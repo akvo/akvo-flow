@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<survey>
+	<questionGroup order="1">
+		<heading>Water Point Questions</heading>
+		<question id="q1" order="1" mandatory="true" type="option">
+			<text>Location?</text>
+			<options allowOther="true">
+				<option value="rural">Rural</option>
+				<option value="rural">Peri-Urban</option>
+				<option value="rural">Small Town</option>
+				<option value="rural">Urban</option>
+			</options>
+		</question>
+		<question id="q2" order="2" mandatory="true" type="free">
+			<text>Name of Community?</text>			
+		</question>
+	</questionGroup>
+	<questionGroup order="2">
+		<heading>Sanitation></heading>
+		<question id="q19" order="1" mandatory="true" type="option">
+			<text>Is there improved sanitation?</text>
+			<options allowOther="false">
+				<option value="yes">Yes</option>
+				<option value="no">No</option>
+				<option value="dontknow">Don't Know</option>
+			</options>
+		</question>
+		<question order="2" mandatory="true" type="option"> 			
+			<dependency question="q19" answer-value="no"/>
+			<text>Are there any plans for the community to get improved sanitation?</text>
+			<options allowOther="false">
+				<option value="yes">Yes</option>
+				<option value="no">No</option>
+				<option value="dontknow">Don't Know</option>
+			</options>
+		</question>
+	</questionGroup>
+</survey>
