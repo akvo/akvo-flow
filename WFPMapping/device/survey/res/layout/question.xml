@@ -6,5 +6,8 @@
 		android:layout_height="wrap_content" />
 	<RadioGroup android:id="@+id/answerRadioGroup"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:orientation="vertical" />
+		android:orientation="vertical" android:visibility="gone" />
+	<EditText android:id="@+id/answerEditText"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:orientation="vertical" android:visibility="gone" />
 </LinearLayout>

@@ -21,6 +21,11 @@ public class Question {
     private String text;
     private int order;
 
+    public static final String FREE_TYPE = "free";
+    public static final String OPTION_TYPE = "option";
+    public static final String GEO_TYPE = "geo";
+    public static final String DATE_TYPE = "date";
+
     public int getOrder() {
         return order;
     }

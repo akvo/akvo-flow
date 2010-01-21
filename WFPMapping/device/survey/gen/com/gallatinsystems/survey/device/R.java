@@ -15,6 +15,7 @@ public final class R {
     }
     public static final class id {
         public static final int QuestionLayout=0x7f060000;
+        public static final int answerEditText=0x7f060003;
         public static final int answerRadioGroup=0x7f060002;
         public static final int questionText=0x7f060001;
     }

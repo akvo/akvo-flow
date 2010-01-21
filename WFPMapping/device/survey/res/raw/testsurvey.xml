@@ -5,14 +5,37 @@
 		<question id="q1" order="1" mandatory="true" type="option">
 			<text>Location?</text>
 			<options allowOther="true">
-				<option value="rural">Rural</option>
-				<option value="rural">Peri-Urban</option>
-				<option value="rural">Small Town</option>
-				<option value="rural">Urban</option>
+				<option value="r">Rural</option>
+				<option value="pu">Peri-Urban</option>
+				<option value="st">Small Town</option>
+				<option value="u">Urban</option>
 			</options>
 		</question>
 		<question id="q2" order="2" mandatory="true" type="free">
 			<text>Name of Community?</text>			
+		</question>
+		<question id="q3" order="3" mandatory="true" type="free">
+			<text>Year of Construction?</text>			
+		</question>
+		<question id="q4" order="4" mandatory="true" type="option">
+			<text>Source?</text>
+			<options allowOther="true">
+				<option value="s">Spring</option>
+				<option value="b">Borehole</option>
+				<option value="lhd">Lined hand-dug well</option>
+				<option value="uhd">Unlined hand-dug well</option>
+				<option value="sw">Surface Water</option>
+				<option value="p">Piped Supply</option>
+			</options>
+		</question>
+		<question id="q5" order="5" mandatory="true" type="option">
+			<text>Collection Point?</text>
+			<options allowOther="false">
+				<option value="ph">Public Handpump</option>
+				<option value="y">Yard Connection (tap)</option>
+				<option value="h">House Connection (tap)</option>
+				<option value="pp">Public/Private Connection (tap)</option>
+			</options>
 		</question>
 	</questionGroup>
 	<questionGroup order="2">

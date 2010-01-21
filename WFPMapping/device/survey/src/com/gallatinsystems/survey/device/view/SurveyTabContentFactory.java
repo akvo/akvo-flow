@@ -2,7 +2,9 @@ package com.gallatinsystems.survey.device.view;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.R;
@@ -22,6 +24,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 
 	private QuestionGroup questionGroup;
 	private Context context;
+	private ListView questionList;
 
 	/**
 	 * stores the context and questionGroup to member fields
@@ -43,11 +46,17 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	public View createTabContent(String tag) {
 		// TODO: add save/clear buttons to bottom of view. probably need a
 		// container
-		ListView listView = new ListView(context);
+	    questionList = new ListView(context);
 		if (questionGroup != null && questionGroup.getQuestions() != null) {
-			listView.setAdapter(new QuestionAdapter(context, R.id.questionText,
-					questionGroup.getQuestions()));
+		    questionList.setAdapter(new QuestionAdapter(context, R.id.QuestionLayout,
+					questionGroup.getQuestions()));			
+		    questionList.setOnItemClickListener(new OnItemClickListener(){                
+                public void onItemClick(AdapterView<?> adapterView, View view,
+                        int position, long id) {                    
+                    questionList.setSelection(position);
+                    
+                }});
 		}
-		return listView;
+		return questionList;
 	}
 }
