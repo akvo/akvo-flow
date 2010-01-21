@@ -84,4 +84,8 @@ public class Question {
 		}
 		dependencies.add(dep);
 	}
+	
+	public String toString(){
+		return text;
+	}
 }

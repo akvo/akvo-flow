@@ -16,7 +16,7 @@
 		</question>
 	</questionGroup>
 	<questionGroup order="2">
-		<heading>Sanitation></heading>
+		<heading>Sanitation</heading>
 		<question id="q19" order="1" mandatory="true" type="option">
 			<text>Is there improved sanitation?</text>
 			<options allowOther="false">
