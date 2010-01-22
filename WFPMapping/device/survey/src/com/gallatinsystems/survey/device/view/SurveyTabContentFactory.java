@@ -1,12 +1,14 @@
 package com.gallatinsystems.survey.device.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.SurveyViewActivity;
 import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
@@ -32,8 +35,8 @@ import com.gallatinsystems.survey.device.domain.QuestionGroup;
 public class SurveyTabContentFactory implements TabContentFactory {
 
     private QuestionGroup questionGroup;
-    private Context context;
-    private ListView questionList;
+    private SurveyViewActivity context;
+    
 
     /**
      * stores the context and questionGroup to member fields
@@ -41,7 +44,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
      * @param c
      * @param qg
      */
-    public SurveyTabContentFactory(Context c, QuestionGroup qg) {
+    public SurveyTabContentFactory(SurveyViewActivity c, QuestionGroup qg) {
         questionGroup = qg;
         context = c;
     }
@@ -53,12 +56,13 @@ public class SurveyTabContentFactory implements TabContentFactory {
      */
     @Override
     public View createTabContent(String tag) {
-        // TODO: add save/clear buttons to bottom of view. probably need a       
+        // TODO: implement dependent questions
+        // TODO: add save/clear buttons to bottom of view. probably need a
         ScrollView scrollView = new ScrollView(context);
         TableLayout table = new TableLayout(context);
         LayoutInflater inflator = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        
+
         scrollView.addView(table);
 
         for (Question q : questionGroup.getQuestions()) {
@@ -75,6 +79,10 @@ public class SurveyTabContentFactory implements TabContentFactory {
             // viewHolder.optionGroup.setOnCheckedChangeListener(this);
             viewHolder.freetextEdit = (EditText) questionView
                     .findViewById(R.id.answerEditText);
+            viewHolder.photoButton = (Button) questionView
+                    .findViewById(R.id.photoButton);
+            viewHolder.okIcon = (ImageView)questionView.findViewById(R.id.okIcon);
+            viewHolder.photoButton.setOnClickListener(context);
             viewHolder.text.setText(q.getText());
             if (Question.OPTION_TYPE.equalsIgnoreCase(q.getType())) {
                 if (q.getOptions() != null) {
@@ -87,12 +95,14 @@ public class SurveyTabContentFactory implements TabContentFactory {
 
                         viewHolder.optionGroup.addView(rb, i++,
                                 new LayoutParams(LayoutParams.FILL_PARENT,
-                                        LayoutParams.WRAP_CONTENT));                      
+                                        LayoutParams.WRAP_CONTENT));
                     }
                     // TODO: handle the "other" text box
                 }
             } else if (Question.FREE_TYPE.equalsIgnoreCase(q.getType())) {
                 viewHolder.freetextEdit.setVisibility(View.VISIBLE);
+            } else if (Question.PHOTO_TYPE.equalsIgnoreCase(q.getType())) {
+                viewHolder.photoButton.setVisibility(View.VISIBLE);
             }
             viewHolder.isInitialized = true;
             tr.addView(questionView);
@@ -112,6 +122,10 @@ public class SurveyTabContentFactory implements TabContentFactory {
         TextView text;
         RadioGroup optionGroup;
         EditText freetextEdit;
+        Button photoButton;
         boolean isInitialized;
+        ImageView okIcon;
+
     }
+   
 }

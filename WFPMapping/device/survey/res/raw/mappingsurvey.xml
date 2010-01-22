@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<survey>
+	<questionGroup order="1">
+		<heading>Water Point</heading>
+		<question id="q1" order="1" mandatory="true" type="free">
+			<text>Name of Community?</text>
+		</question>
+		<question id="q2" order="2" mandatory="true" type="photo">
+			<text>Water Point Photo</text>
+		</question>
+	</questionGroup>
+</survey>
