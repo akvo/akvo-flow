@@ -2,4 +2,8 @@
 <resources>	
 	<string name="app_name">Field Survey</string>
 	<string name="takephoto">Take Photo</string>
+	<string name="getgeo">Check Geo Location</string>
+	<string name="lat">Lat</string>
+	<string name="lon">Lon</string>
+	<string name="elevation">Elevation</string>
 </resources>

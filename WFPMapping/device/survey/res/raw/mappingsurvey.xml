@@ -8,5 +8,8 @@
 		<question id="q2" order="2" mandatory="true" type="photo">
 			<text>Water Point Photo</text>
 		</question>
+		<question id="q2" order="2" mandatory="true" type="geo">
+			<text>Location</text>
+		</question>
 	</questionGroup>
 </survey>

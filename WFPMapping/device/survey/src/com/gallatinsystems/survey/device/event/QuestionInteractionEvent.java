@@ -12,6 +12,7 @@ import com.gallatinsystems.survey.device.view.QuestionView;
 public class QuestionInteractionEvent {
 
     public static final String TAKE_PHOTO_EVENT = "PHOTO";
+    public static final String GEO_CHECK_EVENT = "GEO";
 
     private String eventType;
     private QuestionView source;

@@ -41,7 +41,8 @@ public class SurveyViewActivity extends TabActivity implements
         QuestionInteractionListener {
 
     private static final String ACTIVITY_NAME = "SurveyViewActivity";
-    private static final int PHOTO_ACTIVITY_REQUEST = 12;
+    private static final int PHOTO_ACTIVITY_REQUEST = 1;
+    private static final int GEO_ACTIVITY_REQUEST = 2;
     private static final String TEMP_PHOTO_NAME = "/mappingphototemp.jpg";
     private List<SurveyTabContentFactory> tabContentFactories;
     private QuestionView photoSource;
@@ -55,7 +56,7 @@ public class SurveyViewActivity extends TabActivity implements
 
         // TODO: fetch the resource from the server
         Survey survey = p.parse(getResources().openRawResource(
-                R.raw.testsurvey));
+                R.raw.mappingsurvey));
 
         if (survey != null) {
             tabContentFactories = new ArrayList<SurveyTabContentFactory>();
