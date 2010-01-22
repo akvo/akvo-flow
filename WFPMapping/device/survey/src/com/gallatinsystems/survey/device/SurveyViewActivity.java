@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.View;
-import android.view.View.OnClickListener;
+import android.util.Log;
 import android.widget.TabHost;
 
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
+import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
+import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
 import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
 
@@ -35,12 +37,14 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
  * @author Christopher Fagiani
  * 
  */
-public class SurveyViewActivity extends TabActivity implements OnClickListener {
+public class SurveyViewActivity extends TabActivity implements
+        QuestionInteractionListener {
 
     private static final String ACTIVITY_NAME = "SurveyViewActivity";
     private static final int PHOTO_ACTIVITY_REQUEST = 12;
     private static final String TEMP_PHOTO_NAME = "/mappingphototemp.jpg";
     private List<SurveyTabContentFactory> tabContentFactories;
+    private QuestionView photoSource;
 
     /** Called when the activity is first created. */
     @Override
@@ -51,7 +55,7 @@ public class SurveyViewActivity extends TabActivity implements OnClickListener {
 
         // TODO: fetch the resource from the server
         Survey survey = p.parse(getResources().openRawResource(
-                R.raw.mappingsurvey));
+                R.raw.testsurvey));
 
         if (survey != null) {
             tabContentFactories = new ArrayList<SurveyTabContentFactory>();
@@ -69,18 +73,6 @@ public class SurveyViewActivity extends TabActivity implements OnClickListener {
     }
 
     @Override
-    public void onClick(View v) {
-        // fire off the intent
-        Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
-                .fromFile(new File(Environment.getExternalStorageDirectory()
-                        .getAbsolutePath()
-                        + TEMP_PHOTO_NAME)));
-        startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
-
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // on activity return
         if (requestCode == PHOTO_ACTIVITY_REQUEST) {
@@ -92,12 +84,33 @@ public class SurveyViewActivity extends TabActivity implements OnClickListener {
                     Uri u = Uri.parse(android.provider.MediaStore.Images.Media
                             .insertImage(getContentResolver(), f
                                     .getAbsolutePath(), null, null));
+                    if (photoSource != null) {  
+                        photoSource.questionComplete();
+                    }
                     f.delete();
                 } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    Log.e(ACTIVITY_NAME, e.getMessage());
+                } finally {
+                    photoSource = null;
                 }
             }
+        }
+
+    }
+
+    @Override
+    public void onQuestionInteraction(QuestionInteractionEvent event) {
+        if (QuestionInteractionEvent.TAKE_PHOTO_EVENT.equals(event
+                .getEventType())) {
+            // fire off the intent
+            Intent i = new Intent(
+                    android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
+                    .fromFile(new File(Environment
+                            .getExternalStorageDirectory().getAbsolutePath()
+                            + TEMP_PHOTO_NAME)));
+            photoSource = event.getSource();
+            startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
         }
 
     }
