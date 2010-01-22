@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/QuestionLayout"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
+<TableLayout android:id="@+id/QuestionLayout"
 	xmlns:android="http://schemas.android.com/apk/res/android">
-	<TextView android:id="@+id/questionText" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
-	<RadioGroup android:id="@+id/answerRadioGroup"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:orientation="vertical" android:visibility="gone" />
-	<EditText android:id="@+id/answerEditText"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:orientation="vertical" android:visibility="gone" />
-</LinearLayout>
+	<TableRow android:layout_width="wrap_content">
+		<!-- <TextView android:id="@+id/questionText"
+			android:layout_width="wrap_content" android:layout_height="wrap_content" /> -->
+			 <TextView android:id="@+id/questionText"
+			android:layout_width="300dp" />
+	</TableRow>
+	<TableRow android:layout_width="fill_parent">
+		<RadioGroup android:id="@+id/answerRadioGroup"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:orientation="vertical" android:visibility="gone" />
+		<EditText android:id="@+id/answerEditText" 
+			android:layout_width="300dp"  android:layout_height="wrap_content"
+			android:orientation="vertical" android:visibility="gone" />
+	</TableRow>
+</TableLayout>
+	
