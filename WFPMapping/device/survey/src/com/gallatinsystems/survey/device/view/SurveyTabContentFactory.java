@@ -49,7 +49,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	    questionList = new ListView(context);
 		if (questionGroup != null && questionGroup.getQuestions() != null) {
 		    questionList.setAdapter(new QuestionAdapter(context, R.id.QuestionLayout,
-					questionGroup.getQuestions()));			
+					questionGroup.getQuestions(), questionList));			
 		    questionList.setOnItemClickListener(new OnItemClickListener(){                
                 public void onItemClick(AdapterView<?> adapterView, View view,
                         int position, long id) {                    

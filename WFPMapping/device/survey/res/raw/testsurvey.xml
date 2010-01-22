@@ -37,6 +37,9 @@
 				<option value="pp">Public/Private Connection (tap)</option>
 			</options>
 		</question>
+		<question id="q6" order="6" mandatory="true" type="textonly">
+			<text>This is a test. No options</text>			
+		</question>
 	</questionGroup>
 	<questionGroup order="2">
 		<heading>Sanitation</heading>

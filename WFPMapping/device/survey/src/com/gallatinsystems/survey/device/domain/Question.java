@@ -25,6 +25,7 @@ public class Question {
     public static final String OPTION_TYPE = "option";
     public static final String GEO_TYPE = "geo";
     public static final String DATE_TYPE = "date";
+    public static final String TEXTONLY_TYPE ="textonly";
 
     public int getOrder() {
         return order;
