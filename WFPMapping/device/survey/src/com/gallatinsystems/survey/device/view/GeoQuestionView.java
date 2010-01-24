@@ -124,7 +124,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
         // completeIcon.setVisibility(View.VISIBLE);
     }
 
-    @Override
+    
     public void onLocationChanged(Location location) {
         populateLocation(location);
         LocationManager locMgr = (LocationManager) getContext()
@@ -132,19 +132,19 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
         locMgr.removeUpdates(this);
     }
 
-    @Override
+
     public void onProviderDisabled(String provider) {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
+
     public void onProviderEnabled(String provider) {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
+
     public void onStatusChanged(String provider, int status, Bundle extras) {
         // TODO Auto-generated method stub
 

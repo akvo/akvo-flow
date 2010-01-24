@@ -99,7 +99,6 @@ public class SurveyViewActivity extends TabActivity implements
 
     }
 
-    @Override
     public void onQuestionInteraction(QuestionInteractionEvent event) {
         if (QuestionInteractionEvent.TAKE_PHOTO_EVENT.equals(event
                 .getEventType())) {
