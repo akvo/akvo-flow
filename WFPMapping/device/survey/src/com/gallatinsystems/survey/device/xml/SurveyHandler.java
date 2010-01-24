@@ -34,6 +34,7 @@ public class SurveyHandler extends DefaultHandler {
     private static final String VALUE = "value";
     private static final String OPTIONS = "options";
     private static final String ALLOW_OTHER = "allowOther";
+    private static final String TIP = "tip";
 
     private Survey survey;
     private QuestionGroup currentQuestionGroup;
@@ -77,6 +78,8 @@ public class SurveyHandler extends DefaultHandler {
             } else if (localName.equalsIgnoreCase(OPTIONS)) {
                 currentQuestion.setOptions(currentOptions);
                 currentOptions = null;
+            } else if (localName.equalsIgnoreCase(TIP)) {
+                currentQuestion.setTip(builder.toString().trim());
             }
         }
         if (currentOption != null) {

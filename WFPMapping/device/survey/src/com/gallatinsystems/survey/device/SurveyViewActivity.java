@@ -56,7 +56,7 @@ public class SurveyViewActivity extends TabActivity implements
 
         // TODO: fetch the resource from the server
         Survey survey = p.parse(getResources().openRawResource(
-                R.raw.mappingsurvey));
+                R.raw.testsurvey));
 
         if (survey != null) {
             tabContentFactories = new ArrayList<SurveyTabContentFactory>();

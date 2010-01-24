@@ -12,10 +12,10 @@
 			</options>
 		</question>
 		<question id="q2" order="2" mandatory="true" type="free">
-			<text>Name of Community?</text>			
+			<text>Name of Community?</text>
 		</question>
 		<question id="q3" order="3" mandatory="true" type="free">
-			<text>Year of Construction?</text>			
+			<text>Year of Construction?</text>
 		</question>
 		<question id="q4" order="4" mandatory="true" type="option">
 			<text>Source?</text>
@@ -34,11 +34,21 @@
 				<option value="ph">Public Handpump</option>
 				<option value="y">Yard Connection (tap)</option>
 				<option value="h">House Connection (tap)</option>
-				<option value="pp">Public/Private Connection (tap)</option>
+				<option value="pp">Public/Private Connection (tap)
+				</option>
 			</options>
 		</question>
-		<question id="q6" order="6" mandatory="true" type="textonly">
-			<text>This is a test. No options</text>			
+		<question id="q6" order="6" mandatory="true" type="option">
+			<text>What is the operational status of the improved water
+				system?</text>
+			<options allowOther="false">
+				<option value="h">High</option>
+				<option value="ok">Ok</option>
+				<option value="p">Poor</option>
+			</options>
+			<tip><![CDATA[<b>High</b> = Water is flowing in adequate quantity and quality, meets govt standards and has no significant broken parts/problems.<br>
+    <b>Ok</b> = Water is flowing but is either not adequate quantity or quality, or does not meet govt. standards, or has broken parts, leaks or problems.<br>
+    <b>Poor</b> =System does not function.]]></tip>
 		</question>
 	</questionGroup>
 	<questionGroup order="2">
@@ -51,9 +61,10 @@
 				<option value="dontknow">Don't Know</option>
 			</options>
 		</question>
-		<question order="2" mandatory="true" type="option"> 			
-			<dependency question="q19" answer-value="no"/>
-			<text>Are there any plans for the community to get improved sanitation?</text>
+		<question order="2" mandatory="true" type="option">
+			<dependency question="q19" answer-value="no" />
+			<text>Are there any plans for the community to get improved
+				sanitation?</text>
 			<options allowOther="false">
 				<option value="yes">Yes</option>
 				<option value="no">No</option>

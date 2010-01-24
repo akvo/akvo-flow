@@ -3,7 +3,11 @@ package com.gallatinsystems.survey.device.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.text.Html;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -27,10 +31,12 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
  */
 public class QuestionView extends TableLayout {
 
-    protected static final int DEFAULT_WIDTH = 300;        
+    protected static final int DEFAULT_WIDTH = 300;
     private TextView questionText;
     protected Question question;
     private List<QuestionInteractionListener> listeners;
+    private TextView tipText;
+    private ImageButton tipImage;
 
     /**
      * install a single tableRow containing a textView with the question text
@@ -46,6 +52,22 @@ public class QuestionView extends TableLayout {
         questionText.setWidth(DEFAULT_WIDTH);
         questionText.setText(q.getText());
         tr.addView(questionText);
+        if (question.getTip() != null) {         
+            tipImage = new ImageButton(context);
+            tipImage.setImageResource(android.R.drawable.ic_dialog_info);
+            tr.addView(tipImage);
+            tipImage.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v
+                            .getContext());
+                    TextView tipText = new TextView(v.getContext());
+                    tipText.setText(Html.fromHtml(question.getTip()));
+                    builder.setView(tipText);                    
+                    builder.show();
+                    
+                }
+            });
+        }
         addView(tr);
     }
 

@@ -20,6 +20,15 @@ public class Question {
     private String id;
     private String text;
     private int order;
+    private String tip;
+
+    public String getTip() {
+        return tip;
+    }
+
+    public void setTip(String tip) {
+        this.tip = tip;
+    }
 
     public static final String FREE_TYPE = "free";
     public static final String OPTION_TYPE = "option";
