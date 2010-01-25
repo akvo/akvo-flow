@@ -28,7 +28,7 @@ public class FreetextQuestionView extends QuestionView {
         TableRow tr = new TableRow(context);
         freetextEdit = new EditText(context);
         freetextEdit.setWidth(DEFAULT_WIDTH);
-        tr.addView(freetextEdit);
+        tr.addView(freetextEdit);        
         addView(tr);
     }
 }

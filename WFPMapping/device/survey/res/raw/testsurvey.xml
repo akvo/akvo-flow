@@ -61,7 +61,7 @@
 				<option value="dontknow">Don't Know</option>
 			</options>
 		</question>
-		<question order="2" mandatory="true" type="option">
+		<question id="q20" order="2" mandatory="true" type="option">
 			<dependency question="q19" answer-value="no" />
 			<text>Are there any plans for the community to get improved
 				sanitation?</text>
@@ -70,6 +70,11 @@
 				<option value="no">No</option>
 				<option value="dontknow">Don't Know</option>
 			</options>
+		</question>
+		<question id="q21" order="3" mandatory="true" type="free">
+			<dependency question="q19" answer-value="yes" />
+			<text>Number of households with improved sanitation systems?
+			</text>
 		</question>
 	</questionGroup>
 </survey>

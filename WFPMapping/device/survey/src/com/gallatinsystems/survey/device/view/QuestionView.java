@@ -12,6 +12,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
@@ -24,19 +25,27 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
  * It is unlikely anyone will ever use this class directly (a subclass should be
  * used).
  * 
- * TODO: implement tool-tip pop-up
  * 
  * @author Christopher Fagiani
  * 
  */
-public class QuestionView extends TableLayout {
+public class QuestionView extends TableLayout implements
+        QuestionInteractionListener {
 
     protected static final int DEFAULT_WIDTH = 300;
     private TextView questionText;
     protected Question question;
+    public Question getQuestion() {
+        return question;
+    }
+
     private List<QuestionInteractionListener> listeners;
-    private TextView tipText;
     private ImageButton tipImage;
+    private String currentValue;
+
+    public String getCurrentValue() {
+        return currentValue;
+    }
 
     /**
      * install a single tableRow containing a textView with the question text
@@ -52,7 +61,11 @@ public class QuestionView extends TableLayout {
         questionText.setWidth(DEFAULT_WIDTH);
         questionText.setText(q.getText());
         tr.addView(questionText);
-        if (question.getTip() != null) {         
+        // if there is a tip for this question, construct an alert dialog box
+        // with the data
+        // TODO: handle html with images by using an ImageLoader with the Html
+        // class?
+        if (question.getTip() != null) {
             tipImage = new ImageButton(context);
             tipImage.setImageResource(android.R.drawable.ic_dialog_info);
             tr.addView(tipImage);
@@ -62,13 +75,19 @@ public class QuestionView extends TableLayout {
                             .getContext());
                     TextView tipText = new TextView(v.getContext());
                     tipText.setText(Html.fromHtml(question.getTip()));
-                    builder.setView(tipText);                    
+                    builder.setView(tipText);
                     builder.show();
-                    
+
                 }
             });
         }
         addView(tr);
+        // if this question has 1 or more dependencies, then it needs to be
+        // invisible initially
+        if (question.getDependencies() != null
+                && question.getDependencies().size() > 0) {
+            setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -109,6 +128,36 @@ public class QuestionView extends TableLayout {
      */
     public void questionComplete() {
         // do nothing
+    }
+
+    public void onQuestionInteraction(QuestionInteractionEvent event) {
+
+        if (QuestionInteractionEvent.QUESTION_ANSWER_EVENT.equals(event
+                .getEventType())) {
+            // if this question is dependent, see if it has been satisfied
+            if (question.getDependencies() != null) {
+                for (Dependency d : question.getDependencies()) {
+                    if (d.getQuestion().equalsIgnoreCase(event.getSource().getQuestion().getId())) {
+                        // if we're here, then the question on which we depend
+                        // has been answered. Check the value to see if it's the
+                        // one we are looking for
+                        if (d.getAnswer() != null
+                                && d.getAnswer().equalsIgnoreCase(
+                                        event.getSource().getCurrentValue())) {
+                            setVisibility(View.VISIBLE);
+                            break;
+                        } else {
+                            setVisibility(View.GONE);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    protected void setCurrentValue(String val) {
+        currentValue = val;
+        notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
     }
 
 }

@@ -13,13 +13,16 @@ public class QuestionInteractionEvent {
 
     public static final String TAKE_PHOTO_EVENT = "PHOTO";
     public static final String GEO_CHECK_EVENT = "GEO";
+    public static final String QUESTION_ANSWER_EVENT = "ANS";
 
     private String eventType;
-    private QuestionView source;
+    private QuestionView source;    
+
+    
 
     public QuestionInteractionEvent(String type, QuestionView source) {
         this.eventType = type;
-        this.source = source;
+        this.source = source;        
     }
 
     public String getEventType() {

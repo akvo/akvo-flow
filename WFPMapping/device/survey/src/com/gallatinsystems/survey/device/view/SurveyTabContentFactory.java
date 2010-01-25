@@ -1,7 +1,8 @@
 package com.gallatinsystems.survey.device.view;
 
-import android.content.Context;
-import android.view.LayoutInflater;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -11,6 +12,7 @@ import android.widget.TableRow;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.SurveyViewActivity;
+import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 
@@ -49,17 +51,16 @@ public class SurveyTabContentFactory implements TabContentFactory {
         // TODO: add save/clear buttons to bottom of view. probably need a
         ScrollView scrollView = new ScrollView(context);
         TableLayout table = new TableLayout(context);
-        LayoutInflater inflator = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+    
         scrollView.addView(table);
-
+        Map<String,QuestionView> questionMap = new HashMap<String,QuestionView>();
         for (Question q : questionGroup.getQuestions()) {
             QuestionView questionView = null;
 
             TableRow tr = new TableRow(context);
             tr.setLayoutParams(new ViewGroup.LayoutParams(
                     LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            
             if (Question.OPTION_TYPE.equalsIgnoreCase(q.getType())) {
                 questionView = new OptionQuestionView(context, q);
 
@@ -72,11 +73,23 @@ public class SurveyTabContentFactory implements TabContentFactory {
             } else {
                 questionView = new QuestionView(context, q);
             }
-
+            questionMap.put(q.getId(), questionView);
             questionView
                     .addQuestionInteractionListener((SurveyViewActivity) context);
             tr.addView(questionView);
             table.addView(tr);
+        }
+        //set up listeners for dependencies
+        for (Question q : questionGroup.getQuestions()) {
+            if(q.getDependencies()!= null){
+                for(Dependency dep: q.getDependencies()){
+                    QuestionView parentQ = questionMap.get(dep.getQuestion());
+                    QuestionView depQ = questionMap.get(q.getId());
+                    if (depQ != null && parentQ != null){
+                        parentQ.addQuestionInteractionListener(depQ);
+                    }
+                }
+            }
         }
         return scrollView;
     }

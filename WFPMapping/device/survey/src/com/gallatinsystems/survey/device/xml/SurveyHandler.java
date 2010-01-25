@@ -121,6 +121,7 @@ public class SurveyHandler extends DefaultHandler {
             currentQuestion.setMandatory(Boolean.parseBoolean(attributes
                     .getValue(MANDATORY)));
             currentQuestion.setType(attributes.getValue(TYPE));
+            currentQuestion.setId(attributes.getValue(ID));
         } else if (localName.equalsIgnoreCase(OPTIONS)) {
             currentOptions = new ArrayList<Option>();
             if (currentQuestion != null) {
