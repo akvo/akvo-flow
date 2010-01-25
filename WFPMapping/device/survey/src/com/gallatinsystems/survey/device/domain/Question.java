@@ -21,20 +21,13 @@ public class Question {
     private String text;
     private int order;
     private String tip;
-
-    public String getTip() {
-        return tip;
-    }
-
-    public void setTip(String tip) {
-        this.tip = tip;
-    }
+    private ValidationRule validationRule;
 
     public static final String FREE_TYPE = "free";
     public static final String OPTION_TYPE = "option";
     public static final String GEO_TYPE = "geo";
     public static final String DATE_TYPE = "date";
-    public static final String TEXTONLY_TYPE ="textonly";
+    public static final String TEXTONLY_TYPE = "textonly";
     public static final String PHOTO_TYPE = "photo";
 
     public int getOrder() {
@@ -112,6 +105,22 @@ public class Question {
             dependencies = new ArrayList<Dependency>();
         }
         dependencies.add(dep);
+    }
+
+    public ValidationRule getValidationRule() {
+        return validationRule;
+    }
+
+    public void setValidationRule(ValidationRule validationRule) {
+        this.validationRule = validationRule;
+    }
+
+    public String getTip() {
+        return tip;
+    }
+
+    public void setTip(String tip) {
+        this.tip = tip;
     }
 
     public String toString() {

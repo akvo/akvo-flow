@@ -12,6 +12,7 @@ import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.domain.ValidationRule;
 
 /**
  * Handler for sax-based xml parser for Survey files
@@ -35,6 +36,11 @@ public class SurveyHandler extends DefaultHandler {
     private static final String OPTIONS = "options";
     private static final String ALLOW_OTHER = "allowOther";
     private static final String TIP = "tip";
+    private static final String VALIDATION_TYPE = "validationType";
+    private static final String VALIDATION_RULE = "validationRule";
+    private static final String MAX_LENGTH = "maxLength";
+    private static final String ALLOW_DEC = "allowDecimal";
+    private static final String ALLOW_SIGN = "signed";
 
     private Survey survey;
     private QuestionGroup currentQuestionGroup;
@@ -42,6 +48,7 @@ public class SurveyHandler extends DefaultHandler {
     private Option currentOption;
     private Dependency currentDependency;
     private List<Option> currentOptions;
+    private ValidationRule currentValidation;
 
     private StringBuilder builder;
 
@@ -80,6 +87,9 @@ public class SurveyHandler extends DefaultHandler {
                 currentOptions = null;
             } else if (localName.equalsIgnoreCase(TIP)) {
                 currentQuestion.setTip(builder.toString().trim());
+            } else if (localName.equalsIgnoreCase(VALIDATION_RULE)) {
+                currentQuestion.setValidationRule(currentValidation);
+                currentValidation = null;
             }
         }
         if (currentOption != null) {
@@ -122,6 +132,11 @@ public class SurveyHandler extends DefaultHandler {
                     .getValue(MANDATORY)));
             currentQuestion.setType(attributes.getValue(TYPE));
             currentQuestion.setId(attributes.getValue(ID));
+            String validation = attributes.getValue(VALIDATION_TYPE);
+            if (validation != null) {
+                currentQuestion
+                        .setValidationRule(new ValidationRule(validation));
+            }
         } else if (localName.equalsIgnoreCase(OPTIONS)) {
             currentOptions = new ArrayList<Option>();
             if (currentQuestion != null) {
@@ -139,6 +154,12 @@ public class SurveyHandler extends DefaultHandler {
                 currentQuestion.addDependency(currentDependency);
             }
             currentDependency = null;
+        } else if (localName.equalsIgnoreCase(VALIDATION_RULE)) {
+            currentValidation = new ValidationRule(attributes
+                    .getValue(VALIDATION_TYPE));
+            currentValidation.setAllowDecimal(attributes.getValue(ALLOW_DEC));
+            currentValidation.setAllowSigned(attributes.getValue(ALLOW_SIGN));
+            currentValidation.setMaxLength(attributes.getValue(MAX_LENGTH));
         }
     }
 }
