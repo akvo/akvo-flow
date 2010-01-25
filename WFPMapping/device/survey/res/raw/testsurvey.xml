@@ -14,10 +14,16 @@
 		<question id="q2" order="2" mandatory="true" type="free">
 			<text>Name of Community?</text>
 		</question>
-		<question id="q3" order="3" mandatory="true" type="free">
+		<question id="q3" order="3" mandatory="true" type="photo">
+			<text>Water Point Photo</text>
+		</question>
+		<question id="q4" order="4" mandatory="true" type="geo">
+			<text>Location</text>
+		</question>
+		<question id="q5" order="5" mandatory="true" type="free">
 			<text>Year of Construction?</text>
 		</question>
-		<question id="q4" order="4" mandatory="true" type="option">
+		<question id="q6" order="6" mandatory="true" type="option">
 			<text>Source?</text>
 			<options allowOther="true">
 				<option value="s">Spring</option>
@@ -28,7 +34,7 @@
 				<option value="p">Piped Supply</option>
 			</options>
 		</question>
-		<question id="q5" order="5" mandatory="true" type="option">
+		<question id="q7" order="7" mandatory="true" type="option">
 			<text>Collection Point?</text>
 			<options allowOther="false">
 				<option value="ph">Public Handpump</option>
@@ -38,7 +44,7 @@
 				</option>
 			</options>
 		</question>
-		<question id="q6" order="6" mandatory="true" type="option">
+		<question id="q8" order="8" mandatory="true" type="option">
 			<text>What is the operational status of the improved water
 				system?</text>
 			<options allowOther="false">
