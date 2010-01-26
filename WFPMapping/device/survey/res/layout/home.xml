@@ -12,7 +12,7 @@
 					<TextView android:text="@string/currentuser"
 						android:layout_width="fill_parent" />
 					<TextView android:id="@+id/currentUserField"
-						android:layout_width="fill_parent" />
+						android:layout_width="fill_parent" android:src="@string/unknown"/>
 				</TableRow>
 				<TableRow android:layout_width="fill_parent">
 					<TextView android:text="@string/lastsync"

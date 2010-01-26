@@ -1,5 +1,7 @@
 package com.gallatinsystems.survey.device;
 
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +21,9 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 
 	public static final int SURVEY_ACTIVITY = 1;
 	public static final int LIST_USER_ACTIVITY = 2;
+	private String currentUserId;
+	private String currentName;
+	private TextView userField;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -30,9 +35,16 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		ImageButton hhButton = (ImageButton) findViewById(R.id.hhSurveyButton);
 		ImageButton pubButton = (ImageButton) findViewById(R.id.pubSurveyButton);
 		ImageButton userButotn = (ImageButton) findViewById(R.id.usersButton);
-		TextView userField = (TextView) findViewById(R.id.currentUserField);
-		// TODO: get current user from db
-		userField.setText("Test User");
+		userField = (TextView) findViewById(R.id.currentUserField);
+
+		// TODO: store/fetch current user from DB?
+		currentUserId = savedInstanceState != null ? savedInstanceState
+				.getString(SurveyDbAdapter.USER_ID_COL) : null;
+		currentName = savedInstanceState != null ? savedInstanceState
+				.getString(SurveyDbAdapter.DISP_NAME_COL) : null;
+		if (currentName != null) {
+			populateFields();
+		}
 
 		mapButton.setOnClickListener(this);
 		wpButton.setOnClickListener(this);
@@ -63,6 +75,49 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 			i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
 			startActivityForResult(i, SURVEY_ACTIVITY);
 		}
+	}
 
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		switch (requestCode) {
+		case LIST_USER_ACTIVITY:
+			if (resultCode == RESULT_OK) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					currentUserId = bundle
+							.getString(SurveyDbAdapter.USER_ID_COL);
+					currentName = bundle
+							.getString(SurveyDbAdapter.DISP_NAME_COL);
+					populateFields();
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(SurveyDbAdapter.USER_ID_COL, currentUserId);
+		outState.putString(SurveyDbAdapter.DISP_NAME_COL, currentName);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		saveState();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		populateFields();
+	}
+
+	private void populateFields() {
+		userField.setText(currentName);
+	}
+
+	private void saveState() {
+
+		// databaseAdaptor.createOrUpdateUser(userId, name, email);
 	}
 }
