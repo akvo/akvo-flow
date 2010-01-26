@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.text.Html;
 import android.view.View;
 import android.widget.ImageButton;
@@ -31,22 +33,22 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
  * 
  */
 public class QuestionView extends TableLayout implements
-        QuestionInteractionListener {
+		QuestionInteractionListener {
 
-    protected static final int DEFAULT_WIDTH = 300;
-    private TextView questionText;
-    protected Question question;
-    private QuestionResponse response;
-    private List<QuestionInteractionListener> listeners;
-    private ImageButton tipImage;
+	protected static final int DEFAULT_WIDTH = 300;
+	private TextView questionText;
+	protected Question question;
+	private QuestionResponse response;
+	private List<QuestionInteractionListener> listeners;
+	private ImageButton tipImage;
 
-    /**
-     * install a single tableRow containing a textView with the question text
-     * 
-     * @param context
-     * @param q
-     */
-    public QuestionView(Context context, Question q) {
+	/**
+	 * install a single tableRow containing a textView with the question text
+	 * 
+	 * @param context
+	 * @param q
+	 */
+	public QuestionView(Context context, Question q) {
         super(context);
         question = q;
         TableRow tr = new TableRow(context);
@@ -69,6 +71,13 @@ public class QuestionView extends TableLayout implements
                     TextView tipText = new TextView(v.getContext());
                     tipText.setText(Html.fromHtml(question.getTip()));
                     builder.setView(tipText);
+                    builder.setPositiveButton("Ok",
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int id) {
+							dialog.cancel();
+						}
+					});
                     builder.show();
 
                 }
@@ -83,113 +92,113 @@ public class QuestionView extends TableLayout implements
         }
     }
 
-    /**
-     * adds a listener to the internal list of clients to be notified on an
-     * event
-     * 
-     * @param listener
-     */
-    public void addQuestionInteractionListener(
-            QuestionInteractionListener listener) {
-        if (listeners == null) {
-            listeners = new ArrayList<QuestionInteractionListener>();
-        }
-        if (listener != null) {
-            listeners.add(listener);
-        }
-    }
+	/**
+	 * adds a listener to the internal list of clients to be notified on an
+	 * event
+	 * 
+	 * @param listener
+	 */
+	public void addQuestionInteractionListener(
+			QuestionInteractionListener listener) {
+		if (listeners == null) {
+			listeners = new ArrayList<QuestionInteractionListener>();
+		}
+		if (listener != null) {
+			listeners.add(listener);
+		}
+	}
 
-    /**
-     * notifies each QuestionInteractionListener registered with this question.
-     * This is done serially on the calling thread.
-     * 
-     * @param type
-     */
-    protected void notifyQuestionListeners(String type) {
-        if (listeners != null) {
-            QuestionInteractionEvent event = new QuestionInteractionEvent(type,
-                    this);
-            for (QuestionInteractionListener l : listeners) {
-                l.onQuestionInteraction(event);
-            }
-        }
-    }
+	/**
+	 * notifies each QuestionInteractionListener registered with this question.
+	 * This is done serially on the calling thread.
+	 * 
+	 * @param type
+	 */
+	protected void notifyQuestionListeners(String type) {
+		if (listeners != null) {
+			QuestionInteractionEvent event = new QuestionInteractionEvent(type,
+					this);
+			for (QuestionInteractionListener l : listeners) {
+				l.onQuestionInteraction(event);
+			}
+		}
+	}
 
-    /**
-     * method that can be overridden by sub classes if they want to have some
-     * sort of visual response to a question interaction.
-     */
-    public void questionComplete() {
-        // do nothing
-    }
+	/**
+	 * method that can be overridden by sub classes if they want to have some
+	 * sort of visual response to a question interaction.
+	 */
+	public void questionComplete() {
+		// do nothing
+	}
 
-    /**
-     * method that should be overridden by sub classes to clear current value
-     * 
-     */
-    public void resetQuestion() {
-        setResponse(null);
-    }
+	/**
+	 * method that should be overridden by sub classes to clear current value
+	 * 
+	 */
+	public void resetQuestion() {
+		setResponse(null);
+	}
 
-    public void onQuestionInteraction(QuestionInteractionEvent event) {
+	public void onQuestionInteraction(QuestionInteractionEvent event) {
 
-        if (QuestionInteractionEvent.QUESTION_ANSWER_EVENT.equals(event
-                .getEventType())) {
-            // if this question is dependent, see if it has been satisfied
-            if (question.getDependencies() != null) {
-                for (Dependency d : question.getDependencies()) {
-                    if (d.getQuestion().equalsIgnoreCase(
-                            event.getSource().getQuestion().getId())) {
-                        // if we're here, then the question on which we depend
-                        // has been answered. Check the value to see if it's the
-                        // one we are looking for
-                        if (d.getAnswer() != null
-                                && event.getSource().getResponse() != null
-                                && d.getAnswer().equalsIgnoreCase(
-                                        event.getSource().getResponse()
-                                                .getValue())) {
-                            setVisibility(View.VISIBLE);
-                            break;
-                        } else {
-                            setVisibility(View.GONE);
-                        }
-                    }
-                }
-            }
-        }
-    }
+		if (QuestionInteractionEvent.QUESTION_ANSWER_EVENT.equals(event
+				.getEventType())) {
+			// if this question is dependent, see if it has been satisfied
+			if (question.getDependencies() != null) {
+				for (Dependency d : question.getDependencies()) {
+					if (d.getQuestion().equalsIgnoreCase(
+							event.getSource().getQuestion().getId())) {
+						// if we're here, then the question on which we depend
+						// has been answered. Check the value to see if it's the
+						// one we are looking for
+						if (d.getAnswer() != null
+								&& event.getSource().getResponse() != null
+								&& d.getAnswer().equalsIgnoreCase(
+										event.getSource().getResponse()
+												.getValue())) {
+							setVisibility(View.VISIBLE);
+							break;
+						} else {
+							setVisibility(View.GONE);
+						}
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * this method should be overridden by subclasses so they can manage the UI
-     * changes when resetting the value
-     * 
-     * @param resp
-     */
-    public void rehydrate(QuestionResponse resp) {
-        setResponse(resp);
-    }
+	/**
+	 * this method should be overridden by subclasses so they can manage the UI
+	 * changes when resetting the value
+	 * 
+	 * @param resp
+	 */
+	public void rehydrate(QuestionResponse resp) {
+		setResponse(resp);
+	}
 
-    public QuestionResponse getResponse() {
-        return response;
-    }
+	public QuestionResponse getResponse() {
+		return response;
+	}
 
-    public void setResponse(QuestionResponse response) {
-        if (response != null) {
-            if (this.response == null) {
-                this.response = response;
-            } else {
-                // we need to preserve the ID so we don't get duplicates in the
-                // db
-                this.response.setType(response.getType());
-                this.response.setValue(response.getValue());
-            }
-        } else {
-            this.response = response;
-        }
-        notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
-    }
+	public void setResponse(QuestionResponse response) {
+		if (response != null) {
+			if (this.response == null) {
+				this.response = response;
+			} else {
+				// we need to preserve the ID so we don't get duplicates in the
+				// db
+				this.response.setType(response.getType());
+				this.response.setValue(response.getValue());
+			}
+		} else {
+			this.response = response;
+		}
+		notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
+	}
 
-    public Question getQuestion() {
-        return question;
-    }
+	public Question getQuestion() {
+		return question;
+	}
 }

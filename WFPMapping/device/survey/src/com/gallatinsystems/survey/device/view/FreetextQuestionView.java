@@ -16,8 +16,6 @@ import com.gallatinsystems.survey.device.domain.ValidationRule;
 /**
  * Question that supports free-text input via the keyboard
  * 
- * TODO: add validation rules
- * 
  * 
  * @author Christopher Fagiani
  * 

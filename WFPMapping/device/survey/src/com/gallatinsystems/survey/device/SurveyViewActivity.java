@@ -34,6 +34,7 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
  * 
  * TODO: add logic for starting background data replication activity
  * 
+ * TODO: refactor to obey suggestions here: http://developer.android.com/guide/practices/design/performance.html
  * 
  * @author Christopher Fagiani
  * 

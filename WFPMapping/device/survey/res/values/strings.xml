@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>	
+<resources>
 	<string name="app_name">Field Survey</string>
 	<string name="takephoto">Take Photo</string>
 	<string name="getgeo">Check Geo Location</string>
@@ -8,4 +8,5 @@
 	<string name="elevation">Elevation</string>
 	<string name="savebutton">Save</string>
 	<string name="clearbutton">Clear</string>
+	<string name="geodialog">GPS must be enabled to do this. Select OK to go to	the settings page. Select Use GPS Satellites and then press the back button to return. Once GPS is enabled you can click Check Geo Location again to get your position.</string>
 </resources>
