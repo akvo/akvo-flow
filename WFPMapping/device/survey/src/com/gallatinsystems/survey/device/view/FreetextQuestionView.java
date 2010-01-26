@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TableRow;
 
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.ValidationRule;
 
 /**
@@ -85,5 +86,17 @@ public class FreetextQuestionView extends QuestionView {
 
         tr.addView(freetextEdit);
         addView(tr);
+    }
+
+    public void rehydrate(QuestionResponse resp){
+        super.rehydrate(resp);
+        if(resp != null){
+            freetextEdit.setText(resp.getValue());
+        }
+    }
+    
+    public void resetQuestion() {
+        super.resetQuestion();
+        freetextEdit.setText("");
     }
 }

@@ -112,6 +112,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
         }
 
     }
+       
 
     private void populateLocation(Location loc) {
         latField.setText(loc.getLatitude() + "");
@@ -119,6 +120,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
         elevationField.setText(loc.getAltitude() + "");
     }
 
+    public void resetQuestion(){ 
+        super.resetQuestion();
+        latField.setText("");
+        lonField.setText("");
+        elevationField.setText("");
+    }
+    
     @Override
     public void questionComplete() {
         // completeIcon.setVisibility(View.VISIBLE);

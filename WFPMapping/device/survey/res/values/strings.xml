@@ -6,4 +6,6 @@
 	<string name="lat">Lat</string>
 	<string name="lon">Lon</string>
 	<string name="elevation">Elevation</string>
+	<string name="savebutton">Save</string>
+	<string name="clearbutton">Clear</string>
 </resources>

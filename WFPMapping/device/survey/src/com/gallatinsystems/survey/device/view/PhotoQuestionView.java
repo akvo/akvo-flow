@@ -9,6 +9,7 @@ import android.widget.TableRow;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 
 /**
@@ -49,5 +50,21 @@ public class PhotoQuestionView extends QuestionView implements OnClickListener {
     @Override
     public void questionComplete() {
         completeIcon.setVisibility(View.VISIBLE);
+    }
+
+    public void rehydrate(QuestionResponse resp) {
+        super.rehydrate(resp);
+        if (resp != null) {
+            if (resp.getValue() != null) {
+                // TODO: handle file path
+                completeIcon.setVisibility(View.VISIBLE);
+            }
+
+        }
+    }
+
+    public void resetQuestion() {
+        super.resetQuestion();
+        completeIcon.setVisibility(View.GONE);
     }
 }

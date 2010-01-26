@@ -11,6 +11,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 
 /**
  * Question type that supports the selection of a single option from a list of
@@ -41,7 +42,10 @@ public class OptionQuestionView extends QuestionView {
                     .setOnCheckedChangeListener(new OnCheckedChangeListener() {
                         public void onCheckedChanged(RadioGroup group,
                                 int checkedId) {
-                            setCurrentValue(idToValueMap.get(checkedId));
+                            setResponse(new QuestionResponse(idToValueMap
+                                    .get(checkedId),
+                                    QuestionResponse.VALUE_TYPE, question
+                                            .getId()));
                         }
                     });
             int i = 0;
@@ -55,5 +59,22 @@ public class OptionQuestionView extends QuestionView {
             tr.addView(optionGroup);
             addView(tr);
         }
+    }
+
+    public void rehydrate(QuestionResponse resp) {
+        super.rehydrate(resp);
+        if (resp != null) {
+            for (Integer key : idToValueMap.keySet()) {
+                if (idToValueMap.get(key).equals(resp.getValue())) {
+                    optionGroup.check(key);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void resetQuestion() {
+        super.resetQuestion();
+        optionGroup.clearCheck();
     }
 }

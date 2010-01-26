@@ -1,0 +1,167 @@
+package com.gallatinsystems.survey.device.dao;
+
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+/**
+ * Database class for the survey db. It can create/upgrade the database as well
+ * as select/insert/update survey reponses.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
+public class SurveyDbAdapter {
+    public static final String NAME_COL = "name";
+    public static final String QUESTION_COL = "question_id";
+    public static final String ANSWER_COL = "answer_value";
+    public static final String ANSWER_TYPE_COL = "answer_type";
+    public static final String SURVEY_RESPONDENT_ID_COL = "survey_respondent_id";
+    public static final String RESP_ID_COL = "survey_response_id";
+    public static final String SURVEY_ID_COL = "survey_id";
+
+    private static final String TAG = "SurveyDbAdapter";
+    private DatabaseHelper databaseHelper;
+    private SQLiteDatabase database;
+
+    /**
+     * Database creation sql statement
+     */
+    private static final String SURVEY_TABLE_CREATE = "create table survey (survey_id integer primary key autoincrement, "
+            + "title text not null);";
+
+    //TODO: put these fields back later
+    private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
+            + "survey_id integer not null);";// submitted_flag text not null,
+                                             // submitted_date text,
+                                             // delivered_date text);";
+
+    private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
+            + " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null);";
+
+    private static final String DATABASE_NAME = "surveydata";
+    private static final String SURVEY_TABLE = "survey";
+    private static final String RESPONDENT_TABLE = "survey_respondent";
+    private static final String RESPONSE_TABLE = "survey_response";
+
+    private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id)";
+
+    private static final int DATABASE_VERSION = 2;
+
+    private final Context context;
+
+    private static class DatabaseHelper extends SQLiteOpenHelper {
+
+        DatabaseHelper(Context context) {
+            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+
+            db.execSQL(SURVEY_TABLE_CREATE);
+            db.execSQL(SURVEY_RESPONDENT_CREATE);
+            db.execSQL(SURVEY_RESPONSE_CREATE);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+                    + newVersion + ", which will destroy all old data");
+            db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
+            onCreate(db);
+        }
+    }
+
+    /**
+     * Constructor - takes the context to allow the database to be
+     * opened/created
+     * 
+     * @param ctx
+     *            the Context within which to work
+     */
+    public SurveyDbAdapter(Context ctx) {
+        this.context = ctx;
+    }
+
+    /**
+     * Open or create the db
+     * 
+     * @throws SQLException
+     *             if the database could be neither opened or created
+     */
+    public SurveyDbAdapter open() throws SQLException {
+        databaseHelper = new DatabaseHelper(context);
+        database = databaseHelper.getWritableDatabase();
+        return this;
+    }
+
+    /**
+     * close the db
+     */
+    public void close() {
+        databaseHelper.close();
+    }
+
+    /**
+     * Create a new survey using the title and body provided. If the survey is
+     * successfully created return the new id, otherwise return a -1 to indicate
+     * failure.
+     * 
+     * @param name
+     *            survey name
+     * 
+     * @return rowId or -1 if failed
+     */
+    public long createSurvey(String name) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(NAME_COL, name);
+        return database.insert(SURVEY_TABLE, null, initialValues);
+    }
+
+    /**
+     * Return a Cursor over the list of all responses for a particular survey
+     * respondent
+     * 
+     * @return Cursor over all responses
+     */
+    public Cursor fetchResponsesByRespondent(String respondentID) {
+        return database.query(RESPONSE_TABLE, new String[] { RESP_ID_COL,
+                QUESTION_COL, ANSWER_COL, ANSWER_TYPE_COL,
+                SURVEY_RESPONDENT_ID_COL }, SURVEY_RESPONDENT_ID_COL + "=?",
+                new String[] { respondentID }, null, null, null);
+    }
+
+    public long createOrUpdateSurveyResponse(QuestionResponse response) {
+        long id = -1;
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(ANSWER_COL, response.getValue());
+        initialValues.put(ANSWER_TYPE_COL, response.getType());
+        initialValues.put(QUESTION_COL, response.getQuestionId());
+        initialValues.put(SURVEY_RESPONDENT_ID_COL, response.getRespondentId());
+        if (response.getId() == null) {
+            id = database.insert(RESPONSE_TABLE, null, initialValues);
+        } else {
+            if (database.update(RESPONSE_TABLE, initialValues, RESP_ID_COL
+                    + "=?", new String[] { response.getId().toString() }) > 0) {
+                id = response.getId();
+            }
+        }
+        return id;
+    }
+
+    public long createSurveyRespondent(String surveyId) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(SURVEY_ID_COL, surveyId);
+        return database.insert(RESPONDENT_TABLE, null, initialValues);
+    }
+
+}

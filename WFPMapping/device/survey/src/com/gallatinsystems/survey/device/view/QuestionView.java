@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
 
@@ -35,17 +36,9 @@ public class QuestionView extends TableLayout implements
     protected static final int DEFAULT_WIDTH = 300;
     private TextView questionText;
     protected Question question;
-    public Question getQuestion() {
-        return question;
-    }
-
+    private QuestionResponse response;
     private List<QuestionInteractionListener> listeners;
     private ImageButton tipImage;
-    private String currentValue;
-
-    public String getCurrentValue() {
-        return currentValue;
-    }
 
     /**
      * install a single tableRow containing a textView with the question text
@@ -130,6 +123,14 @@ public class QuestionView extends TableLayout implements
         // do nothing
     }
 
+    /**
+     * method that should be overridden by sub classes to clear current value
+     * 
+     */
+    public void resetQuestion() {
+        setResponse(null);
+    }
+
     public void onQuestionInteraction(QuestionInteractionEvent event) {
 
         if (QuestionInteractionEvent.QUESTION_ANSWER_EVENT.equals(event
@@ -137,13 +138,16 @@ public class QuestionView extends TableLayout implements
             // if this question is dependent, see if it has been satisfied
             if (question.getDependencies() != null) {
                 for (Dependency d : question.getDependencies()) {
-                    if (d.getQuestion().equalsIgnoreCase(event.getSource().getQuestion().getId())) {
+                    if (d.getQuestion().equalsIgnoreCase(
+                            event.getSource().getQuestion().getId())) {
                         // if we're here, then the question on which we depend
                         // has been answered. Check the value to see if it's the
                         // one we are looking for
                         if (d.getAnswer() != null
+                                && event.getSource().getResponse() != null
                                 && d.getAnswer().equalsIgnoreCase(
-                                        event.getSource().getCurrentValue())) {
+                                        event.getSource().getResponse()
+                                                .getValue())) {
                             setVisibility(View.VISIBLE);
                             break;
                         } else {
@@ -155,9 +159,37 @@ public class QuestionView extends TableLayout implements
         }
     }
 
-    protected void setCurrentValue(String val) {
-        currentValue = val;
+    /**
+     * this method should be overridden by subclasses so they can manage the UI
+     * changes when resetting the value
+     * 
+     * @param resp
+     */
+    public void rehydrate(QuestionResponse resp) {
+        setResponse(resp);
+    }
+
+    public QuestionResponse getResponse() {
+        return response;
+    }
+
+    public void setResponse(QuestionResponse response) {
+        if (response != null) {
+            if (this.response == null) {
+                this.response = response;
+            } else {
+                // we need to preserve the ID so we don't get duplicates in the
+                // db
+                this.response.setType(response.getType());
+                this.response.setValue(response.getValue());
+            }
+        } else {
+            this.response = response;
+        }
         notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
     }
 
+    public Question getQuestion() {
+        return question;
+    }
 }

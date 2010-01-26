@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.TabHost;
 
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
@@ -46,17 +47,34 @@ public class SurveyViewActivity extends TabActivity implements
     private static final String TEMP_PHOTO_NAME = "/mappingphototemp.jpg";
     private List<SurveyTabContentFactory> tabContentFactories;
     private QuestionView photoSource;
+    private SurveyDbAdapter databaseAdaptor;
+    private Long surveyId;
+    private Long respondentId;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        databaseAdaptor = new SurveyDbAdapter(this);
+        databaseAdaptor.open();
+
         setContentView(R.layout.main);
         SaxSurveyParser p = new SaxSurveyParser();
 
         // TODO: fetch the resource from the server
-        Survey survey = p.parse(getResources().openRawResource(
-                R.raw.testsurvey));
+        Survey survey = p.parse(getResources()
+                .openRawResource(R.raw.testsurvey));
+
+        // TODO: load survey ID from DB
+        surveyId = savedInstanceState != null ? savedInstanceState
+                .getLong(SurveyDbAdapter.SURVEY_ID_COL) : new Long(1);
+        respondentId = savedInstanceState != null ? savedInstanceState
+                .getLong(SurveyDbAdapter.RESP_ID_COL) : null;
+
+        if (respondentId == null) {
+            respondentId = databaseAdaptor.createSurveyRespondent(surveyId
+                    .toString());
+        }
 
         if (survey != null) {
             tabContentFactories = new ArrayList<SurveyTabContentFactory>();
@@ -65,7 +83,7 @@ public class SurveyViewActivity extends TabActivity implements
             TabHost tabHost = getTabHost();
             for (QuestionGroup group : survey.getQuestionGroups()) {
                 SurveyTabContentFactory factory = new SurveyTabContentFactory(
-                        this, group);
+                        this, group, databaseAdaptor);
                 tabHost.addTab(tabHost.newTabSpec(group.getHeading())
                         .setIndicator(group.getHeading()).setContent(factory));
                 tabContentFactories.add(factory);
@@ -85,7 +103,7 @@ public class SurveyViewActivity extends TabActivity implements
                     Uri u = Uri.parse(android.provider.MediaStore.Images.Media
                             .insertImage(getContentResolver(), f
                                     .getAbsolutePath(), null, null));
-                    if (photoSource != null) {  
+                    if (photoSource != null) {
                         photoSource.questionComplete();
                     }
                     f.delete();
@@ -112,6 +130,45 @@ public class SurveyViewActivity extends TabActivity implements
             photoSource = event.getSource();
             startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
         }
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
+        outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (tabContentFactories != null) {
+            for (SurveyTabContentFactory tab : tabContentFactories) {
+                tab.saveState(respondentId);
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (tabContentFactories != null) {
+            for (SurveyTabContentFactory tab : tabContentFactories) {
+                tab.loadState(respondentId);
+            }
+        }
+    }
+    
+
+    public Long getSurveyId() {
+        return surveyId;
+    }
+
+    public void setRespondentId(Long respondentId) {
+        this.respondentId = respondentId;
+    }
+
+    public Long getRespondentId() {
+        return respondentId;
     }
 }
