@@ -17,7 +17,8 @@ import android.widget.TextView;
  */
 public class SurveyHomeActivity extends Activity implements OnClickListener {
 
-	public static final int MAPPING_ACTIVITY = 1;
+	public static final int SURVEY_ACTIVITY = 1;
+	public static final int LIST_USER_ACTIVITY = 2;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -28,6 +29,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		ImageButton wpButton = (ImageButton) findViewById(R.id.wpSurveyButton);
 		ImageButton hhButton = (ImageButton) findViewById(R.id.hhSurveyButton);
 		ImageButton pubButton = (ImageButton) findViewById(R.id.pubSurveyButton);
+		ImageButton userButotn = (ImageButton) findViewById(R.id.usersButton);
 		TextView userField = (TextView) findViewById(R.id.currentUserField);
 		// TODO: get current user from db
 		userField.setText("Test User");
@@ -36,23 +38,31 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		wpButton.setOnClickListener(this);
 		hhButton.setOnClickListener(this);
 		pubButton.setOnClickListener(this);
+		userButotn.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		int resourceID = 0;
-		switch (v.getId()) {
-		case R.id.mapSurveyButton:
-			resourceID = R.raw.mappingsurvey;
-			break;
-		case R.id.wpSurveyButton:
-			resourceID = R.raw.testsurvey;
-			break;
-		default:
-			resourceID = R.raw.testsurvey;
+		int clickedId = v.getId();
+		if (clickedId == R.id.usersButton) {
+			Intent i = new Intent(v.getContext(), ListUserActivity.class);
+			startActivityForResult(i, LIST_USER_ACTIVITY);
+		} else {
+			int resourceID = 0;
+			switch (clickedId) {
+			case R.id.mapSurveyButton:
+				resourceID = R.raw.mappingsurvey;
+				break;
+			case R.id.wpSurveyButton:
+				resourceID = R.raw.testsurvey;
+				break;
+			default:
+				resourceID = R.raw.testsurvey;
+			}
+			Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
+			i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
+			startActivityForResult(i, SURVEY_ACTIVITY);
 		}
-		Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
-		i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
-		startActivityForResult(i, MAPPING_ACTIVITY);
+
 	}
 }

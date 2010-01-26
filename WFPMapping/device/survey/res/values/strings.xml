@@ -18,4 +18,8 @@
 	<string name="settingslabel">Settings</string>
 	<string name="maplabel">Mapping</string>
 	<string name="unknown">unknown</string>
+	<string name="adduser">Add User</string>
+	<string name="displayname">Display Name</string>
+	<string name="email">Email Address</string>
+	<string name="userinstructions">Select a user to edit. To create a new user, press the Menu button and select Add User. When finished, press the Back key.</string>
 </resources>
