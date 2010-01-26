@@ -3,6 +3,8 @@ package com.gallatinsystems.survey.device;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -60,20 +62,34 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
 		} else {
-			int resourceID = 0;
-			switch (clickedId) {
-			case R.id.mapSurveyButton:
-				resourceID = R.raw.mappingsurvey;
-				break;
-			case R.id.wpSurveyButton:
-				resourceID = R.raw.testsurvey;
-				break;
-			default:
-				resourceID = R.raw.testsurvey;
+			if (currentUserId != null) {
+				int resourceID = 0;
+				switch (clickedId) {
+				case R.id.mapSurveyButton:
+					resourceID = R.raw.mappingsurvey;
+					break;
+				case R.id.wpSurveyButton:
+					resourceID = R.raw.testsurvey;
+					break;
+				default:
+					resourceID = R.raw.testsurvey;
+				}
+				Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
+				i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
+				startActivityForResult(i, SURVEY_ACTIVITY);
+			} else {
+				// if the current user is null, we can't enter survey mode
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(R.string.mustselectuser).setCancelable(true)
+						.setPositiveButton("Ok",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								});
+				builder.show();
 			}
-			Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
-			i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
-			startActivityForResult(i, SURVEY_ACTIVITY);
 		}
 	}
 
