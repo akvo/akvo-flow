@@ -1,7 +1,6 @@
 package com.gallatinsystems.survey.device.xml;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -47,7 +46,7 @@ public class SurveyHandler extends DefaultHandler {
     private Question currentQuestion;
     private Option currentOption;
     private Dependency currentDependency;
-    private List<Option> currentOptions;
+    private ArrayList<Option> currentOptions;
     private ValidationRule currentValidation;
 
     private StringBuilder builder;

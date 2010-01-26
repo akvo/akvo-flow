@@ -48,7 +48,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int GEO_ACTIVITY_REQUEST = 2;
 	private static final String TEMP_PHOTO_NAME = "/mappingphototemp.jpg";
-	private List<SurveyTabContentFactory> tabContentFactories;
+	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView photoSource;
 	private SurveyDbAdapter databaseAdaptor;
 	private Long surveyId;

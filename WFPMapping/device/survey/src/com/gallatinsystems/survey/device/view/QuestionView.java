@@ -1,12 +1,10 @@
 package com.gallatinsystems.survey.device.view;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.text.Html;
 import android.view.View;
 import android.widget.ImageButton;
@@ -39,7 +37,7 @@ public class QuestionView extends TableLayout implements
 	private TextView questionText;
 	protected Question question;
 	private QuestionResponse response;
-	private List<QuestionInteractionListener> listeners;
+	private ArrayList<QuestionInteractionListener> listeners;
 	private ImageButton tipImage;
 
 	/**
@@ -49,48 +47,48 @@ public class QuestionView extends TableLayout implements
 	 * @param q
 	 */
 	public QuestionView(Context context, Question q) {
-        super(context);
-        question = q;
-        TableRow tr = new TableRow(context);
-        questionText = new TextView(context);
-        questionText.setWidth(DEFAULT_WIDTH);
-        questionText.setText(q.getText());
-        tr.addView(questionText);
-        // if there is a tip for this question, construct an alert dialog box
-        // with the data
-        // TODO: handle html with images by using an ImageLoader with the Html
-        // class?
-        if (question.getTip() != null) {
-            tipImage = new ImageButton(context);
-            tipImage.setImageResource(android.R.drawable.ic_dialog_info);
-            tr.addView(tipImage);
-            tipImage.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(v
-                            .getContext());
-                    TextView tipText = new TextView(v.getContext());
-                    tipText.setText(Html.fromHtml(question.getTip()));
-                    builder.setView(tipText);
-                    builder.setPositiveButton("Ok",
+		super(context);
+		question = q;
+		TableRow tr = new TableRow(context);
+		questionText = new TextView(context);
+		questionText.setWidth(DEFAULT_WIDTH);
+		questionText.setText(q.getText());
+		tr.addView(questionText);
+		// if there is a tip for this question, construct an alert dialog box
+		// with the data
+		// TODO: handle html with images by using an ImageLoader with the Html
+		// class?
+		if (question.getTip() != null) {
+			tipImage = new ImageButton(context);
+			tipImage.setImageResource(android.R.drawable.ic_dialog_info);
+			tr.addView(tipImage);
+			tipImage.setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(v
+							.getContext());
+					TextView tipText = new TextView(v.getContext());
+					tipText.setText(Html.fromHtml(question.getTip()));
+					builder.setView(tipText);
+					builder.setPositiveButton("Ok",
 							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int id) {
-							dialog.cancel();
-						}
-					});
-                    builder.show();
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+					builder.show();
 
-                }
-            });
-        }
-        addView(tr);
-        // if this question has 1 or more dependencies, then it needs to be
-        // invisible initially
-        if (question.getDependencies() != null
-                && question.getDependencies().size() > 0) {
-            setVisibility(View.GONE);
-        }
-    }
+				}
+			});
+		}
+		addView(tr);
+		// if this question has 1 or more dependencies, then it needs to be
+		// invisible initially
+		if (question.getDependencies() != null
+				&& question.getDependencies().size() > 0) {
+			setVisibility(View.GONE);
+		}
+	}
 
 	/**
 	 * adds a listener to the internal list of clients to be notified on an
@@ -118,8 +116,8 @@ public class QuestionView extends TableLayout implements
 		if (listeners != null) {
 			QuestionInteractionEvent event = new QuestionInteractionEvent(type,
 					this);
-			for (QuestionInteractionListener l : listeners) {
-				l.onQuestionInteraction(event);
+			for (int i = 0; i < listeners.size(); i++) {
+				listeners.get(i).onQuestionInteraction(event);
 			}
 		}
 	}
@@ -145,8 +143,10 @@ public class QuestionView extends TableLayout implements
 		if (QuestionInteractionEvent.QUESTION_ANSWER_EVENT.equals(event
 				.getEventType())) {
 			// if this question is dependent, see if it has been satisfied
-			if (question.getDependencies() != null) {
-				for (Dependency d : question.getDependencies()) {
+			ArrayList<Dependency> dependencies = question.getDependencies();
+			if (dependencies != null) {
+				for (int i = 0; i < dependencies.size(); i++) {
+					Dependency d = dependencies.get(i);
 					if (d.getQuestion().equalsIgnoreCase(
 							event.getSource().getQuestion().getId())) {
 						// if we're here, then the question on which we depend

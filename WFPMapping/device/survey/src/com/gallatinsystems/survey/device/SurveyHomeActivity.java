@@ -55,6 +55,9 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		userButotn.setOnClickListener(this);
 	}
 
+	/**
+	 * handles the button presses.
+	 */
 	@Override
 	public void onClick(View v) {
 		int clickedId = v.getId();
@@ -93,6 +96,11 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * handles the callbacks from the completed activities. If it was the
+	 * user-select activity, we need to get the selected user from the bundle
+	 * data and set it in the appropriate member variables.
+	 */
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		switch (requestCode) {
 		case LIST_USER_ACTIVITY:
@@ -133,7 +141,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	}
 
 	private void saveState() {
-
+		//TODO: persist current user?
 		// databaseAdaptor.createOrUpdateUser(userId, name, email);
 	}
 }

@@ -13,7 +13,7 @@ public class QuestionGroup {
 
     private int order;
     private String heading;
-    private List<Question> questions;
+    private ArrayList<Question> questions;
 
     public int getOrder() {
         return order;
@@ -31,11 +31,11 @@ public class QuestionGroup {
         this.heading = heading;
     }
 
-    public List<Question> getQuestions() {
+    public ArrayList<Question> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<Question> questions) {
+    public void setQuestions(ArrayList<Question> questions) {
         this.questions = questions;
     }
 

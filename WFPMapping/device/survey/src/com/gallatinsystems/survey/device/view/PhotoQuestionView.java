@@ -21,50 +21,57 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
  */
 public class PhotoQuestionView extends QuestionView implements OnClickListener {
 
-    private Button photoButton;
-    private ImageView completeIcon;
+	private Button photoButton;
+	private ImageView completeIcon;
 
-    public PhotoQuestionView(Context context, Question q) {
-        super(context, q);
-        init();
-    }
+	public PhotoQuestionView(Context context, Question q) {
+		super(context, q);
+		init();
+	}
 
-    protected void init() {
-        Context context = getContext();
-        TableRow tr = new TableRow(context);
-        photoButton = new Button(context);
-        photoButton.setText(R.string.takephoto);
-        photoButton.setOnClickListener(this);
-        completeIcon = new ImageView(context);
-        completeIcon.setImageResource(android.R.drawable.ic_input_add);
-        completeIcon.setVisibility(View.GONE);
-        tr.addView(photoButton);
-        tr.addView(completeIcon);
-        addView(tr);
-    }
+	protected void init() {
+		Context context = getContext();
+		TableRow tr = new TableRow(context);
+		photoButton = new Button(context);
+		photoButton.setText(R.string.takephoto);
+		photoButton.setOnClickListener(this);
+		completeIcon = new ImageView(context);
+		completeIcon.setImageResource(android.R.drawable.ic_input_add);
+		completeIcon.setVisibility(View.GONE);
+		tr.addView(photoButton);
+		tr.addView(completeIcon);
+		addView(tr);
+	}
 
-    public void onClick(View v) {
-        notifyQuestionListeners(QuestionInteractionEvent.TAKE_PHOTO_EVENT);
-    }
+	public void onClick(View v) {
+		notifyQuestionListeners(QuestionInteractionEvent.TAKE_PHOTO_EVENT);
+	}
 
-    @Override
-    public void questionComplete() {
-        completeIcon.setVisibility(View.VISIBLE);
-    }
+	@Override
+	public void questionComplete() {
+		completeIcon.setVisibility(View.VISIBLE);
+	}
 
-    public void rehydrate(QuestionResponse resp) {
-        super.rehydrate(resp);
-        if (resp != null) {
-            if (resp.getValue() != null) {
-                // TODO: handle file path
-                completeIcon.setVisibility(View.VISIBLE);
-            }
+	/**
+	 * restores the file path for the file and turns on the complete icon if the
+	 * file exists
+	 */
+	public void rehydrate(QuestionResponse resp) {
+		super.rehydrate(resp);
+		if (resp != null) {
+			if (resp.getValue() != null) {
+				// TODO: handle file path
+				completeIcon.setVisibility(View.VISIBLE);
+			}
 
-        }
-    }
+		}
+	}
 
-    public void resetQuestion() {
-        super.resetQuestion();
-        completeIcon.setVisibility(View.GONE);
-    }
+	/**
+	 * clears the file path and the complete icon
+	 */
+	public void resetQuestion() {
+		super.resetQuestion();
+		completeIcon.setVisibility(View.GONE);
+	}
 }

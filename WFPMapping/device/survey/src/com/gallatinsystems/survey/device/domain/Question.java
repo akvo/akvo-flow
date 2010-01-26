@@ -1,7 +1,6 @@
 package com.gallatinsystems.survey.device.domain;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * data structure for individual survey questions. Questions have a type which
@@ -40,15 +39,15 @@ public class Question {
 
     private boolean mandatory;
     private String type;
-    private List<Option> options;
+    private ArrayList<Option> options;
     private boolean allowOther;
-    private List<Dependency> dependencies;
+    private ArrayList<Dependency> dependencies;
 
-    public List<Dependency> getDependencies() {
+    public ArrayList<Dependency> getDependencies() {
         return dependencies;
     }
 
-    public void setDependencies(List<Dependency> dependencies) {
+    public void setDependencies(ArrayList<Dependency> dependencies) {
         this.dependencies = dependencies;
     }
 
@@ -84,11 +83,11 @@ public class Question {
         this.type = type;
     }
 
-    public List<Option> getOptions() {
+    public ArrayList<Option> getOptions() {
         return options;
     }
 
-    public void setOptions(List<Option> options) {
+    public void setOptions(ArrayList<Option> options) {
         this.options = options;
     }
 

@@ -9,6 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+/**
+ * this activity is used to edit a user's profile information and persist it to
+ * the database.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class UserEditActivity extends Activity {
 	private EditText displayName;
 	private EditText emailAddr;
@@ -47,6 +54,9 @@ public class UserEditActivity extends Activity {
 		});
 	}
 
+	/**
+	 * put loaded data into the views for display
+	 */
 	private void populateFields() {
 		if (userId != null) {
 			Cursor user = databaseAdaptor.fetchUser(userId);
@@ -76,6 +86,9 @@ public class UserEditActivity extends Activity {
 		populateFields();
 	}
 
+	/**
+	 * save the name and email address to the db
+	 */
 	private void saveState() {
 		String name = displayName.getText().toString();
 		String email = emailAddr.getText().toString();
