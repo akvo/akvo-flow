@@ -23,7 +23,6 @@ import com.gallatinsystems.survey.device.domain.Question;
  * Question that can handle geographic location input. This question can also
  * listen to location updates from the GPS sensor on the device.
  * 
- * TODO: launch settings panel if GPS is off
  * 
  * @author Christopher Fagiani
  * 
