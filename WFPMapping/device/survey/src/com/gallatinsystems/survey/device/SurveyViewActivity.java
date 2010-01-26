@@ -34,142 +34,150 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
  * 
  * TODO: add logic for starting background data replication activity
  * 
- * TODO: refactor to obey suggestions here: http://developer.android.com/guide/practices/design/performance.html
+ * TODO: refactor to obey suggestions here:
+ * http://developer.android.com/guide/practices/design/performance.html
  * 
  * @author Christopher Fagiani
  * 
  */
 public class SurveyViewActivity extends TabActivity implements
-        QuestionInteractionListener {
+		QuestionInteractionListener {
 
-    private static final String ACTIVITY_NAME = "SurveyViewActivity";
-    private static final int PHOTO_ACTIVITY_REQUEST = 1;
-    private static final int GEO_ACTIVITY_REQUEST = 2;
-    private static final String TEMP_PHOTO_NAME = "/mappingphototemp.jpg";
-    private List<SurveyTabContentFactory> tabContentFactories;
-    private QuestionView photoSource;
-    private SurveyDbAdapter databaseAdaptor;
-    private Long surveyId;
-    private Long respondentId;
+	public static final String SURVEY_RESOURCE_ID = "RESID";
+	private static final String ACTIVITY_NAME = "SurveyViewActivity";
+	private static final int PHOTO_ACTIVITY_REQUEST = 1;
+	private static final int GEO_ACTIVITY_REQUEST = 2;
+	private static final String TEMP_PHOTO_NAME = "/mappingphototemp.jpg";
+	private List<SurveyTabContentFactory> tabContentFactories;
+	private QuestionView photoSource;
+	private SurveyDbAdapter databaseAdaptor;
+	private Long surveyId;
+	private Long respondentId;
 
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        databaseAdaptor = new SurveyDbAdapter(this);
-        databaseAdaptor.open();
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		databaseAdaptor = new SurveyDbAdapter(this);
+		databaseAdaptor.open();
 
-        setContentView(R.layout.main);
-        SaxSurveyParser p = new SaxSurveyParser();
+		setContentView(R.layout.main);
+		SaxSurveyParser p = new SaxSurveyParser();
 
-        // TODO: fetch the resource from the server
-        Survey survey = p.parse(getResources()
-                .openRawResource(R.raw.testsurvey));
+		Bundle extras = getIntent().getExtras();
+		int resourceID = extras != null ? extras.getInt(SURVEY_RESOURCE_ID) : 0;
 
-        // TODO: load survey ID from DB
-        surveyId = savedInstanceState != null ? savedInstanceState
-                .getLong(SurveyDbAdapter.SURVEY_ID_COL) : new Long(1);
-        respondentId = savedInstanceState != null ? savedInstanceState
-                .getLong(SurveyDbAdapter.RESP_ID_COL) : null;
+		// TODO: fetch the resource from the server
+		Survey survey = null;
+		if (resourceID > 0) {
+			survey = p.parse(getResources().openRawResource(resourceID));
+		} else {
+			survey = p.parse(getResources().openRawResource(R.raw.testsurvey));
+		}
 
-        if (respondentId == null) {
-            respondentId = databaseAdaptor.createSurveyRespondent(surveyId
-                    .toString());
-        }
+		// TODO: load survey ID from DB
+		surveyId = savedInstanceState != null ? savedInstanceState
+				.getLong(SurveyDbAdapter.SURVEY_ID_COL) : new Long(1);
+		respondentId = savedInstanceState != null ? savedInstanceState
+				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
 
-        if (survey != null) {
-            tabContentFactories = new ArrayList<SurveyTabContentFactory>();
-            // if the device has an active survey, create a tab for each
-            // question group
-            TabHost tabHost = getTabHost();
-            for (QuestionGroup group : survey.getQuestionGroups()) {
-                SurveyTabContentFactory factory = new SurveyTabContentFactory(
-                        this, group, databaseAdaptor);
-                tabHost.addTab(tabHost.newTabSpec(group.getHeading())
-                        .setIndicator(group.getHeading()).setContent(factory));
-                tabContentFactories.add(factory);
-            }
-        }
-    }
+		if (respondentId == null) {
+			respondentId = databaseAdaptor.createSurveyRespondent(surveyId
+					.toString());
+		}
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // on activity return
-        if (requestCode == PHOTO_ACTIVITY_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                File f = new File(Environment.getExternalStorageDirectory()
-                        .getAbsolutePath()
-                        + TEMP_PHOTO_NAME);
-                try {
-                    Uri u = Uri.parse(android.provider.MediaStore.Images.Media
-                            .insertImage(getContentResolver(), f
-                                    .getAbsolutePath(), null, null));
-                    if (photoSource != null) {
-                        photoSource.questionComplete();
-                    }
-                    f.delete();
-                } catch (FileNotFoundException e) {
-                    Log.e(ACTIVITY_NAME, e.getMessage());
-                } finally {
-                    photoSource = null;
-                }
-            }
-        }
+		if (survey != null) {
+			tabContentFactories = new ArrayList<SurveyTabContentFactory>();
+			// if the device has an active survey, create a tab for each
+			// question group
+			TabHost tabHost = getTabHost();
+			for (QuestionGroup group : survey.getQuestionGroups()) {
+				SurveyTabContentFactory factory = new SurveyTabContentFactory(
+						this, group, databaseAdaptor);
+				tabHost.addTab(tabHost.newTabSpec(group.getHeading())
+						.setIndicator(group.getHeading()).setContent(factory));
+				tabContentFactories.add(factory);
+			}
+		}
+	}
 
-    }
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// on activity return
+		if (requestCode == PHOTO_ACTIVITY_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				File f = new File(Environment.getExternalStorageDirectory()
+						.getAbsolutePath()
+						+ TEMP_PHOTO_NAME);
+				try {
+					Uri u = Uri.parse(android.provider.MediaStore.Images.Media
+							.insertImage(getContentResolver(), f
+									.getAbsolutePath(), null, null));
+					if (photoSource != null) {
+						photoSource.questionComplete();
+					}
+					f.delete();
+				} catch (FileNotFoundException e) {
+					Log.e(ACTIVITY_NAME, e.getMessage());
+				} finally {
+					photoSource = null;
+				}
+			}
+		}
 
-    public void onQuestionInteraction(QuestionInteractionEvent event) {
-        if (QuestionInteractionEvent.TAKE_PHOTO_EVENT.equals(event
-                .getEventType())) {
-            // fire off the intent
-            Intent i = new Intent(
-                    android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
-                    .fromFile(new File(Environment
-                            .getExternalStorageDirectory().getAbsolutePath()
-                            + TEMP_PHOTO_NAME)));
-            photoSource = event.getSource();
-            startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
-        }
-    }
+	}
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
-        outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
-    }
+	public void onQuestionInteraction(QuestionInteractionEvent event) {
+		if (QuestionInteractionEvent.TAKE_PHOTO_EVENT.equals(event
+				.getEventType())) {
+			// fire off the intent
+			Intent i = new Intent(
+					android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+			i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
+					.fromFile(new File(Environment
+							.getExternalStorageDirectory().getAbsolutePath()
+							+ TEMP_PHOTO_NAME)));
+			photoSource = event.getSource();
+			startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
+		}
+	}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (tabContentFactories != null) {
-            for (SurveyTabContentFactory tab : tabContentFactories) {
-                tab.saveState(respondentId);
-            }
-        }
-    }
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putLong(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
+		outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
+	}
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (tabContentFactories != null) {
-            for (SurveyTabContentFactory tab : tabContentFactories) {
-                tab.loadState(respondentId);
-            }
-        }
-    }
-    
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (tabContentFactories != null) {
+			for (SurveyTabContentFactory tab : tabContentFactories) {
+				tab.saveState(respondentId);
+			}
+		}
+	}
 
-    public Long getSurveyId() {
-        return surveyId;
-    }
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (tabContentFactories != null) {
+			for (SurveyTabContentFactory tab : tabContentFactories) {
+				tab.loadState(respondentId);
+			}
+		}
+	}
 
-    public void setRespondentId(Long respondentId) {
-        this.respondentId = respondentId;
-    }
+	public Long getSurveyId() {
+		return surveyId;
+	}
 
-    public Long getRespondentId() {
-        return respondentId;
-    }
+	public void setRespondentId(Long respondentId) {
+		this.respondentId = respondentId;
+	}
+
+	public Long getRespondentId() {
+		return respondentId;
+	}
 }
