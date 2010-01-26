@@ -2,14 +2,20 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="wrap_content" android:layout_height="wrap_content">
 	<TableRow android:layout_width="wrap_content">
-		<TextView android:text="@string/currentuser"
-			android:layout_width="fill_parent" />
-		<TextView android:id="@+id/currentUserField"
-			android:layout_width="fill_parent" />
-		<TextView android:text="@string/lastsync"
-			android:layout_width="fill_parent" />
-		<TextView android:id="@+id/lastSyncField"
-			android:layout_width="fill_parent" />
+		<TableLayout>
+			<TableRow android:layout_width="fill_parent">
+				<TextView android:text="@string/currentuser"
+					android:layout_width="fill_parent" />
+				<TextView android:id="@+id/currentUserField"
+					android:layout_width="fill_parent" />
+			</TableRow>
+			<TableRow android:layout_width="fill_parent">
+				<TextView android:text="@string/lastsync"
+					android:layout_width="fill_parent" />
+				<TextView android:id="@+id/lastSyncField"
+					android:layout_width="fill_parent" android:text="@string/unknown" />
+			</TableRow>
+		</TableLayout>
 	</TableRow>
 	<TableRow android:layout_width="fill_parent">
 		<TableLayout>
@@ -18,19 +24,21 @@
 					android:layout_height="wrap_content" android:orientation="vertical">
 					<ImageButton android:src="@drawable/users"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" android:id="@+id/usersButton" />
+						android:gravity="center_horizontal" android:id="@+id/usersButton"
+						android:clickable="true" android:layout_gravity="center_vertical|center_horizontal" />
 					<TextView android:text="@string/userlabel"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal" />
 				</LinearLayout>
 				<LinearLayout android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:orientation="vertical">
 					<ImageButton android:src="@drawable/checklist"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" android:id="@+id/wpSurveyButton" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal"
+						android:id="@+id/wpSurveyButton" />
 					<TextView android:text="@string/wplabel"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal" />
 				</LinearLayout>
 			</TableRow>
 			<TableRow android:layout_width="fill_parent">
@@ -38,19 +46,21 @@
 					android:layout_height="wrap_content" android:orientation="vertical">
 					<ImageButton android:src="@drawable/checklist"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" android:id="@+id/pubSurveyButton" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal"
+						android:id="@+id/pubSurveyButton" />
 					<TextView android:text="@string/publabel"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal" />
 				</LinearLayout>
 				<LinearLayout android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:orientation="vertical">
 					<ImageButton android:src="@drawable/checklist"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" android:id="@+id/hhSurveyButton" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal"
+						android:id="@+id/hhSurveyButton" />
 					<TextView android:text="@string/hhlabel"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal"/>
 				</LinearLayout>
 			</TableRow>
 			<TableRow android:layout_width="fill_parent">
@@ -58,19 +68,20 @@
 					android:layout_height="wrap_content" android:orientation="vertical">
 					<ImageButton android:src="@drawable/map"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" android:id="@+id/mapSurveyButton" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal"
+						android:id="@+id/mapSurveyButton" />
 					<TextView android:text="@string/maplabel"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal" />
 				</LinearLayout>
 				<LinearLayout android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:orientation="vertical">
 					<ImageButton android:src="@drawable/config"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" android:id="@+id/settingsButton" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal" android:id="@+id/settingsButton" />
 					<TextView android:text="@string/settingslabel"
 						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:gravity="center_horizontal" />
+						android:gravity="center_horizontal" android:layout_gravity="center_horizontal"/>
 				</LinearLayout>
 			</TableRow>
 		</TableLayout>

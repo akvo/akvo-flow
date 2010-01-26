@@ -17,4 +17,5 @@
 	<string name="publabel">Public Institution Survey</string>
 	<string name="settingslabel">Settings</string>
 	<string name="maplabel">Mapping</string>
+	<string name="unknown">unknown</string>
 </resources>
