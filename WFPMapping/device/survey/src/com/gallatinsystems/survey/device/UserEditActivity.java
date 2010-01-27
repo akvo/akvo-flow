@@ -48,7 +48,6 @@ public class UserEditActivity extends Activity {
 
 			public void onClick(View view) {
 				setResult(RESULT_OK);
-				databaseAdaptor.close();
 				finish();
 			}
 
