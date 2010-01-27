@@ -32,7 +32,7 @@ public class DataSyncActivity extends Activity {
 	private static final String TAG = "DATA_SYNC_ACTIVITY";
 	private static final int BUF_SIZE = 2000;
 	private SurveyDbAdapter databaseAdaptor;
-	private static final String TEMP_FILE_NAME = "/datafile";
+	private static final String TEMP_FILE_NAME = "/wfp";
 	private static final String ZIP_IMAGE_DIR = "images/";
 
 	public void onCreate(Bundle savedInstanceState) {

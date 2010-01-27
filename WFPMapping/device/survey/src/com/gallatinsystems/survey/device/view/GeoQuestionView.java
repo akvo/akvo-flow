@@ -135,6 +135,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	}
 
 	private void populateLocation(Location loc) {
+		//TODO: wait for specific accuracy level  (5-10 meters?)
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
 		elevationField.setText(loc.getAltitude() + "");
