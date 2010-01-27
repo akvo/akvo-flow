@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.view;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,6 +24,7 @@ public class PhotoQuestionView extends QuestionView implements OnClickListener {
 
 	private Button photoButton;
 	private ImageView completeIcon;
+	public static final String PHOTO_FILE_KEY = "filename";
 
 	public PhotoQuestionView(Context context, Question q) {
 		super(context, q);
@@ -48,8 +50,13 @@ public class PhotoQuestionView extends QuestionView implements OnClickListener {
 	}
 
 	@Override
-	public void questionComplete() {
-		completeIcon.setVisibility(View.VISIBLE);
+	public void questionComplete(Bundle photoData) {
+		if (photoData != null) {
+			completeIcon.setVisibility(View.VISIBLE);
+			setResponse(new QuestionResponse(photoData
+					.getString(PHOTO_FILE_KEY), QuestionResponse.IMAGE_TYPE,
+					getQuestion().getId()));
+		}
 	}
 
 	/**
@@ -60,7 +67,6 @@ public class PhotoQuestionView extends QuestionView implements OnClickListener {
 		super.rehydrate(resp);
 		if (resp != null) {
 			if (resp.getValue() != null) {
-				// TODO: handle file path
 				completeIcon.setVisibility(View.VISIBLE);
 			}
 

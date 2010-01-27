@@ -1,9 +1,7 @@
 package com.gallatinsystems.survey.device;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.TabActivity;
 import android.content.Intent;
@@ -18,6 +16,7 @@ import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
+import com.gallatinsystems.survey.device.view.PhotoQuestionView;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
 import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
@@ -28,9 +27,6 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
  * 
  * TODO: add logic for starting the background activity to check for updated
  * surveys
- * 
- * TODO: add logic for starting background activity for sending collected data
- * to server
  * 
  * TODO: add logic for starting background data replication activity
  * 
@@ -47,7 +43,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int GEO_ACTIVITY_REQUEST = 2;
-	private static final String TEMP_PHOTO_NAME = "/mappingphototemp.jpg";
+	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView photoSource;
 	private SurveyDbAdapter databaseAdaptor;
@@ -108,16 +104,27 @@ public class SurveyViewActivity extends TabActivity implements
 			if (resultCode == RESULT_OK) {
 				File f = new File(Environment.getExternalStorageDirectory()
 						.getAbsolutePath()
-						+ TEMP_PHOTO_NAME);
+						+ TEMP_PHOTO_NAME_PREFIX + ".jpg");
+				String newName = Environment.getExternalStorageDirectory()
+						.getAbsolutePath()
+						+ TEMP_PHOTO_NAME_PREFIX + System.nanoTime() + ".jpg";
+				f.renameTo(new File(newName));
+
 				try {
-					Uri u = Uri.parse(android.provider.MediaStore.Images.Media
-							.insertImage(getContentResolver(), f
-									.getAbsolutePath(), null, null));
+					/*
+					 * Uri u =
+					 * Uri.parse(android.provider.MediaStore.Images.Media
+					 * .insertImage(getContentResolver(), f .getAbsolutePath(),
+					 * null, null));
+					 */
 					if (photoSource != null) {
-						photoSource.questionComplete();
+						Bundle photoData = new Bundle();
+						photoData.putString(PhotoQuestionView.PHOTO_FILE_KEY,
+								newName);
+						photoSource.questionComplete(photoData);
 					}
-					f.delete();
-				} catch (FileNotFoundException e) {
+					// f.delete();
+				} catch (Exception e) {
 					Log.e(ACTIVITY_NAME, e.getMessage());
 				} finally {
 					photoSource = null;
@@ -136,7 +143,7 @@ public class SurveyViewActivity extends TabActivity implements
 			i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
 					.fromFile(new File(Environment
 							.getExternalStorageDirectory().getAbsolutePath()
-							+ TEMP_PHOTO_NAME)));
+							+ TEMP_PHOTO_NAME_PREFIX + ".jpg")));
 			photoSource = event.getSource();
 			startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
 		}

@@ -120,7 +120,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 
 		// set up actions on button press
 		clearButton.setOnClickListener(new OnClickListener() {
-			@Override
+
 			public void onClick(View v) {
 				if (questionMap != null) {
 					for (QuestionView view : questionMap.values()) {
@@ -132,14 +132,16 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		});
 
 		saveButton.setOnClickListener(new OnClickListener() {
-			@Override
+
 			public void onClick(View v) {
 				if (questionMap != null) {
+					saveState(context.getRespondentId());
+					databaseAdaptor.submitResponses(context
+							.getRespondentId().toString());
 					// while in general we avoid the enhanced for-loop in the
 					// Android VM, we can use it here because we would still
 					// need the iterator
 					for (QuestionView view : questionMap.values()) {
-						saveState(context.getRespondentId());
 						view.resetQuestion();
 					}
 					// create a new response object
@@ -204,7 +206,8 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	public void saveState(Long respondentId) {
 		if (questionMap != null) {
 			for (QuestionView q : questionMap.values()) {
-				if (q.getResponse() != null) {
+				if (q.getResponse() != null
+						&& q.getResponse().getValue() != null) {
 					q.getResponse().setRespondentId(respondentId);
 					databaseAdaptor.createOrUpdateSurveyResponse(q
 							.getResponse());

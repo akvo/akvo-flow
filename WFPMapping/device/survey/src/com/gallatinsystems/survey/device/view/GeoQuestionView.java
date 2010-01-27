@@ -148,7 +148,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	}
 
 	@Override
-	public void questionComplete() {
+	public void questionComplete(Bundle data) {
 		// completeIcon.setVisibility(View.VISIBLE);
 	}
 

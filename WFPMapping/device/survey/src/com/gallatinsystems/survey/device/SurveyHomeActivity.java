@@ -26,7 +26,8 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
-
+	private TextView synchField;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,9 +37,11 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		ImageButton wpButton = (ImageButton) findViewById(R.id.wpSurveyButton);
 		ImageButton hhButton = (ImageButton) findViewById(R.id.hhSurveyButton);
 		ImageButton pubButton = (ImageButton) findViewById(R.id.pubSurveyButton);
-		ImageButton userButotn = (ImageButton) findViewById(R.id.usersButton);
+		ImageButton userButton = (ImageButton) findViewById(R.id.usersButton);
+		ImageButton settingsButton = (ImageButton) findViewById(R.id.settingsButton);
 		userField = (TextView) findViewById(R.id.currentUserField);
-
+		synchField = (TextView) findViewById(R.id.lastSyncField);
+		
 		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState
 				.getString(SurveyDbAdapter.USER_ID_COL) : null;
@@ -52,18 +55,24 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		wpButton.setOnClickListener(this);
 		hhButton.setOnClickListener(this);
 		pubButton.setOnClickListener(this);
-		userButotn.setOnClickListener(this);
+		userButton.setOnClickListener(this);
+		settingsButton.setOnClickListener(this);
 	}
 
 	/**
 	 * handles the button presses.
 	 */
-	@Override
+
 	public void onClick(View v) {
 		int clickedId = v.getId();
 		if (clickedId == R.id.usersButton) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
+		} else if (clickedId == R.id.settingsButton) {
+			//TODO do we want this to be StartActivityForResult so we can update last sync time?
+			Intent i = new Intent(v.getContext(), DataSyncActivity.class);
+			startActivity(i);
+			synchField.setText(R.string.syncinprogress);
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;
@@ -141,7 +150,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	}
 
 	private void saveState() {
-		//TODO: persist current user?
+		// TODO: persist current user?
 		// databaseAdaptor.createOrUpdateUser(userId, name, email);
 	}
 }

@@ -1,6 +1,6 @@
 package com.gallatinsystems.survey.device.dao;
 
-import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import java.util.ArrayList;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,6 +9,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 
 /**
  * Database class for the survey db. It can create/upgrade the database as well
@@ -28,6 +30,8 @@ public class SurveyDbAdapter {
 	public static final String USER_ID_COL = "_id";
 	public static final String DISP_NAME_COL = "display_name";
 	public static final String EMAIL_COL = "email";
+	public static final String SUBMITTED_FLAG_COL = "submitted_flag";
+	public static final String DELIVERED_DATE_COL = "delivered_date";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -39,11 +43,8 @@ public class SurveyDbAdapter {
 	private static final String SURVEY_TABLE_CREATE = "create table survey (survey_id integer primary key autoincrement, "
 			+ "title text not null);";
 
-	// TODO: put these fields back later
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
-			+ "survey_id integer not null);";// submitted_flag text not null,
-	// submitted_date text,
-	// delivered_date text);";
+			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
 			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null);";
@@ -58,7 +59,7 @@ public class SurveyDbAdapter {
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id)";
 
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 
 	private final Context context;
 
@@ -135,6 +136,36 @@ public class SurveyDbAdapter {
 		return database.insert(SURVEY_TABLE, null, initialValues);
 	}
 
+	public Cursor fetchUnsentData() {
+		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
+				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
+				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_COL }, SUBMITTED_FLAG_COL
+				+ "= 'true' AND " + DELIVERED_DATE_COL + " is null", null,
+				null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+
+	public void markDataAsSent(ArrayList<String> idList) {
+
+		if (idList != null) {
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < idList.size(); i++) {
+				if (i > 0) {
+					builder.append(",");
+				}
+				builder.append("'").append(idList.get(i)).append("'");
+			}
+			ContentValues updatedValues = new ContentValues();
+			updatedValues.put(DELIVERED_DATE_COL, System.nanoTime() + "");
+			database.update(RESPONDENT_TABLE, updatedValues,
+					SURVEY_RESPONDENT_ID_COL + " in (?)",
+					new String[] { builder.toString() });
+		}
+	}
+
 	public Cursor fetchUsers() {
 		Cursor cursor = database.query(USER_TABLE, new String[] { USER_ID_COL,
 				DISP_NAME_COL, EMAIL_COL }, null, null, null, null, null);
@@ -199,6 +230,13 @@ public class SurveyDbAdapter {
 			}
 		}
 		return id;
+	}
+
+	public void submitResponses(String respondentId) {
+		ContentValues vals = new ContentValues();
+		vals.put(SUBMITTED_FLAG_COL, "true");
+		database.update(RESPONDENT_TABLE, vals, SURVEY_RESPONDENT_ID_COL + "= "
+				+ respondentId, null);
 	}
 
 	public long createSurveyRespondent(String surveyId) {

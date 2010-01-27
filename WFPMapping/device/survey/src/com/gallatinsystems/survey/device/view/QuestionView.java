@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.widget.ImageButton;
@@ -126,7 +127,7 @@ public class QuestionView extends TableLayout implements
 	 * method that can be overridden by sub classes if they want to have some
 	 * sort of visual response to a question interaction.
 	 */
-	public void questionComplete() {
+	public void questionComplete(Bundle data) {
 		// do nothing
 	}
 
