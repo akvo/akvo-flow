@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 
 /**
  * this activity will extract all submitted, unsent data from the database and
@@ -76,7 +77,7 @@ public class DataSyncActivity extends Activity {
 					buf.append(",").append(type);
 					buf.append(",").append(value);
 					buf.append("\n");
-					if (Question.PHOTO_TYPE.equals(type)) {
+					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
 						imagePaths.add(value);
 					}
 				} while (data.moveToNext());
@@ -98,19 +99,25 @@ public class DataSyncActivity extends Activity {
 					zos.write(buffer, 0, size);
 				}
 				zos.closeEntry();
-				zos.close();
+
 				// write images
 				for (int i = 0; i < imagePaths.size(); i++) {
 					try {
 						BufferedInputStream bin = new BufferedInputStream(
 								new FileInputStream(imagePaths.get(i)));
+						String name = ZIP_IMAGE_DIR;
+						if (imagePaths.get(i).contains("/")) {
+							name = name
+									+ imagePaths.get(i).substring(
+											imagePaths.get(i).lastIndexOf("/")+1);
+						} else {
+							name = name + imagePaths.get(i);
+						}
+						zos.putNextEntry(new ZipEntry(name));
 						int bytesRead = bin.read(buffer);
-						zos.putNextEntry(new ZipEntry(ZIP_IMAGE_DIR
-								+ "/"
-								+ imagePaths.get(i).substring(
-										imagePaths.lastIndexOf("/"))));
 						while (bytesRead > 0) {
 							zos.write(buffer, 0, bytesRead);
+							bytesRead = bin.read(buffer);
 						}
 						bin.close();
 						zos.closeEntry();
