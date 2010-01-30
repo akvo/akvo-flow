@@ -23,6 +23,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 
 	public static final int SURVEY_ACTIVITY = 1;
 	public static final int LIST_USER_ACTIVITY = 2;
+	public static final int SETTINGS_ACTIVITY = 3;
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
@@ -70,9 +71,12 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 			startActivityForResult(i, LIST_USER_ACTIVITY);
 		} else if (clickedId == R.id.settingsButton) {
 			//TODO do we want this to be StartActivityForResult so we can update last sync time?
-			Intent i = new Intent(v.getContext(), DataSyncActivity.class);
-			startActivity(i);
-			synchField.setText(R.string.syncinprogress);
+			//Intent i = new Intent(v.getContext(), DataSyncActivity.class);
+			//startActivity(i);
+			
+			Intent i = new Intent(v.getContext(),SettingsActivity.class);
+			startActivityForResult(i, SETTINGS_ACTIVITY);
+			//synchField.setText(R.string.syncinprogress);
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;

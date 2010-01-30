@@ -18,6 +18,7 @@
 		<activity android:name=".ListUserActivity" />
 		<activity android:name=".UserEditActivity" />
 		<activity android:name=".DataSyncActivity" />
+		<activity android:name=".SettingsActivity"/>
 	</application>
 	<uses-sdk android:minSdkVersion="6" />
 

@@ -25,4 +25,12 @@
 	<string name="editmenu">Edit User</string>
 	<string name="mustselectuser">Please click the User Management icon and choose a user before continuing.</string>
 	<string name="syncinprogress">Synchronizing...</string>
+	<string name="exportcomplete">Data has been exported to SD card</string>
+	<string name="uploadcomplete">Data has been sent to the server</string>
+	<string name="exportoptlabel">Export Data</string>
+	<string name="exportoptdesc">Exports survey data to a zip file on the device\'s SD card</string>
+	<string name="sendoptlabel">Send Data</string>
+	<string name="sendoptdesc">Sends survey data to server. You must have data access (cellular or wi-fi) to perform this operation.</string>
+	<string name="poweroptlabel">Power Management</string>
+	<string name="poweroptdesc">Launches power management settings to better manage battery life.</string>
 </resources>
