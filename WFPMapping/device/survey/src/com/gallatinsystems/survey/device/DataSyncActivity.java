@@ -1,12 +1,14 @@
 package com.gallatinsystems.survey.device;
 
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -24,6 +26,7 @@ import android.util.Log;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.util.MultipartStream;
 
 /**
  * this activity will extract all submitted, unsent data from the database and
@@ -49,7 +52,12 @@ public class DataSyncActivity extends Activity {
 
 	private static final int COMPLETE_ID = 1;
 	// TODO: get S3 upload url
-	private static final String UPLOAD_URL = "http://something-something-something-darkside";
+	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
+	private static final String S3_KEY = "1JZZVDSNFFQYF23ZYJ02";
+	private static final String S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
+	private static final String S3_SIG = "7/fo9v4qamQJjnbga529k3iZMZE=";
+	private static final String BOUNDRY = "***xxx";
+	private static final String PREFIX = "--";
 	private static final String ENDLINE = "\r\n";
 	private static final int BUF_SIZE = 2000;
 
@@ -59,18 +67,25 @@ public class DataSyncActivity extends Activity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		String type = savedInstanceState != null ? savedInstanceState
-				.getString(TYPE_KEY) : EXPORT;
+
+		Bundle extras = getIntent().getExtras();
+		String type = extras != null ? extras.getString(TYPE_KEY) : EXPORT;
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
 		String fileName = formZip();
+		String destName = fileName;
+		if (destName.contains("/")) {
+			destName = destName.substring(destName.lastIndexOf("/") + 1);
+		}else if (destName.contains("\\")){
+			destName = destName.substring(destName.lastIndexOf("\\") + 1);
+		}
 		if (fileName != null && SEND.equals(type)) {
 			// TODO: may need to spawn a thread to do this
 			sendFile(fileName);
 			// TODO: call databaseAdaptor.markDataAsSent(idList)
-			fireNotification(SEND);
+			fireNotification(SEND,destName);
 		} else if (fileName != null) {
-			fireNotification(EXPORT);
+			fireNotification(EXPORT,destName);
 		}
 		databaseAdaptor.close();
 		finish();
@@ -82,7 +97,7 @@ public class DataSyncActivity extends Activity {
 	 * 
 	 * @param type
 	 */
-	private void fireNotification(String type) {
+	private void fireNotification(String type, String fileName) {
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		// TODO: get a better icon
@@ -100,7 +115,7 @@ public class DataSyncActivity extends Activity {
 		Intent notificationIntent = new Intent(this, DataSyncActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(context, tickerText, tickerText,
+		notification.setLatestEventInfo(context, tickerText, fileName,
 				contentIntent);
 		mNotificationManager.notify(COMPLETE_ID, notification);
 	}
@@ -198,64 +213,50 @@ public class DataSyncActivity extends Activity {
 
 		return fileName;
 	}
-
+	
+	
 	/**
 	 * sends the zip file containing data/images to the server via an http
 	 * upload
 	 * 
 	 * @param fileAbsolutePath
 	 */
-	private void sendFile(String fileAbsolutePath) {
-		HttpURLConnection conn = null;
-		DataOutputStream out = null;
+	private boolean sendFile(String fileAbsolutePath) {
+
 		try {
+			URLConnection conn = MultipartStream.createConnection(new URL(
+					UPLOAD_URL));
+			MultipartStream stream = new MultipartStream(conn.getOutputStream());
+			stream.writeFormField("key", "devicezip/${filename}");
+			stream.writeFormField("AWSAccessKeyId", S3_KEY);
+			stream.writeFormField("acl", "public-read");
+			stream.writeFormField("success_action_redirect",
+					"http://www.gallatinsystems.com/SuccessUpload.html");
+			stream.writeFormField("policy", S3_POLICY);
+			stream.writeFormField("signature", S3_SIG);
+			stream.writeFormField("Content-Type", "application/zip");
+			stream.writeFile("file", fileAbsolutePath, null);
+			stream.close();
+			// TODO: check error code!
+			try {
+				DataInputStream inStream = new DataInputStream(conn
+						.getInputStream());
+				String str;
 
-			FileInputStream fileInputStream = new FileInputStream(new File(
-					fileAbsolutePath));
+				while ((str = inStream.readLine()) != null) {
+					Log.e(TAG, "Server Response" + str);
+				}
+				inStream.close();
 
-			// setup the url connection
-			URL url = new URL(UPLOAD_URL);
-			conn = (HttpURLConnection) url.openConnection();
-			conn.setDoInput(true);
-			conn.setDoOutput(true);
-			conn.setUseCaches(false);
-
-			// configure the request
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Connection", "Keep-Alive");
-			// TODO: set appropriate parameters
-			/*
-			 * conn.setRequestProperty("Content-Type",
-			 * "multipart/form-data;boundary=" + boundary);
-			 */
-			conn.setRequestProperty("Content-Type", "multipart/form-data;");
-			out = new DataOutputStream(conn.getOutputStream());
-
-			// out.writeBytes(twoHyphens + boundary + lineEnd);
-			out
-					.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\""
-							+ fileAbsolutePath + "\"" + ENDLINE);
-			out.writeBytes(ENDLINE);
-
-			// read file and write it into form...
-			byte[] buffer = new byte[BUF_SIZE];
-			int bytesRead = fileInputStream.read(buffer);
-			while (bytesRead > 0) {
-				out.write(buffer, 0, bytesRead);
-				bytesRead = fileInputStream.read(buffer);
+			} catch (Exception ioex) {
+				Log.e(TAG, "error: " + ioex.getMessage(), ioex);
 			}
 
-			// send multipart form data necesssary after file data...
-
-			out.writeBytes(ENDLINE);
-			// dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-			fileInputStream.close();
-			out.flush();
-			out.close();
-
-		} catch (Exception ex) {
-			Log.e(TAG, "error: " + ex.getMessage(), ex);
+		} catch (Exception e) {
+			Log.e(TAG, "Could not send upload" + e.getMessage(), e);
+			return false;
 		}
+		return true;
+
 	}
 }
