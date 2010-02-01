@@ -170,6 +170,13 @@ public class QuestionView extends TableLayout implements
 	}
 
 	/**
+	 * this method should be overridden by subclasses so they can record input in a QuestionResponse object
+	 */
+	public void captureResponse() {
+		// NO OP
+	}
+
+	/**
 	 * this method should be overridden by subclasses so they can manage the UI
 	 * changes when resetting the value
 	 * 
@@ -180,6 +187,9 @@ public class QuestionView extends TableLayout implements
 	}
 
 	public QuestionResponse getResponse() {
+		if(response == null){
+			captureResponse();
+		}
 		return response;
 	}
 

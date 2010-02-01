@@ -1,5 +1,7 @@
 package com.gallatinsystems.survey.device.view;
 
+import java.util.StringTokenizer;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 
 /**
  * Question that can handle geographic location input. This question can also
@@ -31,6 +34,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationListener {
 
 	private static final int DEFAULT_WIDTH = 200;
+	private static final String DELIM = "|";
 	private Button geoButton;
 	private TextView latLabel;
 	private EditText latField;
@@ -135,10 +139,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	}
 
 	private void populateLocation(Location loc) {
-		//TODO: wait for specific accuracy level  (5-10 meters?)
+		// TODO: wait for specific accuracy level (5-10 meters?)
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
 		elevationField.setText(loc.getAltitude() + "");
+		setResponse(new QuestionResponse(loc.getLatitude() + DELIM
+				+ loc.getLongitude() + DELIM + loc.getAltitude(),
+				QuestionResponse.GEO_TYPE, getQuestion().getId()));
 	}
 
 	public void resetQuestion() {
@@ -146,6 +153,27 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		latField.setText("");
 		lonField.setText("");
 		elevationField.setText("");
+	}
+
+	/**
+	 * restores the file path for the file and turns on the complete icon if the
+	 * file exists
+	 */
+	public void rehydrate(QuestionResponse resp) {
+		super.rehydrate(resp);
+		if (resp != null) {
+			if (resp.getValue() != null) {
+				StringTokenizer strTok = new StringTokenizer(resp.getValue(),
+						DELIM);
+				if (strTok.countTokens() == 3) {
+					latField.setText(strTok.nextToken());
+					lonField.setText(strTok.nextToken());
+					elevationField.setText(strTok.nextToken());
+				}
+
+			}
+
+		}
 	}
 
 	@Override
