@@ -51,15 +51,12 @@ public class DataSyncActivity extends Activity {
 	public static final String TYPE_KEY = "TYPE";
 
 	private static final int COMPLETE_ID = 1;
-	// TODO: get S3 upload url
+
 	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 	private static final String S3_KEY = "1JZZVDSNFFQYF23ZYJ02";
 	private static final String S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
 	private static final String S3_SIG = "7/fo9v4qamQJjnbga529k3iZMZE=";
-	private static final String BOUNDRY = "***xxx";
-	private static final String PREFIX = "--";
-	private static final String ENDLINE = "\r\n";
-	private static final int BUF_SIZE = 2000;
+	private static final int BUF_SIZE = 2048;
 
 	private SurveyDbAdapter databaseAdaptor;
 	private static final String TEMP_FILE_NAME = "/wfp";
