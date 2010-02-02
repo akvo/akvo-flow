@@ -2,9 +2,11 @@ package com.gallatinsystems.survey.device;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.TableRow;
 
 /**
@@ -25,16 +27,17 @@ public class SettingsActivity extends Activity implements OnClickListener {
 		row = (TableRow) findViewById(R.id.exportDataOption);
 		row.setOnClickListener(this);
 		row = (TableRow) findViewById(R.id.powerMgmtOption);
-		row.setOnClickListener(this);
+		row.setOnClickListener(this);		
 	}
 
-	public void onClick(View v) {
+	public void onClick(View v) {		
 		if (v.getId() == R.id.powerMgmtOption) {
-			// TODO: launch the intent to show the power settings screen
-			v.getContext().startActivity(
-					new Intent(
-							"android.settings.LOCATION_SOURCE_SETTINGS"));
-
+			WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
+			if (!wm.isWifiEnabled()) {
+				wm.setWifiEnabled(true);
+			} else {
+				wm.setWifiEnabled(false);
+			}
 		} else {
 			Intent i = new Intent(v.getContext(), DataSyncActivity.class);
 			if (v.getId() == R.id.sendOption) {
@@ -46,5 +49,5 @@ public class SettingsActivity extends Activity implements OnClickListener {
 			// terminate this activity
 			finish();
 		}
-	}
+	}	
 }

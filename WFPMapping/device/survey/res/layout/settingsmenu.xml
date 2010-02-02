@@ -25,7 +25,7 @@
 		</LinearLayout>
 	</TableRow>
 	<TableRow android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:clickable="true" android:id="@+id/powerMgmtOption">
+		android:layout_height="wrap_content" android:focusable="true" android:clickable="true" android:id="@+id/powerMgmtOption">
 		<LinearLayout android:layout_height="wrap_content"
 			android:layout_width="wrap_content" android:orientation="vertical">
 			<TextView android:layout_width="wrap_content"
