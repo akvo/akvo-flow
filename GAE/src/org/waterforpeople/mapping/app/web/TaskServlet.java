@@ -29,7 +29,7 @@ public class TaskServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		String action = req.getParameter("action");
 		String fileName = req.getParameter("fileName");

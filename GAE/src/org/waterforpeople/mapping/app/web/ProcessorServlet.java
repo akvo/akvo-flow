@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -8,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.queue.QueueManager;
+
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class ProcessorServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(ProcessorServlet.class
@@ -24,8 +29,10 @@ public class ProcessorServlet extends HttpServlet {
 				if (fileName != null) {
 					log.info("about to submit task for fileName: " + fileName);
 					// Submit the fileName for processing
-					QueueManager qm = new QueueManager();
-					qm.submitDeviceFileProcessing(fileName);
+					Queue queue = QueueFactory.getDefaultQueue();
+					
+					queue.add(url("/app_worker/task").param("action", "processFile").param("fileName", fileName));
+					log.info("submiting task for fileName: " + fileName);
 				}
 			}
 		}

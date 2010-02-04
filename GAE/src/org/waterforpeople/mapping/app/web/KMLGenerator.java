@@ -9,6 +9,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.CaptionDefinition;
 import org.waterforpeople.mapping.domain.CaptionManager;
 
 public class KMLGenerator {
@@ -26,7 +27,7 @@ public class KMLGenerator {
 		String document = null;
 		try {
 			ve.setProperty("runtime.log.logsystem.class",
-			"org.apache.velocity.runtime.log.NullLogChute");
+					"org.apache.velocity.runtime.log.NullLogChute");
 			ve.init();
 			org.apache.velocity.Template t = ve.getTemplate("Document.vm");
 			VelocityContext context = new VelocityContext();
@@ -49,11 +50,12 @@ public class KMLGenerator {
 		List<AccessPoint> entries = (List<AccessPoint>) query.execute();
 		return entries;
 	}
-	
-	private List<CaptionManager> loadCaptions(String whereClause) {
+
+	private List<CaptionDefinition> loadCaptions(String whereClause) {
 		javax.jdo.Query query = pm.newQuery("select from  "
-				+ CaptionManager.class.getName());
-		List<CaptionManager> entries = (List<CaptionManager>) query.execute();
+				+ CaptionDefinition.class.getName());
+		List<CaptionDefinition> entries = (List<CaptionDefinition>) query
+				.execute();
 		return entries;
 	}
 
@@ -98,24 +100,10 @@ public class KMLGenerator {
 						.getWaterPointPhotoCaption());
 				context.put("description", ap.getDescription());
 			}
-			
-			List<CaptionManager> captions = loadCaptions(null);
-			for(CaptionManager caption:captions){
-				context.put("collectionDateCaption",caption.getCollectionDateCaption());	
-				context.put("communityCodeCaption",caption.getCommunityCodeCaption());
-				context.put("waterPointPhotoURLCaption",caption.getWaterPointPhotoURLCaption());
-				context.put("typeOfWaterPointTechnologyCaption",caption.getTypeOfWaterPointTechnologyCaption());
-				context.put("constructionDateOfWaterPointCaption",caption.getConstructionDateOfWaterPointCaption());
-				context.put("numberOfHouseholdsUsingWaterPointCaption",caption.getNumberOfHouseholdsUsingWaterPointCaption());
-				context.put("costPerCaption",caption.getCostPerCaption());
-				context.put("farthestHouseholdfromWaterPointCaption",caption.getFarthestHouseholdfromWaterPointCaption());
-				context.put("CurrentManagementStructureWaterPointCaption",caption.getCurrentManagementStructureWaterPointCaption());
-				context.put("waterSystemStatusCaption",caption.getWaterSystemStatusCaption());
-				context.put("sanitationPointPhotoURLCaption",caption.getSanitationPointPhotoURLCaption());
-				context.put("primaryImprovedSanitationTechCaption",caption.getPrimaryImprovedSanitationTechCaption());
-				context.put("percentageOfHouseholdsWithImprovedSanitationCaption",caption.getPercentageOfHouseholdsWithImprovedSanitationCaption());
-				context.put("waterPointPhotoCaption",caption.getWaterPointPhotoCaption());
-				context.put("descriptionCaption",caption.getDescriptionCaption());
+
+			List<CaptionDefinition> captions = loadCaptions(null);
+			for (CaptionDefinition caption : captions) {
+				context.put(caption.getCaptionVariableName(), caption.getCaptionValue());
 			}
 			StringWriter writer = new StringWriter();
 			t.merge(context, writer);
