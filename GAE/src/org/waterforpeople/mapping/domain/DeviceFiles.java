@@ -10,11 +10,13 @@ import javax.jdo.annotations.PrimaryKey;
 
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 
+import com.google.appengine.api.datastore.Key;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceFiles {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id = null;
+	private Key key = null;
 	@Persistent
 	private String URI = null;
 	@Persistent
@@ -42,12 +44,13 @@ public class DeviceFiles {
 		URI = uri;
 	}
 
-	public Long getId() {
-		return id;
+
+	public Key getKey() {
+		return key;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setKey(Key key) {
+		this.key = key;
 	}
 
 	public Date getUploadDateTime() {
@@ -77,7 +80,7 @@ public class DeviceFiles {
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("DeviceFiles: ");
-		sb.append("\n   Id: " + id);
+		sb.append("\n   Key: " + key.toString());
 		sb.append("\n   URI: " + URI);
 		sb.append("\n   ProcessDate: " + this.processDate);
 		sb.append("\n   Status: " + status);

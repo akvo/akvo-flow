@@ -9,6 +9,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.DeviceFiles;
@@ -59,7 +61,7 @@ public class TaskServlet extends HttpServlet {
 		TaskServlet ts = new TaskServlet();
 		ts.processFile(null);
 	}
-
+	
 	private URL url;
 
 	private void processFile(String fileName) {
@@ -68,10 +70,20 @@ public class TaskServlet extends HttpServlet {
 					"http://waterforpeople.s3.amazonaws.com/devicezip/"+fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
-			ArrayList<String> lines = extractDataFromZip(zis);
-			Object obj = marshallDataToObject(lines, AccessPoint.class
-					.getName());
-			saveObject(obj);
+			ArrayList<String> unparsedLines = extractDataFromZip(zis);
+			Long userID = 1L;
+			
+			//Object obj = marshallDataToObject(lines, AccessPoint.class
+			//		.getName());
+			//saveObject(obj);
+			DeviceFiles deviceFile = new DeviceFiles();
+			deviceFile.setProcessDate(getNowDateTimeFormatted());
+			deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
+			deviceFile.setURI(url.toURI().toString());
+			Date collectionDate = new Date();
+			SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
+			
+			siDAO.save(collectionDate, deviceFile, userID, unparsedLines);
 			zis.close();
 		} catch (MalformedURLException e) {
 			// ...
@@ -114,7 +126,10 @@ public class TaskServlet extends HttpServlet {
 
 		return lines;
 	}
-
+	
+	
+	
+//to get rid of
 	private Object marshallDataToObject(ArrayList<String> lines,
 			String classname) {
 
@@ -167,6 +182,7 @@ public class TaskServlet extends HttpServlet {
 		String dateTime = dateFormat.format(date);
 		return dateTime;
 	}
+	
 
 	private void saveObject(Object obj) throws URISyntaxException {
 		pm = PMF.get().getPersistenceManager();
@@ -196,6 +212,7 @@ public class TaskServlet extends HttpServlet {
 		geo.setAltitude(new Double(coordinates[2]));
 		return geo;
 	}
+	
 
 	class GeoCoordinate {
 		private Double latitude;
@@ -236,4 +253,6 @@ public class TaskServlet extends HttpServlet {
 		}
 
 	}
+	
+	
 }
