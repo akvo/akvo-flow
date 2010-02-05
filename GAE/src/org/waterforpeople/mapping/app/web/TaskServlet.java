@@ -46,7 +46,7 @@ public class TaskServlet extends HttpServlet {
 					 * back to S3
 					 */
 					log.info("	Task->processFile");
-					processFile(null);
+					processFile(fileName);
 
 				}
 			}
@@ -65,7 +65,7 @@ public class TaskServlet extends HttpServlet {
 	private void processFile(String fileName) {
 		try {
 			url = new URL(
-					"http://waterforpeople.s3.amazonaws.com/devicezip/wfp183214725759.zip");
+					"http://waterforpeople.s3.amazonaws.com/devicezip/"+fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
 			ArrayList<String> lines = extractDataFromZip(zis);
