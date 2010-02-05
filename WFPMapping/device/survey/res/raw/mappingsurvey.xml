@@ -3,13 +3,119 @@
 	<questionGroup order="1">
 		<heading>Water Point</heading>
 		<question id="qm1" order="1" mandatory="true" type="free">
-			<text>Name of Community?</text>
+			<text>Community Code</text>
+		</question>
+		<question id="qm1a" order="2" mandatory="true" type="geo">
+			<text>Location</text>
 		</question>
 		<question id="qm2" order="2" mandatory="true" type="photo">
 			<text>Water Point Photo</text>
 		</question>
-		<question id="qm3" order="3" mandatory="true" type="geo">
-			<text>Location</text>
+		<question id="qm2a" order="3" mandatory="true" type="free">
+				<text>Photo caption</text>
+		</question>
+		<question id="qm3" order="3" mandatory="true" type="free">
+			<text>Type of water point technology</text>
+		</question>
+		<question id="qm4" order="4" mandatory="true" type="free">
+			<text>Year of Construction?</text>
+			<validationRule validationType="numeric" maxLength="4"
+				allowDecimal="false" signed="false" />
+		</question>
+		<question id="qm5" order="5" mandatory="true" type="option">
+			<text>Type of waterpoint technology?</text>
+			<options allowOther="true">
+				<option value="a">Afridev Handpump</option>
+				<option value="b">Kiosk</option>
+				<option value="c">Malda Handpump</option>
+				<option value="d">Tap Stand - Private</option>
+				<option value="e">Tap Stand - Public</option>
+				<option value="f">Unimproved Waterpoint - Burst pipe</option>
+				<option value="g">Unimproved Waterpoint - Scoop Hole</option>
+				<option value="h">Unimproved Waterpoint - Stream</option>
+				<option value="i">Unimproved Waterpoint - Streambed Catchment</option>
+				<option value="j">Unimproved Waterpoint - Unprotected Spring</option>
+				<option value="k">Unimproved Waterpoint - Unprotected Well</option>
+				<option value="l">Unimproved Waterpoint</option>
+			</options>
+		</question>
+		<question id="qm6" order="6" mandatory="true" type="free">
+			<text>Number of households using water point</text>
+			<validationRule validationType="numeric" maxLength="6"
+				allowDecimal="false" signed="false" />
+		</question>
+		<question id="qm7" order="7" mandatory="true" type="free">
+			<text>Cost per 20L</text>
+			<validationRule validationType="numeric" maxLength="6"
+				allowDecimal="true" signed="false" />
+		</question>
+		<question id="qm8" order="8" mandatory="true" type="option">
+			<text>Is the farthest household from the water point within 500 meters?</text>
+			<options allowOther="true">
+				<option value="a">Yes</option>
+				<option value="b">No</option>				
+			</options>
+		</question>
+		<question id="qm9" order="9" mandatory="true" type="option">
+			<text>Current management structure?</text>
+			<options allowOther="true">
+				<option value="a">Church Group</option>
+				<option value="b">Individual System</option>
+				<option value="c">Individual Tap</option>
+				<option value="d">Kabula Dev Assoc</option>
+				<option value="e">Local Government</option>
+				<option value="f">NGO</option>
+				<option value="g">No Designated Manager</option>
+				<option value="h">Private Operator</option>
+				<option value="i">Village Headman</option>
+				<option value="j">Water Committee/Board</option>
+			</options>
+		</question>
+		<question id="qm10" order="10" mandatory="true" type="option">
+			<text>What is the operational status of the improved water
+				system?</text>
+			<options allowOther="false">
+				<option value="h">High</option>
+				<option value="ok">Ok</option>
+				<option value="p">Poor</option>
+			</options>
+			<tip><![CDATA[<b>High</b> = Water is flowing in adequate quantity and quality, meets govt standards and has no significant broken parts/problems.<br>
+    <b>Ok</b> = Water is flowing but is either not adequate quantity or quality, or does not meet govt. standards, or has broken parts, leaks or problems.<br>
+    <b>Poor</b> =System does not function.]]></tip>
+		</question>		
+	</questionGroup>
+	<questionGroup order="2">
+		<heading>Sanitation</heading>
+		<question id="qm19" order="1" mandatory="true" type="option">
+			<text>Is there improved sanitation?</text>
+			<options allowOther="false">
+				<option value="yes">Yes</option>
+				<option value="no">No</option>
+				<option value="dontknow">Don't Know</option>
+			</options>
+		</question>
+		<question id="qm20" order="3" mandatory="true" type="option">
+			<dependency question="qm19" answer-value="yes" />
+			<text>Primary Improved Sanitation Technology in Use in the Community?</text>
+			<options allowOther="false">
+				<option value="a">Improved Pit Latrine</option>
+				<option value="b">Unimproved Pit Latrine</option>
+				<option value="c">VIP Latrine</option>
+			</options>
+		</question>
+		<question id="qm21" order="2" mandatory="true" type="photo">
+		<dependency question="qm19" answer-value="yes" />
+			<text>Water Point Photo</text>
+		</question>
+		<question id="qm22" order="3" mandatory="true" type="free">
+		<dependency question="qm19" answer-value="yes" />
+				<text>Photo caption</text>
+		</question>
+		<question id="qm23" order="3" mandatory="true" type="free">
+			<dependency question="qm19" answer-value="yes" />
+			<text>Percentage of households with improved sanitation systems?</text>
+			<validationRule validationType="numeric" maxLength="5"
+				allowDecimal="true" signed="false" />
 		</question>
 	</questionGroup>
 </survey>
