@@ -5,11 +5,16 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -50,6 +55,7 @@ public class DataSyncActivity extends Activity {
 
 	private static final int COMPLETE_ID = 1;
 
+	private static final String NOTIFICATION_URL = "http://watermappingmonitoring.appspot.com/processor?action=submit&fileName=";
 	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 	private static final String S3_KEY = "1JZZVDSNFFQYF23ZYJ02";
 	private static final String S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
@@ -71,19 +77,41 @@ public class DataSyncActivity extends Activity {
 		String destName = fileName;
 		if (destName.contains("/")) {
 			destName = destName.substring(destName.lastIndexOf("/") + 1);
-		}else if (destName.contains("\\")){
+		} else if (destName.contains("\\")) {
 			destName = destName.substring(destName.lastIndexOf("\\") + 1);
 		}
 		if (fileName != null && SEND.equals(type)) {
 			// TODO: may need to spawn a thread to do this
 			sendFile(fileName);
-			// TODO: call databaseAdaptor.markDataAsSent(idList)
-			fireNotification(SEND,destName);
+			if (sendProcessingNotification(destName)) {
+				// TODO: call databaseAdaptor.markDataAsSent(idList)
+				fireNotification(SEND, destName);
+			}else{
+				//TODO: handle failure?
+			}
 		} else if (fileName != null) {
-			fireNotification(EXPORT,destName);
+			fireNotification(EXPORT, destName);
 		}
 		databaseAdaptor.close();
 		finish();
+	}
+
+	private boolean sendProcessingNotification(String fileName) {
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpResponse response = null;
+		boolean success = false;
+		try {
+			response = (client
+					.execute(new HttpGet(NOTIFICATION_URL + fileName)));
+			if (response.getStatusLine().getStatusCode() != 200) {
+				Log.e(TAG, "Serivce returned a bad status code");
+			} else {
+				success = true;
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Could not send processing call", e);
+		}
+		return success;
 	}
 
 	/**
@@ -208,8 +236,7 @@ public class DataSyncActivity extends Activity {
 
 		return fileName;
 	}
-	
-	
+
 	/**
 	 * sends the zip file containing data/images to the server via an http
 	 * upload
