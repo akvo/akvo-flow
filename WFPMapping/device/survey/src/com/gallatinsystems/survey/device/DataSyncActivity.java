@@ -5,7 +5,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -16,15 +15,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.util.Log;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -45,7 +45,7 @@ import com.gallatinsystems.survey.device.util.MultipartStream;
  * 
  */
 // TODO: Change this to a Service rather than an activity
-public class DataSyncActivity extends Activity {
+public class DataSyncActivity extends Service {
 
 	private static final String TAG = "DATA_SYNC_ACTIVITY";
 
@@ -65,12 +65,32 @@ public class DataSyncActivity extends Activity {
 	private SurveyDbAdapter databaseAdaptor;
 	private static final String TEMP_FILE_NAME = "/wfp";
 	private static final String ZIP_IMAGE_DIR = "images/";
+	private Thread thread;
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	
+	public IBinder onBind(Intent intent) {
+	  return null;
+	}
 
-		Bundle extras = getIntent().getExtras();
-		String type = extras != null ? extras.getString(TYPE_KEY) : EXPORT;
+	public int onStartCommand(final Intent intent, int flags, int startid){		
+		thread = new Thread(new Runnable() {					
+			public void run() {
+				Bundle extras = intent.getExtras();
+				String type = extras != null ? extras.getString(TYPE_KEY) : EXPORT;		
+				runSync(type);				
+			}
+		});
+		thread.start();
+		return Service.START_FLAG_RETRY;
+	}
+	
+	public void onCreate() {
+		super.onCreate();
+	}
+	
+	private void runSync(String type){
+		/*Bundle extras = getIntent().getExtras();
+		String type = extras != null ? extras.getString(TYPE_KEY) : EXPORT;*/
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
 		String fileName = formZip();
@@ -93,7 +113,7 @@ public class DataSyncActivity extends Activity {
 			fireNotification(EXPORT, destName);
 		}
 		databaseAdaptor.close();
-		finish();
+		//finish();
 	}
 
 	private boolean sendProcessingNotification(String fileName) {
@@ -153,7 +173,7 @@ public class DataSyncActivity extends Activity {
 		String fileName = null;
 		try {
 			if (data != null) {
-				startManagingCursor(data);
+				//startManagingCursor(data);
 				StringBuilder buf = new StringBuilder();
 				ArrayList<String> imagePaths = new ArrayList<String>();
 				do {
@@ -179,7 +199,8 @@ public class DataSyncActivity extends Activity {
 						imagePaths.add(value);
 					}
 				} while (data.moveToNext());
-
+								
+				
 				File zipFile = new File(Environment
 						.getExternalStorageDirectory().getAbsolutePath()
 						+ TEMP_FILE_NAME + System.nanoTime() + ".zip");
@@ -232,6 +253,10 @@ public class DataSyncActivity extends Activity {
 		} catch (Exception e) {
 			Log.e(TAG, "Could not save zip: " + e.getMessage());
 			fileName = null;
+		}finally{
+			if(data != null){
+				data.close();
+			}
 		}
 
 		return fileName;

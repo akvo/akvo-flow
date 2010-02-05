@@ -17,8 +17,10 @@
 		<activity android:name=".SurveyViewActivity" />
 		<activity android:name=".ListUserActivity" />
 		<activity android:name=".UserEditActivity" />
-		<activity android:name=".DataSyncActivity" />
+	<!-- <activity android:name=".DataSyncActivity" /> -->	
 		<activity android:name=".SettingsActivity"/>
+		
+		<service android:name=".DataSyncActivity"/>
 	</application>
 	<uses-sdk android:minSdkVersion="6" />
 
