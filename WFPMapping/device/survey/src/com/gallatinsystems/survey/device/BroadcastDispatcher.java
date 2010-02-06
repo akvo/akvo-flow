@@ -18,12 +18,12 @@ public class BroadcastDispatcher extends BroadcastReceiver {
 	public static final String DATA_AVAILABLE_INTENT = "com.gallatinsystems.survey.device.DATA_SUBMITTED";
 
 	public void onReceive(Context context, Intent intent) {
-		if (intent.getAction() != null
-				&& DATA_AVAILABLE_INTENT.equals(intent.getAction())) {
-			// launch the service telling it to SEND data to the server
-			Intent i = new Intent(context, DataSyncService.class);
-			i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
-			context.startService(i);
-		}
+		// right now, we do the same thing for all event types so need to check
+		// the intent's action
+
+		// launch the service telling it to SEND data to the server
+		Intent i = new Intent(context, DataSyncService.class);
+		i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
+		context.startService(i);
 	}
 }

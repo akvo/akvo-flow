@@ -23,6 +23,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -104,35 +106,37 @@ public class DataSyncService extends Service {
 	 *            - either SYNC or EXPORT
 	 */
 	private void runSync(String type, boolean forceFlag) {
-		databaseAdaptor = new SurveyDbAdapter(this);
-		databaseAdaptor.open();
-		String fileName = createFileName();
-		HashSet<String> idList = formZip(fileName);
-		String destName = fileName;
-		if (destName.contains("/")) {
-			destName = destName.substring(destName.lastIndexOf("/") + 1);
-		} else if (destName.contains("\\")) {
-			destName = destName.substring(destName.lastIndexOf("\\") + 1);
-		}
-		if (fileName != null && idList.size() > 0) {
-			if (SEND.equals(type)) {
-				sendFile(fileName);
-				if (sendProcessingNotification(destName)) {
-					databaseAdaptor.markDataAsSent(idList);
-					fireNotification(SEND, destName);
-				} else {
-					Log
-							.e(
-									TAG,
-									"Could not update send status of data in the database. It will be resent on next execution of the service");
-				}
-			} else {
-				fireNotification(EXPORT, destName);
+		if (isAbleToRun(type)) {
+			databaseAdaptor = new SurveyDbAdapter(this);
+			databaseAdaptor.open();
+			String fileName = createFileName();
+			HashSet<String> idList = formZip(fileName);
+			String destName = fileName;
+			if (destName.contains("/")) {
+				destName = destName.substring(destName.lastIndexOf("/") + 1);
+			} else if (destName.contains("\\")) {
+				destName = destName.substring(destName.lastIndexOf("\\") + 1);
 			}
-		} else if (forceFlag) {
-			fireNotification(NOTHING, null);
+			if (fileName != null && idList.size() > 0) {
+				if (SEND.equals(type)) {
+					sendFile(fileName);
+					if (sendProcessingNotification(destName)) {
+						databaseAdaptor.markDataAsSent(idList);
+						fireNotification(SEND, destName);
+					} else {
+						Log
+								.e(
+										TAG,
+										"Could not update send status of data in the database. It will be resent on next execution of the service");
+					}
+				} else {
+					fireNotification(EXPORT, destName);
+				}
+			} else if (forceFlag) {
+				fireNotification(NOTHING, null);
+			}
+			databaseAdaptor.close();
 		}
-		databaseAdaptor.close();
 	}
 
 	/**
@@ -174,9 +178,9 @@ public class DataSyncService extends Service {
 		CharSequence tickerText = null;
 		if (SEND.equals(type)) {
 			tickerText = getResources().getText(R.string.uploadcomplete);
-		} else if (EXPORT.equals(type)){
+		} else if (EXPORT.equals(type)) {
 			tickerText = getResources().getText(R.string.exportcomplete);
-		}else{
+		} else {
 			tickerText = getResources().getText(R.string.nothingtoexport);
 		}
 		long when = System.currentTimeMillis();
@@ -186,8 +190,8 @@ public class DataSyncService extends Service {
 		Intent notificationIntent = new Intent(this, DataSyncService.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(context, tickerText, fileName!=null?fileName:"",
-				contentIntent);
+		notification.setLatestEventInfo(context, tickerText,
+				fileName != null ? fileName : "", contentIntent);
 		mNotificationManager.notify(COMPLETE_ID, notification);
 	}
 
@@ -356,5 +360,37 @@ public class DataSyncService extends Service {
 	private String createFileName() {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
 				+ TEMP_FILE_NAME + System.nanoTime() + ".zip";
+	}
+
+	/**
+	 * this method checks if the service can perform the requested operation. If
+	 * the operation type is SEND and there is no connectivity, this will return
+	 * false, otherwise it will return true
+	 * 
+	 * @param type
+	 * @return
+	 */
+	private boolean isAbleToRun(String type) {
+		boolean ok = false;
+		// since a null type is treated like send, check !export
+		if (!EXPORT.equals(type)) {
+			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+			if (connMgr != null) {
+				NetworkInfo[] infoArr = connMgr.getAllNetworkInfo();
+				if (infoArr != null) {
+					for (int i = 0; i < infoArr.length; i++) {
+						if (NetworkInfo.State.CONNECTED == infoArr[i]
+								.getState()) {
+							ok = true;
+							break;
+						}
+					}
+				}
+			}
+		} else {
+			// if we're exporting, we don't need to check the network
+			ok = true;
+		}
+		return ok;
 	}
 }
