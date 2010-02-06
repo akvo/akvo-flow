@@ -4,7 +4,7 @@
 		<heading>Water Point Questions</heading>
 		<question id="q1" order="1" mandatory="true" type="option">
 			<text>Location?</text>
-			<options allowOther="true">
+			<options allowOther="true" renderType="spinner">
 				<option value="r">Rural</option>
 				<option value="pu">Peri-Urban</option>
 				<option value="st">Small Town</option>

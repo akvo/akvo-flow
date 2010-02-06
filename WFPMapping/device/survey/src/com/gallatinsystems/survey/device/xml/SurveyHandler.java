@@ -40,6 +40,7 @@ public class SurveyHandler extends DefaultHandler {
     private static final String MAX_LENGTH = "maxLength";
     private static final String ALLOW_DEC = "allowDecimal";
     private static final String ALLOW_SIGN = "signed";
+    private static final String RENDER_TYPE = "renderType";
 
     private Survey survey;
     private QuestionGroup currentQuestionGroup;
@@ -141,10 +142,11 @@ public class SurveyHandler extends DefaultHandler {
             if (currentQuestion != null) {
                 currentQuestion.setAllowOther(Boolean.parseBoolean(attributes
                         .getValue(ALLOW_OTHER)));
+                currentQuestion.setRenderType(attributes.getValue(RENDER_TYPE));
             }
         } else if (localName.equalsIgnoreCase(OPTION)) {
             currentOption = new Option();
-            currentOption.setValue(attributes.getValue(VALUE));
+            currentOption.setValue(attributes.getValue(VALUE));     
         } else if (localName.equalsIgnoreCase(DEPENDENCY)) {
             currentDependency = new Dependency();
             currentDependency.setQuestion(attributes.getValue(QUESTION));
