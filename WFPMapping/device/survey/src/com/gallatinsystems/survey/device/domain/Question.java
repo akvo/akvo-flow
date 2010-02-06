@@ -22,6 +22,7 @@ public class Question {
     private String tip;
     private ValidationRule validationRule;
     private String renderType;
+    
 
     public static final String FREE_TYPE = "free";
     public static final String OPTION_TYPE = "option";

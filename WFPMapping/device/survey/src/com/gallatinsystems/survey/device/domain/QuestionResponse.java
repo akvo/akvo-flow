@@ -5,6 +5,7 @@ public class QuestionResponse {
 	public static final String VALUE_TYPE = "VALUE";
 	public static final String IMAGE_TYPE = "IMAGE";
 	public static final String GEO_TYPE = "GEO";
+	public static final String OTHER_TYPE = "OTHER";
 	private String value;
 	private String type;
 	private Long id;

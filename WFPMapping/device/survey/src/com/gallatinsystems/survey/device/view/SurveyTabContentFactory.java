@@ -145,7 +145,6 @@ public class SurveyTabContentFactory implements TabContentFactory {
 						view.resetQuestion();
 					}
 					// create a new response object
-					// TODO: this probably needs to move.
 					context.setRespondentId(databaseAdaptor
 							.createSurveyRespondent(context.getSurveyId()
 									.toString(), context.getUserId()));

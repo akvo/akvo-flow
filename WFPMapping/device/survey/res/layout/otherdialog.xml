@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:id="@+id/otherroot">
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:text="@string/otherinstructions" />
+	<ScrollView android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+		<EditText android:id="@+id/otherField" android:layout_width="fill_parent"
+			android:layout_height="fill_parent" android:layout_gravity="fill"
+			android:scrollbars="vertical" android:minHeight="40dp"
+			android:minWidth="100dp" />
+	</ScrollView>
+</LinearLayout>

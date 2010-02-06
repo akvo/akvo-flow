@@ -33,4 +33,6 @@
 	<string name="sendoptdesc">Sends survey data to server. You must have data access (cellular or wi-fi) to perform this operation.</string>
 	<string name="poweroptlabel">Power Management</string>
 	<string name="poweroptdesc">Toggles Wi-Fi to better manage battery life.</string>
+	<string name="otherinstructions">Please enter a description</string>
+	<string name="okbutton">OK</string>
 </resources>
