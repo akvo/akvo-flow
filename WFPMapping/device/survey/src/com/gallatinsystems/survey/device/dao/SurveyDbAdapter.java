@@ -136,6 +136,11 @@ public class SurveyDbAdapter {
 		return database.insert(SURVEY_TABLE, null, initialValues);
 	}
 
+	/**
+	 * returns a cursor that lists all unsent (sentFlag = false) survey data
+	 * 
+	 * @return
+	 */
 	public Cursor fetchUnsentData() {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
@@ -148,6 +153,24 @@ public class SurveyDbAdapter {
 		return cursor;
 	}
 
+	/**
+	 * marks the data as submitted in the respondent table (submittedFlag =
+	 * true) thereby making it ready for transmission
+	 * 
+	 * @param respondentId
+	 */
+	public void submitResponses(String respondentId) {
+		ContentValues vals = new ContentValues();
+		vals.put(SUBMITTED_FLAG_COL, "true");
+		database.update(RESPONDENT_TABLE, vals, SURVEY_RESPONDENT_ID_COL + "= "
+				+ respondentId, null);
+	}
+
+	/**
+	 * updates the respondent table by recording the sent date stamp
+	 * 
+	 * @param idList
+	 */
 	public void markDataAsSent(ArrayList<String> idList) {
 
 		if (idList != null) {
@@ -166,6 +189,11 @@ public class SurveyDbAdapter {
 		}
 	}
 
+	/**
+	 * returns a cursor listing all users
+	 * 
+	 * @return
+	 */
 	public Cursor fetchUsers() {
 		Cursor cursor = database.query(USER_TABLE, new String[] { USER_ID_COL,
 				DISP_NAME_COL, EMAIL_COL }, null, null, null, null, null);
@@ -175,6 +203,12 @@ public class SurveyDbAdapter {
 		return cursor;
 	}
 
+	/**
+	 * retrieves a user by ID
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public Cursor fetchUser(Long id) {
 		Cursor cursor = database.query(USER_TABLE, new String[] { USER_ID_COL,
 				DISP_NAME_COL, EMAIL_COL }, USER_ID_COL + "=?",
@@ -185,6 +219,15 @@ public class SurveyDbAdapter {
 		return cursor;
 	}
 
+	/**
+	 * if the ID is populated, this will update a user record. Otherwise, it
+	 * will be inserted
+	 * 
+	 * @param id
+	 * @param name
+	 * @param email
+	 * @return
+	 */
 	public long createOrUpdateUser(Long id, String name, String email) {
 		ContentValues initialValues = new ContentValues();
 		Long idVal = id;
@@ -214,6 +257,13 @@ public class SurveyDbAdapter {
 				new String[] { respondentID }, null, null, null);
 	}
 
+	/**
+	 * if the response has the ID populated, it will update the database row,
+	 * otherwise it will be inserted
+	 * 
+	 * @param response
+	 * @return
+	 */
 	public long createOrUpdateSurveyResponse(QuestionResponse response) {
 		long id = -1;
 		ContentValues initialValues = new ContentValues();
@@ -232,16 +282,40 @@ public class SurveyDbAdapter {
 		return id;
 	}
 
-	public void submitResponses(String respondentId) {
-		ContentValues vals = new ContentValues();
-		vals.put(SUBMITTED_FLAG_COL, "true");
-		database.update(RESPONDENT_TABLE, vals, SURVEY_RESPONDENT_ID_COL + "= "
-				+ respondentId, null);
+	/**
+	 * this method will get the max survey respondent ID that has an unsubmitted
+	 * survey or, if none exists, will create a new respondent
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
+	public long createOrLoadSurveyRespondent(String surveyId) {
+		Cursor results = database.query(RESPONDENT_TABLE, new String[] { "max("
+				+ SURVEY_RESPONDENT_ID_COL + ")" }, SUBMITTED_FLAG_COL
+				+ "='false' and " + SURVEY_ID_COL + "=?",
+				new String[] { surveyId }, null, null, null);
+		long id = -1;
+		if (results != null && results.getCount() > 0) {
+			results.moveToFirst();
+			id = results.getLong(0);
+			results.close();
+		}
+		if (id <= 0) {
+			id = createSurveyRespondent(surveyId);
+		}
+		return id;
 	}
 
+	/**
+	 * creates a new unsubmitted survey respondent record
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
 	public long createSurveyRespondent(String surveyId) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SURVEY_ID_COL, surveyId);
+		initialValues.put(SUBMITTED_FLAG_COL, "false");
 		return database.insert(RESPONDENT_TABLE, null, initialValues);
 	}
 

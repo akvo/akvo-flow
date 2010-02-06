@@ -78,7 +78,7 @@ public class SurveyViewActivity extends TabActivity implements
 				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
 
 		if (respondentId == null) {
-			respondentId = databaseAdaptor.createSurveyRespondent(surveyId
+			respondentId = databaseAdaptor.createOrLoadSurveyRespondent(surveyId
 					.toString());
 		}
 
