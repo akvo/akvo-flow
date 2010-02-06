@@ -3,7 +3,7 @@
 	package="com.gallatinsystems.survey.device" android:versionCode="1"
 	android:versionName="1.0">
 	<application android:icon="@drawable/wfplogo"
-		android:label="@string/app_name">	
+		android:label="@string/app_name">
 		<activity android:name=".SurveyHomeActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -12,10 +12,16 @@
 		</activity>
 		<activity android:name=".SurveyViewActivity" />
 		<activity android:name=".ListUserActivity" />
-		<activity android:name=".UserEditActivity" />	
-		<activity android:name=".SettingsActivity"/>
-		
-		<service android:name=".DataSyncService"/>
+		<activity android:name=".UserEditActivity" />
+		<activity android:name=".SettingsActivity" />
+
+		<service android:name=".DataSyncService" />
+
+		<receiver android:name=".BroadcastDispatcher" >
+			<intent-filter>
+				<action android:name="com.gallatinsystems.survey.device.DATA_SUBMITTED" />
+			</intent-filter>
+		</receiver>
 	</application>
 	<uses-sdk android:minSdkVersion="6" />
 
@@ -24,9 +30,9 @@
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-	
+	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
 	<uses-feature android:name="android.hardware.camera" />
 
 </manifest> 

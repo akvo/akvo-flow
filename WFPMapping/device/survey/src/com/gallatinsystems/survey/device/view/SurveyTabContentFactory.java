@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.device.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TabHost.TabContentFactory;
 
+import com.gallatinsystems.survey.device.BroadcastDispatcher;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.SurveyViewActivity;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -38,6 +40,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	private HashMap<String, QuestionView> questionMap;
 	private SurveyDbAdapter databaseAdaptor;
 	private ScrollView scrollView;
+
 
 	/**
 	 * stores the context and questionGroup to member fields
@@ -148,6 +151,10 @@ public class SurveyTabContentFactory implements TabContentFactory {
 					context.setRespondentId(databaseAdaptor
 							.createSurveyRespondent(context.getSurveyId()
 									.toString(), context.getUserId()));
+					
+					//send a broadcast message indicating new data is available
+					Intent i = new Intent(BroadcastDispatcher.DATA_AVAILABLE_INTENT);
+					context.sendBroadcast(i);
 					scrollView.scrollTo(0, 0);
 				}
 			}
