@@ -45,7 +45,7 @@ import com.gallatinsystems.survey.device.util.MultipartStream;
  * @author Christopher Fagiani
  * 
  */
-public class DataSyncActivity extends Service {
+public class DataSyncService extends Service {
 
 	private static final String TAG = "DATA_SYNC_ACTIVITY";
 	private static final String NOTHING = "NADA";
@@ -183,7 +183,7 @@ public class DataSyncActivity extends Service {
 		Context context = getApplicationContext();
 
 		Notification notification = new Notification(icon, tickerText, when);
-		Intent notificationIntent = new Intent(this, DataSyncActivity.class);
+		Intent notificationIntent = new Intent(this, DataSyncService.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
 		notification.setLatestEventInfo(context, tickerText, fileName!=null?fileName:"",

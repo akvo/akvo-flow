@@ -3,11 +3,7 @@
 	package="com.gallatinsystems.survey.device" android:versionCode="1"
 	android:versionName="1.0">
 	<application android:icon="@drawable/wfplogo"
-		android:label="@string/app_name">
-		<!--
-			<activity android:name=".SurveyViewActivity"
-			android:label="@string/app_name">
-		-->
+		android:label="@string/app_name">	
 		<activity android:name=".SurveyHomeActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -16,11 +12,10 @@
 		</activity>
 		<activity android:name=".SurveyViewActivity" />
 		<activity android:name=".ListUserActivity" />
-		<activity android:name=".UserEditActivity" />
-	<!-- <activity android:name=".DataSyncActivity" /> -->	
+		<activity android:name=".UserEditActivity" />	
 		<activity android:name=".SettingsActivity"/>
 		
-		<service android:name=".DataSyncActivity"/>
+		<service android:name=".DataSyncService"/>
 	</application>
 	<uses-sdk android:minSdkVersion="6" />
 

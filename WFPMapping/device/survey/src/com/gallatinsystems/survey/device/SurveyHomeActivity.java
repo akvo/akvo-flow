@@ -1,7 +1,5 @@
 package com.gallatinsystems.survey.device;
 
-import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -11,6 +9,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 
 /**
  * Activity to render the survey home screen. It will list all available
@@ -66,8 +66,8 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	 * starts up the data sync service
 	 */
 	private void startSyncService() {
-		Intent i = new Intent(this, DataSyncActivity.class);
-		i.putExtra(DataSyncActivity.TYPE_KEY, DataSyncActivity.SEND);		
+		Intent i = new Intent(this, DataSyncService.class);
+		i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);		
 		getApplicationContext().startService(i);
 	}
 

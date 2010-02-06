@@ -66,16 +66,16 @@ public class SettingsActivity extends ListActivity {
 					wm.setWifiEnabled(false);
 				}
 			} else {
-				Intent i = new Intent(view.getContext(), DataSyncActivity.class);
+				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
 					i
-							.putExtra(DataSyncActivity.TYPE_KEY,
-									DataSyncActivity.SEND);
+							.putExtra(DataSyncService.TYPE_KEY,
+									DataSyncService.SEND);
 				} else {
-					i.putExtra(DataSyncActivity.TYPE_KEY,
-							DataSyncActivity.EXPORT);
+					i.putExtra(DataSyncService.TYPE_KEY,
+							DataSyncService.EXPORT);
 				}
-				i.putExtra(DataSyncActivity.FORCE_KEY, true);
+				i.putExtra(DataSyncService.FORCE_KEY, true);
 				getApplicationContext().startService(i);
 				// terminate this activity
 				finish();
