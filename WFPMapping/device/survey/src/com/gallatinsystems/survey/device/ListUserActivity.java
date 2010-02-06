@@ -87,7 +87,7 @@ public class ListUserActivity extends ListActivity {
 			createUser();
 			return true;
 		}
-		
+
 		return super.onMenuItemSelected(featureId, item);
 	}
 
@@ -135,6 +135,7 @@ public class ListUserActivity extends ListActivity {
 			long id) {
 		super.onListItemClick(list, view, position, id);
 		Intent intent = new Intent();
+		databaseAdaptor.open();
 		Cursor user = databaseAdaptor.fetchUser(id);
 		startManagingCursor(user);
 		intent.putExtra(SurveyDbAdapter.USER_ID_COL, user.getString(user
@@ -146,7 +147,6 @@ public class ListUserActivity extends ListActivity {
 		setResult(RESULT_OK, intent);
 		databaseAdaptor.close();
 		finish();
-
 	}
 
 	/**
@@ -158,6 +158,6 @@ public class ListUserActivity extends ListActivity {
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		fillData();
-
 	}
+	
 }

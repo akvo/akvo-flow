@@ -108,11 +108,12 @@ public class SurveyDbAdapter {
 	 * @throws SQLException
 	 *             if the database could be neither opened or created
 	 */
-	public SurveyDbAdapter open() throws SQLException {
+	public SurveyDbAdapter open() throws SQLException {		
 		databaseHelper = new DatabaseHelper(context);
 		database = databaseHelper.getWritableDatabase();
 		return this;
 	}
+	
 
 	/**
 	 * close the db
