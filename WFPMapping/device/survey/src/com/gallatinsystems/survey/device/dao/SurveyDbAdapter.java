@@ -1,6 +1,6 @@
 package com.gallatinsystems.survey.device.dao;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -145,7 +145,8 @@ public class SurveyDbAdapter {
 	public Cursor fetchUnsentData() {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
-				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_COL, DISP_NAME_COL, EMAIL_COL }, SUBMITTED_FLAG_COL
+				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_COL, DISP_NAME_COL,
+				EMAIL_COL, DELIVERED_DATE_COL }, SUBMITTED_FLAG_COL
 				+ "= 'true' AND " + DELIVERED_DATE_COL + " is null", null,
 				null, null, null);
 		if (cursor != null) {
@@ -172,21 +173,20 @@ public class SurveyDbAdapter {
 	 * 
 	 * @param idList
 	 */
-	public void markDataAsSent(ArrayList<String> idList) {
-
+	public void markDataAsSent(HashSet<String> idList) {
 		if (idList != null) {
-			StringBuilder builder = new StringBuilder();
-			for (int i = 0; i < idList.size(); i++) {
-				if (i > 0) {
-					builder.append(",");
-				}
-				builder.append("'").append(idList.get(i)).append("'");
-			}
 			ContentValues updatedValues = new ContentValues();
 			updatedValues.put(DELIVERED_DATE_COL, System.nanoTime() + "");
-			database.update(RESPONDENT_TABLE, updatedValues,
-					SURVEY_RESPONDENT_ID_COL + " in (?)",
-					new String[] { builder.toString() });
+			// enhanced FOR ok here since we're dealing with an implicit
+			// iterator anyway
+			for (String id : idList) {
+				if (database.update(RESPONDENT_TABLE, updatedValues,
+						SURVEY_RESPONDENT_ID_COL + " = ?", new String[] { id }) < 1) {
+					Log.e(TAG,
+							"Could not update record for Survey_respondent_id "
+									+ id);
+				}
+			}
 		}
 	}
 

@@ -27,8 +27,8 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
-	private TextView synchField;
-	
+	private TextView syncField;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,8 +41,8 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		ImageButton userButton = (ImageButton) findViewById(R.id.usersButton);
 		ImageButton settingsButton = (ImageButton) findViewById(R.id.settingsButton);
 		userField = (TextView) findViewById(R.id.currentUserField);
-		synchField = (TextView) findViewById(R.id.lastSyncField);
-		
+		syncField = (TextView) findViewById(R.id.lastSyncField);
+
 		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState
 				.getString(SurveyDbAdapter.USER_ID_COL) : null;
@@ -51,6 +51,8 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		if (currentName != null) {
 			populateFields();
 		}
+
+		startSyncService();
 
 		mapButton.setOnClickListener(this);
 		wpButton.setOnClickListener(this);
@@ -61,22 +63,31 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	}
 
 	/**
+	 * starts up the data sync service
+	 */
+	private void startSyncService() {
+		Intent i = new Intent(this, DataSyncActivity.class);
+		i.putExtra(DataSyncActivity.TYPE_KEY, DataSyncActivity.SEND);		
+		getApplicationContext().startService(i);
+	}
+
+	/**
 	 * handles the button presses.
 	 */
-
 	public void onClick(View v) {
 		int clickedId = v.getId();
 		if (clickedId == R.id.usersButton) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
 		} else if (clickedId == R.id.settingsButton) {
-			//TODO do we want this to be StartActivityForResult so we can update last sync time?
-			//Intent i = new Intent(v.getContext(), DataSyncActivity.class);
-			//startActivity(i);
-			
-			Intent i = new Intent(v.getContext(),SettingsActivity.class);
+			// TODO do we want this to be StartActivityForResult so we can
+			// update last sync time?
+			// Intent i = new Intent(v.getContext(), DataSyncActivity.class);
+			// startActivity(i);
+
+			Intent i = new Intent(v.getContext(), SettingsActivity.class);
 			startActivityForResult(i, SETTINGS_ACTIVITY);
-			//synchField.setText(R.string.syncinprogress);
+			// synchField.setText(R.string.syncinprogress);
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;

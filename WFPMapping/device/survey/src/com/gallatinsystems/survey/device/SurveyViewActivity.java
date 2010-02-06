@@ -28,7 +28,6 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
  * TODO: add logic for starting the background activity to check for updated
  * surveys
  * 
- * TODO: add logic for starting background data replication activity
  * 
  * TODO: refactor to obey suggestions here:
  * http://developer.android.com/guide/practices/design/performance.html

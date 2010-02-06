@@ -75,7 +75,7 @@ public class SettingsActivity extends ListActivity {
 					i.putExtra(DataSyncActivity.TYPE_KEY,
 							DataSyncActivity.EXPORT);
 				}
-				//startActivity(i);
+				i.putExtra(DataSyncActivity.FORCE_KEY, true);
 				getApplicationContext().startService(i);
 				// terminate this activity
 				finish();

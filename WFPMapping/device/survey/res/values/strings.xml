@@ -27,6 +27,7 @@
 	<string name="syncinprogress">Synchronizing...</string>
 	<string name="exportcomplete">Data has been exported to SD card</string>
 	<string name="uploadcomplete">Data has been sent to the server</string>
+	<string name="nothingtoexport">There is no unsent data</string>
 	<string name="exportoptlabel">Export Data</string>
 	<string name="exportoptdesc">Exports survey data to a zip file on the device\'s SD card</string>
 	<string name="sendoptlabel">Send Data</string>

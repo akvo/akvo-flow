@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -44,14 +45,16 @@ import com.gallatinsystems.survey.device.util.MultipartStream;
  * @author Christopher Fagiani
  * 
  */
-// TODO: Change this to a Service rather than an activity
 public class DataSyncActivity extends Service {
 
 	private static final String TAG = "DATA_SYNC_ACTIVITY";
+	private static final String NOTHING = "NADA";
 
 	public static final String EXPORT = "EXPORT";
 	public static final String SEND = "SEND";
+
 	public static final String TYPE_KEY = "TYPE";
+	public static final String FORCE_KEY = "FORCE";
 
 	private static final int COMPLETE_ID = 1;
 
@@ -71,53 +74,74 @@ public class DataSyncActivity extends Service {
 		return null;
 	}
 
+	/**
+	 * lifecycle method for the service. This is called by the system when the
+	 * service is started
+	 */
 	public int onStartCommand(final Intent intent, int flags, int startid) {
 		thread = new Thread(new Runnable() {
 			public void run() {
 				Bundle extras = intent.getExtras();
 				String type = extras != null ? extras.getString(TYPE_KEY)
-						: EXPORT;
-				runSync(type);
+						: SEND;
+				boolean forceFlag = extras != null ? extras.getBoolean(
+						FORCE_KEY, false) : false;
+				runSync(type, forceFlag);
 			}
 		});
 		thread.start();
-		return Service.START_FLAG_RETRY;
+		return Service.START_STICKY;
 	}
 
 	public void onCreate() {
 		super.onCreate();
 	}
 
-	private void runSync(String type) {
-		/*
-		 * Bundle extras = getIntent().getExtras(); String type = extras != null
-		 * ? extras.getString(TYPE_KEY) : EXPORT;
-		 */
+	/**
+	 * executes the data export/sync operation (based on the type passed in).
+	 * 
+	 * @param type
+	 *            - either SYNC or EXPORT
+	 */
+	private void runSync(String type, boolean forceFlag) {
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
-		String fileName = formZip();
+		String fileName = createFileName();
+		HashSet<String> idList = formZip(fileName);
 		String destName = fileName;
 		if (destName.contains("/")) {
 			destName = destName.substring(destName.lastIndexOf("/") + 1);
 		} else if (destName.contains("\\")) {
 			destName = destName.substring(destName.lastIndexOf("\\") + 1);
 		}
-		if (fileName != null && SEND.equals(type)) {
-			// TODO: may need to spawn a thread to do this
-			sendFile(fileName);
-			if (sendProcessingNotification(destName)) {
-				// TODO: call databaseAdaptor.markDataAsSent(idList)
-				fireNotification(SEND, destName);
+		if (fileName != null && idList.size() > 0) {
+			if (SEND.equals(type)) {
+				sendFile(fileName);
+				if (sendProcessingNotification(destName)) {
+					databaseAdaptor.markDataAsSent(idList);
+					fireNotification(SEND, destName);
+				} else {
+					Log
+							.e(
+									TAG,
+									"Could not update send status of data in the database. It will be resent on next execution of the service");
+				}
 			} else {
-				// TODO: handle failure?
+				fireNotification(EXPORT, destName);
 			}
-		} else if (fileName != null) {
-			fireNotification(EXPORT, destName);
+		} else if (forceFlag) {
+			fireNotification(NOTHING, null);
 		}
 		databaseAdaptor.close();
-		// finish();
 	}
 
+	/**
+	 * sends a message to the service with the file name that was just uploaded
+	 * so it can start processing the file
+	 * 
+	 * @param fileName
+	 * @return
+	 */
 	private boolean sendProcessingNotification(String fileName) {
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response = null;
@@ -150,8 +174,10 @@ public class DataSyncActivity extends Service {
 		CharSequence tickerText = null;
 		if (SEND.equals(type)) {
 			tickerText = getResources().getText(R.string.uploadcomplete);
-		} else {
+		} else if (EXPORT.equals(type)){
 			tickerText = getResources().getText(R.string.exportcomplete);
+		}else{
+			tickerText = getResources().getText(R.string.nothingtoexport);
 		}
 		long when = System.currentTimeMillis();
 		Context context = getApplicationContext();
@@ -160,7 +186,7 @@ public class DataSyncActivity extends Service {
 		Intent notificationIntent = new Intent(this, DataSyncActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(context, tickerText, fileName,
+		notification.setLatestEventInfo(context, tickerText, fileName!=null?fileName:"",
 				contentIntent);
 		mNotificationManager.notify(COMPLETE_ID, notification);
 	}
@@ -170,9 +196,9 @@ public class DataSyncActivity extends Service {
 	 * 
 	 * @return
 	 */
-	private String formZip() {
+	private HashSet<String> formZip(String fileName) {
 		Cursor data = databaseAdaptor.fetchUnsentData();
-		String fileName = null;
+		HashSet<String> respondentIds = new HashSet<String>();
 		try {
 			if (data != null) {
 				StringBuilder buf = new StringBuilder();
@@ -207,60 +233,66 @@ public class DataSyncActivity extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+					String temp = data
+							.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.DELIVERED_DATE_COL));
 					buf.append("\n");
 					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
 						imagePaths.add(value);
 					}
+					respondentIds
+							.add(data
+									.getString(data
+											.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_RESPONDENT_ID_COL)));
 				} while (data.moveToNext());
 
-				File zipFile = new File(Environment
-						.getExternalStorageDirectory().getAbsolutePath()
-						+ TEMP_FILE_NAME + System.nanoTime() + ".zip");
-				fileName = zipFile.getAbsolutePath();
+				if (respondentIds.size() > 0) {
+					File zipFile = new File(fileName);
+					fileName = zipFile.getAbsolutePath();
 
-				ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(
-						zipFile));
-				zos.putNextEntry(new ZipEntry("data.txt"));
-				String tempString = buf.toString();
-				byte[] buffer = new byte[BUF_SIZE];
-				for (int i = 0; i < tempString.getBytes().length; i += BUF_SIZE) {
-					int size = i + BUF_SIZE < tempString.getBytes().length ? BUF_SIZE
-							: tempString.getBytes().length - i;
-					tempString.getBytes(i, i + size, buffer, 0);
-					zos.write(buffer, 0, size);
-				}
-				zos.closeEntry();
-
-				// write images
-				for (int i = 0; i < imagePaths.size(); i++) {
-					try {
-						BufferedInputStream bin = new BufferedInputStream(
-								new FileInputStream(imagePaths.get(i)));
-						String name = ZIP_IMAGE_DIR;
-						if (imagePaths.get(i).contains("/")) {
-							name = name
-									+ imagePaths
-											.get(i)
-											.substring(
-													imagePaths.get(i)
-															.lastIndexOf("/") + 1);
-						} else {
-							name = name + imagePaths.get(i);
-						}
-						zos.putNextEntry(new ZipEntry(name));
-						int bytesRead = bin.read(buffer);
-						while (bytesRead > 0) {
-							zos.write(buffer, 0, bytesRead);
-							bytesRead = bin.read(buffer);
-						}
-						bin.close();
-						zos.closeEntry();
-					} catch (Exception e) {
-						Log.e(TAG, "Could not add image " + imagePaths.get(i)
-								+ " to zip: " + e.getMessage());
+					ZipOutputStream zos = new ZipOutputStream(
+							new FileOutputStream(zipFile));
+					zos.putNextEntry(new ZipEntry("data.txt"));
+					String tempString = buf.toString();
+					byte[] buffer = new byte[BUF_SIZE];
+					for (int i = 0; i < tempString.getBytes().length; i += BUF_SIZE) {
+						int size = i + BUF_SIZE < tempString.getBytes().length ? BUF_SIZE
+								: tempString.getBytes().length - i;
+						tempString.getBytes(i, i + size, buffer, 0);
+						zos.write(buffer, 0, size);
 					}
+					zos.closeEntry();
+
+					// write images
+					for (int i = 0; i < imagePaths.size(); i++) {
+						try {
+							BufferedInputStream bin = new BufferedInputStream(
+									new FileInputStream(imagePaths.get(i)));
+							String name = ZIP_IMAGE_DIR;
+							if (imagePaths.get(i).contains("/")) {
+								name = name
+										+ imagePaths.get(i).substring(
+												imagePaths.get(i).lastIndexOf(
+														"/") + 1);
+							} else {
+								name = name + imagePaths.get(i);
+							}
+							zos.putNextEntry(new ZipEntry(name));
+							int bytesRead = bin.read(buffer);
+							while (bytesRead > 0) {
+								zos.write(buffer, 0, bytesRead);
+								bytesRead = bin.read(buffer);
+							}
+							bin.close();
+							zos.closeEntry();
+						} catch (Exception e) {
+							Log.e(TAG, "Could not add image "
+									+ imagePaths.get(i) + " to zip: "
+									+ e.getMessage());
+						}
+					}
+					zos.close();
 				}
-				zos.close();
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not save zip: " + e.getMessage());
@@ -270,8 +302,7 @@ public class DataSyncActivity extends Service {
 				data.close();
 			}
 		}
-
-		return fileName;
+		return respondentIds;
 	}
 
 	/**
@@ -301,7 +332,6 @@ public class DataSyncActivity extends Service {
 				DataInputStream inStream = new DataInputStream(conn
 						.getInputStream());
 				String str;
-
 				while ((str = inStream.readLine()) != null) {
 					Log.e(TAG, "Server Response" + str);
 				}
@@ -316,6 +346,15 @@ public class DataSyncActivity extends Service {
 			return false;
 		}
 		return true;
+	}
 
+	/**
+	 * constructs a filename for the data file
+	 * 
+	 * @return
+	 */
+	private String createFileName() {
+		return Environment.getExternalStorageDirectory().getAbsolutePath()
+				+ TEMP_FILE_NAME + System.nanoTime() + ".zip";
 	}
 }
