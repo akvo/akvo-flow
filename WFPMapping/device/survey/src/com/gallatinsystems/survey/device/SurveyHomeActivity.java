@@ -79,12 +79,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		if (clickedId == R.id.usersButton) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
-		} else if (clickedId == R.id.settingsButton) {
-			// TODO do we want this to be StartActivityForResult so we can
-			// update last sync time?
-			// Intent i = new Intent(v.getContext(), DataSyncActivity.class);
-			// startActivity(i);
-
+		} else if (clickedId == R.id.settingsButton) {			
 			Intent i = new Intent(v.getContext(), SettingsActivity.class);
 			startActivityForResult(i, SETTINGS_ACTIVITY);
 			// synchField.setText(R.string.syncinprogress);

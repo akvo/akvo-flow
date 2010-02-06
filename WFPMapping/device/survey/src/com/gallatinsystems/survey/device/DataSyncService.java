@@ -1,10 +1,11 @@
 package com.gallatinsystems.survey.device;
 
 import java.io.BufferedInputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -204,7 +205,7 @@ public class DataSyncService extends Service {
 		Cursor data = databaseAdaptor.fetchUnsentData();
 		HashSet<String> respondentIds = new HashSet<String>();
 		try {
-			if (data != null) {
+			if (data != null && data.isFirst()) {
 				StringBuilder buf = new StringBuilder();
 				ArrayList<String> imagePaths = new ArrayList<String>();
 				do {
@@ -236,10 +237,7 @@ public class DataSyncService extends Service {
 							.append(
 									data
 											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
-					String temp = data
-							.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.DELIVERED_DATE_COL));
+													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));					
 					buf.append("\n");
 					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
 						imagePaths.add(value);
@@ -299,7 +297,7 @@ public class DataSyncService extends Service {
 				}
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Could not save zip: " + e.getMessage());
+			Log.e(TAG, "Could not save zip: " + e.getMessage(),e);
 			fileName = null;
 		} finally {
 			if (data != null) {
@@ -333,8 +331,8 @@ public class DataSyncService extends Service {
 			stream.close();
 			// TODO: check error code!
 			try {
-				DataInputStream inStream = new DataInputStream(conn
-						.getInputStream());
+				BufferedReader inStream = new BufferedReader(
+						new InputStreamReader(conn.getInputStream()));
 				String str;
 				while ((str = inStream.readLine()) != null) {
 					Log.e(TAG, "Server Response" + str);

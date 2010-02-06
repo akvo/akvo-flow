@@ -3,6 +3,8 @@ package com.gallatinsystems.survey.device.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.BroadcastDispatcher;
@@ -40,7 +43,6 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	private HashMap<String, QuestionView> questionMap;
 	private SurveyDbAdapter databaseAdaptor;
 	private ScrollView scrollView;
-
 
 	/**
 	 * stores the context and questionGroup to member fields
@@ -139,28 +141,82 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			public void onClick(View v) {
 				if (questionMap != null) {
 					saveState(context.getRespondentId());
-					databaseAdaptor.submitResponses(context
-							.getRespondentId().toString());
-					// while in general we avoid the enhanced for-loop in the
-					// Android VM, we can use it here because we would still
-					// need the iterator
-					for (QuestionView view : questionMap.values()) {
-						view.resetQuestion();
+					ArrayList<Question> missingQuestions = context
+							.checkMandatory();
+					if (missingQuestions.size() == 0) {
+						databaseAdaptor.submitResponses(context
+								.getRespondentId().toString());
+
+						// while in general we avoid the enhanced for-loop in
+						// the
+						// Android VM, we can use it here because we would still
+						// need the iterator
+						for (QuestionView view : questionMap.values()) {
+							view.resetQuestion();
+						}
+						// create a new response object
+						context.setRespondentId(databaseAdaptor
+								.createSurveyRespondent(context.getSurveyId()
+										.toString(), context.getUserId()));
+
+						// send a broadcast message indicating new data is
+						// available
+						Intent i = new Intent(
+								BroadcastDispatcher.DATA_AVAILABLE_INTENT);
+						context.sendBroadcast(i);
+						scrollView.scrollTo(0, 0);
+					} else {
+						AlertDialog.Builder builder = new AlertDialog.Builder(v
+								.getContext());
+						TextView tipText = new TextView(v.getContext());
+						builder.setTitle(R.string.cannotsave);
+						tipText.setText(R.string.mandatorywarning);
+						builder.setView(tipText);
+						builder.setPositiveButton("Ok",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								});
+						builder.show();
 					}
-					// create a new response object
-					context.setRespondentId(databaseAdaptor
-							.createSurveyRespondent(context.getSurveyId()
-									.toString(), context.getUserId()));
-					
-					//send a broadcast message indicating new data is available
-					Intent i = new Intent(BroadcastDispatcher.DATA_AVAILABLE_INTENT);
-					context.sendBroadcast(i);
-					scrollView.scrollTo(0, 0);
 				}
 			}
 		});
 		loadState(context.getRespondentId());
 		return scrollView;
+	}
+
+	/**
+	 * checks to make sure the mandatory questions in this tab have a response
+	 * 
+	 * @return
+	 */
+	public ArrayList<Question> checkMandatoryQuestions() {
+		ArrayList<Question> missingQuestions = new ArrayList<Question>();
+		// we have to check if the map is null or empty since the views aren't
+		// created until the tab is clicked the first time
+		if (questionMap == null || questionMap.size() == 0) {
+			// add all the mandatory questions
+			ArrayList<Question> uninitializedQuesitons = questionGroup
+					.getQuestions();
+			for (int i = 0; i < uninitializedQuesitons.size(); i++) {
+				if (uninitializedQuesitons.get(i).isMandatory()) {
+					missingQuestions.add(uninitializedQuesitons.get(i));
+				}
+			}
+		} else {
+			for (QuestionView view : questionMap.values()) {
+				if (view.getQuestion().isMandatory()) {
+					QuestionResponse resp = view.getResponse();
+					if (resp == null || !resp.isValid()) {
+						missingQuestions.add(view.getQuestion());
+					}
+				}
+			}
+		}
+		return missingQuestions;
 	}
 
 	/**

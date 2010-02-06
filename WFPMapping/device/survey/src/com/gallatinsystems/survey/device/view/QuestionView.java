@@ -53,7 +53,11 @@ public class QuestionView extends TableLayout implements
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
 		questionText.setWidth(DEFAULT_WIDTH);
-		questionText.setText(q.getText());
+		String text = q.getText();
+		if (q.isMandatory()) {
+			text = text + "*";
+		}
+		questionText.setText(text);
 		tr.addView(questionText);
 		// if there is a tip for this question, construct an alert dialog box
 		// with the data
@@ -170,7 +174,8 @@ public class QuestionView extends TableLayout implements
 	}
 
 	/**
-	 * this method should be overridden by subclasses so they can record input in a QuestionResponse object
+	 * this method should be overridden by subclasses so they can record input
+	 * in a QuestionResponse object
 	 */
 	public void captureResponse() {
 		// NO OP
@@ -187,7 +192,7 @@ public class QuestionView extends TableLayout implements
 	}
 
 	public QuestionResponse getResponse() {
-		if(response == null){
+		if (response == null) {
 			captureResponse();
 		}
 		return response;

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.TabHost;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
@@ -156,6 +157,21 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 	}
 
+	/**
+	 * checks if all the mandatory questions (on all tabs) have responses
+	 * 
+	 * @return
+	 */
+	public ArrayList<Question> checkMandatory() {
+		ArrayList<Question> missingQuestions = new ArrayList<Question>();
+		if (tabContentFactories != null) {
+			for (int i = 0; i < tabContentFactories.size(); i++) {
+				missingQuestions.addAll(tabContentFactories.get(i).checkMandatoryQuestions());				
+			}
+		}
+		return missingQuestions;
+	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -172,6 +188,7 @@ public class SurveyViewActivity extends TabActivity implements
 				tab.saveState(respondentId);
 			}
 		}
+		databaseAdaptor.close();
 	}
 
 	@Override

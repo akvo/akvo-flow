@@ -15,17 +15,17 @@
 			<text>Name of Community?</text>
 			<validationRule validationType="name" maxLength="50"/>
 		</question>
-		<question id="q3" order="3" mandatory="true" type="photo">
+		<question id="q3" order="3" mandatory="false" type="photo">
 			<text>Water Point Photo</text>
 		</question>
-		<question id="q4" order="4" mandatory="true" type="geo">
+		<question id="q4" order="4" mandatory="false" type="geo">
 			<text>Location</text>
 		</question>
-		<question id="q5" order="5" mandatory="true" type="free">
+		<question id="q5" order="5" mandatory="false" type="free">
 			<text>Year of Construction?</text>
 			<validationRule validationType="numeric" maxLength="4" allowDecimal="false" signed="false"/>
 		</question>
-		<question id="q6" order="6" mandatory="true" type="option">
+		<question id="q6" order="6" mandatory="false" type="option">
 			<text>Source?</text>
 			<options allowOther="true">
 				<option value="s">Spring</option>
@@ -36,7 +36,7 @@
 				<option value="p">Piped Supply</option>
 			</options>
 		</question>
-		<question id="q7" order="7" mandatory="true" type="option">
+		<question id="q7" order="7" mandatory="false" type="option">
 			<text>Collection Point?</text>
 			<options allowOther="false">
 				<option value="ph">Public Handpump</option>
@@ -46,7 +46,7 @@
 				</option>
 			</options>
 		</question>
-		<question id="q8" order="8" mandatory="true" type="option">
+		<question id="q8" order="8" mandatory="false" type="option">
 			<text>What is the operational status of the improved water
 				system?</text>
 			<options allowOther="false">
@@ -61,7 +61,7 @@
 	</questionGroup>
 	<questionGroup order="2">
 		<heading>Sanitation</heading>
-		<question id="q19" order="1" mandatory="true" type="option">
+		<question id="q19" order="1" mandatory="false" type="option">
 			<text>Is there improved sanitation?</text>
 			<options allowOther="false">
 				<option value="yes">Yes</option>
@@ -69,7 +69,7 @@
 				<option value="dontknow">Don't Know</option>
 			</options>
 		</question>
-		<question id="q20" order="2" mandatory="true" type="option">
+		<question id="q20" order="2" mandatory="false" type="option">
 			<dependency question="q19" answer-value="no" />
 			<text>Are there any plans for the community to get improved
 				sanitation?</text>
@@ -79,7 +79,7 @@
 				<option value="dontknow">Don't Know</option>
 			</options>
 		</question>
-		<question id="q21" order="3" mandatory="true" type="free">
+		<question id="q21" order="3" mandatory="false" type="free">
 			<dependency question="q19" answer-value="yes" />
 			<text>Number of households with improved sanitation systems?
 			</text>

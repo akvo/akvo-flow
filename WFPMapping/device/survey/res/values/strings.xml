@@ -36,4 +36,6 @@
 	<string name="poweroptdesc">Toggles Wi-Fi to better manage battery life.</string>
 	<string name="otherinstructions">Please enter a description</string>
 	<string name="okbutton">OK</string>
+	<string name="mandatorywarning">You must answer all questions marked with a *</string>
+	<string name="cannotsave">Cannot submit responses</string>
 </resources>

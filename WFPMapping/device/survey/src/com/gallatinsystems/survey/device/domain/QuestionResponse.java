@@ -36,6 +36,17 @@ public class QuestionResponse {
 		questionId = null;
 	}
 
+	public boolean isValid() {
+		if (!OTHER_TYPE.equals(type)) {
+			// if the response isn't "OTHER" then we have to check that it has a
+			// value that isn't just a blank
+			if (value == null || value.trim().length() == 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public String getQuestionId() {
 		return questionId;
 	}

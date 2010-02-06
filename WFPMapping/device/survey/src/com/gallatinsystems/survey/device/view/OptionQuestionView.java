@@ -66,7 +66,7 @@ public class OptionQuestionView extends QuestionView {
 				for (int i = 0; i < options.size(); i++) {
 					optionArray[i + 1] = options.get(i).getText();
 				}
-				//put the "other" option in the last slot in the array
+				// put the "other" option in the last slot in the array
 				if (question.isAllowOther()) {
 					optionArray[optionArray.length - 1] = OTHER_TEXT;
 				}
@@ -76,7 +76,7 @@ public class OptionQuestionView extends QuestionView {
 				optionAdapter
 						.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				spinner.setAdapter(optionAdapter);
-				//set the selection to the first element
+				// set the selection to the first element
 				spinner.setSelection(0);
 
 				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -94,6 +94,10 @@ public class OptionQuestionView extends QuestionView {
 												QuestionResponse.OTHER_TYPE)) {
 									displayOtherDialog();
 								}
+							} else if (position == 0) {
+								setResponse(new QuestionResponse("",
+										QuestionResponse.VALUE_TYPE, question
+												.getId()));
 							} else {
 								setResponse(new QuestionResponse(question
 										.getOptions()
