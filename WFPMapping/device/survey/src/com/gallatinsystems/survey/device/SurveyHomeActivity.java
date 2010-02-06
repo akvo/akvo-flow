@@ -92,6 +92,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 				}
 				Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
 				i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
+				i.putExtra(SurveyViewActivity.USER_ID, currentUserId);
 				startActivityForResult(i, SURVEY_ACTIVITY);
 			} else {
 				// if the current user is null, we can't enter survey mode

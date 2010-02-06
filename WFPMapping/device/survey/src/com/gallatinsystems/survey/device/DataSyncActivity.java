@@ -67,30 +67,32 @@ public class DataSyncActivity extends Service {
 	private static final String ZIP_IMAGE_DIR = "images/";
 	private Thread thread;
 
-	
 	public IBinder onBind(Intent intent) {
-	  return null;
+		return null;
 	}
 
-	public int onStartCommand(final Intent intent, int flags, int startid){		
-		thread = new Thread(new Runnable() {					
+	public int onStartCommand(final Intent intent, int flags, int startid) {
+		thread = new Thread(new Runnable() {
 			public void run() {
 				Bundle extras = intent.getExtras();
-				String type = extras != null ? extras.getString(TYPE_KEY) : EXPORT;		
-				runSync(type);				
+				String type = extras != null ? extras.getString(TYPE_KEY)
+						: EXPORT;
+				runSync(type);
 			}
 		});
 		thread.start();
 		return Service.START_FLAG_RETRY;
 	}
-	
+
 	public void onCreate() {
 		super.onCreate();
 	}
-	
-	private void runSync(String type){
-		/*Bundle extras = getIntent().getExtras();
-		String type = extras != null ? extras.getString(TYPE_KEY) : EXPORT;*/
+
+	private void runSync(String type) {
+		/*
+		 * Bundle extras = getIntent().getExtras(); String type = extras != null
+		 * ? extras.getString(TYPE_KEY) : EXPORT;
+		 */
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
 		String fileName = formZip();
@@ -106,14 +108,14 @@ public class DataSyncActivity extends Service {
 			if (sendProcessingNotification(destName)) {
 				// TODO: call databaseAdaptor.markDataAsSent(idList)
 				fireNotification(SEND, destName);
-			}else{
-				//TODO: handle failure?
+			} else {
+				// TODO: handle failure?
 			}
 		} else if (fileName != null) {
 			fireNotification(EXPORT, destName);
 		}
 		databaseAdaptor.close();
-		//finish();
+		// finish();
 	}
 
 	private boolean sendProcessingNotification(String fileName) {
@@ -173,7 +175,6 @@ public class DataSyncActivity extends Service {
 		String fileName = null;
 		try {
 			if (data != null) {
-				//startManagingCursor(data);
 				StringBuilder buf = new StringBuilder();
 				ArrayList<String> imagePaths = new ArrayList<String>();
 				do {
@@ -194,13 +195,24 @@ public class DataSyncActivity extends Service {
 													.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_COL)));
 					buf.append(",").append(type);
 					buf.append(",").append(value);
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
 					buf.append("\n");
 					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
 						imagePaths.add(value);
 					}
 				} while (data.moveToNext());
-								
-				
+
 				File zipFile = new File(Environment
 						.getExternalStorageDirectory().getAbsolutePath()
 						+ TEMP_FILE_NAME + System.nanoTime() + ".zip");
@@ -253,8 +265,8 @@ public class DataSyncActivity extends Service {
 		} catch (Exception e) {
 			Log.e(TAG, "Could not save zip: " + e.getMessage());
 			fileName = null;
-		}finally{
-			if(data != null){
+		} finally {
+			if (data != null) {
 				data.close();
 			}
 		}

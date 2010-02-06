@@ -148,7 +148,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 					// TODO: this probably needs to move.
 					context.setRespondentId(databaseAdaptor
 							.createSurveyRespondent(context.getSurveyId()
-									.toString()));
+									.toString(), context.getUserId()));
 					scrollView.scrollTo(0, 0);
 				}
 			}

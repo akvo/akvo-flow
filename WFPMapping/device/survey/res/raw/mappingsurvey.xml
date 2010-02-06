@@ -11,12 +11,9 @@
 		<question id="qm2" order="2" mandatory="true" type="photo">
 			<text>Water Point Photo</text>
 		</question>
-		<question id="qm2a" order="3" mandatory="true" type="free">
-				<text>Photo caption</text>
-		</question>
 		<question id="qm3" order="3" mandatory="true" type="free">
-			<text>Type of water point technology</text>
-		</question>
+				<text>Photo caption</text>
+		</question>		
 		<question id="qm4" order="4" mandatory="true" type="free">
 			<text>Year of Construction?</text>
 			<validationRule validationType="numeric" maxLength="4"

@@ -40,6 +40,7 @@ public class SurveyViewActivity extends TabActivity implements
 		QuestionInteractionListener {
 
 	public static final String SURVEY_RESOURCE_ID = "RESID";
+	public static final String USER_ID = "UID";
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int GEO_ACTIVITY_REQUEST = 2;
@@ -49,6 +50,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private SurveyDbAdapter databaseAdaptor;
 	private Long surveyId;
 	private Long respondentId;
+	private String userId;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -62,6 +64,11 @@ public class SurveyViewActivity extends TabActivity implements
 
 		Bundle extras = getIntent().getExtras();
 		int resourceID = extras != null ? extras.getInt(SURVEY_RESOURCE_ID) : 0;
+		userId = extras != null ? extras.getString(USER_ID) : null;
+		if (userId == null) {
+			userId = savedInstanceState != null ? savedInstanceState
+					.getString(SurveyDbAdapter.USER_FK_COL) : null;
+		}
 
 		// TODO: fetch the resource from the server
 		Survey survey = null;
@@ -78,8 +85,8 @@ public class SurveyViewActivity extends TabActivity implements
 				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
 
 		if (respondentId == null) {
-			respondentId = databaseAdaptor.createOrLoadSurveyRespondent(surveyId
-					.toString());
+			respondentId = databaseAdaptor.createOrLoadSurveyRespondent(
+					surveyId.toString(), userId.toString());
 		}
 
 		if (survey != null) {
@@ -112,6 +119,7 @@ public class SurveyViewActivity extends TabActivity implements
 
 				try {
 					/*
+					 * //this will resolve put the image in the media browser
 					 * Uri u =
 					 * Uri.parse(android.provider.MediaStore.Images.Media
 					 * .insertImage(getContentResolver(), f .getAbsolutePath(),
@@ -154,6 +162,7 @@ public class SurveyViewActivity extends TabActivity implements
 		super.onSaveInstanceState(outState);
 		outState.putLong(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
 		outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
+		outState.putString(SurveyDbAdapter.USER_FK_COL, userId);
 	}
 
 	@Override
@@ -187,4 +196,9 @@ public class SurveyViewActivity extends TabActivity implements
 	public Long getRespondentId() {
 		return respondentId;
 	}
+
+	public String getUserId() {
+		return userId;
+	}
+
 }
