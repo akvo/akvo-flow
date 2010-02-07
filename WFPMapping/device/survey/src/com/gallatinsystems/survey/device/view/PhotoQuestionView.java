@@ -27,7 +27,7 @@ public class PhotoQuestionView extends QuestionView implements OnClickListener {
 	public static final String PHOTO_FILE_KEY = "filename";
 
 	public PhotoQuestionView(Context context, Question q) {
-		super(context, q);
+		super(context,q);
 		init();
 	}
 
@@ -38,7 +38,7 @@ public class PhotoQuestionView extends QuestionView implements OnClickListener {
 		photoButton.setText(R.string.takephoto);
 		photoButton.setOnClickListener(this);
 		completeIcon = new ImageView(context);
-		completeIcon.setImageResource(android.R.drawable.ic_input_add);
+		completeIcon.setImageResource(R.drawable.checkmark);
 		completeIcon.setVisibility(View.GONE);
 		tr.addView(photoButton);
 		tr.addView(completeIcon);

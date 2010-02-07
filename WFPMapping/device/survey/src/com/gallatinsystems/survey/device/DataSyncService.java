@@ -175,8 +175,7 @@ public class DataSyncService extends Service {
 	private void fireNotification(String type, String fileName) {
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		// TODO: get a better icon
-		int icon = android.R.drawable.ic_dialog_alert;
+		int icon = R.drawable.info;
 		CharSequence tickerText = null;
 		if (SEND.equals(type)) {
 			tickerText = getResources().getText(R.string.uploadcomplete);
