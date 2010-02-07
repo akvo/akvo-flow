@@ -192,7 +192,10 @@ public class QuestionView extends TableLayout implements
 	}
 
 	public QuestionResponse getResponse() {
-		if (response == null) {
+		if (response == null
+				|| (QuestionResponse.VALUE_TYPE.equals(response.getType()) && (response
+						.getValue() == null || response.getValue().trim()
+						.length() == 0))) {
 			captureResponse();
 		}
 		return response;

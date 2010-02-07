@@ -94,16 +94,16 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 				String surveyId = "1";
 				if (selected.equals(HomeMenuViewAdapter.MAP_OP)) {
 					resourceID = R.raw.mappingsurvey;
-					surveyId = "1";
+					surveyId = "5";
 				} else if (selected.equals(HomeMenuViewAdapter.WPS_OP)) {
 					resourceID = R.raw.testsurvey;
-					surveyId = "2";
+					surveyId = "6";
 				} else if (selected.equals(HomeMenuViewAdapter.HHS_OP)) {
 					resourceID = R.raw.testsurvey;
-					surveyId = "3";
+					surveyId = "7";
 				} else if (selected.equals(HomeMenuViewAdapter.PUBS_OP)) {
 					resourceID = R.raw.testsurvey;
-					surveyId = "4";
+					surveyId = "8";
 				}
 				Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
 				i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
