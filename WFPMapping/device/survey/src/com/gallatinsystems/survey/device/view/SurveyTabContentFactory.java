@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -38,6 +39,7 @@ import com.gallatinsystems.survey.device.domain.QuestionResponse;
  */
 public class SurveyTabContentFactory implements TabContentFactory {
 
+	private static final int BUTTON_WIDTH = 200;
 	private QuestionGroup questionGroup;
 	private SurveyViewActivity context;
 	private HashMap<String, QuestionView> questionMap;
@@ -115,12 +117,15 @@ public class SurveyTabContentFactory implements TabContentFactory {
 
 		// create save/clear buttons
 		TableRow buttonRow = new TableRow(context);
+		LinearLayout group = new LinearLayout(context);		
 		Button saveButton = new Button(context);
 		saveButton.setText(R.string.savebutton);
-		buttonRow.addView(saveButton);
+		saveButton.setWidth(BUTTON_WIDTH);
+		group.addView(saveButton);
 		Button clearButton = new Button(context);
 		clearButton.setText(R.string.clearbutton);
-		buttonRow.addView(clearButton);
+		group.addView(clearButton);
+		buttonRow.addView(group);
 		table.addView(buttonRow);
 
 		// set up actions on button press
