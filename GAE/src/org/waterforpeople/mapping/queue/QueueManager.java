@@ -1,10 +1,17 @@
 package org.waterforpeople.mapping.queue;
 
+
+
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Logger;
+
+import org.waterforpeople.mapping.domain.ProcessingAction;
 
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.*;
+import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 
 public class QueueManager {
@@ -20,5 +27,10 @@ public class QueueManager {
 		log.info(url("/app_worker/task").param("action", "process").param("fileName", fileName).toString());
 		queue.add(url("/app_worker/task").param("action", "process").param("fileName", fileName));
 		log.info("submiting task for fileName: " + fileName);
+	}
+	
+	public void submitNewTaskToQueue(ProcessingAction pa){
+		Queue queue = QueueFactory.getDefaultQueue();
+		
 	}
 }

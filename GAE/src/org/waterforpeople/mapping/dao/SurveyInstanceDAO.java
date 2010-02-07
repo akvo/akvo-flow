@@ -15,7 +15,7 @@ public class SurveyInstanceDAO {
 	PersistenceManager pm;
 	SurveyInstance si;
 
-	public Boolean save(Date collectionDate, DeviceFiles deviceFile,
+	public Long save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, ArrayList<String> unparsedLines) {
 		Boolean savedSuccessFlag = false;
 		si = new SurveyInstance();
@@ -36,7 +36,7 @@ public class SurveyInstanceDAO {
 		}
 		si.setQuestionAnswersStore(qasList);
 		pm.makePersistent(si);
-		return savedSuccessFlag;
+		return si.getId();
 	}
 
 	public SurveyInstanceDAO() {

@@ -5,11 +5,16 @@ import java.io.IOException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.DeviceFiles;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
 public class SurveyManagerServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -20,12 +25,14 @@ public class SurveyManagerServlet extends HttpServlet {
 		try {
 			if (si != null) {
 				resp.getWriter().println(si.toString());
-				DeviceFiles df =si.getDeviceFile();
+				DeviceFiles df = si.getDeviceFile();
 				resp.getWriter().println(df.toString());
-				for(QuestionAnswerStore qas :si.getQuestionAnswersStore()){
+				for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
 					resp.getWriter().println(qas.toString());
-					resp.getWriter().println("----------SurveyID assoced with QuestionAnswer: " + qas.getSurveyInstance().getId());
-				}	
+					resp.getWriter().println(
+							"----------SurveyID assoced with QuestionAnswer: "
+									+ qas.getSurveyInstance().getId());
+				}
 			} else {
 				resp.getWriter().println("No Survey found for id: " + surveyId);
 			}
@@ -33,6 +40,15 @@ public class SurveyManagerServlet extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
+		String action = req.getParameter("action");
+		String surveyDoc = req.getParameter("surveyDoc");
+		// Survey survey = new SurveyXMLAdapter().unmarshall(surveyDoc);
+		SurveyDAO surveyDAO = new SurveyDAO();
+		surveyDAO.save(surveyDoc);
+		resp.setContentType("text/plain");
 	}
 
 }

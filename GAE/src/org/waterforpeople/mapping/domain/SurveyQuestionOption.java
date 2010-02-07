@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -9,47 +8,35 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Key;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class CaptionDefinition {
+public class SurveyQuestionOption {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
-
-	private String captionVariableName = null;
-	private String captionValue = null;
-	private Date captionEffectiveStartDate = null;
-	private Date captionEffectiveEndDate = null;
-	public Long getId() {
-		return id;
+	private Key key;
+	@Persistent
+	private String value;
+	@Persistent
+	private String text;
+	public Key getKey() {
+		return key;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setKey(Key key) {
+		this.key = key;
 	}
-	public String getCaptionVariableName() {
-		return captionVariableName;
+	public String getValue() {
+		return value;
 	}
-	public void setCaptionVariableName(String captionVariableName) {
-		this.captionVariableName = captionVariableName;
+	public void setValue(String value) {
+		this.value = value;
 	}
-	public String getCaptionValue() {
-		return captionValue;
+	public String getText() {
+		return text;
 	}
-	public void setCaptionValue(String captionValue) {
-		this.captionValue = captionValue;
+	public void setText(String text) {
+		this.text = text;
 	}
-	public Date getCaptionEffectiveStartDate() {
-		return captionEffectiveStartDate;
-	}
-	public void setCaptionEffectiveStartDate(Date captionEffectiveStartDate) {
-		this.captionEffectiveStartDate = captionEffectiveStartDate;
-	}
-	public Date getCaptionEffectiveEndDate() {
-		return captionEffectiveEndDate;
-	}
-	public void setCaptionEffectiveEndDate(Date captionEffectiveEndDate) {
-		this.captionEffectiveEndDate = captionEffectiveEndDate;
-	}
-	
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

@@ -49,6 +49,9 @@ public class AccessPoint {
 	private String waterPointPhotoCaption = null;
 	@Persistent
 	private String description = null;
+	
+	public AccessPoint(){
+	}
 
 	public String getCollectionDate() {
 		return collectionDate;

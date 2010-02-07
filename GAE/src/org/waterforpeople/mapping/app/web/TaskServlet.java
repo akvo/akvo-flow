@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,9 +27,16 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.DeviceFiles;
+import org.waterforpeople.mapping.domain.GeoCoordinates;
+import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
+import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
+
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class TaskServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(TaskServlet.class
@@ -48,9 +59,23 @@ public class TaskServlet extends HttpServlet {
 					 * back to S3
 					 */
 					log.info("	Task->processFile");
-					processFile(fileName);
-
+					ArrayList<String> surveyIds = processFile(fileName);
+					for (String ids : surveyIds) {
+						ProcessingAction pa =dispatch(ids);
+						Queue queue = QueueFactory.getDefaultQueue();
+						TaskOptions options = url(pa.getDispatchURL());
+						Iterator it = pa.getParams().keySet().iterator();
+						while(it.hasNext()){
+						    options.param("key",(String)it.next());
+						}
+						queue.add(options);	
+					}
 				}
+			}else if(action.equals("addAccessPoints")){
+				Long surveyId = new Long(req.getParameter("surveyId"));
+				log.info("Received Task Queue calls for surveyId: " + surveyId);
+				AccessPointHelper aph = new AccessPointHelper();
+				aph.processSurveyInstance(surveyId);
 			}
 		}
 	}
@@ -61,29 +86,32 @@ public class TaskServlet extends HttpServlet {
 		TaskServlet ts = new TaskServlet();
 		ts.processFile(null);
 	}
-	
+
 	private URL url;
 
-	private void processFile(String fileName) {
+	private ArrayList<String> processFile(String fileName) {
+		ArrayList<String> surveyIds = new ArrayList<String>();
 		try {
-			url = new URL(
-					"http://waterforpeople.s3.amazonaws.com/devicezip/"+fileName);
+			url = new URL("http://waterforpeople.s3.amazonaws.com/devicezip/"
+					+ fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
 			ArrayList<String> unparsedLines = extractDataFromZip(zis);
 			Long userID = 1L;
-			
-			//Object obj = marshallDataToObject(lines, AccessPoint.class
-			//		.getName());
-			//saveObject(obj);
+
+			// Object obj = marshallDataToObject(lines, AccessPoint.class
+			// .getName());
+			// saveObject(obj);
 			DeviceFiles deviceFile = new DeviceFiles();
 			deviceFile.setProcessDate(getNowDateTimeFormatted());
 			deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
 			deviceFile.setURI(url.toURI().toString());
 			Date collectionDate = new Date();
 			SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-			
-			siDAO.save(collectionDate, deviceFile, userID, unparsedLines);
+
+			Long surveyId = siDAO.save(collectionDate, deviceFile, userID,
+					unparsedLines);
+			surveyIds.add(surveyId.toString());
 			zis.close();
 		} catch (MalformedURLException e) {
 			// ...
@@ -92,6 +120,7 @@ public class TaskServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return surveyIds;
 	}
 
 	private ArrayList<String> extractDataFromZip(ZipInputStream zis)
@@ -117,7 +146,7 @@ public class TaskServlet extends HttpServlet {
 			} else {
 				S3Driver s3 = new S3Driver();
 				String[] imageParts = entry.getName().split("/");
-				//comment out while testing locally
+				// comment out while testing locally
 				s3.uploadFile("dru-test", imageParts[1], out.toByteArray());
 				out.close();
 			}
@@ -126,10 +155,8 @@ public class TaskServlet extends HttpServlet {
 
 		return lines;
 	}
-	
-	
-	
-//to get rid of
+
+	// to get rid of
 	private Object marshallDataToObject(ArrayList<String> lines,
 			String classname) {
 
@@ -159,7 +186,8 @@ public class TaskServlet extends HttpServlet {
 				} else if (line.contains("qm3")) {
 					// geo
 					String[] splitContents = line.split(",");
-					GeoCoordinate geo = extractGeoCoordinate(splitContents[3]);
+					GeoCoordinates geo = new GeoCoordinates()
+							.extractGeoCoordinate(splitContents[3]);
 					log.info(geo.toString());
 					lat = geo.getLatitude();
 					lon = geo.getLongitude();
@@ -182,7 +210,6 @@ public class TaskServlet extends HttpServlet {
 		String dateTime = dateFormat.format(date);
 		return dateTime;
 	}
-	
 
 	private void saveObject(Object obj) throws URISyntaxException {
 		pm = PMF.get().getPersistenceManager();
@@ -204,55 +231,15 @@ public class TaskServlet extends HttpServlet {
 
 	PersistenceManager pm = null;
 
-	private GeoCoordinate extractGeoCoordinate(String line) {
-		GeoCoordinate geo = new GeoCoordinate();
-		String[] coordinates = line.split("\\|");
-		geo.setLatitude(new Double(coordinates[0]));
-		geo.setLongitude(new Double(coordinates[1]));
-		geo.setAltitude(new Double(coordinates[2]));
-		return geo;
+	private ProcessingAction dispatch(String surveyId) {
+		ProcessingAction pa = new ProcessingAction();
+
+		HashMap params = new HashMap();
+
+		pa.setAction("addAccessPoint");
+		pa.setDispatchURL("/worker/task");
+		pa.addParam("surveyId", surveyId);
+		return pa;
 	}
-	
 
-	class GeoCoordinate {
-		private Double latitude;
-		private Double longitude;
-		private Double altitude;
-
-		public Double getLatitude() {
-			return latitude;
-		}
-
-		public void setLatitude(Double latitude) {
-			this.latitude = latitude;
-		}
-
-		public Double getLongitude() {
-			return longitude;
-		}
-
-		public void setLongitude(Double longitude) {
-			this.longitude = longitude;
-		}
-
-		public Double getAltitude() {
-			return altitude;
-		}
-
-		public void setAltitude(Double altitude) {
-			this.altitude = altitude;
-		}
-
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("GeoCoordinates:");
-			sb.append("\n--Latitude: " + this.latitude);
-			sb.append("\n--Longitude: " + this.longitude);
-			sb.append("\n--Altitude: " + this.altitude);
-			return sb.toString();
-		}
-
-	}
-	
-	
 }

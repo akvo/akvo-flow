@@ -1,7 +1,7 @@
 package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
-import java.util.Date;
+import java.util.ArrayList;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -9,47 +9,43 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Key;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class CaptionDefinition {
+public class SurveyQuestionGroup {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
-
-	private String captionVariableName = null;
-	private String captionValue = null;
-	private Date captionEffectiveStartDate = null;
-	private Date captionEffectiveEndDate = null;
-	public Long getId() {
-		return id;
+	private Key key;
+	@Persistent
+	private Long groupOrder;
+	@Persistent
+	private String header;
+	@Persistent
+	private ArrayList<SurveyQuestion> surveyQuestions;
+	public Key getKey() {
+		return key;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setKey(Key key) {
+		this.key = key;
 	}
-	public String getCaptionVariableName() {
-		return captionVariableName;
+	public Long getGroupOrder() {
+		return groupOrder;
 	}
-	public void setCaptionVariableName(String captionVariableName) {
-		this.captionVariableName = captionVariableName;
+	public void setGroupOrder(Long groupOrder) {
+		this.groupOrder = groupOrder;
 	}
-	public String getCaptionValue() {
-		return captionValue;
+	public String getHeader() {
+		return header;
 	}
-	public void setCaptionValue(String captionValue) {
-		this.captionValue = captionValue;
+	public void setHeader(String header) {
+		this.header = header;
 	}
-	public Date getCaptionEffectiveStartDate() {
-		return captionEffectiveStartDate;
+	public ArrayList<SurveyQuestion> getSurveyQuestions() {
+		return surveyQuestions;
 	}
-	public void setCaptionEffectiveStartDate(Date captionEffectiveStartDate) {
-		this.captionEffectiveStartDate = captionEffectiveStartDate;
+	public void setSurveyQuestions(ArrayList<SurveyQuestion> surveyQuestions) {
+		this.surveyQuestions = surveyQuestions;
 	}
-	public Date getCaptionEffectiveEndDate() {
-		return captionEffectiveEndDate;
-	}
-	public void setCaptionEffectiveEndDate(Date captionEffectiveEndDate) {
-		this.captionEffectiveEndDate = captionEffectiveEndDate;
-	}
-	
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
@@ -80,4 +76,5 @@ public class CaptionDefinition {
 
 		return result.toString();
 	}
+
 }
