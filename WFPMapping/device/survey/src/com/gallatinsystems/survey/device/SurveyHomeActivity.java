@@ -166,6 +166,5 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 
 	private void saveState() {
 		// TODO: persist current user?
-		// databaseAdaptor.createOrUpdateUser(userId, name, email);
 	}
 }

@@ -34,6 +34,8 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationListener {
 
 	private static final int DEFAULT_WIDTH = 200;
+	private static final float UNKNOWN_ACCURACY = 99999999f;
+	private static final float ACCURACY_THRESHOLD = 20f;
 	private static final String DELIM = "|";
 	private Button geoButton;
 	private TextView latLabel;
@@ -42,6 +44,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private EditText lonField;
 	private TextView elevationLabel;
 	private EditText elevationField;
+	private float lastAccuracy;
 
 	public GeoQuestionView(Context context, Question q) {
 		super(context, q);
@@ -109,6 +112,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 			if (location != null) {
 				populateLocation(location);
 			} else {
+				lastAccuracy = UNKNOWN_ACCURACY;
 				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 						1000, 0, this);
 			}
@@ -139,7 +143,6 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	}
 
 	private void populateLocation(Location loc) {
-		// TODO: wait for specific accuracy level (5-10 meters?)
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
 		elevationField.setText(loc.getAltitude() + "");
@@ -181,11 +184,30 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		// completeIcon.setVisibility(View.VISIBLE);
 	}
 
+	/**
+	 * called by the system when it gets location updates.
+	 */
 	public void onLocationChanged(Location location) {
-		populateLocation(location);
-		LocationManager locMgr = (LocationManager) getContext()
-				.getSystemService(Context.LOCATION_SERVICE);
-		locMgr.removeUpdates(this);
+		float currentAccuracy = location.getAccuracy();
+		// if accuracy is 0 then the gps has no idea where we're at
+		if (currentAccuracy > 0) {
+		
+			// if we're decreasing in accuracy or staying the same, or if we're
+			// below the accuracy threshold, stop listening for updates
+			if (currentAccuracy >= lastAccuracy
+					|| currentAccuracy <= ACCURACY_THRESHOLD) {
+				LocationManager locMgr = (LocationManager) getContext()
+						.getSystemService(Context.LOCATION_SERVICE);
+				locMgr.removeUpdates(this);
+			}
+			
+			// if the location reading is more accurate than the last, update
+			// the view
+			if (lastAccuracy > currentAccuracy) {
+				lastAccuracy = currentAccuracy;
+				populateLocation(location);
+			}
+		}
 	}
 
 	public void onProviderDisabled(String provider) {
