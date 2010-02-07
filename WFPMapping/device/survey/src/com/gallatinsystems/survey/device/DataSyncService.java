@@ -1,11 +1,9 @@
 package com.gallatinsystems.survey.device;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -239,6 +237,12 @@ public class DataSyncService extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+					buf
+					.append(",")
+					.append(
+							data
+									.getString(data
+											.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
 					buf.append("\n");
 					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
 						imagePaths.add(value);

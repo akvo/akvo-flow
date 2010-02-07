@@ -32,6 +32,7 @@ public class SurveyDbAdapter {
 	public static final String DISP_NAME_COL = "display_name";
 	public static final String EMAIL_COL = "email";
 	public static final String SUBMITTED_FLAG_COL = "submitted_flag";
+	public static final String SUBMITTED_DATE_COL = "submitted_date";
 	public static final String DELIVERED_DATE_COL = "delivered_date";
 
 	private static final String TAG = "SurveyDbAdapter";
@@ -147,7 +148,7 @@ public class SurveyDbAdapter {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
 				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_COL, DISP_NAME_COL,
-				EMAIL_COL, DELIVERED_DATE_COL }, SUBMITTED_FLAG_COL
+				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL }, SUBMITTED_FLAG_COL
 				+ "= 'true' AND " + DELIVERED_DATE_COL + " is null", null,
 				null, null, null);
 		if (cursor != null) {
@@ -165,6 +166,7 @@ public class SurveyDbAdapter {
 	public void submitResponses(String respondentId) {
 		ContentValues vals = new ContentValues();
 		vals.put(SUBMITTED_FLAG_COL, "true");
+		vals.put(SUBMITTED_DATE_COL, System.currentTimeMillis());
 		database.update(RESPONDENT_TABLE, vals, SURVEY_RESPONDENT_ID_COL + "= "
 				+ respondentId, null);
 	}
@@ -177,7 +179,7 @@ public class SurveyDbAdapter {
 	public void markDataAsSent(HashSet<String> idList) {
 		if (idList != null) {
 			ContentValues updatedValues = new ContentValues();
-			updatedValues.put(DELIVERED_DATE_COL, System.nanoTime() + "");
+			updatedValues.put(DELIVERED_DATE_COL, System.currentTimeMillis() + "");
 			// enhanced FOR ok here since we're dealing with an implicit
 			// iterator anyway
 			for (String id : idList) {
