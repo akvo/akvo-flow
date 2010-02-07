@@ -1,16 +1,21 @@
 package com.gallatinsystems.survey.device;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.view.HomeMenuViewAdapter;
 
 /**
  * Activity to render the survey home screen. It will list all available
@@ -19,7 +24,10 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
  * @author Christopher Fagiani
  * 
  */
-public class SurveyHomeActivity extends Activity implements OnClickListener {
+public class SurveyHomeActivity extends Activity implements OnItemClickListener {
+
+	private static final String LABEL = "label";
+	private static final String IMG = "img";
 
 	public static final int SURVEY_ACTIVITY = 1;
 	public static final int LIST_USER_ACTIVITY = 2;
@@ -27,20 +35,18 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
-	
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
-		ImageButton mapButton = (ImageButton) findViewById(R.id.mapSurveyButton);
-		ImageButton wpButton = (ImageButton) findViewById(R.id.wpSurveyButton);
-		ImageButton hhButton = (ImageButton) findViewById(R.id.hhSurveyButton);
-		ImageButton pubButton = (ImageButton) findViewById(R.id.pubSurveyButton);
-		ImageButton userButton = (ImageButton) findViewById(R.id.usersButton);
-		ImageButton settingsButton = (ImageButton) findViewById(R.id.settingsButton);
-		userField = (TextView) findViewById(R.id.currentUserField);		
+
+		userField = (TextView) findViewById(R.id.currentUserField);
+
+		GridView grid = (GridView) findViewById(R.id.gridview);
+		grid.setAdapter(new HomeMenuViewAdapter(this));
+		grid.setOnItemClickListener(this);
 
 		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState
@@ -50,15 +56,14 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		if (currentName != null) {
 			populateFields();
 		}
-
 		startSyncService();
+	}
 
-		mapButton.setOnClickListener(this);
-		wpButton.setOnClickListener(this);
-		hhButton.setOnClickListener(this);
-		pubButton.setOnClickListener(this);
-		userButton.setOnClickListener(this);
-		settingsButton.setOnClickListener(this);
+	private HashMap<String, Object> createMap(String label, Drawable img) {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put(LABEL, label);
+		map.put(IMG, img);
+		return map;
 	}
 
 	/**
@@ -66,38 +71,39 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	 */
 	private void startSyncService() {
 		Intent i = new Intent(this, DataSyncService.class);
-		i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);		
+		i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
 		getApplicationContext().startService(i);
 	}
 
 	/**
 	 * handles the button presses.
 	 */
-	public void onClick(View v) {
-		int clickedId = v.getId();
-		if (clickedId == R.id.usersButton) {
+	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+		String selected = HomeMenuViewAdapter.operations[position];
+		v.setSelected(false);
+		if (selected.equals(HomeMenuViewAdapter.USER_OP)) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
-		} else if (clickedId == R.id.settingsButton) {			
+		} else if (selected.equals(HomeMenuViewAdapter.CONF_OP)) {
 			Intent i = new Intent(v.getContext(), SettingsActivity.class);
 			startActivityForResult(i, SETTINGS_ACTIVITY);
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;
-				//TODO: load survey ID from DB
+				// TODO: load survey ID from DB
 				String surveyId = "1";
-				switch (clickedId) {
-				case R.id.mapSurveyButton:
+				if (selected.equals(HomeMenuViewAdapter.MAP_OP)) {
 					resourceID = R.raw.mappingsurvey;
-					surveyId="1";
-					break;
-				case R.id.wpSurveyButton:
+					surveyId = "1";
+				} else if (selected.equals(HomeMenuViewAdapter.WPS_OP)) {
 					resourceID = R.raw.testsurvey;
-					surveyId="2";
-					break;
-				default:
-					surveyId="3";
+					surveyId = "2";
+				} else if (selected.equals(HomeMenuViewAdapter.HHS_OP)) {
 					resourceID = R.raw.testsurvey;
+					surveyId = "3";
+				} else if (selected.equals(HomeMenuViewAdapter.PUBS_OP)) {
+					resourceID = R.raw.testsurvey;
+					surveyId = "4";
 				}
 				Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
 				i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);

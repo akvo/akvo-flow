@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="wrap_content"
+	android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android" android:padding="10dip">
+	<ImageView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:gravity="center_horizontal"
+		android:id="@+id/homebuttonimg"
+		android:layout_gravity="center_vertical|center_horizontal"
+		android:layout_centerHorizontal="true" />
+	<TextView android:id="@+id/buttonText" android:width="150dip"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:gravity="center_horizontal" android:layout_gravity="center_horizontal"
+		android:layout_below="@id/homebuttonimg"/>
+</RelativeLayout>
