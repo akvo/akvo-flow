@@ -134,8 +134,7 @@ public class ListUserActivity extends ListActivity {
 	protected void onListItemClick(ListView list, View view, int position,
 			long id) {
 		super.onListItemClick(list, view, position, id);
-		Intent intent = new Intent();
-		databaseAdaptor.open();
+		Intent intent = new Intent();		
 		Cursor user = databaseAdaptor.fetchUser(id);
 		startManagingCursor(user);
 		intent.putExtra(SurveyDbAdapter.USER_ID_COL, user.getString(user
