@@ -187,8 +187,7 @@ public class SurveyViewActivity extends TabActivity implements
 			for (SurveyTabContentFactory tab : tabContentFactories) {
 				tab.saveState(respondentId);
 			}
-		}
-		databaseAdaptor.close();
+		}		
 	}
 
 	@Override
@@ -201,6 +200,13 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 	}
 
+	protected void onDestroy(){
+		super.onDestroy();
+		if(databaseAdaptor != null){
+			databaseAdaptor.close();
+		}
+	}
+	
 	public Long getSurveyId() {
 		return surveyId;
 	}

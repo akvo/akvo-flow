@@ -86,6 +86,13 @@ public class UserEditActivity extends Activity {
 		populateFields();
 	}
 
+	protected void onDestroy(){
+		super.onDestroy();
+		if(databaseAdaptor != null){
+			databaseAdaptor.close();
+		}
+	}
+	
 	/**
 	 * save the name and email address to the db
 	 */

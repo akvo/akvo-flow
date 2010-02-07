@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -316,7 +317,7 @@ public class DataSyncService extends Service {
 	private boolean sendFile(String fileAbsolutePath) {
 
 		try {
-			URLConnection conn = MultipartStream.createConnection(new URL(
+			HttpURLConnection conn = MultipartStream.createConnection(new URL(
 					UPLOAD_URL));
 			MultipartStream stream = new MultipartStream(conn.getOutputStream());
 			stream.writeFormField("key", "devicezip/${filename}");
@@ -331,6 +332,8 @@ public class DataSyncService extends Service {
 			stream.close();
 			// TODO: check error code!
 			try {
+				int code = conn.getResponseCode();
+				Log.e(TAG,"Code: "+code);
 				BufferedReader inStream = new BufferedReader(
 						new InputStreamReader(conn.getInputStream()));
 				String str;

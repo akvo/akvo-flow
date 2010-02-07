@@ -79,9 +79,9 @@ public class MultipartStream {
 		out.close();	
 	}
 
-	public static URLConnection createConnection(URL url)
+	public static HttpURLConnection createConnection(URL url)
 			throws java.io.IOException {
-		URLConnection urlConn = url.openConnection();
+		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
 		if (urlConn instanceof HttpURLConnection) {
 			HttpURLConnection httpConn = (HttpURLConnection) urlConn;
 			httpConn.setRequestMethod("POST");
