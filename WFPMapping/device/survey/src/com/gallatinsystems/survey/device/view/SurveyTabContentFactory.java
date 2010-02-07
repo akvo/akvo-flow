@@ -148,16 +148,15 @@ public class SurveyTabContentFactory implements TabContentFactory {
 								.getRespondentId().toString());
 
 						// while in general we avoid the enhanced for-loop in
-						// the
-						// Android VM, we can use it here because we would still
-						// need the iterator
+						// the Android VM, we can use it here because we
+						// would still need the iterator
 						for (QuestionView view : questionMap.values()) {
 							view.resetQuestion();
 						}
 						// create a new response object
 						context.setRespondentId(databaseAdaptor
-								.createSurveyRespondent(context.getSurveyId()
-										.toString(), context.getUserId()));
+								.createSurveyRespondent(context.getSurveyId(),
+										context.getUserId()));
 
 						// send a broadcast message indicating new data is
 						// available

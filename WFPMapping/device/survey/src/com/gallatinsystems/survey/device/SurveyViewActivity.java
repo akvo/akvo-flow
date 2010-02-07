@@ -39,13 +39,14 @@ public class SurveyViewActivity extends TabActivity implements
 
 	public static final String SURVEY_RESOURCE_ID = "RESID";
 	public static final String USER_ID = "UID";
+	public static final String SURVEY_ID = "SID";
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;	
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView photoSource;
 	private SurveyDbAdapter databaseAdaptor;
-	private Long surveyId;
+	private String surveyId;
 	private Long respondentId;
 	private String userId;
 
@@ -66,6 +67,12 @@ public class SurveyViewActivity extends TabActivity implements
 			userId = savedInstanceState != null ? savedInstanceState
 					.getString(SurveyDbAdapter.USER_FK_COL) : null;
 		}
+		
+		surveyId = extras != null ? extras.getString(SURVEY_ID) : null;
+		if(surveyId == null){
+			surveyId = savedInstanceState != null ? savedInstanceState
+					.getString(SurveyDbAdapter.SURVEY_ID_COL) : "1";
+		}
 
 		// TODO: fetch the resource from the server
 		Survey survey = null;
@@ -74,10 +81,8 @@ public class SurveyViewActivity extends TabActivity implements
 		} else {
 			survey = p.parse(getResources().openRawResource(R.raw.testsurvey));
 		}
-
-		// TODO: load survey ID from DB
-		surveyId = savedInstanceState != null ? savedInstanceState
-				.getLong(SurveyDbAdapter.SURVEY_ID_COL) : new Long(1);
+		
+		
 		respondentId = savedInstanceState != null ? savedInstanceState
 				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
 
@@ -85,6 +90,7 @@ public class SurveyViewActivity extends TabActivity implements
 			respondentId = databaseAdaptor.createOrLoadSurveyRespondent(
 					surveyId.toString(), userId.toString());
 		}
+				
 
 		if (survey != null) {
 			tabContentFactories = new ArrayList<SurveyTabContentFactory>();
@@ -172,7 +178,7 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putLong(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
+		outState.putString(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
 		outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
 		outState.putString(SurveyDbAdapter.USER_FK_COL, userId);
 	}
@@ -204,7 +210,7 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 	}
 	
-	public Long getSurveyId() {
+	public String getSurveyId() {
 		return surveyId;
 	}
 

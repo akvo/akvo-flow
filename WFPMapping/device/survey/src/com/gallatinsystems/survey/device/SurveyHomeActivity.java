@@ -81,23 +81,28 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		} else if (clickedId == R.id.settingsButton) {			
 			Intent i = new Intent(v.getContext(), SettingsActivity.class);
 			startActivityForResult(i, SETTINGS_ACTIVITY);
-			// synchField.setText(R.string.syncinprogress);
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;
+				//TODO: load survey ID from DB
+				String surveyId = "1";
 				switch (clickedId) {
 				case R.id.mapSurveyButton:
 					resourceID = R.raw.mappingsurvey;
+					surveyId="1";
 					break;
 				case R.id.wpSurveyButton:
 					resourceID = R.raw.testsurvey;
+					surveyId="2";
 					break;
 				default:
+					surveyId="3";
 					resourceID = R.raw.testsurvey;
 				}
 				Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
 				i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
 				i.putExtra(SurveyViewActivity.USER_ID, currentUserId);
+				i.putExtra(SurveyViewActivity.SURVEY_ID, surveyId);
 				startActivityForResult(i, SURVEY_ACTIVITY);
 			} else {
 				// if the current user is null, we can't enter survey mode
