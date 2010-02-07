@@ -1,15 +1,10 @@
 package org.waterforpeople.mapping.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.db.PMF;
-import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.DeviceFiles;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 public class AccessPointDAO {
