@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
@@ -73,6 +72,8 @@ public class DataSyncService extends Service {
 	private static final String TEMP_FILE_NAME = "/wfp";
 	private static final String ZIP_IMAGE_DIR = "images/";
 	private Thread thread;
+	private static final int REDIRECT_CODE = 303;
+	private static final int OK_CODE = 200;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -237,7 +238,7 @@ public class DataSyncService extends Service {
 							.append(
 									data
 											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));					
+													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
 					buf.append("\n");
 					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
 						imagePaths.add(value);
@@ -297,7 +298,7 @@ public class DataSyncService extends Service {
 				}
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Could not save zip: " + e.getMessage(),e);
+			Log.e(TAG, "Could not save zip: " + e.getMessage(), e);
 			fileName = null;
 		} finally {
 			if (data != null) {
@@ -329,22 +330,11 @@ public class DataSyncService extends Service {
 			stream.writeFormField("Content-Type", "application/zip");
 			stream.writeFile("file", fileAbsolutePath, null);
 			stream.close();
-			// TODO: check error code!
-			try {
-				int code = conn.getResponseCode();
-				Log.e(TAG,"Code: "+code);
-				BufferedReader inStream = new BufferedReader(
-						new InputStreamReader(conn.getInputStream()));
-				String str;
-				while ((str = inStream.readLine()) != null) {
-					Log.e(TAG, "Server Response" + str);
-				}
-				inStream.close();
-
-			} catch (Exception ioex) {
-				Log.e(TAG, "error: " + ioex.getMessage(), ioex);
+			int code = conn.getResponseCode();
+			if (code != REDIRECT_CODE && code != OK_CODE) {
+				Log.e(TAG, "Server returned a bad code after upload: " + code);
+				return false;
 			}
-
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send upload" + e.getMessage(), e);
 			return false;

@@ -45,12 +45,10 @@ public class UserEditActivity extends Activity {
 		populateFields();
 
 		saveButton.setOnClickListener(new View.OnClickListener() {
-
 			public void onClick(View view) {
 				setResult(RESULT_OK);
 				finish();
 			}
-
 		});
 	}
 

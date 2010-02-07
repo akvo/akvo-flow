@@ -30,8 +30,6 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
  * surveys
  * 
  * 
- * TODO: refactor to obey suggestions here:
- * http://developer.android.com/guide/practices/design/performance.html
  * 
  * @author Christopher Fagiani
  * 
@@ -42,8 +40,7 @@ public class SurveyViewActivity extends TabActivity implements
 	public static final String SURVEY_RESOURCE_ID = "RESID";
 	public static final String USER_ID = "UID";
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
-	private static final int PHOTO_ACTIVITY_REQUEST = 1;
-	private static final int GEO_ACTIVITY_REQUEST = 2;
+	private static final int PHOTO_ACTIVITY_REQUEST = 1;	
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView photoSource;

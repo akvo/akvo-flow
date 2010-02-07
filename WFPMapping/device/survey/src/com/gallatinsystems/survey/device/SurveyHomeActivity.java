@@ -27,7 +27,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
-	private TextView syncField;
+	
 
 	/** Called when the activity is first created. */
 	@Override
@@ -40,8 +40,7 @@ public class SurveyHomeActivity extends Activity implements OnClickListener {
 		ImageButton pubButton = (ImageButton) findViewById(R.id.pubSurveyButton);
 		ImageButton userButton = (ImageButton) findViewById(R.id.usersButton);
 		ImageButton settingsButton = (ImageButton) findViewById(R.id.settingsButton);
-		userField = (TextView) findViewById(R.id.currentUserField);
-		syncField = (TextView) findViewById(R.id.lastSyncField);
+		userField = (TextView) findViewById(R.id.currentUserField);		
 
 		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState

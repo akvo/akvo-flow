@@ -3,7 +3,7 @@
 	android:orientation="vertical">
 	<TextView android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/optionLabel"
-		android:textSize="20dp" />
+		android:textSize="20dip" />
 	<TextView android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/optionDesc" />
 </LinearLayout>

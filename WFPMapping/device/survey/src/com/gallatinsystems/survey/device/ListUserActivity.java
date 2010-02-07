@@ -145,7 +145,6 @@ public class ListUserActivity extends ListActivity {
 		intent.putExtra(SurveyDbAdapter.EMAIL_COL, user.getString(user
 				.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
 		setResult(RESULT_OK, intent);
-		//databaseAdaptor.close();
 		finish();
 	}
 
