@@ -61,20 +61,21 @@ public class TaskServlet extends HttpServlet {
 					log.info("	Task->processFile");
 					ArrayList<String> surveyIds = processFile(fileName);
 					for (String ids : surveyIds) {
-						ProcessingAction pa =dispatch(ids);
+						ProcessingAction pa = dispatch(ids);
 						Queue queue = QueueFactory.getDefaultQueue();
 						TaskOptions options = url(pa.getDispatchURL());
 						Iterator it = pa.getParams().keySet().iterator();
-						while(it.hasNext()){
-						    options.param("key",(String)it.next());
+						while (it.hasNext()) {
+							options.param("key", (String) it.next());
 						}
-						queue.add(options);	
-						log.info("Received Task Queue calls for surveyId: " + ids);
+						//queue.add(options);
+						log.info("Received Task Queue calls for surveyId: "
+								+ ids);
 						AccessPointHelper aph = new AccessPointHelper();
 						aph.processSurveyInstance(new Long(ids));
 					}
 				}
-			}else if(action.equals("addAccessPoints")){
+			} else if (action.equals("addAccessPoints")) {
 				Long surveyId = new Long(req.getParameter("surveyId"));
 				log.info("Received Task Queue calls for surveyId: " + surveyId);
 				AccessPointHelper aph = new AccessPointHelper();
@@ -150,7 +151,11 @@ public class TaskServlet extends HttpServlet {
 				S3Driver s3 = new S3Driver();
 				String[] imageParts = entry.getName().split("/");
 				// comment out while testing locally
-				s3.uploadFile("dru-test", imageParts[1], out.toByteArray());
+				try {
+					s3.uploadFile("dru-test", imageParts[1], out.toByteArray());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 				out.close();
 			}
 			zis.closeEntry();
@@ -198,10 +203,11 @@ public class TaskServlet extends HttpServlet {
 				}
 			}
 
-			/*AccessPoint ap = new AccessPoint(lat, lon, alt, communityCode,
-					urlPhoto, null);*/
-			//return ap;
-
+			/*
+			 * AccessPoint ap = new AccessPoint(lat, lon, alt, communityCode,
+			 * urlPhoto, null);
+			 */
+			// return ap;
 		}
 
 		return null;
