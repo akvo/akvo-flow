@@ -32,30 +32,11 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 		String listFiles = req.getParameter("listFiles");
 		String testVelocity = req.getParameter("testVelocity");
 		if (showKML != null) {
-			StringBuilder sb = new StringBuilder();
-			System.out.println("Show KML");
-
-			javax.jdo.Query query = pm.newQuery("select from  "
-					+ AccessPoint.class.getName());
-			List<AccessPoint> entries = (List<AccessPoint>) query.execute();
-			sb
-					.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?> <kml xmlns=\"http://earth.google.com/kml/2.1\"> ");
-			sb
-					.append("<Document> <name>a name for this list</name><description>a useful description</description>");
-			for (AccessPoint ap : entries) {
-				sb.append("<Placemark>");
-				sb.append("<name>" + ap.getCommunityCode() + "</name>");
-				sb.append("<Point><coordinates>" + ap.getLatitude() + ","
-						+ ap.getLongitude() + "," + ap.getAltitude()
-						+ "</coordinates></Point>");
-				sb.append("</Placemark>");
-			}
-			pm.close();
-			sb.append("</Document>");
-			sb.append("</kml>");
-			System.out.println(sb.toString());
+			KMLGenerator kmlGen = new KMLGenerator();
+			String placemarksDocument = kmlGen
+					.generateDocument("PlacemarkTabs.vm");
 			resp.setContentType("application/vnd.google-earth.kml+xml");
-			resp.getWriter().println(sb.toString());
+			resp.getWriter().println(placemarksDocument);
 		} else if (listFiles != null) {
 			// List processed files
 			javax.jdo.Query query = pm.newQuery("select from  "

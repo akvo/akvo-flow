@@ -52,10 +52,10 @@ public class SurveyHarness {
 			String data = URLEncoder.encode("action", "UTF-8") + "="
 					+ URLEncoder.encode("addAccessPoints", "UTF-8");
 			data += "&" + URLEncoder.encode("surveyId", "UTF-8") + "="
-					+ URLEncoder.encode("17", "UTF-8");
+					+ URLEncoder.encode("2025", "UTF-8");
 
 			// Send data
-			URL url = new URL("http://localhost:8888/app_worker/task");
+			URL url = new URL("http://watermappingmonitoring.appspot.com/app_worker/task");
 			URLConnection conn = url.openConnection();
 			conn.setDoOutput(true);
 			OutputStreamWriter wr = new OutputStreamWriter(conn

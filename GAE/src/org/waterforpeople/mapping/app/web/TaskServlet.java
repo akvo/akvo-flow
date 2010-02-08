@@ -69,6 +69,9 @@ public class TaskServlet extends HttpServlet {
 						    options.param("key",(String)it.next());
 						}
 						queue.add(options);	
+						log.info("Received Task Queue calls for surveyId: " + ids);
+						AccessPointHelper aph = new AccessPointHelper();
+						aph.processSurveyInstance(new Long(ids));
 					}
 				}
 			}else if(action.equals("addAccessPoints")){
@@ -195,9 +198,9 @@ public class TaskServlet extends HttpServlet {
 				}
 			}
 
-			AccessPoint ap = new AccessPoint(lat, lon, alt, communityCode,
-					urlPhoto, null);
-			return ap;
+			/*AccessPoint ap = new AccessPoint(lat, lon, alt, communityCode,
+					urlPhoto, null);*/
+			//return ap;
 
 		}
 

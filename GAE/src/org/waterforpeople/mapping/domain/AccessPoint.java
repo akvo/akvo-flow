@@ -24,32 +24,36 @@ public class AccessPoint {
 	@Persistent
 	private String communityCode = null;
 	@Persistent
-	private String waterPointPhotoURL = null;
+	private String photoURL = null;
 	@Persistent
-	private String typeOfWaterPointTechnology = null;
+	private String typeTechnology = null;
 	@Persistent
-	private String constructionDateOfWaterPoint = null;
+	private String constructionDate = null;
 	@Persistent
-	private String numberOfHouseholdsUsingWaterPoint = null;
+	private String numberOfHouseholdsUsingPoint = null;
 	@Persistent
 	private String costPer = null;
 	@Persistent
-	private String farthestHouseholdfromWaterPoint = null;
+	private String farthestHouseholdfromPoint = null;
 	@Persistent
-	private String CurrentManagementStructureWaterPoint = null;
+	private String currentManagementStructurePoint = null;
 	@Persistent
-	private String waterSystemStatus = null;
+	private String pointStatus = null;
 	@Persistent
-	private String sanitationPointPhotoURL = null;
-	@Persistent
-	private String primaryImprovedSanitationTech = null;
-	@Persistent
-	private String percentageOfHouseholdsWithImprovedSanitation = null;
-	@Persistent
-	private String waterPointPhotoCaption = null;
+	private String pointPhotoCaption = null;
 	@Persistent
 	private String description = null;
+	@Persistent
+	private AccessPointType pointType;
 	
+	public AccessPointType getPointType() {
+		return pointType;
+	}
+
+	public void setPointType(AccessPointType pointType) {
+		this.pointType = pointType;
+	}
+
 	public AccessPoint(){
 	}
 
@@ -59,100 +63,6 @@ public class AccessPoint {
 
 	public void setCollectionDate(String collectionDate) {
 		this.collectionDate = collectionDate;
-	}
-
-	public String getTypeOfWaterPointTechnology() {
-		return typeOfWaterPointTechnology;
-	}
-
-	public void setTypeOfWaterPointTechnology(String typeOfWaterPointTechnology) {
-		this.typeOfWaterPointTechnology = typeOfWaterPointTechnology;
-	}
-
-	public String getConstructionDateOfWaterPoint() {
-		return constructionDateOfWaterPoint;
-	}
-
-	public void setConstructionDateOfWaterPoint(
-			String constructionDateOfWaterPoint) {
-		this.constructionDateOfWaterPoint = constructionDateOfWaterPoint;
-	}
-
-	public String getNumberOfHouseholdsUsingWaterPoint() {
-		return numberOfHouseholdsUsingWaterPoint;
-	}
-
-	public void setNumberOfHouseholdsUsingWaterPoint(
-			String numberOfHouseholdsUsingWaterPoint) {
-		this.numberOfHouseholdsUsingWaterPoint = numberOfHouseholdsUsingWaterPoint;
-	}
-
-	public String getCostPer() {
-		return costPer;
-	}
-
-	public void setCostPer(String costPer) {
-		this.costPer = costPer;
-	}
-
-	public String getFarthestHouseholdfromWaterPoint() {
-		return farthestHouseholdfromWaterPoint;
-	}
-
-	public void setFarthestHouseholdfromWaterPoint(
-			String farthestHouseholdfromWaterPoint) {
-		this.farthestHouseholdfromWaterPoint = farthestHouseholdfromWaterPoint;
-	}
-
-	public String getCurrentManagementStructureWaterPoint() {
-		return CurrentManagementStructureWaterPoint;
-	}
-
-	public void setCurrentManagementStructureWaterPoint(
-			String currentManagementStructureWaterPoint) {
-		CurrentManagementStructureWaterPoint = currentManagementStructureWaterPoint;
-	}
-
-	public String getWaterSystemStatus() {
-		return waterSystemStatus;
-	}
-
-	public void setWaterSystemStatus(String waterSystemStatus) {
-		this.waterSystemStatus = waterSystemStatus;
-	}
-
-	public String getPrimaryImprovedSanitationTech() {
-		return primaryImprovedSanitationTech;
-	}
-
-	public void setPrimaryImprovedSanitationTech(
-			String primaryImprovedSanitationTech) {
-		this.primaryImprovedSanitationTech = primaryImprovedSanitationTech;
-	}
-
-	public String getPercentageOfHouseholdsWithImprovedSanitation() {
-		return percentageOfHouseholdsWithImprovedSanitation;
-	}
-
-	public void setPercentageOfHouseholdsWithImprovedSanitation(
-			String percentageOfHouseholdsWithImprovedSanitation) {
-		this.percentageOfHouseholdsWithImprovedSanitation = percentageOfHouseholdsWithImprovedSanitation;
-	}
-
-	public String getWaterPointPhotoCaption() {
-		return waterPointPhotoCaption;
-	}
-
-	public void setWaterPointPhotoCaption(String waterPointPhotoCaption) {
-		this.waterPointPhotoCaption = waterPointPhotoCaption;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public Long getId() {
@@ -195,70 +105,89 @@ public class AccessPoint {
 		this.communityCode = communityCode;
 	}
 
-	public String getWaterPointPhotoURL() {
-		return waterPointPhotoURL;
+	public String getPhotoURL() {
+		return photoURL;
 	}
 
-	public void setWaterPointPhotoURL(String waterPointPhotoURL) {
-		this.waterPointPhotoURL = waterPointPhotoURL;
+	public void setPhotoURL(String photoURL) {
+		this.photoURL = photoURL;
 	}
 
-	public String getSanitationPointPhotoURL() {
-		return sanitationPointPhotoURL;
+	public String getTypeTechnology() {
+		return typeTechnology;
 	}
 
-	public void setSanitationPointPhotoURL(String sanitationPointPhotoURL) {
-		this.sanitationPointPhotoURL = sanitationPointPhotoURL;
+	public void setTypeTechnology(String typeTechnology) {
+		this.typeTechnology = typeTechnology;
 	}
 
-	public AccessPoint(Double latitude, Double longitude, Double altitude,
-			String communityCode, String waterPointPhotoURL,
-			String sanitationPointPhotoURL) {
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.altitude = altitude;
-		this.communityCode = communityCode;
-		this.waterPointPhotoURL = waterPointPhotoURL;
-		this.sanitationPointPhotoURL = sanitationPointPhotoURL;
+	public String getConstructionDate() {
+		return constructionDate;
 	}
 
-	public AccessPoint(String collectionDate, Double latitude,
-			Double longitude, Double altitude, String communityCode,
-			String waterPointPhotoURL, String typeOfWaterPointTechnology,
-			String constructionDateOfWaterPoint,
-			String numberOfHouseholdsUsingWaterPoint, String costPer,
-			String farthestHouseholdfromWaterPoint,
-			String CurrentManagementStructureWaterPoint,
-			String waterSystemStatus, String sanitationPointPhotoURL,
-			String primaryImprovedSanitationTech,
-			String percentageOfHouseholdsWithImprovedSanitation,
-			String waterPointPhotoCaption, String description) {
-		this.collectionDate = collectionDate;
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.altitude = altitude;
-		this.communityCode = communityCode;
-		this.waterPointPhotoURL = waterPointPhotoURL;
-		this.typeOfWaterPointTechnology = typeOfWaterPointTechnology;
-		this.constructionDateOfWaterPoint = constructionDateOfWaterPoint;
-		this.numberOfHouseholdsUsingWaterPoint = numberOfHouseholdsUsingWaterPoint;
+	public void setConstructionDate(String constructionDate) {
+		this.constructionDate = constructionDate;
+	}
+
+	public String getNumberOfHouseholdsUsingPoint() {
+		return numberOfHouseholdsUsingPoint;
+	}
+
+	public void setNumberOfHouseholdsUsingPoint(String numberOfHouseholdsUsingPoint) {
+		this.numberOfHouseholdsUsingPoint = numberOfHouseholdsUsingPoint;
+	}
+
+	public String getCostPer() {
+		return costPer;
+	}
+
+	public void setCostPer(String costPer) {
 		this.costPer = costPer;
-		this.farthestHouseholdfromWaterPoint = farthestHouseholdfromWaterPoint;
-		this.CurrentManagementStructureWaterPoint = CurrentManagementStructureWaterPoint;
-		this.waterSystemStatus = waterSystemStatus;
-		this.sanitationPointPhotoURL = sanitationPointPhotoURL;
-		this.primaryImprovedSanitationTech = primaryImprovedSanitationTech;
-		this.percentageOfHouseholdsWithImprovedSanitation = percentageOfHouseholdsWithImprovedSanitation;
-		this.waterPointPhotoCaption = waterPointPhotoCaption;
+	}
+
+	public String getFarthestHouseholdfromPoint() {
+		return farthestHouseholdfromPoint;
+	}
+
+	public void setFarthestHouseholdfromPoint(String farthestHouseholdfromPoint) {
+		this.farthestHouseholdfromPoint = farthestHouseholdfromPoint;
+	}
+
+	public String getCurrentManagementStructurePoint() {
+		return currentManagementStructurePoint;
+	}
+
+	public void setCurrentManagementStructurePoint(
+			String currentManagementStructurePoint) {
+		this.currentManagementStructurePoint = currentManagementStructurePoint;
+	}
+
+	public String getPointStatus() {
+		return pointStatus;
+	}
+
+	public void setPointStatus(String pointStatus) {
+		this.pointStatus = pointStatus;
+	}
+
+	public String getPointPhotoCaption() {
+		return pointPhotoCaption;
+	}
+
+	public void setPointPhotoCaption(String pointPhotoCaption) {
+		this.pointPhotoCaption = pointPhotoCaption;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
 		this.description = description;
-
 	}
 
-	public void saveAccessPoint(Double latitude, Double longitude,
-			Double altitude, String communityCode, String waterPointPhotoURL,
-			String sanitationPointPhotoURL) {
-
+	public enum AccessPointType{
+		WATER_POINT,SANITATION_POINT
 	}
-
 	
 }

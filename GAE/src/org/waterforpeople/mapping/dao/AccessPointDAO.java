@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -35,6 +36,13 @@ public class AccessPointDAO {
 
 	private void init() {
 		pm = PMF.get().getPersistenceManager();
+	}
+	
+	public List<AccessPoint> listAccessPoints(){
+		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		List<AccessPoint> points= (List<AccessPoint>) query.execute();
+			
+		return points;
 	}
 
 }
