@@ -106,9 +106,10 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			Location location = locMgr
-					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
+		//	Location location = locMgr
+		//			.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			Location location = null;
+			
 			if (location != null) {
 				populateLocation(location);
 			} else {
