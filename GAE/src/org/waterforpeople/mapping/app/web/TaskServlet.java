@@ -34,6 +34,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
@@ -68,7 +69,7 @@ public class TaskServlet extends HttpServlet {
 						while (it.hasNext()) {
 							options.param("key", (String) it.next());
 						}
-						//queue.add(options);
+						// queue.add(options);
 						log.info("Received Task Queue calls for surveyId: "
 								+ ids);
 						AccessPointHelper aph = new AccessPointHelper();
@@ -152,7 +153,16 @@ public class TaskServlet extends HttpServlet {
 				String[] imageParts = entry.getName().split("/");
 				// comment out while testing locally
 				try {
+					// GAEImageAdapter gaeIA = new GAEImageAdapter();
+					// byte[] resizedImage =
+					// gaeIA.resizeImage(out.toByteArray(), 500, 500);
+					// s3.uploadFile("dru-test", imageParts[1], resizedImage);
 					s3.uploadFile("dru-test", imageParts[1], out.toByteArray());
+					// add queue call to resize
+					Queue queue = QueueFactory.getDefaultQueue();
+
+					queue.add(url("imageprocessor").param("imageURL", imageParts[1]));
+					log.info("submiting image resize for imageURL: " + imageParts[1]);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
