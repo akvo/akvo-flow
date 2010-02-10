@@ -157,7 +157,9 @@ public class TaskServlet extends HttpServlet {
 					// byte[] resizedImage =
 					// gaeIA.resizeImage(out.toByteArray(), 500, 500);
 					// s3.uploadFile("dru-test", imageParts[1], resizedImage);
-					s3.uploadFile("dru-test", imageParts[1], out.toByteArray());
+					GAEImageAdapter gaeImg = new GAEImageAdapter();
+					byte[] newImage = gaeImg.resizeImage(out.toByteArray(), 500, 500);
+					s3.uploadFile("dru-test", imageParts[1], newImage);
 					// add queue call to resize
 					Queue queue = QueueFactory.getDefaultQueue();
 

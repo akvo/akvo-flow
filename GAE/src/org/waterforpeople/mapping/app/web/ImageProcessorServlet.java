@@ -1,11 +1,18 @@
 package org.waterforpeople.mapping.app.web;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import services.S3Driver;
 
 import com.gallatinsystems.image.GAEImageAdapter;
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 public class ImageProcessorServlet extends HttpServlet {
 	private static final Logger log = Logger
@@ -50,7 +60,7 @@ public class ImageProcessorServlet extends HttpServlet {
 		}
 
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
-		byte[] newImage = gaeImg.resizeImage(out.toByteArray(), 300, 300);
+		byte[] newImage = gaeImg.resizeImage(out.toByteArray(), 500, 500);
 		log.info("After size: " + newImage.length);
 		S3Driver s3 = new S3Driver();
 		String[] urlParts = imageURL.split("/");
