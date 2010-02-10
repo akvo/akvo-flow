@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.Semaphore;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -72,6 +73,7 @@ public class DataSyncService extends Service {
 	private Thread thread;
 	private static final int REDIRECT_CODE = 303;
 	private static final int OK_CODE = 200;
+	private Semaphore lock = new Semaphore(1);
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -108,35 +110,45 @@ public class DataSyncService extends Service {
 	 */
 	private void runSync(String type, boolean forceFlag) {
 		if (isAbleToRun(type)) {
-			databaseAdaptor = new SurveyDbAdapter(this);
-			databaseAdaptor.open();
-			String fileName = createFileName();
-			HashSet<String> idList = formZip(fileName);
-			String destName = fileName;
-			if (destName.contains("/")) {
-				destName = destName.substring(destName.lastIndexOf("/") + 1);
-			} else if (destName.contains("\\")) {
-				destName = destName.substring(destName.lastIndexOf("\\") + 1);
-			}
-			if (fileName != null && idList.size() > 0) {
-				if (SEND.equals(type)) {
-					sendFile(fileName);
-					if (sendProcessingNotification(destName)) {
-						databaseAdaptor.markDataAsSent(idList);
-						fireNotification(SEND, destName);
-					} else {
-						Log
-								.e(
-										TAG,
-										"Could not update send status of data in the database. It will be resent on next execution of the service");
-					}
-				} else {
-					fireNotification(EXPORT, destName);
+			try {
+				lock.acquire();
+			
+				databaseAdaptor = new SurveyDbAdapter(this);
+				databaseAdaptor.open();
+				String fileName = createFileName();
+				HashSet<String> idList = formZip(fileName);
+				String destName = fileName;
+				if (destName.contains("/")) {
+					destName = destName
+							.substring(destName.lastIndexOf("/") + 1);
+				} else if (destName.contains("\\")) {
+					destName = destName
+							.substring(destName.lastIndexOf("\\") + 1);
 				}
-			} else if (forceFlag) {
-				fireNotification(NOTHING, null);
+				if (fileName != null && idList.size() > 0) {
+					if (SEND.equals(type)) {
+						sendFile(fileName);
+						if (sendProcessingNotification(destName)) {
+							databaseAdaptor.markDataAsSent(idList);
+							fireNotification(SEND, destName);
+						} else {
+							Log
+									.e(
+											TAG,
+											"Could not update send status of data in the database. It will be resent on next execution of the service");
+						}
+					} else {
+						fireNotification(EXPORT, destName);
+					}
+				} else if (forceFlag) {
+					fireNotification(NOTHING, null);
+				}
+				databaseAdaptor.close();
+				} catch (InterruptedException e) {
+				Log.e(TAG, "Data sync interrupted", e);
+			} finally {
+				lock.release();
 			}
-			databaseAdaptor.close();
 		}
 	}
 
@@ -238,11 +250,11 @@ public class DataSyncService extends Service {
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
 					buf
-					.append(",")
-					.append(
-							data
-									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
 					buf.append("\n");
 					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
 						imagePaths.add(value);
