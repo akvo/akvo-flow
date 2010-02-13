@@ -2,10 +2,7 @@ package com.gallatinsystems.survey.device.view;
 
 import java.util.StringTokenizer;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,6 +18,7 @@ import android.widget.TextView;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * Question that can handle geographic location input. This question can also
@@ -103,40 +101,31 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 	}
 
+	/**
+	 * When the user clicks the "Populate Geo" button, start listening for
+	 * location updates
+	 */
 	public void onClick(View v) {
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-				needUpdate = true;
-				lastAccuracy = UNKNOWN_ACCURACY;
-				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-						0, 0, this);			
+			needUpdate = true;
+			lastAccuracy = UNKNOWN_ACCURACY;
+			locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
+					this);
 		} else {
 			// we can't turn GPS on directly, the best we can do is launch the
 			// settings page
-			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-			builder.setMessage(R.string.geodialog).setCancelable(true)
-					.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									getContext()
-											.startActivity(
-													new Intent(
-															"android.settings.LOCATION_SOURCE_SETTINGS"));
-								}
-							}).setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-			builder.show();
+			ViewUtil.showGPSDialog(getContext());
 		}
 
 	}
 
+	/**
+	 * populates the fields on the UI with the location info from the event
+	 * 
+	 * @param loc
+	 */
 	private void populateLocation(Location loc) {
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
@@ -146,6 +135,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 				QuestionResponse.GEO_TYPE, getQuestion().getId()));
 	}
 
+	/**
+	 * clears out the UI fields
+	 */
 	public void resetQuestion() {
 		super.resetQuestion();
 		latField.setText("");
@@ -183,25 +175,25 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	 * called by the system when it gets location updates.
 	 */
 	public void onLocationChanged(Location location) {
-		float currentAccuracy = location.getAccuracy();		
-		// if accuracy is 0 then the gps has no idea where we're at		
+		float currentAccuracy = location.getAccuracy();
+		// if accuracy is 0 then the gps has no idea where we're at
 		if (currentAccuracy > 0) {
-		
+
 			// if we're decreasing in accuracy or staying the same, or if we're
 			// below the accuracy threshold, stop listening for updates
 			if (currentAccuracy >= lastAccuracy
 					|| currentAccuracy <= ACCURACY_THRESHOLD) {
 				LocationManager locMgr = (LocationManager) getContext()
 						.getSystemService(Context.LOCATION_SERVICE);
-				locMgr.removeUpdates(this);				
+				locMgr.removeUpdates(this);
 			}
-			
+
 			// if the location reading is more accurate than the last, update
 			// the view
 			if (lastAccuracy > currentAccuracy || needUpdate) {
 				lastAccuracy = currentAccuracy;
 				needUpdate = false;
-				populateLocation(location);				
+				populateLocation(location);
 			}
 		}
 	}
