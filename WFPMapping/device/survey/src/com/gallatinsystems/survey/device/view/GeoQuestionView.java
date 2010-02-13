@@ -45,6 +45,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private TextView elevationLabel;
 	private EditText elevationField;
 	private float lastAccuracy;
+	private boolean needUpdate = false;
 
 	public GeoQuestionView(Context context, Question q) {
 		super(context, q);
@@ -106,17 +107,10 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-		//	Location location = locMgr
-		//			.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			Location location = null;
-			
-			if (location != null) {
-				populateLocation(location);
-			} else {
+				needUpdate = true;
 				lastAccuracy = UNKNOWN_ACCURACY;
 				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-						1000, 0, this);
-			}
+						1000, 0, this);			
 		} else {
 			// we can't turn GPS on directly, the best we can do is launch the
 			// settings page
@@ -189,8 +183,8 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	 * called by the system when it gets location updates.
 	 */
 	public void onLocationChanged(Location location) {
-		float currentAccuracy = location.getAccuracy();
-		// if accuracy is 0 then the gps has no idea where we're at
+		float currentAccuracy = location.getAccuracy();		
+		// if accuracy is 0 then the gps has no idea where we're at		
 		if (currentAccuracy > 0) {
 		
 			// if we're decreasing in accuracy or staying the same, or if we're
@@ -199,14 +193,15 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 					|| currentAccuracy <= ACCURACY_THRESHOLD) {
 				LocationManager locMgr = (LocationManager) getContext()
 						.getSystemService(Context.LOCATION_SERVICE);
-				locMgr.removeUpdates(this);
+				locMgr.removeUpdates(this);				
 			}
 			
 			// if the location reading is more accurate than the last, update
 			// the view
-			if (lastAccuracy > currentAccuracy) {
+			if (lastAccuracy > currentAccuracy || needUpdate) {
 				lastAccuracy = currentAccuracy;
-				populateLocation(location);
+				needUpdate = false;
+				populateLocation(location);				
 			}
 		}
 	}
