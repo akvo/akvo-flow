@@ -110,7 +110,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 				needUpdate = true;
 				lastAccuracy = UNKNOWN_ACCURACY;
 				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-						1000, 0, this);			
+						0, 0, this);			
 		} else {
 			// we can't turn GPS on directly, the best we can do is launch the
 			// settings page
