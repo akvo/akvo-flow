@@ -4,8 +4,8 @@
 	android:layout_height="fill_parent">
 	<!--
 		NOTE: the apiKey below is tied to Chris's local debug key. This must
-		be changed to the version of the key signed with the key of whoever
-		is building the APK
+		be changed to the version of the key signed with the release key when
+		we launch
 	-->
 	<com.google.android.maps.MapView
 		android:id="@+id/mapview" android:layout_width="fill_parent"
@@ -21,8 +21,11 @@
 			android:paddingLeft="5px" android:paddingTop="5px"
 			android:paddingRight="5px" android:paddingBottom="5px">
 			<Button android:id="@+id/addpoint_button"
-				android:layout_width="fill_parent" android:layout_height="wrap_content"
-				android:text="Add Point"></Button>
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:text="@string/addpoint" />
+			<Button android:id="@+id/completeplot_button"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:text="@string/completeplot" android:layout_toRightOf="@id/addpoint_button" />
 		</com.gallatinsystems.survey.device.view.TransparentPanel>
 	</LinearLayout>
 </FrameLayout>

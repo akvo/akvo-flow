@@ -1,7 +1,5 @@
 package com.gallatinsystems.survey.device;
 
-import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,38 +7,41 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+
 /**
- * this activity is used to edit a user's profile information and persist it to
- * the database.
+ * create or edit a new Plot record
+ * 
+ * TODO: include current userID?
  * 
  * @author Christopher Fagiani
  * 
  */
-public class UserEditActivity extends Activity {
+public class PlotEditActivity extends Activity {
 	private EditText displayName;
-	private EditText emailAddr;
-	private Long userId;
+	private EditText description;
+	private Long plotId;
 	private SurveyDbAdapter databaseAdaptor;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.useredit);
+		setContentView(R.layout.plotedit);
 
 		displayName = (EditText) findViewById(R.id.displayNameField);
-		emailAddr = (EditText) findViewById(R.id.emailField);
+		description = (EditText) findViewById(R.id.descField);
 
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
 
 		Button saveButton = (Button) findViewById(R.id.confirm);
 
-		userId = savedInstanceState != null ? savedInstanceState
+		plotId = savedInstanceState != null ? savedInstanceState
 				.getLong(SurveyDbAdapter.PK_ID_COL) : null;
-		if (userId == null) {
+		if (plotId == null) {
 			Bundle extras = getIntent().getExtras();
-			userId = extras != null ? extras
-					.getLong(SurveyDbAdapter.PK_ID_COL) : null;
+			plotId = extras != null ? extras.getLong(SurveyDbAdapter.PK_ID_COL)
+					: null;
 		}
 		populateFields();
 
@@ -56,20 +57,22 @@ public class UserEditActivity extends Activity {
 	 * put loaded data into the views for display
 	 */
 	private void populateFields() {
-		if (userId != null) {
-			Cursor user = databaseAdaptor.findUser(userId);
-			startManagingCursor(user);
-			displayName.setText(user.getString(user
+		if (plotId != null) {
+			Cursor plot = databaseAdaptor.findPlot(plotId);
+			startManagingCursor(plot);
+			displayName.setText(plot.getString(plot
 					.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-			emailAddr.setText(user.getString(user
-					.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+			description.setText(plot.getString(plot
+					.getColumnIndexOrThrow(SurveyDbAdapter.DESC_COL)));
 		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putLong(SurveyDbAdapter.PK_ID_COL, userId);
+		if(outState != null && plotId != null){
+			outState.putLong(SurveyDbAdapter.PK_ID_COL, plotId);
+		}
 	}
 
 	@Override
@@ -84,20 +87,19 @@ public class UserEditActivity extends Activity {
 		populateFields();
 	}
 
-	protected void onDestroy(){
+	protected void onDestroy() {
 		super.onDestroy();
-		if(databaseAdaptor != null){
+		if (databaseAdaptor != null) {
 			databaseAdaptor.close();
 		}
 	}
-	
+
 	/**
-	 * save the name and email address to the db
+	 * save the name and description to the db
 	 */
 	private void saveState() {
 		String name = displayName.getText().toString();
-		String email = emailAddr.getText().toString();
-
-		databaseAdaptor.createOrUpdateUser(userId, name, email);
+		String desc = description.getText().toString();
+		databaseAdaptor.createOrUpdatePlot(plotId, name, desc,null);
 	}
 }

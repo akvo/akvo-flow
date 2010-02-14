@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -21,10 +22,14 @@ import com.google.android.maps.Overlay;
 public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		LocationListener {
 
+	public static final String PLOT_ID = "plotid";
+
 	private MapController mapController;
 	private MapView mapView;
 	private MyLocationOverlay myLocation;
 	private LocationManager locMgr;
+	private String plotId;
+	private SurveyDbAdapter dbAdaptor;
 
 	private static final float MINIMUM_ACCURACY = 1000f;
 	private static final int INITIAL_ZOOM_LEVEL = 16;
@@ -39,18 +44,32 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		mapController.setZoom(INITIAL_ZOOM_LEVEL);
 		Button addPointButton = (Button) findViewById(R.id.addpoint_button);
 		addPointButton.setOnClickListener(this);
+		// set up my location overlay
 		myLocation = new MyLocationOverlay(this, mapView);
 		List<Overlay> overlays = mapView.getOverlays();
 		overlays.add(myLocation);
+
 		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		// TODO: make sure GPS is on (maybe do this before launching this
-		// activity)
+		// handle instance state
+		plotId = savedInstanceState != null ? savedInstanceState
+				.getString(SurveyDbAdapter.PK_ID_COL) : null;
+		if (plotId == null) {
+			Bundle extras = getIntent().getExtras();
+			plotId = extras != null ? extras.getString(PLOT_ID) : null;
+		}
+		dbAdaptor = new SurveyDbAdapter(this);
+		dbAdaptor.open();
 
 	}
 
 	protected boolean isRouteDisplayed() {
 		return false;
+	}
+
+	public void onDestroy() {
+		super.onDestroy();
+		dbAdaptor.close();
 	}
 
 	public void onPause() {
@@ -71,12 +90,17 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 				LOCATION_UPDATE_FREQ, 0, this);
 	}
 
+	/**
+	 * TODO: add handler for onComplete click
+	 */
 	@Override
 	public void onClick(View v) {
 		GeoPoint point = myLocation.getMyLocation();
 		if (point != null) {
 			mapController.animateTo(point);
 			mapView.invalidate();
+			dbAdaptor.savePlotPoint(plotId, decodeLocation(point
+					.getLatitudeE6()), decodeLocation(point.getLongitudeE6()));
 		}
 	}
 
@@ -84,6 +108,10 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		Double latitude = loc.getLatitude() * 1E6;
 		Double longitude = loc.getLongitude() * 1E6;
 		return new GeoPoint(latitude.intValue(), longitude.intValue());
+	}
+
+	private String decodeLocation(int val) {
+		return "" + ((double) val / (double) 1E6);
 	}
 
 	/**

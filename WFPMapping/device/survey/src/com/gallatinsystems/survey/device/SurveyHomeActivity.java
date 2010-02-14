@@ -36,6 +36,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public static final int LIST_USER_ACTIVITY = 2;
 	public static final int SETTINGS_ACTIVITY = 3;
 	public static final int PLOTTING_ACTIVITY = 4;
+	public static final int PLOT_LIST_ACTIVITY = 5;
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
@@ -54,7 +55,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 
 		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState
-				.getString(SurveyDbAdapter.USER_ID_COL) : null;
+				.getString(SurveyDbAdapter.PK_ID_COL) : null;
 		currentName = savedInstanceState != null ? savedInstanceState
 				.getString(SurveyDbAdapter.DISP_NAME_COL) : null;
 		if (currentName != null) {
@@ -95,8 +96,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		} else if (selected.equals(HomeMenuViewAdapter.PLOT_OP)) {
 			LocationManager locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-				Intent i = new Intent(v.getContext(), RegionPlotActivity.class);
-				startActivityForResult(i, PLOTTING_ACTIVITY);
+				Intent i = new Intent(v.getContext(), ListPlotActivity.class);
+				startActivityForResult(i, PLOT_LIST_ACTIVITY);
 			} else {
 				ViewUtil.showGPSDialog(this);
 			}
@@ -150,20 +151,31 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			if (resultCode == RESULT_OK) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					currentUserId = bundle
-							.getString(SurveyDbAdapter.USER_ID_COL);
+					currentUserId = bundle.getString(SurveyDbAdapter.PK_ID_COL);
 					currentName = bundle
 							.getString(SurveyDbAdapter.DISP_NAME_COL);
 					populateFields();
 				}
 			}
+			break;
+		case PLOT_LIST_ACTIVITY:
+			if (resultCode == RESULT_OK) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					String plotId = bundle.getString(SurveyDbAdapter.PK_ID_COL);
+					Intent i = new Intent(this, RegionPlotActivity.class);
+					i.putExtra(RegionPlotActivity.PLOT_ID, plotId);
+					startActivityForResult(i, PLOTTING_ACTIVITY);
+				}
+			}
+			break;
 		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString(SurveyDbAdapter.USER_ID_COL, currentUserId);
+		outState.putString(SurveyDbAdapter.PK_ID_COL, currentUserId);
 		outState.putString(SurveyDbAdapter.DISP_NAME_COL, currentName);
 	}
 

@@ -20,20 +20,26 @@ import com.gallatinsystems.survey.device.domain.QuestionResponse;
  * 
  */
 public class SurveyDbAdapter {
-	public static final String NAME_COL = "name";
+
 	public static final String QUESTION_COL = "question_id";
 	public static final String ANSWER_COL = "answer_value";
 	public static final String ANSWER_TYPE_COL = "answer_type";
 	public static final String SURVEY_RESPONDENT_ID_COL = "survey_respondent_id";
 	public static final String RESP_ID_COL = "survey_response_id";
 	public static final String SURVEY_ID_COL = "survey_id";
-	public static final String USER_ID_COL = "_id";
+	public static final String PK_ID_COL = "_id";
 	public static final String USER_FK_COL = "user_id";
 	public static final String DISP_NAME_COL = "display_name";
 	public static final String EMAIL_COL = "email";
 	public static final String SUBMITTED_FLAG_COL = "submitted_flag";
 	public static final String SUBMITTED_DATE_COL = "submitted_date";
 	public static final String DELIVERED_DATE_COL = "delivered_date";
+	public static final String CREATED_DATE_COL = "created_date";
+	public static final String PLOT_FK_COL = "plot_id";
+	public static final String LAT_COL = "lat";
+	public static final String LON_COL = "lon";
+	public static final String DESC_COL = "description";
+	public static final String STATUS_COL = "status";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -43,7 +49,7 @@ public class SurveyDbAdapter {
 	 * Database creation sql statement
 	 */
 	private static final String SURVEY_TABLE_CREATE = "create table survey (survey_id integer primary key autoincrement, "
-			+ "title text not null);";
+			+ "display_name text not null);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer);";
@@ -53,15 +59,21 @@ public class SurveyDbAdapter {
 
 	private static final String USER_TABLE_CREATE = "create table user (_id integer primary key autoincrement, display_name text not null, email text not null);";
 
+	private static final String PLOT_TABLE_CREATE = "create table plot (_id integer primary key autoincrement, display_name text, description text, created_date text, user_id integer, status text);";
+
+	private static final String PLOT_POINT_TABLE_CREATE = "create table plot_point (_id integer primary key autoincrement, plot_id integer not null, lat text, lon text, created_date text);";
+
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
 	private static final String RESPONDENT_TABLE = "survey_respondent";
 	private static final String RESPONSE_TABLE = "survey_response";
 	private static final String USER_TABLE = "user";
+	private static final String PLOT_TABLE = "plot";
+	private static final String PLOT_POINT_TABLE = "plot_point";
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 
-	private static final int DATABASE_VERSION = 7;
+	private static final int DATABASE_VERSION = 9;
 
 	private final Context context;
 
@@ -77,7 +89,8 @@ public class SurveyDbAdapter {
 			db.execSQL(SURVEY_TABLE_CREATE);
 			db.execSQL(SURVEY_RESPONDENT_CREATE);
 			db.execSQL(SURVEY_RESPONSE_CREATE);
-
+			db.execSQL(PLOT_TABLE_CREATE);
+			db.execSQL(PLOT_POINT_TABLE_CREATE);
 		}
 
 		@Override
@@ -87,6 +100,8 @@ public class SurveyDbAdapter {
 			db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 			onCreate(db);
 		}
@@ -109,12 +124,11 @@ public class SurveyDbAdapter {
 	 * @throws SQLException
 	 *             if the database could be neither opened or created
 	 */
-	public SurveyDbAdapter open() throws SQLException {		
+	public SurveyDbAdapter open() throws SQLException {
 		databaseHelper = new DatabaseHelper(context);
 		database = databaseHelper.getWritableDatabase();
 		return this;
 	}
-	
 
 	/**
 	 * close the db
@@ -135,7 +149,7 @@ public class SurveyDbAdapter {
 	 */
 	public long createSurvey(String name) {
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(NAME_COL, name);
+		initialValues.put(DISP_NAME_COL, name);
 		return database.insert(SURVEY_TABLE, null, initialValues);
 	}
 
@@ -148,9 +162,9 @@ public class SurveyDbAdapter {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
 				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_COL, DISP_NAME_COL,
-				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL }, SUBMITTED_FLAG_COL
-				+ "= 'true' AND " + DELIVERED_DATE_COL + " is null", null,
-				null, null, null);
+				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL },
+				SUBMITTED_FLAG_COL + "= 'true' AND " + DELIVERED_DATE_COL
+						+ " is null", null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -179,7 +193,8 @@ public class SurveyDbAdapter {
 	public void markDataAsSent(HashSet<String> idList) {
 		if (idList != null) {
 			ContentValues updatedValues = new ContentValues();
-			updatedValues.put(DELIVERED_DATE_COL, System.currentTimeMillis() + "");
+			updatedValues.put(DELIVERED_DATE_COL, System.currentTimeMillis()
+					+ "");
 			// enhanced FOR ok here since we're dealing with an implicit
 			// iterator anyway
 			for (String id : idList) {
@@ -198,8 +213,8 @@ public class SurveyDbAdapter {
 	 * 
 	 * @return
 	 */
-	public Cursor fetchUsers() {
-		Cursor cursor = database.query(USER_TABLE, new String[] { USER_ID_COL,
+	public Cursor listUsers() {
+		Cursor cursor = database.query(USER_TABLE, new String[] { PK_ID_COL,
 				DISP_NAME_COL, EMAIL_COL }, null, null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
@@ -213,10 +228,10 @@ public class SurveyDbAdapter {
 	 * @param id
 	 * @return
 	 */
-	public Cursor fetchUser(Long id) {
-		Cursor cursor = database.query(USER_TABLE, new String[] { USER_ID_COL,
-				DISP_NAME_COL, EMAIL_COL }, USER_ID_COL + "=?",
-				new String[] { id.toString() }, null, null, null);
+	public Cursor findUser(Long id) {
+		Cursor cursor = database.query(USER_TABLE, new String[] { PK_ID_COL,
+				DISP_NAME_COL, EMAIL_COL }, PK_ID_COL + "=?", new String[] { id
+				.toString() }, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -241,7 +256,7 @@ public class SurveyDbAdapter {
 		if (idVal == null) {
 			idVal = database.insert(USER_TABLE, null, initialValues);
 		} else {
-			if (database.update(USER_TABLE, initialValues, USER_ID_COL + "=?",
+			if (database.update(USER_TABLE, initialValues, PK_ID_COL + "=?",
 					new String[] { idVal.toString() }) > 0) {
 			}
 		}
@@ -324,4 +339,80 @@ public class SurveyDbAdapter {
 		return database.insert(RESPONDENT_TABLE, null, initialValues);
 	}
 
+	/**
+	 * creates a new plot point in the database for the plot and coordinates
+	 * sent in
+	 * 
+	 * @param plotId
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
+	public long savePlotPoint(String plotId, String lat, String lon) {
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(PLOT_FK_COL, plotId);
+		initialValues.put(LAT_COL, lat);
+		initialValues.put(LON_COL, lon);
+		initialValues.put(CREATED_DATE_COL, System.currentTimeMillis());
+		return database.insert(PLOT_POINT_TABLE, null, initialValues);
+	}
+
+	/**
+	 * returns a cursor listing all plots
+	 * 
+	 * @return
+	 */
+	public Cursor listPlots() {
+		Cursor cursor = database.query(PLOT_TABLE, new String[] { PK_ID_COL,
+				DISP_NAME_COL, DESC_COL, CREATED_DATE_COL, STATUS_COL }, null,
+				null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+
+	/**
+	 * retrieves a plot by ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Cursor findPlot(Long id) {
+		Cursor cursor = database.query(PLOT_TABLE, new String[] { PK_ID_COL,
+				DISP_NAME_COL, DESC_COL, CREATED_DATE_COL, STATUS_COL },
+				PK_ID_COL + "=?", new String[] { id.toString() }, null, null,
+				null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+
+	/**
+	 * if the ID is populated, this will update a plot record. Otherwise, it
+	 * will be inserted
+	 * 
+	 * @param id
+	 * @param name
+	 * @param email
+	 * @return
+	 */
+	public long createOrUpdatePlot(Long id, String name, String desc, String userId) {
+		ContentValues initialValues = new ContentValues();
+		Long idVal = id;
+		initialValues.put(DISP_NAME_COL, name);
+		initialValues.put(DESC_COL, desc);
+		initialValues.put(CREATED_DATE_COL, System.currentTimeMillis());
+		initialValues.put(USER_FK_COL, userId);
+
+		if (idVal == null) {
+			idVal = database.insert(PLOT_TABLE, null, initialValues);
+		} else {
+			if (database.update(PLOT_TABLE, initialValues, PK_ID_COL + "=?",
+					new String[] { idVal.toString() }) > 0) {
+			}
+		}
+		return idVal;
+	}
 }

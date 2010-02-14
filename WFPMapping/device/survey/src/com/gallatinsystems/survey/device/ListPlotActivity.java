@@ -17,15 +17,17 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 
 /**
- * This activity will list all the users in the database and present them in
- * list form. From the list they can be either edited or selected for use as the
- * "current user". New users can also be added to the system using this activity
- * by activating the menu.
+ * Lists out all the plots currently in the DB and allows the user to
+ * edit/create a new one
+ * 
+ * TODO: see if we can refactor this and the UserListActivity into a generic
+ * class. they're almost identical. Probably some sort of delegate (since we
+ * can't control Activity construction)
  * 
  * @author Christopher Fagiani
  * 
  */
-public class ListUserActivity extends ListActivity {
+public class ListPlotActivity extends ListActivity {
 	private static final int ACTIVITY_CREATE = 0;
 	private static final int ACTIVITY_EDIT = 1;
 
@@ -39,12 +41,12 @@ public class ListUserActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.itemlist);
-		
-		TextView inst = (TextView)findViewById(R.id.instructions);
-		TextView emp = (TextView)findViewById(android.R.id.empty);		
-		inst.setText(R.string.userinstructions);
-		emp.setText(R.string.nouser);
-		
+
+		TextView inst = (TextView) findViewById(R.id.instructions);
+		TextView emp = (TextView) findViewById(android.R.id.empty);
+		inst.setText(R.string.plotinstructions);
+		emp.setText(R.string.noplots);
+
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
 		fillData();
@@ -52,13 +54,13 @@ public class ListUserActivity extends ListActivity {
 	}
 
 	/**
-	 * loads all users from the database and binds it to the listView via a
+	 * loads all plots from the database and binds it to the listView via a
 	 * SimpleCursorAdaptor
 	 */
 	private void fillData() {
 		// Get all of the rows from the database and create the item list
-		Cursor userCursor = databaseAdaptor.listUsers();
-		startManagingCursor(userCursor);
+		Cursor plotCursor = databaseAdaptor.listPlots();
+		startManagingCursor(plotCursor);
 
 		// Create an array to specify the fields we want to display in the list
 
@@ -70,17 +72,17 @@ public class ListUserActivity extends ListActivity {
 
 		// Now create a simple cursor adapter and set it to display
 		SimpleCursorAdapter notes = new SimpleCursorAdapter(this,
-				R.layout.itemlistrow, userCursor, from, to);
+				R.layout.itemlistrow, plotCursor, from, to);
 		setListAdapter(notes);
 	}
 
 	/**
-	 * presents a single button ("Add User") when the user clicks the menu key
+	 * presents a single button ("Add Plot") when the user clicks the menu key
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, INSERT_ID, 0, R.string.adduser);
+		menu.add(0, INSERT_ID, 0, R.string.addplot);
 		return true;
 	}
 
@@ -91,7 +93,7 @@ public class ListUserActivity extends ListActivity {
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 		case INSERT_ID:
-			createUser();
+			createPlot();
 			return true;
 		}
 
@@ -105,7 +107,7 @@ public class ListUserActivity extends ListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(0, EDIT_ID, 0, R.string.editmenu);
+		menu.add(0, EDIT_ID, 0, R.string.editplot);
 	}
 
 	/**
@@ -126,10 +128,10 @@ public class ListUserActivity extends ListActivity {
 	}
 
 	/**
-	 * spawn the editUserActivity in "create" mode
+	 * spawn the editPlotActivity in "create" mode
 	 */
-	private void createUser() {
-		Intent i = new Intent(this, UserEditActivity.class);
+	private void createPlot() {
+		Intent i = new Intent(this, PlotEditActivity.class);
 		startActivityForResult(i, ACTIVITY_CREATE);
 	}
 
@@ -141,15 +143,13 @@ public class ListUserActivity extends ListActivity {
 	protected void onListItemClick(ListView list, View view, int position,
 			long id) {
 		super.onListItemClick(list, view, position, id);
-		Intent intent = new Intent();		
-		Cursor user = databaseAdaptor.findUser(id);
-		startManagingCursor(user);
-		intent.putExtra(SurveyDbAdapter.PK_ID_COL, user.getString(user
+		Intent intent = new Intent();
+		Cursor plot = databaseAdaptor.findPlot(id);
+		startManagingCursor(plot);
+		intent.putExtra(SurveyDbAdapter.PK_ID_COL, plot.getString(plot
 				.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
-		intent.putExtra(SurveyDbAdapter.DISP_NAME_COL, user.getString(user
+		intent.putExtra(SurveyDbAdapter.DISP_NAME_COL, plot.getString(plot
 				.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-		intent.putExtra(SurveyDbAdapter.EMAIL_COL, user.getString(user
-				.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -164,10 +164,10 @@ public class ListUserActivity extends ListActivity {
 		super.onActivityResult(requestCode, resultCode, intent);
 		fillData();
 	}
-	
-	protected void onDestroy(){
+
+	protected void onDestroy() {
 		super.onDestroy();
-		if(databaseAdaptor != null){
+		if (databaseAdaptor != null) {
 			databaseAdaptor.close();
 		}
 	}

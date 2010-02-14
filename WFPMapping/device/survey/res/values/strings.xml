@@ -19,6 +19,7 @@
 	<string name="maplabel">Mapping</string>
 	<string name="unknown">unknown</string>
 	<string name="adduser">Add User</string>
+	<string name="nouser">No Users!</string>
 	<string name="displayname">Display Name</string>
 	<string name="email">Email Address</string>
 	<string name="userinstructions">Select the current user by clicking. To create a new user, press the Menu button and select Add User. Long-click to edit a user.</string>
@@ -39,4 +40,11 @@
 	<string name="mandatorywarning">You must answer all questions marked with a *</string>
 	<string name="cannotsave">Cannot submit responses</string>
 	<string name="plottinglabel">Area Plotting</string>
+	<string name="addpoint">Add Point</string>
+	<string name="completeplot">Complete Plot</string>
+	<string name="noplots">No Plots</string>
+	<string name="addplot">Create New Plot</string>
+	<string name="editplot">Edit Plot</string>
+	<string name="description">Description</string>
+	<string name="plotinstructions">Select the desired plot by clicking. To create a new plot, press the Menu button and select Add New Plot. Long-click to edit the name or description of an existing plot.</string>
 </resources>

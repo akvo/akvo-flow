@@ -6,9 +6,9 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-public class TransparentPanel extends LinearLayout {
+public class TransparentPanel extends RelativeLayout {
 private Paint	innerPaint, borderPaint ;
     
 	public TransparentPanel(Context context, AttributeSet attrs) {
