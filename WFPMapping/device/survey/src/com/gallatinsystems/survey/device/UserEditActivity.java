@@ -39,8 +39,8 @@ public class UserEditActivity extends Activity {
 				.getLong(SurveyDbAdapter.PK_ID_COL) : null;
 		if (userId == null) {
 			Bundle extras = getIntent().getExtras();
-			userId = extras != null ? extras
-					.getLong(SurveyDbAdapter.PK_ID_COL) : null;
+			userId = extras != null ? new Long(extras
+					.getString(SurveyDbAdapter.PK_ID_COL)) : null;
 		}
 		populateFields();
 
@@ -84,13 +84,13 @@ public class UserEditActivity extends Activity {
 		populateFields();
 	}
 
-	protected void onDestroy(){
+	protected void onDestroy() {
 		super.onDestroy();
-		if(databaseAdaptor != null){
+		if (databaseAdaptor != null) {
 			databaseAdaptor.close();
 		}
 	}
-	
+
 	/**
 	 * save the name and email address to the db
 	 */

@@ -19,6 +19,13 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
+/**
+ * Activity to handle display of a mapview that allows the user to map a region
+ * by recording GPS way-points.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		LocationListener {
 
@@ -72,13 +79,18 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		dbAdaptor.close();
 	}
 
+	/**
+	 * stop getting location updates when we're paused (to conserve battery life). 
+	 */
 	public void onPause() {
 		super.onPause();
 		myLocation.disableMyLocation();
-		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				LOCATION_UPDATE_FREQ, 0, this);
+		locMgr.removeUpdates(this);
 	}
 
+	/**
+	 * starts listening for location updates
+	 */
 	public void onResume() {
 		super.onResume();
 		myLocation.enableMyLocation();
