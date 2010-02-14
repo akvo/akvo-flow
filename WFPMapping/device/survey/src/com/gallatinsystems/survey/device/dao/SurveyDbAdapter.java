@@ -398,7 +398,8 @@ public class SurveyDbAdapter {
 	 * @param email
 	 * @return
 	 */
-	public long createOrUpdatePlot(Long id, String name, String desc, String userId) {
+	public long createOrUpdatePlot(Long id, String name, String desc,
+			String userId) {
 		ContentValues initialValues = new ContentValues();
 		Long idVal = id;
 		initialValues.put(DISP_NAME_COL, name);
@@ -414,5 +415,21 @@ public class SurveyDbAdapter {
 			}
 		}
 		return idVal;
+	}
+
+	/**
+	 * retrieves all the points for a given plot
+	 * 
+	 * @param plotId
+	 * @return
+	 */
+	public Cursor listPlotPoints(String plotId) {
+		Cursor cursor = database.query(PLOT_POINT_TABLE, new String[] {
+				PK_ID_COL, LAT_COL, LON_COL, CREATED_DATE_COL }, PLOT_FK_COL
+				+ " = ?", new String[] { plotId }, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
 	}
 }

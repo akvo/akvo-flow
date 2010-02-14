@@ -6,50 +6,51 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
-public class TransparentPanel extends RelativeLayout {
-private Paint	innerPaint, borderPaint ;
-    
+/**
+ * Simple transparent panel adapted from code found here:
+ * <code> http://blog.pocketjourney.com/2008/03/15/tutorial-1-transparent-panel-linear-layout-on-mapview-google-map/</code>
+ * 
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
+public class TransparentPanel extends LinearLayout {
+
+	private static final int LINE_WIDTH = 2;
+	private Paint innerColor;
+	private Paint borderColor;
+
 	public TransparentPanel(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init();
+		setupColors();
 	}
 
 	public TransparentPanel(Context context) {
 		super(context);
-		init();
+		setupColors();
 	}
 
-	private void init() {
-		innerPaint = new Paint();
-		innerPaint.setARGB(225, 75, 75, 75); //gray
-		innerPaint.setAntiAlias(true);
+	private void setupColors() {
+		innerColor = new Paint();
+		innerColor.setARGB(225, 75, 75, 75);
+		innerColor.setAntiAlias(true);
 
-		borderPaint = new Paint();
-		borderPaint.setARGB(255, 255, 255, 255);
-		borderPaint.setAntiAlias(true);
-		borderPaint.setStyle(Style.STROKE);
-		borderPaint.setStrokeWidth(2);
-	}
-	
-	public void setInnerPaint(Paint innerPaint) {
-		this.innerPaint = innerPaint;
+		borderColor = new Paint();
+		borderColor.setARGB(255, 255, 255, 255);
+		borderColor.setAntiAlias(true);
+		borderColor.setStyle(Style.STROKE);
+		borderColor.setStrokeWidth(LINE_WIDTH);
 	}
 
-	public void setBorderPaint(Paint borderPaint) {
-		this.borderPaint = borderPaint;
-	}
-
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
-    	
-    	RectF drawRect = new RectF();
-    	drawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
-    	
-    	canvas.drawRoundRect(drawRect, 5, 5, innerPaint);
-		canvas.drawRoundRect(drawRect, 5, 5, borderPaint);
-		
+	@Override
+	protected void dispatchDraw(Canvas canvas) {
+		RectF drawRect = new RectF();
+		drawRect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+		// draw the panel
+		canvas.drawRoundRect(drawRect, 5, 5, innerColor);
+		canvas.drawRoundRect(drawRect, 5, 5, borderColor);
 		super.dispatchDraw(canvas);
-    }
+	}
 }
