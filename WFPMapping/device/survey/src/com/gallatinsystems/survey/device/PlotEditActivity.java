@@ -40,8 +40,8 @@ public class PlotEditActivity extends Activity {
 				.getLong(SurveyDbAdapter.PK_ID_COL) : null;
 		if (plotId == null) {
 			Bundle extras = getIntent().getExtras();
-			plotId = extras != null ? extras.getLong(SurveyDbAdapter.PK_ID_COL)
-					: null;
+			plotId = extras != null ? new Long(extras
+					.getString(SurveyDbAdapter.PK_ID_COL)) : null;
 		}
 		populateFields();
 
@@ -70,7 +70,7 @@ public class PlotEditActivity extends Activity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if(outState != null && plotId != null){
+		if (outState != null && plotId != null) {
 			outState.putLong(SurveyDbAdapter.PK_ID_COL, plotId);
 		}
 	}
@@ -100,6 +100,6 @@ public class PlotEditActivity extends Activity {
 	private void saveState() {
 		String name = displayName.getText().toString();
 		String desc = description.getText().toString();
-		databaseAdaptor.createOrUpdatePlot(plotId, name, desc,null);
+		databaseAdaptor.createOrUpdatePlot(plotId, name, desc, null);
 	}
 }
