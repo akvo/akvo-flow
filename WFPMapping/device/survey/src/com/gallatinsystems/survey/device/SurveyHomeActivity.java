@@ -4,9 +4,11 @@ import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.HomeMenuViewAdapter;
 
 /**
@@ -32,6 +35,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public static final int SURVEY_ACTIVITY = 1;
 	public static final int LIST_USER_ACTIVITY = 2;
 	public static final int SETTINGS_ACTIVITY = 3;
+	public static final int PLOTTING_ACTIVITY = 4;
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
@@ -81,12 +85,21 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		String selected = HomeMenuViewAdapter.operations[position];
 		v.setSelected(false);
+
 		if (selected.equals(HomeMenuViewAdapter.USER_OP)) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
 		} else if (selected.equals(HomeMenuViewAdapter.CONF_OP)) {
 			Intent i = new Intent(v.getContext(), SettingsActivity.class);
 			startActivityForResult(i, SETTINGS_ACTIVITY);
+		} else if (selected.equals(HomeMenuViewAdapter.PLOT_OP)) {
+			LocationManager locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+				Intent i = new Intent(v.getContext(), RegionPlotActivity.class);
+				startActivityForResult(i, PLOTTING_ACTIVITY);
+			} else {
+				ViewUtil.showGPSDialog(this);
+			}
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;

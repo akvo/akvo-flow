@@ -50,13 +50,11 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	// references to our buttons
 	private Integer[] buttonImages = { R.drawable.users, R.drawable.checklist,
 			R.drawable.checklist, R.drawable.checklist, R.drawable.map,
-			R.drawable.config
-
-	};
+			R.drawable.plotting, R.drawable.settings };
 
 	private Integer[] buttonLabels = { R.string.userlabel, R.string.wplabel,
 			R.string.hhlabel, R.string.publabel, R.string.maplabel,
-			R.string.settingslabel };
+			R.string.plottinglabel, R.string.settingslabel };
 
 	public static final String USER_OP = "USER";
 	public static final String WPS_OP = "WP";
@@ -64,7 +62,8 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	public static final String PUBS_OP = "PUB";
 	public static final String MAP_OP = "MAP";
 	public static final String CONF_OP = "CONF";
+	public static final String PLOT_OP = "PLOT";
 	public static final String[] operations = { USER_OP, WPS_OP, HHS_OP,
-			PUBS_OP, MAP_OP, CONF_OP };
+			PUBS_OP, MAP_OP, PLOT_OP, CONF_OP };
 
 }

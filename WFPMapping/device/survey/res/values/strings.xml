@@ -38,4 +38,5 @@
 	<string name="okbutton">OK</string>
 	<string name="mandatorywarning">You must answer all questions marked with a *</string>
 	<string name="cannotsave">Cannot submit responses</string>
+	<string name="plottinglabel">Area Plotting</string>
 </resources>
