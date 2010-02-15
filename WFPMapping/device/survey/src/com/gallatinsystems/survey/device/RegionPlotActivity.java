@@ -152,7 +152,6 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 				idList.remove(id);
 			}
 		}
-
 	}
 
 	@Override

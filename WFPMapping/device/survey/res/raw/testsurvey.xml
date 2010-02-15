@@ -9,7 +9,8 @@
 				<option value="pu">Peri-Urban</option>
 				<option value="st">Small Town</option>
 				<option value="u">Urban</option>
-			</options>
+			</options>			
+			<video src="http://www.gallatinsystems.com/WFPDevice/video/demoVid.mp4"/>
 		</question>
 		<question id="q2" order="2" mandatory="true" type="free">
 			<text>Name of Community?</text>

@@ -16,23 +16,23 @@ import java.util.ArrayList;
  * 
  */
 public class Question {
-    private String id;
-    private String text;
-    private int order;
-    private String tip;
-    private ValidationRule validationRule;
-    private String renderType;
-    
+	private String id;
+	private String text;
+	private int order;
+	private String tip;
+	private ValidationRule validationRule;
+	private String renderType;
+	private String video;
 
-    public static final String FREE_TYPE = "free";
-    public static final String OPTION_TYPE = "option";
-    public static final String GEO_TYPE = "geo";
-    public static final String DATE_TYPE = "date";
-    public static final String TEXTONLY_TYPE = "textonly";
-    public static final String PHOTO_TYPE = "photo";
-    public static final String SPINNER_TYPE = "spinner";
+	public static final String FREE_TYPE = "free";
+	public static final String OPTION_TYPE = "option";
+	public static final String GEO_TYPE = "geo";
+	public static final String DATE_TYPE = "date";
+	public static final String TEXTONLY_TYPE = "textonly";
+	public static final String PHOTO_TYPE = "photo";
+	public static final String SPINNER_TYPE = "spinner";
 
-    public String getRenderType() {
+	public String getRenderType() {
 		return renderType;
 	}
 
@@ -41,99 +41,107 @@ public class Question {
 	}
 
 	public int getOrder() {
-        return order;
-    }
+		return order;
+	}
 
-    public void setOrder(int order) {
-        this.order = order;
-    }
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
-    private boolean mandatory;
-    private String type;
-    private ArrayList<Option> options;
-    private boolean allowOther;
-    private ArrayList<Dependency> dependencies;
+	private boolean mandatory;
+	private String type;
+	private ArrayList<Option> options;
+	private boolean allowOther;
+	private ArrayList<Dependency> dependencies;
 
-    public ArrayList<Dependency> getDependencies() {
-        return dependencies;
-    }
+	public ArrayList<Dependency> getDependencies() {
+		return dependencies;
+	}
 
-    public void setDependencies(ArrayList<Dependency> dependencies) {
-        this.dependencies = dependencies;
-    }
+	public void setDependencies(ArrayList<Dependency> dependencies) {
+		this.dependencies = dependencies;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getText() {
-        return text;
-    }
+	public String getText() {
+		return text;
+	}
 
-    public void setText(String text) {
-        this.text = text;
-    }
+	public void setText(String text) {
+		this.text = text;
+	}
 
-    public boolean isMandatory() {
-        return mandatory;
-    }
+	public boolean isMandatory() {
+		return mandatory;
+	}
 
-    public void setMandatory(boolean mandatory) {
-        this.mandatory = mandatory;
-    }
+	public void setMandatory(boolean mandatory) {
+		this.mandatory = mandatory;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public ArrayList<Option> getOptions() {
-        return options;
-    }
+	public ArrayList<Option> getOptions() {
+		return options;
+	}
 
-    public void setOptions(ArrayList<Option> options) {
-        this.options = options;
-    }
+	public void setOptions(ArrayList<Option> options) {
+		this.options = options;
+	}
 
-    public boolean isAllowOther() {
-        return allowOther;
-    }
+	public boolean isAllowOther() {
+		return allowOther;
+	}
 
-    public void setAllowOther(boolean allowOther) {
-        this.allowOther = allowOther;
-    }
+	public void setAllowOther(boolean allowOther) {
+		this.allowOther = allowOther;
+	}
 
-    public void addDependency(Dependency dep) {
-        if (dependencies == null) {
-            dependencies = new ArrayList<Dependency>();
-        }
-        dependencies.add(dep);
-    }
+	public void addDependency(Dependency dep) {
+		if (dependencies == null) {
+			dependencies = new ArrayList<Dependency>();
+		}
+		dependencies.add(dep);
+	}
 
-    public ValidationRule getValidationRule() {
-        return validationRule;
-    }
+	public ValidationRule getValidationRule() {
+		return validationRule;
+	}
 
-    public void setValidationRule(ValidationRule validationRule) {
-        this.validationRule = validationRule;
-    }
+	public void setValidationRule(ValidationRule validationRule) {
+		this.validationRule = validationRule;
+	}
 
-    public String getTip() {
-        return tip;
-    }
+	public String getTip() {
+		return tip;
+	}
 
-    public void setTip(String tip) {
-        this.tip = tip;
-    }
+	public void setTip(String tip) {
+		this.tip = tip;
+	}
 
-    public String toString() {
-        return text;
-    }
+	public String getVideo() {
+		return video;
+	}
+
+	public void setVideo(String video) {
+		this.video = video;
+	}
+
+	public String toString() {
+		return text;
+	}
 }

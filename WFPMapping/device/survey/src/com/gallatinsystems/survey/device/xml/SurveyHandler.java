@@ -41,6 +41,8 @@ public class SurveyHandler extends DefaultHandler {
     private static final String ALLOW_DEC = "allowDecimal";
     private static final String ALLOW_SIGN = "signed";
     private static final String RENDER_TYPE = "renderType";
+    private static final String VIDEO = "video";
+    private static final String SRC= "src";
 
     private Survey survey;
     private QuestionGroup currentQuestionGroup;
@@ -161,6 +163,10 @@ public class SurveyHandler extends DefaultHandler {
             currentValidation.setAllowDecimal(attributes.getValue(ALLOW_DEC));
             currentValidation.setAllowSigned(attributes.getValue(ALLOW_SIGN));
             currentValidation.setMaxLength(attributes.getValue(MAX_LENGTH));
+        }else if (localName.equalsIgnoreCase(VIDEO)){
+        	if(currentQuestion!= null){
+        		currentQuestion.setVideo(attributes.getValue(SRC));
+        	}
         }
     }
 }

@@ -35,12 +35,14 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
 public class QuestionView extends TableLayout implements
 		QuestionInteractionListener {
 
+
 	protected static final int DEFAULT_WIDTH = 300;
 	private TextView questionText;
 	protected Question question;
 	private QuestionResponse response;
 	private ArrayList<QuestionInteractionListener> listeners;
 	private ImageButton tipImage;
+	private ImageButton videoImage;
 
 	/**
 	 * install a single tableRow containing a textView with the question text
@@ -67,6 +69,7 @@ public class QuestionView extends TableLayout implements
 		if (question.getTip() != null) {
 			tipImage = new ImageButton(context);
 			tipImage.setImageResource(android.R.drawable.ic_dialog_info);
+
 			tr.addView(tipImage);
 			tipImage.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
@@ -86,6 +89,19 @@ public class QuestionView extends TableLayout implements
 
 				}
 			});
+		}
+		String video = question.getVideo();
+		if (video != null && video.trim().length() > 0) {
+			videoImage = new ImageButton(context);
+			videoImage.setImageResource(android.R.drawable.ic_media_play);
+
+			tr.addView(videoImage);
+			videoImage.setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					notifyQuestionListeners(QuestionInteractionEvent.VIDEO_TIP_VIEW);
+				}
+			});
+
 		}
 		addView(tr);
 		// if this question has 1 or more dependencies, then it needs to be

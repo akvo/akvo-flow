@@ -43,6 +43,10 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
+	private static final String VIDEO_PREFIX = "file:////";
+	private static final String HTTP_PREFIX = "http://";
+	private static final String VIDEO_TYPE = "video/*";
+	private static final String IMAGE_SUFFIX = ".jpg";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView photoSource;
 	private SurveyDbAdapter databaseAdaptor;
@@ -119,10 +123,12 @@ public class SurveyViewActivity extends TabActivity implements
 			if (resultCode == RESULT_OK) {
 				File f = new File(Environment.getExternalStorageDirectory()
 						.getAbsolutePath()
-						+ TEMP_PHOTO_NAME_PREFIX + ".jpg");
+						+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX);
 				String newName = Environment.getExternalStorageDirectory()
 						.getAbsolutePath()
-						+ TEMP_PHOTO_NAME_PREFIX + System.nanoTime() + ".jpg";
+						+ TEMP_PHOTO_NAME_PREFIX
+						+ System.nanoTime()
+						+ IMAGE_SUFFIX;
 				f.renameTo(new File(newName));
 
 				try {
@@ -162,10 +168,13 @@ public class SurveyViewActivity extends TabActivity implements
 
 	/**
 	 * event handler that can be used to handle events fired by individual
-	 * questions at thie Activity level. Because we can't launch the photo
+	 * questions at the Activity level. Because we can't launch the photo
 	 * activity from a view (we need to launch it from the activity), the photo
 	 * question view fires a QuestionInteractionEvent (to which this activity
 	 * listens). When we get the event, we can then spawn the camera activity.
+	 * 
+	 * Currently, this method supports handing TAKE_PHOTO_EVENT and
+	 * VIDEO_TIP_EVENT types
 	 */
 	public void onQuestionInteraction(QuestionInteractionEvent event) {
 		if (QuestionInteractionEvent.TAKE_PHOTO_EVENT.equals(event
@@ -176,9 +185,23 @@ public class SurveyViewActivity extends TabActivity implements
 			i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
 					.fromFile(new File(Environment
 							.getExternalStorageDirectory().getAbsolutePath()
-							+ TEMP_PHOTO_NAME_PREFIX + ".jpg")));
+							+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX)));
 			photoSource = event.getSource();
 			startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
+		} else if (QuestionInteractionEvent.VIDEO_TIP_VIEW.equals(event
+				.getEventType())) {
+			Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+			Uri uri = null;
+			String src = event.getSource().getQuestion().getVideo().trim();
+			if (src.toLowerCase().startsWith(HTTP_PREFIX)) {
+				uri = Uri.parse(src);
+			} else {
+				// if the source doesn't start with http, assume it's
+				// referencing device storage
+				uri = Uri.parse(VIDEO_PREFIX + src);
+			}
+			intent.setDataAndType(uri, VIDEO_TYPE);
+			startActivity(intent);
 		}
 	}
 
