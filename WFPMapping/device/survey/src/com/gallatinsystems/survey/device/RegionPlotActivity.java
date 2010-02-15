@@ -149,6 +149,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			dbAdaptor.updatePlotStatus(plotId, SurveyDbAdapter.COMPLETE_STATUS);
 			// send a broadcast message indicating new data is available
 			sendBroadcast(new Intent(BroadcastDispatcher.DATA_AVAILABLE_INTENT));
+			finish();			
 		}
 	}
 
