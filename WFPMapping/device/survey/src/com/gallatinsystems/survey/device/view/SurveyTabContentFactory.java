@@ -117,7 +117,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 
 		// create save/clear buttons
 		TableRow buttonRow = new TableRow(context);
-		LinearLayout group = new LinearLayout(context);		
+		LinearLayout group = new LinearLayout(context);
 		Button saveButton = new Button(context);
 		saveButton.setText(R.string.savebutton);
 		saveButton.setWidth(BUTTON_WIDTH);
@@ -128,55 +128,56 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		buttonRow.addView(group);
 		table.addView(buttonRow);
 
-		// set up actions on button press
+		// clicking the clear button just blanks out all responses (across all
+		// tabs)
 		clearButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				if (questionMap != null) {
-					for (QuestionView view : questionMap.values()) {
-						view.resetQuestion();
-					}
-					scrollView.scrollTo(0, 0);
+					context.resetAllQuestions();
 				}
 			}
 		});
 
+		// clicking save will check to see if all mandatory questions are
+		// answered and, if so, will fire a broadcast indicating that data is
+		// available for transfer
 		saveButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				if (questionMap != null) {
+					// make sure we don't lose anything that was already written
 					saveState(context.getRespondentId());
+					// get the list (across all tabs) of missing mandatory
+					// responses
 					ArrayList<Question> missingQuestions = context
 							.checkMandatory();
 					if (missingQuestions.size() == 0) {
+						// if we have no missing responses, submit the survey
 						databaseAdaptor.submitResponses(context
 								.getRespondentId().toString());
-
-						// while in general we avoid the enhanced for-loop in
-						// the Android VM, we can use it here because we
-						// would still need the iterator
-						for (QuestionView view : questionMap.values()) {
-							view.resetQuestion();
-						}
-						// create a new response object
-						context.setRespondentId(databaseAdaptor
-								.createSurveyRespondent(context.getSurveyId(),
-										context.getUserId()));
 
 						// send a broadcast message indicating new data is
 						// available
 						Intent i = new Intent(
 								BroadcastDispatcher.DATA_AVAILABLE_INTENT);
 						context.sendBroadcast(i);
-						scrollView.scrollTo(0, 0);
+
+						// create a new response object so we're ready for the
+						// next instance
+						context.setRespondentId(databaseAdaptor
+								.createSurveyRespondent(context.getSurveyId(),
+										context.getUserId()));
+						context.resetAllQuestions();
 					} else {
+						//if we do have missing responses, tell the user
 						AlertDialog.Builder builder = new AlertDialog.Builder(v
 								.getContext());
 						TextView tipText = new TextView(v.getContext());
 						builder.setTitle(R.string.cannotsave);
 						tipText.setText(R.string.mandatorywarning);
 						builder.setView(tipText);
-						builder.setPositiveButton("Ok",
+						builder.setPositiveButton(R.string.okbutton,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
@@ -190,6 +191,19 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		});
 		loadState(context.getRespondentId());
 		return scrollView;
+	}
+
+	/**
+	 * resets all the questions on this tab
+	 */
+	public void resetTabQuestions() {
+		// while in general we avoid the enhanced for-loop in
+		// the Android VM, we can use it here because we
+		// would still need the iterator
+		for (QuestionView view : questionMap.values()) {
+			view.resetQuestion();
+		}
+		scrollView.scrollTo(0, 0);
 	}
 
 	/**

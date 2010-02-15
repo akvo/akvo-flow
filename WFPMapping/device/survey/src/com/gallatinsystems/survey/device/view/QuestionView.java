@@ -13,6 +13,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
@@ -74,7 +75,7 @@ public class QuestionView extends TableLayout implements
 					TextView tipText = new TextView(v.getContext());
 					tipText.setText(Html.fromHtml(question.getTip()));
 					builder.setView(tipText);
-					builder.setPositiveButton("Ok",
+					builder.setPositiveButton(R.string.okbutton,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {

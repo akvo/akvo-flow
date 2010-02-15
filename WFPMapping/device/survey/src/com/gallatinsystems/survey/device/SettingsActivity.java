@@ -3,11 +3,14 @@ package com.gallatinsystems.survey.device;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -24,6 +27,7 @@ public class SettingsActivity extends ListActivity {
 
 	private static final String LABEL = "label";
 	private static final String DESC = "desc";
+	private static final String GPS_STATUS_INTENT = "com.eclipsim.gpsstatus.VIEW";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,6 +41,8 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.exportoptdesc)));
 		list.add(createMap(resources.getString(R.string.poweroptlabel),
 				resources.getString(R.string.poweroptdesc)));
+		list.add(createMap(resources.getString(R.string.gpsstatuslabel),
+				resources.getString(R.string.gpsstatusdesc)));
 		String[] fromKeys = { LABEL, DESC };
 		int[] toIds = { R.id.optionLabel, R.id.optionDesc };
 
@@ -65,15 +71,32 @@ public class SettingsActivity extends ListActivity {
 				} else {
 					wm.setWifiEnabled(false);
 				}
+			} else if (resources.getString(R.string.gpsstatuslabel).equals(val)) {
+				try {
+					Intent i = new Intent(GPS_STATUS_INTENT);
+					startActivity(i);
+				} catch (Exception e) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					TextView tipText = new TextView(this);
+					tipText.setText(R.string.nogpsstatus);
+					builder.setView(tipText);
+					builder.setPositiveButton(R.string.okbutton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+					builder.show();
+				}
 			} else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
+					i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
+				} else {
 					i
 							.putExtra(DataSyncService.TYPE_KEY,
-									DataSyncService.SEND);
-				} else {
-					i.putExtra(DataSyncService.TYPE_KEY,
-							DataSyncService.EXPORT);
+									DataSyncService.EXPORT);
 				}
 				i.putExtra(DataSyncService.FORCE_KEY, true);
 				getApplicationContext().startService(i);

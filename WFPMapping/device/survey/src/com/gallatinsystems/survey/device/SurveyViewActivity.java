@@ -41,7 +41,7 @@ public class SurveyViewActivity extends TabActivity implements
 	public static final String USER_ID = "UID";
 	public static final String SURVEY_ID = "SID";
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
-	private static final int PHOTO_ACTIVITY_REQUEST = 1;	
+	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView photoSource;
@@ -67,9 +67,9 @@ public class SurveyViewActivity extends TabActivity implements
 			userId = savedInstanceState != null ? savedInstanceState
 					.getString(SurveyDbAdapter.USER_FK_COL) : null;
 		}
-		
+
 		surveyId = extras != null ? extras.getString(SURVEY_ID) : null;
-		if(surveyId == null){
+		if (surveyId == null) {
 			surveyId = savedInstanceState != null ? savedInstanceState
 					.getString(SurveyDbAdapter.SURVEY_ID_COL) : "1";
 		}
@@ -81,8 +81,7 @@ public class SurveyViewActivity extends TabActivity implements
 		} else {
 			survey = p.parse(getResources().openRawResource(R.raw.testsurvey));
 		}
-		
-		
+
 		respondentId = savedInstanceState != null ? savedInstanceState
 				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
 
@@ -90,7 +89,6 @@ public class SurveyViewActivity extends TabActivity implements
 			respondentId = databaseAdaptor.createOrLoadSurveyRespondent(
 					surveyId.toString(), userId.toString());
 		}
-				
 
 		if (survey != null) {
 			tabContentFactories = new ArrayList<SurveyTabContentFactory>();
@@ -107,6 +105,13 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 	}
 
+	/**
+	 * this is called when external activities launched by this activity return
+	 * and we need to do something. Right now the only activity we care about is
+	 * the Photo activity (when the user is done taking a picture). When we get
+	 * control back from the camera, we just need to capture the details about
+	 * the picture that was just stored and stuff it into the question response.
+	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// on activity return
@@ -145,6 +150,23 @@ public class SurveyViewActivity extends TabActivity implements
 
 	}
 
+	/**
+	 * iterates over all tabs and calls their RESET method to blank out the
+	 * questions
+	 */
+	public void resetAllQuestions() {
+		for (int i = 0; i < tabContentFactories.size(); i++) {
+			tabContentFactories.get(i).resetTabQuestions();
+		}
+	}
+
+	/**
+	 * event handler that can be used to handle events fired by individual
+	 * questions at thie Activity level. Because we can't launch the photo
+	 * activity from a view (we need to launch it from the activity), the photo
+	 * question view fires a QuestionInteractionEvent (to which this activity
+	 * listens). When we get the event, we can then spawn the camera activity.
+	 */
 	public void onQuestionInteraction(QuestionInteractionEvent event) {
 		if (QuestionInteractionEvent.TAKE_PHOTO_EVENT.equals(event
 				.getEventType())) {
@@ -169,7 +191,8 @@ public class SurveyViewActivity extends TabActivity implements
 		ArrayList<Question> missingQuestions = new ArrayList<Question>();
 		if (tabContentFactories != null) {
 			for (int i = 0; i < tabContentFactories.size(); i++) {
-				missingQuestions.addAll(tabContentFactories.get(i).checkMandatoryQuestions());				
+				missingQuestions.addAll(tabContentFactories.get(i)
+						.checkMandatoryQuestions());
 			}
 		}
 		return missingQuestions;
@@ -190,7 +213,7 @@ public class SurveyViewActivity extends TabActivity implements
 			for (SurveyTabContentFactory tab : tabContentFactories) {
 				tab.saveState(respondentId);
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -203,13 +226,13 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 	}
 
-	protected void onDestroy(){
+	protected void onDestroy() {
 		super.onDestroy();
-		if(databaseAdaptor != null){
+		if (databaseAdaptor != null) {
 			databaseAdaptor.close();
 		}
 	}
-	
+
 	public String getSurveyId() {
 		return surveyId;
 	}

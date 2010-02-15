@@ -35,6 +35,9 @@
 	<string name="sendoptdesc">Sends survey data to server. You must have data access (cellular or wi-fi) to perform this operation.</string>
 	<string name="poweroptlabel">Power Management</string>
 	<string name="poweroptdesc">Toggles Wi-Fi to better manage battery life.</string>
+	<string name="gpsstatuslabel">GPS Status</string>
+	<string name="gpsstatusdesc">Launches the GPS Status application if you have it installed on this device.</string>
+	<string name="nogpsstatus">GPS Status is not installed on this device. Please install it using the Android Market.</string>
 	<string name="otherinstructions">Please enter a description</string>
 	<string name="okbutton">OK</string>
 	<string name="mandatorywarning">You must answer all questions marked with a *</string>
@@ -47,4 +50,5 @@
 	<string name="editplot">Edit Plot</string>
 	<string name="description">Description</string>
 	<string name="plotinstructions">Select the desired plot by clicking. To create a new plot, press the Menu button and select Add New Plot. Long-click to edit the name or description of an existing plot.</string>
+	
 </resources>
