@@ -68,10 +68,14 @@ public class SurveyDbAdapter {
 	private static final String RESPONDENT_TABLE = "survey_respondent";
 	private static final String RESPONSE_TABLE = "survey_response";
 	private static final String USER_TABLE = "user";
-	private static final String PLOT_TABLE = "plot";
-	private static final String PLOT_POINT_TABLE = "plot_point";
+	public static final String PLOT_TABLE = "plot";
+	public static final String PLOT_POINT_TABLE = "plot_point";
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
+	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
+
+	public static final String COMPLETE_STATUS = "Complete";
+	public static final String SENT_STATUS = "Sent";
 
 	private static final int DATABASE_VERSION = 9;
 
@@ -358,14 +362,17 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * returns a cursor listing all plots
+	 * returns a cursor listing all plots with the status passed in or all plots
+	 * if status is null
 	 * 
 	 * @return
 	 */
-	public Cursor listPlots() {
+	public Cursor listPlots(String status) {
 		Cursor cursor = database.query(PLOT_TABLE, new String[] { PK_ID_COL,
-				DISP_NAME_COL, DESC_COL, CREATED_DATE_COL, STATUS_COL }, null,
-				null, null, null, null);
+				DISP_NAME_COL, DESC_COL, CREATED_DATE_COL, STATUS_COL },
+				status == null ? null : STATUS_COL + " = ?",
+				status == null ? null : new String[] { status }, null, null,
+				null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -427,6 +434,57 @@ public class SurveyDbAdapter {
 		Cursor cursor = database.query(PLOT_POINT_TABLE, new String[] {
 				PK_ID_COL, LAT_COL, LON_COL, CREATED_DATE_COL }, PLOT_FK_COL
 				+ " = ?", new String[] { plotId }, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+
+	/**
+	 * updates the status of a plot in the db
+	 * 
+	 * @param plotId
+	 * @param status
+	 */
+	public long updatePlotStatus(String plotId, String status) {
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(STATUS_COL, status);
+		return database.update(PLOT_TABLE, initialValues, PK_ID_COL + " = ?",
+				new String[] { plotId });
+	}
+
+	/**
+	 * updates the status of all the plots identified by the ids sent in to the
+	 * value of status
+	 * 
+	 * @param idList
+	 * @param status
+	 */
+	public void updatePlotStatus(HashSet<String> idList, String status) {
+		if (idList != null) {
+			ContentValues updatedValues = new ContentValues();
+			updatedValues.put(STATUS_COL, status);
+			// enhanced FOR ok here since we're dealing with an implicit
+			// iterator anyway
+			for (String id : idList) {
+				if (updatePlotStatus(id, status) < 1) {
+					Log.e(TAG, "Could not update plot status for plot " + id);
+				}
+			}
+		}
+	}
+
+	/**
+	 * lists all plot points for plots that are in the COMPLETED state
+	 * 
+	 * @return
+	 */
+	public Cursor listCompletePlotPoints() {
+		Cursor cursor = database.query(PLOT_JOIN, new String[] {
+				PLOT_TABLE + "." + PK_ID_COL +" as plot_id", PLOT_TABLE + "." + DISP_NAME_COL,
+				PLOT_POINT_TABLE + "." + PK_ID_COL, LAT_COL, LON_COL,
+				PLOT_POINT_TABLE + "." + CREATED_DATE_COL }, STATUS_COL
+				+ "= ?", new String[] { COMPLETE_STATUS }, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}

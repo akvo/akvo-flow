@@ -42,7 +42,7 @@ public class ListPlotActivity extends AbstractListEditActivity {
 	 */
 	@Override
 	protected Cursor getData() {
-		return databaseAdaptor.listPlots();
+		return databaseAdaptor.listPlots(null);
 
 	}
 

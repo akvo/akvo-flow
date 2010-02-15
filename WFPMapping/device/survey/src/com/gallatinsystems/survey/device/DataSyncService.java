@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -70,28 +71,32 @@ public class DataSyncService extends Service {
 	private SurveyDbAdapter databaseAdaptor;
 	private static final String TEMP_FILE_NAME = "/wfp";
 	private static final String ZIP_IMAGE_DIR = "images/";
+	private static final String SURVEY_DATA_FILE = "data.txt";
+	private static final String REGION_DATA_FILE = "regions.txt";
 	private Thread thread;
 	private static final int REDIRECT_CODE = 303;
 	private static final int OK_CODE = 200;
-	private Semaphore lock = new Semaphore(1);
+	private static Semaphore lock = new Semaphore(1);
 
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
 
 	/**
-	 * lifecycle method for the service. This is called by the system when the
+	 * life cycle method for the service. This is called by the system when the
 	 * service is started
 	 */
 	public int onStartCommand(final Intent intent, int flags, int startid) {
 		thread = new Thread(new Runnable() {
 			public void run() {
-				Bundle extras = intent.getExtras();
-				String type = extras != null ? extras.getString(TYPE_KEY)
-						: SEND;
-				boolean forceFlag = extras != null ? extras.getBoolean(
-						FORCE_KEY, false) : false;
-				runSync(type, forceFlag);
+				if (intent != null) {
+					Bundle extras = intent.getExtras();
+					String type = extras != null ? extras.getString(TYPE_KEY)
+							: SEND;
+					boolean forceFlag = extras != null ? extras.getBoolean(
+							FORCE_KEY, false) : false;
+					runSync(type, forceFlag);
+				}
 			}
 		});
 		thread.start();
@@ -112,11 +117,11 @@ public class DataSyncService extends Service {
 		if (isAbleToRun(type)) {
 			try {
 				lock.acquire();
-			
+
 				databaseAdaptor = new SurveyDbAdapter(this);
 				databaseAdaptor.open();
 				String fileName = createFileName();
-				HashSet<String> idList = formZip(fileName);
+				HashSet<String>[] idList = formZip(fileName);
 				String destName = fileName;
 				if (destName.contains("/")) {
 					destName = destName
@@ -125,11 +130,18 @@ public class DataSyncService extends Service {
 					destName = destName
 							.substring(destName.lastIndexOf("\\") + 1);
 				}
-				if (fileName != null && idList.size() > 0) {
+				if (fileName != null
+						&& (idList[0].size() > 0 || idList[1].size() > 0)) {
 					if (SEND.equals(type)) {
 						sendFile(fileName);
 						if (sendProcessingNotification(destName)) {
-							databaseAdaptor.markDataAsSent(idList);
+							if (idList[0].size() > 0) {
+								databaseAdaptor.markDataAsSent(idList[0]);
+							}
+							if (idList[1].size() > 0) {
+								databaseAdaptor.updatePlotStatus(idList[1],
+										SurveyDbAdapter.SENT_STATUS);
+							}
 							fireNotification(SEND, destName);
 						} else {
 							Log
@@ -144,7 +156,7 @@ public class DataSyncService extends Service {
 					fireNotification(NOTHING, null);
 				}
 				databaseAdaptor.close();
-				} catch (InterruptedException e) {
+			} catch (InterruptedException e) {
 				Log.e(TAG, "Data sync interrupted", e);
 			} finally {
 				lock.release();
@@ -212,13 +224,182 @@ public class DataSyncService extends Service {
 	 * 
 	 * @return
 	 */
-	private HashSet<String> formZip(String fileName) {
-		Cursor data = databaseAdaptor.fetchUnsentData();
-		HashSet<String> respondentIds = new HashSet<String>();
+	@SuppressWarnings("unchecked")
+	private HashSet<String>[] formZip(String fileName) {
+		HashSet<String>[] idsToUpdate = new HashSet[2];
+		idsToUpdate[0] = new HashSet<String>();
+		idsToUpdate[1] = new HashSet<String>();
+		StringBuilder surveyBuf = new StringBuilder();
+		ArrayList<String> imagePaths = new ArrayList<String>();
+		StringBuilder regionBuf = new StringBuilder();
 		try {
+			// extract survey data
+			processSurveyData(surveyBuf, imagePaths, idsToUpdate[0]);
+
+			// extract region data
+			processRegionData(regionBuf, idsToUpdate[1]);
+
+			// now write the data
+			if (idsToUpdate[0].size() > 0 || idsToUpdate[1].size() > 0) {
+				File zipFile = new File(fileName);
+				fileName = zipFile.getAbsolutePath();
+
+				ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(
+						zipFile));
+				// write the survey data
+				if (idsToUpdate[0].size() > 0) {
+					writeTextToZip(zos, surveyBuf.toString(), SURVEY_DATA_FILE);
+				}
+				if (idsToUpdate[1].size() > 0) {
+					writeTextToZip(zos, regionBuf.toString(), REGION_DATA_FILE);
+				}
+
+				byte[] buffer = new byte[BUF_SIZE];
+				// write images
+				for (int i = 0; i < imagePaths.size(); i++) {
+					try {
+						BufferedInputStream bin = new BufferedInputStream(
+								new FileInputStream(imagePaths.get(i)));
+						String name = ZIP_IMAGE_DIR;
+						if (imagePaths.get(i).contains("/")) {
+							name = name
+									+ imagePaths
+											.get(i)
+											.substring(
+													imagePaths.get(i)
+															.lastIndexOf("/") + 1);
+						} else {
+							name = name + imagePaths.get(i);
+						}
+						zos.putNextEntry(new ZipEntry(name));
+						int bytesRead = bin.read(buffer);
+						while (bytesRead > 0) {
+							zos.write(buffer, 0, bytesRead);
+							bytesRead = bin.read(buffer);
+						}
+						bin.close();
+						zos.closeEntry();
+					} catch (Exception e) {
+						Log.e(TAG, "Could not add image " + imagePaths.get(i)
+								+ " to zip: " + e.getMessage());
+					}
+				}
+				zos.close();
+			}
+
+		} catch (Exception e) {
+			Log.e(TAG, "Could not save zip: " + e.getMessage(), e);
+			fileName = null;
+		}
+		return idsToUpdate;
+	}
+
+	/**
+	 * writes the contents of text to a zip entry within the Zip file behind zos
+	 * named fileName
+	 * 
+	 * @param zos
+	 * @param text
+	 * @param fileName
+	 * @throws IOException
+	 */
+	private void writeTextToZip(ZipOutputStream zos, String text,
+			String fileName) throws IOException {
+		zos.putNextEntry(new ZipEntry(fileName));
+		byte[] buffer = new byte[BUF_SIZE];
+		for (int i = 0; i < text.getBytes().length; i += BUF_SIZE) {
+			int size = i + BUF_SIZE < text.getBytes().length ? BUF_SIZE : text
+					.getBytes().length
+					- i;
+			text.getBytes(i, i + size, buffer, 0);
+			zos.write(buffer, 0, size);
+		}
+		zos.closeEntry();
+	}
+
+	/**
+	 * iterate over the plot data returned from the database and populate the
+	 * string builder and collections passed in with the requisite information.
+	 * 
+	 * @param buf
+	 *            - IN param. After execution this will contain the data to be
+	 *            sent
+	 * 
+	 * @param plotIds
+	 *            - IN param. After execution this will contain the ids of the
+	 *            plots
+	 */
+	private void processRegionData(StringBuilder buf, HashSet<String> plotIds) {
+		Cursor data = null;
+		try {
+			data = databaseAdaptor.listCompletePlotPoints();
 			if (data != null && data.isFirst()) {
-				StringBuilder buf = new StringBuilder();
-				ArrayList<String> imagePaths = new ArrayList<String>();
+				do {
+					String plotId = data
+							.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.PLOT_FK_COL));
+					String plotPointId = data.getString(data
+							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL));
+					if (plotPointId == null) {
+						continue;
+					}
+					buf.append(plotId).append(",");
+					plotIds.add(plotId);
+					buf.append(plotPointId).append(",");
+					buf
+							.append(data
+									.getString(data
+											.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.LON_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.CREATED_DATE_COL)));
+					buf.append("\n");
+				} while (data.moveToNext());
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Could not extract survey data from db", e);
+		} finally {
+			if (data != null) {
+				data.close();
+			}
+		}
+	}
+
+	/**
+	 * iterate over the survey data returned from the database and populate the
+	 * string builder and collections passed in with the requisite information.
+	 * 
+	 * @param buf
+	 *            - IN param. After execution this will contain the data to be
+	 *            sent
+	 * @param imagePaths
+	 *            - IN param. After execution this will contain the list of
+	 *            photo paths to send
+	 * @param respondentIds
+	 *            - IN param. After execution this will contain the ids of the
+	 *            respondents
+	 */
+	private void processSurveyData(StringBuilder buf,
+			ArrayList<String> imagePaths, HashSet<String> respondentIds) {
+		Cursor data = null;
+		try {
+			data = databaseAdaptor.fetchUnsentData();
+			if (data != null && data.isFirst()) {
 				do {
 					String value = data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_COL));
@@ -264,64 +445,14 @@ public class DataSyncService extends Service {
 									.getString(data
 											.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_RESPONDENT_ID_COL)));
 				} while (data.moveToNext());
-
-				if (respondentIds.size() > 0) {
-					File zipFile = new File(fileName);
-					fileName = zipFile.getAbsolutePath();
-
-					ZipOutputStream zos = new ZipOutputStream(
-							new FileOutputStream(zipFile));
-					zos.putNextEntry(new ZipEntry("data.txt"));
-					String tempString = buf.toString();
-					byte[] buffer = new byte[BUF_SIZE];
-					for (int i = 0; i < tempString.getBytes().length; i += BUF_SIZE) {
-						int size = i + BUF_SIZE < tempString.getBytes().length ? BUF_SIZE
-								: tempString.getBytes().length - i;
-						tempString.getBytes(i, i + size, buffer, 0);
-						zos.write(buffer, 0, size);
-					}
-					zos.closeEntry();
-
-					// write images
-					for (int i = 0; i < imagePaths.size(); i++) {
-						try {
-							BufferedInputStream bin = new BufferedInputStream(
-									new FileInputStream(imagePaths.get(i)));
-							String name = ZIP_IMAGE_DIR;
-							if (imagePaths.get(i).contains("/")) {
-								name = name
-										+ imagePaths.get(i).substring(
-												imagePaths.get(i).lastIndexOf(
-														"/") + 1);
-							} else {
-								name = name + imagePaths.get(i);
-							}
-							zos.putNextEntry(new ZipEntry(name));
-							int bytesRead = bin.read(buffer);
-							while (bytesRead > 0) {
-								zos.write(buffer, 0, bytesRead);
-								bytesRead = bin.read(buffer);
-							}
-							bin.close();
-							zos.closeEntry();
-						} catch (Exception e) {
-							Log.e(TAG, "Could not add image "
-									+ imagePaths.get(i) + " to zip: "
-									+ e.getMessage());
-						}
-					}
-					zos.close();
-				}
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Could not save zip: " + e.getMessage(), e);
-			fileName = null;
+			Log.e(TAG, "Could not extract survey data from db", e);
 		} finally {
 			if (data != null) {
 				data.close();
 			}
 		}
-		return respondentIds;
 	}
 
 	/**

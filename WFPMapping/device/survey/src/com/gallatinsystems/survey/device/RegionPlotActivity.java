@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.device;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
@@ -56,8 +57,11 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		// turn on zoom controls
 		mapView.setBuiltInZoomControls(true);
 
-		Button addPointButton = (Button) findViewById(R.id.addpoint_button);
-		addPointButton.setOnClickListener(this);
+		Button button = (Button) findViewById(R.id.addpoint_button);
+		button.setOnClickListener(this);
+		
+		button = (Button) findViewById(R.id.completeplot_button);
+		button.setOnClickListener(this);
 
 		// set up my location and area rendering overlays
 		myLocation = new MyLocationOverlay(this, mapView);
@@ -129,18 +133,22 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 				LOCATION_UPDATE_FREQ, 0, this);
 	}
 
-	/**
-	 * TODO: add handler for onComplete click
-	 */
 	@Override
 	public void onClick(View v) {
-		GeoPoint point = myLocation.getMyLocation();
-		if (point != null) {
-			mapController.animateTo(point);
-			regionPlot.addLocation(point);
-			mapView.invalidate();
-			dbAdaptor.savePlotPoint(plotId, decodeLocation(point
-					.getLatitudeE6()), decodeLocation(point.getLongitudeE6()));
+		if (v.getId() == R.id.addpoint_button) {
+			GeoPoint point = myLocation.getMyLocation();
+			if (point != null) {
+				mapController.animateTo(point);
+				regionPlot.addLocation(point);
+				mapView.invalidate();
+				dbAdaptor.savePlotPoint(plotId, decodeLocation(point
+						.getLatitudeE6()), decodeLocation(point
+						.getLongitudeE6()));
+			}
+		} else {
+			dbAdaptor.updatePlotStatus(plotId, SurveyDbAdapter.COMPLETE_STATUS);
+			// send a broadcast message indicating new data is available
+			sendBroadcast(new Intent(BroadcastDispatcher.DATA_AVAILABLE_INTENT));
 		}
 	}
 
