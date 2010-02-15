@@ -481,13 +481,25 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor listCompletePlotPoints() {
 		Cursor cursor = database.query(PLOT_JOIN, new String[] {
-				PLOT_TABLE + "." + PK_ID_COL +" as plot_id", PLOT_TABLE + "." + DISP_NAME_COL,
+				PLOT_TABLE + "." + PK_ID_COL + " as plot_id",
+				PLOT_TABLE + "." + DISP_NAME_COL,
 				PLOT_POINT_TABLE + "." + PK_ID_COL, LAT_COL, LON_COL,
-				PLOT_POINT_TABLE + "." + CREATED_DATE_COL }, STATUS_COL
-				+ "= ?", new String[] { COMPLETE_STATUS }, null, null, null);
+				PLOT_POINT_TABLE + "." + CREATED_DATE_COL },
+				STATUS_COL + "= ?", new String[] { COMPLETE_STATUS }, null,
+				null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
 		return cursor;
+	}
+
+	/**
+	 * deletes the plot_point row denoted by the ID passed in
+	 * 
+	 * @param id
+	 */
+	public void deletePlotPoint(String id) {
+		database.delete(PLOT_POINT_TABLE, PK_ID_COL + " = ?",
+				new String[] { id });
 	}
 }

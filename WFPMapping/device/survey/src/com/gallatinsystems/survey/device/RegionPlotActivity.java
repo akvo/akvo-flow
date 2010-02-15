@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.device;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -41,6 +42,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	private LocationManager locMgr;
 	private String plotId;
 	private SurveyDbAdapter dbAdaptor;
+	private ArrayList<String> idList;
 
 	private static final float MINIMUM_ACCURACY = 1000f;
 	private static final int INITIAL_ZOOM_LEVEL = 16;
@@ -51,6 +53,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.regionplotview);
 		mapView = (MapView) findViewById(R.id.mapview);
+		idList = new ArrayList<String>();
 
 		mapController = mapView.getController();
 		mapController.setZoom(INITIAL_ZOOM_LEVEL);
@@ -59,7 +62,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 
 		Button button = (Button) findViewById(R.id.addpoint_button);
 		button.setOnClickListener(this);
-		
+
 		button = (Button) findViewById(R.id.completeplot_button);
 		button.setOnClickListener(this);
 
@@ -96,8 +99,11 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 					.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)), data
 					.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.LON_COL))));
+			idList.add(data.getString(data
+					.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 			data.moveToNext();
 		}
+		data.close();
 	}
 
 	protected boolean isRouteDisplayed() {
@@ -133,6 +139,22 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 				LOCATION_UPDATE_FREQ, 0, this);
 	}
 
+	/**
+	 * deletes a plot point from the database
+	 * 
+	 * @param index
+	 */
+	public void deletePoint(int index) {
+		if (index < idList.size()) {
+			String id = idList.get(index);
+			if (id != null) {
+				dbAdaptor.deletePlotPoint(id);
+				idList.remove(id);
+			}
+		}
+
+	}
+
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.addpoint_button) {
@@ -149,7 +171,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			dbAdaptor.updatePlotStatus(plotId, SurveyDbAdapter.COMPLETE_STATUS);
 			// send a broadcast message indicating new data is available
 			sendBroadcast(new Intent(BroadcastDispatcher.DATA_AVAILABLE_INTENT));
-			finish();			
+			finish();
 		}
 	}
 
@@ -174,6 +196,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	 */
 	public void onLocationChanged(Location loc) {
 		if (loc != null) {
+			// TODO: put this back in?
 			// if (loc.getAccuracy() < MINIMUM_ACCURACY) {
 			mapController.animateTo(convertToPoint(loc));
 			mapView.invalidate();
@@ -184,19 +207,19 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
+		// no op. needed to satisfy location interface
 
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
+		// no op. needed to satisfy location interface
 
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
+		// no op. needed to satisfy location interface
 
 	}
 }
