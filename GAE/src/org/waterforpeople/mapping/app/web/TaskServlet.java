@@ -31,6 +31,7 @@ import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
+import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import services.S3Driver;
 
@@ -102,21 +103,30 @@ public class TaskServlet extends HttpServlet {
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
 			ArrayList<String> unparsedLines = extractDataFromZip(zis);
-			Long userID = 1L;
-
-			// Object obj = marshallDataToObject(lines, AccessPoint.class
-			// .getName());
-			// saveObject(obj);
 			DeviceFiles deviceFile = new DeviceFiles();
 			deviceFile.setProcessDate(getNowDateTimeFormatted());
 			deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
 			deviceFile.setURI(url.toURI().toString());
 			Date collectionDate = new Date();
-			SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 
-			Long surveyId = siDAO.save(collectionDate, deviceFile, userID,
-					unparsedLines);
-			surveyIds.add(surveyId.toString());
+			if (unparsedLines.get(0).equals("regionFlag=true")) {
+				unparsedLines.remove(0);
+				GeoRegionHelper grh  = new GeoRegionHelper();
+				grh.processRegionsSurvey(unparsedLines);
+			} else {
+
+				Long userID = 1L;
+
+				// Object obj = marshallDataToObject(lines, AccessPoint.class
+				// .getName());
+				// saveObject(obj);
+				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
+
+				Long surveyId = siDAO.save(collectionDate, deviceFile, userID,
+						unparsedLines);
+				// if survey
+				surveyIds.add(surveyId.toString());
+			}
 			zis.close();
 		} catch (MalformedURLException e) {
 			// ...
@@ -144,6 +154,9 @@ public class TaskServlet extends HttpServlet {
 			line = out.toString();
 
 			if (entry.getName().endsWith("txt")) {
+				if (entry.getName().equals("regions.txt")) {
+					lines.add("regionFlag=true");
+				}
 				String[] linesSplit = line.split("\n");
 				for (String s : linesSplit) {
 					lines.add(s);
@@ -158,13 +171,16 @@ public class TaskServlet extends HttpServlet {
 					// gaeIA.resizeImage(out.toByteArray(), 500, 500);
 					// s3.uploadFile("dru-test", imageParts[1], resizedImage);
 					GAEImageAdapter gaeImg = new GAEImageAdapter();
-					byte[] newImage = gaeImg.resizeImage(out.toByteArray(), 500, 500);
+					byte[] newImage = gaeImg.resizeImage(out.toByteArray(),
+							500, 500);
 					s3.uploadFile("dru-test", imageParts[1], newImage);
 					// add queue call to resize
 					Queue queue = QueueFactory.getDefaultQueue();
 
-					queue.add(url("imageprocessor").param("imageURL", imageParts[1]));
-					log.info("submiting image resize for imageURL: " + imageParts[1]);
+					queue.add(url("imageprocessor").param("imageURL",
+							imageParts[1]));
+					log.info("submiting image resize for imageURL: "
+							+ imageParts[1]);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

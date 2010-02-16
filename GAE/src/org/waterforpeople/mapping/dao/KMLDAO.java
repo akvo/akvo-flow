@@ -7,6 +7,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.CaptionDefinition;
+import org.waterforpeople.mapping.domain.GeoRegion;
 
 public class KMLDAO {
 	public String generatePlacemarks(String vmName) {
@@ -85,6 +86,37 @@ public class KMLDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return sb.toString();
+	}
+
+	public String generateRegionOutlines(String vmName) {
+		StringBuilder sb = new StringBuilder();
+		GeoRegionDAO grDAO = new GeoRegionDAO();
+		List<GeoRegion> grList = grDAO.listGeoRegions();
+
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty("runtime.log.logsystem.class",
+				"org.apache.velocity.runtime.log.NullLogChute");
+		try {
+			ve.init();
+			org.apache.velocity.Template t = ve.getTemplate(vmName);
+			VelocityContext context = new VelocityContext();
+
+			// loop through GeoRegions and bind to variables
+			for (GeoRegion gr : grList) {
+				context.put("latitude", gr.getLatitiude());
+				context.put("longitude", gr.getLatitiude());
+			}
+			StringWriter writer = new StringWriter();
+			t.merge(context, writer);
+			System.out.println(writer.toString());
+			sb.append(writer.toString());
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return sb.toString();
 	}
 }
