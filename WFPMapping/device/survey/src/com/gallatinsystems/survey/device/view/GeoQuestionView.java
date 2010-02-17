@@ -33,7 +33,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 	private static final int DEFAULT_WIDTH = 200;
 	private static final float UNKNOWN_ACCURACY = 99999999f;
-	private static final float ACCURACY_THRESHOLD = 20f;
+	private static final float ACCURACY_THRESHOLD = 100f;
 	private static final String DELIM = "|";
 	private Button geoButton;
 	private TextView latLabel;
@@ -109,6 +109,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			Location loc = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if(loc!= null){
+				//if the last location is accurate, then we can use it
+				if(loc.hasAccuracy() && loc.getAccuracy()< ACCURACY_THRESHOLD){
+					populateLocation(loc);
+				}
+			}
 			needUpdate = true;
 			lastAccuracy = UNKNOWN_ACCURACY;
 			locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
@@ -195,6 +202,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 				needUpdate = false;
 				populateLocation(location);
 			}
+		}else if (needUpdate){
+			needUpdate = false;
+			populateLocation(location);
 		}
 	}
 
