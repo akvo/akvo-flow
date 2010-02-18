@@ -170,7 +170,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 										context.getUserId()));
 						context.resetAllQuestions();
 					} else {
-						//if we do have missing responses, tell the user
+						// if we do have missing responses, tell the user
 						AlertDialog.Builder builder = new AlertDialog.Builder(v
 								.getContext());
 						TextView tipText = new TextView(v.getContext());
@@ -200,10 +200,12 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		// while in general we avoid the enhanced for-loop in
 		// the Android VM, we can use it here because we
 		// would still need the iterator
-		for (QuestionView view : questionMap.values()) {
-			view.resetQuestion();
+		if (questionMap != null) {
+			for (QuestionView view : questionMap.values()) {
+				view.resetQuestion();
+			}
+			scrollView.scrollTo(0, 0);
 		}
-		scrollView.scrollTo(0, 0);
 	}
 
 	/**
