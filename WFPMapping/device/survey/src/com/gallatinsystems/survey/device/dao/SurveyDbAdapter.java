@@ -38,6 +38,7 @@ public class SurveyDbAdapter {
 	public static final String PLOT_FK_COL = "plot_id";
 	public static final String LAT_COL = "lat";
 	public static final String LON_COL = "lon";
+	public static final String ELEVATION_COL = "elevation";
 	public static final String DESC_COL = "description";
 	public static final String STATUS_COL = "status";
 
@@ -61,7 +62,7 @@ public class SurveyDbAdapter {
 
 	private static final String PLOT_TABLE_CREATE = "create table plot (_id integer primary key autoincrement, display_name text, description text, created_date text, user_id integer, status text);";
 
-	private static final String PLOT_POINT_TABLE_CREATE = "create table plot_point (_id integer primary key autoincrement, plot_id integer not null, lat text, lon text, created_date text);";
+	private static final String PLOT_POINT_TABLE_CREATE = "create table plot_point (_id integer primary key autoincrement, plot_id integer not null, lat text, lon text, elevation text, created_date text);";
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -77,7 +78,7 @@ public class SurveyDbAdapter {
 	public static final String COMPLETE_STATUS = "Complete";
 	public static final String SENT_STATUS = "Sent";
 
-	private static final int DATABASE_VERSION = 9;
+	private static final int DATABASE_VERSION = 10;
 
 	private final Context context;
 
@@ -352,11 +353,13 @@ public class SurveyDbAdapter {
 	 * @param lon
 	 * @return
 	 */
-	public long savePlotPoint(String plotId, String lat, String lon) {
+	public long savePlotPoint(String plotId, String lat, String lon,
+			double currentElevation) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(PLOT_FK_COL, plotId);
 		initialValues.put(LAT_COL, lat);
 		initialValues.put(LON_COL, lon);
+		initialValues.put(ELEVATION_COL, currentElevation);
 		initialValues.put(CREATED_DATE_COL, System.currentTimeMillis());
 		return database.insert(PLOT_POINT_TABLE, null, initialValues);
 	}
@@ -484,7 +487,7 @@ public class SurveyDbAdapter {
 				PLOT_TABLE + "." + PK_ID_COL + " as plot_id",
 				PLOT_TABLE + "." + DISP_NAME_COL,
 				PLOT_POINT_TABLE + "." + PK_ID_COL, LAT_COL, LON_COL,
-				PLOT_POINT_TABLE + "." + CREATED_DATE_COL },
+				ELEVATION_COL, PLOT_POINT_TABLE + "." + CREATED_DATE_COL },
 				STATUS_COL + "= ?", new String[] { COMPLETE_STATUS }, null,
 				null, null);
 		if (cursor != null) {

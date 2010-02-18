@@ -367,6 +367,12 @@ public class DataSyncService extends Service {
 							.append(
 									data
 											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.ELEVATION_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.CREATED_DATE_COL)));
 					buf.append("\n");
 				} while (data.moveToNext());

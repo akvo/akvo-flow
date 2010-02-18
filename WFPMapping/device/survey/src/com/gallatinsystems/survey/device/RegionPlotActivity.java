@@ -43,6 +43,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	private String plotId;
 	private SurveyDbAdapter dbAdaptor;
 	private ArrayList<String> idList;
+	private double currentElevation;
 
 	private static final float MINIMUM_ACCURACY = 1000f;
 	private static final int INITIAL_ZOOM_LEVEL = 16;
@@ -161,10 +162,10 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			if (point != null) {
 				mapController.animateTo(point);
 				regionPlot.addLocation(point);
-				mapView.invalidate();
+				mapView.invalidate();				
 				dbAdaptor.savePlotPoint(plotId, decodeLocation(point
 						.getLatitudeE6()), decodeLocation(point
-						.getLongitudeE6()));
+						.getLongitudeE6()), currentElevation);
 			}
 		} else {
 			dbAdaptor.updatePlotStatus(plotId, SurveyDbAdapter.COMPLETE_STATUS);
@@ -198,6 +199,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			// TODO: put this back in?
 			// if (loc.getAccuracy() < MINIMUM_ACCURACY) {
 			mapController.animateTo(convertToPoint(loc));
+			currentElevation = loc.getAltitude();
 			mapView.invalidate();
 			// }
 
