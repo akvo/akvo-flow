@@ -21,6 +21,12 @@ public class KMLGenerator {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public String generateRegionDocumentString(String regionVMName){
+		KMLDAO kmlDAO = new KMLDAO();
+		String regionKML = kmlDAO.generateRegionOutlines(regionVMName);
+		return regionKML;
+	}
 
 	public String generateDocument(String placemarksVMName) {
 		VelocityEngine ve = new VelocityEngine();
@@ -33,10 +39,12 @@ public class KMLGenerator {
 			VelocityContext context = new VelocityContext();
 			KMLDAO kmlDAO = new KMLDAO();
 			context.put("Placemark", kmlDAO.generatePlacemarks("PlacemarkTabs.vm"));
+			context.put("regionPlacemark", kmlDAO.generateRegionOutlines("Regions.vm"));
 			StringWriter writer = new StringWriter();
 			t.merge(context, writer);
 			System.out.println(writer.toString());
 			document = writer.toString();
+			kmlDAO.saveKML(document);
 		} catch (Exception ex) {
 
 		}

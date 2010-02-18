@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -10,13 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
+import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.DeviceFiles;
-
-import com.google.appengine.repackaged.com.google.common.base.Log;
 
 @SuppressWarnings("serial")
 public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
@@ -31,10 +27,29 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 		String processFile = req.getParameter("processFile");
 		String listFiles = req.getParameter("listFiles");
 		String testVelocity = req.getParameter("testVelocity");
+		String showRegion = req.getParameter("showRegion");
+
 		if (showKML != null) {
+			Long kmlID = 0L;
+			if(req.getParameter("kmlID")!=null){
+				kmlID = new Long(req.getParameter("kmlID"));
+			}
+			if (kmlID != 0) {
+				KMLDAO kmlDAO = new KMLDAO();
+				String kmlString = kmlDAO.getKML(kmlID);
+				resp.setContentType("application/vnd.google-earth.kml+xml");
+				resp.getWriter().println(kmlString);		
+			} else {
+				KMLGenerator kmlGen = new KMLGenerator();
+				String placemarksDocument = kmlGen
+						.generateDocument("PlacemarkTabs.vm");
+				resp.setContentType("application/vnd.google-earth.kml+xml");
+				resp.getWriter().println(placemarksDocument);
+			}
+		} else if (showRegion != null) {
 			KMLGenerator kmlGen = new KMLGenerator();
 			String placemarksDocument = kmlGen
-					.generateDocument("PlacemarkTabs.vm");
+					.generateRegionDocumentString("Regions.vm");
 			resp.setContentType("application/vnd.google-earth.kml+xml");
 			resp.getWriter().println(placemarksDocument);
 		} else if (listFiles != null) {

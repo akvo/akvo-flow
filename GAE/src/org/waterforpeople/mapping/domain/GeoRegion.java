@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.domain;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -15,10 +16,13 @@ public class GeoRegion {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;
+	@Persistent
+	private String uuid;
 	private String name;
 	private Long order;
 	private Double latitiude;
 	private Double longitude;
+	private Double altitude;
 	private Date createDateTime;
 	
 	public Date getCreateDateTime() {
@@ -26,6 +30,19 @@ public class GeoRegion {
 	}
 	public void setCreateDateTime(Date createDateTime) {
 		this.createDateTime = createDateTime;
+	}
+
+	public Double getAltitude() {
+		return altitude;
+	}
+	public void setAltitude(Double altitude) {
+		this.altitude = altitude;
+	}
+	public String getUuid() {
+		return uuid;
+	}
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 	public Key getKey() {
 		return key;

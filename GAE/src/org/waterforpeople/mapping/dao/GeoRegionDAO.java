@@ -19,11 +19,20 @@ public class GeoRegionDAO {
 	}
 	
 	public List<GeoRegion> listGeoRegions(){
-		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		javax.jdo.Query query = pm.newQuery(GeoRegion.class);
+		query.setOrdering("uuid, order asc");
 		List<GeoRegion> region= (List<GeoRegion>) query.execute();
 			
 		return region;
 
+	}
+	
+	public GeoRegion getGeoRegion(String key){
+		GeoRegion gr = null;
+		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		List<GeoRegion> region= (List<GeoRegion>) query.execute();
+		
+		return gr;
 	}
 
 	public GeoRegionDAO() {

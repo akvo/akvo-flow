@@ -24,7 +24,7 @@ public class S3Driver {
 	
 	public void uploadFile(String bucketName, final String fileName, byte[] file){
 		S3Store s3Store = new com.amazon.s3shell.S3Store("s3.amazonaws.com", aws_identifier, aws_secret_key);
-		s3Store.setBucket("dru-test");
+		s3Store.setBucket(bucketName);
 		try {
 			boolean storedFlag=s3Store.storeItem(fileName, file,"public-read");
 			log.info("Stored image: " + fileName + " " + storedFlag);

@@ -1,15 +1,37 @@
 package org.waterforpeople.mapping.dao;
 
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
+
+import javax.jdo.PersistenceManager;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.waterforpeople.mapping.app.web.TaskServlet;
+import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.CaptionDefinition;
 import org.waterforpeople.mapping.domain.GeoRegion;
+import org.waterforpeople.mapping.domain.KML;
+
+import com.google.appengine.api.datastore.Text;
 
 public class KMLDAO {
+	private static final Logger log = Logger.getLogger(KMLDAO.class
+			.getName());
+
+	PersistenceManager pm;
+
+	private void init() {
+		pm = PMF.get().getPersistenceManager();
+	}
+
+	public KMLDAO() {
+		init();
+	}
+
 	public String generatePlacemarks(String vmName) {
 		VelocityEngine ve = new VelocityEngine();
 		StringBuilder sb = new StringBuilder();
@@ -100,23 +122,68 @@ public class KMLDAO {
 		try {
 			ve.init();
 			org.apache.velocity.Template t = ve.getTemplate(vmName);
-			VelocityContext context = new VelocityContext();
+			StringBuilder sbPlacemarks = new StringBuilder();
 
-			// loop through GeoRegions and bind to variables
-			for (GeoRegion gr : grList) {
-				context.put("latitude", gr.getLatitiude());
-				context.put("longitude", gr.getLatitiude());
+			String currUUID = grList.get(0).getUuid();
+			StringWriter writer = null;
+			VelocityContext context = new VelocityContext();
+			StringBuilder sbCoor = new StringBuilder();
+
+			for (int i = 0; i < grList.size(); i++) {
+				GeoRegion gr = grList.get(i);
+				// loop through GeoRegions and bind to variables
+
+				if (currUUID.equals(gr.getUuid())) {
+					sbCoor.append(gr.getLongitude() + "," + gr.getLatitiude()
+							+ "," + 0 + "\n");
+				} else {
+					currUUID = gr.getUuid();
+					context.put("coordinateString", sbCoor.toString());
+					writer = new StringWriter();
+					t.merge(context, writer);
+					sb.append(writer.toString());
+					log.info(sbCoor.toString());
+					context = new VelocityContext();
+					sbCoor = new StringBuilder();
+					sbCoor.append(gr.getLongitude() + "," + gr.getLatitiude()
+							+ "," + 0 + "\n");
+
+				}
 			}
-			StringWriter writer = new StringWriter();
+			
+			context.put("coordinateString", sbCoor.toString());
+			writer = new StringWriter();
 			t.merge(context, writer);
-			System.out.println(writer.toString());
 			sb.append(writer.toString());
+			System.out.println(sb.toString());
+			return sb.toString();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return sb.toString();
+		return null;
+	}
+
+	public Long saveKML(String kmlText) {
+		KML kml = new KML();
+		kml.setKmlText(new Text(kmlText));
+		kml.setCreateDateTime(new Date());
+		pm.makePersistent(kml);
+		return kml.getId();
+	}
+
+	public String getKML(Long id) {
+		KML kml = null;
+
+		javax.jdo.Query query = pm.newQuery(KML.class);
+		query.setFilter("id == idParam");
+		query.declareParameters("Long idParam");
+		List<KML> results = (List<KML>) query.execute(id);
+		if (results.size() > 0) {
+			kml = results.get(0);
+		}
+		return kml.getKmlText().toString();
 	}
 }
