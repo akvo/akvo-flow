@@ -175,8 +175,14 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString(SurveyDbAdapter.PK_ID_COL, currentUserId);
-		outState.putString(SurveyDbAdapter.DISP_NAME_COL, currentName);
+		if(outState != null){
+			if(currentUserId != null){
+				outState.putString(SurveyDbAdapter.PK_ID_COL, currentUserId);
+			}
+			if(currentName != null){
+				outState.putString(SurveyDbAdapter.DISP_NAME_COL, currentName);
+			}
+		}
 	}
 
 	@Override

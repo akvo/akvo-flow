@@ -107,6 +107,14 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		data.close();
 	}
 
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		if (outState != null && plotId != null) {
+			outState.putString(SurveyDbAdapter.PK_ID_COL, plotId);
+		}
+
+	}
+
 	protected boolean isRouteDisplayed() {
 		return false;
 	}
@@ -162,7 +170,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			if (point != null) {
 				mapController.animateTo(point);
 				regionPlot.addLocation(point);
-				mapView.invalidate();				
+				mapView.invalidate();
 				dbAdaptor.savePlotPoint(plotId, decodeLocation(point
 						.getLatitudeE6()), decodeLocation(point
 						.getLongitudeE6()), currentElevation);

@@ -69,7 +69,9 @@ public class UserEditActivity extends Activity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putLong(SurveyDbAdapter.PK_ID_COL, userId);
+		if(outState != null && userId != null){
+			outState.putLong(SurveyDbAdapter.PK_ID_COL, userId);
+		}
 	}
 
 	@Override

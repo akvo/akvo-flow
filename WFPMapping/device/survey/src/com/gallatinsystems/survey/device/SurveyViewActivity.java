@@ -224,9 +224,17 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
-		outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
-		outState.putString(SurveyDbAdapter.USER_FK_COL, userId);
+		if (outState != null) {
+			if (surveyId != null) {
+				outState.putString(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
+			}
+			if (respondentId != null) {
+				outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
+			}
+			if (userId != null) {
+				outState.putString(SurveyDbAdapter.USER_FK_COL, userId);
+			}
+		}
 	}
 
 	@Override
