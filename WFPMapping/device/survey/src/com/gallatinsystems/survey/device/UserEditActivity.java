@@ -59,17 +59,19 @@ public class UserEditActivity extends Activity {
 		if (userId != null) {
 			Cursor user = databaseAdaptor.findUser(userId);
 			startManagingCursor(user);
-			displayName.setText(user.getString(user
-					.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-			emailAddr.setText(user.getString(user
-					.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+			if (user.getCount() > 0) {
+				displayName.setText(user.getString(user
+						.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+				emailAddr.setText(user.getString(user
+						.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+			}
 		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if(outState != null && userId != null){
+		if (outState != null && userId != null) {
 			outState.putLong(SurveyDbAdapter.PK_ID_COL, userId);
 		}
 	}
