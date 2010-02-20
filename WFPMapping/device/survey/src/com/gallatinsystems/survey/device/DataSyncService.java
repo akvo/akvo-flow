@@ -443,7 +443,8 @@ public class DataSyncService extends Service {
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
 					buf.append("\n");
-					if (QuestionResponse.IMAGE_TYPE.equals(type)) {
+					if (QuestionResponse.IMAGE_TYPE.equals(type)
+							|| QuestionResponse.VIDEO_TYPE.equals(type)) {
 						imagePaths.add(value);
 					}
 					respondentIds
