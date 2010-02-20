@@ -14,48 +14,66 @@ import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 
 /**
- * Question type that supports taking a picture with the device's on-board
- * camera.
+ * Question type that supports taking a picture/video/audio recording with the
+ * device's on-board camera.
  * 
  * @author Christopher Fagiani
  * 
  */
-public class PhotoQuestionView extends QuestionView implements OnClickListener {
+public class MediaQuestionView extends QuestionView implements OnClickListener {
 
-	private Button photoButton;
+	private Button mediaButton;
 	private ImageView completeIcon;
-	public static final String PHOTO_FILE_KEY = "filename";
+	private String mediaType;
+	public static final String MEDIA_FILE_KEY = "filename";
+	public static final String PHOTO_TYPE = "photo";
+	public static final String VIDEO_TYPE = "video";
 
-	public PhotoQuestionView(Context context, Question q) {
-		super(context,q);
-		init();
+	public MediaQuestionView(Context context, Question q, String type) {
+		super(context, q);
+		init(type);
 	}
 
-	protected void init() {
+	protected void init(String type) {
 		Context context = getContext();
+		mediaType = type;
 		TableRow tr = new TableRow(context);
-		photoButton = new Button(context);
-		photoButton.setText(R.string.takephoto);
-		photoButton.setOnClickListener(this);
+		mediaButton = new Button(context);
+		if (PHOTO_TYPE.equals(type)) {
+			mediaButton.setText(R.string.takephoto);
+		} else {
+			mediaButton.setText(R.string.takevideo);
+		}
+		mediaButton.setOnClickListener(this);
 		completeIcon = new ImageView(context);
 		completeIcon.setImageResource(R.drawable.checkmark);
 		completeIcon.setVisibility(View.GONE);
-		tr.addView(photoButton);
+		tr.addView(mediaButton);
 		tr.addView(completeIcon);
 		addView(tr);
 	}
 
+	/**
+	 * handle the action button click
+	 */
 	public void onClick(View v) {
-		notifyQuestionListeners(QuestionInteractionEvent.TAKE_PHOTO_EVENT);
+		if (PHOTO_TYPE.equals(mediaType)) {
+			notifyQuestionListeners(QuestionInteractionEvent.TAKE_PHOTO_EVENT);
+		} else {
+			notifyQuestionListeners(QuestionInteractionEvent.TAKE_VIDEO_EVENT);
+		}
+
 	}
 
 	@Override
-	public void questionComplete(Bundle photoData) {
-		if (photoData != null) {
+	public void questionComplete(Bundle mediaData) {
+		if (mediaData != null) {
 			completeIcon.setVisibility(View.VISIBLE);
-			setResponse(new QuestionResponse(photoData
-					.getString(PHOTO_FILE_KEY), QuestionResponse.IMAGE_TYPE,
-					getQuestion().getId()));
+			setResponse(new QuestionResponse(mediaData
+					.getString(MEDIA_FILE_KEY),
+					PHOTO_TYPE.equals(mediaType) ? QuestionResponse.IMAGE_TYPE
+							: QuestionResponse.VIDEO_TYPE, getQuestion()
+							.getId()));
 		}
 	}
 

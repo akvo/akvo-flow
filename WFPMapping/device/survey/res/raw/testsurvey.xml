@@ -16,6 +16,9 @@
 			<text>Name of Community?</text>
 			<validationRule validationType="name" maxLength="50"/>
 		</question>
+		<question id="q91" order="3" mandatory="false" type="video">
+			<text>Water Point Video</text>
+		</question>
 		<question id="q3" order="3" mandatory="false" type="photo">
 			<text>Water Point Photo</text>
 		</question>

@@ -85,7 +85,11 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			} else if (Question.FREE_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new FreetextQuestionView(context, q);
 			} else if (Question.PHOTO_TYPE.equalsIgnoreCase(q.getType())) {
-				questionView = new PhotoQuestionView(context, q);
+				questionView = new MediaQuestionView(context, q,
+						MediaQuestionView.PHOTO_TYPE);
+			} else if (Question.VIDEO_TYPE.equalsIgnoreCase(q.getType())) {
+				questionView = new MediaQuestionView(context, q,
+						MediaQuestionView.VIDEO_TYPE);
 			} else if (Question.GEO_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new GeoQuestionView(context, q);
 			} else {

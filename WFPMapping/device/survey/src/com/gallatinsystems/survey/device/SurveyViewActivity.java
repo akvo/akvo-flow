@@ -17,7 +17,7 @@ import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
-import com.gallatinsystems.survey.device.view.PhotoQuestionView;
+import com.gallatinsystems.survey.device.view.MediaQuestionView;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
 import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
@@ -42,13 +42,16 @@ public class SurveyViewActivity extends TabActivity implements
 	public static final String SURVEY_ID = "SID";
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
+	private static final int VIDEO_ACTIVITY_REQUEST = 2;
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
+	private static final String TEMP_VIDEO_NAME_PREFIX = "/wfpVideo";
 	private static final String VIDEO_PREFIX = "file:////";
 	private static final String HTTP_PREFIX = "http://";
 	private static final String VIDEO_TYPE = "video/*";
 	private static final String IMAGE_SUFFIX = ".jpg";
+	private static final String VIDEO_SUFFIX = ".mp4";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
-	private QuestionView photoSource;
+	private QuestionView mediaQuestionSource;
 	private SurveyDbAdapter databaseAdaptor;
 	private String surveyId;
 	private Long respondentId;
@@ -112,23 +115,33 @@ public class SurveyViewActivity extends TabActivity implements
 	/**
 	 * this is called when external activities launched by this activity return
 	 * and we need to do something. Right now the only activity we care about is
-	 * the Photo activity (when the user is done taking a picture). When we get
-	 * control back from the camera, we just need to capture the details about
-	 * the picture that was just stored and stuff it into the question response.
+	 * the media (photo/video/audio) activity (when the user is done recording
+	 * the media). When we get control back from the camera, we just need to
+	 * capture the details about the file that was just stored and stuff it
+	 * into the question response.
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// on activity return
-		if (requestCode == PHOTO_ACTIVITY_REQUEST) {
+		if (requestCode == PHOTO_ACTIVITY_REQUEST
+				|| requestCode == VIDEO_ACTIVITY_REQUEST) {
 			if (resultCode == RESULT_OK) {
+				String filePrefix = null;
+				String fileSuffix = null;
+				if (requestCode == PHOTO_ACTIVITY_REQUEST) {
+					filePrefix = TEMP_PHOTO_NAME_PREFIX;
+					fileSuffix = IMAGE_SUFFIX;
+				} else {
+					filePrefix = TEMP_VIDEO_NAME_PREFIX;
+					fileSuffix = VIDEO_SUFFIX;
+				}
+
 				File f = new File(Environment.getExternalStorageDirectory()
 						.getAbsolutePath()
-						+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX);
+						+ filePrefix + fileSuffix);
 				String newName = Environment.getExternalStorageDirectory()
 						.getAbsolutePath()
-						+ TEMP_PHOTO_NAME_PREFIX
-						+ System.nanoTime()
-						+ IMAGE_SUFFIX;
+						+ filePrefix + System.nanoTime() + fileSuffix;
 				f.renameTo(new File(newName));
 
 				try {
@@ -139,21 +152,20 @@ public class SurveyViewActivity extends TabActivity implements
 					 * .insertImage(getContentResolver(), f .getAbsolutePath(),
 					 * null, null));
 					 */
-					if (photoSource != null) {
+					if (mediaQuestionSource != null) {
 						Bundle photoData = new Bundle();
-						photoData.putString(PhotoQuestionView.PHOTO_FILE_KEY,
+						photoData.putString(MediaQuestionView.MEDIA_FILE_KEY,
 								newName);
-						photoSource.questionComplete(photoData);
+						mediaQuestionSource.questionComplete(photoData);
 					}
 					// f.delete();
 				} catch (Exception e) {
 					Log.e(ACTIVITY_NAME, e.getMessage());
 				} finally {
-					photoSource = null;
+					mediaQuestionSource = null;
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -186,7 +198,7 @@ public class SurveyViewActivity extends TabActivity implements
 					.fromFile(new File(Environment
 							.getExternalStorageDirectory().getAbsolutePath()
 							+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX)));
-			photoSource = event.getSource();
+			mediaQuestionSource = event.getSource();
 			startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
 		} else if (QuestionInteractionEvent.VIDEO_TIP_VIEW.equals(event
 				.getEventType())) {
@@ -202,6 +214,17 @@ public class SurveyViewActivity extends TabActivity implements
 			}
 			intent.setDataAndType(uri, VIDEO_TYPE);
 			startActivity(intent);
+		} else if (QuestionInteractionEvent.TAKE_VIDEO_EVENT.equals(event
+				.getEventType())) {
+			// fire off the intent
+			Intent i = new Intent(
+					android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
+			i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
+					.fromFile(new File(Environment
+							.getExternalStorageDirectory().getAbsolutePath()
+							+ TEMP_VIDEO_NAME_PREFIX + VIDEO_SUFFIX)));
+			mediaQuestionSource = event.getSource();
+			startActivityForResult(i, VIDEO_ACTIVITY_REQUEST);
 		}
 	}
 
