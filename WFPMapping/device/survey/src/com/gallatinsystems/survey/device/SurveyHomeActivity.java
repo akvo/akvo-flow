@@ -163,8 +163,11 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					String plotId = bundle.getString(SurveyDbAdapter.PK_ID_COL);
+					String status = bundle
+							.getString(SurveyDbAdapter.STATUS_COL);
 					Intent i = new Intent(this, RegionPlotActivity.class);
 					i.putExtra(RegionPlotActivity.PLOT_ID, plotId);
+					i.putExtra(RegionPlotActivity.STATUS, status);
 					startActivityForResult(i, PLOTTING_ACTIVITY);
 				}
 			}
@@ -175,11 +178,11 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if(outState != null){
-			if(currentUserId != null){
+		if (outState != null) {
+			if (currentUserId != null) {
 				outState.putString(SurveyDbAdapter.PK_ID_COL, currentUserId);
 			}
-			if(currentName != null){
+			if (currentName != null) {
 				outState.putString(SurveyDbAdapter.DISP_NAME_COL, currentName);
 			}
 		}

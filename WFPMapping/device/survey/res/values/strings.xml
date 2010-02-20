@@ -50,6 +50,8 @@
 	<string name="cannotsave">Cannot submit responses</string>
 	<string name="plottinglabel">Area Plotting</string>
 	<string name="addpoint">Add Point</string>
+	<string name="startplotting">Start Plotting</string>
+	<string name="stopplotting">Stop Plotting</string>
 	<string name="completeplot">Complete Plot</string>
 	<string name="noplots">No Plots</string>
 	<string name="addplot">Create New Plot</string>
@@ -61,4 +63,5 @@
 	<string name="videohelpoption">View Help Video</string>
 	<string name="photohelpoption">View Help Photos</string>
 	<string name="helpheading">Help Options</string>
+	<string name="toggleplotmode">Toggle Plot Mode</string>
 </resources>

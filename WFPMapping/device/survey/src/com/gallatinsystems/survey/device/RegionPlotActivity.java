@@ -10,6 +10,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -34,6 +36,14 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		LocationListener {
 
 	public static final String PLOT_ID = "plotid";
+	public static final String STATUS = "status";
+
+	private static final int TOGGLE_ID = Menu.FIRST;
+	private static final String AUTO_MODE = "auto";
+	private static final String MANUAL_MODE = "manual";
+	private static final float MINIMUM_ACCURACY = 1000f;
+	private static final int INITIAL_ZOOM_LEVEL = 16;
+	private static final int LOCATION_UPDATE_FREQ = 5000;
 
 	private MapController mapController;
 	private MapView mapView;
@@ -44,10 +54,10 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	private SurveyDbAdapter dbAdaptor;
 	private ArrayList<String> idList;
 	private double currentElevation;
-
-	private static final float MINIMUM_ACCURACY = 1000f;
-	private static final int INITIAL_ZOOM_LEVEL = 16;
-	private static final int LOCATION_UPDATE_FREQ = 5000;
+	private String currentMode;
+	private String currentStatus;
+	private Button actionButton;
+	private String lastDrawTime;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,16 +65,16 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		setContentView(R.layout.regionplotview);
 		mapView = (MapView) findViewById(R.id.mapview);
 		idList = new ArrayList<String>();
-
+		lastDrawTime = null;
 		mapController = mapView.getController();
 		mapController.setZoom(INITIAL_ZOOM_LEVEL);
 		// turn on zoom controls
 		mapView.setBuiltInZoomControls(true);
 
-		Button button = (Button) findViewById(R.id.addpoint_button);
-		button.setOnClickListener(this);
+		actionButton = (Button) findViewById(R.id.plotaction_button);
+		actionButton.setOnClickListener(this);
 
-		button = (Button) findViewById(R.id.completeplot_button);
+		Button button = (Button) findViewById(R.id.completeplot_button);
 		button.setOnClickListener(this);
 
 		// set up my location and area rendering overlays
@@ -79,21 +89,33 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		// handle instance state
 		plotId = savedInstanceState != null ? savedInstanceState
 				.getString(SurveyDbAdapter.PK_ID_COL) : null;
+		currentStatus = savedInstanceState != null ? savedInstanceState
+				.getString(SurveyDbAdapter.STATUS_COL)
+				: SurveyDbAdapter.IN_PROGRESS_STATUS;
 		if (plotId == null) {
 			Bundle extras = getIntent().getExtras();
 			plotId = extras != null ? extras.getString(PLOT_ID) : null;
+			currentStatus = extras != null ? extras.getString(STATUS)
+					: SurveyDbAdapter.IN_PROGRESS_STATUS;
 		}
+		if (SurveyDbAdapter.RUNNING_STATUS.equals(currentStatus)) {
+			currentMode = AUTO_MODE;
+		} else {
+			currentMode = MANUAL_MODE;
+		}
+		updateLabels();
 		dbAdaptor = new SurveyDbAdapter(this);
 		dbAdaptor.open();
 		fillPlot();
+		registerForContextMenu(mapView);
 	}
 
 	/**
 	 * iterates over the points from the database and adds them to the region
-	 * overlay
+	 * overlay.
 	 */
 	private void fillPlot() {
-		Cursor data = dbAdaptor.listPlotPoints(plotId);
+		Cursor data = dbAdaptor.listPlotPoints(plotId, lastDrawTime);
 		startManagingCursor(data);
 		while (!data.isAfterLast()) {
 			regionPlot.addLocation(convertToPoint(data.getString(data
@@ -105,14 +127,27 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			data.moveToNext();
 		}
 		data.close();
+		lastDrawTime = "" + System.currentTimeMillis();
+	}
+
+	private void updateLabels() {
+		if (MANUAL_MODE.equals(currentMode)) {
+			actionButton.setText(R.string.addpoint);
+		} else {
+			if (SurveyDbAdapter.RUNNING_STATUS.equals(currentStatus)) {
+				actionButton.setText(R.string.stopplotting);
+			} else {
+				actionButton.setText(R.string.startplotting);
+			}
+		}
 	}
 
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		if (outState != null && plotId != null) {
 			outState.putString(SurveyDbAdapter.PK_ID_COL, plotId);
+			outState.putString(SurveyDbAdapter.STATUS_COL, currentStatus);
 		}
-
 	}
 
 	protected boolean isRouteDisplayed() {
@@ -165,18 +200,37 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.addpoint_button) {
-			GeoPoint point = myLocation.getMyLocation();
-			if (point != null) {
-				mapController.animateTo(point);
-				regionPlot.addLocation(point);
-				mapView.invalidate();
-				dbAdaptor.savePlotPoint(plotId, decodeLocation(point
-						.getLatitudeE6()), decodeLocation(point
-						.getLongitudeE6()), currentElevation);
+		if (v.getId() == R.id.plotaction_button) {
+			if (MANUAL_MODE.equals(currentMode)) {
+				GeoPoint point = myLocation.getMyLocation();
+				if (point != null) {
+					mapController.animateTo(point);
+					regionPlot.addLocation(point);
+					mapView.invalidate();
+					dbAdaptor.savePlotPoint(plotId, decodeLocation(point
+							.getLatitudeE6()), decodeLocation(point
+							.getLongitudeE6()), currentElevation);
+				}
+			} else {
+				// if we're in AUTO mode, then we are going to either start or
+				// stop the plotting service
+				if (SurveyDbAdapter.RUNNING_STATUS.equals(currentStatus)) {
+					// if we're running, then stop the service
+					stopPlotService();
+					// set the status to In progress
+					changePlotStatus(SurveyDbAdapter.IN_PROGRESS_STATUS);
+				} else {
+					// if we're not running, then we should start
+					startPlotService();
+					changePlotStatus(SurveyDbAdapter.RUNNING_STATUS);
+				}
 			}
 		} else {
-			dbAdaptor.updatePlotStatus(plotId, SurveyDbAdapter.COMPLETE_STATUS);
+			// if we're in AUTO mode, we have to stop the service
+			if (AUTO_MODE.equals(currentMode)) {
+				stopPlotService();
+			}
+			changePlotStatus(SurveyDbAdapter.COMPLETE_STATUS);
 			// send a broadcast message indicating new data is available
 			sendBroadcast(new Intent(BroadcastDispatcher.DATA_AVAILABLE_INTENT));
 			finish();
@@ -199,6 +253,59 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		return "" + ((double) val / (double) 1E6);
 	}
 
+	private void changePlotStatus(String status) {
+		currentStatus = status;
+		dbAdaptor.updatePlotStatus(plotId, currentStatus);
+		updateLabels();
+	}
+
+	/**
+	 * termniates the RegionPlotService
+	 */
+	private void stopPlotService() {
+		Intent i = new Intent(this, RegionPlotService.class);
+		stopService(i);
+	}
+
+	/**
+	 * starts the plot service
+	 */
+	private void startPlotService() {
+		Intent i = new Intent(this, RegionPlotService.class);
+		i.putExtra(RegionPlotService.PLOT_ID, plotId);
+		startService(i);
+	}
+
+	/**
+	 * presents a single button ("Toggle Mode") when the user clicks the menu
+	 * key
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, TOGGLE_ID, 0, R.string.toggleplotmode);
+		return true;
+	}
+
+	/**
+	 * handles the button press for the options menu
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case TOGGLE_ID:
+			if (AUTO_MODE.equals(currentMode)) {
+				currentMode = MANUAL_MODE;
+				actionButton.setText(R.string.addpoint);
+			} else {
+				currentMode = AUTO_MODE;
+				actionButton.setText(R.string.startplotting);
+			}
+			return true;
+		}
+		return super.onMenuItemSelected(featureId, item);
+	}
+
 	/**
 	 * called by the system when it gets location updates.
 	 */
@@ -208,6 +315,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			// if (loc.getAccuracy() < MINIMUM_ACCURACY) {
 			mapController.animateTo(convertToPoint(loc));
 			currentElevation = loc.getAltitude();
+			fillPlot();
 			mapView.invalidate();
 			// }
 

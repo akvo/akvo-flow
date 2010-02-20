@@ -33,6 +33,8 @@ public class ListPlotActivity extends AbstractListEditActivity {
 				.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 		intent.putExtra(SurveyDbAdapter.DISP_NAME_COL, plot.getString(plot
 				.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+		intent.putExtra(SurveyDbAdapter.STATUS_COL, plot.getString(plot
+				.getColumnIndexOrThrow(SurveyDbAdapter.STATUS_COL)));
 		setResult(RESULT_OK, intent);
 		finish();
 	}

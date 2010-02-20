@@ -20,7 +20,7 @@
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:paddingLeft="5px" android:paddingTop="5px"
 			android:paddingRight="5px" android:paddingBottom="5px">
-			<Button android:id="@+id/addpoint_button"
+			<Button android:id="@+id/plotaction_button"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:text="@string/addpoint" android:layout_weight="1" />
 			<Button android:id="@+id/completeplot_button"

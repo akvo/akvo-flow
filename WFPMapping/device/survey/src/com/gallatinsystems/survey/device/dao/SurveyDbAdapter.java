@@ -77,6 +77,8 @@ public class SurveyDbAdapter {
 
 	public static final String COMPLETE_STATUS = "Complete";
 	public static final String SENT_STATUS = "Sent";
+	public static final String RUNNING_STATUS = "Running";
+	public static final String IN_PROGRESS_STATUS = "In Progress";
 
 	private static final int DATABASE_VERSION = 10;
 
@@ -416,6 +418,7 @@ public class SurveyDbAdapter {
 		initialValues.put(DESC_COL, desc);
 		initialValues.put(CREATED_DATE_COL, System.currentTimeMillis());
 		initialValues.put(USER_FK_COL, userId);
+		initialValues.put(STATUS_COL, IN_PROGRESS_STATUS);
 
 		if (idVal == null) {
 			idVal = database.insert(PLOT_TABLE, null, initialValues);
@@ -433,10 +436,13 @@ public class SurveyDbAdapter {
 	 * @param plotId
 	 * @return
 	 */
-	public Cursor listPlotPoints(String plotId) {
-		Cursor cursor = database.query(PLOT_POINT_TABLE, new String[] {
-				PK_ID_COL, LAT_COL, LON_COL, CREATED_DATE_COL }, PLOT_FK_COL
-				+ " = ?", new String[] { plotId }, null, null, null);
+	public Cursor listPlotPoints(String plotId, String afterTime) {
+
+		Cursor cursor = database
+				.query(PLOT_POINT_TABLE, new String[] { PK_ID_COL, LAT_COL,
+						LON_COL, CREATED_DATE_COL }, PLOT_FK_COL + " = ? and "
+						+ CREATED_DATE_COL + " > ?", new String[] { plotId,
+						afterTime != null ? afterTime : "0" }, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
