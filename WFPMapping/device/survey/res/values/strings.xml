@@ -57,4 +57,8 @@
 	<string name="description">Description</string>
 	<string name="plotinstructions">Select the desired plot by clicking. To create a new plot, press the Menu button and select Add New Plot. Long-click to edit the name or description of an existing plot.</string>
 	<string name="deletepointdialog">Are you sure you want to remove this point from the plot?</string>
+	<string name="texthelpoption">View Help Text</string>
+	<string name="videohelpoption">View Help Video</string>
+	<string name="photohelpoption">View Help Photos</string>
+	<string name="helpheading">Help Options</string>
 </resources>

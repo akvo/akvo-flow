@@ -61,6 +61,7 @@
 			<tip><![CDATA[<b>High</b> = Water is flowing in adequate quantity and quality, meets govt standards and has no significant broken parts/problems.<br>
     <b>Ok</b> = Water is flowing but is either not adequate quantity or quality, or does not meet govt. standards, or has broken parts, leaks or problems.<br>
     <b>Poor</b> =System does not function.]]></tip>
+    <video src="http://www.gallatinsystems.com/WFPDevice/video/demoVid.mp4"/>
 		</question>
 	</questionGroup>
 	<questionGroup order="2">

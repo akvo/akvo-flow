@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -35,6 +36,9 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
 public class QuestionView extends TableLayout implements
 		QuestionInteractionListener {
 
+	private static final String VIDEO_HELP = "video";
+	private static final String TEXT_HELP = "txt";
+	private static final String PHOTO_HELP = "photo";
 
 	protected static final int DEFAULT_WIDTH = 300;
 	private TextView questionText;
@@ -42,7 +46,6 @@ public class QuestionView extends TableLayout implements
 	private QuestionResponse response;
 	private ArrayList<QuestionInteractionListener> listeners;
 	private ImageButton tipImage;
-	private ImageButton videoImage;
 
 	/**
 	 * install a single tableRow containing a textView with the question text
@@ -64,44 +67,27 @@ public class QuestionView extends TableLayout implements
 		tr.addView(questionText);
 		// if there is a tip for this question, construct an alert dialog box
 		// with the data
-		// TODO: handle html with images by using an ImageLoader with the Html
-		// class?
-		if (question.getTip() != null) {
+		final int tips = question.getTipCount();
+		if (tips > 0) {
 			tipImage = new ImageButton(context);
 			tipImage.setImageResource(android.R.drawable.ic_dialog_info);
-
 			tr.addView(tipImage);
 			tipImage.setOnClickListener(new OnClickListener() {
+				@Override
 				public void onClick(View v) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(v
-							.getContext());
-					TextView tipText = new TextView(v.getContext());
-					tipText.setText(Html.fromHtml(question.getTip()));
-					builder.setView(tipText);
-					builder.setPositiveButton(R.string.okbutton,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-					builder.show();
-
+					if (tips > 1) {
+						displayHelpChoices();
+					} else {
+						if (question.getTip() != null) {
+							displayHelp(TEXT_HELP);
+						} else if (question.getVideo() != null) {
+							displayHelp(VIDEO_HELP);
+						} else {
+							displayHelp(PHOTO_HELP);
+						}
+					}
 				}
 			});
-		}
-		String video = question.getVideo();
-		if (video != null && video.trim().length() > 0) {
-			videoImage = new ImageButton(context);
-			videoImage.setImageResource(android.R.drawable.ic_media_play);
-
-			tr.addView(videoImage);
-			videoImage.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					notifyQuestionListeners(QuestionInteractionEvent.VIDEO_TIP_VIEW);
-				}
-			});
-
 		}
 		addView(tr);
 		// if this question has 1 or more dependencies, then it needs to be
@@ -109,6 +95,68 @@ public class QuestionView extends TableLayout implements
 		if (question.getDependencies() != null
 				&& question.getDependencies().size() > 0) {
 			setVisibility(View.GONE);
+		}
+	}
+
+	/**
+	 * displays a dialog box with options for each of the help types that have
+	 * been initialized for this particular question.
+	 */
+	private void displayHelpChoices() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+		builder.setTitle(R.string.helpheading);
+		final CharSequence[] items = new CharSequence[question.getTipCount()];
+		final Resources resources = getResources();
+		int itemIndex = 0;
+
+		if (question.getImage() != null) {
+			items[itemIndex++] = resources.getString(R.string.photohelpoption);
+		}
+		if (question.getVideo() != null) {
+			items[itemIndex++] = resources.getString(R.string.videohelpoption);
+		}
+		if (question.getTip() != null) {
+			items[itemIndex++] = resources.getString(R.string.texthelpoption);
+		}
+		builder.setItems(items, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				String val = items[id].toString();
+				if (resources.getString(R.string.texthelpoption).equals(val)) {
+					displayHelp(TEXT_HELP);
+				} else if (resources.getString(R.string.videohelpoption)
+						.equals(val)) {
+					displayHelp(VIDEO_HELP);
+				} else {
+					displayHelp(PHOTO_HELP);
+				}
+				dialog.dismiss();
+			}
+		});
+		builder.show();
+	}
+
+	/**
+	 * displays the selected help type
+	 * 
+	 * @param type
+	 */
+	private void displayHelp(String type) {
+		if (VIDEO_HELP.equals(type)) {
+			notifyQuestionListeners(QuestionInteractionEvent.VIDEO_TIP_VIEW);
+		} else if (TEXT_HELP.equals(type)) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+			TextView tipText = new TextView(getContext());
+			tipText.setText(Html.fromHtml(question.getTip()));
+			builder.setView(tipText);
+			builder.setPositiveButton(R.string.okbutton,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+						}
+					});
+			builder.show();
+		} else {
+			// TODO: display image help
 		}
 	}
 
@@ -237,4 +285,5 @@ public class QuestionView extends TableLayout implements
 	public Question getQuestion() {
 		return question;
 	}
+
 }

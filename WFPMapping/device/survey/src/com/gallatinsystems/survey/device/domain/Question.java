@@ -8,7 +8,8 @@ import java.util.ArrayList;
  * <ul>
  * <li>option - radio-button like selection</li>
  * <li>free - free text</li>
- * <li>date - date selector</li>
+ * <li>video - video capture</li>
+ * <li>photo - photo capture</li>
  * <li>geo - geographic detection (GPS)</li>
  * </ul>
  * 
@@ -23,6 +24,7 @@ public class Question {
 	private ValidationRule validationRule;
 	private String renderType;
 	private String video;
+	private String image;
 
 	public static final String FREE_TYPE = "free";
 	public static final String OPTION_TYPE = "option";
@@ -140,6 +142,33 @@ public class Question {
 
 	public void setVideo(String video) {
 		this.video = video;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	/**
+	 * counts the number of non-null help tips
+	 * 
+	 * @return
+	 */
+	public int getTipCount() {
+		int count = 0;
+		if (tip != null) {
+			count++;
+		}
+		if (video != null) {
+			count++;
+		}
+		if (image != null) {
+			count++;
+		}
+		return count;
 	}
 
 	public String toString() {

@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
