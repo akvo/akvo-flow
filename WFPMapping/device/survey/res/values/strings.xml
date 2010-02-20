@@ -36,6 +36,10 @@
 	<string name="sendoptdesc">Sends survey data to server. You must have data access (cellular or wi-fi) to perform this operation.</string>
 	<string name="poweroptlabel">Power Management</string>
 	<string name="poweroptdesc">Toggles Wi-Fi to better manage battery life.</string>
+	<string name="aboutlabel">About</string>
+	<string name="aboutdesc">Displays version information.</string>
+	<string name="abouttitle">About - FieldSurvey</string>
+	<string name="abouttext">FieldSurvey\nDeveloped By: Gallatin Systems\nCopyright 2010\nVersion 1.0</string>
 	<string name="gpsstatuslabel">GPS Status</string>
 	<string name="gpsstatusdesc">Launches the GPS Status application if you have it installed on this device.</string>
 	<string name="nogpsstatus">GPS Status is not installed on this device. Please install it using the Android Market.</string>

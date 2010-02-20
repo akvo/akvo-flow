@@ -43,6 +43,8 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.poweroptdesc)));
 		list.add(createMap(resources.getString(R.string.gpsstatuslabel),
 				resources.getString(R.string.gpsstatusdesc)));
+		list.add(createMap(resources.getString(R.string.aboutlabel),
+				resources.getString(R.string.aboutdesc)));
 		String[] fromKeys = { LABEL, DESC };
 		int[] toIds = { R.id.optionLabel, R.id.optionDesc };
 
@@ -89,7 +91,21 @@ public class SettingsActivity extends ListActivity {
 							});
 					builder.show();
 				}
-			} else {
+			} else if (resources.getString(R.string.aboutlabel).equals(val)) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				TextView tipText = new TextView(this);
+				tipText.setText(R.string.abouttext);
+				builder.setTitle(R.string.abouttitle);
+				builder.setView(tipText);
+				builder.setPositiveButton(R.string.okbutton,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int id) {
+								dialog.cancel();
+							}
+						});
+				builder.show();				
+			}else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
 					i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
