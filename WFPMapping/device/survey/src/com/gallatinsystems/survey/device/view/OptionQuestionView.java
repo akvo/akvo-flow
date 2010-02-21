@@ -129,10 +129,9 @@ public class OptionQuestionView extends QuestionView {
 										.get(checkedId))) {
 									if (!suppressListeners) {
 										// only display the dialog if OTHER
-										// isn't
-										// already populated as the response.
-										// need this
-										// to suppress the OTHER dialog
+										// isn't already populated as the
+										// response need this to suppress the
+										// OTHER dialog
 										if (getResponse() == null
 												|| !getResponse()
 														.getType()

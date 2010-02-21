@@ -64,4 +64,6 @@
 	<string name="photohelpoption">View Help Photos</string>
 	<string name="helpheading">Help Options</string>
 	<string name="toggleplotmode">Toggle Plot Mode</string>
+	<string name="plotsettings">Settings</string>
+	<string name="plotinterval">Set Plot Interval</string>
 </resources>

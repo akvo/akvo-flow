@@ -3,7 +3,9 @@ package com.gallatinsystems.survey.device;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
@@ -17,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.GeoUtil;
 import com.gallatinsystems.survey.device.view.GeoPlotOverlay;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -39,11 +42,13 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	public static final String STATUS = "status";
 
 	private static final int TOGGLE_ID = Menu.FIRST;
+	private static final int INTERVAL_ID = Menu.FIRST + 1;
 	private static final String AUTO_MODE = "auto";
 	private static final String MANUAL_MODE = "manual";
 	private static final float MINIMUM_ACCURACY = 1000f;
 	private static final int INITIAL_ZOOM_LEVEL = 16;
 	private static final int LOCATION_UPDATE_FREQ = 5000;
+	private static final int DEFAULT_AUTO_INTERVAL = 60000;
 
 	private MapController mapController;
 	private MapView mapView;
@@ -58,11 +63,13 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	private String currentStatus;
 	private Button actionButton;
 	private String lastDrawTime;
+	private int interval;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.regionplotview);
+		interval = DEFAULT_AUTO_INTERVAL;
 		mapView = (MapView) findViewById(R.id.mapview);
 		idList = new ArrayList<String>();
 		lastDrawTime = null;
@@ -118,7 +125,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		Cursor data = dbAdaptor.listPlotPoints(plotId, lastDrawTime);
 		startManagingCursor(data);
 		while (!data.isAfterLast()) {
-			regionPlot.addLocation(convertToPoint(data.getString(data
+			regionPlot.addLocation(GeoUtil.convertToPoint(data.getString(data
 					.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)), data
 					.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.LON_COL))));
@@ -207,9 +214,10 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 					mapController.animateTo(point);
 					regionPlot.addLocation(point);
 					mapView.invalidate();
-					dbAdaptor.savePlotPoint(plotId, decodeLocation(point
-							.getLatitudeE6()), decodeLocation(point
-							.getLongitudeE6()), currentElevation);
+					dbAdaptor.savePlotPoint(plotId, GeoUtil
+							.decodeLocation(point.getLatitudeE6()), GeoUtil
+							.decodeLocation(point.getLongitudeE6()),
+							currentElevation);
 				}
 			} else {
 				// if we're in AUTO mode, then we are going to either start or
@@ -237,22 +245,6 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		}
 	}
 
-	private GeoPoint convertToPoint(String lat, String lon) {
-		Double latitude = Double.parseDouble(lat) * 1E6;
-		Double longitude = Double.parseDouble(lon) * 1E6;
-		return new GeoPoint(latitude.intValue(), longitude.intValue());
-	}
-
-	private GeoPoint convertToPoint(Location loc) {
-		Double latitude = loc.getLatitude() * 1E6;
-		Double longitude = loc.getLongitude() * 1E6;
-		return new GeoPoint(latitude.intValue(), longitude.intValue());
-	}
-
-	private String decodeLocation(int val) {
-		return "" + ((double) val / (double) 1E6);
-	}
-
 	private void changePlotStatus(String status) {
 		currentStatus = status;
 		dbAdaptor.updatePlotStatus(plotId, currentStatus);
@@ -260,7 +252,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	}
 
 	/**
-	 * termniates the RegionPlotService
+	 * Terminates the RegionPlotService
 	 */
 	private void stopPlotService() {
 		Intent i = new Intent(this, RegionPlotService.class);
@@ -273,6 +265,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	private void startPlotService() {
 		Intent i = new Intent(this, RegionPlotService.class);
 		i.putExtra(RegionPlotService.PLOT_ID, plotId);
+		i.putExtra(RegionPlotService.INTERVAL, interval);
 		startService(i);
 	}
 
@@ -284,6 +277,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, TOGGLE_ID, 0, R.string.toggleplotmode);
+		menu.add(0, INTERVAL_ID, 1, R.string.plotsettings);
 		return true;
 	}
 
@@ -302,6 +296,21 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 				actionButton.setText(R.string.startplotting);
 			}
 			return true;
+		case INTERVAL_ID:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.plotinterval);
+			final CharSequence[] items = { "30 Seconds", "60 Seconds",
+					"2 Minutes", "5 Minutes", "10 Minutes" };
+			final int[] vals = { 30000, 60000, 120000, 300000, 600000 };
+			builder.setItems(items, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int item) {
+					interval = vals[item];
+					dialog.dismiss();
+				}
+			});
+			builder.show();
+
+			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
@@ -313,7 +322,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		if (loc != null) {
 			// TODO: put this back in?
 			// if (loc.getAccuracy() < MINIMUM_ACCURACY) {
-			mapController.animateTo(convertToPoint(loc));
+			mapController.animateTo(GeoUtil.convertToPoint(loc));
 			currentElevation = loc.getAltitude();
 			fillPlot();
 			mapView.invalidate();
