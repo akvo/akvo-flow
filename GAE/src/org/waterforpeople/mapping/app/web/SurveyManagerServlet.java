@@ -5,25 +5,32 @@ import java.io.IOException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.DeviceFiles;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
 public class SurveyManagerServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
-		Long surveyId = new Long(req.getParameter("surveyId"));
+		Long surveyId = 0L;
 		SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-		SurveyInstance si = siDAO.get(surveyId);
-		resp.setContentType("text/plain");
+		SurveyInstance si=null;
+		if (req.getParameter("surveyId") != null) {
+			 surveyId = new Long(req.getParameter("surveyId"));
+				si = siDAO.get(surveyId);
+
+		}
+		String action = req.getParameter("action");
+		String surveyDoc = req.getParameter("surveyDoc");
+		String devicePhoneNumber = req.getParameter("devicePhoneNumber");
+
+		resp.setContentType("application/xhtml+xml");
 		try {
-			if (si != null) {
+			if (surveyId != 0L) {
 				resp.getWriter().println(si.toString());
 				DeviceFiles df = si.getDeviceFile();
 				resp.getWriter().println(df.toString());
@@ -33,8 +40,12 @@ public class SurveyManagerServlet extends HttpServlet {
 							"----------SurveyID assoced with QuestionAnswer: "
 									+ qas.getSurveyInstance().getId());
 				}
-			} else {
-				resp.getWriter().println("No Survey found for id: " + surveyId);
+			} else if (action.equals("save") && surveyDoc != null) {
+				SurveyDAO surveyDAO = new SurveyDAO();
+				surveyDAO.save(surveyDoc);
+			} else if (action.equals("getAvailableSurveysDevice")
+					&& devicePhoneNumber != null) {
+				resp.getWriter().print(getSurveyForPhone(devicePhoneNumber));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -44,11 +55,35 @@ public class SurveyManagerServlet extends HttpServlet {
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
-		String surveyDoc = req.getParameter("surveyDoc");
-		// Survey survey = new SurveyXMLAdapter().unmarshall(surveyDoc);
-		SurveyDAO surveyDAO = new SurveyDAO();
-		surveyDAO.save(surveyDoc);
-		resp.setContentType("text/plain");
+		String surveyDoc = req.getParameter("surveyDocument");
+		String devicePhoneNumber = req.getParameter("devicePhoneNumber");
+
+		if (surveyDoc != null) {
+			SurveyDAO surveyDAO = new SurveyDAO();
+			try {
+				resp.getWriter().print("Survey : " + surveyDAO.save(surveyDoc));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (action.equals("getAvailableSurveysDevice")
+				&& devicePhoneNumber != null) {
+			try {
+				resp.setContentType("application/xhtml+xml");
+				resp.getWriter().print(getSurveyForPhone(devicePhoneNumber));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
+
+	private String getSurveyForPhone(String devicePhoneNumber) {
+		SurveyDAO surveyDAO = new SurveyDAO();
+		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+		return surveyDAO.getSurveyDocument(dsjqDAO.get(devicePhoneNumber));
+	}
+	
 
 }

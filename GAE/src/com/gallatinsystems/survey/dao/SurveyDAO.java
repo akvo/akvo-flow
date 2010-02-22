@@ -45,6 +45,20 @@ public class SurveyDAO {
 		}
 		return survey;
 	}
+	
+	public String getSurveyDocument(Long id) {
+		SurveyContainer surveyContainer = null;
+
+		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
+		query.setFilter("id == idParam");
+		query.declareParameters("Long idParam");
+		List<SurveyContainer> results = (List<SurveyContainer>) query.execute(id);
+		if (results.size() > 0) {
+			surveyContainer = results.get(0);
+		}
+		
+		return surveyContainer.getSurveyDocument().getValue();
+	}
 
 	private void init() {
 		pm = PMF.get().getPersistenceManager();
