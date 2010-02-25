@@ -62,6 +62,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			populateFields();
 		}
 		startSyncService();
+		startDownloadService();
 	}
 
 	private HashMap<String, Object> createMap(String label, Drawable img) {
@@ -78,6 +79,14 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		Intent i = new Intent(this, DataSyncService.class);
 		i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
 		getApplicationContext().startService(i);
+	}
+
+	/**
+	 * starts up the download service
+	 */
+	private void startDownloadService() {
+		getApplicationContext().startService(
+				new Intent(this, SurveyDownloadService.class));
 	}
 
 	/**

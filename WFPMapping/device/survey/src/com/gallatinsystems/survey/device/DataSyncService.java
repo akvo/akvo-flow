@@ -45,6 +45,8 @@ import com.gallatinsystems.survey.device.util.MultipartStream;
  * (if it is invoked with the SEND type set under the TYPE_KEY in the extras
  * bundle)
  * 
+ * TODO: refactor to use new HttpUtil and ViewUtil.fireNotification
+ * 
  * @author Christopher Fagiani
  * 
  */

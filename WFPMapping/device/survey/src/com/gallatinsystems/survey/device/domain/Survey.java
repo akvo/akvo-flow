@@ -17,8 +17,17 @@ public class Survey {
     private Date startDate;
     private Date endDate;
     private List<QuestionGroup> questionGroups;
+    private double version;
 
-    public String getName() {
+    public double getVersion() {
+		return version;
+	}
+
+	public void setVersion(double version) {
+		this.version = version;
+	}
+
+	public String getName() {
         return name;
 
     }

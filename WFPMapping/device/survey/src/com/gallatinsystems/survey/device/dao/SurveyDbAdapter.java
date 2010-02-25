@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.device.dao;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import android.content.ContentValues;
@@ -11,6 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.domain.Survey;
 
 /**
  * Database class for the survey db. It can create/upgrade the database as well
@@ -41,6 +43,7 @@ public class SurveyDbAdapter {
 	public static final String ELEVATION_COL = "elevation";
 	public static final String DESC_COL = "description";
 	public static final String STATUS_COL = "status";
+	public static final String VERSION_COL = "version";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -49,8 +52,8 @@ public class SurveyDbAdapter {
 	/**
 	 * Database creation sql statement
 	 */
-	private static final String SURVEY_TABLE_CREATE = "create table survey (survey_id integer primary key autoincrement, "
-			+ "display_name text not null);";
+	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key autoincrement, "
+			+ "display_name text not null, version real, type text, location text, filename text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer);";
@@ -63,6 +66,12 @@ public class SurveyDbAdapter {
 	private static final String PLOT_TABLE_CREATE = "create table plot (_id integer primary key autoincrement, display_name text, description text, created_date text, user_id integer, status text);";
 
 	private static final String PLOT_POINT_TABLE_CREATE = "create table plot_point (_id integer primary key autoincrement, plot_id integer not null, lat text, lon text, elevation text, created_date text);";
+
+	private static final String[] DEFAULT_INSERTS = new String[] {
+			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey.xml')",
+			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey.xml')",
+			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey.xml')",
+			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey.xml')", };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -80,7 +89,7 @@ public class SurveyDbAdapter {
 	public static final String RUNNING_STATUS = "Running";
 	public static final String IN_PROGRESS_STATUS = "In Progress";
 
-	private static final int DATABASE_VERSION = 10;
+	private static final int DATABASE_VERSION = 12;
 
 	private final Context context;
 
@@ -98,6 +107,9 @@ public class SurveyDbAdapter {
 			db.execSQL(SURVEY_RESPONSE_CREATE);
 			db.execSQL(PLOT_TABLE_CREATE);
 			db.execSQL(PLOT_POINT_TABLE_CREATE);
+			for (int i = 0; i < DEFAULT_INSERTS.length; i++) {
+				db.execSQL(DEFAULT_INSERTS[i]);
+			}
 		}
 
 		@Override
@@ -510,5 +522,30 @@ public class SurveyDbAdapter {
 	public void deletePlotPoint(String id) {
 		database.delete(PLOT_POINT_TABLE, PK_ID_COL + " = ?",
 				new String[] { id });
+	}
+
+	/**
+	 * returns a list of survey objects that are out of date (missing from the
+	 * db or with a lower version number)
+	 * 
+	 * @param surveys
+	 * @return
+	 */
+	public ArrayList<Survey> checkSurveyVersions(ArrayList<Survey> surveys) {
+		ArrayList<Survey> outOfDateSurveys = new ArrayList<Survey>();
+		for (int i = 0; i < surveys.size(); i++) {
+			Cursor cursor = database.query(SURVEY_TABLE,
+					new String[] { PK_ID_COL }, PK_ID_COL + " = ? and "
+							+ VERSION_COL + " >= ?", new String[] {
+							surveys.get(i).getId(),
+							surveys.get(i).getVersion() + "" }, null, null,
+					null);
+
+			if (cursor.getCount() == 0) {
+				outOfDateSurveys.add(surveys.get(i));
+			}
+			cursor.close();
+		}
+		return outOfDateSurveys;
 	}
 }
