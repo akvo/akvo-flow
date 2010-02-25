@@ -1,13 +1,14 @@
 package com.gallatinsystems.survey.device;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
 
 import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Service;
 import android.content.Context;
@@ -33,6 +34,8 @@ public class SurveyDownloadService extends Service {
 
 	private static final String TAG = "SURVEY_DOWNLOAD_ACTIVITY";
 
+	private static final String SURVEY_FILE_SUFFIX = ".xml";
+	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
 
 	private static final String SURVEY_LIST_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
@@ -43,9 +46,10 @@ public class SurveyDownloadService extends Service {
 	private SurveyDbAdapter databaseAdaptor;
 
 	private static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
+	private static final String SD_LOC = "scdard";
 
 	private Thread thread;
-	
+
 	private static Semaphore lock = new Semaphore(1);
 
 	public IBinder onBind(Intent intent) {
@@ -59,7 +63,7 @@ public class SurveyDownloadService extends Service {
 	public int onStartCommand(final Intent intent, int flags, int startid) {
 		thread = new Thread(new Runnable() {
 			public void run() {
-				if (intent != null) {			
+				if (intent != null) {
 					checkAndDownload();
 				}
 			}
@@ -88,7 +92,7 @@ public class SurveyDownloadService extends Service {
 							Survey survey = surveys.get(i);
 							try {
 								if (downloadSurvey(survey)) {
-								//	databaseAdaptor.saveSurvey(survey);
+									databaseAdaptor.saveSurvey(survey);
 								}
 							} catch (Exception e) {
 								Log.e(TAG, "Could not download survey", e);
@@ -112,24 +116,28 @@ public class SurveyDownloadService extends Service {
 	 * with the filename and location
 	 */
 	private boolean downloadSurvey(Survey survey) {
-		DefaultHttpClient client = new DefaultHttpClient();
-		HttpResponse response = null;
 		boolean success = false;
 		try {
-			response = (client.execute(new HttpGet(SURVEY_SERVICE_URL
-					+ survey.getId())));
-			if (response.getStatusLine().getStatusCode() != 200) {
-				Log.e(TAG, "Serivce returned a bad status code");
-			} else {
-				success = true;
-				// TODO: parse the response and save file to disk
-				// TODO: update survey object with file location
+			String response = HttpUtil.httpGet(SURVEY_SERVICE_URL
+					+ survey.getId());
 
-			}
+			survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
+			// TODO: get type and from survey XML once its added to schema
+			survey.setType(DEFAULT_TYPE);
+			survey.setName("Survey "+survey.getId());
+			survey.setLocation(SD_LOC);
+			survey.setVersion(survey.getVersion());
+			File file = new File(DATA_DIR, survey.getFileName());
+			PrintStream writer = new PrintStream(new FileOutputStream(file));
+			writer.print(response);
+			writer.close();
+			success = true;
+		} catch (IOException e) {
+			Log.e(TAG, "Could write survey file " + survey.getFileName(), e);
 		} catch (Exception e) {
-			Log.e(TAG, "Could not send processing call", e);
+			Log.e(TAG, "Could not download survey " + survey.getId(), e);
 		}
-		return true;
+		return success;
 	}
 
 	/**
@@ -178,7 +186,7 @@ public class SurveyDownloadService extends Service {
 	private String getPhoneNumber() {
 		TelephonyManager teleMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		return teleMgr.getLine1Number();
-		//return "3033359240";
+		// return "3033359240";
 	}
 
 	/**
@@ -188,7 +196,8 @@ public class SurveyDownloadService extends Service {
 	 * @param type
 	 */
 	private void fireNotification(int count) {
-		String text = getResources().getText(R.string.surveysupdated).toString();
+		String text = getResources().getText(R.string.surveysupdated)
+				.toString();
 		ViewUtil.fireNotification(text, text, this, COMPLETE_ID);
 	}
 

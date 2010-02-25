@@ -44,6 +44,9 @@ public class SurveyDbAdapter {
 	public static final String DESC_COL = "description";
 	public static final String STATUS_COL = "status";
 	public static final String VERSION_COL = "version";
+	public static final String TYPE_COL = "type";
+	public static final String LOCATION_COL = "location";
+	public static final String FILENAME_COL = "filename";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -52,7 +55,7 @@ public class SurveyDbAdapter {
 	/**
 	 * Database creation sql statement
 	 */
-	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key autoincrement, "
+	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key, "
 			+ "display_name text not null, version real, type text, location text, filename text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
@@ -89,7 +92,7 @@ public class SurveyDbAdapter {
 	public static final String RUNNING_STATUS = "Running";
 	public static final String IN_PROGRESS_STATUS = "In Progress";
 
-	private static final int DATABASE_VERSION = 12;
+	private static final int DATABASE_VERSION = 13;
 
 	private final Context context;
 
@@ -547,5 +550,33 @@ public class SurveyDbAdapter {
 			cursor.close();
 		}
 		return outOfDateSurveys;
+	}
+
+	/**
+	 * updates a survey in the db
+	 * 
+	 * @param survey
+	 * @return
+	 */
+	public void saveSurvey(Survey survey) {
+		Cursor cursor = database.query(SURVEY_TABLE,
+				new String[] { PK_ID_COL }, PK_ID_COL + " = ?",
+				new String[] { survey.getId(), }, null, null, null);
+		ContentValues updatedValues = new ContentValues();
+		updatedValues.put(PK_ID_COL, survey.getId());
+		updatedValues.put(VERSION_COL, survey.getVersion());
+		updatedValues.put(TYPE_COL, survey.getType());
+		updatedValues.put(LOCATION_COL, survey.getLocation());
+		updatedValues.put(FILENAME_COL, survey.getFileName());
+		updatedValues.put(DISP_NAME_COL, survey.getName());
+
+		if (cursor.getCount() > 0) {
+			// if we found an item, it's an update, otherwise, it's an insert
+			database.update(SURVEY_TABLE, updatedValues, PK_ID_COL + " = ?",
+					new String[] { survey.getId() });
+		} else {
+			database.insert(SURVEY_TABLE, null, updatedValues);
+		}
+		cursor.close();
 	}
 }
