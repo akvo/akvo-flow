@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import android.content.ContentValues;
@@ -23,12 +24,12 @@ import com.gallatinsystems.survey.device.domain.Survey;
  */
 public class SurveyDbAdapter {
 
-	public static final String QUESTION_COL = "question_id";
+	public static final String QUESTION_FK_COL = "question_id";
 	public static final String ANSWER_COL = "answer_value";
 	public static final String ANSWER_TYPE_COL = "answer_type";
 	public static final String SURVEY_RESPONDENT_ID_COL = "survey_respondent_id";
 	public static final String RESP_ID_COL = "survey_response_id";
-	public static final String SURVEY_ID_COL = "survey_id";
+	public static final String SURVEY_FK_COL = "survey_id";
 	public static final String PK_ID_COL = "_id";
 	public static final String USER_FK_COL = "user_id";
 	public static final String DISP_NAME_COL = "display_name";
@@ -47,6 +48,8 @@ public class SurveyDbAdapter {
 	public static final String TYPE_COL = "type";
 	public static final String LOCATION_COL = "location";
 	public static final String FILENAME_COL = "filename";
+	public static final String KEY_COL = "key";
+	public static final String VALUE_COL = "value";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -70,11 +73,13 @@ public class SurveyDbAdapter {
 
 	private static final String PLOT_POINT_TABLE_CREATE = "create table plot_point (_id integer primary key autoincrement, plot_id integer not null, lat text, lon text, elevation text, created_date text);";
 
+	private static final String SETTINGS_TABLE_CREATE = "create table settings (_id integer primary key autoincrement, key text not null, value text);";
+
 	private static final String[] DEFAULT_INSERTS = new String[] {
-			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey.xml')",
-			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey.xml')",
-			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey.xml')",
-			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey.xml')", };
+			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey')",
+			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey')",
+			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey')",
+			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey')", };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -83,6 +88,7 @@ public class SurveyDbAdapter {
 	private static final String USER_TABLE = "user";
 	public static final String PLOT_TABLE = "plot";
 	public static final String PLOT_POINT_TABLE = "plot_point";
+	public static final String SETTINGS_TABLE = "settings";
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
@@ -92,7 +98,7 @@ public class SurveyDbAdapter {
 	public static final String RUNNING_STATUS = "Running";
 	public static final String IN_PROGRESS_STATUS = "In Progress";
 
-	private static final int DATABASE_VERSION = 13;
+	private static final int DATABASE_VERSION = 15;
 
 	private final Context context;
 
@@ -110,6 +116,7 @@ public class SurveyDbAdapter {
 			db.execSQL(SURVEY_RESPONSE_CREATE);
 			db.execSQL(PLOT_TABLE_CREATE);
 			db.execSQL(PLOT_POINT_TABLE_CREATE);
+			db.execSQL(SETTINGS_TABLE_CREATE);
 			for (int i = 0; i < DEFAULT_INSERTS.length; i++) {
 				db.execSQL(DEFAULT_INSERTS[i]);
 			}
@@ -125,6 +132,7 @@ public class SurveyDbAdapter {
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + SETTINGS_TABLE);
 			onCreate(db);
 		}
 	}
@@ -183,7 +191,7 @@ public class SurveyDbAdapter {
 	public Cursor fetchUnsentData() {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
-				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_COL, DISP_NAME_COL,
+				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL,
 				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL },
 				SUBMITTED_FLAG_COL + "= 'true' AND " + DELIVERED_DATE_COL
 						+ " is null", null, null, null, null);
@@ -293,7 +301,7 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor fetchResponsesByRespondent(String respondentID) {
 		return database.query(RESPONSE_TABLE, new String[] { RESP_ID_COL,
-				QUESTION_COL, ANSWER_COL, ANSWER_TYPE_COL,
+				QUESTION_FK_COL, ANSWER_COL, ANSWER_TYPE_COL,
 				SURVEY_RESPONDENT_ID_COL }, SURVEY_RESPONDENT_ID_COL + "=?",
 				new String[] { respondentID }, null, null, null);
 	}
@@ -310,7 +318,7 @@ public class SurveyDbAdapter {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(ANSWER_COL, response.getValue());
 		initialValues.put(ANSWER_TYPE_COL, response.getType());
-		initialValues.put(QUESTION_COL, response.getQuestionId());
+		initialValues.put(QUESTION_FK_COL, response.getQuestionId());
 		initialValues.put(SURVEY_RESPONDENT_ID_COL, response.getRespondentId());
 		if (response.getId() == null) {
 			id = database.insert(RESPONSE_TABLE, null, initialValues);
@@ -333,7 +341,7 @@ public class SurveyDbAdapter {
 	public long createOrLoadSurveyRespondent(String surveyId, String userId) {
 		Cursor results = database.query(RESPONDENT_TABLE, new String[] { "max("
 				+ SURVEY_RESPONDENT_ID_COL + ")" }, SUBMITTED_FLAG_COL
-				+ "='false' and " + SURVEY_ID_COL + "=?",
+				+ "='false' and " + SURVEY_FK_COL + "=?",
 				new String[] { surveyId }, null, null, null);
 		long id = -1;
 		if (results != null && results.getCount() > 0) {
@@ -355,7 +363,7 @@ public class SurveyDbAdapter {
 	 */
 	public long createSurveyRespondent(String surveyId, String userId) {
 		ContentValues initialValues = new ContentValues();
-		initialValues.put(SURVEY_ID_COL, surveyId);
+		initialValues.put(SURVEY_FK_COL, surveyId);
 		initialValues.put(SUBMITTED_FLAG_COL, "false");
 		initialValues.put(USER_FK_COL, userId);
 		return database.insert(RESPONDENT_TABLE, null, initialValues);
@@ -544,10 +552,12 @@ public class SurveyDbAdapter {
 							surveys.get(i).getVersion() + "" }, null, null,
 					null);
 
-			if (cursor.getCount() == 0) {
+			if (cursor == null || cursor.getCount() <= 0) {
 				outOfDateSurveys.add(surveys.get(i));
 			}
-			cursor.close();
+			if (cursor != null) {
+				cursor.close();
+			}
 		}
 		return outOfDateSurveys;
 	}
@@ -570,13 +580,118 @@ public class SurveyDbAdapter {
 		updatedValues.put(FILENAME_COL, survey.getFileName());
 		updatedValues.put(DISP_NAME_COL, survey.getName());
 
-		if (cursor.getCount() > 0) {
+		if (cursor != null && cursor.getCount() > 0) {
 			// if we found an item, it's an update, otherwise, it's an insert
 			database.update(SURVEY_TABLE, updatedValues, PK_ID_COL + " = ?",
 					new String[] { survey.getId() });
 		} else {
 			database.insert(SURVEY_TABLE, null, updatedValues);
 		}
-		cursor.close();
+
+		if (cursor != null) {
+			cursor.close();
+		}
+	}
+
+	/**
+	 * Gets a single survey from the db using its primary key
+	 */
+	public Survey findSurvey(String surveyId) {
+		Survey survey = null;
+		Cursor cursor = database
+				.query(SURVEY_TABLE, new String[] { PK_ID_COL, DISP_NAME_COL,
+						LOCATION_COL, FILENAME_COL, TYPE_COL }, PK_ID_COL
+						+ " = ?", new String[] { surveyId }, null, null, null);
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+				survey = new Survey();
+				survey.setId(surveyId);
+				survey.setName(cursor.getString(cursor
+						.getColumnIndexOrThrow(DISP_NAME_COL)));
+				survey.setLocation(cursor.getString(cursor
+						.getColumnIndexOrThrow(LOCATION_COL)));
+				survey.setFileName(cursor.getString(cursor
+						.getColumnIndexOrThrow(FILENAME_COL)));
+				survey.setType(cursor.getString(cursor
+						.getColumnIndexOrThrow(TYPE_COL)));
+			}
+			cursor.close();
+		}
+
+		return survey;
+	}
+
+	/**
+	 * Lists all surveys from the database
+	 */
+	public ArrayList<Survey> listSurveys() {
+		ArrayList<Survey> surveys = new ArrayList<Survey>();
+		Cursor cursor = database.query(SURVEY_TABLE, new String[] { PK_ID_COL,
+				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL }, null,
+				null, null, null, null);
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+				do {
+					Survey survey = new Survey();
+					survey.setId(cursor.getString(cursor
+							.getColumnIndexOrThrow(PK_ID_COL)));
+					survey.setName(cursor.getString(cursor
+							.getColumnIndexOrThrow(DISP_NAME_COL)));
+					survey.setLocation(cursor.getString(cursor
+							.getColumnIndexOrThrow(LOCATION_COL)));
+					survey.setFileName(cursor.getString(cursor
+							.getColumnIndexOrThrow(FILENAME_COL)));
+					survey.setType(cursor.getString(cursor
+							.getColumnIndexOrThrow(TYPE_COL)));
+					surveys.add(survey);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return surveys;
+	}
+
+	/**
+	 * returns the value of a single setting identified by the key passed in
+	 */
+	public String findSettingValue(String key) {
+		String value = null;
+		Cursor cursor = database.query(SETTINGS_TABLE, new String[] { KEY_COL,
+				VALUE_COL }, KEY_COL + " = ?", new String[] { key }, null,
+				null, null);
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+				value = cursor.getString(cursor
+						.getColumnIndexOrThrow(VALUE_COL));
+			}
+			cursor.close();
+		}
+		return value;
+	}
+
+	/**
+	 * Lists all settings from the database
+	 */
+	public HashMap<String, String> listSettings() {
+		HashMap<String, String> settings = new HashMap<String, String>();
+		Cursor cursor = database.query(SETTINGS_TABLE, new String[] { KEY_COL,
+				VALUE_COL }, null, null, null, null, null);
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+				do {
+					settings
+							.put(cursor.getString(cursor
+									.getColumnIndexOrThrow(KEY_COL)), cursor
+									.getString(cursor
+											.getColumnIndexOrThrow(VALUE_COL)));
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return settings;
 	}
 }

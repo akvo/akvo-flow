@@ -13,19 +13,9 @@ import java.util.concurrent.Semaphore;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -33,7 +23,10 @@ import android.util.Log;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.MultipartStream;
+import com.gallatinsystems.survey.device.util.StatusUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * this activity will extract all submitted, unsent data from the database and
@@ -45,7 +38,6 @@ import com.gallatinsystems.survey.device.util.MultipartStream;
  * (if it is invoked with the SEND type set under the TYPE_KEY in the extras
  * bundle)
  * 
- * TODO: refactor to use new HttpUtil and ViewUtil.fireNotification
  * 
  * @author Christopher Fagiani
  * 
@@ -174,17 +166,10 @@ public class DataSyncService extends Service {
 	 * @return
 	 */
 	private boolean sendProcessingNotification(String fileName) {
-		DefaultHttpClient client = new DefaultHttpClient();
-		HttpResponse response = null;
 		boolean success = false;
 		try {
-			response = (client
-					.execute(new HttpGet(NOTIFICATION_URL + fileName)));
-			if (response.getStatusLine().getStatusCode() != 200) {
-				Log.e(TAG, "Serivce returned a bad status code");
-			} else {
-				success = true;
-			}
+			HttpUtil.httpGet(NOTIFICATION_URL + fileName);
+			success = true;
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send processing call", e);
 		}
@@ -198,9 +183,6 @@ public class DataSyncService extends Service {
 	 * @param type
 	 */
 	private void fireNotification(String type, String fileName) {
-		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-		int icon = R.drawable.info;
 		CharSequence tickerText = null;
 		if (SEND.equals(type)) {
 			tickerText = getResources().getText(R.string.uploadcomplete);
@@ -209,16 +191,8 @@ public class DataSyncService extends Service {
 		} else {
 			tickerText = getResources().getText(R.string.nothingtoexport);
 		}
-		long when = System.currentTimeMillis();
-		Context context = getApplicationContext();
-
-		Notification notification = new Notification(icon, tickerText, when);
-		Intent notificationIntent = new Intent(this, DataSyncService.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
-		notification.setLatestEventInfo(context, tickerText,
-				fileName != null ? fileName : "", contentIntent);
-		mNotificationManager.notify(COMPLETE_ID, notification);
+		ViewUtil.fireNotification(tickerText.toString(),
+				fileName != null ? fileName : "", this, COMPLETE_ID);
 	}
 
 	/**
@@ -423,7 +397,7 @@ public class DataSyncService extends Service {
 							.append(
 									data
 											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_COL)));
+													.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
 					buf.append(",").append(type);
 					buf.append(",").append(value);
 					buf
@@ -520,19 +494,7 @@ public class DataSyncService extends Service {
 		boolean ok = false;
 		// since a null type is treated like send, check !export
 		if (!EXPORT.equals(type)) {
-			ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-			if (connMgr != null) {
-				NetworkInfo[] infoArr = connMgr.getAllNetworkInfo();
-				if (infoArr != null) {
-					for (int i = 0; i < infoArr.length; i++) {
-						if (NetworkInfo.State.CONNECTED == infoArr[i]
-								.getState()) {
-							ok = true;
-							break;
-						}
-					}
-				}
-			}
+			ok = StatusUtil.hasDataConnection(this);
 		} else {
 			// if we're exporting, we don't need to check the network
 			ok = true;

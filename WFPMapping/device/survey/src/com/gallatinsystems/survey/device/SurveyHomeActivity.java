@@ -23,9 +23,9 @@ import com.gallatinsystems.survey.device.view.HomeMenuViewAdapter;
 /**
  * Activity to render the survey home screen. It will list all available
  * sub-activities and start them as needed.
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class SurveyHomeActivity extends Activity implements OnItemClickListener {
 
@@ -40,6 +40,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
+	private HomeMenuViewAdapter menuViewAdapter;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -47,10 +48,11 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
 
+		menuViewAdapter = new HomeMenuViewAdapter(this);
 		userField = (TextView) findViewById(R.id.currentUserField);
 
 		GridView grid = (GridView) findViewById(R.id.gridview);
-		grid.setAdapter(new HomeMenuViewAdapter(this));
+		grid.setAdapter(menuViewAdapter);
 		grid.setOnItemClickListener(this);
 
 		// TODO: store/fetch current user from DB?
@@ -93,7 +95,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	 * handles the button presses.
 	 */
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-		String selected = HomeMenuViewAdapter.operations[position];
+		String selected = menuViewAdapter.getSelectedOperation(position);
 		v.setSelected(false);
 
 		if (selected.equals(HomeMenuViewAdapter.USER_OP)) {
@@ -113,21 +115,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;
-				// TODO: load survey ID from DB
-				String surveyId = "1";
-				if (selected.equals(HomeMenuViewAdapter.MAP_OP)) {
-					resourceID = R.raw.mappingsurvey;
-					surveyId = "5";
-				} else if (selected.equals(HomeMenuViewAdapter.WPS_OP)) {
-					resourceID = R.raw.testsurvey;
-					surveyId = "6";
-				} else if (selected.equals(HomeMenuViewAdapter.HHS_OP)) {
-					resourceID = R.raw.testsurvey;
-					surveyId = "7";
-				} else if (selected.equals(HomeMenuViewAdapter.PUBS_OP)) {
-					resourceID = R.raw.testsurvey;
-					surveyId = "8";
-				}
+
+				String surveyId = menuViewAdapter.getSelectedSurveyId(position);				
 				Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
 				i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
 				i.putExtra(SurveyViewActivity.USER_ID, currentUserId);

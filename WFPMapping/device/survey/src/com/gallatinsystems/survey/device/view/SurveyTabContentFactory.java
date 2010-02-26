@@ -269,7 +269,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 						resp.setValue(responseCursor.getString(i));
 					} else if (cols[i].equals(SurveyDbAdapter.ANSWER_TYPE_COL)) {
 						resp.setType(responseCursor.getString(i));
-					} else if (cols[i].equals(SurveyDbAdapter.QUESTION_COL)) {
+					} else if (cols[i].equals(SurveyDbAdapter.QUESTION_FK_COL)) {
 						resp.setQuestionId(responseCursor.getString(i));
 					}
 				}

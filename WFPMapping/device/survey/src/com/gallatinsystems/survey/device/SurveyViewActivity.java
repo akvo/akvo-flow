@@ -1,10 +1,12 @@
 package com.gallatinsystems.survey.device;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,8 +28,6 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
  * main activity for the Field Survey application. It will read in the current
  * survey definition and render the survey UI based on the questions defined.
  * 
- * TODO: add logic for starting the background activity to check for updated
- * surveys
  * 
  * 
  * 
@@ -37,6 +37,7 @@ import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
 public class SurveyViewActivity extends TabActivity implements
 		QuestionInteractionListener {
 
+	private static final String TAG = "Survey View Activity";
 	public static final String SURVEY_RESOURCE_ID = "RESID";
 	public static final String USER_ID = "UID";
 	public static final String SURVEY_ID = "SID";
@@ -50,9 +51,14 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final String VIDEO_TYPE = "video/*";
 	private static final String IMAGE_SUFFIX = ".jpg";
 	private static final String VIDEO_SUFFIX = ".mp4";
+	private static final String RESOURCE_LOCATION = "res";
+	private static final String RESOURCE_PACKAGE = "com.gallatinsystems.survey.device";
+	private static final String RAW_RESOURCE = "raw";
+
+	private static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView mediaQuestionSource;
-	private SurveyDbAdapter databaseAdaptor;
+	private SurveyDbAdapter databaseAdapter;
 	private String surveyId;
 	private Long respondentId;
 	private String userId;
@@ -61,11 +67,10 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		databaseAdaptor = new SurveyDbAdapter(this);
-		databaseAdaptor.open();
+		databaseAdapter = new SurveyDbAdapter(this);
+		databaseAdapter.open();
 
 		setContentView(R.layout.main);
-		SaxSurveyParser p = new SaxSurveyParser();
 
 		Bundle extras = getIntent().getExtras();
 		int resourceID = extras != null ? extras.getInt(SURVEY_RESOURCE_ID) : 0;
@@ -78,22 +83,22 @@ public class SurveyViewActivity extends TabActivity implements
 		surveyId = extras != null ? extras.getString(SURVEY_ID) : null;
 		if (surveyId == null) {
 			surveyId = savedInstanceState != null ? savedInstanceState
-					.getString(SurveyDbAdapter.SURVEY_ID_COL) : "1";
+					.getString(SurveyDbAdapter.SURVEY_FK_COL) : "1";
 		}
 
 		// TODO: fetch the resource from the server
-		Survey survey = null;
-		if (resourceID > 0) {
-			survey = p.parse(getResources().openRawResource(resourceID));
-		} else {
-			survey = p.parse(getResources().openRawResource(R.raw.testsurvey));
-		}
+		Survey survey = loadSurvey(surveyId);
+		/*
+		 * if (resourceID > 0) { survey =
+		 * p.parse(getResources().openRawResource(resourceID)); } else { survey
+		 * = p.parse(getResources().openRawResource(R.raw.testsurvey)); }
+		 */
 
 		respondentId = savedInstanceState != null ? savedInstanceState
 				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
 
 		if (respondentId == null) {
-			respondentId = databaseAdaptor.createOrLoadSurveyRespondent(
+			respondentId = databaseAdapter.createOrLoadSurveyRespondent(
 					surveyId.toString(), userId.toString());
 		}
 
@@ -104,7 +109,7 @@ public class SurveyViewActivity extends TabActivity implements
 			TabHost tabHost = getTabHost();
 			for (QuestionGroup group : survey.getQuestionGroups()) {
 				SurveyTabContentFactory factory = new SurveyTabContentFactory(
-						this, group, databaseAdaptor);
+						this, group, databaseAdapter);
 				tabHost.addTab(tabHost.newTabSpec(group.getHeading())
 						.setIndicator(group.getHeading()).setContent(factory));
 				tabContentFactories.add(factory);
@@ -113,12 +118,39 @@ public class SurveyViewActivity extends TabActivity implements
 	}
 
 	/**
+	 * looks up the survey in the database and, depending on the survey location
+	 * type, loads the xml from either a resource file inside the application
+	 * bundle or from the file system
+	 */
+	private Survey loadSurvey(String surveyId) {
+		Survey survey = databaseAdapter.findSurvey(surveyId);
+		if (survey != null) {
+			SaxSurveyParser parser = new SaxSurveyParser();
+			if (RESOURCE_LOCATION.equalsIgnoreCase(survey.getLocation())) {
+				// load from resource
+				Resources res = getResources();
+				survey = parser.parse(res.openRawResource(res.getIdentifier(
+						survey.getFileName(), RAW_RESOURCE,RESOURCE_PACKAGE)));
+			} else {
+				// load from file
+				try {
+					survey = parser.parse(new FileInputStream(DATA_DIR
+							+ survey.getFileName()));
+				} catch (Exception e) {
+					Log.e(TAG, "Could not load survey from file system", e);
+				}
+			}
+		}
+		return survey;
+	}
+
+	/**
 	 * this is called when external activities launched by this activity return
 	 * and we need to do something. Right now the only activity we care about is
 	 * the media (photo/video/audio) activity (when the user is done recording
 	 * the media). When we get control back from the camera, we just need to
-	 * capture the details about the file that was just stored and stuff it
-	 * into the question response.
+	 * capture the details about the file that was just stored and stuff it into
+	 * the question response.
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -249,7 +281,7 @@ public class SurveyViewActivity extends TabActivity implements
 		super.onSaveInstanceState(outState);
 		if (outState != null) {
 			if (surveyId != null) {
-				outState.putString(SurveyDbAdapter.SURVEY_ID_COL, surveyId);
+				outState.putString(SurveyDbAdapter.SURVEY_FK_COL, surveyId);
 			}
 			if (respondentId != null) {
 				outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
@@ -282,8 +314,8 @@ public class SurveyViewActivity extends TabActivity implements
 
 	protected void onDestroy() {
 		super.onDestroy();
-		if (databaseAdaptor != null) {
-			databaseAdaptor.close();
+		if (databaseAdapter != null) {
+			databaseAdapter.close();
 		}
 	}
 

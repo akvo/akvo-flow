@@ -13,8 +13,6 @@ import org.apache.http.HttpException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -22,6 +20,7 @@ import android.util.Log;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -40,8 +39,6 @@ public class SurveyDownloadService extends Service {
 
 	private static final String SURVEY_LIST_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?surveyId=";
-
-	private static final int BUF_SIZE = 2048;
 
 	private SurveyDbAdapter databaseAdaptor;
 
@@ -76,12 +73,18 @@ public class SurveyDownloadService extends Service {
 		super.onCreate();
 	}
 
+	/**
+	 * checks for new surveys and, if there are some new ones, downloads them to
+	 * the DATA_DIR
+	 */
 	private void checkAndDownload() {
 		if (isAbleToRun()) {
 			try {
 				lock.acquire();
 				ArrayList<Survey> surveys = checkForSurveys();
 				if (surveys != null && surveys.size() > 0) {
+					// create directory if not there
+					findOrCreateDataDir();
 					// if there are surveys for this device, see if we need them
 					databaseAdaptor = new SurveyDbAdapter(this);
 					databaseAdaptor.open();
@@ -93,12 +96,13 @@ public class SurveyDownloadService extends Service {
 							try {
 								if (downloadSurvey(survey)) {
 									databaseAdaptor.saveSurvey(survey);
+									updateCount++;
 								}
 							} catch (Exception e) {
 								Log.e(TAG, "Could not download survey", e);
 							}
 						}
-						if (updateCount > 1) {
+						if (updateCount > 0) {
 							fireNotification(updateCount);
 						}
 					}
@@ -122,9 +126,9 @@ public class SurveyDownloadService extends Service {
 					+ survey.getId());
 
 			survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
-			// TODO: get type and from survey XML once its added to schema
 			survey.setType(DEFAULT_TYPE);
-			survey.setName("Survey "+survey.getId());
+			// TODO: get this from touple once service is updated
+			survey.setName("Survey " + survey.getId());
 			survey.setLocation(SD_LOC);
 			survey.setVersion(survey.getVersion());
 			File file = new File(DATA_DIR, survey.getFileName());
@@ -186,7 +190,6 @@ public class SurveyDownloadService extends Service {
 	private String getPhoneNumber() {
 		TelephonyManager teleMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		return teleMgr.getLine1Number();
-		// return "3033359240";
 	}
 
 	/**
@@ -203,29 +206,24 @@ public class SurveyDownloadService extends Service {
 
 	/**
 	 * this method checks if the service can perform the requested operation. If
-	 * the operation type is SEND and there is no connectivity, this will return
-	 * false, otherwise it will return true
+	 * there is no connectivity, this will return false, otherwise it will
+	 * return true
 	 * 
-	 * TODO: move to common utils
 	 * 
 	 * @param type
 	 * @return
 	 */
 	private boolean isAbleToRun() {
-		boolean ok = false;
-		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		if (connMgr != null) {
-			NetworkInfo[] infoArr = connMgr.getAllNetworkInfo();
-			if (infoArr != null) {
-				for (int i = 0; i < infoArr.length; i++) {
-					if (NetworkInfo.State.CONNECTED == infoArr[i].getState()) {
-						ok = true;
-						break;
-					}
-				}
-			}
-		}
-		return ok;
+		return StatusUtil.hasDataConnection(this);
 	}
 
+	/**
+	 * creates the data dir if it does not exist
+	 */
+	private void findOrCreateDataDir() {
+		File dir = new File(DATA_DIR);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+	}
 }
