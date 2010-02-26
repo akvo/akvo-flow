@@ -72,8 +72,7 @@ public class SurveyViewActivity extends TabActivity implements
 
 		setContentView(R.layout.main);
 
-		Bundle extras = getIntent().getExtras();
-		int resourceID = extras != null ? extras.getInt(SURVEY_RESOURCE_ID) : 0;
+		Bundle extras = getIntent().getExtras();		
 		userId = extras != null ? extras.getString(USER_ID) : null;
 		if (userId == null) {
 			userId = savedInstanceState != null ? savedInstanceState
@@ -86,13 +85,7 @@ public class SurveyViewActivity extends TabActivity implements
 					.getString(SurveyDbAdapter.SURVEY_FK_COL) : "1";
 		}
 
-		// TODO: fetch the resource from the server
-		Survey survey = loadSurvey(surveyId);
-		/*
-		 * if (resourceID > 0) { survey =
-		 * p.parse(getResources().openRawResource(resourceID)); } else { survey
-		 * = p.parse(getResources().openRawResource(R.raw.testsurvey)); }
-		 */
+		Survey survey = loadSurvey(surveyId);		
 
 		respondentId = savedInstanceState != null ? savedInstanceState
 				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
