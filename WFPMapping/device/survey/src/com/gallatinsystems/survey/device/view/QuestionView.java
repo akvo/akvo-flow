@@ -20,6 +20,7 @@ import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * basic question view. This just displays the question text. It also provides a
@@ -258,7 +259,7 @@ public class QuestionView extends TableLayout implements
 
 	public QuestionResponse getResponse() {
 		if (response == null
-				|| (QuestionResponse.VALUE_TYPE.equals(response.getType()) && (response
+				|| (ConstantUtil.VALUE_RESPONSE_TYPE.equals(response.getType()) && (response
 						.getValue() == null || response.getValue().trim()
 						.length() == 0))) {
 			captureResponse();

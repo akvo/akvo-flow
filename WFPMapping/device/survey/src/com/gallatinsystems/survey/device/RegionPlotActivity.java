@@ -19,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.GeoUtil;
 import com.gallatinsystems.survey.device.view.GeoPlotOverlay;
 import com.google.android.maps.GeoPoint;
@@ -29,7 +30,7 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 /**
- * Activity to handle display of a mapview that allows the user to map a region
+ * Activity to handle display of a MapView that allows the user to map a region
  * by recording GPS way-points.
  * 
  * @author Christopher Fagiani
@@ -38,13 +39,12 @@ import com.google.android.maps.Overlay;
 public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		LocationListener {
 
-	public static final String PLOT_ID = "plotid";
-	public static final String STATUS = "status";
-
 	private static final int TOGGLE_ID = Menu.FIRST;
 	private static final int INTERVAL_ID = Menu.FIRST + 1;
 	private static final String AUTO_MODE = "auto";
 	private static final String MANUAL_MODE = "manual";
+
+	@SuppressWarnings("unused")
 	private static final float MINIMUM_ACCURACY = 1000f;
 	private static final int INITIAL_ZOOM_LEVEL = 16;
 	private static final int LOCATION_UPDATE_FREQ = 5000;
@@ -98,14 +98,16 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 				.getString(SurveyDbAdapter.PK_ID_COL) : null;
 		currentStatus = savedInstanceState != null ? savedInstanceState
 				.getString(SurveyDbAdapter.STATUS_COL)
-				: SurveyDbAdapter.IN_PROGRESS_STATUS;
+				: ConstantUtil.IN_PROGRESS_STATUS;
 		if (plotId == null) {
 			Bundle extras = getIntent().getExtras();
-			plotId = extras != null ? extras.getString(PLOT_ID) : null;
-			currentStatus = extras != null ? extras.getString(STATUS)
-					: SurveyDbAdapter.IN_PROGRESS_STATUS;
+			plotId = extras != null ? extras
+					.getString(ConstantUtil.PLOT_ID_KEY) : null;
+			currentStatus = extras != null ? extras
+					.getString(ConstantUtil.STATUS_KEY)
+					: ConstantUtil.IN_PROGRESS_STATUS;
 		}
-		if (SurveyDbAdapter.RUNNING_STATUS.equals(currentStatus)) {
+		if (ConstantUtil.RUNNING_STATUS.equals(currentStatus)) {
 			currentMode = AUTO_MODE;
 		} else {
 			currentMode = MANUAL_MODE;
@@ -137,11 +139,14 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		lastDrawTime = "" + System.currentTimeMillis();
 	}
 
+	/**
+	 * changes button labels based on the active mode
+	 */
 	private void updateLabels() {
 		if (MANUAL_MODE.equals(currentMode)) {
 			actionButton.setText(R.string.addpoint);
 		} else {
-			if (SurveyDbAdapter.RUNNING_STATUS.equals(currentStatus)) {
+			if (ConstantUtil.RUNNING_STATUS.equals(currentStatus)) {
 				actionButton.setText(R.string.stopplotting);
 			} else {
 				actionButton.setText(R.string.startplotting);
@@ -222,15 +227,15 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			} else {
 				// if we're in AUTO mode, then we are going to either start or
 				// stop the plotting service
-				if (SurveyDbAdapter.RUNNING_STATUS.equals(currentStatus)) {
+				if (ConstantUtil.RUNNING_STATUS.equals(currentStatus)) {
 					// if we're running, then stop the service
 					stopPlotService();
 					// set the status to In progress
-					changePlotStatus(SurveyDbAdapter.IN_PROGRESS_STATUS);
+					changePlotStatus(ConstantUtil.IN_PROGRESS_STATUS);
 				} else {
 					// if we're not running, then we should start
 					startPlotService();
-					changePlotStatus(SurveyDbAdapter.RUNNING_STATUS);
+					changePlotStatus(ConstantUtil.RUNNING_STATUS);
 				}
 			}
 		} else {
@@ -238,9 +243,9 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			if (AUTO_MODE.equals(currentMode)) {
 				stopPlotService();
 			}
-			changePlotStatus(SurveyDbAdapter.COMPLETE_STATUS);
+			changePlotStatus(ConstantUtil.COMPLETE_STATUS);
 			// send a broadcast message indicating new data is available
-			sendBroadcast(new Intent(BroadcastDispatcher.DATA_AVAILABLE_INTENT));
+			sendBroadcast(new Intent(ConstantUtil.DATA_AVAILABLE_INTENT));
 			finish();
 		}
 	}

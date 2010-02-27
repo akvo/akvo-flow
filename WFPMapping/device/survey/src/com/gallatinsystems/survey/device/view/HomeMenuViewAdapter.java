@@ -15,6 +15,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ArrayUtil;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * 
@@ -27,19 +28,11 @@ import com.gallatinsystems.survey.device.util.ArrayUtil;
  */
 public class HomeMenuViewAdapter extends BaseAdapter {
 
-	private static final String TAG = "Home Menu View Adapter";
-
-	// TODO: move constants out into ConstantUtil class
-	private static final String SURVEY_TYPE = "survey";
-
-	// references to our buttons
-	private Integer[] buttonImages = new Integer[0];
-
-	// this is of type Object since the values can be Integers or Strings
-	private Object[] buttonLabels;
-
-	private ArrayList<Survey> surveys;
-
+	private static final String TAG = "Home Menu View Adapter";	
+	
+	/**
+	 * statically defined menu options
+	 */
 	private static final Integer[] preSurveyButtons = { R.drawable.users };
 	private static final Integer[] preSurveyLabels = { R.string.userlabel };
 	private static final Integer[] postSurveyButtons = { R.drawable.plotting,
@@ -47,15 +40,12 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private static final Integer[] postSurveyLabels = { R.string.plottinglabel,
 			R.string.settingslabel };
 
-	public static final String USER_OP = "USER";
-	public static final String WPS_OP = "WP";
-	public static final String HHS_OP = "HH";
-	public static final String PUBS_OP = "PUB";
-	public static final String MAP_OP = "MAP";
-	public static final String SURVEY_OP = "SURVEY";
-	public static final String CONF_OP = "CONF";
-	public static final String PLOT_OP = "PLOT";
 
+	// references to our buttons
+	private Integer[] buttonImages = new Integer[0];
+	// this is of type Object since the values can be Integers or Strings
+	private Object[] buttonLabels;
+	private ArrayList<Survey> surveys;	
 	private ArrayList<String> operations;
 
 	private LayoutInflater inflater;
@@ -95,16 +85,16 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 		ArrayUtil.combineArrays(buttonImages, preSurveyButtons, 0);
 		ArrayUtil.combineArrays(buttonLabels, preSurveyLabels, 0);
 
-		operations.add(USER_OP);
+		operations.add(ConstantUtil.USER_OP);
 
 		for (int i = 0; i < surveys.size(); i++) {
-			if (SURVEY_TYPE.equalsIgnoreCase(surveys.get(i).getType())) {
+			if (ConstantUtil.SURVEY_TYPE.equalsIgnoreCase(surveys.get(i).getType())) {
 				buttonImages[preSurveyButtons.length + i] = R.drawable.checklist;
 			} else {
 				buttonImages[preSurveyButtons.length + i] = R.drawable.map;
 			}
 			buttonLabels[preSurveyLabels.length + i] = surveys.get(i).getName();
-			operations.add(SURVEY_OP);
+			operations.add(ConstantUtil.SURVEY_OP);
 		}
 
 		ArrayUtil.combineArrays(buttonImages, postSurveyButtons,
@@ -112,8 +102,8 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 		ArrayUtil.combineArrays(buttonLabels, postSurveyLabels,
 				preSurveyButtons.length + surveys.size());
 
-		operations.add(PLOT_OP);
-		operations.add(CONF_OP);
+		operations.add(ConstantUtil.PLOT_OP);
+		operations.add(ConstantUtil.CONF_OP);
 		notifyDataSetChanged();
 	}
 

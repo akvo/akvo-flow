@@ -1,7 +1,6 @@
 package com.gallatinsystems.survey.device.domain;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * data structure for grouping questions under a common heading.

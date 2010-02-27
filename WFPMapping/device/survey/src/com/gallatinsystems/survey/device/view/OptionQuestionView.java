@@ -25,6 +25,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Question type that supports the selection of a single option from a list of
@@ -36,7 +37,7 @@ import com.gallatinsystems.survey.device.domain.QuestionResponse;
  */
 public class OptionQuestionView extends QuestionView {
 
-	private static final String OTHER_TEXT = "Other...";
+	private String OTHER_TEXT;
 	private RadioGroup optionGroup;
 	private Spinner spinner;
 	private Map<Integer, String> idToValueMap;
@@ -44,6 +45,7 @@ public class OptionQuestionView extends QuestionView {
 
 	public OptionQuestionView(Context context, Question q) {
 		super(context, q);
+		OTHER_TEXT = getResources().getString(R.string.othertext);
 		init();
 	}
 
@@ -54,8 +56,8 @@ public class OptionQuestionView extends QuestionView {
 		suppressListeners = true;
 		if (options != null) {
 			TableRow tr = new TableRow(context);
-			if (Question.SPINNER_TYPE
-					.equalsIgnoreCase(question.getRenderType())) {
+			if (ConstantUtil.SPINNER_RENDER_MODE.equalsIgnoreCase(question
+					.getRenderType())) {
 				spinner = new Spinner(context);
 				int extras = 1;
 				if (question.isAllowOther()) {
@@ -80,6 +82,7 @@ public class OptionQuestionView extends QuestionView {
 				spinner.setSelection(0);
 
 				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+					@SuppressWarnings("unchecked")
 					public void onItemSelected(AdapterView parent, View view,
 							int position, long id) {
 						if (!suppressListeners) {
@@ -90,29 +93,32 @@ public class OptionQuestionView extends QuestionView {
 								// already populated as the response. need this
 								// to suppress the OTHER dialog
 								if (getResponse() == null
-										|| !getResponse().getType().equals(
-												QuestionResponse.OTHER_TYPE)) {
+										|| !getResponse()
+												.getType()
+												.equals(
+														ConstantUtil.OTHER_RESPONSE_TYPE)) {
 									displayOtherDialog();
 								}
 							} else if (position == 0) {
 								setResponse(new QuestionResponse("",
-										QuestionResponse.VALUE_TYPE, question
-												.getId()));
+										ConstantUtil.VALUE_RESPONSE_TYPE,
+										question.getId()));
 							} else {
 								setResponse(new QuestionResponse(question
 										.getOptions()
 										.get(position > 0 ? position - 1 : 0)
 										.getText(),
-										QuestionResponse.VALUE_TYPE, question
-												.getId()));
+										ConstantUtil.VALUE_RESPONSE_TYPE,
+										question.getId()));
 							}
 						}
 					}
 
+					@SuppressWarnings("unchecked")
 					public void onNothingSelected(AdapterView parent) {
 						if (!suppressListeners) {
 							setResponse(new QuestionResponse("",
-									QuestionResponse.VALUE_TYPE, question
+									ConstantUtil.VALUE_RESPONSE_TYPE, question
 											.getId()));
 						}
 					}
@@ -136,14 +142,14 @@ public class OptionQuestionView extends QuestionView {
 												|| !getResponse()
 														.getType()
 														.equals(
-																QuestionResponse.OTHER_TYPE)) {
+																ConstantUtil.OTHER_RESPONSE_TYPE)) {
 											displayOtherDialog();
 										}
 									}
 								} else {
 									setResponse(new QuestionResponse(
 											idToValueMap.get(checkedId),
-											QuestionResponse.VALUE_TYPE,
+											ConstantUtil.VALUE_RESPONSE_TYPE,
 											question.getId()));
 								}
 							}
@@ -196,7 +202,8 @@ public class OptionQuestionView extends QuestionView {
 							text = text.trim();
 						}
 						setResponse(new QuestionResponse(text,
-								QuestionResponse.OTHER_TYPE, question.getId()));
+								ConstantUtil.OTHER_RESPONSE_TYPE, question
+										.getId()));
 						dialog.dismiss();
 					}
 				});
@@ -204,7 +211,8 @@ public class OptionQuestionView extends QuestionView {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						setResponse(new QuestionResponse("",
-								QuestionResponse.OTHER_TYPE, question.getId()));
+								ConstantUtil.OTHER_RESPONSE_TYPE, question
+										.getId()));
 						dialog.dismiss();
 					}
 				});
@@ -226,7 +234,7 @@ public class OptionQuestionView extends QuestionView {
 					// option ID OR if the response is the "OTHER" type and the
 					// id matches the other option, select it
 					if (idToValueMap.get(key).equals(resp.getValue())
-							|| (QuestionResponse.OTHER_TYPE.equals(resp
+							|| (ConstantUtil.OTHER_RESPONSE_TYPE.equals(resp
 									.getType()) && idToValueMap.get(key)
 									.equals(OTHER_TEXT))) {
 						optionGroup.check(key);
@@ -236,7 +244,7 @@ public class OptionQuestionView extends QuestionView {
 			}
 			if (spinner != null && resp.getValue() != null) {
 				ArrayList<Option> options = question.getOptions();
-				if (QuestionResponse.OTHER_TYPE.equals(resp.getType())) {
+				if (ConstantUtil.OTHER_RESPONSE_TYPE.equals(resp.getType())) {
 					// since OTHER is the last option and the response is of
 					// OTHER type, select the last option in the spinner which
 					// is size +1 (accounting for the initial BLANK and the

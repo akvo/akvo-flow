@@ -8,8 +8,7 @@ package com.gallatinsystems.survey.device.domain;
  * 
  */
 public class ValidationRule {
-    public static final String NUMERIC = "numeric";
-    public static final String NAME = "name";
+  
     private static final int DEFAULT_MAX_LENGTH = 9999;
 
     private String validationType;

@@ -1,12 +1,9 @@
 package com.gallatinsystems.survey.device.domain;
 
+import com.gallatinsystems.survey.device.util.ConstantUtil;
+
 public class QuestionResponse {
 
-	public static final String VALUE_TYPE = "VALUE";
-	public static final String IMAGE_TYPE = "IMAGE";
-	public static final String VIDEO_TYPE = "VIDEO";
-	public static final String GEO_TYPE = "GEO";
-	public static final String OTHER_TYPE = "OTHER";
 	private String value;
 	private String type;
 	private Long id;
@@ -38,7 +35,7 @@ public class QuestionResponse {
 	}
 
 	public boolean isValid() {
-		if (!OTHER_TYPE.equals(type)) {
+		if (!ConstantUtil.OTHER_RESPONSE_TYPE.equals(type)) {
 			// if the response isn't "OTHER" then we have to check that it has a
 			// value that isn't just a blank
 			if (value == null || value.trim().length() == 0) {

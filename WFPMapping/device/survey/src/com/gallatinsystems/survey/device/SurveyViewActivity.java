@@ -19,7 +19,7 @@ import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
-import com.gallatinsystems.survey.device.view.MediaQuestionView;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
 import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
@@ -38,9 +38,7 @@ public class SurveyViewActivity extends TabActivity implements
 		QuestionInteractionListener {
 
 	private static final String TAG = "Survey View Activity";
-	public static final String SURVEY_RESOURCE_ID = "RESID";
-	public static final String USER_ID = "UID";
-	public static final String SURVEY_ID = "SID";
+
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int VIDEO_ACTIVITY_REQUEST = 2;
@@ -73,13 +71,13 @@ public class SurveyViewActivity extends TabActivity implements
 		setContentView(R.layout.main);
 
 		Bundle extras = getIntent().getExtras();		
-		userId = extras != null ? extras.getString(USER_ID) : null;
+		userId = extras != null ? extras.getString(ConstantUtil.USER_ID_KEY) : null;
 		if (userId == null) {
 			userId = savedInstanceState != null ? savedInstanceState
 					.getString(SurveyDbAdapter.USER_FK_COL) : null;
 		}
 
-		surveyId = extras != null ? extras.getString(SURVEY_ID) : null;
+		surveyId = extras != null ? extras.getString(ConstantUtil.SURVEY_ID_KEY) : null;
 		if (surveyId == null) {
 			surveyId = savedInstanceState != null ? savedInstanceState
 					.getString(SurveyDbAdapter.SURVEY_FK_COL) : "1";
@@ -179,7 +177,7 @@ public class SurveyViewActivity extends TabActivity implements
 					 */
 					if (mediaQuestionSource != null) {
 						Bundle photoData = new Bundle();
-						photoData.putString(MediaQuestionView.MEDIA_FILE_KEY,
+						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
 								newName);
 						mediaQuestionSource.questionComplete(photoData);
 					}

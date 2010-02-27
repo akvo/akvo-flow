@@ -14,12 +14,13 @@ import android.util.Log;
 
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Database class for the survey db. It can create/upgrade the database as well
  * as select/insert/update survey responses.
  * 
- * TODO: break this up into seperate DAOs
+ * TODO: break this up into separate DAOs
  * 
  * @author Christopher Fagiani
  * 
@@ -53,8 +54,6 @@ public class SurveyDbAdapter {
 	public static final String KEY_COL = "key";
 	public static final String VALUE_COL = "value";
 	public static final String DELETED_COL = "deleted_flag";
-	public static final String IS_DELETED = "Y";
-	public static final String NOT_DELETED = "N";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -91,23 +90,26 @@ public class SurveyDbAdapter {
 	private static final String RESPONDENT_TABLE = "survey_respondent";
 	private static final String RESPONSE_TABLE = "survey_response";
 	private static final String USER_TABLE = "user";
-	public static final String PLOT_TABLE = "plot";
-	public static final String PLOT_POINT_TABLE = "plot_point";
-	public static final String SETTINGS_TABLE = "settings";
+	private static final String PLOT_TABLE = "plot";
+	private static final String PLOT_POINT_TABLE = "plot_point";
+	private static final String SETTINGS_TABLE = "settings";
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
-
-	public static final String COMPLETE_STATUS = "Complete";
-	public static final String SENT_STATUS = "Sent";
-	public static final String RUNNING_STATUS = "Running";
-	public static final String IN_PROGRESS_STATUS = "In Progress";
 
 	private static final int DATABASE_VERSION = 16;
 
 	private final Context context;
 
-	private static class DatabaseHelper extends SQLiteOpenHelper {
+	/**
+	 * Helper class for creating the database tables and loading reference data
+	 * 
+	 * It is declared with package scope for VM optimizations
+	 * 
+	 * @author Christopher Fagiani
+	 * 
+	 */
+	static class DatabaseHelper extends SQLiteOpenHelper {
 
 		DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -446,7 +448,7 @@ public class SurveyDbAdapter {
 		initialValues.put(DESC_COL, desc);
 		initialValues.put(CREATED_DATE_COL, System.currentTimeMillis());
 		initialValues.put(USER_FK_COL, userId);
-		initialValues.put(STATUS_COL, IN_PROGRESS_STATUS);
+		initialValues.put(STATUS_COL, ConstantUtil.IN_PROGRESS_STATUS);
 
 		if (idVal == null) {
 			idVal = database.insert(PLOT_TABLE, null, initialValues);
@@ -517,13 +519,15 @@ public class SurveyDbAdapter {
 	 * @return
 	 */
 	public Cursor listCompletePlotPoints() {
-		Cursor cursor = database.query(PLOT_JOIN, new String[] {
-				PLOT_TABLE + "." + PK_ID_COL + " as plot_id",
-				PLOT_TABLE + "." + DISP_NAME_COL,
-				PLOT_POINT_TABLE + "." + PK_ID_COL, LAT_COL, LON_COL,
-				ELEVATION_COL, PLOT_POINT_TABLE + "." + CREATED_DATE_COL },
-				STATUS_COL + "= ?", new String[] { COMPLETE_STATUS }, null,
-				null, null);
+		Cursor cursor = database
+				.query(PLOT_JOIN, new String[] {
+						PLOT_TABLE + "." + PK_ID_COL + " as plot_id",
+						PLOT_TABLE + "." + DISP_NAME_COL,
+						PLOT_POINT_TABLE + "." + PK_ID_COL, LAT_COL, LON_COL,
+						ELEVATION_COL,
+						PLOT_POINT_TABLE + "." + CREATED_DATE_COL }, STATUS_COL
+						+ "= ?", new String[] { ConstantUtil.COMPLETE_STATUS },
+						null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -556,8 +560,8 @@ public class SurveyDbAdapter {
 					PK_ID_COL + " = ? and (" + VERSION_COL + " >= ? or "
 							+ DELETED_COL + " = ?)", new String[] {
 							surveys.get(i).getId(),
-							surveys.get(i).getVersion() + "", IS_DELETED },
-					null, null, null);
+							surveys.get(i).getVersion() + "",
+							ConstantUtil.IS_DELETED }, null, null, null);
 
 			if (cursor == null || cursor.getCount() <= 0) {
 				outOfDateSurveys.add(surveys.get(i));
@@ -586,7 +590,7 @@ public class SurveyDbAdapter {
 		updatedValues.put(LOCATION_COL, survey.getLocation());
 		updatedValues.put(FILENAME_COL, survey.getFileName());
 		updatedValues.put(DISP_NAME_COL, survey.getName());
-		updatedValues.put(DELETED_COL, NOT_DELETED);
+		updatedValues.put(DELETED_COL, ConstantUtil.NOT_DELETED);
 
 		if (cursor != null && cursor.getCount() > 0) {
 			// if we found an item, it's an update, otherwise, it's an insert
@@ -637,8 +641,8 @@ public class SurveyDbAdapter {
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		Cursor cursor = database.query(SURVEY_TABLE, new String[] { PK_ID_COL,
 				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL },
-				DELETED_COL + " <> ?", new String[] { IS_DELETED }, null, null,
-				null);
+				DELETED_COL + " <> ?",
+				new String[] { ConstantUtil.IS_DELETED }, null, null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -669,7 +673,7 @@ public class SurveyDbAdapter {
 	 */
 	public void deleteSurvey(String surveyId) {
 		ContentValues updatedValues = new ContentValues();
-		updatedValues.put(DELETED_COL, IS_DELETED);
+		updatedValues.put(DELETED_COL, ConstantUtil.IS_DELETED);
 		database.update(SURVEY_TABLE, updatedValues, PK_ID_COL + " = ?",
 				new String[] { surveyId });
 	}

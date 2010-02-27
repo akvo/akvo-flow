@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -139,7 +140,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		elevationField.setText(loc.getAltitude() + "");
 		setResponse(new QuestionResponse(loc.getLatitude() + DELIM
 				+ loc.getLongitude() + DELIM + loc.getAltitude(),
-				QuestionResponse.GEO_TYPE, getQuestion().getId()));
+				ConstantUtil.GEO_RESPONSE_TYPE, getQuestion().getId()));
 	}
 
 	/**

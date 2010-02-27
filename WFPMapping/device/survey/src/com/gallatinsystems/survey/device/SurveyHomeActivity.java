@@ -21,6 +21,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.HomeMenuViewAdapter;
 
@@ -79,7 +80,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		// we only allow delete of surveys so check the view tag
-		if (HomeMenuViewAdapter.SURVEY_OP
+		if (ConstantUtil.SURVEY_OP
 				.equals(((AdapterContextMenuInfo) menuInfo).targetView.getTag())) {
 			super.onCreateContextMenu(menu, v, menuInfo);
 			menu.add(0, DELETE_ID, 0, R.string.deletesurvey);
@@ -107,7 +108,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	 */
 	private void startSyncService() {
 		Intent i = new Intent(this, DataSyncService.class);
-		i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
+		i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.SEND);
 		getApplicationContext().startService(i);
 	}
 
@@ -126,13 +127,13 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		String selected = menuViewAdapter.getSelectedOperation(position);
 		v.setSelected(false);
 
-		if (selected.equals(HomeMenuViewAdapter.USER_OP)) {
+		if (selected.equals(ConstantUtil.USER_OP)) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
-		} else if (selected.equals(HomeMenuViewAdapter.CONF_OP)) {
+		} else if (selected.equals(ConstantUtil.CONF_OP)) {
 			Intent i = new Intent(v.getContext(), SettingsActivity.class);
 			startActivityForResult(i, SETTINGS_ACTIVITY);
-		} else if (selected.equals(HomeMenuViewAdapter.PLOT_OP)) {
+		} else if (selected.equals(ConstantUtil.PLOT_OP)) {
 			LocationManager locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 				Intent i = new Intent(v.getContext(), ListPlotActivity.class);
@@ -147,10 +148,10 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 				if (survey != null) {
 					Intent i = new Intent(v.getContext(),
 							SurveyViewActivity.class);
-					i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID,
+					i.putExtra(ConstantUtil.SURVEY_RESOURCE_ID_KEY,
 							resourceID);
-					i.putExtra(SurveyViewActivity.USER_ID, currentUserId);
-					i.putExtra(SurveyViewActivity.SURVEY_ID, survey.getId());
+					i.putExtra(ConstantUtil.USER_ID_KEY, currentUserId);
+					i.putExtra(ConstantUtil.SURVEY_ID_KEY, survey.getId());
 					startActivityForResult(i, SURVEY_ACTIVITY);
 				} else {
 					Log.e(TAG, "Survey for selection is null");
@@ -197,8 +198,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 					String status = bundle
 							.getString(SurveyDbAdapter.STATUS_COL);
 					Intent i = new Intent(this, RegionPlotActivity.class);
-					i.putExtra(RegionPlotActivity.PLOT_ID, plotId);
-					i.putExtra(RegionPlotActivity.STATUS, status);
+					i.putExtra(ConstantUtil.PLOT_ID_KEY, plotId);
+					i.putExtra(ConstantUtil.STATUS_KEY, status);
 					startActivityForResult(i, PLOTTING_ACTIVITY);
 				}
 			}

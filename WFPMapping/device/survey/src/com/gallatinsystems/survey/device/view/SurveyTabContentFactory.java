@@ -19,7 +19,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TabHost.TabContentFactory;
 
-import com.gallatinsystems.survey.device.BroadcastDispatcher;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.SurveyViewActivity;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -27,6 +26,7 @@ import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Creates the content for a single tab in the survey (corresponds to a
@@ -79,18 +79,18 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			tr.setLayoutParams(new ViewGroup.LayoutParams(
 					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
-			if (Question.OPTION_TYPE.equalsIgnoreCase(q.getType())) {
+			if (ConstantUtil.OPTION_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new OptionQuestionView(context, q);
 
-			} else if (Question.FREE_TYPE.equalsIgnoreCase(q.getType())) {
+			} else if (ConstantUtil.FREE_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new FreetextQuestionView(context, q);
-			} else if (Question.PHOTO_TYPE.equalsIgnoreCase(q.getType())) {
+			} else if (ConstantUtil.PHOTO_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						MediaQuestionView.PHOTO_TYPE);
-			} else if (Question.VIDEO_TYPE.equalsIgnoreCase(q.getType())) {
+						ConstantUtil.PHOTO_QUESTION_TYPE);
+			} else if (ConstantUtil.VIDEO_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						MediaQuestionView.VIDEO_TYPE);
-			} else if (Question.GEO_TYPE.equalsIgnoreCase(q.getType())) {
+						ConstantUtil.VIDEO_QUESTION_TYPE);
+			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new GeoQuestionView(context, q);
 			} else {
 				questionView = new QuestionView(context, q);
@@ -164,7 +164,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 						// send a broadcast message indicating new data is
 						// available
 						Intent i = new Intent(
-								BroadcastDispatcher.DATA_AVAILABLE_INTENT);
+								ConstantUtil.DATA_AVAILABLE_INTENT);
 						context.sendBroadcast(i);
 
 						// create a new response object so we're ready for the

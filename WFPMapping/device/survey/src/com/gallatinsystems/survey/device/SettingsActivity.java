@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.gallatinsystems.survey.device.util.ConstantUtil;
+
 /**
  * Displays the settings menu and handles the user choices
  * 
@@ -107,13 +109,13 @@ public class SettingsActivity extends ListActivity {
 			}else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
-					i.putExtra(DataSyncService.TYPE_KEY, DataSyncService.SEND);
+					i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.SEND);
 				} else {
 					i
-							.putExtra(DataSyncService.TYPE_KEY,
-									DataSyncService.EXPORT);
+							.putExtra(ConstantUtil.OP_TYPE_KEY,
+									ConstantUtil.EXPORT);
 				}
-				i.putExtra(DataSyncService.FORCE_KEY, true);
+				i.putExtra(ConstantUtil.FORCE_KEY, true);
 				getApplicationContext().startService(i);
 				// terminate this activity
 				finish();

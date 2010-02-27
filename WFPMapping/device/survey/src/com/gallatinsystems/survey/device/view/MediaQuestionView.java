@@ -12,6 +12,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Question type that supports taking a picture/video/audio recording with the
@@ -25,9 +26,7 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	private Button mediaButton;
 	private ImageView completeIcon;
 	private String mediaType;
-	public static final String MEDIA_FILE_KEY = "filename";
-	public static final String PHOTO_TYPE = "photo";
-	public static final String VIDEO_TYPE = "video";
+	
 
 	public MediaQuestionView(Context context, Question q, String type) {
 		super(context, q);
@@ -39,7 +38,7 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 		mediaType = type;
 		TableRow tr = new TableRow(context);
 		mediaButton = new Button(context);
-		if (PHOTO_TYPE.equals(type)) {
+		if (ConstantUtil.PHOTO_QUESTION_TYPE.equals(type)) {
 			mediaButton.setText(R.string.takephoto);
 		} else {
 			mediaButton.setText(R.string.takevideo);
@@ -57,7 +56,7 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	 * handle the action button click
 	 */
 	public void onClick(View v) {
-		if (PHOTO_TYPE.equals(mediaType)) {
+		if (ConstantUtil.PHOTO_QUESTION_TYPE.equals(mediaType)) {
 			notifyQuestionListeners(QuestionInteractionEvent.TAKE_PHOTO_EVENT);
 		} else {
 			notifyQuestionListeners(QuestionInteractionEvent.TAKE_VIDEO_EVENT);
@@ -70,9 +69,9 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 		if (mediaData != null) {
 			completeIcon.setVisibility(View.VISIBLE);
 			setResponse(new QuestionResponse(mediaData
-					.getString(MEDIA_FILE_KEY),
-					PHOTO_TYPE.equals(mediaType) ? QuestionResponse.IMAGE_TYPE
-							: QuestionResponse.VIDEO_TYPE, getQuestion()
+					.getString(ConstantUtil.MEDIA_FILE_KEY),
+					ConstantUtil.PHOTO_QUESTION_TYPE.equals(mediaType) ? ConstantUtil.IMAGE_RESPONSE_TYPE
+							: ConstantUtil.VIDEO_RESPONSE_TYPE, getQuestion()
 							.getId()));
 		}
 	}

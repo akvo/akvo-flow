@@ -3,7 +3,6 @@ package com.gallatinsystems.survey.device.view;
 import java.util.StringTokenizer;
 
 import android.content.Context;
-import android.sax.TextElementListener;
 import android.text.InputFilter;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
@@ -13,6 +12,7 @@ import android.widget.TableRow;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.ValidationRule;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Question that supports free-text input via the keyboard
@@ -44,16 +44,16 @@ public class FreetextQuestionView extends QuestionView {
 				freetextEdit.setFilters(FilterArray);
 			}
 			// if the type is numeric, add numeric-specific rules
-			if (ValidationRule.NUMERIC.equalsIgnoreCase(rule
+			if (ConstantUtil.NUMERIC_VALIDATION_TYPE.equalsIgnoreCase(rule
 					.getValidationType())) {
 				DigitsKeyListener MyDigitKeyListener = new DigitsKeyListener(
 						rule.getAllowSigned(), rule.getAllowDecimal());
 				freetextEdit.setKeyListener(MyDigitKeyListener);
 			}
 
-			// if we have NAME validation, we need to listen to loss of focus
+			// if we have NAME_VALIDATION_TYPE validation, we need to listen to loss of focus
 			// and make sure each word is capitalized
-			if (ValidationRule.NAME.equalsIgnoreCase(rule.getValidationType())) {
+			if (ConstantUtil.NAME_VALIDATION_TYPE.equalsIgnoreCase(rule.getValidationType())) {
 				freetextEdit
 						.setOnFocusChangeListener(new OnFocusChangeListener() {
 							public void onFocusChange(View view,
@@ -93,7 +93,7 @@ public class FreetextQuestionView extends QuestionView {
 	 */
 	public void captureResponse() {
 		setResponse(new QuestionResponse(freetextEdit.getText().toString(),
-				QuestionResponse.VALUE_TYPE, getQuestion().getId()));
+				ConstantUtil.VALUE_RESPONSE_TYPE, getQuestion().getId()));
 	}
 
 	public void rehydrate(QuestionResponse resp) {

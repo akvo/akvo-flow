@@ -26,14 +26,7 @@ public class Question {
 	private String video;
 	private String image;
 
-	public static final String FREE_TYPE = "free";
-	public static final String OPTION_TYPE = "option";
-	public static final String GEO_TYPE = "geo";
-	public static final String VIDEO_TYPE = "video";
-	public static final String DATE_TYPE = "date";
-	public static final String TEXTONLY_TYPE = "textonly";
-	public static final String PHOTO_TYPE = "photo";
-	public static final String SPINNER_TYPE = "spinner";
+
 
 	public String getRenderType() {
 		return renderType;
