@@ -17,7 +17,9 @@ import com.gallatinsystems.survey.device.domain.Survey;
 
 /**
  * Database class for the survey db. It can create/upgrade the database as well
- * as select/insert/update survey reponses.
+ * as select/insert/update survey responses.
+ * 
+ * TODO: break this up into seperate DAOs
  * 
  * @author Christopher Fagiani
  * 
@@ -50,6 +52,9 @@ public class SurveyDbAdapter {
 	public static final String FILENAME_COL = "filename";
 	public static final String KEY_COL = "key";
 	public static final String VALUE_COL = "value";
+	public static final String DELETED_COL = "deleted_flag";
+	public static final String IS_DELETED = "Y";
+	public static final String NOT_DELETED = "N";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -59,7 +64,7 @@ public class SurveyDbAdapter {
 	 * Database creation sql statement
 	 */
 	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key, "
-			+ "display_name text not null, version real, type text, location text, filename text);";
+			+ "display_name text not null, version real, type text, location text, filename text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer);";
@@ -76,10 +81,10 @@ public class SurveyDbAdapter {
 	private static final String SETTINGS_TABLE_CREATE = "create table settings (_id integer primary key autoincrement, key text not null, value text);";
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
-			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey')",
-			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey')",
-			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey')",
-			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey')", };
+			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey','N')",
+			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey','N')",
+			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey','N')",
+			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey','N')", };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -98,7 +103,7 @@ public class SurveyDbAdapter {
 	public static final String RUNNING_STATUS = "Running";
 	public static final String IN_PROGRESS_STATUS = "In Progress";
 
-	private static final int DATABASE_VERSION = 15;
+	private static final int DATABASE_VERSION = 16;
 
 	private final Context context;
 
@@ -537,7 +542,8 @@ public class SurveyDbAdapter {
 
 	/**
 	 * returns a list of survey objects that are out of date (missing from the
-	 * db or with a lower version number)
+	 * db or with a lower version number). If a survey is present but marked as
+	 * deleted, it will not be listed as out of date (and thus won't be updated)
 	 * 
 	 * @param surveys
 	 * @return
@@ -546,11 +552,12 @@ public class SurveyDbAdapter {
 		ArrayList<Survey> outOfDateSurveys = new ArrayList<Survey>();
 		for (int i = 0; i < surveys.size(); i++) {
 			Cursor cursor = database.query(SURVEY_TABLE,
-					new String[] { PK_ID_COL }, PK_ID_COL + " = ? and "
-							+ VERSION_COL + " >= ?", new String[] {
+					new String[] { PK_ID_COL },
+					PK_ID_COL + " = ? and (" + VERSION_COL + " >= ? or "
+							+ DELETED_COL + " = ?)", new String[] {
 							surveys.get(i).getId(),
-							surveys.get(i).getVersion() + "" }, null, null,
-					null);
+							surveys.get(i).getVersion() + "", IS_DELETED },
+					null, null, null);
 
 			if (cursor == null || cursor.getCount() <= 0) {
 				outOfDateSurveys.add(surveys.get(i));
@@ -579,6 +586,7 @@ public class SurveyDbAdapter {
 		updatedValues.put(LOCATION_COL, survey.getLocation());
 		updatedValues.put(FILENAME_COL, survey.getFileName());
 		updatedValues.put(DISP_NAME_COL, survey.getName());
+		updatedValues.put(DELETED_COL, NOT_DELETED);
 
 		if (cursor != null && cursor.getCount() > 0) {
 			// if we found an item, it's an update, otherwise, it's an insert
@@ -623,13 +631,14 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * Lists all surveys from the database
+	 * Lists all non-deleted surveys from the database
 	 */
 	public ArrayList<Survey> listSurveys() {
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		Cursor cursor = database.query(SURVEY_TABLE, new String[] { PK_ID_COL,
-				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL }, null,
-				null, null, null, null);
+				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL },
+				DELETED_COL + " <> ?", new String[] { IS_DELETED }, null, null,
+				null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -651,6 +660,18 @@ public class SurveyDbAdapter {
 			cursor.close();
 		}
 		return surveys;
+	}
+
+	/**
+	 * marks a survey record identified by the ID passed in as deleted.
+	 * 
+	 * @param surveyId
+	 */
+	public void deleteSurvey(String surveyId) {
+		ContentValues updatedValues = new ContentValues();
+		updatedValues.put(DELETED_COL, IS_DELETED);
+		database.update(SURVEY_TABLE, updatedValues, PK_ID_COL + " = ?",
+				new String[] { surveyId });
 	}
 
 	/**

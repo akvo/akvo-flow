@@ -67,4 +67,5 @@
 	<string name="plotsettings">Settings</string>
 	<string name="plotinterval">Set Plot Interval</string>
 	<string name="surveysupdated">Installed surveys have been updated</string>	
+	<string name="deletesurvey">Delete Survey</string>
 </resources>

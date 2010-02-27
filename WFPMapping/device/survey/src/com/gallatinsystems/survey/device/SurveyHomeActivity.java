@@ -1,37 +1,40 @@
 package com.gallatinsystems.survey.device;
 
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.HomeMenuViewAdapter;
 
 /**
  * Activity to render the survey home screen. It will list all available
  * sub-activities and start them as needed.
- *
+ * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class SurveyHomeActivity extends Activity implements OnItemClickListener {
 
-	private static final String LABEL = "label";
-	private static final String IMG = "img";
-
+	private static final int DELETE_ID = Menu.FIRST + 1;
+	private static final String TAG = "Survey Home Activity";
 	public static final int SURVEY_ACTIVITY = 1;
 	public static final int LIST_USER_ACTIVITY = 2;
 	public static final int SETTINGS_ACTIVITY = 3;
@@ -54,6 +57,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		GridView grid = (GridView) findViewById(R.id.gridview);
 		grid.setAdapter(menuViewAdapter);
 		grid.setOnItemClickListener(this);
+		registerForContextMenu(grid);
 
 		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState
@@ -63,15 +67,39 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		if (currentName != null) {
 			populateFields();
 		}
+
 		startSyncService();
 		startDownloadService();
 	}
 
-	private HashMap<String, Object> createMap(String label, Drawable img) {
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put(LABEL, label);
-		map.put(IMG, img);
-		return map;
+	/**
+	 * presents a single "edit" option when the user long-clicks a list item
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		// we only allow delete of surveys so check the view tag
+		if (HomeMenuViewAdapter.SURVEY_OP
+				.equals(((AdapterContextMenuInfo) menuInfo).targetView.getTag())) {
+			super.onCreateContextMenu(menu, v, menuInfo);
+			menu.add(0, DELETE_ID, 0, R.string.deletesurvey);
+		}
+	}
+
+	/**
+	 * spawns an activity (configured in initializeFields) in Edit mode
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case DELETE_ID:
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+					.getMenuInfo();
+			menuViewAdapter.deleteItem(info.position, this);
+
+			return true;
+		}
+		return super.onContextItemSelected(item);
 	}
 
 	/**
@@ -115,13 +143,18 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;
-
-				String surveyId = menuViewAdapter.getSelectedSurveyId(position);				
-				Intent i = new Intent(v.getContext(), SurveyViewActivity.class);
-				i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID, resourceID);
-				i.putExtra(SurveyViewActivity.USER_ID, currentUserId);
-				i.putExtra(SurveyViewActivity.SURVEY_ID, surveyId);
-				startActivityForResult(i, SURVEY_ACTIVITY);
+				Survey survey = menuViewAdapter.getSelectedSurvey(position);
+				if (survey != null) {
+					Intent i = new Intent(v.getContext(),
+							SurveyViewActivity.class);
+					i.putExtra(SurveyViewActivity.SURVEY_RESOURCE_ID,
+							resourceID);
+					i.putExtra(SurveyViewActivity.USER_ID, currentUserId);
+					i.putExtra(SurveyViewActivity.SURVEY_ID, survey.getId());
+					startActivityForResult(i, SURVEY_ACTIVITY);
+				} else {
+					Log.e(TAG, "Survey for selection is null");
+				}
 			} else {
 				// if the current user is null, we can't enter survey mode
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -200,6 +233,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 
 	private void populateFields() {
 		userField.setText(currentName);
+		menuViewAdapter.loadData(this);
 	}
 
 	private void saveState() {

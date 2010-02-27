@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.device.view;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +16,29 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ArrayUtil;
 
+/**
+ * 
+ * Adapter class to populate the grid view on the survey home page. It will
+ * display a combination of statically defined menu options as well as surveys
+ * buttons based on values in the database.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class HomeMenuViewAdapter extends BaseAdapter {
+
+	private static final String TAG = "Home Menu View Adapter";
 
 	// TODO: move constants out into ConstantUtil class
 	private static final String SURVEY_TYPE = "survey";
 
 	// references to our buttons
-	private Integer[] buttonImages;
+	private Integer[] buttonImages = new Integer[0];
 
 	// this is of type Object since the values can be Integers or Strings
 	private Object[] buttonLabels;
 
-	private ArrayList<String> surveyIds;
+	private ArrayList<Survey> surveys;
 
 	private static final Integer[] preSurveyButtons = { R.drawable.users };
 	private static final Integer[] preSurveyLabels = { R.string.userlabel };
@@ -43,27 +55,38 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	public static final String SURVEY_OP = "SURVEY";
 	public static final String CONF_OP = "CONF";
 	public static final String PLOT_OP = "PLOT";
-	// public static final String[] operations = { USER_OP, WPS_OP, HHS_OP,
-	// PUBS_OP, MAP_OP, PLOT_OP, CONF_OP };
 
 	private ArrayList<String> operations;
 
 	private LayoutInflater inflater;
 
+	/**
+	 * initializes the view inflater
+	 * 
+	 * @param c
+	 */
 	public HomeMenuViewAdapter(Context c) {
 		inflater = (LayoutInflater) c
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		initializeValues(c);
 
 	}
 
-	private void initializeValues(Context c) {
+	/**
+	 * gets all surveys from the db and uses them to instantiate the views
+	 * 
+	 * @param c
+	 */
+	public void loadData(Context c) {
+		fetchSurveys(c);
+		initializeValues();
+	}
+
+	/**
+	 * builds internal data structures to facilitate the combination of both
+	 * static and dynamic menu options
+	 */
+	private void initializeValues() {
 		operations = new ArrayList<String>();
-		surveyIds = new ArrayList<String>();
-		SurveyDbAdapter database = new SurveyDbAdapter(c);
-		database.open();
-		ArrayList<Survey> surveys = database.listSurveys();
-		database.close();
 
 		buttonImages = new Integer[surveys.size() + preSurveyButtons.length
 				+ postSurveyButtons.length];
@@ -75,7 +98,6 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 		operations.add(USER_OP);
 
 		for (int i = 0; i < surveys.size(); i++) {
-			surveyIds.add(surveys.get(i).getId());
 			if (SURVEY_TYPE.equalsIgnoreCase(surveys.get(i).getType())) {
 				buttonImages[preSurveyButtons.length + i] = R.drawable.checklist;
 			} else {
@@ -92,7 +114,21 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 
 		operations.add(PLOT_OP);
 		operations.add(CONF_OP);
+		notifyDataSetChanged();
+	}
 
+	/**
+	 * gets surveys from the database and closes the db adaptor
+	 * 
+	 * @param c
+	 * @return
+	 */
+	private ArrayList<Survey> fetchSurveys(Context c) {
+		SurveyDbAdapter database = new SurveyDbAdapter(c);
+		database.open();
+		surveys = database.listSurveys();
+		database.close();
+		return surveys;
 	}
 
 	public int getCount() {
@@ -117,7 +153,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 		} else {
 			item = convertView;
 		}
-
+		item.setTag(operations.get(position));
 		ImageView button = (ImageView) item.findViewById(R.id.homebuttonimg);
 		TextView text = (TextView) item.findViewById(R.id.buttonText);
 
@@ -131,13 +167,39 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * determines the survey that corresponds to the position within the grid
+	 * and calls delete on the database for that survey. It then calls the
+	 * initialize method to reset internal structures
+	 * 
+	 * @param position
+	 * @param c
+	 */
+	public void deleteItem(int position, Context c) {
+		SurveyDbAdapter database = new SurveyDbAdapter(c);
+		database.open();
+		Survey itemToDelete = getSelectedSurvey(position);
+		if (itemToDelete != null) {
+			database.deleteSurvey(itemToDelete.getId());
+			database.close();
+			surveys.remove(itemToDelete);
+			// update the view
+			initializeValues();			
+		}
+	}
+
+	/**
 	 * returns the survey id of the selected survey
 	 * 
 	 * @param idx
 	 * @return
 	 */
-	public String getSelectedSurveyId(int idx) {
-		return surveyIds.get(idx - preSurveyButtons.length);
+	public Survey getSelectedSurvey(int idx) {
+		if (idx - preSurveyButtons.length < surveys.size()) {
+			return surveys.get(idx - preSurveyButtons.length);
+		} else {
+			Log.e(TAG, "Selected item exceeds survey list size");
+			return null;
+		}
 	}
 
 	/**
