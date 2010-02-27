@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -62,9 +61,9 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 
 		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState
-				.getString(SurveyDbAdapter.PK_ID_COL) : null;
+				.getString(ConstantUtil.ID_KEY) : null;
 		currentName = savedInstanceState != null ? savedInstanceState
-				.getString(SurveyDbAdapter.DISP_NAME_COL) : null;
+				.getString(ConstantUtil.DISPLAY_NAME_KEY) : null;
 		if (currentName != null) {
 			populateFields();
 		}
@@ -160,7 +159,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 				// if the current user is null, we can't enter survey mode
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setMessage(R.string.mustselectuser).setCancelable(true)
-						.setPositiveButton("Ok",
+						.setPositiveButton(R.string.okbutton,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
@@ -183,9 +182,9 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			if (resultCode == RESULT_OK) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					currentUserId = bundle.getString(SurveyDbAdapter.PK_ID_COL);
+					currentUserId = bundle.getString(ConstantUtil.ID_KEY);
 					currentName = bundle
-							.getString(SurveyDbAdapter.DISP_NAME_COL);
+							.getString(ConstantUtil.DISPLAY_NAME_KEY);
 					populateFields();
 				}
 			}
@@ -194,9 +193,9 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			if (resultCode == RESULT_OK) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					String plotId = bundle.getString(SurveyDbAdapter.PK_ID_COL);
+					String plotId = bundle.getString(ConstantUtil.ID_KEY);
 					String status = bundle
-							.getString(SurveyDbAdapter.STATUS_COL);
+							.getString(ConstantUtil.STATUS_KEY);
 					Intent i = new Intent(this, RegionPlotActivity.class);
 					i.putExtra(ConstantUtil.PLOT_ID_KEY, plotId);
 					i.putExtra(ConstantUtil.STATUS_KEY, status);
@@ -212,10 +211,10 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		super.onSaveInstanceState(outState);
 		if (outState != null) {
 			if (currentUserId != null) {
-				outState.putString(SurveyDbAdapter.PK_ID_COL, currentUserId);
+				outState.putString(ConstantUtil.ID_KEY, currentUserId);
 			}
 			if (currentName != null) {
-				outState.putString(SurveyDbAdapter.DISP_NAME_COL, currentName);
+				outState.putString(ConstantUtil.DISPLAY_NAME_KEY, currentName);
 			}
 		}
 	}

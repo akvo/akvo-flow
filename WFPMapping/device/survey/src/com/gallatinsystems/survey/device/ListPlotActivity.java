@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Lists out all the plots currently in the DB and allows the user to
@@ -29,11 +30,11 @@ public class ListPlotActivity extends AbstractListEditActivity {
 		Intent intent = new Intent();
 		Cursor plot = databaseAdaptor.findPlot(id);
 		startManagingCursor(plot);
-		intent.putExtra(SurveyDbAdapter.PK_ID_COL, plot.getString(plot
+		intent.putExtra(ConstantUtil.ID_KEY, plot.getString(plot
 				.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
-		intent.putExtra(SurveyDbAdapter.DISP_NAME_COL, plot.getString(plot
+		intent.putExtra(ConstantUtil.DISPLAY_NAME_KEY, plot.getString(plot
 				.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-		intent.putExtra(SurveyDbAdapter.STATUS_COL, plot.getString(plot
+		intent.putExtra(ConstantUtil.STATUS_KEY, plot.getString(plot
 				.getColumnIndexOrThrow(SurveyDbAdapter.STATUS_COL)));
 		setResult(RESULT_OK, intent);
 		finish();

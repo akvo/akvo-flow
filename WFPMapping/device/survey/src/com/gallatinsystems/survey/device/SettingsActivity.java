@@ -44,8 +44,8 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.poweroptdesc)));
 		list.add(createMap(resources.getString(R.string.gpsstatuslabel),
 				resources.getString(R.string.gpsstatusdesc)));
-		list.add(createMap(resources.getString(R.string.aboutlabel),
-				resources.getString(R.string.aboutdesc)));
+		list.add(createMap(resources.getString(R.string.aboutlabel), resources
+				.getString(R.string.aboutdesc)));
 		String[] fromKeys = { LABEL, DESC };
 		int[] toIds = { R.id.optionLabel, R.id.optionDesc };
 
@@ -53,6 +53,13 @@ public class SettingsActivity extends ListActivity {
 				R.layout.settingsdetail, fromKeys, toIds));
 	}
 
+	/**
+	 * creates data structure for use in list adapter
+	 * 
+	 * @param label
+	 * @param desc
+	 * @return
+	 */
 	private HashMap<String, String> createMap(String label, String desc) {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put(LABEL, label);
@@ -60,6 +67,10 @@ public class SettingsActivity extends ListActivity {
 		return map;
 	}
 
+	/**
+	 * when an item is clicked, use the label value to determine what option it
+	 * was and then handle that type of action
+	 */
 	@Override
 	protected void onListItemClick(ListView list, View view, int position,
 			long id) {
@@ -100,20 +111,17 @@ public class SettingsActivity extends ListActivity {
 				builder.setView(tipText);
 				builder.setPositiveButton(R.string.okbutton,
 						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int id) {
+							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();
 							}
 						});
-				builder.show();				
-			}else {
+				builder.show();
+			} else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
 					i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.SEND);
 				} else {
-					i
-							.putExtra(ConstantUtil.OP_TYPE_KEY,
-									ConstantUtil.EXPORT);
+					i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.EXPORT);
 				}
 				i.putExtra(ConstantUtil.FORCE_KEY, true);
 				getApplicationContext().startService(i);

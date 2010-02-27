@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * This activity will list all the users in the database and present them in
@@ -31,11 +32,11 @@ public class ListUserActivity extends AbstractListEditActivity {
 		Intent intent = new Intent();
 		Cursor user = databaseAdaptor.findUser(id);
 		startManagingCursor(user);
-		intent.putExtra(SurveyDbAdapter.PK_ID_COL, user.getString(user
+		intent.putExtra(ConstantUtil.ID_KEY, user.getString(user
 				.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
-		intent.putExtra(SurveyDbAdapter.DISP_NAME_COL, user.getString(user
+		intent.putExtra(ConstantUtil.DISPLAY_NAME_KEY, user.getString(user
 				.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-		intent.putExtra(SurveyDbAdapter.EMAIL_COL, user.getString(user
+		intent.putExtra(ConstantUtil.EMAIL_KEY, user.getString(user
 				.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
 		setResult(RESULT_OK, intent);
 		finish();

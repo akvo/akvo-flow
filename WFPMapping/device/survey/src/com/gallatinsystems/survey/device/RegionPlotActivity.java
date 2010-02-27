@@ -95,9 +95,9 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 
 		// handle instance state
 		plotId = savedInstanceState != null ? savedInstanceState
-				.getString(SurveyDbAdapter.PK_ID_COL) : null;
+				.getString(ConstantUtil.ID_KEY) : null;
 		currentStatus = savedInstanceState != null ? savedInstanceState
-				.getString(SurveyDbAdapter.STATUS_COL)
+				.getString(ConstantUtil.STATUS_KEY)
 				: ConstantUtil.IN_PROGRESS_STATUS;
 		if (plotId == null) {
 			Bundle extras = getIntent().getExtras();
@@ -157,8 +157,8 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		if (outState != null && plotId != null) {
-			outState.putString(SurveyDbAdapter.PK_ID_COL, plotId);
-			outState.putString(SurveyDbAdapter.STATUS_COL, currentStatus);
+			outState.putString(ConstantUtil.ID_KEY, plotId);
+			outState.putString(ConstantUtil.STATUS_KEY, currentStatus);
 		}
 	}
 
@@ -269,8 +269,8 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	 */
 	private void startPlotService() {
 		Intent i = new Intent(this, RegionPlotService.class);
-		i.putExtra(RegionPlotService.PLOT_ID, plotId);
-		i.putExtra(RegionPlotService.INTERVAL, interval);
+		i.putExtra(ConstantUtil.PLOT_ID_KEY, plotId);
+		i.putExtra(ConstantUtil.INTERVAL_KEY, interval);
 		startService(i);
 	}
 

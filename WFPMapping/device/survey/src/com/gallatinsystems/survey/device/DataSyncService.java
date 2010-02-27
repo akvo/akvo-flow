@@ -79,10 +79,11 @@ public class DataSyncService extends Service {
 			public void run() {
 				if (intent != null) {
 					Bundle extras = intent.getExtras();
-					String type = extras != null ? extras.getString( ConstantUtil.OP_TYPE_KEY)
+					String type = extras != null ? extras
+							.getString(ConstantUtil.OP_TYPE_KEY)
 							: ConstantUtil.SEND;
 					boolean forceFlag = extras != null ? extras.getBoolean(
-							 ConstantUtil.FORCE_KEY, false) : false;
+							ConstantUtil.FORCE_KEY, false) : false;
 					runSync(type, forceFlag);
 				}
 			}
@@ -120,7 +121,7 @@ public class DataSyncService extends Service {
 				}
 				if (fileName != null
 						&& (idList[0].size() > 0 || idList[1].size() > 0)) {
-					if ( ConstantUtil.SEND.equals(type)) {
+					if (ConstantUtil.SEND.equals(type)) {
 						sendFile(fileName);
 						if (sendProcessingNotification(destName)) {
 							if (idList[0].size() > 0) {
@@ -130,7 +131,7 @@ public class DataSyncService extends Service {
 								databaseAdaptor.updatePlotStatus(idList[1],
 										ConstantUtil.SENT_STATUS);
 							}
-							fireNotification( ConstantUtil.SEND, destName);
+							fireNotification(ConstantUtil.SEND, destName);
 						} else {
 							Log
 									.e(
@@ -138,7 +139,7 @@ public class DataSyncService extends Service {
 											"Could not update send status of data in the database. It will be resent on next execution of the service");
 						}
 					} else {
-						fireNotification( ConstantUtil.EXPORT, destName);
+						fireNotification(ConstantUtil.EXPORT, destName);
 					}
 				} else if (forceFlag) {
 					fireNotification(NOTHING, null);
@@ -178,9 +179,9 @@ public class DataSyncService extends Service {
 	 */
 	private void fireNotification(String type, String fileName) {
 		CharSequence tickerText = null;
-		if ( ConstantUtil.SEND.equals(type)) {
+		if (ConstantUtil.SEND.equals(type)) {
 			tickerText = getResources().getText(R.string.uploadcomplete);
-		} else if ( ConstantUtil.EXPORT.equals(type)) {
+		} else if (ConstantUtil.EXPORT.equals(type)) {
 			tickerText = getResources().getText(R.string.exportcomplete);
 		} else {
 			tickerText = getResources().getText(R.string.nothingtoexport);
@@ -487,7 +488,7 @@ public class DataSyncService extends Service {
 	private boolean isAbleToRun(String type) {
 		boolean ok = false;
 		// since a null type is treated like send, check !export
-		if (! ConstantUtil.EXPORT.equals(type)) {
+		if (!ConstantUtil.EXPORT.equals(type)) {
 			ok = StatusUtil.hasDataConnection(this);
 		} else {
 			// if we're exporting, we don't need to check the network

@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * create or edit a new Plot record
@@ -37,11 +38,11 @@ public class PlotEditActivity extends Activity {
 		Button saveButton = (Button) findViewById(R.id.confirm);
 
 		plotId = savedInstanceState != null ? savedInstanceState
-				.getLong(SurveyDbAdapter.PK_ID_COL) : null;
+				.getLong(ConstantUtil.ID_KEY) : null;
 		if (plotId == null) {
 			Bundle extras = getIntent().getExtras();
 			plotId = extras != null ? new Long(extras
-					.getString(SurveyDbAdapter.PK_ID_COL)) : null;
+					.getString(ConstantUtil.ID_KEY)) : null;
 		}
 		populateFields();
 
@@ -71,7 +72,7 @@ public class PlotEditActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		if (outState != null && plotId != null) {
-			outState.putLong(SurveyDbAdapter.PK_ID_COL, plotId);
+			outState.putLong(ConstantUtil.ID_KEY, plotId);
 		}
 	}
 

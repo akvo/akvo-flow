@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Background service used by the RegionPlotActivity to automatically record
@@ -24,8 +25,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
  * 
  */
 public class RegionPlotService extends Service implements LocationListener {
-	public static final String INTERVAL = "interval";
-	public static final String PLOT_ID = "plotid";
+
 	private static final int DEFAULT_INTERVAL = 60000;
 	private SurveyDbAdapter database;
 	private LocationManager locMgr;
@@ -41,8 +41,8 @@ public class RegionPlotService extends Service implements LocationListener {
 	public int onStartCommand(final Intent intent, int flags, int startid) {
 		if (timer == null) {
 			timer = new Timer();
-			interval = intent.getIntExtra(INTERVAL, DEFAULT_INTERVAL);
-			plotId = intent.getStringExtra(PLOT_ID);
+			interval = intent.getIntExtra(ConstantUtil.INTERVAL_KEY, DEFAULT_INTERVAL);
+			plotId = intent.getStringExtra(ConstantUtil.PLOT_ID_KEY);
 			database = new SurveyDbAdapter(this);
 			database.open();
 			if (locMgr == null) {

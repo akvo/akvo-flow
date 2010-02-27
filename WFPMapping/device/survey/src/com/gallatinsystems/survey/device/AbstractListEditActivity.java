@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Abstract class that defines behaviors for simple list views used across the
@@ -150,7 +151,7 @@ public abstract class AbstractListEditActivity extends ListActivity {
 		try {
 			Intent i = new Intent(this, Class.forName(editActivityClassName));
 			if (id != null) {
-				i.putExtra(SurveyDbAdapter.PK_ID_COL, id);
+				i.putExtra(ConstantUtil.ID_KEY, id);
 			}
 			startActivityForResult(i, ACTIVITY_CREATE);
 		} catch (ClassNotFoundException e) {

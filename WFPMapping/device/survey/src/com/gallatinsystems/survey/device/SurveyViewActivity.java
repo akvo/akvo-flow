@@ -70,23 +70,25 @@ public class SurveyViewActivity extends TabActivity implements
 
 		setContentView(R.layout.main);
 
-		Bundle extras = getIntent().getExtras();		
-		userId = extras != null ? extras.getString(ConstantUtil.USER_ID_KEY) : null;
+		Bundle extras = getIntent().getExtras();
+		userId = extras != null ? extras.getString(ConstantUtil.USER_ID_KEY)
+				: null;
 		if (userId == null) {
 			userId = savedInstanceState != null ? savedInstanceState
-					.getString(SurveyDbAdapter.USER_FK_COL) : null;
+					.getString(ConstantUtil.USER_ID_KEY) : null;
 		}
 
-		surveyId = extras != null ? extras.getString(ConstantUtil.SURVEY_ID_KEY) : null;
+		surveyId = extras != null ? extras
+				.getString(ConstantUtil.SURVEY_ID_KEY) : null;
 		if (surveyId == null) {
 			surveyId = savedInstanceState != null ? savedInstanceState
-					.getString(SurveyDbAdapter.SURVEY_FK_COL) : "1";
+					.getString(ConstantUtil.SURVEY_ID_KEY) : "1";
 		}
 
-		Survey survey = loadSurvey(surveyId);		
+		Survey survey = loadSurvey(surveyId);
 
 		respondentId = savedInstanceState != null ? savedInstanceState
-				.getLong(SurveyDbAdapter.RESP_ID_COL) : null;
+				.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
 
 		if (respondentId == null) {
 			respondentId = databaseAdapter.createOrLoadSurveyRespondent(
@@ -121,7 +123,7 @@ public class SurveyViewActivity extends TabActivity implements
 				// load from resource
 				Resources res = getResources();
 				survey = parser.parse(res.openRawResource(res.getIdentifier(
-						survey.getFileName(), RAW_RESOURCE,RESOURCE_PACKAGE)));
+						survey.getFileName(), RAW_RESOURCE, RESOURCE_PACKAGE)));
 			} else {
 				// load from file
 				try {
@@ -168,20 +170,12 @@ public class SurveyViewActivity extends TabActivity implements
 				f.renameTo(new File(newName));
 
 				try {
-					/*
-					 * //this will resolve put the image in the media browser
-					 * Uri u =
-					 * Uri.parse(android.provider.MediaStore.Images.Media
-					 * .insertImage(getContentResolver(), f .getAbsolutePath(),
-					 * null, null));
-					 */
 					if (mediaQuestionSource != null) {
 						Bundle photoData = new Bundle();
 						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
 								newName);
 						mediaQuestionSource.questionComplete(photoData);
 					}
-					// f.delete();
 				} catch (Exception e) {
 					Log.e(ACTIVITY_NAME, e.getMessage());
 				} finally {
@@ -272,13 +266,13 @@ public class SurveyViewActivity extends TabActivity implements
 		super.onSaveInstanceState(outState);
 		if (outState != null) {
 			if (surveyId != null) {
-				outState.putString(SurveyDbAdapter.SURVEY_FK_COL, surveyId);
+				outState.putString(ConstantUtil.SURVEY_ID_KEY, surveyId);
 			}
 			if (respondentId != null) {
-				outState.putLong(SurveyDbAdapter.RESP_ID_COL, respondentId);
+				outState.putLong(ConstantUtil.RESPONDENT_ID_KEY, respondentId);
 			}
 			if (userId != null) {
-				outState.putString(SurveyDbAdapter.USER_FK_COL, userId);
+				outState.putString(ConstantUtil.USER_ID_KEY, userId);
 			}
 		}
 	}

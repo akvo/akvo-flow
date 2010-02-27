@@ -87,6 +87,11 @@ public class ConstantUtil {
 	public static final String SURVEY_RESOURCE_ID_KEY = "RESID";
 	public static final String USER_ID_KEY = "UID";
 	public static final String SURVEY_ID_KEY = "SID";
+	public static final String ID_KEY = "_id";
+	public static final String DISPLAY_NAME_KEY = "display_name";
+	public static final String EMAIL_KEY = "email";
+	public static final String INTERVAL_KEY = "interval";	
+	public static final String RESPONDENT_ID_KEY = "survey_respondent_id";
 	
 	/**
 	 * intents

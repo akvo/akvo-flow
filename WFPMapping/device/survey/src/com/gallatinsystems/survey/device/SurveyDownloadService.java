@@ -218,7 +218,7 @@ public class SurveyDownloadService extends Service {
 	}
 
 	/**
-	 * creates the data dir if it does not exist
+	 * creates the data directory if it does not exist
 	 */
 	private void findOrCreateDataDir() {
 		File dir = new File(DATA_DIR);

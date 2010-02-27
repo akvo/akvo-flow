@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -36,11 +37,11 @@ public class UserEditActivity extends Activity {
 		Button saveButton = (Button) findViewById(R.id.confirm);
 
 		userId = savedInstanceState != null ? savedInstanceState
-				.getLong(SurveyDbAdapter.PK_ID_COL) : null;
+				.getLong(ConstantUtil.ID_KEY) : null;
 		if (userId == null) {
 			Bundle extras = getIntent().getExtras();
 			userId = extras != null ? new Long(extras
-					.getString(SurveyDbAdapter.PK_ID_COL)) : null;
+					.getString(ConstantUtil.ID_KEY)) : null;
 		}
 		populateFields();
 
@@ -72,7 +73,7 @@ public class UserEditActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		if (outState != null && userId != null) {
-			outState.putLong(SurveyDbAdapter.PK_ID_COL, userId);
+			outState.putLong(ConstantUtil.ID_KEY, userId);
 		}
 	}
 
