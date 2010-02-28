@@ -270,6 +270,6 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	}
 
 	private void saveState() {
-		// TODO: persist current user?
+
 	}
 }
