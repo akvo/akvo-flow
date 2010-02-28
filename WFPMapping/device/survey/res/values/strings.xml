@@ -30,6 +30,8 @@
 	<string name="exportcomplete">Data has been exported to SD card</string>
 	<string name="uploadcomplete">Data has been sent to the server</string>
 	<string name="nothingtoexport">There is no unsent data</string>
+	<string name="prefoptlabel">Preferences</string>
+	<string name="prefoptdesc">Set default survey language and other preference data</string>
 	<string name="exportoptlabel">Export Data</string>
 	<string name="exportoptdesc">Exports survey data to a zip file on the device\'s SD card</string>
 	<string name="sendoptlabel">Send Data</string>
@@ -39,7 +41,7 @@
 	<string name="aboutlabel">About</string>
 	<string name="aboutdesc">Displays version information.</string>
 	<string name="abouttitle">About - FieldSurvey</string>
-	<string name="abouttext">FieldSurvey\nDeveloped By: Gallatin Systems\nCopyright 2010\nVersion 1.0</string>
+	<string name="abouttext">FieldSurvey\nDeveloped By: Gallatin Systems\nCopyright 2010\nVersion 0.5</string>
 	<string name="gpsstatuslabel">GPS Status</string>
 	<string name="gpsstatusdesc">Launches the GPS Status application if you have it installed on this device.</string>
 	<string name="nogpsstatus">GPS Status is not installed on this device. Please install it using the Android Market.</string>
@@ -69,4 +71,8 @@
 	<string name="surveysupdated">Installed surveys have been updated</string>	
 	<string name="deletesurvey">Delete Survey</string>
 	<string name="othertext">Other...</string>
+	<string name="savelastuserlabel">Keep the last selected user logged-in between sessions</string>
+	<string name="uploadoptionlabel">Upload data over cellular network</string>
+	<string name="uploadoptiondialogtitle">Upload via cellular</string>
+	<string name="surveylanglabel">Survey Language</string>
 </resources>

@@ -105,6 +105,7 @@ public class SurveyDownloadService extends Service {
 						if (updateCount > 0) {
 							fireNotification(updateCount);
 						}
+						databaseAdaptor.close();
 					}
 				}
 			} catch (Exception e) {
@@ -214,7 +215,7 @@ public class SurveyDownloadService extends Service {
 	 * @return
 	 */
 	private boolean isAbleToRun() {
-		return StatusUtil.hasDataConnection(this);
+		return StatusUtil.hasDataConnection(this, false);
 	}
 
 	/**

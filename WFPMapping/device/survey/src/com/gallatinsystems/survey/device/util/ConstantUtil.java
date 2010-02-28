@@ -94,9 +94,28 @@ public class ConstantUtil {
 	public static final String RESPONDENT_ID_KEY = "survey_respondent_id";
 	
 	/**
+	 * settings keys
+	 */
+	public static final String SURVEY_LANG_SETTING_KEY = "survey.language";
+	public static final String USER_SAVE_SETTING_KEY = "user.storelast";
+	public static final String CELL_UPLOAD_SETTING_KEY = "data.cellular.upload";
+	public static final String PLOT_MODE_SETTING_KEY = "plot.default.mode";
+	public static final String PLOT_INTERVAL_SETTING_KEY = "plot.interval";
+	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
+	
+	
+	/**
+	 * index values into string arrays
+	 */
+	public static final int UPLOAD_DATA_ONLY_IDX = 1;
+	public static final int UPLOAD_NEVER_IDX = 2;
+	
+	
+	/**
 	 * intents
 	 */
 	public static final String DATA_AVAILABLE_INTENT = "com.gallatinsystems.survey.device.DATA_SUBMITTED";
+	public static final String GPS_STATUS_INTENT = "com.eclipsim.gpsstatus.VIEW";
 	
 	/**
 	 * prevent instantiation

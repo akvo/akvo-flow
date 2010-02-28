@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -59,17 +61,50 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		grid.setOnItemClickListener(this);
 		registerForContextMenu(grid);
 
-		// TODO: store/fetch current user from DB?
 		currentUserId = savedInstanceState != null ? savedInstanceState
 				.getString(ConstantUtil.ID_KEY) : null;
 		currentName = savedInstanceState != null ? savedInstanceState
 				.getString(ConstantUtil.DISPLAY_NAME_KEY) : null;
+
+		if (currentUserId == null) {
+			loadLastUser();
+		}
+
 		if (currentName != null) {
 			populateFields();
 		}
 
 		startSyncService();
 		startDownloadService();
+	}
+
+	/**
+	 * checks if the user preference to persist logged-in users is set and, if
+	 * so, loads the last logged-in user from the DB
+	 * 
+	 * @return
+	 */
+	private void loadLastUser() {
+
+		SurveyDbAdapter database = new SurveyDbAdapter(this);
+		database.open();
+		// first check if they want to keep users logged in
+		String val = database
+				.findPreference(ConstantUtil.USER_SAVE_SETTING_KEY);
+		if (val != null && Boolean.parseBoolean(val)) {
+			val = database.findPreference(ConstantUtil.LAST_USER_SETTING_KEY);
+			if (val != null && val.trim().length() > 0) {
+				currentUserId = val;
+				Cursor cur = database.findUser(new Long(val));
+				if (cur != null) {
+					currentName = cur
+							.getString(cur
+									.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL));
+					cur.close();
+				}
+			}
+		}
+		database.close();
 	}
 
 	/**
@@ -147,8 +182,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 				if (survey != null) {
 					Intent i = new Intent(v.getContext(),
 							SurveyViewActivity.class);
-					i.putExtra(ConstantUtil.SURVEY_RESOURCE_ID_KEY,
-							resourceID);
+					i.putExtra(ConstantUtil.SURVEY_RESOURCE_ID_KEY, resourceID);
 					i.putExtra(ConstantUtil.USER_ID_KEY, currentUserId);
 					i.putExtra(ConstantUtil.SURVEY_ID_KEY, survey.getId());
 					startActivityForResult(i, SURVEY_ACTIVITY);
@@ -194,8 +228,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					String plotId = bundle.getString(ConstantUtil.ID_KEY);
-					String status = bundle
-							.getString(ConstantUtil.STATUS_KEY);
+					String status = bundle.getString(ConstantUtil.STATUS_KEY);
 					Intent i = new Intent(this, RegionPlotActivity.class);
 					i.putExtra(ConstantUtil.PLOT_ID_KEY, plotId);
 					i.putExtra(ConstantUtil.STATUS_KEY, status);

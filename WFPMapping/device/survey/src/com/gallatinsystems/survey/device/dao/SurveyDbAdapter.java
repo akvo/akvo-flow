@@ -77,13 +77,19 @@ public class SurveyDbAdapter {
 
 	private static final String PLOT_POINT_TABLE_CREATE = "create table plot_point (_id integer primary key autoincrement, plot_id integer not null, lat text, lon text, elevation text, created_date text);";
 
-	private static final String SETTINGS_TABLE_CREATE = "create table settings (_id integer primary key autoincrement, key text not null, value text);";
+	private static final String PREFERENCES_TABLE_CREATE = "create table preferences (key text primary key, value text);";
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
 			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey','N')",
 			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey','N')",
 			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey','N')",
-			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey','N')", };
+			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey','N')",
+			"insert into preferences values('survey.language','0')",
+			"insert into preferences values('user.storelast','false')",
+			"insert into preferences values('data.cellular.upload','0')",
+			"insert into preferences values('plot.default.mode','manual')",
+			"insert into preferences values('plot.interval','60000')",
+			"insert into preferences values('user.lastuser.id','')" };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -92,12 +98,12 @@ public class SurveyDbAdapter {
 	private static final String USER_TABLE = "user";
 	private static final String PLOT_TABLE = "plot";
 	private static final String PLOT_POINT_TABLE = "plot_point";
-	private static final String SETTINGS_TABLE = "settings";
+	private static final String PREFERENCES_TABLE = "preferences";
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 
-	private static final int DATABASE_VERSION = 16;
+	private static final int DATABASE_VERSION = 19;
 
 	private final Context context;
 
@@ -123,7 +129,7 @@ public class SurveyDbAdapter {
 			db.execSQL(SURVEY_RESPONSE_CREATE);
 			db.execSQL(PLOT_TABLE_CREATE);
 			db.execSQL(PLOT_POINT_TABLE_CREATE);
-			db.execSQL(SETTINGS_TABLE_CREATE);
+			db.execSQL(PREFERENCES_TABLE_CREATE);
 			for (int i = 0; i < DEFAULT_INSERTS.length; i++) {
 				db.execSQL(DEFAULT_INSERTS[i]);
 			}
@@ -139,7 +145,7 @@ public class SurveyDbAdapter {
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + SETTINGS_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 			onCreate(db);
 		}
 	}
@@ -681,11 +687,11 @@ public class SurveyDbAdapter {
 	/**
 	 * returns the value of a single setting identified by the key passed in
 	 */
-	public String findSettingValue(String key) {
+	public String findPreference(String key) {
 		String value = null;
-		Cursor cursor = database.query(SETTINGS_TABLE, new String[] { KEY_COL,
-				VALUE_COL }, KEY_COL + " = ?", new String[] { key }, null,
-				null, null);
+		Cursor cursor = database.query(PREFERENCES_TABLE, new String[] {
+				KEY_COL, VALUE_COL }, KEY_COL + " = ?", new String[] { key },
+				null, null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -700,10 +706,10 @@ public class SurveyDbAdapter {
 	/**
 	 * Lists all settings from the database
 	 */
-	public HashMap<String, String> listSettings() {
+	public HashMap<String, String> listPreferences() {
 		HashMap<String, String> settings = new HashMap<String, String>();
-		Cursor cursor = database.query(SETTINGS_TABLE, new String[] { KEY_COL,
-				VALUE_COL }, null, null, null, null, null);
+		Cursor cursor = database.query(PREFERENCES_TABLE, new String[] {
+				KEY_COL, VALUE_COL }, null, null, null, null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -718,5 +724,17 @@ public class SurveyDbAdapter {
 			cursor.close();
 		}
 		return settings;
+	}
+
+	/**
+	 * persists setting to the db
+	 * 
+	 * @param surveyId
+	 */
+	public void savePreference(String key, String value) {
+		ContentValues updatedValues = new ContentValues();
+		updatedValues.put(VALUE_COL, value);
+		database.update(PREFERENCES_TABLE, updatedValues, KEY_COL + " = ?",
+				new String[] { key });
 	}
 }

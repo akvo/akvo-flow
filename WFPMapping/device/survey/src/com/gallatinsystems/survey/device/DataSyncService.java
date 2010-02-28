@@ -103,14 +103,20 @@ public class DataSyncService extends Service {
 	 *            - either SYNC or EXPORT
 	 */
 	private void runSync(String type, boolean forceFlag) {
-		if (isAbleToRun(type)) {
+		databaseAdaptor = new SurveyDbAdapter(this);
+		databaseAdaptor.open();
+		String uploadOption = databaseAdaptor
+				.findPreference(ConstantUtil.CELL_UPLOAD_SETTING_KEY);
+		int uploadIndex = -1;
+		if (uploadOption != null && uploadOption.trim().length() > 0) {
+			uploadIndex = Integer.parseInt(uploadOption);
+		}
+		if (isAbleToRun(type, uploadIndex)) {
 			try {
 				lock.acquire();
-
-				databaseAdaptor = new SurveyDbAdapter(this);
-				databaseAdaptor.open();
 				String fileName = createFileName();
-				HashSet<String>[] idList = formZip(fileName);
+				HashSet<String>[] idList = formZip(fileName,
+						(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex));
 				String destName = fileName;
 				if (destName.contains("/")) {
 					destName = destName
@@ -144,13 +150,13 @@ public class DataSyncService extends Service {
 				} else if (forceFlag) {
 					fireNotification(NOTHING, null);
 				}
-				databaseAdaptor.close();
 			} catch (InterruptedException e) {
 				Log.e(TAG, "Data sync interrupted", e);
 			} finally {
 				lock.release();
 			}
 		}
+		databaseAdaptor.close();
 	}
 
 	/**
@@ -196,7 +202,7 @@ public class DataSyncService extends Service {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private HashSet<String>[] formZip(String fileName) {
+	private HashSet<String>[] formZip(String fileName, boolean dataOnly) {
 		HashSet<String>[] idsToUpdate = new HashSet[2];
 		idsToUpdate[0] = new HashSet<String>();
 		idsToUpdate[1] = new HashSet<String>();
@@ -225,34 +231,36 @@ public class DataSyncService extends Service {
 					writeTextToZip(zos, regionBuf.toString(), REGION_DATA_FILE);
 				}
 
-				byte[] buffer = new byte[BUF_SIZE];
-				// write images
-				for (int i = 0; i < imagePaths.size(); i++) {
-					try {
-						BufferedInputStream bin = new BufferedInputStream(
-								new FileInputStream(imagePaths.get(i)));
-						String name = ZIP_IMAGE_DIR;
-						if (imagePaths.get(i).contains("/")) {
-							name = name
-									+ imagePaths
-											.get(i)
-											.substring(
-													imagePaths.get(i)
-															.lastIndexOf("/") + 1);
-						} else {
-							name = name + imagePaths.get(i);
+				// write images if enabled
+				if (!dataOnly) {
+					byte[] buffer = new byte[BUF_SIZE];
+
+					for (int i = 0; i < imagePaths.size(); i++) {
+						try {
+							BufferedInputStream bin = new BufferedInputStream(
+									new FileInputStream(imagePaths.get(i)));
+							String name = ZIP_IMAGE_DIR;
+							if (imagePaths.get(i).contains("/")) {
+								name = name
+										+ imagePaths.get(i).substring(
+												imagePaths.get(i).lastIndexOf(
+														"/") + 1);
+							} else {
+								name = name + imagePaths.get(i);
+							}
+							zos.putNextEntry(new ZipEntry(name));
+							int bytesRead = bin.read(buffer);
+							while (bytesRead > 0) {
+								zos.write(buffer, 0, bytesRead);
+								bytesRead = bin.read(buffer);
+							}
+							bin.close();
+							zos.closeEntry();
+						} catch (Exception e) {
+							Log.e(TAG, "Could not add image "
+									+ imagePaths.get(i) + " to zip: "
+									+ e.getMessage());
 						}
-						zos.putNextEntry(new ZipEntry(name));
-						int bytesRead = bin.read(buffer);
-						while (bytesRead > 0) {
-							zos.write(buffer, 0, bytesRead);
-							bytesRead = bin.read(buffer);
-						}
-						bin.close();
-						zos.closeEntry();
-					} catch (Exception e) {
-						Log.e(TAG, "Could not add image " + imagePaths.get(i)
-								+ " to zip: " + e.getMessage());
 					}
 				}
 				zos.close();
@@ -485,11 +493,16 @@ public class DataSyncService extends Service {
 	 * @param type
 	 * @return
 	 */
-	private boolean isAbleToRun(String type) {
+	private boolean isAbleToRun(String type, int uploadModeIndex) {
 		boolean ok = false;
 		// since a null type is treated like send, check !export
 		if (!ConstantUtil.EXPORT.equals(type)) {
-			ok = StatusUtil.hasDataConnection(this);
+			if (uploadModeIndex > -1
+					&& ConstantUtil.UPLOAD_NEVER_IDX == uploadModeIndex) {
+				ok = StatusUtil.hasDataConnection(this, true);
+			} else {
+				ok = StatusUtil.hasDataConnection(this, false);
+			}
 		} else {
 			// if we're exporting, we don't need to check the network
 			ok = true;

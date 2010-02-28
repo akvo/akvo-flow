@@ -69,7 +69,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.regionplotview);
-		interval = DEFAULT_AUTO_INTERVAL;
+
 		mapView = (MapView) findViewById(R.id.mapview);
 		idList = new ArrayList<String>();
 		lastDrawTime = null;
@@ -92,6 +92,16 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		overlays.add(regionPlot);
 
 		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		dbAdaptor = new SurveyDbAdapter(this);
+		dbAdaptor.open();
+
+		String intervalPref = dbAdaptor
+				.findPreference(ConstantUtil.PLOT_INTERVAL_SETTING_KEY);
+		if (intervalPref != null) {
+			interval = Integer.parseInt(intervalPref);
+		} else {
+			interval = DEFAULT_AUTO_INTERVAL;
+		}
 
 		// handle instance state
 		plotId = savedInstanceState != null ? savedInstanceState
@@ -110,11 +120,17 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		if (ConstantUtil.RUNNING_STATUS.equals(currentStatus)) {
 			currentMode = AUTO_MODE;
 		} else {
-			currentMode = MANUAL_MODE;
+			// if we're not running, check the defaults
+			String mode = dbAdaptor
+					.findPreference(ConstantUtil.PLOT_MODE_SETTING_KEY);
+			if (mode != null) {
+				currentMode = mode;
+			} else {
+				currentMode = MANUAL_MODE;
+			}
 		}
 		updateLabels();
-		dbAdaptor = new SurveyDbAdapter(this);
-		dbAdaptor.open();
+
 		fillPlot();
 		registerForContextMenu(mapView);
 	}
@@ -300,6 +316,9 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 				currentMode = AUTO_MODE;
 				actionButton.setText(R.string.startplotting);
 			}
+			// save the mode too
+			dbAdaptor.savePreference(ConstantUtil.PLOT_MODE_SETTING_KEY,
+					currentMode);
 			return true;
 		case INTERVAL_ID:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -310,6 +329,10 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int item) {
 					interval = vals[item];
+					// save the interval
+					dbAdaptor.savePreference(
+							ConstantUtil.PLOT_INTERVAL_SETTING_KEY, interval
+									+ "");
 					dialog.dismiss();
 				}
 			});
@@ -339,18 +362,15 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	@Override
 	public void onProviderDisabled(String provider) {
 		// no op. needed to satisfy location interface
-
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
 		// no op. needed to satisfy location interface
-
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// no op. needed to satisfy location interface
-
 	}
 }

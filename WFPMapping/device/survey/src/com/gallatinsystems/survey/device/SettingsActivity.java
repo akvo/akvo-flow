@@ -28,7 +28,7 @@ public class SettingsActivity extends ListActivity {
 
 	private static final String LABEL = "label";
 	private static final String DESC = "desc";
-	private static final String GPS_STATUS_INTENT = "com.eclipsim.gpsstatus.VIEW";
+	
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,6 +36,8 @@ public class SettingsActivity extends ListActivity {
 
 		ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 		Resources resources = getResources();
+		list.add(createMap(resources.getString(R.string.prefoptlabel),
+				resources.getString(R.string.prefoptdesc)));
 		list.add(createMap(resources.getString(R.string.sendoptlabel),
 				resources.getString(R.string.sendoptdesc)));
 		list.add(createMap(resources.getString(R.string.exportoptlabel),
@@ -78,7 +80,11 @@ public class SettingsActivity extends ListActivity {
 		if (label != null) {
 			String val = label.getText().toString();
 			Resources resources = getResources();
-			if (resources.getString(R.string.poweroptlabel).equals(val)) {
+			if(resources.getString(R.string.prefoptlabel).equals(val)){
+				Intent i = new Intent(this, PreferencesActivity.class);
+				startActivity(i);
+			}
+			else if (resources.getString(R.string.poweroptlabel).equals(val)) {
 				WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
 				if (!wm.isWifiEnabled()) {
 					wm.setWifiEnabled(true);
@@ -87,7 +93,7 @@ public class SettingsActivity extends ListActivity {
 				}
 			} else if (resources.getString(R.string.gpsstatuslabel).equals(val)) {
 				try {
-					Intent i = new Intent(GPS_STATUS_INTENT);
+					Intent i = new Intent(ConstantUtil.GPS_STATUS_INTENT);
 					startActivity(i);
 				} catch (Exception e) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this);

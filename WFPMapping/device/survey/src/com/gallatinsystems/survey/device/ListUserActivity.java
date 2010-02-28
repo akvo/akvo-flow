@@ -38,6 +38,8 @@ public class ListUserActivity extends AbstractListEditActivity {
 				.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
 		intent.putExtra(ConstantUtil.EMAIL_KEY, user.getString(user
 				.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+		//save the user to the prefs table
+		databaseAdaptor.savePreference(ConstantUtil.LAST_USER_SETTING_KEY, id+"");		
 		setResult(RESULT_OK, intent);
 		finish();
 	}
