@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.domain;
+package com.gallatinsystems.survey.domain.xml;
 
 import java.util.Date;
 

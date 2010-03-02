@@ -1,19 +1,24 @@
 package com.gallatinsystems.survey.dao;
 
-import java.security.Key;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.db.PMF;
 
-import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.survey.domain.SurveyContainer;
+import com.gallatinsystems.survey.domain.xml.Survey;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
+
 
 public class SurveyDAO {
 	PersistenceManager pm;
+	private static final Logger log = Logger
+	.getLogger(DeviceManagerServlet.class.getName());
 
 	public Long save(String surveyDefinition) {
 		Long id = 0L;
@@ -22,6 +27,17 @@ public class SurveyDAO {
 		sc.setSurveyDocument(surveyText);
 		pm.makePersistent(sc);
 		return sc.getId();
+	}
+	
+	public void test(){
+		com.gallatinsystems.survey.domain.Survey survey = new com.gallatinsystems.survey.domain.Survey();
+		survey.setCreatedDateTime(new Date());
+		survey.setCreateUserId(1L);
+		survey.setName("test");
+		survey.setVersion(1);
+		pm.makePersistent(survey);
+		log.info("BaseDAO test survey key: " + survey.getKey().getId());
+		
 	}
 
 	public Survey get(Long id) {

@@ -6,7 +6,7 @@
 //
 
 
-package com.gallatinsystems.survey.domain;
+package com.gallatinsystems.survey.domain.xml;
 
 import javax.xml.bind.annotation.XmlRegistry;
 

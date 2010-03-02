@@ -12,6 +12,7 @@ import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.device.helper.DeviceHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 
 public class DeviceManagerServlet extends HttpServlet {
 	private static final Logger log = Logger
@@ -30,6 +31,9 @@ public class DeviceManagerServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 			}
+		}else if(action.equals("testBaseDomain")){
+			SurveyDAO surveyDAO = new SurveyDAO();
+			surveyDAO.test();
 		}
 	}
 
@@ -74,7 +78,7 @@ public class DeviceManagerServlet extends HttpServlet {
 		device.setDeviceType(Device.DeviceType.CELL_PHONE_ANDROID);
 		device.setEsn(esn);
 		device.setPhoneNumber(phoneNumber);
-		device.setId(deviceHelper.createDevice(device).getId());
+		device.setKey(deviceHelper.createDevice(device).getKey());
 		sb.append(device.toString());
 		return sb.toString();
 	}

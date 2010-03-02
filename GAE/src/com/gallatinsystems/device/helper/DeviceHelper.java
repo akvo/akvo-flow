@@ -11,8 +11,8 @@ public class DeviceHelper {
 	
 	public Device createDevice(Device device){
 		DeviceDAO deviceDAO = new DeviceDAO();
-		deviceDAO.saveDevice(device);
-		return device;
+		deviceDAO.save(device);
+		return (Device)device;
 	}
 
 

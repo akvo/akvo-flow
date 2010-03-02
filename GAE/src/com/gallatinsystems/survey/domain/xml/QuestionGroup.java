@@ -6,7 +6,7 @@
 //
 
 
-package com.gallatinsystems.survey.domain;
+package com.gallatinsystems.survey.domain.xml;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +31,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}option" maxOccurs="unbounded"/>
+ *         &lt;element ref="{}heading"/>
+ *         &lt;element ref="{}question" maxOccurs="unbounded"/>
  *       &lt;/sequence>
- *       &lt;attribute name="allowOther" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="order" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -43,69 +44,96 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "option"
+    "heading",
+    "question"
 })
-@XmlRootElement(name = "options")
-public class Options {
+@XmlRootElement(name = "questionGroup")
+public class QuestionGroup {
 
     @XmlElement(required = true)
-    protected List<Option> option;
+    protected Heading heading;
+    @XmlElement(required = true)
+    protected List<Question> question;
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
-    protected String allowOther;
+    protected String order;
 
     /**
-     * Gets the value of the option property.
+     * Gets the value of the heading property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Heading }
+     *     
+     */
+    public Heading getHeading() {
+        return heading;
+    }
+
+    /**
+     * Sets the value of the heading property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Heading }
+     *     
+     */
+    public void setHeading(Heading value) {
+        this.heading = value;
+    }
+
+    /**
+     * Gets the value of the question property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the option property.
+     * This is why there is not a <CODE>set</CODE> method for the question property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getOption().add(newItem);
+     *    getQuestion().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Option }
+     * {@link Question }
      * 
      * 
      */
-    public List<Option> getOption() {
-        if (option == null) {
-            option = new ArrayList<Option>();
+    public List<Question> getQuestion() {
+        if (question == null) {
+            question = new ArrayList<Question>();
         }
-        return this.option;
+        return this.question;
     }
 
     /**
-     * Gets the value of the allowOther property.
+     * Gets the value of the order property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAllowOther() {
-        return allowOther;
+    public String getOrder() {
+        return order;
     }
 
     /**
-     * Sets the value of the allowOther property.
+     * Sets the value of the order property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAllowOther(String value) {
-        this.allowOther = value;
+    public void setOrder(String value) {
+        this.order = value;
     }
 
 }

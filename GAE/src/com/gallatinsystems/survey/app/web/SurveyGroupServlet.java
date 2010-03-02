@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.SurveyContainer;
-import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.SurveyGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
+import com.gallatinsystems.survey.domain.xml.SurveyGroup;
+import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
 
 public class SurveyGroupServlet extends HttpServlet {
 

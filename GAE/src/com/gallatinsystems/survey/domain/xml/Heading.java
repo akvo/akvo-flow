@@ -6,7 +6,7 @@
 //
 
 
-package com.gallatinsystems.survey.domain;
+package com.gallatinsystems.survey.domain.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -35,8 +35,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlType(name = "", propOrder = {
     "content"
 })
-@XmlRootElement(name = "tip")
-public class Tip {
+@XmlRootElement(name = "heading")
+public class Heading {
 
     @XmlValue
     protected String content;

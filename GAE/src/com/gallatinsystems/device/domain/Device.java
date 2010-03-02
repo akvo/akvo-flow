@@ -9,11 +9,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Device {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+import com.gallatinsystems.framework.domain.BaseDomain;
+
+@PersistenceCapable
+public class Device extends BaseDomain {
 	private DeviceType deviceType;
 	private String phoneNumber;
 	private String esn;
@@ -27,13 +26,6 @@ public class Device {
 		CELL_PHONE_ANDROID, TABLET_ANDROID, TABLET_PHONE_ANDROID
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public DeviceType getDeviceType() {
 		return deviceType;

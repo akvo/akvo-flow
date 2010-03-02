@@ -12,10 +12,10 @@ public class DeviceDAO extends BaseDAO {
 	private static final Logger log = Logger.getLogger(DeviceDAO.class
 			.getName());
 
-	public Device saveDevice(Device device) {
+	public Device save(Device device) {
 		Device deviceExists = get(device.getPhoneNumber());
 		if (deviceExists == null) {
-			super.getPersistenceManager().makePersistent(device);
+			super.save(device);
 		}else{
 			//update device
 		}

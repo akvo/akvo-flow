@@ -10,9 +10,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.xml.Question;
+import com.gallatinsystems.survey.domain.xml.QuestionGroup;
+import com.gallatinsystems.survey.domain.xml.Survey;
 
 public class SurveyXMLAdapter {
 	private static final Logger log = Logger.getLogger(SurveyXMLAdapter.class
