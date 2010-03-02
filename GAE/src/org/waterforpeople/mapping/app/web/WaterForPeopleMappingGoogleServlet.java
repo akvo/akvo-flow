@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.DeviceFiles;
+
+import com.gallatinsystems.device.domain.DeviceFiles;
 
 @SuppressWarnings("serial")
 public class WaterForPeopleMappingGoogleServlet extends HttpServlet {

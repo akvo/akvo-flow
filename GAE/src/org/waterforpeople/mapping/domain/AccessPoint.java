@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -14,7 +15,7 @@ public class AccessPoint {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
 	@Persistent
-	private String collectionDate = null;
+	private Date collectionDate = null;
 	@Persistent
 	private Double latitude = 0.0;
 	@Persistent
@@ -57,11 +58,11 @@ public class AccessPoint {
 	public AccessPoint(){
 	}
 
-	public String getCollectionDate() {
+	public Date getCollectionDate() {
 		return collectionDate;
 	}
 
-	public void setCollectionDate(String collectionDate) {
+	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
 
@@ -188,6 +189,36 @@ public class AccessPoint {
 
 	public enum AccessPointType{
 		WATER_POINT,SANITATION_POINT
+	}
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		String newLine = System.getProperty("line.separator");
+
+		result.append(this.getClass().getName());
+		result.append(" Object {");
+		result.append(newLine);
+
+		// determine fields declared in this class only (no fields of
+		// superclass)
+		Field[] fields = this.getClass().getDeclaredFields();
+
+		// print field names paired with their values
+		for (Field field : fields) {
+			result.append("  ");
+			try {
+				result.append(field.getName());
+				result.append(": ");
+				// requires access to private field:
+				result.append(field.get(this));
+			} catch (IllegalAccessException ex) {
+				System.out.println(ex);
+			}
+			result.append(newLine);
+		}
+		result.append("}");
+
+		return result.toString();
 	}
 	
 }

@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.DeviceFiles;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
@@ -35,6 +34,7 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;

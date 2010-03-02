@@ -12,6 +12,9 @@ public class AccessPointDAO {
 	PersistenceManager pm;
 	
 	public Long save(AccessPoint ap) {
+		if(ap.getCollectionDate() == null){
+			
+		}
 		Boolean savedSuccessFlag = false;
 		pm.makePersistent(ap);
 		return ap.getId();

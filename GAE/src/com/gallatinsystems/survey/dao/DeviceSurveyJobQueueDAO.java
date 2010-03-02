@@ -7,22 +7,18 @@ import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.db.PMF;
 
-import com.gallatinsystems.survey.domain.DeviceSurveyJobQueue;
+import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 
 public class DeviceSurveyJobQueueDAO {
 	PersistenceManager pm;
 
-	public Long get(String devicePhoneNumber) {
+	public List<DeviceSurveyJobQueue> get(String devicePhoneNumber) {
 		DeviceSurveyJobQueue deviceSurveyJobQueue = null;
 		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
 		query.setFilter("devicePhoneNumber == devicePhoneNumberParam");
 		query.declareParameters("Long idParam");
 		List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query.execute(devicePhoneNumber);
-		if (results.size() > 0) {
-			deviceSurveyJobQueue = results.get(0);
-		}
-		
-		return deviceSurveyJobQueue.getSurveyID();
+		return results;
 	}
 	
 	public Long save(DeviceSurveyJobQueue deviceSurveyJobQueue){

@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -24,7 +25,16 @@ public class QuestionAnswerStore {
 	private String type;
 	@Persistent
 	private String value;
+	private Date collectionDate;
 	
+	
+	public Date getCollectionDate() {
+		return collectionDate;
+	}
+
+	public void setCollectionDate(Date collectionDate) {
+		this.collectionDate = collectionDate;
+	}
 	@Persistent
 	private SurveyInstance surveyInstance;
 

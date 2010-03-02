@@ -10,6 +10,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.gallatinsystems.device.domain.DeviceFiles;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyInstance {
 	@PrimaryKey

@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
+import java.security.Key;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -18,7 +19,6 @@ public class SurveyDAO {
 		Long id = 0L;
 		SurveyContainer sc = new SurveyContainer();
 		com.google.appengine.api.datastore.Text surveyText = new com.google.appengine.api.datastore.Text(surveyDefinition);
-		
 		sc.setSurveyDocument(surveyText);
 		pm.makePersistent(sc);
 		return sc.getId();
@@ -60,6 +60,15 @@ public class SurveyDAO {
 		return surveyContainer.getSurveyDocument().getValue();
 	}
 
+	public List<SurveyContainer> listSurveyContainers(){
+			SurveyContainer surveyContainer = null;
+
+			javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
+
+			List<SurveyContainer> results = (List<SurveyContainer>) query.execute();
+			return results;
+	}
+	
 	private void init() {
 		pm = PMF.get().getPersistenceManager();
 	}

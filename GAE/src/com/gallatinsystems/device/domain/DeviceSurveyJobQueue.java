@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.domain;
+package com.gallatinsystems.device.domain;
 
 import java.lang.reflect.Field;
 import java.util.Date;

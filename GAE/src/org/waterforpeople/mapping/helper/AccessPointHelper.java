@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.helper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 
 import org.waterforpeople.mapping.dao.AccessPointDAO;
@@ -99,7 +100,8 @@ public class AccessPointHelper {
 				ap.setPointStatus(qas.getValue());
 			}
 			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-
+			//for now hardcode the data to now
+			ap.setCollectionDate(new Date());
 		}
 
 		return ap;

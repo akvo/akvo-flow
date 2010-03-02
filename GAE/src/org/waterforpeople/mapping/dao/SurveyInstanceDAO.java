@@ -7,9 +7,11 @@ import java.util.List;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.db.PMF;
-import org.waterforpeople.mapping.domain.DeviceFiles;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+
+import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.survey.domain.SurveyContainer;
 
 public class SurveyInstanceDAO {
 	PersistenceManager pm;
@@ -32,6 +34,7 @@ public class SurveyInstanceDAO {
 			if (parts.length > 3) {
 				qas.setValue(parts[3]);
 			}
+			//Need to implement handling of date from text file here.
 			qasList.add(qas);
 		}
 		si.setQuestionAnswersStore(qasList);
@@ -42,6 +45,21 @@ public class SurveyInstanceDAO {
 	public SurveyInstanceDAO() {
 		init();
 	}
+	
+
+	public SurveyContainer getSurveyDocument(Long id) {
+		SurveyContainer si = null;
+
+		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
+		query.setFilter("id == idParam");
+		query.declareParameters("Long idParam");
+		List<SurveyContainer> results = (List<SurveyContainer>) query.execute(id);
+		if (results.size() > 0) {
+			si = results.get(0);
+		}
+		return si;
+	}
+
 
 	public SurveyInstance get(Long id) {
 		SurveyInstance si = null;

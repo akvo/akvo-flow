@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.domain;
+package com.gallatinsystems.device.domain;
 
 import java.util.Date;
 
@@ -8,6 +8,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import org.waterforpeople.mapping.domain.Status;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.google.appengine.api.datastore.Key;
