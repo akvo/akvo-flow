@@ -4,31 +4,25 @@ import java.lang.reflect.Field;
 
 import javax.jdo.annotations.PersistenceCapable;
 
-import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.domain.BaseAssocDomain;
+
 @PersistenceCapable
-public class QuestionHelp extends BaseDomain{
-	private String text;
-	private String resourceUrl;
+public class SurveyQuestionGroupAssoc extends BaseAssocDomain{
+	private Survey survey;
+	private QuestionGroup questionGroup;
+	public Survey getSurvey() {
+		return survey;
+	}
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
+	}
+	public QuestionGroup getQuestionGroup() {
+		return questionGroup;
+	}
+	public void setQuestionGroup(QuestionGroup questionGroup) {
+		this.questionGroup = questionGroup;
+	}
 	
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public String getResourceUrl() {
-		return resourceUrl;
-	}
-
-	public void setResourceUrl(String resourceUrl) {
-		this.resourceUrl = resourceUrl;
-	}
-
-	public enum QuestionHelpType{
-		TEXT,PICTURE_GALLERY,PICTURE,MOVIE
-	}
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

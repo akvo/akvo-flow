@@ -9,6 +9,7 @@ import javax.jdo.PersistenceManager;
 import org.waterforpeople.mapping.db.PMF;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Key;
 
 public class BaseDAO {
 	PersistenceManager pm;
@@ -23,6 +24,9 @@ public class BaseDAO {
 	}
 
 	public PersistenceManager getPersistenceManager() {
+		if(pm==null){
+			init();
+		}
 		return pm;
 	}
 
@@ -41,19 +45,13 @@ public class BaseDAO {
 	}
 
 	public <T extends BaseDomain> T getByKey(Long keyId) {
-		T object = null;
-		javax.jdo.Query query = pm.newQuery(object.getClass());
-		query.setFilter("key == KeyIdParam");
-		query.declareParameters("Long KeyIdParam");
-		List<T> results = (List<T>) query.execute(keyId);
-		if (results.size() > 0) {
-			object = results.get(0);
-		}
-		return object;
+		return (T) pm.getObjectById(keyId);
+		
 	}
+	
 
-	public <T extends BaseDomain> List<T> list() {
-		T object = null;
+	public <T extends BaseDomain> List<T> list(T object) {
+		
 		javax.jdo.Query query = pm.newQuery(object.getClass());
 		List<T> results = (List<T>) query.execute();
 		return results;

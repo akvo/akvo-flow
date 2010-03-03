@@ -31,9 +31,6 @@ public class DeviceManagerServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 			}
-		}else if(action.equals("testBaseDomain")){
-			SurveyDAO surveyDAO = new SurveyDAO();
-			surveyDAO.test();
 		}
 	}
 

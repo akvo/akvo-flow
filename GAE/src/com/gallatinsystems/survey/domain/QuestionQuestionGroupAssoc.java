@@ -2,32 +2,27 @@ package com.gallatinsystems.survey.domain;
 
 import java.lang.reflect.Field;
 
+import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.PersistenceCapable;
 
-import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.domain.BaseAssocDomain;
+
 @PersistenceCapable
-public class QuestionHelp extends BaseDomain{
-	private String text;
-	private String resourceUrl;
-	
-	public String getText() {
-		return text;
+@Inheritance(customStrategy = "complete-table")
+public class QuestionQuestionGroupAssoc extends BaseAssocDomain{
+	private Question question;
+	private QuestionGroup questionGroup;
+	public Question getQuestion() {
+		return question;
 	}
-
-	public void setText(String text) {
-		this.text = text;
+	public void setQuestion(Question question) {
+		this.question = question;
 	}
-
-	public String getResourceUrl() {
-		return resourceUrl;
+	public QuestionGroup getQuestionGroup() {
+		return questionGroup;
 	}
-
-	public void setResourceUrl(String resourceUrl) {
-		this.resourceUrl = resourceUrl;
-	}
-
-	public enum QuestionHelpType{
-		TEXT,PICTURE_GALLERY,PICTURE,MOVIE
+	public void setQuestionGroup(QuestionGroup questionGroup) {
+		this.questionGroup = questionGroup;
 	}
 	@Override
 	public String toString() {
@@ -59,5 +54,4 @@ public class QuestionHelp extends BaseDomain{
 
 		return result.toString();
 	}
-
 }

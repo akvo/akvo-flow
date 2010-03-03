@@ -1,16 +1,11 @@
 package com.gallatinsystems.survey.domain;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
-import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
+import com.gallatinsystems.framework.domain.BaseAssocDomain;
 
 @PersistenceCapable
-public class SurveySurveyGroupAssoc extends BaseDomain {
+public class SurveySurveyGroupAssoc extends BaseAssocDomain {
 
 	private Long surveyContainerId;
 	private Long surveyGroupId;
