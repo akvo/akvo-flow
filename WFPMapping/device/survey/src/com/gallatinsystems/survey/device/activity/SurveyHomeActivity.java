@@ -24,6 +24,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.service.DataSyncService;
+import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -79,6 +80,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 
 		startSyncService();
 		startDownloadService();
+		startLocationService();
 	}
 
 	/**
@@ -155,6 +157,14 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	private void startDownloadService() {
 		getApplicationContext().startService(
 				new Intent(this, SurveyDownloadService.class));
+	}
+
+	/**
+	 * starts up the location beacon service
+	 */
+	private void startLocationService() {
+		getApplicationContext().startService(
+				new Intent(this, LocationService.class));
 	}
 
 	/**

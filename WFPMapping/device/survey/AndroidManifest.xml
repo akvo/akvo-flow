@@ -23,6 +23,7 @@
 		<service android:name=".service.DataSyncService" />
 		<service android:name=".service.SurveyDownloadService" />
 		<service android:name=".service.RegionPlotService" />
+		<service android:name=".service.LocationService" />
 
 		<receiver android:name=".broadcast.BroadcastDispatcher" >
 			<intent-filter>

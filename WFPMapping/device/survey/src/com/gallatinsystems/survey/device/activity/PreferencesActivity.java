@@ -18,6 +18,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -64,7 +65,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		} else {
 			saveUserCheckbox.setChecked(false);
 		}
-		
+
 		val = settings.get(ConstantUtil.LOCATION_BEACON_SETTING_KEY);
 		if (val != null && Boolean.parseBoolean(val)) {
 			beaconCheckbox.setChecked(true);
@@ -171,6 +172,13 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		} else {
 			database.savePreference(ConstantUtil.LOCATION_BEACON_SETTING_KEY,
 					"" + isChecked);
+			if (isChecked) {
+				// if the option changed, kick the service so it reflects the
+				// change
+				startService(new Intent(this, LocationService.class));
+			} else {
+				stopService(new Intent(this, LocationService.class));
+			}
 		}
 	}
 }

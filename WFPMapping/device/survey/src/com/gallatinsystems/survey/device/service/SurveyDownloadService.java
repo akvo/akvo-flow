@@ -115,6 +115,7 @@ public class SurveyDownloadService extends Service {
 				lock.release();
 			}
 		}
+		stopSelf();
 	}
 
 	/**
