@@ -104,9 +104,9 @@ public class SurveyDownloadService extends Service {
 						}
 						if (updateCount > 0) {
 							fireNotification(updateCount);
-						}
-						databaseAdaptor.close();
+						}						
 					}
+					databaseAdaptor.close();
 				}
 			} catch (Exception e) {
 				Log.e(TAG, "Could not update surveys", e);
