@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.service;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -21,6 +21,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;

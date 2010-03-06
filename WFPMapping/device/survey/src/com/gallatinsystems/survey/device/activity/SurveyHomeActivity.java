@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,8 +20,11 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.service.DataSyncService;
+import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.HomeMenuViewAdapter;

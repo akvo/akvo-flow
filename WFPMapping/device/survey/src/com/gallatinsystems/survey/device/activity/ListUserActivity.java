@@ -1,10 +1,11 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.activity;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
 import android.widget.ListView;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 

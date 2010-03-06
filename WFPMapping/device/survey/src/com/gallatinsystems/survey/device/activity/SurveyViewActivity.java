@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.activity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.TabHost;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;

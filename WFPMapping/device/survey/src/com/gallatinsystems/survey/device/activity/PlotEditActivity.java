@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.activity;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 

@@ -12,7 +12,7 @@ import android.location.Location;
 import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
-import com.gallatinsystems.survey.device.RegionPlotActivity;
+import com.gallatinsystems.survey.device.activity.RegionPlotActivity;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;

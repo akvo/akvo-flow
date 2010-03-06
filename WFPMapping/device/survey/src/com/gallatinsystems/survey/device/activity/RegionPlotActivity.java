@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.activity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.service.RegionPlotService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.GeoUtil;
 import com.gallatinsystems.survey.device.view.GeoPlotOverlay;

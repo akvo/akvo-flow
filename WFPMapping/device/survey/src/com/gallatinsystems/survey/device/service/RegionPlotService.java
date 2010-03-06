@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.service;
 
 import java.util.Timer;
 import java.util.TimerTask;

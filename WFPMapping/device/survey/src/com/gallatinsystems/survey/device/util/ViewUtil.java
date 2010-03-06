@@ -8,8 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
-import com.gallatinsystems.survey.device.DataSyncService;
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.service.DataSyncService;
 
 /**
  * Utility class to handle common features for the View tier

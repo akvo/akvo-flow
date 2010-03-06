@@ -20,7 +20,7 @@ import android.widget.TextView;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.R;
-import com.gallatinsystems.survey.device.SurveyViewActivity;
+import com.gallatinsystems.survey.device.activity.SurveyViewActivity;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;

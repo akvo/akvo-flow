@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**

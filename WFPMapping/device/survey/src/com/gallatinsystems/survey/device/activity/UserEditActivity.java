@@ -1,7 +1,4 @@
-package com.gallatinsystems.survey.device;
-
-import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
-import com.gallatinsystems.survey.device.util.ConstantUtil;
+package com.gallatinsystems.survey.device.activity;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -9,6 +6,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * this activity is used to edit a user's profile information and persist it to

@@ -1,9 +1,10 @@
-package com.gallatinsystems.survey.device;
+package com.gallatinsystems.survey.device.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
