@@ -5,6 +5,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
@@ -103,6 +104,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					R.array.celluploadoptions,
 					ConstantUtil.CELL_UPLOAD_SETTING_KEY, uploadArray,
 					uploadOptionTextView);
+			if(uploadArray[ConstantUtil.UPLOAD_DATA_ALLWAYS_IDX].equals(uploadOptionTextView.getText()) ){
+				//fire an intent to make sure we don't have any data pending upload
+				Intent i = new Intent(
+						ConstantUtil.DATA_AVAILABLE_INTENT);
+				sendBroadcast(i);
+			}
 		} else if (R.id.suveylangbutton == v.getId()) {
 			showPreferenceDialog(R.string.surveylanglabel, R.array.languages,
 					ConstantUtil.SURVEY_LANG_SETTING_KEY, languageArray,

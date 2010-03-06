@@ -30,6 +30,7 @@ public class ConstantUtil {
 	public static final String GEO_QUESTION_TYPE = "geo";
 	public static final String VIDEO_QUESTION_TYPE = "video";
 	public static final String PHOTO_QUESTION_TYPE = "photo";
+	public static final String SCAN_QUESTION_TYPE = "scan";
 
 	/**
 	 * rendering options
@@ -42,7 +43,7 @@ public class ConstantUtil {
 	public static final String VALUE_RESPONSE_TYPE = "VALUE";
 	public static final String IMAGE_RESPONSE_TYPE = "IMAGE";
 	public static final String VIDEO_RESPONSE_TYPE = "VIDEO";
-	public static final String GEO_RESPONSE_TYPE = "GEO";
+	public static final String GEO_RESPONSE_TYPE = "GEO";	
 	public static final String OTHER_RESPONSE_TYPE = "OTHER";
 
 	/**
@@ -107,6 +108,7 @@ public class ConstantUtil {
 	/**
 	 * index values into string arrays
 	 */
+	public static final int UPLOAD_DATA_ALLWAYS_IDX = 0;
 	public static final int UPLOAD_DATA_ONLY_IDX = 1;
 	public static final int UPLOAD_NEVER_IDX = 2;
 	
@@ -116,6 +118,13 @@ public class ConstantUtil {
 	 */
 	public static final String DATA_AVAILABLE_INTENT = "com.gallatinsystems.survey.device.DATA_SUBMITTED";
 	public static final String GPS_STATUS_INTENT = "com.eclipsim.gpsstatus.VIEW";
+	public static final String BARCODE_SCAN_INTENT = "com.google.zxing.client.android.SCAN";
+	
+	/**
+	 * zxing barcode extra keys
+	 */
+	public static final String BARCODE_CONTENT = "SCAN_RESULT";
+	public static final String BARCODE_FORMAT = "SCAN_RESULT_FORMAT";
 	
 	/**
 	 * prevent instantiation

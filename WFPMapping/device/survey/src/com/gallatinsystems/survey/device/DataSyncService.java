@@ -131,7 +131,14 @@ public class DataSyncService extends Service {
 						sendFile(fileName);
 						if (sendProcessingNotification(destName)) {
 							if (idList[0].size() > 0) {
-								databaseAdaptor.markDataAsSent(idList[0]);
+								databaseAdaptor
+										.markDataAsSent(
+												idList[0],
+												""
+														+ StatusUtil
+																.hasDataConnection(
+																		this,
+																		(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex)));
 							}
 							if (idList[1].size() > 0) {
 								databaseAdaptor.updatePlotStatus(idList[1],

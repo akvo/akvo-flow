@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -42,6 +45,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int VIDEO_ACTIVITY_REQUEST = 2;
+	private static final int SCAN_ACTIVITY_REQUEST = 3;
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
 	private static final String TEMP_VIDEO_NAME_PREFIX = "/wfpVideo";
 	private static final String VIDEO_PREFIX = "file:////";
@@ -55,7 +59,7 @@ public class SurveyViewActivity extends TabActivity implements
 
 	private static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
-	private QuestionView mediaQuestionSource;
+	private QuestionView eventQuestionSource;
 	private SurveyDbAdapter databaseAdapter;
 	private String surveyId;
 	private Long respondentId;
@@ -170,17 +174,21 @@ public class SurveyViewActivity extends TabActivity implements
 				f.renameTo(new File(newName));
 
 				try {
-					if (mediaQuestionSource != null) {
+					if (eventQuestionSource != null) {
 						Bundle photoData = new Bundle();
 						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
 								newName);
-						mediaQuestionSource.questionComplete(photoData);
+						eventQuestionSource.questionComplete(photoData);
 					}
 				} catch (Exception e) {
 					Log.e(ACTIVITY_NAME, e.getMessage());
 				} finally {
-					mediaQuestionSource = null;
+					eventQuestionSource = null;
 				}
+			}
+		} else if (requestCode == SCAN_ACTIVITY_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				eventQuestionSource.questionComplete(data.getExtras());
 			}
 		}
 	}
@@ -215,7 +223,7 @@ public class SurveyViewActivity extends TabActivity implements
 					.fromFile(new File(Environment
 							.getExternalStorageDirectory().getAbsolutePath()
 							+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX)));
-			mediaQuestionSource = event.getSource();
+			eventQuestionSource = event.getSource();
 			startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
 		} else if (QuestionInteractionEvent.VIDEO_TIP_VIEW.equals(event
 				.getEventType())) {
@@ -240,8 +248,25 @@ public class SurveyViewActivity extends TabActivity implements
 					.fromFile(new File(Environment
 							.getExternalStorageDirectory().getAbsolutePath()
 							+ TEMP_VIDEO_NAME_PREFIX + VIDEO_SUFFIX)));
-			mediaQuestionSource = event.getSource();
+			eventQuestionSource = event.getSource();
 			startActivityForResult(i, VIDEO_ACTIVITY_REQUEST);
+		} else if (QuestionInteractionEvent.SCAN_BARCODE_EVENT.equals(event
+				.getEventType())) {
+			Intent intent = new Intent(ConstantUtil.BARCODE_SCAN_INTENT);
+			try {
+				startActivityForResult(intent, SCAN_ACTIVITY_REQUEST);
+				eventQuestionSource = event.getSource();
+			} catch (ActivityNotFoundException ex) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(R.string.barcodeerror);
+				builder.setPositiveButton(R.string.okbutton,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+				builder.show();
+			}
 		}
 	}
 

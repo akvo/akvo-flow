@@ -75,4 +75,6 @@
 	<string name="uploadoptionlabel">Upload data over cellular network</string>
 	<string name="uploadoptiondialogtitle">Upload via cellular</string>
 	<string name="surveylanglabel">Survey Language</string>
+	<string name="scanbarcode">Scan Barcode</string>
+	<string name="barcodeerror">Scanner not installed. Please install the Barcode Scanner app from the Android Market.</string>
 </resources>

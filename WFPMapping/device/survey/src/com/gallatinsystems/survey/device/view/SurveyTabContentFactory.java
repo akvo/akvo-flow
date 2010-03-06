@@ -92,7 +92,9 @@ public class SurveyTabContentFactory implements TabContentFactory {
 						ConstantUtil.VIDEO_QUESTION_TYPE);
 			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new GeoQuestionView(context, q);
-			} else {
+			} else if (ConstantUtil.SCAN_QUESTION_TYPE.equalsIgnoreCase(q.getType())){
+				questionView = new BarcodeQuestionView(context, q);
+			}else {
 				questionView = new QuestionView(context, q);
 			}
 			questionMap.put(q.getId(), questionView);

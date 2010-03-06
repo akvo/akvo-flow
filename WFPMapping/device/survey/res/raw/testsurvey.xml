@@ -63,6 +63,9 @@
     <b>Poor</b> =System does not function.]]></tip>
     <video src="http://www.gallatinsystems.com/WFPDevice/video/demoVid.mp4"/>
 		</question>
+			<question id="q9" order="9" mandatory="false" type="scan">
+			<text>Waterpoint barcode?</text>			
+		</question>
 	</questionGroup>
 	<questionGroup order="2">
 		<heading>Sanitation</heading>

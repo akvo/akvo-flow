@@ -54,6 +54,7 @@ public class SurveyDbAdapter {
 	public static final String KEY_COL = "key";
 	public static final String VALUE_COL = "value";
 	public static final String DELETED_COL = "deleted_flag";
+	public static final String MEDIA_SENT_COL = "media_sent_flag";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -66,7 +67,7 @@ public class SurveyDbAdapter {
 			+ "display_name text not null, version real, type text, location text, filename text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
-			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer);";
+			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
 			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null);";
@@ -103,7 +104,7 @@ public class SurveyDbAdapter {
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 
-	private static final int DATABASE_VERSION = 19;
+	private static final int DATABASE_VERSION = 20;
 
 	private final Context context;
 
@@ -206,8 +207,9 @@ public class SurveyDbAdapter {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
 				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL,
 				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL },
-				SUBMITTED_FLAG_COL + "= 'true' AND " + DELIVERED_DATE_COL
-						+ " is null", null, null, null, null);
+				SUBMITTED_FLAG_COL + "= 'true' AND (" + DELIVERED_DATE_COL
+						+ " is null OR " + MEDIA_SENT_COL + " <> 'true')",
+				null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -233,11 +235,12 @@ public class SurveyDbAdapter {
 	 * 
 	 * @param idList
 	 */
-	public void markDataAsSent(HashSet<String> idList) {
+	public void markDataAsSent(HashSet<String> idList, String mediaSentFlag) {
 		if (idList != null) {
 			ContentValues updatedValues = new ContentValues();
 			updatedValues.put(DELIVERED_DATE_COL, System.currentTimeMillis()
 					+ "");
+			updatedValues.put(MEDIA_SENT_COL, mediaSentFlag);
 			// enhanced FOR ok here since we're dealing with an implicit
 			// iterator anyway
 			for (String id : idList) {
