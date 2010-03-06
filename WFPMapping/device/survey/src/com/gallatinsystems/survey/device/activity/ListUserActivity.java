@@ -20,7 +20,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  */
 public class ListUserActivity extends AbstractListEditActivity {
 
-	private static final String EDIT_USER_ACTIVITY_CLASS = "com.gallatinsystems.survey.device.UserEditActivity";
+	private static final String EDIT_USER_ACTIVITY_CLASS = "com.gallatinsystems.survey.device.activity.UserEditActivity";
 
 	/**
 	 * when a list item is clicked, get the user id and name of the selected

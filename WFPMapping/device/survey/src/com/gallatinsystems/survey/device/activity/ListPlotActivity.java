@@ -18,7 +18,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  * 
  */
 public class ListPlotActivity extends AbstractListEditActivity {
-	private static final String EDIT_PLOT_ACTIVITY_CLASS = "com.gallatinsystems.survey.device.PlotEditActivity";
+	private static final String EDIT_PLOT_ACTIVITY_CLASS = "com.gallatinsystems.survey.device.activity.PlotEditActivity";
 
 	/**
 	 * when a list item is clicked, get the user id and name of the selected

@@ -49,7 +49,7 @@ public class LocationService extends Service {
 			sendBeacon = Boolean.parseBoolean(val);
 		}
 		database.close();
-		if (timer == null) {
+		if (timer == null && sendBeacon) {
 			timer = new Timer(true);
 			timer.scheduleAtFixedRate(new TimerTask() {
 

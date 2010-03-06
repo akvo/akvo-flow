@@ -66,6 +66,7 @@ public class DataSyncService extends Service {
 	private static final int REDIRECT_CODE = 303;
 	private static final int OK_CODE = 200;
 	private static Semaphore lock = new Semaphore(1);
+	private static int counter=0;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -103,7 +104,7 @@ public class DataSyncService extends Service {
 	 * @param type
 	 *            - either SYNC or EXPORT
 	 */
-	private void runSync(String type, boolean forceFlag) {
+	private void runSync(String type, boolean forceFlag) {		
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
 		String uploadOption = databaseAdaptor
@@ -112,6 +113,7 @@ public class DataSyncService extends Service {
 		if (uploadOption != null && uploadOption.trim().length() > 0) {
 			uploadIndex = Integer.parseInt(uploadOption);
 		}
+		counter++;
 		if (isAbleToRun(type, uploadIndex)) {
 			try {
 				lock.acquire();
@@ -163,8 +165,12 @@ public class DataSyncService extends Service {
 			} finally {
 				lock.release();
 			}
-		}
+		}		
 		databaseAdaptor.close();
+		counter--;
+		if(counter == 0){
+			stopSelf();
+		}
 	}
 
 	/**
