@@ -30,6 +30,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		OnCheckedChangeListener {
 
 	private CheckBox saveUserCheckbox;
+	private CheckBox beaconCheckbox;
 	private TextView uploadOptionTextView;
 	private TextView languageTextView;
 	private SurveyDbAdapter database;
@@ -41,9 +42,11 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		setContentView(R.layout.preferences);
 
 		saveUserCheckbox = (CheckBox) findViewById(R.id.lastusercheckbox);
+		beaconCheckbox = (CheckBox) findViewById(R.id.beaconcheckbox);
 
 		uploadOptionTextView = (TextView) findViewById(R.id.uploadoptionvalue);
 		languageTextView = (TextView) findViewById(R.id.surveylangvalue);
+
 		Resources res = getResources();
 		languageArray = res.getStringArray(R.array.languages);
 		uploadArray = res.getStringArray(R.array.celluploadoptions);
@@ -59,6 +62,13 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			saveUserCheckbox.setChecked(true);
 		} else {
 			saveUserCheckbox.setChecked(false);
+		}
+		
+		val = settings.get(ConstantUtil.LOCATION_BEACON_SETTING_KEY);
+		if (val != null && Boolean.parseBoolean(val)) {
+			beaconCheckbox.setChecked(true);
+		} else {
+			beaconCheckbox.setChecked(false);
 		}
 
 		val = settings.get(ConstantUtil.CELL_UPLOAD_SETTING_KEY);
@@ -81,6 +91,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		database.open();
 		populateFields();
 		saveUserCheckbox.setOnCheckedChangeListener(this);
+		beaconCheckbox.setOnCheckedChangeListener(this);
 		((ImageButton) findViewById(R.id.uploadoptionbutton))
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.suveylangbutton))
@@ -104,10 +115,11 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					R.array.celluploadoptions,
 					ConstantUtil.CELL_UPLOAD_SETTING_KEY, uploadArray,
 					uploadOptionTextView);
-			if(uploadArray[ConstantUtil.UPLOAD_DATA_ALLWAYS_IDX].equals(uploadOptionTextView.getText()) ){
-				//fire an intent to make sure we don't have any data pending upload
-				Intent i = new Intent(
-						ConstantUtil.DATA_AVAILABLE_INTENT);
+			if (uploadArray[ConstantUtil.UPLOAD_DATA_ALLWAYS_IDX]
+					.equals(uploadOptionTextView.getText())) {
+				// fire an intent to make sure we don't have any data pending
+				// upload
+				Intent i = new Intent(ConstantUtil.DATA_AVAILABLE_INTENT);
 				sendBroadcast(i);
 			}
 		} else if (R.id.suveylangbutton == v.getId()) {
@@ -152,7 +164,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	 */
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		database.savePreference(ConstantUtil.USER_SAVE_SETTING_KEY, ""
-				+ isChecked);
+		if (buttonView == saveUserCheckbox) {
+			database.savePreference(ConstantUtil.USER_SAVE_SETTING_KEY, ""
+					+ isChecked);
+		} else {
+			database.savePreference(ConstantUtil.LOCATION_BEACON_SETTING_KEY,
+					"" + isChecked);
+		}
 	}
 }

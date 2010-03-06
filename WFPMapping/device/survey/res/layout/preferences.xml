@@ -39,5 +39,14 @@
 				android:layout_height="wrap_content" android:id="@+id/surveylangvalue"
 				android:layout_below="@id/uploadoptionlabel" />
 		</RelativeLayout>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+			<CheckBox android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/beaconcheckbox"
+				android:layout_alignParentRight="true" />
+			<TextView android:textSize="20dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/beaconlabel"
+				android:text="@string/beaconlabel" android:layout_toLeftOf="@id/beaconcheckbox" />
+		</RelativeLayout>
 	</LinearLayout>
 </ScrollView>

@@ -103,6 +103,7 @@ public class ConstantUtil {
 	public static final String PLOT_MODE_SETTING_KEY = "plot.default.mode";
 	public static final String PLOT_INTERVAL_SETTING_KEY = "plot.interval";
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
+	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
 	
 	
 	/**
