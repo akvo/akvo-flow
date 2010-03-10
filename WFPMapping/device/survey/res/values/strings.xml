@@ -76,6 +76,8 @@
 	<string name="uploadoptiondialogtitle">Upload via cellular</string>
 	<string name="surveylanglabel">Survey Language</string>
 	<string name="beaconlabel">Send Location Beacons</string>
+	<string name="precachehelplabel">Pre-cache help media</string>
+	<string name="precachehelpdialogtitle">Pre-cache help media</string>
 	<string name="scanbarcode">Scan Barcode</string>
 	<string name="barcodeerror">Scanner not installed. Please install the Barcode Scanner app from the Android Market.</string>
 </resources>

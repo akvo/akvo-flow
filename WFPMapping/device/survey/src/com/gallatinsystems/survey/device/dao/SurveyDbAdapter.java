@@ -91,7 +91,8 @@ public class SurveyDbAdapter {
 			"insert into preferences values('plot.default.mode','manual')",
 			"insert into preferences values('plot.interval','60000')",
 			"insert into preferences values('user.lastuser.id','')",
-			"insert into preferences values('location.sendbeacon','true')"};
+			"insert into preferences values('location.sendbeacon','true')", 
+			"insert into preferences values('survey.precachehelp','0')"};
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -105,7 +106,7 @@ public class SurveyDbAdapter {
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 
-	private static final int DATABASE_VERSION = 21;
+	private static final int DATABASE_VERSION = 22;
 
 	private final Context context;
 

@@ -7,6 +7,11 @@ package com.gallatinsystems.survey.device.util;
  * 
  */
 public class ConstantUtil {
+	
+	/**
+	 * filesystem constants
+	 */
+	public static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
 
 	/**
 	 * status related constants
@@ -32,6 +37,11 @@ public class ConstantUtil {
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
 
+	/**
+	 * help media types
+	 */
+	public static final String VIDEO_MEDIA_TYPE = "video";
+	public static final String IMAGE_MEDIA_TYPE = "image";
 	/**
 	 * rendering options
 	 */
@@ -104,6 +114,7 @@ public class ConstantUtil {
 	public static final String PLOT_INTERVAL_SETTING_KEY = "plot.interval";
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
 	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
+	public static final String PRECACHE_HELP_SETTING_KEY = "survey.precachehelp";
 	
 	
 	/**
@@ -112,6 +123,10 @@ public class ConstantUtil {
 	public static final int UPLOAD_DATA_ALLWAYS_IDX = 0;
 	public static final int UPLOAD_DATA_ONLY_IDX = 1;
 	public static final int UPLOAD_NEVER_IDX = 2;
+	
+	public static final int PRECACHE_HELP_ALLWAYS_IDX = 0;
+	public static final int PRECACHE_HELP_WIFI_ONLY_IDX = 1;
+	public static final int PRECACHE_HELP_NEVER_IDX = 2;
 	
 	
 	/**

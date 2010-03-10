@@ -9,4 +9,9 @@
 		<item>English</item>
 		<item>French</item>		
 	</string-array>
+	<string-array name="precachehelpoptions">
+		<item>Always</item>
+		<item>WiFi Only</item>
+		<item>Never</item>
+	</string-array>
 </resources>

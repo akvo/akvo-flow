@@ -1,12 +1,17 @@
 package com.gallatinsystems.survey.device.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpException;
 
@@ -19,10 +24,14 @@ import android.util.Log;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
+import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
 
 /**
  * this activity will check for new surveys on the device and install as needed
@@ -43,10 +52,11 @@ public class SurveyDownloadService extends Service {
 
 	private SurveyDbAdapter databaseAdaptor;
 
-	private static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
 	private static final String SD_LOC = "scdard";
 
 	private Thread thread;
+
+	private ThreadPoolExecutor downloadExecutor;
 
 	private static Semaphore lock = new Semaphore(1);
 
@@ -72,6 +82,8 @@ public class SurveyDownloadService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		downloadExecutor = new ThreadPoolExecutor(1, 3, 5000,
+				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 
 	/**
@@ -85,11 +97,16 @@ public class SurveyDownloadService extends Service {
 				ArrayList<Survey> surveys = checkForSurveys();
 				if (surveys != null && surveys.size() > 0) {
 					// create directory if not there
-					findOrCreateDataDir();
+					FileUtil.findOrCreateDir(ConstantUtil.DATA_DIR);
 					// if there are surveys for this device, see if we need them
 					databaseAdaptor = new SurveyDbAdapter(this);
 					databaseAdaptor.open();
 					surveys = databaseAdaptor.checkSurveyVersions(surveys);
+
+					int precacheOption = Integer
+							.parseInt(databaseAdaptor
+									.findPreference(ConstantUtil.PRECACHE_HELP_SETTING_KEY));
+
 					int updateCount = 0;
 					if (surveys != null && surveys.size() > 0) {
 						for (int i = 0; i < surveys.size(); i++) {
@@ -97,6 +114,7 @@ public class SurveyDownloadService extends Service {
 							try {
 								if (downloadSurvey(survey)) {
 									databaseAdaptor.saveSurvey(survey);
+									downloadHelp(survey, precacheOption);
 									updateCount++;
 								}
 							} catch (Exception e) {
@@ -105,7 +123,7 @@ public class SurveyDownloadService extends Service {
 						}
 						if (updateCount > 0) {
 							fireNotification(updateCount);
-						}						
+						}
 					}
 					databaseAdaptor.close();
 				}
@@ -114,6 +132,17 @@ public class SurveyDownloadService extends Service {
 			} finally {
 				lock.release();
 			}
+		}
+		try {
+			downloadExecutor.shutdown();
+			// wait up to 30 minutes to download the media
+			downloadExecutor.awaitTermination(1800, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			Log
+					.e(
+							TAG,
+							"Error while waiting for download executor to terminate",
+							e);
 		}
 		stopSelf();
 	}
@@ -134,7 +163,7 @@ public class SurveyDownloadService extends Service {
 			survey.setName("Survey " + survey.getId());
 			survey.setLocation(SD_LOC);
 			survey.setVersion(survey.getVersion());
-			File file = new File(DATA_DIR, survey.getFileName());
+			File file = new File(ConstantUtil.DATA_DIR, survey.getFileName());
 			PrintStream writer = new PrintStream(new FileOutputStream(file));
 			writer.print(response);
 			writer.close();
@@ -145,6 +174,64 @@ public class SurveyDownloadService extends Service {
 			Log.e(TAG, "Could not download survey " + survey.getId(), e);
 		}
 		return success;
+	}
+
+	/**
+	 * checks to see if we should pre-cache help media files (based on the
+	 * property in the settings db) and, if we should, downloads the files
+	 * 
+	 * @param survey
+	 */
+	private void downloadHelp(Survey survey, int precacheOption) {
+		// first, see if we should even bother trying to download
+		if (canDownload(precacheOption)) {
+			try {
+				SaxSurveyParser parser = new SaxSurveyParser();
+				Survey hydratedSurvey = parser.parse(new FileInputStream(
+						ConstantUtil.DATA_DIR + survey.getFileName()));
+				if (hydratedSurvey != null) {
+					if (hydratedSurvey.getQuestionGroups() != null) {
+						for (int i = 0; i < hydratedSurvey.getQuestionGroups()
+								.size(); i++) {
+							ArrayList<Question> questions = hydratedSurvey
+									.getQuestionGroups().get(i).getQuestions();
+							if (questions != null) {
+								for (int j = 0; j < questions.size(); j++) {
+									if (questions.get(j).getVideo() != null) {
+										final String remoteFile = questions
+												.get(j).getVideo();
+										final String localFile = FileUtil
+												.convertRemoteToLocalFile(
+														remoteFile, survey
+																.getId());
+										downloadExecutor
+												.execute(new Runnable() {
+													@Override
+													public void run() {
+														try {
+															HttpUtil
+																	.httpDownload(
+																			remoteFile,
+																			localFile);
+														} catch (Exception e) {
+															Log
+																	.e(
+																			TAG,
+																			"Could not download help media file",
+																			e);
+														}
+													}
+												});
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (FileNotFoundException e) {
+				Log.e(TAG, "Could not parse survey survey file", e);
+			}
+		}
 	}
 
 	/**
@@ -221,12 +308,20 @@ public class SurveyDownloadService extends Service {
 	}
 
 	/**
-	 * creates the data directory if it does not exist
+	 * this method checks if the service can precache media files based on the
+	 * user preference and the type of network connection currently held
+	 * 
+	 * @param type
+	 * @return
 	 */
-	private void findOrCreateDataDir() {
-		File dir = new File(DATA_DIR);
-		if (!dir.exists()) {
-			dir.mkdirs();
+	private boolean canDownload(int precacheOptionIndex) {
+		boolean ok = false;
+		if (precacheOptionIndex > -1
+				&& ConstantUtil.PRECACHE_HELP_WIFI_ONLY_IDX == precacheOptionIndex) {
+			ok = StatusUtil.hasDataConnection(this, true);
+		} else {
+			ok = StatusUtil.hasDataConnection(this, false);
 		}
+		return ok;
 	}
 }

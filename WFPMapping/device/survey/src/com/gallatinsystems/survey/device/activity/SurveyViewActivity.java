@@ -24,6 +24,7 @@ import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
 import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
@@ -232,7 +233,13 @@ public class SurveyViewActivity extends TabActivity implements
 			Uri uri = null;
 			String src = event.getSource().getQuestion().getVideo().trim();
 			if (src.toLowerCase().startsWith(HTTP_PREFIX)) {
-				uri = Uri.parse(src);
+				//first see if we have a precached copy of the file
+				String localFile = FileUtil.convertRemoteToLocalFile(src, surveyId);
+				if(FileUtil.doesFileExist(localFile)){
+					uri = Uri.parse(VIDEO_PREFIX + localFile);	
+				}else{
+					uri = Uri.parse(src);
+				}
 			} else {
 				// if the source doesn't start with http, assume it's
 				// referencing device storage

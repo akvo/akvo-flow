@@ -35,9 +35,11 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private CheckBox beaconCheckbox;
 	private TextView uploadOptionTextView;
 	private TextView languageTextView;
+	private TextView precacheHelpTextView;
 	private SurveyDbAdapter database;
 	private String[] languageArray;
 	private String[] uploadArray;
+	private String[] precacheHelpArray;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,10 +50,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 
 		uploadOptionTextView = (TextView) findViewById(R.id.uploadoptionvalue);
 		languageTextView = (TextView) findViewById(R.id.surveylangvalue);
+		precacheHelpTextView = (TextView) findViewById(R.id.precachehelpvalue);
 
 		Resources res = getResources();
 		languageArray = res.getStringArray(R.array.languages);
 		uploadArray = res.getStringArray(R.array.celluploadoptions);
+		precacheHelpArray = res.getStringArray(R.array.precachehelpoptions);
 	}
 
 	/**
@@ -81,6 +85,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		if (val != null) {
 			languageTextView.setText(languageArray[Integer.parseInt(val)]);
 		}
+		val = settings.get(ConstantUtil.PRECACHE_HELP_SETTING_KEY);
+		if (val != null) {
+			precacheHelpTextView.setText(precacheHelpArray[Integer
+					.parseInt(val)]);
+		}
+
 	}
 
 	/**
@@ -98,7 +108,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.suveylangbutton))
 				.setOnClickListener(this);
-
+		((ImageButton) findViewById(R.id.precachehelpbutton))
+				.setOnClickListener(this);
 	}
 
 	public void onPause() {
@@ -128,6 +139,11 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			showPreferenceDialog(R.string.surveylanglabel, R.array.languages,
 					ConstantUtil.SURVEY_LANG_SETTING_KEY, languageArray,
 					languageTextView);
+		} else if (R.id.precachehelpbutton == v.getId()) {
+			showPreferenceDialog(R.string.precachehelpdialogtitle,
+					R.array.precachehelpoptions,
+					ConstantUtil.PRECACHE_HELP_SETTING_KEY, precacheHelpArray,
+					precacheHelpTextView);
 		}
 	}
 
