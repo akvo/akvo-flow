@@ -28,7 +28,7 @@ import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
-import com.gallatinsystems.survey.device.view.HomeMenuViewAdapter;
+import com.gallatinsystems.survey.device.view.adapter.HomeMenuViewAdapter;
 
 /**
  * Activity to render the survey home screen. It will list all available
