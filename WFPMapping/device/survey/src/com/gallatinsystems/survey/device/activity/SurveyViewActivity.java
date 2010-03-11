@@ -233,11 +233,12 @@ public class SurveyViewActivity extends TabActivity implements
 			Uri uri = null;
 			String src = event.getSource().getQuestion().getVideo().trim();
 			if (src.toLowerCase().startsWith(HTTP_PREFIX)) {
-				//first see if we have a precached copy of the file
-				String localFile = FileUtil.convertRemoteToLocalFile(src, surveyId);
-				if(FileUtil.doesFileExist(localFile)){
-					uri = Uri.parse(VIDEO_PREFIX + localFile);	
-				}else{
+				// first see if we have a precached copy of the file
+				String localFile = FileUtil.convertRemoteToLocalFile(src,
+						surveyId);
+				if (FileUtil.doesFileExist(localFile)) {
+					uri = Uri.parse(VIDEO_PREFIX + localFile);
+				} else {
 					uri = Uri.parse(src);
 				}
 			} else {
@@ -246,6 +247,15 @@ public class SurveyViewActivity extends TabActivity implements
 				uri = Uri.parse(VIDEO_PREFIX + src);
 			}
 			intent.setDataAndType(uri, VIDEO_TYPE);
+			startActivity(intent);
+		} else if (QuestionInteractionEvent.PHOTO_TIP_VIEW.equals(event
+				.getEventType())) {
+			Intent intent = new Intent(this, ImageBrowserActivity.class);
+
+			intent.putExtra(ConstantUtil.IMAGE_URL_LIST_KEY, event.getSource()
+					.getQuestion().getImages());
+			intent.putExtra(ConstantUtil.IMAGE_CAPTION_LIST_KEY, event
+					.getSource().getQuestion().getImageCaptions());
 			startActivity(intent);
 		} else if (QuestionInteractionEvent.TAKE_VIDEO_EVENT.equals(event
 				.getEventType())) {

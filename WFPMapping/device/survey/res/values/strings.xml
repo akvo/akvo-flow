@@ -80,4 +80,5 @@
 	<string name="precachehelpdialogtitle">Pre-cache help media</string>
 	<string name="scanbarcode">Scan Barcode</string>
 	<string name="barcodeerror">Scanner not installed. Please install the Barcode Scanner app from the Android Market.</string>
+	<string name="imagehelpviewmessage">Click a thumbnail to view larger image. Press back key to return to survey.</string>
 </resources>

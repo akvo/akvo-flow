@@ -11,8 +11,11 @@
 				<option value="u">Urban</option>
 			</options>			
 			<video src="http://www.gallatinsystems.com/WFPDevice/video/demoVid.mp4"/>
+			<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1085_thumb.jpg" caption="Handpump"/>		            
+		<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/EmptyingJugThumb.jpg" caption="Waterpoint example"/>
+		<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1159_thumb.jpg" caption="Cistern"/>
 		</question>
-		<question id="q2" order="2" mandatory="true" type="free">
+		<question id="q2" order="2" mandatory="true" type="free">		
 			<text>Name of Community?</text>
 			<validationRule validationType="name" maxLength="50"/>
 		</question>
@@ -41,6 +44,7 @@
 			</options>
 		</question>
 		<question id="q7" order="7" mandatory="false" type="option">
+		<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1159_thumb.jpg" caption="Help message"/>
 			<text>Collection Point?</text>
 			<options allowOther="false">
 				<option value="ph">Public Handpump</option>

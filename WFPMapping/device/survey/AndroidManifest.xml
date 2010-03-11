@@ -19,6 +19,7 @@
 		<activity android:name=".activity.PlotEditActivity" />
 		<activity android:name=".activity.RegionPlotActivity" />
 		<activity android:name=".activity.PreferencesActivity" />
+		<activity android:name=".activity.ImageBrowserActivity" />
 
 		<service android:name=".service.DataSyncService" />
 		<service android:name=".service.SurveyDownloadService" />

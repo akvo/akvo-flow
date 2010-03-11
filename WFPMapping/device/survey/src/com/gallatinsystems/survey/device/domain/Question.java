@@ -24,9 +24,23 @@ public class Question {
 	private ValidationRule validationRule;
 	private String renderType;
 	private String video;
-	private String image;
+	private ArrayList<String> images;
 
+	private ArrayList<String> imageCaptions;
 
+	private boolean mandatory;
+	private String type;
+	private ArrayList<Option> options;
+	private boolean allowOther;
+	private ArrayList<Dependency> dependencies;
+
+	public ArrayList<String> getImages() {
+		return images;
+	}
+
+	public ArrayList<String> getImageCaptions() {
+		return imageCaptions;
+	}
 
 	public String getRenderType() {
 		return renderType;
@@ -43,12 +57,6 @@ public class Question {
 	public void setOrder(int order) {
 		this.order = order;
 	}
-
-	private boolean mandatory;
-	private String type;
-	private ArrayList<Option> options;
-	private boolean allowOther;
-	private ArrayList<Dependency> dependencies;
 
 	public ArrayList<Dependency> getDependencies() {
 		return dependencies;
@@ -106,6 +114,20 @@ public class Question {
 		this.allowOther = allowOther;
 	}
 
+	public void addImage(String img) {
+		if (images == null) {
+			images = new ArrayList<String>();
+		}
+		images.add(img);
+	}
+
+	public void addImageCaption(String cap) {
+		if (imageCaptions == null) {
+			imageCaptions = new ArrayList<String>();
+		}
+		imageCaptions.add(cap);
+	}
+
 	public void addDependency(Dependency dep) {
 		if (dependencies == null) {
 			dependencies = new ArrayList<Dependency>();
@@ -137,14 +159,6 @@ public class Question {
 		this.video = video;
 	}
 
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
 	/**
 	 * counts the number of non-null help tips
 	 * 
@@ -158,7 +172,7 @@ public class Question {
 		if (video != null) {
 			count++;
 		}
-		if (image != null) {
+		if (images != null && images.size() > 0) {
 			count++;
 		}
 		return count;

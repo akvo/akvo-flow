@@ -103,6 +103,8 @@ public class ConstantUtil {
 	public static final String EMAIL_KEY = "email";
 	public static final String INTERVAL_KEY = "interval";	
 	public static final String RESPONDENT_ID_KEY = "survey_respondent_id";
+	public static final String IMAGE_URL_LIST_KEY ="imageurls";
+	public static final String IMAGE_CAPTION_LIST_KEY ="imagecaps";
 	
 	/**
 	 * settings keys

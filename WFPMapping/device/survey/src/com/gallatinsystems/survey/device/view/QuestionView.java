@@ -110,7 +110,7 @@ public class QuestionView extends TableLayout implements
 		final Resources resources = getResources();
 		int itemIndex = 0;
 
-		if (question.getImage() != null) {
+		if (question.getImages() != null && question.getImages().size() > 0) {
 			items[itemIndex++] = resources.getString(R.string.photohelpoption);
 		}
 		if (question.getVideo() != null) {
@@ -157,7 +157,7 @@ public class QuestionView extends TableLayout implements
 					});
 			builder.show();
 		} else {
-			// TODO: display image help
+			notifyQuestionListeners(QuestionInteractionEvent.PHOTO_TIP_VIEW);
 		}
 	}
 

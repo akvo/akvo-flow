@@ -16,6 +16,7 @@ public class QuestionInteractionEvent {
     public static final String GEO_CHECK_EVENT = "GEO";
     public static final String QUESTION_ANSWER_EVENT = "ANS";
     public static final String VIDEO_TIP_VIEW = "VIDTIP";
+    public static final String PHOTO_TIP_VIEW = "PHOTOTIP";
     public static final String SCAN_BARCODE_EVENT= "SCAN";
 
     private String eventType;

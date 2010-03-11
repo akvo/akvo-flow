@@ -11,6 +11,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 /**
  * Simple utility to make http calls and read the responses
  * 
@@ -44,6 +47,32 @@ public class HttpUtil {
 	}
 
 	/**
+	 * fetches an image from a remote url and returns it to the caller as a
+	 * bitmap
+	 * 
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
+	public static Bitmap getRemoteImage(String url) throws Exception {
+		BufferedInputStream reader = null;
+		Bitmap bitMap = null;
+		try {
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpResponse response = client.execute(new HttpGet(url));
+			reader = new BufferedInputStream(response.getEntity().getContent());
+
+			bitMap = BitmapFactory.decodeStream(reader);
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+		return bitMap;
+
+	}
+
+	/**
 	 * downloads the resource at url and saves the contents to file
 	 * 
 	 * @param url
@@ -53,19 +82,27 @@ public class HttpUtil {
 	public static void httpDownload(String url, String file) throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(new HttpGet(url));
-		BufferedOutputStream writer = new BufferedOutputStream(
-				new FileOutputStream(file));
-		BufferedInputStream reader = new BufferedInputStream(response
-				.getEntity().getContent());
-		byte[] buffer = new byte[BUF_SIZE];
-		int bytesRead = reader.read(buffer);
+		BufferedOutputStream writer = null;
+		BufferedInputStream reader = null;
+		try {
+			writer = new BufferedOutputStream(new FileOutputStream(file));
+			reader = new BufferedInputStream(response.getEntity().getContent());
 
-		while (bytesRead > 0) {
-			writer.write(buffer, 0, bytesRead);
-			bytesRead = reader.read(buffer);
+			byte[] buffer = new byte[BUF_SIZE];
+			int bytesRead = reader.read(buffer);
+
+			while (bytesRead > 0) {
+				writer.write(buffer, 0, bytesRead);
+				bytesRead = reader.read(buffer);
+			}
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+			if (reader != null) {
+				reader.close();
+			}
 		}
-		writer.close();
-		reader.close();
 	}
 
 	/**
@@ -77,16 +114,22 @@ public class HttpUtil {
 	 */
 	private static String parseResponse(HttpResponse response) throws Exception {
 		String result = null;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				response.getEntity().getContent()));
-		StringBuilder sb = new StringBuilder();
-		String line = null;
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(response
+					.getEntity().getContent()));
+			StringBuilder sb = new StringBuilder();
+			String line = null;
 
-		while ((line = reader.readLine()) != null) {
-			sb.append(line + "\n");
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			result = sb.toString();
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
 		}
-		result = sb.toString();
-		reader.close();
 		return result;
 	}
 }
