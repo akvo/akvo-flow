@@ -27,10 +27,13 @@ public class HelpImageBrowserAdapter extends BaseAdapter {
 	private ArrayList<String> imageUrls;
 	private HashMap<Integer, Bitmap> bitmaps;
 	private Context context;
+	private String cacheDir;
 
-	public HelpImageBrowserAdapter(Context ctx, ArrayList<String> imageUrls) {
+	public HelpImageBrowserAdapter(Context ctx, ArrayList<String> imageUrls,
+			String cacheDir) {
 		context = ctx;
 		this.imageUrls = imageUrls;
+		this.cacheDir = cacheDir;
 		bitmaps = new HashMap<Integer, Bitmap>();
 	}
 
@@ -61,10 +64,9 @@ public class HelpImageBrowserAdapter extends BaseAdapter {
 		Bitmap bitmap = bitmaps.get(position);
 		if (bitmap == null) {
 			try {
-				// TODO: check local cache first
-				bitmap = HttpUtil.getRemoteImage(imageUrls.get(position));
+				bitmap = HttpUtil.getRemoteImage(imageUrls.get(position),
+						cacheDir);
 				bitmaps.put(position, bitmap);
-
 			} catch (Exception e) {
 				Log.e(TAG, "Could not load image into bitmap", e);
 			}

@@ -224,7 +224,8 @@ public class SurveyViewActivity extends TabActivity implements
 		} else if (QuestionInteractionEvent.PHOTO_TIP_VIEW.equals(event
 				.getEventType())) {
 			Intent intent = new Intent(this, ImageBrowserActivity.class);
-
+			
+			intent.putExtra(ConstantUtil.SURVEY_ID_KEY, surveyId);
 			intent.putExtra(ConstantUtil.IMAGE_URL_LIST_KEY, event.getSource()
 					.getQuestion().getImages());
 			intent.putExtra(ConstantUtil.IMAGE_CAPTION_LIST_KEY, event

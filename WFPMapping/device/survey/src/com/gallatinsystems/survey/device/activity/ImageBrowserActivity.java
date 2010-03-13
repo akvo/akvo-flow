@@ -25,7 +25,6 @@ import com.gallatinsystems.survey.device.view.adapter.HelpImageBrowserAdapter;
  * same size (one containing image urls, the other containing their
  * captions).</b>
  * 
- * TODO: make sure we don't re-download pictures when we don't need to
  * 
  * @author Christopher Fagiani
  * 
@@ -39,6 +38,7 @@ public class ImageBrowserActivity extends Activity implements
 	private HelpImageBrowserAdapter imageAdapter;
 	private ArrayList<String> imageUrls;
 	private ArrayList<String> captions;
+	private String surveyId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +47,13 @@ public class ImageBrowserActivity extends Activity implements
 		gallery = (Gallery) findViewById(R.id.imagebrowsergallery);
 		captionTextView = (TextView) findViewById(R.id.captiontextview);
 		mainImageView = (ImageView) findViewById(R.id.mainimageview);
-
+		
 		Bundle extras = getIntent().getExtras();
 		imageUrls = extras.getStringArrayList(ConstantUtil.IMAGE_URL_LIST_KEY);
 		captions = extras
 				.getStringArrayList(ConstantUtil.IMAGE_CAPTION_LIST_KEY);
-
-		imageAdapter = new HelpImageBrowserAdapter(this, imageUrls);
+		surveyId = extras.getString(ConstantUtil.SURVEY_ID_KEY);
+		imageAdapter = new HelpImageBrowserAdapter(this, imageUrls, ConstantUtil.DATA_DIR+surveyId);
 		if (imageUrls.size() == 1) {
 			gallery.setVisibility(View.GONE);
 		} else {

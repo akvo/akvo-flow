@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.device.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 
@@ -54,15 +55,45 @@ public class HttpUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Bitmap getRemoteImage(String url) throws Exception {
+	public static Bitmap getRemoteImage(String url, String cacheDir)
+			throws Exception {
 		BufferedInputStream reader = null;
 		Bitmap bitMap = null;
+		String fileName = url;
+		// extract just the filname portion of the url
+		if (fileName.contains("/")
+				&& fileName.lastIndexOf("/") < fileName.length() + 1) {
+			fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+		}
+		// now check the cache
+		if (cacheDir != null) {
+			File f = new File(cacheDir + "/" + fileName);
+			if (f.exists()) {
+				// if the file exists, return the local version
+				bitMap = BitmapFactory.decodeFile(f.getAbsolutePath());
+				return bitMap;
+			}
+		}
+		// if we get here, then we had a cache miss (or aren't using the cache)
 		try {
-			DefaultHttpClient client = new DefaultHttpClient();
-			HttpResponse response = client.execute(new HttpGet(url));
-			reader = new BufferedInputStream(response.getEntity().getContent());
+			if (cacheDir == null) {
+				// if we aren't using the cache, download directly into the
+				// bitmap
+				DefaultHttpClient client = new DefaultHttpClient();
+				HttpResponse response = client.execute(new HttpGet(url));
+				reader = new BufferedInputStream(response.getEntity()
+						.getContent());
+				bitMap = BitmapFactory.decodeStream(reader);
+			} else {
+				// if we are using the cache, download the file manually.
+				// we need to do this instead of loading the bitmap and calling
+				// compress since
+				// that may not preserve the original file type so subsequent
+				// call will encounter cache misses.
+				httpDownload(url, cacheDir + "/" + fileName);
+				bitMap = BitmapFactory.decodeFile(cacheDir + "/" + fileName);
+			}
 
-			bitMap = BitmapFactory.decodeStream(reader);
 		} finally {
 			if (reader != null) {
 				reader.close();
