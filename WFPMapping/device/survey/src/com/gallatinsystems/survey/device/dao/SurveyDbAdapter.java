@@ -55,6 +55,7 @@ public class SurveyDbAdapter {
 	public static final String VALUE_COL = "value";
 	public static final String DELETED_COL = "deleted_flag";
 	public static final String MEDIA_SENT_COL = "media_sent_flag";
+	public static final String HELP_DOWNLOADED_COL = "help_downloaded_flag";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -64,7 +65,7 @@ public class SurveyDbAdapter {
 	 * Database creation sql statement
 	 */
 	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key, "
-			+ "display_name text not null, version real, type text, location text, filename text, deleted_flag text);";
+			+ "display_name text not null, version real, type text, location text, filename text, help_downloaded_flag text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text);";
@@ -81,18 +82,18 @@ public class SurveyDbAdapter {
 	private static final String PREFERENCES_TABLE_CREATE = "create table preferences (key text primary key, value text);";
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
-			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey','N')",
-			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey','N')",
-			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey','N')",
-			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey','N')",
+			"insert into survey values(1,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey','N','N')",
+			"insert into survey values(2,'Houshold Survey', 1.0,'Survey','res','testsurvey','N','N')",
+			"insert into survey values(3,'Public Institution Survey', 1.0,'Survey','res','testsurvey','N','N')",
+			"insert into survey values(4,'Mapping', 1.0,'Mapping','res','mappingsurvey','N','N')",
 			"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
 			"insert into preferences values('plot.default.mode','manual')",
 			"insert into preferences values('plot.interval','60000')",
 			"insert into preferences values('user.lastuser.id','')",
-			"insert into preferences values('location.sendbeacon','true')", 
-			"insert into preferences values('survey.precachehelp','0')"};
+			"insert into preferences values('location.sendbeacon','true')",
+			"insert into preferences values('survey.precachehelp','0')" };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -106,7 +107,7 @@ public class SurveyDbAdapter {
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 
-	private static final int DATABASE_VERSION = 22;
+	private static final int DATABASE_VERSION = 35;
 
 	private final Context context;
 
@@ -196,6 +197,7 @@ public class SurveyDbAdapter {
 	public long createSurvey(String name) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(DISP_NAME_COL, name);
+		initialValues.put(HELP_DOWNLOADED_COL, "N");
 		return database.insert(SURVEY_TABLE, null, initialValues);
 	}
 
@@ -585,7 +587,22 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * updates a survey in the db
+	 * updates the survey table by recording the help download flag
+	 * 
+	 * @param idList
+	 */
+	public void markSurveyHelpDownloaded(String surveyId, boolean isDownloaded) {
+		ContentValues updatedValues = new ContentValues();
+		updatedValues.put(HELP_DOWNLOADED_COL, isDownloaded ? "Y" : "N");
+
+		if (database.update(SURVEY_TABLE, updatedValues, PK_ID_COL + " = ?",
+				new String[] { surveyId }) < 1) {
+			Log.e(TAG, "Could not update record for Survey " + surveyId);
+		}
+	}
+
+	/**
+	 * updates a survey in the db and resets the deleted flag to "N"
 	 * 
 	 * @param survey
 	 * @return
@@ -601,6 +618,8 @@ public class SurveyDbAdapter {
 		updatedValues.put(LOCATION_COL, survey.getLocation());
 		updatedValues.put(FILENAME_COL, survey.getFileName());
 		updatedValues.put(DISP_NAME_COL, survey.getName());
+		updatedValues.put(HELP_DOWNLOADED_COL, survey.isHelpDownloaded() ? "Y"
+				: "N");
 		updatedValues.put(DELETED_COL, ConstantUtil.NOT_DELETED);
 
 		if (cursor != null && cursor.getCount() > 0) {
@@ -651,7 +670,7 @@ public class SurveyDbAdapter {
 	public ArrayList<Survey> listSurveys() {
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		Cursor cursor = database.query(SURVEY_TABLE, new String[] { PK_ID_COL,
-				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL },
+				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL, HELP_DOWNLOADED_COL },
 				DELETED_COL + " <> ?",
 				new String[] { ConstantUtil.IS_DELETED }, null, null, null);
 		if (cursor != null) {
@@ -669,6 +688,8 @@ public class SurveyDbAdapter {
 							.getColumnIndexOrThrow(FILENAME_COL)));
 					survey.setType(cursor.getString(cursor
 							.getColumnIndexOrThrow(TYPE_COL)));
+					survey.setHelpDownloaded(cursor.getString(cursor
+							.getColumnIndexOrThrow(HELP_DOWNLOADED_COL)));
 					surveys.add(survey);
 				} while (cursor.moveToNext());
 			}

@@ -127,23 +127,20 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			showPreferenceDialog(R.string.uploadoptiondialogtitle,
 					R.array.celluploadoptions,
 					ConstantUtil.CELL_UPLOAD_SETTING_KEY, uploadArray,
-					uploadOptionTextView);
-			if (uploadArray[ConstantUtil.UPLOAD_DATA_ALLWAYS_IDX]
-					.equals(uploadOptionTextView.getText())) {
-				// fire an intent to make sure we don't have any data pending
-				// upload
-				Intent i = new Intent(ConstantUtil.DATA_AVAILABLE_INTENT);
-				sendBroadcast(i);
-			}
+					uploadOptionTextView,
+					uploadArray[ConstantUtil.UPLOAD_DATA_ALLWAYS_IDX],
+					ConstantUtil.DATA_AVAILABLE_INTENT);
 		} else if (R.id.suveylangbutton == v.getId()) {
 			showPreferenceDialog(R.string.surveylanglabel, R.array.languages,
 					ConstantUtil.SURVEY_LANG_SETTING_KEY, languageArray,
-					languageTextView);
+					languageTextView, null, null);
 		} else if (R.id.precachehelpbutton == v.getId()) {
 			showPreferenceDialog(R.string.precachehelpdialogtitle,
 					R.array.precachehelpoptions,
 					ConstantUtil.PRECACHE_HELP_SETTING_KEY, precacheHelpArray,
-					precacheHelpTextView);
+					precacheHelpTextView,
+					precacheHelpArray[ConstantUtil.PRECACHE_HELP_ALLWAYS_IDX],
+					ConstantUtil.PRECACHE_INTENT);
 		}
 	}
 
@@ -161,10 +158,16 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	 *            - string array containing values
 	 * @param currentValView
 	 *            - view to update with value selected
+	 * @param actionValue
+	 *            - if the selected value matches this, then fire an intent with
+	 *            the value of actionIntent
+	 * @param actionIntent
+	 *            - intent to fire if actionValue matches the selection
 	 */
 	private void showPreferenceDialog(int titleId, int listId,
 			final String settingKey, final String[] valueArray,
-			final TextView currentValView) {
+			final TextView currentValView, final String actionValue,
+			final String actionIntent) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(titleId).setItems(listId,
 				new DialogInterface.OnClickListener() {
@@ -172,6 +175,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					public void onClick(DialogInterface dialog, int which) {
 						database.savePreference(settingKey, which + "");
 						currentValView.setText(valueArray[which]);
+						if (actionValue != null && actionIntent != null) {
+							if (valueArray[which].equals(actionValue)) {								
+								sendBroadcast(new Intent(actionIntent));
+							}
+						}
+						dialog.dismiss();
 					}
 				});
 		builder.show();

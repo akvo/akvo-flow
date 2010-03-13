@@ -1,12 +1,12 @@
 package com.gallatinsystems.survey.device.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.StringTokenizer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -23,6 +23,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.dao.SurveyDao;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.Survey;
@@ -31,7 +32,6 @@ import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
-import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
 
 /**
  * this activity will check for new surveys on the device and install as needed
@@ -95,18 +95,18 @@ public class SurveyDownloadService extends Service {
 			try {
 				lock.acquire();
 				ArrayList<Survey> surveys = checkForSurveys();
+				databaseAdaptor = new SurveyDbAdapter(this);
+				databaseAdaptor.open();
+				int precacheOption = Integer
+						.parseInt(databaseAdaptor
+								.findPreference(ConstantUtil.PRECACHE_HELP_SETTING_KEY));
+
 				if (surveys != null && surveys.size() > 0) {
 					// create directory if not there
 					FileUtil.findOrCreateDir(ConstantUtil.DATA_DIR);
 					// if there are surveys for this device, see if we need them
-					databaseAdaptor = new SurveyDbAdapter(this);
-					databaseAdaptor.open();
+
 					surveys = databaseAdaptor.checkSurveyVersions(surveys);
-
-					int precacheOption = Integer
-							.parseInt(databaseAdaptor
-									.findPreference(ConstantUtil.PRECACHE_HELP_SETTING_KEY));
-
 					int updateCount = 0;
 					if (surveys != null && surveys.size() > 0) {
 						for (int i = 0; i < surveys.size(); i++) {
@@ -125,8 +125,22 @@ public class SurveyDownloadService extends Service {
 							fireNotification(updateCount);
 						}
 					}
-					databaseAdaptor.close();
+
 				}
+
+				// now check if any previously downloaded surveys still need
+				// don't have their help media pre-cached
+				if (canDownload(precacheOption)) {
+					surveys = databaseAdaptor.listSurveys();
+					if (surveys != null) {
+						for (int i = 0; i < surveys.size(); i++) {
+							if (!surveys.get(i).isHelpDownloaded()) {
+								downloadHelp(surveys.get(i), precacheOption);
+							}
+						}
+					}
+				}
+				databaseAdaptor.close();
 			} catch (Exception e) {
 				Log.e(TAG, "Could not update surveys", e);
 			} finally {
@@ -186,10 +200,13 @@ public class SurveyDownloadService extends Service {
 		// first, see if we should even bother trying to download
 		if (canDownload(precacheOption)) {
 			try {
-				SaxSurveyParser parser = new SaxSurveyParser();
-				Survey hydratedSurvey = parser.parse(new FileInputStream(
-						ConstantUtil.DATA_DIR + survey.getFileName()));
+				Survey hydratedSurvey = SurveyDao.loadSurvey(survey,
+						getResources());
 				if (hydratedSurvey != null) {
+					// collect files in a set just in case the same binary is
+					// used in multiple questions
+					// we only need to download once
+					HashSet<String> fileSet = new HashSet<String>();
 					if (hydratedSurvey.getQuestionGroups() != null) {
 						for (int i = 0; i < hydratedSurvey.getQuestionGroups()
 								.size(); i++) {
@@ -198,40 +215,54 @@ public class SurveyDownloadService extends Service {
 							if (questions != null) {
 								for (int j = 0; j < questions.size(); j++) {
 									if (questions.get(j).getVideo() != null) {
-										final String remoteFile = questions
-												.get(j).getVideo();
-										final String localFile = FileUtil
-												.convertRemoteToLocalFile(
-														remoteFile, survey
-																.getId());
-										downloadExecutor
-												.execute(new Runnable() {
-													@Override
-													public void run() {
-														try {
-															HttpUtil
-																	.httpDownload(
-																			remoteFile,
-																			localFile);
-														} catch (Exception e) {
-															Log
-																	.e(
-																			TAG,
-																			"Could not download help media file",
-																			e);
-														}
-													}
-												});
+										fileSet
+												.add(questions.get(j)
+														.getVideo());
+									}
+									ArrayList<String> images = questions.get(j)
+											.getImages();
+									if (images != null) {
+										for (int k = 0; k < images.size(); k++) {
+											fileSet.add(images.get(k));
+										}
 									}
 								}
 							}
 						}
 					}
+					for (String file : fileSet) {
+						downloadBinary(file, survey.getId());
+					}
+					databaseAdaptor.markSurveyHelpDownloaded(survey.getId(),
+							true);
 				}
 			} catch (FileNotFoundException e) {
 				Log.e(TAG, "Could not parse survey survey file", e);
 			}
 		}
+	}
+
+	/**
+	 * uses the thread pool executor to download the remote file passed in via a
+	 * background thread
+	 * 
+	 * @param remoteFile
+	 * @param surveyId
+	 */
+	private void downloadBinary(final String remoteFile, final String surveyId) {
+
+		final String localFile = FileUtil.convertRemoteToLocalFile(remoteFile,
+				surveyId);
+		downloadExecutor.execute(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					HttpUtil.httpDownload(remoteFile, localFile);
+				} catch (Exception e) {
+					Log.e(TAG, "Could not download help media file", e);
+				}
+			}
+		});
 	}
 
 	/**
@@ -260,7 +291,9 @@ public class SurveyDownloadService extends Service {
 						Survey temp = new Survey();
 						temp.setId(touple[1]);
 						temp.setVersion(Double.parseDouble(touple[2]));
+						temp.setType(ConstantUtil.FILE_SURVEY_LOCATION_TYPE);
 						surveys.add(temp);
+
 					}
 				}
 			}

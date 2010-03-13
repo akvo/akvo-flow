@@ -1,7 +1,7 @@
 package com.gallatinsystems.survey.device.activity;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -9,7 +9,6 @@ import android.app.TabActivity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +16,7 @@ import android.util.Log;
 import android.widget.TabHost;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.dao.SurveyDao;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
@@ -27,7 +27,6 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
-import com.gallatinsystems.survey.device.xml.SaxSurveyParser;
 
 /**
  * main activity for the Field Survey application. It will read in the current
@@ -55,11 +54,6 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final String VIDEO_TYPE = "video/*";
 	private static final String IMAGE_SUFFIX = ".jpg";
 	private static final String VIDEO_SUFFIX = ".mp4";
-	private static final String RESOURCE_LOCATION = "res";
-	private static final String RESOURCE_PACKAGE = "com.gallatinsystems.survey.device";
-	private static final String RAW_RESOURCE = "raw";
-
-	private static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
 	private ArrayList<SurveyTabContentFactory> tabContentFactories;
 	private QuestionView eventQuestionSource;
 	private SurveyDbAdapter databaseAdapter;
@@ -91,7 +85,13 @@ public class SurveyViewActivity extends TabActivity implements
 					.getString(ConstantUtil.SURVEY_ID_KEY) : "1";
 		}
 
-		Survey survey = loadSurvey(surveyId);
+		Survey survey = null;
+		try {
+			survey = SurveyDao.loadSurvey(databaseAdapter.findSurvey(surveyId),
+					getResources());
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, "Could not load survey xml file");
+		}
 
 		respondentId = savedInstanceState != null ? savedInstanceState
 				.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
@@ -114,33 +114,6 @@ public class SurveyViewActivity extends TabActivity implements
 				tabContentFactories.add(factory);
 			}
 		}
-	}
-
-	/**
-	 * looks up the survey in the database and, depending on the survey location
-	 * type, loads the xml from either a resource file inside the application
-	 * bundle or from the file system
-	 */
-	private Survey loadSurvey(String surveyId) {
-		Survey survey = databaseAdapter.findSurvey(surveyId);
-		if (survey != null) {
-			SaxSurveyParser parser = new SaxSurveyParser();
-			if (RESOURCE_LOCATION.equalsIgnoreCase(survey.getLocation())) {
-				// load from resource
-				Resources res = getResources();
-				survey = parser.parse(res.openRawResource(res.getIdentifier(
-						survey.getFileName(), RAW_RESOURCE, RESOURCE_PACKAGE)));
-			} else {
-				// load from file
-				try {
-					survey = parser.parse(new FileInputStream(DATA_DIR
-							+ survey.getFileName()));
-				} catch (Exception e) {
-					Log.e(TAG, "Could not load survey from file system", e);
-				}
-			}
-		}
-		return survey;
 	}
 
 	/**

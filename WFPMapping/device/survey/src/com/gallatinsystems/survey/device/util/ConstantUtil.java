@@ -13,6 +13,8 @@ public class ConstantUtil {
 	 */
 	public static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
 
+	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
+	
 	/**
 	 * status related constants
 	 */
@@ -135,6 +137,7 @@ public class ConstantUtil {
 	 * intents
 	 */
 	public static final String DATA_AVAILABLE_INTENT = "com.gallatinsystems.survey.device.DATA_SUBMITTED";
+	public static final String PRECACHE_INTENT = "com.gallatinsystems.survey.device.PRECACHE";
 	public static final String GPS_STATUS_INTENT = "com.eclipsim.gpsstatus.VIEW";
 	public static final String BARCODE_SCAN_INTENT = "com.google.zxing.client.android.SCAN";
 	

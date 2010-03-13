@@ -28,6 +28,7 @@
 
 		<receiver android:name=".broadcast.BroadcastDispatcher" >
 			<intent-filter>
+				<action android:name="com.gallatinsystems.survey.device.PRECACHE" />
 				<action android:name="com.gallatinsystems.survey.device.DATA_SUBMITTED" />
 				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
 			</intent-filter>

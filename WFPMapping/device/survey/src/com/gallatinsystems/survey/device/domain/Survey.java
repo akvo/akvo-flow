@@ -21,6 +21,28 @@ public class Survey {
 	private String type;
 	private String location;
 	private String fileName;
+	private boolean helpDownloaded;
+
+	public boolean isHelpDownloaded() {
+		return helpDownloaded;
+	}
+
+	public void setHelpDownloaded(boolean helpDownloaded) {
+		this.helpDownloaded = helpDownloaded;
+	}
+
+	public void setHelpDownloaded(String flagVal) {
+		if (flagVal != null) {
+			if (flagVal.trim().equalsIgnoreCase("Y")
+					|| flagVal.trim().equalsIgnoreCase("true")) {
+				helpDownloaded = true;
+			} else {
+				helpDownloaded = false;
+			}
+		} else {
+			helpDownloaded = false;
+		}
+	}
 
 	public String getType() {
 		return type;

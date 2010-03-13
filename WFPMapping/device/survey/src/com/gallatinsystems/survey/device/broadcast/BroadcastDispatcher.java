@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.gallatinsystems.survey.device.service.DataSyncService;
+import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -18,14 +19,17 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 public class BroadcastDispatcher extends BroadcastReceiver {
 	@SuppressWarnings("unused")
 	private static final String TAG = "BroadcastDispatcher";
-	
 
 	public void onReceive(Context context, Intent intent) {
-		// right now, we do the same thing for all event types so need to check
-		// the intent's action
-		// launch the service telling it to SEND data to the server
-		Intent i = new Intent(context, DataSyncService.class);
-		i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.SEND);
-		context.startService(i);
+
+		if (ConstantUtil.DATA_AVAILABLE_INTENT.equals(intent.getAction())) {
+			// launch the service telling it to SEND data to the server
+			Intent i = new Intent(context, DataSyncService.class);
+			i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.SEND);
+			context.startService(i);
+		} else if (ConstantUtil.PRECACHE_INTENT.equals(intent.getAction())) {
+			context.startService(new Intent(context,
+					SurveyDownloadService.class));
+		}
 	}
 }
