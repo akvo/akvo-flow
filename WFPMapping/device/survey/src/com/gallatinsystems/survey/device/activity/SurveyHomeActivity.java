@@ -13,6 +13,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -55,7 +56,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.home);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.home);		
 
 		menuViewAdapter = new HomeMenuViewAdapter(this);
 		userField = (TextView) findViewById(R.id.currentUserField);

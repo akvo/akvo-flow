@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Window;
 import android.widget.TabHost;
 
 import com.gallatinsystems.survey.device.R;
@@ -65,6 +66,7 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
 

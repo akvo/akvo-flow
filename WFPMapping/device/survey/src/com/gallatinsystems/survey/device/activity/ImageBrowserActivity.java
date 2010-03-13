@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Gallery;
 import android.widget.ImageView;
@@ -43,6 +44,7 @@ public class ImageBrowserActivity extends Activity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.imagebrowser);
 		gallery = (Gallery) findViewById(R.id.imagebrowsergallery);
 		captionTextView = (TextView) findViewById(R.id.captiontextview);
