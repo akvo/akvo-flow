@@ -3,9 +3,9 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical">
 	<Gallery android:id="@+id/imagebrowsergallery"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+		android:layout_width="fill_parent" android:layout_height="wrap_content" android:height="100dip"/>
 	<ImageView android:id="@+id/mainimageview"
-		android:layout_width="fill_parent" android:layout_height="fill_parent" />
+		android:layout_width="fill_parent" android:layout_height="fill_parent" android:height="0dip" android:layout_weight="1"/>
 	<TextView android:id="@+id/captiontextview"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+		android:layout_width="fill_parent" android:layout_height="wrap_content"  android:height="80dip"/>
 </LinearLayout>

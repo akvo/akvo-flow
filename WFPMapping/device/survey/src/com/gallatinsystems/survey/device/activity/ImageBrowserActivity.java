@@ -64,9 +64,7 @@ public class ImageBrowserActivity extends Activity implements
 		gallery.setAdapter(imageAdapter);
 		gallery.setOnItemClickListener(this);
 		mainImageView.setImageBitmap(imageAdapter.getImageBitmap(0));
-		captionTextView.setText(captions.get(0));
-		
-
+		captionTextView.setText(captions.get(0));		
 		
 	}
 
