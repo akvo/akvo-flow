@@ -12,6 +12,9 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.survey.domain.SurveyContainer;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query;
 
 public class SurveyInstanceDAO {
 	PersistenceManager pm;
@@ -49,15 +52,25 @@ public class SurveyInstanceDAO {
 
 	public SurveyContainer getSurveyDocument(Long id) {
 		SurveyContainer si = null;
-
-		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
-		query.setFilter("id == idParam");
-		query.declareParameters("Long idParam");
-		List<SurveyContainer> results = (List<SurveyContainer>) query.execute(id);
-		if (results.size() > 0) {
-			si = results.get(0);
-		}
-		return si;
+		Key itemKey = KeyFactory.createKey(SurveyContainer.class.getSimpleName(), id);
+		
+		si = (SurveyContainer)pm.getObjectById(SurveyContainer.class,itemKey);
+		 
+		 
+		
+		 
+		 return si;
+		 
+		
+		
+//		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
+//		query.setFilter("key.id == idParam");
+//		query.declareParameters("Key idParam");
+//		List<SurveyContainer> results = (List<SurveyContainer>) query.execute(id);
+//		if (results.size() > 0) {
+//			si = results.get(0);
+//		}
+//		return si;
 	}
 
 
