@@ -47,9 +47,12 @@ public class SurveyDownloadService extends Service {
 	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
 
-	private static final String SURVEY_LIST_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
-	private static final String SURVEY_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?surveyId=";
-
+	//private static final String SURVEY_LIST_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
+	//private static final String SURVEY_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?surveyId=";
+	
+	private static final String SURVEY_LIST_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
+	private static final String SURVEY_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?surveyId=";
+	
 	private SurveyDbAdapter databaseAdaptor;
 
 	private static final String SD_LOC = "scdard";
@@ -131,7 +134,7 @@ public class SurveyDownloadService extends Service {
 				// now check if any previously downloaded surveys still need
 				// don't have their help media pre-cached
 				if (canDownload(precacheOption)) {
-					surveys = databaseAdaptor.listSurveys();
+					surveys = databaseAdaptor.listSurveys(null);
 					if (surveys != null) {
 						for (int i = 0; i < surveys.size(); i++) {
 							if (!surveys.get(i).isHelpDownloaded()) {
@@ -173,10 +176,7 @@ public class SurveyDownloadService extends Service {
 
 			survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
 			survey.setType(DEFAULT_TYPE);
-			// TODO: get this from touple once service is updated
-			survey.setName("Survey " + survey.getId());
-			survey.setLocation(SD_LOC);
-			survey.setVersion(survey.getVersion());
+			survey.setLocation(SD_LOC);			
 			File file = new File(ConstantUtil.DATA_DIR, survey.getFileName());
 			PrintStream writer = new PrintStream(new FileOutputStream(file));
 			writer.print(response);
@@ -283,14 +283,16 @@ public class SurveyDownloadService extends Service {
 				while (strTok.hasMoreTokens()) {
 					String currentLine = strTok.nextToken();
 					String[] touple = currentLine.split(",");
-					if (touple.length < 3) {
+					if (touple.length < 5) {
 						Log
 								.e(TAG,
 										"Survey list response is in an unrecognized format");
 					} else {
 						Survey temp = new Survey();
 						temp.setId(touple[1]);
-						temp.setVersion(Double.parseDouble(touple[2]));
+						temp.setName(touple[2]);
+						temp.setLanguage(touple[3]);
+						temp.setVersion(Double.parseDouble(touple[4]));
 						temp.setType(ConstantUtil.FILE_SURVEY_LOCATION_TYPE);
 						surveys.add(temp);
 

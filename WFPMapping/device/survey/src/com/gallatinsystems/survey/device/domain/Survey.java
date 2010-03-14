@@ -22,6 +22,15 @@ public class Survey {
 	private String location;
 	private String fileName;
 	private boolean helpDownloaded;
+	private String language;
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
 
 	public boolean isHelpDownloaded() {
 		return helpDownloaded;

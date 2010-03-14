@@ -57,9 +57,9 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.home);		
+		setContentView(R.layout.home);
 
-		menuViewAdapter = new HomeMenuViewAdapter(this);
+		menuViewAdapter = new HomeMenuViewAdapter(this,loadDesiredSurveyLanguage());
 		userField = (TextView) findViewById(R.id.currentUserField);
 
 		GridView grid = (GridView) findViewById(R.id.gridview);
@@ -112,6 +112,21 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			}
 		}
 		database.close();
+	}
+
+	/**
+	 * gets the desired language from the db and translates the index to a
+	 * string
+	 */
+	private String loadDesiredSurveyLanguage() {
+		SurveyDbAdapter database = new SurveyDbAdapter(this);
+		database.open();
+		// first check if they want to keep users logged in
+		String val = database
+				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
+		database.close();
+		String[] langs = getResources().getStringArray(R.array.languages);
+		return langs[Integer.parseInt(val)];
 	}
 
 	/**

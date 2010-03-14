@@ -47,7 +47,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private Object[] buttonLabels;
 	private ArrayList<Survey> surveys;	
 	private ArrayList<String> operations;
-
+	private String language;
 	private LayoutInflater inflater;
 
 	/**
@@ -55,12 +55,14 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 * 
 	 * @param c
 	 */
-	public HomeMenuViewAdapter(Context c) {
+	public HomeMenuViewAdapter(Context c, String language) {
 		inflater = (LayoutInflater) c
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.language = language;
 
 	}
 
+	
 	/**
 	 * gets all surveys from the db and uses them to instantiate the views
 	 * 
@@ -116,7 +118,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private ArrayList<Survey> fetchSurveys(Context c) {
 		SurveyDbAdapter database = new SurveyDbAdapter(c);
 		database.open();
-		surveys = database.listSurveys();
+		surveys = database.listSurveys(language);
 		database.close();
 		return surveys;
 	}
@@ -201,4 +203,8 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	public String getSelectedOperation(int index) {
 		return operations.get(index);
 	}
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
 }
