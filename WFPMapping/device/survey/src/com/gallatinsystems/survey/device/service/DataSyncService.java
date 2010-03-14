@@ -66,7 +66,7 @@ public class DataSyncService extends Service {
 	private static final int REDIRECT_CODE = 303;
 	private static final int OK_CODE = 200;
 	private static Semaphore lock = new Semaphore(1);
-	private static int counter=0;
+	private static int counter = 0;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -104,7 +104,7 @@ public class DataSyncService extends Service {
 	 * @param type
 	 *            - either SYNC or EXPORT
 	 */
-	private void runSync(String type, boolean forceFlag) {		
+	private void runSync(String type, boolean forceFlag) {
 		databaseAdaptor = new SurveyDbAdapter(this);
 		databaseAdaptor.open();
 		String uploadOption = databaseAdaptor
@@ -165,10 +165,10 @@ public class DataSyncService extends Service {
 			} finally {
 				lock.release();
 			}
-		}		
+		}
 		databaseAdaptor.close();
 		counter--;
-		if(counter == 0){
+		if (counter == 0) {
 			stopSelf();
 		}
 	}
@@ -435,6 +435,12 @@ public class DataSyncService extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)));
 					buf.append("\n");
 					if (ConstantUtil.IMAGE_RESPONSE_TYPE.equals(type)
 							|| ConstantUtil.VIDEO_RESPONSE_TYPE.equals(type)) {

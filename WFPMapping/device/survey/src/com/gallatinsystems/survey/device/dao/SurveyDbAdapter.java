@@ -211,7 +211,7 @@ public class SurveyDbAdapter {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
 				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL,
-				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL },
+				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL, RESPONDENT_TABLE+"."+SURVEY_FK_COL },
 				SUBMITTED_FLAG_COL + "= 'true' AND (" + DELIVERED_DATE_COL
 						+ " is null OR " + MEDIA_SENT_COL + " <> 'true')",
 				null, null, null, null);
