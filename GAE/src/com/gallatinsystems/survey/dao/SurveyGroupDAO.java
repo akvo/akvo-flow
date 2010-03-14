@@ -6,9 +6,9 @@ import javax.xml.bind.JAXBException;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyContainer;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.domain.xml.Survey;
-import com.gallatinsystems.survey.domain.xml.SurveyGroup;
 import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 

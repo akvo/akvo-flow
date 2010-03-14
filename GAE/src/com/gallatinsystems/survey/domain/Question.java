@@ -9,6 +9,11 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
 public class Question extends BaseDomain {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4708385830894435407L;
+
 	private String text;
 	
 	private QuestionType type;

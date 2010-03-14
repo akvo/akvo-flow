@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.domain.xml;
+package com.gallatinsystems.survey.domain;
 
 import java.util.Date;
 
@@ -13,6 +13,10 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyGroup extends BaseDomain {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9001451397587572330L;
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Key key;

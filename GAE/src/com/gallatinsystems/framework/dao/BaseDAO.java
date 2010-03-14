@@ -45,8 +45,7 @@ public class BaseDAO {
 	}
 
 	public <T extends BaseDomain> T getByKey(Long keyId) {
-		return (T) pm.getObjectById(keyId);
-		
+		return (T) pm.getObjectById(keyId);	
 	}
 	
 

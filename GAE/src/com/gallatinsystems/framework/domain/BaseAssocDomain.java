@@ -6,6 +6,10 @@ import javax.jdo.annotations.PersistenceCapable;
 
 @PersistenceCapable
 public class BaseAssocDomain extends BaseDomain {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4033177545242972028L;
 	private Date effectiveStartDate;
 	private Date effectiveEndDate;
 	public Date getEffectiveStartDate() {

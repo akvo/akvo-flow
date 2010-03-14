@@ -10,6 +10,10 @@ import com.gallatinsystems.framework.domain.BaseAssocDomain;
 @PersistenceCapable
 @Inheritance(customStrategy = "complete-table")
 public class QuestionQuestionGroupAssoc extends BaseAssocDomain{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7578071601713731890L;
 	private Question question;
 	private QuestionGroup questionGroup;
 	public Question getQuestion() {

@@ -10,6 +10,11 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceSurveyJobQueue {
+	
+	public DeviceSurveyJobQueue(){
+		this.name="test";
+		this.language="english";
+	}
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -56,6 +61,21 @@ public class DeviceSurveyJobQueue {
 	private Date effectiveEndDate;
 	private String surveyDistrobutionStatus;
 	
+	private String language;
+	private String name;
+	
+	public String getLanguage() {
+		return language;
+	}
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

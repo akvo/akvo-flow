@@ -7,6 +7,10 @@ import com.gallatinsystems.framework.domain.BaseAssocDomain;
 @PersistenceCapable
 public class SurveySurveyGroupAssoc extends BaseAssocDomain {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3225985948073456482L;
 	private Long surveyContainerId;
 	private Long surveyGroupId;
 

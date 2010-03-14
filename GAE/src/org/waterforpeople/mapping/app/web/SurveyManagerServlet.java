@@ -114,8 +114,8 @@ public class SurveyManagerServlet extends HttpServlet {
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
 		StringBuilder sb = new StringBuilder();
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber)) {
-
-			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ",1.0\n");
+			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
+					+ dsjq.getName() + "," + dsjq.getLanguage() + ",1.0\n");
 		}
 		return sb.toString();
 	}
