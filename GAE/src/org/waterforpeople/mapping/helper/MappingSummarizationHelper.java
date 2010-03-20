@@ -12,7 +12,6 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.strtree.STRtree;
 
 /**
@@ -100,16 +99,32 @@ public class MappingSummarizationHelper {
 	 * @param type
 	 * @return
 	 */
-	public List<AccessPoint> processSummarization(String regionUUID, String type) {
-
+	public String processSummarization(String regionUUID, String type) {
+		String result = null;
 		List<AccessPoint> accessPoints = findPointsInRegion(regionUUID);
+
 		if (accessPoints != null && accessPoints.size() > 0) {
 			// now we have the list of access points in the region
 			// so run the rule
-
+			// TODO: define abstract rule handling. right now, we hard code the
+			// 1 rule we have
+			int functionalCount = 0;
+			for (AccessPoint ap : accessPoints) {
+				if ("High".equalsIgnoreCase(ap.getPointStatus())
+						|| "Ok".equalsIgnoreCase(ap.getPointStatus())) {
+					functionalCount++;
+				}
+			}
+			double pctFunctional = functionalCount / accessPoints.size();
+			if (pctFunctional >= 0.75) {
+				result = "GREEN";
+			} else if (pctFunctional >= .5) {
+				result = "YELLOW";
+			} else {
+				result = "RED";
+			}
 		}
-
-		return null;
+		return result;
 	}
 
 	/**

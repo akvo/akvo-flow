@@ -45,10 +45,11 @@ public class MappingSummarizationServlet extends AbstractRestApiServlet {
 	 */
 	@Override
 	protected RestResponse handleRequest(RestRequest request) throws Exception {
-		RestResponse response = new MappingSummarizationResponse();
-		MappingSummarizationRequest summReq = (MappingSummarizationRequest)request; 
-		helper.processSummarization(summReq.getRegionUUID(),summReq.getSummarizationType());
-		
+		MappingSummarizationResponse response = new MappingSummarizationResponse();
+		MappingSummarizationRequest summReq = (MappingSummarizationRequest) request;
+		String result = helper.processSummarization(summReq.getRegionUUID(),
+				summReq.getSummarizationType());
+		response.setColorCode(result);
 		return response;
 	}
 
@@ -58,7 +59,13 @@ public class MappingSummarizationServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse restResponse,
 			HttpServletResponse resp) throws Exception {
-		// TODO: write response!
-
+		// for now, just output the value
+		String val = ((MappingSummarizationResponse) restResponse)
+				.getColorCode();
+		if (val != null) {
+			resp.getWriter().print("The status color is: " + val);
+		} else {
+			resp.getWriter().print("NO DATA");
+		}
 	}
 }

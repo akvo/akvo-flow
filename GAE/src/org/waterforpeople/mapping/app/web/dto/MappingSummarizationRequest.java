@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web.dto;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.exception.RestValidationException;
 
@@ -42,7 +43,13 @@ public class MappingSummarizationRequest extends RestRequest {
 
 	@Override
 	public void validate() throws RestValidationException {
-		// TODO Auto-generated method stub
+		if (regionUUID == null) {
+			String errorMsg = REGION_UUID + " is mandatory";
+			throw new RestValidationException(new RestError(
+					RestError.MISSING_PARAM_ERROR_CODE,
+					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg), errorMsg,
+					null);
+		}
 
 	}
 

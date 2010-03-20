@@ -49,11 +49,11 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			RestResponse restResp = handleRequest(restReq);
 			writeOkResponse(restResp, resp);
 		} catch (RestException e) {
-			writeErrorResponse(e.getError());
+			writeErrorResponse(e.getError(), resp);
 		} catch (Exception e) {
 			// we get here if we get some unexpected exception that does not
 			// derive from RestException
-			writeErrorResponse(new RestError());
+			writeErrorResponse(new RestError(), resp);
 			// TODO: log error
 		}
 	}
@@ -106,8 +106,18 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 		}
 	}
 
-	private void writeErrorResponse(RestError err) {
-		// todo: actually populate this
+	/**
+	 * writes the contents of the RestError to the response
+	 * 
+	 * @param err
+	 * @param resp
+	 */
+	private void writeErrorResponse(RestError err, HttpServletResponse resp) {
+		try {
+			// TODO: error should honor content type (i.e. xml, json or text)
+			resp.getWriter().print(err.toString());
+		} catch (IOException e) {
+			// TODO: log error
+		}
 	}
-
 }
