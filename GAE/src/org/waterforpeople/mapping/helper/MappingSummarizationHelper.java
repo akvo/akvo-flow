@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.helper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,9 +9,16 @@ import org.waterforpeople.mapping.dao.AccessPointDAO;
 import org.waterforpeople.mapping.dao.GeoIndexDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.index.strtree.STRtree;
+
 /**
  * This helper performs mapping summarization as well as abstracts clients from
- * details of the JTS GIS package.
+ * details of the JTS GIS package. <b>No JTS classes should leak out of this
+ * layer.</b>
  * 
  * Some of the methods (addPointToPoly, for instance) are STATEFUL in that they
  * can be used to accumulate points over multiple method invocations in member
@@ -23,7 +31,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 public class MappingSummarizationHelper {
 	private AccessPointDAO accessPointDao;
 	private GeoIndexDao geoIndexDao;
-	
+
 	private Map<String, StringBuilder> regionMap;
 	private Map<String, String> firstPositionInPolys;
 
@@ -58,7 +66,7 @@ public class MappingSummarizationHelper {
 	}
 
 	/**
-	 * persistes all the accumulated points in the region map and resets the
+	 * Persists all the accumulated points in the region map and resets the
 	 * internal member variables
 	 */
 	public void saveRegions() {
@@ -84,20 +92,51 @@ public class MappingSummarizationHelper {
 	}
 
 	/**
-	 * executes a summarization action. It will look up the region index for the
-	 * region specified and, if found, will retrieve all access points that are
-	 * within that region
+	 * executes a summarization action for a given region. It will iterate over
+	 * all access points in that region and use the rule type to evalute what
+	 * should be done
 	 * 
 	 * @param regionUUID
 	 * @param type
 	 * @return
 	 */
 	public List<AccessPoint> processSummarization(String regionUUID, String type) {
-		//TODO: get index, then iterate over each access point and check if it's in the region
-		//then run the rule identified by "type" on those access points.
-		
-		/*return accessPointDao.listAccessPointsWithinRegion(lat1, lon1, lat2,
-				lon2);*/
+
+		List<AccessPoint> accessPoints = findPointsInRegion(regionUUID);
+		if (accessPoints != null && accessPoints.size() > 0) {
+			// now we have the list of access points in the region
+			// so run the rule
+
+		}
+
 		return null;
+	}
+
+	/**
+	 * returns the list of AccessPoint objects that are within the region
+	 * identified by the uuid
+	 * 
+	 * @param regionUUID
+	 * @return
+	 */
+	public List<AccessPoint> findPointsInRegion(String regionUUID) {
+		// first, get the index for the region since, if we don't have that, we
+		// can't do anything
+		STRtree regionIndex = geoIndexDao.findGeoIndex(regionUUID);
+		// TODO: filter access points!!! for now, we get them all
+		List<AccessPoint> accessPoints = accessPointDao.listAccessPoints();
+		List<AccessPoint> pointsInRegion = new ArrayList<AccessPoint>();
+		if (accessPoints != null && regionIndex != null) {
+
+			GeometryFactory geomFactory = new GeometryFactory();
+			for (AccessPoint p : accessPoints) {
+				Point point = geomFactory.createPoint(new Coordinate(p
+						.getLatitude(), p.getLongitude()));
+				if (!regionIndex.query(point.getEnvelopeInternal()).isEmpty()) {
+					pointsInRegion.add(p);
+				}
+			}
+		}
+		return pointsInRegion;
 	}
 }

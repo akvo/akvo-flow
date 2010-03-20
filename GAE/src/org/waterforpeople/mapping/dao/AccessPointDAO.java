@@ -50,6 +50,8 @@ public class AccessPointDAO {
 	/**
 	 * lists all access points with lat/long within the bounding box passed in
 	 * 
+	 * TODO: fix this so it actually works
+	 * 
 	 * @param lat1
 	 * @param lon1
 	 * @param lat2

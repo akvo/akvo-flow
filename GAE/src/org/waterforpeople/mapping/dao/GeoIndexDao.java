@@ -1,11 +1,16 @@
 package org.waterforpeople.mapping.dao;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import services.S3Driver;
 
@@ -23,6 +28,11 @@ import com.vividsolutions.jts.io.WKTReader;
  * 
  */
 public class GeoIndexDao {
+	private static final Logger log = Logger.getLogger(GeoIndexDao.class
+			.getName());
+
+	// TODO: change this
+	private static final String INDEX_BASE_URL = "http://dru-test.s3.amazonaws.com/gis/index/";
 
 	/**
 	 * this will create (or replace) a geo index for each of the regions passed
@@ -64,16 +74,34 @@ public class GeoIndexDao {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.WARNING, "Could not upload index", e);
 		}
 	}
-	
-	public STRtree findGeoIndex(String regionUUID){
+
+	/**
+	 * fetches a pre-generated index
+	 * 
+	 * @param regionUUID
+	 * @return
+	 */
+	public STRtree findGeoIndex(String regionUUID) {
 		STRtree index = null;
-		//ObjectInputStream()
-		
-		
+		ObjectInputStream ois = null;
+		try {
+			URL url = new URL(INDEX_BASE_URL + regionUUID);
+			ois = new ObjectInputStream(url.openStream());
+			index = (STRtree) ois.readObject();
+		} catch (Exception e) {
+			log.log(Level.WARNING, "Could not download index", e);
+		} finally {
+			if (ois != null) {
+				try {
+					ois.close();
+				} catch (IOException e) {
+					// no-op
+				}
+			}
+		}
 		return index;
 	}
-
 }
