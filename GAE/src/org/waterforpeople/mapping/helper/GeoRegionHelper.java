@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.helper;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -21,6 +20,8 @@ public class GeoRegionHelper {
 		int iCurrRegion = 1;
 		int iCurrRow = 1;
 		UUID currentUUID = UUID.randomUUID();
+		MappingSummarizationHelper mappingHelper = new MappingSummarizationHelper();
+		int pointsInPoly = 1;
 		for (String s : regionLines) {
 			GeoRegion gr = new GeoRegion();
 			String[] contents = s.split(",");
@@ -33,6 +34,8 @@ public class GeoRegionHelper {
 				iCurrRegion = iLineRegion;
 				currentUUID = UUID.randomUUID();
 			}
+			mappingHelper.addPointToRegion(currentUUID.toString(), contents[3],
+					contents[4]);
 			gr.setUuid(currentUUID.toString());
 			gr.setOrder(new Long(contents[1]));
 			gr.setName(contents[2]);
@@ -41,8 +44,12 @@ public class GeoRegionHelper {
 			// gr.setCreateDateTime(new Date(contents[5]));
 			Key key = grDAO.save(gr);
 			iCurrRow++;
+			pointsInPoly++;
 			log.info("Saved RegionRow: " + key.toString());
 		}
+	
+		mappingHelper.saveRegions();
+
 		return geoRegions;
 	}
 

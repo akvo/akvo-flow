@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.swing.text.html.Option;
 import javax.xml.bind.JAXBException;
+
+import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -103,7 +104,9 @@ public class SurveyDAO extends BaseDAO {
 		survey.setVersion(1);
 
 		super.save(survey);
-		log.info("BaseDAO test survey key: " + survey.getKey().getId());
+		
+		
+		log.info("BaseDAO test survey key: " + survey.getKey().getId());		
 	}
 
 	public Survey get(Long id) {
