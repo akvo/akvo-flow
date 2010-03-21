@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="dependency">
+    <xs:complexType>
+      <xs:attribute name="answer-value" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="question" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="heading">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="option">
+    <xs:complexType mixed="true">
+      <xs:attribute name="value" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="options">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="option" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="allowOther" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="question">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="dependency" />
+        <xs:element ref="options" />
+        <xs:element ref="text" />
+        <xs:element ref="tip" />
+        <xs:element ref="validationRule" />
+      </xs:choice>
+      <xs:attribute name="order" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="free" />
+            <xs:enumeration value="geo" />
+            <xs:enumeration value="option" />
+            <xs:enumeration value="photo" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="mandatory" type="xs:NMTOKEN" use="required" fixed="true" />
+      <xs:attribute name="id" type="xs:ID" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="questionGroup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="heading" />
+        <xs:element ref="question" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="order" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="survey">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="questionGroup" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="text">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="tip">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="validationRule">
+    <xs:complexType>
+      <xs:attribute name="allowDecimal" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="validationType" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="signed" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="maxLength" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

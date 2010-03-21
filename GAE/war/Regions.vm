@@ -1,0 +1,16 @@
+     <Placemark>
+      <name>Building 41</name>
+      <styleUrl>#transBluePoly</styleUrl>
+      <Polygon>
+        <extrude>1</extrude>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+            	$coordinateString
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+ 

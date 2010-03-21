@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+	<Document>
+	
+		<Style id="pushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="greenwpin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="pushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="yellowpin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="pushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="redpin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="pushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="purpulepin">
+      <Icon>
+        <href>http://waterforpeople.s3.amazonaws.com/images/black-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+	   <Style id="transBluePoly">
+      <LineStyle>
+        <width>1.5</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7dff0000</color>
+      </PolyStyle>
+    </Style>
+	
+	
+	<name>Blantyre Mapping Assesment</name>
+	<description>description</description>
+	<Style id="exampleBalloonStyle">
+    <BalloonStyle>
+      <!-- a background color for the balloon -->
+      <bgColor>white</bgColor>
+      <!-- styling of the balloon text -->
+      <text><![CDATA[      
+      <br/><br/>
+      <font face="Verdana">$[description]</font>
+      <br/><br/>
+      ]]></text>
+    </BalloonStyle>
+  </Style>
+		$Placemark
+	
+		$regionPlacemark
+	
+	</Document>
+</kml>
