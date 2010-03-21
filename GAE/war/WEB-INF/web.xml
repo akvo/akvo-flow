@@ -84,6 +84,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>MapingSummarization</servlet-name>
 		<url-pattern>/mapping/summary</url-pattern>
 	</servlet-mapping>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>*</role-name>
+		</auth-constraint>
+	</security-constraint>	
 	<security-constraint>
 		<web-resource-collection>
 			<url-pattern>/task/*</url-pattern>
