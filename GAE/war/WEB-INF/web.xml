@@ -10,7 +10,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
-		<url-pattern>/waterforpeoplemappinggoogle</url-pattern>
+		<url-pattern>/webapp/waterforpeoplemappinggoogle</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Processor</servlet-name>
@@ -26,7 +26,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Task</servlet-name>
-		<url-pattern>/app_worker/task</url-pattern>
+		<url-pattern>/webapp/app_worker/task</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyManager</servlet-name>
@@ -42,7 +42,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ImageProcessor</servlet-name>
-		<url-pattern>/imageprocessor</url-pattern>
+		<url-pattern>/webapp/imageprocessor</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DeviceManager</servlet-name>
@@ -50,7 +50,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DeviceManager</servlet-name>
-		<url-pattern>/devicemanager</url-pattern>
+		<url-pattern>/webapp/devicemanager</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyGroupManager</servlet-name>
@@ -58,7 +58,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyGroupManager</servlet-name>
-		<url-pattern>/surveygroupmanager</url-pattern>
+		<url-pattern>/webapp/surveygroupmanager</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>TestHarness</servlet-name>
@@ -66,7 +66,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TestHarness</servlet-name>
-		<url-pattern>/testharness</url-pattern>
+		<url-pattern>/webapp/testharness</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>greetServlet</servlet-name>
@@ -74,7 +74,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>greetServlet</servlet-name>
-		<url-pattern>/greet</url-pattern>
+		<url-pattern>/webapp/greet</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>MapingSummarization</servlet-name>
@@ -82,25 +82,17 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>MapingSummarization</servlet-name>
-		<url-pattern>/mapping/summary</url-pattern>
+		<url-pattern>/webapp/mapping/summary</url-pattern>
 	</servlet-mapping>
 	
 	<security-constraint>
 		<web-resource-collection>
-			<url-pattern>/*</url-pattern>
+			<url-pattern>/webapp/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>*</role-name>
 		</auth-constraint>
-	</security-constraint>	
-	<security-constraint>
-		<web-resource-collection>
-			<url-pattern>/task/*</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>admin</role-name>
-		</auth-constraint>
-	</security-constraint>
+	</security-constraint>		
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
