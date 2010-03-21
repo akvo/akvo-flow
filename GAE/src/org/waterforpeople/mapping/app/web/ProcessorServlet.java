@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.waterforpeople.mapping.queue.QueueManager;
-
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class ProcessorServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = -7062679258542909086L;
 	private static final Logger log = Logger.getLogger(ProcessorServlet.class
 			.getName());
 

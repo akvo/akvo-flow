@@ -11,8 +11,7 @@ import org.waterforpeople.mapping.domain.CaptionDefinition;
 public class CaptionsDAO {
 	PersistenceManager pm;
 
-	public Long save(CaptionDefinition ap) {
-		Boolean savedSuccessFlag = false;
+	public Long save(CaptionDefinition ap) {		
 		pm.makePersistent(ap);
 		return ap.getId();
 	}
@@ -27,8 +26,7 @@ public class CaptionsDAO {
 		CaptionDefinition capDef1 = new CaptionDefinition();
 		CaptionDefinition capDef2= new CaptionDefinition();
 		CaptionDefinition capDef3 = new CaptionDefinition();
-		CaptionDefinition capDef4 = new CaptionDefinition();
-		CaptionDefinition capDef5 = new CaptionDefinition();
+		CaptionDefinition capDef4 = new CaptionDefinition();		
 		
 		capDef.setCaptionVariableName("typeOfWaterPointTechnologyCaption");
 		capDef.setCaptionValue("Type of Water Point Technology");

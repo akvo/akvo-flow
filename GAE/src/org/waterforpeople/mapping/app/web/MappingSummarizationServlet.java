@@ -18,6 +18,8 @@ import com.gallatinsystems.framework.rest.RestResponse;
  * 
  */
 public class MappingSummarizationServlet extends AbstractRestApiServlet {
+	
+	private static final long serialVersionUID = -3781006669225793054L;
 	private MappingSummarizationHelper helper;
 
 	public MappingSummarizationServlet() {
@@ -28,6 +30,7 @@ public class MappingSummarizationServlet extends AbstractRestApiServlet {
 	 * converts the incoming servlet request into a MappingSummarizationRequest
 	 */
 	@Override
+	@SuppressWarnings("unused")
 	protected RestRequest convertRequest() throws Exception {
 		HttpServletRequest req = getRequest();
 		String action = req.getParameter(RestRequest.ACTION_PARAM);

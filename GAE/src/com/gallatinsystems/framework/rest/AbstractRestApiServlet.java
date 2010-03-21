@@ -27,6 +27,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	private static final long serialVersionUID = -8553345034709944772L;
 	private static final String XML_MODE = "XML";
 	private static final String JSON_MODE = "JSON";
+	@SuppressWarnings("unused")
 	private static final String PLAINTEXT_MODE = "TEXT";
 	private String mode;
 	private ThreadLocal<HttpServletRequest> requests;

@@ -15,7 +15,6 @@ import com.gallatinsystems.device.app.web.client.GreetingService;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
-import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -34,14 +33,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 			// the client.
 			throw new IllegalArgumentException(
 					"Name must be at least 4 characters long");
-		}
-
-		String serverInfo = getServletContext().getServerInfo();
-		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
-//		return "Hello, " + input + "!<br><br>I am running " + serverInfo
-//				+ ".<br><br>It looks like you are using:<br>" + userAgent;
-//		
-		SurveyDAO surveyDAO = new SurveyDAO();
+		}		
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
 		StringBuilder sb = new StringBuilder();
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(input)) {
@@ -78,8 +70,6 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
 		byte[] newImage = gaeImg.rotateImage(out.toByteArray(), 90);
 			S3Driver s3 = new S3Driver();
-		String[] urlParts = imageURL.split("/");
-		String imageName = urlParts[3];
 		s3.uploadFile(bucket, imageURL, newImage);
 		return null;
 

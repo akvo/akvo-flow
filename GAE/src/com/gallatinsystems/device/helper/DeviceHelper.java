@@ -6,6 +6,7 @@ import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 
 public class DeviceHelper {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 	.getLogger(DeviceHelper.class.getName());
 	

@@ -6,7 +6,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,15 +16,11 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.db.PMF;
-import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
@@ -40,9 +35,12 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class TaskServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = -2607990749512391457L;
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
 
+	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		String action = req.getParameter("action");
@@ -63,7 +61,7 @@ public class TaskServlet extends HttpServlet {
 					ArrayList<String> surveyIds = processFile(fileName);
 					for (String ids : surveyIds) {
 						ProcessingAction pa = dispatch(ids);
-						Queue queue = QueueFactory.getDefaultQueue();
+						//Queue queue = QueueFactory.getDefaultQueue();
 						TaskOptions options = url(pa.getDispatchURL());
 						Iterator it = pa.getParams().keySet().iterator();
 						while (it.hasNext()) {
@@ -84,8 +82,6 @@ public class TaskServlet extends HttpServlet {
 			}
 		}
 	}
-
-	private static final int BUFFER = 2048;
 
 	public static void main(String[] args) {
 		TaskServlet ts = new TaskServlet();
@@ -190,55 +186,7 @@ public class TaskServlet extends HttpServlet {
 
 		return lines;
 	}
-
-	// to get rid of
-	private Object marshallDataToObject(ArrayList<String> lines,
-			String classname) {
-
-		if (classname.contains("AccessPoint")) {
-			DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
-			java.util.Date date = new java.util.Date();
-			String dateTime = dateFormat.format(date);
-
-			Double lat = 0.0;
-			Double lon = 0.0;
-			Double alt = 0.0;
-
-			String communityCode = null;
-			String urlPhoto = "";
-
-			for (String line : lines) {
-				if (line.contains("qm1")) {
-					// CommunityCode question
-					String[] splitContents = line.split(",");
-					communityCode = splitContents[3];
-				} else if (line.contains("qm2")) {
-					// image
-					String[] splitContents = line.split(",");
-					String[] imageParts = splitContents[3].split("/");
-					urlPhoto = "http://waterforpeople.s3.amazonaws.com/images/dev/"
-							+ imageParts[2];
-				} else if (line.contains("qm3")) {
-					// geo
-					String[] splitContents = line.split(",");
-					GeoCoordinates geo = new GeoCoordinates()
-							.extractGeoCoordinate(splitContents[3]);
-					log.info(geo.toString());
-					lat = geo.getLatitude();
-					lon = geo.getLongitude();
-					alt = geo.getAltitude();
-				}
-			}
-
-			/*
-			 * AccessPoint ap = new AccessPoint(lat, lon, alt, communityCode,
-			 * urlPhoto, null);
-			 */
-			// return ap;
-		}
-
-		return null;
-	}
+	
 
 	private String getNowDateTimeFormatted() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
@@ -247,25 +195,6 @@ public class TaskServlet extends HttpServlet {
 		return dateTime;
 	}
 
-	private void saveObject(Object obj) throws URISyntaxException {
-		pm = PMF.get().getPersistenceManager();
-		if (obj.getClass().equals(AccessPoint.class)) {
-			log.info("got Accesspoint to save");
-			pm.makePersistent(obj);
-		}
-
-		// save status of processing file to db
-
-		DeviceFiles df = new DeviceFiles();
-
-		df.setProcessDate(getNowDateTimeFormatted());
-		df.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
-		df.setURI(url.toURI().toString());
-		pm.makePersistent(df);
-		pm.close();
-	}
-
-	PersistenceManager pm = null;
 
 	private ProcessingAction dispatch(String surveyId) {
 		ProcessingAction pa = new ProcessingAction();	

@@ -28,7 +28,6 @@ public class QueueManager {
 	}
 	
 	public void submitNewTaskToQueue(ProcessingAction pa){
-		Queue queue = QueueFactory.getDefaultQueue();
-		
+		//Queue queue = QueueFactory.getDefaultQueue();		
 	}
 }

@@ -9,6 +9,8 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
 public class Device extends BaseDomain {
+	
+	private static final long serialVersionUID = 4894680591207166295L;
 	private DeviceType deviceType;
 	private String phoneNumber;
 	private String esn;

@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.domain.KML;
 import com.google.appengine.api.datastore.Text;
 
 public class KMLDAO {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(KMLDAO.class
 			.getName());
 
@@ -33,6 +34,7 @@ public class KMLDAO {
 		return kml.getId();
 	}
 
+	@SuppressWarnings("unchecked")
 	public String getKML(Long id) {
 		KML kml = null;
 

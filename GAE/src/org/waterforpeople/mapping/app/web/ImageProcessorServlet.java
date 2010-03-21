@@ -17,6 +17,8 @@ import services.S3Driver;
 import com.gallatinsystems.image.GAEImageAdapter;
 
 public class ImageProcessorServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = 2781690180514475579L;
 	private static final Logger log = Logger
 			.getLogger(ImageProcessorServlet.class.getName());
 
@@ -30,14 +32,13 @@ public class ImageProcessorServlet extends HttpServlet {
 
 	private void rotateImage(HttpServletRequest req, HttpServletResponse resp) {
 		String imageURL = req.getParameter("imageURL");
-		Integer degrees = 0;
-		String submitvalue=req.getParameter("submit");
+		Integer degrees = 0;		
 		if (req.getParameter("degrees") != null) {
 			degrees = new Integer(req.getParameter("degrees"));
 		} else {
 			degrees = 90;
 		}
-		String bucket = "waterforpeople";
+
 		String rootURL = "http://waterforpeople.s3.amazonaws.com/";
 		imageURL = "images/africa/malawi/" + imageURL;
 		Random rand = new Random();
@@ -65,9 +66,9 @@ public class ImageProcessorServlet extends HttpServlet {
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
 		byte[] newImage = gaeImg.rotateImage(out.toByteArray(), degrees);
 		log.info("After size: " + newImage.length);
-		S3Driver s3 = new S3Driver();
-		String[] urlParts = imageURL.split("/");
-		String imageName = urlParts[3];
+	//	S3Driver s3 = new S3Driver();
+	//	String[] urlParts = imageURL.split("/");
+		//String imageName = urlParts[3];
 		//s3.uploadFile(bucket, imageURL, newImage);
 
 		/*
@@ -94,6 +95,7 @@ public class ImageProcessorServlet extends HttpServlet {
 
 	}
 
+	@SuppressWarnings("unused")
 	private void resizeImage(HttpServletRequest req, HttpServletResponse resp) {
 		String imageURL = req.getParameter("imageURL");
 		imageURL = "http://dru-test.s3.amazonaws.com/" + imageURL;

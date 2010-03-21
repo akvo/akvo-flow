@@ -12,8 +12,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
-import com.gallatinsystems.survey.dao.SurveyDAO;
-
 public class AccessPointHelper {
 
 	public void processSurveyInstance(Long surveyId) {
@@ -24,7 +22,7 @@ public class AccessPointHelper {
 		SurveyInstance si = sid.get(surveyId);
 		ArrayList<QuestionAnswerStore> questionAnswerList = si
 				.getQuestionAnswersStore();
-		SurveyDAO surveyDAO = new SurveyDAO();
+		
 		// Hardcoded for dev need to identify the map key between SurveyInstance
 		// and Survey
 		// Survey surveyDefinition = surveyDAO.get(39L);

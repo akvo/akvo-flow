@@ -16,6 +16,7 @@ public class SurveyHarness {
 		sh.sendAccessPoint();
 	}
 
+	@SuppressWarnings("unused")
 	public void sendSuveyXML(String filePath) {
 		try {
 			// Construct data
@@ -66,6 +67,7 @@ public class SurveyHarness {
 			// Get the response
 			BufferedReader rd = new BufferedReader(new InputStreamReader(conn
 					.getInputStream()));
+			@SuppressWarnings("unused")
 			String line;
 			while ((line = rd.readLine()) != null) {
 				// Process line...

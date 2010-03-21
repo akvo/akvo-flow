@@ -20,8 +20,7 @@ public class SurveyInstanceDAO {
 	SurveyInstance si;
 
 	public Long save(Date collectionDate, DeviceFiles deviceFile,
-			Long userID, ArrayList<String> unparsedLines) {
-		Boolean savedSuccessFlag = false;
+			Long userID, ArrayList<String> unparsedLines) {		
 		si = new SurveyInstance();
 		si.setCollectionDate(collectionDate);
 		si.setDeviceFile(deviceFile);
@@ -72,7 +71,7 @@ public class SurveyInstanceDAO {
 //		return si;
 	}
 
-
+	@SuppressWarnings("unchecked")
 	public SurveyInstance get(Long id) {
 		SurveyInstance si = null;
 

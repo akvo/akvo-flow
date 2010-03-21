@@ -7,14 +7,14 @@ import javax.jdo.PersistenceManager;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
+@SuppressWarnings("unchecked")
 public class AccessPointDAO {
 	PersistenceManager pm;
 
 	public Long save(AccessPoint ap) {
 		if (ap.getCollectionDate() == null) {
 
-		}
-		Boolean savedSuccessFlag = false;
+		}		
 		pm.makePersistent(ap);
 		return ap.getId();
 	}
@@ -22,6 +22,7 @@ public class AccessPointDAO {
 	public AccessPointDAO() {
 		init();
 	}
+
 
 	public AccessPoint get(Long id) {
 		AccessPoint si = null;

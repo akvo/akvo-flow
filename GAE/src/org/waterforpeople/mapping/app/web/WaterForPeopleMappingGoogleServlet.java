@@ -17,14 +17,17 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 
 @SuppressWarnings("serial")
 public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(WaterForPeopleMappingGoogleServlet.class.getName());
 
+	@SuppressWarnings("unchecked")	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 
 		String showKML = req.getParameter("showKML");
+		@SuppressWarnings("unused")
 		String processFile = req.getParameter("processFile");
 		String listFiles = req.getParameter("listFiles");
 		String testVelocity = req.getParameter("testVelocity");

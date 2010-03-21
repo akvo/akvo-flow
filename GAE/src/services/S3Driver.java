@@ -145,8 +145,7 @@ public class S3Driver {
 					boolean fileExistsInBucket = uberFiles.contains(searchForFile);
 					if (!fileExistsInBucket) {
 						files.add(file.getName());
-						log.info("adding: " + file.getName());
-						byte[] fileContents = null;
+						log.info("adding: " + file.getName());						
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						FileInputStream fis = null;
 						try {
@@ -190,7 +189,6 @@ public class S3Driver {
 
 			s3Store.setBucket(bucketName);
 			for (String fileName : fileNames) {
-				byte[] fileContents = null;
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				FileInputStream fis = null;
 				try {

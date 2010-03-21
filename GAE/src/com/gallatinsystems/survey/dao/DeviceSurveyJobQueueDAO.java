@@ -11,8 +11,8 @@ import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 public class DeviceSurveyJobQueueDAO {
 	PersistenceManager pm;
 
-	public List<DeviceSurveyJobQueue> get(String devicePhoneNumber) {
-		DeviceSurveyJobQueue deviceSurveyJobQueue = null;
+	@SuppressWarnings("unchecked")
+	public List<DeviceSurveyJobQueue> get(String devicePhoneNumber) {		
 		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
 		query.setFilter("devicePhoneNumber == devicePhoneNumberParam");
 		query.declareParameters("Long idParam");
@@ -25,6 +25,7 @@ public class DeviceSurveyJobQueueDAO {
 		return deviceSurveyJobQueue.getId();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<DeviceSurveyJobQueue> listAllJobsInQueue(){
 		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
 		List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query.execute();

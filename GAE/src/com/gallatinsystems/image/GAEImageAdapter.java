@@ -29,10 +29,7 @@ public class GAEImageAdapter {
 	}
 
 	public byte[] rotateImage(byte[] image, Integer degrees) {
-
-		Image oldImage = ImagesServiceFactory.makeImage(image);
-		Transform rotate = ImagesServiceFactory.makeRotate(degrees);
-
+		Image oldImage = ImagesServiceFactory.makeImage(image);		
 		Image newImage = imagesService.applyTransform(ImagesServiceFactory.makeRotate(degrees), oldImage);
 		
 
