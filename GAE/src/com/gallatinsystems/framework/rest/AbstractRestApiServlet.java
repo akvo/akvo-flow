@@ -26,6 +26,8 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	private static final String JSON_MODE = "JSON";
 	private static final String PLAINTEXT_MODE = "TEXT";
 	private String mode;
+	private ThreadLocal<HttpServletRequest> requests;
+	private ThreadLocal<HttpServletResponse> responses;
 
 	public void setMode(String mode) {
 		this.mode = mode;
@@ -43,11 +45,14 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 
 	private void executeRequest(HttpServletRequest req, HttpServletResponse resp) {
 		try {
+			checkThreadLocal();
+			requests.set(req);
+			responses.set(resp);
 			setContentType(resp);
-			RestRequest restReq = convertRequest(req);
+			RestRequest restReq = convertRequest();
 			restReq.validate();
 			RestResponse restResp = handleRequest(restReq);
-			writeOkResponse(restResp, resp);
+			writeOkResponse(restResp);
 		} catch (RestException e) {
 			writeErrorResponse(e.getError(), resp);
 		} catch (Exception e) {
@@ -55,29 +60,31 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			// derive from RestException
 			writeErrorResponse(new RestError(), resp);
 			// TODO: log error
+		} finally {
+			// null out the request/respnonse objects so we don't leak memory
+			requests.set(null);
+			responses.set(null);
 		}
 	}
 
 	/**
 	 * converts a servlet request to a RestRequest
 	 * 
-	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
-	protected abstract RestRequest convertRequest(HttpServletRequest req)
-			throws Exception;
+	protected abstract RestRequest convertRequest() throws Exception;
 
 	/**
 	 * performs the api specific action. If the servlet can support multiple api
 	 * methods, this method should look a the action field in the http request
 	 * and delegate appropriately.
 	 * 
-	 * @param request
+	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
-	protected abstract RestResponse handleRequest(RestRequest request)
+	protected abstract RestResponse handleRequest(RestRequest req)
 			throws Exception;
 
 	/**
@@ -87,8 +94,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	 * @param resp
 	 * @throws Exception
 	 */
-	protected abstract void writeOkResponse(RestResponse restResponse,
-			HttpServletResponse resp) throws Exception;
+	protected abstract void writeOkResponse(RestResponse resp) throws Exception;
 
 	/**
 	 * sets the content type of the response based on the value in web.xml. If
@@ -118,6 +124,36 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			resp.getWriter().print(err.toString());
 		} catch (IOException e) {
 			// TODO: log error
+		}
+	}
+
+	/**
+	 * gets the thread local request
+	 * 
+	 * @return
+	 */
+	protected HttpServletRequest getRequest() {
+		return requests.get();
+	}
+
+	/**
+	 * gets the thread local response
+	 * 
+	 * @return
+	 */
+	protected HttpServletResponse getResponse() {
+		return responses.get();
+	}
+
+	/**
+	 * initializes thread local objets if they're null
+	 */
+	private void checkThreadLocal() {
+		if (requests == null) {
+			requests = new ThreadLocal<HttpServletRequest>();
+		}
+		if (responses == null) {
+			responses = new ThreadLocal<HttpServletResponse>();
 		}
 	}
 }

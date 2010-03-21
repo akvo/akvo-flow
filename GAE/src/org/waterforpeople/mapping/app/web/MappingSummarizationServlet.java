@@ -1,13 +1,10 @@
 package org.waterforpeople.mapping.app.web;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.web.dto.MappingSummarizationRequest;
 import org.waterforpeople.mapping.app.web.dto.MappingSummarizationResponse;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.helper.MappingSummarizationHelper;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -31,8 +28,8 @@ public class MappingSummarizationServlet extends AbstractRestApiServlet {
 	 * converts the incoming servlet request into a MappingSummarizationRequest
 	 */
 	@Override
-	protected RestRequest convertRequest(HttpServletRequest req)
-			throws Exception {
+	protected RestRequest convertRequest() throws Exception {
+		HttpServletRequest req = getRequest();
 		String action = req.getParameter(RestRequest.ACTION_PARAM);
 		RestRequest restRequest = new MappingSummarizationRequest();
 		restRequest.populateFromHttpRequest(req);
@@ -57,8 +54,8 @@ public class MappingSummarizationServlet extends AbstractRestApiServlet {
 	 * write the response to the servlet response object
 	 */
 	@Override
-	protected void writeOkResponse(RestResponse restResponse,
-			HttpServletResponse resp) throws Exception {
+	protected void writeOkResponse(RestResponse restResponse) throws Exception {
+		HttpServletResponse resp = getResponse();
 		// for now, just output the value
 		String val = ((MappingSummarizationResponse) restResponse)
 				.getColorCode();
