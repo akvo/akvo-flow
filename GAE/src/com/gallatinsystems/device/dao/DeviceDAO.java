@@ -11,20 +11,9 @@ public class DeviceDAO extends BaseDAO<Device> {
 			.getName());
 
 	public DeviceDAO(){
-		super();
-		setDomainClass(Device.class);
+		super(Device.class);		
 	}
-	
-	public Device save(Device device) {
-		Device deviceExists = get(device.getPhoneNumber());
-		if (deviceExists == null) {
-			super.save(device);
-		} else {
-			// update device
-		}
-		return device;
-	}
-
+		
 	public Device get(String phoneNumber) {
 		Device device = null;
 		javax.jdo.Query query = super.getPersistenceManager().newQuery(

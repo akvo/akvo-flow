@@ -4,10 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
-
-import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -16,8 +13,8 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
-import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
@@ -26,8 +23,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			.getLogger(DeviceManagerServlet.class.getName());
 
 	public SurveyDAO() {
-		super();
-		setDomainClass(Survey.class);
+		super(Survey.class);		
 	}
 
 	public SurveyGroup save(SurveyGroup surveyGroup) {

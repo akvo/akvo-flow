@@ -10,8 +10,7 @@ import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
 public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 
 	public SurveyGroupDAO() {
-		super();
-		setDomainClass(SurveyGroup.class);
+		super(SurveyGroup.class);		
 	}
 
 	public SurveyGroup save(SurveyGroup surveyGroup) {

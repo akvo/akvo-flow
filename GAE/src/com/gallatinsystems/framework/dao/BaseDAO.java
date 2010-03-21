@@ -9,9 +9,14 @@ import org.waterforpeople.mapping.db.PMF;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
-public abstract class BaseDAO<T extends BaseDomain> {
+public class BaseDAO<T extends BaseDomain> {
 	protected PersistenceManager pm;	
 	private Class<T> concreteClass;
+	
+	public BaseDAO(Class<T> e){
+		setDomainClass(e);
+		init();
+	}
 
 	/**
 	 * Injected version of the actual Class to pass for the persistentClass in
@@ -27,20 +32,16 @@ public abstract class BaseDAO<T extends BaseDomain> {
 	}
 
 	private void init() {
-		pm = PMF.get().getPersistenceManager();
+		pm = PMF.get().getPersistenceManager();		
 	}
-
-	public BaseDAO() {
-		init();
-	}
-
+	
 	public PersistenceManager getPersistenceManager() {
 		if (pm == null) {
 			init();
 		}
 		return pm;
-	}
-
+	}	
+	
 	public <E extends BaseDomain> E save(E obj) {
 		if (obj.getCreatedDateTime() == null) {
 			obj.setCreatedDateTime(new Date());
