@@ -16,7 +16,7 @@
 			.listSurveyContainers();
 %>
 Create SurveyGroup
-<form action="/surveygroupmanager" method="post">Code: <input
+<form action="/webapp/surveygroupmanager" method="post">Code: <input
 	type="text" name="code"><br>
 <input type="text" name="decription"><br>
 <input type="hidden" name="action" value="addSurveyGroup" /> <INPUT
@@ -25,7 +25,7 @@ Create SurveyGroup
 
 <br>
 Associate SurveyGroups
-<form action="/surveygroupmanager" method="post">Survey Group
+<form action="/webapp/surveygroupmanager" method="post">Survey Group
 From: <select name="surveyGroupFrom">
 	<%
 		for (SurveyGroup surveyGroup : surveyGroupList) {
@@ -48,7 +48,7 @@ Survey Group To: <select name="surveyGroupTo">
 
 <br>
 Associate Survey to SurveyGroups
-<form action="/surveygroupmanager" method="post">Survey Group : <select
+<form action="/webapp/surveygroupmanager" method="post">Survey Group : <select
 	name="surveyGroupId">
 	<%
 		for (SurveyGroup surveyGroup : surveyGroupList) {
