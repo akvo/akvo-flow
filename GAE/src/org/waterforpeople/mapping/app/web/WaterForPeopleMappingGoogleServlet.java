@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.KML;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.framework.dao.BaseDAO;
 
 @SuppressWarnings("serial")
 public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
@@ -21,7 +23,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 	private static final Logger log = Logger
 			.getLogger(WaterForPeopleMappingGoogleServlet.class.getName());
 
-	@SuppressWarnings("unchecked")	
+	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -35,14 +37,14 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 
 		if (showKML != null) {
 			Long kmlID = 0L;
-			if(req.getParameter("kmlID")!=null){
+			if (req.getParameter("kmlID") != null) {
 				kmlID = new Long(req.getParameter("kmlID"));
 			}
 			if (kmlID != 0) {
 				KMLDAO kmlDAO = new KMLDAO();
 				String kmlString = kmlDAO.getKML(kmlID);
 				resp.setContentType("application/vnd.google-earth.kml+xml");
-				resp.getWriter().println(kmlString);		
+				resp.getWriter().println(kmlString);
 			} else {
 				KMLGenerator kmlGen = new KMLGenerator();
 				String placemarksDocument = kmlGen

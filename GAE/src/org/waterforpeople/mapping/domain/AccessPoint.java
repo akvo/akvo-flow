@@ -3,17 +3,16 @@ package org.waterforpeople.mapping.domain;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+
+import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class AccessPoint {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+public class AccessPoint extends BaseDomain{
+		
+	private static final long serialVersionUID = -7708214468114860788L;
 	@Persistent
 	private Date collectionDate = null;
 	@Persistent
@@ -64,14 +63,6 @@ public class AccessPoint {
 
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public Double getLatitude() {

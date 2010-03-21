@@ -117,7 +117,7 @@ public class TaskServlet extends HttpServlet {
 				// saveObject(obj);
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 
-				Long surveyId = siDAO.save(collectionDate, deviceFile, userID,
+				String surveyId = siDAO.save(collectionDate, deviceFile, userID,
 						unparsedLines);
 				// if survey
 				surveyIds.add(surveyId.toString());

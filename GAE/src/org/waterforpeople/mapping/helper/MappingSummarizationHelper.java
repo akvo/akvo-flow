@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.waterforpeople.mapping.dao.AccessPointDAO;
 import org.waterforpeople.mapping.dao.GeoIndexDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -28,14 +28,14 @@ import com.vividsolutions.jts.index.strtree.STRtree;
  * 
  */
 public class MappingSummarizationHelper {
-	private AccessPointDAO accessPointDao;
+	private BaseDAO<AccessPoint> accessPointDao;
 	private GeoIndexDao geoIndexDao;
 
 	private Map<String, StringBuilder> regionMap;
 	private Map<String, String> firstPositionInPolys;
 
 	public MappingSummarizationHelper() {
-		accessPointDao = new AccessPointDAO();
+		accessPointDao = new BaseDAO<AccessPoint>(AccessPoint.class);
 		geoIndexDao = new GeoIndexDao();
 	}
 
@@ -139,7 +139,7 @@ public class MappingSummarizationHelper {
 		// can't do anything
 		STRtree regionIndex = geoIndexDao.findGeoIndex(regionUUID);
 		// TODO: filter access points!!! for now, we get them all
-		List<AccessPoint> accessPoints = accessPointDao.listAccessPoints();
+		List<AccessPoint> accessPoints = accessPointDao.list();
 		List<AccessPoint> pointsInRegion = new ArrayList<AccessPoint>();
 		if (accessPoints != null && regionIndex != null) {
 

@@ -8,13 +8,16 @@ import java.util.logging.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.waterforpeople.mapping.dao.AccessPointDAO;
 import org.waterforpeople.mapping.dao.CaptionsDAO;
 import org.waterforpeople.mapping.dao.GeoRegionDAO;
 import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.CaptionDefinition;
 import org.waterforpeople.mapping.domain.GeoRegion;
+import org.waterforpeople.mapping.domain.KML;
+
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.google.appengine.api.datastore.Text;
 
 public class KMLGenerator {
 	private static final Logger log = Logger.getLogger(KMLGenerator.class
@@ -75,11 +78,11 @@ public class KMLGenerator {
 	public String generatePlacemarks(String vmName) {
 
 		StringBuilder sb = new StringBuilder();
-		AccessPointDAO apDAO = new AccessPointDAO();
+		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
 
-		List<AccessPoint> entries = apDAO.listAccessPoints();
+		List<AccessPoint> entries = apDAO.list();
 		CaptionsDAO captionDAO = new CaptionsDAO();
-		List<CaptionDefinition> captions = captionDAO.listCaptions();
+		List<CaptionDefinition> captions = captionDAO.list();
 		try {
 			// loop through accessPoints and bind to variables
 			for (AccessPoint ap : entries) {
@@ -144,38 +147,40 @@ public class KMLGenerator {
 	public String generateRegionOutlines(String vmName) {
 		StringBuilder sb = new StringBuilder();
 		GeoRegionDAO grDAO = new GeoRegionDAO();
-		List<GeoRegion> grList = grDAO.listGeoRegions();
+		List<GeoRegion> grList = grDAO.list();
 		try {
-			String currUUID = grList.get(0).getUuid();
-			VelocityContext context = new VelocityContext();
-			StringBuilder sbCoor = new StringBuilder();
+			if (grList != null && grList.size() > 0) {
+				String currUUID = grList.get(0).getUuid();
+				VelocityContext context = new VelocityContext();
+				StringBuilder sbCoor = new StringBuilder();
 
-			// loop through GeoRegions and bind to variables
-			for (int i = 0; i < grList.size(); i++) {
-				GeoRegion gr = grList.get(i);
+				// loop through GeoRegions and bind to variables
+				for (int i = 0; i < grList.size(); i++) {
+					GeoRegion gr = grList.get(i);
 
-				if (currUUID.equals(gr.getUuid())) {
-					sbCoor.append(gr.getLongitude() + "," + gr.getLatitiude()
-							+ "," + 0 + "\n");
-				} else {
-					currUUID = gr.getUuid();
-					context.put("coordinateString", sbCoor.toString());
-					sb.append(mergeContext(context, vmName));
-					log.info(sbCoor.toString());
-					context = new VelocityContext();
-					sbCoor = new StringBuilder();
-					sbCoor.append(gr.getLongitude() + "," + gr.getLatitiude()
-							+ "," + 0 + "\n");
+					if (currUUID.equals(gr.getUuid())) {
+						sbCoor.append(gr.getLongitude() + ","
+								+ gr.getLatitiude() + "," + 0 + "\n");
+					} else {
+						currUUID = gr.getUuid();
+						context.put("coordinateString", sbCoor.toString());
+						sb.append(mergeContext(context, vmName));
+						log.info(sbCoor.toString());
+						context = new VelocityContext();
+						sbCoor = new StringBuilder();
+						sbCoor.append(gr.getLongitude() + ","
+								+ gr.getLatitiude() + "," + 0 + "\n");
+					}
 				}
-			}
 
-			context.put("coordinateString", sbCoor.toString());
-			sb.append(mergeContext(context, vmName));
-			return sb.toString();
+				context.put("coordinateString", sbCoor.toString());
+				sb.append(mergeContext(context, vmName));
+				return sb.toString();
+			}
 
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Error generating region outlines", e);
 		}
-		return null;
+		return "";
 	}
 }

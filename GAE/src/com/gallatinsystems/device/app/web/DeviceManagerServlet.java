@@ -21,7 +21,7 @@ public class DeviceManagerServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
-		if (action.equals("listDevices")) {
+		if ("listDevices".equals(action)) {
 			DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
 			List<DeviceSurveyJobQueue> jobs = dsjqDAO.listAllJobsInQueue();
 			for (DeviceSurveyJobQueue item : jobs) {
@@ -31,13 +31,19 @@ public class DeviceManagerServlet extends HttpServlet {
 					log.log(Level.SEVERE, "Could not execute list device", e);
 				}
 			}
+		} else {
+			try {
+				resp.getWriter().print("need an action");
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Could not write error", e);
+			}
 		}
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		String outputString = null;
-		if (action != null && action.equals("saveDevice")) {
+		if ("saveDevice".equals(action)) {
 			outputString = createDevice(req);
 		} else {
 			String devicePhoneNumber = req.getParameter("devicePhoneNumber");

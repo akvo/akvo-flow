@@ -3,21 +3,14 @@ package org.waterforpeople.mapping.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jdo.PersistenceManager;
-
-import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.CaptionDefinition;
 
-public class CaptionsDAO {
-	PersistenceManager pm;
+import com.gallatinsystems.framework.dao.BaseDAO;
 
-	public Long save(CaptionDefinition ap) {		
-		pm.makePersistent(ap);
-		return ap.getId();
-	}
+public class CaptionsDAO extends BaseDAO<CaptionDefinition>{
 
 	public CaptionsDAO() {
-		init();
+		super(CaptionDefinition.class);
 	}
 
 	private List<CaptionDefinition> listCaptionsHardCoded() {
@@ -46,16 +39,10 @@ public class CaptionsDAO {
 		return points;
 	}
 
-	public List<CaptionDefinition> listCaptions() {
-		// javax.jdo.Query query = pm.newQuery(CaptionDefinition.class);
-		// List<CaptionDefinition> points = (List<CaptionDefinition>) query
-		// .execute();
-
+	//TODO: remove this method once we can stop using hard-coded captions
+	public List<CaptionDefinition> list() {	
 		return listCaptionsHardCoded();
 	}
-
-	private void init() {
-		pm = PMF.get().getPersistenceManager();
-	}
+	
 
 }

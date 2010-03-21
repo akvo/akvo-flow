@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.waterforpeople.mapping.dao.AccessPointDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 
 public class TestHarnessServlet extends HttpServlet {
@@ -26,7 +26,7 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyDAO surveyDAO = new SurveyDAO();
 			surveyDAO.test();
 			String outString = surveyDAO.getForTest();
-			AccessPointDAO pointDao = new AccessPointDAO();
+			BaseDAO<AccessPoint> pointDao = new BaseDAO<AccessPoint>(AccessPoint.class);
 			AccessPoint point = new AccessPoint();
 			point.setLatitude(78d);
 			point.setLongitude(43d);

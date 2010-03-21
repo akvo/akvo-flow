@@ -11,13 +11,12 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class SurveyInstance {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
-
+public class SurveyInstance extends BaseDomain{
+	
 	@Persistent
 	private Long userID;
 	
@@ -29,15 +28,7 @@ public class SurveyInstance {
 	
 	@Persistent(mappedBy = "surveyInstance")
 	private ArrayList<QuestionAnswerStore> questionAnswersStore;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
+	
 	public Long getUserID() {
 		return userID;
 	}

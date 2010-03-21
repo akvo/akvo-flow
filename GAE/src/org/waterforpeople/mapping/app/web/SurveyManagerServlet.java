@@ -31,7 +31,7 @@ public class SurveyManagerServlet extends HttpServlet {
 		String surveyDocOut = null;
 		if (req.getParameter("surveyInstanceId") != null) {
 			surveyInstanceId = new Long(req.getParameter("surveyInstanceId"));
-			si = siDAO.get(surveyInstanceId);
+			si = siDAO.getByKey(surveyInstanceId);
 
 		} else if (req.getParameter("surveyId") != null) {
 			surveyId = new Long(req.getParameter("surveyId"));
@@ -63,7 +63,7 @@ public class SurveyManagerServlet extends HttpServlet {
 						resp.getWriter().println(qas.toString());
 						resp.getWriter().println(
 								"----------SurveyID assoced with QuestionAnswer: "
-										+ qas.getSurveyInstance().getId());
+										+ qas.getSurveyInstance().getKey());
 					}
 				} else if (action.equals("save") && surveyDoc != null) {
 					SurveyDAO surveyDAO = new SurveyDAO();

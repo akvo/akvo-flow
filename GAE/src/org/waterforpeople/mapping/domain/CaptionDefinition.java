@@ -3,28 +3,19 @@ package org.waterforpeople.mapping.domain;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+
+import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class CaptionDefinition {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
-
+public class CaptionDefinition extends BaseDomain{
+	
 	private String captionVariableName = null;
 	private String captionValue = null;
 	private Date captionEffectiveStartDate = null;
 	private Date captionEffectiveEndDate = null;
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+
 	public String getCaptionVariableName() {
 		return captionVariableName;
 	}

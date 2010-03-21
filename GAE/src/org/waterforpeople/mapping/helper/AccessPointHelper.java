@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
-import org.waterforpeople.mapping.dao.AccessPointDAO;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+
+import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class AccessPointHelper {
 
@@ -19,10 +20,10 @@ public class AccessPointHelper {
 		// Get the surveyDefinition
 
 		SurveyInstanceDAO sid = new SurveyInstanceDAO();
-		SurveyInstance si = sid.get(surveyId);
+		SurveyInstance si = sid.getByKey(surveyId);
 		ArrayList<QuestionAnswerStore> questionAnswerList = si
 				.getQuestionAnswersStore();
-		
+
 		// Hardcoded for dev need to identify the map key between SurveyInstance
 		// and Survey
 		// Survey surveyDefinition = surveyDAO.get(39L);
@@ -38,9 +39,10 @@ public class AccessPointHelper {
 		 * sanitationPointPhotoURL =q3 waterPointCaption = qm3
 		 */
 
-		AccessPoint ap ;
-		AccessPointDAO apDAO = new AccessPointDAO();
-		ap = parseAccessPoint(questionAnswerList,AccessPoint.AccessPointType.WATER_POINT);
+		AccessPoint ap;
+		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
+		ap = parseAccessPoint(questionAnswerList,
+				AccessPoint.AccessPointType.WATER_POINT);
 		apDAO.save(ap);
 
 	}
@@ -48,18 +50,18 @@ public class AccessPointHelper {
 	private AccessPoint parseAccessPoint(
 			ArrayList<QuestionAnswerStore> questionAnswerList,
 			AccessPoint.AccessPointType accessPointType) {
-		AccessPoint ap=null;
-		if(accessPointType==AccessPointType.WATER_POINT){
+		AccessPoint ap = null;
+		if (accessPointType == AccessPointType.WATER_POINT) {
 			ap = parseWaterPoint(questionAnswerList);
-		}
-		else if(accessPointType== AccessPointType.SANITATION_POINT){
-			
+		} else if (accessPointType == AccessPointType.SANITATION_POINT) {
+
 		}
 		return ap;
 	}
-	
-	private AccessPoint parseWaterPoint(ArrayList<QuestionAnswerStore> questionAnswerList){
-		AccessPoint ap=new AccessPoint();
+
+	private AccessPoint parseWaterPoint(
+			ArrayList<QuestionAnswerStore> questionAnswerList) {
+		AccessPoint ap = new AccessPoint();
 		Properties props = System.getProperties();
 
 		String photo_url_root = props.getProperty("photo_url_root");
@@ -98,7 +100,7 @@ public class AccessPointHelper {
 				ap.setPointStatus(qas.getValue());
 			}
 			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-			//for now hardcode the data to now
+			// for now hardcode the data to now
 			ap.setCollectionDate(new Date());
 		}
 

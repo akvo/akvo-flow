@@ -42,7 +42,7 @@ public class GeoRegionHelper {
 			gr.setLatitiude(new Double(contents[3]));
 			gr.setLongitude(new Double(contents[4]));
 			// gr.setCreateDateTime(new Date(contents[5]));
-			Key key = grDAO.save(gr);
+			Key key = (grDAO.save(gr)).getKey();
 			iCurrRow++;
 			pointsInPoly++;
 			log.info("Saved RegionRow: " + key.toString());

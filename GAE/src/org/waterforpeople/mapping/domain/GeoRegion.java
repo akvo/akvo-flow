@@ -2,19 +2,15 @@ package org.waterforpeople.mapping.domain;
 
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
+import com.gallatinsystems.framework.domain.BaseDomain;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
+public class GeoRegion extends BaseDomain {
 
-public class GeoRegion {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
 	@Persistent
 	private String uuid;
 	private String name;
@@ -23,10 +19,11 @@ public class GeoRegion {
 	private Double longitude;
 	private Double altitude;
 	private Date createDateTime;
-	
+
 	public Date getCreateDateTime() {
 		return createDateTime;
 	}
+
 	public void setCreateDateTime(Date createDateTime) {
 		this.createDateTime = createDateTime;
 	}
@@ -34,45 +31,49 @@ public class GeoRegion {
 	public Double getAltitude() {
 		return altitude;
 	}
+
 	public void setAltitude(Double altitude) {
 		this.altitude = altitude;
 	}
+
 	public String getUuid() {
 		return uuid;
 	}
+
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-	public Key getKey() {
-		return key;
-	}
-	public void setKey(Key key) {
-		this.key = key;
-	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public Long getOrder() {
 		return order;
 	}
+
 	public void setOrder(Long order) {
 		this.order = order;
 	}
+
 	public Double getLatitiude() {
 		return latitiude;
 	}
+
 	public void setLatitiude(Double latitiude) {
 		this.latitiude = latitiude;
 	}
+
 	public Double getLongitude() {
 		return longitude;
 	}
+
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	
 
 }

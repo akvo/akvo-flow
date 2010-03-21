@@ -1,50 +1,33 @@
 package org.waterforpeople.mapping.dao;
 
-import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
-
-import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.KML;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.datastore.Text;
 
-public class KMLDAO {
+public class KMLDAO extends BaseDAO<KML> {
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(KMLDAO.class
-			.getName());
-
-	PersistenceManager pm;
-
-	private void init() {
-		pm = PMF.get().getPersistenceManager();
-	}
+	private static final Logger log = Logger.getLogger(KMLDAO.class.getName());
 
 	public KMLDAO() {
-		init();
+		super(KML.class);
 	}
-	
-	public Long saveKML(String kmlText) {
+
+	public String saveKML(String kmlText) {
 		KML kml = new KML();
 		kml.setKmlText(new Text(kmlText));
-		kml.setCreateDateTime(new Date());
-		pm.makePersistent(kml);
-		return kml.getId();
+		return save(kml).getKey().toString();
 	}
 
 	@SuppressWarnings("unchecked")
 	public String getKML(Long id) {
-		KML kml = null;
-
-		javax.jdo.Query query = pm.newQuery(KML.class);
-		query.setFilter("id == idParam");
-		query.declareParameters("Long idParam");
-		List<KML> results = (List<KML>) query.execute(id);
-		if (results.size() > 0) {
-			kml = results.get(0);
+		KML kml = getByKey(id);
+		if (kml != null) {
+			return kml.getKmlText().toString();
+		} else {
+			return "";
 		}
-		return kml.getKmlText().toString();
 	}
 }
