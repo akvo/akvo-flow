@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
@@ -55,11 +56,10 @@ public class ImageProcessorServlet extends HttpServlet {
 			while ((size = in.read(buffer, 0, buffer.length)) != -1) {
 				out.write(buffer, 0, size);
 			}
-			// resp.getWriter().println("Before size: " + out.size());
+
 			log.info("Before size: " + out.size());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not rotate image",e);
 		}
 
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
@@ -80,7 +80,6 @@ public class ImageProcessorServlet extends HttpServlet {
 //		try {
 //			resp.getOutputStream().write(newImage);
 //		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
 		 String contextPath = req.getContextPath();
@@ -88,8 +87,7 @@ public class ImageProcessorServlet extends HttpServlet {
 		try {
 			resp.sendRedirect(resp.encodeRedirectURL(contextPath + "/MalawiPhotos.html") );
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not rotate image",e);
 		}
 		
 
@@ -115,8 +113,7 @@ public class ImageProcessorServlet extends HttpServlet {
 			resp.getWriter().println("Before size: " + out.size());
 			log.info("Before size: " + out.size());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not resize image",e);
 		}
 
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
@@ -129,10 +126,8 @@ public class ImageProcessorServlet extends HttpServlet {
 		try {
 			resp.getWriter().println("After size: " + newImage.length);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not resize image",e);
 		}
-
 		resp.setContentType("text/plain");
 
 	}

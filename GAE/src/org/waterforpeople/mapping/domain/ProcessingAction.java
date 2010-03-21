@@ -24,11 +24,11 @@ public class ProcessingAction {
 		this.dispatchURL = dispatchURL;
 	}
 
-	public HashMap getParams() {
+	public HashMap<String,String> getParams() {
 		return params;
 	}
 
-	public void setParams(HashMap params) {
+	public void setParams(HashMap<String,String> params) {
 		this.params = params;
 	}
 

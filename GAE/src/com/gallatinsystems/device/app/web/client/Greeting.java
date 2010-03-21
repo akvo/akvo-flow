@@ -50,12 +50,10 @@ public class Greeting implements EntryPoint {
 		final AsyncCallback callback = new AsyncCallback() {
 
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
 
 			}
 
 			public void onSuccess(Object result) {
-				// TODO Auto-generated method stub
 				// greetingTextBox.setText((String)result);
 				Integer random = Random.nextInt();
 				image.setUrl(urlString + "?random=" + random);
@@ -98,7 +96,7 @@ public class Greeting implements EntryPoint {
 
 		addPanel.add(surveyTree);
 
-		// TODO Assemble Add Stock panel.
+		// Assemble Add Stock panel.
 		addPanel.add(newSymbolTextBox);
 		addPanel.add(addStockButton);
 		addPanel.add(newSymbolTextBox);
@@ -110,7 +108,7 @@ public class Greeting implements EntryPoint {
 		// Assemble Main panel.
 		mainPanel.add(addPanel);
 
-		// TODO Associate the Main panel with the HTML host page.
+		// Associate the Main panel with the HTML host page.
 		RootPanel.get("greeting").add(mainPanel);
 
 		surveyTree.addSelectionHandler(new SelectionHandler() {
@@ -119,7 +117,6 @@ public class Greeting implements EntryPoint {
 			}
 		});
 
-		// TODO Move cursor focus to the input box.
 		newSymbolTextBox.setFocus(true);
 		// Listen for mouse events on the Add button.
 		addStockButton.addClickHandler(new ClickHandler() {

@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.domain;
 
 import java.util.Date;
-import java.util.UUID;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;

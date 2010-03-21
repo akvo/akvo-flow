@@ -1,15 +1,14 @@
 package com.gallatinsystems.survey.app.web;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
@@ -50,8 +49,7 @@ public class SurveyGroupServlet extends HttpServlet {
 			outString = surveyGroupAssoc.toString();
 		} else if (action != null
 				&& action.equals("associateSurveyToSurveyGroup")) {
-			SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
-			SurveyContainer surveyContainer = new SurveyContainer();
+			SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();			
 			Long surveyContainerId = new Long(req
 					.getParameter("surveyContainerId"));
 			Long surveyGroupId = new Long(req.getParameter("surveyGroupId"));
@@ -65,8 +63,7 @@ public class SurveyGroupServlet extends HttpServlet {
 		try {
 			resp.getWriter().print(outString);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"could not perform survey group operation",e);
 		}
 	}
 

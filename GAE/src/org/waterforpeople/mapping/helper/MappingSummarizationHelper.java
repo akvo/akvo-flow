@@ -106,8 +106,8 @@ public class MappingSummarizationHelper {
 		if (accessPoints != null && accessPoints.size() > 0) {
 			// now we have the list of access points in the region
 			// so run the rule
-			// TODO: define abstract rule handling. right now, we hard code the
-			// 1 rule we have
+
+			// 1 rule we have. once we have more, this will be abstracted out
 			int functionalCount = 0;
 			for (AccessPoint ap : accessPoints) {
 				if ("High".equalsIgnoreCase(ap.getPointStatus())

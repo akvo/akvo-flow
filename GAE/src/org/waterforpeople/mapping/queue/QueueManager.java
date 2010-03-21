@@ -2,16 +2,14 @@ package org.waterforpeople.mapping.queue;
 
 
 
-import java.util.HashMap;
-import java.util.Iterator;
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.domain.ProcessingAction;
 
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 
 public class QueueManager {

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
@@ -38,16 +39,13 @@ public class SurveyXMLAdapter {
 	}
 
 	public static void main(String[] args) {
-		SurveyXMLAdapter surveyXMLAdapter = new SurveyXMLAdapter();
-		String xmlDoc = null;
+		SurveyXMLAdapter surveyXMLAdapter = new SurveyXMLAdapter();		
 		try {
 			surveyXMLAdapter.unmarshall(readFileAsString(args[0]));
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not get survey from xml",e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not read file",e);
 		}
 	}
 

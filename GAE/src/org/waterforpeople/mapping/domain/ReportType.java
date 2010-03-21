@@ -5,17 +5,17 @@ import java.util.HashMap;
 
 public class ReportType {
 	private String code;
-	private	HashMap params;
+	private	HashMap<String,String> params;
 	public String getCode() {
 		return code;
 	}
 	public void setCode(String code) {
 		this.code = code;
 	}
-	public HashMap getParams() {
+	public HashMap<String,String> getParams() {
 		return params;
 	}
-	public void setParams(HashMap params) {
+	public void setParams(HashMap<String,String> params) {
 		this.params = params;
 	}
 	@Override

@@ -4,13 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import services.S3Driver;
 
@@ -31,7 +28,6 @@ public class GeoIndexDao {
 	private static final Logger log = Logger.getLogger(GeoIndexDao.class
 			.getName());
 
-	// TODO: change this
 	private static final String INDEX_BASE_URL = "http://dru-test.s3.amazonaws.com/gis/index/";
 
 	/**
@@ -62,8 +58,7 @@ public class GeoIndexDao {
 				ByteArrayOutputStream byteArr = new ByteArrayOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(byteArr);
 				oos.writeObject(index);
-
-				// TODO: change path
+				
 				// NOTE: this will give an exception in the Dev environment due
 				// to a bug with the GAE local implementation. It'll work on the
 				// server.

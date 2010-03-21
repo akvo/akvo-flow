@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import services.S3Driver;
 
@@ -23,6 +25,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GreetingService {
 
+	Logger log = Logger.getLogger(GreetingServiceImpl.class.getName());
+	
 	public String greetServer(String input) throws IllegalArgumentException {
 		// Verify that the input is valid. 
 		if (!FieldVerifier.isValidName(input)) {
@@ -67,10 +71,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 			while ((size = in.read(buffer, 0, buffer.length)) != -1) {
 				out.write(buffer, 0, size);
 			}
-			// resp.getWriter().println("Before size: " + out.size());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not rotate image",e);
 		}
 
 		GAEImageAdapter gaeImg = new GAEImageAdapter();

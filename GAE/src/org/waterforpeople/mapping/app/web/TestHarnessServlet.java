@@ -2,6 +2,8 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,10 +16,8 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 
 public class TestHarnessServlet extends HttpServlet {
-
-	/**
-	 * 
-	 */
+	private static Logger log = Logger.getLogger(TestHarnessServlet.class
+			.getName());
 	private static final long serialVersionUID = -5673118002247715049L;
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -34,8 +34,7 @@ public class TestHarnessServlet extends HttpServlet {
 			try {
 				resp.getWriter().print(outString);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Could not execute test", e);
 			}
 		} else if ("testSaveRegion".equals(action)) {
 			GeoRegionHelper geoHelp = new GeoRegionHelper();
@@ -47,11 +46,10 @@ public class TestHarnessServlet extends HttpServlet {
 				regionLines.add(builder.toString());
 			}
 			geoHelp.processRegionsSurvey(regionLines);
-			try {				
+			try {
 				resp.getWriter().print("Save complete");
-			} catch (IOException e) {				
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Could not save test region", e);
 			}
 		}
 	}

@@ -14,7 +14,6 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Query;
 
 public class SurveyInstanceDAO {
 	PersistenceManager pm;

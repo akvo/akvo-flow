@@ -12,7 +12,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -269,9 +268,7 @@ public class TaskServlet extends HttpServlet {
 	PersistenceManager pm = null;
 
 	private ProcessingAction dispatch(String surveyId) {
-		ProcessingAction pa = new ProcessingAction();
-
-		HashMap params = new HashMap();
+		ProcessingAction pa = new ProcessingAction();	
 
 		pa.setAction("addAccessPoint");
 		pa.setDispatchURL("/worker/task");

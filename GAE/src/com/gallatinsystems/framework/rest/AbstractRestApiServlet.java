@@ -1,6 +1,8 @@
 package com.gallatinsystems.framework.rest;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +22,8 @@ import com.gallatinsystems.framework.rest.exception.RestException;
  * 
  */
 public abstract class AbstractRestApiServlet extends HttpServlet {
-
+	private static Logger log = Logger.getLogger(AbstractRestApiServlet.class
+			.getName());
 	private static final long serialVersionUID = -8553345034709944772L;
 	private static final String XML_MODE = "XML";
 	private static final String JSON_MODE = "JSON";
@@ -59,9 +62,9 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			// we get here if we get some unexpected exception that does not
 			// derive from RestException
 			writeErrorResponse(new RestError(), resp);
-			// TODO: log error
+			log.log(Level.SEVERE,"Could not execute rest request",e);
 		} finally {
-			// null out the request/respnonse objects so we don't leak memory
+			// null out the request/response objects so we don't leak memory
 			requests.set(null);
 			responses.set(null);
 		}
@@ -123,7 +126,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			// TODO: error should honor content type (i.e. xml, json or text)
 			resp.getWriter().print(err.toString());
 		} catch (IOException e) {
-			// TODO: log error
+			log.log(Level.SEVERE,"Could not write to servlet response object",e);
 		}
 	}
 
@@ -146,7 +149,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	}
 
 	/**
-	 * initializes thread local objets if they're null
+	 * initializes thread local objects if they're null
 	 */
 	private void checkThreadLocal() {
 		if (requests == null) {

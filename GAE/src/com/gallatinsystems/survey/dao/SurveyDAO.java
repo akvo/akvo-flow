@@ -2,6 +2,7 @@ package com.gallatinsystems.survey.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -30,8 +31,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return super.getPersistenceManager().makePersistent(surveyGroup);
 	}
 
-	public Long save(String surveyDefinition) {
-		Long id = 0L;
+	public Long save(String surveyDefinition) {	
 		SurveyContainer sc = new SurveyContainer();
 		com.google.appengine.api.datastore.Text surveyText = new com.google.appengine.api.datastore.Text(
 				surveyDefinition);
@@ -43,7 +43,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	public String getForTest() {
 		// Question quest = super.getByKey(300L);
 		StringBuilder sb = new StringBuilder();
-		List<Question> questionList = super.list(Question.class);
+
 
 		List<QuestionQuestionGroupAssoc> qqgaList = super
 				.list(QuestionQuestionGroupAssoc.class);
@@ -55,13 +55,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 					sb.append(oo.toString());
 				}
 			}
-		}
-
-		List<com.gallatinsystems.survey.domain.Survey> surveyList = list();
-
-		for (com.gallatinsystems.survey.domain.Survey survey : surveyList) {
-			// sb.append(survey.toString());
-		}
+		}		
 		return sb.toString();
 	}
 
@@ -112,6 +106,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		log.info("BaseDAO test survey key: " + survey.getKey().getId());
 	}
 
+	@SuppressWarnings("unchecked")
 	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
 		SurveyContainer surveyContainer = null;
 
@@ -130,12 +125,12 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			survey = sxa.unmarshall(surveyContainer.getSurveyDocument()
 					.toString());
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could not unmarshal xml",e);
 		}
 		return survey;
 	}
 
+	@SuppressWarnings("unchecked")
 	public String getSurveyDocument(Long id) {
 		SurveyContainer surveyContainer = null;
 
@@ -151,9 +146,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return surveyContainer.getSurveyDocument().getValue();
 	}
 
-	public List<SurveyContainer> listSurveyContainers() {
-		SurveyContainer surveyContainer = null;
-
+	@SuppressWarnings("unchecked")
+	public List<SurveyContainer> listSurveyContainers() {		
 		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
 
 		List<SurveyContainer> results = (List<SurveyContainer>) query.execute();

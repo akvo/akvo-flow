@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.amazon.s3shell.S3Store;
@@ -54,8 +55,7 @@ public class S3Driver {
 					"public-read");
 			log.info("Stored image: " + fileName + " " + storedFlag);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Could upload file",e);
 		}
 
 	}
@@ -124,8 +124,7 @@ public class S3Driver {
 			}
 			
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.log(Level.SEVERE,"Could not upload files",e1);
 		}
 		
 		List<String> uberFiles = new ArrayList<String>();
@@ -162,11 +161,9 @@ public class S3Driver {
 							log.info("Stored image: " + fileName + " "
 									+ storedFlag);
 						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							log.log(Level.SEVERE,"Could not find file",e);
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							log.log(Level.SEVERE,"Could not read/write file",e);
 						}
 					}
 				}
@@ -199,8 +196,7 @@ public class S3Driver {
 				try {
 					fis = new FileInputStream(fileName);
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,"Could not find file",e);
 				}
 				byte[] buffer = new byte[2048];
 				int size;
@@ -209,16 +205,14 @@ public class S3Driver {
 						out.write(buffer, 0, size);
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,"Could not read file",e);
 				}
 				try {
 					boolean storedFlag = s3Store.storeItem(fileName, out
 							.toByteArray(), "public-read");
 					log.info("Stored image: " + fileName + " " + storedFlag);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,"Could not store file",e);
 				}
 			}
 		}
