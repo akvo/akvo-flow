@@ -17,13 +17,22 @@ import com.gallatinsystems.survey.domain.QuestionHelp;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveyContainer;
-import com.gallatinsystems.survey.domain.xml.Survey;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
-public class SurveyDAO extends BaseDAO {
-	PersistenceManager pm;
+public class SurveyDAO extends BaseDAO<Survey> {
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
+
+	public SurveyDAO() {
+		super();
+		setDomainClass(Survey.class);
+	}
+
+	public SurveyGroup save(SurveyGroup surveyGroup) {
+		return super.getPersistenceManager().makePersistent(surveyGroup);
+	}
 
 	public Long save(String surveyDefinition) {
 		Long id = 0L;
@@ -36,12 +45,12 @@ public class SurveyDAO extends BaseDAO {
 	}
 
 	public String getForTest() {
-		//Question quest = super.getByKey(300L);
+		// Question quest = super.getByKey(300L);
 		StringBuilder sb = new StringBuilder();
-		List<Question> questionList = super.list(new Question());
+		List<Question> questionList = super.list(Question.class);
 
 		List<QuestionQuestionGroupAssoc> qqgaList = super
-				.list(new QuestionQuestionGroupAssoc());
+				.list(QuestionQuestionGroupAssoc.class);
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
 			sb.append(qqga.toString());
 			if (qqga.getQuestion() != null) {
@@ -52,8 +61,7 @@ public class SurveyDAO extends BaseDAO {
 			}
 		}
 
-		List<com.gallatinsystems.survey.domain.Survey> surveyList = super
-				.list(new com.gallatinsystems.survey.domain.Survey());
+		List<com.gallatinsystems.survey.domain.Survey> surveyList = list();
 
 		for (com.gallatinsystems.survey.domain.Survey survey : surveyList) {
 			// sb.append(survey.toString());
@@ -104,12 +112,11 @@ public class SurveyDAO extends BaseDAO {
 		survey.setVersion(1);
 
 		super.save(survey);
-		
-		
-		log.info("BaseDAO test survey key: " + survey.getKey().getId());		
+
+		log.info("BaseDAO test survey key: " + survey.getKey().getId());
 	}
 
-	public Survey get(Long id) {
+	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
 		SurveyContainer surveyContainer = null;
 
 		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
@@ -122,7 +129,7 @@ public class SurveyDAO extends BaseDAO {
 		}
 
 		SurveyXMLAdapter sxa = new SurveyXMLAdapter();
-		Survey survey = null;
+		com.gallatinsystems.survey.domain.xml.Survey survey = null;
 		try {
 			survey = sxa.unmarshall(surveyContainer.getSurveyDocument()
 					.toString());
@@ -155,13 +162,5 @@ public class SurveyDAO extends BaseDAO {
 
 		List<SurveyContainer> results = (List<SurveyContainer>) query.execute();
 		return results;
-	}
-
-	private void init() {
-		pm = super.getPersistenceManager();
-	}
-
-	public SurveyDAO() {
-		init();
 	}
 }

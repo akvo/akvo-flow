@@ -3,21 +3,24 @@ package com.gallatinsystems.device.dao;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.waterforpeople.mapping.domain.AccessPoint;
-
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
-public class DeviceDAO extends BaseDAO {
+public class DeviceDAO extends BaseDAO<Device> {
 	private static final Logger log = Logger.getLogger(DeviceDAO.class
 			.getName());
 
+	public DeviceDAO(){
+		super();
+		setDomainClass(Device.class);
+	}
+	
 	public Device save(Device device) {
 		Device deviceExists = get(device.getPhoneNumber());
 		if (deviceExists == null) {
 			super.save(device);
-		}else{
-			//update device
+		} else {
+			// update device
 		}
 		return device;
 	}

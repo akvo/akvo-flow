@@ -2,11 +2,8 @@ package com.gallatinsystems.survey.domain;
 
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -16,10 +13,7 @@ public class SurveyGroup extends BaseDomain {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 9001451397587572330L;
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private static final long serialVersionUID = 9001451397587572330L;	
 	private String description;
 	@Unique(name="SURVEYGROUP_CODE_IDX")
 	private String code;
