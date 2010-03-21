@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.StringWriter;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.velocity.VelocityContext;
@@ -17,10 +18,20 @@ import org.waterforpeople.mapping.domain.GeoRegion;
 public class KMLGenerator {
 	private static final Logger log = Logger.getLogger(KMLGenerator.class
 			.getName());
+
 	private KMLDAO kmlDAO;
+	private VelocityEngine engine;
 
 	public KMLGenerator() {
-		kmlDAO = new KMLDAO();		
+		kmlDAO = new KMLDAO();
+		engine = new VelocityEngine();
+		engine.setProperty("runtime.log.logsystem.class",
+				"org.apache.velocity.runtime.log.NullLogChute");
+		try {
+			engine.init();
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not initialize velocity", e);
+		}
 	}
 
 	public String generateRegionDocumentString(String regionVMName) {
@@ -28,23 +39,22 @@ public class KMLGenerator {
 		return regionKML;
 	}
 
+	private org.apache.velocity.Template getVelocityTemplate(String templateName)
+			throws Exception {
+		return engine.getTemplate(templateName);
+	}
+
 	public String generateDocument(String placemarksVMName) {
-		VelocityEngine ve = new VelocityEngine();
 		String document = null;
 		try {
-			ve.setProperty("runtime.log.logsystem.class",
-					"org.apache.velocity.runtime.log.NullLogChute");
-			ve.init();
-			org.apache.velocity.Template t = ve.getTemplate("Document.vm");
+			org.apache.velocity.Template t = getVelocityTemplate("Document.vm");
 			VelocityContext context = new VelocityContext();
-
 			context.put("Placemark", generatePlacemarks("PlacemarkTabs.vm"));
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
 			StringWriter writer = new StringWriter();
 			t.merge(context, writer);
-			System.out.println(writer.toString());
 			document = writer.toString();
 			kmlDAO.saveKML(document);
 		} catch (Exception ex) {
@@ -54,7 +64,7 @@ public class KMLGenerator {
 	}
 
 	public String generatePlacemarks(String vmName) {
-		VelocityEngine ve = new VelocityEngine();
+
 		StringBuilder sb = new StringBuilder();
 		AccessPointDAO apDAO = new AccessPointDAO();
 
@@ -63,10 +73,8 @@ public class KMLGenerator {
 		List<CaptionDefinition> captions = captionDAO.listCaptions();
 		try {
 			for (AccessPoint ap : entries) {
-				ve.setProperty("runtime.log.logsystem.class",
-						"org.apache.velocity.runtime.log.NullLogChute");
-				ve.init();
-				org.apache.velocity.Template t = ve.getTemplate(vmName);
+
+				org.apache.velocity.Template t = getVelocityTemplate(vmName);
 				VelocityContext context = new VelocityContext();
 
 				// loop through accessPoints and bind to variables
@@ -121,13 +129,11 @@ public class KMLGenerator {
 
 				StringWriter writer = new StringWriter();
 				t.merge(context, writer);
-				System.out.println(writer.toString());
 				sb.append(writer.toString());
 
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Error generating placemarks", e);
 		}
 		return sb.toString();
 	}
@@ -136,15 +142,9 @@ public class KMLGenerator {
 		StringBuilder sb = new StringBuilder();
 		GeoRegionDAO grDAO = new GeoRegionDAO();
 		List<GeoRegion> grList = grDAO.listGeoRegions();
-
-		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty("runtime.log.logsystem.class",
-				"org.apache.velocity.runtime.log.NullLogChute");
 		try {
-			ve.init();
-			org.apache.velocity.Template t = ve.getTemplate(vmName);
-			StringBuilder sbPlacemarks = new StringBuilder();
 
+			org.apache.velocity.Template t = getVelocityTemplate(vmName);
 			String currUUID = grList.get(0).getUuid();
 			StringWriter writer = null;
 			VelocityContext context = new VelocityContext();
@@ -176,12 +176,10 @@ public class KMLGenerator {
 			writer = new StringWriter();
 			t.merge(context, writer);
 			sb.append(writer.toString());
-			System.out.println(sb.toString());
 			return sb.toString();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Error generating region outlines", e);
 		}
 		return null;
 	}
