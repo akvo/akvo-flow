@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.dao.AccessPointDAO;
@@ -39,24 +40,32 @@ public class KMLGenerator {
 		return regionKML;
 	}
 
-	private org.apache.velocity.Template getVelocityTemplate(String templateName)
+	/**
+	 * merges a hydrated context with a template identified by the templateName
+	 * passed in.
+	 * 
+	 * @param context
+	 * @param templateName
+	 * @return
+	 * @throws Exception
+	 */
+	private String mergeContext(VelocityContext context, String templateName)
 			throws Exception {
-		return engine.getTemplate(templateName);
+		Template t = engine.getTemplate(templateName);
+		StringWriter writer = new StringWriter();
+		t.merge(context, writer);
+		return writer.toString();
 	}
 
 	public String generateDocument(String placemarksVMName) {
 		String document = null;
 		try {
-			org.apache.velocity.Template t = getVelocityTemplate("Document.vm");
 			VelocityContext context = new VelocityContext();
 			context.put("Placemark", generatePlacemarks("PlacemarkTabs.vm"));
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
-			StringWriter writer = new StringWriter();
-			t.merge(context, writer);
-			document = writer.toString();
-			kmlDAO.saveKML(document);
+			kmlDAO.saveKML(mergeContext(context, "Document.vm"));
 		} catch (Exception ex) {
 
 		}
@@ -72,12 +81,9 @@ public class KMLGenerator {
 		CaptionsDAO captionDAO = new CaptionsDAO();
 		List<CaptionDefinition> captions = captionDAO.listCaptions();
 		try {
+			// loop through accessPoints and bind to variables
 			for (AccessPoint ap : entries) {
-
-				org.apache.velocity.Template t = getVelocityTemplate(vmName);
 				VelocityContext context = new VelocityContext();
-
-				// loop through accessPoints and bind to variables
 
 				context.put("collectionDate", ap.getCollectionDate());
 				context.put("latitude", ap.getLatitude());
@@ -127,10 +133,7 @@ public class KMLGenerator {
 							.getCaptionValue());
 				}
 
-				StringWriter writer = new StringWriter();
-				t.merge(context, writer);
-				sb.append(writer.toString());
-
+				sb.append(mergeContext(context, vmName));
 			}
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Error generating placemarks", e);
@@ -143,16 +146,13 @@ public class KMLGenerator {
 		GeoRegionDAO grDAO = new GeoRegionDAO();
 		List<GeoRegion> grList = grDAO.listGeoRegions();
 		try {
-
-			org.apache.velocity.Template t = getVelocityTemplate(vmName);
 			String currUUID = grList.get(0).getUuid();
-			StringWriter writer = null;
 			VelocityContext context = new VelocityContext();
 			StringBuilder sbCoor = new StringBuilder();
 
+			// loop through GeoRegions and bind to variables
 			for (int i = 0; i < grList.size(); i++) {
 				GeoRegion gr = grList.get(i);
-				// loop through GeoRegions and bind to variables
 
 				if (currUUID.equals(gr.getUuid())) {
 					sbCoor.append(gr.getLongitude() + "," + gr.getLatitiude()
@@ -160,22 +160,17 @@ public class KMLGenerator {
 				} else {
 					currUUID = gr.getUuid();
 					context.put("coordinateString", sbCoor.toString());
-					writer = new StringWriter();
-					t.merge(context, writer);
-					sb.append(writer.toString());
+					sb.append(mergeContext(context, vmName));
 					log.info(sbCoor.toString());
 					context = new VelocityContext();
 					sbCoor = new StringBuilder();
 					sbCoor.append(gr.getLongitude() + "," + gr.getLatitiude()
 							+ "," + 0 + "\n");
-
 				}
 			}
 
 			context.put("coordinateString", sbCoor.toString());
-			writer = new StringWriter();
-			t.merge(context, writer);
-			sb.append(writer.toString());
+			sb.append(mergeContext(context, vmName));
 			return sb.toString();
 
 		} catch (Exception e) {
