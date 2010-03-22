@@ -122,7 +122,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	 * @param err
 	 * @param resp
 	 */
-	private void writeErrorResponse(RestError err, HttpServletResponse resp) {
+	protected void writeErrorResponse(RestError err, HttpServletResponse resp) {
 		try {
 			// TODO: error should honor content type (i.e. xml, json or text)
 			resp.getWriter().print(err.toString());

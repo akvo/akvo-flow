@@ -5,7 +5,6 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,10 +16,9 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
@@ -30,74 +28,26 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import services.S3Driver;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
+import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
-public class TaskServlet extends HttpServlet {
+public class TaskServlet extends AbstractRestApiServlet {
 
 	private static final long serialVersionUID = -2607990749512391457L;
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
 
-	@SuppressWarnings("unchecked")
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-		String action = req.getParameter("action");
-		String fileName = req.getParameter("fileName");
-		if (action != null) {
-			log.info("	TaskServlet->action->" + action);
-			log.info("  TaskServlet->action->" + fileName);
-			if (action.equals("processFile")) {
-				if (fileName != null) {
-					/*
-					 * Callback URL for Google TaskQueue to call to begin
-					 * processing zip file 1. Get the zip file from S3 2. Open
-					 * file 3. Save the meta-data to the DB 4. Explode the
-					 * Images 5. Process the images (resize) 6. Save the images
-					 * back to S3
-					 */
-					log.info("	Task->processFile");
-					ArrayList<String> surveyIds = processFile(fileName);
-					for (String key : surveyIds) {
-						ProcessingAction pa = dispatch(key);
-						// Queue queue = QueueFactory.getDefaultQueue();
-						TaskOptions options = url(pa.getDispatchURL());
-						Iterator it = pa.getParams().keySet().iterator();
-						while (it.hasNext()) {
-							options.param("key", (String) it.next());
-						}
-						// queue.add(options);
-						log.info("Received Task Queue calls for surveyKey: "
-								+ key);
-						AccessPointHelper aph = new AccessPointHelper();
-						aph.processSurveyInstance(key);
-					}
-				}
-			} else if (action.equals("addAccessPoints")) {
-				String surveyKey = req.getParameter("surveyId");
-				log
-						.info("Received Task Queue calls for surveyId: "
-								+ surveyKey);
-				AccessPointHelper aph = new AccessPointHelper();
-				aph.processSurveyInstance(surveyKey);
-			}
-		}
-	}
-
-	public static void main(String[] args) {
-		TaskServlet ts = new TaskServlet();
-		ts.processFile(null);
-	}
-
-	private URL url;
-
 	private ArrayList<String> processFile(String fileName) {
 		ArrayList<String> surveyIds = new ArrayList<String>();
 		try {
-			url = new URL("http://waterforpeople.s3.amazonaws.com/devicezip/"
-					+ fileName);
+			URL url = new URL(
+					"http://waterforpeople.s3.amazonaws.com/devicezip/"
+							+ fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
 			ArrayList<String> unparsedLines = extractDataFromZip(zis);
@@ -116,7 +66,7 @@ public class TaskServlet extends HttpServlet {
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 				String surveyId = siDAO.save(collectionDate, deviceFile,
 						userID, unparsedLines);
-				surveyIds.add(surveyId.toString());				
+				surveyIds.add(surveyId.toString());
 			}
 			zis.close();
 		} catch (Exception e) {
@@ -193,6 +143,67 @@ public class TaskServlet extends HttpServlet {
 		pa.setDispatchURL("/worker/task");
 		pa.addParam("surveyId", surveyKey);
 		return pa;
+	}
+
+	@Override
+	protected RestRequest convertRequest() throws Exception {
+		HttpServletRequest req = getRequest();
+		RestRequest restRequest = new TaskRequest();
+		restRequest.populateFromHttpRequest(req);
+		return restRequest;
+	}
+
+	@Override
+	protected RestResponse handleRequest(RestRequest request) throws Exception {
+		RestResponse response = new RestResponse();
+		TaskRequest taskReq = (TaskRequest) request;
+		if (TaskRequest.PROCESS_FILE_ACTION.equalsIgnoreCase(taskReq
+				.getAction())) {
+			ingestFile(taskReq);
+		} else if (TaskRequest.ADD_ACCESS_POINT_ACTION.equalsIgnoreCase(taskReq
+				.getAction())) {
+			addAccessPoint(taskReq);
+		}
+		return response;
+	}
+
+	@Override
+	protected void writeOkResponse(RestResponse resp) throws Exception {
+		// no-op
+	}
+
+	private void addAccessPoint(TaskRequest req) {
+		String surveyKey = req.getSurveyId();
+		log.info("Received Task Queue calls for surveyId: " + surveyKey);
+		AccessPointHelper aph = new AccessPointHelper();
+		aph.processSurveyInstance(surveyKey);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void ingestFile(TaskRequest req) {
+		if (req.getFileName() != null) {
+			/*
+			 * Callback URL for Google TaskQueue to call to begin processing zip
+			 * file 1. Get the zip file from S3 2. Open file 3. Save the
+			 * meta-data to the DB 4. Explode the Images 5. Process the images
+			 * (resize) 6. Save the images back to S3
+			 */
+			log.info("	Task->processFile");
+			ArrayList<String> surveyIds = processFile(req.getFileName());
+			for (String key : surveyIds) {
+				ProcessingAction pa = dispatch(key);
+				// Queue queue = QueueFactory.getDefaultQueue();
+				TaskOptions options = url(pa.getDispatchURL());
+				Iterator it = pa.getParams().keySet().iterator();
+				while (it.hasNext()) {
+					options.param("key", (String) it.next());
+				}
+				// queue.add(options);
+				log.info("Received Task Queue calls for surveyKey: " + key);
+				AccessPointHelper aph = new AccessPointHelper();
+				aph.processSurveyInstance(key);
+			}
+		}
 	}
 
 }

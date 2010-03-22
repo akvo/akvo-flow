@@ -11,6 +11,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class CaptionDefinition extends BaseDomain{
 	
+	private static final long serialVersionUID = 9106909352315314467L;
 	private String captionVariableName = null;
 	private String captionValue = null;
 	private Date captionEffectiveStartDate = null;

@@ -11,6 +11,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class GeoRegion extends BaseDomain {
 
+	private static final long serialVersionUID = 6092272747793723650L;
 	@Persistent
 	private String uuid;
 	private String name;

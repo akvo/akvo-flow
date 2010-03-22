@@ -14,10 +14,8 @@ import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.CaptionDefinition;
 import org.waterforpeople.mapping.domain.GeoRegion;
-import org.waterforpeople.mapping.domain.KML;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.google.appengine.api.datastore.Text;
 
 public class KMLGenerator {
 	private static final Logger log = Logger.getLogger(KMLGenerator.class

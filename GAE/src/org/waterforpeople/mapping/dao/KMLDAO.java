@@ -20,8 +20,7 @@ public class KMLDAO extends BaseDAO<KML> {
 		kml.setKmlText(new Text(kmlText));
 		return save(kml).getKey().getId()+"";
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public String getKML(String key) {
 		KML kml = getByKey(key);
 		if (kml != null) {

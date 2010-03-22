@@ -64,23 +64,21 @@ public class BaseDAO<T extends BaseDomain> {
 		return getByKey(keyString, concreteClass);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		E result = null;
-		
+
 		Key k = KeyFactory.stringToKey(keyString);
-		result = (E) pm.getObjectById(clazz, k);		
+		result = (E) pm.getObjectById(clazz, k);
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<T> list() {
 		return list(concreteClass);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends BaseDomain> List<E> list(Class<E> c) {		
+	public <E extends BaseDomain> List<E> list(Class<E> c) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		List<E> results = null;
 		javax.jdo.Query query = pm.newQuery(c);

@@ -9,17 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 
 public class SurveyManagerServlet extends HttpServlet {
 	private static final Logger log = Logger
-	.getLogger(SurveyManagerServlet.class.getName());
+			.getLogger(SurveyManagerServlet.class.getName());
 
 	private static final long serialVersionUID = 4400244780977729721L;
 
@@ -27,11 +24,10 @@ public class SurveyManagerServlet extends HttpServlet {
 		Long surveyId = 0L;
 		String surveyInstanceKey = null;
 		SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-		SurveyInstance si = null;
 		String surveyDocOut = null;
 		if (req.getParameter("surveyInstanceId") != null) {
 			surveyInstanceKey = req.getParameter("surveyInstanceId");
-			si = siDAO.getByKey(surveyInstanceKey);
+			siDAO.getByKey(surveyInstanceKey);
 
 		} else if (req.getParameter("surveyId") != null) {
 			surveyId = new Long(req.getParameter("surveyId"));
@@ -41,9 +37,10 @@ public class SurveyManagerServlet extends HttpServlet {
 			try {
 				resp.getWriter().print(surveyDocOut);
 			} catch (IOException e) {
-				log.log(Level.SEVERE,"Could not write survey doc to response",e);
+				log.log(Level.SEVERE, "Could not write survey doc to response",
+						e);
 			}
-		} 
+		}
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -56,7 +53,8 @@ public class SurveyManagerServlet extends HttpServlet {
 			try {
 				resp.getWriter().print("Survey : " + surveyDAO.save(surveyDoc));
 			} catch (IOException e) {
-				log.log(Level.SEVERE,"Could not write survey doc to response",e);
+				log.log(Level.SEVERE, "Could not write survey doc to response",
+						e);
 			}
 		} else if (action.equals("getAvailableSurveysDevice")
 				&& devicePhoneNumber != null) {
@@ -64,7 +62,8 @@ public class SurveyManagerServlet extends HttpServlet {
 				resp.setContentType("application/xhtml+xml");
 				resp.getWriter().print(getSurveyForPhone(devicePhoneNumber));
 			} catch (IOException e) {
-				log.log(Level.SEVERE,"Could not write survey doc to response",e);
+				log.log(Level.SEVERE, "Could not write survey doc to response",
+						e);
 			}
 		}
 
@@ -82,7 +81,7 @@ public class SurveyManagerServlet extends HttpServlet {
 	 * + "\" surveyId=\"" + dsjq.getSurveyID() + "\"/>"); }
 	 * sb.append("</deviceSurveyMapping>"); return sb.toString(); }
 	 */
-	private String getSurveyForPhone(String devicePhoneNumber) {		
+	private String getSurveyForPhone(String devicePhoneNumber) {
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
 		StringBuilder sb = new StringBuilder();
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber)) {
