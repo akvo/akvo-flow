@@ -32,8 +32,8 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	/**
-	 * saves an object to the data store AND flushes the persistence manager
-	 * instance used by this DAO
+	 * saves an object to the data store AND closes the persistence manager
+	 * instance to force a flush
 	 * 
 	 * @param <E>
 	 * @param obj
@@ -60,10 +60,24 @@ public class BaseDAO<T extends BaseDomain> {
 		return save(object);
 	}
 
+	/**
+	 * gets the core persistent object for the dao concrete class using the
+	 * string key (obtained from KeyFactory.stringFromKey())
+	 * 
+	 * @param keyString
+	 * @return
+	 */
 	public T getByKey(String keyString) {
 		return getByKey(keyString, concreteClass);
 	}
 
+	/**
+	 * convenience method to allow loading of other persistent objects by key
+	 * from this dao
+	 * 
+	 * @param keyString
+	 * @return
+	 */
 	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		E result = null;
@@ -73,10 +87,23 @@ public class BaseDAO<T extends BaseDomain> {
 		return result;
 	}
 
+	/**
+	 * lists all of the concreteClass instances in the datastore. TODO: if we
+	 * think we'll use this on large tables, we should use Extents
+	 * 
+	 * @return
+	 */
 	public List<T> list() {
 		return list(concreteClass);
 	}
 
+	/**
+	 * lists all of the type passed in.
+	 * 
+	 * TODO: if we think we'll use this on large tables, we should use Extents
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public <E extends BaseDomain> List<E> list(Class<E> c) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -107,7 +134,8 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	/**
-	 * lists all the objects with property equal to the value passed in
+	 * lists all the objects of the same type as the concreteClass with property
+	 * equal to the value passed in
 	 * 
 	 * since using this requires the caller know the persistence data type of
 	 * the field and the field name, this method is protected so that it can
@@ -125,6 +153,20 @@ public class BaseDAO<T extends BaseDomain> {
 				concreteClass);
 	}
 
+	/**
+	 * convenience method to list all instances of the type passed in that match
+	 * the property
+	 * 
+	 * since using this requires the caller know the persistence data type of
+	 * the field and the field name, this method is protected so that it can
+	 * only be used by subclass DAOs. We don't want those details to leak into
+	 * higher layers of the code.
+	 * 
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param propertyType
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends BaseDomain> List<E> listByProperty(
 			String propertyName, Object propertyValue, String propertyType,
