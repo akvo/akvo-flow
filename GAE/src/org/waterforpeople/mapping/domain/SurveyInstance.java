@@ -4,19 +4,18 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyInstance extends BaseDomain{
-	
+		
+	private static final long serialVersionUID = 5840846001731305734L;
+
 	@Persistent
 	private Long userID;
 	

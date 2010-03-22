@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
@@ -29,13 +29,13 @@ public class SurveyGroupServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		String outString = new String();
+		BaseDAO<SurveyGroup> surveyGroupDAO = new BaseDAO<SurveyGroup>(SurveyGroup.class);
 		if (action != null && action.equals("addSurveyGroup")) {
 			String code = req.getParameter("code");
 			String description = req.getParameter("description");
 			SurveyGroup surveyGroup = new SurveyGroup();
 			surveyGroup.setCode(code);
-			surveyGroup.setDescription(description);
-			SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+			surveyGroup.setDescription(description);		
 			surveyGroupDAO.save(surveyGroup);
 			outString = surveyGroup.toString();
 		} else if (action != null && action.equals("associateSurveyGroup")) {
@@ -43,13 +43,12 @@ public class SurveyGroupServlet extends HttpServlet {
 			String surveyGroupToCode = req.getParameter("surveyGroupTo");
 			SurveyGroupAssoc surveyGroupAssoc = new SurveyGroupAssoc();
 			surveyGroupAssoc.setSurveyGroupFromCode(surveyGroupFromCode);
-			surveyGroupAssoc.setSurveyGroupToCode(surveyGroupToCode);
-			SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+			surveyGroupAssoc.setSurveyGroupToCode(surveyGroupToCode);		
 			surveyGroupDAO.save(surveyGroupAssoc);
 			outString = surveyGroupAssoc.toString();
 		} else if (action != null
 				&& action.equals("associateSurveyToSurveyGroup")) {
-			SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();			
+					
 			Long surveyContainerId = new Long(req
 					.getParameter("surveyContainerId"));
 			Long surveyGroupId = new Long(req.getParameter("surveyGroupId"));

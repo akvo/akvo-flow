@@ -8,14 +8,14 @@ import javax.jdo.PersistenceManager;
 import org.waterforpeople.mapping.db.PMF;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 public class BaseDAO<T extends BaseDomain> {
-	protected PersistenceManager pm;	
 	private Class<T> concreteClass;
-	
-	public BaseDAO(Class<T> e){
+
+	public BaseDAO(Class<T> e) {
 		setDomainClass(e);
-		init();
 	}
 
 	/**
@@ -31,48 +31,114 @@ public class BaseDAO<T extends BaseDomain> {
 		this.concreteClass = e;
 	}
 
-	private void init() {
-		pm = PMF.get().getPersistenceManager();		
-	}
-	
-	public PersistenceManager getPersistenceManager() {
-		if (pm == null) {
-			init();
-		}
-		return pm;
-	}	
-	
+	/**
+	 * saves an object to the data store AND flushes the persistence manager
+	 * instance used by this DAO
+	 * 
+	 * @param <E>
+	 * @param obj
+	 * @return
+	 */
 	public <E extends BaseDomain> E save(E obj) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
 		if (obj.getCreatedDateTime() == null) {
 			obj.setCreatedDateTime(new Date());
 		}
 		if (obj.getLastUpdateDateTime() == null) {
 			obj.setLastUpdateDateTime(new Date());
 		}
-		return pm.makePersistent(obj);
+		try {
+			obj = pm.makePersistent(obj);
+		} finally {
+			pm.close();
+		}
+
+		return obj;
 	}
 
 	public T saveOrUpdate(T object) {
 		return save(object);
 	}
 
+	public T getByKey(String keyString) {
+		return getByKey(keyString, concreteClass);
+	}
+
 	@SuppressWarnings("unchecked")
-	public T getByKey(Long keyId) {
-		return (T) pm.getObjectById(keyId);
+	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		E result = null;
+		
+		Key k = KeyFactory.stringToKey(keyString);
+		result = (E) pm.getObjectById(clazz, k);		
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<T> list() {
-		javax.jdo.Query query = pm.newQuery(concreteClass);
-		List<T> results = (List<T>) query.execute();
-		return results;
+		return list(concreteClass);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends BaseDomain> List<E> list(Class<E> c) {
+	public <E extends BaseDomain> List<E> list(Class<E> c) {		
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		List<E> results = null;
 		javax.jdo.Query query = pm.newQuery(c);
-		List<E> results = (List<E>) query.execute();
+		results = (List<E>) query.execute();
+
 		return results;
 	}
 
+	/**
+	 * returns a single object based on the property value
+	 * 
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param propertyType
+	 * @return
+	 */
+	protected T findByProperty(String propertyName, Object propertyValue,
+			String propertyType) {
+		T result = null;
+		List<T> results = listByProperty(propertyName, propertyValue,
+				propertyType);
+		if (results.size() > 0) {
+			result = results.get(0);
+		}
+		return result;
+	}
+
+	/**
+	 * lists all the objects with property equal to the value passed in
+	 * 
+	 * since using this requires the caller know the persistence data type of
+	 * the field and the field name, this method is protected so that it can
+	 * only be used by subclass DAOs. We don't want those details to leak into
+	 * higher layers of the code.
+	 * 
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param propertyType
+	 * @return
+	 */
+	protected List<T> listByProperty(String propertyName, Object propertyValue,
+			String propertyType) {
+		return listByProperty(propertyName, propertyValue, propertyType,
+				concreteClass);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <E extends BaseDomain> List<E> listByProperty(
+			String propertyName, Object propertyValue, String propertyType,
+			Class<E> clazz) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		List<E> results = null;
+
+		javax.jdo.Query query = pm.newQuery(clazz);
+		query.setFilter(propertyName + " == " + propertyName + "Param");
+		query.declareParameters(propertyType + " " + propertyName + "Param");
+		results = (List<E>) query.execute(propertyValue);
+
+		return results;
+	}
 }

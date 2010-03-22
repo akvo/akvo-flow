@@ -18,32 +18,32 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
+import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyDAO extends BaseDAO<Survey> {
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
 	public SurveyDAO() {
-		super(Survey.class);		
+		super(Survey.class);
 	}
 
 	public SurveyGroup save(SurveyGroup surveyGroup) {
-		return super.getPersistenceManager().makePersistent(surveyGroup);
+		return super.save(surveyGroup);
 	}
 
-	public Long save(String surveyDefinition) {	
+	public String save(String surveyDefinition) {
 		SurveyContainer sc = new SurveyContainer();
 		com.google.appengine.api.datastore.Text surveyText = new com.google.appengine.api.datastore.Text(
 				surveyDefinition);
 		sc.setSurveyDocument(surveyText);
-		pm.makePersistent(sc);
-		return sc.getKey().getId();
+		sc = super.save(sc);
+		return KeyFactory.keyToString(sc.getKey());
 	}
 
 	public String getForTest() {
 		// Question quest = super.getByKey(300L);
 		StringBuilder sb = new StringBuilder();
-
 
 		List<QuestionQuestionGroupAssoc> qqgaList = super
 				.list(QuestionQuestionGroupAssoc.class);
@@ -55,7 +55,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 					sb.append(oo.toString());
 				}
 			}
-		}		
+		}
 		return sb.toString();
 	}
 
@@ -106,18 +106,9 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		log.info("BaseDAO test survey key: " + survey.getKey().getId());
 	}
 
-	@SuppressWarnings("unchecked")
-	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
-		SurveyContainer surveyContainer = null;
-
-		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
-		query.setFilter("id == idParam");
-		query.declareParameters("Long idParam");
-		List<SurveyContainer> results = (List<SurveyContainer>) query
-				.execute(id);
-		if (results.size() > 0) {
-			surveyContainer = results.get(0);
-		}
+	public com.gallatinsystems.survey.domain.xml.Survey get(String keyString) {
+		SurveyContainer surveyContainer = getByKey(keyString,
+				SurveyContainer.class);
 
 		SurveyXMLAdapter sxa = new SurveyXMLAdapter();
 		com.gallatinsystems.survey.domain.xml.Survey survey = null;
@@ -125,32 +116,18 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			survey = sxa.unmarshall(surveyContainer.getSurveyDocument()
 					.toString());
 		} catch (JAXBException e) {
-			log.log(Level.SEVERE,"Could not unmarshal xml",e);
+			log.log(Level.SEVERE, "Could not unmarshal xml", e);
 		}
 		return survey;
 	}
 
-	@SuppressWarnings("unchecked")
-	public String getSurveyDocument(Long id) {
-		SurveyContainer surveyContainer = null;
-
-		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
-		query.setFilter("id == idParam");
-		query.declareParameters("Long idParam");
-		List<SurveyContainer> results = (List<SurveyContainer>) query
-				.execute(id);
-		if (results.size() > 0) {
-			surveyContainer = results.get(0);
-		}
-
+	public String getSurveyDocument(String keyString) {
+		SurveyContainer surveyContainer = getByKey(keyString,
+				SurveyContainer.class);
 		return surveyContainer.getSurveyDocument().getValue();
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<SurveyContainer> listSurveyContainers() {		
-		javax.jdo.Query query = pm.newQuery(SurveyContainer.class);
-
-		List<SurveyContainer> results = (List<SurveyContainer>) query.execute();
-		return results;
+	public List<SurveyContainer> listSurveyContainers() {
+		return super.list(SurveyContainer.class);
 	}
 }

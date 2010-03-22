@@ -25,13 +25,13 @@ public class SurveyManagerServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		Long surveyId = 0L;
-		Long surveyInstanceId = 0L;
+		String surveyInstanceKey = null;
 		SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 		SurveyInstance si = null;
 		String surveyDocOut = null;
 		if (req.getParameter("surveyInstanceId") != null) {
-			surveyInstanceId = new Long(req.getParameter("surveyInstanceId"));
-			si = siDAO.getByKey(surveyInstanceId);
+			surveyInstanceKey = req.getParameter("surveyInstanceId");
+			si = siDAO.getByKey(surveyInstanceKey);
 
 		} else if (req.getParameter("surveyId") != null) {
 			surveyId = new Long(req.getParameter("surveyId"));
@@ -43,41 +43,7 @@ public class SurveyManagerServlet extends HttpServlet {
 			} catch (IOException e) {
 				log.log(Level.SEVERE,"Could not write survey doc to response",e);
 			}
-
-		} else {
-			// TODO: find out from Dru what this branch is supposed to do... we
-			// can only enter here if both the surveyInstanceId is null AND the
-			// surveyID is null... if that is the case, this will yield a NullPointerException
-			// for resp.getWriter().println(si.toString());
-			String action = req.getParameter("action");
-			String surveyDoc = req.getParameter("surveyDoc");
-			String devicePhoneNumber = req.getParameter("devicePhoneNumber");
-
-			resp.setContentType("application/xhtml+xml");
-			try {
-				if (surveyId != 0L) {
-					resp.getWriter().println(si.toString());
-					DeviceFiles df = si.getDeviceFile();
-					resp.getWriter().println(df.toString());
-					for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
-						resp.getWriter().println(qas.toString());
-						resp.getWriter().println(
-								"----------SurveyID assoced with QuestionAnswer: "
-										+ qas.getSurveyInstance().getKey());
-					}
-				} else if (action.equals("save") && surveyDoc != null) {
-					SurveyDAO surveyDAO = new SurveyDAO();
-					surveyDAO.save(surveyDoc);
-				} else if (action.equals("getAvailableSurveysDevice")
-						&& devicePhoneNumber != null) {
-					resp.getWriter()
-							.print(getSurveyForPhone(devicePhoneNumber));
-				}
-
-			} catch (IOException e) {
-				log.log(Level.SEVERE,"Could not write perform survey op",e);
-			}
-		}
+		} 
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {

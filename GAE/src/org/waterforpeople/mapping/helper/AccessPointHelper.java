@@ -15,12 +15,12 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class AccessPointHelper {
 
-	public void processSurveyInstance(Long surveyId) {
+	public void processSurveyInstance(String surveyKey) {
 		// Get the survey and QuestionAnswerStore
 		// Get the surveyDefinition
 
 		SurveyInstanceDAO sid = new SurveyInstanceDAO();
-		SurveyInstance si = sid.getByKey(surveyId);
+		SurveyInstance si = sid.getByKey(surveyKey);
 		ArrayList<QuestionAnswerStore> questionAnswerList = si
 				.getQuestionAnswersStore();
 

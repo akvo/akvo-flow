@@ -2,16 +2,13 @@ package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyContainer;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
@@ -36,7 +33,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			qasList.add(qas);
 		}
 		si.setQuestionAnswersStore(qasList);
-		return save(si).getKey().toString();
+		return KeyFactory.keyToString(save(si).getKey());
 	}
 
 	public SurveyInstanceDAO() {
@@ -45,10 +42,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	public SurveyContainer getSurveyDocument(Long id) {
 		SurveyContainer si = null;
-		Key itemKey = KeyFactory.createKey(SurveyContainer.class
-				.getSimpleName(), id);
-
-		si = (SurveyContainer) pm.getObjectById(SurveyContainer.class, itemKey);
+		String itemKey = KeyFactory.createKeyString(SurveyContainer.class
+				.getSimpleName(), id);		
+		si = (SurveyContainer) getByKey(itemKey, SurveyContainer.class);
 		return si;
 	}
 }

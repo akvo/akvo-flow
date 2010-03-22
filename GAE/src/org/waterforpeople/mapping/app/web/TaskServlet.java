@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -35,7 +36,7 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class TaskServlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = -2607990749512391457L;
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
@@ -59,26 +60,28 @@ public class TaskServlet extends HttpServlet {
 					 */
 					log.info("	Task->processFile");
 					ArrayList<String> surveyIds = processFile(fileName);
-					for (String ids : surveyIds) {
-						ProcessingAction pa = dispatch(ids);
-						//Queue queue = QueueFactory.getDefaultQueue();
+					for (String key : surveyIds) {
+						ProcessingAction pa = dispatch(key);
+						// Queue queue = QueueFactory.getDefaultQueue();
 						TaskOptions options = url(pa.getDispatchURL());
 						Iterator it = pa.getParams().keySet().iterator();
 						while (it.hasNext()) {
 							options.param("key", (String) it.next());
 						}
 						// queue.add(options);
-						log.info("Received Task Queue calls for surveyId: "
-								+ ids);
+						log.info("Received Task Queue calls for surveyKey: "
+								+ key);
 						AccessPointHelper aph = new AccessPointHelper();
-						aph.processSurveyInstance(new Long(ids));
+						aph.processSurveyInstance(key);
 					}
 				}
 			} else if (action.equals("addAccessPoints")) {
-				Long surveyId = new Long(req.getParameter("surveyId"));
-				log.info("Received Task Queue calls for surveyId: " + surveyId);
+				String surveyKey = req.getParameter("surveyId");
+				log
+						.info("Received Task Queue calls for surveyId: "
+								+ surveyKey);
 				AccessPointHelper aph = new AccessPointHelper();
-				aph.processSurveyInstance(surveyId);
+				aph.processSurveyInstance(surveyKey);
 			}
 		}
 	}
@@ -106,29 +109,18 @@ public class TaskServlet extends HttpServlet {
 
 			if (unparsedLines.get(0).equals("regionFlag=true")) {
 				unparsedLines.remove(0);
-				GeoRegionHelper grh  = new GeoRegionHelper();
+				GeoRegionHelper grh = new GeoRegionHelper();
 				grh.processRegionsSurvey(unparsedLines);
 			} else {
-
 				Long userID = 1L;
-
-				// Object obj = marshallDataToObject(lines, AccessPoint.class
-				// .getName());
-				// saveObject(obj);
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-
-				String surveyId = siDAO.save(collectionDate, deviceFile, userID,
-						unparsedLines);
-				// if survey
-				surveyIds.add(surveyId.toString());
+				String surveyId = siDAO.save(collectionDate, deviceFile,
+						userID, unparsedLines);
+				surveyIds.add(surveyId.toString());				
 			}
 			zis.close();
-		} catch (MalformedURLException e) {
-			// ...
-		} catch (IOException e) {
-			// ...
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not process data file", e);
 		}
 		return surveyIds;
 	}
@@ -186,7 +178,6 @@ public class TaskServlet extends HttpServlet {
 
 		return lines;
 	}
-	
 
 	private String getNowDateTimeFormatted() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
@@ -195,13 +186,12 @@ public class TaskServlet extends HttpServlet {
 		return dateTime;
 	}
 
-
-	private ProcessingAction dispatch(String surveyId) {
-		ProcessingAction pa = new ProcessingAction();	
+	private ProcessingAction dispatch(String surveyKey) {
+		ProcessingAction pa = new ProcessingAction();
 
 		pa.setAction("addAccessPoint");
 		pa.setDispatchURL("/worker/task");
-		pa.addParam("surveyId", surveyId);
+		pa.addParam("surveyId", surveyKey);
 		return pa;
 	}
 

@@ -1,15 +1,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page import="com.gallatinsystems.survey.domain.*"%>
 <%@ page import="com.gallatinsystems.survey.dao.*"%>
+<%@ page import="com.gallatinsystems.framework.dao.BaseDAO"%>
 <%@ page import="java.util.List"%>
 
 
 <html>
 <body>
 <%
-	SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+	BaseDAO<SurveyGroup> surveyGroupDAO = new BaseDAO<SurveyGroup>(SurveyGroup.class);
 	List<SurveyGroup> surveyGroupList = surveyGroupDAO
-			.listSurveyGroup();
+			.list();
 
 	SurveyDAO surveyDAO = new SurveyDAO();
 	List<SurveyContainer> surveyContainerList = surveyDAO

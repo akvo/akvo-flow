@@ -12,10 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.KML;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.framework.dao.BaseDAO;
 
 @SuppressWarnings("serial")
 public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
@@ -36,13 +34,13 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 		String showRegion = req.getParameter("showRegion");
 
 		if (showKML != null) {
-			Long kmlID = 0L;
+			String kmlKey = null;
 			if (req.getParameter("kmlID") != null) {
-				kmlID = new Long(req.getParameter("kmlID"));
+				kmlKey =req.getParameter("kmlID");
 			}
-			if (kmlID != 0) {
+			if (kmlKey != null) {
 				KMLDAO kmlDAO = new KMLDAO();
-				String kmlString = kmlDAO.getKML(kmlID);
+				String kmlString = kmlDAO.getKML(kmlKey);				
 				resp.setContentType("application/vnd.google-earth.kml+xml");
 				resp.getWriter().println(kmlString);
 			} else {
@@ -59,6 +57,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 			resp.setContentType("application/vnd.google-earth.kml+xml");
 			resp.getWriter().println(placemarksDocument);
 		} else if (listFiles != null) {
+			//TODO move this to a DAO
 			// List processed files
 			javax.jdo.Query query = pm.newQuery("select from  "
 					+ DeviceFiles.class.getName());
@@ -79,6 +78,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 			resp.setContentType("text/plain");
 			resp.getWriter().println(placemarksDocument);
 		} else {
+			//TODO move to DAO
 			javax.jdo.Query query = pm.newQuery("select from  "
 					+ AccessPoint.class.getName());
 			List<AccessPoint> entries = (List<AccessPoint>) query.execute();
