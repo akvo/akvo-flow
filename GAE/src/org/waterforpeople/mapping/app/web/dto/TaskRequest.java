@@ -21,7 +21,7 @@ public class TaskRequest extends RestRequest {
 	private static final String SURVEY_ID_PARAM = "surveyId";
 
 	private String fileName;
-	private String surveyId;
+	private Long surveyId;
 
 	public String getFileName() {
 		return fileName;
@@ -31,29 +31,32 @@ public class TaskRequest extends RestRequest {
 		this.fileName = fileName;
 	}
 
-	public String getSurveyId() {
+	public Long getSurveyId() {
 		return surveyId;
 	}
 
-	public void setSurveyId(String surveyId) {
+	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
 	}
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		fileName = req.getParameter(FILE_NAME_PARAM);
-		surveyId = req.getParameter(SURVEY_ID_PARAM);
+		try {
+			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
+		} catch (Exception e) {
+			addError(new RestError(RestError.BAD_DATATYPE_CODE,
+					RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
+							+ " must be an integer"));
+		}
 	}
 
 	@Override
-	public void validate() throws RestValidationException {
+	public void populateErrors() {
 		if (getAction() == null) {
 			String errorMsg = ACTION_PARAM + " is mandatory";
-			throw new RestValidationException(new RestError(
-					RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg), errorMsg,
-					null);
+			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg));
 		}
-
 	}
 }

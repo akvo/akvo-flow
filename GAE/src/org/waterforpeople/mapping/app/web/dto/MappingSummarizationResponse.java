@@ -10,6 +10,7 @@ import com.gallatinsystems.framework.rest.RestResponse;
  */
 public class MappingSummarizationResponse extends RestResponse {
 
+	private static final long serialVersionUID = -1612531028251861520L;
 	private String colorCode;
 
 	public String getColorCode() {

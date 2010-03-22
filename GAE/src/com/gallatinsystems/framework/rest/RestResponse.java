@@ -1,13 +1,16 @@
 package com.gallatinsystems.framework.rest;
 
+import java.io.Serializable;
+
 /**
  * base class to unify rest responses.
  * 
  * @author Christopher Fagiani
  * 
  */
-public class RestResponse {
+public class RestResponse implements Serializable{
 
+	private static final long serialVersionUID = -4783160185098390267L;
 	private int resultCount;
 	private String message;
 	private String code;

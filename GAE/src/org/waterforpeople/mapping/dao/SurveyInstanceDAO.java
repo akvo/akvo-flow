@@ -9,11 +9,10 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyContainer;
-import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
-	public String save(Date collectionDate, DeviceFiles deviceFile,
+	public Long save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, ArrayList<String> unparsedLines) {
 		SurveyInstance si = new SurveyInstance();
 		si.setCollectionDate(collectionDate);
@@ -33,7 +32,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			qasList.add(qas);
 		}
 		si.setQuestionAnswersStore(qasList);
-		return KeyFactory.keyToString(save(si).getKey());
+		return save(si).getKey().getId();
 	}
 
 	public SurveyInstanceDAO() {
@@ -41,10 +40,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	public SurveyContainer getSurveyDocument(Long id) {
-		SurveyContainer si = null;
-		String itemKey = KeyFactory.createKeyString(SurveyContainer.class
-				.getSimpleName(), id);		
-		si = (SurveyContainer) getByKey(itemKey, SurveyContainer.class);
+		SurveyContainer si = null;		
+		si = (SurveyContainer) getByKey(id, SurveyContainer.class);
 		return si;
 	}
 }

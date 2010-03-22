@@ -34,9 +34,9 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 		String showRegion = req.getParameter("showRegion");
 
 		if (showKML != null) {
-			String kmlKey = null;
+			Long kmlKey = null;
 			if (req.getParameter("kmlID") != null) {
-				kmlKey =req.getParameter("kmlID");
+				kmlKey = Long.parseLong(req.getParameter("kmlID"));
 			}
 			if (kmlKey != null) {
 				KMLDAO kmlDAO = new KMLDAO();

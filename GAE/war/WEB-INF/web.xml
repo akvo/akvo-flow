@@ -30,7 +30,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyManager</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.SurveyManagerServlet</servlet-class>
+		<servlet-class>org.waterforpeople.mapping.app.web.SurveyManagerServlet</servlet-class>		
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyManager</servlet-name>

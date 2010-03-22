@@ -2,7 +2,9 @@ package com.gallatinsystems.framework.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.db.PMF;
@@ -13,9 +15,11 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 public class BaseDAO<T extends BaseDomain> {
 	private Class<T> concreteClass;
+	protected Logger log;
 
 	public BaseDAO(Class<T> e) {
 		setDomainClass(e);
+		log = Logger.getLogger(this.getClass().getName());
 	}
 
 	/**
@@ -81,9 +85,30 @@ public class BaseDAO<T extends BaseDomain> {
 	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		E result = null;
-
 		Key k = KeyFactory.stringToKey(keyString);
-		result = (E) pm.getObjectById(clazz, k);
+		try {
+			result = (E) pm.getObjectById(clazz, k);
+		} catch (JDOObjectNotFoundException nfe) {
+			log.warning("No " + clazz.getCanonicalName() + " found with key: "
+					+ k);
+		}
+		return result;
+	}
+
+	public T getByKey(Long id) {
+		return getByKey(id, concreteClass);
+	}
+
+	public <E extends BaseDomain> E getByKey(Long id, Class<E> clazz) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String itemKey = KeyFactory.createKeyString(clazz.getSimpleName(), id);
+		E result = null;
+		try {
+			result = pm.getObjectById(clazz, itemKey);
+		} catch (JDOObjectNotFoundException nfe) {
+			log.warning("No " + clazz.getCanonicalName() + " found with id: "
+					+ id);
+		}
 		return result;
 	}
 

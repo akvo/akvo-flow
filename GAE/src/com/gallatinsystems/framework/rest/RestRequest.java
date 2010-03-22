@@ -1,5 +1,9 @@
 package com.gallatinsystems.framework.rest;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.exception.RestValidationException;
@@ -13,13 +17,15 @@ import com.gallatinsystems.framework.rest.exception.RestValidationException;
  * @author Christopher Fagiani
  * 
  */
-public abstract class RestRequest {
-
+public abstract class RestRequest implements Serializable {
+	private static final long serialVersionUID = -8356057661356968219L;
 	public static final String ACTION_PARAM = "action";
 	private static final String API_KEY_PARAM = "apiKey";
 	private static final String STARTROW_PARAM = "startRow";
 	private static final String ENDROW_PARAM = "endRow";
 	private static final String DESIRED_RESULTS_PARAM = "maxResults";
+
+	private List<RestError> validationErrorList;
 
 	private int startRow;
 	private int endRow;
@@ -95,9 +101,38 @@ public abstract class RestRequest {
 		return intVal;
 	}
 
+	protected void addError(RestError err) {
+		if (validationErrorList == null) {
+			validationErrorList = new ArrayList<RestError>();
+		}
+		validationErrorList.add(err);
+	}
+
 	protected abstract void populateFields(HttpServletRequest req)
 			throws Exception;
 
-	public abstract void validate() throws RestValidationException;
+	protected abstract void populateErrors();
+
+	public void validate() throws RestValidationException {
+		populateErrors();
+		if (validationErrorList != null && validationErrorList.size() > 0) {
+			throw new RestValidationException(validationErrorList,
+					"Validation error", null);
+		}
+	}
+
+	protected Long parseLong(String val, String field) {
+		Long result = null;
+		if (val != null && val.trim().length() > 0) {
+			try {
+				result = Long.parseLong(val);
+			} catch (Exception e) {
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, field
+								+ " must be an integer"));
+			}
+		}
+		return result;
+	}
 
 }

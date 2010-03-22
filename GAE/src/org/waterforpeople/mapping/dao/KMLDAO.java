@@ -21,8 +21,8 @@ public class KMLDAO extends BaseDAO<KML> {
 		return save(kml).getKey().getId()+"";
 	}
 	
-	public String getKML(String key) {
-		KML kml = getByKey(key);
+	public String getKML(Long id) {
+		KML kml = getByKey(id);
 		if (kml != null) {
 			return kml.getKmlText().toString();
 		} else {

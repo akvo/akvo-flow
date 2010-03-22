@@ -1,6 +1,7 @@
 package com.gallatinsystems.framework.rest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,10 +26,10 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	private static Logger log = Logger.getLogger(AbstractRestApiServlet.class
 			.getName());
 	private static final long serialVersionUID = -8553345034709944772L;
-	private static final String XML_MODE = "XML";
-	private static final String JSON_MODE = "JSON";
-	@SuppressWarnings("unused")
-	private static final String PLAINTEXT_MODE = "TEXT";
+	public static final String XML_MODE = "XML";
+	public static final String JSON_MODE = "JSON";
+	public static final String XHTML_MODE = "XHTML";
+	public static final String PLAINTEXT_MODE = "TEXT";
 	private String mode;
 	private ThreadLocal<HttpServletRequest> requests;
 	private ThreadLocal<HttpServletResponse> responses;
@@ -58,12 +59,12 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			RestResponse restResp = handleRequest(restReq);
 			writeOkResponse(restResp);
 		} catch (RestException e) {
-			writeErrorResponse(e.getError(), resp);
+			writeErrorResponse(e.getErrors(), resp);
 		} catch (Exception e) {
 			// we get here if we get some unexpected exception that does not
 			// derive from RestException
-			writeErrorResponse(new RestError(), resp);
-			log.log(Level.SEVERE,"Could not execute rest request",e);
+			writeErrorResponse(null, resp);
+			log.log(Level.SEVERE, "Could not execute rest request", e);
 		} finally {
 			// null out the request/response objects so we don't leak memory
 			requests.set(null);
@@ -111,6 +112,8 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			resp.setContentType("text/xml;charset=utf-8");
 		} else if (JSON_MODE.equalsIgnoreCase(mode)) {
 			resp.setContentType("application/javascript;charset=utf-8");
+		} else if (XHTML_MODE.equalsIgnoreCase(mode)) {
+			resp.setContentType("application/xhtml+xml");
 		} else {
 			resp.setContentType("text/plain");
 		}
@@ -122,12 +125,21 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	 * @param err
 	 * @param resp
 	 */
-	protected void writeErrorResponse(RestError err, HttpServletResponse resp) {
+	protected void writeErrorResponse(List<RestError> errs,
+			HttpServletResponse resp) {
 		try {
 			// TODO: error should honor content type (i.e. xml, json or text)
-			resp.getWriter().print(err.toString());
+			if (errs != null) {
+				for (RestError err : errs) {
+					resp.getWriter().print(err.toString() + "\n");
+				}
+			} else {
+				resp.getWriter().print(new RestError());
+			}
+
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"Could not write to servlet response object",e);
+			log.log(Level.SEVERE, "Could not write to servlet response object",
+					e);
 		}
 	}
 

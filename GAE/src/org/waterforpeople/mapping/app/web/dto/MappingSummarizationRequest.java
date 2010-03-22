@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.framework.rest.exception.RestValidationException;
 
 /**
  * DTO for requests to the summarization apis
@@ -13,6 +12,8 @@ import com.gallatinsystems.framework.rest.exception.RestValidationException;
  * 
  */
 public class MappingSummarizationRequest extends RestRequest {
+	
+	private static final long serialVersionUID = 2509976216047671455L;
 	private static final String REGION_UUID = "regionUUID";
 	private static final String TYPE = "type";
 
@@ -42,15 +43,11 @@ public class MappingSummarizationRequest extends RestRequest {
 	}
 
 	@Override
-	public void validate() throws RestValidationException {
+	protected void populateErrors() {
 		if (regionUUID == null) {
 			String errorMsg = REGION_UUID + " is mandatory";
-			throw new RestValidationException(new RestError(
-					RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg), errorMsg,
-					null);
+			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg));
 		}
-
 	}
-
 }

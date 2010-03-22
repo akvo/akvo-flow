@@ -64,7 +64,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			} else {
 				Long userID = 1L;
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-				String surveyId = siDAO.save(collectionDate, deviceFile,
+				Long surveyId = siDAO.save(collectionDate, deviceFile,
 						userID, unparsedLines);
 				surveyIds.add(surveyId.toString());
 			}
@@ -173,21 +173,23 @@ public class TaskServlet extends AbstractRestApiServlet {
 	}
 
 	private void addAccessPoint(TaskRequest req) {
-		String surveyKey = req.getSurveyId();
-		log.info("Received Task Queue calls for surveyId: " + surveyKey);
+		Long surveyId = req.getSurveyId();
+		log.info("Received Task Queue calls for surveyId: " + surveyId);
 		AccessPointHelper aph = new AccessPointHelper();
-		aph.processSurveyInstance(surveyKey);
+		aph.processSurveyInstance(surveyId.toString());
 	}
 
+	/**
+	 * handles the callback from the device indicating that a new data file is
+	 * available. This method will call processFile to retrieve the file and
+	 * persist the data to the data store it will then add access points for
+	 * each water point in the survey responses.
+	 * 
+	 * @param req
+	 */
 	@SuppressWarnings("unchecked")
 	private void ingestFile(TaskRequest req) {
 		if (req.getFileName() != null) {
-			/*
-			 * Callback URL for Google TaskQueue to call to begin processing zip
-			 * file 1. Get the zip file from S3 2. Open file 3. Save the
-			 * meta-data to the DB 4. Explode the Images 5. Process the images
-			 * (resize) 6. Save the images back to S3
-			 */
 			log.info("	Task->processFile");
 			ArrayList<String> surveyIds = processFile(req.getFileName());
 			for (String key : surveyIds) {

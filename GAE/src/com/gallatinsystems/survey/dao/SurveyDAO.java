@@ -18,7 +18,6 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
-import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyDAO extends BaseDAO<Survey> {
 	private static final Logger log = Logger
@@ -32,13 +31,13 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return super.save(surveyGroup);
 	}
 
-	public String save(String surveyDefinition) {
+	public Long save(String surveyDefinition) {
 		SurveyContainer sc = new SurveyContainer();
 		com.google.appengine.api.datastore.Text surveyText = new com.google.appengine.api.datastore.Text(
 				surveyDefinition);
 		sc.setSurveyDocument(surveyText);
 		sc = super.save(sc);
-		return KeyFactory.keyToString(sc.getKey());
+		return sc.getKey().getId();
 	}
 
 	public String getForTest() {
@@ -106,8 +105,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		log.info("BaseDAO test survey key: " + survey.getKey().getId());
 	}
 
-	public com.gallatinsystems.survey.domain.xml.Survey get(String keyString) {
-		SurveyContainer surveyContainer = getByKey(keyString,
+	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
+		SurveyContainer surveyContainer = getByKey(id,
 				SurveyContainer.class);
 
 		SurveyXMLAdapter sxa = new SurveyXMLAdapter();
@@ -121,8 +120,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return survey;
 	}
 
-	public String getSurveyDocument(String keyString) {
-		SurveyContainer surveyContainer = getByKey(keyString,
+	public String getSurveyDocument(Long id) {
+		SurveyContainer surveyContainer = getByKey(id,
 				SurveyContainer.class);
 		return surveyContainer.getSurveyDocument().getValue();
 	}
