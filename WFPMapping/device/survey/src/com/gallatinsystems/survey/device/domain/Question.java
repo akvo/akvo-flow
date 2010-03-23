@@ -32,6 +32,16 @@ public class Question {
 	private String type;
 	private ArrayList<Option> options;
 	private boolean allowOther;
+	private boolean allowMultiple;
+
+	public boolean isAllowMultiple() {
+		return allowMultiple;
+	}
+
+	public void setAllowMultiple(boolean allowMultiple) {
+		this.allowMultiple = allowMultiple;
+	}
+
 	private ArrayList<Dependency> dependencies;
 
 	public ArrayList<String> getImages() {

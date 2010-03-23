@@ -45,6 +45,7 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String IMAGE = "image";
 	private static final String CAPTION = "caption";
 	private static final String SRC = "src";
+	private static final String ALLOW_MULT = "allowMultiple";
 
 	private Survey survey;
 	private QuestionGroup currentQuestionGroup;
@@ -147,6 +148,8 @@ public class SurveyHandler extends DefaultHandler {
 				currentQuestion.setAllowOther(Boolean.parseBoolean(attributes
 						.getValue(ALLOW_OTHER)));
 				currentQuestion.setRenderType(attributes.getValue(RENDER_TYPE));
+				currentQuestion.setAllowMultiple(Boolean
+						.parseBoolean(attributes.getValue(ALLOW_MULT)));
 			}
 		} else if (localName.equalsIgnoreCase(OPTION)) {
 			currentOption = new Option();

@@ -34,7 +34,7 @@
 		</question>
 		<question id="q6" order="6" mandatory="false" type="option">
 			<text>Source?</text>
-			<options allowOther="true">
+			<options allowOther="true" allowMultiple="true">
 				<option value="s">Spring</option>
 				<option value="b">Borehole</option>
 				<option value="lhd">Lined hand-dug well</option>
