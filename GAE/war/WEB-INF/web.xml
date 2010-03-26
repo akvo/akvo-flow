@@ -84,7 +84,22 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>MapingSummarization</servlet-name>
 		<url-pattern>/webapp/mapping/summary</url-pattern>
 	</servlet-mapping>
-	
+		<servlet>
+		<servlet-name>surveyGroupServlet</servlet-name>
+		<servlet-class>com.gallatinsystems.survey.app.web.SurveyGroupServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>surveyGroupServlet</servlet-name>
+		<url-pattern>/surveygroup</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>SpreadsheetProcessor</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.SpreadsheetProcessorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpreadsheetProcessor</servlet-name>
+		<url-pattern>/webapp/spreadsheetprocessor</url-pattern>
+	</servlet-mapping>
 	<security-constraint>
 		<web-resource-collection>
 			<url-pattern>/webapp/*</url-pattern>
