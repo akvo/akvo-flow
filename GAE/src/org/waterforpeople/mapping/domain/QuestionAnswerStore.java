@@ -9,13 +9,15 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class QuestionAnswerStore {
-	@PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Key key;
+public class QuestionAnswerStore extends BaseDomain{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3726562582080475960L;
 
 	@Persistent
 	private Long arbitratyNumber;
@@ -44,15 +46,6 @@ public class QuestionAnswerStore {
 
 	public void setSurveyInstance(SurveyInstance surveyInstance) {
 		this.surveyInstance = surveyInstance;
-	}
-
-
-	public Key getKey() {
-		return key;
-	}
-
-	public void setKey(Key key) {
-		this.key = key;
 	}
 
 	public Long getArbitratyNumber() {
