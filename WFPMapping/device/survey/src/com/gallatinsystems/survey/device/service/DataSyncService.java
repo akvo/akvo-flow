@@ -50,7 +50,8 @@ public class DataSyncService extends Service {
 
 	private static final int COMPLETE_ID = 1;
 
-	private static final String NOTIFICATION_URL = "http://watermappingmonitoring.appspot.com/processor?action=submit&fileName=";
+//	private static final String NOTIFICATION_URL = "http://watermappingmonitoring.appspot.com/processor?action=submit&fileName=";
+	private static final String NOTIFICATION_URL = "http://watermapmonitordev.appspot.com/processor?action=submit&fileName=";
 	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 	private static final String S3_KEY = "1JZZVDSNFFQYF23ZYJ02";
 	private static final String S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";

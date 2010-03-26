@@ -46,6 +46,8 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String CAPTION = "caption";
 	private static final String SRC = "src";
 	private static final String ALLOW_MULT = "allowMultiple";
+	private static final String MIN_VAL = "minVal";
+	private static final String MAX_VAL = "maxVal";
 
 	private Survey survey;
 	private QuestionGroup currentQuestionGroup;
@@ -168,6 +170,8 @@ public class SurveyHandler extends DefaultHandler {
 			currentValidation.setAllowDecimal(attributes.getValue(ALLOW_DEC));
 			currentValidation.setAllowSigned(attributes.getValue(ALLOW_SIGN));
 			currentValidation.setMaxLength(attributes.getValue(MAX_LENGTH));
+			currentValidation.setMinVal(attributes.getValue(MIN_VAL));
+			currentValidation.setMaxVal(attributes.getValue(MAX_VAL));
 		} else if (localName.equalsIgnoreCase(VIDEO)) {
 			if (currentQuestion != null) {
 				currentQuestion.setVideo(attributes.getValue(SRC));

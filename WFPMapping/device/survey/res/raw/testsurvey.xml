@@ -30,7 +30,7 @@
 		</question>
 		<question id="q5" order="5" mandatory="false" type="free">
 			<text>Year of Construction?</text>
-			<validationRule validationType="numeric" maxLength="4" allowDecimal="false" signed="false"/>
+			<validationRule validationType="numeric" maxLength="4" allowDecimal="false" signed="false" minVal="1900" maxVal="2010"/>
 		</question>
 		<question id="q6" order="6" mandatory="false" type="option">
 			<text>Source?</text>

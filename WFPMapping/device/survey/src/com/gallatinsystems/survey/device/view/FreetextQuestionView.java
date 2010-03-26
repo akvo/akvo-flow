@@ -1,17 +1,20 @@
 package com.gallatinsystems.survey.device.view;
 
-import java.util.StringTokenizer;
-
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.InputFilter;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TableRow;
+import android.widget.TextView;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.ValidationRule;
+import com.gallatinsystems.survey.device.exception.ValidationException;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -51,9 +54,13 @@ public class FreetextQuestionView extends QuestionView {
 				freetextEdit.setKeyListener(MyDigitKeyListener);
 			}
 
-			// if we have NAME_VALIDATION_TYPE validation, we need to listen to loss of focus
+			// we need to listen to loss of focus
 			// and make sure each word is capitalized
-			if (ConstantUtil.NAME_VALIDATION_TYPE.equalsIgnoreCase(rule.getValidationType())) {
+			if (ConstantUtil.NAME_VALIDATION_TYPE.equalsIgnoreCase(rule
+					.getValidationType())
+					|| ConstantUtil.NUMERIC_VALIDATION_TYPE
+							.equalsIgnoreCase(rule.getValidationType())) {
+				final ValidationRule currentRule = rule;
 				freetextEdit
 						.setOnFocusChangeListener(new OnFocusChangeListener() {
 							public void onFocusChange(View view,
@@ -61,23 +68,57 @@ public class FreetextQuestionView extends QuestionView {
 								if (!hasFocus) {
 									EditText textEdit = (EditText) view;
 									if (textEdit.getText() != null) {
-										String text = textEdit.getText()
-												.toString();
-										StringTokenizer strTok = new StringTokenizer(
-												text, " ");
-										StringBuilder builder = new StringBuilder();
-										while (strTok.hasMoreTokens()) {
-											String word = strTok.nextToken();
-											builder.append(word.substring(0, 1)
-													.toUpperCase());
-											builder.append(word.substring(1));
-											if (strTok.hasMoreTokens()) {
-												builder.append(" ");
+										try {
+											String validatedText = currentRule
+													.performValidation(textEdit
+															.getText()
+															.toString());
+											textEdit.setText(validatedText);
+											// now capture the response
+											captureResponse();
+										} catch (ValidationException e) {
+											// if we failed validation, display
+											// a message to the user
+											AlertDialog.Builder builder = new AlertDialog.Builder(
+													getContext());
+											builder
+													.setTitle(R.string.validationerrtitle);
+											TextView tipText = new TextView(
+													getContext());
+											if (ValidationException.TOO_LARGE
+													.equals(e.getType())) {
+												String baseText = getResources()
+														.getString(
+																R.string.toolargeerr);
+												tipText.setText(baseText
+														+ currentRule
+																.getMaxValString());
+											} else if (ValidationException.TOO_SMALL
+													.equals(e.getType())) {
+												String baseText = getResources()
+														.getString(
+																R.string.toosmallerr);
+												tipText.setText(baseText
+														+ currentRule
+																.getMinValString());
+											} else {
+												tipText
+														.setText(R.string.baddatatypeerr);
 											}
+											builder.setView(tipText);
+											builder
+													.setPositiveButton(
+															R.string.okbutton,
+															new DialogInterface.OnClickListener() {
+																public void onClick(
+																		DialogInterface dialog,
+																		int id) {
+																	dialog
+																			.dismiss();
+																}
+															});
+											builder.show();
 										}
-										textEdit.setText(builder.toString());
-										// now capture the response
-										captureResponse();
 									}
 								}
 							}

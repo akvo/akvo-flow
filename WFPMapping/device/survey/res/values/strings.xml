@@ -81,4 +81,8 @@
 	<string name="scanbarcode">Scan Barcode</string>
 	<string name="barcodeerror">Scanner not installed. Please install the Barcode Scanner app from the Android Market.</string>
 	<string name="imagehelpviewmessage">Click a thumbnail to view larger image. Press back key to return to survey.</string>
+	<string name="validationerrtitle">Invalid Response</string>
+	<string name="toosmallerr">Value is too small. Minimum value: </string>
+	<string name="toolargeerr">Value is too large. Maximum value: </string>
+	<string name="baddatatypeerr">Answer must be numeric</string>
 </resources>
