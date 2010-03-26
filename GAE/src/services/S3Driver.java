@@ -22,8 +22,8 @@ public class S3Driver {
 
 	Properties props;
 
-	String aws_secret_key = "";
-	String aws_identifier = "";
+	private String aws_secret_key = "";
+	private String aws_identifier = "";
 	private S3Store s3Store;
 
 	private void init() {
