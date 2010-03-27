@@ -1,8 +1,5 @@
 package com.gallatinsystems.common.data.calendar;
 
-import java.net.URL;
-
-import com.google.gdata.client.calendar.CalendarService;
 
 public class GoogleCalendarAdapter {
 	
