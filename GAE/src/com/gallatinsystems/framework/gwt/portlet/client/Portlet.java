@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public abstract class Portlet extends FocusPanel {
 
+	private PortalContainer portletContainer;
+
 	public static class DirectionConstant {
 
 		public final int directionBits;
@@ -250,4 +252,30 @@ public abstract class Portlet extends FocusPanel {
 	public void setHeight(int height) {
 		this.height = height;
 	}
+
+	void setParent(PortalContainer container) {
+		this.portletContainer = container;
+	}
+
+	/**
+	 * Tells the portlet container to notify all other portlets that something
+	 * happened in this portlet that they MAY want to know about. Events raised
+	 * by a portlet are delivered to all portlets EXCEPT the one that raised it
+	 * 
+	 * @param e
+	 */
+	protected void raiseEvent(PortletEvent e) {
+		if (portletContainer != null) {
+			portletContainer.notifyPortlets(e);
+		}
+	}
+
+	/**
+	 * method that is invoked by the portlet container whenever another portlet
+	 * raises an event.
+	 * 
+	 * @param e
+	 */
+	public abstract void handleEvent(PortletEvent e);
+
 }

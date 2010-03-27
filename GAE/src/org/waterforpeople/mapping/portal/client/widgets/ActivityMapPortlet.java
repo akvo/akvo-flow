@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
@@ -50,5 +51,11 @@ public class ActivityMapPortlet extends Portlet {
 		options.setWidth(WIDTH);
 		options.setHeight(HEIGHT);
 		return options;
+	}
+
+	@Override
+	public void handleEvent(PortletEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

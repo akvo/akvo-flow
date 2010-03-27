@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 
@@ -37,6 +38,12 @@ public class SummaryPortlet extends Portlet {
 		t.addItem(root);
 
 		return t;
+	}
+
+	@Override
+	public void handleEvent(PortletEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

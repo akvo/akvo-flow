@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
@@ -50,5 +51,11 @@ public class ActivityChartPortlet extends Portlet {
 	private Options createOptions() {
 		Options options = Options.create();
 		return options;
+	}
+
+	@Override
+	public void handleEvent(PortletEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
