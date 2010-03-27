@@ -11,8 +11,9 @@ import com.google.gwt.visualization.client.visualizations.IntensityMap.Options;
 
 public class ActivityMapPortlet extends Portlet {
 
-	private static final int WIDTH = 600;
-	private static final int HEIGHT= 200;
+	//unfortunately, the map doesn't scale. we need to use these dimensions
+	private static final int WIDTH = 400;
+	private static final int HEIGHT= 240;
 	private IntensityMap map;
 
 	public ActivityMapPortlet() {
@@ -47,7 +48,7 @@ public class ActivityMapPortlet extends Portlet {
 	}
 
 	private Options createOptions() {
-		Options options = Options.create();
+		Options options = Options.create();		
 		options.setWidth(WIDTH);
 		options.setHeight(HEIGHT);
 		return options;
