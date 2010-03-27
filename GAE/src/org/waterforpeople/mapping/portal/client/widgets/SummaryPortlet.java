@@ -14,28 +14,26 @@ import com.google.gwt.user.client.ui.TreeItem;
 public class SummaryPortlet extends Portlet {
 
 	private static final int WIDTH = 300;
-	private static final int HEIGHT= 300;
-	
+	private static final int HEIGHT = 300;
+
 	public SummaryPortlet() {
-		super("System Summary", false,WIDTH,HEIGHT);	
+		super("System Summary", true, WIDTH, HEIGHT);
 		setContent(constructTree());
+
 	}
 
 	private Tree constructTree() {
 		// TODO: get items from DB
-		TreeItem root = new TreeItem("Summary");
-		TreeItem surveyItem = root.addItem("Surveys");
+		Tree t = new Tree();
+		TreeItem surveyItem = t.addItem("Surveys");
 		surveyItem.addItem("Test Survey");
 		surveyItem.addItem("Waterpoint Survey");
-		TreeItem userItem = root.addItem("Users");
+		TreeItem userItem = t.addItem("Users");
 		userItem.addItem("Chris");
 		userItem.addItem("Dru");
-		TreeItem deviceItem = root.addItem("Devices");
+		TreeItem deviceItem = t.addItem("Devices");
 		deviceItem.addItem("9175667663");
 		deviceItem.addItem("3033359240");
-
-		Tree t = new Tree();
-		t.addItem(root);
 
 		return t;
 	}
@@ -43,7 +41,7 @@ public class SummaryPortlet extends Portlet {
 	@Override
 	public void handleEvent(PortletEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

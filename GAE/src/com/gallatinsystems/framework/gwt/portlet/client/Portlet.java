@@ -1,5 +1,6 @@
 package com.gallatinsystems.framework.gwt.portlet.client;
 
+import com.allen_sauer.gwt.dnd.client.HasDragHandle;
 import com.allen_sauer.gwt.dnd.client.util.Location;
 import com.allen_sauer.gwt.dnd.client.util.WidgetLocation;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -10,27 +11,14 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class Portlet extends FocusPanel {
+public abstract class Portlet extends FocusPanel implements HasDragHandle {
 
-	private PortalContainer portletContainer;
-
-	public static class DirectionConstant {
-
-		public final int directionBits;
-
-		public final String directionLetters;
-
-		private DirectionConstant(int directionBits, String directionLetters) {
-			this.directionBits = directionBits;
-			this.directionLetters = directionLetters;
-		}
-	}
-
+	private static final int HEADER_HEIGHT = 20;
 	private static final int DEFAULT_WIDTH = 100;
 	private static final int DEFAULT_HEIGHT = 100;
 	private int width = DEFAULT_WIDTH;
 	private int height = DEFAULT_HEIGHT;
-
+	private Widget currentColumn;
 	/**
 	 * Specifies that resizing occur at the east edge.
 	 */
@@ -107,31 +95,34 @@ public abstract class Portlet extends FocusPanel {
 
 	private static final String CSS_HEADER = "portlet-header";
 
+	private PortalContainer portletContainer;
+
+	public static class DirectionConstant {
+
+		public final int directionBits;
+
+		public final String directionLetters;
+
+		private DirectionConstant(int directionBits, String directionLetters) {
+			this.directionBits = directionBits;
+			this.directionLetters = directionLetters;
+		}
+	}
+
 	private int contentHeight;
 	private boolean scrollable;
-
 	private Widget internalContent;
-
 	private int contentWidth;
-
 	private Widget eastWidget;
-
 	private Grid grid = new Grid(3, 3);
-
 	private final FocusPanel headerContainer;
-
 	private final Widget headerWidget;
-
 	private boolean initialLoad = false;
-
 	private Widget northWidget;
-
 	private Widget southWidget;
-
 	private Widget westWidget;
 
 	public Portlet(String title, boolean scrollable, int width, int height) {
-
 		addStyleName(CSS_PANEL);
 		if (width > 0) {
 			this.width = width;
@@ -146,8 +137,9 @@ public abstract class Portlet extends FocusPanel {
 		} else {
 			headerWidget = new Label("");
 		}
+		headerWidget.setHeight(HEADER_HEIGHT + "");
 
-		setPixelSize(width, height + headerWidget.getOffsetHeight());
+		setPixelSize(width, getPortletHeight());
 		headerContainer = new FocusPanel();
 		headerContainer.addStyleName(CSS_HEADER);
 		headerContainer.add(headerWidget);
@@ -181,8 +173,8 @@ public abstract class Portlet extends FocusPanel {
 		setContentSize(width, height);
 	}
 
-	public int getContentHeight() {
-		return contentHeight;
+	public int getPortletHeight() {
+		return height + HEADER_HEIGHT + BORDER_THICKNESS * 2;
 	}
 
 	public int getContentWidth() {
@@ -268,6 +260,23 @@ public abstract class Portlet extends FocusPanel {
 		if (portletContainer != null) {
 			portletContainer.notifyPortlets(e);
 		}
+	}
+
+	/**
+	 * returns the portion of the Portlet that can be used as a drag handle. By
+	 * default, this will return the header. This can be overriden by a subclass
+	 * that wants to use some other drag handler.
+	 */
+	public Widget getDragHandle() {
+		return headerContainer;
+	}
+
+	public Widget getCurrentColumn() {
+		return currentColumn;
+	}
+
+	public void setCurrentColumn(Widget currentColumn) {
+		this.currentColumn = currentColumn;
 	}
 
 	/**

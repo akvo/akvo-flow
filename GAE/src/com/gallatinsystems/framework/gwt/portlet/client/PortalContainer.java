@@ -3,9 +3,11 @@ package com.gallatinsystems.framework.gwt.portlet.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
-import com.allen_sauer.gwt.dnd.client.DragHandlerAdapter;
+import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
+import com.allen_sauer.gwt.dnd.client.VetoDragException;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -15,12 +17,15 @@ import com.google.gwt.user.client.ui.Widget;
 
 public abstract class PortalContainer extends SimplePanel {
 
+	private static final int INITIAL_COL_HEIGHT = 750;
+	private static final int MINIMUM_COL_WIDTH = 200;
 	private static final int COLS = 3;
 	private static final int PADDING = 0;
 
 	private List<Portlet> activePortlets;
 
-	private static final String COL_CSS = "portal-column";
+	private static final String ACTIVE_COL_CSS = "portal-column-active";;
+	private static final String IDLE_COL_CSS = "portal-column-idle";
 
 	private PickupDragController dragController;
 	private PortletDropController controller;
@@ -34,12 +39,54 @@ public abstract class PortalContainer extends SimplePanel {
 	public PortalContainer() {
 		activePortlets = new ArrayList<Portlet>();
 		final AbsolutePanel boundaryPanel = new AbsolutePanel();
-		boundaryPanel.setPixelSize(1024, 768);
+
 		setWidget(boundaryPanel);
 		columnPanels = new VerticalPanel[COLS];
 
-		// right now, we don't do anything special for the drag handler
-		DragHandler handler = new DragHandlerAdapter();
+		// define custom events that occur when dragging
+		DragHandler handler = new DragHandler() {
+
+			/**
+			 * update the currentColumn pointer in the portlet and make sure
+			 * that we don't collapse empty columns down to nothing.
+			 */
+			@Override
+			public void onDragEnd(DragEndEvent event) {
+				if (event.getSource() instanceof Portlet) {
+					Portlet p = (Portlet) event.getSource();
+					Widget w = p.getCurrentColumn();
+					if (w.getOffsetWidth() < MINIMUM_COL_WIDTH) {
+						w.setWidth(MINIMUM_COL_WIDTH + "");
+						w.setHeight(INITIAL_COL_HEIGHT + "");
+					}
+					p.setCurrentColumn(event.getContext().finalDropController
+							.getDropTarget());
+					for (int i = 0; i < columnPanels.length; i++) {
+						columnPanels[i].setStyleName(IDLE_COL_CSS);
+					}
+				}
+			}
+
+			@Override
+			public void onDragStart(DragStartEvent event) {
+				for (int i = 0; i < columnPanels.length; i++) {
+					columnPanels[i].setStyleName(ACTIVE_COL_CSS);
+				}
+			}
+
+			@Override
+			public void onPreviewDragEnd(DragEndEvent event)
+					throws VetoDragException {
+
+			}
+
+			@Override
+			public void onPreviewDragStart(DragStartEvent event)
+					throws VetoDragException {
+				// TODO Auto-generated method stub
+
+			}
+		};
 
 		// create a DragController to manage drag-n-drop actions
 		// note: This creates an implicit DropController for the boundary panel
@@ -56,8 +103,10 @@ public abstract class PortalContainer extends SimplePanel {
 
 			// initialize inner vertical panel to hold individual widgets
 			VerticalPanel verticalPanel = new VerticalPanel();
+			verticalPanel.setHeight(INITIAL_COL_HEIGHT + "");
+			verticalPanel.setWidth(MINIMUM_COL_WIDTH+"");
 			verticalPanel.setSpacing(PADDING);
-			verticalPanel.setStyleName(COL_CSS);
+			verticalPanel.setStyleName(IDLE_COL_CSS);
 			columnPanels[col] = verticalPanel;
 
 			// initialize a widget drop controller for the current column
@@ -87,8 +136,10 @@ public abstract class PortalContainer extends SimplePanel {
 		// RootPanel.get().add(w);
 		columnPanels[col].add(w);
 		if (w instanceof Portlet) {
-			((Portlet) w).setParent(this);
-			activePortlets.add((Portlet) w);
+			Portlet p = (Portlet) w;
+			p.setParent(this);
+			activePortlets.add(p);
+			p.setCurrentColumn(columnPanels[col]);
 		}
 		dragController.makeDraggable(w);
 	}

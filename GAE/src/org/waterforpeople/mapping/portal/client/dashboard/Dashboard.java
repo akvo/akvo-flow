@@ -24,20 +24,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class Dashboard extends PortalContainer implements EntryPoint {
 
 	public void onModuleLoad() {
-		// ensure the document BODY has dimensions in standards mode
 		RootPanel.get().setPixelSize(1024, 768);
-
-		// workaround for GWT issue 1813
-		// http://code.google.com/p/google-web-toolkit/issues/detail?id=1813
 		RootPanel.get().getElement().getStyle().setProperty("position",
 				"relative");
-
-		// add a new image to the boundary panel and make it draggable
-		/*
-		 * Image img = new Image(
-		 * "http://code.google.com/webtoolkit/logo-185x175.png");
-		 * RootPanel.get().add(img, 40, 30); dragController.makeDraggable(img);
-		 */
 
 		VerticalPanel containerPanel = new VerticalPanel();
 		containerPanel.add(new Image("images/WFP_Logo.png"));
