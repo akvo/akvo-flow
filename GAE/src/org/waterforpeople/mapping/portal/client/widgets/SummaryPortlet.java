@@ -78,15 +78,12 @@ public class SummaryPortlet extends Portlet {
 
 	private Tree constructTree() {
 		// TODO: get items from DB
-		// TODO: get icons
 		Tree t = new Tree();
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(SURVEY_IMAGE));
 		panel.add(new Label("Surveys"));
 		surveyRoot = t.addItem(panel);
-		// surveyRoot.addItem("Test Survey");
-		// surveyRoot.addItem("Waterpoint Survey");
 
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);

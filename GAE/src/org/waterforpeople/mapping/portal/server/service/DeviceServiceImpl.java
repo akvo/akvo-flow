@@ -1,4 +1,4 @@
-package com.gallatinsystems.device.app.service;
+package org.waterforpeople.mapping.portal.server.service;
 
 import java.util.List;
 import java.util.logging.Logger;

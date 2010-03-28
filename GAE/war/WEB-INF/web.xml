@@ -102,7 +102,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyRpcServlet</servlet-name>
-		<servlet-class>com.gallatinsystems.survey.app.web.SurveyServiceImpl</servlet-class>
+		<servlet-class>org.waterforpeople.mapping.portal.server.service.SurveyServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyRpcServlet</servlet-name>
@@ -110,7 +110,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DeviceRpcServlet</servlet-name>
-		<servlet-class>com.gallatinsystems.device.app.service.DeviceServiceImpl</servlet-class>
+		<servlet-class>org.waterforpeople.mapping.portal.server.service.DeviceServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DeviceRpcServlet</servlet-name>
@@ -124,6 +124,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
 		<url-pattern>/webapp/spreadsheetattributemapper</url-pattern>
 	</servlet-mapping>	
+	
+		<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/Dashboard.html</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>*</role-name>
+		</auth-constraint>
+	</security-constraint>	
 	
 	<security-constraint>
 		<web-resource-collection>
