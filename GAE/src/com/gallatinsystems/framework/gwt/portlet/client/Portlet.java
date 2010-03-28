@@ -81,7 +81,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		setPixelSize(width, getPortletHeight());
 		headerContainer = new FocusPanel();
 		headerContainer.addStyleName(CSS_HEADER);
-		headerContainer.add(headerPanel);
+		headerContainer.add(headerPanel);	
 	}
 
 	public void onClick(ClickEvent event) {
@@ -102,9 +102,16 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.add(headerContainer);
 		verticalPanel.add(internalContent);
-		add(verticalPanel);
 
+		add(verticalPanel);
 		setContentSize(width, height);
+		// update the width only if the header has already been rendered to the
+		// DOM we need to do this to handle the portlets that use an async
+		// callback to fetch their content (like the visualization api portlets)
+		if (headerWidget.getOffsetWidth() > 0) {
+			headerWidget.setPixelSize(headerWidget.getOffsetWidth(),
+					HEADER_HEIGHT);
+		}
 	}
 
 	public int getPortletHeight() {
