@@ -37,15 +37,16 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		containerPanel.add(new Image("images/WFP_Logo.png"));
 		RootPanel.get().add(containerPanel);
 
-		addDraggable(new SummaryPortlet(), 0);
-		addDraggable(new ActivityChartPortlet(), 1);
-		addDraggable(new ActivityMapPortlet(), 1);
+		addPortlet(new SummaryPortlet(), 0, true);
+		addPortlet(new ActivityChartPortlet(), 1, true);
+		addPortlet(new ActivityMapPortlet(), 1, true);
 		// now add the portal container to the vertical panel
 		containerPanel.add(this);
 	}
 
 	@Override
 	public Class<?>[] getInvolvedClasses() {
-		return new Class[] { this.getClass() };
+		return new Class[] { this.getClass(), SummaryPortlet.class,
+				ActivityChartPortlet.class, ActivityMapPortlet.class };
 	}
 }

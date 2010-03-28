@@ -11,6 +11,17 @@ import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Options;
 
+/**
+ * Portlet that displays the current system activity over a period of time using
+ * the AnnotatedTimeLine visualization.
+ * 
+ * This portlet supports configuration - users can specify the timeframe and
+ * filters for the activity
+ * 
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class ActivityChartPortlet extends Portlet {
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 300;
@@ -48,6 +59,11 @@ public class ActivityChartPortlet extends Portlet {
 		return data;
 	}
 
+	/**
+	 * configures the Options to initialize the visualization
+	 * 
+	 * @return
+	 */
 	private Options createOptions() {
 		Options options = Options.create();
 		return options;
@@ -55,19 +71,15 @@ public class ActivityChartPortlet extends Portlet {
 
 	@Override
 	public void handleEvent(PortletEvent e) {
-
-		
 	}
 
 	@Override
 	protected boolean getReadyForRemove() {
-
 		return true;
 	}
 
 	@Override
 	protected void handleConfigClick() {
-		
-		
+		// TODO: handle configuration
 	}
 }

@@ -12,12 +12,21 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Base class for a portlet that can be used in conjunction with a
+ * PortalContainer. Portlets are designed to be dragged and dropped within the
+ * portalContainer and may support user configuration. All portlets have a
+ * header with a name that is used as the dragHandle (i.e. you must drag a
+ * portlet using its title bar).
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		ClickHandler {
 
 	private static final String CLOSE_IMAGE = "images/close.png";
 	private static final String CONF_IMAGE = "images/configure-32.png";
-	private static final int BORDER_THICKNESS = 5;
 	private static final String CSS_PANEL = "portlet-panel";
 	private static final String CSS_HEADER = "portlet-header";
 	private static final int HEADER_HEIGHT = 20;
@@ -40,8 +49,22 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	private Image confImg;
 	private FocusPanel headerContainer;
 
-	private boolean initialLoad = false;
+	private boolean isLoaded = false;
 
+	/**
+	 * constructs a portlet with the given title. If scrollable is true, the
+	 * content panel will be wrapped in a scrollPanel. If configurable is true,
+	 * the header will include the "configure" button.
+	 * 
+	 * @param title
+	 * @param scrollable
+	 * @param configurable
+	 * @param width
+	 *            - desired max width of the widget content panel
+	 * @param height
+	 *            - desired max height of the widget's content panel (i.e. does
+	 *            not include the header)
+	 */
 	public Portlet(String title, boolean scrollable, boolean configurable,
 			int width, int height) {
 		addStyleName(CSS_PANEL);
@@ -56,6 +79,14 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		constructHeader(title);
 	}
 
+	/**
+	 * constructs the standard portlet header. This consists of a left-justified
+	 * title, and a right-justified close button. If this portlet is
+	 * configurable, a configure button will be added to the left of the close
+	 * button.
+	 * 
+	 * @param title
+	 */
 	protected void constructHeader(String title) {
 		DockPanel headerPanel = new DockPanel();
 		headerPanel.setWidth(width + "");
@@ -81,9 +112,16 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		setPixelSize(width, getPortletHeight());
 		headerContainer = new FocusPanel();
 		headerContainer.addStyleName(CSS_HEADER);
-		headerContainer.add(headerPanel);	
+		headerContainer.add(headerPanel);
 	}
 
+	/**
+	 * reacts to click event for the header buttons. If the close butotn is
+	 * clicked, getReadyForRemove is called (allowing sub-classes to do any
+	 * cleanup they want) then the portal container is notified that is should
+	 * remove this portlet. If the configure button is clicked, control is
+	 * delegated to the subclass since configuration is portlet-specific.
+	 */
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == closeImg) {
 			if (getReadyForRemove()) {
@@ -94,6 +132,12 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		}
 	}
 
+	/**
+	 * sets the internal content of the widget and updates the size of the
+	 * header (if needed) to match
+	 * 
+	 * @param contentWidget
+	 */
 	protected void setContent(Widget contentWidget) {
 		if (contentWidget != null) {
 			internalContent = scrollable ? new ScrollPanel(contentWidget)
@@ -114,15 +158,31 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		}
 	}
 
+	/**
+	 * returns the total height of the portlet
+	 * 
+	 * @return
+	 */
 	public int getPortletHeight() {
-		return height + HEADER_HEIGHT + BORDER_THICKNESS * 2;
+		return height + HEADER_HEIGHT;
 	}
 
+	/**
+	 * returns the total width of the portlet's content panel
+	 * 
+	 * @return
+	 */
 	public int getContentWidth() {
 		return contentWidth;
 	}
 
-	public void setContentSize(int width, int height) {
+	/**
+	 * sets the size of the portlet's content pane
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	protected void setContentSize(int width, int height) {
 		if (width != contentWidth) {
 			contentWidth = width;
 			headerContainer.setPixelSize(contentWidth, HEADER_HEIGHT);
@@ -133,37 +193,21 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		internalContent.setPixelSize(contentWidth, contentHeight);
 	}
 
+	/**
+	 * sets the size of the header and content if they've already been added to
+	 * the DOM
+	 */
 	@Override
 	protected void onLoad() {
 		super.onLoad();
-		if (!initialLoad && internalContent != null
+		if (!isLoaded && internalContent != null
 				&& internalContent.getOffsetHeight() != 0) {
-			initialLoad = true;
+			isLoaded = true;
 			headerWidget.setPixelSize(headerWidget.getOffsetWidth(),
 					HEADER_HEIGHT);
 			setContentSize(internalContent.getOffsetWidth(), internalContent
 					.getOffsetHeight());
 		}
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	void setParent(PortalContainer container) {
-		this.portletContainer = container;
 	}
 
 	/**
@@ -188,10 +232,20 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		return headerContainer;
 	}
 
+	/**
+	 * returns the column in which this portlet is currently located
+	 * 
+	 * @return
+	 */
 	public Widget getCurrentColumn() {
 		return currentColumn;
 	}
 
+	/**
+	 * updates the column
+	 * 
+	 * @param currentColumn
+	 */
 	public void setCurrentColumn(Widget currentColumn) {
 		this.currentColumn = currentColumn;
 	}
@@ -202,6 +256,26 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 
 	public void setConfigurable(boolean configurable) {
 		this.configurable = configurable;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	void setParent(PortalContainer container) {
+		this.portletContainer = container;
 	}
 
 	/**

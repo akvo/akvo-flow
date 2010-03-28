@@ -1,11 +1,24 @@
 package com.gallatinsystems.framework.gwt.portlet.client;
 
+/**
+ * Events that may be broadcast by portlets to notify other portlets
+ * participating in the view that something has changed.
+ *  
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class PortletEvent {
 
 	private String type;
 	private Object payload;
 	private Portlet source;
 
+	/**
+	 * returns the portlet that raised the event
+	 * 
+	 * @return
+	 */
 	public Portlet getSource() {
 		return source;
 	}

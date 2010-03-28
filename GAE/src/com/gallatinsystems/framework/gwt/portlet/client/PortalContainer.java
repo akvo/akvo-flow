@@ -15,6 +15,20 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Base portlet container class that implements a very simplistic portal-like
+ * environment. The container will create an arbitrary number of columns that
+ * can contain any number of portlets. Portlets added from the top of the column
+ * to the bottom (you can arrange them in any order, but you can't have an empty
+ * space above a portlet). This base class will also handle broadcasting portlet
+ * events raised by any of the portlets it's managing to all others.
+ * 
+ * TODO: make it so non-draggable widgets are "locked" in their position and
+ * can't get bumped by draggables
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public abstract class PortalContainer extends SimplePanel {
 
 	private static final int INITIAL_COL_HEIGHT = 750;
@@ -28,20 +42,23 @@ public abstract class PortalContainer extends SimplePanel {
 	private static final String IDLE_COL_CSS = "portal-column-idle";
 
 	private PickupDragController dragController;
-	private PortletDropController controller;
 	private VerticalPanel[] columnPanels;
 	private int columns = DEFAULT_COLS;
 	private HorizontalPanel mainPanel;
 
-	private boolean initialLoaded = false;
-
 	/**
-	 * Constructor for examples which create their own drag controller.
+	 * Initializes the portal with columnCount columns.
+	 * 
+	 * @param columnCount
+	 *            - positive integer representing the number of columns to
+	 *            spawn. If the value passed in is zero or negative, the DEFAULT
+	 *            column count will be used.
 	 */
 	public PortalContainer(int columnCount) {
 		activePortlets = new ArrayList<Portlet>();
 		final AbsolutePanel boundaryPanel = new AbsolutePanel();
-
+		// since we're extending SimplePanel, install the AbsolutePanel as our
+		// sole widget
 		setWidget(boundaryPanel);
 		if (columnCount > 0) {
 			columns = columnCount;
@@ -75,6 +92,10 @@ public abstract class PortalContainer extends SimplePanel {
 				}
 			}
 
+			/**
+			 * swaps out the CSS for the columns so they have visible borders
+			 * while dragging
+			 */
 			@Override
 			public void onDragStart(DragStartEvent event) {
 				for (int i = 0; i < columnPanels.length; i++) {
@@ -85,30 +106,27 @@ public abstract class PortalContainer extends SimplePanel {
 			@Override
 			public void onPreviewDragEnd(DragEndEvent event)
 					throws VetoDragException {
-
+				// no-op
 			}
 
 			@Override
 			public void onPreviewDragStart(DragStartEvent event)
 					throws VetoDragException {
-				// TODO Auto-generated method stub
-
+				// no-op
 			}
 		};
 
-		// create a DragController to manage drag-n-drop actions
-		// note: This creates an implicit DropController for the boundary panel
 		dragController = new PickupDragController(RootPanel.get(), false);
 		dragController.setBehaviorMultipleSelection(false);
 		dragController.addDragHandler(handler);
 
-		// initialize horizontal panel to hold our columns
+		// the main panel is the container for all the columns
 		mainPanel = new HorizontalPanel();
 		mainPanel.setSpacing(PADDING);
 		boundaryPanel.add(mainPanel);
 
 		for (int col = 0; col < columns; col++) {
-			// initialize inner vertical panel to hold individual widgets
+			// initialize inner vertical panel to hold individual portlets
 			VerticalPanel verticalPanel = new VerticalPanel();
 			verticalPanel.setHeight(INITIAL_COL_HEIGHT + "");
 			verticalPanel.setWidth(MINIMUM_COL_WIDTH + "");
@@ -116,25 +134,31 @@ public abstract class PortalContainer extends SimplePanel {
 			verticalPanel.setStyleName(IDLE_COL_CSS);
 			columnPanels[col] = verticalPanel;
 
-			// initialize a widget drop controller for the current column
+			// initialize a widget drop controller for the current column and
+			// register it with the drag controller
 			PortletDropController dropController = new PortletDropController(
 					verticalPanel);
 			dragController.registerDropController(dropController);
 
-			// put a blank panel in each column
-			SimplePanel p = new SimplePanel();
-			p.setHeight(PADDING + "");
-			verticalPanel.add(p);
 			mainPanel.add(verticalPanel);
 		}
-
 	}
 
-	protected PortletDropController getPortletController() {
-		return controller;
-	}
-
-	protected void addDraggable(Widget w, int col) {
+	/**
+	 * adds a portlet to the list managed by this portal in the column passed
+	 * in. The portlet will be added beneath the other portlets already in that
+	 * column. If the draggableFlag is true, tt will also be registered with the
+	 * drag controller so it can be moved by the user
+	 * 
+	 * 
+	 * @param w
+	 *            - widget to add
+	 * @param col
+	 *            - column in which widget should be added (zero-indexed)
+	 * @param draggable
+	 *            - flag indicating whether or not the widget is draggable
+	 */
+	protected void addPortlet(Widget w, int col, boolean draggable) {
 		columnPanels[col].add(w);
 		if (w instanceof Portlet) {
 			Portlet p = (Portlet) w;
@@ -142,40 +166,27 @@ public abstract class PortalContainer extends SimplePanel {
 			activePortlets.add(p);
 			p.setCurrentColumn(columnPanels[col]);
 		}
-		dragController.makeDraggable(w);
-	}
-
-	public String getHistoryToken() {
-		// TODO: fix this
-		return "hi";
-		// return getInvolvedClasses()[0].getSimpleName();
-	}
-
-	/**
-	 * Return the classes involved in this example.
-	 * 
-	 * @return an array of involved classes
-	 */
-	public abstract Class<?>[] getInvolvedClasses();
-
-	/**
-	 * Called when {@link #onLoad()} is called for the first time.
-	 */
-	protected void onInitialLoad() {
-	}
-
-	/**
-	 * Calls {@link #onInitialLoad()} when called for the first time.
-	 */
-	@Override
-	protected void onLoad() {
-		super.onLoad();
-		if (!initialLoaded) {
-			onInitialLoad();
-			initialLoaded = true;
+		if (draggable) {
+			dragController.makeDraggable(w);
 		}
 	}
 
+	/**
+	 * returns a token to be used for history to detect if users click the back
+	 * button
+	 * 
+	 * @return
+	 */
+	public String getHistoryToken() {
+		return getInvolvedClasses()[0].getName();
+	}
+
+	/**
+	 * propagates the PortletEvent to all active portlets EXECPT the one that
+	 * raised it
+	 * 
+	 * @param e
+	 */
 	public void notifyPortlets(PortletEvent e) {
 		for (Portlet p : activePortlets) {
 			if (e.getSource() != p) {
@@ -193,4 +204,12 @@ public abstract class PortalContainer extends SimplePanel {
 		p.removeFromParent();
 		activePortlets.remove(p);
 	}
+
+	/**
+	 * Return the classes involved
+	 * 
+	 * @return an array of involved classes
+	 */
+	public abstract Class<?>[] getInvolvedClasses();
+
 }

@@ -9,15 +9,27 @@ import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.IntensityMap;
 import com.google.gwt.visualization.client.visualizations.IntensityMap.Options;
 
+/**
+ * Portlet that displays the current system activity over a period of time using
+ * the IntensityMap visualization.
+ * 
+ * This portlet supports configuration - users can specify the timeframe and
+ * filters for the activity. Alternatively, they should also be able to choose
+ * an option to "bind" the timeframe used by this portlet to the timeframe used
+ * in other portlets
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class ActivityMapPortlet extends Portlet {
 
-	//unfortunately, the map doesn't scale. we need to use these dimensions
+	// unfortunately, the map doesn't scale. we need to use these dimensions
 	private static final int WIDTH = 400;
-	private static final int HEIGHT= 240;
+	private static final int HEIGHT = 240;
 	private IntensityMap map;
 
 	public ActivityMapPortlet() {
-		super("Recent Activity", false,true, WIDTH, HEIGHT);
+		super("Recent Activity", false, true, WIDTH, HEIGHT);
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
 				map = new IntensityMap(createTable(), createOptions());
@@ -40,15 +52,15 @@ public class ActivityMapPortlet extends Portlet {
 		data.setValue(1, 1, 6);
 		data.setValue(2, 0, "PE");
 		data.setValue(2, 1, 33);
-		data.setValue(3, 0, "HN" );
+		data.setValue(3, 0, "HN");
 		data.setValue(3, 1, 2);
-		data.setValue(4, 0,"IN");
+		data.setValue(4, 0, "IN");
 		data.setValue(4, 1, 18);
 		return data;
 	}
 
 	private Options createOptions() {
-		Options options = Options.create();		
+		Options options = Options.create();
 		options.setWidth(WIDTH);
 		options.setHeight(HEIGHT);
 		return options;
@@ -56,8 +68,8 @@ public class ActivityMapPortlet extends Portlet {
 
 	@Override
 	public void handleEvent(PortletEvent e) {
-	
-		
+		// TODO: update timeframe if in that mode based on broadcasts from other
+		// portlets
 	}
 
 	@Override
@@ -68,7 +80,6 @@ public class ActivityMapPortlet extends Portlet {
 
 	@Override
 	protected void handleConfigClick() {
-
-		
+		// TODO: handle config
 	}
 }
