@@ -1,7 +1,16 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -22,10 +31,49 @@ public class SummaryPortlet extends Portlet {
 	private static final String USER_IMAGE = "images/users.png";
 	private static final String SURVEY_IMAGE = "images/surveys.png";
 	private static final String DEVICE_IMAGE = "images/device.png";
+	private TreeItem surveyRoot;
+	private TreeItem deviceRoot;
+	private TreeItem userRoot;
 
 	public SummaryPortlet() {
 		super("System Summary", true, false, WIDTH, HEIGHT);
+		SurveyServiceAsync surveyService = GWT.create(SurveyService.class);
+		// Set up the callback object.
+		AsyncCallback<SurveyDto[]> surveyCallback = new AsyncCallback<SurveyDto[]>() {
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			public void onSuccess(SurveyDto[] result) {
+				if (result != null) {
+					for (int i = 0; i < result.length; i++) {
+						surveyRoot.addItem(result[i].getName() + " - v."
+								+ result[i].getVersion());
+					}
+				}
+			}
+		};
+		surveyService.listSurvey(surveyCallback);
+
+		DeviceServiceAsync deviceService = GWT.create(DeviceService.class);
+		// Set up the callback object.
+		AsyncCallback<DeviceDto[]> deviceCallback = new AsyncCallback<DeviceDto[]>() {
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			public void onSuccess(DeviceDto[] result) {
+				if (result != null) {
+					for (int i = 0; i < result.length; i++) {
+						deviceRoot.addItem(result[i].getPhoneNumber());
+					}
+				}
+			}
+		};
+		deviceService.listDevice(deviceCallback);
+
 		setContent(constructTree());
+
 	}
 
 	private Tree constructTree() {
@@ -36,25 +84,25 @@ public class SummaryPortlet extends Portlet {
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(SURVEY_IMAGE));
 		panel.add(new Label("Surveys"));
-		TreeItem surveyItem = t.addItem(panel);
-		surveyItem.addItem("Test Survey");
-		surveyItem.addItem("Waterpoint Survey");
+		surveyRoot = t.addItem(panel);
+		// surveyRoot.addItem("Test Survey");
+		// surveyRoot.addItem("Waterpoint Survey");
 
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(USER_IMAGE));
 		panel.add(new Label("Users"));
-		TreeItem userItem = t.addItem(panel);
-		userItem.addItem("Chris");
-		userItem.addItem("Dru");
+		userRoot = t.addItem(panel);
+		userRoot.addItem("Chris");
+		userRoot.addItem("Dru");
 
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(DEVICE_IMAGE));
 		panel.add(new Label("Devices"));
-		TreeItem deviceItem = t.addItem(panel);
-		deviceItem.addItem("9175667663");
-		deviceItem.addItem("3033359240");
+		deviceRoot = t.addItem(panel);
+		deviceRoot.addItem("9175667663");
+		deviceRoot.addItem("3033359240");
 
 		return t;
 

@@ -3,6 +3,7 @@
 <module>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name='com.gallatinsystems.framework.gwt.portlet.PortletFramework' />
+	<inherits name='org.waterforpeople.mapping.app.gwt.WFPServices' />
 	 <inherits name='com.google.gwt.visualization.Visualization'/>
 	<source path="client" />
 	<entry-point
