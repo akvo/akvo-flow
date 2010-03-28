@@ -32,8 +32,9 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		containerPanel.add(new Image("images/WFP_Logo.png"));
 		RootPanel.get().add(containerPanel);
 		
+		
 		addDraggable(new SummaryPortlet(), 0);
-		addDraggable(new ActivityChartPortlet(), 1);
+		addDraggable(new ActivityChartPortlet(), 1);		
 		addDraggable(new ActivityMapPortlet(), 1);
 		// now add the portal container to the vertical panel
 		containerPanel.add(this);

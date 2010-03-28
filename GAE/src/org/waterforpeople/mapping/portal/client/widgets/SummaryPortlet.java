@@ -18,8 +18,7 @@ public class SummaryPortlet extends Portlet {
 
 	public SummaryPortlet() {
 		super("System Summary", true, WIDTH, HEIGHT);
-		setContent(constructTree());
-
+		setContent(constructTree());		
 	}
 
 	private Tree constructTree() {
@@ -36,6 +35,7 @@ public class SummaryPortlet extends Portlet {
 		deviceItem.addItem("3033359240");
 
 		return t;
+		
 	}
 
 	@Override

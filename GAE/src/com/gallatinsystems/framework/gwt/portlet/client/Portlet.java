@@ -192,18 +192,16 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	public void setContentSize(int width, int height) {
 		if (width != contentWidth) {
 			contentWidth = width;
-			headerContainer.setPixelSize(contentWidth, headerWidget
-					.getOffsetHeight());
+			headerContainer.setPixelSize(contentWidth, HEADER_HEIGHT);
 			northWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
 			southWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
 		}
 		if (height != contentHeight) {
-			contentHeight = height;
-			int headerHeight = headerContainer.getOffsetHeight();
+			contentHeight = height;			
 			westWidget.setPixelSize(BORDER_THICKNESS, contentHeight
-					+ headerHeight);
+					+ HEADER_HEIGHT);
 			eastWidget.setPixelSize(BORDER_THICKNESS, contentHeight
-					+ headerHeight);
+					+ HEADER_HEIGHT);
 		}
 		internalContent.setPixelSize(contentWidth, contentHeight);
 	}
