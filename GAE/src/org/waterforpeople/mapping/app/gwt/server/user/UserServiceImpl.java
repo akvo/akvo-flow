@@ -12,7 +12,14 @@ import com.gallatinsystems.user.domain.UserConfig;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class UserServiceImpl extends RemoteServiceServlet implements UserService {
+/**
+ * Retrieves users and their personalization info from the data store
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
+public class UserServiceImpl extends RemoteServiceServlet implements
+		UserService {
 
 	private static final long serialVersionUID = 5371988266704758230L;
 	private UserDao userDao;
@@ -21,6 +28,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		userDao = new UserDao();
 	}
 
+	/**
+	 * lists all users in the system.
+	 */
 	@Override
 	public UserDto[] listUser() {
 		List<User> users = userDao.list();
@@ -37,7 +47,12 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		return result;
 	}
 
-
+	/**
+	 * returns the UserConfigDto for the currently logged in user. If the
+	 * current user is not found in the database, a User record will be
+	 * autocreated. If no config info is present (or if this is a new user),
+	 * this method returns null.
+	 */
 	@Override
 	public UserConfigDto getCurrentUserConfig() {
 		com.google.appengine.api.users.UserService userService = UserServiceFactory

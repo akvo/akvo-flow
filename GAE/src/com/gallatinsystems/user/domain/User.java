@@ -5,13 +5,22 @@ import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * User of the web application. This object also can be used to persist (via a
+ * cascade save) UserConfig.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class User extends BaseDomain {
+	
+	private static final long serialVersionUID = -1416095159769575254L;
 	@Persistent
 	private String userName;
 	@Persistent
 	private String emailAddress;
-	
+
 	@Persistent
 	private UserConfig config;
 

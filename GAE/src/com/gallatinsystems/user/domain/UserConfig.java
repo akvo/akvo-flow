@@ -5,6 +5,12 @@ import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * Data structure for user configuration/personalization information.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class UserConfig extends BaseDomain {
 
