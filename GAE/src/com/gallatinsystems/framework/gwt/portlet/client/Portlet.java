@@ -5,7 +5,6 @@ import com.allen_sauer.gwt.dnd.client.util.Location;
 import com.allen_sauer.gwt.dnd.client.util.WidgetLocation;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -19,77 +18,9 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	private int width = DEFAULT_WIDTH;
 	private int height = DEFAULT_HEIGHT;
 	private Widget currentColumn;
-	/**
-	 * Specifies that resizing occur at the east edge.
-	 */
-	public static final int DIRECTION_EAST = 0x0001;
+	
 
-	/**
-	 * Specifies that resizing occur at the both edge.
-	 */
-	public static final int DIRECTION_NORTH = 0x0002;
-
-	/**
-	 * Specifies that resizing occur at the south edge.
-	 */
-	public static final int DIRECTION_SOUTH = 0x0004;
-
-	/**
-	 * Specifies that resizing occur at the west edge.
-	 */
-	public static final int DIRECTION_WEST = 0x0008;
-
-	/**
-	 * Specifies that resizing occur at the east edge.
-	 */
-	public static final DirectionConstant EAST = new DirectionConstant(
-			DIRECTION_EAST, "e");
-
-	/**
-	 * Specifies that resizing occur at the both edge.
-	 */
-	public static final DirectionConstant NORTH = new DirectionConstant(
-			DIRECTION_NORTH, "n");
-
-	/**
-	 * Specifies that resizing occur at the north-east edge.
-	 */
-	public static final DirectionConstant NORTH_EAST = new DirectionConstant(
-			DIRECTION_NORTH | DIRECTION_EAST, "ne");
-
-	/**
-	 * Specifies that resizing occur at the north-west edge.
-	 */
-	public static final DirectionConstant NORTH_WEST = new DirectionConstant(
-			DIRECTION_NORTH | DIRECTION_WEST, "nw");
-
-	/**
-	 * Specifies that resizing occur at the south edge.
-	 */
-	public static final DirectionConstant SOUTH = new DirectionConstant(
-			DIRECTION_SOUTH, "s");
-
-	/**
-	 * Specifies that resizing occur at the south-east edge.
-	 */
-	public static final DirectionConstant SOUTH_EAST = new DirectionConstant(
-			DIRECTION_SOUTH | DIRECTION_EAST, "se");
-
-	/**
-	 * Specifies that resizing occur at the south-west edge.
-	 */
-	public static final DirectionConstant SOUTH_WEST = new DirectionConstant(
-			DIRECTION_SOUTH | DIRECTION_WEST, "sw");
-
-	/**
-	 * Specifies that resizing occur at the west edge.
-	 */
-	public static final DirectionConstant WEST = new DirectionConstant(
-			DIRECTION_WEST, "w");
-
-	private static final int BORDER_THICKNESS = 5;
-
-	private static final String CSS_BORDER_EDGE = "portlet-edge";
+	private static final int BORDER_THICKNESS = 5;	
 
 	private static final String CSS_PANEL = "portlet-panel";
 
@@ -97,31 +28,15 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 
 	private PortalContainer portletContainer;
 
-	public static class DirectionConstant {
-
-		public final int directionBits;
-
-		public final String directionLetters;
-
-		private DirectionConstant(int directionBits, String directionLetters) {
-			this.directionBits = directionBits;
-			this.directionLetters = directionLetters;
-		}
-	}
 
 	private int contentHeight;
 	private boolean scrollable;
 	private Widget internalContent;
-	private int contentWidth;
-	private Widget eastWidget;
-	private Grid grid = new Grid(3, 3);
+	private int contentWidth;	
 	private final FocusPanel headerContainer;
 	private final Widget headerWidget;
 	private boolean initialLoad = false;
-	private Widget northWidget;
-	private Widget southWidget;
-	private Widget westWidget;
-
+	
 	public Portlet(String title, boolean scrollable, int width, int height) {
 		addStyleName(CSS_PANEL);
 		if (width > 0) {
@@ -154,22 +69,9 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.add(headerContainer);
 		verticalPanel.add(internalContent);
+		add(verticalPanel);
 
-		grid.setCellSpacing(0);
-		grid.setCellPadding(0);
-		add(grid);
-
-		setupCell(0, 0, NORTH_WEST);
-		northWidget = setupCell(0, 1, NORTH);
-		setupCell(0, 2, NORTH_EAST);
-
-		westWidget = setupCell(1, 0, WEST);
-		grid.setWidget(1, 1, verticalPanel);
-		eastWidget = setupCell(1, 2, EAST);
-
-		setupCell(2, 0, SOUTH_WEST);
-		southWidget = setupCell(2, 1, SOUTH);
-		setupCell(2, 2, SOUTH_EAST);
+		
 		setContentSize(width, height);
 	}
 
@@ -193,15 +95,15 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		if (width != contentWidth) {
 			contentWidth = width;
 			headerContainer.setPixelSize(contentWidth, HEADER_HEIGHT);
-			northWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
-			southWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
+//			northWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
+	//		southWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
 		}
 		if (height != contentHeight) {
 			contentHeight = height;			
-			westWidget.setPixelSize(BORDER_THICKNESS, contentHeight
-					+ HEADER_HEIGHT);
-			eastWidget.setPixelSize(BORDER_THICKNESS, contentHeight
-					+ HEADER_HEIGHT);
+		//	westWidget.setPixelSize(BORDER_THICKNESS, contentHeight
+					//+ HEADER_HEIGHT);
+			//eastWidget.setPixelSize(BORDER_THICKNESS, contentHeight
+				//	+ HEADER_HEIGHT);
 		}
 		internalContent.setPixelSize(contentWidth, contentHeight);
 	}
@@ -219,14 +121,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		}
 	}
 
-	private Widget setupCell(int row, int col, DirectionConstant direction) {
-		final FocusPanel widget = new FocusPanel();
-		widget.setPixelSize(BORDER_THICKNESS, BORDER_THICKNESS);
-		grid.setWidget(row, col, widget);
-		grid.getCellFormatter().addStyleName(row, col, CSS_BORDER_EDGE);
-		return widget;
-	}
-
+	
 	public int getWidth() {
 		return width;
 	}
