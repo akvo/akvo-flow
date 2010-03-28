@@ -19,7 +19,7 @@ public abstract class PortalContainer extends SimplePanel {
 
 	private static final int INITIAL_COL_HEIGHT = 750;
 	private static final int MINIMUM_COL_WIDTH = 200;
-	private static final int COLS = 3;
+	private static final int DEFAULT_COLS = 3;
 	private static final int PADDING = 0;
 
 	private List<Portlet> activePortlets;
@@ -30,18 +30,23 @@ public abstract class PortalContainer extends SimplePanel {
 	private PickupDragController dragController;
 	private PortletDropController controller;
 	private VerticalPanel[] columnPanels;
+	private int columns = DEFAULT_COLS;
+	private HorizontalPanel mainPanel;
 
 	private boolean initialLoaded = false;
 
 	/**
 	 * Constructor for examples which create their own drag controller.
 	 */
-	public PortalContainer() {
+	public PortalContainer(int columnCount) {
 		activePortlets = new ArrayList<Portlet>();
 		final AbsolutePanel boundaryPanel = new AbsolutePanel();
 
 		setWidget(boundaryPanel);
-		columnPanels = new VerticalPanel[COLS];
+		if (columnCount > 0) {
+			columns = columnCount;
+		}
+		columnPanels = new VerticalPanel[columns];
 
 		// define custom events that occur when dragging
 		DragHandler handler = new DragHandler() {
@@ -59,8 +64,11 @@ public abstract class PortalContainer extends SimplePanel {
 						w.setWidth(MINIMUM_COL_WIDTH + "");
 						w.setHeight(INITIAL_COL_HEIGHT + "");
 					}
-					p.setCurrentColumn(event.getContext().finalDropController
-							.getDropTarget());
+					if (event.getContext().finalDropController != null) {
+						p
+								.setCurrentColumn(event.getContext().finalDropController
+										.getDropTarget());
+					}
 					for (int i = 0; i < columnPanels.length; i++) {
 						columnPanels[i].setStyleName(IDLE_COL_CSS);
 					}
@@ -95,16 +103,15 @@ public abstract class PortalContainer extends SimplePanel {
 		dragController.addDragHandler(handler);
 
 		// initialize horizontal panel to hold our columns
-		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		horizontalPanel.setSpacing(PADDING);
-		boundaryPanel.add(horizontalPanel);
+		mainPanel = new HorizontalPanel();
+		mainPanel.setSpacing(PADDING);
+		boundaryPanel.add(mainPanel);
 
-		for (int col = 0; col < COLS; col++) {
-
+		for (int col = 0; col < columns; col++) {
 			// initialize inner vertical panel to hold individual widgets
 			VerticalPanel verticalPanel = new VerticalPanel();
 			verticalPanel.setHeight(INITIAL_COL_HEIGHT + "");
-			verticalPanel.setWidth(MINIMUM_COL_WIDTH+"");
+			verticalPanel.setWidth(MINIMUM_COL_WIDTH + "");
 			verticalPanel.setSpacing(PADDING);
 			verticalPanel.setStyleName(IDLE_COL_CSS);
 			columnPanels[col] = verticalPanel;
@@ -118,12 +125,7 @@ public abstract class PortalContainer extends SimplePanel {
 			SimplePanel p = new SimplePanel();
 			p.setHeight(PADDING + "");
 			verticalPanel.add(p);
-
-			// Put together the column pieces
-			// Label heading = new Label("Column " + col);
-			// heading.addStyleName(CSS_DEMO_INSERT_PANEL_EXAMPLE_HEADING);
-			// columnCompositePanel.add(heading);
-			horizontalPanel.add(verticalPanel);
+			mainPanel.add(verticalPanel);
 		}
 
 	}
@@ -133,7 +135,6 @@ public abstract class PortalContainer extends SimplePanel {
 	}
 
 	protected void addDraggable(Widget w, int col) {
-		// RootPanel.get().add(w);
 		columnPanels[col].add(w);
 		if (w instanceof Portlet) {
 			Portlet p = (Portlet) w;
@@ -181,5 +182,15 @@ public abstract class PortalContainer extends SimplePanel {
 				p.handleEvent(e);
 			}
 		}
+	}
+
+	/**
+	 * removes a portlet from the UI
+	 * 
+	 * @param p
+	 */
+	public void removePortlet(Portlet p) {
+		p.removeFromParent();
+		activePortlets.remove(p);
 	}
 }

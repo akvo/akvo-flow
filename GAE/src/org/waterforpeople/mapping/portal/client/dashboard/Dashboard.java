@@ -22,6 +22,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public class Dashboard extends PortalContainer implements EntryPoint {
+	private static final int COLUMNS = 3;
+
+	public Dashboard() {
+		super(COLUMNS);
+	}
 
 	public void onModuleLoad() {
 		RootPanel.get().setPixelSize(1024, 768);
@@ -31,10 +36,9 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		VerticalPanel containerPanel = new VerticalPanel();
 		containerPanel.add(new Image("images/WFP_Logo.png"));
 		RootPanel.get().add(containerPanel);
-		
-		
+
 		addDraggable(new SummaryPortlet(), 0);
-		addDraggable(new ActivityChartPortlet(), 1);		
+		addDraggable(new ActivityChartPortlet(), 1);
 		addDraggable(new ActivityMapPortlet(), 1);
 		// now add the portal container to the vertical panel
 		containerPanel.add(this);

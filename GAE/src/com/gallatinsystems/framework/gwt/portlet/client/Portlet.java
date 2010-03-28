@@ -1,43 +1,49 @@
 package com.gallatinsystems.framework.gwt.portlet.client;
 
 import com.allen_sauer.gwt.dnd.client.HasDragHandle;
-import com.allen_sauer.gwt.dnd.client.util.Location;
-import com.allen_sauer.gwt.dnd.client.util.WidgetLocation;
-import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class Portlet extends FocusPanel implements HasDragHandle {
+public abstract class Portlet extends FocusPanel implements HasDragHandle,
+		ClickHandler {
 
+	private static final String CLOSE_IMAGE = "images/close.png";
+	private static final String CONF_IMAGE = "images/configure-32.png";
+	private static final int BORDER_THICKNESS = 5;
+	private static final String CSS_PANEL = "portlet-panel";
+	private static final String CSS_HEADER = "portlet-header";
 	private static final int HEADER_HEIGHT = 20;
 	private static final int DEFAULT_WIDTH = 100;
 	private static final int DEFAULT_HEIGHT = 100;
+
 	private int width = DEFAULT_WIDTH;
 	private int height = DEFAULT_HEIGHT;
 	private Widget currentColumn;
-	
-
-	private static final int BORDER_THICKNESS = 5;	
-
-	private static final String CSS_PANEL = "portlet-panel";
-
-	private static final String CSS_HEADER = "portlet-header";
 
 	private PortalContainer portletContainer;
 
-
 	private int contentHeight;
+	private int contentWidth;
 	private boolean scrollable;
+	private boolean configurable;
 	private Widget internalContent;
-	private int contentWidth;	
-	private final FocusPanel headerContainer;
-	private final Widget headerWidget;
+	private Widget headerWidget;
+	private Image closeImg;
+	private Image confImg;
+	private FocusPanel headerContainer;
+
 	private boolean initialLoad = false;
-	
-	public Portlet(String title, boolean scrollable, int width, int height) {
+
+	public Portlet(String title, boolean scrollable, boolean configurable,
+			int width, int height) {
 		addStyleName(CSS_PANEL);
 		if (width > 0) {
 			this.width = width;
@@ -45,20 +51,47 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		if (height > 0) {
 			this.height = height;
 		}
-
+		this.configurable = configurable;
 		this.scrollable = scrollable;
+		constructHeader(title);
+	}
+
+	protected void constructHeader(String title) {
+		DockPanel headerPanel = new DockPanel();
+		headerPanel.setWidth(width + "");
+		headerPanel.setHeight(HEADER_HEIGHT + "");
 		if (title != null) {
 			headerWidget = new Label(title);
 		} else {
 			headerWidget = new Label("");
 		}
+		headerPanel.add(headerWidget, DockPanel.WEST);
+		headerPanel.add(new SimplePanel(), DockPanel.CENTER);
+		closeImg = new Image(CLOSE_IMAGE);
+		closeImg.addClickHandler(this);
+		headerPanel.add(closeImg, DockPanel.EAST);
+		if (configurable) {
+			confImg = new Image(CONF_IMAGE);
+			confImg.addClickHandler(this);
+			headerPanel.add(confImg, DockPanel.EAST);
+		}
+
 		headerWidget.setHeight(HEADER_HEIGHT + "");
 
 		setPixelSize(width, getPortletHeight());
 		headerContainer = new FocusPanel();
 		headerContainer.addStyleName(CSS_HEADER);
-		headerContainer.add(headerWidget);
+		headerContainer.add(headerPanel);
+	}
 
+	public void onClick(ClickEvent event) {
+		if (event.getSource() == closeImg) {
+			if (getReadyForRemove()) {
+				portletContainer.removePortlet(this);
+			}
+		} else {
+			handleConfigClick();
+		}
 	}
 
 	protected void setContent(Widget contentWidget) {
@@ -71,7 +104,6 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		verticalPanel.add(internalContent);
 		add(verticalPanel);
 
-		
 		setContentSize(width, height);
 	}
 
@@ -83,27 +115,13 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		return contentWidth;
 	}
 
-	public void moveBy(int right, int down) {
-		AbsolutePanel parent = (AbsolutePanel) getParent();
-		Location location = new WidgetLocation(this, parent);
-		int left = location.getLeft() + right;
-		int top = location.getTop() + down;
-		parent.setWidgetPosition(this, left, top);
-	}
-
 	public void setContentSize(int width, int height) {
 		if (width != contentWidth) {
 			contentWidth = width;
 			headerContainer.setPixelSize(contentWidth, HEADER_HEIGHT);
-//			northWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
-	//		southWidget.setPixelSize(contentWidth, BORDER_THICKNESS);
 		}
 		if (height != contentHeight) {
-			contentHeight = height;			
-		//	westWidget.setPixelSize(BORDER_THICKNESS, contentHeight
-					//+ HEADER_HEIGHT);
-			//eastWidget.setPixelSize(BORDER_THICKNESS, contentHeight
-				//	+ HEADER_HEIGHT);
+			contentHeight = height;
 		}
 		internalContent.setPixelSize(contentWidth, contentHeight);
 	}
@@ -115,13 +133,12 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 				&& internalContent.getOffsetHeight() != 0) {
 			initialLoad = true;
 			headerWidget.setPixelSize(headerWidget.getOffsetWidth(),
-					headerWidget.getOffsetHeight());
+					HEADER_HEIGHT);
 			setContentSize(internalContent.getOffsetWidth(), internalContent
 					.getOffsetHeight());
 		}
 	}
 
-	
 	public int getWidth() {
 		return width;
 	}
@@ -172,6 +189,14 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		this.currentColumn = currentColumn;
 	}
 
+	public boolean isConfigurable() {
+		return configurable;
+	}
+
+	public void setConfigurable(boolean configurable) {
+		this.configurable = configurable;
+	}
+
 	/**
 	 * method that is invoked by the portlet container whenever another portlet
 	 * raises an event.
@@ -180,4 +205,16 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	 */
 	public abstract void handleEvent(PortletEvent e);
 
+	/**
+	 * called immediately before a portlet is removed from the ui. If you need
+	 * to do any cleanup (persisting of data, for instance) before the portlet
+	 * is closed, do it here. If the method returns false, then the close will
+	 * be aborted.
+	 */
+	protected abstract boolean getReadyForRemove();
+
+	/**
+	 * handles the response to the click of the "configure" button
+	 */
+	protected abstract void handleConfigClick();
 }

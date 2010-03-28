@@ -17,8 +17,8 @@ public class SummaryPortlet extends Portlet {
 	private static final int HEIGHT = 300;
 
 	public SummaryPortlet() {
-		super("System Summary", true, WIDTH, HEIGHT);
-		setContent(constructTree());		
+		super("System Summary", true, false, WIDTH, HEIGHT);
+		setContent(constructTree());
 	}
 
 	private Tree constructTree() {
@@ -35,12 +35,23 @@ public class SummaryPortlet extends Portlet {
 		deviceItem.addItem("3033359240");
 
 		return t;
-		
+
 	}
 
 	@Override
 	public void handleEvent(PortletEvent e) {
 		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected boolean getReadyForRemove() {
+
+		return true;
+	}
+
+	@Override
+	protected void handleConfigClick() {
 
 	}
 

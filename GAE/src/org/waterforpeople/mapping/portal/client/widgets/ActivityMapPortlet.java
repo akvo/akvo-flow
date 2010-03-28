@@ -17,7 +17,7 @@ public class ActivityMapPortlet extends Portlet {
 	private IntensityMap map;
 
 	public ActivityMapPortlet() {
-		super("Recent Activity", false, WIDTH, HEIGHT);
+		super("Recent Activity", false,true, WIDTH, HEIGHT);
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
 				map = new IntensityMap(createTable(), createOptions());
@@ -56,7 +56,19 @@ public class ActivityMapPortlet extends Portlet {
 
 	@Override
 	public void handleEvent(PortletEvent e) {
-		// TODO Auto-generated method stub
+	
+		
+	}
+
+	@Override
+	protected boolean getReadyForRemove() {
+
+		return true;
+	}
+
+	@Override
+	protected void handleConfigClick() {
+
 		
 	}
 }

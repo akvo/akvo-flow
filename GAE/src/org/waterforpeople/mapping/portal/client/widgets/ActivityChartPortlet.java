@@ -17,7 +17,7 @@ public class ActivityChartPortlet extends Portlet {
 	private AnnotatedTimeLine timeLine;
 
 	public ActivityChartPortlet() {
-		super("Recent Activity", false, WIDTH, HEIGHT);
+		super("Recent Activity", false, true, WIDTH, HEIGHT);
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
 				timeLine = new AnnotatedTimeLine(createTable(),
@@ -55,7 +55,19 @@ public class ActivityChartPortlet extends Portlet {
 
 	@Override
 	public void handleEvent(PortletEvent e) {
-		// TODO Auto-generated method stub
+
+		
+	}
+
+	@Override
+	protected boolean getReadyForRemove() {
+
+		return true;
+	}
+
+	@Override
+	protected void handleConfigClick() {
+		
 		
 	}
 }
