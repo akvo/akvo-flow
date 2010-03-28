@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.portal.server.service;
+package org.waterforpeople.mapping.app.gwt.server.survey;
 
 import java.util.List;
 import java.util.logging.Logger;

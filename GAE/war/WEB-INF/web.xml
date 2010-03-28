@@ -102,7 +102,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.portal.server.service.SurveyServiceImpl</servlet-class>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyRpcServlet</servlet-name>
@@ -110,7 +110,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DeviceRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.portal.server.service.DeviceServiceImpl</servlet-class>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.device.DeviceServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DeviceRpcServlet</servlet-name>
