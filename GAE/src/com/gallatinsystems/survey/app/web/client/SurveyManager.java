@@ -109,8 +109,7 @@ public class SurveyManager implements EntryPoint {
 	private void addEventHandlers() {
 
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	private void addItem(ClickEvent event) {
 		if (surveyTree.getItemCount() == 0) {
 			actionType = "createSurveyGroup";

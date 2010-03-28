@@ -13,6 +13,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyService {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 

@@ -11,12 +11,17 @@ import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+/**
+ * Service allowing listing/saving of Device objects
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class DeviceServiceImpl extends RemoteServiceServlet implements
 		DeviceService {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -3606845978482271221L;
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
@@ -33,7 +38,7 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 				Device d = devices.get(i);
 
 				dto.setPhoneNumber(d.getPhoneNumber());
-				dto.setEsn(d.getEsn());				
+				dto.setEsn(d.getEsn());
 				deviceDtos[i] = dto;
 			}
 		}

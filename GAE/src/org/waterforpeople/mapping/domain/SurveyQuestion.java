@@ -12,7 +12,8 @@ import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyQuestion extends BaseDomain {
-	
+		
+	private static final long serialVersionUID = 6756349508244348272L;
 	@Persistent
 	private String id;
 	@Persistent
