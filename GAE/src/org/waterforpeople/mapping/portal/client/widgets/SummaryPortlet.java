@@ -6,6 +6,9 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.app.gwt.client.user.UserService;
+import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
@@ -72,6 +75,27 @@ public class SummaryPortlet extends Portlet {
 		};
 		deviceService.listDevice(deviceCallback);
 
+		UserServiceAsync userService = GWT.create(UserService.class);
+		// Set up the callback object.
+		AsyncCallback<UserDto[]> userCallback = new AsyncCallback<UserDto[]>() {
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			public void onSuccess(UserDto[] result) {
+				if (result != null) {
+					for (int i = 0; i < result.length; i++) {
+						if (result[i].getUserName() != null) {
+							userRoot.addItem(result[i].getUserName());
+						} else {
+							userRoot.addItem(result[i].getEmailAddress());
+						}
+					}
+				}
+			}
+		};
+		userService.listUser(userCallback);
+
 		setContent(constructTree());
 
 	}
@@ -90,8 +114,8 @@ public class SummaryPortlet extends Portlet {
 		panel.add(new Image(USER_IMAGE));
 		panel.add(new Label("Users"));
 		userRoot = t.addItem(panel);
-		userRoot.addItem("Chris");
-		userRoot.addItem("Dru");
+		// userRoot.addItem("Chris");
+		// userRoot.addItem("Dru");
 
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);

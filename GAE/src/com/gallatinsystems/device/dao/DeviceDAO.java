@@ -15,7 +15,7 @@ public class DeviceDAO extends BaseDAO<Device> {
 	}
 	
 	public Device get(String phoneNumber) {
-		return super.findByProperty("phoneNumber", phoneNumber, "String");
+		return super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
 	}
 
 }

@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class BaseDAO<T extends BaseDomain> {
+	protected static final String STRING_TYPE= "String";
 	private Class<T> concreteClass;
 	protected Logger log;
 

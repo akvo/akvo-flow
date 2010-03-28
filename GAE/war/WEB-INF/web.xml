@@ -106,7 +106,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyRpcServlet</servlet-name>
-		<url-pattern>org.waterforpeople.mapping.portal.portal/surveyrpcservice</url-pattern>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DeviceRpcServlet</servlet-name>
@@ -114,7 +114,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DeviceRpcServlet</servlet-name>
-		<url-pattern>org.waterforpeople.mapping.portal.portal/devicerpcservice</url-pattern>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicerpcservice</url-pattern>
 	</servlet-mapping>
 		<servlet>
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
@@ -124,6 +124,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
 		<url-pattern>/webapp/spreadsheetattributemapper</url-pattern>
 	</servlet-mapping>	
+	<servlet>
+		<servlet-name>UserRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/userrpcservice</url-pattern>
+	</servlet-mapping>
 	
 		<security-constraint>
 		<web-resource-collection>
