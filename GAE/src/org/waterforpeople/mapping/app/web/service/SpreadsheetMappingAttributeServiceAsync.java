@@ -19,4 +19,7 @@ public interface SpreadsheetMappingAttributeServiceAsync {
 	void saveSpreadsheetMapping(MappingSpreadsheetDefinition mapDef,
 			AsyncCallback<Void> callback);
 
+	void processSpreadsheet(MappingSpreadsheetDefinition mapDef,
+			AsyncCallback<Void> callback);
+
 }
