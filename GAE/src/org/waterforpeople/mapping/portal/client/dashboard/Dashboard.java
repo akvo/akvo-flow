@@ -5,15 +5,26 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortalContainer;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -28,6 +39,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final int COLUMNS = 3;
+	private static final String CSS_SYSTEM_HEAD = "sys-header";
+	private static final String ADD_ICON = "images/add-icon.png";
 
 	private VerticalPanel containerPanel;
 
@@ -41,7 +54,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				"relative");
 
 		containerPanel = new VerticalPanel();
-		containerPanel.add(new Image("images/WFP_Logo.png"));
+
+		containerPanel.add(constructMenu());
 		RootPanel.get().add(containerPanel);
 
 		// get the user config
@@ -61,9 +75,29 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			}
 		};
 		userService.getCurrentUserConfig(userCallback);
-		
-	
+	}
 
+	private Widget constructMenu() {
+		VerticalPanel menuPanel = new VerticalPanel();
+		menuPanel.add(new Image("images/WFP_Logo.png"));
+		DockPanel statusDock = new DockPanel();
+		statusDock.setPixelSize(1024, 20);
+		statusDock.setStyleName(CSS_SYSTEM_HEAD);
+		statusDock.add(new Label("Monitoring Dashboard"), DockPanel.WEST);
+		statusDock.add(new SimplePanel(), DockPanel.CENTER);
+		Image confImage = new Image(ADD_ICON);
+		confImage.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				new ConfigurationDialog().show();
+
+			}
+		});
+
+		statusDock.add(confImage, DockPanel.EAST);
+		menuPanel.add(statusDock);
+		return menuPanel;
 	}
 
 	private void initializeContent(String config) {
@@ -81,4 +115,67 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		return new Class[] { this.getClass(), SummaryPortlet.class,
 				ActivityChartPortlet.class, ActivityMapPortlet.class };
 	}
+
+	/**
+	 * Renders the dashboard configuration UI as a dialog box. From this box,
+	 * the user will be able to select widgets to add to the system.
+	 * 
+	 * @author Christopher Fagiani
+	 * 
+	 */
+	private class ConfigurationDialog extends DialogBox implements ClickHandler {
+
+		public ConfigurationDialog() {
+			// Set the dialog box's caption.
+			setText("Add Items to Dashboard");
+			setAnimationEnabled(true);
+			setGlassEnabled(true);
+
+			VerticalPanel contentPane = new VerticalPanel();
+			contentPane
+					.add(new Label(
+							"Select the portlets you want to add to your dashboard screen"));
+			setPopupPosition(Window.getClientWidth() / 3, Window
+					.getClientHeight() / 3);
+			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);
+
+			g.setText(0, 0, "Portlets");
+			g.setText(0, 1, "Description");
+			for (int i = 0; i < PortletFactory.AVAILABLE_PORTLETS.length; i++) {
+				g.setText(i + 1, 0,
+						(String) PortletFactory.AVAILABLE_PORTLETS[i][0]);
+				g.setText(i + 1, 1,
+						(String) PortletFactory.AVAILABLE_PORTLETS[i][1]);
+				Image img = new Image(ADD_ICON);
+				img.setTitle((String) PortletFactory.AVAILABLE_PORTLETS[i][0]);
+				img.addClickHandler(this);
+				g.setWidget(i + 1, 2, img);
+			}
+			g.getCellFormatter().setWidth(0, 2, "256px");
+			contentPane.add(g);
+			// DialogBox is a SimplePanel, so you have to set its widget
+			// property to
+			// whatever you want its contents to be.
+			Button ok = new Button("Done");
+			contentPane.add(ok);
+			ok.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					ConfigurationDialog.this.hide();
+				}
+			});
+			setWidget(contentPane);
+
+		}
+
+		@Override
+		public void onClick(ClickEvent event) {
+			if (event.getSource() instanceof Image) {
+				Image img = (Image) event.getSource();
+				String name = img.getTitle();
+				addPortlet(PortletFactory.createPortlet(name), 0, true);
+			}
+
+		}
+	}
+
 }

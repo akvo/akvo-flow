@@ -27,7 +27,8 @@ import com.google.gwt.user.client.ui.TreeItem;
  * 
  */
 public class SummaryPortlet extends Portlet {
-
+	public static final String DESCRIPTION = "Displays a tree allowing you to drill-down into survey, device, and user details";
+	public static final String NAME = "System Summary";
 	private static final int WIDTH = 300;
 	private static final int HEIGHT = 300;
 	private static final String TREE_ITEM_HEIGHT = "25";
@@ -39,7 +40,7 @@ public class SummaryPortlet extends Portlet {
 	private TreeItem userRoot;
 
 	public SummaryPortlet() {
-		super("System Summary", true, false, WIDTH, HEIGHT);
+		super(NAME, true, false, WIDTH, HEIGHT);
 		SurveyServiceAsync surveyService = GWT.create(SurveyService.class);
 		// Set up the callback object.
 		AsyncCallback<SurveyDto[]> surveyCallback = new AsyncCallback<SurveyDto[]>() {

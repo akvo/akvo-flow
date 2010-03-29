@@ -13,7 +13,8 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  */
 @PersistenceCapable
 public class UserConfig extends BaseDomain {
-
+	
+	private static final long serialVersionUID = 515991819240493160L;
 	@Persistent
 	private String dashboardConfig;
 

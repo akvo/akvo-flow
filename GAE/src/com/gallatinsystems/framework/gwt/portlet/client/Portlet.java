@@ -24,6 +24,11 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		ClickHandler {
+	/**
+	 * both name and description should be hidden by subclasses
+	 */
+	public static final String NAME = "Generic Portlet";
+	public static final String DESCRIPTION = "Generic Portlet";
 
 	private static final String CLOSE_IMAGE = "images/close.png";
 	private static final String CONF_IMAGE = "images/configure-32.png";
@@ -298,4 +303,5 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	 * handles the response to the click of the "configure" button
 	 */
 	protected abstract void handleConfigClick();
+
 }

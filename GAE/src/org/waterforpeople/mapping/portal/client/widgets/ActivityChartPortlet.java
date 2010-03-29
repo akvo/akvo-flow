@@ -10,6 +10,7 @@ import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Options;
+import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.WindowMode;
 
 /**
  * Portlet that displays the current system activity over a period of time using
@@ -23,17 +24,20 @@ import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Opti
  * 
  */
 public class ActivityChartPortlet extends Portlet {
+	public static final String DESCRIPTION = "Displays survey response activity over a configurable timeframe";
+	public static final String NAME = "Survey Activity Over Time";
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 300;
 	private AnnotatedTimeLine timeLine;
 
 	public ActivityChartPortlet() {
-		super("Recent Activity", false, true, WIDTH, HEIGHT);
+		super(NAME, false, true, WIDTH, HEIGHT);
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
 				timeLine = new AnnotatedTimeLine(createTable(),
 						createOptions(), WIDTH + "", "" + HEIGHT);
 				setContent(timeLine);
+
 			}
 		};
 		VisualizationUtils.loadVisualizationApi(onLoadCallback,
@@ -66,6 +70,8 @@ public class ActivityChartPortlet extends Portlet {
 	 */
 	private Options createOptions() {
 		Options options = Options.create();
+		// this is needed so we can display html pop-ups over the flash content
+		options.setWindowMode(WindowMode.TRANSPARENT);
 		return options;
 	}
 
@@ -82,4 +88,5 @@ public class ActivityChartPortlet extends Portlet {
 	protected void handleConfigClick() {
 		// TODO: handle configuration
 	}
+
 }

@@ -21,15 +21,16 @@ import com.google.gwt.visualization.client.visualizations.IntensityMap.Options;
  * @author Christopher Fagiani
  * 
  */
-public class ActivityMapPortlet extends Portlet {
-
+public class ActivityMapPortlet extends Portlet {	
+	public static final String DESCRIPTION = "Displays survey response activity by region on a map";
+	public static final String NAME = "Survey Activity By Region";
 	// unfortunately, the map doesn't scale. we need to use these dimensions
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 240;
 	private IntensityMap map;
 
 	public ActivityMapPortlet() {
-		super("Recent Activity", false, true, WIDTH, HEIGHT);
+		super(NAME, false, true, WIDTH, HEIGHT);
 		Runnable onLoadCallback = new Runnable() {
 			public void run() {
 				map = new IntensityMap(createTable(), createOptions());
@@ -82,4 +83,5 @@ public class ActivityMapPortlet extends Portlet {
 	protected void handleConfigClick() {
 		// TODO: handle config
 	}
+	
 }

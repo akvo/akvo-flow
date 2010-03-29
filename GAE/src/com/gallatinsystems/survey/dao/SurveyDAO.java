@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
+
+import org.waterforpeople.mapping.db.PMF;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -58,6 +62,50 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unchecked")
+	public List countSurveyInstance(Date startDate, Date endDate,
+			String rollUpType) {
+
+		//TODO: find another way to do this since GAE doesn't support groupBy
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		List results = null;
+		StringBuilder params = new StringBuilder();
+		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
+		if (startDate != null) {
+			query.setFilter("collectionDate" + " >= startDateParam");
+			params.append("Date startDateParam");
+		}
+		if ("collectionDate".equals(rollUpType)) {
+			query.setResult("collectionDate, count(this)");
+		} else {
+			// TODO: add region to survey instance so we can do location roll-up
+			query.setResult("collectionDate, count(this)");
+		}
+		if (endDate != null) {
+			query.setFilter("collectionDate" + " <= endDateParam");
+			if (startDate != null) {
+				params.append(" ");
+			}
+			params.append("Date endDateParam");
+		}
+		if (rollUpType != null) {
+			query.setGrouping(rollUpType);
+		}
+		if (startDate != null || endDate != null) {
+			query.declareParameters(params.toString());
+			if (startDate != null && endDate != null) {
+				results = (List) query.execute(startDate, endDate);
+			} else if (startDate != null) {
+				results = (List) query.execute(startDate);
+			} else {
+				results = (List) query.execute(endDate);
+			}
+		} else {
+			results = (List) query.execute();
+		}
+		return results;
+	}
+
 	public void test() {
 
 		QuestionOption questionOption = new QuestionOption();
@@ -106,8 +154,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
-		SurveyContainer surveyContainer = getByKey(id,
-				SurveyContainer.class);
+		SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
 
 		SurveyXMLAdapter sxa = new SurveyXMLAdapter();
 		com.gallatinsystems.survey.domain.xml.Survey survey = null;
@@ -121,8 +168,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	public String getSurveyDocument(Long id) {
-		SurveyContainer surveyContainer = getByKey(id,
-				SurveyContainer.class);
+		SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
 		return surveyContainer.getSurveyDocument().getValue();
 	}
 
