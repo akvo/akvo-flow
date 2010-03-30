@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.server.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
@@ -54,28 +55,66 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 * this method returns null.
 	 */
 	@Override
-	public UserConfigDto getCurrentUserConfig() {
+	public UserDto getCurrentUserConfig() {
 		com.google.appengine.api.users.UserService userService = UserServiceFactory
 				.getUserService();
 		com.google.appengine.api.users.User currentUser = userService
 				.getCurrentUser();
-		UserConfigDto conf = null;
+
+		UserDto userDto = new UserDto();
 		if (currentUser != null) {
 			User u = userDao.findUserByEmail(currentUser.getEmail());
 			if (u == null) {
 				User newUser = new User();
 				newUser.setEmailAddress(currentUser.getEmail());
 				newUser.setUserName(currentUser.getNickname());
+				userDto.setEmailAddress(currentUser.getEmail());
+				userDto.setUserName(currentUser.getNickname());
 				userDao.save(newUser);
 			} else {
-				UserConfig c = u.getConfig();
-				if (c != null) {
-					conf = new UserConfigDto();
-					conf.setDashboardConfig(c.getDashboardConfig());
+				List<UserConfigDto> configList = new ArrayList<UserConfigDto>();
+				if (u.getConfig() != null) {
+					for (UserConfig c : u.getConfig()) {
+						UserConfigDto confDto = new UserConfigDto();
+						confDto.setGroup(c.getGroup());
+						confDto.setName(c.getName());
+						confDto.setValue(c.getValue());
+						configList.add(confDto);
+					}
+					userDto.setConfig(configList);
+					userDto.setUserName(u.getUserName());
+					userDto.setEmailAddress(u.getEmailAddress());
 				}
 			}
 		}
-		return conf;
+		return userDto;
+	}
+
+	@Override
+	public void saveUser(UserDto user) {
+		User existingUser = userDao.findUserByEmail(user.getEmailAddress());
+		User newUser = new User();
+		if (existingUser != null) {
+			newUser = existingUser;
+		}
+		if (user.getEmailAddress() != null) {
+			newUser.setEmailAddress(user.getEmailAddress());
+		}
+		if (user.getUserName() != null) {
+			newUser.setUserName(user.getUserName());
+		}
+		if (user.getConfig() != null) {
+			List<UserConfig> confList = new ArrayList<UserConfig>();
+			for (UserConfigDto confDto : user.getConfig()) {
+				UserConfig config = new UserConfig();
+				config.setGroup(confDto.getGroup());
+				config.setName(confDto.getName());
+				config.setValue(confDto.getValue());
+				confList.add(config);
+			}
+			newUser.setConfig(confList);
+		}	
+			userDao.save(newUser);	
 	}
 
 }

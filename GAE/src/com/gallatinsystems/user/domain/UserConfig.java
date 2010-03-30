@@ -13,16 +13,36 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  */
 @PersistenceCapable
 public class UserConfig extends BaseDomain {
-	
+
 	private static final long serialVersionUID = 515991819240493160L;
 	@Persistent
-	private String dashboardConfig;
+	private String group;
+	@Persistent
+	private String name;
+	@Persistent
+	private String value;
 
-	public String getDashboardConfig() {
-		return dashboardConfig;
+	public String getGroup() {
+		return group;
 	}
 
-	public void setDashboardConfig(String dashboardConfig) {
-		this.dashboardConfig = dashboardConfig;
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 }

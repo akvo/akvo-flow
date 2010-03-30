@@ -133,6 +133,16 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/userrpcservice</url-pattern>
 	</servlet-mapping>
 	
+	 <filter>
+        <filter-name>persistenceFilter</filter-name>
+        <filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>        
+    </filter>	 
+    <filter-mapping>
+        <filter-name>persistenceFilter</filter-name>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
+	
+	
 		<security-constraint>
 		<web-resource-collection>
 			<url-pattern>/Dashboard.html</url-pattern>

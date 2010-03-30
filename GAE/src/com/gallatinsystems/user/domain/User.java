@@ -1,5 +1,7 @@
 package com.gallatinsystems.user.domain;
 
+import java.util.List;
+
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -22,13 +24,13 @@ public class User extends BaseDomain {
 	private String emailAddress;
 
 	@Persistent
-	private UserConfig config;
+	private List<UserConfig> config;
 
-	public UserConfig getConfig() {
+	public  List<UserConfig> getConfig() {
 		return config;
 	}
 
-	public void setConfig(UserConfig config) {
+	public void setConfig( List<UserConfig> config) {
 		this.config = config;
 	}
 

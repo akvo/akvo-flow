@@ -7,14 +7,13 @@ import java.util.logging.Logger;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
-import org.waterforpeople.mapping.db.PMF;
-
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class BaseDAO<T extends BaseDomain> {
-	protected static final String STRING_TYPE= "String";
+	protected static final String STRING_TYPE = "String";
 	private Class<T> concreteClass;
 	protected Logger log;
 
@@ -45,18 +44,16 @@ public class BaseDAO<T extends BaseDomain> {
 	 * @return
 	 */
 	public <E extends BaseDomain> E save(E obj) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+
+		PersistenceManager pm = PersistenceFilter.getManager();
 		if (obj.getCreatedDateTime() == null) {
 			obj.setCreatedDateTime(new Date());
 		}
 		if (obj.getLastUpdateDateTime() == null) {
 			obj.setLastUpdateDateTime(new Date());
 		}
-		try {
-			obj = pm.makePersistent(obj);
-		} finally {
-			pm.close();
-		}
+
+		obj = pm.makePersistent(obj);
 
 		return obj;
 	}
@@ -83,8 +80,8 @@ public class BaseDAO<T extends BaseDomain> {
 	 * @param keyString
 	 * @return
 	 */
-	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {		
+		PersistenceManager pm = PersistenceFilter.getManager();
 		E result = null;
 		Key k = KeyFactory.stringToKey(keyString);
 		try {
@@ -101,7 +98,7 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	public <E extends BaseDomain> E getByKey(Long id, Class<E> clazz) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PersistenceFilter.getManager();
 		String itemKey = KeyFactory.createKeyString(clazz.getSimpleName(), id);
 		E result = null;
 		try {
@@ -132,7 +129,7 @@ public class BaseDAO<T extends BaseDomain> {
 	 */
 	@SuppressWarnings("unchecked")
 	public <E extends BaseDomain> List<E> list(Class<E> c) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PersistenceFilter.getManager();
 		List<E> results = null;
 		javax.jdo.Query query = pm.newQuery(c);
 		results = (List<E>) query.execute();
@@ -197,7 +194,7 @@ public class BaseDAO<T extends BaseDomain> {
 	protected <E extends BaseDomain> List<E> listByProperty(
 			String propertyName, Object propertyValue, String propertyType,
 			Class<E> clazz) {
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm = PersistenceFilter.getManager();
 		List<E> results = null;
 
 		javax.jdo.Query query = pm.newQuery(clazz);

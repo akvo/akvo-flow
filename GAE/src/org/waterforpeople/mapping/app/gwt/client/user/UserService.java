@@ -8,5 +8,7 @@ public interface UserService extends RemoteService{
 
 	public UserDto[] listUser();
 
-	public UserConfigDto getCurrentUserConfig();
+	public UserDto getCurrentUserConfig();
+	
+	public void saveUser(UserDto user);
 }

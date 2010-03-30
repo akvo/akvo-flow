@@ -158,7 +158,7 @@ public abstract class PortalContainer extends SimplePanel {
 	 * @param draggable
 	 *            - flag indicating whether or not the widget is draggable
 	 */
-	protected void addPortlet(Widget w, int col, boolean draggable) {
+	protected int addPortlet(Widget w, int col, boolean draggable) {
 		columnPanels[col].add(w);
 		if (w instanceof Portlet) {
 			Portlet p = (Portlet) w;
@@ -169,6 +169,7 @@ public abstract class PortalContainer extends SimplePanel {
 		if (draggable) {
 			dragController.makeDraggable(w);
 		}
+		return columnPanels[col].getWidgetCount();
 	}
 
 	/**

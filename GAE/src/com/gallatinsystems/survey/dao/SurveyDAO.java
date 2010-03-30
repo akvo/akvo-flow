@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
@@ -67,7 +68,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			String rollUpType) {
 
 		//TODO: find another way to do this since GAE doesn't support groupBy
-		PersistenceManager pm = PMF.get().getPersistenceManager();
+		PersistenceManager pm =PersistenceFilter.getManager();
 		List results = null;
 		StringBuilder params = new StringBuilder();
 		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);

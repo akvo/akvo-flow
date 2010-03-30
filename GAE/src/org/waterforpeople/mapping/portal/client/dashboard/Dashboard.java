@@ -1,6 +1,13 @@
 package org.waterforpeople.mapping.portal.client.dashboard;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
@@ -39,10 +46,12 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final int COLUMNS = 3;
+	private static final String CONFIG_GROUP = "DASHBOARD";
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
 
 	private VerticalPanel containerPanel;
+	private UserDto currentUser;
 
 	public Dashboard() {
 		super(COLUMNS);
@@ -61,14 +70,15 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		// get the user config
 		UserServiceAsync userService = GWT.create(UserService.class);
 		// Set up the callback object.
-		AsyncCallback<UserConfigDto> userCallback = new AsyncCallback<UserConfigDto>() {
+		AsyncCallback<UserDto> userCallback = new AsyncCallback<UserDto>() {
 			public void onFailure(Throwable caught) {
 				initializeContent(null);
 			}
 
-			public void onSuccess(UserConfigDto result) {
+			public void onSuccess(UserDto result) {
 				if (result != null) {
-					initializeContent(result.getDashboardConfig());
+					currentUser = result;
+					initializeContent(result);
 				} else {
 					initializeContent(null);
 				}
@@ -100,14 +110,49 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		return menuPanel;
 	}
 
-	private void initializeContent(String config) {
-		if (config == null) {
+	private void initializeContent(UserDto user) {
+		if (user == null || user.getConfig() == null
+				|| user.getConfig().size() == 0) {
 			addPortlet(new SummaryPortlet(), 0, true);
 			addPortlet(new ActivityChartPortlet(), 1, true);
 			addPortlet(new ActivityMapPortlet(), 1, true);
-			// now add the portal container to the vertical panel
-			containerPanel.add(this);
+			
+		} else {
+			List<Map<Integer, String>> colMap = new ArrayList<Map<Integer, String>>();
+			for (int i = 0; i < COLUMNS; i++) {
+				colMap.add(new HashMap<Integer, String>());
+			}
+			// build up the list of widgets and their positions
+			for (UserConfigDto config : user.getConfig()) {
+				if (CONFIG_GROUP.equals(config.getGroup())) {
+					String val = config.getValue();
+					Integer row = 0;
+					Integer col = 0;
+					if (val.contains("\n")) {
+						String[] coords = val.substring(0, val.indexOf("\n"))
+								.trim().split(",");
+						if (coords.length == 2) {
+							col = new Integer(coords[0]);
+							row = new Integer(coords[1]);
+						}
+						colMap.get(col).put(row, config.getName());
+					}
+				}
+			}
+			// now install the portlets in the right order
+			for (int i = 0; i < COLUMNS; i++) {
+				Object[] key = colMap.get(i).keySet().toArray();
+				if (key.length > 0) {
+					Arrays.sort(key);
+					for (int j = 0; j < key.length; j++) {
+						addPortlet(PortletFactory.createPortlet(colMap.get(i)
+								.get(key[j])), i, true);
+					}
+				}
+			}
 		}
+		// now add the portal container to the vertical panel
+		containerPanel.add(this);
 	}
 
 	@Override
@@ -172,7 +217,37 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			if (event.getSource() instanceof Image) {
 				Image img = (Image) event.getSource();
 				String name = img.getTitle();
-				addPortlet(PortletFactory.createPortlet(name), 0, true);
+				int position = addPortlet(PortletFactory.createPortlet(name),
+						0, true);
+				List<UserConfigDto> confList = currentUser.getConfig();
+				if (confList == null) {
+					confList = new ArrayList<UserConfigDto>();
+					currentUser.setConfig(confList);
+				}
+				UserConfigDto confDto = new UserConfigDto();
+				confDto.setGroup(CONFIG_GROUP);
+				confDto.setName(name);
+				confDto.setValue(0 + "," + position + "\n");
+				confList.add(confDto);
+				// also save the user's new config
+				// userD
+				UserServiceAsync userService = GWT.create(UserService.class);
+				// Set up the callback object.
+				AsyncCallback<Void> userCallback = new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// no-op
+
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						// no-op
+
+					}
+				};
+				userService.saveUser(currentUser, userCallback);
 			}
 
 		}
