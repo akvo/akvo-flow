@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
 import org.waterforpeople.mapping.app.web.client.SpreadsheetMappingAttributeService;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
@@ -58,7 +59,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	@Override
 	public void processSpreadsheet(MappingSpreadsheetDefinition mapDef) {
-
+		new SpreadsheetAccessPointAdapter().processSpreadsheetOfAccessPoints(mapDef.getSpreadsheetURL());
 	}
 
 	private org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition copyToCanonicalObject(
@@ -76,5 +77,23 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			canonicalAttribute.setFormattingRule(attribute.getFormattingRule());
 		}
 		return canonicalMapDef;
+	}
+
+	@Override
+	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL) {
+		if (feedURL == null) {
+			try {
+				return new SpreadsheetMappingAttributeHelper()
+						.listSpreadsheets("http://spreadsheets.google.com/feeds/spreadsheets/private/full");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return null;
 	}
 }

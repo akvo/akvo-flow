@@ -15,4 +15,6 @@ public interface SpreadsheetMappingAttributeService extends RemoteService {
 
 	public void saveSpreadsheetMapping(MappingSpreadsheetDefinition mapDef);
 	public void processSpreadsheet(MappingSpreadsheetDefinition mapDef);
+	
+	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL);
 }

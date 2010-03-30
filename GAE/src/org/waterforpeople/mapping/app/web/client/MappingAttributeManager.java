@@ -1,6 +1,10 @@
 package org.waterforpeople.mapping.app.web.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
+import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -14,6 +18,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -31,6 +36,10 @@ public class MappingAttributeManager implements EntryPoint {
 	private Button spreadsheetMapAddButton = new Button("+");
 	private Button spreadsheetMapDeleteButton = new Button("-");
 	private Button saveSpreadsheetMapButton = new Button("save");
+	private Button getSpreadsheetColumnsButton = new Button(
+			"Retrieve Spreadsheet Info");
+	private Label spreadsheetNameLabel = new Label("Spreadsheet Name");
+	private Button processSpreadsheetButton = new Button("Process Spreadsheet");
 
 	private HorizontalPanel mainHPanel = new HorizontalPanel();
 	private VerticalPanel mainVRightPanel = new VerticalPanel();
@@ -38,36 +47,44 @@ public class MappingAttributeManager implements EntryPoint {
 	private VerticalPanel buttonVPanel = new VerticalPanel();
 	private VerticalPanel mapVPanel = new VerticalPanel();
 	private HorizontalPanel colMapHPanel = new HorizontalPanel();
-
+	private HorizontalPanel spreadsheetNameHPanel = new HorizontalPanel();
+	SpreadsheetMappingAttributeServiceAsync svc;
 	public void onModuleLoad() {
-		final SpreadsheetMappingAttributeServiceAsync svc = (SpreadsheetMappingAttributeServiceAsync) GWT
+		svc = (SpreadsheetMappingAttributeServiceAsync) GWT
 				.create(SpreadsheetMappingAttributeService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) svc;
-		endpoint.setServiceEntryPoint("/webapp/spreadsheetattributemapper");
-		final AsyncCallback callback = new AsyncCallback() {
-
+		endpoint.setServiceEntryPoint("/spreadsheetattributemapper");
+		loadAttributes();
+		svc.listSpreadsheetsFromFeed(null, new AsyncCallback() {
+			@Override
 			public void onFailure(Throwable caught) {
-
+				// TODO Auto-generated method stub
 			}
 
+			@Override
 			public void onSuccess(Object result) {
-				loadColumnsAndAttributes((ArrayList<String>) result);
+				loadSpreadsheetTree((ArrayList<String>) result);
 			}
+		});
+		
 
-		};
-
-		loadSpreadsheetTree();
 		spreadSheetTypeListBox.addItem("Google Spreadsheet");
 		spreadSheetTypeListBox.addItem("Excel Spreadsheet");
 
 		buttonVPanel.add(spreadsheetMapAddButton);
 		buttonVPanel.add(spreadsheetMapDeleteButton);
-
+		colMapTable.setVisible(false);
+		mainVLeftPanel.add(new Label("Available Spreadsheets"));
 		mainVLeftPanel.add(spreadsheetMappingTree);
+
 		mainVLeftPanel.add(buttonVPanel);
 
-		mainVRightPanel.add(spreadSheetTextBox);
-		mainVRightPanel.add(spreadSheetTypeListBox);
+		spreadsheetNameHPanel.setVisible(false);
+		spreadsheetNameHPanel.add(spreadsheetNameLabel);
+		spreadsheetNameHPanel.add(spreadSheetTextBox);
+		spreadsheetNameHPanel.add(spreadSheetTypeListBox);
+		spreadsheetNameHPanel.add(getSpreadsheetColumnsButton);
+		mainVRightPanel.add(spreadsheetNameHPanel);
 
 		colMapHPanel.add(addColMapButton);
 		colMapHPanel.add(deleteColMapButton);
@@ -75,32 +92,18 @@ public class MappingAttributeManager implements EntryPoint {
 		colMapTable.setText(0, 0, "Spreadsheet Columns");
 		colMapTable.setText(0, 1, "Attribute List");
 
-		svc.listSpreadsheetColumns("PeruGoogleEarthData", callback);
-		
 		mapVPanel.add(colMapTable);
 		mapVPanel.add(colMapHPanel);
 
 		mainVRightPanel.add(mapVPanel);
 		mainVRightPanel.add(saveSpreadsheetMapButton);
+		processSpreadsheetButton.setVisible(false);
+		mainVRightPanel.add(processSpreadsheetButton);
 
 		saveSpreadsheetMapButton.addClickHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
-				StringBuilder sb = new StringBuilder();
-				for (int i = 1; i < colMapTable.getRowCount(); i++) {
-					ListBox colList = (ListBox) colMapTable.getWidget(i, 0);
-					Integer spreadsheetColIndex = (colList).getSelectedIndex();
-
-					String colValue = colList.getItemText(spreadsheetColIndex);
-
-					ListBox attrList = (ListBox) colMapTable.getWidget(i, 1);
-					Integer attrColIndex = (attrList).getSelectedIndex();
-					String attrValue = colList.getItemText(attrColIndex);
-					sb.append("row: " + i + " columnValue: " + colValue
-							+ " attributeValue: " + attrValue + "\n");
-
-				}
-				Window.alert(sb.toString());
+				saveSpreadsheetMapping();
 			}
 
 		});
@@ -112,17 +115,87 @@ public class MappingAttributeManager implements EntryPoint {
 		spreadsheetMappingTree
 				.addSelectionHandler(new SelectionHandler<TreeItem>() {
 					public void onSelection(SelectionEvent event) {
-						Window.alert(((TreeItem) event.getSelectedItem())
-								.getText());
+						spreadsheetNameHPanel.setVisible(true);
+						spreadSheetTextBox.setText(((TreeItem) event
+								.getSelectedItem()).getText());
 					}
 				});
 
+		spreadsheetMapAddButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				spreadsheetNameHPanel.setVisible(true);
+
+			}
+
+		});
+
+		getSpreadsheetColumnsButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (spreadSheetTextBox.getText() != null
+						&& !spreadSheetTextBox.getText().trim().equals("")) {
+					svc.listSpreadsheetColumns(spreadSheetTextBox.getText()
+							.trim(), new AsyncCallback() {
+
+						@Override
+						public void onSuccess(Object result) {
+							loadColumnsAndAttributes((ArrayList<String>) result);
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+
+						}
+					});
+				}
+
+			}
+
+		});
+		
+		processSpreadsheetButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
+				mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
+				svc.processSpreadsheet(mapDef, new AsyncCallback(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(Object result) {
+						Window.alert("Spreadsheet Processed");
+						
+					}
+					
+				});
+				
+			}
+			
+		});
+
 	}
 
-	private void loadSpreadsheetTree() {
+	private void loadSpreadsheetTree(ArrayList<String> spreadsheetList) {
+		TreeItem outerRoot = new TreeItem("Google Docs Spreadsheets");
+		spreadsheetMappingTree.addItem(outerRoot);
+		for (String item : spreadsheetList) {
+			outerRoot.addItem(item);
+		}
 	}
 
 	private void loadColumnsAndAttributes(ArrayList<String> cols) {
+		colMapTable.setWidget(0, 0, new Label("Spreadsheet Columns"));
+		colMapTable.setWidget(0, 1, new Label("Database Column"));
 		for (int i = 0; i < cols.size(); i++) {
 			ListBox objectAttributeList = new ListBox();
 			ListBox spreadsheetColumnList = new ListBox();
@@ -131,15 +204,78 @@ public class MappingAttributeManager implements EntryPoint {
 			}
 			spreadsheetColumnList.setSelectedIndex(0);
 
-			objectAttributeList.addItem("latitude", "latitude");
-			objectAttributeList.addItem("longitude", "longitude");
-			objectAttributeList.addItem("collection date", "collectionDate");
-			objectAttributeList.addItem("photo url", "photoUrl");
-			objectAttributeList.addItem("technology", "technology");
-			objectAttributeList.addItem("photo caption", "photoCaption");
+			for (String item : objectAttributes) {
+				objectAttributeList.addItem(item, item);
+			}
 			objectAttributeList.setSelectedIndex(0);
-			colMapTable.setWidget(i, 0, spreadsheetColumnList);
-			colMapTable.setWidget(i, 1, objectAttributeList);
+			colMapTable.setWidget(i + 1, 0, spreadsheetColumnList);
+			colMapTable.setWidget(i + 1, 1, objectAttributeList);
 		}
+		colMapTable.setVisible(true);
+	}
+	private ArrayList<String> objectAttributes = new ArrayList<String>();
+
+	private ArrayList<String> loadAttributes() {
+		svc.listObjectAttributes(null,new AsyncCallback(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Object result) {
+				 objectAttributes = (ArrayList<String>)result;
+				
+			}
+			
+		});
+		return null;
+	}
+	
+	private void saveSpreadsheetMapping(){
+		
+		MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
+		mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
+		HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap = new HashMap<String, MappingSpreadsheetColumnToAttribute> ();
+		
+		for (int i = 1; i < colMapTable.getRowCount(); i++) {
+			MappingSpreadsheetColumnToAttribute item = new MappingSpreadsheetColumnToAttribute();
+			ListBox colList = (ListBox) colMapTable.getWidget(i, 0);
+			Integer spreadsheetColIndex = (colList).getSelectedIndex();
+
+			String colValue = colList.getItemText(spreadsheetColIndex);
+
+			ListBox attrList = (ListBox) colMapTable.getWidget(i, 1);
+			Integer attrColIndex = (attrList).getSelectedIndex();
+			String attrValue = colList.getItemText(attrColIndex);
+			item.setSpreadsheetColumn(colValue);
+			item.setObjectAttribute(attrValue);
+			
+			columnMap.put(colValue, item);
+
+		}
+		mapDef.setColumnMap(columnMap);
+		
+		
+		
+		svc.saveSpreadsheetMapping(mapDef,new AsyncCallback(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Object result) {
+				Window.alert("Spreadsheet Mapping successfully saved");
+				processSpreadsheetButton.setVisible(true);
+			}
+			
+		});
+		
+		
 	}
 }

@@ -64,7 +64,29 @@ public class GoogleSpreadsheetAdapter {
 	public ArrayList<String> listColumns(String spreadsheetName) throws IOException, ServiceException{
 		return listColumns(spreadsheetName,google_user_name,google_password);
 	}
+	
+	public ArrayList<String> listSpreasheets(String feedURL) throws IOException, ServiceException{
+		return listSpreadsheets(feedURL,google_user_name,google_password);
+	}
 
+	private ArrayList<String> listSpreadsheets(String feedURL, String googleUserName,String googlePassword) throws IOException, ServiceException{
+		service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
+		service.setUserCredentials(googleUserName, googlePassword);
+
+		URL metafeedUrl = new URL(feedURL);
+		SpreadsheetFeed feed = service.getFeed(metafeedUrl,
+				SpreadsheetFeed.class);
+		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+		ArrayList<String> spreadsheetNamesList = new ArrayList<String>();
+		for (int i = 0; i < spreadsheets.size(); i++) {
+			SpreadsheetEntry entry = spreadsheets.get(i);
+			String title = entry.getTitle().getPlainText();
+				spreadsheetNamesList.add(title);
+			
+		}
+		return spreadsheetNamesList;
+	}
+	
 	private ArrayList<String> listColumns(String spreadsheetName, String googleUserName, String googlePassword) throws IOException, ServiceException {
 		service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
 		service.setUserCredentials(googleUserName, googlePassword);

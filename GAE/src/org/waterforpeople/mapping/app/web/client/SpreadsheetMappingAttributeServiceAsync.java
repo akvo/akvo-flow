@@ -22,4 +22,6 @@ public interface SpreadsheetMappingAttributeServiceAsync {
 	void processSpreadsheet(MappingSpreadsheetDefinition mapDef,
 			AsyncCallback<Void> callback);
 
+	void listSpreadsheetsFromFeed(String feedURL, AsyncCallback<ArrayList<String>> callback);
+
 }

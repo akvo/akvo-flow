@@ -44,6 +44,10 @@ public class SpreadsheetAccessPointAdapter {
 		GoogleSpreadsheetAdapter gas = new GoogleSpreadsheetAdapter();
 		return gas.listColumns(spreadsheetName);
 	}
+	
+	public ArrayList<String> listSpreadsheets(String feedURL) throws IOException, ServiceException{
+		return new GoogleSpreadsheetAdapter().listSpreasheets(feedURL);
+	}
 
 	private AccessPoint processRow(RowContainer row, String spreadsheetName) {
 		AccessPoint ap = new AccessPoint();
