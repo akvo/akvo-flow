@@ -1,9 +1,12 @@
 package org.waterforpeople.mapping.helper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
+
+import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetMappingAttributeHelper {
 
@@ -31,8 +34,11 @@ public class SpreadsheetMappingAttributeHelper {
 		return null;
 	}
 
-	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName) {
-		// TODO Auto-generated method stub
+	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName) throws IOException, ServiceException {
+		if (!spreadsheetName.trim().isEmpty()) {
+			SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter();
+			return sapa.listColumns(spreadsheetName);
+		}
 		return null;
 	}
 
