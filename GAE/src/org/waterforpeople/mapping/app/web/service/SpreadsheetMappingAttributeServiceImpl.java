@@ -1,12 +1,15 @@
 package org.waterforpeople.mapping.app.web.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.web.client.SpreadsheetMappingAttributeService;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
+import com.google.gdata.util.ServiceException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SpreadsheetMappingAttributeServiceImpl extends
@@ -26,7 +29,16 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	@Override
 	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName) {
 		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper();
-		return helper.listSpreadsheetColumns(spreadsheetName);
+		try {
+			return helper.listSpreadsheetColumns(spreadsheetName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

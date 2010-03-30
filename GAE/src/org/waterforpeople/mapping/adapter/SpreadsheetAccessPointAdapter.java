@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.adapter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -37,6 +38,11 @@ public class SpreadsheetAccessPointAdapter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public ArrayList<String> listColumns(String spreadsheetName) throws IOException, ServiceException{
+		GoogleSpreadsheetAdapter gas = new GoogleSpreadsheetAdapter();
+		return gas.listColumns(spreadsheetName);
 	}
 
 	private AccessPoint processRow(RowContainer row, String spreadsheetName) {
@@ -198,6 +204,7 @@ public class SpreadsheetAccessPointAdapter {
 		colsToAttributesMap.put("latitude", "Latitude");
 		colsToAttributesMap.put("longitude", "Longitude");
 		colsToAttributesMap.put("communitycode", "CommunityCode");
+		colsToAttributesMap.put("", "");
 		return colsToAttributesMap;
 	}
 

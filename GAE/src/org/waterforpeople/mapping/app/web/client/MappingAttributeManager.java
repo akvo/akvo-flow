@@ -1,13 +1,17 @@
 package org.waterforpeople.mapping.app.web.client;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
@@ -36,6 +40,22 @@ public class MappingAttributeManager implements EntryPoint {
 	private HorizontalPanel colMapHPanel = new HorizontalPanel();
 
 	public void onModuleLoad() {
+		final SpreadsheetMappingAttributeServiceAsync svc = (SpreadsheetMappingAttributeServiceAsync) GWT
+				.create(SpreadsheetMappingAttributeService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) svc;
+		endpoint.setServiceEntryPoint("/webapp/spreadsheetattributemapper");
+		final AsyncCallback callback = new AsyncCallback() {
+
+			public void onFailure(Throwable caught) {
+
+			}
+
+			public void onSuccess(Object result) {
+				loadColumnsAndAttributes((ArrayList<String>) result);
+			}
+
+		};
+
 		loadSpreadsheetTree();
 		spreadSheetTypeListBox.addItem("Google Spreadsheet");
 		spreadSheetTypeListBox.addItem("Excel Spreadsheet");
@@ -55,27 +75,8 @@ public class MappingAttributeManager implements EntryPoint {
 		colMapTable.setText(0, 0, "Spreadsheet Columns");
 		colMapTable.setText(0, 1, "Attribute List");
 
-		for (int i = 1; i < 15; i++) {
-			ListBox objectAttributeList = new ListBox();
-			ListBox spreadsheetColumnList = new ListBox();
-
-			spreadsheetColumnList.addItem("Date of Visit", "dateOfVisit");
-			spreadsheetColumnList.addItem("Latitude", "latitude");
-			spreadsheetColumnList.addItem("Longitude", "longitude");
-			spreadsheetColumnList.addItem("Community Code", "communityCode");
-			spreadsheetColumnList.setSelectedIndex(0);
-
-			objectAttributeList.addItem("latitude", "latitude");
-			objectAttributeList.addItem("longitude", "longitude");
-			objectAttributeList.addItem("collection date", "collectionDate");
-			objectAttributeList.addItem("photo url", "photoUrl");
-			objectAttributeList.addItem("technology", "technology");
-			objectAttributeList.addItem("photo caption", "photoCaption");
-			objectAttributeList.setSelectedIndex(0);
-			colMapTable.setWidget(i, 0, spreadsheetColumnList);
-			colMapTable.setWidget(i, 1, objectAttributeList);
-		}
-
+		svc.listSpreadsheetColumns("PeruGoogleEarthData", callback);
+		
 		mapVPanel.add(colMapTable);
 		mapVPanel.add(colMapHPanel);
 
@@ -89,14 +90,15 @@ public class MappingAttributeManager implements EntryPoint {
 				for (int i = 1; i < colMapTable.getRowCount(); i++) {
 					ListBox colList = (ListBox) colMapTable.getWidget(i, 0);
 					Integer spreadsheetColIndex = (colList).getSelectedIndex();
-					
+
 					String colValue = colList.getItemText(spreadsheetColIndex);
 
 					ListBox attrList = (ListBox) colMapTable.getWidget(i, 1);
 					Integer attrColIndex = (attrList).getSelectedIndex();
 					String attrValue = colList.getItemText(attrColIndex);
-					sb.append("row: " + i + " columnValue: " + colValue + " attributeValue: " + attrValue+"\n");
-					
+					sb.append("row: " + i + " columnValue: " + colValue
+							+ " attributeValue: " + attrValue + "\n");
+
 				}
 				Window.alert(sb.toString());
 			}
@@ -114,25 +116,30 @@ public class MappingAttributeManager implements EntryPoint {
 								.getText());
 					}
 				});
+
 	}
 
 	private void loadSpreadsheetTree() {
-		spreadsheetMappingTree.addItem("Spreadsheet 1");
-		TreeItem outerRoot = new TreeItem("Item 1");
-		outerRoot.addItem("Item 1-1");
-		outerRoot.addItem("Item 1-2");
-		outerRoot.addItem("Item 1-3");
-		outerRoot.addItem(new CheckBox("Item 1-4"));
-
-		TreeItem innerRoot = new TreeItem("Item 1-5");
-		innerRoot.addItem("Item 1-5-1");
-		innerRoot.addItem("Item 1-5-2");
-		innerRoot.addItem("Item 1-5-3");
-		innerRoot.addItem("Item 1-5-4");
-		innerRoot.addItem(new CheckBox("Item 1-5-5"));
-
-		outerRoot.addItem(innerRoot);
-		spreadsheetMappingTree.addItem(outerRoot);
 	}
 
+	private void loadColumnsAndAttributes(ArrayList<String> cols) {
+		for (int i = 0; i < cols.size(); i++) {
+			ListBox objectAttributeList = new ListBox();
+			ListBox spreadsheetColumnList = new ListBox();
+			for (String colItem : cols) {
+				spreadsheetColumnList.addItem(colItem);
+			}
+			spreadsheetColumnList.setSelectedIndex(0);
+
+			objectAttributeList.addItem("latitude", "latitude");
+			objectAttributeList.addItem("longitude", "longitude");
+			objectAttributeList.addItem("collection date", "collectionDate");
+			objectAttributeList.addItem("photo url", "photoUrl");
+			objectAttributeList.addItem("technology", "technology");
+			objectAttributeList.addItem("photo caption", "photoCaption");
+			objectAttributeList.setSelectedIndex(0);
+			colMapTable.setWidget(i, 0, spreadsheetColumnList);
+			colMapTable.setWidget(i, 1, objectAttributeList);
+		}
+	}
 }

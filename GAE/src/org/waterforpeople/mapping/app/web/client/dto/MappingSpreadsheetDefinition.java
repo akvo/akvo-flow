@@ -1,9 +1,10 @@
 package org.waterforpeople.mapping.app.web.client.dto;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 
-public class MappingSpreadsheetDefinition {
+public class MappingSpreadsheetDefinition implements Serializable{
 	/**
 	 * 
 	 */

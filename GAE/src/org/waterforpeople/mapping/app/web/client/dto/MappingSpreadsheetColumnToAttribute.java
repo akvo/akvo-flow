@@ -1,6 +1,8 @@
 package org.waterforpeople.mapping.app.web.client.dto;
 
-public class MappingSpreadsheetColumnToAttribute {
+import java.io.Serializable;
+
+public class MappingSpreadsheetColumnToAttribute implements Serializable{
 
 	/**
 	 * 
