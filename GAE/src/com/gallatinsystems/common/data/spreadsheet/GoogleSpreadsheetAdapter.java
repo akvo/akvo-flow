@@ -1,6 +1,7 @@
 package com.gallatinsystems.common.data.spreadsheet;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 import com.google.gdata.data.spreadsheet.TableEntry;
 import com.google.gdata.data.spreadsheet.Worksheet;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 public class GoogleSpreadsheetAdapter {
@@ -57,6 +59,52 @@ public class GoogleSpreadsheetAdapter {
 			throws IOException, ServiceException {
 		return loadSpreadsheet(spreadsheetName, google_user_name,
 				google_password);
+	}
+	
+	public ArrayList<String> listColumns(String spreadsheetName) throws IOException, ServiceException{
+		return listColumns(spreadsheetName,google_user_name,google_password);
+	}
+
+	private ArrayList<String> listColumns(String spreadsheetName, String googleUserName, String googlePassword) throws IOException, ServiceException {
+		service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
+		service.setUserCredentials(googleUserName, googlePassword);
+
+		URL metafeedUrl = new URL(google_spreadsheet_url);
+		SpreadsheetFeed feed = service.getFeed(metafeedUrl,
+				SpreadsheetFeed.class);
+		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+		for (int i = 0; i < spreadsheets.size(); i++) {
+			SpreadsheetEntry entry = spreadsheets.get(i);
+			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
+				List<WorksheetEntry> worksheets = entry.getWorksheets();
+				for (int j = 0; i < worksheets.size(); i++) {
+					WorksheetEntry worksheet = worksheets.get(j);
+					String title = worksheet.getTitle().getPlainText();
+					int rowCount = worksheet.getRowCount();
+					int colCount = worksheet.getColCount();
+
+					return listColumns(worksheet);
+				}
+			}
+		}
+		return null;
+
+	}
+
+	private ArrayList<String> listColumns(WorksheetEntry worksheetEntry)
+			throws IOException, ServiceException {
+		URL listFeedUrl = worksheetEntry.getListFeedUrl();
+		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
+		ArrayList<String> columns = new ArrayList<String>();
+		int i = 0;
+		for (ListEntry entry : feed.getEntries()) {
+			// row
+			for (String tag : entry.getCustomElements().getTags()) {
+				columns.add(tag);
+			}
+			break;
+		}
+		return columns;
 	}
 
 	private SpreadsheetContainer loadSpreadsheet(String spreadsheetName,
