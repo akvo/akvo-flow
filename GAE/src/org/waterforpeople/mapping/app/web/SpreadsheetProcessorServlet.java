@@ -1,14 +1,16 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
+import org.waterforpeople.mapping.domain.AccessPoint;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -28,8 +30,29 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 		String spreadsheetName = req.getParameter("spreadsheetName");
 		String listColumns = req.getParameter("listColumns");
 		SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter();
-
-		if (!spreadsheetName.trim().isEmpty()) {
+		String clearAccessPointFlag = req.getParameter("clearAccessPointFlag");
+		
+		if(clearAccessPointFlag.equals("doIt")){
+			BaseDAO<AccessPoint> baseDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
+			List<AccessPoint> apList = baseDAO.list();
+			for(AccessPoint item: apList){
+				try {
+					resp.getWriter().println("Deleting: " + item.toString());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				baseDAO.delete(item);
+			}
+			
+			try {
+				resp.getWriter().println("FINISHED ACCESSPOINT TABLE SHOULD BE EMPTY");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (!spreadsheetName.trim().isEmpty()) {
 			if (listColumns != null && listColumns.equals("true")) {
 				try {
 					StringBuilder sb = new StringBuilder();

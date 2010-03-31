@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute;
+import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
+import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
 import com.gallatinsystems.common.data.spreadsheet.GoogleSpreadsheetAdapter;
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
@@ -39,13 +42,15 @@ public class SpreadsheetAccessPointAdapter {
 			e.printStackTrace();
 		}
 	}
-	
-	public ArrayList<String> listColumns(String spreadsheetName) throws IOException, ServiceException{
+
+	public ArrayList<String> listColumns(String spreadsheetName)
+			throws IOException, ServiceException {
 		GoogleSpreadsheetAdapter gas = new GoogleSpreadsheetAdapter();
 		return gas.listColumns(spreadsheetName);
 	}
-	
-	public ArrayList<String> listSpreadsheets(String feedURL) throws IOException, ServiceException{
+
+	public ArrayList<String> listSpreadsheets(String feedURL)
+			throws IOException, ServiceException {
 		return new GoogleSpreadsheetAdapter().listSpreasheets(feedURL);
 	}
 
@@ -72,7 +77,7 @@ public class SpreadsheetAccessPointAdapter {
 		// know</gsx:primaryimprovedsanitationtechnologyinuseinthecommunity>
 		// <gsx:numberofhouseholdswithimprovedsanitation>Don't
 		// know</gsx:numberofhouseholdswithimprovedsanitation>
-		Class cls=null;
+		Class cls = null;
 		HashMap<String, String> attributeTypeMap = new HashMap<String, String>();
 
 		try {
@@ -90,7 +95,7 @@ public class SpreadsheetAccessPointAdapter {
 					}
 				}
 			}
-			
+
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -102,7 +107,7 @@ public class SpreadsheetAccessPointAdapter {
 			String attributeName = colsToAttributesMap.get(colName);
 			if (attributeName != null && !attributeName.trim().isEmpty()) {
 				try {
-					
+
 					Class partypes[] = new Class[1];
 					String paramTypeClass = attributeTypeMap.get("set"
 							+ attributeName);
@@ -114,16 +119,16 @@ public class SpreadsheetAccessPointAdapter {
 						Object arglist[] = new Object[1];
 						arglist[0] = parseDouble(col.getColContents());
 
-						Object retobj = meth.invoke(ap,arglist);
+						Object retobj = meth.invoke(ap, arglist);
 					} else if (paramTypeClass.contains("String")) {
 						Object arglist[] = new Object[1];
 						arglist[0] = col.getColContents();
 
-						Object retobj = meth.invoke(ap,arglist);
+						Object retobj = meth.invoke(ap, arglist);
 					} else if (paramTypeClass.contains("Date")) {
 						Object arglist[] = new Object[1];
 						arglist[0] = parseDate(col.getColContents());
-						Object retobj = meth.invoke(ap,arglist);
+						Object retobj = meth.invoke(ap, arglist);
 					}
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -148,37 +153,37 @@ public class SpreadsheetAccessPointAdapter {
 			}
 		}
 
-//		for (ColumnContainer col : row.getColumnContainersList()) {
-//			if (col.getColName().equals("dateofvisit")) {
-//				ap.setCreatedDateTime(parseDate(col.getColContents()));
-//			} else if (col.getColName().equals("latitude")) {
-//				ap.setLatitude(parseDouble(col.getColContents()));
-//			} else if (col.getColName().equals("longitude")) {
-//				ap.setLongitude(parseDouble(col.getColContents()));
-//			} else if (col.getColName().equals("communitycode")) {
-//				ap.setCommunityCode(col.getColContents());
-//			} else if (col.getColName().equals("watersystemstatus")) {
-//				ap.setPointStatus(col.getColContents());
-//			} else if (col.getColName().equals(
-//					"photocodeforprimarywatertechnology")) {
-//
-//			} else if (col.getColName().equals("linksforphotos")) {
-//				ap.setPhotoURL(col.getColContents());
-//			} else if (col.getColName().equals("captianforwaterpointphoto")) {
-//				ap.setPointPhotoCaption(col.getColContents());
-//			} else if (col.getColName().equals(
-//					"photoofprimarysanitationtechnology")) {
-//
-//			} else if (col.getColName().equals("typeofsanitaitontechnology")) {
-//
-//			} else if (col.getColName().equals(
-//					"primaryimprovedsanitationtechnologyinuseinthecommunity")) {
-//
-//			} else if (col.getColName().equals(
-//					"numberofhouseholdswithimprovedsanitation")) {
-//
-//			}
-//		}
+		// for (ColumnContainer col : row.getColumnContainersList()) {
+		// if (col.getColName().equals("dateofvisit")) {
+		// ap.setCreatedDateTime(parseDate(col.getColContents()));
+		// } else if (col.getColName().equals("latitude")) {
+		// ap.setLatitude(parseDouble(col.getColContents()));
+		// } else if (col.getColName().equals("longitude")) {
+		// ap.setLongitude(parseDouble(col.getColContents()));
+		// } else if (col.getColName().equals("communitycode")) {
+		// ap.setCommunityCode(col.getColContents());
+		// } else if (col.getColName().equals("watersystemstatus")) {
+		// ap.setPointStatus(col.getColContents());
+		// } else if (col.getColName().equals(
+		// "photocodeforprimarywatertechnology")) {
+		//
+		// } else if (col.getColName().equals("linksforphotos")) {
+		// ap.setPhotoURL(col.getColContents());
+		// } else if (col.getColName().equals("captianforwaterpointphoto")) {
+		// ap.setPointPhotoCaption(col.getColContents());
+		// } else if (col.getColName().equals(
+		// "photoofprimarysanitationtechnology")) {
+		//
+		// } else if (col.getColName().equals("typeofsanitaitontechnology")) {
+		//
+		// } else if (col.getColName().equals(
+		// "primaryimprovedsanitationtechnologyinuseinthecommunity")) {
+		//
+		// } else if (col.getColName().equals(
+		// "numberofhouseholdswithimprovedsanitation")) {
+		//
+		// }
+		// }
 		return ap;
 	}
 
@@ -203,12 +208,15 @@ public class SpreadsheetAccessPointAdapter {
 	}
 
 	private HashMap getColsToAttributeMap(String spreadsheetName) {
+		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper();
+		MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
+		mapDef = samh.getMappingSpreadsheetDefinition(spreadsheetName);
 		HashMap<String, String> colsToAttributesMap = new HashMap<String, String>();
-		colsToAttributesMap.put("dateofvisit", "CollectionDate");
-		colsToAttributesMap.put("latitude", "Latitude");
-		colsToAttributesMap.put("longitude", "Longitude");
-		colsToAttributesMap.put("communitycode", "CommunityCode");
-		colsToAttributesMap.put("", "");
+		for (MappingSpreadsheetColumnToAttribute item : mapDef.getColumnMap()) {
+			String capedString = item.getObjectAttribute().substring(0,1).toUpperCase();
+			capedString = capedString + item.getObjectAttribute().substring(1);
+			colsToAttributesMap.put(item.getSpreadsheetColumn(),capedString);
+		}
 		return colsToAttributesMap;
 	}
 
