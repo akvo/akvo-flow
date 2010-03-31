@@ -31,15 +31,14 @@ public class MappingAttributeManager implements EntryPoint {
 	private ListBox spreadSheetTypeListBox = new ListBox();
 	private Tree spreadsheetMappingTree = new Tree();
 	private FlexTable colMapTable = new FlexTable();
-	private Button addColMapButton = new Button("+");
-	private Button deleteColMapButton = new Button("-");
-	private Button spreadsheetMapAddButton = new Button("+");
-	private Button spreadsheetMapDeleteButton = new Button("-");
 	private Button saveSpreadsheetMapButton = new Button("save");
 	private Button getSpreadsheetColumnsButton = new Button(
 			"Retrieve Spreadsheet Info");
 	private Label spreadsheetNameLabel = new Label("Spreadsheet Name");
 	private Button processSpreadsheetButton = new Button("Process Spreadsheet");
+	private Label treeStatusLabel = new Label(
+			"Please wait loading spreadsheets");
+	private Label colMapStatusLabel = new Label("Please wait loading columns");
 
 	private HorizontalPanel mainHPanel = new HorizontalPanel();
 	private VerticalPanel mainVRightPanel = new VerticalPanel();
@@ -65,16 +64,18 @@ public class MappingAttributeManager implements EntryPoint {
 			@Override
 			public void onSuccess(Object result) {
 				loadSpreadsheetTree((ArrayList<String>) result);
+				treeStatusLabel.setVisible(false);
+				spreadsheetMappingTree.setVisible(true);
 			}
 		});
 
 		spreadSheetTypeListBox.addItem("Google Spreadsheet");
 		spreadSheetTypeListBox.addItem("Excel Spreadsheet");
 
-		buttonVPanel.add(spreadsheetMapAddButton);
-		buttonVPanel.add(spreadsheetMapDeleteButton);
 		colMapTable.setVisible(false);
 		mainVLeftPanel.add(new Label("Available Spreadsheets"));
+		mainVLeftPanel.add(treeStatusLabel);
+		spreadsheetMappingTree.setVisible(false);
 		mainVLeftPanel.add(spreadsheetMappingTree);
 
 		mainVLeftPanel.add(buttonVPanel);
@@ -86,16 +87,16 @@ public class MappingAttributeManager implements EntryPoint {
 		spreadsheetNameHPanel.add(getSpreadsheetColumnsButton);
 		mainVRightPanel.add(spreadsheetNameHPanel);
 
-		colMapHPanel.add(addColMapButton);
-		colMapHPanel.add(deleteColMapButton);
-
 		colMapTable.setText(0, 0, "Spreadsheet Columns");
 		colMapTable.setText(0, 1, "Attribute List");
-
+		colMapTable.setVisible(false);
+		colMapStatusLabel.setVisible(false);
+		mapVPanel.add(colMapStatusLabel);
 		mapVPanel.add(colMapTable);
 		mapVPanel.add(colMapHPanel);
 
 		mainVRightPanel.add(mapVPanel);
+		saveSpreadsheetMapButton.setVisible(false);
 		mainVRightPanel.add(saveSpreadsheetMapButton);
 		processSpreadsheetButton.setVisible(false);
 		mainVRightPanel.add(processSpreadsheetButton);
@@ -103,6 +104,9 @@ public class MappingAttributeManager implements EntryPoint {
 		saveSpreadsheetMapButton.addClickHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
+				colMapTable.setVisible(false);
+				colMapStatusLabel.setText("Please wait saving columns");
+				colMapStatusLabel.setVisible(true);
 				saveSpreadsheetMapping();
 			}
 
@@ -116,6 +120,10 @@ public class MappingAttributeManager implements EntryPoint {
 				.addSelectionHandler(new SelectionHandler<TreeItem>() {
 					public void onSelection(SelectionEvent event) {
 						spreadsheetNameHPanel.setVisible(true);
+						colMapStatusLabel.setVisible(true);
+						colMapTable.setVisible(false);
+						clearColumnMapTable();
+
 						String spreadsheetName = ((TreeItem) event
 								.getSelectedItem()).getText();
 						spreadSheetTextBox.setText(spreadsheetName);
@@ -124,16 +132,6 @@ public class MappingAttributeManager implements EntryPoint {
 						loadExistingMap(spreadsheetName);
 					}
 				});
-
-		spreadsheetMapAddButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				spreadsheetNameHPanel.setVisible(true);
-
-			}
-
-		});
 
 		getSpreadsheetColumnsButton.addClickHandler(new ClickHandler() {
 
@@ -152,6 +150,10 @@ public class MappingAttributeManager implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				colMapTable.setVisible(false);
+				colMapStatusLabel
+						.setText("Please wait ingesting data from spreadsheet");
+				colMapStatusLabel.setVisible(true);
 				MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 				mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
 				svc.processSpreadsheet(mapDef, new AsyncCallback() {
@@ -164,6 +166,11 @@ public class MappingAttributeManager implements EntryPoint {
 
 					@Override
 					public void onSuccess(Object result) {
+						colMapTable.setVisible(true);
+						colMapStatusLabel.setVisible(false);
+						colMapStatusLabel
+								.setText("Please wait loading columns");
+
 						Window.alert("Spreadsheet Processed");
 
 					}
@@ -174,6 +181,10 @@ public class MappingAttributeManager implements EntryPoint {
 
 		});
 
+	}
+
+	private void clearColumnMapTable() {
+		colMapTable.removeAllRows();
 	}
 
 	private void setSpreadsheetCols() {
@@ -230,7 +241,9 @@ public class MappingAttributeManager implements EntryPoint {
 					public void onSuccess(Object result) {
 						if (result != null) {
 							MappingDefinitionColumnContainer existingMapDef = (MappingDefinitionColumnContainer) result;
-							loadColumnsAndAttributes(existingMapDef.getSpreadsheetColsList(), existingMapDef.getMapDef());
+							loadColumnsAndAttributes(existingMapDef
+									.getSpreadsheetColsList(), existingMapDef
+									.getMapDef());
 						}
 
 					}
@@ -240,8 +253,8 @@ public class MappingAttributeManager implements EntryPoint {
 	}
 
 	private void loadExistingMap(String spreadsheetName) {
-			existingMapAyncCalls(spreadsheetName);
-	
+		existingMapAyncCalls(spreadsheetName);
+
 	}
 
 	private MappingSpreadsheetDefinition existingMapDef = null;
@@ -300,7 +313,9 @@ public class MappingAttributeManager implements EntryPoint {
 			colMapTable.setWidget(i + 1, 0, spreadsheetColumnList);
 			colMapTable.setWidget(i + 1, 1, objectAttributeList);
 		}
+		colMapStatusLabel.setVisible(false);
 		colMapTable.setVisible(true);
+		saveSpreadsheetMapButton.setVisible(true);
 	}
 
 	private ArrayList<String> objectAttributes = new ArrayList<String>();
@@ -363,6 +378,10 @@ public class MappingAttributeManager implements EntryPoint {
 
 			@Override
 			public void onSuccess(Object result) {
+				colMapTable.setVisible(true);
+				colMapStatusLabel.setVisible(false);
+				colMapStatusLabel.setText("Please wait loading columns");
+
 				Window.alert("Spreadsheet Mapping successfully saved");
 				processSpreadsheetButton.setVisible(true);
 			}
