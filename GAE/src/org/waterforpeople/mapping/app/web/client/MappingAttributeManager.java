@@ -49,6 +49,7 @@ public class MappingAttributeManager implements EntryPoint {
 	private HorizontalPanel colMapHPanel = new HorizontalPanel();
 	private HorizontalPanel spreadsheetNameHPanel = new HorizontalPanel();
 	SpreadsheetMappingAttributeServiceAsync svc;
+
 	public void onModuleLoad() {
 		svc = (SpreadsheetMappingAttributeServiceAsync) GWT
 				.create(SpreadsheetMappingAttributeService.class);
@@ -66,7 +67,6 @@ public class MappingAttributeManager implements EntryPoint {
 				loadSpreadsheetTree((ArrayList<String>) result);
 			}
 		});
-		
 
 		spreadSheetTypeListBox.addItem("Google Spreadsheet");
 		spreadSheetTypeListBox.addItem("Excel Spreadsheet");
@@ -156,31 +156,31 @@ public class MappingAttributeManager implements EntryPoint {
 			}
 
 		});
-		
-		processSpreadsheetButton.addClickHandler(new ClickHandler(){
+
+		processSpreadsheetButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 				mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
-				svc.processSpreadsheet(mapDef, new AsyncCallback(){
+				svc.processSpreadsheet(mapDef, new AsyncCallback() {
 
 					@Override
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
-						
+
 					}
 
 					@Override
 					public void onSuccess(Object result) {
 						Window.alert("Spreadsheet Processed");
-						
+
 					}
-					
+
 				});
-				
+
 			}
-			
+
 		});
 
 	}
@@ -199,47 +199,66 @@ public class MappingAttributeManager implements EntryPoint {
 		for (int i = 0; i < cols.size(); i++) {
 			ListBox objectAttributeList = new ListBox();
 			ListBox spreadsheetColumnList = new ListBox();
+			String columnName = null;
 			for (String colItem : cols) {
 				spreadsheetColumnList.addItem(colItem);
+				
 			}
-			spreadsheetColumnList.setSelectedIndex(0);
-
+			spreadsheetColumnList.setSelectedIndex(i);
+			columnName = spreadsheetColumnList.getItemText(i);
+			int j = 0;
+			int iMatchCol = 0;
 			for (String item : objectAttributes) {
 				objectAttributeList.addItem(item, item);
+				if (item.trim().toLowerCase().equals(
+						columnName.trim().toLowerCase())) {
+					iMatchCol = j;
+				}
+				// } else if ((Integer iMatchCol=patternMatch(columnName))>=0) {
+				//					
+				// }
+				
+				j++;
 			}
-			objectAttributeList.setSelectedIndex(0);
+			objectAttributeList.setSelectedIndex(iMatchCol);
 			colMapTable.setWidget(i + 1, 0, spreadsheetColumnList);
 			colMapTable.setWidget(i + 1, 1, objectAttributeList);
 		}
 		colMapTable.setVisible(true);
 	}
+
 	private ArrayList<String> objectAttributes = new ArrayList<String>();
 
+	private Integer patternMatch(String colItem) {
+
+		return -1;
+	}
+
 	private ArrayList<String> loadAttributes() {
-		svc.listObjectAttributes(null,new AsyncCallback(){
+		svc.listObjectAttributes(null, new AsyncCallback() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void onSuccess(Object result) {
-				 objectAttributes = (ArrayList<String>)result;
-				
+				objectAttributes = (ArrayList<String>) result;
+
 			}
-			
+
 		});
 		return null;
 	}
-	
-	private void saveSpreadsheetMapping(){
-		
+
+	private void saveSpreadsheetMapping() {
+
 		MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 		mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
-		HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap = new HashMap<String, MappingSpreadsheetColumnToAttribute> ();
-		
+		HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap = new HashMap<String, MappingSpreadsheetColumnToAttribute>();
+
 		for (int i = 1; i < colMapTable.getRowCount(); i++) {
 			MappingSpreadsheetColumnToAttribute item = new MappingSpreadsheetColumnToAttribute();
 			ListBox colList = (ListBox) colMapTable.getWidget(i, 0);
@@ -252,20 +271,18 @@ public class MappingAttributeManager implements EntryPoint {
 			String attrValue = colList.getItemText(attrColIndex);
 			item.setSpreadsheetColumn(colValue);
 			item.setObjectAttribute(attrValue);
-			
+
 			columnMap.put(colValue, item);
 
 		}
 		mapDef.setColumnMap(columnMap);
-		
-		
-		
-		svc.saveSpreadsheetMapping(mapDef,new AsyncCallback(){
+
+		svc.saveSpreadsheetMapping(mapDef, new AsyncCallback() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
@@ -273,9 +290,8 @@ public class MappingAttributeManager implements EntryPoint {
 				Window.alert("Spreadsheet Mapping successfully saved");
 				processSpreadsheetButton.setVisible(true);
 			}
-			
+
 		});
-		
-		
+
 	}
 }
