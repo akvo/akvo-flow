@@ -2,10 +2,11 @@ package org.waterforpeople.mapping.app.web.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
 import org.waterforpeople.mapping.app.web.client.SpreadsheetMappingAttributeService;
+import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
@@ -15,7 +16,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SpreadsheetMappingAttributeServiceImpl extends
 		RemoteServiceServlet implements SpreadsheetMappingAttributeService {
-
+	private static final Logger log = Logger
+			.getLogger(SpreadsheetMappingAttributeServiceImpl.class.getName());
 	/**
 	 * 
 	 */
@@ -59,24 +61,49 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	@Override
 	public void processSpreadsheet(MappingSpreadsheetDefinition mapDef) {
-		new SpreadsheetAccessPointAdapter().processSpreadsheetOfAccessPoints(mapDef.getSpreadsheetURL());
+		new SpreadsheetAccessPointAdapter()
+				.processSpreadsheetOfAccessPoints(mapDef.getSpreadsheetURL());
 	}
 
 	private org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition copyToCanonicalObject(
 			MappingSpreadsheetDefinition mapDef) {
 		org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition canonicalMapDef = new org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition();
 		canonicalMapDef.setSpreadsheetURL(mapDef.getSpreadsheetURL());
-		for (Map.Entry<String, MappingSpreadsheetColumnToAttribute> entry : mapDef
-				.getColumnMap().entrySet()) {
-			MappingSpreadsheetColumnToAttribute attribute = entry.getValue();
+		for (MappingSpreadsheetColumnToAttribute entry : mapDef.getColumnMap()) {
+			MappingSpreadsheetColumnToAttribute attribute = entry;
 			org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute canonicalAttribute = new org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute();
 			canonicalAttribute.setSpreadsheetColumn(attribute
 					.getSpreadsheetColumn());
 			canonicalAttribute.setObjectAttribute(attribute
 					.getObjectAttribute());
 			canonicalAttribute.setFormattingRule(attribute.getFormattingRule());
+			canonicalMapDef.addColumnToMap(canonicalAttribute);
 		}
 		return canonicalMapDef;
+	}
+
+	private MappingSpreadsheetDefinition copyToDTOObject(
+			org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition canonicalMapDef) {
+
+		MappingSpreadsheetDefinition mapSpreadsheetDTO = new MappingSpreadsheetDefinition();
+		if (canonicalMapDef.getKey() != null)
+			mapSpreadsheetDTO.setKeyId(canonicalMapDef.getKey().getId());
+		mapSpreadsheetDTO
+				.setSpreadsheetURL(canonicalMapDef.getSpreadsheetURL());
+		if (canonicalMapDef.getColumnMap() != null) {
+			for (org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute entry : canonicalMapDef
+					.getColumnMap()) {
+				org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute colAttr = entry;
+				MappingSpreadsheetColumnToAttribute colAttrDTO = new MappingSpreadsheetColumnToAttribute();
+				// colAttrDTO.setKeyId(colAttr.getKey().getId());
+				colAttrDTO.setSpreadsheetColumn(colAttr.getSpreadsheetColumn());
+				colAttrDTO.setObjectAttribute(colAttr.getObjectAttribute());
+				log.info(colAttr.getSpreadsheetColumn() + "|"
+						+ colAttr.getObjectAttribute());
+				mapSpreadsheetDTO.addColumnToMap(colAttrDTO);
+			}
+		}
+		return mapSpreadsheetDTO;
 	}
 
 	@Override
@@ -92,6 +119,23 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+		}
+		return null;
+	}
+
+	@Override
+	public MappingDefinitionColumnContainer getMappingSpreadsheetDefinition(
+			String spreadsheetName) {
+		// TODO Auto-generated method stub
+		MappingDefinitionColumnContainer mapdefCC = new MappingDefinitionColumnContainer();
+		org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition mapDef = new SpreadsheetMappingAttributeHelper()
+				.getMappingSpreadsheetDefinition(spreadsheetName);
+		if (mapDef != null) {
+			mapdefCC.setMapDef(copyToDTOObject(mapDef));
+			mapdefCC
+					.setSpreadsheetColsList(listSpreadsheetColumns(spreadsheetName));
+			return mapdefCC;
 
 		}
 		return null;

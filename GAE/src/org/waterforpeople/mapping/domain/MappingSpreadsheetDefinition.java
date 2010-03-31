@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.jdo.annotations.IdentityType;
@@ -19,8 +20,17 @@ public class MappingSpreadsheetDefinition extends BaseDomain {
 	private String spreadsheetURL;
 	private SPREADSHEET_SOURCE_TYPE spreadsheetType;
 	private String mapToObject;
-	@Persistent(serialized = "true") 
-	private HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap;
+	@Persistent(serialized = "true")
+	private ArrayList<MappingSpreadsheetColumnToAttribute> columnMap;
+
+	public ArrayList<MappingSpreadsheetColumnToAttribute> getColumnMap() {
+		return columnMap;
+	}
+
+	public void setColumnMap(
+			ArrayList<MappingSpreadsheetColumnToAttribute> columnMap) {
+		this.columnMap = columnMap;
+	}
 
 	public String getSpreadsheetURL() {
 		return spreadsheetURL;
@@ -46,20 +56,11 @@ public class MappingSpreadsheetDefinition extends BaseDomain {
 		this.mapToObject = mapToObject;
 	}
 
-	public HashMap<String, MappingSpreadsheetColumnToAttribute> getColumnMap() {
-		return columnMap;
-	}
-
-	public void setColumnMap(
-			HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap) {
-		this.columnMap = columnMap;
-	}
-
 	public void addColumnToMap(MappingSpreadsheetColumnToAttribute mapAttribute) {
 		if (columnMap == null) {
-			columnMap = new HashMap<String, MappingSpreadsheetColumnToAttribute>();
+			columnMap = new ArrayList<MappingSpreadsheetColumnToAttribute>();
 		}
-		columnMap.put(mapAttribute.getSpreadsheetColumn(), mapAttribute);
+		columnMap.add(mapAttribute);
 	}
 
 	public enum SPREADSHEET_SOURCE_TYPE {

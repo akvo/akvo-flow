@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
+import org.waterforpeople.mapping.dao.MappingSpreadsheetDefintionDAO;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -51,7 +52,8 @@ public class SpreadsheetMappingAttributeHelper {
 		return attributesList;
 	}
 
-	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName) throws IOException, ServiceException {
+	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName)
+			throws IOException, ServiceException {
 		if (!spreadsheetName.trim().isEmpty()) {
 			SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter();
 			return sapa.listColumns(spreadsheetName);
@@ -64,12 +66,21 @@ public class SpreadsheetMappingAttributeHelper {
 		return null;
 	}
 
-	public void saveSpreadsheetMapping(MappingSpreadsheetDefinition mapDef) {
-		BaseDAO<MappingSpreadsheetDefinition> baseDAO  = new BaseDAO<MappingSpreadsheetDefinition>((Class<MappingSpreadsheetDefinition>) mapDef.getClass());
-		baseDAO.save(mapDef);
+	public MappingSpreadsheetDefinition saveSpreadsheetMapping(MappingSpreadsheetDefinition mapDef) {
+		MappingSpreadsheetDefintionDAO baseDAO = new MappingSpreadsheetDefintionDAO(
+				MappingSpreadsheetDefinition.class);
+		return baseDAO.save(mapDef);
 	}
-	
-	public ArrayList<String> listSpreadsheets(String feedURL) throws IOException, ServiceException{
+
+	public ArrayList<String> listSpreadsheets(String feedURL)
+			throws IOException, ServiceException {
 		return new SpreadsheetAccessPointAdapter().listSpreadsheets(feedURL);
+	}
+
+	public MappingSpreadsheetDefinition getMappingSpreadsheetDefinition(
+			String spreadsheetName) {
+		MappingSpreadsheetDefintionDAO baseDAO = new MappingSpreadsheetDefintionDAO(
+				MappingSpreadsheetDefinition.class);
+		return baseDAO.findBySpreadsheetURL(spreadsheetName);
 	}
 }

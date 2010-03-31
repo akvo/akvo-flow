@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web.client;
 
 import java.util.ArrayList;
 
+import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -17,4 +18,5 @@ public interface SpreadsheetMappingAttributeService extends RemoteService {
 	public void processSpreadsheet(MappingSpreadsheetDefinition mapDef);
 	
 	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL);
+	public MappingDefinitionColumnContainer getMappingSpreadsheetDefinition(String spreadsheetName);
 }

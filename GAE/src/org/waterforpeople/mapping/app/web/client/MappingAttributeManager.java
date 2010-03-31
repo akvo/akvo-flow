@@ -1,8 +1,8 @@
 package org.waterforpeople.mapping.app.web.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 
@@ -116,8 +116,12 @@ public class MappingAttributeManager implements EntryPoint {
 				.addSelectionHandler(new SelectionHandler<TreeItem>() {
 					public void onSelection(SelectionEvent event) {
 						spreadsheetNameHPanel.setVisible(true);
-						spreadSheetTextBox.setText(((TreeItem) event
-								.getSelectedItem()).getText());
+						String spreadsheetName = ((TreeItem) event
+								.getSelectedItem()).getText();
+						spreadSheetTextBox.setText(spreadsheetName);
+						// check and see if there is a map in the database
+						// already for it
+						loadExistingMap(spreadsheetName);
 					}
 				});
 
@@ -137,20 +141,7 @@ public class MappingAttributeManager implements EntryPoint {
 			public void onClick(ClickEvent event) {
 				if (spreadSheetTextBox.getText() != null
 						&& !spreadSheetTextBox.getText().trim().equals("")) {
-					svc.listSpreadsheetColumns(spreadSheetTextBox.getText()
-							.trim(), new AsyncCallback() {
-
-						@Override
-						public void onSuccess(Object result) {
-							loadColumnsAndAttributes((ArrayList<String>) result);
-						}
-
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-
-						}
-					});
+					retrieveSpreadsheetCols();
 				}
 
 			}
@@ -185,6 +176,76 @@ public class MappingAttributeManager implements EntryPoint {
 
 	}
 
+	private void setSpreadsheetCols() {
+		svc.listSpreadsheetColumns(spreadSheetTextBox.getText().trim(),
+				new AsyncCallback() {
+
+					@Override
+					public void onSuccess(Object result) {
+						spreadsheetCols = (ArrayList<String>) result;
+
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+	}
+
+	@SuppressWarnings("unchecked")
+	private void retrieveSpreadsheetCols() {
+		svc.listSpreadsheetColumns(spreadSheetTextBox.getText().trim(),
+				new AsyncCallback() {
+
+					@Override
+					public void onSuccess(Object result) {
+						spreadsheetCols = (ArrayList<String>) result;
+						loadColumnsAndAttributes((ArrayList<String>) result,
+								null);
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+	}
+
+	private ArrayList<String> spreadsheetCols = null;
+
+	private void existingMapAyncCalls(String spreadsheetName) {
+		svc.getMappingSpreadsheetDefinition(spreadsheetName,
+				new AsyncCallback() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onSuccess(Object result) {
+						if (result != null) {
+							MappingDefinitionColumnContainer existingMapDef = (MappingDefinitionColumnContainer) result;
+							loadColumnsAndAttributes(existingMapDef.getSpreadsheetColsList(), existingMapDef.getMapDef());
+						}
+
+					}
+
+				});
+
+	}
+
+	private void loadExistingMap(String spreadsheetName) {
+			existingMapAyncCalls(spreadsheetName);
+	
+	}
+
+	private MappingSpreadsheetDefinition existingMapDef = null;
+
 	private void loadSpreadsheetTree(ArrayList<String> spreadsheetList) {
 		TreeItem outerRoot = new TreeItem("Google Docs Spreadsheets");
 		spreadsheetMappingTree.addItem(outerRoot);
@@ -193,16 +254,17 @@ public class MappingAttributeManager implements EntryPoint {
 		}
 	}
 
-	private void loadColumnsAndAttributes(ArrayList<String> cols) {
+	private void loadColumnsAndAttributes(ArrayList<String> cols,
+			MappingSpreadsheetDefinition existingMap) {
 		colMapTable.setWidget(0, 0, new Label("Spreadsheet Columns"));
 		colMapTable.setWidget(0, 1, new Label("Database Column"));
+
 		for (int i = 0; i < cols.size(); i++) {
 			ListBox objectAttributeList = new ListBox();
 			ListBox spreadsheetColumnList = new ListBox();
 			String columnName = null;
 			for (String colItem : cols) {
 				spreadsheetColumnList.addItem(colItem);
-				
 			}
 			spreadsheetColumnList.setSelectedIndex(i);
 			columnName = spreadsheetColumnList.getItemText(i);
@@ -214,10 +276,24 @@ public class MappingAttributeManager implements EntryPoint {
 						columnName.trim().toLowerCase())) {
 					iMatchCol = j;
 				}
+
+				if (existingMap != null) {
+					for (MappingSpreadsheetColumnToAttribute itemExisting : existingMap
+							.getColumnMap()) {
+						if (columnName.trim().toLowerCase().equals(
+								itemExisting.getSpreadsheetColumn().trim()
+										.toLowerCase())
+								&& item.trim().toLowerCase().equals(
+										itemExisting.getObjectAttribute()
+												.trim().toLowerCase())) {
+							iMatchCol = j;
+						}
+					}
+				}
 				// } else if ((Integer iMatchCol=patternMatch(columnName))>=0) {
 				//					
 				// }
-				
+
 				j++;
 			}
 			objectAttributeList.setSelectedIndex(iMatchCol);
@@ -257,7 +333,7 @@ public class MappingAttributeManager implements EntryPoint {
 
 		MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 		mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
-		HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap = new HashMap<String, MappingSpreadsheetColumnToAttribute>();
+		ArrayList<MappingSpreadsheetColumnToAttribute> columnMap = new ArrayList<MappingSpreadsheetColumnToAttribute>();
 
 		for (int i = 1; i < colMapTable.getRowCount(); i++) {
 			MappingSpreadsheetColumnToAttribute item = new MappingSpreadsheetColumnToAttribute();
@@ -268,11 +344,11 @@ public class MappingAttributeManager implements EntryPoint {
 
 			ListBox attrList = (ListBox) colMapTable.getWidget(i, 1);
 			Integer attrColIndex = (attrList).getSelectedIndex();
-			String attrValue = colList.getItemText(attrColIndex);
+			String attrValue = attrList.getItemText(attrColIndex);
 			item.setSpreadsheetColumn(colValue);
 			item.setObjectAttribute(attrValue);
 
-			columnMap.put(colValue, item);
+			columnMap.add(item);
 
 		}
 		mapDef.setColumnMap(columnMap);

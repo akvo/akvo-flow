@@ -1,15 +1,16 @@
 package org.waterforpeople.mapping.app.web.client.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
-
-public class MappingSpreadsheetDefinition implements Serializable{
+public class MappingSpreadsheetDefinition implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6735894528258688636L;
 	private Long keyId;
+
 	public Long getKeyId() {
 		return keyId;
 	}
@@ -21,7 +22,16 @@ public class MappingSpreadsheetDefinition implements Serializable{
 	private String spreadsheetURL;
 	private SPREADSHEET_SOURCE_TYPE spreadsheetType;
 	private String mapToObject;
-	private HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap;
+	private ArrayList<MappingSpreadsheetColumnToAttribute> columnMap;
+
+	public ArrayList<MappingSpreadsheetColumnToAttribute> getColumnMap() {
+		return columnMap;
+	}
+
+	public void setColumnMap(
+			ArrayList<MappingSpreadsheetColumnToAttribute> columnMap) {
+		this.columnMap = columnMap;
+	}
 
 	public String getSpreadsheetURL() {
 		return spreadsheetURL;
@@ -47,20 +57,11 @@ public class MappingSpreadsheetDefinition implements Serializable{
 		this.mapToObject = mapToObject;
 	}
 
-	public HashMap<String, MappingSpreadsheetColumnToAttribute> getColumnMap() {
-		return columnMap;
-	}
-
-	public void setColumnMap(
-			HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap) {
-		this.columnMap = columnMap;
-	}
-
 	public void addColumnToMap(MappingSpreadsheetColumnToAttribute mapAttribute) {
 		if (columnMap == null) {
-			columnMap = new HashMap<String, MappingSpreadsheetColumnToAttribute>();
+			columnMap = new ArrayList<MappingSpreadsheetColumnToAttribute>();
 		}
-		columnMap.put(mapAttribute.getSpreadsheetColumn(), mapAttribute);
+		columnMap.add(mapAttribute);
 	}
 
 	public enum SPREADSHEET_SOURCE_TYPE {
