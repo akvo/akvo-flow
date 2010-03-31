@@ -83,5 +83,8 @@ public class ActivityMapPortlet extends Portlet {
 	protected void handleConfigClick() {
 		// TODO: handle config
 	}
-	
+
+	public String getName(){
+		return NAME;
+	}
 }

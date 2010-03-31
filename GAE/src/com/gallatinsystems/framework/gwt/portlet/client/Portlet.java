@@ -44,6 +44,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 
 	private PortalContainer portletContainer;
 
+	private boolean active;
 	private int contentHeight;
 	private int contentWidth;
 	private boolean scrollable;
@@ -81,6 +82,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		}
 		this.configurable = configurable;
 		this.scrollable = scrollable;
+		active = true;
 		constructHeader(title);
 	}
 
@@ -283,6 +285,18 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		this.portletContainer = container;
 	}
 
+	public boolean isActive() {
+		return active;
+	}
+
+	public void disable() {
+		active = false;
+	}
+
+	public void enable() {
+		active = true;
+	}
+
 	/**
 	 * method that is invoked by the portlet container whenever another portlet
 	 * raises an event.
@@ -304,4 +318,5 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	 */
 	protected abstract void handleConfigClick();
 
+	public abstract String getName();
 }

@@ -1,7 +1,11 @@
 package org.waterforpeople.mapping.app.gwt.server.user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
@@ -72,16 +76,23 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				userDto.setUserName(currentUser.getNickname());
 				userDao.save(newUser);
 			} else {
-				List<UserConfigDto> configList = new ArrayList<UserConfigDto>();
+				Map<String, Set<UserConfigDto>> configMap = new HashMap<String, Set<UserConfigDto>>();
+
 				if (u.getConfig() != null) {
 					for (UserConfig c : u.getConfig()) {
 						UserConfigDto confDto = new UserConfigDto();
 						confDto.setGroup(c.getGroup());
 						confDto.setName(c.getName());
 						confDto.setValue(c.getValue());
-						configList.add(confDto);
+						Set<UserConfigDto> dtoList = configMap.get(c
+								.getGroup());
+						if (dtoList == null) {
+							dtoList = new HashSet<UserConfigDto>();
+							configMap.put(c.getGroup(), dtoList);
+						}
+						dtoList.add(confDto);
 					}
-					userDto.setConfig(configList);
+					userDto.setConfig(configMap);
 					userDto.setUserName(u.getUserName());
 					userDto.setEmailAddress(u.getEmailAddress());
 				}
@@ -105,16 +116,25 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 		}
 		if (user.getConfig() != null) {
 			List<UserConfig> confList = new ArrayList<UserConfig>();
-			for (UserConfigDto confDto : user.getConfig()) {
-				UserConfig config = new UserConfig();
-				config.setGroup(confDto.getGroup());
-				config.setName(confDto.getName());
-				config.setValue(confDto.getValue());
-				confList.add(config);
+			for (String key : user.getConfig().keySet()) {
+				// flush old config values for the group
+				if (existingUser != null && existingUser.getConfig() != null) {
+					for (UserConfig oldConf : existingUser.getConfig()) {
+						userDao.delete(oldConf);
+					}
+				}
+				for (UserConfigDto confDto : user.getConfig().get(key)) {
+					UserConfig config = new UserConfig();
+					config.setGroup(confDto.getGroup());
+					config.setName(confDto.getName());
+					config.setValue(confDto.getValue());
+					confList.add(config);
+				}
 			}
+
 			newUser.setConfig(confList);
-		}	
-			userDao.save(newUser);	
+		}
+		userDao.save(newUser);
 	}
 
 }

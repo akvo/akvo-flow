@@ -80,7 +80,7 @@ public class BaseDAO<T extends BaseDomain> {
 	 * @param keyString
 	 * @return
 	 */
-	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {		
+	public <E extends BaseDomain> E getByKey(String keyString, Class<E> clazz) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		E result = null;
 		Key k = KeyFactory.stringToKey(keyString);
@@ -203,5 +203,16 @@ public class BaseDAO<T extends BaseDomain> {
 		results = (List<E>) query.execute(propertyValue);
 
 		return results;
+	}
+
+	/**
+	 * deletes an object from the db
+	 * 
+	 * @param <E>
+	 * @param obj
+	 */
+	public <E extends BaseDomain> void delete(E obj) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		pm.deletePersistent(obj);
 	}
 }

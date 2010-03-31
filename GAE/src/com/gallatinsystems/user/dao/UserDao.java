@@ -24,5 +24,4 @@ public class UserDao extends BaseDAO<User> {
 	public User findUserByEmail(String email) {
 		return findByProperty("emailAddress", email, STRING_TYPE);
 	}
-
 }

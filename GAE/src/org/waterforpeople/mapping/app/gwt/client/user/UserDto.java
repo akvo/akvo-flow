@@ -1,7 +1,8 @@
 package org.waterforpeople.mapping.app.gwt.client.user;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class UserDto implements Serializable {
 
@@ -9,14 +10,14 @@ public class UserDto implements Serializable {
 	
 	private String userName;
 	private String emailAddress;
-	private List<UserConfigDto> config;
+	private Map<String, Set<UserConfigDto>> config;
 	
 	
-	public List<UserConfigDto> getConfig() {
+	public Map<String, Set<UserConfigDto>> getConfig() {
 		return config;
 	}
 
-	public void setConfig(List<UserConfigDto> config) {
+	public void setConfig(Map<String, Set<UserConfigDto>> config) {
 		this.config = config;
 	}
 

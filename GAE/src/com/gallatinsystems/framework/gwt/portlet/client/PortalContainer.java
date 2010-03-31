@@ -1,7 +1,9 @@
 package com.gallatinsystems.framework.gwt.portlet.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
@@ -85,6 +87,7 @@ public abstract class PortalContainer extends SimplePanel {
 						p
 								.setCurrentColumn(event.getContext().finalDropController
 										.getDropTarget());
+						updateLayout();
 					}
 					for (int i = 0; i < columnPanels.length; i++) {
 						columnPanels[i].setStyleName(IDLE_COL_CSS);
@@ -196,6 +199,22 @@ public abstract class PortalContainer extends SimplePanel {
 		}
 	}
 
+	private void updateLayout() {
+		Map<String, String> positionMap = new HashMap<String, String>();
+		for (int i = 0; i < columnPanels.length; i++) {
+			for (int j = 0; j < columnPanels[i].getWidgetCount(); j++) {
+				if (columnPanels[i].getWidget(j) instanceof Portlet) {
+					if (((Portlet) columnPanels[i].getWidget(j)).isActive()) {
+						positionMap.put(
+								((Portlet) columnPanels[i].getWidget(j))
+										.getName(), i + "," + j);
+					}
+				}
+			}
+		}
+		updateSavedLayout(positionMap);
+	}
+
 	/**
 	 * removes a portlet from the UI
 	 * 
@@ -204,6 +223,8 @@ public abstract class PortalContainer extends SimplePanel {
 	public void removePortlet(Portlet p) {
 		p.removeFromParent();
 		activePortlets.remove(p);
+		p.disable();
+		updateLayout();
 	}
 
 	/**
@@ -212,5 +233,13 @@ public abstract class PortalContainer extends SimplePanel {
 	 * @return an array of involved classes
 	 */
 	public abstract Class<?>[] getInvolvedClasses();
+
+	/**
+	 * allows subclasses to persist the new layout information after the user
+	 * moves a portlet
+	 * 
+	 * @param p
+	 */
+	protected abstract void updateSavedLayout(Map<String, String> positionMap);
 
 }

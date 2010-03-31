@@ -146,4 +146,7 @@ public class SummaryPortlet extends Portlet {
 		// no-op. this portlet does not support config
 	}
 
+	public String getName(){
+		return NAME;
+	}
 }

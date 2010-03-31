@@ -33,4 +33,19 @@ public class UserConfigDto implements Serializable {
 		this.value = value;
 	}
 
+	public boolean equals(Object other) {
+		if (other instanceof UserConfigDto) {
+			if (((UserConfigDto) other).group.equals(group)
+					&& ((UserConfigDto) other).name.equals(name)
+					&& ((value == null && ((UserConfigDto) other).value == null) || value
+							.equals(((UserConfigDto) other).value))) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 }

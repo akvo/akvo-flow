@@ -89,4 +89,7 @@ public class ActivityChartPortlet extends Portlet {
 		// TODO: handle configuration
 	}
 
+	public String getName(){
+		return NAME;
+	}
 }

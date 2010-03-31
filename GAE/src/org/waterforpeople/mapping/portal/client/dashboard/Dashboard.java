@@ -3,8 +3,10 @@ package org.waterforpeople.mapping.portal.client.dashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
@@ -87,6 +89,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		userService.getCurrentUserConfig(userCallback);
 	}
 
+	/**
+	 * constructs the header menu and binds the click listener for the
+	 * "addWidget" button
+	 * 
+	 * @return
+	 */
 	private Widget constructMenu() {
 		VerticalPanel menuPanel = new VerticalPanel();
 		menuPanel.add(new Image("images/WFP_Logo.png"));
@@ -110,33 +118,48 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		return menuPanel;
 	}
 
+	/**
+	 * If the user has a configuration set, this will render the dashboard using
+	 * his saved settings. If not, it will layout the standard set of widgets
+	 * and then create a config record in the datastore for them.
+	 * 
+	 * @param user
+	 */
 	private void initializeContent(UserDto user) {
 		if (user == null || user.getConfig() == null
-				|| user.getConfig().size() == 0) {
+				|| user.getConfig().get(CONFIG_GROUP) == null
+				|| user.getConfig().get(CONFIG_GROUP).size() == 0) {
+			Map<String, String> posMap = new HashMap<String, String>();
+
 			addPortlet(new SummaryPortlet(), 0, true);
+			posMap.put(SummaryPortlet.NAME, "0,0");
+
 			addPortlet(new ActivityChartPortlet(), 1, true);
+			posMap.put(ActivityChartPortlet.NAME, "1,0");
+
 			addPortlet(new ActivityMapPortlet(), 1, true);
-			
+			posMap.put(ActivityMapPortlet.NAME, "1,1");
+
+			updateUserConfig(posMap);
+
 		} else {
 			List<Map<Integer, String>> colMap = new ArrayList<Map<Integer, String>>();
 			for (int i = 0; i < COLUMNS; i++) {
 				colMap.add(new HashMap<Integer, String>());
 			}
 			// build up the list of widgets and their positions
-			for (UserConfigDto config : user.getConfig()) {
-				if (CONFIG_GROUP.equals(config.getGroup())) {
-					String val = config.getValue();
-					Integer row = 0;
-					Integer col = 0;
-					if (val.contains("\n")) {
-						String[] coords = val.substring(0, val.indexOf("\n"))
-								.trim().split(",");
-						if (coords.length == 2) {
-							col = new Integer(coords[0]);
-							row = new Integer(coords[1]);
-						}
-						colMap.get(col).put(row, config.getName());
+			for (UserConfigDto config : user.getConfig().get(CONFIG_GROUP)) {
+				String val = config.getValue();
+				Integer row = 0;
+				Integer col = 0;
+				if (val.contains("\n")) {
+					String[] coords = val.substring(0, val.indexOf("\n"))
+							.trim().split(",");
+					if (coords.length == 2) {
+						col = new Integer(coords[0]);
+						row = new Integer(coords[1]);
 					}
+					colMap.get(col).put(row, config.getName());
 				}
 			}
 			// now install the portlets in the right order
@@ -145,8 +168,13 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				if (key.length > 0) {
 					Arrays.sort(key);
 					for (int j = 0; j < key.length; j++) {
-						addPortlet(PortletFactory.createPortlet(colMap.get(i)
-								.get(key[j])), i, true);
+						try {
+							addPortlet(PortletFactory.createPortlet(colMap.get(
+									i).get(key[j])), i, true);
+						} catch (IllegalArgumentException e) {
+							// swallow in case we change portlet names and don't
+							// update the DB
+						}
 					}
 				}
 			}
@@ -159,6 +187,62 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	public Class<?>[] getInvolvedClasses() {
 		return new Class[] { this.getClass(), SummaryPortlet.class,
 				ActivityChartPortlet.class, ActivityMapPortlet.class };
+	}
+
+	/**
+	 * persists the layout information to the server
+	 * 
+	 * @param positionMap
+	 */
+	protected void updateUserConfig(Map<String, String> positionMap) {
+		Map<String, Set<UserConfigDto>> confMap = currentUser.getConfig();
+		UserServiceAsync userService = GWT.create(UserService.class);
+		// Set up the callback object.
+		AsyncCallback<Void> userCallback = new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				// no-op
+			}
+		};
+		if (confMap == null) {
+			confMap = new HashMap<String, Set<UserConfigDto>>();
+			currentUser.setConfig(confMap);
+		}
+
+		for (String item : positionMap.keySet()) {
+			Set<UserConfigDto> existingConf = confMap.get(CONFIG_GROUP);
+			if (existingConf == null) {
+				existingConf = new HashSet<UserConfigDto>();
+				confMap.put(CONFIG_GROUP, existingConf);
+			}
+			boolean found = false;
+			for(UserConfigDto confItem: existingConf){
+				if (confItem.getName() != null
+						&& confItem.getName().equals(item)) {
+					confItem.setValue(positionMap.get(item) + "\n");
+				}	
+			}
+			
+			if (!found) {
+				UserConfigDto confDto = new UserConfigDto();
+				confDto.setGroup(CONFIG_GROUP);
+				confDto.setName(item);
+				confDto.setValue(positionMap.get(item) + "\n");
+				existingConf.add(confDto);
+			}
+		}
+		userService.saveUser(currentUser, userCallback);
+	}
+
+	@Override
+	protected void updateSavedLayout(Map<String, String> positionMap) {
+		updateUserConfig(positionMap);
 	}
 
 	/**
@@ -219,37 +303,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				String name = img.getTitle();
 				int position = addPortlet(PortletFactory.createPortlet(name),
 						0, true);
-				List<UserConfigDto> confList = currentUser.getConfig();
-				if (confList == null) {
-					confList = new ArrayList<UserConfigDto>();
-					currentUser.setConfig(confList);
-				}
-				UserConfigDto confDto = new UserConfigDto();
-				confDto.setGroup(CONFIG_GROUP);
-				confDto.setName(name);
-				confDto.setValue(0 + "," + position + "\n");
-				confList.add(confDto);
-				// also save the user's new config
-				// userD
-				UserServiceAsync userService = GWT.create(UserService.class);
-				// Set up the callback object.
-				AsyncCallback<Void> userCallback = new AsyncCallback<Void>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						// no-op
-
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-						// no-op
-
-					}
-				};
-				userService.saveUser(currentUser, userCallback);
+				Map<String, String> posMap = new HashMap<String, String>();
+				posMap.put(name, "0," + position);
+				updateUserConfig(posMap);
 			}
-
 		}
 	}
 
