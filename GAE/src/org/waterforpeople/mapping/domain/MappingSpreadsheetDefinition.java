@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
@@ -18,6 +19,7 @@ public class MappingSpreadsheetDefinition extends BaseDomain {
 	private String spreadsheetURL;
 	private SPREADSHEET_SOURCE_TYPE spreadsheetType;
 	private String mapToObject;
+	@Persistent(serialized = "true") 
 	private HashMap<String, MappingSpreadsheetColumnToAttribute> columnMap;
 
 	public String getSpreadsheetURL() {
