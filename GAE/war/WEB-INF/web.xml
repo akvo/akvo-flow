@@ -117,14 +117,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicerpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.service.SpreadsheetMappingAttributeServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
-		<url-pattern>/webapp/spreadsheetattributemapper</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>UserRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl</servlet-class>
 	</servlet>
@@ -147,6 +139,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>DataSummarization</servlet-name>
 		<url-pattern>/app_worker/datasummarization</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AuthSub</servlet-name>
+		<servlet-class>com.gallatinsystems.security.authorization.app.web.AuthenticationSubscriptionServlet</servlet-class>		
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AuthSub</servlet-name>
+		<url-pattern>/authsub</url-pattern>
 	</servlet-mapping>
 	<filter>
 		<filter-name>persistenceFilter</filter-name>
