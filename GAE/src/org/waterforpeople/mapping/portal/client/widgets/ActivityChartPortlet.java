@@ -92,4 +92,4 @@ public class ActivityChartPortlet extends Portlet {
 	public String getName(){
 		return NAME;
 	}
-}
+	}

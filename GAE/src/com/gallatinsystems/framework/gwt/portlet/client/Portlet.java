@@ -54,6 +54,8 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	private Image closeImg;
 	private Image confImg;
 	private FocusPanel headerContainer;
+	private String config;
+
 
 	private boolean isLoaded = false;
 
@@ -297,6 +299,15 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		active = true;
 	}
 
+
+	public String getConfig() {
+		return config;
+	}
+
+	public void setConfig(String config) {
+		this.config = config;
+	}
+	
 	/**
 	 * method that is invoked by the portlet container whenever another portlet
 	 * raises an event.
@@ -319,4 +330,6 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	protected abstract void handleConfigClick();
 
 	public abstract String getName();
+	
+	
 }

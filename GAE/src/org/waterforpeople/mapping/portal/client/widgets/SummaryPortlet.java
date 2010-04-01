@@ -38,6 +38,7 @@ public class SummaryPortlet extends Portlet {
 	private TreeItem surveyRoot;
 	private TreeItem deviceRoot;
 	private TreeItem userRoot;
+	
 
 	public SummaryPortlet() {
 		super(NAME, true, false, WIDTH, HEIGHT);
@@ -149,4 +150,5 @@ public class SummaryPortlet extends Portlet {
 	public String getName(){
 		return NAME;
 	}
+
 }

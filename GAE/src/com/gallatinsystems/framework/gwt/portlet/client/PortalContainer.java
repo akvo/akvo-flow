@@ -199,7 +199,7 @@ public abstract class PortalContainer extends SimplePanel {
 		}
 	}
 
-	private void updateLayout() {
+	protected void updateLayout() {
 		Map<String, String> positionMap = new HashMap<String, String>();
 		for (int i = 0; i < columnPanels.length; i++) {
 			for (int j = 0; j < columnPanels[i].getWidgetCount(); j++) {

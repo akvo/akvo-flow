@@ -140,6 +140,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			addPortlet(new ActivityMapPortlet(), 1, true);
 			posMap.put(ActivityMapPortlet.NAME, "1,1");
 
+			// if this is the first time the user logged in, create a config for
+			// him with the default portlet set
 			updateUserConfig(posMap);
 
 		} else {
@@ -214,28 +216,14 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			confMap = new HashMap<String, Set<UserConfigDto>>();
 			currentUser.setConfig(confMap);
 		}
-
-		for (String item : positionMap.keySet()) {
-			Set<UserConfigDto> existingConf = confMap.get(CONFIG_GROUP);
-			if (existingConf == null) {
-				existingConf = new HashSet<UserConfigDto>();
-				confMap.put(CONFIG_GROUP, existingConf);
-			}
-			boolean found = false;
-			for(UserConfigDto confItem: existingConf){
-				if (confItem.getName() != null
-						&& confItem.getName().equals(item)) {
-					confItem.setValue(positionMap.get(item) + "\n");
-				}	
-			}
-			
-			if (!found) {
-				UserConfigDto confDto = new UserConfigDto();
-				confDto.setGroup(CONFIG_GROUP);
-				confDto.setName(item);
-				confDto.setValue(positionMap.get(item) + "\n");
-				existingConf.add(confDto);
-			}
+		Set<UserConfigDto> groupConfig = new HashSet<UserConfigDto>();
+		confMap.put(CONFIG_GROUP, groupConfig);
+		for (String item : positionMap.keySet()) {					
+			UserConfigDto confDto = new UserConfigDto();
+			confDto.setGroup(CONFIG_GROUP);
+			confDto.setName(item);
+			confDto.setValue(positionMap.get(item) + "\n");
+			groupConfig.add(confDto);
 		}
 		userService.saveUser(currentUser, userCallback);
 	}
@@ -301,11 +289,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			if (event.getSource() instanceof Image) {
 				Image img = (Image) event.getSource();
 				String name = img.getTitle();
-				int position = addPortlet(PortletFactory.createPortlet(name),
-						0, true);
-				Map<String, String> posMap = new HashMap<String, String>();
-				posMap.put(name, "0," + position);
-				updateUserConfig(posMap);
+				addPortlet(PortletFactory.createPortlet(name), 0, true);
+				updateLayout();
 			}
 		}
 	}
