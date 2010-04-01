@@ -43,7 +43,9 @@ public class TaskRequest extends RestRequest {
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		fileName = req.getParameter(FILE_NAME_PARAM);
 		try {
-			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
+			if(req.getParameter(SURVEY_ID_PARAM)!= null){
+				surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
+			}
 		} catch (Exception e) {
 			addError(new RestError(RestError.BAD_DATATYPE_CODE,
 					RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
@@ -59,4 +61,5 @@ public class TaskRequest extends RestRequest {
 					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg));
 		}
 	}
+	
 }

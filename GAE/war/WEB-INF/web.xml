@@ -140,6 +140,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
 		<url-pattern>/spreadsheetattributemapper</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>DataSummarization</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.analytics.SurveyDataSummarizationHandler</servlet-class>		
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DataSummarization</servlet-name>
+		<url-pattern>/app_worker/datasummarization</url-pattern>
+	</servlet-mapping>
 	<filter>
 		<filter-name>persistenceFilter</filter-name>
 		<filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>
