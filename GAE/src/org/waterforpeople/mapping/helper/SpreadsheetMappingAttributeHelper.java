@@ -1,17 +1,29 @@
 package org.waterforpeople.mapping.helper;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
 import org.waterforpeople.mapping.dao.MappingSpreadsheetDefintionDAO;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetMappingAttributeHelper {
+	private static final Logger log = Logger
+	.getLogger(SpreadsheetMappingAttributeHelper.class.getName());
+	
+	private String sessionToken = null;
+	private PrivateKey privateKey = null;
 
+	public SpreadsheetMappingAttributeHelper(String sessionToken, PrivateKey privateKey){
+		this.sessionToken= sessionToken;
+		this.privateKey = privateKey;
+	}
+	
 	public MappingSpreadsheetDefinition saveSpreadsheetMappingAttribute(
 			MappingSpreadsheetDefinition mapDef) {
 		return null;
@@ -21,7 +33,7 @@ public class SpreadsheetMappingAttributeHelper {
 			MappingSpreadsheetDefinition mapDef) {
 		String spreadsheetName = mapDef.getSpreadsheetURL();
 		if (!spreadsheetName.trim().isEmpty()) {
-			SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter();
+			SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter(sessionToken, privateKey);
 			sapa.processSpreadsheetOfAccessPoints(spreadsheetName);
 			// ToDo: need to decide how to let them know this is finished since
 			// it could take a while
@@ -55,7 +67,7 @@ public class SpreadsheetMappingAttributeHelper {
 	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName)
 			throws IOException, ServiceException {
 		if (!spreadsheetName.trim().isEmpty()) {
-			SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter();
+			SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter(sessionToken, privateKey);
 			return sapa.listColumns(spreadsheetName);
 		}
 		return null;
@@ -73,8 +85,8 @@ public class SpreadsheetMappingAttributeHelper {
 	}
 
 	public ArrayList<String> listSpreadsheets(String feedURL)
-			throws IOException, ServiceException {
-		return new SpreadsheetAccessPointAdapter().listSpreadsheets(feedURL);
+			throws IOException, ServiceException, GeneralSecurityException {
+		return new SpreadsheetAccessPointAdapter(sessionToken, privateKey).listSpreadsheets(feedURL);
 	}
 
 	public MappingSpreadsheetDefinition getMappingSpreadsheetDefinition(

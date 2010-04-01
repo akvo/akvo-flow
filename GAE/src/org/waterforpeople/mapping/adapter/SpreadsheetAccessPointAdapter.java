@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.adapter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,9 +25,17 @@ import com.google.gdata.util.ServiceException;
 public class SpreadsheetAccessPointAdapter {
 	private static final Logger log = Logger
 			.getLogger(SpreadsheetAccessPointAdapter.class.getName());
+	
+	private PrivateKey privateKey = null;
+	private String sessionToken =null;
+	
+	public SpreadsheetAccessPointAdapter(String sessionToken, PrivateKey privateKey){
+		this.privateKey = privateKey;
+		this.sessionToken = sessionToken;
+	}
 
 	public void processSpreadsheetOfAccessPoints(String spreadsheetName) {
-		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter();
+		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(sessionToken, privateKey);
 		BaseDAO<AccessPoint> accessPointBaseDAO = new BaseDAO<AccessPoint>(
 				AccessPoint.class);
 		try {
@@ -45,13 +55,13 @@ public class SpreadsheetAccessPointAdapter {
 
 	public ArrayList<String> listColumns(String spreadsheetName)
 			throws IOException, ServiceException {
-		GoogleSpreadsheetAdapter gas = new GoogleSpreadsheetAdapter();
+		GoogleSpreadsheetAdapter gas = new GoogleSpreadsheetAdapter(sessionToken, privateKey);
 		return gas.listColumns(spreadsheetName);
 	}
 
 	public ArrayList<String> listSpreadsheets(String feedURL)
-			throws IOException, ServiceException {
-		return new GoogleSpreadsheetAdapter().listSpreasheets(feedURL);
+			throws IOException, ServiceException, GeneralSecurityException {
+		return new GoogleSpreadsheetAdapter(sessionToken, privateKey).listSpreasheets(feedURL);
 	}
 
 	private AccessPoint processRow(RowContainer row, String spreadsheetName) {
@@ -208,7 +218,7 @@ public class SpreadsheetAccessPointAdapter {
 	}
 
 	private HashMap getColsToAttributeMap(String spreadsheetName) {
-		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper();
+		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper(sessionToken, privateKey);
 		MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 		mapDef = samh.getMappingSpreadsheetDefinition(spreadsheetName);
 		HashMap<String, String> colsToAttributesMap = new HashMap<String, String>();

@@ -1,8 +1,12 @@
 package org.waterforpeople.mapping.app.web.service;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import javax.servlet.http.HttpSession;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
 import org.waterforpeople.mapping.app.web.client.SpreadsheetMappingAttributeService;
@@ -22,16 +26,46 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	 * 
 	 */
 	private static final long serialVersionUID = 7708378583408245812L;
+	private String sessionToken = null;
+	private PrivateKey privateKey = null;
+
+	public SpreadsheetMappingAttributeServiceImpl() {
+
+	}
+
+	public void setCreds() {
+		if (sessionToken == null || privateKey == null) {
+			sessionToken = getSessionTokenFromSession();
+			privateKey = getPrivateKeyFromSession();
+		}
+	}
+
+	private String getSessionTokenFromSession() {
+		HttpSession session = this.getThreadLocalRequest().getSession();
+		String token = (String) session.getValue("sessionToken");
+
+		return token;
+	}
+
+	private PrivateKey getPrivateKeyFromSession() {
+		HttpSession session = this.getThreadLocalRequest().getSession();
+		PrivateKey key = (PrivateKey) session.getValue("privateKey");
+		return key;
+	}
 
 	@Override
 	public ArrayList<String> listObjectAttributes(String objectNames) {
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper();
+		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
+				sessionToken, privateKey);
 		return helper.listObjectAttributes(objectNames);
 	}
 
 	@Override
 	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName) {
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper();
+		setCreds();
+		log.info("listingSpreadsheetColumns");
+		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
+				sessionToken, privateKey);
 		try {
 			return helper.listSpreadsheetColumns(spreadsheetName);
 		} catch (IOException e) {
@@ -46,14 +80,19 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	@Override
 	public ArrayList<String> listSpreadsheets() {
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper();
+		setCreds();
+		log.info("listingSpreadsheets");
+		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
+				sessionToken, privateKey);
 		return helper.listSpreadsheets();
 	}
 
 	@Override
 	public void saveSpreadsheetMapping(MappingSpreadsheetDefinition mapDef) {
+		setCreds();
 		// TODO change to return status of save or errors if there are any
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper();
+		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
+				sessionToken, privateKey);
 		// convert to domain object from dto
 
 		helper.saveSpreadsheetMapping(copyToCanonicalObject(mapDef));
@@ -61,7 +100,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	@Override
 	public void processSpreadsheet(MappingSpreadsheetDefinition mapDef) {
-		new SpreadsheetAccessPointAdapter()
+		setCreds();
+		new SpreadsheetAccessPointAdapter(sessionToken, privateKey)
 				.processSpreadsheetOfAccessPoints(mapDef.getSpreadsheetURL());
 	}
 
@@ -108,10 +148,17 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	@Override
 	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL) {
+		setCreds();
 		if (feedURL == null) {
 			try {
-				return new SpreadsheetMappingAttributeHelper()
-						.listSpreadsheets("http://spreadsheets.google.com/feeds/spreadsheets/private/full");
+				try {
+					return new SpreadsheetMappingAttributeHelper(sessionToken,
+							privateKey)
+							.listSpreadsheets("http://spreadsheets.google.com/feeds/spreadsheets/private/full");
+				} catch (GeneralSecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -129,7 +176,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			String spreadsheetName) {
 		// TODO Auto-generated method stub
 		MappingDefinitionColumnContainer mapdefCC = new MappingDefinitionColumnContainer();
-		org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition mapDef = new SpreadsheetMappingAttributeHelper()
+		org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition mapDef = new SpreadsheetMappingAttributeHelper(
+				sessionToken, privateKey)
 				.getMappingSpreadsheetDefinition(spreadsheetName);
 		if (mapDef != null) {
 			mapdefCC.setMapDef(copyToDTOObject(mapDef));

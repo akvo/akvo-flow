@@ -29,7 +29,7 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String spreadsheetName = req.getParameter("spreadsheetName");
 		String listColumns = req.getParameter("listColumns");
-		SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter();
+		SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter(null,null);
 		String clearAccessPointFlag = req.getParameter("clearAccessPointFlag");
 		
 		if(clearAccessPointFlag.equals("doIt")){
