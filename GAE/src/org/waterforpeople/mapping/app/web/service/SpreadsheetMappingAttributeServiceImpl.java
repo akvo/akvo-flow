@@ -99,10 +99,23 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	}
 
 	@Override
-	public void processSpreadsheet(MappingSpreadsheetDefinition mapDef) {
+	public String processSpreadsheet(MappingSpreadsheetDefinition mapDef) {
 		setCreds();
-		new SpreadsheetAccessPointAdapter(sessionToken, privateKey)
-				.processSpreadsheetOfAccessPoints(mapDef.getSpreadsheetURL());
+		try {
+			new SpreadsheetAccessPointAdapter(sessionToken, privateKey)
+					.processSpreadsheetOfAccessPoints(mapDef.getSpreadsheetURL());
+			return new String("Processed Successfully");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			String message =new String("Could not save spreadsheet : ");
+			message.concat(e.getMessage());
+			return message;
+		}
+		return null;
 	}
 
 	private org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition copyToCanonicalObject(

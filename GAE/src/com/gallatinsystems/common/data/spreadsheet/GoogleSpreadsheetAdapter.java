@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
-import com.gallatinsystems.security.authorization.utility.TokenUtility;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.google.gdata.client.spreadsheet.FeedURLFactory;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.PlainTextConstruct;
@@ -33,34 +33,26 @@ public class GoogleSpreadsheetAdapter {
 	private static final Logger log = Logger
 			.getLogger(GoogleSpreadsheetAdapter.class.getName());
 
-	Properties props;
-	private String google_user_name;
-	private String google_password;
 	private String google_spreadsheet_url;
 	private static final String RANDOM_SPREADSHEET_NAME = "exampleCo-exampleApp-1.0";
 
-	public GoogleSpreadsheetAdapter(String sessionToken, PrivateKey privateKey) {
-		props = System.getProperties();
-		google_spreadsheet_url = props.getProperty("google_spreadsheet_url");
-		service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
-		service.setAuthSubToken(sessionToken, privateKey);
-		try {
+	SpreadsheetFeed feed = null;
+
+	public GoogleSpreadsheetAdapter(String sessionToken, PrivateKey privateKey)
+			throws IOException, ServiceException {
+		google_spreadsheet_url = new PropertyUtil()
+				.getProperty("google_spreadsheet_url");
+		if (service == null) {
+			service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
+			service.setAuthSubToken(sessionToken, privateKey);
+		}
+		if (metafeedUrl == null) {
 			metafeedUrl = new URL(google_spreadsheet_url);
-			
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		try {
+		if (feed == null) {
 			feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		
+
 	}
 
 	SpreadsheetService service;
@@ -70,49 +62,20 @@ public class GoogleSpreadsheetAdapter {
 		String googleUserName = args[1];
 		String googlePassword = args[2];
 
-		new GoogleSpreadsheetAdapter(null, null).loadSpreadsheet(
-				spreadsheetName, googleUserName, googlePassword);
+		new GoogleSpreadsheetAdapter(null, null)
+				.loadSpreadsheet(spreadsheetName);
 	}
 
 	public SpreadsheetContainer getSpreadsheetContents(String spreadsheetName)
 			throws IOException, ServiceException {
-		return loadSpreadsheet(spreadsheetName, google_user_name,
-				google_password);
+		return loadSpreadsheet(spreadsheetName);
 	}
 
 	public ArrayList<String> listColumns(String spreadsheetName)
 			throws IOException, ServiceException {
-		return listColumns(spreadsheetName, google_user_name, google_password);
-	}
+		SpreadsheetFeed feed = service.getFeed(metafeedUrl,
+				SpreadsheetFeed.class);
 
-	public ArrayList<String> listSpreasheets(String feedURL)
-			throws IOException, ServiceException, GeneralSecurityException {
-		return listSpreadsheets(feedURL);
-	}
-
-	private URL metafeedUrl;
-	private SpreadsheetFeed feed;
-	
-	
-	private ArrayList<String> listSpreadsheets(String feedURL)
-			throws IOException, ServiceException, GeneralSecurityException {
-		
-		log.info("created spreadsheetfeed");
-		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
-		log.info("got spreadsheet entry list: " + spreadsheets.size());
-		ArrayList<String> spreadsheetNamesList = new ArrayList<String>();
-		for (int i = 0; i < spreadsheets.size(); i++) {
-			SpreadsheetEntry entry = spreadsheets.get(i);
-			String title = entry.getTitle().getPlainText();
-			spreadsheetNamesList.add(title);
-			log.info("-> spreadsheets: " + title);
-		}
-		return spreadsheetNamesList;
-	}
-
-	private ArrayList<String> listColumns(String spreadsheetName,
-			String googleUserName, String googlePassword) throws IOException,
-			ServiceException {
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 		for (int i = 0; i < spreadsheets.size(); i++) {
 			SpreadsheetEntry entry = spreadsheets.get(i);
@@ -129,8 +92,26 @@ public class GoogleSpreadsheetAdapter {
 			}
 		}
 		return null;
-
 	}
+
+	public ArrayList<String> listSpreasheets(String feedURL)
+			throws IOException, ServiceException, GeneralSecurityException {
+
+		log.info("created spreadsheetfeed");
+
+		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+		log.info("got spreadsheet entry list: " + spreadsheets.size());
+		ArrayList<String> spreadsheetNamesList = new ArrayList<String>();
+		for (int i = 0; i < spreadsheets.size(); i++) {
+			SpreadsheetEntry entry = spreadsheets.get(i);
+			String title = entry.getTitle().getPlainText();
+			spreadsheetNamesList.add(title);
+			log.info("-> spreadsheets: " + title);
+		}
+		return spreadsheetNamesList;
+	}
+
+	private URL metafeedUrl;
 
 	private ArrayList<String> listColumns(WorksheetEntry worksheetEntry)
 			throws IOException, ServiceException {
@@ -148,14 +129,9 @@ public class GoogleSpreadsheetAdapter {
 		return columns;
 	}
 
-	private SpreadsheetContainer loadSpreadsheet(String spreadsheetName,
-			String googleUserName, String googlePassword) throws IOException,
-			ServiceException {
-		service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
-
-		URL metafeedUrl = new URL(google_spreadsheet_url);
-		SpreadsheetFeed feed = service.getFeed(metafeedUrl,
-				SpreadsheetFeed.class);
+	private SpreadsheetContainer loadSpreadsheet(String spreadsheetName)
+			throws IOException, ServiceException {
+	
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 		for (int i = 0; i < spreadsheets.size(); i++) {
 			SpreadsheetEntry entry = spreadsheets.get(i);

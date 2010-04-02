@@ -21,7 +21,7 @@ public interface SpreadsheetMappingAttributeServiceAsync {
 			AsyncCallback<Void> callback);
 
 	void processSpreadsheet(MappingSpreadsheetDefinition mapDef,
-			AsyncCallback<Void> callback);
+			AsyncCallback<String> callback);
 
 	void getMappingSpreadsheetDefinition(String spreadsheetName,
 			AsyncCallback<MappingDefinitionColumnContainer> callback);

@@ -30,7 +30,7 @@ public class SpreadsheetMappingAttributeHelper {
 	}
 
 	public ArrayList<String> processSpreadsheet(
-			MappingSpreadsheetDefinition mapDef) {
+			MappingSpreadsheetDefinition mapDef) throws IOException, ServiceException {
 		String spreadsheetName = mapDef.getSpreadsheetURL();
 		if (!spreadsheetName.trim().isEmpty()) {
 			SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter(sessionToken, privateKey);

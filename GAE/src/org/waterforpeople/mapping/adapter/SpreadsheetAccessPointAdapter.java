@@ -34,7 +34,7 @@ public class SpreadsheetAccessPointAdapter {
 		this.sessionToken = sessionToken;
 	}
 
-	public void processSpreadsheetOfAccessPoints(String spreadsheetName) {
+	public void processSpreadsheetOfAccessPoints(String spreadsheetName) throws IOException, ServiceException {
 		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(sessionToken, privateKey);
 		BaseDAO<AccessPoint> accessPointBaseDAO = new BaseDAO<AccessPoint>(
 				AccessPoint.class);
@@ -47,9 +47,11 @@ public class SpreadsheetAccessPointAdapter {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw(e);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw(e);
 		}
 	}
 

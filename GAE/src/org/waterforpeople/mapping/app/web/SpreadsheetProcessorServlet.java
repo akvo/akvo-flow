@@ -69,7 +69,15 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 					e.printStackTrace();
 				}
 			} else {
-				sapa.processSpreadsheetOfAccessPoints(spreadsheetName);
+				try {
+					sapa.processSpreadsheetOfAccessPoints(spreadsheetName);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ServiceException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				try {
 					resp.getWriter().print("AccessPoints have been loaded");
 				} catch (IOException e) {

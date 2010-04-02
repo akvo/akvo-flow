@@ -171,7 +171,7 @@ public class MappingAttributeManager implements EntryPoint {
 						colMapStatusLabel
 								.setText("Please wait loading columns");
 
-						Window.alert("Spreadsheet Processed");
+						Window.alert((String) result);
 
 					}
 
