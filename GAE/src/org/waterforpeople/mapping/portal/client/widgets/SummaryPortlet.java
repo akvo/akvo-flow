@@ -73,7 +73,7 @@ public class SummaryPortlet extends Portlet {
 						deviceRoot.addItem(result[i].getPhoneNumber());
 					}
 				}
-			}
+			}	
 		};
 		deviceService.listDevice(deviceCallback);
 

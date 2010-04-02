@@ -52,5 +52,12 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 		SurveyQuestionSummaryDao thisDao = new SurveyQuestionSummaryDao();
 		thisDao.save(summary);
 	}
+	
+	/**
+	* this method will list all the summary objects for a given question id
+	*/
+	public List<SurveyQuestionSummary> listByQuestion(String qId){
+		return listByProperty("questionId",qId,"String");
+	}
 
 }

@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyActivityDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
+import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -64,5 +66,25 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		List items = surveyDao.countSurveyInstance(null,null,SurveyService.DATE_ROLL_UP);
 		return null;
 	}
+	
+	/**
+	* This method will return a list of all the questions that have a specific type code
+	*/
+	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode){
 
+		SurveyDAO dao = new SurveyDAO();
+		List<SurveyQuestion> qList = dao.listQuestionByType(typeCode);
+		SurveyQuestionDto[] dtoList = null;
+		if(qList != null){
+			dtoList = new SurveyQuestionDto[qList.size()];
+			for(int i =0; i < qList.size(); i++){
+				SurveyQuestionDto qDto = new SurveyQuestionDto();
+				qDto.setQuestionId(qList.get(i).getId());
+				qDto.setQuestionType(typeCode);
+				qDto.setQuestionText(qList.get(i).getText());
+				dtoList[i] = qDto;
+			}
+		}
+		return dtoList;
+	}
 }

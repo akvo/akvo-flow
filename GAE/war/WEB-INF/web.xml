@@ -109,6 +109,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>SurveySummaryRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveySummaryServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SurveySummaryRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveysummaryrpcservice</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>DeviceRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.device.DeviceServiceImpl</servlet-class>
 	</servlet>

@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.db.PMF;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -175,5 +176,12 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
 	public List<SurveyContainer> listSurveyContainers() {
 		return super.list(SurveyContainer.class);
+	}
+	
+	/**
+	* lists all questions of a given type (across all surveys)
+	*/
+	public List<SurveyQuestion> listQuestionByType(String questionType){
+		return listByProperty("type",questionType,"String",SurveyQuestion.class);
 	}
 }

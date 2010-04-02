@@ -9,7 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.SurveyQuestion;
+import org.waterforpeople.mapping.domain.SurveyQuestion.QuestionAnswerType;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -51,7 +55,50 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "Could not save test region", e);
 			}
+		}else if ("testSurveyQuestion".equals(action)){
+			SurveyDAO surveyDao = new SurveyDAO();
+			SurveyQuestion q = new SurveyQuestion();
+			q.setId("q6");
+			q.setText("Source");
+			q.setType(QuestionAnswerType.option);
+			surveyDao.save(q);
+			q = new SurveyQuestion();
+			q.setId("q7");
+			q.setText("Collection Point");
+			q.setType(QuestionAnswerType.option);
+			surveyDao.save(q);
+			
+			SurveyQuestionSummary summ = new SurveyQuestionSummary();
+			summ.setQuestionId("q6");
+			summ.setCount(new Long(10));
+			summ.setResponse("Spring");
+			surveyDao.save(summ);
+			summ = new SurveyQuestionSummary();
+			summ.setQuestionId("q6");
+			summ.setCount(new Long(7));
+			summ.setResponse("Borehole");
+			surveyDao.save(summ);
+			summ = new SurveyQuestionSummary();
+			summ.setQuestionId("q6");
+			summ.setCount(new Long(22));
+			summ.setResponse("Surface Water");
+			surveyDao.save(summ);
+			summ = new SurveyQuestionSummary();
+			summ.setQuestionId("q7");
+			summ.setCount(new Long(19));
+			summ.setResponse("Public Handpump");
+			surveyDao.save(summ);
+			summ = new SurveyQuestionSummary();
+			summ.setQuestionId("q7");
+			summ.setCount(new Long(32));
+			summ.setResponse("Yard Connection");
+			surveyDao.save(summ);
+			summ = new SurveyQuestionSummary();
+			summ.setQuestionId("q7");
+			summ.setCount(new Long(3));
+			summ.setResponse("House Connection");
+			surveyDao.save(summ);		
+					
 		}
-	}
-
+	}	
 }

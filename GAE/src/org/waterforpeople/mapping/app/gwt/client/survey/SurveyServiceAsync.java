@@ -11,4 +11,7 @@ public interface SurveyServiceAsync {
 	void listSurveyActivityByDate(Date startDate, Date endDate,
 			String rollUpType, AsyncCallback<SurveyActivityDto[]> callback);
 
+	void listSurveyQuestionByType(String typeCode,
+			AsyncCallback<SurveyQuestionDto[]> callback);
+
 }

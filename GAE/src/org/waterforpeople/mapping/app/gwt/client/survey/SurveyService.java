@@ -17,4 +17,5 @@ public interface SurveyService extends RemoteService {
 	public SurveyActivityDto[] listSurveyActivityByDate(Date startDate,
 			Date endDate, String rollUpType);
 
+	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode);
 }

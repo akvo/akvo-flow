@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortalContainer;
 import com.google.gwt.core.client.EntryPoint;
@@ -139,6 +140,9 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			addPortlet(new ActivityMapPortlet(), 1, true);
 			posMap.put(ActivityMapPortlet.NAME, "1,1");
+			
+			addPortlet(new SurveyQuestionPortlet(), 2, true);
+			posMap.put(SummaryPortlet.NAME, "2,0");
 
 			// if this is the first time the user logged in, create a config for
 			// him with the default portlet set
