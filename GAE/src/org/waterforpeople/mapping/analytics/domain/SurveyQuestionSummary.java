@@ -5,6 +5,12 @@ import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * structure for roll-up of survey question responses
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class SurveyQuestionSummary extends BaseDomain {
 
@@ -12,7 +18,7 @@ public class SurveyQuestionSummary extends BaseDomain {
 
 	@Persistent
 	private String questionId;
-	
+
 	@Persistent
 	private String response;
 	@Persistent
@@ -25,7 +31,7 @@ public class SurveyQuestionSummary extends BaseDomain {
 	public void setQuestionId(String questionId) {
 		this.questionId = questionId;
 	}
-	
+
 	public String getResponse() {
 		return response;
 	}

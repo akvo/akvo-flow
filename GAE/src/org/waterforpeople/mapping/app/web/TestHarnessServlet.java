@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.SurveyQuestion.QuestionAnswerType;
@@ -20,6 +25,8 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class TestHarnessServlet extends HttpServlet {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
@@ -113,6 +120,21 @@ public class TestHarnessServlet extends HttpServlet {
 			AccessPointHelper helper = new AccessPointHelper();
 			helper.saveAccessPoint(ap);
 
+		} else if ("createInstance".equals(action)) {
+			SurveyInstance si = new SurveyInstance();
+			si.setCollectionDate(new Date());
+			ArrayList<QuestionAnswerStore> store = new ArrayList<QuestionAnswerStore>();
+			QuestionAnswerStore ans = new QuestionAnswerStore();
+			ans.setQuestionID("q2");
+			ans.setValue("Geneva");
+			store.add(ans);
+			si.setQuestionAnswersStore(store);
+			SurveyInstanceDAO dao = new SurveyInstanceDAO();
+			si = dao.save(si);
+			Queue summQueue = QueueFactory.getQueue("dataSummarization");
+			summQueue.add(url("/app_worker/datasummarization").param(
+					"objectKey", si.getKey().getId() + "").param("type",
+					"SurveyInstance"));
 		}
 	}
 }

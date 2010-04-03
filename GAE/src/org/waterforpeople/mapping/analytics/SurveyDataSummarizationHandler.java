@@ -24,10 +24,14 @@ public class SurveyDataSummarizationHandler extends DataSummarizationHandler {
 		queueName = "dataSummarization";
 		summarizerPath = "/app_worker/datasummarization";
 		summarizers = new HashMap<String, List<String>>();
+
 		List<String> surveyQuestionSummarizers = new ArrayList<String>();
 		surveyQuestionSummarizers
 				.add("org.waterforpeople.mapping.analytics.SurveyQuestionSummarizer");
+		surveyQuestionSummarizers
+				.add("org.waterforpeople.mapping.analytics.SurveyInstanceSummarizer");
 		summarizers.put("SurveyInstance", surveyQuestionSummarizers);
+
 		List<String> apSummarizers = new ArrayList<String>();
 		apSummarizers
 				.add("org.waterforpeople.mapping.analytics.CommunityLocationSummarizer");

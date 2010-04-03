@@ -5,6 +5,12 @@ import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * roll-up for access point status aggregtions
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class AccessPointStatusSummary extends BaseDomain {
 
