@@ -42,7 +42,6 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 							ourCountry = new Country();
 							ourCountry.setCountryCode(gp.getCountryCode());
 							ourCountry.setName(gp.getCountryName());
-							ourCountry = commDao.save(ourCountry);
 						}
 						community = new Community();
 						community.setCountry(ourCountry);
@@ -50,6 +49,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 						community.setName(gp.getName());
 						community.setLat(gp.getLat());
 						community.setLon(gp.getLon());
+						// this save will cascade-save the country
 						commDao.save(community);
 					}
 				}

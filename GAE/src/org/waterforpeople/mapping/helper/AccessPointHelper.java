@@ -122,7 +122,7 @@ public class AccessPointHelper {
 		ap = apDao.save(ap);
 		Queue summQueue = QueueFactory.getQueue("dataSummarization");
 		summQueue.add(url("/app_worker/datasummarization").param("objectKey",
-				ap.toString()).param("objectType", "AccessPoint"));
+				ap.getKey().getId() + "").param("type", "AccessPoint"));
 		return ap;
 	}
 

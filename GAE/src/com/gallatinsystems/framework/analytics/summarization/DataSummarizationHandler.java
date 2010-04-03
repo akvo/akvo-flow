@@ -61,38 +61,45 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 		int idx = 0;
 		List<String> applicableSummarizers = summarizers
 				.get(summarizationRequest.getType());
-		if (request.getAction() != null) {
-			while (idx < applicableSummarizers.size()) {
-				if (applicableSummarizers.get(idx).trim().equals(
-						summarizationRequest.getAction())) {
-					break;
+		if (applicableSummarizers != null) {
+			if (request.getAction() != null) {
+				while (idx < applicableSummarizers.size()) {
+					if (applicableSummarizers.get(idx).trim().equals(
+							summarizationRequest.getAction())) {
+						break;
+					}
+					idx++;
 				}
-				idx++;
 			}
-		}
-		if (idx < applicableSummarizers.size()) {
-			try {
-				Class cls = Class.forName(applicableSummarizers.get(idx));
-				DataSummarizer summarizer = (DataSummarizer) cls.newInstance();
-				summarizer.performSummarization(summarizationRequest
-						.getObjectKey(), summarizationRequest.getType());
-			} catch (Exception e) {
-				log("Could not invoke summarizer", e);
+			if (idx < applicableSummarizers.size()) {
+				try {
+					Class cls = Class.forName(applicableSummarizers.get(idx));
+					DataSummarizer summarizer = (DataSummarizer) cls
+							.newInstance();
+					summarizer.performSummarization(summarizationRequest
+							.getObjectKey(), summarizationRequest.getType());
+				} catch (Exception e) {
+					log("Could not invoke summarizer", e);
+				}
+				if (idx < applicableSummarizers.size() - 1) {
+					summarizationRequest.setAction(applicableSummarizers
+							.get(idx + 1));
+					// put the item back on the queue with the action updated to
+					// the
+					// next summarization in the chain
+					Queue queue = QueueFactory.getQueue(queueName);
+					queue.add(url(summarizerPath).param(
+							DataSummarizationRequest.ACTION_PARAM,
+							summarizationRequest.getAction()).param(
+							DataSummarizationRequest.OBJECT_KEY,
+							summarizationRequest.getObjectKey()).param(
+							DataSummarizationRequest.OBJECT_TYPE,
+							summarizationRequest.getType()));
+				}
 			}
-			if (idx < applicableSummarizers.size() - 1) {
-				summarizationRequest.setAction(applicableSummarizers
-						.get(idx + 1));
-				// put the item back on the queue with the action updated to the
-				// next summarization in the chain
-				Queue queue = QueueFactory.getQueue(queueName);
-				queue.add(url(summarizerPath).param(
-						DataSummarizationRequest.ACTION_PARAM,
-						summarizationRequest.getAction()).param(
-						DataSummarizationRequest.OBJECT_KEY,
-						summarizationRequest.getObjectKey()).param(
-						DataSummarizationRequest.OBJECT_TYPE,
-						summarizationRequest.getType()));
-			}
+		} else {
+			log("No summarizers configured for type "
+					+ summarizationRequest.getType());
 		}
 		return response;
 

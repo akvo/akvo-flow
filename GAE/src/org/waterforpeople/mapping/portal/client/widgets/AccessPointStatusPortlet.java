@@ -6,7 +6,6 @@ import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
@@ -37,9 +36,11 @@ import com.google.gwt.visualization.client.visualizations.PieChart.Options;
  * 
  */
 public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
-		ValueChangeHandler<RadioButton> {
+		ValueChangeHandler<Boolean> {
 	public static final String DESCRIPTION = "Access Point status as a Pie Chart";
 	public static final String NAME = "Access Point Status";
+	private static final String WATER_TYPE = "WATER_POINT";
+	private static final String SANITATION_TYPE = "SANITATION_POINT";
 
 	private static final String ALL_OPT = "All";
 	private static final int WIDTH = 400;
@@ -78,8 +79,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 					}
 					countryListbox.setVisibleItemCount(1);
 					if (result.length > 0) {
-						buildChart(null, null, null,
-								AccessPointType.WATER_POINT.toString());
+						buildChart(null, null, null, WATER_TYPE);
 					}
 				}
 			}
@@ -134,7 +134,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 
 	}
 
-	public void onValueChange(ValueChangeEvent event) {
+	public void onValueChange(ValueChangeEvent<Boolean> event) {
 		updateChart();
 	}
 
@@ -156,9 +156,8 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		buildChart(getSelectedValue(countryListbox),
 				getSelectedValue(communityListbox),
 				getSelectedValue(yearListbox),
-				wpTypeButton.getValue() ? AccessPointType.WATER_POINT
-						.toString() : AccessPointType.SANITATION_POINT
-						.toString());
+				wpTypeButton.getValue() ? WATER_TYPE.toString()
+						: SANITATION_TYPE.toString());
 	}
 
 	private Widget buildHeader() {
@@ -182,7 +181,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		HorizontalPanel yearPanel = new HorizontalPanel();
 		yearPanel.add(new Label("Year: "));
 		yearListbox = new ListBox();
-		commPanel.add(yearListbox);
+		yearPanel.add(yearListbox);
 		grid.setWidget(0, 1, yearPanel);
 		yearListbox.addChangeHandler(this);
 
@@ -192,6 +191,8 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		spTypeButton = new RadioButton("typeGroup", "Sanitation");
 		typePanel.add(wpTypeButton);
 		typePanel.add(spTypeButton);
+		wpTypeButton.addValueChangeHandler(this);
+		spTypeButton.addValueChangeHandler(this);
 		wpTypeButton.setValue(true);
 		grid.setWidget(1, 1, typePanel);
 

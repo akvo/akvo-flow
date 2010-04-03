@@ -43,7 +43,7 @@ public class AccessPointStatusSummaryDao extends
 		query
 				.setFilter("year == yearParam && status == statusParam && community == communityParam && type == typeParam");
 		query
-				.declareParameters("String yearParam, String statusParam, String , String communityParam, String typeParam");
+				.declareParameters("String yearParam, String statusParam, String communityParam, String typeParam");
 		String yearString = null;
 		if (ap.getCollectionDate() != null) {
 			GregorianCalendar cal = new GregorianCalendar();

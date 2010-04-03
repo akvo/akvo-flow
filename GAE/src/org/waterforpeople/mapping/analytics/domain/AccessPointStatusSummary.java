@@ -1,8 +1,26 @@
 package org.waterforpeople.mapping.analytics.domain;
 
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+@PersistenceCapable
 public class AccessPointStatusSummary extends BaseDomain {
+
+	private static final long serialVersionUID = 6629466550148260904L;
+	@Persistent
+	private Long count;
+	@Persistent
+	private String year;
+	@Persistent
+	private String status;
+	@Persistent
+	private String country;
+	@Persistent
+	private String community;
+	@Persistent
+	private String type;
 
 	public Long getCount() {
 		return count;
@@ -52,11 +70,4 @@ public class AccessPointStatusSummary extends BaseDomain {
 		this.type = type;
 	}
 
-	private static final long serialVersionUID = 6629466550148260904L;
-	private Long count;
-	private String year;
-	private String status;
-	private String country;
-	private String community;
-	private String type;
 }

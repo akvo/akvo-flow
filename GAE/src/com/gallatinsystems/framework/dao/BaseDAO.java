@@ -198,9 +198,13 @@ public class BaseDAO<T extends BaseDomain> {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		List<E> results = null;
 
+		String paramName = propertyName + "Param";
+		if (paramName.contains(".")) {
+			paramName = paramName.substring(paramName.indexOf(".") + 1);
+		}
 		javax.jdo.Query query = pm.newQuery(clazz);
-		query.setFilter(propertyName + " == " + propertyName + "Param");
-		query.declareParameters(propertyType + " " + propertyName + "Param");
+		query.setFilter(propertyName + " == " + paramName);
+		query.declareParameters(propertyType + " " + paramName);
 		results = (List<E>) query.execute(propertyValue);
 
 		return results;

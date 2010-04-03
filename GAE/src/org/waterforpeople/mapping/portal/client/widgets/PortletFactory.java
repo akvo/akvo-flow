@@ -15,7 +15,9 @@ public class PortletFactory {
 			{ SummaryPortlet.NAME, SummaryPortlet.DESCRIPTION },
 			{ ActivityChartPortlet.NAME, ActivityChartPortlet.DESCRIPTION },
 			{ ActivityMapPortlet.NAME, ActivityMapPortlet.DESCRIPTION },
-			{ SurveyQuestionPortlet.NAME, SurveyQuestionPortlet.DESCRIPTION } };
+			{ SurveyQuestionPortlet.NAME, SurveyQuestionPortlet.DESCRIPTION },
+			{ AccessPointStatusPortlet.NAME,
+					AccessPointStatusPortlet.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name) {
 		if (name == null) {
@@ -30,6 +32,8 @@ public class PortletFactory {
 			return new ActivityMapPortlet();
 		} else if (name.equals(SurveyQuestionPortlet.NAME)) {
 			return new SurveyQuestionPortlet();
+		} else if (name.equals(AccessPointStatusPortlet.NAME)) {
+			return new AccessPointStatusPortlet();
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

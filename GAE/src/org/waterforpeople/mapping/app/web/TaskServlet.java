@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
@@ -70,7 +69,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 				
 				Queue summQueue = QueueFactory.getQueue("dataSummarization");
 				summQueue.add(url("/app_worker/datasummarization").param(
-						"objectKey", surveyId.toString()).param("objectType",
+						"objectKey", surveyId.toString()).param("type",
 						"SurveyInstance"));
 
 				surveyIds.add(surveyId.toString());

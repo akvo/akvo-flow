@@ -16,6 +16,9 @@ public class SurveyDataSummarizationHandler extends DataSummarizationHandler {
 
 	private static final long serialVersionUID = -6697211847598513025L;
 
+	/**
+	 * installs the list of summarizers that will run for various data types
+	 */
 	@Override
 	protected void initializeSummarization() {
 		queueName = "dataSummarization";
@@ -25,5 +28,11 @@ public class SurveyDataSummarizationHandler extends DataSummarizationHandler {
 		surveyQuestionSummarizers
 				.add("org.waterforpeople.mapping.analytics.SurveyQuestionSummarizer");
 		summarizers.put("SurveyInstance", surveyQuestionSummarizers);
+		List<String> apSummarizers = new ArrayList<String>();
+		apSummarizers
+				.add("org.waterforpeople.mapping.analytics.CommunityLocationSummarizer");
+		apSummarizers
+				.add("org.waterforpeople.mapping.analytics.AccessPointStatusSummarizer");
+		summarizers.put("AccessPoint", apSummarizers);
 	}
 }
