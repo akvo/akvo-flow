@@ -246,12 +246,13 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	 */
 	private class ConfigurationDialog extends DialogBox implements ClickHandler {
 
+			private static final String HEADER_CSS = "tableheader";
 		public ConfigurationDialog() {
 			// Set the dialog box's caption.
 			setText("Add Items to Dashboard");
 			setAnimationEnabled(true);
 			setGlassEnabled(true);
-
+			setWidth("80%");			
 			VerticalPanel contentPane = new VerticalPanel();
 			contentPane
 					.add(new Label(
@@ -259,9 +260,14 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			setPopupPosition(Window.getClientWidth() / 3, Window
 					.getClientHeight() / 3);
 			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);
-
-			g.setText(0, 0, "Portlets");
-			g.setText(0, 1, "Description");
+			
+			Label header = new Label("Portlets");
+			header.setStyleName(HEADER_CSS);			
+			g.setWidget(0, 0, header);
+			header = new Label("Description");
+			header.setStyleName(HEADER_CSS);			
+			g.setWidget(0, 1, header);		
+			
 			for (int i = 0; i < PortletFactory.AVAILABLE_PORTLETS.length; i++) {
 				g.setText(i + 1, 0,
 						(String) PortletFactory.AVAILABLE_PORTLETS[i][0]);
