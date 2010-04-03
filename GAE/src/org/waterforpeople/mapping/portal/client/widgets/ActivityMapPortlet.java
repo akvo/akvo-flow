@@ -40,7 +40,7 @@ import com.google.gwt.visualization.client.visualizations.IntensityMap.Options;
 public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		ValueChangeHandler<Boolean> {
 	public static final String DESCRIPTION = "Displays access points by status by region on a map";
-	public static final String NAME = "Survey Activity By Region";
+	public static final String NAME = "Access Point Status by Country";
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
 
