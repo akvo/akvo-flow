@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
@@ -56,11 +57,11 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 	private RadioButton spTypeButton;
 
 	public AccessPointStatusPortlet() {
-		super(NAME, true, false, WIDTH, HEIGHT);
+		super(NAME, false, false, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
-
+		setContent(contentPane);
 		CommunityServiceAsync communityService = GWT
 				.create(CommunityService.class);
 		// Set up the callback object.
@@ -86,7 +87,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		};
 		communityService.listCountries(countryCallback);
 
-		setContent(contentPane);
+		
 
 	}
 
@@ -216,7 +217,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 			String year, String type) {
 		// fetch list of responses for a question
 		AccessPointSummaryServiceAsync apService = GWT
-				.create(AccessPointSummaryServiceAsync.class);
+				.create(AccessPointSummaryService.class);
 		// Set up the callback object.
 		AsyncCallback<AccessPointSummaryDto[]> apCallback = new AsyncCallback<AccessPointSummaryDto[]>() {
 			public void onFailure(Throwable caught) {

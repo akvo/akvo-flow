@@ -40,7 +40,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	private ListBox questionListbox;
 
 	public SurveyQuestionPortlet() {
-		super(NAME, true, false, WIDTH, HEIGHT);
+		super(NAME, false, false, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
 		HorizontalPanel header = new HorizontalPanel();
 		header.add(new Label("Survey Question: "));
@@ -48,6 +48,7 @@ public class SurveyQuestionPortlet extends Portlet {
 		header.add(questionListbox);
 
 		contentPane.add(header);
+		setContent(contentPane);
 
 		SurveyServiceAsync surveyService = GWT.create(SurveyService.class);
 		// Set up the callback object.
@@ -80,7 +81,7 @@ public class SurveyQuestionPortlet extends Portlet {
 		};
 		surveyService.listSurveyQuestionByType("option", surveyCallback);
 
-		setContent(contentPane);
+		
 
 	}
 

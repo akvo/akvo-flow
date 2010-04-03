@@ -49,6 +49,9 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 						community.setName(gp.getName());
 						community.setLat(gp.getLat());
 						community.setLon(gp.getLon());
+						// have to do this so we can query by it due to GAE's
+						// JDO limitations
+						community.setCountryCode(ourCountry.getCountryCode());
 						// this save will cascade-save the country
 						commDao.save(community);
 					}

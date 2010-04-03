@@ -20,6 +20,16 @@ public class Community extends BaseDomain {
 	private Double lat;
 	@Persistent
 	private Double lon;
+	@Persistent
+	private String countryCode;
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
 
 	public Double getLat() {
 		return lat;

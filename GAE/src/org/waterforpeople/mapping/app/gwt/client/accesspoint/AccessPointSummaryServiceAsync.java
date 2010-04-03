@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface AccessPointSummaryServiceAsync {
 
-	void listAccessPointStatusSummary(String country, String community,
+	public void listAccessPointStatusSummary(String country, String community,
 			String type, String year,
 			AsyncCallback<AccessPointSummaryDto[]> callback);
 

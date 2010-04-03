@@ -54,7 +54,7 @@ public class CommunityDao extends BaseDAO<Community> {
 	public Country findCountryByCode(String code) {
 		List<Country> cList = listByProperty("countryCode", code, "String",
 				Country.class);
-		if (cList != null && cList.size()>0) {
+		if (cList != null && cList.size() > 0) {
 			return cList.get(0);
 		} else {
 			return null;
@@ -68,8 +68,8 @@ public class CommunityDao extends BaseDAO<Community> {
 	 * @return
 	 */
 	public List<Community> listCommunityByCountry(String countryCode) {
-		return (List<Community>) listByProperty("country.countryCode",
-				countryCode, "String");
+		return (List<Community>) listByProperty("countryCode", countryCode,
+				"String");
 	}
 
 }
