@@ -2,6 +2,7 @@ package com.gallatinsystems.framework.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -214,5 +215,37 @@ public class BaseDAO<T extends BaseDomain> {
 	public <E extends BaseDomain> void delete(E obj) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		pm.deletePersistent(obj);
+	}
+
+	/**
+	 * utility method to form a hash map of query parameters
+	 * 
+	 * @param paramName
+	 *            - name of object property
+	 * @param filter
+	 *            - in/out stringBuilder of query filters
+	 * @param param
+	 *            -in/out stringBuilder of param names
+	 * @param type
+	 *            - data type of field
+	 * @param value
+	 *            - value to bind to param
+	 * @param paramMap
+	 *            - in/out parameter map
+	 */
+	protected void appendNonNullParam(String paramName, StringBuilder filter,
+			StringBuilder param, String type, Object value,
+			Map<String, Object> paramMap) {
+		if (value != null) {
+			if (paramMap.keySet().size() > 0) {
+				filter.append(" &&");
+				param.append(", ");
+			}
+
+			filter.append(paramName).append(" == ").append(paramName).append(
+					"Param");
+			param.append(type).append(" ").append(paramName).append("Param");
+			paramMap.put(paramName + "Param", value);
+		}
 	}
 }

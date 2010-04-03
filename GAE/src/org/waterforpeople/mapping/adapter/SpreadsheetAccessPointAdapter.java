@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.adapter;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +15,7 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
+import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
 import com.gallatinsystems.common.data.spreadsheet.GoogleSpreadsheetAdapter;
@@ -20,50 +23,56 @@ import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetAccessPointAdapter {
 	private static final Logger log = Logger
 			.getLogger(SpreadsheetAccessPointAdapter.class.getName());
-	
+
 	private PrivateKey privateKey = null;
-	private String sessionToken =null;
-	
-	public SpreadsheetAccessPointAdapter(String sessionToken, PrivateKey privateKey){
+	private String sessionToken = null;
+
+	public SpreadsheetAccessPointAdapter(String sessionToken,
+			PrivateKey privateKey) {
 		this.privateKey = privateKey;
 		this.sessionToken = sessionToken;
 	}
 
-	public void processSpreadsheetOfAccessPoints(String spreadsheetName) throws IOException, ServiceException {
-		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(sessionToken, privateKey);
-		BaseDAO<AccessPoint> accessPointBaseDAO = new BaseDAO<AccessPoint>(
-				AccessPoint.class);
+	public void processSpreadsheetOfAccessPoints(String spreadsheetName)
+			throws IOException, ServiceException {
+		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
+				sessionToken, privateKey);
+		AccessPointHelper apHelper = new AccessPointHelper();
 		try {
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
 			for (RowContainer row : sc.getRowContainerList()) {
 				AccessPoint ap = processRow(row, spreadsheetName);
-				accessPointBaseDAO.save(ap);
+				ap = apHelper.saveAccessPoint(ap);										
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw(e);
+			throw (e);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw(e);
+			throw (e);
 		}
 	}
 
 	public ArrayList<String> listColumns(String spreadsheetName)
 			throws IOException, ServiceException {
-		GoogleSpreadsheetAdapter gas = new GoogleSpreadsheetAdapter(sessionToken, privateKey);
+		GoogleSpreadsheetAdapter gas = new GoogleSpreadsheetAdapter(
+				sessionToken, privateKey);
 		return gas.listColumns(spreadsheetName);
 	}
 
 	public ArrayList<String> listSpreadsheets(String feedURL)
 			throws IOException, ServiceException, GeneralSecurityException {
-		return new GoogleSpreadsheetAdapter(sessionToken, privateKey).listSpreasheets(feedURL);
+		return new GoogleSpreadsheetAdapter(sessionToken, privateKey)
+				.listSpreasheets(feedURL);
 	}
 
 	private AccessPoint processRow(RowContainer row, String spreadsheetName) {
@@ -220,14 +229,16 @@ public class SpreadsheetAccessPointAdapter {
 	}
 
 	private HashMap getColsToAttributeMap(String spreadsheetName) {
-		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper(sessionToken, privateKey);
+		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper(
+				sessionToken, privateKey);
 		MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 		mapDef = samh.getMappingSpreadsheetDefinition(spreadsheetName);
 		HashMap<String, String> colsToAttributesMap = new HashMap<String, String>();
 		for (MappingSpreadsheetColumnToAttribute item : mapDef.getColumnMap()) {
-			String capedString = item.getObjectAttribute().substring(0,1).toUpperCase();
+			String capedString = item.getObjectAttribute().substring(0, 1)
+					.toUpperCase();
 			capedString = capedString + item.getObjectAttribute().substring(1);
-			colsToAttributesMap.put(item.getSpreadsheetColumn(),capedString);
+			colsToAttributesMap.put(item.getSpreadsheetColumn(), capedString);
 		}
 		return colsToAttributesMap;
 	}

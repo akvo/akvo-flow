@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.helper;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
@@ -12,6 +14,8 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class AccessPointHelper {
 
@@ -104,6 +108,21 @@ public class AccessPointHelper {
 			ap.setCollectionDate(new Date());
 		}
 
+		return ap;
+	}
+
+	/**
+	 * saves an access point and fires off a summarization message
+	 * 
+	 * @param ap
+	 * @return
+	 */
+	public AccessPoint saveAccessPoint(AccessPoint ap) {
+		BaseDAO<AccessPoint> apDao = new BaseDAO<AccessPoint>(AccessPoint.class);
+		ap = apDao.save(ap);
+		Queue summQueue = QueueFactory.getQueue("dataSummarization");
+		summQueue.add(url("/app_worker/datasummarization").param("objectKey",
+				ap.toString()).param("objectType", "AccessPoint"));
 		return ap;
 	}
 
