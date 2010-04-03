@@ -30,7 +30,7 @@ import com.google.gwt.visualization.client.visualizations.PieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart.Options;
 
 /**
- * Displays summary information for access points either globablly, for a
+ * Displays summary information for access points either globally, for a
  * country, or a community
  * 
  * @author Christopher Fagiani
@@ -87,10 +87,12 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		};
 		communityService.listCountries(countryCallback);
 
-		
-
 	}
 
+	/**
+	 * checks if the country was changed and, if so, loads that country's
+	 * communities. This will also trigger a reload of the pie chart
+	 */
 	@Override
 	public void onChange(ChangeEvent event) {
 		if (event.getSource() == countryListbox) {
@@ -132,13 +134,23 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		} else {
 			updateChart();
 		}
-
 	}
 
+	/**
+	 * triggers reload of chart
+	 */
 	public void onValueChange(ValueChangeEvent<Boolean> event) {
 		updateChart();
 	}
 
+	/**
+	 * helper method to get value out of a listbox. If "All" is selected, it's
+	 * translated to null since the service expects null to be passed in rather
+	 * than "all" if you don't want to filter by that param
+	 * 
+	 * @param lb
+	 * @return
+	 */
 	private String getSelectedValue(ListBox lb) {
 		if (lb.getSelectedIndex() >= 0) {
 			String val = lb.getValue(lb.getSelectedIndex());
@@ -150,9 +162,12 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		} else {
 			return null;
 		}
-
 	}
 
+	/**
+	 * gets the currently selected values from the list box and then updates the
+	 * chart
+	 */
 	private void updateChart() {
 		buildChart(getSelectedValue(countryListbox),
 				getSelectedValue(communityListbox),
@@ -161,6 +176,12 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 						: SANITATION_TYPE.toString());
 	}
 
+	/**
+	 * constructs and installs the menu for this porlet. Also wires in the event
+	 * handlers so we can update on menu value change
+	 * 
+	 * @return
+	 */
 	private Widget buildHeader() {
 		Grid grid = new Grid(2, 2);
 
@@ -213,6 +234,15 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		return options;
 	}
 
+	/**
+	 * constructs a data table using the results of the service call and
+	 * installs a new Pie Chart with those values
+	 * 
+	 * @param countryCode
+	 * @param communityCode
+	 * @param year
+	 * @param type
+	 */
 	private void buildChart(String countryCode, String communityCode,
 			String year, String type) {
 		// fetch list of responses for a question
@@ -252,7 +282,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 			}
 		};
 		apService.listAccessPointStatusSummary(countryCode, communityCode,
-				year, type, apCallback);
+				year, type,null, apCallback);
 	}
 
 	@Override

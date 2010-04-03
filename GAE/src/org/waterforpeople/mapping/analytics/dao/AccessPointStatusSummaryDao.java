@@ -82,13 +82,13 @@ public class AccessPointStatusSummaryDao extends
 	 */
 	@SuppressWarnings("unchecked")
 	public List<AccessPointStatusSummary> listByLocationAndYear(String country,
-			String community, String year, String type) {
+			String community, String year, String type, String status) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
-		
+
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
 
 		appendNonNullParam("country", filterString, paramString, "String",
 				country, paramMap);
@@ -98,6 +98,8 @@ public class AccessPointStatusSummaryDao extends
 				paramMap);
 		appendNonNullParam("type", filterString, paramString, "String", type,
 				paramMap);
+		appendNonNullParam("pointStatus", filterString, paramString, "String",
+				type, paramMap);
 		return (List<AccessPointStatusSummary>) query.executeWithMap(paramMap);
 	}
 

@@ -14,15 +14,15 @@ import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
- * This service is responsible for returning access point summarization objects. The
- * fields within the summary DTO may be partially populated based on the type of
- * summarization being returned.
- *
+ * This service is responsible for returning access point summarization objects.
+ * The fields within the summary DTO may be partially populated based on the
+ * type of summarization being returned.
+ * 
  * @author Christopher Fagiani
- *
+ * 
  */
-public class AccessPointSummaryServiceImpl extends RemoteServiceServlet implements
-		AccessPointSummaryService {
+public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
+		implements AccessPointSummaryService {
 
 	private static final long serialVersionUID = -5722103696712574220L;
 	@SuppressWarnings("unused")
@@ -33,35 +33,48 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet implemen
 	 * returns an array of AccessPointSummaryDto objects that match the criteria
 	 * passed in. The summary objects will have the status and count populated.
 	 */
-	public AccessPointSummaryDto[] listAccessPointStatusSummary(String country, String community, String type, String year) {
+	public AccessPointSummaryDto[] listAccessPointStatusSummary(String country,
+			String community, String type, String year, String status) {
 		AccessPointStatusSummaryDao summaryDao = new AccessPointStatusSummaryDao();
 		List<AccessPointStatusSummary> summaries = summaryDao
-				.listByLocationAndYear(country,community,type,year);
+				.listByLocationAndYear(country, community, type, year, status);
 		AccessPointSummaryDto[] dtoList = null;
+
 		if (summaries != null) {
-			//first, collapse based on status
-			Map<String,Long> statusCount = new HashMap<String,Long>();
-
-
-			for (int i = 0; i < summaries.size(); i++) {
-				Long curVal = statusCount.get(summaries.get(i).getStatus());
-				if(curVal == null){
-					curVal = summaries.get(i).getCount();
-				}else{
-					curVal = curVal + summaries.get(i).getCount();
+			Map<String, Long> countMap = new HashMap<String, Long>();
+			if (status == null) {
+				// if we're not selecting by status, collapse based on it
+				for (int i = 0; i < summaries.size(); i++) {
+					Long curVal = countMap.get(summaries.get(i).getStatus());
+					if (curVal == null) {
+						curVal = summaries.get(i).getCount();
+					} else {
+						curVal = curVal + summaries.get(i).getCount();
+					}
+					countMap.put(summaries.get(i).getStatus(), curVal);
 				}
-				statusCount.put(summaries.get(i).getStatus(),curVal);
+			} else {
+				// if we're selecting by status, collapse based on Country
+				for (int i = 0; i < summaries.size(); i++) {
+					Long curVal = countMap.get(summaries.get(i).getStatus());
+					if (curVal == null) {
+						curVal = summaries.get(i).getCount();
+					} else {
+						curVal = curVal + summaries.get(i).getCount();
+					}
+					countMap.put(summaries.get(i).getCountry(), curVal);
+				}
 			}
-			dtoList = new AccessPointSummaryDto[statusCount.keySet().size()];
+			dtoList = new AccessPointSummaryDto[countMap.keySet().size()];
 			int i = 0;
-			for(String key: statusCount.keySet()){
+			for (String key : countMap.keySet()) {
 				AccessPointSummaryDto dto = new AccessPointSummaryDto();
 				dto.setCountryCode(country);
 				dto.setCommunityCode(community);
 				dto.setType(type);
 				dto.setYear(year);
 				dto.setStatus(key);
-				dto.setCount(statusCount.get(key));
+				dto.setCount(countMap.get(key));
 				dtoList[i++] = dto;
 			}
 		}

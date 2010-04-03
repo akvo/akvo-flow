@@ -13,5 +13,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface AccessPointSummaryService extends RemoteService {
 
 	public AccessPointSummaryDto[] listAccessPointStatusSummary(String country,
-			String community, String type, String year);
+			String community, String type, String year, String status);
 }

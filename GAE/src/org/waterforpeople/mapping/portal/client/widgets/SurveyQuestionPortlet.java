@@ -120,10 +120,7 @@ public class SurveyQuestionPortlet extends Portlet {
 						dataTable.setValue(i, 1, result[i].getCount());
 					}
 					Runnable onLoadCallback = new Runnable() {
-						public void run() {
-							// TODO: see if we can just do table.removeColumns
-							// and add new ones so we don't have to reload a pie
-							// chart
+						public void run() {							
 							if (pieChart != null) {
 								// remove the old chart
 								pieChart.removeFromParent();
@@ -135,7 +132,6 @@ public class SurveyQuestionPortlet extends Portlet {
 					};
 					VisualizationUtils.loadVisualizationApi(onLoadCallback,
 							PieChart.PACKAGE);
-
 				}
 			}
 		};
