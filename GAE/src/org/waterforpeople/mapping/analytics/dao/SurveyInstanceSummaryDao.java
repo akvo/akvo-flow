@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.analytics.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
@@ -57,6 +59,38 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 		}
 		SurveyInstanceSummaryDao thisDao = new SurveyInstanceSummaryDao();
 		thisDao.save(summary);
+	}
+
+	/**
+	 * Lists all summary objects matching the country and/or community passed
+	 * in. If both are null, all results are returned
+	 * 
+	 * @param countryCode
+	 * @param communityCode
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstanceSummary> listByLocation(String countryCode,
+			String communityCode) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyInstanceSummary.class);
+		List<SurveyInstanceSummary> results = null;
+		if (countryCode != null || communityCode != null) {
+			StringBuilder filter = new StringBuilder();
+			StringBuilder param = new StringBuilder();
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+			this.appendNonNullParam("countryCode", filter, param, "String",
+					countryCode, paramMap);
+			this.appendNonNullParam("communityCode", filter, param, "String",
+					communityCode, paramMap);
+			query.setFilter(filter.toString());
+			query.declareParameters(param.toString());
+			results = (List<SurveyInstanceSummary>) query
+					.executeWithMap(paramMap);
+		} else {
+			results = list();
+		}
+		return results;
 	}
 
 }

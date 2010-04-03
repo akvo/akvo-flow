@@ -1,9 +1,14 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
@@ -50,4 +55,44 @@ public class SurveySummaryServiceImpl extends RemoteServiceServlet implements
 		return dtoList;
 	}
 
+	/**
+	 * returns a list of SurveySummaryDto objects rolled up by date to represent
+	 * the number of survey instances collected on a given date,possibly
+	 * filtered by country and/or community.
+	 * 
+	 * @param countryCode
+	 * @param communityCode
+	 * @return
+	 */
+	public SurveySummaryDto[] listInstanceSummaryByLocation(String countryCode,
+			String communityCode) {
+		SurveySummaryDto[] dtoList = null;
+		SurveyInstanceSummaryDao siDao = new SurveyInstanceSummaryDao();
+		List<SurveyInstanceSummary> summaries = siDao.listByLocation(
+				countryCode, communityCode);
+		if (summaries != null) {
+			// now do the rollup.
+			dtoList = new SurveySummaryDto[summaries.size()];
+			Map<Date, Long> countMap = new HashMap<Date, Long>();
+			for (int i = 0; i < summaries.size(); i++) {
+				Long val = countMap.get(summaries.get(i).getCollectionDate());
+				if (val == null) {
+					val = new Long(summaries.get(i).getCount());
+				} else {
+					val += summaries.get(i).getCount();
+				}
+				countMap.put(summaries.get(i).getCollectionDate(), val);
+			}
+			int i = 0;
+			for (Date d : countMap.keySet()) {
+				SurveySummaryDto dto = new SurveySummaryDto();
+				dto.setCommunityCode(communityCode);
+				dto.setCountryCode(countryCode);
+				dto.setDate(d);
+				dto.setCount(countMap.get(d));
+				dtoList[i++] = dto;
+			}
+		}
+		return dtoList;
+	}
 }

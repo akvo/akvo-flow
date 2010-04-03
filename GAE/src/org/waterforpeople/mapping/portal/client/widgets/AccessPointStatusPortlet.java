@@ -177,8 +177,8 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 	}
 
 	/**
-	 * constructs and installs the menu for this porlet. Also wires in the event
-	 * handlers so we can update on menu value change
+	 * constructs and installs the menu for this portlet. Also wires in the
+	 * event handlers so we can update on menu value change
 	 * 
 	 * @return
 	 */
@@ -254,19 +254,20 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 				// no-op
 			}
 
-			public void onSuccess(AccessPointSummaryDto[] result) {
+			public void onSuccess(final AccessPointSummaryDto[] result) {
 
-				if (result != null) {
-					final DataTable dataTable = DataTable.create();
-					dataTable.addColumn(ColumnType.STRING, "Status");
-					dataTable.addColumn(ColumnType.NUMBER, "Count");
-					for (int i = 0; i < result.length; i++) {
-						dataTable.addRow();
-						dataTable.setValue(i, 0, result[i].getStatus());
-						dataTable.setValue(i, 1, result[i].getCount());
-					}
-					Runnable onLoadCallback = new Runnable() {
-						public void run() {
+				Runnable onLoadCallback = new Runnable() {
+					public void run() {
+
+						if (result != null) {
+							final DataTable dataTable = DataTable.create();
+							dataTable.addColumn(ColumnType.STRING, "Status");
+							dataTable.addColumn(ColumnType.NUMBER, "Count");
+							for (int i = 0; i < result.length; i++) {
+								dataTable.addRow();
+								dataTable.setValue(i, 0, result[i].getStatus());
+								dataTable.setValue(i, 1, result[i].getCount());
+							}
 							if (pieChart != null) {
 								// remove the old chart
 								pieChart.removeFromParent();
@@ -274,15 +275,14 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 							pieChart = new PieChart(dataTable, createOptions());
 							contentPane.add(pieChart);
 						}
-					};
-					VisualizationUtils.loadVisualizationApi(onLoadCallback,
-							PieChart.PACKAGE);
-
-				}
+					}
+				};
+				VisualizationUtils.loadVisualizationApi(onLoadCallback,
+						PieChart.PACKAGE);
 			}
 		};
 		apService.listAccessPointStatusSummary(countryCode, communityCode,
-				year, type,null, apCallback);
+				year, type, null, apCallback);
 	}
 
 	@Override
