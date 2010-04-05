@@ -125,6 +125,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/communityrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/apmanagerrpcservice</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointSummaryServiceImpl</servlet-class>
 	</servlet>
