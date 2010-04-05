@@ -4,6 +4,7 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -18,6 +19,11 @@ import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class AccessPointHelper {
+	
+	public AccessPoint getAccessPoint(Long id){
+		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
+		return apDAO.getByKey(id);
+	}
 
 	public void processSurveyInstance(String surveyId) {
 		// Get the survey and QuestionAnswerStore
@@ -124,6 +130,11 @@ public class AccessPointHelper {
 		summQueue.add(url("/app_worker/datasummarization").param("objectKey",
 				ap.getKey().getId() + "").param("type", "AccessPoint"));
 		return ap;
+	}
+	
+	public List<AccessPoint> listAccessPoint(){
+		BaseDAO<AccessPoint> apDao = new BaseDAO<AccessPoint>(AccessPoint.class);
+		return apDao.list();
 	}
 
 }

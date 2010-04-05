@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
+import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
@@ -143,6 +144,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			
 			addPortlet(new SurveyQuestionPortlet(), 2, true);
 			posMap.put(SummaryPortlet.NAME, "2,0");
+			
+			addPortlet(new AccessPointManagerPortlet(),1,true);
+			posMap.put(AccessPointManagerPortlet.NAME,"2,1");
+			
 
 			// if this is the first time the user logged in, create a config for
 			// him with the default portlet set
