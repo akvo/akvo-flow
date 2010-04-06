@@ -24,7 +24,7 @@ public class AccessPointDto implements Serializable {
 	private String communityCode = null;
 	private String photoURL = null;
 	private String typeTechnology = null;
-	private String constructionDate = null;
+	private Date constructionDate = null;
 	private String numberOfHouseholdsUsingPoint = null;
 	private String costPer = null;
 	private String farthestHouseholdfromPoint = null;
@@ -98,11 +98,11 @@ public class AccessPointDto implements Serializable {
 		this.typeTechnology = typeTechnology;
 	}
 
-	public String getConstructionDate() {
+	public Date getConstructionDate() {
 		return constructionDate;
 	}
 
-	public void setConstructionDate(String constructionDate) {
+	public void setConstructionDate(Date constructionDate) {
 		this.constructionDate = constructionDate;
 	}
 

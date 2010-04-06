@@ -94,7 +94,7 @@ public class AccessPointHelper {
 				// photo caption
 				ap.setPointPhotoCaption(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm4")) {
-				ap.setConstructionDate(qas.getValue());
+				ap.setConstructionDate(new Date(qas.getValue()));
 			} else if (qas.getQuestionID().equals("qm5")) {
 				ap.setTypeTechnology(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm6")) {

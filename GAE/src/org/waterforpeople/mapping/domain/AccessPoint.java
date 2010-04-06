@@ -28,7 +28,7 @@ public class AccessPoint extends BaseDomain{
 	@Persistent
 	private String typeTechnology = null;
 	@Persistent
-	private String constructionDate = null;
+	private Date constructionDate = null;
 	@Persistent
 	private String numberOfHouseholdsUsingPoint = null;
 	@Persistent
@@ -113,11 +113,11 @@ public class AccessPoint extends BaseDomain{
 		this.typeTechnology = typeTechnology;
 	}
 
-	public String getConstructionDate() {
+	public Date getConstructionDate() {
 		return constructionDate;
 	}
 
-	public void setConstructionDate(String constructionDate) {
+	public void setConstructionDate(Date constructionDate) {
 		this.constructionDate = constructionDate;
 	}
 
