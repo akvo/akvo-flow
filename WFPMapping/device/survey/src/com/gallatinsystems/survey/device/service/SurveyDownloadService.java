@@ -16,10 +16,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpException;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.gallatinsystems.survey.device.R;
@@ -47,12 +45,14 @@ public class SurveyDownloadService extends Service {
 	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
 
-	//private static final String SURVEY_LIST_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
-	//private static final String SURVEY_SERVICE_URL = "http://watermappingmonitoring.appspot.com/surveymanager?surveyId=";
-	
+	// private static final String SURVEY_LIST_SERVICE_URL =
+	// "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
+	// private static final String SURVEY_SERVICE_URL =
+	// "http://watermappingmonitoring.appspot.com/surveymanager?surveyId=";
+
 	private static final String SURVEY_LIST_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?surveyId=";
-	
+
 	private SurveyDbAdapter databaseAdaptor;
 
 	private static final String SD_LOC = "scdard";
@@ -176,7 +176,7 @@ public class SurveyDownloadService extends Service {
 
 			survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
 			survey.setType(DEFAULT_TYPE);
-			survey.setLocation(SD_LOC);			
+			survey.setLocation(SD_LOC);
 			File file = new File(ConstantUtil.DATA_DIR, survey.getFileName());
 			PrintStream writer = new PrintStream(new FileOutputStream(file));
 			writer.print(response);
@@ -277,7 +277,7 @@ public class SurveyDownloadService extends Service {
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
 			response = HttpUtil.httpGet(SURVEY_LIST_SERVICE_URL
-					+ getPhoneNumber());
+					+ StatusUtil.getPhoneNumber(this));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {
@@ -305,16 +305,6 @@ public class SurveyDownloadService extends Service {
 			Log.e(TAG, "Could not send processing call", e);
 		}
 		return surveys;
-	}
-
-	/**
-	 * gets the device's primary phone number
-	 * 
-	 * @return
-	 */
-	private String getPhoneNumber() {
-		TelephonyManager teleMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		return teleMgr.getLine1Number();
 	}
 
 	/**

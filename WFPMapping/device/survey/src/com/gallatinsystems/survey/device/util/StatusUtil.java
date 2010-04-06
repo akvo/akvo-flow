@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.device.util;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
 
 /**
  * utilities for checking system state
@@ -45,5 +46,16 @@ public class StatusUtil {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * gets the device's primary phone number
+	 * 
+	 * @return
+	 */
+	public static String getPhoneNumber(Context context) {
+		TelephonyManager teleMgr = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		return teleMgr.getLine1Number();
 	}
 }

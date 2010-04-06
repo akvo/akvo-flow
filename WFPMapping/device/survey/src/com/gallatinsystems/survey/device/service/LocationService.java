@@ -12,6 +12,8 @@ import android.os.IBinder;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.StatusUtil;
 
 /**
  * service for sending location beacons on a set interval to the server. This
@@ -27,6 +29,10 @@ public class LocationService extends Service {
 	private static final long INITIAL_DELAY = 60000;
 	private static final long INTERVAL = 300000;
 	private static boolean sendBeacon = true;
+	private static final String BEACON_SERVICE_URL = "http://watermapmonitordev.appspot.com/locationBeacon?action=beacon&phoneNumber=";
+	private static final String LAT = "&lat=";
+	private static final String LON = "&lon=";
+	private static final String ACC = "&acc=";
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -39,7 +45,8 @@ public class LocationService extends Service {
 	 */
 	public int onStartCommand(final Intent intent, int flags, int startid) {
 		// we only need to check this on command start since we'll explicitly
-		// call endService if they change the preference to false after we're already
+		// call endService if they change the preference to false after we're
+		// already
 		// started
 		SurveyDbAdapter database = new SurveyDbAdapter(this);
 		database.open();
@@ -73,13 +80,23 @@ public class LocationService extends Service {
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
-
 	}
 
+	/**
+	 * sends the location beacon to the server
+	 * 
+	 * @param loc
+	 */
 	private void sendLocation(Location loc) {
-		// TODO: get server API call for sending location beacons
-		if(loc != null){
-			
+		if (loc != null) {
+			try {
+				HttpUtil.httpGet(BEACON_SERVICE_URL
+						+ StatusUtil.getPhoneNumber(this) + LAT
+						+ loc.getLatitude() + LON + loc.getLongitude() + ACC
+						+ loc.getAccuracy());
+			} catch (Exception e) {
+				// TODO: log error
+			}
 		}
 	}
 
