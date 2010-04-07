@@ -19,7 +19,8 @@ public class PortletFactory {
 			{ AccessPointStatusPortlet.NAME,
 					AccessPointStatusPortlet.DESCRIPTION },
 			{ AccessPointManagerPortlet.NAME,
-					AccessPointManagerPortlet.DESCRIPTION } };
+					AccessPointManagerPortlet.DESCRIPTION },
+			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name) {
 		if (name == null) {
@@ -38,8 +39,9 @@ public class PortletFactory {
 			return new AccessPointStatusPortlet();
 		} else if (name.equals(AccessPointManagerPortlet.NAME)) {
 			return new AccessPointManagerPortlet();
-		}
-		else {
+		} else if (name.equals(DeviceLocationPortlet.NAME)) {
+			return new DeviceLocationPortlet();
+		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
 	}

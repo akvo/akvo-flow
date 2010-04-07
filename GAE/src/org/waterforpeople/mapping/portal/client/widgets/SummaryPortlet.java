@@ -103,7 +103,6 @@ public class SummaryPortlet extends Portlet {
 	}
 
 	private Tree constructTree() {
-		// TODO: get items from DB
 		Tree t = new Tree();
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
@@ -116,17 +115,14 @@ public class SummaryPortlet extends Portlet {
 		panel.add(new Image(USER_IMAGE));
 		panel.add(new Label("Users"));
 		userRoot = t.addItem(panel);
-		// userRoot.addItem("Chris");
-		// userRoot.addItem("Dru");
+		
 
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(DEVICE_IMAGE));
 		panel.add(new Label("Devices"));
 		deviceRoot = t.addItem(panel);
-		deviceRoot.addItem("9175667663");
-		deviceRoot.addItem("3033359240");
-
+		
 		return t;
 
 	}

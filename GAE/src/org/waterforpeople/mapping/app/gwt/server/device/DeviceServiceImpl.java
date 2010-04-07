@@ -39,6 +39,10 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 
 				dto.setPhoneNumber(d.getPhoneNumber());
 				dto.setEsn(d.getEsn());
+				dto.setLastKnownAccuracy(d.getLastKnownAccuracy());
+				dto.setLastKnownLat(d.getLastKnownLat());
+				dto.setLastKnownLon(d.getLastKnownLon());
+				dto.setLastPositionDate(d.getLastLocationBeaconTime());
 				deviceDtos[i] = dto;
 			}
 		}

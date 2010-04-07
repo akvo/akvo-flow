@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;

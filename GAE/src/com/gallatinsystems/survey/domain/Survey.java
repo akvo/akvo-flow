@@ -8,9 +8,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class Survey extends BaseDomain{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -8572907583563124756L;
 	private String name;
 	private Integer version;
