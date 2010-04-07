@@ -96,7 +96,8 @@ public class AccessPointHelper {
 			} else if (qas.getQuestionID().equals("qm4")) {
 				ap.setConstructionDate(new Date(qas.getValue()));
 			} else if (qas.getQuestionID().equals("qm5")) {
-				ap.setTypeTechnology(qas.getValue());
+				//ToDo: implement Technology type lookup
+				//ap.setTypeTechnology(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm6")) {
 				ap.setNumberOfHouseholdsUsingPoint(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm7")) {

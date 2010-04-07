@@ -23,7 +23,8 @@ public class AccessPointDto implements Serializable {
 	private Double altitude = 0.0;
 	private String communityCode = null;
 	private String photoURL = null;
-	private String typeTechnology = null;
+	private TechnologyTypeDto typeTechnology = null;
+	private String technologyTypeOther = null;
 	private Date constructionDate = null;
 	private String numberOfHouseholdsUsingPoint = null;
 	private String costPer = null;
@@ -90,11 +91,11 @@ public class AccessPointDto implements Serializable {
 		this.photoURL = photoURL;
 	}
 
-	public String getTypeTechnology() {
+	public TechnologyTypeDto getTypeTechnology() {
 		return typeTechnology;
 	}
 
-	public void setTypeTechnology(String typeTechnology) {
+	public void setTypeTechnology(TechnologyTypeDto typeTechnology) {
 		this.typeTechnology = typeTechnology;
 	}
 
@@ -162,6 +163,14 @@ public class AccessPointDto implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public void setTechnologyTypeOther(String technologyTypeOther) {
+		this.technologyTypeOther = technologyTypeOther;
+	}
+
+	public String getTechnologyTypeOther() {
+		return technologyTypeOther;
 	}
 
 	public enum AccessPointType {

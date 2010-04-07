@@ -26,7 +26,9 @@ public class AccessPoint extends BaseDomain{
 	@Persistent
 	private String photoURL = null;
 	@Persistent
-	private String typeTechnology = null;
+	private TechnologyType typeTechnology = null;
+	@Persistent
+	private String TechnologyTypeOther = null;
 	@Persistent
 	private Date constructionDate = null;
 	@Persistent
@@ -105,11 +107,11 @@ public class AccessPoint extends BaseDomain{
 		this.photoURL = photoURL;
 	}
 
-	public String getTypeTechnology() {
+	public TechnologyType getTypeTechnology() {
 		return typeTechnology;
 	}
 
-	public void setTypeTechnology(String typeTechnology) {
+	public void setTypeTechnology(TechnologyType typeTechnology) {
 		this.typeTechnology = typeTechnology;
 	}
 
@@ -210,6 +212,14 @@ public class AccessPoint extends BaseDomain{
 		result.append("}");
 
 		return result.toString();
+	}
+
+	public void setTechnologyTypeOther(String technologyTypeOther) {
+		TechnologyTypeOther = technologyTypeOther;
+	}
+
+	public String getTechnologyTypeOther() {
+		return TechnologyTypeOther;
 	}
 	
 }
