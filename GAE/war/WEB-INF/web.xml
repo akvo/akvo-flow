@@ -13,6 +13,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/webapp/waterforpeoplemappinggoogle</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>LocationBeacon</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.LocationBeaconServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LocationBeacon</servlet-name>
+		<url-pattern>/locationBeacon</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>Processor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.ProcessorServlet</servlet-class>
 	</servlet>

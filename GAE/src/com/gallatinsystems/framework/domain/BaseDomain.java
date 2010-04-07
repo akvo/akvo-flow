@@ -15,9 +15,7 @@ import com.google.appengine.api.datastore.Key;
 @PersistenceCapable
 @Inheritance(strategy = InheritanceStrategy.SUBCLASS_TABLE)
 public abstract class BaseDomain implements Serializable{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 7824199813334027150L;
 
 	@PrimaryKey

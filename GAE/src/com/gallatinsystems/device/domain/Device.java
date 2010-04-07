@@ -9,7 +9,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
 public class Device extends BaseDomain {
-	
+
 	private static final long serialVersionUID = 4894680591207166295L;
 	private DeviceType deviceType;
 	private String phoneNumber;
@@ -19,11 +19,48 @@ public class Device extends BaseDomain {
 	private Date lastUpdate;
 	private String osVersion;
 	private String gallatinSoftwareManifest;
+	private Double lastKnownLat;
+	private Double lastKnownLon;
+	private Double lastKnownAccuracy;	
+	private Date lastLocationBeaconTime; 
+
+	public Double getLastKnownLat() {
+		return lastKnownLat;
+	}
+
+	public void setLastKnownLat(Double lastKnownLat) {
+		this.lastKnownLat = lastKnownLat;
+	}
+
+	public Double getLastKnownLon() {
+		return lastKnownLon;
+	}
+
+	public void setLastKnownLon(Double lastKnownLon) {
+		this.lastKnownLon = lastKnownLon;
+	}
+
+	public Double getLastKnownAccuracy() {
+		return lastKnownAccuracy;
+	}
+
+	public void setLastKnownAccuracy(Double lastKnownAccuracy) {
+		this.lastKnownAccuracy = lastKnownAccuracy;
+	}
+
+	public Date getLastLocationBeaconTime() {
+		return lastLocationBeaconTime;
+	}
+
+	public void setLastLocationBeaconTime(Date lastLocationBeaconTime) {
+		this.lastLocationBeaconTime = lastLocationBeaconTime;
+	}
+
+
 
 	public enum DeviceType {
 		CELL_PHONE_ANDROID, TABLET_ANDROID, TABLET_PHONE_ANDROID
 	}
-
 
 	public DeviceType getDeviceType() {
 		return deviceType;
