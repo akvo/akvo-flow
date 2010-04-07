@@ -20,4 +20,12 @@ public interface AccessPointManagerServiceAsync {
 
 	void deleteAccessPoint(Long id, AsyncCallback<Integer> callback);
 
+	void list(AsyncCallback<List<TechnologyTypeDto>> callback);
+
+	void delete(TechnologyTypeDto item, AsyncCallback<Void> callback);
+
+	void getTechnologyType(Long id, AsyncCallback<TechnologyTypeDto> callback);
+
+	void save(TechnologyTypeDto item, AsyncCallback<TechnologyTypeDto> callback);
+
 }

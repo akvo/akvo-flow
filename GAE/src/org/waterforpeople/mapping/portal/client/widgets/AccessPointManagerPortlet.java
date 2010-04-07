@@ -41,15 +41,7 @@ public class AccessPointManagerPortlet extends Portlet {
 
 	// Search UI Elements
 	private VerticalPanel mainVPanel = new VerticalPanel();
-	private FlexTable searchTabel = new FlexTable();
-
-	private Label latLabel = new Label("Latitude");
-	private TextBox latBoxLower = new TextBox();
-	private TextBox latBoxUpper = new TextBox();
-
-	private Label lonLabel = new Label("Longitude");
-	private TextBox lonBoxLower = new TextBox();
-	private TextBox lonBoxUpper = new TextBox();
+	private FlexTable searchTable = new FlexTable();
 
 	private Label accessPointTypeLabel = new Label("Access Point Type");
 	private ListBox accessPointTypeListBox = new ListBox();
@@ -64,6 +56,15 @@ public class AccessPointManagerPortlet extends Portlet {
 	private AccessPointManagerServiceAsync svc;
 
 	private Label statusLabel = new Label();
+
+	private ListBox communityLB = new ListBox();
+	private ListBox countryLB = new ListBox();
+	private DatePicker collectionDateDPLower = new DatePicker();
+	private DatePicker collectionDateDPUpper = new DatePicker();
+	private DatePicker constructionDateDPLower = new DatePicker();
+	private DatePicker constructionDateDPUpper = new DatePicker();
+
+	private ListBox statusLB = new ListBox();
 
 	public AccessPointManagerPortlet() {
 		super(NAME, false, false, WIDTH, HEIGHT);
@@ -145,25 +146,34 @@ public class AccessPointManagerPortlet extends Portlet {
 
 	private void configureSearchRibbon() {
 		configureDependantControls();
-		searchTabel.setWidget(0, 0, latLabel);
-		searchTabel.setWidget(0, 1, latBoxLower);
-		searchTabel.setWidget(0, 2, new Label("Between"));
-		searchTabel.setWidget(0, 3, latBoxUpper);
-		searchTabel.setWidget(1, 0, lonLabel);
-		searchTabel.setWidget(1, 1, lonBoxLower);
-		searchTabel.setWidget(1, 2, new Label("Between"));
-		searchTabel.setWidget(1, 3, lonBoxUpper);
-		searchTabel.setWidget(2, 0, accessPointTypeLabel);
-		searchTabel.setWidget(2, 1, accessPointTypeListBox);
-		searchTabel.setWidget(2, 2, technologyTypeLabel);
-		searchTabel.setWidget(2, 3, techTypeListBox);
-		searchTabel.setWidget(3, 0, searchButton);
-		searchTabel.setWidget(3, 1, createNewAccessPoint);
-		mainVPanel.add(searchTabel);
+		searchTable.setWidget(0, 0, new Label("Country"));
+		searchTable.setWidget(0, 1, countryLB);
+		searchTable.setWidget(0, 2, new Label("Community"));
+		searchTable.setWidget(0, 3, communityLB);
+		searchTable.setWidget(1, 0, new Label("Collection Date from: "));
+		searchTable.setWidget(1, 1, collectionDateDPLower);
+		searchTable.setWidget(1, 2, new Label("to"));
+		searchTable.setWidget(1, 3, collectionDateDPUpper);
+		searchTable.setWidget(2, 0, accessPointTypeLabel);
+		searchTable.setWidget(2, 1, accessPointTypeListBox);
+		searchTable.setWidget(2, 2, technologyTypeLabel);
+		searchTable.setWidget(2, 3, techTypeListBox);
+		searchTable.setWidget(3, 0, searchButton);
+		searchTable.setWidget(3, 1, createNewAccessPoint);
+		searchTable.setWidget(4, 0, new Label("Construction Date From: "));
+		searchTable.setWidget(4, 1, constructionDateDPLower);
+		searchTable.setWidget(4, 2, constructionDateDPUpper);
+
+		mainVPanel.add(searchTable);
 	}
 
 	private void configureDependantControls() {
 		configureAccessPointListBox();
+		configureTechnologyType();
+	}
+
+	private void configureTechnologyType() {
+
 	}
 
 	private void configureAccessPointListBox() {
@@ -377,7 +387,6 @@ public class AccessPointManagerPortlet extends Portlet {
 		accessPointDetail.setWidget(11, 1, statusTB);
 
 		accessPointDetail.setWidget(12, 0, new Label("Point Type: "));
-		
 
 		ListBox pointType = new ListBox();
 		pointType.addItem("Water Point");
@@ -389,7 +398,7 @@ public class AccessPointManagerPortlet extends Portlet {
 			} else {
 				pointType.setSelectedIndex(1);
 			}
-		}else{
+		} else {
 			pointType.setSelectedIndex(0);
 		}
 		accessPointDetail.setWidget(12, 1, pointType);

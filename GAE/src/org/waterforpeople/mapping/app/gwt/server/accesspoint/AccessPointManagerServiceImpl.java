@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
@@ -128,5 +129,29 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		AccessPointHelper aph = new AccessPointHelper();
 		return copyCanonicalToDto(aph
 				.saveAccessPoint(copyDtoToCanonical(accessPointDto)));
+	}
+
+	@Override
+	public void delete(TechnologyTypeDto item) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public TechnologyTypeDto getTechnologyType(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<TechnologyTypeDto> list() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TechnologyTypeDto save(TechnologyTypeDto item) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

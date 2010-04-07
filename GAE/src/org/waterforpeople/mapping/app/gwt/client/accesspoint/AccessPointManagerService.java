@@ -10,4 +10,8 @@ public interface AccessPointManagerService extends RemoteService {
 	AccessPointDto getAccessPoint(Long id);
 	AccessPointDto saveAccessPoint(AccessPointDto accessPointDto);
 	Integer deleteAccessPoint(Long id);
+	List<TechnologyTypeDto> list();
+	TechnologyTypeDto getTechnologyType(Long id);
+	void delete(TechnologyTypeDto item);
+	TechnologyTypeDto save(TechnologyTypeDto item);
 }
