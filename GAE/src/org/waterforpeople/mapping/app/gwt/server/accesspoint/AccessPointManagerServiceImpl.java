@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCr
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
@@ -67,10 +68,23 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				.getNumberOfHouseholdsUsingPoint());
 		apDto.setPhotoURL(apCanonical.getPhotoURL());
 		apDto.setPointPhotoCaption(apCanonical.getPointPhotoCaption());
-		apDto.setPointStatus(apCanonical.getPointStatus());
-		if(apCanonical.getPointType()==AccessPointType.WATER_POINT){
+		if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_HIGH) {
+			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_HIGH);
+		} else if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_OK) {
+			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_OK);
+		} else if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS) {
+			apDto
+					.setPointStatus(AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS);
+		} else if (apCanonical.getPointStatus() == AccessPoint.Status.NO_IMPROVED_SYSTEM) {
+			apDto.setPointStatus(AccessPointDto.Status.NO_IMPROVED_SYSTEM);
+		} else {
+			apDto.setPointStatus(AccessPointDto.Status.OTHER);
+			apDto.setOtherStatus(apCanonical.getOtherStatus());
+		}
+
+		if (apCanonical.getPointType() == AccessPointType.WATER_POINT) {
 			apDto.setPointType(AccessPointDto.AccessPointType.WATER_POINT);
-		}else{
+		} else {
 			apDto.setPointType(AccessPointDto.AccessPointType.SANITATION_POINT);
 		}
 
@@ -79,7 +93,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	private AccessPoint copyDtoToCanonical(AccessPointDto apDto) {
 		AccessPoint accessPoint = new AccessPoint();
-		//Check to see if it is an update or insert
+		// Check to see if it is an update or insert
 		if (apDto.getKeyId() != null) {
 			Key key = KeyFactory.createKey(AccessPoint.class.getSimpleName(),
 					apDto.getKeyId());
@@ -101,11 +115,28 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				.getNumberOfHouseholdsUsingPoint());
 		accessPoint.setPhotoURL(apDto.getPhotoURL());
 		accessPoint.setPointPhotoCaption(apDto.getPointPhotoCaption());
-		accessPoint.setPointStatus(apDto.getPointStatus());
-		if(apDto.getPointType() == AccessPointDto.AccessPointType.WATER_POINT){
+		if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_HIGH) {
+			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+		} else if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_OK) {
+			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+		}else if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS) {
+			accessPoint
+					.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+		} else if (apDto.getPointStatus() == AccessPointDto.Status.NO_IMPROVED_SYSTEM) {
+			accessPoint.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
+		} else {
+			accessPoint.setPointStatus(AccessPoint.Status.OTHER);
+			accessPoint.setOtherStatus(apDto.getOtherStatus());
+		}
+
+		if (accessPoint.getPointStatus() == Status.OTHER) {
+			accessPoint.setOtherStatus(apDto.getOtherStatus());
+		}
+		if (apDto.getPointType() == AccessPointDto.AccessPointType.WATER_POINT) {
 			accessPoint.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-		}else{
-			accessPoint.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
+		} else {
+			accessPoint
+					.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
 		}
 		return accessPoint;
 	}
@@ -134,7 +165,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	@Override
 	public void delete(TechnologyTypeDto item) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

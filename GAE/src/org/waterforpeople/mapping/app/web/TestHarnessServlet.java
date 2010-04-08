@@ -19,6 +19,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.SurveyQuestion.QuestionAnswerType;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
@@ -113,7 +114,7 @@ public class TestHarnessServlet extends HttpServlet {
 			AccessPoint ap = new AccessPoint();
 			ap.setCollectionDate(new Date());
 			ap.setCommunityCode("Geneva");
-			ap.setPointStatus("OK");
+			ap.setPointStatus(Status.FUNCTIONING_OK);
 			ap.setLatitude(47.3);
 			ap.setLongitude(9d);
 			ap.setPointType(AccessPointType.WATER_POINT);

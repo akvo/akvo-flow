@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.labs.taskqueue.Queue;
@@ -101,14 +102,14 @@ public class AccessPointHelper {
 			} else if (qas.getQuestionID().equals("qm6")) {
 				ap.setNumberOfHouseholdsUsingPoint(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm7")) {
-				ap.setCostPer(qas.getValue());
+				ap.setCostPer(new Double(qas.getValue()));
 			} else if (qas.getQuestionID().equals("qm8")) {
 				ap.setFarthestHouseholdfromPoint(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm9")) {
 				// Current mgmt structure
 				ap.setCurrentManagementStructurePoint(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm10")) {
-				ap.setPointStatus(qas.getValue());
+				
 			}
 			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 			// for now hardcode the data to now

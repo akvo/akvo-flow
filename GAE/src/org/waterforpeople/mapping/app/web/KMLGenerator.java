@@ -120,13 +120,13 @@ public class KMLGenerator {
 								.getPointPhotoCaption());
 				context.put("description", ap.getDescription());
 				// Need to check this
-				if ("High".equalsIgnoreCase(ap.getPointStatus())) {
+				if (AccessPoint.Status.FUNCTIONING_HIGH== ap.getPointStatus()) {
 					context.put("pinStyle", "pushpingreen");
-				} else if ("Ok".equalsIgnoreCase(ap.getPointStatus())) {
+				} else if (AccessPoint.Status.FUNCTIONING_OK==ap.getPointStatus()) {
 					context.put("pinStyle", "pushpinyellow");
-				} else if ("Poor".equalsIgnoreCase(ap.getPointStatus())) {
+				} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == (ap.getPointStatus())) {
 					context.put("pinStyle", "pushpinred");
-				} else {
+				} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM==ap.getPointStatus()){
 					context.put("pinStyle", "pushpinblk");
 				}
 				for (CaptionDefinition caption : captions) {

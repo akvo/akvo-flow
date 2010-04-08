@@ -1,13 +1,15 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointTechnologyTypeDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
+import org.waterforpeople.mapping.app.gwt.client.common.UnitOfMeasure;
+import org.waterforpeople.mapping.app.gwt.client.common.UnitOfMeasure.UnitOfMeasureSystem;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
@@ -67,7 +69,7 @@ public class AccessPointManagerPortlet extends Portlet {
 	private ListBox statusLB = new ListBox();
 
 	public AccessPointManagerPortlet() {
-		super(NAME, false, false, WIDTH, HEIGHT);
+		super(NAME, true, false, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
@@ -343,8 +345,15 @@ public class AccessPointManagerPortlet extends Portlet {
 		accessPointDetail.setWidget(5, 0, new Label("Cost Per: "));
 		TextBox costPerTB = new TextBox();
 		if (accessPointDto != null)
-			costPerTB.setText(accessPointDto.getCostPer());
+			costPerTB.setText(accessPointDto.getCostPer().toString());
 		accessPointDetail.setWidget(5, 1, costPerTB);
+
+		ListBox unitOfMeasureLB = new ListBox();
+		unitOfMeasureLB.addItem("ml");
+		unitOfMeasureLB.addItem("liters");
+		unitOfMeasureLB.addItem("ounces");
+		unitOfMeasureLB.addItem("gallons");
+		accessPointDetail.setWidget(5, 2, unitOfMeasureLB);
 
 		accessPointDetail.setWidget(6, 0, new Label(
 				"Current Management Structure: "));
@@ -381,10 +390,30 @@ public class AccessPointManagerPortlet extends Portlet {
 		accessPointDetail.setWidget(10, 1, captionTB);
 
 		accessPointDetail.setWidget(11, 0, new Label("Point Status: "));
-		TextBox statusTB = new TextBox();
-		if (accessPointDto != null)
-			statusTB.setText(accessPointDto.getPointStatus());
-		accessPointDetail.setWidget(11, 1, statusTB);
+		ListBox statusLB = new ListBox();
+		statusLB.addItem("Functioning High");
+		statusLB.addItem("Functioning Ok");
+		statusLB.addItem("Functioning but with Problems");
+		statusLB.addItem("No Improved System");
+		statusLB.addItem("Other");
+
+		if (accessPointDto != null) {
+			AccessPointDto.Status pointStatus = accessPointDto.getPointStatus();
+			if (pointStatus.equals(AccessPointDto.Status.FUNCTIONING_HIGH)) {
+				statusLB.setSelectedIndex(0);
+			} else if (pointStatus.equals(AccessPointDto.Status.FUNCTIONING_OK)) {
+				statusLB.setSelectedIndex(1);
+			} else if (pointStatus
+					.equals(AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS)) {
+				statusLB.setSelectedIndex(2);
+			} else if (pointStatus
+					.equals(AccessPointDto.Status.NO_IMPROVED_SYSTEM)) {
+				statusLB.setSelectedIndex(3);
+			} else {
+				statusLB.setSelectedIndex(4);
+			}
+		}
+		accessPointDetail.setWidget(11, 1, statusLB);
 
 		accessPointDetail.setWidget(12, 0, new Label("Point Type: "));
 
@@ -500,8 +529,36 @@ public class AccessPointManagerPortlet extends Portlet {
 		apDto.setConstructionDate(constructionDateTB.getValue());
 
 		TextBox costPerTB = (TextBox) accessPointDetail.getWidget(5, 1);
-		String costPer = costPerTB.getText();
+		Double costPer = new Double(costPerTB.getText());
 		apDto.setCostPer(costPer);
+		ListBox unitOfMeasureLB = (ListBox) accessPointDetail.getWidget(5, 2);
+		if (unitOfMeasureLB.getSelectedIndex() == 0) {
+			// ml
+			UnitOfMeasure uom = new UnitOfMeasure();
+			uom.setSystem(UnitOfMeasureSystem.METRIC);
+			uom.setCode("ml");
+			apDto.setCostPerUnitOfMeasure(uom);
+		} else if (unitOfMeasureLB.getSelectedIndex() == 1) {
+			// liters
+			UnitOfMeasure uom = new UnitOfMeasure();
+			uom.setSystem(UnitOfMeasureSystem.METRIC);
+			uom.setCode("l");
+			apDto.setCostPerUnitOfMeasure(uom);
+
+		} else if (unitOfMeasureLB.getSelectedIndex() == 2) {
+			UnitOfMeasure uom = new UnitOfMeasure();
+			uom.setSystem(UnitOfMeasureSystem.IMPERIAL);
+			uom.setCode("oz");
+			apDto.setCostPerUnitOfMeasure(uom);
+			// /ounces
+		} else {
+			// gallons
+			UnitOfMeasure uom = new UnitOfMeasure();
+			uom.setSystem(UnitOfMeasureSystem.IMPERIAL);
+			uom.setCode("g");
+			apDto.setCostPerUnitOfMeasure(uom);
+
+		}
 
 		TextBox currentMgmtStructureTB = (TextBox) accessPointDetail.getWidget(
 				6, 1);
@@ -524,9 +581,18 @@ public class AccessPointManagerPortlet extends Portlet {
 		String caption = captionTB.getText();
 		apDto.setPointPhotoCaption(caption);
 
-		TextBox statusTB = (TextBox) accessPointDetail.getWidget(11, 1);
-		String status = statusTB.getText();
-		apDto.setPointStatus(status);
+		ListBox statusLB = (ListBox) accessPointDetail.getWidget(11, 1);
+		if (statusLB.getSelectedIndex() == 0) {
+			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_HIGH);
+		} else if (statusLB.getSelectedIndex() == 1) {
+			apDto.setPointStatus(Status.FUNCTIONING_OK);
+		} else if (statusLB.getSelectedIndex() == 2) {
+			apDto.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
+		} else if (statusLB.getSelectedIndex() == 3) {
+			apDto.setPointStatus(Status.NO_IMPROVED_SYSTEM);
+		} else {
+			apDto.setPointStatus(Status.OTHER);
+		}
 
 		ListBox pointTypeLB = (ListBox) accessPointDetail.getWidget(12, 1);
 		Integer selectedIndex = pointTypeLB.getSelectedIndex();

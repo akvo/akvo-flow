@@ -110,8 +110,7 @@ public class MappingSummarizationHelper {
 			// 1 rule we have. once we have more, this will be abstracted out
 			int functionalCount = 0;
 			for (AccessPoint ap : accessPoints) {
-				if ("High".equalsIgnoreCase(ap.getPointStatus())
-						|| "Ok".equalsIgnoreCase(ap.getPointStatus())) {
+				if (AccessPoint.Status.FUNCTIONING_HIGH==ap.getPointStatus()) {
 					functionalCount++;
 				}
 			}

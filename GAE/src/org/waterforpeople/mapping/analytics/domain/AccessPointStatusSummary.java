@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.analytics.domain;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import org.waterforpeople.mapping.domain.AccessPoint;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
@@ -20,7 +22,7 @@ public class AccessPointStatusSummary extends BaseDomain {
 	@Persistent
 	private String year;
 	@Persistent
-	private String status;
+	private AccessPoint.Status status;
 	@Persistent
 	private String country;
 	@Persistent
@@ -44,11 +46,11 @@ public class AccessPointStatusSummary extends BaseDomain {
 		this.year = year;
 	}
 
-	public String getStatus() {
+	public AccessPoint.Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(AccessPoint.Status status) {
 		this.status = status;
 	}
 

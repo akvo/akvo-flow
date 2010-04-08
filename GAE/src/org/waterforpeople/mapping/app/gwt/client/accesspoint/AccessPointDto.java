@@ -3,12 +3,21 @@ package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.jdo.annotations.Persistent;
+
+import org.waterforpeople.mapping.app.gwt.client.common.Currency;
+import org.waterforpeople.mapping.app.gwt.client.common.UnitOfMeasure;
+
+
+
+
 public class AccessPointDto implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -9059171394832476797L;
 	private Long keyId = null;
+
 	public Long getKeyId() {
 		return keyId;
 	}
@@ -17,23 +26,47 @@ public class AccessPointDto implements Serializable {
 		this.keyId = keyId;
 	}
 
+	@Persistent
 	private Date collectionDate = null;
+	@Persistent
 	private Double latitude = 0.0;
+	@Persistent
 	private Double longitude = 0.0;
+	@Persistent
 	private Double altitude = 0.0;
+	@Persistent
 	private String communityCode = null;
+	@Persistent
 	private String photoURL = null;
-	private TechnologyTypeDto typeTechnology = null;
-	private String technologyTypeOther = null;
+	@Persistent
+	private TechnologyType typeTechnology = null;
+	@Persistent
+	private String TechnologyTypeOther = null;
+	@Persistent
 	private Date constructionDate = null;
+	@Persistent
 	private String numberOfHouseholdsUsingPoint = null;
-	private String costPer = null;
+	@Persistent
+	private Double costPer = null;
+	private UnitOfMeasure costPerUnitOfMeasure = null;
+	private Currency costPerCurrency = null;
+	@Persistent
 	private String farthestHouseholdfromPoint = null;
+	@Persistent
 	private String currentManagementStructurePoint = null;
-	private String pointStatus = null;
+	@Persistent
+	private Status pointStatus = null;
+	private String otherStatus = null;
+	@Persistent
 	private String pointPhotoCaption = null;
+	@Persistent
 	private String description = null;
+	@Persistent
 	private AccessPointType pointType;
+
+	public enum Status {
+		FUNCTIONING_HIGH, FUNCTIONING_OK, FUNCTIONING_WITH_PROBLEMS, NO_IMPROVED_SYSTEM, OTHER
+	}
 
 	public AccessPointType getPointType() {
 		return pointType;
@@ -91,11 +124,11 @@ public class AccessPointDto implements Serializable {
 		this.photoURL = photoURL;
 	}
 
-	public TechnologyTypeDto getTypeTechnology() {
+	public TechnologyType getTypeTechnology() {
 		return typeTechnology;
 	}
 
-	public void setTypeTechnology(TechnologyTypeDto typeTechnology) {
+	public void setTypeTechnology(TechnologyType typeTechnology) {
 		this.typeTechnology = typeTechnology;
 	}
 
@@ -116,11 +149,11 @@ public class AccessPointDto implements Serializable {
 		this.numberOfHouseholdsUsingPoint = numberOfHouseholdsUsingPoint;
 	}
 
-	public String getCostPer() {
+	public Double getCostPer() {
 		return costPer;
 	}
 
-	public void setCostPer(String costPer) {
+	public void setCostPer(Double costPer) {
 		this.costPer = costPer;
 	}
 
@@ -141,11 +174,11 @@ public class AccessPointDto implements Serializable {
 		this.currentManagementStructurePoint = currentManagementStructurePoint;
 	}
 
-	public String getPointStatus() {
+	public Status getPointStatus() {
 		return pointStatus;
 	}
 
-	public void setPointStatus(String pointStatus) {
+	public void setPointStatus(Status pointStatus) {
 		this.pointStatus = pointStatus;
 	}
 
@@ -165,16 +198,56 @@ public class AccessPointDto implements Serializable {
 		this.description = description;
 	}
 
-	public void setTechnologyTypeOther(String technologyTypeOther) {
-		this.technologyTypeOther = technologyTypeOther;
-	}
-
-	public String getTechnologyTypeOther() {
-		return technologyTypeOther;
-	}
-
 	public enum AccessPointType {
 		WATER_POINT, SANITATION_POINT
 	}
 
+	public void setTechnologyTypeOther(String technologyTypeOther) {
+		TechnologyTypeOther = technologyTypeOther;
+	}
+
+	public String getTechnologyTypeOther() {
+		return TechnologyTypeOther;
+	}
+
+	public void setCostPerUnitOfMeasure(UnitOfMeasure costPerUnitOfMeasure) {
+		this.costPerUnitOfMeasure = costPerUnitOfMeasure;
+	}
+
+	public UnitOfMeasure getCostPerUnitOfMeasure() {
+		return costPerUnitOfMeasure;
+	}
+
+	public void setCostPerCurrency(Currency costPerCurrency) {
+		this.costPerCurrency = costPerCurrency;
+	}
+
+	public Currency getCostPerCurrency() {
+		return costPerCurrency;
+	}
+
+	public void setOtherStatus(String otherStatus) {
+		this.otherStatus = otherStatus;
+	}
+
+	public String getOtherStatus() {
+		return otherStatus;
+	}
+
+	public Status encodeStatus(String unencodedStatus) {
+		if (unencodedStatus.trim().equals("high")) {
+			return Status.FUNCTIONING_HIGH;
+		} else if (unencodedStatus.trim().toLowerCase().equals(
+				"functioning but with problems")) {
+			return Status.FUNCTIONING_WITH_PROBLEMS;
+		} else if (unencodedStatus.trim().toLowerCase().equals("functional")
+				|| unencodedStatus.trim().toLowerCase().equals("functioning")
+				|| unencodedStatus.trim().equals("ok")) {
+			return Status.FUNCTIONING_OK;
+		} else if (unencodedStatus.trim().toLowerCase().contains("no improved")) {
+			return Status.NO_IMPROVED_SYSTEM;
+		} else {
+			return Status.OTHER;
+		}
+	}
 }

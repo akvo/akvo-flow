@@ -7,11 +7,13 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import com.gallatinsystems.common.domain.weightsmeasures.Currency;
+import com.gallatinsystems.common.domain.weightsmeasures.UnitOfMeasure;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class AccessPoint extends BaseDomain{
-		
+public class AccessPoint extends BaseDomain {
+
 	private static final long serialVersionUID = -7708214468114860788L;
 	@Persistent
 	private Date collectionDate = null;
@@ -34,20 +36,23 @@ public class AccessPoint extends BaseDomain{
 	@Persistent
 	private String numberOfHouseholdsUsingPoint = null;
 	@Persistent
-	private String costPer = null;
+	private Double costPer = null;
+	private UnitOfMeasure costPerUnitOfMeasure = null;
+	private Currency costPerCurrency = null;
 	@Persistent
 	private String farthestHouseholdfromPoint = null;
 	@Persistent
 	private String currentManagementStructurePoint = null;
 	@Persistent
-	private String pointStatus = null;
+	private AccessPoint.Status pointStatus = null;
+	private String otherStatus = null;
 	@Persistent
 	private String pointPhotoCaption = null;
 	@Persistent
 	private String description = null;
 	@Persistent
 	private AccessPointType pointType;
-	
+
 	public AccessPointType getPointType() {
 		return pointType;
 	}
@@ -56,7 +61,7 @@ public class AccessPoint extends BaseDomain{
 		this.pointType = pointType;
 	}
 
-	public AccessPoint(){
+	public AccessPoint() {
 	}
 
 	public Date getCollectionDate() {
@@ -127,15 +132,16 @@ public class AccessPoint extends BaseDomain{
 		return numberOfHouseholdsUsingPoint;
 	}
 
-	public void setNumberOfHouseholdsUsingPoint(String numberOfHouseholdsUsingPoint) {
+	public void setNumberOfHouseholdsUsingPoint(
+			String numberOfHouseholdsUsingPoint) {
 		this.numberOfHouseholdsUsingPoint = numberOfHouseholdsUsingPoint;
 	}
 
-	public String getCostPer() {
+	public Double getCostPer() {
 		return costPer;
 	}
 
-	public void setCostPer(String costPer) {
+	public void setCostPer(Double costPer) {
 		this.costPer = costPer;
 	}
 
@@ -156,11 +162,11 @@ public class AccessPoint extends BaseDomain{
 		this.currentManagementStructurePoint = currentManagementStructurePoint;
 	}
 
-	public String getPointStatus() {
+	public AccessPoint.Status getPointStatus() {
 		return pointStatus;
 	}
 
-	public void setPointStatus(String pointStatus) {
+	public void setPointStatus(AccessPoint.Status pointStatus) {
 		this.pointStatus = pointStatus;
 	}
 
@@ -180,9 +186,14 @@ public class AccessPoint extends BaseDomain{
 		this.description = description;
 	}
 
-	public enum AccessPointType{
-		WATER_POINT,SANITATION_POINT
+	public enum AccessPointType {
+		WATER_POINT, SANITATION_POINT
 	}
+
+	public enum Status {
+		FUNCTIONING_HIGH, FUNCTIONING_OK, FUNCTIONING_WITH_PROBLEMS, NO_IMPROVED_SYSTEM, OTHER
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
@@ -221,5 +232,46 @@ public class AccessPoint extends BaseDomain{
 	public String getTechnologyTypeOther() {
 		return TechnologyTypeOther;
 	}
-	
+
+	public void setCostPerUnitOfMeasure(UnitOfMeasure costPerUnitOfMeasure) {
+		this.costPerUnitOfMeasure = costPerUnitOfMeasure;
+	}
+
+	public UnitOfMeasure getCostPerUnitOfMeasure() {
+		return costPerUnitOfMeasure;
+	}
+
+	public void setCostPerCurrency(Currency costPerCurrency) {
+		this.costPerCurrency = costPerCurrency;
+	}
+
+	public Currency getCostPerCurrency() {
+		return costPerCurrency;
+	}
+
+	public void setOtherStatus(String otherStatus) {
+		this.otherStatus = otherStatus;
+	}
+
+	public String getOtherStatus() {
+		return otherStatus;
+	}
+
+	public Status encodeStatus(String unencodedStatus) {
+		if (unencodedStatus.trim().equals("high")) {
+			return Status.FUNCTIONING_HIGH;
+		} else if (unencodedStatus.trim().toLowerCase().equals(
+				"functioning but with problems")) {
+			return Status.FUNCTIONING_WITH_PROBLEMS;
+		} else if (unencodedStatus.trim().toLowerCase().equals("functional")
+				|| unencodedStatus.trim().toLowerCase().equals("functioning")
+				|| unencodedStatus.trim().equals("ok")) {
+			return Status.FUNCTIONING_OK;
+		} else if (unencodedStatus.trim().toLowerCase().contains("no improved")) {
+			return Status.NO_IMPROVED_SYSTEM;
+		} else {
+			return Status.OTHER;
+		}
+	}
+
 }

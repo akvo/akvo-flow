@@ -51,7 +51,7 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 					} else {
 						curVal = curVal + summaries.get(i).getCount();
 					}
-					countMap.put(summaries.get(i).getStatus(), curVal);
+					countMap.put(summaries.get(i).getStatus().toString(), curVal);
 				}
 			} else {
 				// if we're selecting by status, collapse based on Country
