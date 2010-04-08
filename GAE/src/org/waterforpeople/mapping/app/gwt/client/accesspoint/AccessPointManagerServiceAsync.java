@@ -28,4 +28,6 @@ public interface AccessPointManagerServiceAsync {
 
 	void save(TechnologyTypeDto item, AsyncCallback<TechnologyTypeDto> callback);
 
+	void rotateImage(String fileName, AsyncCallback<Boolean> callback);
+
 }

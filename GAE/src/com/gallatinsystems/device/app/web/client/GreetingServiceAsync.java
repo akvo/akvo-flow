@@ -10,4 +10,5 @@ public interface GreetingServiceAsync {
 			throws IllegalArgumentException;
 
 	void rotateImage(String fileName, AsyncCallback<Boolean> callback);
+	
 }

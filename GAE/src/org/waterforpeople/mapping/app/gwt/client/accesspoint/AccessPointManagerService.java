@@ -14,4 +14,5 @@ public interface AccessPointManagerService extends RemoteService {
 	TechnologyTypeDto getTechnologyType(Long id);
 	void delete(TechnologyTypeDto item);
 	TechnologyTypeDto save(TechnologyTypeDto item);
+	Boolean rotateImage(String fileName);
 }

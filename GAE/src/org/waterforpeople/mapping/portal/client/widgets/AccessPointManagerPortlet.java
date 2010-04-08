@@ -18,6 +18,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -25,6 +26,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -379,8 +381,38 @@ public class AccessPointManagerPortlet extends Portlet {
 
 		accessPointDetail.setWidget(9, 0, new Label("Photo Url: "));
 		TextBox photoURLTB = new TextBox();
-		if (accessPointDto != null)
+		if (accessPointDto != null) {
 			photoURLTB.setText(accessPointDto.getPhotoURL());
+			Image photo = new Image(accessPointDto.getPhotoURL());
+			accessPointDetail.setWidget(9, 2, photo);
+			photo.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					svc.rotateImage(((TextBox) accessPointDetail
+							.getWidget(9, 1)).getText(), new AsyncCallback() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+
+						}
+
+						@Override
+						public void onSuccess(Object result) {
+							Integer random = Random.nextInt();
+
+							((Image) accessPointDetail.getWidget(9, 2))
+									.setUrl(((TextBox) accessPointDetail
+											.getWidget(9, 1)).getText()
+											+ "?random=" + random);
+						}
+					});
+
+				}
+
+			});
+		}
 		accessPointDetail.setWidget(9, 1, photoURLTB);
 
 		accessPointDetail.setWidget(10, 0, new Label("Photo Caption: "));
@@ -522,6 +554,7 @@ public class AccessPointManagerPortlet extends Portlet {
 
 		DatePicker collectionDateTB = (DatePicker) accessPointDetail.getWidget(
 				3, 1);
+		
 		apDto.setCollectionDate(collectionDateTB.getValue());
 
 		DatePicker constructionDateTB = (DatePicker) accessPointDetail

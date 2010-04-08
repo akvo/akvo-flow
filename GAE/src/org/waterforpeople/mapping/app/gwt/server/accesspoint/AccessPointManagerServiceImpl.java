@@ -1,7 +1,13 @@
 package org.waterforpeople.mapping.app.gwt.server.accesspoint;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
@@ -13,7 +19,10 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
+import services.S3Driver;
+
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
+import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -184,5 +193,49 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	public TechnologyTypeDto save(TechnologyTypeDto item) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Boolean rotateImage(String fileName) {
+			String imageURL = fileName.substring(fileName.indexOf("http://waterforpeople.s3.amazonaws.com/"));
+			String bucket = "waterforpeople";
+			String rootURL = "http://waterforpeople.s3.amazonaws.com/";
+			Random rand = new Random();
+			String totalURL =  imageURL + "?random="+ rand.nextInt();
+			InputStream in;
+			ByteArrayOutputStream out = null;
+			URL url;
+			try {
+				url = new URL(totalURL);
+				in = url.openStream();
+				out = new ByteArrayOutputStream();
+				byte[] buffer = new byte[2048];
+				int size;
+
+				while ((size = in.read(buffer, 0, buffer.length)) != -1) {
+					out.write(buffer, 0, size);
+				}
+			} catch (IOException e) {
+				log.log(Level.SEVERE,"Could not rotate image",e);
+			}
+
+			GAEImageAdapter gaeImg = new GAEImageAdapter();
+			byte[] newImage = gaeImg.rotateImage(out.toByteArray(), 90);
+				S3Driver s3 = new S3Driver();
+			s3.uploadFile(bucket, imageURL, newImage);
+			return null;
+
+			/*
+			 * resp.getWriter() .print( "<html><body><img src=\"" + totalURL +
+			 * "\"/></body></html>");
+			 */
+			// serve the first image
+			//resp.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+			//resp.setContentType("image/jpeg");
+			//resp.getOutputStream().write(newImage);
+			 
+
+		
+
 	}
 }
