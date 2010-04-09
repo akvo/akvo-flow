@@ -1,14 +1,13 @@
 package org.waterforpeople.mapping.analytics.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * roll-up for access point status aggregtions
+ * roll-up for access point status aggregations
  * 
  * @author Christopher Fagiani
  * 
@@ -17,18 +16,15 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 public class AccessPointStatusSummary extends BaseDomain {
 
 	private static final long serialVersionUID = 6629466550148260904L;
-	@Persistent
+
 	private Long count;
-	@Persistent
 	private String year;
-	@Persistent
 	private AccessPoint.Status status;
-	@Persistent
 	private String country;
-	@Persistent
 	private String community;
-	@Persistent
 	private String type;
+	private Double costPerUnit;
+	private Long householdsServed;
 
 	public Long getCount() {
 		return count;
@@ -76,6 +72,22 @@ public class AccessPointStatusSummary extends BaseDomain {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Double getCostPerUnit() {
+		return costPerUnit;
+	}
+
+	public void setCostPerUnit(Double costPerUnit) {
+		this.costPerUnit = costPerUnit;
+	}
+
+	public Long getHouseholdsServed() {
+		return householdsServed;
+	}
+
+	public void setHouseholdsServed(Long householdsServed) {
+		this.householdsServed = householdsServed;
 	}
 
 }

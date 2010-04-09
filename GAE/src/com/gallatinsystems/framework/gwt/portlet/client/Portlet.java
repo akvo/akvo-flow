@@ -125,7 +125,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	}
 
 	/**
-	 * reacts to click event for the header buttons. If the close butotn is
+	 * reacts to click event for the header buttons. If the close button is
 	 * clicked, getReadyForRemove is called (allowing sub-classes to do any
 	 * cleanup they want) then the portal container is notified that is should
 	 * remove this portlet. If the configure button is clicked, control is
@@ -136,7 +136,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 			if (getReadyForRemove()) {
 				portletContainer.removePortlet(this);
 			}
-		} else {
+		} else if (event.getSource() == confImg) {
 			handleConfigClick();
 		}
 	}
