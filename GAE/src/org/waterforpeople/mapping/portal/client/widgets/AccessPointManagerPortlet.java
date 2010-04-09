@@ -411,7 +411,16 @@ public class AccessPointManagerPortlet extends Portlet {
 				Window.alert("File uploaded");
 				String fileName = ((FileUpload)((FormPanel)accessPointDetail.getWidget(9, 3)).getWidget()).getFilename();
 				((TextBox)accessPointDetail.getWidget(9, 1)).setText("http://waterforpeople.s3.amazonaws.com/"+fileName);
-				((Image)accessPointDetail.getWidget(9,2)).setUrl("http://waterforpeople.s3.amazonaws.com/"+fileName);
+				
+				Image i =((Image)accessPointDetail.getWidget(9,2));
+				
+				if(i==null){
+					Image photo = new Image();
+					photo.setUrl("http://waterforpeople.s3.amazonaws.com/"+fileName);
+					accessPointDetail.setWidget(9, 2, photo);
+				}else{
+					i.setUrl("http://waterforpeople.s3.amazonaws.com/"+fileName);
+				}
 			}
 			
 		});
