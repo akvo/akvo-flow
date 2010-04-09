@@ -174,7 +174,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DataSummarization</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.analytics.SurveyDataSummarizationHandler</servlet-class>		
+		<servlet-class>org.waterforpeople.mapping.analytics.SurveyDataSummarizationHandler</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DataSummarization</servlet-name>
@@ -182,7 +182,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>AuthSub</servlet-name>
-		<servlet-class>com.gallatinsystems.security.authorization.app.web.AuthenticationSubscriptionServlet</servlet-class>		
+		<servlet-class>com.gallatinsystems.security.authorization.app.web.AuthenticationSubscriptionServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AuthSub</servlet-name>
@@ -192,6 +192,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<filter-name>persistenceFilter</filter-name>
 		<filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>
 	</filter>
+	<servlet>
+		<servlet-name>PhotoUpload</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.PhotoUpload</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PhotoUpload</servlet-name>
+		<url-pattern>/webapp/photoupload</url-pattern>
+	</servlet-mapping>
 	<filter-mapping>
 		<filter-name>persistenceFilter</filter-name>
 		<url-pattern>*</url-pattern>
