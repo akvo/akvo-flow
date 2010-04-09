@@ -409,7 +409,9 @@ public class AccessPointManagerPortlet extends Portlet {
 			@Override
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
 				Window.alert("File uploaded");
-				
+				String fileName = ((FileUpload)((FormPanel)accessPointDetail.getWidget(9, 3)).getWidget()).getFilename();
+				((TextBox)accessPointDetail.getWidget(9, 1)).setText("http://waterforpeople.s3.amazonaws.com/"+fileName);
+				((Image)accessPointDetail.getWidget(9,2)).setUrl("http://waterforpeople.s3.amazonaws.com/"+fileName);
 			}
 			
 		});
