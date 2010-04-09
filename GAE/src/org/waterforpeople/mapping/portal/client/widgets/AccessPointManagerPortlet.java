@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DatePicker;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends Portlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
@@ -63,10 +63,10 @@ public class AccessPointManagerPortlet extends Portlet {
 
 	private ListBox communityLB = new ListBox();
 	private ListBox countryLB = new ListBox();
-	private DatePicker collectionDateDPLower = new DatePicker();
-	private DatePicker collectionDateDPUpper = new DatePicker();
-	private DatePicker constructionDateDPLower = new DatePicker();
-	private DatePicker constructionDateDPUpper = new DatePicker();
+	private DateBox collectionDateDPLower = new DateBox();
+	private DateBox collectionDateDPUpper = new DateBox();
+	private DateBox constructionDateDPLower = new DateBox();
+	private DateBox constructionDateDPUpper = new DateBox();
 
 	private ListBox statusLB = new ListBox();
 
@@ -326,7 +326,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		// .toLocaleString());
 		// accessPointDetail.setWidget(3, 1, collectionDateTB);
 		accessPointDetail.setWidget(3, 0, new Label("Collection Date: "));
-		DatePicker pickerCollectionDate = new DatePicker();
+		DateBox pickerCollectionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerCollectionDate.setValue(accessPointDto.getConstructionDate());
 		accessPointDetail.setWidget(3, 1, pickerCollectionDate);
@@ -338,7 +338,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		// accessPointDetail.setWidget(4, 1, constructionDateTB);
 
 		accessPointDetail.setWidget(4, 0, new Label("Point Construction Date"));
-		DatePicker pickerConstructionDate = new DatePicker();
+		DateBox pickerConstructionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerConstructionDate.setValue(accessPointDto
 					.getConstructionDate());
@@ -552,12 +552,12 @@ public class AccessPointManagerPortlet extends Portlet {
 		Double longitude = new Double(longitudeTB.getText());
 		apDto.setLongitude(longitude);
 
-		DatePicker collectionDateTB = (DatePicker) accessPointDetail.getWidget(
+		DateBox collectionDateTB = (DateBox) accessPointDetail.getWidget(
 				3, 1);
 		
 		apDto.setCollectionDate(collectionDateTB.getValue());
 
-		DatePicker constructionDateTB = (DatePicker) accessPointDetail
+		DateBox constructionDateTB = (DateBox) accessPointDetail
 				.getWidget(4, 1);
 		apDto.setConstructionDate(constructionDateTB.getValue());
 
