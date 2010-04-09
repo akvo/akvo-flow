@@ -23,7 +23,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FormHandler;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -381,6 +386,44 @@ public class AccessPointManagerPortlet extends Portlet {
 
 		accessPointDetail.setWidget(9, 0, new Label("Photo Url: "));
 		TextBox photoURLTB = new TextBox();
+		FormPanel form = new FormPanel();
+		form.setMethod(FormPanel.METHOD_POST);
+		form.setEncoding(FormPanel.ENCODING_MULTIPART);
+		form.setAction("/webapp/photoupload");
+		FileUpload upload = new FileUpload();
+		form.setWidget(upload);
+		accessPointDetail.setWidget(9, 3, form);
+		Button submitUpload = new Button("Upload");
+		//accessPointDetail.setWidget(9,4, upload);
+		upload.setName("uploadFormElement");
+		accessPointDetail.setWidget(9,4, submitUpload);
+		
+		form.addFormHandler(new FormHandler(){
+
+			@Override
+			public void onSubmit(FormSubmitEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSubmitComplete(FormSubmitCompleteEvent event) {
+				Window.alert("File uploaded");
+				
+			}
+			
+		});
+		
+		submitUpload.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				((FormPanel)accessPointDetail.getWidget(9,3)).submit();
+				
+			}
+			
+		});
+		
 		if (accessPointDto != null) {
 			photoURLTB.setText(accessPointDto.getPhotoURL());
 			Image photo = new Image(accessPointDto.getPhotoURL());

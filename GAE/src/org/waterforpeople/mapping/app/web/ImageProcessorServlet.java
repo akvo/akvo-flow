@@ -17,7 +17,7 @@ import services.S3Driver;
 import com.gallatinsystems.image.GAEImageAdapter;
 
 public class ImageProcessorServlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 2781690180514475579L;
 	private static final Logger log = Logger
 			.getLogger(ImageProcessorServlet.class.getName());
@@ -27,12 +27,12 @@ public class ImageProcessorServlet extends HttpServlet {
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
-		rotateImage(req,resp);
+		rotateImage(req, resp);
 	}
 
 	private void rotateImage(HttpServletRequest req, HttpServletResponse resp) {
 		String imageURL = req.getParameter("imageURL");
-		Integer degrees = 0;		
+		Integer degrees = 0;
 		if (req.getParameter("degrees") != null) {
 			degrees = new Integer(req.getParameter("degrees"));
 		} else {
@@ -42,8 +42,9 @@ public class ImageProcessorServlet extends HttpServlet {
 		String rootURL = "http://waterforpeople.s3.amazonaws.com/";
 		imageURL = "images/africa/malawi/" + imageURL;
 		Random rand = new Random();
-		
-		String totalURL = rootURL + imageURL+"?random="+rand.nextInt();;
+
+		String totalURL = rootURL + imageURL + "?random=" + rand.nextInt();
+		;
 		URL url;
 		InputStream in;
 		ByteArrayOutputStream out = null;
@@ -60,38 +61,38 @@ public class ImageProcessorServlet extends HttpServlet {
 
 			log.info("Before size: " + out.size());
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"Could not rotate image",e);
+			log.log(Level.SEVERE, "Could not rotate image", e);
 		}
 
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
 		byte[] newImage = gaeImg.rotateImage(out.toByteArray(), degrees);
 		log.info("After size: " + newImage.length);
-	//	S3Driver s3 = new S3Driver();
-	//	String[] urlParts = imageURL.split("/");
-		//String imageName = urlParts[3];
-		//s3.uploadFile(bucket, imageURL, newImage);
+//		S3Driver s3 = new S3Driver();
+//		String[] urlParts = imageURL.split("/");
+//		String imageName = urlParts[3];
+//		s3.uploadFile(bucket, imageURL, newImage);
 
 		/*
 		 * resp.getWriter() .print( "<html><body><img src=\"" + totalURL +
 		 * "\"/></body></html>");
 		 */
 		// serve the first image
-//		resp.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-//		resp.setContentType("image/jpeg");
-//		try {
-//			resp.getOutputStream().write(newImage);
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
-		 String contextPath = req.getContextPath();
-	       
-		try {
-			resp.sendRedirect(resp.encodeRedirectURL(contextPath + "/MalawiPhotos.html") );
-		} catch (IOException e) {
-			log.log(Level.SEVERE,"Could not rotate image",e);
-		}
-		
+		// resp.setHeader("Cache-Control",
+		// "no-store, no-cache, must-revalidate");
+		// resp.setContentType("image/jpeg");
+		// try {
+		// resp.getOutputStream().write(newImage);
+		// } catch (IOException e1) {
+		// e1.printStackTrace();
+		// }
+		String contextPath = req.getContextPath();
 
+		try {
+			resp.sendRedirect(resp.encodeRedirectURL(contextPath
+					+ "/MalawiPhotos.html"));
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Could not rotate image", e);
+		}
 
 	}
 
@@ -115,7 +116,7 @@ public class ImageProcessorServlet extends HttpServlet {
 			resp.getWriter().println("Before size: " + out.size());
 			log.info("Before size: " + out.size());
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"Could not resize image",e);
+			log.log(Level.SEVERE, "Could not resize image", e);
 		}
 
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
@@ -128,7 +129,7 @@ public class ImageProcessorServlet extends HttpServlet {
 		try {
 			resp.getWriter().println("After size: " + newImage.length);
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"Could not resize image",e);
+			log.log(Level.SEVERE, "Could not resize image", e);
 		}
 		resp.setContentType("text/plain");
 
