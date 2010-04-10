@@ -144,7 +144,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		metricListbox = new ListBox();
 		metricListbox.addItem("Cost", COST_METRIC);
 		metricListbox.addItem("Households Served", COUNT_METRIC);
-		metricListbox.addItem("Status", STATUS_METRIC);
+		// metricListbox.addItem("Status", STATUS_METRIC);
 		metricListbox.addChangeHandler(this);
 
 		VerticalPanel headerPanel = new VerticalPanel();
@@ -156,9 +156,11 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		spTypeButton = new RadioButton("typeGroup", "Sanitation");
 		controlPanel.add(wpTypeButton);
 		controlPanel.add(spTypeButton);
+		wpTypeButton.setValue(true);
+
 		wpTypeButton.addValueChangeHandler(this);
 		spTypeButton.addValueChangeHandler(this);
-		wpTypeButton.setValue(true);
+
 		controlPanel.add(new Label("Metric: "));
 		controlPanel.add(metricListbox);
 
@@ -238,7 +240,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			}
 		};
 		apService.listAccessPointStatusSummaryWithoutRollup(countryCode,
-				communityCode, null, type, null, apCallback);
+				communityCode, type, null, null, apCallback);
 	}
 
 	/**
@@ -251,7 +253,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		}
 
 		if (summaryMap.keySet().size() > 0) {
-			final DataTable dataTable = DataTable.create();
+			DataTable dataTable = DataTable.create();
 			String metric = getSelectedMetric();
 			SortedSet<Long> years = new TreeSet<Long>();
 			// get the union of all years sorted in ascending order
@@ -262,7 +264,11 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			dataTable.addColumn(ColumnType.STRING, "Year");
 			// add a column for each location
 			for (String location : summaryMap.keySet()) {
-				dataTable.addColumn(ColumnType.STRING, location);
+				if (STATUS_METRIC.equals(metric)) {
+					dataTable.addColumn(ColumnType.STRING, location);
+				} else {
+					dataTable.addColumn(ColumnType.NUMBER, location);
+				}
 			}
 
 			// add a row for each year
@@ -271,8 +277,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 				dataTable.addRow();
 				dataTable.setValue(i, 0, year.toString());
 				for (String location : summaryMap.keySet()) {
-					AccessPointSummaryDto curItem = summaryMap.get(year) != null ? summaryMap
-							.get(year).get(location)
+					AccessPointSummaryDto curItem = summaryMap.get(location) != null ? summaryMap
+							.get(location).get(year)
 							: null;
 					if (curItem != null) {
 						if (STATUS_METRIC.equals(metric)) {
@@ -374,7 +380,6 @@ public class AccessPointPerformancePortlet extends Portlet implements
 				countryListbox.addItem(countries[i].getName(), countries[i]
 						.getIsoAlpha2Code());
 			}
-			
 
 			countryListbox.setVisibleItemCount(1);
 			countryPanel.add(countryListbox);

@@ -106,7 +106,13 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 								dataTable.addRow();
 								dataTable.setValue(i, 0, result[i]
 										.getCountryCode());
-								dataTable.setValue(i, 1, result[i].getCount());
+								dataTable
+										.setValue(
+												i,
+												1,
+												result[i].getCount() != null ? result[i]
+														.getCount()
+														: 0);
 							}
 							if (map != null) {
 								// remove the old chart
@@ -121,7 +127,7 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 						IntensityMap.PACKAGE);
 			}
 		};
-		apService.listAccessPointStatusSummary(null, null, null, type, status,
+		apService.listAccessPointStatusSummary(null, null, type, null, status,
 				apCallback);
 	}
 

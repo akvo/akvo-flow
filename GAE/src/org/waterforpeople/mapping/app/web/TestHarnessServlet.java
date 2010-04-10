@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -153,6 +155,47 @@ public class TestHarnessServlet extends HttpServlet {
 			CommunityDao dao = new CommunityDao();
 			dao.save(comm);
 
+		} else if ("createAPSummary".equals(action)) {
+			AccessPointStatusSummary sum = new AccessPointStatusSummary();
+			sum.setCommunity("NY");
+			sum.setCountry("US");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(23.10);
+			sum.setYear("2000");
+			sum.setHouseholdsServed(244l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			AccessPointStatusSummaryDao dao = new AccessPointStatusSummaryDao();
+			dao.save(sum);
+			
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("NY");
+			sum.setCountry("US");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(20.10);
+			sum.setYear("2001");
+			sum.setHouseholdsServed(244l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			dao.save(sum);
+			
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("NY");
+			sum.setCountry("US");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(17.20);
+			sum.setYear("2003");
+			sum.setHouseholdsServed(244l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			dao.save(sum);
+			
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("NY");
+			sum.setCountry("US");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(19.88);
+			sum.setYear("2004");
+			sum.setHouseholdsServed(244l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
+			dao.save(sum);
 		}
 	}
 }

@@ -111,7 +111,7 @@ public class AccessPointStatusSummaryDao extends
 				paramMap);
 		appendNonNullParam("type", filterString, paramString, "String", type,
 				paramMap);
-		appendNonNullParam("pointStatus", filterString, paramString, "String",
+		appendNonNullParam("status", filterString, paramString, "String",
 				type, paramMap);
 		return (List<AccessPointStatusSummary>) query.executeWithMap(paramMap);
 	}

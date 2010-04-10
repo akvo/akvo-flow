@@ -282,7 +282,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 			}
 		};
 		apService.listAccessPointStatusSummary(countryCode, communityCode,
-				year, type, null, apCallback);
+				type, year, null, apCallback);
 	}
 
 	@Override
