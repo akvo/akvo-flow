@@ -387,7 +387,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			countryListbox = new ListBox();
 			for (int i = 0; i < countries.length; i++) {
 				countryListbox.addItem(countries[i].getName(), countries[i]
-						.getCountryCode());
+						.getIsoAlpha2Code());
 			}
 			countryListbox.setVisibleItemCount(1);
 			countryPanel.add(countryListbox);

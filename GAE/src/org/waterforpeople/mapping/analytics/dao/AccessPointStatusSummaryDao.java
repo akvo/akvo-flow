@@ -12,10 +12,10 @@ import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.Country;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.gis.geography.domain.Country;
 
 /**
  * updates access point status summary objects
@@ -61,7 +61,7 @@ public class AccessPointStatusSummaryDao extends
 			summary.setCount(new Long(1));
 			summary.setYear(yearString);
 			summary.setStatus(ap.getPointStatus());
-			summary.setCountry(c.getCountryCode());
+			summary.setCountry(c.getIsoAlpha2Code());
 			summary.setCommunity(ap.getCommunityCode());
 			summary.setType(ap.getPointType().toString());
 			summary.setCostPerUnit(ap.getCostPer());

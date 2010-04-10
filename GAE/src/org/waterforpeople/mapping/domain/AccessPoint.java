@@ -7,9 +7,9 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
-import com.gallatinsystems.common.domain.weightsmeasures.Currency;
-import com.gallatinsystems.common.domain.weightsmeasures.UnitOfMeasure;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.weightsmeasures.domain.Currency;
+import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AccessPoint extends BaseDomain {

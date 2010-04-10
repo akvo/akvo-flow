@@ -5,9 +5,6 @@ import java.util.Date;
 
 import javax.jdo.annotations.Persistent;
 
-import org.waterforpeople.mapping.app.gwt.client.common.Currency;
-import org.waterforpeople.mapping.app.gwt.client.common.UnitOfMeasure;
-
 
 
 
@@ -48,8 +45,8 @@ public class AccessPointDto implements Serializable {
 	private String numberOfHouseholdsUsingPoint = null;
 	@Persistent
 	private Double costPer = null;
-	private UnitOfMeasure costPerUnitOfMeasure = null;
-	private Currency costPerCurrency = null;
+	private UnitOfMeasureDto costPerUnitOfMeasure = null;
+	private CurrencyDto costPerCurrency = null;
 	@Persistent
 	private String farthestHouseholdfromPoint = null;
 	@Persistent
@@ -210,19 +207,19 @@ public class AccessPointDto implements Serializable {
 		return TechnologyTypeOther;
 	}
 
-	public void setCostPerUnitOfMeasure(UnitOfMeasure costPerUnitOfMeasure) {
+	public void setCostPerUnitOfMeasure(UnitOfMeasureDto costPerUnitOfMeasure) {
 		this.costPerUnitOfMeasure = costPerUnitOfMeasure;
 	}
 
-	public UnitOfMeasure getCostPerUnitOfMeasure() {
+	public UnitOfMeasureDto getCostPerUnitOfMeasure() {
 		return costPerUnitOfMeasure;
 	}
 
-	public void setCostPerCurrency(Currency costPerCurrency) {
+	public void setCostPerCurrency(CurrencyDto costPerCurrency) {
 		this.costPerCurrency = costPerCurrency;
 	}
 
-	public Currency getCostPerCurrency() {
+	public CurrencyDto getCostPerCurrency() {
 		return costPerCurrency;
 	}
 

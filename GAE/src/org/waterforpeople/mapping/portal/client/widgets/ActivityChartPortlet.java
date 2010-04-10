@@ -67,7 +67,7 @@ public class ActivityChartPortlet extends Portlet implements ChangeHandler {
 					countryListbox.addItem(ALL_OPT, ALL_OPT);
 					for (int i = 0; i < result.length; i++) {
 						countryListbox.addItem(result[i].getName(), result[i]
-								.getCountryCode());
+								.getIsoAlpha2Code());
 
 					}
 					countryListbox.setVisibleItemCount(1);

@@ -7,8 +7,8 @@ import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.domain.Community;
-import org.waterforpeople.mapping.domain.Country;
 
+import com.gallatinsystems.gis.geography.domain.Country;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -53,7 +53,7 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 			dtoList = new CountryDto[cList.size()];
 			for (int i = 0; i < cList.size(); i++) {
 				CountryDto dto = new CountryDto();
-				dto.setCountryCode(cList.get(i).getCountryCode());
+				dto.setIsoAlpha2Code(cList.get(i).getIsoAlpha2Code());
 				dto.setName(cList.get(i).getName());
 				dtoList[i] = dto;
 			}

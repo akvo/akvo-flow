@@ -3,10 +3,10 @@ package org.waterforpeople.mapping.analytics;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.Country;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.gis.geography.domain.Country;
 
 /**
  * This class will populate country/community lookup tables based on geo

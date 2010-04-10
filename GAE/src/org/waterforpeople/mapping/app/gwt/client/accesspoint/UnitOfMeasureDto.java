@@ -1,9 +1,9 @@
-package org.waterforpeople.mapping.app.gwt.client.common;
+package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
 import java.io.Serializable;
 
 
-public class UnitOfMeasure implements Serializable{
+public class UnitOfMeasureDto implements Serializable{
 	/**
 	 * 
 	 */

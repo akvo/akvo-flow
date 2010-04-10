@@ -1,10 +1,10 @@
-package com.gallatinsystems.common.domain.weightsmeasures;
+package com.gallatinsystems.weightsmeasures.domain;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 
-import com.gallatinsystems.common.domain.geography.Country;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.gis.geography.domain.Country;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Currency extends BaseDomain {
 

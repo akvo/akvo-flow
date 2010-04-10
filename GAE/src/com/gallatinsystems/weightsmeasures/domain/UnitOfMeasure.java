@@ -1,4 +1,4 @@
-package com.gallatinsystems.common.domain.weightsmeasures;
+package com.gallatinsystems.weightsmeasures.domain;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;

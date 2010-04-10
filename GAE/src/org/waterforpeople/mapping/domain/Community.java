@@ -4,6 +4,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.gis.geography.domain.Country;
 
 @PersistenceCapable
 public class Community extends BaseDomain {

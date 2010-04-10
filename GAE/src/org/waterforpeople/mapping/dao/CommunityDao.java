@@ -3,9 +3,9 @@ package org.waterforpeople.mapping.dao;
 import java.util.List;
 
 import org.waterforpeople.mapping.domain.Community;
-import org.waterforpeople.mapping.domain.Country;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.gis.geography.domain.Country;
 
 /**
  * Data access methods for communities and countriesF

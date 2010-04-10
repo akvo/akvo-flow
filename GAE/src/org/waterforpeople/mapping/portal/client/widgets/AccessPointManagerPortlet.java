@@ -6,10 +6,10 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointTechnologyTypeDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
-import org.waterforpeople.mapping.app.gwt.client.common.UnitOfMeasure;
-import org.waterforpeople.mapping.app.gwt.client.common.UnitOfMeasure.UnitOfMeasureSystem;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
@@ -621,26 +621,26 @@ public class AccessPointManagerPortlet extends Portlet {
 		ListBox unitOfMeasureLB = (ListBox) accessPointDetail.getWidget(5, 2);
 		if (unitOfMeasureLB.getSelectedIndex() == 0) {
 			// ml
-			UnitOfMeasure uom = new UnitOfMeasure();
+			UnitOfMeasureDto uom = new UnitOfMeasureDto();
 			uom.setSystem(UnitOfMeasureSystem.METRIC);
 			uom.setCode("ml");
 			apDto.setCostPerUnitOfMeasure(uom);
 		} else if (unitOfMeasureLB.getSelectedIndex() == 1) {
 			// liters
-			UnitOfMeasure uom = new UnitOfMeasure();
+			UnitOfMeasureDto uom = new UnitOfMeasureDto();
 			uom.setSystem(UnitOfMeasureSystem.METRIC);
 			uom.setCode("l");
 			apDto.setCostPerUnitOfMeasure(uom);
 
 		} else if (unitOfMeasureLB.getSelectedIndex() == 2) {
-			UnitOfMeasure uom = new UnitOfMeasure();
+			UnitOfMeasureDto uom = new UnitOfMeasureDto();
 			uom.setSystem(UnitOfMeasureSystem.IMPERIAL);
 			uom.setCode("oz");
 			apDto.setCostPerUnitOfMeasure(uom);
 			// /ounces
 		} else {
 			// gallons
-			UnitOfMeasure uom = new UnitOfMeasure();
+			UnitOfMeasureDto uom = new UnitOfMeasureDto();
 			uom.setSystem(UnitOfMeasureSystem.IMPERIAL);
 			uom.setCode("g");
 			apDto.setCostPerUnitOfMeasure(uom);
