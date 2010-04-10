@@ -8,4 +8,8 @@ public interface AccessPointSummaryServiceAsync {
 			String type, String year, String status,
 			AsyncCallback<AccessPointSummaryDto[]> callback);
 
+	void listAccessPointStatusSummaryWithoutRollup(String country,
+			String community, String type, String year, String status,
+			AsyncCallback<AccessPointSummaryDto[]> callback);
+
 }

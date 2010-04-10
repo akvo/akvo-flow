@@ -12,6 +12,16 @@ public class AccessPointSummaryDto implements Serializable {
 	private String year;
 	private Long count;
 	private String status;
+	private Long householdsServed;
+	private Double cost;
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
 
 	public String getStatus() {
 		return status;
@@ -59,6 +69,14 @@ public class AccessPointSummaryDto implements Serializable {
 
 	public void setCount(Long count) {
 		this.count = count;
+	}
+
+	public Long getHouseholdsServed() {
+		return householdsServed;
+	}
+
+	public void setHouseholdsServed(Long householdsServed) {
+		this.householdsServed = householdsServed;
 	}
 
 }

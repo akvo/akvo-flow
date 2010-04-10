@@ -1,5 +1,10 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
@@ -22,7 +27,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -48,6 +52,10 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
 
+	private static final String STATUS_METRIC = "Status";
+	private static final String COST_METRIC = "Cost";
+	private static final String COUNT_METRIC = "Households Served";
+
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 400;
 	private VerticalPanel contentPane;
@@ -60,8 +68,10 @@ public class AccessPointPerformancePortlet extends Portlet implements
 
 	private ListBox metricListbox;
 	private Button addLocationButton;
+	private Button resetButton;
 
 	private LocationDialog locationDialog;
+	private Map<String, Map<Long, AccessPointSummaryDto>> summaryMap;
 
 	public AccessPointPerformancePortlet() {
 		super(NAME, false, false, WIDTH, HEIGHT);
@@ -69,6 +79,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
+		summaryMap = new HashMap<String, Map<Long, AccessPointSummaryDto>>();
 
 		CommunityServiceAsync communityService = GWT
 				.create(CommunityService.class);
@@ -90,17 +101,24 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	}
 
 	/**
-	 * triggers reload of chart
+	 * triggers reload of chart when the user changes the type of AP from
+	 * sanitation to waterpoint or vice versa
 	 */
 	public void onValueChange(ValueChangeEvent<Boolean> event) {
 		updateChart();
 	}
 
+	/**
+	 * opens the "add location" dialog box or resets the widget
+	 */
 	@Override
 	public void onClick(ClickEvent event) {
 		super.onClick(event);
 		if (event.getSource() == addLocationButton) {
 			locationDialog.show();
+		} else if (event.getSource() == resetButton) {
+			summaryMap.clear();
+			renderChart();
 		}
 	}
 
@@ -139,12 +157,15 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	private Widget buildHeader() {
 
 		metricListbox = new ListBox();
-		metricListbox.addItem("Cost", "Cost");
-		metricListbox.addItem("Households Served", "Households Served");
-		metricListbox.addItem("Status", "Status");
+		metricListbox.addItem("Cost", COST_METRIC);
+		metricListbox.addItem("Households Served", COUNT_METRIC);
+		metricListbox.addItem("Status", STATUS_METRIC);
 		metricListbox.addChangeHandler(this);
 
+		VerticalPanel headerPanel = new VerticalPanel();
+
 		HorizontalPanel controlPanel = new HorizontalPanel();
+
 		controlPanel.add(new Label("Type: "));
 		wpTypeButton = new RadioButton("typeGroup", "Waterpoint");
 		spTypeButton = new RadioButton("typeGroup", "Sanitation");
@@ -153,12 +174,20 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		wpTypeButton.addValueChangeHandler(this);
 		spTypeButton.addValueChangeHandler(this);
 		wpTypeButton.setValue(true);
+		controlPanel.add(new Label("Metric: "));
 		controlPanel.add(metricListbox);
+
+		HorizontalPanel buttonPanel = new HorizontalPanel();
 		addLocationButton = new Button("Add Location");
 		addLocationButton.addClickHandler(this);
-		controlPanel.add(addLocationButton);
+		buttonPanel.add(addLocationButton);
+		resetButton = new Button("Reset");
+		resetButton.addClickHandler(this);
+		buttonPanel.add(resetButton);
 
-		return controlPanel;
+		headerPanel.add(controlPanel);
+		headerPanel.add(buttonPanel);
+		return headerPanel;
 	}
 
 	/**
@@ -183,11 +212,13 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	 * @param valueType
 	 * @param type
 	 */
-	private void buildChart(String countryCode, String communityCode,
-			String valueType, String type) {
+	private void buildChart(final String countryCode,
+			final String communityCode, String valueType, String type) {
+
 		// fetch list of responses for a question
 		AccessPointSummaryServiceAsync apService = GWT
 				.create(AccessPointSummaryService.class);
+
 		// Set up the callback object.
 		AsyncCallback<AccessPointSummaryDto[]> apCallback = new AsyncCallback<AccessPointSummaryDto[]>() {
 			public void onFailure(Throwable caught) {
@@ -200,21 +231,20 @@ public class AccessPointPerformancePortlet extends Portlet implements
 					public void run() {
 
 						if (result != null) {
-							final DataTable dataTable = DataTable.create();
-							dataTable.addColumn(ColumnType.STRING, "Status");
-							dataTable.addColumn(ColumnType.NUMBER, "Count");
+							Map<Long, AccessPointSummaryDto> locationMap = new HashMap<Long, AccessPointSummaryDto>();
 							for (int i = 0; i < result.length; i++) {
-								dataTable.addRow();
-								dataTable.setValue(i, 0, result[i].getStatus());
-								dataTable.setValue(i, 1, result[i].getCount());
+								if (result[i].getYear() != null) {
+									try {
+										locationMap.put(new Long(result[i]
+												.getYear().trim()), result[i]);
+									} catch (NumberFormatException e) {
+										// no-op
+									}
+								}
 							}
-							if (lineChart != null) {
-								// remove the old chart
-								lineChart.removeFromParent();
-							}
-							lineChart = new LineChart(dataTable,
-									createOptions());
-							contentPane.add(lineChart);
+							summaryMap.put(countryCode + " - " + communityCode,
+									locationMap);
+							renderChart();
 						}
 					}
 				};
@@ -222,8 +252,67 @@ public class AccessPointPerformancePortlet extends Portlet implements
 						LineChart.PACKAGE);
 			}
 		};
-		apService.listAccessPointStatusSummary(countryCode, communityCode,
-				null, type, null, apCallback);
+		apService.listAccessPointStatusSummaryWithoutRollup(countryCode,
+				communityCode, null, type, null, apCallback);
+	}
+
+	/**
+	 * Renders the line chart for all loaded locations
+	 */
+	private void renderChart() {
+		if (lineChart != null) {
+			// remove the old chart
+			lineChart.removeFromParent();
+		}
+
+		if (summaryMap.keySet().size() > 0) {
+			final DataTable dataTable = DataTable.create();
+			String metric = getSelectedMetric();
+			SortedSet<Long> years = new TreeSet<Long>();
+			// get the union of all years sorted in ascending order
+			for (Map<Long, AccessPointSummaryDto> apList : summaryMap.values()) {
+				years.addAll(apList.keySet());
+			}
+
+			dataTable.addColumn(ColumnType.STRING, "Year");
+			// add a column for each location
+			for (String location : summaryMap.keySet()) {
+				dataTable.addColumn(ColumnType.STRING, location);
+			}
+
+			// add a row for each year
+			int i = 0;
+			for (Long year : years) {
+				dataTable.addRow();
+				dataTable.setValue(i, 0, year.toString());
+				for (String location : summaryMap.keySet()) {
+					AccessPointSummaryDto curItem = summaryMap.get(year) != null ? summaryMap
+							.get(year).get(location)
+							: null;
+					if (curItem != null) {
+						if (STATUS_METRIC.equals(metric)) {
+							dataTable.setValue(i, 1, curItem.getStatus());
+						} else if (COST_METRIC.equals(metric)) {
+							dataTable.setValue(i, 1, curItem.getCost());
+						} else {
+							dataTable.setValue(i, 1, curItem
+									.getHouseholdsServed());
+						}
+					} else {
+						dataTable.setValue(i, 1, 0);
+					}
+				}
+				i++;
+			}
+
+			if (lineChart != null) {
+				// remove the old chart
+				lineChart.removeFromParent();
+			}
+			lineChart = new LineChart(dataTable, createOptions());
+			contentPane.add(lineChart);
+		}
+
 	}
 
 	@Override
@@ -246,6 +335,9 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		return NAME;
 	}
 
+	/**
+	 * returns the value currently selected in the metric listbox
+	 */
 	public String getSelectedMetric() {
 		if (metricListbox.getSelectedIndex() >= 0) {
 			String val = metricListbox.getValue(metricListbox
@@ -256,6 +348,10 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		}
 	}
 
+	/**
+	 * triggers a chart update whenever the user changes the value of the metric
+	 * listbox
+	 */
 	@Override
 	public void onChange(ChangeEvent event) {
 		updateChart();
@@ -305,9 +401,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			commPanel.add(communityListbox);
 			contentPane.add(commPanel);
 			communityListbox.addChangeHandler(this);
-			// DialogBox is a SimplePanel, so you have to set its widget
-			// property to
-			// whatever you want its contents to be.
+
 			HorizontalPanel buttonPanel = new HorizontalPanel();
 			okButton = new Button("Ok");
 			okButton.setEnabled(false);
@@ -349,7 +443,6 @@ public class AccessPointPerformancePortlet extends Portlet implements
 
 								}
 								communityListbox.setVisibleItemCount(1);
-								updateChart();
 							}
 						}
 					};
@@ -357,11 +450,13 @@ public class AccessPointPerformancePortlet extends Portlet implements
 							.listCommunities(getSelectedValue(countryListbox),
 									communityCallback);
 				}
-			} else {
-				updateChart();
 			}
 		}
 
+		/**
+		 * Closes the dialog box and, if "ok" is the source, tells the portlet
+		 * to update the chart
+		 */
 		@Override
 		public void onClick(ClickEvent event) {
 			if (event.getSource() == cancelButton) {
@@ -372,6 +467,9 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			}
 		}
 
+		/**
+		 * returns the currently selected country from the listbox
+		 */
 		public String getSelectedCountry() {
 			if (countryListbox.getSelectedIndex() >= 0) {
 				String val = countryListbox.getValue(countryListbox
@@ -382,6 +480,9 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			}
 		}
 
+		/**
+		 * returns the currently selected community from the listbox
+		 */
 		public String getSelectedCommunity() {
 			if (communityListbox.getSelectedIndex() >= 0) {
 				String val = communityListbox.getValue(communityListbox

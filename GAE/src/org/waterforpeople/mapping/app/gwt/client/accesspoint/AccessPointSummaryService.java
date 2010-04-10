@@ -14,4 +14,7 @@ public interface AccessPointSummaryService extends RemoteService {
 
 	public AccessPointSummaryDto[] listAccessPointStatusSummary(String country,
 			String community, String type, String year, String status);
+	
+	public AccessPointSummaryDto[] listAccessPointStatusSummaryWithoutRollup(String country,
+	String community, String type, String year, String status);
 }

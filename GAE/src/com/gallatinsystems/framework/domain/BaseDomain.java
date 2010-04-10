@@ -21,7 +21,7 @@ public abstract class BaseDomain implements Serializable{
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	protected Key key;
-	
+
 	protected Date createdDateTime;
 	protected Date lastUpdateDateTime;
 	protected Long lastUpdateUserId;

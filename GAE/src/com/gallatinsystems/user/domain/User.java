@@ -16,14 +16,14 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  */
 @PersistenceCapable
 public class User extends BaseDomain {
-	
+	 
 	private static final long serialVersionUID = -1416095159769575254L;
-	@Persistent
+	
 	private String userName;
-	@Persistent
+	
 	private String emailAddress;
 
-	@Persistent
+	
 	private List<UserConfig> config;
 
 	public  List<UserConfig> getConfig() {
