@@ -3,15 +3,8 @@ package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.jdo.annotations.Persistent;
-
-
-
-
 public class AccessPointDto implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -9059171394832476797L;
 	private Long keyId = null;
 
@@ -23,42 +16,45 @@ public class AccessPointDto implements Serializable {
 		this.keyId = keyId;
 	}
 
-	@Persistent
+	private String countryCode;
+
+	private Long year;
+
 	private Date collectionDate = null;
-	@Persistent
+
 	private Double latitude = 0.0;
-	@Persistent
+
 	private Double longitude = 0.0;
-	@Persistent
+
 	private Double altitude = 0.0;
-	@Persistent
+
 	private String communityCode = null;
-	@Persistent
+
 	private String photoURL = null;
-	@Persistent
+
 	private TechnologyType typeTechnology = null;
-	@Persistent
+
 	private String TechnologyTypeOther = null;
-	@Persistent
+
 	private Date constructionDate = null;
-	@Persistent
+
 	private String numberOfHouseholdsUsingPoint = null;
-	@Persistent
+
 	private Double costPer = null;
 	private UnitOfMeasureDto costPerUnitOfMeasure = null;
 	private CurrencyDto costPerCurrency = null;
-	@Persistent
+
 	private String farthestHouseholdfromPoint = null;
-	@Persistent
+
 	private String currentManagementStructurePoint = null;
-	@Persistent
+
 	private Status pointStatus = null;
 	private String otherStatus = null;
-	@Persistent
+
 	private String pointPhotoCaption = null;
-	@Persistent
+
 	private String description = null;
-	@Persistent
+
 	private AccessPointType pointType;
 
 	public enum Status {
@@ -229,6 +225,22 @@ public class AccessPointDto implements Serializable {
 
 	public String getOtherStatus() {
 		return otherStatus;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	public Long getYear() {
+		return year;
+	}
+
+	public void setYear(Long year) {
+		this.year = year;
 	}
 
 	public Status encodeStatus(String unencodedStatus) {

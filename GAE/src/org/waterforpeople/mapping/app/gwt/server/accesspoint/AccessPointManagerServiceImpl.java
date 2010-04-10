@@ -13,7 +13,9 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
+import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
@@ -21,7 +23,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
-import com.gallatinsystems.device.app.web.DeviceManagerServlet;
+import com.gallatinsystems.common.util.DateUtil;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -77,6 +79,9 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				.getNumberOfHouseholdsUsingPoint());
 		apDto.setPhotoURL(apCanonical.getPhotoURL());
 		apDto.setPointPhotoCaption(apCanonical.getPointPhotoCaption());
+		if (apCanonical.getCollectionDate() != null) {
+			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
+		}
 		if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_HIGH) {
 			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_HIGH);
 		} else if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_OK) {
@@ -128,7 +133,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_OK) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-		}else if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS) {
+		} else if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS) {
 			accessPoint
 					.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
 		} else if (apDto.getPointStatus() == AccessPointDto.Status.NO_IMPROVED_SYSTEM) {
@@ -197,45 +202,67 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public Boolean rotateImage(String fileName) {
-			String imageURL = fileName.substring(fileName.indexOf("http://waterforpeople.s3.amazonaws.com/"));
-			String bucket = "waterforpeople";
-			String rootURL = "http://waterforpeople.s3.amazonaws.com/";
-			Random rand = new Random();
-			String totalURL =  imageURL + "?random="+ rand.nextInt();
-			InputStream in;
-			ByteArrayOutputStream out = null;
-			URL url;
-			try {
-				url = new URL(totalURL);
-				in = url.openStream();
-				out = new ByteArrayOutputStream();
-				byte[] buffer = new byte[2048];
-				int size;
+		String imageURL = fileName.substring(fileName
+				.indexOf("http://waterforpeople.s3.amazonaws.com/"));
+		String bucket = "waterforpeople";
+		String rootURL = "http://waterforpeople.s3.amazonaws.com/";
+		Random rand = new Random();
+		String totalURL = imageURL + "?random=" + rand.nextInt();
+		InputStream in;
+		ByteArrayOutputStream out = null;
+		URL url;
+		try {
+			url = new URL(totalURL);
+			in = url.openStream();
+			out = new ByteArrayOutputStream();
+			byte[] buffer = new byte[2048];
+			int size;
 
-				while ((size = in.read(buffer, 0, buffer.length)) != -1) {
-					out.write(buffer, 0, size);
-				}
-			} catch (IOException e) {
-				log.log(Level.SEVERE,"Could not rotate image",e);
+			while ((size = in.read(buffer, 0, buffer.length)) != -1) {
+				out.write(buffer, 0, size);
 			}
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Could not rotate image", e);
+		}
 
-			GAEImageAdapter gaeImg = new GAEImageAdapter();
-			byte[] newImage = gaeImg.rotateImage(out.toByteArray(), 90);
-				S3Driver s3 = new S3Driver();
-			s3.uploadFile(bucket, imageURL, newImage);
-			return null;
+		GAEImageAdapter gaeImg = new GAEImageAdapter();
+		byte[] newImage = gaeImg.rotateImage(out.toByteArray(), 90);
+		S3Driver s3 = new S3Driver();
+		s3.uploadFile(bucket, imageURL, newImage);
+		return null;
 
-			/*
-			 * resp.getWriter() .print( "<html><body><img src=\"" + totalURL +
-			 * "\"/></body></html>");
-			 */
-			// serve the first image
-			//resp.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-			//resp.setContentType("image/jpeg");
-			//resp.getOutputStream().write(newImage);
-			 
+		/*
+		 * resp.getWriter() .print( "<html><body><img src=\"" + totalURL +
+		 * "\"/></body></html>");
+		 */
+		// serve the first image
+		// resp.setHeader("Cache-Control",
+		// "no-store, no-cache, must-revalidate");
+		// resp.setContentType("image/jpeg");
+		// resp.getOutputStream().write(newImage);
 
-		
+	}
 
+	/**
+	 * returns an array of AccessPointDto objects that match the criteria passed
+	 * in.
+	 */
+	public AccessPointDto[] listAccessPointByLocation(String country,
+			String community, String type) {
+		AccessPointDao apDAO = new AccessPointDao();
+		List<AccessPoint> summaries = apDAO.listAccessPointByLocation(country,
+				community, type);
+		AccessPointDto[] dtoList = null;
+
+		if (summaries != null) {
+
+			dtoList = new AccessPointDto[summaries.size()];
+
+			for (int i = 0; i < summaries.size(); i++) {
+				AccessPointDto dto = copyCanonicalToDto(summaries.get(i));
+				dtoList[i] = dto;
+			}
+		}
+		return dtoList;
 	}
 }

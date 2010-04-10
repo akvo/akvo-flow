@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.weightsmeasures.domain.Currency;
@@ -15,43 +14,53 @@ import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 public class AccessPoint extends BaseDomain {
 
 	private static final long serialVersionUID = -7708214468114860788L;
-	@Persistent
+
 	private Date collectionDate = null;
-	@Persistent
+
 	private Double latitude = 0.0;
-	@Persistent
+
 	private Double longitude = 0.0;
-	@Persistent
+
 	private Double altitude = 0.0;
-	@Persistent
+
 	private String communityCode = null;
-	@Persistent
+
 	private String photoURL = null;
-	@Persistent
+
 	private TechnologyType typeTechnology = null;
-	@Persistent
+
 	private String TechnologyTypeOther = null;
-	@Persistent
+
 	private Date constructionDate = null;
-	@Persistent
+
 	private String numberOfHouseholdsUsingPoint = null;
-	@Persistent
+
 	private Double costPer = null;
 	private UnitOfMeasure costPerUnitOfMeasure = null;
 	private Currency costPerCurrency = null;
-	@Persistent
+
 	private String farthestHouseholdfromPoint = null;
-	@Persistent
+
 	private String currentManagementStructurePoint = null;
-	@Persistent
+
 	private AccessPoint.Status pointStatus = null;
 	private String otherStatus = null;
-	@Persistent
+
 	private String pointPhotoCaption = null;
-	@Persistent
+
 	private String description = null;
-	@Persistent
+
 	private AccessPointType pointType;
+
+	private String countryCode;
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
 
 	public AccessPointType getPointType() {
 		return pointType;

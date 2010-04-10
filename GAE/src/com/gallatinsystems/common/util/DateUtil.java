@@ -29,4 +29,13 @@ public class DateUtil {
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal.getTime();
 	}
+
+	/**
+	 * returns the year as a Long
+	 */
+	public static Long getYear(Date dt) {
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(dt);
+		return new Long(cal.get(Calendar.YEAR));
+	}
 }

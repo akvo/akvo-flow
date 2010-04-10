@@ -82,34 +82,4 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 		return dtoList;
 	}
 
-	/**
-	 * returns an array of AccessPointSummaryDto objects that match the criteria
-	 * passed in.
-	 */
-	public AccessPointSummaryDto[] listAccessPointStatusSummaryWithoutRollup(
-			String country, String community, String type, String year,
-			String status) {
-		AccessPointStatusSummaryDao summaryDao = new AccessPointStatusSummaryDao();
-		List<AccessPointStatusSummary> summaries = summaryDao
-				.listByLocationAndYear(country, community, type, year, status);
-		AccessPointSummaryDto[] dtoList = null;
-
-		if (summaries != null) {
-
-			dtoList = new AccessPointSummaryDto[summaries.size()];
-
-			for (int i = 0; i < summaries.size(); i++) {
-				AccessPointSummaryDto dto = new AccessPointSummaryDto();
-				dto.setCountryCode(country);
-				dto.setCommunityCode(community);
-				dto.setType(summaries.get(i).getType());
-				dto.setYear(summaries.get(i).getYear());
-				dto.setStatus(summaries.get(i).getStatus().toString());
-				dto.setHouseholdsServed(summaries.get(i).getHouseholdsServed());
-				dto.setCost(summaries.get(i).getCostPerUnit());
-				dtoList[i] = dto;
-			}
-		}
-		return dtoList;
-	}
 }

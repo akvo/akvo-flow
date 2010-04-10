@@ -30,4 +30,7 @@ public interface AccessPointManagerServiceAsync {
 
 	void rotateImage(String fileName, AsyncCallback<Boolean> callback);
 
+	void listAccessPointByLocation(String country, String community,
+			String type, AsyncCallback<AccessPointDto[]> callback);
+
 }

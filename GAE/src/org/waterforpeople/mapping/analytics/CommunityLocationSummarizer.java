@@ -1,11 +1,11 @@
 package org.waterforpeople.mapping.analytics;
 
+import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.Community;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationService;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
@@ -23,8 +23,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 	@Override
 	public boolean performSummarization(String key, String type) {
 		if (key != null) {
-			BaseDAO<AccessPoint> accessPointDao = new BaseDAO<AccessPoint>(
-					AccessPoint.class);
+			AccessPointDao accessPointDao = new AccessPointDao();
 			AccessPoint ap = accessPointDao.getByKey(new Long(key));
 			if (ap != null) {
 				CommunityDao commDao = new CommunityDao();
@@ -55,6 +54,10 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 						// this save will cascade-save the country
 						commDao.save(community);
 					}
+				}
+				if (ap.getCountryCode() == null && community != null) {
+					ap.setCountryCode(community.getCommunityCode());
+					accessPointDao.save(ap);
 				}
 			}
 		}

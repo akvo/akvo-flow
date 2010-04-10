@@ -5,9 +5,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
@@ -71,7 +72,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	private Button resetButton;
 
 	private LocationDialog locationDialog;
-	private Map<String, Map<Long, AccessPointSummaryDto>> summaryMap;
+	private Map<String, Map<Long, AccessPointDto>> summaryMap;
 
 	public AccessPointPerformancePortlet() {
 		super(NAME, false, false, WIDTH, HEIGHT);
@@ -79,7 +80,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
-		summaryMap = new HashMap<String, Map<Long, AccessPointSummaryDto>>();
+		summaryMap = new HashMap<String, Map<Long, AccessPointDto>>();
 
 		CommunityServiceAsync communityService = GWT
 				.create(CommunityService.class);
@@ -203,27 +204,27 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			final String communityCode, String valueType, String type) {
 
 		// fetch list of responses for a question
-		AccessPointSummaryServiceAsync apService = GWT
-				.create(AccessPointSummaryService.class);
+		AccessPointManagerServiceAsync apService = GWT
+				.create(AccessPointManagerService.class);
 
 		// Set up the callback object.
-		AsyncCallback<AccessPointSummaryDto[]> apCallback = new AsyncCallback<AccessPointSummaryDto[]>() {
+		AsyncCallback<AccessPointDto[]> apCallback = new AsyncCallback<AccessPointDto[]>() {
 			public void onFailure(Throwable caught) {
 				// no-op
 			}
 
-			public void onSuccess(final AccessPointSummaryDto[] result) {
+			public void onSuccess(final AccessPointDto[] result) {
 
 				Runnable onLoadCallback = new Runnable() {
 					public void run() {
 
 						if (result != null) {
-							Map<Long, AccessPointSummaryDto> locationMap = new HashMap<Long, AccessPointSummaryDto>();
+							Map<Long, AccessPointDto> locationMap = new HashMap<Long, AccessPointDto>();
 							for (int i = 0; i < result.length; i++) {
-								if (result[i].getYear() != null) {
+								if (result[i].getCollectionDate() != null) {
 									try {
-										locationMap.put(new Long(result[i]
-												.getYear().trim()), result[i]);
+										locationMap.put(result[i].getYear(),
+												result[i]);
 									} catch (NumberFormatException e) {
 										// no-op
 									}
@@ -239,8 +240,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 						LineChart.PACKAGE);
 			}
 		};
-		apService.listAccessPointStatusSummaryWithoutRollup(countryCode,
-				communityCode, type, null, null, apCallback);
+		apService.listAccessPointByLocation(countryCode, communityCode, type,
+				apCallback);
 	}
 
 	/**
@@ -257,7 +258,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			String metric = getSelectedMetric();
 			SortedSet<Long> years = new TreeSet<Long>();
 			// get the union of all years sorted in ascending order
-			for (Map<Long, AccessPointSummaryDto> apList : summaryMap.values()) {
+			for (Map<Long, AccessPointDto> apList : summaryMap.values()) {
 				years.addAll(apList.keySet());
 			}
 
@@ -278,17 +279,18 @@ public class AccessPointPerformancePortlet extends Portlet implements
 				dataTable.setValue(i, 0, year.toString());
 				int j = 1;
 				for (String location : summaryMap.keySet()) {
-					AccessPointSummaryDto curItem = summaryMap.get(location) != null ? summaryMap
+					AccessPointDto curItem = summaryMap.get(location) != null ? summaryMap
 							.get(location).get(year)
 							: null;
 					if (curItem != null) {
 						if (STATUS_METRIC.equals(metric)) {
-							dataTable.setValue(i, j, curItem.getStatus());
+							dataTable.setValue(i, j, curItem.getPointStatus()
+									.toString());
 						} else if (COST_METRIC.equals(metric)) {
-							dataTable.setValue(i, j, curItem.getCost());
+							dataTable.setValue(i, j, curItem.getCostPer());
 						} else {
 							dataTable.setValue(i, j, curItem
-									.getHouseholdsServed());
+									.getNumberOfHouseholdsUsingPoint());
 						}
 					} else {
 						dataTable.setValue(i, j, 0);
