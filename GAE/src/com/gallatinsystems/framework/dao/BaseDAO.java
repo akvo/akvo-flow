@@ -242,7 +242,7 @@ public class BaseDAO<T extends BaseDomain> {
 			Map<String, Object> paramMap) {
 		if (value != null) {
 			if (paramMap.keySet().size() > 0) {
-				filter.append(" &&");
+				filter.append(" && ");
 				param.append(", ");
 			}
 

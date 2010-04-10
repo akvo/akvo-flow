@@ -143,57 +143,57 @@ public class TestHarnessServlet extends HttpServlet {
 					"SurveyInstance"));
 		} else if ("createCommunity".equals(action)) {
 			Country c = new Country();
-			c.setIsoAlpha2Code("US");
-			c.setName("United States");
-			c.setDisplayName("United States");
+			c.setIsoAlpha2Code("CA");
+			c.setName("Canada");
+			c.setDisplayName("Canada");
 			Community comm = new Community();
-			comm.setCommunityCode("NY");
+			comm.setCommunityCode("ON");
 			comm.setCountry(c);
-			comm.setCountryCode("US");
-			comm.setLat(41.99);
+			comm.setCountryCode("CA");
+			comm.setLat(54.99);
 			comm.setLon(-74.72);
 			CommunityDao dao = new CommunityDao();
 			dao.save(comm);
 
 		} else if ("createAPSummary".equals(action)) {
 			AccessPointStatusSummary sum = new AccessPointStatusSummary();
-			sum.setCommunity("NY");
-			sum.setCountry("US");
+			sum.setCommunity("ON");
+			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(23.10);
+			sum.setCostPerUnit(35.00);
 			sum.setYear("2000");
-			sum.setHouseholdsServed(244l);
+			sum.setHouseholdsServed(100l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			AccessPointStatusSummaryDao dao = new AccessPointStatusSummaryDao();
 			dao.save(sum);
-			
+
 			sum = new AccessPointStatusSummary();
-			sum.setCommunity("NY");
-			sum.setCountry("US");
+			sum.setCommunity("ON");
+			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(20.10);
+			sum.setCostPerUnit(37.10);
 			sum.setYear("2001");
-			sum.setHouseholdsServed(244l);
+			sum.setHouseholdsServed(150l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
-			
+
 			sum = new AccessPointStatusSummary();
-			sum.setCommunity("NY");
-			sum.setCountry("US");
+			sum.setCommunity("ON");
+			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(17.20);
+			sum.setCostPerUnit(32.00);
 			sum.setYear("2003");
-			sum.setHouseholdsServed(244l);
+			sum.setHouseholdsServed(144l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
-			
+
 			sum = new AccessPointStatusSummary();
-			sum.setCommunity("NY");
-			sum.setCountry("US");
+			sum.setCommunity("ON");
+			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(19.88);
+			sum.setCostPerUnit(29.27);
 			sum.setYear("2004");
-			sum.setHouseholdsServed(244l);
+			sum.setHouseholdsServed(200l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
 			dao.save(sum);
 		}

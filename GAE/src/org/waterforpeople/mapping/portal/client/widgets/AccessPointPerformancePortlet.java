@@ -276,22 +276,24 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			for (Long year : years) {
 				dataTable.addRow();
 				dataTable.setValue(i, 0, year.toString());
+				int j = 1;
 				for (String location : summaryMap.keySet()) {
 					AccessPointSummaryDto curItem = summaryMap.get(location) != null ? summaryMap
 							.get(location).get(year)
 							: null;
 					if (curItem != null) {
 						if (STATUS_METRIC.equals(metric)) {
-							dataTable.setValue(i, 1, curItem.getStatus());
+							dataTable.setValue(i, j, curItem.getStatus());
 						} else if (COST_METRIC.equals(metric)) {
-							dataTable.setValue(i, 1, curItem.getCost());
+							dataTable.setValue(i, j, curItem.getCost());
 						} else {
-							dataTable.setValue(i, 1, curItem
+							dataTable.setValue(i, j, curItem
 									.getHouseholdsServed());
 						}
 					} else {
-						dataTable.setValue(i, 1, 0);
+						dataTable.setValue(i, j, 0);
 					}
+					j++;
 				}
 				i++;
 			}
@@ -422,6 +424,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			String selectedCountry = countryListbox.getValue(countryListbox
 					.getSelectedIndex());
 			if (selectedCountry != null) {
+				// empty the old communities
+				communityListbox.clear();
 				// if country changed, load the communities
 				CommunityServiceAsync communityService = GWT
 						.create(CommunityService.class);
