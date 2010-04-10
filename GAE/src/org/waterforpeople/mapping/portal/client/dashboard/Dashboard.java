@@ -257,13 +257,13 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			setText("Add Items to Dashboard");
 			setAnimationEnabled(true);
 			setGlassEnabled(true);
-			setWidth("80%");			
+	
 			VerticalPanel contentPane = new VerticalPanel();
 			contentPane
 					.add(new Label(
 							"Select the portlets you want to add to your dashboard screen"));
-			setPopupPosition(Window.getClientWidth() / 3, Window
-					.getClientHeight() / 3);
+			setPopupPosition(Window.getClientWidth() / 4, Window
+					.getClientHeight() / 4);
 			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);
 			
 			Label header = new Label("Portlets");

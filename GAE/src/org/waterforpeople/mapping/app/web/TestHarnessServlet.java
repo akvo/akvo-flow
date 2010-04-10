@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
@@ -25,6 +27,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -136,6 +139,20 @@ public class TestHarnessServlet extends HttpServlet {
 			summQueue.add(url("/app_worker/datasummarization").param(
 					"objectKey", si.getKey().getId() + "").param("type",
 					"SurveyInstance"));
+		} else if ("createCommunity".equals(action)) {
+			Country c = new Country();
+			c.setIsoAlpha2Code("US");
+			c.setName("United States");
+			c.setDisplayName("United States");
+			Community comm = new Community();
+			comm.setCommunityCode("NY");
+			comm.setCountry(c);
+			comm.setCountryCode("US");
+			comm.setLat(41.99);
+			comm.setLon(-74.72);
+			CommunityDao dao = new CommunityDao();
+			dao.save(comm);
+
 		}
 	}
 }

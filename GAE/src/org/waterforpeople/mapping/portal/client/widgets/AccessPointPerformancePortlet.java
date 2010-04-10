@@ -389,6 +389,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 				countryListbox.addItem(countries[i].getName(), countries[i]
 						.getIsoAlpha2Code());
 			}
+			
+
 			countryListbox.setVisibleItemCount(1);
 			countryPanel.add(countryListbox);
 			contentPane.add(countryPanel);
@@ -410,9 +412,9 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			cancelButton = new Button("Cancel");
 			cancelButton.addClickHandler(this);
 			buttonPanel.add(cancelButton);
-
 			setWidget(contentPane);
 			contentPane.add(buttonPanel);
+			loadCommunities();
 		}
 
 		/**
@@ -422,35 +424,39 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		@Override
 		public void onChange(ChangeEvent event) {
 			if (event.getSource() == countryListbox) {
-				String selectedCountry = countryListbox.getValue(countryListbox
-						.getSelectedIndex());
-				if (selectedCountry != null) {
-					// if country changed, load the communities
-					CommunityServiceAsync communityService = GWT
-							.create(CommunityService.class);
-					// Set up the callback object.
-					AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
-						public void onFailure(Throwable caught) {
-							// no-op
-						}
-
-						public void onSuccess(CommunityDto[] result) {
-							if (result != null) {
-								for (int i = 0; i < result.length; i++) {
-									communityListbox.addItem(result[i]
-											.getCommunityCode(), result[i]
-											.getCommunityCode());
-
-								}
-								communityListbox.setVisibleItemCount(1);
-							}
-						}
-					};
-					communityService
-							.listCommunities(getSelectedValue(countryListbox),
-									communityCallback);
-				}
+				loadCommunities();
 			}
+		}
+
+		private void loadCommunities() {
+			String selectedCountry = countryListbox.getValue(countryListbox
+					.getSelectedIndex());
+			if (selectedCountry != null) {
+				// if country changed, load the communities
+				CommunityServiceAsync communityService = GWT
+						.create(CommunityService.class);
+				// Set up the callback object.
+				AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
+					public void onFailure(Throwable caught) {
+						// no-op
+					}
+
+					public void onSuccess(CommunityDto[] result) {
+						if (result != null) {
+							for (int i = 0; i < result.length; i++) {
+								communityListbox.addItem(result[i]
+										.getCommunityCode(), result[i]
+										.getCommunityCode());
+
+							}
+							communityListbox.setVisibleItemCount(1);
+						}
+					}
+				};
+				communityService.listCommunities(selectedCountry,
+						communityCallback);
+			}
+			okButton.setEnabled(true);
 		}
 
 		/**
