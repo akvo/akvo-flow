@@ -108,22 +108,22 @@ public class SurveyQuestionPortlet extends Portlet {
 				// no-op
 			}
 
-			public void onSuccess(SurveySummaryDto[] result) {
+			public void onSuccess(final SurveySummaryDto[] result) {
 
-				if (result != null) {
-					final DataTable dataTable = DataTable.create();
-					dataTable.addColumn(ColumnType.STRING, "Response");
-					dataTable.addColumn(ColumnType.NUMBER, "Count");
-					for (int i = 0; i < result.length; i++) {
-						dataTable.addRow();
-						dataTable.setValue(i, 0, result[i].getResponseText());
-						dataTable.setValue(i, 1, result[i].getCount());
-					}
+				if (result != null) {					
 					Runnable onLoadCallback = new Runnable() {
 						public void run() {							
 							if (pieChart != null) {
 								// remove the old chart
 								pieChart.removeFromParent();
+							}
+							DataTable dataTable = DataTable.create();
+							dataTable.addColumn(ColumnType.STRING, "Response");
+							dataTable.addColumn(ColumnType.NUMBER, "Count");
+							for (int i = 0; i < result.length; i++) {
+								dataTable.addRow();
+								dataTable.setValue(i, 0, result[i].getResponseText());
+								dataTable.setValue(i, 1, result[i].getCount());
 							}
 							pieChart = new PieChart(dataTable, createOptions());
 							contentPane.add(pieChart);
