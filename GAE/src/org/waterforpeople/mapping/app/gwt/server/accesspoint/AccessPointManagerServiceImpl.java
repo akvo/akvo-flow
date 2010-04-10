@@ -69,6 +69,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		apDto.setCommunityCode(apCanonical.getCommunityCode());
 		apDto.setCollectionDate(apCanonical.getCollectionDate());
 		apDto.setConstructionDate(apCanonical.getConstructionDate());
+		apDto.setCountryCode(apCanonical.getCountryCode());
 		apDto.setCostPer(apCanonical.getCostPer());
 		apDto.setCurrentManagementStructurePoint(apCanonical
 				.getCurrentManagementStructurePoint());
@@ -120,6 +121,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		accessPoint.setCollectionDate(apDto.getCollectionDate());
 		accessPoint.setConstructionDate(apDto.getConstructionDate());
 		accessPoint.setCostPer(apDto.getCostPer());
+		accessPoint.setCountryCode(apDto.getCountryCode());
 		accessPoint.setCurrentManagementStructurePoint(apDto
 				.getCurrentManagementStructurePoint());
 		accessPoint.setDescription(apDto.getDescription());
