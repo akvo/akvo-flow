@@ -154,6 +154,19 @@ public class TestHarnessServlet extends HttpServlet {
 			comm.setLon(-74.72);
 			CommunityDao dao = new CommunityDao();
 			dao.save(comm);
+			
+			c = new Country();
+			c.setIsoAlpha2Code("US");
+			c.setName("United States");
+			c.setDisplayName("Unites States");
+			 comm = new Community();
+			comm.setCommunityCode("NY");
+			comm.setCountry(c);
+			comm.setCountryCode("US");
+			comm.setLat(34.99);
+			comm.setLon(-74.72);
+			
+			dao.save(comm);
 
 		} else if ("createAPSummary".equals(action)) {
 			AccessPointStatusSummary sum = new AccessPointStatusSummary();
@@ -194,6 +207,46 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setCostPerUnit(29.27);
 			sum.setYear("2004");
 			sum.setHouseholdsServed(200l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
+			dao.save(sum);
+			
+			
+			sum.setCommunity("US");
+			sum.setCountry("NY");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(19.00);
+			sum.setYear("2000");
+			sum.setHouseholdsServed(220l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);			
+			dao.save(sum);
+
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("US");
+			sum.setCountry("NY");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(18.10);
+			sum.setYear("2001");
+			sum.setHouseholdsServed(250l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			dao.save(sum);
+
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("US");
+			sum.setCountry("NY");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(17.27);
+			sum.setYear("2003");
+			sum.setHouseholdsServed(250l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			dao.save(sum);
+
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("US");
+			sum.setCountry("NY");
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setCostPerUnit(19.27);
+			sum.setYear("2004");
+			sum.setHouseholdsServed(267l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
 			dao.save(sum);
 		}
