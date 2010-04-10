@@ -94,8 +94,7 @@ public class AccessPointManagerPortlet extends Portlet {
 
 	@Override
 	protected boolean getReadyForRemove() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
