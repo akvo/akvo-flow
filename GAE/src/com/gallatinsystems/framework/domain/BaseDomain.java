@@ -19,8 +19,7 @@ public abstract class BaseDomain implements Serializable{
 	private static final long serialVersionUID = 7824199813334027150L; 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	protected Key key;
-
+	protected Key key;	
 	protected Date createdDateTime;
 	protected Date lastUpdateDateTime;
 	protected Long lastUpdateUserId;

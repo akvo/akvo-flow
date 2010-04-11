@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
@@ -13,13 +14,19 @@ import com.google.appengine.api.datastore.Key;
 public class SurveyQuestion extends BaseDomain {
 		
 	private static final long serialVersionUID = 6756349508244348272L;
-
+	@Persistent
 	private String id;
+	@Persistent
 	private Long order;
+	@Persistent
 	private Boolean manadatory;
+	@Persistent
 	private QuestionAnswerType type;
+	@Persistent
 	private String text;
+	@Persistent
 	private ArrayList<SurveyQuestionOption> options;
+	@Persistent
 	private String optionsAllowOthers;
 
 	public enum QuestionAnswerType {

@@ -4,9 +4,10 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Country extends BaseDomain {
-	
+
 	private static final long serialVersionUID = 8933871165504597175L;
 	private String displayName = null;
 	private String name = null;

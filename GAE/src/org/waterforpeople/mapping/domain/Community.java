@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -9,12 +10,17 @@ import com.gallatinsystems.gis.geography.domain.Country;
 public class Community extends BaseDomain {
 
 	private static final long serialVersionUID = 3253521922960208695L;
-
+	@Persistent
 	private String communityCode;
+	@Persistent
 	private String name;
+	@Persistent
 	private Country country;
+	@Persistent
 	private Double lat;
+	@Persistent
 	private Double lon;
+	@Persistent
 	private String countryCode;
 
 	public String getCountryCode() {
