@@ -27,6 +27,12 @@ public class AccessPointStatusSummarizer implements DataSummarizer {
 				CommunityDao commDao = new CommunityDao();
 				Country c = commDao.findCountryByCommunity(ap
 						.getCommunityCode());
+				if(c == null){
+					//if we didn't find a country, use a placeholder for now
+					c= new Country();
+					c.setIsoAlpha2Code("??");
+					c.setName("Unknown");					
+				}
 				AccessPointStatusSummaryDao.incrementCount(ap, c);
 			}
 		}
