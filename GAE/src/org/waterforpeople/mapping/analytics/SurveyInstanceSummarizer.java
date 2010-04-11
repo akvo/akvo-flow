@@ -24,7 +24,7 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 	private static Logger logger = Logger
 			.getLogger(SurveyInstanceSummarizer.class.getName());
 	// TODO: find a better way of identifying the community?
-	private static final String COMMUNITY_QUESTION_ID = "q2";
+	private static final String COMMUNITY_QUESTION_ID = "qm1";
 
 	/**
 	 * looks up a survey instance then finds it's corresponding community (by
