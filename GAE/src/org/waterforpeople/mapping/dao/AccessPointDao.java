@@ -41,11 +41,11 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		StringBuilder paramString = new StringBuilder();
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("country", filterString, paramString, "String",
+		appendNonNullParam("countryCode", filterString, paramString, "String",
 				country, paramMap);
-		appendNonNullParam("community", filterString, paramString, "String",
+		appendNonNullParam("communityCode", filterString, paramString, "String",
 				community, paramMap);
-		appendNonNullParam("type", filterString, paramString, "String", type,
+		appendNonNullParam("pointType", filterString, paramString, "String", type,
 				paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());

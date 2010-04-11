@@ -72,7 +72,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	private Button resetButton;
 
 	private LocationDialog locationDialog;
-	private Map<String, Map<Long, AccessPointDto>> summaryMap;
+	private Map<String, Map<Long, AccessPointDto>> wpSummaryMap;
+	private Map<String, Map<Long, AccessPointDto>> spSummaryMap;
 
 	public AccessPointPerformancePortlet() {
 		super(NAME, false, false, WIDTH, HEIGHT);
@@ -80,7 +81,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
-		summaryMap = new HashMap<String, Map<Long, AccessPointDto>>();
+		wpSummaryMap = new HashMap<String, Map<Long, AccessPointDto>>();
+		spSummaryMap = new HashMap<String, Map<Long, AccessPointDto>>();
 
 		CommunityServiceAsync communityService = GWT
 				.create(CommunityService.class);
@@ -118,7 +120,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		if (event.getSource() == addLocationButton) {
 			locationDialog.show();
 		} else if (event.getSource() == resetButton) {
-			summaryMap.clear();
+			wpSummaryMap.clear();
+			spSummaryMap.clear();
 			renderChart();
 		}
 	}
@@ -230,8 +233,13 @@ public class AccessPointPerformancePortlet extends Portlet implements
 									}
 								}
 							}
-							summaryMap.put(countryCode + " - " + communityCode,
-									locationMap);
+							if (spTypeButton.getValue()) {
+								spSummaryMap.put(countryCode + " - "
+										+ communityCode, locationMap);
+							} else {
+								wpSummaryMap.put(countryCode + " - "
+										+ communityCode, locationMap);
+							}
 							renderChart();
 						}
 					}
@@ -251,6 +259,12 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		if (lineChart != null) {
 			// remove the old chart
 			lineChart.removeFromParent();
+		}
+		Map<String, Map<Long, AccessPointDto>> summaryMap = null;
+		if (spTypeButton.getValue()) {
+			summaryMap = spSummaryMap;
+		} else {
+			summaryMap = wpSummaryMap;
 		}
 
 		if (summaryMap.keySet().size() > 0) {

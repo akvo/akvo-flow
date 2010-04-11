@@ -145,17 +145,19 @@ public class TestHarnessServlet extends HttpServlet {
 					"objectKey", si.getKey().getId() + "").param("type",
 					"SurveyInstance"));
 		} else if ("createCommunity".equals(action)) {
+			CommunityDao dao = new CommunityDao();
 			Country c = new Country();
 			c.setIsoAlpha2Code("CA");
 			c.setName("Canada");
 			c.setDisplayName("Canada");
 			Community comm = new Community();
 			comm.setCommunityCode("ON");
-			comm.setCountry(c);
+			dao.save(c);
+
 			comm.setCountryCode("CA");
 			comm.setLat(54.99);
 			comm.setLon(-74.72);
-			CommunityDao dao = new CommunityDao();
+
 			dao.save(comm);
 
 			c = new Country();
@@ -163,12 +165,12 @@ public class TestHarnessServlet extends HttpServlet {
 			c.setName("United States");
 			c.setDisplayName("Unites States");
 			comm = new Community();
-			comm.setCommunityCode("NY");
-			comm.setCountry(c);
+			comm.setCommunityCode("Omaha");
 			comm.setCountryCode("US");
 			comm.setLat(34.99);
 			comm.setLon(-74.72);
 
+			dao.save(c);
 			dao.save(comm);
 
 		} else if ("createAPSummary".equals(action)) {
@@ -176,9 +178,7 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setCommunity("ON");
 			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(35.00);
 			sum.setYear("2000");
-			sum.setHouseholdsServed(100l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			AccessPointStatusSummaryDao dao = new AccessPointStatusSummaryDao();
 			dao.save(sum);
@@ -187,9 +187,7 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setCommunity("ON");
 			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(37.10);
 			sum.setYear("2001");
-			sum.setHouseholdsServed(150l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
@@ -197,9 +195,7 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setCommunity("ON");
 			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(32.00);
 			sum.setYear("2003");
-			sum.setHouseholdsServed(144l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
@@ -207,18 +203,30 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setCommunity("ON");
 			sum.setCountry("CA");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(29.27);
 			sum.setYear("2004");
-			sum.setHouseholdsServed(200l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
 			dao.save(sum);
 
 			sum.setCommunity("US");
 			sum.setCountry("NY");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(19.00);
 			sum.setYear("2000");
-			sum.setHouseholdsServed(220l);
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			dao.save(sum);
+
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("US");
+			sum.setCountry("NY");
+			sum.setType(AccessPointType.WATER_POINT.toString());			
+			sum.setYear("2001");			
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			dao.save(sum);
+
+			sum = new AccessPointStatusSummary();
+			sum.setCommunity("US");
+			sum.setCountry("NY");
+			sum.setType(AccessPointType.WATER_POINT.toString());		
+			sum.setYear("2003");			
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
@@ -226,35 +234,13 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setCommunity("US");
 			sum.setCountry("NY");
 			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(18.10);
-			sum.setYear("2001");
-			sum.setHouseholdsServed(250l);
-			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-			dao.save(sum);
-
-			sum = new AccessPointStatusSummary();
-			sum.setCommunity("US");
-			sum.setCountry("NY");
-			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(17.27);
-			sum.setYear("2003");
-			sum.setHouseholdsServed(250l);
-			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-			dao.save(sum);
-
-			sum = new AccessPointStatusSummary();
-			sum.setCommunity("US");
-			sum.setCountry("NY");
-			sum.setType(AccessPointType.WATER_POINT.toString());
-			sum.setCostPerUnit(19.27);
 			sum.setYear("2004");
-			sum.setHouseholdsServed(267l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
 			dao.save(sum);
 		} else if ("createApHistory".equals(action)) {
 			GregorianCalendar cal = new GregorianCalendar();
 			AccessPointHelper apHelper = new AccessPointHelper();
-			
+
 			AccessPoint ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2000);
 			ap.setCollectionDate(cal.getTime());
@@ -262,12 +248,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_OK);
 			ap.setLatitude(47.3);
 			ap.setLongitude(9d);
-			ap.setNumberOfHouseholdsUsingPoint("300");
+			ap.setNumberOfHouseholdsUsingPoint(300l);
 			ap.setCostPer(43.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-		
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2001);
 			ap.setCollectionDate(cal.getTime());
@@ -275,12 +261,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_OK);
 			ap.setLatitude(47.3);
 			ap.setLongitude(9d);
-			ap.setNumberOfHouseholdsUsingPoint("317");
+			ap.setNumberOfHouseholdsUsingPoint(317l);
 			ap.setCostPer(40.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-		
+
 			apHelper.saveAccessPoint(ap);
-			
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2002);
 			ap.setCollectionDate(cal.getTime());
@@ -288,12 +274,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_OK);
 			ap.setLatitude(47.3);
 			ap.setLongitude(9d);
-			ap.setNumberOfHouseholdsUsingPoint("340");
+			ap.setNumberOfHouseholdsUsingPoint(340l);
 			ap.setCostPer(37.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-			
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2003);
 			ap.setCollectionDate(cal.getTime());
@@ -301,12 +287,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_HIGH);
 			ap.setLatitude(47.3);
 			ap.setLongitude(9d);
-			ap.setNumberOfHouseholdsUsingPoint("340");
+			ap.setNumberOfHouseholdsUsingPoint(340l);
 			ap.setCostPer(34.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-		
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2004);
 			ap.setCollectionDate(cal.getTime());
@@ -314,12 +300,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_OK);
 			ap.setLatitude(47.3);
 			ap.setLongitude(9d);
-			ap.setNumberOfHouseholdsUsingPoint("338");
+			ap.setNumberOfHouseholdsUsingPoint(338l);
 			ap.setCostPer(38.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-		
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2000);
 			ap.setCollectionDate(cal.getTime());
@@ -327,12 +313,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_HIGH);
 			ap.setLatitude(40.87d);
 			ap.setLongitude(-95.2d);
-			ap.setNumberOfHouseholdsUsingPoint("170");
+			ap.setNumberOfHouseholdsUsingPoint(170l);
 			ap.setCostPer(19.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-			
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2001);
 			ap.setCollectionDate(cal.getTime());
@@ -340,12 +326,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_HIGH);
 			ap.setLatitude(40.87d);
 			ap.setLongitude(-95.2d);
-			ap.setNumberOfHouseholdsUsingPoint("201");
+			ap.setNumberOfHouseholdsUsingPoint(201l);
 			ap.setCostPer(19.00);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-		
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2002);
 			ap.setCollectionDate(cal.getTime());
@@ -353,12 +339,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_HIGH);
 			ap.setLatitude(40.87d);
 			ap.setLongitude(-95.2d);
-			ap.setNumberOfHouseholdsUsingPoint("211");
+			ap.setNumberOfHouseholdsUsingPoint(211l);
 			ap.setCostPer(17.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-		
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2003);
 			ap.setCollectionDate(cal.getTime());
@@ -366,12 +352,12 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
 			ap.setLatitude(40.87d);
 			ap.setLongitude(-95.2d);
-			ap.setNumberOfHouseholdsUsingPoint("220");
+			ap.setNumberOfHouseholdsUsingPoint(220l);
 			ap.setCostPer(25.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
-		
+
 			ap = new AccessPoint();
 			cal.set(Calendar.YEAR, 2004);
 			ap.setCollectionDate(cal.getTime());
@@ -379,10 +365,10 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointStatus(Status.FUNCTIONING_OK);
 			ap.setLatitude(40.87d);
 			ap.setLongitude(-95.2d);
-			ap.setNumberOfHouseholdsUsingPoint("175");
+			ap.setNumberOfHouseholdsUsingPoint(175l);
 			ap.setCostPer(24.20);
 			ap.setPointType(AccessPointType.WATER_POINT);
-			
+
 			apHelper.saveAccessPoint(ap);
 		}
 	}

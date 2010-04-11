@@ -41,9 +41,9 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 							ourCountry = new Country();
 							ourCountry.setIsoAlpha2Code(gp.getCountryCode());
 							ourCountry.setName(gp.getCountryName());
+							commDao.save(ourCountry);
 						}
-						community = new Community();
-						community.setCountry(ourCountry);
+						community = new Community();						
 						community.setCommunityCode(ap.getCommunityCode());
 						community.setName(gp.getName());
 						community.setLat(gp.getLat());
@@ -56,7 +56,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 					}
 				}
 				if (ap.getCountryCode() == null && community != null) {
-					ap.setCountryCode(community.getCommunityCode());
+					ap.setCountryCode(community.getCountryCode());
 					accessPointDao.save(ap);
 				}
 			}

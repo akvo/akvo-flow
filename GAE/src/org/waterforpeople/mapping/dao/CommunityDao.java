@@ -29,7 +29,7 @@ public class CommunityDao extends BaseDAO<Community> {
 	public Country findCountryByCommunity(String communityCode) {
 		Community comm = findCommunityByCode(communityCode);
 		if (comm != null) {
-			return comm.getCountry();
+			return findCountryByCode(comm.getCountryCode());
 		} else {
 			return null;
 		}

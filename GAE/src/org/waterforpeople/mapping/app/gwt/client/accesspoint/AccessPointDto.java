@@ -38,7 +38,7 @@ public class AccessPointDto implements Serializable {
 
 	private Date constructionDate = null;
 
-	private String numberOfHouseholdsUsingPoint = null;
+	private Long numberOfHouseholdsUsingPoint = null;
 
 	private Double costPer = null;
 	private UnitOfMeasureDto costPerUnitOfMeasure = null;
@@ -133,12 +133,12 @@ public class AccessPointDto implements Serializable {
 		this.constructionDate = constructionDate;
 	}
 
-	public String getNumberOfHouseholdsUsingPoint() {
+	public Long getNumberOfHouseholdsUsingPoint() {
 		return numberOfHouseholdsUsingPoint;
 	}
 
 	public void setNumberOfHouseholdsUsingPoint(
-			String numberOfHouseholdsUsingPoint) {
+			Long numberOfHouseholdsUsingPoint) {
 		this.numberOfHouseholdsUsingPoint = numberOfHouseholdsUsingPoint;
 	}
 

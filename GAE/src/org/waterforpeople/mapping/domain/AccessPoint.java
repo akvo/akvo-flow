@@ -33,7 +33,7 @@ public class AccessPoint extends BaseDomain {
 
 	private Date constructionDate = null;
 
-	private String numberOfHouseholdsUsingPoint = null;
+	private Long numberOfHouseholdsUsingPoint = null;
 
 	private Double costPer = null;
 	private UnitOfMeasure costPerUnitOfMeasure = null;
@@ -137,12 +137,12 @@ public class AccessPoint extends BaseDomain {
 		this.constructionDate = constructionDate;
 	}
 
-	public String getNumberOfHouseholdsUsingPoint() {
+	public Long getNumberOfHouseholdsUsingPoint() {
 		return numberOfHouseholdsUsingPoint;
 	}
 
 	public void setNumberOfHouseholdsUsingPoint(
-			String numberOfHouseholdsUsingPoint) {
+			Long numberOfHouseholdsUsingPoint) {
 		this.numberOfHouseholdsUsingPoint = numberOfHouseholdsUsingPoint;
 	}
 

@@ -23,9 +23,7 @@ public class AccessPointStatusSummary extends BaseDomain {
 	private String country;
 	private String community;
 	private String type;
-	private Double costPerUnit;
-	private Long householdsServed;
-
+	
 	public Long getCount() {
 		return count;
 	}
@@ -72,22 +70,6 @@ public class AccessPointStatusSummary extends BaseDomain {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public Double getCostPerUnit() {
-		return costPerUnit;
-	}
-
-	public void setCostPerUnit(Double costPerUnit) {
-		this.costPerUnit = costPerUnit;
-	}
-
-	public Long getHouseholdsServed() {
-		return householdsServed;
-	}
-
-	public void setHouseholdsServed(Long householdsServed) {
-		this.householdsServed = householdsServed;
-	}
+	}	
 
 }

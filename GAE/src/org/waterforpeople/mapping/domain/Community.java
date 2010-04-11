@@ -13,9 +13,7 @@ public class Community extends BaseDomain {
 	@Persistent
 	private String communityCode;
 	@Persistent
-	private String name;
-	@Persistent
-	private Country country;
+	private String name;	
 	@Persistent
 	private Double lat;
 	@Persistent
@@ -53,14 +51,6 @@ public class Community extends BaseDomain {
 
 	public void setCommunityCode(String communityCode) {
 		this.communityCode = communityCode;
-	}
-
-	public Country getCountry() {
-		return country;
-	}
-
-	public void setCountry(Country country) {
-		this.country = country;
 	}
 
 	public String getName() {

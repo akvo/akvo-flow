@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -31,7 +30,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		implements AccessPointManagerService {
-	@SuppressWarnings("unused")
+
 	private static final Logger log = Logger
 			.getLogger(AccessPointManagerService.class.getName());
 	/**

@@ -20,8 +20,8 @@ import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class AccessPointHelper {
-	
-	public AccessPoint getAccessPoint(Long id){
+
+	public AccessPoint getAccessPoint(Long id) {
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
 		return apDAO.getByKey(id);
 	}
@@ -97,10 +97,17 @@ public class AccessPointHelper {
 			} else if (qas.getQuestionID().equals("qm4")) {
 				ap.setConstructionDate(new Date(qas.getValue()));
 			} else if (qas.getQuestionID().equals("qm5")) {
-				//ToDo: implement Technology type lookup
-				//ap.setTypeTechnology(qas.getValue());
+				// TODO: implement Technology type lookup
+				// ap.setTypeTechnology(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm6")) {
-				ap.setNumberOfHouseholdsUsingPoint(qas.getValue());
+				if (qas.getValue() != null) {
+					try {
+						ap.setNumberOfHouseholdsUsingPoint(new Long(qas
+								.getValue().trim()));
+					} catch (NumberFormatException e) {
+						ap.setNumberOfHouseholdsUsingPoint(0l);
+					}
+				}
 			} else if (qas.getQuestionID().equals("qm7")) {
 				ap.setCostPer(new Double(qas.getValue()));
 			} else if (qas.getQuestionID().equals("qm8")) {
@@ -109,7 +116,7 @@ public class AccessPointHelper {
 				// Current mgmt structure
 				ap.setCurrentManagementStructurePoint(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm10")) {
-				
+
 			}
 			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 			// for now hardcode the data to now
@@ -133,8 +140,8 @@ public class AccessPointHelper {
 				ap.getKey().getId() + "").param("type", "AccessPoint"));
 		return ap;
 	}
-	
-	public List<AccessPoint> listAccessPoint(){
+
+	public List<AccessPoint> listAccessPoint() {
 		BaseDAO<AccessPoint> apDao = new BaseDAO<AccessPoint>(AccessPoint.class);
 		return apDao.list();
 	}

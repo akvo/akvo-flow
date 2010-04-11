@@ -63,18 +63,7 @@ public class AccessPointStatusSummaryDao extends
 			summary.setStatus(ap.getPointStatus());
 			summary.setCountry(c.getIsoAlpha2Code());
 			summary.setCommunity(ap.getCommunityCode());
-			summary.setType(ap.getPointType().toString());
-			summary.setCostPerUnit(ap.getCostPer());
-			try {
-				summary.setHouseholdsServed(ap
-						.getNumberOfHouseholdsUsingPoint() != null ? new Long(
-						ap.getNumberOfHouseholdsUsingPoint().trim()) : 0);
-			} catch (NumberFormatException e) {
-				Logger
-						.getLogger(AccessPointStatusSummaryDao.class.getName())
-						.log(Level.SEVERE,
-								"Access point has non-integer value for numberOfHouseholdsUsingPoint");
-			}
+			summary.setType(ap.getPointType().toString());						
 		} else {
 			summary = (AccessPointStatusSummary) results.get(0);
 			summary.setCount(summary.getCount() + 1);

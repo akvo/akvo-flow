@@ -3,7 +3,9 @@ package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+@RemoteServiceRelativePath("apmanagerrpcservice")
 public interface AccessPointManagerService extends RemoteService {
 	List<AccessPointDto> listAllAccessPoints(Integer startRecord,
 			Integer endRecord);

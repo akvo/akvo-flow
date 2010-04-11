@@ -82,9 +82,6 @@ public class AccessPointManagerPortlet extends Portlet {
 		contentPane.add(header);
 		setContent(contentPane);
 		svc = GWT.create(AccessPointManagerService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) svc;
-		endpoint
-				.setServiceEntryPoint("/org.waterforpeople.mapping.portal.portal/apmanagerrpcservice");
 	}
 
 	@Override
@@ -380,7 +377,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		TextBox numHouseholdsTB = new TextBox();
 		if (accessPointDto != null)
 			numHouseholdsTB.setText(accessPointDto
-					.getNumberOfHouseholdsUsingPoint());
+					.getNumberOfHouseholdsUsingPoint().toString());
 		accessPointDetail.setWidget(8, 1, numHouseholdsTB);
 
 		accessPointDetail.setWidget(9, 0, new Label("Photo Url: "));
@@ -393,47 +390,52 @@ public class AccessPointManagerPortlet extends Portlet {
 		form.setWidget(upload);
 		accessPointDetail.setWidget(9, 3, form);
 		Button submitUpload = new Button("Upload");
-		//accessPointDetail.setWidget(9,4, upload);
+		// accessPointDetail.setWidget(9,4, upload);
 		upload.setName("uploadFormElement");
-		accessPointDetail.setWidget(9,4, submitUpload);
-		
-		form.addFormHandler(new FormHandler(){
+		accessPointDetail.setWidget(9, 4, submitUpload);
+
+		form.addFormHandler(new FormHandler() {
 
 			@Override
 			public void onSubmit(FormSubmitEvent event) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void onSubmitComplete(FormSubmitCompleteEvent event) {
 				Window.alert("File uploaded");
-				String fileName = ((FileUpload)((FormPanel)accessPointDetail.getWidget(9, 3)).getWidget()).getFilename();
-				((TextBox)accessPointDetail.getWidget(9, 1)).setText("http://waterforpeople.s3.amazonaws.com/"+fileName);
-				
-				Image i =((Image)accessPointDetail.getWidget(9,2));
-				
-				if(i==null){
+				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
+						.getWidget(9, 3)).getWidget()).getFilename();
+				((TextBox) accessPointDetail.getWidget(9, 1))
+						.setText("http://waterforpeople.s3.amazonaws.com/"
+								+ fileName);
+
+				Image i = ((Image) accessPointDetail.getWidget(9, 2));
+
+				if (i == null) {
 					Image photo = new Image();
-					photo.setUrl("http://waterforpeople.s3.amazonaws.com/"+fileName);
+					photo.setUrl("http://waterforpeople.s3.amazonaws.com/"
+							+ fileName);
 					accessPointDetail.setWidget(9, 2, photo);
-				}else{
-					i.setUrl("http://waterforpeople.s3.amazonaws.com/"+fileName);
+				} else {
+					i.setUrl("http://waterforpeople.s3.amazonaws.com/"
+							+ fileName);
 				}
 			}
-			
+
 		});
-		
-		submitUpload.addClickHandler(new ClickHandler(){
+
+		submitUpload.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				((FormPanel)accessPointDetail.getWidget(9,3)).submit();
-				
+				((FormPanel) accessPointDetail.getWidget(9, 3)).submit();
+
 			}
-			
+
 		});
-		
+
 		if (accessPointDto != null) {
 			photoURLTB.setText(accessPointDto.getPhotoURL());
 			Image photo = new Image(accessPointDto.getPhotoURL());
@@ -605,9 +607,8 @@ public class AccessPointManagerPortlet extends Portlet {
 		Double longitude = new Double(longitudeTB.getText());
 		apDto.setLongitude(longitude);
 
-		DateBox collectionDateTB = (DateBox) accessPointDetail.getWidget(
-				3, 1);
-		
+		DateBox collectionDateTB = (DateBox) accessPointDetail.getWidget(3, 1);
+
 		apDto.setCollectionDate(collectionDateTB.getValue());
 
 		DateBox constructionDateTB = (DateBox) accessPointDetail
@@ -657,7 +658,14 @@ public class AccessPointManagerPortlet extends Portlet {
 
 		TextBox numHouseholdsTB = (TextBox) accessPointDetail.getWidget(8, 1);
 		String numHouseholds = numHouseholdsTB.getText();
-		apDto.setNumberOfHouseholdsUsingPoint(numHouseholds);
+		if (numHouseholds != null && numHouseholds.trim().length() > 0) {
+			try {
+				apDto.setNumberOfHouseholdsUsingPoint(new Long(numHouseholds
+						.trim()));
+			} catch (NumberFormatException e) {
+				// to-do: display validation error
+			}
+		}
 
 		TextBox photoURLTB = (TextBox) accessPointDetail.getWidget(9, 1);
 		String photoUrl = photoURLTB.getText();
