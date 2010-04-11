@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.DataTable;
@@ -118,7 +119,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	public void onClick(ClickEvent event) {
 		super.onClick(event);
 		if (event.getSource() == addLocationButton) {
-			locationDialog.show();
+			locationDialog.showRelativeTo(this);
 		} else if (event.getSource() == resetButton) {
 			wpSummaryMap.clear();
 			spSummaryMap.clear();
@@ -385,11 +386,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			setText("Add Items to Dashboard");
 			setAnimationEnabled(true);
 			setGlassEnabled(true);
-			setWidth("80%");
 			VerticalPanel contentPane = new VerticalPanel();
 			contentPane.add(new Label("Add Community to Chart"));
-			setPopupPosition(Window.getClientWidth() / 3, Window
-					.getClientHeight() / 3);
 
 			HorizontalPanel countryPanel = new HorizontalPanel();
 			countryPanel.add(new Label("Country: "));
@@ -424,6 +422,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			contentPane.add(buttonPanel);
 			loadCommunities();
 		}
+		
 
 		/**
 		 * checks if the country was changed and, if so, loads that country's
