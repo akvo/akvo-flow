@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -58,8 +59,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		TableLayout innerTable = new TableLayout(context);
 		TableRow innerRow = new TableRow(context);
 
+		DigitsKeyListener numericListener = new DigitsKeyListener(true, true);
+
 		latField = new EditText(context);
 		latField.setWidth(DEFAULT_WIDTH);
+
+		latField.setKeyListener(numericListener);
+
 		latLabel = new TextView(context);
 		latLabel.setText(R.string.lat);
 
@@ -71,6 +77,8 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 		lonField = new EditText(context);
 		lonField.setWidth(DEFAULT_WIDTH);
+		lonField.setKeyListener(numericListener);
+
 		lonLabel = new TextView(context);
 		lonLabel.setText(R.string.lon);
 
@@ -82,6 +90,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 		elevationField = new EditText(context);
 		elevationField.setWidth(DEFAULT_WIDTH);
+		elevationField.setKeyListener(numericListener);
 		elevationLabel = new TextView(context);
 		elevationLabel.setText(R.string.elevation);
 
@@ -110,10 +119,11 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			Location loc = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			if(loc!= null){
-				//if the last location is accurate, then we can use it
-				if(loc.hasAccuracy() && loc.getAccuracy()< ACCURACY_THRESHOLD){
+			Location loc = locMgr
+					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			if (loc != null) {
+				// if the last location is accurate, then we can use it
+				if (loc.hasAccuracy() && loc.getAccuracy() < ACCURACY_THRESHOLD) {
 					populateLocation(loc);
 				}
 			}
@@ -203,7 +213,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 				needUpdate = false;
 				populateLocation(location);
 			}
-		}else if (needUpdate){
+		} else if (needUpdate) {
 			needUpdate = false;
 			populateLocation(location);
 		}
