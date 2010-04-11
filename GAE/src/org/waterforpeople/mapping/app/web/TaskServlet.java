@@ -65,13 +65,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 				Long userID = 1L;
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 				Long surveyId = siDAO.save(collectionDate, deviceFile, userID,
-						unparsedLines);
-				
-				Queue summQueue = QueueFactory.getQueue("dataSummarization");
-				summQueue.add(url("/app_worker/datasummarization").param(
-						"objectKey", surveyId.toString()).param("type",
-						"SurveyInstance"));
-
+						unparsedLines);					
 				surveyIds.add(surveyId.toString());
 			}
 			zis.close();
@@ -198,6 +192,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
 			ArrayList<String> surveyIds = processFile(req.getFileName());
+			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			for (String key : surveyIds) {
 				ProcessingAction pa = dispatch(key);
 				// Queue queue = QueueFactory.getDefaultQueue();
@@ -209,7 +204,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 				// queue.add(options);
 				log.info("Received Task Queue calls for surveyKey: " + key);
 				AccessPointHelper aph = new AccessPointHelper();
-				aph.processSurveyInstance(key);
+				aph.processSurveyInstance(key);				
+				summQueue.add(url("/app_worker/datasummarization").param(
+						"objectKey", key).param("type",
+						"SurveyInstance"));
 			}
 		}
 	}
