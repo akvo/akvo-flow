@@ -13,7 +13,7 @@ public class CountryDto implements Serializable {
 	private Integer isoNumeric3Code = null;
 
 	public String getDisplayName() {
-		return displayName;
+		return displayName != null ? displayName : name;
 	}
 
 	public void setDisplayName(String displayName) {

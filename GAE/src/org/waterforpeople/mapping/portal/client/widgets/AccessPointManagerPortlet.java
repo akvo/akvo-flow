@@ -10,6 +10,10 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
+import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
+import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
+import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
@@ -21,14 +25,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FormHandler;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -37,13 +37,17 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends Portlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
 	public static final String NAME = "Access Point Manager";
 
-	private static final String ALL_OPT = "All";
+	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
@@ -80,6 +84,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
+		loadCountries();
 		setContent(contentPane);
 		svc = GWT.create(AccessPointManagerService.class);
 	}
@@ -104,6 +109,58 @@ public class AccessPointManagerPortlet extends Portlet {
 	public void handleEvent(PortletEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * populates the country drop-down box and sets up the event handler to load
+	 * the communities
+	 */
+	private void loadCountries() {
+		final CommunityServiceAsync communityService = GWT
+				.create(CommunityService.class);
+		countryLB.addItem(ANY_OPT, ANY_OPT);
+		// Set up the callback object.
+		AsyncCallback<CountryDto[]> countryCallback = new AsyncCallback<CountryDto[]>() {
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			public void onSuccess(CountryDto[] result) {
+				if (result != null) {
+					for (int i = 0; i < result.length; i++)
+						countryLB.addItem(result[i].getName(), result[i]
+								.getIsoAlpha2Code());
+				}
+			}
+		};
+		communityService.listCountries(countryCallback);
+		countryLB.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				communityLB.clear();
+				AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// no-op
+
+					}
+
+					@Override
+					public void onSuccess(CommunityDto[] result) {
+						if (result != null) {
+							for (int i = 0; i < result.length; i++)
+								communityLB.addItem(result[i]
+										.getCommunityCode(), result[i]
+										.getCommunityCode());
+						}
+					}
+				};
+				communityService.listCommunities(countryLB.getValue(countryLB
+						.getSelectedIndex()), communityCallback);
+			}
+		});
 	}
 
 	/**
@@ -190,6 +247,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		AccessPointTechnologyTypeDto techType;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processClickEvent() {
 		statusLabel.setText("Please wait loading access points");
 		statusLabel.setVisible(true);
@@ -209,7 +267,6 @@ public class AccessPointManagerPortlet extends Portlet {
 			}
 
 		});
-
 	}
 
 	private void loadAccessPoint(ArrayList<AccessPointDto> apDtoList) {
@@ -284,7 +341,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		statusLabel.setText("Please wait loading access point for edit");
 		statusLabel.setVisible(true);
 		mainVPanel.add(statusLabel);
-		svc.getAccessPoint(id, new AsyncCallback() {
+		svc.getAccessPoint(id, new AsyncCallback<AccessPointDto>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -293,7 +350,7 @@ public class AccessPointManagerPortlet extends Portlet {
 			}
 
 			@Override
-			public void onSuccess(Object result) {
+			public void onSuccess(AccessPointDto result) {
 				AccessPointDto item = (AccessPointDto) result;
 				loadAccessPointDetailTable(item);
 			}
@@ -394,16 +451,16 @@ public class AccessPointManagerPortlet extends Portlet {
 		upload.setName("uploadFormElement");
 		accessPointDetail.setWidget(9, 4, submitUpload);
 
-		form.addFormHandler(new FormHandler() {
-
+		form.addSubmitHandler(new SubmitHandler() {
 			@Override
-			public void onSubmit(FormSubmitEvent event) {
+			public void onSubmit(SubmitEvent event) {
 				// TODO Auto-generated method stub
-
 			}
+		});
 
+		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			@Override
-			public void onSubmitComplete(FormSubmitCompleteEvent event) {
+			public void onSubmitComplete(SubmitCompleteEvent event) {
 				Window.alert("File uploaded");
 				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
 						.getWidget(9, 3)).getWidget()).getFilename();
@@ -423,7 +480,6 @@ public class AccessPointManagerPortlet extends Portlet {
 							+ fileName);
 				}
 			}
-
 		});
 
 		submitUpload.addClickHandler(new ClickHandler() {
@@ -445,27 +501,25 @@ public class AccessPointManagerPortlet extends Portlet {
 				@Override
 				public void onClick(ClickEvent event) {
 					svc.rotateImage(((TextBox) accessPointDetail
-							.getWidget(9, 1)).getText(), new AsyncCallback() {
+							.getWidget(9, 1)).getText(),
+							new AsyncCallback<Boolean>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									// TODO Auto-generated method stub
 
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
+								}
 
-						}
+								@Override
+								public void onSuccess(Boolean result) {
+									Integer random = Random.nextInt();
 
-						@Override
-						public void onSuccess(Object result) {
-							Integer random = Random.nextInt();
-
-							((Image) accessPointDetail.getWidget(9, 2))
-									.setUrl(((TextBox) accessPointDetail
-											.getWidget(9, 1)).getText()
-											+ "?random=" + random);
-						}
-					});
-
+									((Image) accessPointDetail.getWidget(9, 2))
+											.setUrl(((TextBox) accessPointDetail
+													.getWidget(9, 1)).getText()
+													+ "?random=" + random);
+								}
+							});
 				}
-
 			});
 		}
 		accessPointDetail.setWidget(9, 1, photoURLTB);
@@ -477,7 +531,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		accessPointDetail.setWidget(10, 1, captionTB);
 
 		accessPointDetail.setWidget(11, 0, new Label("Point Status: "));
-		ListBox statusLB = new ListBox();
+		statusLB = new ListBox();
 		statusLB.addItem("Functioning High");
 		statusLB.addItem("Functioning Ok");
 		statusLB.addItem("Functioning but with Problems");
@@ -557,20 +611,21 @@ public class AccessPointManagerPortlet extends Portlet {
 					statusLabel.setText("Please wait saving access point");
 					mainVPanel.add(statusLabel);
 					AccessPointDto apDto = buildAccessPointDto();
-					svc.saveAccessPoint(apDto, new AsyncCallback() {
+					svc.saveAccessPoint(apDto,
+							new AsyncCallback<AccessPointDto>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									// TODO Auto-generated method stub
 
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
+								}
 
-						}
+								@Override
+								public void onSuccess(AccessPointDto result) {
+									Window
+											.alert("Access Point successfully updated");
+								}
 
-						@Override
-						public void onSuccess(Object result) {
-							Window.alert("Access Point successfully updated");
-						}
-
-					});
+							});
 					statusLabel.setVisible(false);
 					mainVPanel.remove(statusLabel);
 					accessPointFT.setVisible(true);
@@ -707,5 +762,26 @@ public class AccessPointManagerPortlet extends Portlet {
 
 	public Boolean validateAccessPointDetail() {
 		return true;
+	}
+
+	/**
+	 * helper method to get value out of a listbox. If "Any" is selected, it's
+	 * translated to null since the service expects null to be passed in rather
+	 * than "all" if you don't want to filter by that param
+	 * 
+	 * @param lb
+	 * @return
+	 */
+	private String getSelectedValue(ListBox lb) {
+		if (lb.getSelectedIndex() >= 0) {
+			String val = lb.getValue(lb.getSelectedIndex());
+			if (ANY_OPT.equals(val)) {
+				return null;
+			} else {
+				return val;
+			}
+		} else {
+			return null;
+		}
 	}
 }

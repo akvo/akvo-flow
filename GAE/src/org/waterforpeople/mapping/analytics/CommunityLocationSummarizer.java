@@ -46,6 +46,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 							ourCountry = new Country();
 							ourCountry.setIsoAlpha2Code(gp.getCountryCode());
 							ourCountry.setName(gp.getCountryName());
+							ourCountry.setDisplayName(gp.getCountryName());
 							commDao.save(ourCountry);
 						}
 						community = new Community();
