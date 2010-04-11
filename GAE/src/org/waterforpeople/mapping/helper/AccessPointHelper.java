@@ -130,7 +130,16 @@ public class AccessPointHelper {
 				// Current mgmt structure
 				ap.setCurrentManagementStructurePoint(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm10")) {
-
+				String val = qas.getValue();
+				if (val !=null){
+					if("High".equalsIgnoreCase(val)){
+						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+					}else if ("Ok".equalsIgnoreCase(val)){
+						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+					}else{
+						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+					}
+				}
 			}
 			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 			// for now hardcode the data to now

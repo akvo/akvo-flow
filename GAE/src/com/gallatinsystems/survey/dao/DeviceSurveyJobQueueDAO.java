@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.jdo.PersistenceManager;
 
-import org.waterforpeople.mapping.db.PMF;
-
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
