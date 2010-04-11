@@ -139,28 +139,33 @@ public class AccessPointManagerPortlet extends Portlet {
 			@Override
 			public void onChange(ChangeEvent event) {
 				communityLB.clear();
-				AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
+				String country = getSelectedValue(countryLB);
+				// only procede if they didn't select "ANY"
+				if (country != null) {
+					AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// no-op
+						@Override
+						public void onFailure(Throwable caught) {
+							// no-op
 
-					}
-
-					@Override
-					public void onSuccess(CommunityDto[] result) {
-						if (result != null) {
-							for (int i = 0; i < result.length; i++)
-								communityLB.addItem(result[i]
-										.getCommunityCode(), result[i]
-										.getCommunityCode());
 						}
-					}
-				};
-				communityService.listCommunities(countryLB.getValue(countryLB
-						.getSelectedIndex()), communityCallback);
+
+						@Override
+						public void onSuccess(CommunityDto[] result) {
+							if (result != null) {
+								for (int i = 0; i < result.length; i++)
+									communityLB.addItem(result[i]
+											.getCommunityCode(), result[i]
+											.getCommunityCode());
+							}
+						}
+					};
+					communityService
+							.listCommunities(country, communityCallback);
+				}
 			}
 		});
+
 	}
 
 	/**
