@@ -85,4 +85,11 @@ public class QuestionResponse {
 		this.id = id;
 	}
 
+	public boolean hasValue() {
+		boolean hasVal = false;
+		if (value != null && value.trim().length() > 0) {
+			hasVal = true;
+		}
+		return hasVal;
+	}
 }

@@ -82,19 +82,24 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			if (ConstantUtil.OPTION_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new OptionQuestionView(context, q);
 
-			} else if (ConstantUtil.FREE_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
+			} else if (ConstantUtil.FREE_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
 				questionView = new FreetextQuestionView(context, q);
-			} else if (ConstantUtil.PHOTO_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
+			} else if (ConstantUtil.PHOTO_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
 				questionView = new MediaQuestionView(context, q,
 						ConstantUtil.PHOTO_QUESTION_TYPE);
-			} else if (ConstantUtil.VIDEO_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
+			} else if (ConstantUtil.VIDEO_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
 				questionView = new MediaQuestionView(context, q,
 						ConstantUtil.VIDEO_QUESTION_TYPE);
-			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
+			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
 				questionView = new GeoQuestionView(context, q);
-			} else if (ConstantUtil.SCAN_QUESTION_TYPE.equalsIgnoreCase(q.getType())){
+			} else if (ConstantUtil.SCAN_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
 				questionView = new BarcodeQuestionView(context, q);
-			}else {
+			} else {
 				questionView = new QuestionView(context, q);
 			}
 			questionMap.put(q.getId(), questionView);
@@ -294,8 +299,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	public void saveState(Long respondentId) {
 		if (questionMap != null) {
 			for (QuestionView q : questionMap.values()) {
-				if (q.getResponse() != null
-						&& q.getResponse().getValue() != null) {
+				if (q.getResponse() != null && q.getResponse().hasValue()) {
 					q.getResponse().setRespondentId(respondentId);
 					databaseAdaptor.createOrUpdateSurveyResponse(q
 							.getResponse());
