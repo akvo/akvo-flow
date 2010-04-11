@@ -209,8 +209,8 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 
 		HorizontalPanel typePanel = new HorizontalPanel();
 		typePanel.add(new Label("Type: "));
-		wpTypeButton = new RadioButton("typeGroup", "Waterpoint");
-		spTypeButton = new RadioButton("typeGroup", "Sanitation");
+		wpTypeButton = new RadioButton("APStatusTypeGroup", "Waterpoint");
+		spTypeButton = new RadioButton("APStatusTypeGroup", "Sanitation");
 		typePanel.add(wpTypeButton);
 		typePanel.add(spTypeButton);
 		wpTypeButton.addValueChangeHandler(this);

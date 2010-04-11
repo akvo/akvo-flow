@@ -24,6 +24,7 @@ import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.IntensityMap;
 import com.google.gwt.visualization.client.visualizations.IntensityMap.Options;
+import com.google.gwt.visualization.client.visualizations.IntensityMap.Region;
 
 /**
  * Portlet that displays the current access point status activity over a period
@@ -49,6 +50,7 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 	private IntensityMap map;
 	private VerticalPanel contentPane;
 	private ListBox statusListbox;
+	private ListBox regionListbox;
 	private RadioButton wpTypeButton;
 	private RadioButton spTypeButton;
 
@@ -63,6 +65,23 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 
 	private Options createOptions() {
 		Options options = Options.create();
+		String region = regionListbox
+				.getValue(regionListbox.getSelectedIndex());
+		if (region.equalsIgnoreCase(Region.AFRICA.toString())) {
+			options.setRegion(Region.AFRICA);
+		} else if (region.equalsIgnoreCase(Region.ASIA.toString())) {
+			options.setRegion(Region.ASIA);
+		} else if (region.equalsIgnoreCase(Region.ASIA.toString())) {
+			options.setRegion(Region.ASIA);
+		} else if (region.equalsIgnoreCase(Region.EUROPE.toString())) {
+			options.setRegion(Region.EUROPE);
+		} else if (region.equalsIgnoreCase(Region.MIDDLE_EAST.toString())) {
+			options.setRegion(Region.MIDDLE_EAST);
+		} else if (region.equalsIgnoreCase(Region.SOUTH_AMERICA.toString())) {
+			options.setRegion(Region.SOUTH_AMERICA);
+		} else if (region.equalsIgnoreCase(Region.USA.toString())) {
+			options.setRegion(Region.USA);
+		}
 		options.setWidth(WIDTH);
 		options.setHeight(HEIGHT - 60);
 		return options;
@@ -137,6 +156,7 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 	 * @return
 	 */
 	private Widget buildHeader() {
+		VerticalPanel headerPanel = new VerticalPanel();
 		Grid grid = new Grid(1, 2);
 
 		HorizontalPanel statusPanel = new HorizontalPanel();
@@ -152,8 +172,8 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 
 		HorizontalPanel typePanel = new HorizontalPanel();
 		typePanel.add(new Label("Type: "));
-		wpTypeButton = new RadioButton("typeGroup", "Waterpoint");
-		spTypeButton = new RadioButton("typeGroup", "Sanitation");
+		wpTypeButton = new RadioButton("ActMapTypeGroup", "Waterpoint");
+		spTypeButton = new RadioButton("ActMapTypeGroup", "Sanitation");
 		typePanel.add(wpTypeButton);
 		typePanel.add(spTypeButton);
 		wpTypeButton.addValueChangeHandler(this);
@@ -161,7 +181,23 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		wpTypeButton.setValue(true);
 		grid.setWidget(0, 1, typePanel);
 
-		return grid;
+		headerPanel.add(grid);
+
+		HorizontalPanel regionPanel = new HorizontalPanel();
+		regionPanel.add(new Label("Region: "));
+		regionListbox = new ListBox();
+		regionListbox.addItem("World", "world");
+		regionListbox.addItem("Africa", "africa");
+		regionListbox.addItem("Asia", "asia");
+		regionListbox.addItem("Europe", "europe");
+		regionListbox.addItem("Middle East", "middle_east");
+		regionListbox.addItem("South America", "south_america");
+		regionListbox.addItem("USA", "usa");
+		regionListbox.addChangeHandler(this);
+		regionPanel.add(regionListbox);
+		headerPanel.add(regionPanel);
+
+		return headerPanel;
 	}
 
 	@Override

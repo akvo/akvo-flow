@@ -8,7 +8,6 @@ import java.util.TreeSet;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
@@ -23,7 +22,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -31,7 +29,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.DataTable;
@@ -157,15 +154,17 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		HorizontalPanel controlPanel = new HorizontalPanel();
 
 		controlPanel.add(new Label("Type: "));
-		wpTypeButton = new RadioButton("typeGroup", "Waterpoint");
-		spTypeButton = new RadioButton("typeGroup", "Sanitation");
-		controlPanel.add(wpTypeButton);
-		controlPanel.add(spTypeButton);
-		wpTypeButton.setValue(true);
-
+		wpTypeButton = new RadioButton("APperfTypeGroup", "Waterpoint");
+		spTypeButton = new RadioButton("APperfTypeGroup", "Sanitation");
+		
+		
 		wpTypeButton.addValueChangeHandler(this);
 		spTypeButton.addValueChangeHandler(this);
-
+		wpTypeButton.setValue(true);
+		
+		controlPanel.add(wpTypeButton);
+		controlPanel.add(spTypeButton);
+		
 		controlPanel.add(new Label("Metric: "));
 		controlPanel.add(metricListbox);
 
