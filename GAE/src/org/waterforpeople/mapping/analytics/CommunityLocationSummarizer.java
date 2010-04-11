@@ -1,5 +1,8 @@
 package org.waterforpeople.mapping.analytics;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -19,6 +22,8 @@ import com.gallatinsystems.gis.location.GeoPlace;
  * 
  */
 public class CommunityLocationSummarizer implements DataSummarizer {
+	Logger logger = Logger.getLogger(CommunityLocationSummarizer.class
+			.getName());
 
 	@Override
 	public boolean performSummarization(String key, String type) {
@@ -43,7 +48,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 							ourCountry.setName(gp.getCountryName());
 							commDao.save(ourCountry);
 						}
-						community = new Community();						
+						community = new Community();
 						community.setCommunityCode(ap.getCommunityCode());
 						community.setName(gp.getName());
 						community.setLat(gp.getLat());
@@ -53,6 +58,12 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 						community.setCountryCode(ourCountry.getIsoAlpha2Code());
 						// this save will cascade-save the country
 						commDao.save(community);
+					} else {
+						logger.log(Level.SEVERE,
+								"Did not find a country for lat/lon "
+										+ ap.getLatitude() + ","
+										+ ap.getLongitude()
+										+ " using the geonames service");
 					}
 				}
 				if (ap.getCountryCode() == null && community != null) {
