@@ -66,7 +66,8 @@ public class KMLGenerator {
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
-			kmlDAO.saveKML(mergeContext(context, "Document.vm"));
+			document = mergeContext(context, "Document.vm");
+			kmlDAO.saveKML(document);
 		} catch (Exception ex) {
 
 		}
