@@ -193,6 +193,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>
 	</filter>
 	<servlet>
+		<servlet-name>TechnologyTypeRpcService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.TechnologyTypeServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TechnologyTypeRpcService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/technologytype</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>PhotoUpload</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.PhotoUpload</servlet-class>
 	</servlet>
