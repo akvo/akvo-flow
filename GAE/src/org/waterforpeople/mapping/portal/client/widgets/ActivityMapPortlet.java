@@ -142,9 +142,9 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		HorizontalPanel statusPanel = new HorizontalPanel();
 		statusPanel.add(new Label("Status: "));
 		statusListbox = new ListBox();
-		statusListbox.addItem("High", "High");
-		statusListbox.addItem("Ok", "Ok");
-		statusListbox.addItem("Poor", "Poor");
+		statusListbox.addItem("High", "FUNCTIONING_HIGH");
+		statusListbox.addItem("Ok", "FUNCTIONING_OK");
+		statusListbox.addItem("Poor", "FUNCTIONING_WITH_PROBLEMS");
 		statusListbox.setVisibleItemCount(1);
 		statusPanel.add(statusListbox);
 		grid.setWidget(0, 0, statusPanel);
