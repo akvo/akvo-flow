@@ -4,7 +4,9 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -154,18 +157,18 @@ public class TestHarnessServlet extends HttpServlet {
 			comm.setLon(-74.72);
 			CommunityDao dao = new CommunityDao();
 			dao.save(comm);
-			
+
 			c = new Country();
 			c.setIsoAlpha2Code("US");
 			c.setName("United States");
 			c.setDisplayName("Unites States");
-			 comm = new Community();
+			comm = new Community();
 			comm.setCommunityCode("NY");
 			comm.setCountry(c);
 			comm.setCountryCode("US");
 			comm.setLat(34.99);
 			comm.setLon(-74.72);
-			
+
 			dao.save(comm);
 
 		} else if ("createAPSummary".equals(action)) {
@@ -209,15 +212,14 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setHouseholdsServed(200l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
 			dao.save(sum);
-			
-			
+
 			sum.setCommunity("US");
 			sum.setCountry("NY");
 			sum.setType(AccessPointType.WATER_POINT.toString());
 			sum.setCostPerUnit(19.00);
 			sum.setYear("2000");
 			sum.setHouseholdsServed(220l);
-			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);			
+			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
 			sum = new AccessPointStatusSummary();
@@ -249,6 +251,139 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setHouseholdsServed(267l);
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
 			dao.save(sum);
+		} else if ("createApHistory".equals(action)) {
+			GregorianCalendar cal = new GregorianCalendar();
+			AccessPointHelper apHelper = new AccessPointHelper();
+			
+			AccessPoint ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2000);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Geneva");
+			ap.setPointStatus(Status.FUNCTIONING_OK);
+			ap.setLatitude(47.3);
+			ap.setLongitude(9d);
+			ap.setNumberOfHouseholdsUsingPoint("300");
+			ap.setCostPer(43.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+		
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2001);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Geneva");
+			ap.setPointStatus(Status.FUNCTIONING_OK);
+			ap.setLatitude(47.3);
+			ap.setLongitude(9d);
+			ap.setNumberOfHouseholdsUsingPoint("317");
+			ap.setCostPer(40.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+		
+			apHelper.saveAccessPoint(ap);
+			
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2002);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Geneva");
+			ap.setPointStatus(Status.FUNCTIONING_OK);
+			ap.setLatitude(47.3);
+			ap.setLongitude(9d);
+			ap.setNumberOfHouseholdsUsingPoint("340");
+			ap.setCostPer(37.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+			
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2003);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Geneva");
+			ap.setPointStatus(Status.FUNCTIONING_HIGH);
+			ap.setLatitude(47.3);
+			ap.setLongitude(9d);
+			ap.setNumberOfHouseholdsUsingPoint("340");
+			ap.setCostPer(34.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+		
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2004);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Geneva");
+			ap.setPointStatus(Status.FUNCTIONING_OK);
+			ap.setLatitude(47.3);
+			ap.setLongitude(9d);
+			ap.setNumberOfHouseholdsUsingPoint("338");
+			ap.setCostPer(38.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+		
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2000);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Omaha");
+			ap.setPointStatus(Status.FUNCTIONING_HIGH);
+			ap.setLatitude(40.87d);
+			ap.setLongitude(-95.2d);
+			ap.setNumberOfHouseholdsUsingPoint("170");
+			ap.setCostPer(19.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+			
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2001);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Omaha");
+			ap.setPointStatus(Status.FUNCTIONING_HIGH);
+			ap.setLatitude(40.87d);
+			ap.setLongitude(-95.2d);
+			ap.setNumberOfHouseholdsUsingPoint("201");
+			ap.setCostPer(19.00);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+		
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2002);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Omaha");
+			ap.setPointStatus(Status.FUNCTIONING_HIGH);
+			ap.setLatitude(40.87d);
+			ap.setLongitude(-95.2d);
+			ap.setNumberOfHouseholdsUsingPoint("211");
+			ap.setCostPer(17.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+		
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2003);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Omaha");
+			ap.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
+			ap.setLatitude(40.87d);
+			ap.setLongitude(-95.2d);
+			ap.setNumberOfHouseholdsUsingPoint("220");
+			ap.setCostPer(25.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
+		
+			ap = new AccessPoint();
+			cal.set(Calendar.YEAR, 2004);
+			ap.setCollectionDate(cal.getTime());
+			ap.setCommunityCode("Omaha");
+			ap.setPointStatus(Status.FUNCTIONING_OK);
+			ap.setLatitude(40.87d);
+			ap.setLongitude(-95.2d);
+			ap.setNumberOfHouseholdsUsingPoint("175");
+			ap.setCostPer(24.20);
+			ap.setPointType(AccessPointType.WATER_POINT);
+			
+			apHelper.saveAccessPoint(ap);
 		}
 	}
 }

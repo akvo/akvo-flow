@@ -65,5 +65,4 @@ public abstract class BaseDomain implements Serializable{
 	public void setCreateUserId(Long createUserId) {
 		this.createUserId = createUserId;
 	}
-
 }

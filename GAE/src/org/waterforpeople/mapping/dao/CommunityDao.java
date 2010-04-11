@@ -52,7 +52,7 @@ public class CommunityDao extends BaseDAO<Community> {
 	 * @return
 	 */
 	public Country findCountryByCode(String code) {
-		List<Country> cList = listByProperty("countryCode", code, "String",
+		List<Country> cList = listByProperty("isoAlpha2Code", code, "String",
 				Country.class);
 		if (cList != null && cList.size() > 0) {
 			return cList.get(0);
