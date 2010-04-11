@@ -25,7 +25,10 @@ public class TechnologyTypeServiceImpl extends RemoteServiceServlet implements T
 
 	public void delete(Long id) {
 		TechnologyTypeHelper tth = new TechnologyTypeHelper();
-		//tth.delete(null);
+		TechnologyType toObject = new TechnologyType();
+		
+		toObject = tth.getTechnologyType(id);
+		tth.delete(toObject);
 		
 		
 	}
@@ -35,9 +38,9 @@ public class TechnologyTypeServiceImpl extends RemoteServiceServlet implements T
 		return copyCanonicaltoDto(tth.getTechnologyType(id));
 	}
 
-	public List<TechnologyTypeDto> list() {
+	public ArrayList<TechnologyTypeDto> list() {
 		TechnologyTypeHelper techTypeHelper = new TechnologyTypeHelper();
-		List<TechnologyTypeDto> list = new ArrayList<TechnologyTypeDto>();
+		ArrayList<TechnologyTypeDto> list = new ArrayList<TechnologyTypeDto>();
 		 for(TechnologyType item :techTypeHelper.listTechnologyTypes()){
 			 list.add(copyCanonicaltoDto(item));
 		 }

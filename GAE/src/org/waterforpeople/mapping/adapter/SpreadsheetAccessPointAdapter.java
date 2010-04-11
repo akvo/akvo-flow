@@ -50,7 +50,7 @@ public class SpreadsheetAccessPointAdapter {
 					.getSpreadsheetContents(spreadsheetName);
 			for (RowContainer row : sc.getRowContainerList()) {
 				AccessPoint ap = processRow(row, spreadsheetName);
-				ap = apHelper.saveAccessPoint(ap);										
+				ap = apHelper.saveAccessPoint(ap);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -127,48 +127,58 @@ public class SpreadsheetAccessPointAdapter {
 			String colName = col.getColName();
 			String attributeName = colsToAttributesMap.get(colName);
 			if (attributeName != null && !attributeName.trim().isEmpty()) {
-				try {
-
-					Class partypes[] = new Class[1];
-					String paramTypeClass = attributeTypeMap.get("set"
-							+ attributeName);
-					partypes[0] = Class.forName(paramTypeClass);
-					java.lang.reflect.Method meth = cls.getMethod("set"
-							+ attributeName, partypes);
-
-					if (paramTypeClass.contains("Double")) {
-						Object arglist[] = new Object[1];
-						arglist[0] = parseDouble(col.getColContents());
-
-						Object retobj = meth.invoke(ap, arglist);
-					} else if (paramTypeClass.contains("String")) {
-						Object arglist[] = new Object[1];
-						arglist[0] = col.getColContents();
-
-						Object retobj = meth.invoke(ap, arglist);
-					} else if (paramTypeClass.contains("Date")) {
-						Object arglist[] = new Object[1];
-						arglist[0] = parseDate(col.getColContents());
-						Object retobj = meth.invoke(ap, arglist);
+				if (attributeName.equals("typeTechnology")||attributeName.equals("pointType")||attributeName.equals("pointStatus")) {
+					if(attributeName.equals("typeTechnology")){
+						
+					}else if(attributeName.equals("pointType")){
+						
+					}else if(attributeName.equals("pointStatus")){
+						
 					}
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} else {
+					try {
+
+						Class partypes[] = new Class[1];
+						String paramTypeClass = attributeTypeMap.get("set"
+								+ attributeName);
+						partypes[0] = Class.forName(paramTypeClass);
+						java.lang.reflect.Method meth = cls.getMethod("set"
+								+ attributeName, partypes);
+
+						if (paramTypeClass.contains("Double")) {
+							Object arglist[] = new Object[1];
+							arglist[0] = parseDouble(col.getColContents());
+
+							Object retobj = meth.invoke(ap, arglist);
+						} else if (paramTypeClass.contains("String")) {
+							Object arglist[] = new Object[1];
+							arglist[0] = col.getColContents();
+
+							Object retobj = meth.invoke(ap, arglist);
+						} else if (paramTypeClass.contains("Date")) {
+							Object arglist[] = new Object[1];
+							arglist[0] = parseDate(col.getColContents());
+							Object retobj = meth.invoke(ap, arglist);
+						}
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 
 			}
@@ -242,5 +252,7 @@ public class SpreadsheetAccessPointAdapter {
 		}
 		return colsToAttributesMap;
 	}
+	
+	
 
 }
