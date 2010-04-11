@@ -30,4 +30,11 @@ public class TechnologyTypeHelper {
 		BaseDAO<TechnologyType> baseDAO = new BaseDAO<TechnologyType>(TechnologyType.class);
 		return baseDAO.getByKey(id);
 	}
+	
+	public void deleteAll(){
+		BaseDAO<TechnologyType> baseDAO = new BaseDAO<TechnologyType>(TechnologyType.class);
+		for(TechnologyType techType: baseDAO.list()){
+			baseDAO.delete(techType);
+		}
+	}
 }
