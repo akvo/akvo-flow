@@ -38,4 +38,23 @@ public class DateUtil {
 		cal.setTime(dt);
 		return new Long(cal.get(Calendar.YEAR));
 	}
+
+	/**
+	 * takes a string containing a 4 digit year and returns a Date object that
+	 * has the year indicated and all other fields set to 0 (so jan 1 of that
+	 * year at 00:00:00)
+	 * 
+	 * @param year
+	 * @return
+	 * @throws NumberFormatException
+	 */
+	public static Date getYearOnlyDate(String year)
+			throws NumberFormatException {
+		Calendar cal = new GregorianCalendar();
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.MONTH, 0);
+		cal.set(Calendar.YEAR, new Integer(year));
+		// sets the time portion to 00:00:00 and returns
+		return getDateNoTime(cal.getTime());
+	}
 }
