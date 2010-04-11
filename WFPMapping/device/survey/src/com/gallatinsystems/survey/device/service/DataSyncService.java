@@ -51,6 +51,7 @@ public class DataSyncService extends Service {
 	private static final int COMPLETE_ID = 1;
 
 //	private static final String NOTIFICATION_URL = "http://watermappingmonitoring.appspot.com/processor?action=submit&fileName=";
+	//private static final String NOTIFICATION_URL = "http://127.0.0.1:8888/processor?action=submit&fileName=";
 	private static final String NOTIFICATION_URL = "http://watermapmonitordev.appspot.com/processor?action=submit&fileName=";
 	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 	private static final String S3_KEY = "1JZZVDSNFFQYF23ZYJ02";

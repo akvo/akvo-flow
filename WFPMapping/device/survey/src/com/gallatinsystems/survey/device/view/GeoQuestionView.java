@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
@@ -31,7 +32,7 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  * 
  */
 public class GeoQuestionView extends QuestionView implements OnClickListener,
-		LocationListener {
+		LocationListener, OnFocusChangeListener {
 
 	private static final int DEFAULT_WIDTH = 200;
 	private static final float UNKNOWN_ACCURACY = 99999999f;
@@ -63,8 +64,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 		latField = new EditText(context);
 		latField.setWidth(DEFAULT_WIDTH);
-
+		latField.setOnFocusChangeListener(this);
 		latField.setKeyListener(numericListener);
+	
 
 		latLabel = new TextView(context);
 		latLabel.setText(R.string.lat);
@@ -78,7 +80,8 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		lonField = new EditText(context);
 		lonField.setWidth(DEFAULT_WIDTH);
 		lonField.setKeyListener(numericListener);
-
+		lonField.setOnFocusChangeListener(this);
+		
 		lonLabel = new TextView(context);
 		lonLabel.setText(R.string.lon);
 
@@ -91,6 +94,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		elevationField = new EditText(context);
 		elevationField.setWidth(DEFAULT_WIDTH);
 		elevationField.setKeyListener(numericListener);
+		elevationField.setOnFocusChangeListener(this);
 		elevationLabel = new TextView(context);
 		elevationLabel.setText(R.string.elevation);
 
@@ -232,4 +236,17 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// no op. needed for LocationListener interface
 	}
+
+	/**
+	 * used to capture lat/lon/elevation if manually typed
+	 */
+	@Override
+	public void onFocusChange(View v, boolean hasFocus) {
+		if (!hasFocus) {
+			setResponse(new QuestionResponse(latField.getText() + DELIM
+					+ lonField.getText() + DELIM + elevationField.getText(),
+					ConstantUtil.GEO_RESPONSE_TYPE, getQuestion().getId()));
+		}
+	}
+
 }
