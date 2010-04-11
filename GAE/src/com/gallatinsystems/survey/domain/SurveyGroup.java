@@ -10,9 +10,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyGroup extends BaseDomain {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 9001451397587572330L;	
 	private String description;
 	@Unique(name="SURVEYGROUP_CODE_IDX")

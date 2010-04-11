@@ -7,9 +7,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class QuestionOption extends BaseDomain{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 8925764841259376220L;
 	/**
 	 * 

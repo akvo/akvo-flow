@@ -8,9 +8,6 @@ import com.gallatinsystems.gis.geography.domain.Country;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Currency extends BaseDomain {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2732185712823409196L;
 
 	private String name = null;

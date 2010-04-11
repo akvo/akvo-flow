@@ -6,10 +6,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UnitOfMeasure extends BaseDomain{
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -713244155250701779L;
 	private String name;
 	private String code;

@@ -6,9 +6,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
 public class SurveyContainer extends BaseDomain {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -1445653380398913451L;
 	private String description;
 	private String notes;

@@ -6,9 +6,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
 public class QuestionGroup extends BaseDomain{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -7253934961271624253L;
 	/**
 	 * 
