@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.analytics.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
 
@@ -19,6 +20,7 @@ public class AccessPointStatusSummary extends BaseDomain {
 
 	private Long count;
 	private String year;
+	@Persistent
 	private AccessPoint.Status status;
 	private String country;
 	private String community;
