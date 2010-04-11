@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -13,13 +15,16 @@ import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
 
+import com.gallatinsystems.common.util.DateUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class AccessPointHelper {
+
+	private static Logger logger = Logger.getLogger(AccessPointHelper.class
+			.getName());
 
 	public AccessPoint getAccessPoint(Long id) {
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
@@ -95,7 +100,16 @@ public class AccessPointHelper {
 				// photo caption
 				ap.setPointPhotoCaption(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm4")) {
-				ap.setConstructionDate(new Date(qas.getValue()));
+				if (qas.getValue() != null) {
+					try {
+						ap.setConstructionDate(DateUtil.getYearOnlyDate(qas
+								.getValue()));
+					} catch (NumberFormatException e) {
+						logger.log(Level.SEVERE,
+								"non-integer year in construction date field",
+								e);
+					}
+				}
 			} else if (qas.getQuestionID().equals("qm5")) {
 				// TODO: implement Technology type lookup
 				// ap.setTypeTechnology(qas.getValue());
