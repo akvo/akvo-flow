@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
@@ -56,10 +57,10 @@ public class AccessPointHelper {
 		 */
 
 		AccessPoint ap;
-		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
+
 		ap = parseAccessPoint(questionAnswerList,
 				AccessPoint.AccessPointType.WATER_POINT);
-		apDAO.save(ap);
+		saveAccessPoint(ap);
 
 	}
 
@@ -131,13 +132,14 @@ public class AccessPointHelper {
 				ap.setCurrentManagementStructurePoint(qas.getValue());
 			} else if (qas.getQuestionID().equals("qm10")) {
 				String val = qas.getValue();
-				if (val !=null){
-					if("High".equalsIgnoreCase(val)){
+				if (val != null) {
+					if ("High".equalsIgnoreCase(val)) {
 						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-					}else if ("Ok".equalsIgnoreCase(val)){
+					} else if ("Ok".equalsIgnoreCase(val)) {
 						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-					}else{
-						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+					} else {
+						ap
+								.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
 					}
 				}
 			}
@@ -156,7 +158,7 @@ public class AccessPointHelper {
 	 * @return
 	 */
 	public AccessPoint saveAccessPoint(AccessPoint ap) {
-		BaseDAO<AccessPoint> apDao = new BaseDAO<AccessPoint>(AccessPoint.class);
+		AccessPointDao apDao = new AccessPointDao();
 		ap = apDao.save(ap);
 		Queue summQueue = QueueFactory.getQueue("dataSummarization");
 		summQueue.add(url("/app_worker/datasummarization").param("objectKey",
@@ -165,7 +167,7 @@ public class AccessPointHelper {
 	}
 
 	public List<AccessPoint> listAccessPoint() {
-		BaseDAO<AccessPoint> apDao = new BaseDAO<AccessPoint>(AccessPoint.class);
+		AccessPointDao apDao = new AccessPointDao();
 		return apDao.list();
 	}
 
