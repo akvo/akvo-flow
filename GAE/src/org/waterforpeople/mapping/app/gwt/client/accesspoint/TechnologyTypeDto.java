@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class TechnologyTypeDto implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2922589897005551499L;
+	private Long keyId = null;
 	private String name = null;
 	private String code = null;
 	private String description = null;
@@ -63,6 +68,14 @@ public class TechnologyTypeDto implements Serializable {
 			photoUrlList = new ArrayList<String>();
 		}
 		photoUrlList.add(photoUrl);
+	}
+
+	public void setKeyId(Long keyId) {
+		this.keyId = keyId;
+	}
+
+	public Long getKeyId() {
+		return keyId;
 	}
 
 	private Date effectiveEndDate = null;
