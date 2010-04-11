@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -217,16 +216,16 @@ public class TestHarnessServlet extends HttpServlet {
 			sum = new AccessPointStatusSummary();
 			sum.setCommunity("US");
 			sum.setCountry("NY");
-			sum.setType(AccessPointType.WATER_POINT.toString());			
-			sum.setYear("2001");			
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setYear("2001");
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
 			sum = new AccessPointStatusSummary();
 			sum.setCommunity("US");
 			sum.setCountry("NY");
-			sum.setType(AccessPointType.WATER_POINT.toString());		
-			sum.setYear("2003");			
+			sum.setType(AccessPointType.WATER_POINT.toString());
+			sum.setYear("2003");
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
@@ -370,6 +369,28 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointType(AccessPointType.WATER_POINT);
 
 			apHelper.saveAccessPoint(ap);
+		} else if ("createQuestionLookup".equals(action)) {
+			SurveyDAO surveyDao = new SurveyDAO();
+			SurveyQuestion q = new SurveyQuestion();
+			q.setId("qm5");
+			q.setText("Technology Type");
+			q.setType(QuestionAnswerType.option);
+			surveyDao.save(q);
+			q = new SurveyQuestion();
+			q.setId("qm8");
+			q.setText("Is farthest household within 500m");
+			q.setType(QuestionAnswerType.option);
+			surveyDao.save(q);
+			q = new SurveyQuestion();
+			q.setId("qm9");
+			q.setText("Management Structure");
+			q.setType(QuestionAnswerType.option);
+			surveyDao.save(q);
+			q = new SurveyQuestion();
+			q.setId("qm10");
+			q.setText("Status");
+			q.setType(QuestionAnswerType.option);
+			surveyDao.save(q);
 		}
 	}
 }
