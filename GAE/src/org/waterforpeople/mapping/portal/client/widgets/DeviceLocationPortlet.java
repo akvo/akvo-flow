@@ -79,7 +79,7 @@ public class DeviceLocationPortlet extends Portlet {
 
 	private MapWidget constructMap() {
 		map = new MapWidget();
-		map.setSize(WIDTH + "px", (HEIGHT - 60) + "px");
+		map.setSize(WIDTH + "px", (HEIGHT - 20) + "px");
 		// add zoom control
 		map.addControl(new LargeMapControl());
 		return map;

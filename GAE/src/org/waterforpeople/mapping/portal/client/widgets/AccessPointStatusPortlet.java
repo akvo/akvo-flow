@@ -229,7 +229,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 	private Options createOptions() {
 		Options options = Options.create();
 		// this is needed so we can display html pop-ups over the flash content
-		options.setHeight(HEIGHT);
+		options.setHeight(HEIGHT-60);
 		options.setWidth(WIDTH);
 		return options;
 	}
