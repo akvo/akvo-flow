@@ -1,19 +1,17 @@
 package org.waterforpeople.mapping.app.web;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.dao.KMLDAO;
-import org.waterforpeople.mapping.db.PMF;
-import org.waterforpeople.mapping.domain.AccessPoint;
 
-import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.common.util.ZipUtil;
 
 @SuppressWarnings("serial")
 public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
@@ -46,8 +44,17 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 				KMLGenerator kmlGen = new KMLGenerator();
 				String placemarksDocument = kmlGen
 						.generateDocument("PlacemarkTabs.vm");
-				resp.setContentType("application/vnd.google-earth.kml+xml");
-				resp.getWriter().println(placemarksDocument);
+				//ToDo implement kmz compression now that kmls are so big
+				//application/vnd.google-earth.kmz
+				//resp.setContentType("application/vnd.google-earth.kml+xml");
+				resp.setContentType("application/vnd.google-earth.kmz");
+				
+				ServletOutputStream out = resp.getOutputStream();
+                //resp.setContentType("application/zip");
+                resp.setHeader("Content-Disposition","inline; filename=waterforpeoplemaping.kmz;");
+                String zip =((ByteArrayOutputStream) new ZipUtil().generateKMZ(placemarksDocument)).toString();
+                out.println(zip);
+                out.flush();				
 			}
 		} else if (showRegion != null) {
 			KMLGenerator kmlGen = new KMLGenerator();
