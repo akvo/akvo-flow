@@ -242,6 +242,8 @@ public class AccessPointManagerPortlet extends Portlet {
 	private void configureTechnologyType() {
 
 	}
+	
+	
 
 	private void configureAccessPointListBox() {
 		accessPointTypeListBox.addItem("Water Point");

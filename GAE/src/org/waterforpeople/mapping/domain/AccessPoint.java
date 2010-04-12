@@ -31,8 +31,11 @@ public class AccessPoint extends BaseDomain {
 	private TechnologyType typeTechnology = null;
 	@Persistent
 	private String TechnologyTypeOther = null;
+	private String typeTechnologyString = null;
 	@Persistent
+	//ToDo need to implement correct business rule
 	private Date constructionDate = null;
+	private String constructionDateYear = null;
 	@Persistent
 	private Long numberOfHouseholdsUsingPoint = null;
 	@Persistent
@@ -285,6 +288,22 @@ public class AccessPoint extends BaseDomain {
 		} else {
 			return Status.OTHER;
 		}
+	}
+
+	public void setTypeTechnologyString(String typeTechnologyString) {
+		this.typeTechnologyString = typeTechnologyString;
+	}
+
+	public String getTypeTechnologyString() {
+		return typeTechnologyString;
+	}
+
+	public void setConstructionDateYear(String constructionDateYear) {
+		this.constructionDateYear = constructionDateYear;
+	}
+
+	public String getConstructionDateYear() {
+		return constructionDateYear;
 	}
 
 }

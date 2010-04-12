@@ -244,6 +244,11 @@ public class MappingAttributeManager implements EntryPoint {
 							loadColumnsAndAttributes(existingMapDef
 									.getSpreadsheetColsList(), existingMapDef
 									.getMapDef());
+						}else{
+							
+							colMapStatusLabel.setText("No Existing Map Found");
+							colMapStatusLabel.setVisible(false);
+							retrieveSpreadsheetCols();
 						}
 
 					}

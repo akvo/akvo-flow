@@ -98,8 +98,9 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 			}
 		}
 		try {
-			((HttpServletResponse) resp)
-					.sendRedirect("/SpreadsheetMapping.html");
+			//((HttpServletResponse) resp)
+			//		.sendRedirect("/SpreadsheetMapping.html");
+			((HttpServletResponse)resp).sendRedirect("/SpreadsheetMapping.html?gwt.codesvr=127.0.0.1:9997");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

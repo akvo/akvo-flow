@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.adapter;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,16 +13,17 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
+import org.waterforpeople.mapping.domain.TechnologyType;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
+import org.waterforpeople.mapping.helper.TechnologyTypeHelper;
 
 import com.gallatinsystems.common.data.spreadsheet.GoogleSpreadsheetAdapter;
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetAccessPointAdapter {
@@ -42,6 +41,7 @@ public class SpreadsheetAccessPointAdapter {
 
 	public void processSpreadsheetOfAccessPoints(String spreadsheetName)
 			throws IOException, ServiceException {
+		loadTechnologyTypes();
 		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
 				sessionToken, privateKey);
 		AccessPointHelper apHelper = new AccessPointHelper();
@@ -73,6 +73,15 @@ public class SpreadsheetAccessPointAdapter {
 			throws IOException, ServiceException, GeneralSecurityException {
 		return new GoogleSpreadsheetAdapter(sessionToken, privateKey)
 				.listSpreasheets(feedURL);
+	}
+
+	HashMap<String, TechnologyType> techTypeMap = new HashMap<String, TechnologyType>();
+
+	private void loadTechnologyTypes() {
+		TechnologyTypeHelper tth = new TechnologyTypeHelper();
+		for (TechnologyType item : tth.listTechnologyTypes()) {
+			techTypeMap.put(item.getCode(), item);
+		}
 	}
 
 	private AccessPoint processRow(RowContainer row, String spreadsheetName) {
@@ -126,14 +135,66 @@ public class SpreadsheetAccessPointAdapter {
 		for (ColumnContainer col : row.getColumnContainersList()) {
 			String colName = col.getColName();
 			String attributeName = colsToAttributesMap.get(colName);
+			// log.info("attributeName: " + attributeName);
 			if (attributeName != null && !attributeName.trim().isEmpty()) {
-				if (attributeName.equals("typeTechnology")||attributeName.equals("pointType")||attributeName.equals("pointStatus")) {
-					if(attributeName.equals("typeTechnology")){
-						
-					}else if(attributeName.equals("pointType")){
-						
-					}else if(attributeName.equals("pointStatus")){
-						
+				if (attributeName.trim().toLowerCase().equals(
+						"typetechnologystring")
+						|| attributeName.trim().toLowerCase().equals(
+								"typetechnology")
+						|| attributeName.trim().toLowerCase().equals(
+								"pointtype")
+						|| attributeName.trim().toLowerCase().equals(
+								"pointstatus")) {
+					if (attributeName.trim().toLowerCase().equals(
+							"typetechnology")) {
+						TechnologyType tt = techTypeMap.get(col
+								.getColContents());
+						if (tt != null) {
+							// ToDo: fix after Tuesday demo
+							//log.info("Matched tt type: " + tt.getCode());
+							// ap.setTypeTechnology(tt);
+						} else {
+							ap.setTechnologyTypeOther(col.getColContents());
+						}
+					} else if (attributeName.toLowerCase().equals(
+							"typetechnologystring")) {
+						TechnologyType tt = techTypeMap.get(col
+								.getColContents());
+						if (tt != null) {
+							// ToDo: fix after Tuesday demo
+							//log.info("Matched tt type: " + tt.getCode());
+							ap.setTypeTechnologyString(tt.getCode());
+						} else {
+							ap.setTypeTechnologyString(col.getColContents());
+						}
+					} else if (attributeName.trim().toLowerCase().equals(
+							"pointtype")) {
+						if (col.getColContents().trim().toLowerCase().equals(
+								"sanitation")) {
+							ap.setPointType(AccessPointType.SANITATION_POINT);
+						} else if (col.getColContents().trim().toLowerCase()
+								.equals("water")) {
+							ap.setPointType(AccessPointType.WATER_POINT);
+						}
+					} else if (attributeName.trim().toLowerCase().equals(
+							"pointstatus")) {
+						if (col.getColContents() != null) {
+							if (col.getColContents().toLowerCase().equals(
+									"functional but with problems")) {
+								ap
+										.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
+							} else if (col.getColContents().toLowerCase()
+									.equals("Functional")) {
+								ap
+										.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+							} else {
+								ap.setPointStatus(AccessPoint.Status.OTHER);
+								ap.setOtherStatus(col.getColContents());
+							}
+						}else{
+							ap.setPointStatus(Status.OTHER);
+							ap.setOtherStatus("Unknown");
+						}
 					}
 				} else {
 					try {
@@ -252,7 +313,5 @@ public class SpreadsheetAccessPointAdapter {
 		}
 		return colsToAttributesMap;
 	}
-	
-	
 
 }

@@ -81,7 +81,7 @@ public class GoogleSpreadsheetAdapter {
 			SpreadsheetEntry entry = spreadsheets.get(i);
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
 				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				for (int j = 0; i < worksheets.size(); i++) {
+				for (int j = 0; j < worksheets.size(); j++) {
 					WorksheetEntry worksheet = worksheets.get(j);
 					String title = worksheet.getTitle().getPlainText();
 					int rowCount = worksheet.getRowCount();
