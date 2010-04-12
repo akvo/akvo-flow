@@ -141,6 +141,7 @@ public class ActivityChartPortlet extends Portlet implements ChangeHandler {
 					.getSelectedIndex());
 
 			if (selectedCountry != null) {
+				communityListbox.clear();
 				// if country changed, load the communities
 				CommunityServiceAsync communityService = GWT
 						.create(CommunityService.class);

@@ -101,6 +101,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 
 			if (selectedCountry != null) {
 				// if country changed, load the communities
+				communityListbox.clear();
 				CommunityServiceAsync communityService = GWT
 						.create(CommunityService.class);
 				// Set up the callback object.
