@@ -110,6 +110,7 @@ public class AccessPointHelper {
 								"non-integer year in construction date field",
 								e);
 					}
+					ap.setConstructionDateYear(qas.getValue());
 				}
 			} else if (qas.getQuestionID().equals("qm5")) {
 				// TODO: implement Technology type lookup
