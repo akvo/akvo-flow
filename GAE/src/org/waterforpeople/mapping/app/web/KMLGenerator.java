@@ -94,9 +94,9 @@ public class KMLGenerator {
 				context.put("communityCode", ap.getCommunityCode());
 				context.put("photoUrl", ap.getPhotoURL());
 				context.put("typeOfWaterPointTechnology", ap
-						.getTypeTechnology());
+						.getTypeTechnologyString());
 				context.put("constructionDateOfWaterPoint", ap
-						.getConstructionDate());
+						.getConstructionDateYear());
 				context.put("numberOfHouseholdsUsingWaterPoint", ap
 						.getNumberOfHouseholdsUsingPoint());
 				context.put("costPer", ap.getCostPer());
@@ -104,7 +104,7 @@ public class KMLGenerator {
 						.getFarthestHouseholdfromPoint());
 				context.put("currMgmtStructure", ap
 						.getCurrentManagementStructurePoint());
-				context.put("waterSystemStatus", ap.getPointStatus());
+				context.put("waterSystemStatus", ap.getPointStatus().toString());
 				context
 						.put("waterPointPhotoCaption", ap
 								.getPointPhotoCaption());
