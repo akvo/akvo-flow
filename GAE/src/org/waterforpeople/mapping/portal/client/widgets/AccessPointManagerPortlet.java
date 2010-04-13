@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointTechnologyTypeDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
@@ -73,7 +74,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private ListBox statusLB = new ListBox();
 
 	public AccessPointManagerPortlet() {
-		super(NAME, true, false, WIDTH, HEIGHT,true,LocationDrivenPortlet.ANY_OPT);
+		super(NAME, true, false, WIDTH, HEIGHT, true,
+				LocationDrivenPortlet.ANY_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
@@ -102,7 +104,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	/**
 	 * constructs and installs the menu for this portlet. Also wires in the
 	 * event handlers so we can update on menu value change
@@ -177,16 +179,31 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private void configureTechnologyType() {
 
 	}
-	
-	
 
 	private void configureAccessPointListBox() {
-		accessPointTypeListBox.addItem("Water Point");
-		accessPointTypeListBox.addItem("Sanitation Point");
+		accessPointTypeListBox.addItem("Water Point",
+				AccessPointType.WATER_POINT.toString());
+		accessPointTypeListBox.addItem("Sanitation Point",
+				AccessPointType.SANITATION_POINT.toString());
 	}
 
 	private void configureTechTypeListBox(ChangeEvent event) {
 		AccessPointTechnologyTypeDto techType;
+	}
+
+	/**
+	 * constructs a search criteria object using values from the form
+	 * 
+	 * @return
+	 */
+	private AccessPointSearchCriteriaDto formSearchCriteria() {
+		AccessPointSearchCriteriaDto dto = new AccessPointSearchCriteriaDto();
+		dto.setCommunityCode(getSelectedCommunity());
+		dto.setCountryCode(getSelectedCountry());
+		dto.setCollectionDateFrom(collectionDateDPLower.getValue());
+		dto.setCollectionDateTo(collectionDateDPUpper.getValue());
+		dto.setPointType(getSelectedValue(accessPointTypeListBox));
+		return dto;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -195,8 +212,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		statusLabel.setVisible(true);
 		mainVPanel.add(statusLabel);
 
-		svc.listAllAccessPoints(0, 0, new AsyncCallback() {
-
+		// svc.listAllAccessPoints(0, 0, new AsyncCallback() {
+		svc.listAccessPoints(formSearchCriteria(), 0, 0, new AsyncCallback() {
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
@@ -215,57 +232,64 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 		loadAccessPointHeaderRow();
 		int i = 1;
+		if (apDtoList == null || apDtoList.size() == 0) {
+			accessPointFT.clear();
+			statusLabel.setVisible(true);
+			statusLabel.setText("No matching access points");
+		} else {
 
-		for (AccessPointDto apDto : apDtoList) {
-			Label keyIdLabel = new Label(apDto.getKeyId().toString());
-			// keyIdLabel.setVisible(false);
-			accessPointFT.setWidget(i, 0, keyIdLabel);
-			accessPointFT.setWidget(i, 1, new Label(apDto.getCommunityCode()));
-			accessPointFT.setWidget(i, 2, new Label(apDto.getLatitude()
-					.toString()));
-			accessPointFT.setWidget(i, 3, new Label(apDto.getLongitude()
-					.toString()));
-			Button editAccessPoint = new Button("edit");
-			editAccessPoint.setTitle(keyIdLabel.getText());
-			Button deleteAccessPoint = new Button("delete");
-			deleteAccessPoint.setTitle(keyIdLabel.getText());
-			HorizontalPanel buttonHPanel = new HorizontalPanel();
-			buttonHPanel.add(editAccessPoint);
-			buttonHPanel.add(deleteAccessPoint);
+			for (AccessPointDto apDto : apDtoList) {
+				Label keyIdLabel = new Label(apDto.getKeyId().toString());
+				// keyIdLabel.setVisible(false);
+				accessPointFT.setWidget(i, 0, keyIdLabel);
+				accessPointFT.setWidget(i, 1, new Label(apDto
+						.getCommunityCode()));
+				accessPointFT.setWidget(i, 2, new Label(apDto.getLatitude()
+						.toString()));
+				accessPointFT.setWidget(i, 3, new Label(apDto.getLongitude()
+						.toString()));
+				Button editAccessPoint = new Button("edit");
+				editAccessPoint.setTitle(keyIdLabel.getText());
+				Button deleteAccessPoint = new Button("delete");
+				deleteAccessPoint.setTitle(keyIdLabel.getText());
+				HorizontalPanel buttonHPanel = new HorizontalPanel();
+				buttonHPanel.add(editAccessPoint);
+				buttonHPanel.add(deleteAccessPoint);
 
-			editAccessPoint.addClickHandler(new ClickHandler() {
+				editAccessPoint.addClickHandler(new ClickHandler() {
 
-				@Override
-				public void onClick(ClickEvent event) {
-					Button pressedButton = (Button) event.getSource();
-					Long itemId = new Long(pressedButton.getTitle());
-					loadAccessPointDetailTable(itemId);
-				}
+					@Override
+					public void onClick(ClickEvent event) {
+						Button pressedButton = (Button) event.getSource();
+						Long itemId = new Long(pressedButton.getTitle());
+						loadAccessPointDetailTable(itemId);
+					}
 
-			});
+				});
 
-			deleteAccessPoint.addClickHandler(new ClickHandler() {
+				deleteAccessPoint.addClickHandler(new ClickHandler() {
 
-				@Override
-				public void onClick(ClickEvent event) {
-					Button pressedButton = (Button) event.getSource();
-					Window.alert("delete key id: " + pressedButton.getTitle());
-				}
+					@Override
+					public void onClick(ClickEvent event) {
+						Button pressedButton = (Button) event.getSource();
+						Window.alert("delete key id: "
+								+ pressedButton.getTitle());
+					}
 
-			});
-			accessPointFT.setWidget(i, 4, buttonHPanel);
-			i++;
-			statusLabel
-					.setText("loading row: " + i + " of " + apDtoList.size());
+				});
+				accessPointFT.setWidget(i, 4, buttonHPanel);
+				i++;
+				statusLabel.setText("loading row: " + i + " of "
+						+ apDtoList.size());
 
+			}
+
+			statusLabel.setText("Done loading access points");
+			statusLabel.setVisible(false);
+			mainVPanel.remove(statusLabel);
+
+			mainVPanel.add(accessPointFT);
 		}
-
-		statusLabel.setText("Done loading access points");
-		statusLabel.setVisible(false);
-		mainVPanel.remove(statusLabel);
-
-		mainVPanel.add(accessPointFT);
-
 	}
 
 	private void loadAccessPointHeaderRow() {
@@ -501,8 +525,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointDetail.setWidget(12, 0, new Label("Point Type: "));
 
 		ListBox pointType = new ListBox();
-		pointType.addItem("Water Point");
-		pointType.addItem("Sanitation Type");
+		pointType
+				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
+		pointType.addItem("Sanitation Type", AccessPointType.SANITATION_POINT
+				.toString());
 		if (accessPointDto != null) {
 			AccessPointType apType = accessPointDto.getPointType();
 			if (apType.equals(AccessPointType.WATER_POINT)) {

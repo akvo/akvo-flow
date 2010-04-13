@@ -33,17 +33,28 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	private static final Logger log = Logger
 			.getLogger(AccessPointManagerService.class.getName());
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 2710084399371519003L;
 
+	/**
+	 * lists all access points that match the search criteria passed in
+	 */
 	@Override
 	public List<AccessPointDto> listAccessPoints(
 			AccessPointSearchCriteriaDto searchCriteria, Integer startRecord,
 			Integer endRecord) {
-		// TODO Auto-generated method stub
-		return null;
+		AccessPointDao dao = new AccessPointDao();
+		List<AccessPoint> pointList = dao.searchAccessPoints(searchCriteria
+				.getCountryCode(), searchCriteria.getCommunityCode(),
+				searchCriteria.getCollectionDateFrom(), searchCriteria
+						.getCollectionDateTo(), searchCriteria.getPointType(),
+				searchCriteria.getTechType());
+		List<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
+		for (AccessPoint apItem : pointList) {
+			AccessPointDto apDto = copyCanonicalToDto(apItem);
+			apDtoList.add(apDto);
+		}
+		return apDtoList;
 	}
 
 	@Override

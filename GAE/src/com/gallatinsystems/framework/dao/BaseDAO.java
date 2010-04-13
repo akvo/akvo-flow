@@ -15,6 +15,9 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 public class BaseDAO<T extends BaseDomain> {
 	protected static final String STRING_TYPE = "String";
+	protected static final String EQ_OP = " == ";
+	protected static final String GTE_OP = " >= ";
+	protected static final String LTE_OP = " <= ";
 	private Class<T> concreteClass;
 	protected Logger log;
 
@@ -222,7 +225,8 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	/**
-	 * utility method to form a hash map of query parameters
+	 * utility method to form a hash map of query parameters using an equality
+	 * operator
 	 * 
 	 * @param paramName
 	 *            - name of object property
@@ -240,14 +244,38 @@ public class BaseDAO<T extends BaseDomain> {
 	protected void appendNonNullParam(String paramName, StringBuilder filter,
 			StringBuilder param, String type, Object value,
 			Map<String, Object> paramMap) {
+		appendNonNullParam(paramName, filter, param, type, value, paramMap,
+				EQ_OP);
+	}
+
+	/**
+	 * utility method to form a hash map of query parameters
+	 * 
+	 * @param paramName
+	 *            - name of object property
+	 * @param filter
+	 *            - in/out stringBuilder of query filters
+	 * @param param
+	 *            -in/out stringBuilder of param names
+	 * @param type
+	 *            - data type of field
+	 * @param value
+	 *            - value to bind to param
+	 * @param paramMap
+	 *            - in/out parameter map
+	 * @param operator
+	 *            - operator to use
+	 */
+	protected void appendNonNullParam(String paramName, StringBuilder filter,
+			StringBuilder param, String type, Object value,
+			Map<String, Object> paramMap, String operator) {
 		if (value != null) {
 			if (paramMap.keySet().size() > 0) {
 				filter.append(" && ");
 				param.append(", ");
 			}
-
-			filter.append(paramName).append(" == ").append(paramName).append(
-					"Param");
+			filter.append(paramName).append(" ").append(operator).append(" ")
+					.append(paramName).append("Param");
 			param.append(type).append(" ").append(paramName).append("Param");
 			paramMap.put(paramName + "Param", value);
 		}

@@ -85,6 +85,7 @@ public class KMLGenerator {
 		try {
 			// loop through accessPoints and bind to variables
 			for (AccessPoint ap : entries) {
+				try{
 				VelocityContext context = new VelocityContext();
 
 				context.put("collectionDate", ap.getCollectionDate());
@@ -136,6 +137,9 @@ public class KMLGenerator {
 				}
 
 				sb.append(mergeContext(context, vmName));
+				}catch(Exception ex){
+					//TO-DO Fix
+				}
 			}
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Error generating placemarks", e);
