@@ -1,13 +1,11 @@
 package com.gallatinsystems.common.data.spreadsheet;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
@@ -131,7 +129,7 @@ public class GoogleSpreadsheetAdapter {
 
 	private SpreadsheetContainer loadSpreadsheet(String spreadsheetName)
 			throws IOException, ServiceException {
-	
+
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 		for (int i = 0; i < spreadsheets.size(); i++) {
 			SpreadsheetEntry entry = spreadsheets.get(i);

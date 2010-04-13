@@ -60,7 +60,7 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
-		buildChart("OK", WATER_TYPE);
+		buildChart("FUNCTIONING_HIGH", WATER_TYPE);
 	}
 
 	private Options createOptions() {
@@ -165,6 +165,7 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		statusListbox.addItem("High", "FUNCTIONING_HIGH");
 		statusListbox.addItem("Ok", "FUNCTIONING_OK");
 		statusListbox.addItem("Poor", "FUNCTIONING_WITH_PROBLEMS");
+		statusListbox.addItem("Other","OTHER");
 		statusListbox.setVisibleItemCount(1);
 		statusPanel.add(statusListbox);
 		grid.setWidget(0, 0, statusPanel);

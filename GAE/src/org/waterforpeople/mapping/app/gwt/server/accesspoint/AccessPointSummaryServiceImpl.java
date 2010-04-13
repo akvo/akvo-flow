@@ -57,7 +57,7 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 			} else {
 				// if we're selecting by status, collapse based on Country
 				for (int i = 0; i < summaries.size(); i++) {
-					Long curVal = countMap.get(summaries.get(i).getStatus());
+					Long curVal = countMap.get(summaries.get(i).getCountry());
 					if (curVal == null) {
 						curVal = summaries.get(i).getCount();
 					} else {
@@ -81,5 +81,4 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 		}
 		return dtoList;
 	}
-
 }
