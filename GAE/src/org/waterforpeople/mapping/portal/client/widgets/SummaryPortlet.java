@@ -13,6 +13,9 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -33,11 +36,13 @@ public class SummaryPortlet extends Portlet {
 	private static final int HEIGHT = 300;
 	private static final String TREE_ITEM_HEIGHT = "25";
 	private static final String USER_IMAGE = "images/users.png";
+	private static final String GOOGLE_EARTH_IMAGE = "images/google_earth_icon.png";
 	private static final String SURVEY_IMAGE = "images/surveys.png";
 	private static final String DEVICE_IMAGE = "images/device.png";
 	private TreeItem surveyRoot;
 	private TreeItem deviceRoot;
 	private TreeItem userRoot;
+	private TreeItem kmlRoot;
 	
 
 	public SummaryPortlet() {
@@ -123,8 +128,21 @@ public class SummaryPortlet extends Portlet {
 		panel.add(new Label("Devices"));
 		deviceRoot = t.addItem(panel);
 		
+		panel = new HorizontalPanel();
+		panel.setHeight(TREE_ITEM_HEIGHT);
+		panel.add(new Image(GOOGLE_EARTH_IMAGE));
+		Label l = new Label("View Current Map");
+		l.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.open("/webapp/waterforpeoplemappinggoogle?showKML=true", "KMZ", null);
+			}
+		});
+		panel.add(l);
+		kmlRoot = t.addItem(panel);
+	
 		return t;
-
 	}
 
 	@Override

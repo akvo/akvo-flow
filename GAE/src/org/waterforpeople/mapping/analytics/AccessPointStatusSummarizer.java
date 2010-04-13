@@ -10,7 +10,7 @@ import com.gallatinsystems.gis.geography.domain.Country;
 
 /**
  * This class will populate country/community lookup tables based on geo
- * information in the access piont.
+ * information in the access point.
  * 
  * @author Christopher Fagiani
  * 
