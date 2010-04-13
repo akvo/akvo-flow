@@ -10,12 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -43,7 +38,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
-public class AccessPointManagerPortlet extends Portlet {
+public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
 	public static final String NAME = "Access Point Manager";
 
@@ -70,8 +65,6 @@ public class AccessPointManagerPortlet extends Portlet {
 
 	private Label statusLabel = new Label();
 
-	private ListBox communityLB = new ListBox();
-	private ListBox countryLB = new ListBox();
 	private DateBox collectionDateDPLower = new DateBox();
 	private DateBox collectionDateDPUpper = new DateBox();
 	private DateBox constructionDateDPLower = new DateBox();
@@ -80,11 +73,10 @@ public class AccessPointManagerPortlet extends Portlet {
 	private ListBox statusLB = new ListBox();
 
 	public AccessPointManagerPortlet() {
-		super(NAME, true, false, WIDTH, HEIGHT);
+		super(NAME, true, false, WIDTH, HEIGHT,true,LocationDrivenPortlet.ANY_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
-		loadCountries();
 		setContent(contentPane);
 		svc = GWT.create(AccessPointManagerService.class);
 	}
@@ -110,64 +102,7 @@ public class AccessPointManagerPortlet extends Portlet {
 		// TODO Auto-generated method stub
 
 	}
-
-	/**
-	 * populates the country drop-down box and sets up the event handler to load
-	 * the communities
-	 */
-	private void loadCountries() {
-		final CommunityServiceAsync communityService = GWT
-				.create(CommunityService.class);
-		countryLB.addItem(ANY_OPT, ANY_OPT);
-		// Set up the callback object.
-		AsyncCallback<CountryDto[]> countryCallback = new AsyncCallback<CountryDto[]>() {
-			public void onFailure(Throwable caught) {
-				// no-op
-			}
-
-			public void onSuccess(CountryDto[] result) {
-				if (result != null) {
-					for (int i = 0; i < result.length; i++)
-						countryLB.addItem(result[i].getName(), result[i]
-								.getIsoAlpha2Code());
-				}
-			}
-		};
-		communityService.listCountries(countryCallback);
-		countryLB.addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				communityLB.clear();
-				String country = getSelectedValue(countryLB);
-				// only procede if they didn't select "ANY"
-				if (country != null) {
-					AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							// no-op
-
-						}
-
-						@Override
-						public void onSuccess(CommunityDto[] result) {
-							if (result != null) {
-								for (int i = 0; i < result.length; i++)
-									communityLB.addItem(result[i]
-											.getCommunityCode(), result[i]
-											.getCommunityCode());
-							}
-						}
-					};
-					communityService
-							.listCommunities(country, communityCallback);
-				}
-			}
-		});
-
-	}
-
+	
 	/**
 	 * constructs and installs the menu for this portlet. Also wires in the
 	 * event handlers so we can update on menu value change
@@ -214,9 +149,9 @@ public class AccessPointManagerPortlet extends Portlet {
 	private void configureSearchRibbon() {
 		configureDependantControls();
 		searchTable.setWidget(0, 0, new Label("Country"));
-		searchTable.setWidget(0, 1, countryLB);
+		searchTable.setWidget(0, 1, getCountryControl());
 		searchTable.setWidget(0, 2, new Label("Community"));
-		searchTable.setWidget(0, 3, communityLB);
+		searchTable.setWidget(0, 3, getCommunityControl());
 		searchTable.setWidget(1, 0, new Label("Collection Date from: "));
 		searchTable.setWidget(1, 1, collectionDateDPLower);
 		searchTable.setWidget(1, 2, new Label("to"));

@@ -8,12 +8,7 @@ import java.util.TreeSet;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -44,8 +39,8 @@ import com.google.gwt.visualization.client.visualizations.LineChart.Options;
  * @author Christopher Fagiani
  * 
  */
-public class AccessPointPerformancePortlet extends Portlet implements
-		ChangeHandler, ClickHandler, ValueChangeHandler<Boolean> {
+public class AccessPointPerformancePortlet extends LocationDrivenPortlet
+		implements ChangeHandler, ClickHandler, ValueChangeHandler<Boolean> {
 	public static final String DESCRIPTION = "Compare Access Point performance over time across communities";
 	public static final String NAME = "Access Point Performance";
 	private static final String WATER_TYPE = "WATER_POINT";
@@ -60,8 +55,6 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	private VerticalPanel contentPane;
 	private LineChart lineChart;
 
-	protected CountryDto[] countries;
-
 	private RadioButton wpTypeButton;
 	private RadioButton spTypeButton;
 
@@ -74,31 +67,19 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	private Map<String, Map<Long, AccessPointDto>> spSummaryMap;
 
 	public AccessPointPerformancePortlet() {
-		super(NAME, false, false, WIDTH, HEIGHT);
+		super(NAME, false, false, WIDTH, HEIGHT, true, null);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
 		wpSummaryMap = new HashMap<String, Map<Long, AccessPointDto>>();
 		spSummaryMap = new HashMap<String, Map<Long, AccessPointDto>>();
+	}
 
-		CommunityServiceAsync communityService = GWT
-				.create(CommunityService.class);
-		// Set up the callback object.
-		AsyncCallback<CountryDto[]> countryCallback = new AsyncCallback<CountryDto[]>() {
-			public void onFailure(Throwable caught) {
-				// no-op
-			}
-
-			public void onSuccess(CountryDto[] result) {
-				if (result != null) {
-					countries = result;
-					locationDialog = new LocationDialog();
-					addLocationButton.setEnabled(true);
-				}
-			}
-		};
-		communityService.listCountries(countryCallback);
+	@Override
+	protected void initialLoadComplete() {
+		locationDialog = new LocationDialog();
+		addLocationButton.setEnabled(true);
 	}
 
 	/**
@@ -129,10 +110,16 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	 * chart
 	 */
 	private void updateChart() {
-		buildChart(locationDialog.getSelectedCountry(), locationDialog
-				.getSelectedCommunity(), getSelectedMetric(), wpTypeButton
-				.getValue() ? WATER_TYPE.toString() : SANITATION_TYPE
-				.toString());
+		buildChart(getSelectedCountry(), getSelectedCommunity(),
+				getSelectedMetric(), wpTypeButton.getValue() ? WATER_TYPE
+						.toString() : SANITATION_TYPE.toString());
+	}
+
+	/**
+	 * when the community is selected, enable the OK button on the dialog
+	 */
+	protected void communitySelected(String community) {
+		locationDialog.enableOk();
 	}
 
 	/**
@@ -156,21 +143,21 @@ public class AccessPointPerformancePortlet extends Portlet implements
 		controlPanel.add(new Label("Type: "));
 		wpTypeButton = new RadioButton("APperfTypeGroup", "Waterpoint");
 		spTypeButton = new RadioButton("APperfTypeGroup", "Sanitation");
-		
-		
+
 		wpTypeButton.addValueChangeHandler(this);
 		spTypeButton.addValueChangeHandler(this);
 		wpTypeButton.setValue(true);
-		
+
 		controlPanel.add(wpTypeButton);
 		controlPanel.add(spTypeButton);
-		
+
 		controlPanel.add(new Label("Metric: "));
 		controlPanel.add(metricListbox);
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		addLocationButton = new Button("Add Location");
 		addLocationButton.addClickHandler(this);
+		addLocationButton.setEnabled(false);
 		buttonPanel.add(addLocationButton);
 		resetButton = new Button("Reset");
 		resetButton.addClickHandler(this);
@@ -189,7 +176,7 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	private Options createOptions() {
 		Options options = Options.create();
 		// this is needed so we can display html pop-ups over the flash content
-		options.setHeight(HEIGHT-60);
+		options.setHeight(HEIGHT - 60);
 		options.setWidth(WIDTH);
 		return options;
 	}
@@ -372,11 +359,8 @@ public class AccessPointPerformancePortlet extends Portlet implements
 	 * @author Christopher Fagiani
 	 * 
 	 */
-	private class LocationDialog extends DialogBox implements ClickHandler,
-			ChangeHandler {
+	private class LocationDialog extends DialogBox implements ClickHandler {
 
-		private ListBox countryListbox;
-		private ListBox communityListbox;
 		private Button okButton;
 		private Button cancelButton;
 
@@ -390,24 +374,15 @@ public class AccessPointPerformancePortlet extends Portlet implements
 
 			HorizontalPanel countryPanel = new HorizontalPanel();
 			countryPanel.add(new Label("Country: "));
-			countryListbox = new ListBox();
-			for (int i = 0; i < countries.length; i++) {
-				countryListbox.addItem(countries[i].getName(), countries[i]
-						.getIsoAlpha2Code());
-			}
-
-			countryListbox.setVisibleItemCount(1);
-			countryPanel.add(countryListbox);
+			countryPanel.add(AccessPointPerformancePortlet.this
+					.getCountryControl());
 			contentPane.add(countryPanel);
-
-			countryListbox.addChangeHandler(this);
 
 			HorizontalPanel commPanel = new HorizontalPanel();
 			commPanel.add(new Label("Community: "));
-			communityListbox = new ListBox();
-			commPanel.add(communityListbox);
+			commPanel.add(AccessPointPerformancePortlet.this
+					.getCommunityControl());
 			contentPane.add(commPanel);
-			communityListbox.addChangeHandler(this);
 
 			HorizontalPanel buttonPanel = new HorizontalPanel();
 			okButton = new Button("Ok");
@@ -419,51 +394,9 @@ public class AccessPointPerformancePortlet extends Portlet implements
 			buttonPanel.add(cancelButton);
 			setWidget(contentPane);
 			contentPane.add(buttonPanel);
-			loadCommunities();
-		}
-		
-
-		/**
-		 * checks if the country was changed and, if so, loads that country's
-		 * communities. This will also trigger a reload of the pie chart
-		 */
-		@Override
-		public void onChange(ChangeEvent event) {
-			if (event.getSource() == countryListbox) {
-				loadCommunities();
-			}
 		}
 
-		private void loadCommunities() {
-			String selectedCountry = countryListbox.getValue(countryListbox
-					.getSelectedIndex());
-			if (selectedCountry != null) {
-				// empty the old communities
-				communityListbox.clear();
-				// if country changed, load the communities
-				CommunityServiceAsync communityService = GWT
-						.create(CommunityService.class);
-				// Set up the callback object.
-				AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
-					public void onFailure(Throwable caught) {
-						// no-op
-					}
-
-					public void onSuccess(CommunityDto[] result) {
-						if (result != null) {
-							for (int i = 0; i < result.length; i++) {
-								communityListbox.addItem(result[i]
-										.getCommunityCode(), result[i]
-										.getCommunityCode());
-
-							}
-							communityListbox.setVisibleItemCount(1);
-						}
-					}
-				};
-				communityService.listCommunities(selectedCountry,
-						communityCallback);
-			}
+		public void enableOk() {
 			okButton.setEnabled(true);
 		}
 
@@ -480,32 +413,5 @@ public class AccessPointPerformancePortlet extends Portlet implements
 				LocationDialog.this.hide();
 			}
 		}
-
-		/**
-		 * returns the currently selected country from the listbox
-		 */
-		public String getSelectedCountry() {
-			if (countryListbox.getSelectedIndex() >= 0) {
-				String val = countryListbox.getValue(countryListbox
-						.getSelectedIndex());
-				return val;
-			} else {
-				return null;
-			}
-		}
-
-		/**
-		 * returns the currently selected community from the listbox
-		 */
-		public String getSelectedCommunity() {
-			if (communityListbox.getSelectedIndex() >= 0) {
-				String val = communityListbox.getValue(communityListbox
-						.getSelectedIndex());
-				return val;
-			} else {
-				return null;
-			}
-		}
 	}
-
 }
