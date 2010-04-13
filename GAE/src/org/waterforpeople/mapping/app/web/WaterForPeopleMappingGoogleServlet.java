@@ -46,15 +46,14 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 						.generateDocument("PlacemarkTabs.vm");
 				//ToDo implement kmz compression now that kmls are so big
 				//application/vnd.google-earth.kmz
-				//resp.setContentType("application/vnd.google-earth.kml+xml");
-				resp.setContentType("application/vnd.google-earth.kmz");
-				
+				resp.setContentType("application/vnd.google-earth.kmz+xml");				
 				ServletOutputStream out = resp.getOutputStream();
-                //resp.setContentType("application/zip");
-                resp.setHeader("Content-Disposition","inline; filename=waterforpeoplemaping.kmz;");
-                String zip =((ByteArrayOutputStream) new ZipUtil().generateKMZ(placemarksDocument)).toString();
-                out.println(zip);
-                out.flush();				
+                resp.setHeader("Content-Disposition","inline; filename=waterforpeoplemaping.kmz;");                
+                ByteArrayOutputStream os = ZipUtil.generateZip(placemarksDocument);
+                out.write(os.toByteArray());
+                out.flush();
+               
+               				
 			}
 		} else if (showRegion != null) {
 			KMLGenerator kmlGen = new KMLGenerator();
