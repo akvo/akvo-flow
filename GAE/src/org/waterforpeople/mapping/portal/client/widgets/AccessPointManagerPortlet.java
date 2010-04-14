@@ -142,8 +142,19 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			}
 
 		});
-
+		hiddenAccessPointCursorString.setVisible(false);
+		mainVPanel.add(hiddenAccessPointCursorString);
 		return grid;
+	}
+
+	private void setAccessPointCursor(String cursor) {
+		hiddenAccessPointCursorString.setText(cursor);
+	}
+
+	private String getAccessPointCursor() {
+		if (hiddenAccessPointCursorString.getText().trim().equals(""))
+			return null;
+		return hiddenAccessPointCursorString.getText();
 	}
 
 	private Button createNewAccessPoint = new Button("Create New Access Point");
@@ -206,6 +217,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		return dto;
 	}
 
+	private Label hiddenAccessPointCursorString = new Label();
+
 	@SuppressWarnings("unchecked")
 	private void processClickEvent() {
 		statusLabel.setText("Please wait loading access points");
@@ -213,19 +226,34 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		mainVPanel.add(statusLabel);
 
 		// svc.listAllAccessPoints(0, 0, new AsyncCallback() {
-		svc.listAccessPoints(formSearchCriteria(), 0, 0, new AsyncCallback() {
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+		svc.listAccessPoints(formSearchCriteria(), getAccessPointCursor(),
+				new AsyncCallback() {
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
 
-			}
+					}
 
-			@Override
-			public void onSuccess(Object result) {
-				loadAccessPoint((ArrayList<AccessPointDto>) result);
-			}
+					@Override
+					public void onSuccess(Object result) {
+						svc.getCursorString(new AsyncCallback<String>() {
 
-		});
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void onSuccess(String result) {
+								setAccessPointCursor(result);
+							}
+
+						});
+						loadAccessPoint((ArrayList<AccessPointDto>) result);
+					}
+
+				});
 	}
 
 	private void loadAccessPoint(ArrayList<AccessPointDto> apDtoList) {
@@ -284,6 +312,20 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			}
 
+			Button nextSet = new Button("Next 20");
+			Button previousSet = new Button("Previous 20");
+
+			nextSet.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					processClickEvent();
+
+				}
+
+			});
+			accessPointFT.setWidget(i + 1, 0, previousSet);
+			accessPointFT.setWidget(i + 1, 1, nextSet);
 			statusLabel.setText("Done loading access points");
 			statusLabel.setVisible(false);
 			mainVPanel.remove(statusLabel);

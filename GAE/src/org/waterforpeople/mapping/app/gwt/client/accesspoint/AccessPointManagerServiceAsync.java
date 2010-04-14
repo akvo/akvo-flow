@@ -7,10 +7,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface AccessPointManagerServiceAsync {
 
 	void listAccessPoints(AccessPointSearchCriteriaDto searchCriteria,
-			Integer startRecord, Integer endRecord,
-			AsyncCallback<List<AccessPointDto>> callback);
-
-	void listAllAccessPoints(Integer startRecord, Integer endRecord,
+			String cursorString,
 			AsyncCallback<List<AccessPointDto>> callback);
 
 	void getAccessPoint(Long id, AsyncCallback<AccessPointDto> callback);
@@ -32,5 +29,10 @@ public interface AccessPointManagerServiceAsync {
 
 	void listAccessPointByLocation(String country, String community,
 			String type, AsyncCallback<AccessPointDto[]> callback);
+
+	void listAllAccessPoints(String cursorString,
+			AsyncCallback<List<AccessPointDto>> callback);
+
+	void getCursorString(AsyncCallback<String> callback);
 
 }

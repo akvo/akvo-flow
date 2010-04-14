@@ -41,32 +41,33 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	 */
 	@Override
 	public List<AccessPointDto> listAccessPoints(
-			AccessPointSearchCriteriaDto searchCriteria, Integer startRecord,
-			Integer endRecord) {
+			AccessPointSearchCriteriaDto searchCriteria, String cursorString) {
 		AccessPointDao dao = new AccessPointDao();
 		List<AccessPoint> pointList = dao.searchAccessPoints(searchCriteria
 				.getCountryCode(), searchCriteria.getCommunityCode(),
 				searchCriteria.getCollectionDateFrom(), searchCriteria
 						.getCollectionDateTo(), searchCriteria.getPointType(),
-				searchCriteria.getTechType());
+				searchCriteria.getTechType(),cursorString);
 		List<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 		for (AccessPoint apItem : pointList) {
 			AccessPointDto apDto = copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
 		}
+		this.accessPointCursor =dao.getCursorString();
 		return apDtoList;
 	}
 
 	@Override
-	public List<AccessPointDto> listAllAccessPoints(Integer startRecord,
-			Integer endRecord) {
+	public List<AccessPointDto> listAllAccessPoints(String cursorString) {
 		List<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 
 		AccessPointHelper ah = new AccessPointHelper();
-		for (AccessPoint apItem : ah.listAccessPoint()) {
+		
+		for (AccessPoint apItem : ah.listAccessPoint(cursorString)) {
 			AccessPointDto apDto = copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
 		}
+		this.accessPointCursor=ah.getCursor();
 		return apDtoList;
 	}
 
@@ -263,7 +264,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			String community, String type) {
 		AccessPointDao apDAO = new AccessPointDao();
 		List<AccessPoint> summaries = apDAO.listAccessPointByLocation(country,
-				community, type);
+				community, type,"all");
 		AccessPointDto[] dtoList = null;
 
 		if (summaries != null) {
@@ -276,5 +277,11 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			}
 		}
 		return dtoList;
+	}
+	private String accessPointCursor= null;
+
+	@Override
+	public String getCursorString() {
+		return accessPointCursor;
 	}
 }

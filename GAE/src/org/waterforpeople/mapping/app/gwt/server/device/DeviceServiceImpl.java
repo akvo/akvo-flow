@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -29,7 +30,7 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 	public DeviceDto[] listDevice() {
 
 		DeviceDAO deviceDao = new DeviceDAO();
-		List<Device> devices = deviceDao.list();
+		List<Device> devices = deviceDao.list(BaseDAO.ALL_RESULTS);
 		DeviceDto[] deviceDtos = null;
 		if (devices != null) {
 			deviceDtos = new DeviceDto[devices.size()];

@@ -79,7 +79,7 @@ public class KMLGenerator {
 		StringBuilder sb = new StringBuilder();
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
 
-		List<AccessPoint> entries = apDAO.list();
+		List<AccessPoint> entries = apDAO.list(BaseDAO.ALL_RESULTS);
 		CaptionsDAO captionDAO = new CaptionsDAO();
 		List<CaptionDefinition> captions = captionDAO.list();
 		try {

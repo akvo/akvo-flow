@@ -7,12 +7,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("apmanagerrpcservice")
 public interface AccessPointManagerService extends RemoteService {
-	List<AccessPointDto> listAllAccessPoints(Integer startRecord,
-			Integer endRecord);
-
-	List<AccessPointDto> listAccessPoints(
-			AccessPointSearchCriteriaDto searchCriteria, Integer startRecord,
-			Integer endRecord);
+	List<AccessPointDto> listAllAccessPoints(String cursorString);
 
 	AccessPointDto getAccessPoint(Long id);
 
@@ -30,6 +25,12 @@ public interface AccessPointManagerService extends RemoteService {
 
 	Boolean rotateImage(String fileName);
 
-	public AccessPointDto[] listAccessPointByLocation(String country,
+	AccessPointDto[] listAccessPointByLocation(String country,
 			String community, String type);
+
+	List<AccessPointDto> listAccessPoints(
+			AccessPointSearchCriteriaDto searchCriteria, String cursorString);
+	
+	String getCursorString();
+	
 }

@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserConfig;
@@ -38,7 +39,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public UserDto[] listUser() {
-		List<User> users = userDao.list();
+		List<User> users = userDao.list(BaseDAO.ALL_RESULTS);
 		UserDto[] result = null;
 		if (users != null) {
 			result = new UserDto[users.size()];

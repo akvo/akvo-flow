@@ -34,7 +34,7 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 		
 		if(clearAccessPointFlag.equals("doIt")){
 			BaseDAO<AccessPoint> baseDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
-			List<AccessPoint> apList = baseDAO.list();
+			List<AccessPoint> apList = baseDAO.list(BaseDAO.ALL_RESULTS);
 			for(AccessPoint item: apList){
 				try {
 					resp.getWriter().println("Deleting: " + item.toString());

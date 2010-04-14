@@ -88,7 +88,7 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 			results = (List<SurveyInstanceSummary>) query
 					.executeWithMap(paramMap);
 		} else {
-			results = list();
+			results = list(BaseDAO.ALL_RESULTS);
 		}
 		return results;
 	}

@@ -48,7 +48,7 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 	public CountryDto[] listCountries() {
 		CommunityDao commDao = new CommunityDao();
 		CountryDto[] dtoList = null;
-		List<Country> cList = commDao.list(Country.class);
+		List<Country> cList = commDao.list(Country.class,"all");
 		if (cList != null) {
 			dtoList = new CountryDto[cList.size()];
 			for (int i = 0; i < cList.size(); i++) {

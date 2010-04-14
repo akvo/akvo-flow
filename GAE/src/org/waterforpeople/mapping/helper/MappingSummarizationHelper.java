@@ -138,7 +138,7 @@ public class MappingSummarizationHelper {
 		// can't do anything
 		STRtree regionIndex = geoIndexDao.findGeoIndex(regionUUID);
 		// TODO: filter access points!!! for now, we get them all
-		List<AccessPoint> accessPoints = accessPointDao.list();
+		List<AccessPoint> accessPoints = accessPointDao.list(BaseDAO.ALL_RESULTS);
 		List<AccessPoint> pointsInRegion = new ArrayList<AccessPoint>();
 		if (accessPoints != null && regionIndex != null) {
 

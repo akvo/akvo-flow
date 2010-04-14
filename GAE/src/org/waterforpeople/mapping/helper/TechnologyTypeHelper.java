@@ -13,7 +13,7 @@ public class TechnologyTypeHelper {
 
 	public List<TechnologyType> listTechnologyTypes(){
 		BaseDAO<TechnologyType> baseDAO = new BaseDAO<TechnologyType>(TechnologyType.class);
-		return baseDAO.list();
+		return baseDAO.list(BaseDAO.ALL_RESULTS);
 	}
 	
 	public TechnologyType save(TechnologyType techType){
@@ -33,7 +33,7 @@ public class TechnologyTypeHelper {
 	
 	public void deleteAll(){
 		BaseDAO<TechnologyType> baseDAO = new BaseDAO<TechnologyType>(TechnologyType.class);
-		for(TechnologyType techType: baseDAO.list()){
+		for(TechnologyType techType: baseDAO.list(BaseDAO.ALL_RESULTS)){
 			baseDAO.delete(techType);
 		}
 	}

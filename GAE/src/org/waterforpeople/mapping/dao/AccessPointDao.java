@@ -7,10 +7,12 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
+import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.Cursor;
 
 /**
  * dao for manipulating access points
@@ -34,23 +36,45 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointByLocation(String country,
-			String community, String type) {
+			String community, String type, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		Map<String, Object> paramMap = null;
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		if (cursorString != null
+				&& !cursorString.trim().toLowerCase().equals(ALL_RESULTS)) {
+			Cursor cursor = Cursor.fromWebSafeString(cursorString);
+			Map<String, Object> extensionMap = new HashMap<String, Object>();
+			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+			query.setExtensions(extensionMap);
+		} else {
 
-		appendNonNullParam("countryCode", filterString, paramString, "String",
-				country, paramMap);
-		appendNonNullParam("communityCode", filterString, paramString,
-				"String", community, paramMap);
-		appendNonNullParam("pointType", filterString, paramString, "String",
-				type, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		return (List<AccessPoint>) query.executeWithMap(paramMap);
+			StringBuilder filterString = new StringBuilder();
+			StringBuilder paramString = new StringBuilder();
+			paramMap = new HashMap<String, Object>();
+
+			appendNonNullParam("countryCode", filterString, paramString,
+					"String", country, paramMap);
+			appendNonNullParam("communityCode", filterString, paramString,
+					"String", community, paramMap);
+			appendNonNullParam("pointType", filterString, paramString,
+					"String", type, paramMap);
+			query.setFilter(filterString.toString());
+			query.declareParameters(paramString.toString());
+
+		}
+
+		if (!cursorString.equals(ALL_RESULTS))
+			query.setRange(0, 20);
+		List<AccessPoint> results = (List<AccessPoint>) query
+				.executeWithMap(paramMap);
+
+		if (cursorString == null) {
+			Cursor cursor = JDOCursorHelper.getCursor(results);
+			super.setCursorString(cursor.toWebSafeString());
+		}
+
+		return results;
 	}
 
 	/**
@@ -66,35 +90,54 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<AccessPoint> searchAccessPoints(String country,
-			String community, Date collDateFrom, Date collDateTo,
-			String type, String tech) {
+			String community, Date collDateFrom, Date collDateTo, String type,
+			String tech, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
-
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> paramMap =null;
+		paramMap= new HashMap<String, Object>();
 
-		appendNonNullParam("countryCode", filterString, paramString, "String",
-				country, paramMap);
+		appendNonNullParam("countryCode", filterString, paramString,
+				"String", country, paramMap);
 		appendNonNullParam("communityCode", filterString, paramString,
 				"String", community, paramMap);
-		appendNonNullParam("pointType", filterString, paramString, "String",
-				type, paramMap);
-		appendNonNullParam("typeTechnologyString", filterString, paramString,
-				"String", tech, paramMap);
+		appendNonNullParam("pointType", filterString, paramString,
+				"String", type, paramMap);
+		appendNonNullParam("typeTechnologyString", filterString,
+				paramString, "String", tech, paramMap);
 		appendNonNullParam("collectionDate", filterString, paramString,
 				"Date", collDateFrom, paramMap, GTE_OP);
 		appendNonNullParam("collectionDate", filterString, paramString,
 				"Date", collDateTo, paramMap, LTE_OP);
+		
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
 
 		if (collDateFrom != null || collDateTo != null) {
 			query.declareImports("import java.util.Date");
 		}
+		if (cursorString != null
+				&& !cursorString.trim().toLowerCase().equals(ALL_RESULTS)) {
+			Cursor cursor = Cursor.fromWebSafeString(cursorString);
+			Map<String, Object> extensionMap = new HashMap<String, Object>();
+			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+			query.setExtensions(extensionMap);
+		} else {
+			
+			
+		}
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		return (List<AccessPoint>) query.executeWithMap(paramMap);
+		
+		if (cursorString==null||!cursorString.equals(ALL_RESULTS))
+			query.setRange(0, 20);
+		List<AccessPoint>results = (List<AccessPoint>) query.executeWithMap(paramMap);
+		if (cursorString == null) {
+			Cursor cursor = JDOCursorHelper.getCursor(results);
+			super.setCursorString(cursor.toWebSafeString());
+		}
+		return results;
 	}
 
 }

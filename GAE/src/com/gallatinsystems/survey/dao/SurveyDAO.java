@@ -50,7 +50,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		StringBuilder sb = new StringBuilder();
 
 		List<QuestionQuestionGroupAssoc> qqgaList = super
-				.list(QuestionQuestionGroupAssoc.class);
+				.list(QuestionQuestionGroupAssoc.class, "all");
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
 			sb.append(qqga.toString());
 			if (qqga.getQuestion() != null) {
@@ -174,7 +174,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	public List<SurveyContainer> listSurveyContainers() {
-		return super.list(SurveyContainer.class);
+		return super.list(SurveyContainer.class,"all");
 	}
 	
 	/**

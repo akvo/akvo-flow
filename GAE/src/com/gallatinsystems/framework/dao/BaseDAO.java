@@ -1,6 +1,7 @@
 package com.gallatinsystems.framework.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -8,8 +9,11 @@ import java.util.logging.Logger;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
+import org.datanucleus.store.appengine.query.JDOCursorHelper;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -120,9 +124,11 @@ public class BaseDAO<T extends BaseDomain> {
 	 * 
 	 * @return
 	 */
-	public List<T> list() {
-		return list(concreteClass);
+	public List<T> list(String cursorString) {
+		return list(concreteClass, cursorString);
 	}
+
+	public final static String ALL_RESULTS = "all";
 
 	/**
 	 * lists all of the type passed in.
@@ -132,14 +138,29 @@ public class BaseDAO<T extends BaseDomain> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <E extends BaseDomain> List<E> list(Class<E> c) {
+	public <E extends BaseDomain> List<E> list(Class<E> c, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		List<E> results = null;
 		javax.jdo.Query query = pm.newQuery(c);
-		results = (List<E>) query.execute();
 
+		if (cursorString != null
+				&& !cursorString.trim().toLowerCase().equals(ALL_RESULTS)) {
+			Cursor cursor = Cursor.fromWebSafeString(cursorString);
+			Map<String, Object> extensionMap = new HashMap<String, Object>();
+			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+			query.setExtensions(extensionMap);
+		}
+		List<E> results = null;
+		if (!cursorString.equals(ALL_RESULTS))
+			query.setRange(0, 20);
+		results = (List<E>) query.execute();
+		if (cursorString == null) {
+			Cursor cursor = JDOCursorHelper.getCursor(results);
+			this.cursorString = cursor.toWebSafeString();
+		}
 		return results;
 	}
+
+	private String cursorString = null;
 
 	/**
 	 * returns a single object based on the property value
@@ -279,5 +300,13 @@ public class BaseDAO<T extends BaseDomain> {
 			param.append(type).append(" ").append(paramName).append("Param");
 			paramMap.put(paramName + "Param", value);
 		}
+	}
+
+	public void setCursorString(String cursorString) {
+		this.cursorString = cursorString;
+	}
+
+	public String getCursorString() {
+		return cursorString;
 	}
 }
