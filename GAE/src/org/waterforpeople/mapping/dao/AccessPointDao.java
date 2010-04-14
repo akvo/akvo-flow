@@ -10,6 +10,7 @@ import javax.jdo.PersistenceManager;
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.google.appengine.api.datastore.Cursor;
@@ -42,7 +43,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		Map<String, Object> paramMap = null;
 
 		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(ALL_RESULTS)) {
+				&& !cursorString.trim().toLowerCase().equals(Constants.ALL_RESULTS)) {
 			Cursor cursor = Cursor.fromWebSafeString(cursorString);
 			Map<String, Object> extensionMap = new HashMap<String, Object>();
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
@@ -64,7 +65,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 
 		}
 
-		if (!cursorString.equals(ALL_RESULTS))
+		if (!cursorString.equals(Constants.ALL_RESULTS))
 			query.setRange(0, 20);
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
@@ -119,7 +120,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			query.declareImports("import java.util.Date");
 		}
 		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(ALL_RESULTS)) {
+				&& !cursorString.trim().toLowerCase().equals(Constants.ALL_RESULTS)) {
 			Cursor cursor = Cursor.fromWebSafeString(cursorString);
 			Map<String, Object> extensionMap = new HashMap<String, Object>();
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
@@ -130,7 +131,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		}
 
 		
-		if (cursorString==null||!cursorString.equals(ALL_RESULTS))
+		if (cursorString==null||!cursorString.equals(Constants.ALL_RESULTS))
 			query.setRange(0, 20);
 		List<AccessPoint>results = (List<AccessPoint>) query.executeWithMap(paramMap);
 		if (cursorString == null) {

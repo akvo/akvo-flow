@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.domain.TechnologyType;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class TechnologyTypeHelper {
@@ -13,7 +14,7 @@ public class TechnologyTypeHelper {
 
 	public List<TechnologyType> listTechnologyTypes(){
 		BaseDAO<TechnologyType> baseDAO = new BaseDAO<TechnologyType>(TechnologyType.class);
-		return baseDAO.list(BaseDAO.ALL_RESULTS);
+		return baseDAO.list(Constants.ALL_RESULTS);
 	}
 	
 	public TechnologyType save(TechnologyType techType){
@@ -33,7 +34,7 @@ public class TechnologyTypeHelper {
 	
 	public void deleteAll(){
 		BaseDAO<TechnologyType> baseDAO = new BaseDAO<TechnologyType>(TechnologyType.class);
-		for(TechnologyType techType: baseDAO.list(BaseDAO.ALL_RESULTS)){
+		for(TechnologyType techType: baseDAO.list(Constants.ALL_RESULTS)){
 			baseDAO.delete(techType);
 		}
 	}

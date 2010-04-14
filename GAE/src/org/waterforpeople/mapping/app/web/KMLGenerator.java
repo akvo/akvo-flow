@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.CaptionDefinition;
 import org.waterforpeople.mapping.domain.GeoRegion;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class KMLGenerator {
@@ -79,7 +80,7 @@ public class KMLGenerator {
 		StringBuilder sb = new StringBuilder();
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
 
-		List<AccessPoint> entries = apDAO.list(BaseDAO.ALL_RESULTS);
+		List<AccessPoint> entries = apDAO.list(Constants.ALL_RESULTS);
 		CaptionsDAO captionDAO = new CaptionsDAO();
 		List<CaptionDefinition> captions = captionDAO.list();
 		try {

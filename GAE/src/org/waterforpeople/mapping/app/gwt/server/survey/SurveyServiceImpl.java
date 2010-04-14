@@ -10,8 +10,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -32,7 +32,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyDto[] listSurvey() {
 
-		List<Survey> surveys = surveyDao.list(BaseDAO.ALL_RESULTS);
+		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
 		SurveyDto[] surveyDtos = null;
 		if (surveys != null) {
 			surveyDtos = new SurveyDto[surveys.size()];

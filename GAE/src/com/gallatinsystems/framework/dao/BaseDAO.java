@@ -11,6 +11,7 @@ import javax.jdo.PersistenceManager;
 
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.google.appengine.api.datastore.Cursor;
@@ -128,7 +129,7 @@ public class BaseDAO<T extends BaseDomain> {
 		return list(concreteClass, cursorString);
 	}
 
-	public final static String ALL_RESULTS = "all";
+	
 
 	/**
 	 * lists all of the type passed in.
@@ -143,14 +144,14 @@ public class BaseDAO<T extends BaseDomain> {
 		javax.jdo.Query query = pm.newQuery(c);
 
 		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(ALL_RESULTS)) {
+				&& !cursorString.trim().toLowerCase().equals(Constants.ALL_RESULTS)) {
 			Cursor cursor = Cursor.fromWebSafeString(cursorString);
 			Map<String, Object> extensionMap = new HashMap<String, Object>();
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
 			query.setExtensions(extensionMap);
 		}
 		List<E> results = null;
-		if (!cursorString.equals(ALL_RESULTS))
+		if (!cursorString.equals(Constants.ALL_RESULTS))
 			query.setRange(0, 20);
 		results = (List<E>) query.execute();
 		if (cursorString == null) {

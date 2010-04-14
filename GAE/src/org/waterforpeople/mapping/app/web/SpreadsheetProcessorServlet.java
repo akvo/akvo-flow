@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -34,7 +35,7 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 		
 		if(clearAccessPointFlag.equals("doIt")){
 			BaseDAO<AccessPoint> baseDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
-			List<AccessPoint> apList = baseDAO.list(BaseDAO.ALL_RESULTS);
+			List<AccessPoint> apList = baseDAO.list(Constants.ALL_RESULTS);
 			for(AccessPoint item: apList){
 				try {
 					resp.getWriter().println("Deleting: " + item.toString());

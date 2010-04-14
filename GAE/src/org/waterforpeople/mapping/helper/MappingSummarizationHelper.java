@@ -8,6 +8,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.dao.GeoIndexDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -138,7 +139,7 @@ public class MappingSummarizationHelper {
 		// can't do anything
 		STRtree regionIndex = geoIndexDao.findGeoIndex(regionUUID);
 		// TODO: filter access points!!! for now, we get them all
-		List<AccessPoint> accessPoints = accessPointDao.list(BaseDAO.ALL_RESULTS);
+		List<AccessPoint> accessPoints = accessPointDao.list(Constants.ALL_RESULTS);
 		List<AccessPoint> pointsInRegion = new ArrayList<AccessPoint>();
 		if (accessPoints != null && regionIndex != null) {
 
