@@ -23,6 +23,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import services.S3Driver;
 
 import com.gallatinsystems.common.util.DateUtil;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.datastore.Key;
@@ -57,7 +58,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		}
 		
 		ResponseDto<ArrayList<AccessPointDto>> container = new ResponseDto<ArrayList<AccessPointDto>>();
-		container.setCursorString(dao.getCursorString());
+		container.setCursorString(BaseDAO.getCursor(pointList));
 		container.setPayload(apDtoList);
 		
 		return container;
@@ -73,7 +74,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			AccessPointDto apDto = copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
 		}
-		this.accessPointCursor=ah.getCursor();
+		
 		return apDtoList;
 	}
 

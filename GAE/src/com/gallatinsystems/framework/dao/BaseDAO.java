@@ -129,8 +129,6 @@ public class BaseDAO<T extends BaseDomain> {
 		return list(concreteClass, cursorString);
 	}
 
-	
-
 	/**
 	 * lists all of the type passed in.
 	 * 
@@ -144,24 +142,21 @@ public class BaseDAO<T extends BaseDomain> {
 		javax.jdo.Query query = pm.newQuery(c);
 
 		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(Constants.ALL_RESULTS)) {
+				&& !cursorString.trim().toLowerCase().equals(
+						Constants.ALL_RESULTS)) {
 			Cursor cursor = Cursor.fromWebSafeString(cursorString);
 			Map<String, Object> extensionMap = new HashMap<String, Object>();
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
 			query.setExtensions(extensionMap);
 		}
 		List<E> results = null;
-		if (!cursorString.equals(Constants.ALL_RESULTS))
-			query.setRange(0, 20);
+		this.prepareCursor(cursorString, query);
 		results = (List<E>) query.execute();
-		if (cursorString == null) {
-			Cursor cursor = JDOCursorHelper.getCursor(results);
-			this.cursorString = cursor.toWebSafeString();
-		}
+		
 		return results;
 	}
 
-	private String cursorString = null;
+	
 
 	/**
 	 * returns a single object based on the property value
@@ -303,11 +298,25 @@ public class BaseDAO<T extends BaseDomain> {
 		}
 	}
 
-	public void setCursorString(String cursorString) {
-		this.cursorString = cursorString;
+	public static String getCursor(List results) {
+		if (results.size() > 0) {
+			Cursor cursor = JDOCursorHelper.getCursor(results);
+			return cursor.toWebSafeString();
+		}
+		return null;
+
 	}
 
-	public String getCursorString() {
-		return cursorString;
+	protected void prepareCursor(String cursorString, javax.jdo.Query query) {
+		if (cursorString != null
+				&& !cursorString.trim().toLowerCase().equals(
+						Constants.ALL_RESULTS)) {
+			Cursor cursor = Cursor.fromWebSafeString(cursorString);
+			Map<String, Object> extensionMap = new HashMap<String, Object>();
+			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+			query.setExtensions(extensionMap);
+		}
+		if (cursorString==null||!cursorString.equals(Constants.ALL_RESULTS))
+			query.setRange(0, 20);
 	}
 }

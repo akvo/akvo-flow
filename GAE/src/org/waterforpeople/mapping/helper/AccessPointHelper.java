@@ -32,10 +32,7 @@ public class AccessPointHelper {
 		return apDAO.getByKey(id);
 	}
 	
-	private String cursor=null;
-	public String getCursor(){
-		return cursor;
-	}
+	
 
 	public void processSurveyInstance(String surveyId) {
 		// Get the survey and QuestionAnswerStore
@@ -174,7 +171,7 @@ public class AccessPointHelper {
 
 	public List<AccessPoint> listAccessPoint(String cursorString) {
 		AccessPointDao apDao = new AccessPointDao();
-		this.cursor = apDao.getCursorString();
+		
 		return apDao.list(cursorString);
 	}
 

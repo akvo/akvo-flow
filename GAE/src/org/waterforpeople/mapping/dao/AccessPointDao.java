@@ -42,14 +42,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		Map<String, Object> paramMap = null;
 
-		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(Constants.ALL_RESULTS)) {
-			Cursor cursor = Cursor.fromWebSafeString(cursorString);
-			Map<String, Object> extensionMap = new HashMap<String, Object>();
-			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-			query.setExtensions(extensionMap);
-		} else {
-
+		
 			StringBuilder filterString = new StringBuilder();
 			StringBuilder paramString = new StringBuilder();
 			paramMap = new HashMap<String, Object>();
@@ -63,18 +56,12 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			query.setFilter(filterString.toString());
 			query.declareParameters(paramString.toString());
 
-		}
-
-		if (!cursorString.equals(Constants.ALL_RESULTS))
-			query.setRange(0, 20);
+		super.prepareCursor(cursorString, query);	
+		
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
 
-		if (cursorString == null) {
-			Cursor cursor = JDOCursorHelper.getCursor(results);
-			super.setCursorString(cursor.toWebSafeString());
-		}
-
+		
 		return results;
 	}
 
@@ -119,25 +106,10 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		if (collDateFrom != null || collDateTo != null) {
 			query.declareImports("import java.util.Date");
 		}
-		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(Constants.ALL_RESULTS)) {
-			Cursor cursor = Cursor.fromWebSafeString(cursorString);
-			Map<String, Object> extensionMap = new HashMap<String, Object>();
-			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-			query.setExtensions(extensionMap);
-		} else {
-			
-			
-		}
-
-		
-		if (cursorString==null||!cursorString.equals(Constants.ALL_RESULTS))
-			query.setRange(0, 20);
+				
+		super.prepareCursor(cursorString, query);
 		List<AccessPoint>results = (List<AccessPoint>) query.executeWithMap(paramMap);
-		if (cursorString == null) {
-			Cursor cursor = JDOCursorHelper.getCursor(results);
-			super.setCursorString(cursor.toWebSafeString());
-		}
+		
 		return results;
 	}
 
