@@ -56,7 +56,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	/**
 	 * returns the UserConfigDto for the currently logged in user. If the
 	 * current user is not found in the database, a User record will be
-	 * autocreated. If no config info is present (or if this is a new user),
+	 * auto-created. If no config info is present (or if this is a new user),
 	 * this method returns null.
 	 */
 	@Override
@@ -85,8 +85,8 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 						confDto.setGroup(c.getGroup());
 						confDto.setName(c.getName());
 						confDto.setValue(c.getValue());
-						Set<UserConfigDto> dtoList = configMap.get(c
-								.getGroup());
+						Set<UserConfigDto> dtoList = configMap
+								.get(c.getGroup());
 						if (dtoList == null) {
 							dtoList = new HashSet<UserConfigDto>();
 							configMap.put(c.getGroup(), dtoList);
@@ -136,6 +136,71 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 			newUser.setConfig(confList);
 		}
 		userDao.save(newUser);
+	}
+
+	/**
+	 * updates a single userConfig object to an existing user. both the user and
+	 * the config object must exist to use this method
+	 * 
+	 * @param emailAddress
+	 * @param configGroup
+	 * @param confDto
+	 */
+	public void updateUserConfigItem(String emailAddress,
+			String configGroup, UserConfigDto confDto) {
+		UserConfig conf = findUserConfig(emailAddress, configGroup, confDto
+				.getName());
+		if (conf != null) {
+			// update the value and persist
+			conf.setValue(confDto.getValue());
+			userDao.save(conf);
+		}
+	}
+
+	/**
+	 * finds a single userConfig item by name
+	 * @param emailAddress
+	 * @param configGroup
+	 * @param configName
+	 * @return
+	 */
+	public UserConfigDto findUserConfigItem(String emailAddress,
+			String configGroup, String configName) {
+		UserConfig c = findUserConfig(emailAddress, configGroup, configName);
+		UserConfigDto dto = null;
+		if (c != null) {
+			dto = new UserConfigDto();
+			dto.setGroup(c.getGroup());
+			dto.setName(c.getName());
+			dto.setValue(c.getValue());
+		}
+		return dto;
+	}
+
+	/**
+	 * finds a userConfig object by its group and name
+	 * 
+	 * @param emailAddress
+	 * @param configGroup
+	 * @param configName
+	 * @return
+	 */
+	private UserConfig findUserConfig(String emailAddress, String configGroup,
+			String configName) {
+		User user = userDao.findUserByEmail(emailAddress);
+		if (user != null && user.getConfig() != null) {
+			for (UserConfig confItem : user.getConfig()) {
+				if (configGroup != null
+						&& configGroup.equals(confItem.getGroup())) {
+					if (confItem.getName() != null
+							&& confItem.getName().equals(configName)) {
+						return confItem;
+					}
+
+				}
+			}
+		}
+		return null;
 	}
 
 }

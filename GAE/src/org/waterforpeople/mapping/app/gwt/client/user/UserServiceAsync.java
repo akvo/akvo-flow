@@ -10,4 +10,10 @@ public interface UserServiceAsync {
 
 	void saveUser(UserDto user, AsyncCallback<Void> callback);
 
+	void updateUserConfigItem(String emailAddress, String configGroup,
+			UserConfigDto confDto, AsyncCallback<Void> callback);
+
+	void findUserConfigItem(String emailAddress, String configGroup,
+			String configName, AsyncCallback<UserConfigDto> callback);
+
 }

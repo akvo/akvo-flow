@@ -109,6 +109,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		Image confImage = new Image(ADD_ICON);
 		confImage.setTitle(ADD_TOOLTIP);
 		confImage.addClickHandler(new ClickHandler() {
+
 			@Override
 			public void onClick(ClickEvent event) {
 				new ConfigurationDialog().show();
@@ -163,9 +164,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				String val = config.getValue();
 				Integer row = 0;
 				Integer col = 0;
-				if (val.contains("\n")) {
-					String[] coords = val.substring(0, val.indexOf("\n"))
-							.trim().split(",");
+				if (val != null) {
+					String[] coords = val.trim().split(",");
 					if (coords.length == 2) {
 						col = new Integer(coords[0]);
 						row = new Integer(coords[1]);
@@ -231,7 +231,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			UserConfigDto confDto = new UserConfigDto();
 			confDto.setGroup(CONFIG_GROUP);
 			confDto.setName(item);
-			confDto.setValue(positionMap.get(item) + "\n");
+			confDto.setValue(positionMap.get(item));
 			groupConfig.add(confDto);
 		}
 		userService.saveUser(currentUser, userCallback);

@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -391,6 +394,20 @@ public class TestHarnessServlet extends HttpServlet {
 			q.setText("Status");
 			q.setType(QuestionAnswerType.option);
 			surveyDao.save(q);
+		}else if("testUser".equals(action)){
+			UserServiceImpl userSvc = new UserServiceImpl();
+			UserDto u = userSvc.getCurrentUserConfig();
+			if(u != null){
+				UserConfigDto cdto = userSvc.findUserConfigItem(u.getEmailAddress(), "DASHBOARD", "System Summary");
+				if(cdto != null){
+					System.out.println("HI: "+cdto.getValue());
+					cdto.setValue("0,0");
+					userSvc.updateUserConfigItem(u.getEmailAddress(), "DASHBOARD", cdto);
+					cdto = userSvc.findUserConfigItem(u.getEmailAddress(), "DASHBOARD", "System Summary");
+					System.out.println("HI: "+cdto.getValue());
+				}
+			}
+		
 		}
 	}
 }

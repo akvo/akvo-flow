@@ -200,6 +200,10 @@ public abstract class PortalContainer extends SimplePanel {
 	}
 
 	protected void updateLayout() {
+		updateSavedLayout(getPositionMap());
+	}
+
+	protected Map<String, String> getPositionMap() {
 		Map<String, String> positionMap = new HashMap<String, String>();
 		for (int i = 0; i < columnPanels.length; i++) {
 			for (int j = 0; j < columnPanels[i].getWidgetCount(); j++) {
@@ -212,9 +216,9 @@ public abstract class PortalContainer extends SimplePanel {
 				}
 			}
 		}
-		updateSavedLayout(positionMap);
+		return positionMap;
 	}
-
+	
 	/**
 	 * removes a portlet from the UI
 	 * 
