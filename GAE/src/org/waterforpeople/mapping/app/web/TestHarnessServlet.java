@@ -206,32 +206,32 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
 			dao.save(sum);
 
-			sum.setCommunity("US");
-			sum.setCountry("NY");
+			sum.setCommunity("NY");
+			sum.setCountry("US");
 			sum.setType(AccessPointType.WATER_POINT.toString());
 			sum.setYear("2000");
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
 			sum = new AccessPointStatusSummary();
-			sum.setCommunity("US");
-			sum.setCountry("NY");
+			sum.setCommunity("NY");
+			sum.setCountry("US");
 			sum.setType(AccessPointType.WATER_POINT.toString());
 			sum.setYear("2001");
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
 			sum = new AccessPointStatusSummary();
-			sum.setCommunity("US");
-			sum.setCountry("NY");
+			sum.setCommunity("NY");
+			sum.setCountry("US");
 			sum.setType(AccessPointType.WATER_POINT.toString());
 			sum.setYear("2003");
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 			dao.save(sum);
 
 			sum = new AccessPointStatusSummary();
-			sum.setCommunity("US");
-			sum.setCountry("NY");
+			sum.setCommunity("NY");
+			sum.setCountry("US");
 			sum.setType(AccessPointType.WATER_POINT.toString());
 			sum.setYear("2004");
 			sum.setStatus(AccessPoint.Status.FUNCTIONING_OK);
