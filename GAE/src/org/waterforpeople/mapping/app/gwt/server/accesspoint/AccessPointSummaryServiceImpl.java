@@ -70,11 +70,16 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 			int i = 0;
 			for (String key : countMap.keySet()) {
 				AccessPointSummaryDto dto = new AccessPointSummaryDto();
+			if(status == null){
+				dto.setStatus(key);
+				dto.setCountryCode(country);
+			}else{
 				dto.setCountryCode(key);
+				dto.setStatus(status);
+			}
 				dto.setCommunityCode(community);
 				dto.setType(type);
 				dto.setYear(year);
-				dto.setStatus(status);
 				dto.setCount(countMap.get(key));
 				dtoList[i++] = dto;
 			}
