@@ -9,8 +9,7 @@
 <body>
 <%
 	BaseDAO<SurveyGroup> surveyGroupDAO = new BaseDAO<SurveyGroup>(SurveyGroup.class);
-	List<SurveyGroup> surveyGroupList = surveyGroupDAO
-			.list();
+	List<SurveyGroup> surveyGroupList = surveyGroupDAO.list("all");
 
 	SurveyDAO surveyDAO = new SurveyDAO();
 	List<SurveyContainer> surveyContainerList = surveyDAO
