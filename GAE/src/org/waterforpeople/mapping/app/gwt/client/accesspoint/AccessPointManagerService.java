@@ -1,7 +1,10 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
+
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -28,7 +31,7 @@ public interface AccessPointManagerService extends RemoteService {
 	AccessPointDto[] listAccessPointByLocation(String country,
 			String community, String type);
 
-	List<AccessPointDto> listAccessPoints(
+	ResponseDto<ArrayList<AccessPointDto>> listAccessPoints(
 			AccessPointSearchCriteriaDto searchCriteria, String cursorString);
 	
 	String getCursorString();

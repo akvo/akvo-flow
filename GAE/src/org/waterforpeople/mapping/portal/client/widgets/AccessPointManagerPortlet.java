@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Acce
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -236,21 +237,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 					@Override
 					public void onSuccess(Object result) {
-						svc.getCursorString(new AsyncCallback<String>() {
-
-							@Override
-							public void onFailure(Throwable caught) {
-								// TODO Auto-generated method stub
-
-							}
-
-							@Override
-							public void onSuccess(String result) {
-								setAccessPointCursor(result);
-							}
-
-						});
-						loadAccessPoint((ArrayList<AccessPointDto>) result);
+						ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>)result;
+						setAccessPointCursor(container.getCursorString());
+						loadAccessPoint((ArrayList<AccessPointDto>)container.getPayload());
 					}
 
 				});
@@ -412,7 +401,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 		accessPointDetail.setWidget(5, 0, new Label("Cost Per: "));
 		TextBox costPerTB = new TextBox();
-		if (accessPointDto != null)
+		if (accessPointDto != null && accessPointDto.getCostPer() != null)
 			costPerTB.setText(accessPointDto.getCostPer().toString());
 		accessPointDetail.setWidget(5, 1, costPerTB);
 
@@ -440,7 +429,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointDetail.setWidget(8, 0, new Label(
 				"Number of Households using Point: "));
 		TextBox numHouseholdsTB = new TextBox();
-		if (accessPointDto != null)
+		if (accessPointDto != null
+				&& accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
 			numHouseholdsTB.setText(accessPointDto
 					.getNumberOfHouseholdsUsingPoint().toString());
 		accessPointDetail.setWidget(8, 1, numHouseholdsTB);
@@ -681,8 +671,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		apDto.setConstructionDate(constructionDateTB.getValue());
 
 		TextBox costPerTB = (TextBox) accessPointDetail.getWidget(5, 1);
-		Double costPer = new Double(costPerTB.getText());
-		apDto.setCostPer(costPer);
+		String costPerTemp = costPerTB.getText();
+		
+		if (costPerTemp !=null&&costPerTemp.length()>0 ) {
+			Double costPer = new Double(costPerTB.getText());
+			apDto.setCostPer(costPer);
+		}
 		ListBox unitOfMeasureLB = (ListBox) accessPointDetail.getWidget(5, 2);
 		if (unitOfMeasureLB.getSelectedIndex() == 0) {
 			// ml

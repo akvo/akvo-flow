@@ -1,14 +1,17 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
+
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface AccessPointManagerServiceAsync {
 
 	void listAccessPoints(AccessPointSearchCriteriaDto searchCriteria,
 			String cursorString,
-			AsyncCallback<List<AccessPointDto>> callback);
+			AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>> callback);
 
 	void getAccessPoint(Long id, AsyncCallback<AccessPointDto> callback);
 

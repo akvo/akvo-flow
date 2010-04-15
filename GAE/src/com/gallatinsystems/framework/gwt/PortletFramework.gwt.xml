@@ -3,5 +3,6 @@
 <module>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
-	<source path="client"/>
+	<source path="portlet/client"/>
+	<source path="dto/client"/>
 </module>

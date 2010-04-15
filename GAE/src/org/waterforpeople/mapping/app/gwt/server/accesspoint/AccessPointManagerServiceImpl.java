@@ -23,6 +23,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import services.S3Driver;
 
 import com.gallatinsystems.common.util.DateUtil;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -40,21 +41,26 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	 * lists all access points that match the search criteria passed in
 	 */
 	@Override
-	public List<AccessPointDto> listAccessPoints(
+	public ResponseDto<ArrayList<AccessPointDto>> listAccessPoints(
 			AccessPointSearchCriteriaDto searchCriteria, String cursorString) {
 		AccessPointDao dao = new AccessPointDao();
+		
 		List<AccessPoint> pointList = dao.searchAccessPoints(searchCriteria
 				.getCountryCode(), searchCriteria.getCommunityCode(),
 				searchCriteria.getCollectionDateFrom(), searchCriteria
 						.getCollectionDateTo(), searchCriteria.getPointType(),
 				searchCriteria.getTechType(),cursorString);
-		List<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
+		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 		for (AccessPoint apItem : pointList) {
 			AccessPointDto apDto = copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
 		}
-		this.accessPointCursor =dao.getCursorString();
-		return apDtoList;
+		
+		ResponseDto<ArrayList<AccessPointDto>> container = new ResponseDto<ArrayList<AccessPointDto>>();
+		container.setCursorString(dao.getCursorString());
+		container.setPayload(apDtoList);
+		
+		return container;
 	}
 
 	@Override
