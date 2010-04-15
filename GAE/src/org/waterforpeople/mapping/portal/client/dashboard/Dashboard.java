@@ -53,6 +53,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String CONFIG_GROUP = "DASHBOARD";
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
+	private static final String ADD_TOOLTIP = "Add portlets to dashboard";
 
 	private VerticalPanel containerPanel;
 	private UserDto currentUser;
@@ -106,8 +107,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		statusDock.add(new Label("Monitoring Dashboard"), DockPanel.WEST);
 		statusDock.add(new SimplePanel(), DockPanel.CENTER);
 		Image confImage = new Image(ADD_ICON);
+		confImage.setTitle(ADD_TOOLTIP);
 		confImage.addClickHandler(new ClickHandler() {
-
 			@Override
 			public void onClick(ClickEvent event) {
 				new ConfigurationDialog().show();
@@ -141,13 +142,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			addPortlet(new ActivityMapPortlet(), 1, true);
 			posMap.put(ActivityMapPortlet.NAME, "1,1");
-			
+
 			addPortlet(new SurveyQuestionPortlet(), 2, true);
 			posMap.put(SummaryPortlet.NAME, "2,0");
-			
-			addPortlet(new AccessPointManagerPortlet(),1,true);
-			posMap.put(AccessPointManagerPortlet.NAME,"2,1");
-			
+
+			addPortlet(new AccessPointManagerPortlet(), 1, true);
+			posMap.put(AccessPointManagerPortlet.NAME, "2,1");
 
 			// if this is the first time the user logged in, create a config for
 			// him with the default portlet set
@@ -227,7 +227,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		}
 		Set<UserConfigDto> groupConfig = new HashSet<UserConfigDto>();
 		confMap.put(CONFIG_GROUP, groupConfig);
-		for (String item : positionMap.keySet()) {					
+		for (String item : positionMap.keySet()) {
 			UserConfigDto confDto = new UserConfigDto();
 			confDto.setGroup(CONFIG_GROUP);
 			confDto.setName(item);
@@ -251,13 +251,14 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	 */
 	private class ConfigurationDialog extends DialogBox implements ClickHandler {
 
-			private static final String HEADER_CSS = "tableheader";
+		private static final String HEADER_CSS = "tableheader";
+
 		public ConfigurationDialog() {
 			// Set the dialog box's caption.
 			setText("Add Items to Dashboard");
 			setAnimationEnabled(true);
 			setGlassEnabled(true);
-	
+
 			VerticalPanel contentPane = new VerticalPanel();
 			contentPane
 					.add(new Label(
@@ -265,14 +266,14 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			setPopupPosition(Window.getClientWidth() / 4, Window
 					.getClientHeight() / 4);
 			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);
-			
+
 			Label header = new Label("Portlets");
-			header.setStyleName(HEADER_CSS);			
+			header.setStyleName(HEADER_CSS);
 			g.setWidget(0, 0, header);
 			header = new Label("Description");
-			header.setStyleName(HEADER_CSS);			
-			g.setWidget(0, 1, header);		
-			
+			header.setStyleName(HEADER_CSS);
+			g.setWidget(0, 1, header);
+
 			for (int i = 0; i < PortletFactory.AVAILABLE_PORTLETS.length; i++) {
 				g.setText(i + 1, 0,
 						(String) PortletFactory.AVAILABLE_PORTLETS[i][0]);
