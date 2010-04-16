@@ -304,6 +304,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			}
 
 			Button nextSet = new Button("Next 20");
+			nextSet.setVisible(true);
 			Button previousSet = new Button("Previous 20");
 
 			nextSet.addClickHandler(new ClickHandler() {
@@ -315,8 +316,16 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				}
 
 			});
-			accessPointFT.setWidget(i + 1, 0, previousSet);
-			accessPointFT.setWidget(i + 1, 1, nextSet);
+			// ToDo: implement previous handling
+			// accessPointFT.setWidget(i + 1, 0, previousSet);
+			if (i == 21) {
+				accessPointFT.setWidget(i + 1, 1, nextSet);
+			} else if (i < 21) {
+				nextSet.setVisible(false);
+				for (int j = i-1; j < accessPointFT.getRowCount(); j++)
+					accessPointFT.removeRow(j);
+				
+			}
 			statusLabel.setText("Done loading access points");
 			statusLabel.setVisible(false);
 			mainVPanel.remove(statusLabel);
@@ -469,11 +478,13 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 								+ fileName);
 
 				Image i = ((Image) accessPointDetail.getWidget(9, 2));
+				i.setHeight("200px");
 
 				if (i == null) {
 					Image photo = new Image();
 					photo.setUrl("http://waterforpeople.s3.amazonaws.com/"
 							+ fileName);
+					photo.setHeight("200px");
 					accessPointDetail.setWidget(9, 2, photo);
 				} else {
 					i.setUrl("http://waterforpeople.s3.amazonaws.com/"
@@ -608,7 +619,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			public void onClick(ClickEvent event) {
 
 				if (validateAccessPointDetail()) {
-					accessPointDetail.setVisible(false);
+
 					statusLabel.setVisible(true);
 					statusLabel.setText("Please wait saving access point");
 					mainVPanel.add(statusLabel);
@@ -636,6 +647,21 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 		});
 		Button cancelButton = new Button("Cancel");
+		cancelButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Boolean cancel = Window
+						.confirm("Any changes made will be lost");
+				if (cancel) {
+					accessPointDetail.setVisible(false);
+					statusLabel.setVisible(false);
+					mainVPanel.remove(statusLabel);
+					accessPointFT.setVisible(true);
+				}
+			}
+
+		});
 		accessPointDetail.setWidget(15, 0, saveButton);
 		accessPointDetail.setWidget(15, 1, cancelButton);
 		accessPointDetail.setVisible(true);
