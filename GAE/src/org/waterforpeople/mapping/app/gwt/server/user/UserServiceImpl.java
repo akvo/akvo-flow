@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.server.user;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -139,6 +140,20 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	}
 
 	/**
+	 * deletes a config from the datastore
+	 * 
+	 * @param dto
+	 * @param emailAddress
+	 */
+	public void deletePortletConfig(UserConfigDto dto, String emailAddress) {
+		UserConfig c = findUserConfig(emailAddress, dto.getGroup(), dto
+				.getName(), false);
+		if (c != null) {
+			userDao.delete(c);
+		}
+	}
+
+	/**
 	 * updates a single userConfig object to an existing user. both the user and
 	 * the config object must exist to use this method
 	 * 
@@ -146,10 +161,10 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 * @param configGroup
 	 * @param confDto
 	 */
-	public void updateUserConfigItem(String emailAddress,
-			String configGroup, UserConfigDto confDto) {
+	public void updateUserConfigItem(String emailAddress, String configGroup,
+			UserConfigDto confDto) {
 		UserConfig conf = findUserConfig(emailAddress, configGroup, confDto
-				.getName());
+				.getName(), true);
 		if (conf != null) {
 			// update the value and persist
 			conf.setValue(confDto.getValue());
@@ -159,6 +174,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 
 	/**
 	 * finds a single userConfig item by name
+	 * 
 	 * @param emailAddress
 	 * @param configGroup
 	 * @param configName
@@ -166,7 +182,8 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 */
 	public UserConfigDto findUserConfigItem(String emailAddress,
 			String configGroup, String configName) {
-		UserConfig c = findUserConfig(emailAddress, configGroup, configName);
+		UserConfig c = findUserConfig(emailAddress, configGroup, configName,
+				false);
 		UserConfigDto dto = null;
 		if (c != null) {
 			dto = new UserConfigDto();
@@ -186,7 +203,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 * @return
 	 */
 	private UserConfig findUserConfig(String emailAddress, String configGroup,
-			String configName) {
+			String configName, boolean createIfMissing) {
 		User user = userDao.findUserByEmail(emailAddress);
 		if (user != null && user.getConfig() != null) {
 			for (UserConfig confItem : user.getConfig()) {
@@ -196,11 +213,24 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 							&& confItem.getName().equals(configName)) {
 						return confItem;
 					}
-
 				}
 			}
 		}
-		return null;
+		// if we got here, then it's missing
+		if (createIfMissing) {
+			UserConfig confItem = new UserConfig();
+			confItem.setCreatedDateTime(new Date());
+			confItem.setGroup(configGroup);
+			confItem.setName(configName);
+			if (user.getConfig() == null) {
+				user.setConfig(new ArrayList<UserConfig>());
+			}
+			user.getConfig().add(confItem);
+			userDao.save(user);
+			return confItem;
+		} else {
+			return null;
+		}
 	}
 
 }

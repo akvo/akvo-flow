@@ -68,8 +68,28 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 		String conf = getConfig();
 		if (conf != null) {
 			String[] vals = conf.split(",");
-			if (vals.length == 2) {
+			if (vals.length >= 2) {
+				for (int i = 0; i < statusListbox.getItemCount(); i++) {
+					if (statusListbox.getValue(i).equals(vals[0])) {
+						statusListbox.setSelectedIndex(i);
+						break;
+					}
+				}
+				if (vals[1].equals(spTypeButton.getText())) {
+					spTypeButton.setValue(true);
+				} else {
+					wpTypeButton.setValue(true);
+				}
+				if (vals.length > 2) {
+					for (int i = 0; i < regionListbox.getItemCount(); i++) {
+						if (regionListbox.getValue(i).equals(vals[2])) {
+							regionListbox.setSelectedIndex(i);
+							break;
+						}
+					}
+				}
 				buildChart(vals[0], vals[1]);
+
 			}
 		} else {
 			buildChart("FUNCTIONING_HIGH", WATER_TYPE);
@@ -92,8 +112,6 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 			options.setRegion(Region.MIDDLE_EAST);
 		} else if (region.equalsIgnoreCase(Region.SOUTH_AMERICA.toString())) {
 			options.setRegion(Region.SOUTH_AMERICA);
-		} else if (region.equalsIgnoreCase(Region.USA.toString())) {
-			options.setRegion(Region.USA);
 		}
 		options.setWidth(WIDTH);
 		options.setHeight(HEIGHT - 60);
@@ -207,7 +225,6 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 		regionListbox.addItem("Europe", "europe");
 		regionListbox.addItem("Middle East", "middle_east");
 		regionListbox.addItem("South America", "south_america");
-		regionListbox.addItem("USA", "usa");
 		regionListbox.addChangeHandler(this);
 		regionPanel.add(regionListbox);
 		headerPanel.add(regionPanel);
@@ -218,12 +235,6 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 	@Override
 	public void handleEvent(PortletEvent e) {
 		// no-op
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-
-		return true;
 	}
 
 	public String getName() {

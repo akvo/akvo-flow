@@ -16,4 +16,7 @@ public interface UserServiceAsync {
 	void findUserConfigItem(String emailAddress, String configGroup,
 			String configName, AsyncCallback<UserConfigDto> callback);
 
+	void deletePortletConfig(UserConfigDto dto, String emailAddress,
+			AsyncCallback<Void> callback);
+
 }

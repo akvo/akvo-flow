@@ -63,7 +63,29 @@ public abstract class UserAwarePortlet extends Portlet {
 	}
 
 	/**
-	 * method that reutnrs the name of the configuration object for this
+	 * when about to remove the portlet, delete the config object
+	 */
+	@Override
+	protected boolean getReadyForRemove() {
+		if (portletConfig != null) {
+			userService.deletePortletConfig(portletConfig, currentUser
+					.getEmailAddress(), new AsyncCallback<Void>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					// no-op
+				}
+
+				@Override
+				public void onSuccess(Void result) {
+					// no-op
+				}
+			});
+		}
+		return true;
+	}
+
+	/**
+	 * method that returns the name of the configuration object for this
 	 * portlet. Subclasses should override this method.
 	 * 
 	 * @return

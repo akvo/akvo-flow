@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.client.user;
 
-import com.gallatinsystems.user.domain.UserConfig;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -46,4 +45,11 @@ public interface UserService extends RemoteService {
 	public UserConfigDto findUserConfigItem(String emailAddress,
 			String configGroup, String configName);
 
+	/**
+	 * deletes a config from the datastore
+	 * 
+	 * @param dto
+	 * @param emailAddress
+	 */
+	public void deletePortletConfig(UserConfigDto dto, String emailAddress);
 }
