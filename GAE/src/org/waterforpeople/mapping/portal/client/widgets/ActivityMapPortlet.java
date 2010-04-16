@@ -3,8 +3,8 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -38,10 +38,11 @@ import com.google.gwt.visualization.client.visualizations.IntensityMap.Region;
  * @author Christopher Fagiani
  * 
  */
-public class ActivityMapPortlet extends Portlet implements ChangeHandler,
-		ValueChangeHandler<Boolean> {
+public class ActivityMapPortlet extends UserAwarePortlet implements
+		ChangeHandler, ValueChangeHandler<Boolean> {
 	public static final String DESCRIPTION = "Displays access points by status by region on a map";
 	public static final String NAME = "Access Point Status by Country";
+	private static final String CONFIG_NAME = "ActivityMap";
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
 
@@ -54,13 +55,25 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 	private RadioButton wpTypeButton;
 	private RadioButton spTypeButton;
 
-	public ActivityMapPortlet() {
-		super(NAME, false, true, WIDTH, HEIGHT);
+	public ActivityMapPortlet(UserDto user) {
+		super(NAME, false, true, WIDTH, HEIGHT, user);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
-		buildChart("FUNCTIONING_HIGH", WATER_TYPE);
+		doInitialLoad();
+	}
+
+	private void doInitialLoad() {
+		String conf = getConfig();
+		if (conf != null) {
+			String[] vals = conf.split(",");
+			if (vals.length == 2) {
+				buildChart(vals[0], vals[1]);
+			}
+		} else {
+			buildChart("FUNCTIONING_HIGH", WATER_TYPE);
+		}
 	}
 
 	private Options createOptions() {
@@ -88,12 +101,13 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 	}
 
 	/**
-	 * gets ths values from the menus and calls buildChart
+	 * gets the values from the menus and calls buildChart
 	 */
 	private void updateChart() {
-		buildChart(getSelectedValue(statusListbox),
-				wpTypeButton.getValue() ? WATER_TYPE.toString()
-						: SANITATION_TYPE.toString());
+		String typeVal = wpTypeButton.getValue() ? WATER_TYPE.toString()
+				: SANITATION_TYPE.toString();
+		setConfig(getSelectedValue(statusListbox) + "," + typeVal);
+		buildChart(getSelectedValue(statusListbox), typeVal);
 	}
 
 	/**
@@ -165,7 +179,7 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		statusListbox.addItem("High", "FUNCTIONING_HIGH");
 		statusListbox.addItem("Ok", "FUNCTIONING_OK");
 		statusListbox.addItem("Poor", "FUNCTIONING_WITH_PROBLEMS");
-		statusListbox.addItem("Other","OTHER");
+		statusListbox.addItem("Other", "OTHER");
 		statusListbox.setVisibleItemCount(1);
 		statusPanel.add(statusListbox);
 		grid.setWidget(0, 0, statusPanel);
@@ -212,11 +226,6 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		return true;
 	}
 
-	@Override
-	protected void handleConfigClick() {
-		// TODO: handle config
-	}
-
 	public String getName() {
 		return NAME;
 	}
@@ -252,5 +261,10 @@ public class ActivityMapPortlet extends Portlet implements ChangeHandler,
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	protected String getConfigItemName() {
+		return CONFIG_NAME;
 	}
 }

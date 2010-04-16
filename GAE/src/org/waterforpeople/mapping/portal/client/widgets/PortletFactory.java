@@ -38,7 +38,7 @@ public class PortletFactory {
 		} else if (name.equals(ActivityChartPortlet.NAME)) {
 			return new ActivityChartPortlet(user);
 		} else if (name.equals(ActivityMapPortlet.NAME)) {
-			return new ActivityMapPortlet();
+			return new ActivityMapPortlet(user);
 		} else if (name.equals(SurveyQuestionPortlet.NAME)) {
 			return new SurveyQuestionPortlet();
 		} else if (name.equals(AccessPointStatusPortlet.NAME)) {

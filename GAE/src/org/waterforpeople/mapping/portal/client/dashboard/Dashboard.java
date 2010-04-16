@@ -141,7 +141,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			addPortlet(new ActivityChartPortlet(currentUser), 1, true);
 			posMap.put(ActivityChartPortlet.NAME, "1,0");
 
-			addPortlet(new ActivityMapPortlet(), 1, true);
+			addPortlet(new ActivityMapPortlet(currentUser), 1, true);
 			posMap.put(ActivityMapPortlet.NAME, "1,1");
 
 			addPortlet(new SurveyQuestionPortlet(), 2, true);
