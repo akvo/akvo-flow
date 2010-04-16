@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
@@ -74,8 +75,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 	private ListBox statusLB = new ListBox();
 
-	public AccessPointManagerPortlet() {
-		super(NAME, true, false, WIDTH, HEIGHT, true,
+	public AccessPointManagerPortlet(UserDto user) {
+		super(NAME, true, false, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
@@ -237,9 +238,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 					@Override
 					public void onSuccess(Object result) {
-						ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>)result;
+						ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>) result;
 						setAccessPointCursor(container.getCursorString());
-						loadAccessPoint((ArrayList<AccessPointDto>)container.getPayload());
+						loadAccessPoint((ArrayList<AccessPointDto>) container
+								.getPayload());
 					}
 
 				});
@@ -672,8 +674,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 		TextBox costPerTB = (TextBox) accessPointDetail.getWidget(5, 1);
 		String costPerTemp = costPerTB.getText();
-		
-		if (costPerTemp !=null&&costPerTemp.length()>0 ) {
+
+		if (costPerTemp != null && costPerTemp.length() > 0) {
 			Double costPer = new Double(costPerTB.getText());
 			apDto.setCostPer(costPer);
 		}

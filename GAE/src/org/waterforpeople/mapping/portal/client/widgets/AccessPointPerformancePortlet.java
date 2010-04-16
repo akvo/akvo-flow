@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
@@ -66,8 +67,8 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 	private Map<String, Map<Long, AccessPointDto>> wpSummaryMap;
 	private Map<String, Map<Long, AccessPointDto>> spSummaryMap;
 
-	public AccessPointPerformancePortlet() {
-		super(NAME, false, false, WIDTH, HEIGHT, true, null);
+	public AccessPointPerformancePortlet(UserDto user) {
+		super(NAME, false, false, WIDTH, HEIGHT, user, true, null);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);

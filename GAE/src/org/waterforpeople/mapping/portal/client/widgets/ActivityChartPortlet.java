@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
@@ -38,8 +39,8 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 	private AnnotatedTimeLine timeLine;
 	private VerticalPanel contentPane;
 
-	public ActivityChartPortlet() {
-		super(NAME, false, true, WIDTH, HEIGHT, true,
+	public ActivityChartPortlet(UserDto u) {
+		super(NAME, false, true, WIDTH, HEIGHT, u, true,
 				LocationDrivenPortlet.ALL_OPT);
 		contentPane = new VerticalPanel();
 		contentPane.add(buildHeader());

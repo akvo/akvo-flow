@@ -138,7 +138,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			addPortlet(new SummaryPortlet(), 0, true);
 			posMap.put(SummaryPortlet.NAME, "0,0");
 
-			addPortlet(new ActivityChartPortlet(), 1, true);
+			addPortlet(new ActivityChartPortlet(currentUser), 1, true);
 			posMap.put(ActivityChartPortlet.NAME, "1,0");
 
 			addPortlet(new ActivityMapPortlet(), 1, true);
@@ -147,7 +147,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			addPortlet(new SurveyQuestionPortlet(), 2, true);
 			posMap.put(SummaryPortlet.NAME, "2,0");
 
-			addPortlet(new AccessPointManagerPortlet(), 1, true);
+			addPortlet(new AccessPointManagerPortlet(currentUser), 1, true);
 			posMap.put(AccessPointManagerPortlet.NAME, "2,1");
 
 			// if this is the first time the user logged in, create a config for
@@ -181,7 +181,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					for (int j = 0; j < key.length; j++) {
 						try {
 							addPortlet(PortletFactory.createPortlet(colMap.get(
-									i).get(key[j])), i, true);
+									i).get(key[j]),currentUser), i, true);
 						} catch (IllegalArgumentException e) {
 							// swallow in case we change portlet names and don't
 							// update the DB
@@ -305,7 +305,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			if (event.getSource() instanceof Image) {
 				Image img = (Image) event.getSource();
 				String name = img.getTitle();
-				addPortlet(PortletFactory.createPortlet(name), 0, true);
+				addPortlet(PortletFactory.createPortlet(name, currentUser), 0, true);
 				updateLayout();
 			}
 		}

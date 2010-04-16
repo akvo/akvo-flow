@@ -4,8 +4,8 @@ import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Christopher Fagiani
  * 
  */
-public abstract class LocationDrivenPortlet extends Portlet {
+public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 
 	private boolean useCommunity;
 
@@ -56,9 +56,9 @@ public abstract class LocationDrivenPortlet extends Portlet {
 	 *            will return null.
 	 */
 	public LocationDrivenPortlet(String title, boolean scrollable,
-			boolean configurable, int width, int height, boolean useCommunity,
-			String specialOption) {
-		super(title, scrollable, configurable, width, height);
+			boolean configurable, int width, int height, UserDto user,
+			boolean useCommunity, String specialOption) {
+		super(title, scrollable, configurable, width, height, user);
 		communityListbox = new ListBox();
 		countryListbox = new ListBox();
 		this.specialOption = specialOption;

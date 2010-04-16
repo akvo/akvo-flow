@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 
 /**
@@ -22,12 +24,11 @@ public class PortletFactory {
 					AccessPointManagerPortlet.DESCRIPTION },
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
-					AccessPointPerformancePortlet.DESCRIPTION } ,
-					{ TechnologyTypeManagerPortlet.NAME,
-						TechnologyTypeManagerPortlet.DESCRIPTION }
-};
+					AccessPointPerformancePortlet.DESCRIPTION },
+			{ TechnologyTypeManagerPortlet.NAME,
+					TechnologyTypeManagerPortlet.DESCRIPTION } };
 
-	public static Portlet createPortlet(String name) {
+	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {
 			throw new IllegalArgumentException(
 					"Name cannot be null when invoking PortletFactory.createPortlet");
@@ -35,7 +36,7 @@ public class PortletFactory {
 		if (name.equals(SummaryPortlet.NAME)) {
 			return new SummaryPortlet();
 		} else if (name.equals(ActivityChartPortlet.NAME)) {
-			return new ActivityChartPortlet();
+			return new ActivityChartPortlet(user);
 		} else if (name.equals(ActivityMapPortlet.NAME)) {
 			return new ActivityMapPortlet();
 		} else if (name.equals(SurveyQuestionPortlet.NAME)) {
@@ -43,14 +44,14 @@ public class PortletFactory {
 		} else if (name.equals(AccessPointStatusPortlet.NAME)) {
 			return new AccessPointStatusPortlet();
 		} else if (name.equals(AccessPointManagerPortlet.NAME)) {
-			return new AccessPointManagerPortlet();
+			return new AccessPointManagerPortlet(user);
 		} else if (name.equals(DeviceLocationPortlet.NAME)) {
 			return new DeviceLocationPortlet();
 		} else if (name.equals(AccessPointPerformancePortlet.NAME)) {
-			return new AccessPointPerformancePortlet();
+			return new AccessPointPerformancePortlet(user);
 		} else if (name.equals(TechnologyTypeManagerPortlet.NAME)) {
 			return new TechnologyTypeManagerPortlet();
-		}else {
+		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
 	}
