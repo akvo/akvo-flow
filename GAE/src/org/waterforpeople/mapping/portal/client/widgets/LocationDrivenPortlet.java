@@ -155,7 +155,7 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 		communityService.listCountries(countryCallback);
 	}
 
-	private void loadCommunities(String country) {
+	protected void loadCommunities(String country) {
 		if (specialOption != null) {
 			communityListbox.addItem(specialOption, specialOption);
 		}
@@ -201,6 +201,25 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 			}
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * sets the value of the location
+	 * 
+	 * @param val
+	 */
+	protected void setSelectedValue(String val, Widget widget) {
+		ListBox control = (ListBox) widget;
+		if ((val == null || "null".equalsIgnoreCase(val))
+				&& specialOption != null) {
+			control.setSelectedIndex(0);
+		}
+		for (int i = 0; i < control.getItemCount(); i++) {
+			if (control.getValue(i).equals(val)) {
+				control.setSelectedIndex(i);
+				break;
+			}
 		}
 	}
 

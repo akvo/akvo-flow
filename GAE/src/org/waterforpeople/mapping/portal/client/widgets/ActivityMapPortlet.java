@@ -64,6 +64,10 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 		doInitialLoad();
 	}
 
+	/**
+	 * parses config and, if present, sets the control values and builds the
+	 * chart.
+	 */
 	private void doInitialLoad() {
 		String conf = getConfig();
 		if (conf != null) {

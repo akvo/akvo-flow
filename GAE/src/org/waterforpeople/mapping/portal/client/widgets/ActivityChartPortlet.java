@@ -34,6 +34,7 @@ import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Wind
 public class ActivityChartPortlet extends LocationDrivenPortlet {
 	public static final String DESCRIPTION = "Displays survey response activity over a configurable timeframe";
 	public static final String NAME = "Survey Activity Over Time";
+	private static final String CONFIG_NAME = "ActivityChart";
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 300;
 	private AnnotatedTimeLine timeLine;
@@ -48,7 +49,33 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 	}
 
 	protected void countrySelected(String country) {
+		setConfig(getSelectedCountry() + "," + getSelectedCommunity());
 		buildChart(getSelectedCountry(), getSelectedCommunity());
+	}
+
+	protected void initialLoadComplete() {
+		doInitialLoad();
+	}
+
+	/**
+	 * parses config and, if present, sets the control values and builds the
+	 * chart.
+	 */
+	private void doInitialLoad() {
+		String conf = getConfig();
+		if (conf != null) {
+			String[] vals = conf.split(",");
+			if (vals.length >= 2) {
+				setSelectedValue(vals[0], getCountryControl());
+				if (getSelectedCountry() != null) {
+					loadCommunities(vals[0]);
+					setSelectedValue(vals[1], getCommunityControl());
+				}
+				buildChart(vals[0], vals[1]);
+			}
+		} else {
+			buildChart(ALL_OPT, ALL_OPT);
+		}
 	}
 
 	/**
@@ -102,6 +129,7 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 	}
 
 	protected void communitySelected(String community) {
+		setConfig(getSelectedCountry() + "," + getSelectedCommunity());
 		buildChart(getSelectedCountry(), getSelectedCommunity());
 	}
 
@@ -143,17 +171,13 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 	public void handleEvent(PortletEvent e) {
 	}
 
-	@Override
-	protected boolean getReadyForRemove() {
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// TODO: handle configuration
-	}
-
 	public String getName() {
 		return NAME;
 	}
+
+	@Override
+	protected String getConfigItemName() {
+		return CONFIG_NAME;
+	}
+
 }
