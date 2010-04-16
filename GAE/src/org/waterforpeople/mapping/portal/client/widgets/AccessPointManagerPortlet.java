@@ -639,6 +639,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 								}
 
 							});
+					accessPointDetail.setVisible(false);
 					statusLabel.setVisible(false);
 					mainVPanel.remove(statusLabel);
 					accessPointFT.setVisible(true);
@@ -651,9 +652,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Boolean cancel = Window
+				Boolean ok = Window
 						.confirm("Any changes made will be lost");
-				if (cancel) {
+				if (ok) {
 					accessPointDetail.setVisible(false);
 					statusLabel.setVisible(false);
 					mainVPanel.remove(statusLabel);
