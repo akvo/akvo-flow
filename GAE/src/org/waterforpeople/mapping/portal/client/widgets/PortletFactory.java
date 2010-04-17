@@ -42,7 +42,7 @@ public class PortletFactory {
 		} else if (name.equals(SurveyQuestionPortlet.NAME)) {
 			return new SurveyQuestionPortlet();
 		} else if (name.equals(AccessPointStatusPortlet.NAME)) {
-			return new AccessPointStatusPortlet();
+			return new AccessPointStatusPortlet(user);
 		} else if (name.equals(AccessPointManagerPortlet.NAME)) {
 			return new AccessPointManagerPortlet(user);
 		} else if (name.equals(DeviceLocationPortlet.NAME)) {

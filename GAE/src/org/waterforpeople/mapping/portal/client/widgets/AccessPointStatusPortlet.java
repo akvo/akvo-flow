@@ -3,12 +3,8 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -36,105 +32,62 @@ import com.google.gwt.visualization.client.visualizations.PieChart.Options;
  * @author Christopher Fagiani
  * 
  */
-public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
-		ValueChangeHandler<Boolean> {
+public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
+		ChangeHandler, ValueChangeHandler<Boolean> {
 	public static final String DESCRIPTION = "Access Point status as a Pie Chart";
 	public static final String NAME = "Access Point Status";
+	private static final String CONFIG_ITEM_NAME = "APStatus";
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
 
-	private static final String ALL_OPT = "All";
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 400;
 	private VerticalPanel contentPane;
 	private PieChart pieChart;
 
-	private ListBox countryListbox;
-	private ListBox communityListbox;
 	private ListBox yearListbox;
 
 	private RadioButton wpTypeButton;
 	private RadioButton spTypeButton;
 
-	public AccessPointStatusPortlet() {
-		super(NAME, false, false, WIDTH, HEIGHT);
+	public AccessPointStatusPortlet(UserDto user) {
+		super(NAME, false, true, WIDTH, HEIGHT, user, true,
+				LocationDrivenPortlet.ALL_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
-		CommunityServiceAsync communityService = GWT
-				.create(CommunityService.class);
-		// Set up the callback object.
-		AsyncCallback<CountryDto[]> countryCallback = new AsyncCallback<CountryDto[]>() {
-			public void onFailure(Throwable caught) {
-				// no-op
-			}
-
-			public void onSuccess(CountryDto[] result) {
-				if (result != null) {
-					countryListbox.addItem(ALL_OPT, ALL_OPT);
-					for (int i = 0; i < result.length; i++) {
-						countryListbox.addItem(result[i].getName(), result[i]
-								.getIsoAlpha2Code());
-
-					}
-					countryListbox.setVisibleItemCount(1);
-					if (result.length > 0) {
-						buildChart(null, null, null, WATER_TYPE);
-					}
-				}
-			}
-		};
-		communityService.listCountries(countryCallback);
-
 	}
 
-	/**
-	 * checks if the country was changed and, if so, loads that country's
-	 * communities. This will also trigger a reload of the pie chart
-	 */
-	@Override
-	public void onChange(ChangeEvent event) {
-		if (event.getSource() == countryListbox) {
-			String selectedCountry = countryListbox.getValue(countryListbox
-					.getSelectedIndex());
-
-			if (selectedCountry != null) {
-				// if country changed, load the communities
-				communityListbox.clear();
-				CommunityServiceAsync communityService = GWT
-						.create(CommunityService.class);
-				// Set up the callback object.
-				AsyncCallback<CommunityDto[]> communityCallback = new AsyncCallback<CommunityDto[]>() {
-					public void onFailure(Throwable caught) {
-						// no-op
-					}
-
-					public void onSuccess(CommunityDto[] result) {
-						if (result != null) {
-							communityListbox.addItem(ALL_OPT, ALL_OPT);
-							for (int i = 0; i < result.length; i++) {
-								communityListbox.addItem(result[i]
-										.getCommunityCode(), result[i]
-										.getCommunityCode());
-
-							}
-							communityListbox.setVisibleItemCount(1);
-							updateChart();
-						}
-					}
-				};
-				communityService.listCommunities(
-						getSelectedValue(countryListbox), communityCallback);
-			} else {
-				// if country is ALL_OPT then we need to clear the communities
-				// box
-				communityListbox.clear();
-				updateChart();
+	public void initialLoadComplete() {
+		String conf = getConfig();
+		if (conf != null) {
+			String[] vals = conf.split(",");
+			if (vals.length >= 4) {
+				setSelectedValue(vals[0], getCountryControl());
+				if (getSelectedCountry() != null) {
+					loadCommunities(vals[0]);
+					setSelectedValue(vals[1], getCommunityControl());
+				}
+				setSelectedValue(vals[2], yearListbox);
+				if (WATER_TYPE.equals(vals[3])) {
+					wpTypeButton.setValue(true);
+				} else {
+					spTypeButton.setValue(true);
+				}
+				buildChart(vals[0], vals[1], vals[2], vals[3]);
 			}
 		} else {
-			updateChart();
+			buildChart(null, null, null, WATER_TYPE);
 		}
+	}
+
+	public void countrySelected(String country) {
+		updateChart();
+	}
+
+	public void communitySelected(String community) {
+		updateChart();
 	}
 
 	/**
@@ -170,8 +123,15 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 	 * chart
 	 */
 	private void updateChart() {
-		buildChart(getSelectedValue(countryListbox),
-				getSelectedValue(communityListbox),
+		setConfig(getSelectedCountry()
+				+ ","
+				+ getSelectedCommunity()
+				+ ","
+				+ getSelectedValue(yearListbox)
+				+ ","
+				+ (wpTypeButton.getValue() ? WATER_TYPE.toString()
+						: SANITATION_TYPE.toString()));
+		buildChart(getSelectedCountry(), getSelectedCommunity(),
 				getSelectedValue(yearListbox),
 				wpTypeButton.getValue() ? WATER_TYPE.toString()
 						: SANITATION_TYPE.toString());
@@ -188,18 +148,13 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 
 		HorizontalPanel countryPanel = new HorizontalPanel();
 		countryPanel.add(new Label("Country: "));
-		countryListbox = new ListBox();
-		countryPanel.add(countryListbox);
+		countryPanel.add(getCountryControl());
 		grid.setWidget(0, 0, countryPanel);
-
-		countryListbox.addChangeHandler(this);
 
 		HorizontalPanel commPanel = new HorizontalPanel();
 		commPanel.add(new Label("Community: "));
-		communityListbox = new ListBox();
-		commPanel.add(communityListbox);
+		commPanel.add(getCommunityControl());
 		grid.setWidget(1, 0, commPanel);
-		communityListbox.addChangeHandler(this);
 
 		HorizontalPanel yearPanel = new HorizontalPanel();
 		yearPanel.add(new Label("Year: "));
@@ -230,7 +185,7 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 	private Options createOptions() {
 		Options options = Options.create();
 		// this is needed so we can display html pop-ups over the flash content
-		options.setHeight(HEIGHT-60);
+		options.setHeight(HEIGHT - 60);
 		options.setWidth(WIDTH);
 		return options;
 	}
@@ -267,7 +222,13 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 							for (int i = 0; i < result.length; i++) {
 								dataTable.addRow();
 								dataTable.setValue(i, 0, result[i].getStatus());
-								dataTable.setValue(i, 1, result[i].getCount());
+								dataTable
+										.setValue(
+												i,
+												1,
+												result[i].getCount() != null ? result[i]
+														.getCount()
+														: 0);
 							}
 							if (pieChart != null) {
 								// remove the old chart
@@ -297,13 +258,18 @@ public class AccessPointStatusPortlet extends Portlet implements ChangeHandler,
 		return true;
 	}
 
-	@Override
-	protected void handleConfigClick() {
-		// no-op. this portlet does not support config
-	}
 
 	public String getName() {
 		return NAME;
 	}
 
+	@Override
+	public void onChange(ChangeEvent event) {
+		updateChart();
+	}
+
+	@Override
+	protected String getConfigItemName() {
+		return CONFIG_ITEM_NAME;
+	}
 }
