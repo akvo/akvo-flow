@@ -249,14 +249,15 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 	private void loadAccessPoint(ArrayList<AccessPointDto> apDtoList) {
 
-		loadAccessPointHeaderRow();
+		
 		int i = 1;
 		if (apDtoList == null || apDtoList.size() == 0) {
 			accessPointFT.clear();
 			statusLabel.setVisible(true);
 			statusLabel.setText("No matching access points");
 		} else {
-
+			accessPointFT.removeAllRows();
+			loadAccessPointHeaderRow();
 			for (AccessPointDto apDto : apDtoList) {
 				Label keyIdLabel = new Label(apDto.getKeyId().toString());
 				// keyIdLabel.setVisible(false);
