@@ -1,10 +1,27 @@
 package com.gallatinsystems.gis.coordinate.utilities;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 public class CoordinateUtilities {
+
+	/**
+	 * computes the APPROXIMATE distance between 2 points (lat/lon in DEGREES,
+	 * not radians) forumula described here:
+	 * http://www.meridianworlddata.com/Distance-Calculation.asp
+	 * 
+	 * @param lat1
+	 * @param lon1
+	 * @param lat2
+	 * @param lon2
+	 * @return
+	 */
+	public static Double computeDistanceInMiles(Double lat1, Double lon1,
+			Double lat2, Double lon2) {
+		double x = 69.1 * (lat2 - lat1);
+		double y = 53.0 * (lon2 - lon1) * Math.cos(lat1 / 57.3);
+		return Math.sqrt(x * x + y * y);
+	}
 
 	public String convertDecimalToDegrees(Double lat, Double lon) {
 		String degrees = null;
