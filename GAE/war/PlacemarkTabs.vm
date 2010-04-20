@@ -119,9 +119,9 @@
 						<!--<tr>
 							<td><b><font color="#003333" face="Verdana">$numberOfHouseholdsUsingWaterPointCaption</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
 						</tr>-->
-						<tr>
+						<!--<tr>
 							<td><b><font color="#003333" face="Verdana">Is the farthest household from the water point within 500 meters?:</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
-						</tr>
+						</tr>-->
 						<!--<tr>
 							<td><b><font color="#003333" face="Verdana">$waterSystemStatusCaption</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
 						</tr>-->
