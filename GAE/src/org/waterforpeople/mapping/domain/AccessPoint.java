@@ -28,6 +28,15 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private Double altitude = 0.0;
 	@Persistent
 	private String communityCode = null;
+	private String communityName = null;
+	public String getCommunityName() {
+		return communityName;
+	}
+
+	public void setCommunityName(String communityName) {
+		this.communityName = communityName;
+	}
+
 	@Persistent
 	private String photoURL = null;
 	@Persistent
