@@ -17,6 +17,8 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.beoui.geocell.GeocellManager;
+import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.DateUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.labs.taskqueue.Queue;
@@ -31,8 +33,6 @@ public class AccessPointHelper {
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
 		return apDAO.getByKey(id);
 	}
-	
-	
 
 	public void processSurveyInstance(String surveyId) {
 		// Get the survey and QuestionAnswerStore
@@ -162,6 +162,10 @@ public class AccessPointHelper {
 	 */
 	public AccessPoint saveAccessPoint(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
+		if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
+			ap.setGeocells(GeocellManager.generateGeoCell(new Point(ap
+					.getLatitude(), ap.getLongitude())));
+		}
 		ap = apDao.save(ap);
 		Queue summQueue = QueueFactory.getQueue("dataSummarization");
 		summQueue.add(url("/app_worker/datasummarization").param("objectKey",
@@ -171,7 +175,7 @@ public class AccessPointHelper {
 
 	public List<AccessPoint> listAccessPoint(String cursorString) {
 		AccessPointDao apDao = new AccessPointDao();
-		
+
 		return apDao.list(cursorString);
 	}
 

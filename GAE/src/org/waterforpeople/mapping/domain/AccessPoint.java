@@ -2,17 +2,20 @@ package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.List;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import com.beoui.geocell.model.LocationCapable;
+import com.beoui.geocell.model.Point;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.weightsmeasures.domain.Currency;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class AccessPoint extends BaseDomain {
+public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	private static final long serialVersionUID = -7708214468114860788L;
 	@Persistent
@@ -33,7 +36,7 @@ public class AccessPoint extends BaseDomain {
 	private String TechnologyTypeOther = null;
 	private String typeTechnologyString = null;
 	@Persistent
-	//ToDo need to implement correct business rule
+	// ToDo need to implement correct business rule
 	private Date constructionDate = null;
 	private String constructionDateYear = null;
 	@Persistent
@@ -60,6 +63,15 @@ public class AccessPoint extends BaseDomain {
 	private AccessPointType pointType;
 	@Persistent
 	private String countryCode;
+	private List<String> geocells;
+
+	public List<String> getGeocells() {
+		return geocells;
+	}
+
+	public void setGeocells(List<String> geocells) {
+		this.geocells = geocells;
+	}
 
 	public String getCountryCode() {
 		return countryCode;
@@ -304,6 +316,16 @@ public class AccessPoint extends BaseDomain {
 
 	public String getConstructionDateYear() {
 		return constructionDateYear;
+	}
+
+	@Override
+	public String getKeyString() {
+		 return getKey().getId()+"";
+	}
+
+	@Override
+	public Point getLocation() {
+		return new Point(latitude, longitude);
 	}
 
 }

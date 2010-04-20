@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +21,7 @@ import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl;
+import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -33,6 +35,8 @@ import org.waterforpeople.mapping.domain.SurveyQuestion.QuestionAnswerType;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
+import com.beoui.geocell.GeocellManager;
+import com.beoui.geocell.model.Point;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -394,20 +398,44 @@ public class TestHarnessServlet extends HttpServlet {
 			q.setText("Status");
 			q.setType(QuestionAnswerType.option);
 			surveyDao.save(q);
-		}else if("testUser".equals(action)){
+		} else if ("testUser".equals(action)) {
 			UserServiceImpl userSvc = new UserServiceImpl();
 			UserDto u = userSvc.getCurrentUserConfig();
-			if(u != null){
-				UserConfigDto cdto = userSvc.findUserConfigItem(u.getEmailAddress(), "DASHBOARD", "System Summary");
-				if(cdto != null){
-					System.out.println("HI: "+cdto.getValue());
+			if (u != null) {
+				UserConfigDto cdto = userSvc.findUserConfigItem(u
+						.getEmailAddress(), "DASHBOARD", "System Summary");
+				if (cdto != null) {
+					System.out.println("HI: " + cdto.getValue());
 					cdto.setValue("0,0");
-					userSvc.updateUserConfigItem(u.getEmailAddress(), "DASHBOARD", cdto);
-					cdto = userSvc.findUserConfigItem(u.getEmailAddress(), "DASHBOARD", "System Summary");
-					System.out.println("HI: "+cdto.getValue());
+					userSvc.updateUserConfigItem(u.getEmailAddress(),
+							"DASHBOARD", cdto);
+					cdto = userSvc.findUserConfigItem(u.getEmailAddress(),
+							"DASHBOARD", "System Summary");
+					System.out.println("HI: " + cdto.getValue());
 				}
 			}
-		
+
+		} else if ("generateGeocells".equals(action)) {
+			AccessPointDao apDao = new AccessPointDao();
+			List<AccessPoint> apList = apDao.list(null);
+			if (apList != null) {
+				for (AccessPoint ap : apList) {
+					
+					if (ap.getGeocells() == null
+							|| ap.getGeocells().size() == 0) {
+						if (ap.getLatitude() != null
+								&& ap.getLongitude() != null) {
+							ap
+									.setGeocells(GeocellManager
+											.generateGeoCell(new Point(ap
+													.getLatitude(), ap
+													.getLongitude())));
+							apDao.save(ap);
+						}
+					}
+				}
+			}
 		}
+
 	}
 }

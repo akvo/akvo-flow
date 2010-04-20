@@ -14,20 +14,16 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
+import org.waterforpeople.mapping.app.util.AccessPointServiceSupport;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
-import com.gallatinsystems.common.util.DateUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.image.GAEImageAdapter;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AccessPointManagerServiceImpl extends RemoteServiceServlet
@@ -45,22 +41,23 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	public ResponseDto<ArrayList<AccessPointDto>> listAccessPoints(
 			AccessPointSearchCriteriaDto searchCriteria, String cursorString) {
 		AccessPointDao dao = new AccessPointDao();
-		
+
 		List<AccessPoint> pointList = dao.searchAccessPoints(searchCriteria
 				.getCountryCode(), searchCriteria.getCommunityCode(),
 				searchCriteria.getCollectionDateFrom(), searchCriteria
 						.getCollectionDateTo(), searchCriteria.getPointType(),
-				searchCriteria.getTechType(),cursorString);
+				searchCriteria.getTechType(), cursorString);
 		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 		for (AccessPoint apItem : pointList) {
-			AccessPointDto apDto = copyCanonicalToDto(apItem);
+			AccessPointDto apDto = AccessPointServiceSupport
+					.copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
 		}
-		
+
 		ResponseDto<ArrayList<AccessPointDto>> container = new ResponseDto<ArrayList<AccessPointDto>>();
 		container.setCursorString(BaseDAO.getCursor(pointList));
 		container.setPayload(apDtoList);
-		
+
 		return container;
 	}
 
@@ -69,110 +66,14 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		List<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 
 		AccessPointHelper ah = new AccessPointHelper();
-		
+
 		for (AccessPoint apItem : ah.listAccessPoint(cursorString)) {
-			AccessPointDto apDto = copyCanonicalToDto(apItem);
+			AccessPointDto apDto = AccessPointServiceSupport
+					.copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
 		}
-		
+
 		return apDtoList;
-	}
-
-	private AccessPointDto copyCanonicalToDto(AccessPoint apCanonical) {
-		AccessPointDto apDto = new AccessPointDto();
-		apDto.setKeyId(apCanonical.getKey().getId());
-		apDto.setAltitude(apCanonical.getAltitude());
-		apDto.setLatitude(apCanonical.getLatitude());
-		apDto.setLongitude(apCanonical.getLongitude());
-		apDto.setCommunityCode(apCanonical.getCommunityCode());
-		apDto.setCollectionDate(apCanonical.getCollectionDate());
-		apDto.setConstructionDate(apCanonical.getConstructionDate());
-		apDto.setCountryCode(apCanonical.getCountryCode());
-		apDto.setCostPer(apCanonical.getCostPer());
-		apDto.setCurrentManagementStructurePoint(apCanonical
-				.getCurrentManagementStructurePoint());
-		apDto.setDescription(apCanonical.getDescription());
-		apDto.setFarthestHouseholdfromPoint(apCanonical
-				.getFarthestHouseholdfromPoint());
-		apDto.setNumberOfHouseholdsUsingPoint(apCanonical
-				.getNumberOfHouseholdsUsingPoint());
-		apDto.setPhotoURL(apCanonical.getPhotoURL());
-		apDto.setPointPhotoCaption(apCanonical.getPointPhotoCaption());
-		if (apCanonical.getCollectionDate() != null) {
-			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
-		}
-		if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_HIGH) {
-			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_HIGH);
-		} else if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_OK) {
-			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_OK);
-		} else if (apCanonical.getPointStatus() == AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS) {
-			apDto
-					.setPointStatus(AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS);
-		} else if (apCanonical.getPointStatus() == AccessPoint.Status.NO_IMPROVED_SYSTEM) {
-			apDto.setPointStatus(AccessPointDto.Status.NO_IMPROVED_SYSTEM);
-		} else {
-			apDto.setPointStatus(AccessPointDto.Status.OTHER);
-			apDto.setOtherStatus(apCanonical.getOtherStatus());
-		}
-
-		if (apCanonical.getPointType() == AccessPointType.WATER_POINT) {
-			apDto.setPointType(AccessPointDto.AccessPointType.WATER_POINT);
-		} else {
-			apDto.setPointType(AccessPointDto.AccessPointType.SANITATION_POINT);
-		}
-
-		return apDto;
-	}
-
-	private AccessPoint copyDtoToCanonical(AccessPointDto apDto) {
-		AccessPoint accessPoint = new AccessPoint();
-		// Check to see if it is an update or insert
-		if (apDto.getKeyId() != null) {
-			Key key = KeyFactory.createKey(AccessPoint.class.getSimpleName(),
-					apDto.getKeyId());
-			accessPoint.setKey(key);
-		}
-		accessPoint.setAltitude(apDto.getAltitude());
-		accessPoint.setLatitude(apDto.getLatitude());
-		accessPoint.setLongitude(apDto.getLongitude());
-		accessPoint.setCommunityCode(apDto.getCommunityCode());
-		accessPoint.setCollectionDate(apDto.getCollectionDate());
-		accessPoint.setConstructionDate(apDto.getConstructionDate());
-		accessPoint.setCostPer(apDto.getCostPer());
-		accessPoint.setCountryCode(apDto.getCountryCode());
-		accessPoint.setCurrentManagementStructurePoint(apDto
-				.getCurrentManagementStructurePoint());
-		accessPoint.setDescription(apDto.getDescription());
-		accessPoint.setFarthestHouseholdfromPoint(apDto
-				.getFarthestHouseholdfromPoint());
-		accessPoint.setNumberOfHouseholdsUsingPoint(apDto
-				.getNumberOfHouseholdsUsingPoint());
-		accessPoint.setPhotoURL(apDto.getPhotoURL());
-		accessPoint.setPointPhotoCaption(apDto.getPointPhotoCaption());
-		if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_HIGH) {
-			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-		} else if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_OK) {
-			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-		} else if (apDto.getPointStatus() == AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS) {
-			accessPoint
-					.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
-		} else if (apDto.getPointStatus() == AccessPointDto.Status.NO_IMPROVED_SYSTEM) {
-			accessPoint.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
-		} else {
-			accessPoint.setPointStatus(AccessPoint.Status.OTHER);
-			accessPoint.setOtherStatus(apDto.getOtherStatus());
-		}
-
-		if (accessPoint.getPointStatus() == Status.OTHER) {
-			accessPoint.setOtherStatus(apDto.getOtherStatus());
-		}
-		if (apDto.getPointType() == AccessPointDto.AccessPointType.WATER_POINT) {
-			accessPoint.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-		} else {
-			accessPoint
-					.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
-		}
-		return accessPoint;
 	}
 
 	@Override
@@ -185,15 +86,17 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	public AccessPointDto getAccessPoint(Long id) {
 		AccessPointHelper aph = new AccessPointHelper();
 		AccessPoint canonicalItem = aph.getAccessPoint(id);
-		AccessPointDto apDto = copyCanonicalToDto(canonicalItem);
+		AccessPointDto apDto = AccessPointServiceSupport
+				.copyCanonicalToDto(canonicalItem);
 		return apDto;
 	}
 
 	@Override
 	public AccessPointDto saveAccessPoint(AccessPointDto accessPointDto) {
 		AccessPointHelper aph = new AccessPointHelper();
-		return copyCanonicalToDto(aph
-				.saveAccessPoint(copyDtoToCanonical(accessPointDto)));
+		return AccessPointServiceSupport.copyCanonicalToDto(aph
+				.saveAccessPoint(AccessPointServiceSupport
+						.copyDtoToCanonical(accessPointDto)));
 	}
 
 	@Override
@@ -271,7 +174,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			String community, String type) {
 		AccessPointDao apDAO = new AccessPointDao();
 		List<AccessPoint> summaries = apDAO.listAccessPointByLocation(country,
-				community, type,"all");
+				community, type, "all");
 		AccessPointDto[] dtoList = null;
 
 		if (summaries != null) {
@@ -279,13 +182,15 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			dtoList = new AccessPointDto[summaries.size()];
 
 			for (int i = 0; i < summaries.size(); i++) {
-				AccessPointDto dto = copyCanonicalToDto(summaries.get(i));
+				AccessPointDto dto = AccessPointServiceSupport
+						.copyCanonicalToDto(summaries.get(i));
 				dtoList[i] = dto;
 			}
 		}
 		return dtoList;
 	}
-	private String accessPointCursor= null;
+
+	private String accessPointCursor = null;
 
 	@Override
 	public String getCursorString() {

@@ -77,6 +77,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/webapp/testharness</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>AccessPointServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.AccessPointServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AccessPointServlet</servlet-name>
+		<url-pattern>/accesspoint</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>greetServlet</servlet-name>
 		<servlet-class>com.gallatinsystems.device.app.service.GreetingServiceImpl</servlet-class>
 	</servlet>
