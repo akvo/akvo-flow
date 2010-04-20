@@ -226,6 +226,10 @@ public class SpreadsheetAccessPointAdapter {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseDate(col.getColContents());
 							Object retobj = meth.invoke(ap, arglist);
+						} else if (paramTypeClass.contains("Long")) {
+							Object arglist[] = new Object[1];
+							arglist[0] = parseLong(col.getColContents());
+							Object retobj = meth.invoke(ap, arglist);
 						}
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
@@ -305,6 +309,16 @@ public class SpreadsheetAccessPointAdapter {
 		return valueD;
 	}
 
+	private Long parseLong(String value){
+		Long longVal = null;
+		try{
+			longVal = new Long(value);
+		}catch(Exception ex){
+			longVal = null;
+			log.info("In process spreadsheet couldn't parse long :" + value);
+		}
+		return longVal;
+	}
 	private HashMap getColsToAttributeMap(String spreadsheetName) {
 		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper(
 				sessionToken, privateKey);
