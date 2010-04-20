@@ -151,7 +151,7 @@ public class SpreadsheetAccessPointAdapter {
 								.getColContents());
 						if (tt != null) {
 							// ToDo: fix after Tuesday demo
-							//log.info("Matched tt type: " + tt.getCode());
+							// log.info("Matched tt type: " + tt.getCode());
 							// ap.setTypeTechnology(tt);
 						} else {
 							ap.setTechnologyTypeOther(col.getColContents());
@@ -162,7 +162,7 @@ public class SpreadsheetAccessPointAdapter {
 								.getColContents());
 						if (tt != null) {
 							// ToDo: fix after Tuesday demo
-							//log.info("Matched tt type: " + tt.getCode());
+							// log.info("Matched tt type: " + tt.getCode());
 							ap.setTypeTechnologyString(tt.getCode());
 						} else {
 							ap.setTypeTechnologyString(col.getColContents());
@@ -179,19 +179,25 @@ public class SpreadsheetAccessPointAdapter {
 					} else if (attributeName.trim().toLowerCase().equals(
 							"pointstatus")) {
 						if (col.getColContents() != null) {
-							if (col.getColContents().toLowerCase().equals(
-									"functional but with problems")) {
+							if(col.getColContents().toLowerCase().equals("meets government standards")){
+								ap.setPointStatus(Status.FUNCTIONING_HIGH);
+							}
+							else if (col.getColContents().toLowerCase().equals(
+									"functional but with problems")||col.getColContents().toLowerCase().trim().equals("broken down system")||col.getColContents().toLowerCase().trim().equals("borken-down system")||col.getColContents().toLowerCase().trim().equals("broken-down system")) {
 								ap
 										.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
 							} else if (col.getColContents().toLowerCase()
-									.equals("Functional")) {
+									.equals("Functional")||col.getColContents().trim().toLowerCase().equals("system needs repair but is functioning")) {
 								ap
 										.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+							} else if (col.getColContents().toLowerCase().equals("no improved system")) {
+								//No improved system
+								ap.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
 							} else {
 								ap.setPointStatus(AccessPoint.Status.OTHER);
 								ap.setOtherStatus(col.getColContents());
 							}
-						}else{
+						} else {
 							ap.setPointStatus(Status.OTHER);
 							ap.setOtherStatus("Unknown");
 						}
