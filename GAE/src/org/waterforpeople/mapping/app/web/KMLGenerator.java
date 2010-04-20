@@ -99,8 +99,10 @@ public class KMLGenerator {
 					if (ap.getPointType().equals(
 							AccessPoint.AccessPointType.WATER_POINT)) {
 						context.put("typeOfPoint", "Water");
+						context.put("water", true);
 					} else {
 						context.put("typeOfPoint", "Sanitation");
+						context.put("water", false);
 					}
 					context.put("typeOfWaterPointTechnology", ap
 							.getTypeTechnologyString());
@@ -113,7 +115,7 @@ public class KMLGenerator {
 					}
 					if (ap.getNumberOfHouseholdsUsingPoint() == null) {
 						context.put("numberOfHouseholdsUsingWaterPoint",
-								"Unkown");
+								"Unknown");
 					} else {
 						context.put("numberOfHouseholdsUsingWaterPoint", ap
 								.getNumberOfHouseholdsUsingPoint());
@@ -129,10 +131,20 @@ public class KMLGenerator {
 					}
 					context.put("currMgmtStructure", ap
 							.getCurrentManagementStructurePoint());
-					context.put("waterSystemStatus", ap.getPointStatus()
-							.toString());
-					context.put("waterPointPhotoCaption", ap
-							.getPointPhotoCaption());
+
+					if (ap.getPointPhotoCaption() == null) {
+						context.put("waterPointPhotoCaption",
+								"Water For People");
+					} else {
+						context.put("waterPointPhotoCaption", ap
+								.getPointPhotoCaption());
+					}
+					if(ap.getCommunityName()==null){
+						context.put("communityName", "Unknown");
+					}else{
+						context.put("communityName", ap.getCommunityName());
+					}
+					
 					/*
 					 * context.put("sanitationPointPhotoURL", ap
 					 * .getSanitationPointPhotoURL());
@@ -149,18 +161,27 @@ public class KMLGenerator {
 							AccessPointType.SANITATION_POINT)) {
 						context.put("pinStyle", "pushpinpurple");
 					} else {
-						if (AccessPoint.Status.FUNCTIONING_HIGH == ap
-								.getPointStatus()) {
+						if (ap.getPointStatus().equals(
+								AccessPoint.Status.FUNCTIONING_HIGH)) {
 							context.put("pinStyle", "pushpingreen");
-						} else if (AccessPoint.Status.FUNCTIONING_OK == ap
-								.getPointStatus()) {
+							context
+									.put("waterSystemStatus",
+											"System Functioning and Meets Government Standards");
+						} else if (ap.getPointStatus().equals(
+								AccessPoint.Status.FUNCTIONING_OK)) {
 							context.put("pinStyle", "pushpinyellow");
-						} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == (ap
-								.getPointStatus())||ap.getOtherStatus().toLowerCase().trim().equals("broken-down system")) {
+							context.put("waterSystemStatus",
+									"System needs repair but is functioning");
+						} else if (ap.getPointStatus().equals(
+								AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
 							context.put("pinStyle", "pushpinred");
-						} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == ap
-								.getPointStatus()) {
+							context.put("waterSystemStatus",
+									"Broken-down system");
+						} else if (ap.getPointStatus().equals(
+								AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
 							context.put("pinStyle", "pushpinblk");
+							context.put("waterSystemStatus",
+									"No Improved System");
 						}
 						for (CaptionDefinition caption : captions) {
 							context.put(caption.getCaptionVariableName(),
