@@ -14,6 +14,7 @@ import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.CaptionDefinition;
 import org.waterforpeople.mapping.domain.GeoRegion;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -86,60 +87,89 @@ public class KMLGenerator {
 		try {
 			// loop through accessPoints and bind to variables
 			for (AccessPoint ap : entries) {
-				try{
-				VelocityContext context = new VelocityContext();
+				try {
+					VelocityContext context = new VelocityContext();
 
-				context.put("collectionDate", ap.getCollectionDate());
-				context.put("latitude", ap.getLatitude());
-				context.put("longitude", ap.getLongitude());
-				context.put("altitude", ap.getAltitude());
-				context.put("communityCode", ap.getCommunityCode());
-				context.put("photoUrl", ap.getPhotoURL());
-				context.put("typeOfWaterPointTechnology", ap
-						.getTypeTechnologyString());
-				context.put("constructionDateOfWaterPoint", ap
-						.getConstructionDateYear());
-				context.put("numberOfHouseholdsUsingWaterPoint", ap
-						.getNumberOfHouseholdsUsingPoint());
-				context.put("costPer", ap.getCostPer());
-				context.put("farthestHouseholdfromWaterPoint", ap
-						.getFarthestHouseholdfromPoint());
-				context.put("currMgmtStructure", ap
-						.getCurrentManagementStructurePoint());
-				context.put("waterSystemStatus", ap.getPointStatus().toString());
-				context
-						.put("waterPointPhotoCaption", ap
-								.getPointPhotoCaption());
-				/*
-				 * context.put("sanitationPointPhotoURL", ap
-				 * .getSanitationPointPhotoURL());
-				 * context.put("primaryImprovedSanitationTech", ap
-				 * .getPrimaryImprovedSanitationTech());
-				 * context.put("percentageOfHouseholdsWithImprovedSanitation",
-				 * ap .getPercentageOfHouseholdsWithImprovedSanitation());
-				 */
-				context
-						.put("waterPointPhotoCaption", ap
-								.getPointPhotoCaption());
-				context.put("description", ap.getDescription());
-				// Need to check this
-				if (AccessPoint.Status.FUNCTIONING_HIGH== ap.getPointStatus()) {
-					context.put("pinStyle", "pushpingreen");
-				} else if (AccessPoint.Status.FUNCTIONING_OK==ap.getPointStatus()) {
-					context.put("pinStyle", "pushpinyellow");
-				} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == (ap.getPointStatus())) {
-					context.put("pinStyle", "pushpinred");
-				} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM==ap.getPointStatus()){
-					context.put("pinStyle", "pushpinblk");
-				}
-				for (CaptionDefinition caption : captions) {
-					context.put(caption.getCaptionVariableName(), caption
-							.getCaptionValue());
-				}
-
-				sb.append(mergeContext(context, vmName));
-				}catch(Exception ex){
-					//TO-DO Fix
+					context.put("collectionDate", ap.getCollectionDate());
+					context.put("latitude", ap.getLatitude());
+					context.put("longitude", ap.getLongitude());
+					context.put("altitude", ap.getAltitude());
+					context.put("communityCode", ap.getCommunityCode());
+					context.put("photoUrl", ap.getPhotoURL());
+					if (ap.getPointType().equals(
+							AccessPoint.AccessPointType.WATER_POINT)) {
+						context.put("typeOfPoint", "Water");
+					} else {
+						context.put("typeOfPoint", "Sanitation");
+					}
+					context.put("typeOfWaterPointTechnology", ap
+							.getTypeTechnologyString());
+					if (ap.getConstructionDateYear() == null
+							|| ap.getConstructionDateYear().trim().equals("")) {
+						context.put("constructionDateOfWaterPoint", "Unknown");
+					} else {
+						context.put("constructionDateOfWaterPoint", ap
+								.getConstructionDateYear());
+					}
+					if (ap.getNumberOfHouseholdsUsingPoint() == null) {
+						context.put("numberOfHouseholdsUsingWaterPoint",
+								"Unkown");
+					} else {
+						context.put("numberOfHouseholdsUsingWaterPoint", ap
+								.getNumberOfHouseholdsUsingPoint());
+					}
+					context.put("costPer", ap.getCostPer());
+					if (ap.getFarthestHouseholdfromPoint() == null
+							|| ap.getFarthestHouseholdfromPoint().trim()
+									.equals("")) {
+						context.put("farthestHouseholdfromWaterPoint", "N/A");
+					} else {
+						context.put("farthestHouseholdfromWaterPoint", ap
+								.getFarthestHouseholdfromPoint());
+					}
+					context.put("currMgmtStructure", ap
+							.getCurrentManagementStructurePoint());
+					context.put("waterSystemStatus", ap.getPointStatus()
+							.toString());
+					context.put("waterPointPhotoCaption", ap
+							.getPointPhotoCaption());
+					/*
+					 * context.put("sanitationPointPhotoURL", ap
+					 * .getSanitationPointPhotoURL());
+					 * context.put("primaryImprovedSanitationTech", ap
+					 * .getPrimaryImprovedSanitationTech());
+					 * context.put("percentageOfHouseholdsWithImprovedSanitation"
+					 * , ap .getPercentageOfHouseholdsWithImprovedSanitation());
+					 */
+					context.put("waterPointPhotoCaption", ap
+							.getPointPhotoCaption());
+					context.put("description", ap.getDescription());
+					// Need to check this
+					if (ap.getPointType().equals(
+							AccessPointType.SANITATION_POINT)) {
+						context.put("pinStyle", "pushpinpurple");
+					} else {
+						if (AccessPoint.Status.FUNCTIONING_HIGH == ap
+								.getPointStatus()) {
+							context.put("pinStyle", "pushpingreen");
+						} else if (AccessPoint.Status.FUNCTIONING_OK == ap
+								.getPointStatus()) {
+							context.put("pinStyle", "pushpinyellow");
+						} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == (ap
+								.getPointStatus())||ap.getOtherStatus().toLowerCase().trim().equals("broken-down system")) {
+							context.put("pinStyle", "pushpinred");
+						} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == ap
+								.getPointStatus()) {
+							context.put("pinStyle", "pushpinblk");
+						}
+						for (CaptionDefinition caption : captions) {
+							context.put(caption.getCaptionVariableName(),
+									caption.getCaptionValue());
+						}
+					}
+					sb.append(mergeContext(context, vmName));
+				} catch (Exception ex) {
+					// TO-DO Fix
 				}
 			}
 		} catch (Exception e) {
