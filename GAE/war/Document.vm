@@ -32,6 +32,16 @@
       </Icon>
     </IconStyle>
   </Style>
+   <Style id="pushpinpurple">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="purplepin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/purple-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
    <Style id="pushpinblk">
            <BalloonStyle> 
       <text>$[description]</text> 
@@ -52,7 +62,7 @@
     </Style>
 	
 	
-	<name>Blantyre Mapping Assesment</name>
+	<name>Water For People Mapping Assesment</name>
 	<description>description</description>
 	<Style id="exampleBalloonStyle">
     <BalloonStyle>

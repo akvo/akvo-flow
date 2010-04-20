@@ -91,131 +91,9 @@
 	}
 	
 	</style>
-	<script type="text/javascript">
-	var menuAlignment = 'left';	// Align menu to the left or right?	
-	var topMenuSpacer = 15; // Horizontal space(pixels) between the main menu items	
-	var activateSubOnClick = true; // if true-> Show sub menu items on click, if false, show submenu items onmouseover
-	var leftAlignSubItems = false; 	// left align sub items t
-	
-	var activeMenuItem = false;	// Don't change this option. It should initially be false
-	var activeTabIndex = 0;	// Index of initial active tab	(0 = first tab) - If the value below is set to true, it will override this one.
-	var rememberActiveTabByCookie = false;	// Set it to true if you want to be able to save active tab as cookie
-	
-	var MSIE = navigator.userAgent.indexOf('MSIE')>=0?true:false;
-	var Opera = navigator.userAgent.indexOf('Opera')>=0?true:false;
-	var navigatorVersion = navigator.appVersion.replace(/.*?MSIE ([0-9]\.[0-9]).*/g,'$1')/1;
-		
-	
-	
-	function showHide()
-	{
-		if(activeMenuItem){
-			activeMenuItem.className = 'inactiveMenuItem'; 	
-			var theId = activeMenuItem.id.replace(/[^0-9]/g,'');
-			document.getElementById('submenu_'+theId).style.display='none';
-			var img = activeMenuItem.getElementsByTagName('IMG');
-			if(img.length>0)img[0].style.display='none';			
-		}
-
-		var img = this.getElementsByTagName('IMG');
-		if(img.length>0)img[0].style.display='inline';
-				
-		activeMenuItem = this;		
-		this.className = 'activeMenuItem';
-		var theId = this.id.replace(/[^0-9]/g,'');
-		document.getElementById('submenu_'+theId).style.display='block';
-	}
-	
-	function initMenu()
-	{
-		var mainMenuObj = document.getElementById('mainMenu');
-		var menuItems = mainMenuObj.getElementsByTagName('A');
-		if(document.all){
-			mainMenuObj.style.visibility = 'hidden';
-			document.getElementById('submenu').style.visibility='hidden';
-		}		
-		
-		
-		var currentLeftPos = 15;
-		for(var no=0;no<menuItems.length;no++){			
-			if(activateSubOnClick)menuItems[no].onclick = showHide; else menuItems[no].onmouseover = showHide;
-			menuItems[no].id = 'mainMenuItem' + (no+1);
-			if(menuAlignment=='left')
-				menuItems[no].style.left = currentLeftPos + 'px';
-			else
-				menuItems[no].style.right = currentLeftPos + 'px';
-				
-			currentLeftPos = currentLeftPos + menuItems[no].offsetWidth + topMenuSpacer; 
-			
-			var img = menuItems[no].getElementsByTagName('IMG');
-			if(img.length>0){
-				img[0].style.display='none';
-				if(MSIE && !Opera){
-					img[0].style.bottom = '-1px';
-					img[0].style.right = '-1px';
-				}
-			}
-						
-			if(no==activeTabIndex){
-				menuItems[no].className='activeMenuItem';
-				activeMenuItem = menuItems[no];
-				var img = activeMenuItem.getElementsByTagName('IMG');
-				if(img.length>0)img[0].style.display='inline';	
-							
-			}else menuItems[no].className='inactiveMenuItem';
-			if(!document.all)menuItems[no].style.bottom = '-1px';
-			if(MSIE && navigatorVersion < 6)menuItems[no].style.bottom = '-2px';
-			
-
-		}		
-		
-		var mainMenuLinks = mainMenuObj.getElementsByTagName('A');
-		
-		var subCounter = 1;
-		var parentWidth = mainMenuObj.offsetWidth;
-		while(document.getElementById('submenu_' + subCounter)){
-			var subItem = document.getElementById('submenu_' + subCounter);
-			
-			if(leftAlignSubItems){
-				// No action
-			}else{							
-				var leftPos = mainMenuLinks[subCounter-1].offsetLeft;
-				document.getElementById('submenu_'+subCounter).style.paddingLeft =  leftPos + 'px';
-				subItem.style.position ='absolute';
-				if(subItem.offsetWidth > parentWidth){
-					leftPos = leftPos - Math.max(0,subItem.offsetWidth-parentWidth); 	
-				}
-				subItem.style.paddingLeft =  leftPos + 'px';
-				subItem.style.position ='static';
-					
-				
-			}
-			if(subCounter==(activeTabIndex+1)){
-				subItem.style.display='block';
-			}else{
-				subItem.style.display='none';
-			}
-			
-			subCounter++;
-		}
-		if(document.all){
-			mainMenuObj.style.visibility = 'visible';
-			document.getElementById('submenu').style.visibility='visible';
-		}		
-		document.getElementById('submenu').style.display='block';
-	}
-	
-	</script>
-</head>
 </head>
 <body>
 
-<div id="mainContainer">
-<!-- This is the start of the menu -->
-<div id="mainMenu">
-	<a>Water Point</a>
-	<a>Sanitation Point</a>
-</div>
 <div id="submenu">
 	<!-- The first sub menu -->
 	<div id="submenu_1">
@@ -230,26 +108,23 @@
 			          	</td>
 	    			</tr>
 	       				<tr>
-	    					<td><b><font color="#003333" face="Verdana">$typeOfWaterPointTechnologyCaption</font></b><br><font face="face="Verdana">$typeOfWaterPointTechnology</font><td>
+	    					<td><b><font color="#003333" face="Verdana">Type of Technology</font></b><br><font face="face="Verdana">$typeOfWaterPointTechnology</font><td>
 	    				</tr>
-						<tr>
+	    				<tr>
+	    					<td><b><font color="#003333" face="Verdana">Type of Point</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
+	    				</tr>
+						<!--<tr>
 							<td><b><font color="#003333" face="Verdana">$constructionDateOfWaterPointCaption</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
-						</tr>
-						<tr>
+						</tr>-->
+						<!--<tr>
 							<td><b><font color="#003333" face="Verdana">$numberOfHouseholdsUsingWaterPointCaption</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
-						</tr>
-						<tr>
-							<td><b><font color="#003333" face="Verdana">$costCaption</font></b><br> <font face="face="Verdana">$costPer</font></td>
-						</tr>
+						</tr>-->
 						<tr>
 							<td><b><font color="#003333" face="Verdana">Is the farthest household from the water point within 500 meters?:</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
 						</tr>
-						<tr>
-							<td><b><font color="#003333" face="Verdana">Management Structure:</font></b><br><font face="face="Verdana">$currMgmtStructure</font></td>
-						</tr>
-						<tr>
+						<!--<tr>
 							<td><b><font color="#003333" face="Verdana">$waterSystemStatusCaption</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
-						</tr>
+						</tr>-->
 						<tr>
 	    					<td><br><a href="www.waterforpeople.org">Water For People</a></td>
 	    					
@@ -260,7 +135,7 @@
 		    	<td valign="top">
 	    			<table>
 	    				<tr>
-	    					<td align="left" valign="middle"><font color="#003333" size="+2" face="Verdana"><strong>Blantyre Water Board</strong></font><hr /></td>
+	    					<td align="left" valign="middle"><font color="#003333" size="+2" face="Verdana"><strong>Water For People Monitoring</strong></font><hr /></td>
 	    				</tr>
 	    				<tr>
 	    					<td><img src="$photoUrl" alt="picture"  align="left" /></td>
@@ -281,56 +156,6 @@
 	    	</tr>
 	    </table>
 	</div>
-	<!-- Second sub menu -->
-	<div id="submenu_2">
-			    <table width="580" cellpadding="0" cellspacing="0">
-	    	<tr>
-	    	<td valign="top">
-	    	<table>
-	    			<tr>
-	    				
-			        	<td align="left" valign="top">
-			            	<a href="www.waterforpeople.org"><img src="http://waterforpeople.s3.amazonaws.com/images/wwmp-300.jpg" width="150" height="112""></a>
-			          	</td>
-	    			</tr>
-	   					<tr>
-							<td><b><font color="#003333" face="Verdana">$primarySanitationTechnologyCaption</font></b><br><font face="face="Verdana">$primarySanitationTechnology</font></td>
-						</tr>
-						<tr>
-							<td><b><font color="#003333" face="Verdana">$percentageHouseholdsImprovedSanitationCaption</font></b><br><font face="face="Verdana">$percentageOfHouseholdsWithImprovedSanitation</font></td>
-						</tr>
-						<tr>
-	    					<td><br><a href="www.waterforpeople.org">Water For People</a></td>
-	    					
-	    				</tr>
-					</table>
-		    	</td>
-		    	
-		    	<td valign="top">
-	    			<table>
-	    				<tr>
-	    					<td align="left" valign="middle"><font color="#003333" size="+2" face="Verdana"><strong>Blantyre Water Board</strong></font><hr /></td>
-	    				</tr>
-	    				<tr>
-	    					<td><img src="$photoOfPrimarySanitationtechnology" alt="picture"  align="left" /></td>
-	    				</tr>
-	    				<tr>
-	    					<td align="left" valign="top">
-	    						<dt><font color="#666666"><strong>$sanitationPhotoCaption</strong></font></dt>
-	    					</td>
-	    				</tr>
-	    			</table>
-	    		</td>
-		    	
-			</tr>
-	    	<tr>
-	    		<td colspan="3" align="right" valign="top">
-					<font color="#999999">$footer</font>
-				</td>
-	    	</tr>
-	    </table>
-	</div>
-</div>
 <script type="text/javascript">
 initMenu();
 </script>
