@@ -107,24 +107,33 @@
 			            	<a href="www.waterforpeople.org"><img src="http://waterforpeople.s3.amazonaws.com/images/wwmp-300.jpg" width="150" height="112""></a>
 			          	</td>
 	    			</tr>
+		    			<tr>
+		    				<td><b><font color="#003333" face="Verdana">Community Name</font></b><br><font face="face="Verdana">$communityName</font><td>
+		    			</tr>
 	       				<tr>
 	    					<td><b><font color="#003333" face="Verdana">Type of Technology</font></b><br><font face="face="Verdana">$typeOfWaterPointTechnology</font><td>
 	    				</tr>
 	    				<tr>
 	    					<td><b><font color="#003333" face="Verdana">Type of Point</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
 	    				</tr>
-						<!--<tr>
-							<td><b><font color="#003333" face="Verdana">$constructionDateOfWaterPointCaption</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
-						</tr>-->
-						<!--<tr>
-							<td><b><font color="#003333" face="Verdana">$numberOfHouseholdsUsingWaterPointCaption</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
-						</tr>-->
-						<!--<tr>
-							<td><b><font color="#003333" face="Verdana">Is the farthest household from the water point within 500 meters?:</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
-						</tr>-->
-						<!--<tr>
-							<td><b><font color="#003333" face="Verdana">$waterSystemStatusCaption</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
-						</tr>-->
+	    				#if($water)
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Construction Date of Water Point</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Number of Households Using Water Point</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Is the farthest household from the water point within 500 meters?:</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Water System Status</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
+							</tr>
+						#else
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Number of Households with improved sanitation</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
+							</tr>
+						#end
 						<tr>
 	    					<td><br><a href="www.waterforpeople.org">Water For People</a></td>
 	    					
