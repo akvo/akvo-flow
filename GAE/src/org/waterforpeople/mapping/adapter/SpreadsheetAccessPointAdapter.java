@@ -179,20 +179,53 @@ public class SpreadsheetAccessPointAdapter {
 					} else if (attributeName.trim().toLowerCase().equals(
 							"pointstatus")) {
 						if (col.getColContents() != null) {
-							if(col.getColContents().toLowerCase().equals("meets government standards")){
+							if (col.getColContents().toLowerCase().equals(
+									"functioning")
+									|| col
+											.getColContents()
+											.toLowerCase()
+											.equals(
+													"meets government standards")
+									|| col
+											.getColContents()
+											.trim()
+											.toLowerCase()
+											.equals(
+													"system functioning and meets government standards")
+									|| col.getColContents().toLowerCase()
+											.trim().equals("Functional")) {
+								// Green
 								ap.setPointStatus(Status.FUNCTIONING_HIGH);
-							}
-							else if (col.getColContents().toLowerCase().equals(
-									"functional but with problems")||col.getColContents().toLowerCase().trim().equals("broken down system")||col.getColContents().toLowerCase().trim().equals("borken-down system")||col.getColContents().toLowerCase().trim().equals("broken-down system")) {
+							} else if (col
+									.getColContents()
+									.trim()
+									.toLowerCase()
+									.equals(
+											"system needs repair but is functioning")
+									|| col
+											.getColContents()
+											.toLowerCase()
+											.equals(
+													"functional but with problems")) {
+								// Yellow
+								ap
+										.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+							} else if (col.getColContents().toLowerCase()
+									.trim().equals("broken down system")
+									|| col.getColContents().toLowerCase()
+											.trim()
+											.equals("borken-down system")
+									|| col.getColContents().toLowerCase()
+											.trim()
+											.equals("broken-down system")) {
+								// Red
 								ap
 										.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
 							} else if (col.getColContents().toLowerCase()
-									.equals("Functional")||col.getColContents().trim().toLowerCase().equals("system needs repair but is functioning")) {
+									.equals("no improved system")) {
+								// No improved system Black
 								ap
-										.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-							} else if (col.getColContents().toLowerCase().equals("no improved system")) {
-								//No improved system
-								ap.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
+										.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
 							} else {
 								ap.setPointStatus(AccessPoint.Status.OTHER);
 								ap.setOtherStatus(col.getColContents());
@@ -229,6 +262,10 @@ public class SpreadsheetAccessPointAdapter {
 						} else if (paramTypeClass.contains("Long")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseLong(col.getColContents());
+							Object retobj = meth.invoke(ap, arglist);
+						} else if(paramTypeClass.contains("Boolean")){
+							Object arglist[] = new Object[1];
+							arglist[0] = parseBoolean(col.getColContents());
 							Object retobj = meth.invoke(ap, arglist);
 						}
 					} catch (ClassNotFoundException e) {
@@ -309,16 +346,36 @@ public class SpreadsheetAccessPointAdapter {
 		return valueD;
 	}
 
-	private Long parseLong(String value){
+	private Long parseLong(String value) {
 		Long longVal = null;
-		try{
+		try {
 			longVal = new Long(value);
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			longVal = null;
 			log.info("In process spreadsheet couldn't parse long :" + value);
 		}
 		return longVal;
 	}
+
+	private Boolean parseBoolean(String value) {
+		Boolean retVal = null;
+		try {
+			if (value.trim().toLowerCase().equals("y")
+					|| value.trim().toLowerCase().equals("yes")
+					|| value.trim().toLowerCase().equals("true")
+					|| value.trim().toLowerCase().equals("t")
+					|| value.trim().toLowerCase().equals("1")
+					|| value.trim().toLowerCase().equals("one")) {
+				retVal = true;
+			} else {
+				retVal = false;
+			}
+		} catch (Exception ex) {
+			log.info("In process spreadsheet couldn't parse Boolean: " + value);
+		}
+		return retVal;
+	}
+
 	private HashMap getColsToAttributeMap(String spreadsheetName) {
 		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper(
 				sessionToken, privateKey);
