@@ -512,6 +512,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 				@Override
 				public void onClick(ClickEvent event) {
+					((Image) accessPointDetail.getWidget(9, 2)).setVisible(false);
+					accessPointDetail.setWidget(9, 4, new Label("Please wait while image is rotated 90 Degrees"));
 					svc.rotateImage(((TextBox) accessPointDetail
 							.getWidget(9, 1)).getText(),
 							new AsyncCallback<Boolean>() {
@@ -524,11 +526,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 								@Override
 								public void onSuccess(Boolean result) {
 									Integer random = Random.nextInt();
-
-									((Image) accessPointDetail.getWidget(9, 2))
-											.setUrl(((TextBox) accessPointDetail
+									Image photo = ((Image) accessPointDetail.getWidget(9, 2));
+									accessPointDetail.getWidget(9, 4).setVisible(false);
+											photo.setUrl(((TextBox) accessPointDetail
 													.getWidget(9, 1)).getText()
 													+ "?random=" + random);
+											photo.setVisible(true);
 								}
 							});
 				}
