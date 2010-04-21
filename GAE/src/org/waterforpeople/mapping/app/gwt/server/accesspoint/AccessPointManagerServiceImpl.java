@@ -151,7 +151,13 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
 		byte[] newImage = gaeImg.rotateImage(out.toByteArray(), 90);
 		S3Driver s3 = new S3Driver();
-		s3.uploadFile(bucket, imageURL, newImage);
+		try {
+			s3.uploadFile(bucket, imageURL, newImage);
+		} catch (Exception ex) {
+			// This is here for dev env where you can't make S3 puts
+			log.info(ex.getMessage());
+
+		}
 		return null;
 
 		/*
@@ -163,7 +169,6 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		// "no-store, no-cache, must-revalidate");
 		// resp.setContentType("image/jpeg");
 		// resp.getOutputStream().write(newImage);
-
 	}
 
 	/**
