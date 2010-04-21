@@ -29,6 +29,90 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@Persistent
 	private String communityCode = null;
 	private String communityName = null;
+	
+	private String balloonTitle = null;
+	public String getBalloonTitle() {
+		return balloonTitle;
+	}
+
+	public void setBalloonTitle(String balloonTitle) {
+		this.balloonTitle = balloonTitle;
+	}
+
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
+
+	public String getFooter() {
+		return footer;
+	}
+
+	public void setFooter(String footer) {
+		this.footer = footer;
+	}
+
+	public String getPhotoName() {
+		return photoName;
+	}
+
+	public void setPhotoName(String photoName) {
+		this.photoName = photoName;
+	}
+
+	public Boolean getMeetGovtQualityStandardFlag() {
+		return meetGovtQualityStandardFlag;
+	}
+
+	public void setMeetGovtQualityStandardFlag(Boolean meetGovtQualityStandardFlag) {
+		this.meetGovtQualityStandardFlag = meetGovtQualityStandardFlag;
+	}
+
+	public Boolean getMeetGovtQuantityStandardFlag() {
+		return meetGovtQuantityStandardFlag;
+	}
+
+	public void setMeetGovtQuantityStandardFlag(Boolean meetGovtQuantityStandardFlag) {
+		this.meetGovtQuantityStandardFlag = meetGovtQuantityStandardFlag;
+	}
+
+	public String getWhoRepairsPoint() {
+		return whoRepairsPoint;
+	}
+
+	public void setWhoRepairsPoint(String whoRepairsPoint) {
+		this.whoRepairsPoint = whoRepairsPoint;
+	}
+
+	public String getSecondaryTechnologyString() {
+		return secondaryTechnologyString;
+	}
+
+	public void setSecondaryTechnologyString(String secondaryTechnologyString) {
+		this.secondaryTechnologyString = secondaryTechnologyString;
+	}
+
+	public Boolean getProvideAdequateQuantity() {
+		return provideAdequateQuantity;
+	}
+
+	public void setProvideAdequateQuantity(Boolean provideAdequateQuantity) {
+		this.provideAdequateQuantity = provideAdequateQuantity;
+	}
+
+	private String header = null;
+	private String footer = null;
+	private String photoName = null;
+	private Boolean meetGovtQualityStandardFlag = null;
+	private Boolean meetGovtQuantityStandardFlag = null;
+	private String whoRepairsPoint =null;
+	private String secondaryTechnologyString = null;
+	private Boolean provideAdequateQuantity = null;
+	
+	
 	public String getCommunityName() {
 		return communityName;
 	}
@@ -224,7 +308,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	}
 
 	public enum AccessPointType {
-		WATER_POINT, SANITATION_POINT
+		WATER_POINT, SANITATION_POINT, SCHOOL, HEALTH_POSTS, PUBLIC_INSTITUTIONS
 	}
 
 	public enum Status {
@@ -329,7 +413,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	@Override
 	public String getKeyString() {
-		 return getKey().getId()+"";
+		return getKey().getId() + "";
 	}
 
 	@Override
