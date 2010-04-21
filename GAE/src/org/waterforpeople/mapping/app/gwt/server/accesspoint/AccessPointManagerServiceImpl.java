@@ -135,7 +135,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		ByteArrayOutputStream out = null;
 		URL url;
 		try {
-			url = new URL(totalURL);
+			url = new URL(imageURL+"?random=" + rand.nextInt());
 			in = url.openStream();
 			out = new ByteArrayOutputStream();
 			byte[] buffer = new byte[2048];
