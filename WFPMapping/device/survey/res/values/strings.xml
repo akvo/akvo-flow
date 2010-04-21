@@ -85,4 +85,9 @@
 	<string name="toosmallerr">Value is too small. Minimum value: </string>
 	<string name="toolargeerr">Value is too large. Maximum value: </string>
 	<string name="baddatatypeerr">Answer must be numeric</string>
+	<string name="nothingnearby">No nearby access points</string>
+	<string name="nearbyinstructions">Click on an access point to see details. Press back to return to main menu.</string>
+	<string name="communitycode">Community Code: </string>
+	<string name="distance">Distance: </string>
+	<string name="nearbylabel">Nearby Access Points</string>
 </resources>

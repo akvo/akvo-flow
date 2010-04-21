@@ -7,14 +7,14 @@ package com.gallatinsystems.survey.device.util;
  * 
  */
 public class ConstantUtil {
-	
+
 	/**
 	 * filesystem constants
 	 */
 	public static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
 
 	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
-	
+
 	/**
 	 * status related constants
 	 */
@@ -55,7 +55,7 @@ public class ConstantUtil {
 	public static final String VALUE_RESPONSE_TYPE = "VALUE";
 	public static final String IMAGE_RESPONSE_TYPE = "IMAGE";
 	public static final String VIDEO_RESPONSE_TYPE = "VIDEO";
-	public static final String GEO_RESPONSE_TYPE = "GEO";	
+	public static final String GEO_RESPONSE_TYPE = "GEO";
 	public static final String OTHER_RESPONSE_TYPE = "OTHER";
 
 	/**
@@ -63,18 +63,17 @@ public class ConstantUtil {
 	 */
 	public static final String NUMERIC_VALIDATION_TYPE = "numeric";
 	public static final String NAME_VALIDATION_TYPE = "name";
-	
+
 	/**
 	 * survey types
 	 * 
 	 */
 	public static final String SURVEY_TYPE = "survey";
-	
+
 	/**
 	 * media question support
 	 */
 	public static final String MEDIA_FILE_KEY = "filename";
-	
 
 	/**
 	 * operation types
@@ -83,7 +82,8 @@ public class ConstantUtil {
 	public static final String SURVEY_OP = "SURVEY";
 	public static final String CONF_OP = "CONF";
 	public static final String PLOT_OP = "PLOT";
-	
+	public static final String NEARBY_OP = "NEARBY";
+
 	/**
 	 * data sync options
 	 */
@@ -91,23 +91,24 @@ public class ConstantUtil {
 	public static final String SEND = "SEND";
 	public static final String OP_TYPE_KEY = "TYPE";
 	public static final String FORCE_KEY = "FORCE";
-	
+
 	/**
 	 * keys for saves state and bundle extras
 	 */
 	public static final String PLOT_ID_KEY = "plotid";
-	public static final String STATUS_KEY = "status";	
+	public static final String STATUS_KEY = "status";
 	public static final String SURVEY_RESOURCE_ID_KEY = "RESID";
 	public static final String USER_ID_KEY = "UID";
 	public static final String SURVEY_ID_KEY = "SID";
 	public static final String ID_KEY = "_id";
 	public static final String DISPLAY_NAME_KEY = "display_name";
 	public static final String EMAIL_KEY = "email";
-	public static final String INTERVAL_KEY = "interval";	
+	public static final String INTERVAL_KEY = "interval";
 	public static final String RESPONDENT_ID_KEY = "survey_respondent_id";
-	public static final String IMAGE_URL_LIST_KEY ="imageurls";
-	public static final String IMAGE_CAPTION_LIST_KEY ="imagecaps";
-	
+	public static final String IMAGE_URL_LIST_KEY = "imageurls";
+	public static final String IMAGE_CAPTION_LIST_KEY = "imagecaps";
+	public static final String AP_KEY = "accesspoint";
+
 	/**
 	 * settings keys
 	 */
@@ -119,20 +120,18 @@ public class ConstantUtil {
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
 	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
 	public static final String PRECACHE_HELP_SETTING_KEY = "survey.precachehelp";
-	
-	
+
 	/**
 	 * index values into string arrays
 	 */
 	public static final int UPLOAD_DATA_ALLWAYS_IDX = 0;
 	public static final int UPLOAD_DATA_ONLY_IDX = 1;
 	public static final int UPLOAD_NEVER_IDX = 2;
-	
+
 	public static final int PRECACHE_HELP_ALLWAYS_IDX = 0;
 	public static final int PRECACHE_HELP_WIFI_ONLY_IDX = 1;
 	public static final int PRECACHE_HELP_NEVER_IDX = 2;
-	
-	
+
 	/**
 	 * intents
 	 */
@@ -140,13 +139,13 @@ public class ConstantUtil {
 	public static final String PRECACHE_INTENT = "com.gallatinsystems.survey.device.PRECACHE";
 	public static final String GPS_STATUS_INTENT = "com.eclipsim.gpsstatus.VIEW";
 	public static final String BARCODE_SCAN_INTENT = "com.google.zxing.client.android.SCAN";
-	
+
 	/**
 	 * zxing barcode extra keys
 	 */
 	public static final String BARCODE_CONTENT = "SCAN_RESULT";
 	public static final String BARCODE_FORMAT = "SCAN_RESULT_FORMAT";
-	
+
 	/**
 	 * prevent instantiation
 	 */

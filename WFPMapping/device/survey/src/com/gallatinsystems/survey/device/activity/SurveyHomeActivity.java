@@ -47,6 +47,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public static final int SETTINGS_ACTIVITY = 3;
 	public static final int PLOTTING_ACTIVITY = 4;
 	public static final int PLOT_LIST_ACTIVITY = 5;
+	public static final int NEARBY_ACTIVITY = 6;
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
@@ -59,7 +60,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.home);
 
-		menuViewAdapter = new HomeMenuViewAdapter(this,loadDesiredSurveyLanguage());
+		menuViewAdapter = new HomeMenuViewAdapter(this,
+				loadDesiredSurveyLanguage());
 		userField = (TextView) findViewById(R.id.currentUserField);
 
 		GridView grid = (GridView) findViewById(R.id.gridview);
@@ -205,6 +207,9 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			} else {
 				ViewUtil.showGPSDialog(this);
 			}
+		} else if (selected.equals(ConstantUtil.NEARBY_OP)) {
+			Intent i = new Intent(v.getContext(), NearbyItemActivity.class);
+			startActivityForResult(i, NEARBY_ACTIVITY);
 		} else {
 			if (currentUserId != null) {
 				int resourceID = 0;
