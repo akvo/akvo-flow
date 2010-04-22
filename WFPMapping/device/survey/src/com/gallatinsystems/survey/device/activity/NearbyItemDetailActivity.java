@@ -1,10 +1,15 @@
 package com.gallatinsystems.survey.device.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,21 +25,27 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * displays the detail information for a single nearby item
- * 
+ *
  * @author Christopher Fagiani
  */
 public class NearbyItemDetailActivity extends Activity implements
-		LocationListener {
+		LocationListener, SensorEventListener {
 
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private TextView communityCodeField;
 	private TextView distanceField;
+	private TextView techTypeField;
+	private TextView statusField;
 	private ImageView arrowView;
 	private AccessPointDto accessPoint;
 	private Bitmap arrowBitmap;
 	private Location apLocation;
 	private float lastBearing;
+	private Location lastLocation;
+	private float lastOrientation;
+	private Sensor orientSensor;
+
 
 	private static final float MIN_CHANGE = 2f;
 
@@ -42,16 +53,25 @@ public class NearbyItemDetailActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		lastBearing = -999f;
+		lastOrientation = 0f;
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0,
 				this);
-		lastBearing = -999;
+		SensorManager sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+		orientSensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+		sensorMgr.registerListener(this,orientSensor,SensorManager.SENSOR_DELAY_NORMAL);
+
+
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
 		setContentView(R.layout.nearbydetail);
 
 		communityCodeField = (TextView) findViewById(R.id.communityCodeField);
 		distanceField = (TextView) findViewById(R.id.distanceField);
+		techTypeField = (TextView) findViewById(R.id.techTypeField);
+		statusField = (TextView) findViewById(R.id.statusField);
 		arrowView = (ImageView) findViewById(R.id.arrowView);
 		arrowBitmap = BitmapFactory.decodeResource(getResources(),
 				R.drawable.uparrow);
@@ -71,12 +91,25 @@ public class NearbyItemDetailActivity extends Activity implements
 		populateFields();
 	}
 
+/**
+* when this activity is done, stop listening for location updates
+*/
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		if(locMgr != null){
+			locMgr.removeUpdates(this);
+		}
+	}
+
 	/**
 	 * put loaded data into the views for display
 	 */
 	private void populateFields() {
 		if (accessPoint != null) {
 			communityCodeField.setText(accessPoint.getCommunityCode());
+			techTypeField.setText(accessPoint.getTechType());
+			statusField.setText(accessPoint.getStatus());
 			// TODO: add other fields
 		}
 	}
@@ -91,22 +124,28 @@ public class NearbyItemDetailActivity extends Activity implements
 
 	@Override
 	public void onLocationChanged(Location loc) {
+		lastLocation = loc;
 		// set the distance value
 		distanceField.setText(apLocation.distanceTo(loc) + "");
-		// rotate the compass arrow
-		Matrix matrix = new Matrix();
-		float newBearing = loc.bearingTo(apLocation);
 		// only update the bearing and the corresponding image representation of
 		// it if it changed more than MIN_CHANGE degrees
 		// so we're not always manipulating the image
+		float newBearing = loc.bearingTo(apLocation);
 		if (Math.abs(newBearing - lastBearing) >= MIN_CHANGE) {
-			matrix.postRotate(loc.bearingTo(apLocation));
-			Bitmap resizedBitmap = Bitmap.createBitmap(arrowBitmap, 0, 0, 30,
-					30, matrix, true);
-			arrowView.setImageDrawable(new BitmapDrawable(resizedBitmap));
 			lastBearing = newBearing;
+			updateArrow();
 		}
+	}
 
+/**
+*  Rotates the direction arrow so it always points at the access point
+*/
+	private void updateArrow(){
+		Matrix matrix = new Matrix();
+		matrix.postRotate(lastBearing + lastOrientation);
+		Bitmap resizedBitmap = Bitmap.createBitmap(arrowBitmap, 0, 0, 30,
+				30, matrix, true);
+		arrowView.setImageDrawable(new BitmapDrawable(resizedBitmap));
 	}
 
 	@Override
@@ -125,4 +164,18 @@ public class NearbyItemDetailActivity extends Activity implements
 		//no-op
 
 	}
+
+	   @Override
+	        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	            // no-op
+	        }
+
+	        @Override
+	        public void onSensorChanged(SensorEvent event) {
+	            if (event.sensor == orientSensor) {
+	                lastOrientation  = event.values[0];
+	                updateArrow();
+
+	            }
+	        }
 }

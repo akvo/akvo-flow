@@ -27,7 +27,7 @@ public class AccessPointService {
 	 */
 	public static ArrayList<AccessPointDto> getNearbyAccessPoints(Double lat,
 			Double lon) {
-		//todo: remove this
+		// todo: remove this
 		lat = -15.88008;
 		lon = 35.06023;
 		ArrayList<AccessPointDto> dtoList = new ArrayList<AccessPointDto>();
@@ -67,6 +67,8 @@ public class AccessPointService {
 				dto.setLat(json.getDouble("latitude"));
 				dto.setLon(json.getDouble("longitude"));
 				dto.setCommunityCode(json.getString("communityCode"));
+				dto.setTechType(json.getString("typeTechnology"));
+				dto.setStatus(json.getString("pointStatus"));
 			} catch (JSONException e) {
 				Log.e(TAG, "Could not parse points", e);
 			}

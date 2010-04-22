@@ -12,7 +12,25 @@ public class AccessPointDto implements Serializable {
 	private static final long serialVersionUID = 7202533894121885298L;
 	private Double lat;
 	private Double lon;
+	private String techType;
+	private String status;
 	private String communityCode;
+
+	public String getTechType() {
+		return techType;
+	}
+
+	public void setTechType(String techType) {
+		this.techType = techType;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public Double getLat() {
 		return lat;

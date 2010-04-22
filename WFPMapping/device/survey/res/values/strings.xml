@@ -90,4 +90,6 @@
 	<string name="communitycode">Community Code: </string>
 	<string name="distance">Distance: </string>
 	<string name="nearbylabel">Nearby Access Points</string>
+	<string name="itemstatus">Status: </string>
+	<string name="techtype">Technology Type: </string>
 </resources>
