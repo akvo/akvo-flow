@@ -107,17 +107,21 @@
 			            	<a href="www.waterforpeople.org"><img src="http://waterforpeople.s3.amazonaws.com/images/wwmp-300.jpg" width="150" height="112""></a>
 			          	</td>
 	    			</tr>
-		    			<tr>
-		    				<td><b><font color="#003333" face="Verdana">Community Name</font></b><br><font face="face="Verdana">$communityName</font><td>
-		    			</tr>
-	       				<tr>
-	    					<td><b><font color="#003333" face="Verdana">Type of Technology</font></b><br><font face="face="Verdana">$typeOfWaterPointTechnology</font><td>
-	    				</tr>
-	    				<tr>
-	    					<td><b><font color="#003333" face="Verdana">Type of Point</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
-	    				</tr>
-	    				#if($water)
-							<tr>
+		    			
+	    				#if($type=="water")
+		    				<tr>
+			    				<td><b><font color="#003333" face="Verdana">Community Name</font></b><br><font face="face="Verdana">$communityName</font><td>
+			    			</tr>
+			    			<tr>
+		    					<td><b><font color="#003333" face="Verdana">Type of Point</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
+		    				</tr>
+		    				<tr>
+		    					<td><b><font color="#003333" face="Verdana">Type of Technology</font></b><br><font face="face="Verdana">$primaryTypeTechnology</font><td>
+		    				</tr>
+			    			<tr>
+			    				<td><b><font color="#003333" face="Verdana">Date Data was collected</font></b><br><font face="face="Verdana">$collectionDate</font><td>
+			    			</tr>
+		       				<tr>
 								<td><b><font color="#003333" face="Verdana">Construction Date of Water Point</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
 							</tr>
 							<tr>
@@ -129,9 +133,84 @@
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Water System Status</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
 							</tr>
-						#else
+						#elseif($type=="sanitation")
+							<tr>
+			    				<td><b><font color="#003333" face="Verdana">Community Name</font></b><br><font face="face="Verdana">$communityName</font><td>
+			    			</tr>
+			    			<tr>
+		    					<td><b><font color="#003333" face="Verdana">Type of Point</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
+		    				</tr>
+		    				<tr>
+			    				<td><b><font color="#003333" face="Verdana">Date Data was collected</font></b><br><font face="face="Verdana">$collectionDate</font><td>
+			    			</tr>
+			    			<tr>
+								<td><b><font color="#003333" face="Verdana">Construction Date</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
+							</tr>
+		       				<tr>
+		    					<td><b><font color="#003333" face="Verdana">Primary Sanitation Technology in Community</font></b><br><font face="face="Verdana">$primaryTypeTechnology</font><td>
+		    				</tr>
+		    				#if($secondaryTechnology!="null")
+			    				<tr>
+			    					<td><b><font color="#003333" face="Verdana">Secondary Sanitation Technology in Community</font></b><br><font face="face="Verdana">$secondaryTypeTechnology</font><td>
+			    				</tr>
+		    				#end
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Number of Households with improved sanitation</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
+							</tr>						
+						#else				
+			    			<tr>
+			    				<td><b><font color="#003333" face="Verdana">Community Name</font></b><br><font face="face="Verdana">$communityName</font><td>
+			    			</tr>
+			    			<tr>
+			    				<td><b><font color="#003333" face="Verdana">Type of Public Institution</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
+			    			</tr>
+			    			<tr>
+			    				<td><b><font color="#003333" face="Verdana">Public Institution Name</font></b><br><font face="face="Verdana">$institutionName</font><td>
+			    			</tr>
+		    				<tr>
+		    					<td><b><font color="#003333" face="Verdana">Type of Technology</font></b><br><font face="face="Verdana">$primaryTypeTechnology</font><td>
+		    				</tr>
+			    			<tr>
+			    				<td><b><font color="#003333" face="Verdana">Date Data was collected</font></b><br><font face="face="Verdana">$collectionDate</font><td>
+			    			</tr>
+		       				<tr>
+								<td><b><font color="#003333" face="Verdana">Construction Date</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Estimated Number of Users</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Does the Waterpoint Provide Enough Every Day?</font></b><br><font face="face="Verdana">$provideAdequateQuantity</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Is the farthest household from the water point within 500 meters?:</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Does Water Quality Meet Government Standards</font></b><br><font face="face="Verdana">$meetGovtQualityStandardFlag</font></td>
+							</tr>
+							
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Does the Quantity of Water Meet Government Standards?</font></b><br><font face="face="Verdana">$meetGovtQuantityStandardFlag</font></td>
+							</tr>
+								<tr>
+								<td><b><font color="#003333" face="Verdana">Tariff/User Fee</font></b><br><font face="face="Verdana">$costPer</font></td>
+							</tr>			
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Who Manages the Waterpoint?</font></b><br><font face="face="Verdana">$currMgmtStructure</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Who Repairs the Waterpoint</font></b><br><font face="face="Verdana">$whoRepairsPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Primary Sanitation Technology</font></b><br><font face="face="Verdana">$primaryTypeTechnology</font></td>
+							</tr>
+							#if($secondaryTechnology!="null")
+			    				<tr>
+			    					<td><b><font color="#003333" face="Verdana">Secondary Sanitation Technology in Community</font></b><br><font face="face="Verdana">$secondaryTypeTechnology</font><td>
+			    				</tr>
+		    				#end
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Water System Status</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
 							</tr>
 						#end
 						<tr>
@@ -144,7 +223,7 @@
 		    	<td valign="top">
 	    			<table>
 	    				<tr>
-	    					<td align="left" valign="middle"><font color="#003333" size="+2" face="Verdana"><strong>Water For People Monitoring</strong></font><hr /></td>
+	    					<td align="left" valign="middle"><font color="#003333" size="+2" face="Verdana"><strong>$title</strong></font><hr /></td>
 	    				</tr>
 	    				<tr>
 	    					<td><img src="$photoUrl" alt="picture"  align="left" /></td>
