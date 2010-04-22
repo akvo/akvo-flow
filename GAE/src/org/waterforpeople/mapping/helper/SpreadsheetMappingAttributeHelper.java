@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
@@ -58,9 +59,10 @@ public class SpreadsheetMappingAttributeHelper {
 
 			for (Field item : cls.getDeclaredFields()) {
 				if (!item.getName().contains("jdo")
-						&& !item.getName().equals("serialVersionUID"))
+						&& !item.getName().equals("serialVersionUID")&&!item.getName().equals("geoCells"))
 					attributesList.add(item.getName());
 			}
+			Collections.sort(attributesList);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

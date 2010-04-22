@@ -29,8 +29,9 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@Persistent
 	private String communityCode = null;
 	private String communityName = null;
-	private String institutuionName = null;
+	private String institutionName = null;
 	private String balloonTitle = null;
+
 	public String getBalloonTitle() {
 		return balloonTitle;
 	}
@@ -67,7 +68,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 		return meetGovtQualityStandardFlag;
 	}
 
-	public void setMeetGovtQualityStandardFlag(Boolean meetGovtQualityStandardFlag) {
+	public void setMeetGovtQualityStandardFlag(
+			Boolean meetGovtQualityStandardFlag) {
 		this.meetGovtQualityStandardFlag = meetGovtQualityStandardFlag;
 	}
 
@@ -75,7 +77,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 		return meetGovtQuantityStandardFlag;
 	}
 
-	public void setMeetGovtQuantityStandardFlag(Boolean meetGovtQuantityStandardFlag) {
+	public void setMeetGovtQuantityStandardFlag(
+			Boolean meetGovtQuantityStandardFlag) {
 		this.meetGovtQuantityStandardFlag = meetGovtQuantityStandardFlag;
 	}
 
@@ -108,11 +111,10 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String photoName = null;
 	private Boolean meetGovtQualityStandardFlag = null;
 	private Boolean meetGovtQuantityStandardFlag = null;
-	private String whoRepairsPoint =null;
+	private String whoRepairsPoint = null;
 	private String secondaryTechnologyString = null;
 	private Boolean provideAdequateQuantity = null;
-	
-	
+
 	public String getCommunityName() {
 		return communityName;
 	}
@@ -308,7 +310,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	}
 
 	public enum AccessPointType {
-		WATER_POINT, SANITATION_POINT, SCHOOL, HEALTH_POSTS, PUBLIC_INSTITUTIONS
+		WATER_POINT, SANITATION_POINT, SCHOOL, HEALTH_POSTS, PUBLIC_INSTITUTION
 	}
 
 	public enum Status {
@@ -421,12 +423,12 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 		return new Point(latitude, longitude);
 	}
 
-	public void setInstitutuionName(String institutuionName) {
-		this.institutuionName = institutuionName;
+	public void setInstitutionName(String institutionName) {
+		this.institutionName = institutionName;
 	}
 
-	public String getInstitutuionName() {
-		return institutuionName;
+	public String getInstitutionName() {
+		return institutionName;
 	}
 
 }

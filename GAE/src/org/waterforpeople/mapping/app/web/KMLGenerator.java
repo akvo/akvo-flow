@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,9 +89,16 @@ public class KMLGenerator {
 			// loop through accessPoints and bind to variables
 			for (AccessPoint ap : entries) {
 				try {
-					VelocityContext context = new VelocityContext();
 
-					context.put("collectionDate", ap.getCollectionDate());
+					VelocityContext context = new VelocityContext();
+					if (ap.getCollectionDate() != null) {
+						String formattedDate = DateFormat.getDateInstance(
+								DateFormat.SHORT)
+								.format(ap.getCollectionDate());
+						context.put("collectionDate", formattedDate);
+					} else {
+						context.put("collectionDate", "N/A");
+					}
 					context.put("latitude", ap.getLatitude());
 					context.put("longitude", ap.getLongitude());
 					context.put("altitude", ap.getAltitude());
@@ -99,13 +107,37 @@ public class KMLGenerator {
 					if (ap.getPointType().equals(
 							AccessPoint.AccessPointType.WATER_POINT)) {
 						context.put("typeOfPoint", "Water");
-						context.put("water", true);
-					} else {
+						context.put("type", "water");
+					} else if (ap.getPointType().equals(
+							AccessPointType.SANITATION_POINT)) {
 						context.put("typeOfPoint", "Sanitation");
-						context.put("water", false);
+						context.put("type", "sanitation");
+					} else if (ap.getPointType().equals(
+							AccessPointType.PUBLIC_INSTITUTION)) {
+						context.put("typeOfPoint", "Public Institutions");
+						context.put("type", "public_institutions");
+					} else if (ap.getPointType().equals(
+							AccessPointType.HEALTH_POSTS)) {
+						context.put("typeOfPoint", "Health Posts");
+						context.put("type", "health_posts");
+					} else if (ap.getPointType().equals(AccessPointType.SCHOOL)) {
+						context.put("typeOfPoint", "School");
+						context.put("type", "school");
 					}
-					context.put("typeOfWaterPointTechnology", ap
-							.getTypeTechnologyString());
+
+					if (ap.getTypeTechnologyString() == null) {
+						context.put("primaryTypeTechnology", "Unknown");
+					} else {
+						context.put("primaryTypeTechnology", ap
+								.getTypeTechnologyString());
+					}
+
+					if (ap.getInstitutionName() == null) {
+						context.put("institutionName", "Unknown");
+					} else {
+						context.put("institutionName", "Unknown");
+					}
+
 					if (ap.getConstructionDateYear() == null
 							|| ap.getConstructionDateYear().trim().equals("")) {
 						context.put("constructionDateOfWaterPoint", "Unknown");
@@ -120,7 +152,11 @@ public class KMLGenerator {
 						context.put("numberOfHouseholdsUsingWaterPoint", ap
 								.getNumberOfHouseholdsUsingPoint());
 					}
-					context.put("costPer", ap.getCostPer());
+					if (ap.getCostPer() == null) {
+						context.put("costPer", "N/A");
+					} else {
+						context.put("costPer", ap.getCostPer());
+					}
 					if (ap.getFarthestHouseholdfromPoint() == null
 							|| ap.getFarthestHouseholdfromPoint().trim()
 									.equals("")) {
@@ -129,32 +165,90 @@ public class KMLGenerator {
 						context.put("farthestHouseholdfromWaterPoint", ap
 								.getFarthestHouseholdfromPoint());
 					}
-					context.put("currMgmtStructure", ap
-							.getCurrentManagementStructurePoint());
-
-					if (ap.getPointPhotoCaption() == null) {
+					if (ap.getCurrentManagementStructurePoint() == null) {
+						context.put("currMgmtStructure", "N/A");
+					} else {
+						context.put("currMgmtStructure", ap
+								.getCurrentManagementStructurePoint());
+					}
+					if (ap.getPointPhotoCaption() == null
+							|| ap.getPointPhotoCaption().trim().equals("")) {
 						context.put("waterPointPhotoCaption",
 								"Water For People");
 					} else {
 						context.put("waterPointPhotoCaption", ap
 								.getPointPhotoCaption());
 					}
-					if(ap.getCommunityName()==null){
+					if (ap.getCommunityName() == null) {
 						context.put("communityName", "Unknown");
-					}else{
+					} else {
 						context.put("communityName", ap.getCommunityName());
 					}
-					
-					/*
-					 * context.put("sanitationPointPhotoURL", ap
-					 * .getSanitationPointPhotoURL());
-					 * context.put("primaryImprovedSanitationTech", ap
-					 * .getPrimaryImprovedSanitationTech());
-					 * context.put("percentageOfHouseholdsWithImprovedSanitation"
-					 * , ap .getPercentageOfHouseholdsWithImprovedSanitation());
-					 */
-					context.put("waterPointPhotoCaption", ap
-							.getPointPhotoCaption());
+
+					if (ap.getHeader() == null) {
+						context.put("header", "Water For People");
+					} else {
+						context.put("header", ap.getHeader());
+					}
+
+					if (ap.getFooter() == null) {
+						context.put("footer", "Water For People");
+					} else {
+						context.put("footer", ap.getFooter());
+					}
+
+					if (ap.getPhotoName() == null) {
+						context.put("photoName", "Water For People");
+					} else {
+						context.put("photoName", ap.getPhotoName());
+					}
+
+					if (ap.getMeetGovtQualityStandardFlag() == null) {
+						context.put("meetGovtQualityStandardFlag", "N/A");
+					} else {
+						context.put("meetGovtQualityStandardFlag", ap
+								.getMeetGovtQualityStandardFlag());
+					}
+					if (ap.getMeetGovtQuantityStandardFlag() == null) {
+						context.put("meetGovtQuantityStandardFlag", "N/A");
+					} else {
+						context.put("meetGovtQuantityStandardFlag", ap
+								.getMeetGovtQuantityStandardFlag());
+					}
+
+					if (ap.getWhoRepairsPoint() == null) {
+						context.put("whoRepairsPoint", "N/A");
+					} else {
+						context.put("whoRepairsPoint", ap.getWhoRepairsPoint());
+					}
+
+					if (ap.getSecondaryTechnologyString() == null) {
+						context.put("secondaryTypeTechnology", "N/A");
+					} else {
+						context.put("secondaryTypeTechnology", ap
+								.getSecondaryTechnologyString());
+					}
+
+					if (ap.getProvideAdequateQuantity() == null) {
+						context.put("provideAdequateQuantity", "N/A");
+					} else {
+						context.put("provideAdequateQuantity", ap
+								.getProvideAdequateQuantity());
+					}
+
+					if (ap.getBalloonTitle() == null) {
+						context.put("title", "Water For People");
+					} else {
+						context.put("title", ap.getBalloonTitle());
+					}
+
+					if (ap.getProvideAdequateQuantity() == null) {
+						context.put("provideAdequateQuantity", "N/A");
+					} else {
+						context.put("provideAdequateQuantity", ap
+								.getProvideAdequateQuantity());
+					}
+
 					context.put("description", ap.getDescription());
 					// Need to check this
 					if (ap.getPointType().equals(
@@ -182,15 +276,19 @@ public class KMLGenerator {
 							context.put("pinStyle", "pushpinblk");
 							context.put("waterSystemStatus",
 									"No Improved System");
+						} else {
+							context.put("pinStyle", "pushpinblk");
+							context.put("waterSystemStatus", "Unknown");
 						}
 						for (CaptionDefinition caption : captions) {
 							context.put(caption.getCaptionVariableName(),
 									caption.getCaptionValue());
 						}
 					}
-					sb.append(mergeContext(context, vmName));
+					String output = mergeContext(context, vmName);
+					sb.append(output);
 				} catch (Exception ex) {
-					// TO-DO Fix
+					log.info(ex.getMessage());
 				}
 			}
 		} catch (Exception e) {
@@ -220,7 +318,7 @@ public class KMLGenerator {
 						currUUID = gr.getUuid();
 						context.put("coordinateString", sbCoor.toString());
 						sb.append(mergeContext(context, vmName));
-						log.info(sbCoor.toString());
+
 						context = new VelocityContext();
 						sbCoor = new StringBuilder();
 						sbCoor.append(gr.getLongitude() + ","

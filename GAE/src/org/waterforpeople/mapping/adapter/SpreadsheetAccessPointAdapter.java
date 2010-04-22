@@ -175,6 +175,15 @@ public class SpreadsheetAccessPointAdapter {
 						} else if (col.getColContents().trim().toLowerCase()
 								.equals("water")) {
 							ap.setPointType(AccessPointType.WATER_POINT);
+						} else if (col.getColContents().trim().toLowerCase()
+								.equals("school")) {
+							ap.setPointType(AccessPointType.SCHOOL);
+						} else if (col.getColContents().trim().toLowerCase()
+								.equals("public institution")) {
+							ap.setPointType(AccessPointType.PUBLIC_INSTITUTION);
+						} else if (col.getColContents().trim().toLowerCase()
+								.equals("health post")) {
+							ap.setPointType(AccessPointType.HEALTH_POSTS);
 						}
 					} else if (attributeName.trim().toLowerCase().equals(
 							"pointstatus")) {
@@ -206,7 +215,13 @@ public class SpreadsheetAccessPointAdapter {
 											.getColContents()
 											.toLowerCase()
 											.equals(
-													"functional but with problems")) {
+													"functional but with problems")
+									|| col
+											.getColContents()
+											.toLowerCase()
+											.trim()
+											.equals(
+													"functioning but with problems")) {
 								// Yellow
 								ap
 										.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
@@ -222,7 +237,7 @@ public class SpreadsheetAccessPointAdapter {
 								ap
 										.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
 							} else if (col.getColContents().toLowerCase()
-									.equals("no improved system")) {
+									.equals("no improved system")|| (col.getColContents().trim().toLowerCase().equals("no improved system"))) {
 								// No improved system Black
 								ap
 										.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
@@ -244,16 +259,13 @@ public class SpreadsheetAccessPointAdapter {
 						partypes[0] = Class.forName(paramTypeClass);
 						java.lang.reflect.Method meth = cls.getMethod("set"
 								+ attributeName, partypes);
-
 						if (paramTypeClass.contains("Double")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseDouble(col.getColContents());
-
 							Object retobj = meth.invoke(ap, arglist);
 						} else if (paramTypeClass.contains("String")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = col.getColContents();
-
 							Object retobj = meth.invoke(ap, arglist);
 						} else if (paramTypeClass.contains("Date")) {
 							Object arglist[] = new Object[1];
@@ -263,7 +275,7 @@ public class SpreadsheetAccessPointAdapter {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseLong(col.getColContents());
 							Object retobj = meth.invoke(ap, arglist);
-						} else if(paramTypeClass.contains("Boolean")){
+						} else if (paramTypeClass.contains("Boolean")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseBoolean(col.getColContents());
 							Object retobj = meth.invoke(ap, arglist);

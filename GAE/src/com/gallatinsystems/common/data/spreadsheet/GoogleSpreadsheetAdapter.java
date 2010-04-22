@@ -133,9 +133,11 @@ public class GoogleSpreadsheetAdapter {
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 		for (int i = 0; i < spreadsheets.size(); i++) {
 			SpreadsheetEntry entry = spreadsheets.get(i);
+			log.info(entry.getTitle().getPlainText());
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
 				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				for (int j = 0; i < worksheets.size(); i++) {
+				log.info("worksheetsize: " + worksheets.size());
+				for (int j = 0; j < worksheets.size(); j++) {
 					WorksheetEntry worksheet = worksheets.get(j);
 					String title = worksheet.getTitle().getPlainText();
 					int rowCount = worksheet.getRowCount();
