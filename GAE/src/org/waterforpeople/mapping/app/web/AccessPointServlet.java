@@ -81,8 +81,6 @@ public class AccessPointServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
-		// TODO: see if we have to manually form the JSONArray for the list
-		// items?
 		JSONObject obj = new JSONObject(resp);
 		getResponse().getWriter().println(obj.toString());
 	}

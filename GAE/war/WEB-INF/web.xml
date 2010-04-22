@@ -84,6 +84,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AccessPointServlet</servlet-name>
 		<url-pattern>/accesspoint</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>PointOfInterestServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.PointOfInterestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PointOfInterestServlet</servlet-name>
+		<url-pattern>/pointofinterest</url-pattern>
+	</servlet-mapping>
 	
 	<servlet>
 		<servlet-name>greetServlet</servlet-name>
