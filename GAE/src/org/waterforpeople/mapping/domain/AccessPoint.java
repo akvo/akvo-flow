@@ -29,7 +29,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@Persistent
 	private String communityCode = null;
 	private String communityName = null;
-	
+	private String institutuionName = null;
 	private String balloonTitle = null;
 	public String getBalloonTitle() {
 		return balloonTitle;
@@ -419,6 +419,14 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@Override
 	public Point getLocation() {
 		return new Point(latitude, longitude);
+	}
+
+	public void setInstitutuionName(String institutuionName) {
+		this.institutuionName = institutuionName;
+	}
+
+	public String getInstitutuionName() {
+		return institutuionName;
 	}
 
 }
