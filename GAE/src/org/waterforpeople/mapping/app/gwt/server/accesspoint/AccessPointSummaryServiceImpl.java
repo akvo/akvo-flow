@@ -45,7 +45,7 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 			if (status == null) {
 				// if we're not selecting by status, collapse based on it
 				for (int i = 0; i < summaries.size(); i++) {
-					Long curVal = countMap.get(summaries.get(i).getStatus());
+					Long curVal = countMap.get(summaries.get(i).getStatus().toString());
 					if (curVal == null) {
 						curVal = summaries.get(i).getCount();
 					} else {
