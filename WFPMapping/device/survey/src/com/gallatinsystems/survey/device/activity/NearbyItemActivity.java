@@ -15,8 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.gallatinsystems.survey.device.R;
-import com.gallatinsystems.survey.device.remote.AccessPointService;
-import com.gallatinsystems.survey.device.remote.dto.AccessPointDto;
+import com.gallatinsystems.survey.device.remote.PointOfInterestService;
+import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -31,7 +31,7 @@ public class NearbyItemActivity extends ListActivity implements
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private ProgressDialog progressDialog;
-	private ArrayList<AccessPointDto> accessPoints;
+	private ArrayList<PointOfInterestDto> pointsOfInterest;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,12 +56,18 @@ public class NearbyItemActivity extends ListActivity implements
 
 	}
 
+	/**
+	 * loads the data from the server.
+	 * TODO: make this work if offline too by loading from db
+	 * @param lat
+	 * @param lon
+	 */
 	private void loadData(Double lat, Double lon) {
-		accessPoints = AccessPointService.getNearbyAccessPoints(
-				lat, lon);
-		if (accessPoints != null) {
-			setListAdapter(new ArrayAdapter<AccessPointDto>(this,
-					R.layout.itemlistrow, accessPoints));
+		pointsOfInterest = PointOfInterestService.getNearbyAccessPoints(lat,
+				lon);
+		if (pointsOfInterest != null) {
+			setListAdapter(new ArrayAdapter<PointOfInterestDto>(this,
+					R.layout.itemlistrow, pointsOfInterest));
 		}
 		progressDialog.dismiss();
 	}
@@ -74,7 +80,7 @@ public class NearbyItemActivity extends ListActivity implements
 			long id) {
 		super.onListItemClick(list, view, position, id);
 		Intent i = new Intent(this, NearbyItemDetailActivity.class);
-		i.putExtra(ConstantUtil.AP_KEY, accessPoints.get(position));
+		i.putExtra(ConstantUtil.AP_KEY, pointsOfInterest.get(position));
 		startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
 	}
 

@@ -20,7 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
-import com.gallatinsystems.survey.device.remote.dto.AccessPointDto;
+import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -33,16 +33,15 @@ public class NearbyItemDetailActivity extends Activity implements
 
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
-	private TextView communityCodeField;
+	private TextView nameField;
 	private TextView distanceField;
 	private TextView techTypeField;
 	private TextView statusField;
 	private ImageView arrowView;
-	private AccessPointDto accessPoint;
+	private PointOfInterestDto pointOfInterest;
 	private Bitmap arrowBitmap;
 	private Location apLocation;
-	private float lastBearing;
-	private Location lastLocation;
+	private float lastBearing;	
 	private float lastOrientation;
 	private Sensor orientSensor;
 
@@ -68,7 +67,7 @@ public class NearbyItemDetailActivity extends Activity implements
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
 		setContentView(R.layout.nearbydetail);
 
-		communityCodeField = (TextView) findViewById(R.id.communityCodeField);
+		nameField = (TextView) findViewById(R.id.pointNameField);
 		distanceField = (TextView) findViewById(R.id.distanceField);
 		techTypeField = (TextView) findViewById(R.id.techTypeField);
 		statusField = (TextView) findViewById(R.id.statusField);
@@ -77,17 +76,17 @@ public class NearbyItemDetailActivity extends Activity implements
 				R.drawable.uparrow);
 
 
-		accessPoint = savedInstanceState != null ? (AccessPointDto) savedInstanceState
+		pointOfInterest = savedInstanceState != null ? (PointOfInterestDto) savedInstanceState
 				.getSerializable(ConstantUtil.AP_KEY)
 				: null;
-		if (accessPoint == null) {
+		if (pointOfInterest == null) {
 			Bundle extras = getIntent().getExtras();
-			accessPoint = extras != null ? (AccessPointDto) extras
+			pointOfInterest = extras != null ? (PointOfInterestDto) extras
 					.getSerializable(ConstantUtil.AP_KEY) : null;
 		}
 		apLocation = new Location(LocationManager.GPS_PROVIDER);
-		apLocation.setLatitude(accessPoint.getLat());
-		apLocation.setLongitude(accessPoint.getLon());
+		apLocation.setLatitude(pointOfInterest.getLatitude());
+		apLocation.setLongitude(pointOfInterest.getLongitude());
 		populateFields();
 	}
 
@@ -106,25 +105,24 @@ public class NearbyItemDetailActivity extends Activity implements
 	 * put loaded data into the views for display
 	 */
 	private void populateFields() {
-		if (accessPoint != null) {
-			communityCodeField.setText(accessPoint.getCommunityCode());
-			techTypeField.setText(accessPoint.getTechType());
-			statusField.setText(accessPoint.getStatus());
-			// TODO: add other fields
+		if (pointOfInterest != null) {
+			nameField.setText(pointOfInterest.getName());
+			//techTypeField.setText(accessPoint.getTechType());
+		//	statusField.setText(accessPoint.getStatus());
+			// TODO: add property name/value fields
 		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if (outState != null && accessPoint != null) {
-			outState.putSerializable(ConstantUtil.AP_KEY, accessPoint);
+		if (outState != null && pointOfInterest != null) {
+			outState.putSerializable(ConstantUtil.AP_KEY, pointOfInterest);
 		}
 	}
 
 	@Override
-	public void onLocationChanged(Location loc) {
-		lastLocation = loc;
+	public void onLocationChanged(Location loc) {		
 		// set the distance value
 		distanceField.setText(apLocation.distanceTo(loc) + "");
 		// only update the bearing and the corresponding image representation of
