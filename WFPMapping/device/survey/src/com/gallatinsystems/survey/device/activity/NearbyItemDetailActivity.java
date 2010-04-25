@@ -2,6 +2,7 @@ package com.gallatinsystems.survey.device.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -14,7 +15,10 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +37,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 public class NearbyItemDetailActivity extends Activity implements
 		LocationListener, SensorEventListener {
 
+	private static final int NAVIGATE_ID = Menu.FIRST;
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private TextView nameField;
@@ -128,6 +133,29 @@ public class NearbyItemDetailActivity extends Activity implements
 		}
 	}
 
+	/**
+	 * presents a single button ("Add") when the user clicks the menu key
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, NAVIGATE_ID, 0, R.string.navigate);
+		return true;
+	}
+
+	/**
+	 * handles the button press for the "add" button on the menu
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case NAVIGATE_ID:
+			launchNavigation();
+			return true;
+		}
+		return super.onMenuItemSelected(featureId, item);
+	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -159,6 +187,16 @@ public class NearbyItemDetailActivity extends Activity implements
 		Bitmap resizedBitmap = Bitmap.createBitmap(arrowBitmap, 0, 0, 30, 30,
 				matrix, true);
 		arrowView.setImageDrawable(new BitmapDrawable(resizedBitmap));
+	}
+
+	/**
+	 * launches google maps application set to zoom in on point of interest
+	 */
+	private void launchNavigation() {
+		Intent mapsIntent = new Intent(Intent.ACTION_VIEW);
+		mapsIntent.setData(Uri.parse("geo:" + pointOfInterest.getLatitude()
+				+ "," + pointOfInterest.getLongitude() + "z=16"));
+		startActivity(mapsIntent);
 	}
 
 	@Override

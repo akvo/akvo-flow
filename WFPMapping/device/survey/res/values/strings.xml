@@ -92,4 +92,5 @@
 	<string name="nearbylabel">Nearby Access Points</string>
 	<string name="itemstatus">Status: </string>
 	<string name="techtype">Technology Type: </string>
+	<string name="navigate">View on Map</string>
 </resources>
