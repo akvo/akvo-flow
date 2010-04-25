@@ -45,9 +45,12 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 			if (status == null) {
 				// if we're not selecting by status, collapse based on it
 				for (int i = 0; i < summaries.size(); i++) {
-					Long curVal = countMap.get(summaries.get(i).getStatus().toString());
+					Long curVal = countMap.get(summaries.get(i).getStatus()
+							.toString());
 					if (curVal == null) {
-						curVal = summaries.get(i).getCount();
+						curVal = summaries.get(i).getCount() != null ? summaries
+								.get(i).getCount()
+								: new Long(1);
 					} else {
 						curVal = curVal + summaries.get(i).getCount();
 					}
@@ -70,13 +73,13 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 			int i = 0;
 			for (String key : countMap.keySet()) {
 				AccessPointSummaryDto dto = new AccessPointSummaryDto();
-			if(status == null){
-				dto.setStatus(key);
-				dto.setCountryCode(country);
-			}else{
-				dto.setCountryCode(key);
-				dto.setStatus(status);
-			}
+				if (status == null) {
+					dto.setStatus(key);
+					dto.setCountryCode(country);
+				} else {
+					dto.setCountryCode(key);
+					dto.setStatus(status);
+				}
 				dto.setCommunityCode(community);
 				dto.setType(type);
 				dto.setYear(year);
