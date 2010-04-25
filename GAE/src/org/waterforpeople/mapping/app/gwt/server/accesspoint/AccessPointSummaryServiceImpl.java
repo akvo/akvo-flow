@@ -52,7 +52,10 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 								.get(i).getCount()
 								: new Long(1);
 					} else {
-						curVal = curVal + summaries.get(i).getCount();
+						curVal = curVal
+								+ (summaries.get(i).getCount() != null ? summaries
+										.get(i).getCount()
+										: new Long(1));
 					}
 					countMap.put(summaries.get(i).getStatus().toString(),
 							curVal);
