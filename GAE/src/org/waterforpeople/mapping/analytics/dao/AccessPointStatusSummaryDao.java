@@ -5,8 +5,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 
@@ -53,8 +51,7 @@ public class AccessPointStatusSummaryDao extends
 			yearString = cal.get(Calendar.YEAR) + "";
 		}
 		List results = (List) query.executeWithArray(yearString, ap
-				.getPointStatus(), ap.getCommunityCode(), ap.getPointType()
-				.toString());
+				.getPointStatus(), ap.getCommunityCode(), ap.getPointType());
 		AccessPointStatusSummary summary = null;
 		if (results == null || results.size() == 0) {
 			summary = new AccessPointStatusSummary();
@@ -63,7 +60,8 @@ public class AccessPointStatusSummaryDao extends
 			summary.setStatus(ap.getPointStatus());
 			summary.setCountry(c.getIsoAlpha2Code());
 			summary.setCommunity(ap.getCommunityCode());
-			summary.setType(ap.getPointType().toString());						
+			summary.setType(ap.getPointType() != null ? ap.getPointType()
+					.toString() : "UNKNOWN");
 		} else {
 			summary = (AccessPointStatusSummary) results.get(0);
 			summary.setCount(summary.getCount() + 1);
