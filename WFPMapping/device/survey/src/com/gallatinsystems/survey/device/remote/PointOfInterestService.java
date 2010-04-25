@@ -29,8 +29,8 @@ public class PointOfInterestService {
 	public static ArrayList<PointOfInterestDto> getNearbyAccessPoints(
 			Double lat, Double lon) {
 		// TODO: remove this. this is just for testing
-		lat = -15.88008;
-		lon = 35.06023;
+	//	lat = -15.88008;
+		//lon = 35.06023;
 		ArrayList<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
 		try {
 			String response = HttpUtil.httpGet(SERVICE_URL + lat + "&lon="

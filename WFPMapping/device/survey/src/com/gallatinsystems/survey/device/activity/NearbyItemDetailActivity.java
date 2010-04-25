@@ -17,6 +17,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
@@ -25,7 +27,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * displays the detail information for a single nearby item
- *
+ * 
  * @author Christopher Fagiani
  */
 public class NearbyItemDetailActivity extends Activity implements
@@ -35,16 +37,14 @@ public class NearbyItemDetailActivity extends Activity implements
 	private Criteria locationCriteria;
 	private TextView nameField;
 	private TextView distanceField;
-	private TextView techTypeField;
-	private TextView statusField;
+	private ScrollView scrollView;
 	private ImageView arrowView;
 	private PointOfInterestDto pointOfInterest;
 	private Bitmap arrowBitmap;
 	private Location apLocation;
-	private float lastBearing;	
+	private float lastBearing;
 	private float lastOrientation;
 	private Sensor orientSensor;
-
 
 	private static final float MIN_CHANGE = 2f;
 
@@ -60,8 +60,8 @@ public class NearbyItemDetailActivity extends Activity implements
 		SensorManager sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
 		orientSensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-		sensorMgr.registerListener(this,orientSensor,SensorManager.SENSOR_DELAY_NORMAL);
-
+		sensorMgr.registerListener(this, orientSensor,
+				SensorManager.SENSOR_DELAY_NORMAL);
 
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
@@ -69,12 +69,10 @@ public class NearbyItemDetailActivity extends Activity implements
 
 		nameField = (TextView) findViewById(R.id.pointNameField);
 		distanceField = (TextView) findViewById(R.id.distanceField);
-		techTypeField = (TextView) findViewById(R.id.techTypeField);
-		statusField = (TextView) findViewById(R.id.statusField);
+		scrollView = (ScrollView) findViewById(R.id.pointscroll);
 		arrowView = (ImageView) findViewById(R.id.arrowView);
 		arrowBitmap = BitmapFactory.decodeResource(getResources(),
 				R.drawable.uparrow);
-
 
 		pointOfInterest = savedInstanceState != null ? (PointOfInterestDto) savedInstanceState
 				.getSerializable(ConstantUtil.AP_KEY)
@@ -90,13 +88,13 @@ public class NearbyItemDetailActivity extends Activity implements
 		populateFields();
 	}
 
-/**
-* when this activity is done, stop listening for location updates
-*/
+	/**
+	 * when this activity is done, stop listening for location updates
+	 */
 	@Override
-	public void onDestroy(){
+	public void onDestroy() {
 		super.onDestroy();
-		if(locMgr != null){
+		if (locMgr != null) {
 			locMgr.removeUpdates(this);
 		}
 	}
@@ -107,9 +105,26 @@ public class NearbyItemDetailActivity extends Activity implements
 	private void populateFields() {
 		if (pointOfInterest != null) {
 			nameField.setText(pointOfInterest.getName());
-			//techTypeField.setText(accessPoint.getTechType());
-		//	statusField.setText(accessPoint.getStatus());
-			// TODO: add property name/value fields
+			if (pointOfInterest.getPropertyNames() != null) {
+				for (int i = 0; i < pointOfInterest.getPropertyNames().size(); i++) {
+					if (pointOfInterest.getPropertyValues().size() > i) {
+						String val = pointOfInterest.getPropertyValues().get(i);
+						if (val != null && val.trim().length() > 0
+								&& !"null".equalsIgnoreCase(val.trim())) {
+							LinearLayout l = new LinearLayout(this);
+							l.setOrientation(LinearLayout.HORIZONTAL);
+							TextView labelView = new TextView(this);
+							labelView.setText(pointOfInterest
+									.getPropertyNames().get(i));
+							l.addView(labelView);
+							TextView valView = new TextView(this);
+							valView.setText(val);
+							l.addView(valView);
+							scrollView.addView(l);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -122,7 +137,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	}
 
 	@Override
-	public void onLocationChanged(Location loc) {		
+	public void onLocationChanged(Location loc) {
 		// set the distance value
 		distanceField.setText(apLocation.distanceTo(loc) + "");
 		// only update the bearing and the corresponding image representation of
@@ -135,45 +150,45 @@ public class NearbyItemDetailActivity extends Activity implements
 		}
 	}
 
-/**
-*  Rotates the direction arrow so it always points at the access point
-*/
-	private void updateArrow(){
+	/**
+	 * Rotates the direction arrow so it always points at the access point
+	 */
+	private void updateArrow() {
 		Matrix matrix = new Matrix();
 		matrix.postRotate(lastBearing + lastOrientation);
-		Bitmap resizedBitmap = Bitmap.createBitmap(arrowBitmap, 0, 0, 30,
-				30, matrix, true);
+		Bitmap resizedBitmap = Bitmap.createBitmap(arrowBitmap, 0, 0, 30, 30,
+				matrix, true);
 		arrowView.setImageDrawable(new BitmapDrawable(resizedBitmap));
 	}
 
 	@Override
 	public void onProviderDisabled(String arg0) {
-		//no-op
+		// no-op
 
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		//no-op
+		// no-op
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		//no-op
+		// no-op
 
 	}
 
-	   @Override
-	        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-	            // no-op
-	        }
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// no-op
+	}
 
-	        @Override
-	        public void onSensorChanged(SensorEvent event) {
-	            if (event.sensor == orientSensor) {
-	                lastOrientation  = event.values[0];
-	                updateArrow();
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		if (event.sensor == orientSensor) {
+			lastOrientation = event.values[0];
+			updateArrow();
 
-	            }
-	        }
+		}
+	}
 }
