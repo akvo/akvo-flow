@@ -30,12 +30,12 @@ public class ViewUtil {
 	public static void showGPSDialog(final Context parentContext) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
 		builder.setMessage(R.string.geodialog).setCancelable(true)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.okbutton, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						parentContext.startActivity(new Intent(
 								"android.settings.LOCATION_SOURCE_SETTINGS"));
 					}
-				}).setNegativeButton("Cancel",
+				}).setNegativeButton(R.string.cancelbutton,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();

@@ -289,7 +289,7 @@ public class OptionQuestionView extends QuestionView {
 		final View rootView = inflater.inflate(R.layout.otherdialog,
 				(ViewGroup) findViewById(R.id.otherroot));
 		otherDialog.setView(rootView);
-		otherDialog.setPositiveButton("Ok",
+		otherDialog.setPositiveButton(R.string.okbutton,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						EditText val = (EditText) rootView
@@ -306,7 +306,7 @@ public class OptionQuestionView extends QuestionView {
 						dialog.dismiss();
 					}
 				});
-		otherDialog.setNegativeButton("Cancel",
+		otherDialog.setNegativeButton(R.string.cancelbutton,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						setResponse(new QuestionResponse("",
