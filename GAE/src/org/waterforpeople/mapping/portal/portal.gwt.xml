@@ -10,4 +10,6 @@
 	<script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAf8_VY5oeMBNAES-TtQ7eiRS0UZPIjzZbuTBw3-WySZIOaQj8ZxSYlbqnWnjgNjWI7ob-et1ROd1pxA" />
 	<entry-point
 		class="org.waterforpeople.mapping.portal.client.dashboard.Dashboard" />
+		<entry-point
+		class="org.waterforpeople.mapping.portal.client.dashboard.FullScreenPortletManager" />
 </module>
