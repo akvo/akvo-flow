@@ -206,14 +206,14 @@ public class KMLGenerator {
 					if (ap.getMeetGovtQualityStandardFlag() == null) {
 						context.put("meetGovtQualityStandardFlag", "N/A");
 					} else {
-						context.put("meetGovtQualityStandardFlag", ap
-								.getMeetGovtQualityStandardFlag());
+						context.put("meetGovtQualityStandardFlag", encodeBooleanDisplay(ap
+								.getMeetGovtQualityStandardFlag()));
 					}
 					if (ap.getMeetGovtQuantityStandardFlag() == null) {
 						context.put("meetGovtQuantityStandardFlag", "N/A");
 					} else {
-						context.put("meetGovtQuantityStandardFlag", ap
-								.getMeetGovtQuantityStandardFlag());
+						context.put("meetGovtQuantityStandardFlag", encodeBooleanDisplay(ap
+								.getMeetGovtQuantityStandardFlag()));
 					}
 
 					if (ap.getWhoRepairsPoint() == null) {
@@ -232,8 +232,8 @@ public class KMLGenerator {
 					if (ap.getProvideAdequateQuantity() == null) {
 						context.put("provideAdequateQuantity", "N/A");
 					} else {
-						context.put("provideAdequateQuantity", ap
-								.getProvideAdequateQuantity());
+						context.put("provideAdequateQuantity", encodeBooleanDisplay(ap
+								.getProvideAdequateQuantity()));
 					}
 
 					if (ap.getBalloonTitle() == null) {
@@ -245,46 +245,13 @@ public class KMLGenerator {
 					if (ap.getProvideAdequateQuantity() == null) {
 						context.put("provideAdequateQuantity", "N/A");
 					} else {
-						context.put("provideAdequateQuantity", ap
-								.getProvideAdequateQuantity());
+						context.put("provideAdequateQuantity", encodeBooleanDisplay(ap
+								.getProvideAdequateQuantity()));
 					}
 
 					context.put("description", ap.getDescription());
 					// Need to check this
-					if (ap.getPointType().equals(
-							AccessPointType.SANITATION_POINT)) {
-						context.put("pinStyle", "pushpinpurple");
-					} else {
-						if (ap.getPointStatus().equals(
-								AccessPoint.Status.FUNCTIONING_HIGH)) {
-							context.put("pinStyle", "pushpingreen");
-							context
-									.put("waterSystemStatus",
-											"System Functioning and Meets Government Standards");
-						} else if (ap.getPointStatus().equals(
-								AccessPoint.Status.FUNCTIONING_OK)) {
-							context.put("pinStyle", "pushpinyellow");
-							context.put("waterSystemStatus",
-									"System needs repair but is functioning");
-						} else if (ap.getPointStatus().equals(
-								AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-							context.put("pinStyle", "pushpinred");
-							context.put("waterSystemStatus",
-									"Broken-down system");
-						} else if (ap.getPointStatus().equals(
-								AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-							context.put("pinStyle", "pushpinblk");
-							context.put("waterSystemStatus",
-									"No Improved System");
-						} else {
-							context.put("pinStyle", "pushpinblk");
-							context.put("waterSystemStatus", "Unknown");
-						}
-						for (CaptionDefinition caption : captions) {
-							context.put(caption.getCaptionVariableName(),
-									caption.getCaptionValue());
-						}
-					}
+					encodeStatus(ap.getPointType(),ap.getPointStatus(),context);
 					String output = mergeContext(context, vmName);
 					sb.append(output);
 				} catch (Exception ex) {
@@ -335,5 +302,61 @@ public class KMLGenerator {
 			log.log(Level.SEVERE, "Error generating region outlines", e);
 		}
 		return "";
+	}
+	
+	private String encodeBooleanDisplay(Boolean value){
+		if(value){
+			return "Yes";
+		}else{
+			return "No";
+		}
+	}
+	
+	private void encodeStatus(AccessPointType type, AccessPoint.Status status, VelocityContext context){
+		if (type.equals(
+				AccessPointType.SANITATION_POINT)) {
+			context.put("pinStyle", "pushpinpurple");
+		} else {
+			if (status.equals(
+					AccessPoint.Status.FUNCTIONING_HIGH)) {
+				context.put("pinStyle", "pushpingreen");
+			} else if (status.equals(
+					AccessPoint.Status.FUNCTIONING_OK)) {
+				context.put("pinStyle", "pushpinyellow");
+			} else if (status.equals(
+					AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+				context.put("pinStyle", "pushpinred");
+			} else if (status.equals(
+					AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+				context.put("pinStyle", "pushpinblk");
+			} else {
+				context.put("pinStyle", "pushpinblk");
+			}
+		}
+		encodeStatusString(status, context);
+	}
+	
+	private void encodeStatusString(AccessPoint.Status status, VelocityContext context){
+	
+			if (status.equals(
+					AccessPoint.Status.FUNCTIONING_HIGH)) {
+				context
+						.put("waterSystemStatus",
+								"System Functioning and Meets Government Standards");
+			} else if (status.equals(
+					AccessPoint.Status.FUNCTIONING_OK)) {
+				context.put("waterSystemStatus",
+						"Functioning but with Problems");
+			} else if (status.equals(
+					AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+				context.put("waterSystemStatus",
+						"Broken-down system");
+			} else if (status.equals(
+					AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+				context.put("waterSystemStatus",
+						"No Improved System");
+			} else {
+				context.put("waterSystemStatus", "Unknown");
+			}
 	}
 }
