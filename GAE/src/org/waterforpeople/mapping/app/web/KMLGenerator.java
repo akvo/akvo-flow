@@ -9,11 +9,9 @@ import java.util.logging.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.waterforpeople.mapping.dao.CaptionsDAO;
 import org.waterforpeople.mapping.dao.GeoRegionDAO;
 import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.CaptionDefinition;
 import org.waterforpeople.mapping.domain.GeoRegion;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
@@ -83,8 +81,6 @@ public class KMLGenerator {
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
 
 		List<AccessPoint> entries = apDAO.list(Constants.ALL_RESULTS);
-		CaptionsDAO captionDAO = new CaptionsDAO();
-		List<CaptionDefinition> captions = captionDAO.list();
 		try {
 			// loop through accessPoints and bind to variables
 			for (AccessPoint ap : entries) {
