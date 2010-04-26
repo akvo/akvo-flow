@@ -109,12 +109,15 @@
 	    			</tr>
 		    			
 	    				#if($type=="water")
-		    				<tr>
+			    			<tr>
 			    				<td><b><font color="#003333" face="Verdana">Community Name</font></b><br><font face="face="Verdana">$communityName</font><td>
 			    			</tr>
 			    			<tr>
-		    					<td><b><font color="#003333" face="Verdana">Type of Point</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
-		    				</tr>
+			    				<td><b><font color="#003333" face="Verdana">Type of Public Institution</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
+			    			</tr>
+			    			<tr>
+			    				<td><b><font color="#003333" face="Verdana">Public Institution Name</font></b><br><font face="face="Verdana">$institutionName</font><td>
+			    			</tr>
 		    				<tr>
 		    					<td><b><font color="#003333" face="Verdana">Type of Technology</font></b><br><font face="face="Verdana">$primaryTypeTechnology</font><td>
 		    				</tr>
@@ -122,13 +125,35 @@
 			    				<td><b><font color="#003333" face="Verdana">Date Data was collected</font></b><br><font face="face="Verdana">$collectionDate</font><td>
 			    			</tr>
 		       				<tr>
-								<td><b><font color="#003333" face="Verdana">Construction Date of Water Point</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
+								<td><b><font color="#003333" face="Verdana">Construction Date</font></b><br><font face="face="Verdana">$constructionDateOfWaterPoint</font></td>
 							</tr>
 							<tr>
-								<td><b><font color="#003333" face="Verdana">Number of Households Using Water Point</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
+								<td><b><font color="#003333" face="Verdana">Estimated Number of Users</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Does the Water point Provide Enough Every Day?</font></b><br><font face="face="Verdana">$provideAdequateQuantity</font></td>
 							</tr>
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Is the farthest household from the water point within 500 meters?:</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Does Water Quality Meet Government Standards</font></b><br><font face="face="Verdana">$meetGovtQualityStandardFlag</font></td>
+							</tr>
+							
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Does the Quantity of Water Meet Government Standards?</font></b><br><font face="face="Verdana">$meetGovtQuantityStandardFlag</font></td>
+							</tr>
+								<tr>
+								<td><b><font color="#003333" face="Verdana">Tariff/User Fee</font></b><br><font face="face="Verdana">$costPer</font></td>
+							</tr>			
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Who Manages the Water point?</font></b><br><font face="face="Verdana">$currMgmtStructure</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Who Repairs the Water point</font></b><br><font face="face="Verdana">$whoRepairsPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Water Technology</font></b><br><font face="face="Verdana">$primaryTypeTechnology</font></td>
 							</tr>
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Water System Status</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
@@ -156,6 +181,9 @@
 		    				#end
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Number of Households with improved sanitation</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Sanitation System Status</font></b><br><font face="face="Verdana">$waterSystemStatus</font></td>
 							</tr>						
 						#else				
 			    			<tr>
