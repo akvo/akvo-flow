@@ -41,8 +41,6 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * Main container for the dashboard.
  * 
- * TODO: make this load the list of widgets and their relative position/order
- * from the datastore on a per-user basis
  * 
  * 
  * @author Christopher Fagiani
@@ -51,12 +49,13 @@ import com.google.gwt.user.client.ui.Widget;
 public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final int COLUMNS = 3;
 	private static final String CONFIG_GROUP = "DASHBOARD";
+
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
 	private static final String ADD_TOOLTIP = "Add portlets to dashboard";
 
-	private VerticalPanel containerPanel;
 	private UserDto currentUser;
+	private VerticalPanel containerPanel;
 
 	public Dashboard() {
 		super(COLUMNS);
@@ -69,9 +68,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 		containerPanel = new VerticalPanel();
 
-		containerPanel.add(constructMenu());
+		containerPanel.add(constructMenu(true));
 		RootPanel.get().add(containerPanel);
-
+		// now add the portal container to the vertical panel
+		containerPanel.add(this);
 		// get the user config
 		UserServiceAsync userService = GWT.create(UserService.class);
 		// Set up the callback object.
@@ -82,7 +82,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			public void onSuccess(UserDto result) {
 				if (result != null) {
-					currentUser = result;
+					setCurrentUser(result);
 					initializeContent(result);
 				} else {
 					initializeContent(null);
@@ -98,7 +98,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	 * 
 	 * @return
 	 */
-	private Widget constructMenu() {
+	protected Widget constructMenu(boolean isConfigurable) {
 		VerticalPanel menuPanel = new VerticalPanel();
 		menuPanel.add(new Image("images/WFP_Logo.png"));
 		DockPanel statusDock = new DockPanel();
@@ -106,18 +106,19 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		statusDock.setStyleName(CSS_SYSTEM_HEAD);
 		statusDock.add(new Label("Monitoring Dashboard"), DockPanel.WEST);
 		statusDock.add(new SimplePanel(), DockPanel.CENTER);
-		Image confImage = new Image(ADD_ICON);
-		confImage.setTitle(ADD_TOOLTIP);
-		confImage.addClickHandler(new ClickHandler() {
+		if (isConfigurable) {
+			Image confImage = new Image(ADD_ICON);
+			confImage.setTitle(ADD_TOOLTIP);
+			confImage.addClickHandler(new ClickHandler() {
 
-			@Override
-			public void onClick(ClickEvent event) {
-				new ConfigurationDialog().show();
+				@Override
+				public void onClick(ClickEvent event) {
+					new ConfigurationDialog().show();
 
-			}
-		});
-
-		statusDock.add(confImage, DockPanel.EAST);
+				}
+			});
+			statusDock.add(confImage, DockPanel.EAST);
+		}
 		menuPanel.add(statusDock);
 		return menuPanel;
 	}
@@ -138,16 +139,16 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			addPortlet(new SummaryPortlet(), 0, true);
 			posMap.put(SummaryPortlet.NAME, "0,0");
 
-			addPortlet(new ActivityChartPortlet(currentUser), 1, true);
+			addPortlet(new ActivityChartPortlet(getCurrentUser()), 1, true);
 			posMap.put(ActivityChartPortlet.NAME, "1,0");
 
-			addPortlet(new ActivityMapPortlet(currentUser), 1, true);
+			addPortlet(new ActivityMapPortlet(getCurrentUser()), 1, true);
 			posMap.put(ActivityMapPortlet.NAME, "1,1");
 
 			addPortlet(new SurveyQuestionPortlet(), 2, true);
 			posMap.put(SummaryPortlet.NAME, "2,0");
 
-			addPortlet(new AccessPointManagerPortlet(currentUser), 1, true);
+			addPortlet(new AccessPointManagerPortlet(getCurrentUser()), 1, true);
 			posMap.put(AccessPointManagerPortlet.NAME, "2,1");
 
 			// if this is the first time the user logged in, create a config for
@@ -181,7 +182,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					for (int j = 0; j < key.length; j++) {
 						try {
 							addPortlet(PortletFactory.createPortlet(colMap.get(
-									i).get(key[j]),currentUser), i, true);
+									i).get(key[j]), getCurrentUser()), i, true);
 						} catch (IllegalArgumentException e) {
 							// swallow in case we change portlet names and don't
 							// update the DB
@@ -190,8 +191,14 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				}
 			}
 		}
-		// now add the portal container to the vertical panel
-		containerPanel.add(this);
+	}
+
+	public UserDto getCurrentUser() {
+		return currentUser;
+	}
+
+	public void setCurrentUser(UserDto currentUser) {
+		this.currentUser = currentUser;
 	}
 
 	@Override
@@ -206,7 +213,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	 * @param positionMap
 	 */
 	protected void updateUserConfig(Map<String, String> positionMap) {
-		Map<String, Set<UserConfigDto>> confMap = currentUser.getConfig();
+		Map<String, Set<UserConfigDto>> confMap = getCurrentUser().getConfig();
 		UserServiceAsync userService = GWT.create(UserService.class);
 		// Set up the callback object.
 		AsyncCallback<Void> userCallback = new AsyncCallback<Void>() {
@@ -223,7 +230,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		};
 		if (confMap == null) {
 			confMap = new HashMap<String, Set<UserConfigDto>>();
-			currentUser.setConfig(confMap);
+			getCurrentUser().setConfig(confMap);
 		}
 		Set<UserConfigDto> groupConfig = new HashSet<UserConfigDto>();
 		confMap.put(CONFIG_GROUP, groupConfig);
@@ -234,7 +241,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			confDto.setValue(positionMap.get(item));
 			groupConfig.add(confDto);
 		}
-		userService.saveUser(currentUser, userCallback);
+		userService.saveUser(getCurrentUser(), userCallback);
 	}
 
 	@Override
@@ -305,10 +312,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			if (event.getSource() instanceof Image) {
 				Image img = (Image) event.getSource();
 				String name = img.getTitle();
-				addPortlet(PortletFactory.createPortlet(name, currentUser), 0, true);
+				addPortlet(PortletFactory.createPortlet(name, currentUser), 0,
+						true);
 				updateLayout();
 			}
 		}
 	}
-
 }
