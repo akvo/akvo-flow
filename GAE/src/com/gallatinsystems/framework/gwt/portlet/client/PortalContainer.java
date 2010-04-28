@@ -47,6 +47,8 @@ public abstract class PortalContainer extends SimplePanel {
 	private VerticalPanel[] columnPanels;
 	private int columns = DEFAULT_COLS;
 	private HorizontalPanel mainPanel;
+	private boolean takeoverMode;
+	private Widget currentFullscreenWidget;
 
 	/**
 	 * Initializes the portal with columnCount columns.
@@ -58,6 +60,7 @@ public abstract class PortalContainer extends SimplePanel {
 	 */
 	public PortalContainer(int columnCount) {
 		activePortlets = new ArrayList<Portlet>();
+		takeoverMode = false;
 		final AbsolutePanel boundaryPanel = new AbsolutePanel();
 		// since we're extending SimplePanel, install the AbsolutePanel as our
 		// sole widget
@@ -176,6 +179,42 @@ public abstract class PortalContainer extends SimplePanel {
 	}
 
 	/**
+	 * takeover the full content section with a single widget. Existing portlets
+	 * from columns are not destroyed. They're kept (but removed from the view)
+	 * so they can be quickly restored
+	 * 
+	 * @param w
+	 */
+	protected void takeoverScreen(Widget w) {
+		if (!takeoverMode) {
+			for (int i = 0; i < columnPanels.length; i++) {
+				mainPanel.remove(columnPanels[i]);
+			}
+		} else if (currentFullscreenWidget != null) {
+			mainPanel.remove(currentFullscreenWidget);
+		}
+		currentFullscreenWidget = w;
+		mainPanel.add(w);
+		takeoverMode = true;
+	}
+
+	/**
+	 * removes full-screen portlet from the view and re-adds the contents of the
+	 * columns
+	 */
+	protected void exitFullscreen() {
+		if (takeoverMode) {
+			if (currentFullscreenWidget != null) {
+				mainPanel.remove(currentFullscreenWidget);
+			}
+			for (int i = 0; i < columnPanels.length; i++) {
+				mainPanel.add(columnPanels[i]);
+			}
+			takeoverMode = false;
+		}
+	}
+
+	/**
 	 * returns a token to be used for history to detect if users click the back
 	 * button
 	 * 
@@ -199,10 +238,19 @@ public abstract class PortalContainer extends SimplePanel {
 		}
 	}
 
+	/**
+	 * delegates to the updateSavedLayout method
+	 */
 	protected void updateLayout() {
 		updateSavedLayout(getPositionMap());
 	}
 
+	/**
+	 * gets a hashMap keyed on widget name with a value of the i,j column
+	 * coordinate of where it's currently located.
+	 * 
+	 * @return
+	 */
 	protected Map<String, String> getPositionMap() {
 		Map<String, String> positionMap = new HashMap<String, String>();
 		for (int i = 0; i < columnPanels.length; i++) {
@@ -218,7 +266,7 @@ public abstract class PortalContainer extends SimplePanel {
 		}
 		return positionMap;
 	}
-	
+
 	/**
 	 * removes a portlet from the UI
 	 * 

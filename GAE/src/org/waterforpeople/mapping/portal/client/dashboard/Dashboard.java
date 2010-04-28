@@ -18,12 +18,15 @@ import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortalContainer;
+import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -32,6 +35,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -56,6 +60,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
+	private Image confImage;
 
 	public Dashboard() {
 		super(COLUMNS);
@@ -104,10 +109,36 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		DockPanel statusDock = new DockPanel();
 		statusDock.setPixelSize(1024, 20);
 		statusDock.setStyleName(CSS_SYSTEM_HEAD);
-		statusDock.add(new Label("Monitoring Dashboard"), DockPanel.WEST);
+		MenuBar menu = new MenuBar();
+
+		menu.addItem("Dashboard", new Command() {
+			public void execute() {
+				exitFullscreen();
+				if (confImage != null) {
+					confImage.setVisible(false);
+				}
+			}
+		});
+
+		MenuBar mgrMenu = new MenuBar(true);
+		mgrMenu.setAnimationEnabled(true);
+		mgrMenu.addItem("Access Point", new Command() {
+			public void execute() {
+				launchFullscreen(AccessPointManagerPortlet.NAME);
+
+			}
+		});
+		mgrMenu.addItem("Tech Type", new Command() {
+			public void execute() {
+				launchFullscreen(TechnologyTypeManagerPortlet.NAME);
+			}
+		});
+		menu.addItem("Data Managers", mgrMenu);
+
+		statusDock.add(menu, DockPanel.WEST);
 		statusDock.add(new SimplePanel(), DockPanel.CENTER);
 		if (isConfigurable) {
-			Image confImage = new Image(ADD_ICON);
+			confImage = new Image(ADD_ICON);
 			confImage.setTitle(ADD_TOOLTIP);
 			confImage.addClickHandler(new ClickHandler() {
 
@@ -121,6 +152,20 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		}
 		menuPanel.add(statusDock);
 		return menuPanel;
+	}
+
+	/**
+	 * launches a portlet in fullscreen mode and hides unneeded controls
+	 * 
+	 * @param portletName
+	 */
+	private void launchFullscreen(String portletName) {
+		Portlet p = PortletFactory.createPortlet(portletName, getCurrentUser());
+		p.setShowFullscreen(true);
+		if (confImage != null) {
+			confImage.setVisible(false);
+		}
+		takeoverScreen(p);
 	}
 
 	/**

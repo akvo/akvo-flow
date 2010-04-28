@@ -37,6 +37,8 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	private static final int HEADER_HEIGHT = 20;
 	private static final int DEFAULT_WIDTH = 100;
 	private static final int DEFAULT_HEIGHT = 100;
+	private static final int FULLSCREEN_WIDTH = 1024;
+	private static final int FULLSCREEN_HEIGHT = 1000;
 	private static final String CONF_TOOLTIP = "Save current portlet configuration";
 	private static final String CLOSE_TOOLTIP = "Remove portlet";
 
@@ -56,7 +58,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	private Image closeImg;
 	private Image confImg;
 	private FocusPanel headerContainer;
-	private String config;
+	private String config;	
 
 	private boolean isLoaded = false;
 
@@ -85,7 +87,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		}
 		this.configurable = configurable;
 		this.scrollable = scrollable;
-		active = true;
+		active = true;		
 		constructHeader(title);
 	}
 
@@ -242,7 +244,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	 * that wants to use some other drag handler.
 	 */
 	public Widget getDragHandle() {
-		return headerWidget;	
+		return headerWidget;
 	}
 
 	/**
@@ -309,6 +311,14 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 
 	public void setConfig(String config) {
 		this.config = config;
+	}
+
+	public void setShowFullscreen(boolean showFullscreen) {		
+		if (showFullscreen) {
+			closeImg.setVisible(false);
+			setPixelSize(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+
+		}
 	}
 
 	/**
