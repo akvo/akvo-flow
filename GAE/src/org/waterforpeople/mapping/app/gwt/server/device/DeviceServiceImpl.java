@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.server.device;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,6 +24,8 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 		DeviceService {
 
 	private static final long serialVersionUID = -3606845978482271221L;
+	private static final String UNASSIGNED_GROUP = "Unassigned";
+
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
@@ -44,10 +48,38 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 				dto.setLastKnownLat(d.getLastKnownLat());
 				dto.setLastKnownLon(d.getLastKnownLon());
 				dto.setLastPositionDate(d.getLastLocationBeaconTime());
+				dto.setDeviceGroup(d.getDeviceGroup());
 				deviceDtos[i] = dto;
 			}
 		}
 		return deviceDtos;
+	}
+
+	/**
+	 * lists all devices and groups them by group name
+	 * 
+	 * @return
+	 */
+	public HashMap<String, ArrayList<DeviceDto>> listDeviceByGroup() {
+		HashMap<String, ArrayList<DeviceDto>> groupedDevices = new HashMap<String, ArrayList<DeviceDto>>();
+		DeviceDto[] dtos = listDevice();
+		if (dtos != null) {
+			for (int i = 0; i < dtos.length; i++) {
+				String groupName = dtos[i].getDeviceGroup();
+				if (groupName == null) {
+					groupName = UNASSIGNED_GROUP;
+				}
+				ArrayList<DeviceDto> dtoList = groupedDevices.get(groupName);
+				if (dtoList == null) {
+					dtoList = new ArrayList<DeviceDto>();
+					groupedDevices.put(groupName, dtoList);
+				}
+				dtoList.add(dtos[i]);
+			}
+		}
+
+		return groupedDevices;
+
 	}
 
 }

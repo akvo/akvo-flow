@@ -12,6 +12,15 @@ public class DeviceDto implements Serializable {
 	private Double lastKnownLon;
 	private Double lastKnownAccuracy;
 	private Date lastPositionDate;
+	private String deviceGroup;
+
+	public String getDeviceGroup() {
+		return deviceGroup;
+	}
+
+	public void setDeviceGroup(String deviceGroup) {
+		this.deviceGroup = deviceGroup;
+	}
 
 	public Double getLastKnownLat() {
 		return lastKnownLat;

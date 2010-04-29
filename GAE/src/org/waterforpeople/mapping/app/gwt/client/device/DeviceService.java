@@ -1,5 +1,8 @@
 package org.waterforpeople.mapping.app.gwt.client.device;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -7,4 +10,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DeviceService extends RemoteService {
 
 	public DeviceDto[] listDevice();
+	/**
+	 * lists all devices and groups them by group name
+	 * 
+	 * @return
+	 */
+	public HashMap<String, ArrayList<DeviceDto>> listDeviceByGroup();
+
 }

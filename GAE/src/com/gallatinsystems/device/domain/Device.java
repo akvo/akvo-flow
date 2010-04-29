@@ -21,8 +21,17 @@ public class Device extends BaseDomain {
 	private String gallatinSoftwareManifest;
 	private Double lastKnownLat;
 	private Double lastKnownLon;
-	private Double lastKnownAccuracy;	
-	private Date lastLocationBeaconTime; 
+	private Double lastKnownAccuracy;
+	private Date lastLocationBeaconTime;
+	private String deviceGroup;
+
+	public String getDeviceGroup() {
+		return deviceGroup;
+	}
+
+	public void setDeviceGroup(String deviceGroup) {
+		this.deviceGroup = deviceGroup;
+	}
 
 	public Double getLastKnownLat() {
 		return lastKnownLat;
@@ -55,8 +64,6 @@ public class Device extends BaseDomain {
 	public void setLastLocationBeaconTime(Date lastLocationBeaconTime) {
 		this.lastLocationBeaconTime = lastLocationBeaconTime;
 	}
-
-
 
 	public enum DeviceType {
 		CELL_PHONE_ANDROID, TABLET_ANDROID, TABLET_PHONE_ANDROID
