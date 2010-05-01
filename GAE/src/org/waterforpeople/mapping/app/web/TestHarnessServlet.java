@@ -37,6 +37,9 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -435,6 +438,25 @@ public class TestHarnessServlet extends HttpServlet {
 					}
 				}
 			}
+		}else if ("createDevice".equals(action)){
+			Device d = new Device();
+			d.setCreatedDateTime(new Date());
+			d.setDeviceGroup("testgroup");
+			d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+			d.setEsn("123");
+			d.setPhoneNumber("1234567890");
+			d.setInServiceDate(new Date());
+			DeviceDAO deviceDao = new DeviceDAO();
+			deviceDao.save(d);
+			d = new Device();
+			d.setCreatedDateTime(new Date());
+			d.setDeviceGroup("anothergroup");
+			d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+			d.setEsn("123");
+			d.setPhoneNumber("5555555555");
+			d.setInServiceDate(new Date());
+			deviceDao.save(d);
+			
 		}
 
 	}
