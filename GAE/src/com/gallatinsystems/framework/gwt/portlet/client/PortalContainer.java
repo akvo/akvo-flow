@@ -7,9 +7,9 @@ import java.util.Map;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
+import com.allen_sauer.gwt.dnd.client.DragHandlerAdapter;
 import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
-import com.allen_sauer.gwt.dnd.client.VetoDragException;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -71,7 +71,7 @@ public abstract class PortalContainer extends SimplePanel {
 		columnPanels = new VerticalPanel[columns];
 
 		// define custom events that occur when dragging
-		DragHandler handler = new DragHandler() {
+		DragHandler handler = new DragHandlerAdapter() {
 
 			/**
 			 * update the currentColumn pointer in the portlet and make sure
@@ -107,18 +107,6 @@ public abstract class PortalContainer extends SimplePanel {
 				for (int i = 0; i < columnPanels.length; i++) {
 					columnPanels[i].setStyleName(ACTIVE_COL_CSS);
 				}
-			}
-
-			@Override
-			public void onPreviewDragEnd(DragEndEvent event)
-					throws VetoDragException {
-				// no-op
-			}
-
-			@Override
-			public void onPreviewDragStart(DragStartEvent event)
-					throws VetoDragException {
-				// no-op
 			}
 		};
 
