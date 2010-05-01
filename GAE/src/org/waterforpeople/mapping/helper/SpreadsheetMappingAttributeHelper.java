@@ -50,7 +50,7 @@ public class SpreadsheetMappingAttributeHelper {
 		return null;
 	}
 
-	public ArrayList<String> listObjectAttributes(String objectNames) {
+	public static ArrayList<String> listObjectAttributes() {
 		ArrayList<String> attributesList = new ArrayList<String>();
 		Class cls;
 		try {
@@ -68,23 +68,6 @@ public class SpreadsheetMappingAttributeHelper {
 			e.printStackTrace();
 		}
 
-		// attributesList.add("altitude");
-		// attributesList.add("collectionDate");
-		// attributesList.add("communityCode");
-		// attributesList.add("constructionDate");
-		// attributesList.add("costPer");
-		// attributesList.add("currentManagementStructurePoint");
-		// attributesList.add("description");
-		// attributesList.add("farthestHouseholdfromPoint");
-		// attributesList.add("latitude");
-		// attributesList.add("longitude");
-		// attributesList.add("numberOfHouseholdsUsingPoint");
-		// attributesList.add("photoURL");
-		// attributesList.add("pointPhotoCaption");
-		// attributesList.add("pointStatus");
-		// attributesList.add("pointType");
-		// attributesList.add("typeTechnology");
-		// attributesList.add("typeTechnologyString");
 		return attributesList;
 	}
 

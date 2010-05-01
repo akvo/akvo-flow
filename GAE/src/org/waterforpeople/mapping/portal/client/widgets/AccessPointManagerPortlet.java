@@ -46,7 +46,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	public static final String NAME = "Access Point Manager";
 
 	private static final String ANY_OPT = "Any";
-	private static final int WIDTH = 600;
+	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
 

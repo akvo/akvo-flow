@@ -55,9 +55,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	@Override
 	public ArrayList<String> listObjectAttributes(String objectNames) {
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
-				sessionToken, privateKey);
-		return helper.listObjectAttributes(objectNames);
+		return SpreadsheetMappingAttributeHelper.listObjectAttributes();
 	}
 
 	@Override
