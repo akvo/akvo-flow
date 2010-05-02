@@ -1,9 +1,10 @@
 package org.waterforpeople.mapping.app.gwt.client.device;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class DeviceDto implements Serializable {
+import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+
+public class DeviceDto extends BaseDto {
 
 	private static final long serialVersionUID = 3197857074399585732L;
 	private String phoneNumber;

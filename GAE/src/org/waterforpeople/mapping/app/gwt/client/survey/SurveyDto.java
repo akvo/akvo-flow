@@ -1,8 +1,8 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import java.io.Serializable;
+import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
 
-public class SurveyDto implements Serializable{
+public class SurveyDto extends BaseDto {
 	private static final long serialVersionUID = 6593732844403807030L;
 	private String name;
 	private String version;

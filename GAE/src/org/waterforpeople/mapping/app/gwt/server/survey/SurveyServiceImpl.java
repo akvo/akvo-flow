@@ -43,6 +43,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				dto.setName(s.getName());
 				dto.setVersion(s.getVersion() != null ? s.getVersion()
 						.toString() : "");
+				dto.setKeyId(s.getKey().getId());
 				surveyDtos[i] = dto;
 			}
 		}

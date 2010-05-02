@@ -43,6 +43,7 @@ import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -423,7 +424,7 @@ public class TestHarnessServlet extends HttpServlet {
 			List<AccessPoint> apList = apDao.list(null);
 			if (apList != null) {
 				for (AccessPoint ap : apList) {
-					
+
 					if (ap.getGeocells() == null
 							|| ap.getGeocells().size() == 0) {
 						if (ap.getLatitude() != null
@@ -438,7 +439,7 @@ public class TestHarnessServlet extends HttpServlet {
 					}
 				}
 			}
-		}else if ("createDevice".equals(action)){
+		} else if ("createDevice".equals(action)) {
 			Device d = new Device();
 			d.setCreatedDateTime(new Date());
 			d.setDeviceGroup("testgroup");
@@ -456,7 +457,15 @@ public class TestHarnessServlet extends HttpServlet {
 			d.setPhoneNumber("5555555555");
 			d.setInServiceDate(new Date());
 			deviceDao.save(d);
-			
+
+		} else if ("createSurvey".equals(action)) {
+			Survey s = new Survey();
+			s.setName("test");
+			SurveyDAO surveyDao = new SurveyDAO();
+			surveyDao.save(s);
+			s = new Survey();
+			s.setName("test 2");
+			surveyDao.save(s);
 		}
 
 	}

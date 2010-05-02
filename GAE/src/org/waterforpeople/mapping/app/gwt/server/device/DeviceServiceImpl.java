@@ -49,6 +49,7 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 				dto.setLastKnownLon(d.getLastKnownLon());
 				dto.setLastPositionDate(d.getLastLocationBeaconTime());
 				dto.setDeviceGroup(d.getDeviceGroup());
+				dto.setKeyId(d.getKey().getId());
 				deviceDtos[i] = dto;
 			}
 		}
