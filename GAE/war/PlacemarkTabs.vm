@@ -113,10 +113,7 @@
 			    				<td><b><font color="#003333" face="Verdana">Community Name</font></b><br><font face="face="Verdana">$communityName</font><td>
 			    			</tr>
 			    			<tr>
-			    				<td><b><font color="#003333" face="Verdana">Type of Public Institution</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
-			    			</tr>
-			    			<tr>
-			    				<td><b><font color="#003333" face="Verdana">Public Institution Name</font></b><br><font face="face="Verdana">$institutionName</font><td>
+			    				<td><b><font color="#003333" face="Verdana">Type of Point</font></b><br><font face="face="Verdana">$typeOfPoint</font><td>
 			    			</tr>
 		    				<tr>
 		    					<td><b><font color="#003333" face="Verdana">Type of Technology</font></b><br><font face="face="Verdana">$primaryTypeTechnology</font><td>
@@ -131,7 +128,10 @@
 								<td><b><font color="#003333" face="Verdana">Estimated Number of Users</font></b><br><font face="face="Verdana">$numberOfHouseholdsUsingWaterPoint</font></td>
 							</tr>
 							<tr>
-								<td><b><font color="#003333" face="Verdana">Water Water Point Provides Enough Water Every Day</font></b><br><font face="face="Verdana">$provideAdequateQuantity</font></td>
+								<td><b><font color="#003333" face="Verdana">Water Point Provides Enough Water Every Day</font></b><br><font face="face="Verdana">$provideAdequateQuantity</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Has System Been Down More Than 1 Day</font></b><br><font face="face="Verdana">$down1DayFlag</font></td>
 							</tr>
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Farthest Household from the Water Point is Within 500 Meters</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
@@ -209,6 +209,9 @@
 							</tr>
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Water Point Provides Enough Water Every Day</font></b><br><font face="face="Verdana">$provideAdequateQuantity</font></td>
+							</tr>
+							<tr>
+								<td><b><font color="#003333" face="Verdana">Has System Been Down More Than 1 Day</font></b><br><font face="face="Verdana">$down1DayFlag</font></td>
 							</tr>
 							<tr>
 								<td><b><font color="#003333" face="Verdana">Farthest Household from the Water Point is Within 500 Meters:</font></b><br><font face="face="Verdana">$farthestHouseholdfromWaterPoint</font></td>
