@@ -114,6 +114,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String whoRepairsPoint = null;
 	private String secondaryTechnologyString = null;
 	private Boolean provideAdequateQuantity = null;
+	private Boolean hasSystemBeenDown1DayFlag = null;
 
 	public String getCommunityName() {
 		return communityName;
@@ -429,6 +430,14 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public String getInstitutionName() {
 		return institutionName;
+	}
+
+	public void setHasSystemBeenDown1DayFlag(Boolean hasSystemBeenDown1DayFlag) {
+		this.hasSystemBeenDown1DayFlag = hasSystemBeenDown1DayFlag;
+	}
+
+	public Boolean getHasSystemBeenDown1DayFlag() {
+		return hasSystemBeenDown1DayFlag;
 	}
 
 }
