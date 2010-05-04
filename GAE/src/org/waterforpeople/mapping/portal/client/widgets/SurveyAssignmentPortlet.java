@@ -9,6 +9,9 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
@@ -22,7 +25,10 @@ import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -34,6 +40,7 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 /**
@@ -58,6 +65,8 @@ public class SurveyAssignmentPortlet extends Portlet {
 	private TreeDragController deviceDragController;
 	private TreeDragController surveyDragController;
 	private SurveyServiceAsync surveyService;
+	private SurveyAssignmentServiceAsync surveyAssignmentService;
+	private Button saveButton;
 	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
 
@@ -79,6 +88,48 @@ public class SurveyAssignmentPortlet extends Portlet {
 		surveyDragController = installTreeSelector("Surveys", surveyRoot,
 				selectedSurveys, contentPanel, DockPanel.WEST, surveyMap);
 
+		surveyAssignmentService = GWT.create(SurveyAssignmentService.class);
+
+		saveButton = new Button("Save");
+		saveButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				SurveyAssignmentDto dto = new SurveyAssignmentDto();
+				ArrayList<DeviceDto> dtoList = new ArrayList<DeviceDto>();
+				for (int i = 0; i < selectedDevices.getItemCount(); i++) {
+					DeviceDto devDto = new DeviceDto();
+					devDto
+							.setKeyId(Long.parseLong(selectedDevices
+									.getValue(i)));
+					dtoList.add(devDto);
+				}
+				ArrayList<SurveyDto> surveyDtos = new ArrayList<SurveyDto>();
+				for (int i = 0; i < selectedSurveys.getItemCount(); i++) {
+					SurveyDto sDto = new SurveyDto();
+					sDto.setKeyId(Long.parseLong(selectedSurveys.getValue(i)));
+					surveyDtos.add(sDto);
+				}
+				dto.setDevices(dtoList);
+				dto.setSurveys(surveyDtos);
+				surveyAssignmentService.saveSurveyAssignment(dto,
+						new AsyncCallback<Void>() {
+
+							@Override
+							public void onSuccess(Void result) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+
+							}
+						});
+			}
+		});
+		contentPanel.add(saveButton, DockPanel.SOUTH);
 		setContent(contentPanel);
 
 		getDevices();

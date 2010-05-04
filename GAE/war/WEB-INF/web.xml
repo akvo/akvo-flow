@@ -133,6 +133,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SurveyRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyrpcservice</url-pattern>
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyassnrpcservice</url-pattern>
+	</servlet-mapping>	
 	<servlet>
 		<servlet-name>SurveySummaryRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveySummaryServiceImpl</servlet-class>

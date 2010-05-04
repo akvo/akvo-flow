@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.util;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
