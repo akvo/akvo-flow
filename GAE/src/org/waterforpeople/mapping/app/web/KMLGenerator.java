@@ -127,6 +127,12 @@ public class KMLGenerator {
 						context.put("primaryTypeTechnology", ap
 								.getTypeTechnologyString());
 					}
+					
+					if (ap.getHasSystemBeenDown1DayFlag() == null) {
+						context.put("down1DayFlag", "Unknown");
+					} else {
+						context.put("down1DayFlagy", encodeBooleanDisplay(ap.getHasSystemBeenDown1DayFlag()));
+					}
 
 					if (ap.getInstitutionName() == null) {
 						context.put("institutionName", "Unknown");
