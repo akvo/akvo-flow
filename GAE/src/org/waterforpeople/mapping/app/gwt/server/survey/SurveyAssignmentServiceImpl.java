@@ -13,7 +13,9 @@ import org.waterforpeople.mapping.domain.SurveyAssignment;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -29,6 +31,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	private BaseDAO<SurveyAssignment> surveyAssignmentDao;
 	private DeviceDAO deviceDao;
 	private SurveyDAO surveyDao;
+	private DeviceSurveyJobQueueDAO deviceSurveyJobQueueDAO;
 	private static final long serialVersionUID = 3956064184547647245L;
 	private static final Logger logger = Logger
 			.getLogger(SurveyAssignmentServiceImpl.class);
@@ -38,6 +41,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 				SurveyAssignment.class);
 		deviceDao = new DeviceDAO();
 		surveyDao = new SurveyDAO();
+		deviceSurveyJobQueueDAO = new DeviceSurveyJobQueueDAO();
 	}
 
 	/**
@@ -48,7 +52,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 		SurveyAssignment assignment = new SurveyAssignment();
 		if (dto.getKeyId() != null) {
 			try {
-
+				BeanUtils.copyProperties(assignment, dto);
 				BeanUtils.copyProperty(assignment, "Key.Id", dto.getKeyId());
 			} catch (Exception e) {
 				logger.error("Could not set key on survey assignment", e);
@@ -68,13 +72,33 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 			}
 			assignment.setSurveyIds(surveyIds);
 		}
-		surveyAssignmentDao.save(assignment);
-		// TODO: also generate the device job queue objects		
+		assignment = surveyAssignmentDao.save(assignment);
+
+		generateDeviceJobQueueItems(assignment);
+	}
+
+	private void generateDeviceJobQueueItems(SurveyAssignment assignment) {
+		if (assignment.getDeviceIds() != null
+				&& assignment.getSurveyIds() != null) {
+			for (Long id : assignment.getDeviceIds()) {
+				Device d = deviceDao.getByKey(id);
+				for (Long sId : assignment.getSurveyIds()) {
+					DeviceSurveyJobQueue queueItem = new DeviceSurveyJobQueue();
+					queueItem.setDevicePhoneNumber(d.getPhoneNumber());
+					queueItem.setEffectiveStartDate(assignment.getStartDate());
+					queueItem.setEffectiveEndDate(assignment.getEndDate());
+					queueItem.setSurveyID(sId);
+					queueItem.setLanguage(assignment.getLanguage());
+					queueItem
+							.setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
+					deviceSurveyJobQueueDAO.save(queueItem);
+				}
+			}
+		}
 	}
 
 	/**
-	 * lists all assignments
-	 * TODO: move dto/domain conversion out
+	 * lists all assignments TODO: move dto/domain conversion out
 	 */
 	@Override
 	public SurveyAssignmentDto[] listSurveyAssignments() {

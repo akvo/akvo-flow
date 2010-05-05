@@ -8,74 +8,97 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceSurveyJobQueue {
-	
-	public DeviceSurveyJobQueue(){
-		this.name="test";
-		this.language="english";
+
+	public enum DistributionStatus {
+		UNSENT, SENT
+	}
+
+	public DeviceSurveyJobQueue() {
+		this.name = "test";
+		this.language = "english";
 	}
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getDevicePhoneNumber() {
 		return devicePhoneNumber;
 	}
+
 	public void setDevicePhoneNumber(String devicePhoneNumber) {
 		this.devicePhoneNumber = devicePhoneNumber;
 	}
+
 	public Long getSurveyID() {
 		return surveyID;
 	}
+
 	public void setSurveyID(Long surveyID) {
 		this.surveyID = surveyID;
 	}
+
 	public Date getEffectiveStartDate() {
 		return effectiveStartDate;
 	}
+
 	public void setEffectiveStartDate(Date effectiveStartDate) {
 		this.effectiveStartDate = effectiveStartDate;
 	}
+
 	public Date getEffectiveEndDate() {
 		return effectiveEndDate;
 	}
+
 	public void setEffectiveEndDate(Date effectiveEndDate) {
 		this.effectiveEndDate = effectiveEndDate;
 	}
-	public String getSurveyDistrobutionStatus() {
-		return surveyDistrobutionStatus;
+
+	public DistributionStatus getSurveyDistributionStatus() {
+		return surveyDistributionStatus;
 	}
-	public void setSurveyDistrobutionStatus(String surveyDistrobutionStatus) {
-		this.surveyDistrobutionStatus = surveyDistrobutionStatus;
+
+	public void setSurveyDistributionStatus(
+			DistributionStatus surveyDistributionStatus) {
+		this.surveyDistributionStatus = surveyDistributionStatus;
 	}
+
 	private String devicePhoneNumber;
 	private Long surveyID;
 	private Date effectiveStartDate;
 	private Date effectiveEndDate;
-	private String surveyDistrobutionStatus;
-	
+	private DistributionStatus surveyDistributionStatus;
+
 	private String language;
 	private String name;
-	
+
 	public String getLanguage() {
 		return language;
 	}
+
 	public void setLanguage(String language) {
 		this.language = language;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
