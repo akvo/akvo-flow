@@ -131,7 +131,7 @@ public class KMLGenerator {
 					if (ap.getHasSystemBeenDown1DayFlag() == null) {
 						context.put("down1DayFlag", "Unknown");
 					} else {
-						context.put("down1DayFlagy", encodeBooleanDisplay(ap.getHasSystemBeenDown1DayFlag()));
+						context.put("down1DayFlag", encodeBooleanDisplay(ap.getHasSystemBeenDown1DayFlag()));
 					}
 
 					if (ap.getInstitutionName() == null) {
