@@ -3,19 +3,25 @@ package org.waterforpeople.mapping.app.util;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.waterforpeople.mapping.app.gwt.client.formdefinition.DataEntryFormDefinitionDto;
+import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
 
-import com.gallatinsystems.common.dataentry.domain.DataEntryFormDefinition;
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.KeyFactory;
 
+public class DtoMarshaller<T extends BaseDomain, U extends BaseDto> {
+	private T canonical;
+	private U dto;
 
-public class DtoMarshaller {
+	public DtoMarshaller(T canonical, U dto) {
+		this.canonical = canonical;
+		this.dto = dto;
+	}
 
-	public static void copyToCanonical(DataEntryFormDefinition dest, DataEntryFormDefinitionDto orig){
+	public void copyToCanonical(T dest, U orig, Class<T> clazz) {
 		try {
 			BeanUtils.copyProperties(dest, orig);
-			dest.setKey(KeyFactory.createKey(dest.getName(),orig.getKeyId() ));
-			
+			dest.setKey(KeyFactory.createKey(clazz.getName(), orig.getKeyId()));
+
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -24,12 +30,13 @@ public class DtoMarshaller {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void copyToDto(DataEntryFormDefinitionDto dest, DataEntryFormDefinition orig ){
+
+	public void copyToDto(U dest,
+			T orig) {
 		try {
 			BeanUtils.copyProperties(dest, orig);
 			dest.setKeyId(orig.getKey().getId());
-			
+
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
