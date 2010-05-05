@@ -10,6 +10,22 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 public class DtoMarshaller<T extends BaseDomain, U extends BaseDto> {
 	private T canonical;
+	public T getCanonical() {
+		return canonical;
+	}
+
+	public void setCanonical(T canonical) {
+		this.canonical = canonical;
+	}
+
+	public U getDto() {
+		return dto;
+	}
+
+	public void setDto(U dto) {
+		this.dto = dto;
+	}
+
 	private U dto;
 
 	public DtoMarshaller(T canonical, U dto) {
@@ -17,10 +33,11 @@ public class DtoMarshaller<T extends BaseDomain, U extends BaseDto> {
 		this.dto = dto;
 	}
 
-	public void copyToCanonical(T dest, U orig, Class<T> clazz) {
+	public void copyToCanonical() {
 		try {
-			BeanUtils.copyProperties(dest, orig);
-			dest.setKey(KeyFactory.createKey(clazz.getName(), orig.getKeyId()));
+			BeanUtils.copyProperties(canonical, dto);
+			canonical.setKey(KeyFactory.createKey(canonical.getClass()
+					.getName(), dto.getKeyId()));
 
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -31,11 +48,10 @@ public class DtoMarshaller<T extends BaseDomain, U extends BaseDto> {
 		}
 	}
 
-	public void copyToDto(U dest,
-			T orig) {
+	public void copyToDto() {
 		try {
-			BeanUtils.copyProperties(dest, orig);
-			dest.setKeyId(orig.getKey().getId());
+			BeanUtils.copyProperties(dto, canonical);
+			dto.setKeyId(canonical.getKey().getId());
 
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block

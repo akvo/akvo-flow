@@ -40,7 +40,7 @@ public class DataEntryFormDefinitionServiceImpl extends RemoteServiceServlet
 		DataEntryFormDefinitionDto dest = new DataEntryFormDefinitionDto();
 		DataEntryFormDefinition orig = helper.getByName(name);
 		DtoMarshaller<DataEntryFormDefinition,DataEntryFormDefinitionDto> marshaller = new DtoMarshaller<DataEntryFormDefinition, DataEntryFormDefinitionDto>(orig, dest);
-		marshaller.copyToDto(dest, orig);
+		marshaller.copyToDto();
 		return dest;
 	}
 
@@ -52,9 +52,10 @@ public class DataEntryFormDefinitionServiceImpl extends RemoteServiceServlet
 	public DataEntryFormDefinitionDto save(DataEntryFormDefinitionDto orig) {
 		DataEntryFormDefinition dest = new DataEntryFormDefinition();
 		DtoMarshaller<DataEntryFormDefinition,DataEntryFormDefinitionDto> marshaller = new DtoMarshaller<DataEntryFormDefinition, DataEntryFormDefinitionDto>(dest, orig);
+		marshaller.setCanonical(helper.save(dest));
+		marshaller.copyToCanonical();
 		
-		marshaller.copyToCanonical(dest, orig, DataEntryFormDefinition.class);
-		marshaller.copyToDto(orig, helper.save(dest));
+		marshaller.copyToDto();
 		return orig;
 	}
 
