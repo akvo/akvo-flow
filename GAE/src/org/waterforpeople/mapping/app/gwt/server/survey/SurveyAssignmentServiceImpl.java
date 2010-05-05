@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -77,17 +79,31 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 		generateDeviceJobQueueItems(assignment);
 	}
 
+	/**
+	 * creates and saves DeviceSurveyJobQueue objects for each device/survey
+	 * pair in the assignment. If this takes too long to do, may need to make it
+	 * async
+	 * 
+	 * @param assignment
+	 */
 	private void generateDeviceJobQueueItems(SurveyAssignment assignment) {
 		if (assignment.getDeviceIds() != null
 				&& assignment.getSurveyIds() != null) {
+			Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
 			for (Long id : assignment.getDeviceIds()) {
 				Device d = deviceDao.getByKey(id);
 				for (Long sId : assignment.getSurveyIds()) {
+					Survey survey = surveyMap.get(sId);
+					if (survey == null) {
+						survey = surveyDao.getByKey(sId);
+						surveyMap.put(sId, survey);
+					}
 					DeviceSurveyJobQueue queueItem = new DeviceSurveyJobQueue();
 					queueItem.setDevicePhoneNumber(d.getPhoneNumber());
 					queueItem.setEffectiveStartDate(assignment.getStartDate());
 					queueItem.setEffectiveEndDate(assignment.getEndDate());
 					queueItem.setSurveyID(sId);
+					queueItem.setName(survey.getName());
 					queueItem.setLanguage(assignment.getLanguage());
 					queueItem
 							.setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);

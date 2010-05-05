@@ -24,6 +24,7 @@ import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -31,6 +32,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InsertPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -40,7 +42,6 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 /**
@@ -56,7 +57,9 @@ public class SurveyAssignmentPortlet extends Portlet {
 	private static final int WIDTH = 800;
 	private Tree deviceRoot;
 	private Tree surveyRoot;
+	private Label statusLabel;
 	private TextBox eventName;
+	private ListBox language;
 	private ListBox selectedDevices;
 	private ListBox selectedSurveys;
 	private DateBox effectiveStartDate;
@@ -67,12 +70,16 @@ public class SurveyAssignmentPortlet extends Portlet {
 	private SurveyServiceAsync surveyService;
 	private SurveyAssignmentServiceAsync surveyAssignmentService;
 	private Button saveButton;
+	private Button resetButton;
 	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
 
 	public SurveyAssignmentPortlet() {
 		super(NAME, true, false, WIDTH, HEIGHT);
 		contentPanel = new DockPanel();
+		statusLabel = new Label();
+		statusLabel.setVisible(false);
+		contentPanel.add(statusLabel, DockPanel.NORTH);
 		contentPanel.add(createHeaderControls(), DockPanel.NORTH);
 
 		deviceMap = new HashMap<Widget, BaseDto>();
@@ -80,15 +87,26 @@ public class SurveyAssignmentPortlet extends Portlet {
 
 		deviceRoot = new Tree();
 		selectedDevices = new ListBox();
+		HorizontalPanel treeHost = new HorizontalPanel();
 		deviceDragController = installTreeSelector("Devices", deviceRoot,
-				selectedDevices, contentPanel, DockPanel.WEST, deviceMap);
+				selectedDevices, treeHost, deviceMap);
 
 		surveyRoot = new Tree();
 		selectedSurveys = new ListBox();
 		surveyDragController = installTreeSelector("Surveys", surveyRoot,
-				selectedSurveys, contentPanel, DockPanel.WEST, surveyMap);
+				selectedSurveys, treeHost, surveyMap);
+
+		contentPanel.add(treeHost, DockPanel.CENTER);
 
 		surveyAssignmentService = GWT.create(SurveyAssignmentService.class);
+
+		resetButton = new Button("Clear");
+		resetButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				reset();
+			}
+		});
 
 		saveButton = new Button("Save");
 		saveButton.addClickHandler(new ClickHandler() {
@@ -112,29 +130,66 @@ public class SurveyAssignmentPortlet extends Portlet {
 				}
 				dto.setDevices(dtoList);
 				dto.setSurveys(surveyDtos);
-				surveyAssignmentService.saveSurveyAssignment(dto,
-						new AsyncCallback<Void>() {
+				dto.setEndDate(effectiveEndDate.getValue());
+				dto.setStartDate(effectiveStartDate.getValue());
+				dto.setName(eventName.getValue());
+				dto.setLanguage(language.getValue(language.getSelectedIndex()));
+				ArrayList<String> errors = dto.getErrorMessages();
+				if (errors.size() == 0) {
+					surveyAssignmentService.saveSurveyAssignment(dto,
+							new AsyncCallback<Void>() {
 
-							@Override
-							public void onSuccess(Void result) {
-								// TODO Auto-generated method stub
+								@Override
+								public void onSuccess(Void result) {
+									statusLabel.setText("Assignment Saved");
+									statusLabel.setVisible(true);
+								}
 
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								// TODO Auto-generated method stub
-
-							}
-						});
+								@Override
+								public void onFailure(Throwable caught) {
+									statusLabel.setText("Error: "
+											+ caught.getLocalizedMessage());
+									statusLabel.setVisible(true);
+								}
+							});
+				} else {
+					StringBuilder builder = new StringBuilder(
+							"Invalid input:\n");
+					for (String msg : errors) {
+						builder.append(msg).append("<br>");
+					}
+					MessageDialog errDia = new MessageDialog(
+							"Cannot save assignment", builder.toString());
+					errDia.showRelativeTo(saveButton);
+				}
 			}
 		});
-		contentPanel.add(saveButton, DockPanel.SOUTH);
+		HorizontalPanel buttonPanel = new HorizontalPanel();
+		buttonPanel.add(resetButton);
+		buttonPanel.add(saveButton);
+		contentPanel.add(buttonPanel, DockPanel.SOUTH);
 		setContent(contentPanel);
 
 		getDevices();
 		getSurveys();
 
+	}
+
+	private void reset() {
+		selectedDevices.clear();
+		selectedSurveys.clear();
+		deviceRoot.clear();
+		surveyRoot.clear();
+
+		// this is inefficient but is ok for now. Can refactor to not fetch from
+		// server later.
+		getDevices();
+		getSurveys();
+
+		language.setSelectedIndex(0);
+		eventName.setText("");
+		effectiveEndDate.setValue(null);
+		effectiveStartDate.setValue(null);
 	}
 
 	private void getSurveys() {
@@ -211,6 +266,12 @@ public class SurveyAssignmentPortlet extends Portlet {
 		labelPanel.add(new Label("End: "));
 		effectiveEndDate = new DateBox();
 		labelPanel.add(effectiveEndDate);
+		labelPanel.add(new Label("Language: "));
+		language = new ListBox();
+		language.addItem("English", "English");
+		language.addItem("French", "French");
+		language.addItem("Spanish", "Spanish");
+		labelPanel.add(language);
 		return labelPanel;
 	}
 
@@ -223,8 +284,7 @@ public class SurveyAssignmentPortlet extends Portlet {
 	 */
 	private TreeDragController installTreeSelector(String typeDisplayName,
 			final Tree sourceTree, final ListBox targetBox,
-			DockPanel hostPanel, DockPanel.DockLayoutConstant location,
-			final Map<Widget, BaseDto> dtoMap) {
+			InsertPanel hostPanel, final Map<Widget, BaseDto> dtoMap) {
 		HorizontalPanel widgetPanel = new HorizontalPanel();
 
 		VerticalPanel availPanel = new VerticalPanel();
@@ -232,6 +292,7 @@ public class SurveyAssignmentPortlet extends Portlet {
 
 		ScrollPanel scrollPanel = new ScrollPanel();
 
+		scrollPanel.setWidth("150px");
 		scrollPanel.add(sourceTree);
 		availPanel.add(scrollPanel);
 
@@ -239,6 +300,7 @@ public class SurveyAssignmentPortlet extends Portlet {
 		selectedPanel.add(new Label("Assigned " + typeDisplayName));
 
 		targetBox.setVisibleItemCount(5);
+		targetBox.setWidth("250px");
 		selectedPanel.add(targetBox);
 
 		widgetPanel.add(availPanel);
@@ -272,7 +334,7 @@ public class SurveyAssignmentPortlet extends Portlet {
 			}
 		};
 		deviceDragController.addDragHandler(handler);
-		hostPanel.add(widgetPanel, location);
+		hostPanel.add(widgetPanel);
 		return deviceDragController;
 	}
 
@@ -352,4 +414,5 @@ public class SurveyAssignmentPortlet extends Portlet {
 	public void handleEvent(PortletEvent e) {
 		// no-op
 	}
+
 }

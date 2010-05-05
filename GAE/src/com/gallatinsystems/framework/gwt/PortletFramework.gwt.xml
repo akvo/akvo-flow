@@ -5,4 +5,5 @@
 	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
 	<source path="portlet/client"/>
 	<source path="dto/client"/>
+	<source path="util/client"/>
 </module>

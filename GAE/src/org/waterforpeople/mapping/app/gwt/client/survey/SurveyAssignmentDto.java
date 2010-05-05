@@ -70,4 +70,34 @@ public class SurveyAssignmentDto extends BaseDto {
 		this.devices = devices;
 	}
 
+	/**
+	 * validates the object and returns an array list of errors. If object is
+	 * valid, this returns an empty list
+	 * 
+	 * @return
+	 */
+	public ArrayList<String> getErrorMessages() {
+		ArrayList<String> errorMessages = new ArrayList<String>();
+		if (name == null || name.trim().length() == 0) {
+			errorMessages.add("Name is a mandatory field");
+		}
+		if (startDate == null) {
+			errorMessages.add("Start date is a mandatory field");
+		}
+		if (endDate == null) {
+			errorMessages.add("End date is a mandatory field");
+		}
+		if (language == null) {
+			errorMessages.add("Language is a mandatory field");
+		}
+		if (devices == null || devices.size() == 0) {
+			errorMessages.add("You must select 1 or more devices");
+		}
+		if (surveys == null || surveys.size() == 0) {
+			errorMessages.add("You must select 1 or more surveys");
+		}
+
+		return errorMessages;
+	}
+
 }
