@@ -17,7 +17,7 @@ public class KMLDAO extends BaseDAO<KML> {
 
 	public String saveKML(String kmlText) {
 		KML kml = new KML();
-		kml.setKmlText(new Text(kmlText));
+		//kml.setKmlText(new Text(kmlText));
 		return save(kml).getKey().getId()+"";
 	}
 	

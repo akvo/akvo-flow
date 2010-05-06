@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.GeocellQuery;
@@ -117,6 +118,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				collDateFrom, paramMap, GTE_OP);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				collDateTo, paramMap, LTE_OP);
+		
 
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());

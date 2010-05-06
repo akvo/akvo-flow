@@ -48,7 +48,17 @@ public class GoogleSpreadsheetAdapter {
 			metafeedUrl = new URL(google_spreadsheet_url);
 		}
 		if (feed == null) {
-			feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
+			try {
+				feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
+			} catch (IOException iex) {
+				try {
+					wait(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
+			}
 		}
 
 	}
