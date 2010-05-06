@@ -48,7 +48,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 				//application/vnd.google-earth.kmz
 				resp.setContentType("application/vnd.google-earth.kmz+xml");				
 				ServletOutputStream out = resp.getOutputStream();
-                resp.setHeader("Content-Disposition","inline; filename=waterforpeoplemaping.kmz;");                
+                resp.setHeader("Content-Disposition","inline; filename=waterforpeoplemapping.kmz;");                
                 ByteArrayOutputStream os = ZipUtil.generateZip(placemarksDocument);
                 out.write(os.toByteArray());
                 out.flush();
