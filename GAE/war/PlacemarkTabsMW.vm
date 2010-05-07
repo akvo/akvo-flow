@@ -1,3 +1,4 @@
+ 
   <Placemark>
     <!--<name><![CDATA[<strong><font color="red" size="+2">$communityCode</font></strong>]]></name>-->
     <name>$communityCode</name>
@@ -346,3 +347,4 @@ initMenu();
       <coordinates>$longitude,$latitude,$altitude</coordinates>
     </Point>
   </Placemark>
+ 
