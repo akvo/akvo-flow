@@ -2,9 +2,11 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +18,7 @@ import org.waterforpeople.mapping.dao.GeoRegionDAO;
 import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoRegion;
+import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.Constants;
@@ -66,10 +69,12 @@ public class KMLGenerator {
 		String document = null;
 		try {
 			VelocityContext context = new VelocityContext();
-			String mwOutput = generateCountrySpecificPlacemarks(
+			HashMap<String, ArrayList<String>> mwOutputMap = generateCountrySpecificPlacemarks(
 					"PlacemarkTabsMW.vm", "MW");
 			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm");
-			context.put("Placemark", otherCountryOutput + mwOutput);
+			String folderContents = generateFolderContents( mwOutputMap, "Folders.vm");
+			context.put("folderContents", otherCountryOutput
+					+folderContents);
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
@@ -81,12 +86,52 @@ public class KMLGenerator {
 		return document;
 	}
 
-	public String generateCountrySpecificPlacemarks(String vmName,
-			String countryCode) {
+	private String generateFolderContents(HashMap<String, ArrayList<String>> contents, String vmName)
+			throws Exception {
+		VelocityContext context = new VelocityContext();
+		StringBuilder techFolders = new StringBuilder();
+		
+		for(Entry<String,ArrayList<String>>techItem:contents.entrySet()){
+			String key = techItem.getKey();
+			StringBuilder sbFolderPl = new StringBuilder();
+			for(String placemark:techItem.getValue()){
+				sbFolderPl.append(placemark);
+			}
+			context.put("techFolderName", key);
+			context.put("techPlacemarks", sbFolderPl);
+			techFolders.append(mergeContext(context,"techFolders.vm"));
+		}
+		context.put("techFolders", techFolders.toString());
+		return mergeContext(context, vmName);
+
+	}
+
+	public HashMap<String, ArrayList<String>> generateCountrySpecificPlacemarks(
+			String vmName, String countryCode) {
 		if (countryCode.equals("MW")) {
+			HashMap<String, HashMap<String, HashMap<String, AccessPoint>>> layoutMap = new HashMap<String, HashMap<String, HashMap<String, AccessPoint>>>();
+			HashMap<String, ArrayList<AccessPoint>> techMap = new HashMap<String, ArrayList<AccessPoint>>();
+			BaseDAO<TechnologyType> techDAO = new BaseDAO<TechnologyType>(
+					TechnologyType.class);
+			List<TechnologyType> techTypeList = (List<TechnologyType>) techDAO
+					.list("all");
 			AccessPointDao apDao = new AccessPointDao();
 			List<AccessPoint> waterAPList = apDao.searchAccessPoints(
 					countryCode, null, null, null, "WATER_POINT", null, "all");
+			for (TechnologyType techType : techTypeList) {
+				log.info("TechnologyType: " + techType.getName());
+				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
+				for (AccessPoint item : waterAPList) {
+					log.info("waterAP Technology Type: "
+							+ item.getTypeTechnologyString());
+					if (item.getTypeTechnologyString().equals(
+							techType.getName())) {
+						techTypeAPList.add(item);
+					}
+				}
+				techMap.put(techType.getName(), techTypeAPList);
+			}
+
 			List<AccessPoint> sanitationAPList = apDao.searchAccessPoints(
 					countryCode, null, null, null, "SANITATION_POINT", null,
 					"all");
@@ -95,18 +140,20 @@ public class KMLGenerator {
 				sanitationMap.put(item.getGeocells().toString(), item);
 			}
 			sanitationAPList = null;
-			
+			HashMap<String, ArrayList<String>> techPlacemarksMap = new HashMap<String, ArrayList<String>>();
 			StringBuilder placemarksSB = new StringBuilder();
 			int iCount = 0;
-			for (AccessPoint item : waterAPList) {
-				//log.info("Point number: " + iCount++);
-				if (item.getPointType().equals(
-						AccessPoint.AccessPointType.WATER_POINT)) {
-					AccessPoint waterAP = item;
+			for (Entry<String, ArrayList<AccessPoint>> item : techMap
+					.entrySet()) {
+				String key = item.getKey();
+				ArrayList<String> placemarks = new ArrayList<String>();
+				log.info("Techtype: " + key);
+				for (AccessPoint waterAP : item.getValue()) {
+
 					AccessPoint sanitationAP = sanitationMap.get(waterAP
 							.getGeocells().toString());
 					if (sanitationAP != null) {
-						placemarksSB.append(buildMainPlacemark(waterAP,
+						placemarks.add(buildMainPlacemark(waterAP,
 								sanitationAP, vmName));
 					} else {
 						log.info("No matching sanitation point found for "
@@ -115,20 +162,62 @@ public class KMLGenerator {
 								+ waterAP.getCommunityName());
 					}
 				}
+				techPlacemarksMap.put(key, placemarks);
 			}
-			return placemarksSB.toString();
+			return techPlacemarksMap;
 		}
+
 		return null;
+	}
+
+	class FolderDto {
+		private String countryCode = null;
+		private String communityName = null;
+		private String technologyName = null;
+		private String placemark = null;
+
+		public String getCountryCode() {
+			return countryCode;
+		}
+
+		public void setCountryCode(String countryCode) {
+			this.countryCode = countryCode;
+		}
+
+		public String getCommunityName() {
+			return communityName;
+		}
+
+		public void setCommunityName(String communityName) {
+			this.communityName = communityName;
+		}
+
+		public String getTechnologyName() {
+			return technologyName;
+		}
+
+		public void setTechnologyName(String technologyName) {
+			this.technologyName = technologyName;
+		}
+
+		public String getPlacemark() {
+			return placemark;
+		}
+
+		public void setPlacemark(String placemark) {
+			this.placemark = placemark;
+		}
+
 	}
 
 	private HashMap<String, String> loadContextBindings(AccessPoint waterAP,
 			AccessPoint sanitationAP) {
-		//log.info(waterAP.getCommunityCode());
+		// log.info(waterAP.getCommunityCode());
 		try {
 			HashMap<String, String> contextBindingsMap = new HashMap<String, String>();
 			contextBindingsMap.put("communityCode", encodeNullDefault(waterAP
 					.getCommunityCode(), "Unknown"));
-			contextBindingsMap.put("communityName",  encodeNullDefault(waterAP
+			contextBindingsMap.put("communityName", encodeNullDefault(waterAP
 					.getCommunityName(), "Unknown"));
 			contextBindingsMap.put("typeOfWaterPointTechnology",
 					encodeNullDefault(waterAP.getTypeTechnologyString(),
@@ -148,8 +237,8 @@ public class KMLGenerator {
 			contextBindingsMap.put("currentManagementStructureOfWaterPoint",
 					encodeNullDefault(waterAP
 							.getCurrentManagementStructurePoint(), "Unknown"));
-			contextBindingsMap.put("waterSystemStatus", encodeStatusString(
-					waterAP.getPointStatus()));
+			contextBindingsMap.put("waterSystemStatus",
+					encodeStatusString(waterAP.getPointStatus()));
 			contextBindingsMap.put("photoUrl", encodeNullDefault(waterAP
 					.getPhotoURL(), "Unknown"));
 			contextBindingsMap.put("waterPointPhotoCaption", encodeNullDefault(
@@ -173,7 +262,8 @@ public class KMLGenerator {
 					.getLatitude().toString(), "Unknown"));
 			contextBindingsMap.put("altitude", encodeNullDefault(waterAP
 					.getAltitude().toString(), "Unknown"));
-			contextBindingsMap.put("pinStyle", encodePinStyle(waterAP.getPointType(),waterAP.getPointStatus()));
+			contextBindingsMap.put("pinStyle", encodePinStyle(waterAP
+					.getPointType(), waterAP.getPointStatus()));
 			return contextBindingsMap;
 		} catch (NullPointerException nex) {
 			nex.printStackTrace();
@@ -211,7 +301,7 @@ public class KMLGenerator {
 				return defaultMissingVal;
 			}
 		} catch (Exception ex) {
-			//log.info("value that generated nex: " + value);
+			// log.info("value that generated nex: " + value);
 			ex.printStackTrace();
 		}
 		return null;
@@ -416,7 +506,7 @@ public class KMLGenerator {
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
-					//log.info(ex.getMessage());
+					// log.info(ex.getMessage());
 				}
 
 			}
