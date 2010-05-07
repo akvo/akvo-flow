@@ -14,8 +14,10 @@ public class DtoMarshaller {
 			T canonical, U dto) {
 		try {
 			BeanUtils.copyProperties(canonical, dto);
-			canonical.setKey(KeyFactory.createKey(canonical.getClass()
-					.getName(), dto.getKeyId()));
+			if (dto.getKeyId() != null) {
+				canonical.setKey(KeyFactory.createKey(canonical.getClass()
+						.getName(), dto.getKeyId()));
+			}
 
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -30,8 +32,9 @@ public class DtoMarshaller {
 			T canonical, U dto) {
 		try {
 			BeanUtils.copyProperties(dto, canonical);
-			dto.setKeyId(canonical.getKey().getId());
-
+			if (canonical.getKey() != null) {
+				dto.setKeyId(canonical.getKey().getId());
+			}
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
