@@ -28,9 +28,11 @@ import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InsertPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -42,6 +44,7 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 /**
@@ -50,11 +53,18 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * @author Christopher Fagiani
  * 
  */
-public class SurveyAssignmentPortlet extends Portlet {
+public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	public static final String NAME = "Survey Assignment Portlet";
 	public static final String DESCRIPTION = "Assigns surveys to devices";
+	private static final String EVEN_ROW_CSS = "gridCell-even";
+	private static final String ODD_ROW_CSS = "gridCell-odd";
+	private static final String SELECTED_ROW_CSS = "gridCell-selected";
+	private static final String GRID_HEADER_CSS = "gridCell-header";
+	private static final int MAX_ITEMS = 20;
 	private static final int HEIGHT = 1600;
 	private static final int WIDTH = 800;
+	private static final DateTimeFormat DATE_FMT = DateTimeFormat
+			.getShortDateFormat();
 	private Tree deviceRoot;
 	private Tree surveyRoot;
 	private Label statusLabel;
@@ -71,16 +81,26 @@ public class SurveyAssignmentPortlet extends Portlet {
 	private SurveyAssignmentServiceAsync surveyAssignmentService;
 	private Button saveButton;
 	private Button resetButton;
+	private Button editButton;
+	private Button deleteButton;
+	private Button createButton;
+	private DockPanel inputPanel;
+	private VerticalPanel gridPanel;
+	private SurveyAssignmentDto[] currentDtoList;
+	private int currentSelection = -1;
+
 	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
 
 	public SurveyAssignmentPortlet() {
 		super(NAME, true, false, WIDTH, HEIGHT);
+		inputPanel = new DockPanel();
 		contentPanel = new DockPanel();
+		inputPanel = new DockPanel();
 		statusLabel = new Label();
 		statusLabel.setVisible(false);
-		contentPanel.add(statusLabel, DockPanel.NORTH);
-		contentPanel.add(createHeaderControls(), DockPanel.NORTH);
+		inputPanel.add(statusLabel, DockPanel.NORTH);
+		inputPanel.add(createInputControls(), DockPanel.NORTH);
 
 		deviceMap = new HashMap<Widget, BaseDto>();
 		surveyMap = new HashMap<Widget, BaseDto>();
@@ -96,83 +116,129 @@ public class SurveyAssignmentPortlet extends Portlet {
 		surveyDragController = installTreeSelector("Surveys", surveyRoot,
 				selectedSurveys, treeHost, surveyMap);
 
-		contentPanel.add(treeHost, DockPanel.CENTER);
+		inputPanel.add(treeHost, DockPanel.CENTER);
 
 		surveyAssignmentService = GWT.create(SurveyAssignmentService.class);
 
 		resetButton = new Button("Clear");
-		resetButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				reset();
-			}
-		});
+		resetButton.addClickHandler(this);
 
 		saveButton = new Button("Save");
-		saveButton.addClickHandler(new ClickHandler() {
+		saveButton.addClickHandler(this);
 
-			@Override
-			public void onClick(ClickEvent event) {
-				SurveyAssignmentDto dto = new SurveyAssignmentDto();
-				ArrayList<DeviceDto> dtoList = new ArrayList<DeviceDto>();
-				for (int i = 0; i < selectedDevices.getItemCount(); i++) {
-					DeviceDto devDto = new DeviceDto();
-					devDto
-							.setKeyId(Long.parseLong(selectedDevices
-									.getValue(i)));
-					dtoList.add(devDto);
-				}
-				ArrayList<SurveyDto> surveyDtos = new ArrayList<SurveyDto>();
-				for (int i = 0; i < selectedSurveys.getItemCount(); i++) {
-					SurveyDto sDto = new SurveyDto();
-					sDto.setKeyId(Long.parseLong(selectedSurveys.getValue(i)));
-					surveyDtos.add(sDto);
-				}
-				dto.setDevices(dtoList);
-				dto.setSurveys(surveyDtos);
-				dto.setEndDate(effectiveEndDate.getValue());
-				dto.setStartDate(effectiveStartDate.getValue());
-				dto.setName(eventName.getValue());
-				dto.setLanguage(language.getValue(language.getSelectedIndex()));
-				ArrayList<String> errors = dto.getErrorMessages();
-				if (errors.size() == 0) {
-					surveyAssignmentService.saveSurveyAssignment(dto,
-							new AsyncCallback<Void>() {
+		HorizontalPanel masterButtonPanel = new HorizontalPanel();
+		deleteButton = new Button("Delete Selected");
+		deleteButton.addClickHandler(this);
+		editButton = new Button("Edit Assignment");
+		editButton.addClickHandler(this);
+		createButton = new Button("Create Assignment");
+		createButton.addClickHandler(this);
 
-								@Override
-								public void onSuccess(Void result) {
-									statusLabel.setText("Assignment Saved");
-									statusLabel.setVisible(true);
-								}
+		masterButtonPanel.add(createButton);
+		masterButtonPanel.add(editButton);
+		masterButtonPanel.add(deleteButton);
 
-								@Override
-								public void onFailure(Throwable caught) {
-									statusLabel.setText("Error: "
-											+ caught.getLocalizedMessage());
-									statusLabel.setVisible(true);
-								}
-							});
-				} else {
-					StringBuilder builder = new StringBuilder(
-							"Invalid input:\n");
-					for (String msg : errors) {
-						builder.append(msg).append("<br>");
-					}
-					MessageDialog errDia = new MessageDialog(
-							"Cannot save assignment", builder.toString());
-					errDia.showRelativeTo(saveButton);
-				}
-			}
-		});
-		HorizontalPanel buttonPanel = new HorizontalPanel();
-		buttonPanel.add(resetButton);
-		buttonPanel.add(saveButton);
-		contentPanel.add(buttonPanel, DockPanel.SOUTH);
+		HorizontalPanel inputButtonPanel = new HorizontalPanel();
+		inputButtonPanel.add(resetButton);
+		inputButtonPanel.add(saveButton);
+		inputPanel.add(inputButtonPanel, DockPanel.SOUTH);
+		inputPanel.setVisible(false);
+		contentPanel.add(inputPanel, DockPanel.NORTH);
+		gridPanel = new VerticalPanel();
+		contentPanel.add(gridPanel, DockPanel.CENTER);
+		contentPanel.add(masterButtonPanel, DockPanel.SOUTH);
 		setContent(contentPanel);
 
 		getDevices();
 		getSurveys();
+		getAssignments(null);
+	}
 
+	// TODO: paginate!
+	private void getAssignments(String cursor) {
+		surveyAssignmentService
+				.listSurveyAssignments(new AsyncCallback<SurveyAssignmentDto[]>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						MessageDialog errDia = new MessageDialog("Error",
+								"Cannot load assignment");
+						errDia.showRelativeTo(gridPanel);
+					}
+
+					@Override
+					public void onSuccess(SurveyAssignmentDto[] result) {
+						currentDtoList = result;
+						updateDataGrid();
+					}
+				});
+	}
+
+	private void updateDataGrid() {
+		gridPanel.clear();
+		if (currentDtoList != null) {
+			Grid grid = new Grid(currentDtoList.length+1, 4);
+			grid.addClickHandler(this);
+			// build headers
+			grid.setText(0, 0, "Event");
+			grid.setText(0, 1, "Language");
+			grid.setText(0, 2, "Start");
+			grid.setText(0, 3, "End");
+			setGridRowStyle(grid, 0, false);
+			for (int i = 1; i < currentDtoList.length+1; i++) {
+				grid
+						.setWidget(i, 0, new Label(currentDtoList[i - 1]
+								.getName()));
+
+				grid.setWidget(i, 1, new Label(currentDtoList[i - 1]
+						.getLanguage()));
+				grid
+						.setWidget(
+								i,
+								2,
+								currentDtoList[i - 1].getStartDate() != null ? new Label(
+										DATE_FMT.format(currentDtoList[i - 1]
+												.getStartDate()))
+										: new Label(""));
+				grid.setWidget(i, 3,
+						currentDtoList[i - 1].getEndDate() != null ? new Label(
+								DATE_FMT.format(currentDtoList[i - 1]
+										.getEndDate())) : new Label(""));
+				setGridRowStyle(grid, i, false);
+			}
+			gridPanel.add(grid);
+		} else {
+			gridPanel.add(new Label("No Assignments"));
+		}
+	}
+
+	/**
+	 * sets the css for a row in a grid. the top row will get the header style
+	 * and other rows get either the even or odd style. If selected is true and
+	 * row > 0 then it will set the selected style
+	 * 
+	 * @param grid
+	 * @param row
+	 * @param selected
+	 */
+	private void setGridRowStyle(Grid grid, int row, boolean selected) {
+		// if we already had a selection, unselect it
+		String style = "";
+		if (selected) {
+			style = SELECTED_ROW_CSS;
+		} else {
+			if (row > 0) {
+				if (row % 2 == 0) {
+					style = EVEN_ROW_CSS;
+				} else {
+					style = ODD_ROW_CSS;
+				}
+			} else {
+				style = GRID_HEADER_CSS;
+			}
+		}
+		for (int i = 0; i < grid.getColumnCount(); i++) {
+			grid.getCellFormatter().setStyleName(row, i, style);
+		}
 	}
 
 	private void reset() {
@@ -180,6 +246,7 @@ public class SurveyAssignmentPortlet extends Portlet {
 		selectedSurveys.clear();
 		deviceRoot.clear();
 		surveyRoot.clear();
+		currentSelection = -1;
 
 		// this is inefficient but is ok for now. Can refactor to not fetch from
 		// server later.
@@ -255,7 +322,7 @@ public class SurveyAssignmentPortlet extends Portlet {
 	 * 
 	 * @return
 	 */
-	private Widget createHeaderControls() {
+	private Widget createInputControls() {
 		HorizontalPanel labelPanel = new HorizontalPanel();
 		labelPanel.add(new Label("Trip Name: "));
 		eventName = new TextBox();
@@ -399,6 +466,136 @@ public class SurveyAssignmentPortlet extends Portlet {
 		return NAME;
 	}
 
+	/**
+	 * populates a dto using the values currently set in the UI widgets and
+	 * persists it to the server
+	 */
+	private void saveAssignment() {
+		SurveyAssignmentDto dto = new SurveyAssignmentDto();
+		ArrayList<DeviceDto> dtoList = new ArrayList<DeviceDto>();
+		for (int i = 0; i < selectedDevices.getItemCount(); i++) {
+			DeviceDto devDto = new DeviceDto();
+			devDto.setKeyId(Long.parseLong(selectedDevices.getValue(i)));
+			dtoList.add(devDto);
+		}
+		ArrayList<SurveyDto> surveyDtos = new ArrayList<SurveyDto>();
+		for (int i = 0; i < selectedSurveys.getItemCount(); i++) {
+			SurveyDto sDto = new SurveyDto();
+			sDto.setKeyId(Long.parseLong(selectedSurveys.getValue(i)));
+			surveyDtos.add(sDto);
+		}
+		dto.setDevices(dtoList);
+		dto.setSurveys(surveyDtos);
+		dto.setEndDate(effectiveEndDate.getValue());
+		dto.setStartDate(effectiveStartDate.getValue());
+		dto.setName(eventName.getValue());
+		dto.setLanguage(language.getValue(language.getSelectedIndex()));
+		ArrayList<String> errors = dto.getErrorMessages();
+		if (errors.size() == 0) {
+			surveyAssignmentService.saveSurveyAssignment(dto,
+					new AsyncCallback<Void>() {
+
+						@Override
+						public void onSuccess(Void result) {
+							statusLabel.setText("Assignment Saved");
+							statusLabel.setVisible(true);
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							statusLabel.setText("Error: "
+									+ caught.getLocalizedMessage());
+							statusLabel.setVisible(true);
+						}
+					});
+		} else {
+			StringBuilder builder = new StringBuilder("Invalid input:\n");
+			for (String msg : errors) {
+				builder.append(msg).append("<br>");
+			}
+			MessageDialog errDia = new MessageDialog("Cannot save assignment",
+					builder.toString());
+			errDia.showRelativeTo(saveButton);
+		}
+	}
+
+	/**
+	 * uses the values of the currently selected dto (from the grid) to populate
+	 * the input panel widgets
+	 */
+	private void populateInputPanelFromSelection() {		
+		if (currentSelection > 0) {
+			reset();
+			SurveyAssignmentDto currentDto = currentDtoList[currentSelection - 1];
+			if (currentDto != null) {
+				eventName.setText(currentDto.getName());
+				effectiveStartDate.setValue(currentDto.getStartDate());
+				effectiveEndDate.setValue(currentDto.getEndDate());
+				for (int i = 0; i < language.getItemCount(); i++) {
+					if (language.getValue(i).equalsIgnoreCase(
+							currentDto.getLanguage())) {
+						language.setSelectedIndex(i);
+					}
+				}
+				if (currentDto.getDevices() != null) {
+					for (DeviceDto dev : currentDto.getDevices()) {
+						selectedDevices.addItem(dev.getPhoneNumber(), dev
+								.getKeyId().toString());
+					}
+				}
+				if (currentDto.getSurveys() != null) {
+					for (SurveyDto s : currentDto.getSurveys()) {
+						selectedSurveys.addItem(s.getName(), s.getKeyId()
+								.toString());
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onClick(ClickEvent event) {
+		if (event.getSource() == resetButton) {
+			reset();
+		} else if (event.getSource() == saveButton) {
+			saveAssignment();
+		} else if (event.getSource() == deleteButton) {
+
+		} else if (event.getSource() == editButton) {
+			populateInputPanelFromSelection();
+			inputPanel.setVisible(true);
+		} else if (event.getSource() == createButton) {
+			reset();
+			inputPanel.setVisible(true);
+		} else if (event.getSource() instanceof Grid) {
+			Grid grid = (Grid) event.getSource();
+
+			// if we already had a selection, deselect it
+			if (currentSelection > 0) {
+				setGridRowStyle(grid, currentSelection, false);
+			}
+			Cell clickedCell = grid.getCellForEvent(event);
+			// the click may not have been in a cell
+			if (clickedCell != null) {
+				int newSelection = clickedCell.getRowIndex();
+				// if the clicked row is already selected, deselect it
+				if (currentSelection == newSelection) {
+					currentSelection = -1;
+					setGridRowStyle(grid, currentSelection, false);
+				} else {
+					currentSelection = newSelection;
+				}
+				// if the clicked cell is the header (row 0), don't change the
+				// style
+				if (currentSelection > 0) {
+					setGridRowStyle(grid, currentSelection, true);
+				} else {
+					currentSelection = -1;
+				}
+			}
+		}
+	}
+
 	@Override
 	protected boolean getReadyForRemove() {
 		return true;
@@ -414,5 +611,4 @@ public class SurveyAssignmentPortlet extends Portlet {
 	public void handleEvent(PortletEvent e) {
 		// no-op
 	}
-
 }

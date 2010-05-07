@@ -362,3 +362,23 @@ html>body .gwt-MenuBarPopup {
   height: 8px;
   overflow: hidden;
 }
+
+td.gridCell-selected {
+  padding: 5px;
+  background-color: #008AB8;
+  border: 1px solid #ffffff;
+}
+
+td.gridCell-even {
+  padding: 5px;
+  background-color: #D9ECF5;  
+}
+td.gridCell-odd {
+  padding: 5px;
+  background-color: #FFFFFF;  
+}
+td.gridCell-header{
+ padding: 5px;
+ font-weight: bold;
+ background-color: #95C4D8;
+}

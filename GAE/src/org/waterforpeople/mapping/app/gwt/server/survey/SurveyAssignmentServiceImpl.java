@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
@@ -35,6 +35,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	private SurveyDAO surveyDao;
 	private DeviceSurveyJobQueueDAO deviceSurveyJobQueueDAO;
 	private static final long serialVersionUID = 3956064184547647245L;
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger
 			.getLogger(SurveyAssignmentServiceImpl.class);
 
@@ -52,14 +53,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void saveSurveyAssignment(SurveyAssignmentDto dto) {
 		SurveyAssignment assignment = new SurveyAssignment();
-		if (dto.getKeyId() != null) {
-			try {
-				BeanUtils.copyProperties(assignment, dto);
-				BeanUtils.copyProperty(assignment, "Key.Id", dto.getKeyId());
-			} catch (Exception e) {
-				logger.error("Could not set key on survey assignment", e);
-			}
-		}
+		DtoMarshaller.copyToCanonical(assignment, dto);
 		if (dto.getDevices() != null) {
 			List<Long> devIds = new ArrayList<Long>();
 			for (DeviceDto dev : dto.getDevices()) {
@@ -124,7 +118,10 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 			results = new SurveyAssignmentDto[assignments.size()];
 			for (int i = 0; i < assignments.size(); i++) {
 				SurveyAssignmentDto dto = new SurveyAssignmentDto();
-				dto.setKeyId(assignments.get(i).getKey().getId());
+				dto.setName(assignments.get(i).getName());
+				dto.setStartDate(assignments.get(i).getStartDate());
+				dto.setEndDate(assignments.get(i).getEndDate());
+				dto.setLanguage(assignments.get(i).getLanguage());
 				if (assignments.get(i).getDeviceIds() != null) {
 					ArrayList<DeviceDto> devices = new ArrayList<DeviceDto>();
 					for (Long id : assignments.get(i).getDeviceIds()) {
