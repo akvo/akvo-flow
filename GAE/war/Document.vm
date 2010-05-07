@@ -665,10 +665,11 @@
   </Style>
 
   
-		$Placemark
+		$folderContents
 	
 		$regionPlacemark
-		
+	<Folder>
+	<name>Blantyre LIA</name>	
 		<!--Malawi LIA Outline-->
 	   <Placemark>
 
@@ -1347,5 +1348,6 @@
       </MultiGeometry>
 
     </Placemark>
+    </Folder>
 	</Document>
 </kml>
