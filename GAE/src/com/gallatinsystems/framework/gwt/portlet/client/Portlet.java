@@ -22,8 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Christopher Fagiani
  * 
  */
-public abstract class Portlet extends FocusPanel implements HasDragHandle,
-		ClickHandler {
+public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	/**
 	 * both name and description should be hidden by subclasses
 	 */
@@ -58,7 +57,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 	private Image closeImg;
 	private Image confImg;
 	private FocusPanel headerContainer;
-	private String config;	
+	private String config;
 
 	private boolean isLoaded = false;
 
@@ -87,7 +86,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		}
 		this.configurable = configurable;
 		this.scrollable = scrollable;
-		active = true;		
+		active = true;
 		constructHeader(title);
 	}
 
@@ -111,14 +110,31 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		headerPanel.add(headerWidget, DockPanel.WEST);
 		headerPanel.add(new SimplePanel(), DockPanel.CENTER);
 		closeImg = new Image(CLOSE_IMAGE);
-		closeImg.addClickHandler(this);
+		closeImg.addClickHandler(new ClickHandler() {
+			/**
+			 * If the close button is clicked, getReadyForRemove is called
+			 * (allowing sub-classes to do any cleanup they want) then the
+			 * portal container is notified that is should remove this portlet.
+			 */
+			@Override
+			public void onClick(ClickEvent event) {
+				if (getReadyForRemove()) {
+					portletContainer.removePortlet(Portlet.this);
+				}
+			}
+		});
 		closeImg.setTitle(CLOSE_TOOLTIP);
 		headerPanel.add(closeImg, DockPanel.EAST);
 		if (configurable) {
 			confImg = new Image(CONF_IMAGE);
-			confImg.addClickHandler(this);
 			confImg.setTitle(CONF_TOOLTIP);
+			confImg.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					handleConfigClick();
 
+				}
+			});
 			headerPanel.add(confImg, DockPanel.EAST);
 		}
 
@@ -128,23 +144,6 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		headerContainer = new FocusPanel();
 		headerContainer.addStyleName(CSS_HEADER);
 		headerContainer.add(headerPanel);
-	}
-
-	/**
-	 * reacts to click event for the header buttons. If the close button is
-	 * clicked, getReadyForRemove is called (allowing sub-classes to do any
-	 * cleanup they want) then the portal container is notified that is should
-	 * remove this portlet. If the configure button is clicked, control is
-	 * delegated to the subclass since configuration is portlet-specific.
-	 */
-	public void onClick(ClickEvent event) {
-		if (event.getSource() == closeImg) {
-			if (getReadyForRemove()) {
-				portletContainer.removePortlet(this);
-			}
-		} else if (event.getSource() == confImg) {
-			handleConfigClick();
-		}
 	}
 
 	/**
@@ -313,7 +312,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle,
 		this.config = config;
 	}
 
-	public void setShowFullscreen(boolean showFullscreen) {		
+	public void setShowFullscreen(boolean showFullscreen) {
 		if (showFullscreen) {
 			closeImg.setVisible(false);
 			setPixelSize(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);

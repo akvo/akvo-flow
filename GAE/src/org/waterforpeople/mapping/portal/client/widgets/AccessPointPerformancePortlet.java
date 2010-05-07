@@ -96,7 +96,6 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 	 */
 	@Override
 	public void onClick(ClickEvent event) {
-		super.onClick(event);
 		if (event.getSource() == addLocationButton) {
 			locationDialog.showRelativeTo(this);
 		} else if (event.getSource() == resetButton) {
