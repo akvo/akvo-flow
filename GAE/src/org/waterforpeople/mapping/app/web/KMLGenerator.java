@@ -94,10 +94,12 @@ public class KMLGenerator {
 			for (AccessPoint item : sanitationAPList) {
 				sanitationMap.put(item.getGeocells().toString(), item);
 			}
+			sanitationAPList = null;
+			
 			StringBuilder placemarksSB = new StringBuilder();
 			int iCount = 0;
 			for (AccessPoint item : waterAPList) {
-				log.info("Point number: " + iCount++);
+				//log.info("Point number: " + iCount++);
 				if (item.getPointType().equals(
 						AccessPoint.AccessPointType.WATER_POINT)) {
 					AccessPoint waterAP = item;
@@ -121,10 +123,7 @@ public class KMLGenerator {
 
 	private HashMap<String, String> loadContextBindings(AccessPoint waterAP,
 			AccessPoint sanitationAP) {
-		log.info(waterAP.getCommunityCode());
-		if (waterAP.getCommunityCode().equals("MB02E002")) {
-			log.info("Bad record");
-		}
+		//log.info(waterAP.getCommunityCode());
 		try {
 			HashMap<String, String> contextBindingsMap = new HashMap<String, String>();
 			contextBindingsMap.put("communityCode", encodeNullDefault(waterAP
@@ -212,7 +211,7 @@ public class KMLGenerator {
 				return defaultMissingVal;
 			}
 		} catch (Exception ex) {
-			log.info("value that generated nex: " + value);
+			//log.info("value that generated nex: " + value);
 			ex.printStackTrace();
 		}
 		return null;
@@ -416,7 +415,8 @@ public class KMLGenerator {
 						sb.append(output);
 					}
 				} catch (Exception ex) {
-					log.info(ex.getMessage());
+					ex.printStackTrace();
+					//log.info(ex.getMessage());
 				}
 
 			}

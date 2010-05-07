@@ -232,7 +232,8 @@ public class SpreadsheetAccessPointAdapter {
 											.equals("borken-down system")
 									|| col.getColContents().toLowerCase()
 											.trim()
-											.equals("broken-down system")) {
+											.equals("broken-down system")||
+											col.getColContents().trim().toLowerCase().equals("broken down")) {
 								// Red
 								ap
 										.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
