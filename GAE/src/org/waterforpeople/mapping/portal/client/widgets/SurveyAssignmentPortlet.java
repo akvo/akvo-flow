@@ -89,6 +89,9 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private SurveyAssignmentDto[] currentDtoList;
 	private int currentSelection = -1;
 
+	private HashMap<String, ArrayList<DeviceDto>> devices;
+	private SurveyDto[] surveys;
+
 	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
 
@@ -245,12 +248,10 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		selectedDevices.clear();
 		selectedSurveys.clear();
 		deviceRoot.clear();
-		surveyRoot.clear();		
+		surveyRoot.clear();
 
-		// this is inefficient but is ok for now. Can refactor to not fetch from
-		// server later.
-		getDevices();
-		getSurveys();
+		populateDeviceTree();
+		populateSurveyTree();
 
 		language.setSelectedIndex(0);
 		eventName.setText("");
@@ -267,17 +268,10 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			}
 
 			public void onSuccess(SurveyDto[] result) {
-				TreeItem ungroupedSurvey = new TreeItem("Ungrouped");
-				surveyRoot.addItem(ungroupedSurvey);
-				if (result != null) {
 
-					for (int i = 0; i < result.length; i++) {
-						TreeItem item = new TreeItem(new Label(result[i]
-								.getName()));
-						surveyMap.put(item.getWidget(), result[i]);
-						surveyDragController.makeDraggable(item.getWidget());
-						ungroupedSurvey.addItem(item);
-					}
+				if (result != null) {
+					surveys = result;
+					populateSurveyTree();
 				}
 			}
 		};
@@ -294,26 +288,45 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 
 			public void onSuccess(HashMap<String, ArrayList<DeviceDto>> result) {
 				if (result != null) {
-					for (Entry<String, ArrayList<DeviceDto>> entry : result
-							.entrySet()) {
-						TreeItem group = new TreeItem(new Label(entry.getKey()));
-						deviceDragController.makeDraggable(group.getWidget());
-						if (entry.getValue() != null) {
-							for (DeviceDto dto : entry.getValue()) {
-								TreeItem phoneItem = new TreeItem(new Label(dto
-										.getPhoneNumber()));
-								deviceMap.put(phoneItem.getWidget(), dto);
-								deviceDragController.makeDraggable(phoneItem
-										.getWidget());
-								group.addItem(phoneItem);
-							}
-						}
-						deviceRoot.addItem(group);
-					}
+					devices = result;
+					populateDeviceTree();
 				}
 			}
 		};
 		deviceService.listDeviceByGroup(deviceCallback);
+	}
+
+	private void populateDeviceTree() {
+		if (devices != null) {
+			for (Entry<String, ArrayList<DeviceDto>> entry : devices.entrySet()) {
+				TreeItem group = new TreeItem(new Label(entry.getKey()));
+				deviceDragController.makeDraggable(group.getWidget());
+				if (entry.getValue() != null) {
+					for (DeviceDto dto : entry.getValue()) {
+						TreeItem phoneItem = new TreeItem(new Label(dto
+								.getPhoneNumber()));
+						deviceMap.put(phoneItem.getWidget(), dto);
+						deviceDragController.makeDraggable(phoneItem
+								.getWidget());
+						group.addItem(phoneItem);
+					}
+				}
+				deviceRoot.addItem(group);
+			}
+		}
+	}
+
+	private void populateSurveyTree() {
+		TreeItem ungroupedSurvey = new TreeItem("Ungrouped");
+		surveyRoot.addItem(ungroupedSurvey);
+		if (surveys != null) {
+			for (int i = 0; i < surveys.length; i++) {
+				TreeItem item = new TreeItem(new Label(surveys[i].getName()));
+				surveyMap.put(item.getWidget(), surveys[i]);
+				surveyDragController.makeDraggable(item.getWidget());
+				ungroupedSurvey.addItem(item);
+			}
+		}
 	}
 
 	/**
@@ -328,9 +341,13 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		labelPanel.add(eventName);
 		labelPanel.add(new Label("Start: "));
 		effectiveStartDate = new DateBox();
+		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getShortDateFormat()));
 		labelPanel.add(effectiveStartDate);
 		labelPanel.add(new Label("End: "));
 		effectiveEndDate = new DateBox();
+		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getShortDateFormat()));
 		labelPanel.add(effectiveEndDate);
 		labelPanel.add(new Label("Language: "));
 		language = new ListBox();
@@ -484,7 +501,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			surveyDtos.add(sDto);
 		}
 		if (currentSelection > 0) {
-			dto.setKeyId(currentDtoList[currentSelection-1].getKeyId());
+			dto.setKeyId(currentDtoList[currentSelection - 1].getKeyId());
 		}
 		dto.setDevices(dtoList);
 		dto.setSurveys(surveyDtos);
@@ -527,7 +544,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	 */
 	private void populateInputPanelFromSelection() {
 		if (currentSelection > 0) {
-			reset();			
+			reset();
 			SurveyAssignmentDto currentDto = currentDtoList[currentSelection - 1];
 			if (currentDto != null) {
 				eventName.setText(currentDto.getName());
@@ -543,23 +560,75 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 					for (DeviceDto dev : currentDto.getDevices()) {
 						selectedDevices.addItem(dev.getPhoneNumber(), dev
 								.getKeyId().toString());
+						removeFromTree(dev.getKeyId(), deviceRoot, deviceMap);
 					}
 				}
 				if (currentDto.getSurveys() != null) {
 					for (SurveyDto s : currentDto.getSurveys()) {
 						selectedSurveys.addItem(s.getName(), s.getKeyId()
 								.toString());
+						removeFromTree(s.getKeyId(), surveyRoot, surveyMap);
 					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * removes the item that represents the object with a key == keyId from the
+	 * tree passed in. This will recurse through all levels of the tree until a
+	 * match is found or all nodes have been visited.
+	 * 
+	 * @param keyId
+	 * @param tree
+	 * @param dtoMap
+	 */
+	private void removeFromTree(Long keyId, Tree tree,
+			Map<Widget, BaseDto> dtoMap) {
+		if (keyId != null && tree != null) {
+			for (int i = 0; i < tree.getItemCount(); i++) {
+				if (removeTreeItem(keyId, tree.getItem(i), dtoMap)) {
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * checks an individual item to see if it matches the id of the key passed
+	 * in. If the item has children, this method will recurse to evaluate all
+	 * children.
+	 * 
+	 * @param keyId
+	 * @param treeItem
+	 * @param dtoMap
+	 * @return
+	 */
+	private boolean removeTreeItem(Long keyId, TreeItem treeItem,
+			Map<Widget, BaseDto> dtoMap) {
+
+		BaseDto dto = dtoMap.get(treeItem.getWidget());
+		if (dto != null && dto.getKeyId().equals(keyId)) {
+			treeItem.remove();
+			return true;
+		} else if (treeItem.getChildCount() > 0) {
+			for (int i = 0; i < treeItem.getChildCount(); i++) {
+				if (removeTreeItem(keyId, treeItem.getChild(i), dtoMap)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * handles all the button clicks for this portlet
+	 */
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == resetButton) {
 			reset();
-			currentSelection =-1;
+			currentSelection = -1;
 		} else if (event.getSource() == saveButton) {
 			saveAssignment();
 		} else if (event.getSource() == deleteButton) {
@@ -569,7 +638,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			inputPanel.setVisible(true);
 		} else if (event.getSource() == createButton) {
 			reset();
-			currentSelection =-1;
+			currentSelection = -1;
 			inputPanel.setVisible(true);
 		} else if (event.getSource() instanceof Grid) {
 			Grid grid = (Grid) event.getSource();
