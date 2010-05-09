@@ -118,6 +118,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 			results = new SurveyAssignmentDto[assignments.size()];
 			for (int i = 0; i < assignments.size(); i++) {
 				SurveyAssignmentDto dto = new SurveyAssignmentDto();
+				dto.setKeyId(assignments.get(i).getKey().getId());
 				dto.setName(assignments.get(i).getName());
 				dto.setStartDate(assignments.get(i).getStartDate());
 				dto.setEndDate(assignments.get(i).getEndDate());

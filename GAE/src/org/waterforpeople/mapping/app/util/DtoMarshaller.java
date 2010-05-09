@@ -15,8 +15,9 @@ public class DtoMarshaller {
 		try {
 			BeanUtils.copyProperties(canonical, dto);
 			if (dto.getKeyId() != null) {
+				// by default, the JDO key kind uses the Simple name
 				canonical.setKey(KeyFactory.createKey(canonical.getClass()
-						.getName(), dto.getKeyId()));
+						.getSimpleName(), dto.getKeyId()));
 			}
 
 		} catch (IllegalAccessException e) {
@@ -30,7 +31,7 @@ public class DtoMarshaller {
 
 	public static <T extends BaseDomain, U extends BaseDto> void copyToDto(
 			T canonical, U dto) {
-		try {			
+		try {
 			BeanUtils.copyProperties(dto, canonical);
 			if (canonical.getKey() != null) {
 				dto.setKeyId(canonical.getKey().getId());

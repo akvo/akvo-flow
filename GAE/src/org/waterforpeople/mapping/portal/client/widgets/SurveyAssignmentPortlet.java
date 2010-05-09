@@ -176,7 +176,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private void updateDataGrid() {
 		gridPanel.clear();
 		if (currentDtoList != null) {
-			Grid grid = new Grid(currentDtoList.length+1, 4);
+			Grid grid = new Grid(currentDtoList.length + 1, 4);
 			grid.addClickHandler(this);
 			// build headers
 			grid.setText(0, 0, "Event");
@@ -184,7 +184,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			grid.setText(0, 2, "Start");
 			grid.setText(0, 3, "End");
 			setGridRowStyle(grid, 0, false);
-			for (int i = 1; i < currentDtoList.length+1; i++) {
+			for (int i = 1; i < currentDtoList.length + 1; i++) {
 				grid
 						.setWidget(i, 0, new Label(currentDtoList[i - 1]
 								.getName()));
@@ -245,8 +245,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		selectedDevices.clear();
 		selectedSurveys.clear();
 		deviceRoot.clear();
-		surveyRoot.clear();
-		currentSelection = -1;
+		surveyRoot.clear();		
 
 		// this is inefficient but is ok for now. Can refactor to not fetch from
 		// server later.
@@ -484,6 +483,9 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			sDto.setKeyId(Long.parseLong(selectedSurveys.getValue(i)));
 			surveyDtos.add(sDto);
 		}
+		if (currentSelection > 0) {
+			dto.setKeyId(currentDtoList[currentSelection-1].getKeyId());
+		}
 		dto.setDevices(dtoList);
 		dto.setSurveys(surveyDtos);
 		dto.setEndDate(effectiveEndDate.getValue());
@@ -523,9 +525,9 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	 * uses the values of the currently selected dto (from the grid) to populate
 	 * the input panel widgets
 	 */
-	private void populateInputPanelFromSelection() {		
+	private void populateInputPanelFromSelection() {
 		if (currentSelection > 0) {
-			reset();
+			reset();			
 			SurveyAssignmentDto currentDto = currentDtoList[currentSelection - 1];
 			if (currentDto != null) {
 				eventName.setText(currentDto.getName());
@@ -557,6 +559,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == resetButton) {
 			reset();
+			currentSelection =-1;
 		} else if (event.getSource() == saveButton) {
 			saveAssignment();
 		} else if (event.getSource() == deleteButton) {
@@ -566,6 +569,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			inputPanel.setVisible(true);
 		} else if (event.getSource() == createButton) {
 			reset();
+			currentSelection =-1;
 			inputPanel.setVisible(true);
 		} else if (event.getSource() instanceof Grid) {
 			Grid grid = (Grid) event.getSource();
