@@ -22,6 +22,7 @@ import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
 public class SurveyDAO extends BaseDAO<Survey> {
@@ -183,4 +184,16 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	public List<SurveyQuestion> listQuestionByType(String questionType){
 		return listByProperty("type",questionType,"String",SurveyQuestion.class);
 	}
+	
+	public List<SurveyGroup> listSurveyGroup(String cursorString){
+		return super.list(SurveyGroup.class, cursorString);
+	}
+	
+	public List<Survey> getSurveyForSurveyGroup(String surveyGroupCode){
+		SurveyGroupAssocDao surveyGroupAssocDao  = new SurveyGroupAssocDao(SurveyGroupAssoc.class);
+		List<SurveyGroupAssoc> surveyGroupAssocList  = surveyGroupAssocDao.findSurveyGroupAssocByCode(surveyGroupCode);
+		PersistenceManager pm = PersistenceFilter.getManager();
+		return null;
+	}
+	
 }

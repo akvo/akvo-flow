@@ -3,8 +3,10 @@ package com.gallatinsystems.survey.app.web.client.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
 
-public class SurveyGroup implements Serializable{
+
+public class SurveyGroupDto extends BaseDto implements Serializable{
 	/**
 	 * 
 	 */
@@ -12,13 +14,7 @@ public class SurveyGroup implements Serializable{
 	/**
 	 * 
 	 */
-	private Long keyId;
-	public Long getKeyId() {
-		return keyId;
-	}
-	public void setKeyId(Long keyId) {
-		this.keyId = keyId;
-	}
+	
 	private String description;
 	private String code;
 	private Date createdDateTime;

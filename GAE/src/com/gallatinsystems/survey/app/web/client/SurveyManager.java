@@ -2,7 +2,7 @@ package com.gallatinsystems.survey.app.web.client;
 
 import java.util.List;
 
-import com.gallatinsystems.survey.app.web.client.dto.SurveyGroup;
+import com.gallatinsystems.survey.app.web.client.dto.SurveyGroupDto;
 import com.gallatinsystems.survey.app.web.service.SurveyGroupService;
 import com.gallatinsystems.survey.app.web.service.SurveyGroupServiceAsync;
 import com.google.gwt.core.client.EntryPoint;
@@ -51,11 +51,11 @@ public class SurveyManager implements EntryPoint {
 
 			public void onSuccess(Object result) {
 				if (actionType.equals("createSurveyGroup")) {
-					TreeItem outerRoot = new TreeItem(((SurveyGroup) result)
+					TreeItem outerRoot = new TreeItem(((SurveyGroupDto) result)
 							.getCode());
 					surveyTree.addItem(outerRoot);
 				} else if (actionType.equals("load")) {
-					loadSurveyTree((List<SurveyGroup>) result);
+					loadSurveyTree((List<SurveyGroupDto>) result);
 				}
 			}
 
@@ -98,8 +98,8 @@ public class SurveyManager implements EntryPoint {
 		RootPanel.get("survey").add(mainPanel);
 	}
 
-	private void loadSurveyTree(List<SurveyGroup> surveyGroupList) {
-		for (SurveyGroup sg : surveyGroupList) {
+	private void loadSurveyTree(List<SurveyGroupDto> surveyGroupList) {
+		for (SurveyGroupDto sg : surveyGroupList) {
 			surveyTree.addItem(sg.getCode());
 		}
 	}
@@ -125,7 +125,7 @@ public class SurveyManager implements EntryPoint {
 		actionType = "createSurveyGroup";
 		nameBox.setVisible(true);
 		saveButton.setVisible(true);
-		SurveyGroup sg = new SurveyGroup();
+		SurveyGroupDto sg = new SurveyGroupDto();
 		sg.setCode(nameBox.getText());
 		sg.setDescription(nameBox.getSelectedText());
 		svc.saveSurveyGroup(sg, callback);

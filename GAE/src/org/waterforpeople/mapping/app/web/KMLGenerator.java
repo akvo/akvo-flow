@@ -124,7 +124,9 @@ public class KMLGenerator {
 				for (AccessPoint item : waterAPList) {
 					log.info("waterAP Technology Type: "
 							+ item.getTypeTechnologyString());
-					if (item.getTypeTechnologyString().equals(
+					if(techType.getName().toLowerCase().equals("unimproved waterpoint")&& item.getTypeTechnologyString().toLowerCase().contains("unimproved waterpoint")){
+						techTypeAPList.add(item);
+					}else if (item.getTypeTechnologyString().equals(
 							techType.getName())) {
 						techTypeAPList.add(item);
 					}

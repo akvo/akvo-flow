@@ -196,6 +196,9 @@ public class BaseDAO<T extends BaseDomain> {
 		return listByProperty(propertyName, propertyValue, propertyType,
 				concreteClass);
 	}
+	
+	
+	
 
 	/**
 	 * convenience method to list all instances of the type passed in that match
@@ -229,7 +232,7 @@ public class BaseDAO<T extends BaseDomain> {
 
 		return results;
 	}
-
+	
 	/**
 	 * deletes an object from the db
 	 * 

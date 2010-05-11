@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -8,12 +9,15 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyActivityDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
+import com.gallatinsystems.survey.app.web.client.dto.SurveyGroupDto;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
@@ -50,6 +54,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return surveyDtos;
 	}
 
+	public List<SurveyGroupDto> listSurveyGroups(String cursorString) {
+		List<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
+		for (SurveyGroup canonical : surveyDao.listSurveyGroup(cursorString)) {
+			SurveyGroupDto dto = new SurveyGroupDto();
+			DtoMarshaller.copyToDto(canonical, dto);
+		}
+		return surveyGroupDtoList;
+	}
+
 	/**
 	 * Aggregates counts of survey activity between the dates specified based on
 	 * the rollUpType.
@@ -65,21 +78,23 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyActivityDto[] listSurveyActivityByDate(Date startDate,
 			Date endDate, String rollUpType) {
-		List items = surveyDao.countSurveyInstance(null,null,SurveyService.DATE_ROLL_UP);
+		List items = surveyDao.countSurveyInstance(null, null,
+				SurveyService.DATE_ROLL_UP);
 		return null;
 	}
-	
+
 	/**
-	* This method will return a list of all the questions that have a specific type code
-	*/
-	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode){
+	 * This method will return a list of all the questions that have a specific
+	 * type code
+	 */
+	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode) {
 
 		SurveyDAO dao = new SurveyDAO();
 		List<SurveyQuestion> qList = dao.listQuestionByType(typeCode);
 		SurveyQuestionDto[] dtoList = null;
-		if(qList != null){
+		if (qList != null) {
 			dtoList = new SurveyQuestionDto[qList.size()];
-			for(int i =0; i < qList.size(); i++){
+			for (int i = 0; i < qList.size(); i++) {
 				SurveyQuestionDto qDto = new SurveyQuestionDto();
 				qDto.setQuestionId(qList.get(i).getId());
 				qDto.setQuestionType(typeCode);
@@ -89,4 +104,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		return dtoList;
 	}
+
+	
+	public List<SurveyDto> getSurveyGroup(String surveyGroupCode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
 }
