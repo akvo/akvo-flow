@@ -10,7 +10,7 @@ import javax.jdo.annotations.Persistent;
 
 import com.beoui.geocell.model.LocationCapable;
 import com.beoui.geocell.model.Point;
-import com.gallatinsystems.common.util.DisplayName;
+import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.weightsmeasures.domain.Currency;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
@@ -21,25 +21,25 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private static final long serialVersionUID = -7708214468114860788L;
 	@Persistent
 	
-	@DisplayName(value="Collection Date")
+	@MappableField(displayName="Collection Date")
 	private Date collectionDate = null;
 	@Persistent
-	@DisplayName(value="Latitude")
+	@MappableField(displayName="Latitude")
 	private Double latitude = 0.0;
 	@Persistent
-	@DisplayName(value="Longitude")
+	@MappableField(displayName="Longitude")
 	private Double longitude = 0.0;
 	@Persistent
-	@DisplayName(value="Altitude")
+	@MappableField(displayName="Altitude")
 	private Double altitude = 0.0;
 	@Persistent
-	@DisplayName(value="Community Code")
+	@MappableField(displayName="Community Code")
 	private String communityCode = null;
-	@DisplayName(value="Community Name")
+	@MappableField(displayName="Community Name")
 	private String communityName = null;
-	@DisplayName(value="Institution Name")
+	@MappableField(displayName="Institution Name")
 	private String institutionName = null;
-	@DisplayName(value="Balloon Title")
+	@MappableField(displayName="Balloon Title")
 	private String balloonTitle = null;
 
 	public String getBalloonTitle() {

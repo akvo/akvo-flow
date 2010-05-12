@@ -22,10 +22,10 @@ public class ClassAttributeUtil {
 							&& !item.getName().equals("serialVersionUID")
 							&& !item.getName().equals("geoCells")) {
 						String displayName = null;
-						if (((DisplayName) item
-								.getAnnotation(DisplayName.class)) != null)
-							displayName = ((DisplayName) item
-									.getAnnotation(DisplayName.class)).value();
+						if (((MappableField) item
+								.getAnnotation(MappableField.class)) != null)
+							displayName = ((MappableField) item
+									.getAnnotation(MappableField.class)).displayName();
 						attributesList.put(item.getName(), displayName);
 					}
 

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(value=RetentionPolicy.RUNTIME)
 
-public @interface DisplayName {
+public @interface MappableField {
 
-	String value();
+	String displayName();
 }
