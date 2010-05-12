@@ -360,7 +360,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	}
 
 	public void setTechnologyTypeOther(String technologyTypeOther) {
-		technologyTypeOther = technologyTypeOther;
+		this.technologyTypeOther = technologyTypeOther;
 	}
 
 	public String getTechnologyTypeOther() {
