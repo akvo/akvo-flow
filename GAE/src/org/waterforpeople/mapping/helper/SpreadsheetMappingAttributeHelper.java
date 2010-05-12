@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
 import org.waterforpeople.mapping.dao.MappingSpreadsheetDefintionDAO;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
 
+import com.gallatinsystems.common.util.ClassAttributeUtil;
 import com.google.appengine.repackaged.org.joda.time.chrono.AssembledChronology.Fields;
 import com.google.gdata.util.ServiceException;
 
@@ -51,24 +52,8 @@ public class SpreadsheetMappingAttributeHelper {
 	}
 
 	public static ArrayList<String> listObjectAttributes() {
-		ArrayList<String> attributesList = new ArrayList<String>();
-		Class cls;
-		try {
-			cls = Class
-					.forName("org.waterforpeople.mapping.domain.AccessPoint");
-
-			for (Field item : cls.getDeclaredFields()) {
-				if (!item.getName().contains("jdo")
-						&& !item.getName().equals("serialVersionUID")&&!item.getName().equals("geoCells"))
-					attributesList.add(item.getName());
-			}
-			Collections.sort(attributesList);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return attributesList;
+		return ClassAttributeUtil
+				.listObjectAttributes("org.waterforpeople.mapping.domain.AccessPoint");
 	}
 
 	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName)
