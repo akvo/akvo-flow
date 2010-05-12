@@ -2,18 +2,17 @@ package com.gallatinsystems.common.util;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
 public class ClassAttributeUtil {
-	private static HashMap<String, Map<String, String>> classAttributeMap = new HashMap<String, Map<String, String>>();
+	private static HashMap<String, TreeMap<String, String>> classAttributeMap = new HashMap<String, TreeMap<String, String>>();
 
-	public static HashMap<String, String> listObjectAttributes(String className) {
-		Map<String,String> attributesList = classAttributeMap
+	public static TreeMap<String, String> listObjectAttributes(String className) {
+		TreeMap<String,String> attributesList = classAttributeMap
 				.get(className);
 		if (attributesList == null) {
-			attributesList = new HashMap<String, String>();
+			attributesList = new TreeMap<String, String>();
 			Class cls;
 			try {
 				cls = Class.forName(className);
@@ -32,14 +31,14 @@ public class ClassAttributeUtil {
 
 				}
 				
-				Map<String,String> sortedMap = new TreeMap<String,String>(attributesList);
-				classAttributeMap.put(className, sortedMap);
+				
+				classAttributeMap.put(className, attributesList);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return (HashMap)attributesList;
+		return attributesList;
 	}
 
 	public static void main(String[] args) {

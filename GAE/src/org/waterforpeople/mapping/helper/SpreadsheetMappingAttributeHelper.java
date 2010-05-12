@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -50,7 +50,7 @@ public class SpreadsheetMappingAttributeHelper {
 	}
 
 	public static ArrayList<String> listObjectAttributes() {
-		HashMap<String, String> attributes = ClassAttributeUtil
+		TreeMap<String, String> attributes = ClassAttributeUtil
 				.listObjectAttributes("org.waterforpeople.mapping.domain.AccessPoint");
 		ArrayList<String> attributesList = new ArrayList<String>();
 		for (Entry<String, String> item : attributes.entrySet())
