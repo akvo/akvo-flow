@@ -1,12 +1,11 @@
 package org.waterforpeople.mapping.helper;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
@@ -14,7 +13,6 @@ import org.waterforpeople.mapping.dao.MappingSpreadsheetDefintionDAO;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
 
 import com.gallatinsystems.common.util.ClassAttributeUtil;
-import com.google.appengine.repackaged.org.joda.time.chrono.AssembledChronology.Fields;
 import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetMappingAttributeHelper {
@@ -52,8 +50,12 @@ public class SpreadsheetMappingAttributeHelper {
 	}
 
 	public static ArrayList<String> listObjectAttributes() {
-		return ClassAttributeUtil
+		HashMap<String, String> attributes = ClassAttributeUtil
 				.listObjectAttributes("org.waterforpeople.mapping.domain.AccessPoint");
+		ArrayList<String> attributesList = new ArrayList<String>();
+		for (Entry<String, String> item : attributes.entrySet())
+			attributesList.add(item.getKey());
+		return attributesList;
 	}
 
 	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName)

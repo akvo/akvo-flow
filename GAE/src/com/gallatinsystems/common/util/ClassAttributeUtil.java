@@ -1,17 +1,19 @@
 package com.gallatinsystems.common.util;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 public class ClassAttributeUtil {
-	private static HashMap<String, ArrayList<String>> classAttributeMap = new HashMap<String, ArrayList<String>>();
+	private static HashMap<String, Map<String, String>> classAttributeMap = new HashMap<String, Map<String, String>>();
 
-	public static ArrayList<String> listObjectAttributes(String className) {
-		ArrayList<String> attributesList = classAttributeMap.get(className);
+	public static HashMap<String, String> listObjectAttributes(String className) {
+		Map<String,String> attributesList = classAttributeMap
+				.get(className);
 		if (attributesList == null) {
-			attributesList = new ArrayList<String>();
+			attributesList = new HashMap<String, String>();
 			Class cls;
 			try {
 				cls = Class.forName(className);
@@ -19,17 +21,32 @@ public class ClassAttributeUtil {
 				for (Field item : cls.getDeclaredFields()) {
 					if (!item.getName().contains("jdo")
 							&& !item.getName().equals("serialVersionUID")
-							&& !item.getName().equals("geoCells"))
-						attributesList.add(item.getName());
+							&& !item.getName().equals("geoCells")) {
+						String displayName = null;
+						if (((DisplayName) item
+								.getAnnotation(DisplayName.class)) != null)
+							displayName = ((DisplayName) item
+									.getAnnotation(DisplayName.class)).value();
+						attributesList.put(item.getName(), displayName);
+					}
+
 				}
-				Collections.sort(attributesList);
-				classAttributeMap.put(className, attributesList);
+				
+				Map<String,String> sortedMap = new TreeMap<String,String>(attributesList);
+				classAttributeMap.put(className, sortedMap);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return attributesList;
+		return (HashMap)attributesList;
+	}
+
+	public static void main(String[] args) {
+
+		for (Entry<String,String> item : listObjectAttributes("org.waterforpeople.mapping.domain.AccessPoint").entrySet()) {
+			System.out.println(item.getKey() + " " + item.getValue());
+		}
 	}
 
 }
