@@ -139,7 +139,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@Persistent
 	private TechnologyType typeTechnology = null;
 	@Persistent
-	private String TechnologyTypeOther = null;
+	private String technologyTypeOther = null;
 	private String typeTechnologyString = null;
 	@Persistent
 	// ToDo need to implement correct business rule
@@ -360,11 +360,11 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	}
 
 	public void setTechnologyTypeOther(String technologyTypeOther) {
-		TechnologyTypeOther = technologyTypeOther;
+		technologyTypeOther = technologyTypeOther;
 	}
 
 	public String getTechnologyTypeOther() {
-		return TechnologyTypeOther;
+		return technologyTypeOther;
 	}
 
 	public void setCostPerUnitOfMeasure(UnitOfMeasure costPerUnitOfMeasure) {
