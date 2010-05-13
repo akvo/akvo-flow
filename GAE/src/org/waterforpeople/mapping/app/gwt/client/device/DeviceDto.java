@@ -2,7 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.device;
 
 import java.util.Date;
 
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class DeviceDto extends BaseDto {
 

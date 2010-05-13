@@ -23,30 +23,36 @@ public class SurveyGroupServiceImpl extends RemoteServiceServlet implements
 
 	public List<SurveyGroupDto> listSurveyGroup(String groupName) {
 		SurveyGroupHelper sgh = new SurveyGroupHelper();
-		List<com.gallatinsystems.survey.domain.SurveyGroup> sgList = sgh.listSurveyGroups("desc");
-		List<SurveyGroupDto> surveyGroupDTOList=new ArrayList<SurveyGroupDto>();
-		for(com.gallatinsystems.survey.domain.SurveyGroup surveyGroup:sgList){
-			SurveyGroupDto item = new SurveyGroupDto();
-			item.setCode(surveyGroup.getCode());
-			item.setDescription(surveyGroup.getDescription());
-			item.setKeyId(surveyGroup.getKey().getId());
-			item.setCreatedDateTime(surveyGroup.getCreatedDateTime());
-			item.setLastUpdateDateTime(surveyGroup.getLastUpdateDateTime());
+		List<com.gallatinsystems.survey.domain.SurveyGroup> sgList = sgh
+				.listSurveyGroups("desc");
+		List<SurveyGroupDto> surveyGroupDTOList = new ArrayList<SurveyGroupDto>();
+		if (sgList != null) {
+			for (com.gallatinsystems.survey.domain.SurveyGroup surveyGroup : sgList) {
+				SurveyGroupDto item = new SurveyGroupDto();
+				item.setCode(surveyGroup.getCode());
+				item.setDescription(surveyGroup.getDescription());
+				item.setKeyId(surveyGroup.getKey().getId());
+				item.setCreatedDateTime(surveyGroup.getCreatedDateTime());
+				item.setLastUpdateDateTime(surveyGroup.getLastUpdateDateTime());
+			}
 		}
 		return surveyGroupDTOList;
 	}
 
 	public List<SurveyGroupDto> listSurveyGroups(String orderBy) {
 		SurveyGroupHelper sgh = new SurveyGroupHelper();
-		List<com.gallatinsystems.survey.domain.SurveyGroup> sgList = sgh.listSurveyGroups("desc");
-		List<SurveyGroupDto> surveyGroupDTOList=new ArrayList<SurveyGroupDto>();
-		for(com.gallatinsystems.survey.domain.SurveyGroup surveyGroup:sgList){
-			SurveyGroupDto item = new SurveyGroupDto();
-			item.setCode(surveyGroup.getCode());
-			item.setDescription(surveyGroup.getDescription());
-			item.setKeyId(surveyGroup.getKey().getId());
-			item.setCreatedDateTime(surveyGroup.getCreatedDateTime());
-			item.setLastUpdateDateTime(surveyGroup.getLastUpdateDateTime());
+		List<com.gallatinsystems.survey.domain.SurveyGroup> sgList = sgh
+				.listSurveyGroups("desc");
+		List<SurveyGroupDto> surveyGroupDTOList = new ArrayList<SurveyGroupDto>();
+		if (sgList != null) {
+			for (com.gallatinsystems.survey.domain.SurveyGroup surveyGroup : sgList) {
+				SurveyGroupDto item = new SurveyGroupDto();
+				item.setCode(surveyGroup.getCode());
+				item.setDescription(surveyGroup.getDescription());
+				item.setKeyId(surveyGroup.getKey().getId());
+				item.setCreatedDateTime(surveyGroup.getCreatedDateTime());
+				item.setLastUpdateDateTime(surveyGroup.getLastUpdateDateTime());
+			}
 		}
 		return surveyGroupDTOList;
 	}
@@ -56,7 +62,7 @@ public class SurveyGroupServiceImpl extends RemoteServiceServlet implements
 		com.gallatinsystems.survey.domain.SurveyGroup sg = new com.gallatinsystems.survey.domain.SurveyGroup();
 		sg.setCode(surveyGroup.getCode());
 		sg.setDescription(surveyGroup.getDescription());
-		sg =sgh.saveSurveyGroup(sg);
+		sg = sgh.saveSurveyGroup(sg);
 		surveyGroup.setKeyId(sg.getKey().getId());
 		return surveyGroup;
 	}

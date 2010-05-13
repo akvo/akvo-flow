@@ -3,9 +3,9 @@ package org.waterforpeople.mapping.app.util;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class DtoMarshaller {

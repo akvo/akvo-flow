@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.gwt.client.framework;
+package com.gallatinsystems.framework.gwt.dto.client;
 
 import java.io.Serializable;
 

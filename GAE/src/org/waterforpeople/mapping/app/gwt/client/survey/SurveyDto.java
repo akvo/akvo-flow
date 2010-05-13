@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class SurveyDto extends BaseDto {
 	private static final long serialVersionUID = 6593732844403807030L;

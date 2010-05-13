@@ -3,7 +3,7 @@ package com.gallatinsystems.survey.app.web.client.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 
 public class SurveyGroupDto extends BaseDto implements Serializable{

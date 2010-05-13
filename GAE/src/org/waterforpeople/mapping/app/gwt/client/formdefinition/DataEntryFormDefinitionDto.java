@@ -3,7 +3,7 @@ package org.waterforpeople.mapping.app.gwt.client.formdefinition;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class DataEntryFormDefinitionDto extends BaseDto implements Serializable {
 

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
  * dto to transfer survey/device assignments

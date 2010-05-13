@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
  * transfer object to map survey questions to object fields

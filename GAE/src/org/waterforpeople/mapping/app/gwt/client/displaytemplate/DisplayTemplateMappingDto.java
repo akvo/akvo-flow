@@ -2,7 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.displaytemplate;
 
 import java.io.Serializable;
 
-import org.waterforpeople.mapping.app.gwt.client.framework.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class DisplayTemplateMappingDto extends BaseDto implements Serializable {
 
