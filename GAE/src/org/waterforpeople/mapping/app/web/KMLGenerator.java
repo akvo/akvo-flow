@@ -72,34 +72,35 @@ public class KMLGenerator {
 			HashMap<String, ArrayList<String>> mwOutputMap = generateCountrySpecificPlacemarks(
 					"PlacemarkTabsMW.vm", "MW");
 			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm");
-			String folderContents = generateFolderContents( mwOutputMap, "Folders.vm");
-			context.put("folderContents", otherCountryOutput
-					+folderContents);
+			String folderContents = generateFolderContents(mwOutputMap,
+					"Folders.vm");
+			context.put("folderContents", otherCountryOutput + folderContents);
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
 			document = mergeContext(context, "Document.vm");
 			kmlDAO.saveKML(document);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			log.log(Level.SEVERE, "Could create kml", ex);
 		}
 		return document;
 	}
 
-	private String generateFolderContents(HashMap<String, ArrayList<String>> contents, String vmName)
+	private String generateFolderContents(
+			HashMap<String, ArrayList<String>> contents, String vmName)
 			throws Exception {
 		VelocityContext context = new VelocityContext();
 		StringBuilder techFolders = new StringBuilder();
-		
-		for(Entry<String,ArrayList<String>>techItem:contents.entrySet()){
+
+		for (Entry<String, ArrayList<String>> techItem : contents.entrySet()) {
 			String key = techItem.getKey();
 			StringBuilder sbFolderPl = new StringBuilder();
-			for(String placemark:techItem.getValue()){
+			for (String placemark : techItem.getValue()) {
 				sbFolderPl.append(placemark);
 			}
 			context.put("techFolderName", key);
 			context.put("techPlacemarks", sbFolderPl);
-			techFolders.append(mergeContext(context,"techFolders.vm"));
+			techFolders.append(mergeContext(context, "techFolders.vm"));
 		}
 		context.put("techFolders", techFolders.toString());
 		return mergeContext(context, vmName);
@@ -109,7 +110,6 @@ public class KMLGenerator {
 	public HashMap<String, ArrayList<String>> generateCountrySpecificPlacemarks(
 			String vmName, String countryCode) {
 		if (countryCode.equals("MW")) {
-			HashMap<String, HashMap<String, HashMap<String, AccessPoint>>> layoutMap = new HashMap<String, HashMap<String, HashMap<String, AccessPoint>>>();
 			HashMap<String, ArrayList<AccessPoint>> techMap = new HashMap<String, ArrayList<AccessPoint>>();
 			BaseDAO<TechnologyType> techDAO = new BaseDAO<TechnologyType>(
 					TechnologyType.class);
@@ -119,14 +119,17 @@ public class KMLGenerator {
 			List<AccessPoint> waterAPList = apDao.searchAccessPoints(
 					countryCode, null, null, null, "WATER_POINT", null, "all");
 			for (TechnologyType techType : techTypeList) {
-				//log.info("TechnologyType: " + techType.getName());
+				// log.info("TechnologyType: " + techType.getName());
 				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
 				for (AccessPoint item : waterAPList) {
 					log.info("waterAP Technology Type: "
 							+ item.getTypeTechnologyString());
-					if(techType.getName().toLowerCase().equals("unimproved waterpoint")&& item.getTypeTechnologyString().toLowerCase().contains("unimproved waterpoint")){
+					if (techType.getName().toLowerCase().equals(
+							"unimproved waterpoint")
+							&& item.getTypeTechnologyString().toLowerCase()
+									.contains("unimproved waterpoint")) {
 						techTypeAPList.add(item);
-					}else if (item.getTypeTechnologyString().equals(
+					} else if (item.getTypeTechnologyString().equals(
 							techType.getName())) {
 						techTypeAPList.add(item);
 					}
@@ -143,8 +146,6 @@ public class KMLGenerator {
 			}
 			sanitationAPList = null;
 			HashMap<String, ArrayList<String>> techPlacemarksMap = new HashMap<String, ArrayList<String>>();
-			StringBuilder placemarksSB = new StringBuilder();
-			int iCount = 0;
 			for (Entry<String, ArrayList<AccessPoint>> item : techMap
 					.entrySet()) {
 				String key = item.getKey();
@@ -268,7 +269,7 @@ public class KMLGenerator {
 					.getPointType(), waterAP.getPointStatus()));
 			return contextBindingsMap;
 		} catch (NullPointerException nex) {
-			nex.printStackTrace();
+			log.log(Level.SEVERE, "Could not load context bindings", nex);
 		}
 		return null;
 	}
@@ -287,8 +288,7 @@ public class KMLGenerator {
 		try {
 			output = mergeContext(context, vmName);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not build main placemark", e);
 		}
 		sb.append(output);
 
@@ -304,7 +304,7 @@ public class KMLGenerator {
 			}
 		} catch (Exception ex) {
 			// log.info("value that generated nex: " + value);
-			ex.printStackTrace();
+			log.log(Level.SEVERE, "Could not encode null default", ex);
 		}
 		return null;
 	}
@@ -507,8 +507,10 @@ public class KMLGenerator {
 						sb.append(output);
 					}
 				} catch (Exception ex) {
-					ex.printStackTrace();
-					// log.info(ex.getMessage());
+					log.log(Level.SEVERE,
+							"Could not generate placemark for accesspoint id: "
+									+ ap.getKey().getId() + " communityCode: "
+									+ ap.getCommunityCode(), ex);
 				}
 
 			}
