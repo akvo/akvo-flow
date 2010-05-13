@@ -124,6 +124,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>SpreadsheetProcessor</servlet-name>
 		<url-pattern>/webapp/spreadsheetprocessor</url-pattern>
+	</servlet-mapping>	
+	<servlet>
+		<servlet-name>SurveyAttributeMappingServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyAttributeMappingServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SurveyAttributeMappingServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyattrmaprpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyRpcServlet</servlet-name>
