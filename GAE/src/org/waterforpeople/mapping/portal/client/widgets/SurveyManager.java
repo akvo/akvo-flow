@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
@@ -60,7 +60,7 @@ public class SurveyManager extends Portlet {
 
 	private void loadTree() {
 		surveyTree = new Tree();
-		svc.listSurveyGroups("all", new AsyncCallback<List<SurveyGroupDto>>() {
+		svc.listSurveyGroups("all", new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -69,7 +69,7 @@ public class SurveyManager extends Portlet {
 			}
 
 			@Override
-			public void onSuccess(List<SurveyGroupDto> result) {
+			public void onSuccess(ArrayList<SurveyGroupDto> result) {
 				TreeItem outerRoot = new TreeItem();
 				outerRoot.setText("Survey Groups");
 				surveyTree.addItem(outerRoot);
@@ -82,7 +82,7 @@ public class SurveyManager extends Portlet {
 					public void onOpen(OpenEvent<TreeItem> event) {
 						TreeItem selectedItem = new TreeItem();
 						String surveyGroupCode = selectedItem.getText();
-						svc.getSurveyGroup(surveyGroupCode, new AsyncCallback<List<SurveyDto>>(){
+						svc.getSurveyGroup(surveyGroupCode, new AsyncCallback<ArrayList<SurveyDto>>(){
 
 							@Override
 							public void onFailure(Throwable caught) {
@@ -91,7 +91,7 @@ public class SurveyManager extends Portlet {
 							}
 
 							@Override
-							public void onSuccess(List<SurveyDto> result) {
+							public void onSuccess(ArrayList<SurveyDto> result) {
 								TreeItem selectedItem = surveyTree.getSelectedItem();
 
 							}
