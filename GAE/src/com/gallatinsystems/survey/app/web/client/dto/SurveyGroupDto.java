@@ -11,9 +11,7 @@ public class SurveyGroupDto extends BaseDto implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -2235565143615667202L;
-	/**
-	 * 
-	 */
+	
 	
 	private String description;
 	private String code;

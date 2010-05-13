@@ -23,10 +23,12 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
+import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
@@ -466,6 +468,21 @@ public class TestHarnessServlet extends HttpServlet {
 			s = new Survey();
 			s.setName("test 2");
 			surveyDao.save(s);
+		} else if ("saveAPMapping".equals(action)) {
+			SurveyAttributeMapping mapping = new SurveyAttributeMapping();
+			mapping.setAttributeName("status");
+			mapping.setObjectName(AccessPoint.class.getCanonicalName());
+			mapping.setSurveyId(1L);
+			mapping.setSurveyQuestionId("q1");
+			SurveyAttributeMappingDao samDao = new SurveyAttributeMappingDao();
+			samDao.save(mapping);
+		} else if ("listAPMapping".equals(action)) {
+			SurveyAttributeMappingDao samDao = new SurveyAttributeMappingDao();
+			List<SurveyAttributeMapping> mappings = samDao
+					.listMappingsBySurvey(1L);
+			if (mappings != null) {
+				System.out.println(mappings.size());
+			}
 		}
 
 	}
