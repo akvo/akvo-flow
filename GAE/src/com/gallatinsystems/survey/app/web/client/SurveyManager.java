@@ -95,7 +95,7 @@ public class SurveyManager implements EntryPoint {
 		vPanel.add(hPanel);
 		vPanel.add(addPanel);
 		mainPanel.add(vPanel);
-		RootPanel.get("survey").add(mainPanel);
+		//RootPanel.get("survey").add(mainPanel);
 	}
 
 	private void loadSurveyTree(List<SurveyGroupDto> surveyGroupList) {
