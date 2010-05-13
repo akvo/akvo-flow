@@ -119,7 +119,7 @@ public class KMLGenerator {
 			List<AccessPoint> waterAPList = apDao.searchAccessPoints(
 					countryCode, null, null, null, "WATER_POINT", null, "all");
 			for (TechnologyType techType : techTypeList) {
-				log.info("TechnologyType: " + techType.getName());
+				//log.info("TechnologyType: " + techType.getName());
 				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
 				for (AccessPoint item : waterAPList) {
 					log.info("waterAP Technology Type: "
