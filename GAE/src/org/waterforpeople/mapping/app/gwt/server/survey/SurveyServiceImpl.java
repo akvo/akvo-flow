@@ -54,8 +54,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return surveyDtos;
 	}
 
-	public List<SurveyGroupDto> listSurveyGroups(String cursorString) {
-		List<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
+	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString) {
+		ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
 		for (SurveyGroup canonical : surveyDao.listSurveyGroup(cursorString)) {
 			SurveyGroupDto dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(canonical, dto);
@@ -106,7 +106,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	}
 
 	
-	public List<SurveyDto> getSurveyGroup(String surveyGroupCode) {
+	public ArrayList<SurveyDto> getSurveyGroup(String surveyGroupCode) {
 		// TODO Auto-generated method stub
 		return null;
 	}
