@@ -10,13 +10,13 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingDt
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
-import com.gallatinsystems.survey.app.web.client.dto.SurveyGroupDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
