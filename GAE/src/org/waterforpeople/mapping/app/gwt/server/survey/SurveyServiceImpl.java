@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyActivityDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -14,7 +15,6 @@ import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
-import com.gallatinsystems.survey.app.web.client.dto.SurveyGroupDto;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;

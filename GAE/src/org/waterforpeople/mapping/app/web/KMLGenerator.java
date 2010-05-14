@@ -122,8 +122,7 @@ public class KMLGenerator {
 				// log.info("TechnologyType: " + techType.getName());
 				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
 				for (AccessPoint item : waterAPList) {
-					log.info("waterAP Technology Type: "
-							+ item.getTypeTechnologyString());
+					
 					if (techType.getName().toLowerCase().equals(
 							"unimproved waterpoint")
 							&& item.getTypeTechnologyString().toLowerCase()
@@ -150,7 +149,6 @@ public class KMLGenerator {
 					.entrySet()) {
 				String key = item.getKey();
 				ArrayList<String> placemarks = new ArrayList<String>();
-				log.info("Techtype: " + key);
 				for (AccessPoint waterAP : item.getValue()) {
 
 					AccessPoint sanitationAP = sanitationMap.get(waterAP
@@ -507,10 +505,10 @@ public class KMLGenerator {
 						sb.append(output);
 					}
 				} catch (Exception ex) {
-					log.log(Level.SEVERE,
+					log.info(
 							"Could not generate placemark for accesspoint id: "
 									+ ap.getKey().getId() + " communityCode: "
-									+ ap.getCommunityCode(), ex);
+									+ ap.getCommunityCode() +  ex.getCause()+ex.getMessage());
 				}
 
 			}

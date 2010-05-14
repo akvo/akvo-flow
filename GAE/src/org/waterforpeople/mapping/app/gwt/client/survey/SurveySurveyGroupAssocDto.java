@@ -1,7 +1,9 @@
-package com.gallatinsystems.survey.app.web.client.dto;
+package org.waterforpeople.mapping.app.gwt.client.survey;
+
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 
-public class SurveySurveyGroupAssoc {
+public class SurveySurveyGroupAssocDto extends BaseDto{
 
 	/**
 	 * 

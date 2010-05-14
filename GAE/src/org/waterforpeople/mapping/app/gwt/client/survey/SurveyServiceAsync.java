@@ -3,7 +3,6 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.gallatinsystems.survey.app.web.client.dto.SurveyGroupDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyServiceAsync {

@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.app.web.client.dto;
+package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.io.Serializable;
 import java.util.Date;

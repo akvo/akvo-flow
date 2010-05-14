@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import java.util.ArrayList;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class SurveyDto extends BaseDto {
@@ -7,6 +9,22 @@ public class SurveyDto extends BaseDto {
 	private String name;
 	private String version;
 	private String description;
+	private ArrayList<QuestionGroupDto> questionGroupList;
+
+	public void addQuestionGroup(QuestionGroupDto questionGroup) {
+		if (questionGroupList == null) {
+			questionGroupList = new ArrayList<QuestionGroupDto>();
+		}
+		questionGroupList.add(questionGroup);
+	}
+
+	public ArrayList<QuestionGroupDto> getQuestionGroupList() {
+		return questionGroupList;
+	}
+
+	public void setQuestionGroupList(ArrayList<QuestionGroupDto> questionGroupList) {
+		this.questionGroupList = questionGroupList;
+	}
 
 	public String getName() {
 		return name;

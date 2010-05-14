@@ -2,7 +2,8 @@ package com.gallatinsystems.survey.app.web.service;
 
 import java.util.List;
 
-import com.gallatinsystems.survey.app.web.client.dto.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyGroupServiceAsync {
