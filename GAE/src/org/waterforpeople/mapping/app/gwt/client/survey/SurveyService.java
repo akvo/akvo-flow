@@ -25,4 +25,5 @@ public interface SurveyService extends RemoteService {
 	 * lists all surveys for a group
 	 */
 	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupCode);
+	public SurveyGroupDto save(SurveyGroupDto value);
 }

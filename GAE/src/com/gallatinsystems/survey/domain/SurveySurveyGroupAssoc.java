@@ -9,15 +9,15 @@ public class SurveySurveyGroupAssoc extends BaseAssocDomain {
 
 	
 	private static final long serialVersionUID = -3225985948073456482L;
-	private Long surveyContainerId;
+	private Long surveyId;
 	private Long surveyGroupId;
 
-	public Long getSurveyContainerId() {
-		return surveyContainerId;
+	public Long getSurveyId() {
+		return surveyId;
 	}
 
-	public void setSurveyContainerId(Long surveyContainerId) {
-		this.surveyContainerId = surveyContainerId;
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
 	}
 
 	public Long getSurveyGroupId() {

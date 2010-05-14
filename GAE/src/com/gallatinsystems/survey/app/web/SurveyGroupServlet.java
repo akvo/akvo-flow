@@ -29,13 +29,14 @@ public class SurveyGroupServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		String outString = new String();
-		BaseDAO<SurveyGroup> surveyGroupDAO = new BaseDAO<SurveyGroup>(SurveyGroup.class);
+		BaseDAO<SurveyGroup> surveyGroupDAO = new BaseDAO<SurveyGroup>(
+				SurveyGroup.class);
 		if (action != null && action.equals("addSurveyGroup")) {
 			String code = req.getParameter("code");
 			String description = req.getParameter("description");
 			SurveyGroup surveyGroup = new SurveyGroup();
 			surveyGroup.setCode(code);
-			surveyGroup.setDescription(description);		
+			surveyGroup.setDescription(description);
 			surveyGroupDAO.save(surveyGroup);
 			outString = surveyGroup.toString();
 		} else if (action != null && action.equals("associateSurveyGroup")) {
@@ -43,17 +44,16 @@ public class SurveyGroupServlet extends HttpServlet {
 			String surveyGroupToCode = req.getParameter("surveyGroupTo");
 			SurveyGroupAssoc surveyGroupAssoc = new SurveyGroupAssoc();
 			surveyGroupAssoc.setSurveyGroupFromCode(surveyGroupFromCode);
-			surveyGroupAssoc.setSurveyGroupToCode(surveyGroupToCode);		
+			surveyGroupAssoc.setSurveyGroupToCode(surveyGroupToCode);
 			surveyGroupDAO.save(surveyGroupAssoc);
 			outString = surveyGroupAssoc.toString();
 		} else if (action != null
 				&& action.equals("associateSurveyToSurveyGroup")) {
-					
-			Long surveyContainerId = new Long(req
-					.getParameter("surveyContainerId"));
+
+			Long surveyId = new Long(req.getParameter("surveyId"));
 			Long surveyGroupId = new Long(req.getParameter("surveyGroupId"));
 			SurveySurveyGroupAssoc ssga = new SurveySurveyGroupAssoc();
-			ssga.setSurveyContainerId(surveyContainerId);
+			ssga.setSurveyId(surveyId);
 			ssga.setSurveyGroupId(surveyGroupId);
 			surveyGroupDAO.save(ssga);
 			outString = ssga.toString();
@@ -62,7 +62,9 @@ public class SurveyGroupServlet extends HttpServlet {
 		try {
 			resp.getWriter().print(outString);
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"could not perform survey group operation",e);
+			log
+					.log(Level.SEVERE,
+							"could not perform survey group operation", e);
 		}
 	}
 

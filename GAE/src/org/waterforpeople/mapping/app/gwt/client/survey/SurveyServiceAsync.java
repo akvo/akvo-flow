@@ -24,4 +24,6 @@ public interface SurveyServiceAsync {
 	void listSurveysByGroup(String surveyGroupCode,
 			AsyncCallback<ArrayList<SurveyDto>> callback);
 
+	void save(SurveyGroupDto value, AsyncCallback<SurveyGroupDto> callback);
+
 }

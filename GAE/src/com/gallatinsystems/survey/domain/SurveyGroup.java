@@ -1,8 +1,10 @@
 package com.gallatinsystems.survey.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Unique;
 
@@ -17,6 +19,8 @@ public class SurveyGroup extends BaseDomain {
 	private String code;
 	private Date createdDateTime;
 	private Date lastUpdateDateTime;
+	@NotPersistent 
+	private ArrayList<Survey> surveyList = null;
 	public Key getKey() {
 		return key;
 	}
@@ -47,6 +51,15 @@ public class SurveyGroup extends BaseDomain {
 	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
 		this.lastUpdateDateTime = lastUpdateDateTime;
 	}
-
-	
+	public void setSurveyList(ArrayList<Survey> surveyList) {
+		this.surveyList = surveyList;
+	}
+	public ArrayList<Survey> getSurveyList() {
+		return surveyList;
+	}
+	public void addSurvey(Survey item){
+		if(surveyList==null)
+			surveyList = new ArrayList<Survey>();
+		surveyList.add(item);
+	}
 }

@@ -133,4 +133,16 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return surveyDtos;
 	}
 
+	@Override
+	public SurveyGroupDto save(SurveyGroupDto value) {
+		SurveyDAO dao  = new SurveyDAO();
+		SurveyGroup surveyGroup = new SurveyGroup();
+		DtoMarshaller.copyToCanonical(surveyGroup, value);
+		
+		DtoMarshaller.copyToDto(dao.save(surveyGroup), value);
+		return value;
+	}
+	
+	
+
 }
