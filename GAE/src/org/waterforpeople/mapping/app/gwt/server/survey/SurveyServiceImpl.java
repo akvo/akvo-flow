@@ -105,12 +105,32 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return dtoList;
 	}
 
-	
 	public ArrayList<SurveyDto> getSurveyGroup(String surveyGroupCode) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	
+	/**
+	 * lists all surveys for a group
+	 */
+	@Override
+	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupCode) {
+		SurveyDAO dao = new SurveyDAO();
+		List<Survey> surveys = dao.getSurveyForSurveyGroup(surveyGroupCode);
+		ArrayList<SurveyDto> surveyDtos = null;
+		if (surveys != null) {
+			surveyDtos = new ArrayList<SurveyDto>();
+			for (Survey s : surveys) {
+				SurveyDto dto = new SurveyDto();
+
+				dto.setName(s.getName());
+				dto.setVersion(s.getVersion() != null ? s.getVersion()
+						.toString() : "");
+				dto.setKeyId(s.getKey().getId());
+				surveyDtos.add(dto);
+			}
+		}
+		return surveyDtos;
+	}
 
 }

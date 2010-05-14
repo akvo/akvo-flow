@@ -22,4 +22,7 @@ public interface SurveyServiceAsync {
 	void getSurveyGroup(String surveyGroupCode,
 			AsyncCallback<ArrayList<SurveyDto>> callback);
 
+	void listSurveysByGroup(String surveyGroupCode,
+			AsyncCallback<ArrayList<SurveyDto>> callback);
+
 }
