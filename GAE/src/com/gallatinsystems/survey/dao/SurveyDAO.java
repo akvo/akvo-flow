@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
@@ -129,7 +130,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
 		Question question = new Question();
 		question.setText("Question2");
-		question.setType(Question.QuestionType.OPTION);
+		question.setType(QuestionDto.QuestionType.OPTION);
 		question.addOption(questionOption);
 		question.addOption(questionOption2);
 		question.addQuestionHelp(questionHelp);

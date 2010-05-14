@@ -3,19 +3,26 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyActivityDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -135,14 +142,52 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SurveyGroupDto save(SurveyGroupDto value) {
-		SurveyDAO dao  = new SurveyDAO();
+		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyGroup surveyGroup = new SurveyGroup();
 		DtoMarshaller.copyToCanonical(surveyGroup, value);
-		
-		DtoMarshaller.copyToDto(dao.save(surveyGroup), value);
+		for(SurveyDto item : value.getSurveyList()){
+			Survey survey = new Survey();
+			DtoMarshaller.copyToCanonical(survey, item);
+			for(QuestionGroupDto qgDto:item.getQuestionGroupList()){
+				QuestionGroup qg = new QuestionGroup();
+				DtoMarshaller.copyToCanonical(qg,qgDto);
+				for(Entry<Integer,QuestionDto> qDto:qgDto.getQuestionMap().entrySet()){
+					Question q = new Question();
+					DtoMarshaller.copyToCanonical(q, qDto.getValue());
+					qg.addQuestion(q, qDto.getKey());
+				}
+			}
+			surveyGroup.addSurvey(survey);
+		}
+
+		DtoMarshaller.copyToDto(sgDao.save(surveyGroup), value);
 		return value;
 	}
-	
-	
+
+	public void test() {
+		for (int t = 0; t < 10; t++) {
+			SurveyGroupDto sgd = new SurveyGroupDto();
+			sgd.setCode("Survey Group :" + t);
+			sgd.setDescription("Test Survey Group: " + t);
+			for (int i = 0; i < 5; i++) {
+				SurveyDto surveyDto = new SurveyDto();
+				surveyDto.setDescription("test : " + i);
+				for (int q = 0; q < 10; q++) {
+					QuestionGroupDto qgd = new QuestionGroupDto();
+					for (int j = 0; j < 10; j++) {
+						QuestionDto qd = new QuestionDto();
+						qd.setText("Question Test: " + j);
+						qd.setType(QuestionType.FREE_TEXT);
+						qgd.addQuestion(qd, j);
+					}
+					surveyDto.addQuestionGroup(qgd);
+				}
+				surveyDto.setVersion("Version: " + i);
+
+				sgd.addSurvey(surveyDto);
+			}
+			this.save(sgd);
+		}
+	}
 
 }

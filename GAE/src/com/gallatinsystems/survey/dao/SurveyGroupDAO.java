@@ -12,6 +12,9 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 	private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
 			.getName());
 
+	public SurveyGroupDAO(){
+		super(SurveyGroup.class);
+	}
 	public SurveyGroupDAO(Class<SurveyGroup> e) {
 		super(e);
 		// TODO Auto-generated constructor stub

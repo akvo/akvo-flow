@@ -5,6 +5,9 @@ import java.util.ArrayList;
 
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
@@ -14,7 +17,7 @@ public class Question extends BaseDomain {
 
 	private String text;
 	
-	private QuestionType type;
+	private QuestionDto.QuestionType type;
 	private ArrayList<QuestionOption> optionsList;
 	private ArrayList<QuestionHelp> questionHelpList;
 	
@@ -64,9 +67,7 @@ public class Question extends BaseDomain {
 		this.questionHelpList = questionHelpList;
 	}
 
-	public enum QuestionType {
-		FREE_TEXT, OPTION, NUMBER
-	}
+	
 	
 	@Override
 	public String toString() {
