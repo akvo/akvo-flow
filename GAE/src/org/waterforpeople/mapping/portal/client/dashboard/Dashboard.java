@@ -19,6 +19,7 @@ import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
 
@@ -143,6 +144,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.addItem("Display Template Content Manager", new Command() {
 			public void execute() {
 				launchFullscreen(DisplayContentManager.NAME);
+
+			}
+		});
+		mgrMenu.addItem("Survey Question Atrribute Mapper", new Command() {
+			public void execute() {
+				launchFullscreen(SurveyAttributeMappingPortlet.NAME);
 
 			}
 		});
