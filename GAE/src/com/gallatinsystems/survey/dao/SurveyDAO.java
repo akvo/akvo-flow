@@ -37,6 +37,10 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return super.save(surveyGroup);
 	}
 
+	public Survey getById(Long id) {
+		return super.getByKey(id);
+	}
+
 	public Long save(String surveyDefinition) {
 		SurveyContainer sc = new SurveyContainer();
 		com.google.appengine.api.datastore.Text surveyText = new com.google.appengine.api.datastore.Text(
@@ -50,8 +54,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		// Question quest = super.getByKey(300L);
 		StringBuilder sb = new StringBuilder();
 
-		List<QuestionQuestionGroupAssoc> qqgaList = super
-				.list(QuestionQuestionGroupAssoc.class, "all");
+		List<QuestionQuestionGroupAssoc> qqgaList = super.list(
+				QuestionQuestionGroupAssoc.class, "all");
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
 			sb.append(qqga.toString());
 			if (qqga.getQuestion() != null) {
@@ -68,8 +72,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	public List countSurveyInstance(Date startDate, Date endDate,
 			String rollUpType) {
 
-		//TODO: find another way to do this since GAE doesn't support groupBy
-		PersistenceManager pm =PersistenceFilter.getManager();
+		// TODO: find another way to do this since GAE doesn't support groupBy
+		PersistenceManager pm = PersistenceFilter.getManager();
 		List results = null;
 		StringBuilder params = new StringBuilder();
 		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
@@ -175,25 +179,28 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	public List<SurveyContainer> listSurveyContainers() {
-		return super.list(SurveyContainer.class,"all");
+		return super.list(SurveyContainer.class, "all");
 	}
-	
+
 	/**
-	* lists all questions of a given type (across all surveys)
-	*/
-	public List<SurveyQuestion> listQuestionByType(String questionType){
-		return listByProperty("type",questionType,"String",SurveyQuestion.class);
+	 * lists all questions of a given type (across all surveys)
+	 */
+	public List<SurveyQuestion> listQuestionByType(String questionType) {
+		return listByProperty("type", questionType, "String",
+				SurveyQuestion.class);
 	}
-	
-	public List<SurveyGroup> listSurveyGroup(String cursorString){
+
+	public List<SurveyGroup> listSurveyGroup(String cursorString) {
 		return super.list(SurveyGroup.class, cursorString);
 	}
-	
-	public List<Survey> getSurveyForSurveyGroup(String surveyGroupCode){
-		SurveyGroupAssocDao surveyGroupAssocDao  = new SurveyGroupAssocDao(SurveyGroupAssoc.class);
-		List<SurveyGroupAssoc> surveyGroupAssocList  = surveyGroupAssocDao.findSurveyGroupAssocByCode(surveyGroupCode);
+
+	public List<Survey> getSurveyForSurveyGroup(String surveyGroupCode) {
+		SurveyGroupAssocDao surveyGroupAssocDao = new SurveyGroupAssocDao(
+				SurveyGroupAssoc.class);
+		List<SurveyGroupAssoc> surveyGroupAssocList = surveyGroupAssocDao
+				.findSurveyGroupAssocByCode(surveyGroupCode);
 		PersistenceManager pm = PersistenceFilter.getManager();
 		return null;
 	}
-	
+
 }

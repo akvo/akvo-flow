@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -33,6 +34,19 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		}
 
 		return item;
+	}
+
+	public SurveyGroup getByKey(Long id) {
+		SurveyGroup sg = super.getByKey(id);
+		SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
+		List<SurveySurveyGroupAssoc> list = ssgaDao.findBySurveyGroupId(id);
+		SurveyDAO surveyDao = new SurveyDAO();
+
+		for (SurveySurveyGroupAssoc item : list) {
+			sg.addSurvey(surveyDao.getById(item.getSurveyId()));
+		}
+
+		return sg;
 	}
 
 }

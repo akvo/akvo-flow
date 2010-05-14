@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
 public class SurveyGroupHelper {
 	private static final Logger log = Logger.getLogger(SurveyGroupHelper.class
