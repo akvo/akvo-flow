@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingServiceAsync;
@@ -45,17 +43,18 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		ChangeHandler, ClickHandler {
 	public static final String NAME = "Survey Attribute Mapping Portlet";
 	public static final String DESCRIPTION = "Maps survey questions to Access Point attributes";
+	private static final String MAP_TARGET_OBJECT_NAME = "org.waterforpeople.mapping.domain.AccessPoint";
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
-	private static final int HEIGHT = 1600;
+	private static final int HEIGHT = 800;
 	private static final int WIDTH = 800;
 
 	private ListBox surveyGroup;
 	private ListBox surveyListbox;
 
-	private ArrayList<ListBox> attributeListboxes;
+	private HashMap<QuestionDto, ListBox> attributeListboxes;
 
 	private TreeMap<String, String> attributes;
 
@@ -71,7 +70,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private DockPanel inputPanel;
 	private VerticalPanel gridPanel;
 	private ArrayList<SurveyDto> currentDtoList;
-	private int currentSelection = -1;
+	private SurveyDto currentSelection = null;
 
 	private HashMap<String, ArrayList<SurveyDto>> surveys;
 
@@ -113,8 +112,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	}
 
 	private void loadAttributes() {
-		mappingService.listObjectAttributes(
-				"org.waterforpeople.mapping.domain.AccessPoint",
+		mappingService.listObjectAttributes(MAP_TARGET_OBJECT_NAME,
 				new AsyncCallback<TreeMap<String, String>>() {
 
 					@Override
@@ -144,11 +142,11 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 								"Application Error",
 								"Cannot load survey groups");
 						errDia.showRelativeTo(saveButton);
-
 					}
 
 					@Override
 					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+						surveyGroup.addItem("", "");
 						if (result != null) {
 							for (SurveyGroupDto dto : result) {
 								surveyGroup.addItem(dto.getCode(), dto
@@ -163,7 +161,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		gridPanel.clear();
 		if (survey != null) {
 
-			attributeListboxes = new ArrayList<ListBox>();
+			attributeListboxes = new HashMap<QuestionDto, ListBox>();
 			ArrayList<QuestionDto> allQuestions = new ArrayList<QuestionDto>();
 			for (QuestionGroupDto qGroup : survey.getQuestionGroupList()) {
 				allQuestions.addAll(qGroup.getQuestionMap().values());
@@ -176,7 +174,6 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 			grid.setText(0, 2, "Attribute");
 			setGridRowStyle(grid, 0, false);
 			if (survey.getQuestionGroupList() != null) {
-
 				int count = 1;
 				for (QuestionGroupDto qGroup : survey.getQuestionGroupList()) {
 					if (qGroup.getQuestionMap() != null) {
@@ -185,13 +182,17 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 									new Label(qGroup.getCode()));
 							grid.setWidget(count, 1, new Label(q.getText()));
 							ListBox attrListbox = new ListBox();
+							attrListbox.addItem("", "");
 							for (Entry<String, String> entry : attributes
 									.entrySet()) {
-								attrListbox.addItem(entry.getValue(), entry
-										.getKey());
+								String text = entry.getValue();
+								if (text == null || text.trim().length() == 0) {
+									text = entry.getKey();
+								}
+								attrListbox.addItem(text, entry.getKey());
 							}
 							grid.setWidget(count, 2, attrListbox);
-							attributeListboxes.add(attrListbox);
+							attributeListboxes.put(q, attrListbox);
 							setGridRowStyle(grid, count, false);
 							count++;
 						}
@@ -238,41 +239,48 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		surveyGroup.setSelectedIndex(0);
 		surveyListbox.setSelectedIndex(0);
 		surveyListbox.clear();
+		gridPanel.clear();
+		currentSelection = null;
 
 	}
 
 	private void getSurveys() {
-		final String selectedGroupId = surveyGroup.getValue(surveyGroup
-				.getSelectedIndex());
+		if (surveyGroup.getSelectedIndex() > 0) {
+			final String selectedGroupId = surveyGroup.getValue(surveyGroup
+					.getSelectedIndex());
 
-		if (selectedGroupId != null) {
-			if (surveys.get(selectedGroupId) != null) {
-				populateSurveyList(surveys.get(selectedGroupId));
-			} else {
-				// Set up the callback object.
-				AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
-					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Cannot list surveys",
-								"The application encountered an error: "
-										+ caught.getLocalizedMessage());
-						errDia.showRelativeTo(saveButton);
-					}
-
-					public void onSuccess(ArrayList<SurveyDto> result) {
-						if (result != null) {
-							surveys.put(selectedGroupId, result);
-							populateSurveyList(result);
+			if (selectedGroupId != null) {
+				if (surveys.get(selectedGroupId) != null) {
+					populateSurveyList(surveys.get(selectedGroupId));
+				} else {
+					// Set up the callback object.
+					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
+						public void onFailure(Throwable caught) {
+							MessageDialog errDia = new MessageDialog(
+									"Cannot list surveys",
+									"The application encountered an error: "
+											+ caught.getLocalizedMessage());
+							errDia.showRelativeTo(saveButton);
 						}
-					}
-				};
-				surveyService.listSurveysByGroup(selectedGroupId,
-						surveyCallback);
+
+						public void onSuccess(ArrayList<SurveyDto> result) {
+							if (result != null) {
+								surveys.put(selectedGroupId, result);
+								populateSurveyList(result);
+							}
+						}
+					};
+					surveyService.listSurveysByGroup(selectedGroupId,
+							surveyCallback);
+				}
+			} else {
+				MessageDialog errDia = new MessageDialog(
+						"Please select a group",
+						"You must select a survey group first");
+				errDia.showRelativeTo(saveButton);
 			}
 		} else {
-			MessageDialog errDia = new MessageDialog("Please select a group",
-					"You must select a survey group first");
-			errDia.showRelativeTo(saveButton);
+			surveyListbox.clear();
 		}
 	}
 
@@ -293,6 +301,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 			public void onSuccess(SurveyDto result) {
 				if (result != null) {
+					currentSelection = result;
 					updateDataGrid(result);
 				}
 			}
@@ -303,6 +312,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private void populateSurveyList(ArrayList<SurveyDto> surveyItems) {
 		currentDtoList = surveyItems;
 		if (surveyItems != null) {
+			surveyListbox.addItem("", "");
 			for (SurveyDto survey : surveyItems) {
 				surveyListbox.addItem(survey.getName() != null ? survey
 						.getName() : "Survey " + survey.getKeyId().toString(),
@@ -346,17 +356,32 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	 * persists it to the server
 	 */
 	private void saveMapping() {
-		SurveyAssignmentDto dto = new SurveyAssignmentDto();
-		ArrayList<DeviceDto> dtoList = new ArrayList<DeviceDto>();
 
-		if (currentSelection > 0) {
-			// dto.setKeyId(currentDtoList[currentSelection - 1].getKeyId());
-		}
-
-		ArrayList<String> errors = dto.getErrorMessages();
-		if (errors.size() == 0) {
-			// TODO: actually pass data
-			mappingService.saveMappings(null,
+		if (currentSelection != null) {
+			ArrayList<SurveyAttributeMappingDto> mappingDtoList = new ArrayList<SurveyAttributeMappingDto>();
+			for (QuestionGroupDto qGroup : currentSelection
+					.getQuestionGroupList()) {
+				if (qGroup.getQuestionMap() != null) {
+					for (QuestionDto q : qGroup.getQuestionMap().values()) {
+						ListBox attrBox = attributeListboxes.get(q);
+						if (attrBox != null) {
+							String val = attrBox.getValue(attrBox
+									.getSelectedIndex());
+							if (val != null && val.trim().length() > 0) {
+								SurveyAttributeMappingDto dto = new SurveyAttributeMappingDto();
+								dto.setSurveyKeyId(currentSelection.getKeyId());
+								dto.setObjectName(MAP_TARGET_OBJECT_NAME);
+								dto.setAttributeName(val);
+								dto
+										.setSurveyQuestionId(q.getKeyId()
+												.toString());
+								mappingDtoList.add(dto);
+							}
+						}
+					}
+				}
+			}
+			mappingService.saveMappings(mappingDtoList,
 					new AsyncCallback<ArrayList<SurveyAttributeMappingDto>>() {
 
 						@Override
@@ -373,27 +398,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 							statusLabel.setVisible(true);
 						}
 					});
-		} else {
-			StringBuilder builder = new StringBuilder("Invalid input:\n");
-			for (String msg : errors) {
-				builder.append(msg).append("<br>");
-			}
-			MessageDialog errDia = new MessageDialog("Cannot save assignment",
-					builder.toString());
-			errDia.showRelativeTo(saveButton);
 		}
-	}
-
-	/**
-	 * uses the values of the currently selected dto (from the grid) to populate
-	 * the input panel widgets
-	 */
-	private void populateInputPanelFromSelection() {
-		if (currentSelection > 0) {
-			reset();
-
-		}
-
 	}
 
 	/**
@@ -403,7 +408,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == resetButton) {
 			reset();
-			currentSelection = -1;
+			currentSelection = null;
 		} else if (event.getSource() == saveButton) {
 			saveMapping();
 		}
@@ -430,8 +435,12 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		if (event.getSource() == surveyGroup) {
 			getSurveys();
 		} else if (event.getSource() == surveyListbox) {
-			loadFullSurvey(currentDtoList.get(surveyListbox.getSelectedIndex())
-					.getKeyId());
+			loadFullSurvey(currentDtoList.get(
+					surveyListbox.getSelectedIndex() - 1).getKeyId());
+		} else if (event.getSource() == saveButton) {
+			saveMapping();
+		} else if (event.getSource() == resetButton) {
+			reset();
 		}
 	}
 }
