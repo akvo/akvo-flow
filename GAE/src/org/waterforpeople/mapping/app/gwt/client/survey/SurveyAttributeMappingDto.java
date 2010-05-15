@@ -12,17 +12,17 @@ public class SurveyAttributeMappingDto extends BaseDto {
 
 	private static final long serialVersionUID = -1318176575596948441L;
 
-	private Long surveyKeyId;
+	private Long surveyId;
 	private String surveyQuestionId;
 	private String objectName;
 	private String attributeName;
 
-	public Long getSurveyKeyId() {
-		return surveyKeyId;
+	public Long getSurveyId() {
+		return surveyId;
 	}
 
-	public void setSurveyKeyId(Long surveyKeyId) {
-		this.surveyKeyId = surveyKeyId;
+	public void setSurveyId(Long surveyKeyId) {
+		this.surveyId = surveyKeyId;
 	}
 
 	public String getSurveyQuestionId() {

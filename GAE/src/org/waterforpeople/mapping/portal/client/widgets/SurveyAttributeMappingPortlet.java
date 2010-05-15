@@ -242,6 +242,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		surveyListbox.clear();
 		gridPanel.clear();
 		currentSelection = null;
+		statusLabel.setVisible(false);
 
 	}
 
@@ -292,8 +293,11 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	 * @return
 	 */
 	private void loadFullSurvey(final Long id) {
+		statusLabel.setText("Loading survey. Please wait...");
+		statusLabel.setVisible(true);
 		AsyncCallback<SurveyDto> surveyCallback = new AsyncCallback<SurveyDto>() {
 			public void onFailure(Throwable caught) {
+				statusLabel.setVisible(false);
 				MessageDialog errDia = new MessageDialog("Cannot load survey",
 						"The application encountered an error: "
 								+ caught.getLocalizedMessage());
@@ -301,6 +305,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 			}
 
 			public void onSuccess(SurveyDto result) {
+				statusLabel.setVisible(false);
 				if (result != null) {
 					currentSelection = result;
 					loadExistingMappings(id);
@@ -329,7 +334,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 						if (result != null) {
 							for (SurveyAttributeMappingDto dto : result) {
 								ListBox box = attributeListboxes.get(dto
-										.getSurveyKeyId()
+										.getSurveyId()
 										+ ":" + dto.getSurveyQuestionId());
 								if (box != null) {
 									for (int i = 0; i < box.getItemCount(); i++) {
@@ -410,7 +415,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 									.getSelectedIndex());
 							if (val != null && val.trim().length() > 0) {
 								SurveyAttributeMappingDto dto = new SurveyAttributeMappingDto();
-								dto.setSurveyKeyId(currentSelection.getKeyId());
+								dto.setSurveyId(currentSelection.getKeyId());
 								dto.setObjectName(MAP_TARGET_OBJECT_NAME);
 								dto.setAttributeName(val);
 								dto
