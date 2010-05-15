@@ -302,7 +302,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public void setPointStatus(AccessPoint.Status pointStatus) {
 		this.pointStatus = pointStatus;
-	}
+	}	
 
 	public String getPointPhotoCaption() {
 		return pointPhotoCaption;

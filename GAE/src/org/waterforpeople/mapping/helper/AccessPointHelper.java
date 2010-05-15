@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.helper;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +11,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.dao.AccessPointDao;
+import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
@@ -26,8 +29,17 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class AccessPointHelper {
 
+	private static final String VALUE_TYPE = "VALUE";
+	private static final String GEO_TYPE = "GEO";
+	private static final String PHOTO_TYPE = "IMAGE";
+	private SurveyAttributeMappingDao mappingDao;
+
 	private static Logger logger = Logger.getLogger(AccessPointHelper.class
 			.getName());
+
+	public AccessPointHelper() {
+		mappingDao = new SurveyAttributeMappingDao();
+	}
 
 	public AccessPoint getAccessPoint(Long id) {
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
@@ -60,25 +72,128 @@ public class AccessPointHelper {
 
 		AccessPoint ap;
 
-		ap = parseAccessPoint(questionAnswerList,
+		ap = parseAccessPoint(new Long(surveyId), questionAnswerList,
 				AccessPoint.AccessPointType.WATER_POINT);
 		saveAccessPoint(ap);
 
 	}
 
-	private AccessPoint parseAccessPoint(
+	private AccessPoint parseAccessPoint(Long surveyId,
 			ArrayList<QuestionAnswerStore> questionAnswerList,
 			AccessPoint.AccessPointType accessPointType) {
 		AccessPoint ap = null;
-		if (accessPointType == AccessPointType.WATER_POINT) {
-			ap = parseWaterPoint(questionAnswerList);
-		} else if (accessPointType == AccessPointType.SANITATION_POINT) {
+		List<SurveyAttributeMapping> mappings = mappingDao
+				.listMappingsBySurvey(surveyId);
+		if (mappings == null) {
+			if (accessPointType == AccessPointType.WATER_POINT) {
+				ap = hardCodedparseWaterPoint(questionAnswerList);
+			} else if (accessPointType == AccessPointType.SANITATION_POINT) {
 
+			}
+		} else {
+			ap = parseAccessPoint(surveyId, questionAnswerList, mappings);
 		}
 		return ap;
 	}
 
-	private AccessPoint parseWaterPoint(
+	/**
+	 * uses the saved mappings for the survey definition to parse values in the
+	 * questionAnswerStore into attributes of an AccessPoint object
+	 * 
+	 * TODO: figure out way around known limitation of only having 1 GEO
+	 * response per survey
+	 * 
+	 * @param questionAnswerList
+	 * @param mappings
+	 * @return
+	 */
+	private AccessPoint parseAccessPoint(Long surveyId,
+			ArrayList<QuestionAnswerStore> questionAnswerList,
+			List<SurveyAttributeMapping> mappings) {
+		AccessPoint ap = new AccessPoint();
+		if (questionAnswerList != null) {
+			Properties props = System.getProperties();
+			String photo_url_root = props.getProperty("photo_url_root");
+			for (QuestionAnswerStore qas : questionAnswerList) {
+				String field = getFieldForQuestion(mappings, qas
+						.getQuestionID());
+				if (field != null) {
+					try {
+						if (GEO_TYPE.equalsIgnoreCase(qas.getType())) {
+							GeoCoordinates geoC = new GeoCoordinates()
+									.extractGeoCoordinate(qas.getValue());
+							ap.setLatitude(geoC.getLatitude());
+							ap.setLongitude(geoC.getLongitude());
+							ap.setAltitude(geoC.getAltitude());
+						} else {
+							// if it's a value or OTHER type
+							Field f = ap.getClass().getField(field);
+							if (!f.isAccessible()) {
+								f.setAccessible(true);
+							}
+							if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())) {
+								String[] photoParts = qas.getValue().split("/");
+								String newURL = photo_url_root + photoParts[2];
+								f.set(ap, newURL);
+							} else {
+								if (f.getType() == String.class) {
+									f.set(ap, qas.getValue());
+								} else if (f.getType() == AccessPoint.Status.class) {
+									String val = qas.getValue();
+									if ("High".equalsIgnoreCase(val)) {
+										f
+												.set(
+														ap,
+														AccessPoint.Status.FUNCTIONING_HIGH);
+									} else if ("Ok".equalsIgnoreCase(val)) {
+										f
+												.set(
+														ap,
+														AccessPoint.Status.FUNCTIONING_OK);
+									} else {
+										f
+												.set(
+														ap,
+														AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+									}
+								}
+							}
+						}
+					} catch (NoSuchFieldException e) {
+						logger
+								.log(
+										Level.SEVERE,
+										"Could not map field to access point: "
+												+ field
+												+ ". Check the surveyAttribueMapping for surveyId "
+												+ surveyId);
+					} catch (IllegalAccessException e) {
+						logger.log(Level.SEVERE,
+								"Could not set field to access point: " + field
+										+ ". Illegal access.");
+					}
+				}
+			}
+			ap.setCollectionDate(new Date());
+		}
+		return ap;
+	}
+
+	private String getFieldForQuestion(List<SurveyAttributeMapping> mappings,
+			String questionId) {
+		return null;
+	}
+
+	/**
+	 * parses values from the questionAnswerStore into an AccessPoint based on
+	 * hard-coded survey question ids. this should really only be used for
+	 * testing using the default, pre-installed mapping survey resident on the
+	 * device.
+	 * 
+	 * @param questionAnswerList
+	 * @return
+	 */
+	private AccessPoint hardCodedparseWaterPoint(
 			ArrayList<QuestionAnswerStore> questionAnswerList) {
 		AccessPoint ap = new AccessPoint();
 		Properties props = System.getProperties();

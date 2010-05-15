@@ -41,6 +41,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = -2607990749512391457L;
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
+	private AccessPointHelper aph;
+	
+	public TaskServlet(){
+		aph = new AccessPointHelper();
+	}
 
 	private ArrayList<String> processFile(String fileName) {
 		ArrayList<String> surveyIds = new ArrayList<String>();
@@ -175,7 +180,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private void addAccessPoint(TaskRequest req) {
 		Long surveyId = req.getSurveyId();
 		log.info("Received Task Queue calls for surveyId: " + surveyId);
-		AccessPointHelper aph = new AccessPointHelper();
+		
 		aph.processSurveyInstance(surveyId.toString());
 	}
 
@@ -202,8 +207,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 					options.param("key", (String) it.next());
 				}
 				// queue.add(options);
-				log.info("Received Task Queue calls for surveyKey: " + key);
-				AccessPointHelper aph = new AccessPointHelper();
+				log.info("Received Task Queue calls for surveyKey: " + key);				
 				aph.processSurveyInstance(key);				
 				summQueue.add(url("/app_worker/datasummarization").param(
 						"objectKey", key).param("type",

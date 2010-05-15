@@ -32,7 +32,12 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	private static final Logger log = Logger
 			.getLogger(AccessPointManagerService.class.getName());
 
+	private AccessPointHelper aph;
 	private static final long serialVersionUID = 2710084399371519003L;
+
+	public AccessPointManagerServiceImpl() {
+		aph = new AccessPointHelper();
+	}
 
 	/**
 	 * lists all access points that match the search criteria passed in
@@ -65,9 +70,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	public List<AccessPointDto> listAllAccessPoints(String cursorString) {
 		List<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 
-		AccessPointHelper ah = new AccessPointHelper();
-
-		for (AccessPoint apItem : ah.listAccessPoint(cursorString)) {
+		for (AccessPoint apItem : aph.listAccessPoint(cursorString)) {
 			AccessPointDto apDto = AccessPointServiceSupport
 					.copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
@@ -84,7 +87,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public AccessPointDto getAccessPoint(Long id) {
-		AccessPointHelper aph = new AccessPointHelper();
+
 		AccessPoint canonicalItem = aph.getAccessPoint(id);
 		AccessPointDto apDto = AccessPointServiceSupport
 				.copyCanonicalToDto(canonicalItem);
@@ -93,7 +96,6 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public AccessPointDto saveAccessPoint(AccessPointDto accessPointDto) {
-		AccessPointHelper aph = new AccessPointHelper();
 		return AccessPointServiceSupport.copyCanonicalToDto(aph
 				.saveAccessPoint(AccessPointServiceSupport
 						.copyDtoToCanonical(accessPointDto)));
@@ -135,7 +137,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		ByteArrayOutputStream out = null;
 		URL url;
 		try {
-			url = new URL(imageURL+"?random=" + rand.nextInt());
+			url = new URL(imageURL + "?random=" + rand.nextInt());
 			in = url.openStream();
 			out = new ByteArrayOutputStream();
 			byte[] buffer = new byte[2048];

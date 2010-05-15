@@ -32,19 +32,20 @@ public class SpreadsheetAccessPointAdapter {
 
 	private PrivateKey privateKey = null;
 	private String sessionToken = null;
+	private AccessPointHelper apHelper;
 
 	public SpreadsheetAccessPointAdapter(String sessionToken,
 			PrivateKey privateKey) {
 		this.privateKey = privateKey;
 		this.sessionToken = sessionToken;
+		 apHelper = new AccessPointHelper();
 	}
 
 	public void processSpreadsheetOfAccessPoints(String spreadsheetName)
 			throws IOException, ServiceException {
 		loadTechnologyTypes();
 		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
-				sessionToken, privateKey);
-		AccessPointHelper apHelper = new AccessPointHelper();
+				sessionToken, privateKey);		
 		try {
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
