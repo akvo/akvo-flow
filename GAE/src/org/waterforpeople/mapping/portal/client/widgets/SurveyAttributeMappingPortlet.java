@@ -161,38 +161,34 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 	private void updateDataGrid(SurveyDto survey) {
 		gridPanel.clear();
-		if (survey != null) {		
+		if (survey != null) {
 			ArrayList<SurveyQuestionDto> allQuestions = new ArrayList<SurveyQuestionDto>();
-			for(QuestionGroupDto qGroup :survey.getQuestionGroupList()){
-				
-				//allQuestions.addAll(qGroup.get)
+			for (QuestionGroupDto qGroup : survey.getQuestionGroupList()) {
+
+				// allQuestions.addAll(qGroup.get)
 			}
 			survey.getQuestionGroupList();
-		/*	Grid grid = new Grid(currentDtoList.length + 1, 3);
-			grid.addClickHandler(this);
-			// build headers
-			grid.setText(0, 0, "Question Group");
-			grid.setText(0, 1, "Question Text");
-			grid.setText(0, 2, "Attribute");
-			setGridRowStyle(grid, 0, false);
-			for (int i = 1; i < currentDtoList.length + 1; i++) {
-				grid
-						.setWidget(i, 0, new Label(currentDtoList[i - 1]
-								.getName()));
-
-				grid.setWidget(i, 1, new Label(currentDtoList[i - 1]
-						.getLanguage()));*/
-				/*
-				 * grid .setWidget( i, 2, currentDtoList[i - 1].getStartDate()
-				 * != null ? new Label( DATE_FMT.format(currentDtoList[i - 1]
-				 * .getStartDate())) : new Label("")); grid.setWidget(i, 3,
-				 * currentDtoList[i - 1].getEndDate() != null ? new Label(
-				 * DATE_FMT.format(currentDtoList[i - 1] .getEndDate())) : new
-				 * Label(""));
-				 
-				setGridRowStyle(grid, i, false);
-			}
-			gridPanel.add(grid);*/
+			/*
+			 * Grid grid = new Grid(currentDtoList.length + 1, 3);
+			 * grid.addClickHandler(this); // build headers grid.setText(0, 0,
+			 * "Question Group"); grid.setText(0, 1, "Question Text");
+			 * grid.setText(0, 2, "Attribute"); setGridRowStyle(grid, 0, false);
+			 * for (int i = 1; i < currentDtoList.length + 1; i++) { grid
+			 * .setWidget(i, 0, new Label(currentDtoList[i - 1] .getName()));
+			 * 
+			 * grid.setWidget(i, 1, new Label(currentDtoList[i - 1]
+			 * .getLanguage()));
+			 */
+			/*
+			 * grid .setWidget( i, 2, currentDtoList[i - 1].getStartDate() !=
+			 * null ? new Label( DATE_FMT.format(currentDtoList[i - 1]
+			 * .getStartDate())) : new Label("")); grid.setWidget(i, 3,
+			 * currentDtoList[i - 1].getEndDate() != null ? new Label(
+			 * DATE_FMT.format(currentDtoList[i - 1] .getEndDate())) : new
+			 * Label(""));
+			 * 
+			 * setGridRowStyle(grid, i, false); } gridPanel.add(grid);
+			 */
 		} else {
 			gridPanel.add(new Label("No Assignments"));
 		}
@@ -261,7 +257,8 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 						}
 					}
 				};
-				surveyService.listSurveysByGroup(selectedGroupId, surveyCallback);
+				surveyService.listSurveysByGroup(selectedGroupId,
+						surveyCallback);
 			}
 		} else {
 			MessageDialog errDia = new MessageDialog("Please select a group",
@@ -274,8 +271,9 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		currentDtoList = surveyItems;
 		if (surveyItems != null) {
 			for (SurveyDto survey : surveyItems) {
-				surveyListbox.addItem(survey.getName(), survey.getKeyId()
-						.toString());
+				surveyListbox.addItem(survey.getName() != null ? survey
+						.getName() : "Survey " + survey.getKeyId().toString(),
+						survey.getKeyId().toString());
 			}
 		}
 	}
@@ -318,7 +316,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		ArrayList<DeviceDto> dtoList = new ArrayList<DeviceDto>();
 
 		if (currentSelection > 0) {
-		//	dto.setKeyId(currentDtoList[currentSelection - 1].getKeyId());
+			// dto.setKeyId(currentDtoList[currentSelection - 1].getKeyId());
 		}
 
 		ArrayList<String> errors = dto.getErrorMessages();
@@ -398,7 +396,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		if (event.getSource() == surveyGroup) {
 			getSurveys();
 		} else if (event.getSource() == surveyListbox) {
-			
+
 			updateDataGrid(currentDtoList.get(surveyListbox.getSelectedIndex()));
 		}
 

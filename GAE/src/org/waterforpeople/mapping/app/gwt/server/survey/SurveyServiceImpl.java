@@ -67,6 +67,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		for (SurveyGroup canonical : surveyDao.listSurveyGroup(cursorString)) {
 			SurveyGroupDto dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(canonical, dto);
+			surveyGroupDtoList.add(dto);
 		}
 		return surveyGroupDtoList;
 	}
