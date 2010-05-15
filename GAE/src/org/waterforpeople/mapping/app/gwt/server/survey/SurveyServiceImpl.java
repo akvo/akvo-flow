@@ -174,6 +174,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				surveyDto.setDescription("test : " + i);
 				for (int q = 0; q < 10; q++) {
 					QuestionGroupDto qgd = new QuestionGroupDto();
+					qgd.setCode("Question Group: " + q);
+					qgd.setDescription("Question Group Desc: " + q);
 					for (int j = 0; j < 10; j++) {
 						QuestionDto qd = new QuestionDto();
 						qd.setText("Question Test: " + j);
@@ -183,7 +185,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					surveyDto.addQuestionGroup(qgd);
 				}
 				surveyDto.setVersion("Version: " + i);
-
 				sgd.addSurvey(surveyDto);
 			}
 			this.save(sgd);
