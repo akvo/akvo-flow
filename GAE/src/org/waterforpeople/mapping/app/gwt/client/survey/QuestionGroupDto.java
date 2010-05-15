@@ -34,7 +34,7 @@ public class QuestionGroupDto extends BaseDto {
 	}
 
 	public void setQuestionMap(HashMap<Integer, QuestionDto> questionMap) {
-		this.questionMap = questionMap;
+		this.questionMap = questionMap;		
 	}
 
 	public HashMap<Integer, QuestionDto> getQuestionMap() {

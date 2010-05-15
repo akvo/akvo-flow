@@ -14,6 +14,7 @@ import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 
 public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
 			.getName());
 
@@ -39,10 +40,10 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		SurveyDAO surveyDao = new SurveyDAO();
 		SurveySurveyGroupAssocDao ssgaDAO = new SurveySurveyGroupAssocDao();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
-		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao(); 
+		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
 		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
 		BaseDAO<Question> questionDAO = new BaseDAO<Question>(Question.class);
-		
+
 		Long surveyGroupId = item.getKey().getId();
 		for (Survey surveyItem : item.getSurveyList()) {
 			surveyItem = surveyDao.save(surveyItem);
@@ -53,12 +54,13 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 			ssgaDAO.save(ssga);
 			// Save Question Group
 			for (QuestionGroup qg : surveyItem.getQuestionGroupList()) {
-				qg=qgDao.save(qg);
+				qg = qgDao.save(qg);
 				SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
 				sqga.setQuestionGroupId(qg.getKey().getId());
 				sqga.setSurveyId(surveyItem.getKey().getId());
 				sqgaDao.save(sqga);
-				for(Entry<Integer,Question> questionEntry:qg.getQuestionMap().entrySet()){
+				for (Entry<Integer, Question> questionEntry : qg
+						.getQuestionMap().entrySet()) {
 					Question question = questionEntry.getValue();
 					Integer order = questionEntry.getKey();
 					question = questionDAO.save(question);
@@ -75,41 +77,43 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		return item;
 	}
 
-	public SurveyGroup getByKey(Long id) {
+	public SurveyGroup getByKey(Long id, boolean includeQuestions) {
 		SurveyGroup sg = super.getByKey(id);
 		SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
 		List<SurveySurveyGroupAssoc> list = ssgaDao.listBySurveyGroupId(id);
 		SurveyDAO surveyDao = new SurveyDAO();
-		
-		SurveySurveyGroupAssocDao ssgaDAO = new SurveySurveyGroupAssocDao();
+
 		QuestionGroupDao qgDao = new QuestionGroupDao();
-		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao(); 
+		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
 		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
 		BaseDAO<Question> questionDAO = new BaseDAO<Question>(Question.class);
-		//get survey group
-		//get surveys for survey group 
-		//get question groups from survey
-		//get questions from question groups
-		
-		
-		
+		// get survey group
+		// get surveys for survey group
+		// get question groups from survey
+		// get questions from question groups
 
-		for (SurveySurveyGroupAssoc item : list) {
-			
-			List<SurveyQuestionGroupAssoc> surveyGroupQuestionAssocList=sqgaDao.listBySurveyId(item.getSurveyId());
-			Survey survey =surveyDao.getById(item.getSurveyId());
-			for(SurveyQuestionGroupAssoc itemSQGA:surveyGroupQuestionAssocList){
-				QuestionGroup qg = qgDao.getById(itemSQGA.getQuestionGroupId());
-				List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao.listByQuestionGroupId(qg.getKey().getId());
-				for(QuestionQuestionGroupAssoc qqgaItem: qqgaList){
-					Question question = questionDAO.getByKey(qqgaItem.getQuestionId());
-					qg.addQuestion(question, qqgaItem.getOrder());
+		if (includeQuestions) {
+
+			for (SurveySurveyGroupAssoc item : list) {
+
+				List<SurveyQuestionGroupAssoc> surveyGroupQuestionAssocList = sqgaDao
+						.listBySurveyId(item.getSurveyId());
+				Survey survey = surveyDao.getById(item.getSurveyId());
+				for (SurveyQuestionGroupAssoc itemSQGA : surveyGroupQuestionAssocList) {
+					QuestionGroup qg = qgDao.getById(itemSQGA
+							.getQuestionGroupId());
+					List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao
+							.listByQuestionGroupId(qg.getKey().getId());
+					for (QuestionQuestionGroupAssoc qqgaItem : qqgaList) {
+						Question question = questionDAO.getByKey(qqgaItem
+								.getQuestionId());
+						qg.addQuestion(question, qqgaItem.getOrder());
+					}
+					survey.addQuestionGroup(qg);
 				}
-				survey.addQuestionGroup(qg);
+				sg.addSurvey(survey);
 			}
-			sg.addSurvey(survey);
 		}
-
 		return sg;
 	}
 

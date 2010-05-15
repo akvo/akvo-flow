@@ -24,6 +24,7 @@ import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
@@ -43,6 +44,41 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return super.getByKey(id);
 	}
 
+	/**
+	 * loads a full survey object (whole object graph, including questions)
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Survey loadFullSurvey(Long id) {
+		Survey survey = getById(id);
+		if (survey != null) {
+			QuestionGroupDao qGroupDao = new QuestionGroupDao();
+			SurveyQuestionGroupAssocDao surveyQGAssocDao = new SurveyQuestionGroupAssocDao();
+			QuestionQuestionGroupAssocDao qqGroupAssocDao = new QuestionQuestionGroupAssocDao();
+			BaseDAO<Question> questionDao = new BaseDAO<Question>(
+					Question.class);
+			// get all the question groups for the survey
+			List<SurveyQuestionGroupAssoc> surveyGroupQuestionAssocList = surveyQGAssocDao
+					.listBySurveyId(survey.getKey().getId());
+			// for each question group id, load the full question group and then
+			// populate its questions
+			for (SurveyQuestionGroupAssoc itemSQGA : surveyGroupQuestionAssocList) {
+				QuestionGroup qg = qGroupDao.getById(itemSQGA
+						.getQuestionGroupId());
+				List<QuestionQuestionGroupAssoc> qqgaList = qqGroupAssocDao
+						.listByQuestionGroupId(qg.getKey().getId());
+				for (QuestionQuestionGroupAssoc qqgaItem : qqgaList) {
+					Question question = questionDao.getByKey(qqgaItem
+							.getQuestionId());
+					qg.addQuestion(question, qqgaItem.getOrder());
+				}
+				survey.addQuestionGroup(qg);
+			}
+		}
+		return survey;
+	}
+
 	public Long save(String surveyDefinition) {
 		SurveyContainer sc = new SurveyContainer();
 		com.google.appengine.api.datastore.Text surveyText = new com.google.appengine.api.datastore.Text(
@@ -60,59 +96,16 @@ public class SurveyDAO extends BaseDAO<Survey> {
 				QuestionQuestionGroupAssoc.class, "all");
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
 			sb.append(qqga.toString());
-//			if (qqga.getQuestion() != null) {
-//				sb.append("------->" + qqga.getQuestion().toString());
-//				for (QuestionOption oo : qqga.getQuestion().getOptionsList()) {
-//					sb.append(oo.toString());
-//				}
-//			}
+			// if (qqga.getQuestion() != null) {
+			// sb.append("------->" + qqga.getQuestion().toString());
+			// for (QuestionOption oo : qqga.getQuestion().getOptionsList()) {
+			// sb.append(oo.toString());
+			// }
+			// }
 		}
 		return sb.toString();
 	}
 
-	@SuppressWarnings("unchecked")
-	public List countSurveyInstance(Date startDate, Date endDate,
-			String rollUpType) {
-
-		// TODO: find another way to do this since GAE doesn't support groupBy
-		PersistenceManager pm = PersistenceFilter.getManager();
-		List results = null;
-		StringBuilder params = new StringBuilder();
-		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
-		if (startDate != null) {
-			query.setFilter("collectionDate" + " >= startDateParam");
-			params.append("Date startDateParam");
-		}
-		if ("collectionDate".equals(rollUpType)) {
-			query.setResult("collectionDate, count(this)");
-		} else {
-			// TODO: add region to survey instance so we can do location roll-up
-			query.setResult("collectionDate, count(this)");
-		}
-		if (endDate != null) {
-			query.setFilter("collectionDate" + " <= endDateParam");
-			if (startDate != null) {
-				params.append(" ");
-			}
-			params.append("Date endDateParam");
-		}
-		if (rollUpType != null) {
-			query.setGrouping(rollUpType);
-		}
-		if (startDate != null || endDate != null) {
-			query.declareParameters(params.toString());
-			if (startDate != null && endDate != null) {
-				results = (List) query.execute(startDate, endDate);
-			} else if (startDate != null) {
-				results = (List) query.execute(startDate);
-			} else {
-				results = (List) query.execute(endDate);
-			}
-		} else {
-			results = (List) query.execute();
-		}
-		return results;
-	}
 
 	public void test() {
 
@@ -145,8 +138,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		// super.save(questionGroup);
 
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
-//		qqga.setQuestion(question);
-//		qqga.setQuestionGroup(questionGroup);
+		// qqga.setQuestion(question);
+		// qqga.setQuestionGroup(questionGroup);
 
 		super.save(qqga);
 

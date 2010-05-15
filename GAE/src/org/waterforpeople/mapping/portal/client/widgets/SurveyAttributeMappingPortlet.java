@@ -3,8 +3,10 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingDto;
@@ -12,7 +14,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingSe
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
@@ -48,7 +49,6 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
-	private static final int MAX_ITEMS = 20;
 	private static final int HEIGHT = 1600;
 	private static final int WIDTH = 800;
 
@@ -162,35 +162,45 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private void updateDataGrid(SurveyDto survey) {
 		gridPanel.clear();
 		if (survey != null) {
-			ArrayList<SurveyQuestionDto> allQuestions = new ArrayList<SurveyQuestionDto>();
-			for (QuestionGroupDto qGroup : survey.getQuestionGroupList()) {
 
-				// allQuestions.addAll(qGroup.get)
+			attributeListboxes = new ArrayList<ListBox>();
+			ArrayList<QuestionDto> allQuestions = new ArrayList<QuestionDto>();
+			for (QuestionGroupDto qGroup : survey.getQuestionGroupList()) {
+				allQuestions.addAll(qGroup.getQuestionMap().values());
 			}
-			survey.getQuestionGroupList();
-			/*
-			 * Grid grid = new Grid(currentDtoList.length + 1, 3);
-			 * grid.addClickHandler(this); // build headers grid.setText(0, 0,
-			 * "Question Group"); grid.setText(0, 1, "Question Text");
-			 * grid.setText(0, 2, "Attribute"); setGridRowStyle(grid, 0, false);
-			 * for (int i = 1; i < currentDtoList.length + 1; i++) { grid
-			 * .setWidget(i, 0, new Label(currentDtoList[i - 1] .getName()));
-			 * 
-			 * grid.setWidget(i, 1, new Label(currentDtoList[i - 1]
-			 * .getLanguage()));
-			 */
-			/*
-			 * grid .setWidget( i, 2, currentDtoList[i - 1].getStartDate() !=
-			 * null ? new Label( DATE_FMT.format(currentDtoList[i - 1]
-			 * .getStartDate())) : new Label("")); grid.setWidget(i, 3,
-			 * currentDtoList[i - 1].getEndDate() != null ? new Label(
-			 * DATE_FMT.format(currentDtoList[i - 1] .getEndDate())) : new
-			 * Label(""));
-			 * 
-			 * setGridRowStyle(grid, i, false); } gridPanel.add(grid);
-			 */
+
+			Grid grid = new Grid(allQuestions.size() + 1, 3);
+			// build headers
+			grid.setText(0, 0, "Question Group");
+			grid.setText(0, 1, "Question Text");
+			grid.setText(0, 2, "Attribute");
+			setGridRowStyle(grid, 0, false);
+			if (survey.getQuestionGroupList() != null) {
+
+				int count = 1;
+				for (QuestionGroupDto qGroup : survey.getQuestionGroupList()) {
+					if (qGroup.getQuestionMap() != null) {
+						for (QuestionDto q : qGroup.getQuestionMap().values()) {
+							grid.setWidget(count, 0,
+									new Label(qGroup.getCode()));
+							grid.setWidget(count, 1, new Label(q.getText()));
+							ListBox attrListbox = new ListBox();
+							for (Entry<String, String> entry : attributes
+									.entrySet()) {
+								attrListbox.addItem(entry.getValue(), entry
+										.getKey());
+							}
+							grid.setWidget(count, 2, attrListbox);
+							attributeListboxes.add(attrListbox);
+							setGridRowStyle(grid, count, false);
+							count++;
+						}
+					}
+				}
+			}
+			gridPanel.add(grid);
 		} else {
-			gridPanel.add(new Label("No Assignments"));
+			gridPanel.add(new Label("No Questions"));
 		}
 	}
 
@@ -232,7 +242,6 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	}
 
 	private void getSurveys() {
-
 		final String selectedGroupId = surveyGroup.getValue(surveyGroup
 				.getSelectedIndex());
 
@@ -267,6 +276,30 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		}
 	}
 
+	/**
+	 * calls the service to load the fully hydrated survey (including questions)
+	 * 
+	 * @param id
+	 * @return
+	 */
+	private void loadFullSurvey(Long id) {
+		AsyncCallback<SurveyDto> surveyCallback = new AsyncCallback<SurveyDto>() {
+			public void onFailure(Throwable caught) {
+				MessageDialog errDia = new MessageDialog("Cannot load survey",
+						"The application encountered an error: "
+								+ caught.getLocalizedMessage());
+				errDia.showRelativeTo(saveButton);
+			}
+
+			public void onSuccess(SurveyDto result) {
+				if (result != null) {
+					updateDataGrid(result);
+				}
+			}
+		};
+		surveyService.loadFullSurvey(id, surveyCallback);
+	}
+
 	private void populateSurveyList(ArrayList<SurveyDto> surveyItems) {
 		currentDtoList = surveyItems;
 		if (surveyItems != null) {
@@ -296,6 +329,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		labelPanel = new HorizontalPanel();
 		labelPanel.add(new Label("Survey: "));
 		surveyListbox = new ListBox();
+		surveyListbox.addChangeHandler(this);
 		labelPanel.add(surveyListbox);
 		controlPanel.add(labelPanel);
 
@@ -396,9 +430,8 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		if (event.getSource() == surveyGroup) {
 			getSurveys();
 		} else if (event.getSource() == surveyListbox) {
-
-			updateDataGrid(currentDtoList.get(surveyListbox.getSelectedIndex()));
+			loadFullSurvey(currentDtoList.get(surveyListbox.getSelectedIndex())
+					.getKeyId());
 		}
-
 	}
 }

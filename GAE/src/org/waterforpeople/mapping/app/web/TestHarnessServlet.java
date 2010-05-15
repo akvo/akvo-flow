@@ -490,7 +490,7 @@ public class TestHarnessServlet extends HttpServlet {
 			ssI.test();
 		}else if ("testFindSurvey".equals(action)){
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
-			SurveyDto dto = ssI.loadFullSurvey(77L);
+			SurveyDto dto = ssI.loadFullSurvey(2349L);
 		}
 
 	}

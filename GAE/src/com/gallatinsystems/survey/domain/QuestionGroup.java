@@ -54,7 +54,7 @@ public class QuestionGroup extends BaseDomain {
 		questionMap.put(key, item);
 	}
 
-	public void setQuestionList(List<Question> qList) {
+	public void setQuestionList(ArrayList<Question> qList) {
 		questionList = qList;
 		questionMap = new HashMap<Integer, Question>();
 		if (questionList != null) {

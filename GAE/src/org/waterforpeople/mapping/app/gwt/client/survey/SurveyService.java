@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -14,9 +13,6 @@ public interface SurveyService extends RemoteService {
 	public static final String REGION_ROLL_UP = "collectionDate";
 
 	public SurveyDto[] listSurvey();
-
-	public SurveyActivityDto[] listSurveyActivityByDate(Date startDate,
-			Date endDate, String rollUpType);
 
 	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode);
 
