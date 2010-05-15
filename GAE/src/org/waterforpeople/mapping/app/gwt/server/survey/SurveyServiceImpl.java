@@ -145,12 +145,16 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyGroup surveyGroup = new SurveyGroup();
 		DtoMarshaller.copyToCanonical(surveyGroup, value);
-		for(SurveyDto item : value.getSurveyList()){
+		surveyGroup.setSurveyList(null);
+		//for(SurveyDto item : value.getSurveyList()){
+		SurveyDto item = value.getSurveyList().get(0);
 			Survey survey = new Survey();
 			DtoMarshaller.copyToCanonical(survey, item);
+			survey.setQuestionGroupList(null);
 			for(QuestionGroupDto qgDto:item.getQuestionGroupList()){
 				QuestionGroup qg = new QuestionGroup();
 				DtoMarshaller.copyToCanonical(qg,qgDto);
+				qg.setQuestionMap(null);
 				for(Entry<Integer,QuestionDto> qDto:qgDto.getQuestionMap().entrySet()){
 					Question q = new Question();
 					DtoMarshaller.copyToCanonical(q, qDto.getValue());
@@ -158,14 +162,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				}
 			}
 			surveyGroup.addSurvey(survey);
-		}
+		//}
 
 		DtoMarshaller.copyToDto(sgDao.save(surveyGroup), value);
 		return value;
 	}
 
 	public void test() {
-		for (int t = 0; t < 10; t++) {
+		for (int t = 0; t < 1; t++) {
 			SurveyGroupDto sgd = new SurveyGroupDto();
 			sgd.setCode("Survey Group :" + t);
 			sgd.setDescription("Test Survey Group: " + t);
