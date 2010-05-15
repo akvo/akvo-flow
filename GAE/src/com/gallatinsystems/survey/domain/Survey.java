@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.domain;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -13,6 +14,7 @@ public class Survey extends BaseDomain{
 	private String name;
 	private Integer version;
 	private String description;
+	@NotPersistent
 	private ArrayList<QuestionGroup> questionGroupList;
 	
 	public void addQuestionGroup(QuestionGroup questionGroup){

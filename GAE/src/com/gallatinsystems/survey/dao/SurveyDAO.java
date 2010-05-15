@@ -60,12 +60,12 @@ public class SurveyDAO extends BaseDAO<Survey> {
 				QuestionQuestionGroupAssoc.class, "all");
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
 			sb.append(qqga.toString());
-			if (qqga.getQuestion() != null) {
-				sb.append("------->" + qqga.getQuestion().toString());
-				for (QuestionOption oo : qqga.getQuestion().getOptionsList()) {
-					sb.append(oo.toString());
-				}
-			}
+//			if (qqga.getQuestion() != null) {
+//				sb.append("------->" + qqga.getQuestion().toString());
+//				for (QuestionOption oo : qqga.getQuestion().getOptionsList()) {
+//					sb.append(oo.toString());
+//				}
+//			}
 		}
 		return sb.toString();
 	}
@@ -145,8 +145,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		// super.save(questionGroup);
 
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
-		qqga.setQuestion(question);
-		qqga.setQuestionGroup(questionGroup);
+//		qqga.setQuestion(question);
+//		qqga.setQuestionGroup(questionGroup);
 
 		super.save(qqga);
 

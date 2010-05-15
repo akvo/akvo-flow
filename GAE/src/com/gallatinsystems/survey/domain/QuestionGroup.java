@@ -19,6 +19,7 @@ public class QuestionGroup extends BaseDomain {
 
 	private String code;
 	private String description;
+	@NotPersistent
 	private List<Question> questionList;
 
 	@NotPersistent

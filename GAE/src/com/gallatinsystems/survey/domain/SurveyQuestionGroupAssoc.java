@@ -4,26 +4,17 @@ import java.lang.reflect.Field;
 
 import javax.jdo.annotations.PersistenceCapable;
 
-import com.gallatinsystems.framework.domain.BaseAssocDomain;
+import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
-public class SurveyQuestionGroupAssoc extends BaseAssocDomain{
+public class SurveyQuestionGroupAssoc extends BaseDomain{
 	
 	private static final long serialVersionUID = 6593530633749910719L;
-	private Survey survey;
-	private QuestionGroup questionGroup;
-	public Survey getSurvey() {
-		return survey;
-	}
-	public void setSurvey(Survey survey) {
-		this.survey = survey;
-	}
-	public QuestionGroup getQuestionGroup() {
-		return questionGroup;
-	}
-	public void setQuestionGroup(QuestionGroup questionGroup) {
-		this.questionGroup = questionGroup;
-	}
+	
+	private Long questionGroupId = null;
+	private Long surveyId = null;
+	
+	
 	
 	@Override
 	public String toString() {
@@ -54,6 +45,30 @@ public class SurveyQuestionGroupAssoc extends BaseAssocDomain{
 		result.append("}");
 
 		return result.toString();
+	}
+
+
+
+	public void setQuestionGroupId(Long questionGroupId) {
+		this.questionGroupId = questionGroupId;
+	}
+
+
+
+	public Long getQuestionGroupId() {
+		return questionGroupId;
+	}
+
+
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+
+
+	public Long getSurveyId() {
+		return surveyId;
 	}
 
 }
