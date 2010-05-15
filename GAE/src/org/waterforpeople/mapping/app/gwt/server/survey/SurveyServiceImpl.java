@@ -146,16 +146,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyGroup surveyGroup = new SurveyGroup();
 		DtoMarshaller.copyToCanonical(surveyGroup, value);
 		surveyGroup.setSurveyList(null);
-		for(SurveyDto item : value.getSurveyList()){
-		//SurveyDto item = value.getSurveyList().get(0);
+		for (SurveyDto item : value.getSurveyList()) {
+			// SurveyDto item = value.getSurveyList().get(0);
 			Survey survey = new Survey();
 			DtoMarshaller.copyToCanonical(survey, item);
 			survey.setQuestionGroupList(null);
-			for(QuestionGroupDto qgDto:item.getQuestionGroupList()){
+			for (QuestionGroupDto qgDto : item.getQuestionGroupList()) {
 				QuestionGroup qg = new QuestionGroup();
-				DtoMarshaller.copyToCanonical(qg,qgDto);
+				DtoMarshaller.copyToCanonical(qg, qgDto);
 				qg.setQuestionMap(null);
-				for(Entry<Integer,QuestionDto> qDto:qgDto.getQuestionMap().entrySet()){
+				for (Entry<Integer, QuestionDto> qDto : qgDto.getQuestionMap()
+						.entrySet()) {
 					Question q = new Question();
 					DtoMarshaller.copyToCanonical(q, qDto.getValue());
 					qg.addQuestion(q, qDto.getKey());
@@ -169,30 +170,33 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public void test() {
-		for (int t = 0; t < 1; t++) {
-			SurveyGroupDto sgd = new SurveyGroupDto();
-			sgd.setCode("Survey Group :" + t);
-			sgd.setDescription("Test Survey Group: " + t);
-			for (int i = 0; i < 5; i++) {
-				SurveyDto surveyDto = new SurveyDto();
-				surveyDto.setDescription("test : " + i);
-				for (int q = 0; q < 10; q++) {
-					QuestionGroupDto qgd = new QuestionGroupDto();
-					qgd.setCode("Question Group: " + q);
-					qgd.setDescription("Question Group Desc: " + q);
-					for (int j = 0; j < 10; j++) {
-						QuestionDto qd = new QuestionDto();
-						qd.setText("Question Test: " + j);
-						qd.setType(QuestionType.FREE_TEXT);
-						qgd.addQuestion(qd, j);
-					}
-					surveyDto.addQuestionGroup(qgd);
+		int t = 0;
+		SurveyGroupDto sgd = new SurveyGroupDto();
+		sgd.setCode("Survey Group :" + t);
+		sgd.setDescription("Test Survey Group: " + t);
+		for (int i = 0; i < 5; i++) {
+			SurveyDto surveyDto = new SurveyDto();
+			surveyDto.setDescription("test : " + i);
+			for (int q = 0; q < 10; q++) {
+				QuestionGroupDto qgd = new QuestionGroupDto();
+				qgd.setCode("Question Group: " + q);
+				qgd.setDescription("Question Group Desc: " + q);
+				for (int j = 0; j < 10; j++) {
+					QuestionDto qd = new QuestionDto();
+					qd.setText("Question Test: " + j);
+					qd.setType(QuestionType.FREE_TEXT);
+					qgd.addQuestion(qd, j);
 				}
-				surveyDto.setVersion("Version: " + i);
-				sgd.addSurvey(surveyDto);
+				surveyDto.addQuestionGroup(qgd);
 			}
-			this.save(sgd);
+			surveyDto.setVersion("Version: " + i);
+			sgd.addSurvey(surveyDto);
 		}
+		this.save(sgd);
+
+		SurveyGroupDAO sgDAO = new SurveyGroupDAO();
+		SurveyGroup sgResult = sgDAO.getByKey(sgd.getKeyId());
+		log.info("SurveyGroup Result: " + sgResult);
 	}
 
 }
