@@ -155,13 +155,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			for (QuestionGroupDto qgDto : item.getQuestionGroupList()) {
 				QuestionGroup qg = new QuestionGroup();
 				DtoMarshaller.copyToCanonical(qg, qgDto);
-				qg.setQuestionMap(null);
+				qg.setQuestionList(null);
 				for (Entry<Integer, QuestionDto> qDto : qgDto.getQuestionMap()
 						.entrySet()) {
 					Question q = new Question();
 					DtoMarshaller.copyToCanonical(q, qDto.getValue());
 					qg.addQuestion(q, qDto.getKey());
 				}
+				survey.addQuestionGroup(qg);
 			}
 			surveyGroup.addSurvey(survey);
 		}
