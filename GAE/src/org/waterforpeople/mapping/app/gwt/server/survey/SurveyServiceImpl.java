@@ -146,8 +146,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyGroup surveyGroup = new SurveyGroup();
 		DtoMarshaller.copyToCanonical(surveyGroup, value);
 		surveyGroup.setSurveyList(null);
-		//for(SurveyDto item : value.getSurveyList()){
-		SurveyDto item = value.getSurveyList().get(0);
+		for(SurveyDto item : value.getSurveyList()){
+		//SurveyDto item = value.getSurveyList().get(0);
 			Survey survey = new Survey();
 			DtoMarshaller.copyToCanonical(survey, item);
 			survey.setQuestionGroupList(null);
@@ -162,7 +162,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				}
 			}
 			surveyGroup.addSurvey(survey);
-		//}
+		}
 
 		DtoMarshaller.copyToDto(sgDao.save(surveyGroup), value);
 		return value;

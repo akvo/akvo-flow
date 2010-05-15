@@ -2,10 +2,10 @@ package com.gallatinsystems.survey.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
 
-import com.gallatinsystems.framework.domain.BaseAssocDomain;
+import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
-public class SurveySurveyGroupAssoc extends BaseAssocDomain {
+public class SurveySurveyGroupAssoc extends BaseDomain {
 
 	
 	private static final long serialVersionUID = -3225985948073456482L;
