@@ -20,8 +20,8 @@ public class SurveySurveyGroupAssocDao extends BaseDAO<SurveySurveyGroupAssoc> {
 		return (SurveySurveyGroupAssoc) super.save(ssga);
 	}
 	@SuppressWarnings("unchecked")
-	public List<SurveySurveyGroupAssoc> findBySurveyGroupId(Long id){
-		return (List<SurveySurveyGroupAssoc>) super.findByProperty("surveyGroupId", id, "Long");
+	public List<SurveySurveyGroupAssoc> listBySurveyGroupId(Long id){
+		return (List<SurveySurveyGroupAssoc>) super.listByProperty("surveyGroupId", id, "Long");
 	}
 
 }

@@ -42,7 +42,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 	public SurveyGroup getByKey(Long id) {
 		SurveyGroup sg = super.getByKey(id);
 		SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
-		List<SurveySurveyGroupAssoc> list = ssgaDao.findBySurveyGroupId(id);
+		List<SurveySurveyGroupAssoc> list = ssgaDao.listBySurveyGroupId(id);
 		SurveyDAO surveyDao = new SurveyDAO();
 
 		for (SurveySurveyGroupAssoc item : list) {
