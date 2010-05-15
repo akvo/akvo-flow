@@ -54,7 +54,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private ListBox surveyGroup;
 	private ListBox surveyListbox;
 
-	private HashMap<QuestionDto, ListBox> attributeListboxes;
+	private HashMap<String, ListBox> attributeListboxes;
 
 	private TreeMap<String, String> attributes;
 
@@ -161,7 +161,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		gridPanel.clear();
 		if (survey != null) {
 
-			attributeListboxes = new HashMap<QuestionDto, ListBox>();
+			attributeListboxes = new HashMap<String, ListBox>();
 			ArrayList<QuestionDto> allQuestions = new ArrayList<QuestionDto>();
 			for (QuestionGroupDto qGroup : survey.getQuestionGroupList()) {
 				allQuestions.addAll(qGroup.getQuestionMap().values());
@@ -192,7 +192,8 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 								attrListbox.addItem(text, entry.getKey());
 							}
 							grid.setWidget(count, 2, attrListbox);
-							attributeListboxes.put(q, attrListbox);
+							attributeListboxes.put(currentSelection.getKeyId()
+									+ ":" + q.getKeyId(), attrListbox);
 							setGridRowStyle(grid, count, false);
 							count++;
 						}
@@ -290,7 +291,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	 * @param id
 	 * @return
 	 */
-	private void loadFullSurvey(Long id) {
+	private void loadFullSurvey(final Long id) {
 		AsyncCallback<SurveyDto> surveyCallback = new AsyncCallback<SurveyDto>() {
 			public void onFailure(Throwable caught) {
 				MessageDialog errDia = new MessageDialog("Cannot load survey",
@@ -302,6 +303,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 			public void onSuccess(SurveyDto result) {
 				if (result != null) {
 					currentSelection = result;
+					loadExistingMappings(id);
 					updateDataGrid(result);
 				}
 			}
@@ -309,7 +311,44 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		surveyService.loadFullSurvey(id, surveyCallback);
 	}
 
+	private void loadExistingMappings(final Long id) {
+		mappingService.listMappingsBySurvey(id,
+				new AsyncCallback<ArrayList<SurveyAttributeMappingDto>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						MessageDialog errDia = new MessageDialog(
+								"Cannot load mappings",
+								"The application encountered an error: "
+										+ caught.getLocalizedMessage());
+						errDia.showRelativeTo(saveButton);
+					}
+
+					@Override
+					public void onSuccess(
+							ArrayList<SurveyAttributeMappingDto> result) {
+						if (result != null) {
+							for (SurveyAttributeMappingDto dto : result) {
+								ListBox box = attributeListboxes.get(dto
+										.getSurveyKeyId()
+										+ ":" + dto.getSurveyQuestionId());
+								if (box != null) {
+									for (int i = 0; i < box.getItemCount(); i++) {
+										if (box.getValue(i) != null
+												&& box.getValue(i).equals(
+														dto.getAttributeName())) {
+											box.setSelectedIndex(i);
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				});
+	}
+
 	private void populateSurveyList(ArrayList<SurveyDto> surveyItems) {
+		surveyListbox.clear();
 		currentDtoList = surveyItems;
 		if (surveyItems != null) {
 			surveyListbox.addItem("", "");
@@ -363,7 +402,9 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 					.getQuestionGroupList()) {
 				if (qGroup.getQuestionMap() != null) {
 					for (QuestionDto q : qGroup.getQuestionMap().values()) {
-						ListBox attrBox = attributeListboxes.get(q);
+						ListBox attrBox = attributeListboxes
+								.get(currentSelection.getKeyId() + ":"
+										+ q.getKeyId());
 						if (attrBox != null) {
 							String val = attrBox.getValue(attrBox
 									.getSelectedIndex());
