@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
@@ -159,7 +161,13 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 	private void updateDataGrid(SurveyDto survey) {
 		gridPanel.clear();
-		if (survey != null) {			
+		if (survey != null) {		
+			ArrayList<SurveyQuestionDto> allQuestions = new ArrayList<SurveyQuestionDto>();
+			for(QuestionGroupDto qGroup :survey.getQuestionGroupList()){
+				
+				//allQuestions.addAll(qGroup.get)
+			}
+			survey.getQuestionGroupList();
 		/*	Grid grid = new Grid(currentDtoList.length + 1, 3);
 			grid.addClickHandler(this);
 			// build headers
@@ -229,12 +237,12 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 	private void getSurveys() {
 
-		final String selectedGroup = surveyGroup.getItemText(surveyGroup
+		final String selectedGroupId = surveyGroup.getValue(surveyGroup
 				.getSelectedIndex());
 
-		if (selectedGroup != null) {
-			if (surveys.get(selectedGroup) != null) {
-				populateSurveyList(surveys.get(selectedGroup));
+		if (selectedGroupId != null) {
+			if (surveys.get(selectedGroupId) != null) {
+				populateSurveyList(surveys.get(selectedGroupId));
 			} else {
 				// Set up the callback object.
 				AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
@@ -248,12 +256,12 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 					public void onSuccess(ArrayList<SurveyDto> result) {
 						if (result != null) {
-							surveys.put(selectedGroup, result);
+							surveys.put(selectedGroupId, result);
 							populateSurveyList(result);
 						}
 					}
 				};
-				surveyService.listSurveysByGroup(selectedGroup, surveyCallback);
+				surveyService.listSurveysByGroup(selectedGroupId, surveyCallback);
 			}
 		} else {
 			MessageDialog errDia = new MessageDialog("Please select a group",
@@ -391,7 +399,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 			getSurveys();
 		} else if (event.getSource() == surveyListbox) {
 			
-			//updateDataGrid(currentDtoList.get(surveyListbox.getSelectedIndex()));
+			updateDataGrid(currentDtoList.get(surveyListbox.getSelectedIndex()));
 		}
 
 	}

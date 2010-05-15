@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,7 +24,7 @@ import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
+import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 
 public class SurveyDAO extends BaseDAO<Survey> {
@@ -195,13 +196,28 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return super.list(SurveyGroup.class, cursorString);
 	}
 
-	public List<Survey> getSurveyForSurveyGroup(String surveyGroupCode) {
-		SurveyGroupAssocDao surveyGroupAssocDao = new SurveyGroupAssocDao(
-				SurveyGroupAssoc.class);
-		List<SurveyGroupAssoc> surveyGroupAssocList = surveyGroupAssocDao
-				.findSurveyGroupAssocByCode(surveyGroupCode);
-		PersistenceManager pm = PersistenceFilter.getManager();
-		return null;
+	/**
+	 * Fetches all surveys for a survey group NOTE: this is duplicative of
+	 * SurveyGroupDao.getById
+	 * 
+	 * @param surveyGroupId
+	 * @return
+	 */
+	public List<Survey> getSurveyForSurveyGroup(String surveyGroupId) {
+		List<Survey> surveyList = null;
+		SurveySurveyGroupAssocDao surveySurveyGroupAssocDao = new SurveySurveyGroupAssocDao();
+		List<SurveySurveyGroupAssoc> surveySurveyGroupAssocList = surveySurveyGroupAssocDao
+				.listBySurveyGroupId(new Long(surveyGroupId));
+		if (surveySurveyGroupAssocList != null) {
+			surveyList = new ArrayList<Survey>();
+			for (SurveySurveyGroupAssoc assoc : surveySurveyGroupAssocList) {
+				Survey s = getByKey(assoc.getSurveyId());
+				if (s != null) {
+					surveyList.add(s);
+				}
+			}
+		}
+		return surveyList;
 	}
 
 }

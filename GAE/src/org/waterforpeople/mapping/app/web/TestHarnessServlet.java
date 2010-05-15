@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
@@ -487,6 +488,9 @@ public class TestHarnessServlet extends HttpServlet {
 		}else if ("saveSurveyGroup".equals(action)){
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
 			ssI.test();
+		}else if ("testFindSurvey".equals(action)){
+			SurveyServiceImpl ssI = new SurveyServiceImpl();
+			SurveyDto dto = ssI.loadFullSurvey(77L);
 		}
 
 	}

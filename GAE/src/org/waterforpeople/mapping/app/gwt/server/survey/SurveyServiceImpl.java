@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -29,7 +30,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyService {
-	@SuppressWarnings("unused")
+
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
@@ -121,9 +122,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	 * lists all surveys for a group
 	 */
 	@Override
-	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupCode) {
+	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupId) {
 		SurveyDAO dao = new SurveyDAO();
-		List<Survey> surveys = dao.getSurveyForSurveyGroup(surveyGroupCode);
+		List<Survey> surveys = dao.getSurveyForSurveyGroup(surveyGroupId);
 		ArrayList<SurveyDto> surveyDtos = null;
 		if (surveys != null) {
 			surveyDtos = new ArrayList<SurveyDto>();
@@ -192,11 +193,42 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			surveyDto.setVersion("Version: " + i);
 			sgd.addSurvey(surveyDto);
 		}
-		this.save(sgd);
-
+		save(sgd);
+		
 		SurveyGroupDAO sgDAO = new SurveyGroupDAO();
 		SurveyGroup sgResult = sgDAO.getByKey(sgd.getKeyId());
 		log.info("SurveyGroup Result: " + sgResult);
 	}
 
+	/**
+	 * fully hydrates a single survey object
+	 */
+	public SurveyDto loadFullSurvey(Long surveyId) {
+		Survey survey = surveyDao.getById(surveyId);
+		SurveyDto dto = null;
+		if (survey != null) {
+			dto = new SurveyDto();
+			DtoMarshaller.copyToDto(survey, dto);
+			if (survey.getQuestionGroupList() != null) {
+				ArrayList<QuestionGroupDto> qGroupDtoList = new ArrayList<QuestionGroupDto>();
+				for (QuestionGroup qg : survey.getQuestionGroupList()) {
+					QuestionGroupDto qgDto = new QuestionGroupDto();
+					DtoMarshaller.copyToDto(qg, qgDto);
+					qGroupDtoList.add(qgDto);
+					if (qg.getQuestionMap() != null) {
+						HashMap<Integer, QuestionDto> qDtoMap = new HashMap<Integer, QuestionDto>();
+						for (Entry<Integer, Question> entry : qg
+								.getQuestionMap().entrySet()) {
+							QuestionDto qdto = new QuestionDto();
+							DtoMarshaller.copyToDto(entry.getValue(), qdto);
+							qDtoMap.put(entry.getKey(), qdto);
+						}
+						qgDto.setQuestionMap(qDtoMap);
+					}
+				}
+				dto.setQuestionGroupList(qGroupDtoList);
+			}
+		}
+		return dto;
+	}
 }

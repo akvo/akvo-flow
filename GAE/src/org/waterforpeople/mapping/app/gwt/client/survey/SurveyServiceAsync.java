@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -21,9 +22,13 @@ public interface SurveyServiceAsync {
 	void getSurveyGroup(String surveyGroupCode,
 			AsyncCallback<ArrayList<SurveyDto>> callback);
 
-	void listSurveysByGroup(String surveyGroupCode,
+	void listSurveysByGroup(String selectedGroupId,
 			AsyncCallback<ArrayList<SurveyDto>> callback);
 
 	void save(SurveyGroupDto value, AsyncCallback<SurveyGroupDto> callback);
+
+	void loadFullSurvey(Long surveyId, AsyncCallback<SurveyDto> callback);
+
+
 
 }

@@ -19,11 +19,23 @@ public interface SurveyService extends RemoteService {
 			Date endDate, String rollUpType);
 
 	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode);
+
 	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString);
+
 	public ArrayList<SurveyDto> getSurveyGroup(String surveyGroupCode);
+
 	/**
 	 * lists all surveys for a group
 	 */
-	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupCode);
+	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupId);
+
 	public SurveyGroupDto save(SurveyGroupDto value);
+
+	/**
+	 * fully hydrates a survey object
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
+	public SurveyDto loadFullSurvey(Long surveyId);
 }
