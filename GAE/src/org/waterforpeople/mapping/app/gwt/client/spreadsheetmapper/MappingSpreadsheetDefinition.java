@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.client.dto;
+package org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;

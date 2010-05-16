@@ -2,8 +2,6 @@ package org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper;
 
 import java.util.ArrayList;
 
-import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
-import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

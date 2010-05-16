@@ -9,10 +9,10 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingDefinitionColumnContainer;
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpreadsheetColumnToAttribute;
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
-import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
-import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
-import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
 import com.google.gdata.util.ServiceException;

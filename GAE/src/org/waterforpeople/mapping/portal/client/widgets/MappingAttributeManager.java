@@ -2,11 +2,11 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingDefinitionColumnContainer;
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpreadsheetColumnToAttribute;
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
-import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
-import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
-import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
