@@ -3,8 +3,7 @@
 <module>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name="com.google.gwt.maps.GoogleMaps" />
-	<inherits name="com.gallatinsystems.framework.gwt.PortletFramework" />
-	<inherits name="com.gallatinsystems.survey.app.web.Survey"/>
+	<inherits name="com.gallatinsystems.framework.gwt.PortletFramework" />	
 	<inherits name="org.waterforpeople.mapping.app.gwt.WFPServices" />	
 	<inherits name="com.google.gwt.visualization.Visualization"/>
 	<source path="client" />
