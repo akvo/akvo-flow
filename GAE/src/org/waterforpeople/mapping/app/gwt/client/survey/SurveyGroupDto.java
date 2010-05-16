@@ -60,9 +60,9 @@ public class SurveyGroupDto extends BaseDto implements Serializable {
 	}
 
 	public void addSurvey(SurveyDto item) {
-		if (surveyList == null)
+		if (surveyList == null){
 			surveyList = new ArrayList<SurveyDto>();
-		else
+		}		
 			surveyList.add(item);
 	}
 
