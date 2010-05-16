@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.service;
+package org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;
-import org.waterforpeople.mapping.app.web.client.SpreadsheetMappingAttributeService;
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
 import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;

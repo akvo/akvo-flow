@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.client;
+package org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper;
 
 import java.util.ArrayList;
 
