@@ -111,7 +111,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>surveyGroupServlet</servlet-name>
-		<servlet-class>com.gallatinsystems.survey.app.web.SurveyGroupServiceImpl</servlet-class>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyGroupServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>surveyGroupServlet</servlet-name>
