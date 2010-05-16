@@ -3,7 +3,6 @@
 <module>
 	<inherits name="com.google.gwt.user.User" />	
 	<inherits name="com.gallatinsystems.framework.gwt.PortletFramework" />
-	<entry-point class="com.gallatinsystems.survey.app.web.client.SurveyManager"/>
 	<source path="client"/>
 	<source path="service"/>
 	<source path="dto"/>
