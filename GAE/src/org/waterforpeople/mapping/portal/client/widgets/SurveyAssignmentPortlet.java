@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
@@ -28,6 +29,8 @@ import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -53,16 +56,19 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * @author Christopher Fagiani
  * 
  */
-public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
+public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
+		OpenHandler<TreeItem> {
 	public static final String NAME = "Survey Assignment Portlet";
 	public static final String DESCRIPTION = "Assigns surveys to devices";
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
+	private static final String DUMMY = "DUMMY";
+	private static final String PLEASE_WAIT = "Loading...";
 	private static final int MAX_ITEMS = 20;
 	private static final int HEIGHT = 1600;
-	private static final int WIDTH = 800;
+	private static final int WIDTH = 900;
 	private static final DateTimeFormat DATE_FMT = DateTimeFormat
 			.getShortDateFormat();
 	private Tree deviceRoot;
@@ -90,7 +96,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private int currentSelection = -1;
 
 	private HashMap<String, ArrayList<DeviceDto>> devices;
-	private SurveyDto[] surveys;
+	private HashMap<SurveyGroupDto, ArrayList<SurveyDto>> surveys;
 
 	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
@@ -115,6 +121,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 				selectedDevices, treeHost, deviceMap);
 
 		surveyRoot = new Tree();
+		surveyRoot.addOpenHandler(this);
 		selectedSurveys = new ListBox();
 		surveyDragController = installTreeSelector("Surveys", surveyRoot,
 				selectedSurveys, treeHost, surveyMap);
@@ -153,7 +160,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		setContent(contentPanel);
 
 		getDevices();
-		getSurveys();
+		getSurveyGroups();
 		getAssignments(null);
 	}
 
@@ -251,7 +258,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		surveyRoot.clear();
 
 		populateDeviceTree();
-		populateSurveyTree();
+		populateSurveyTree(null);
 
 		language.setSelectedIndex(0);
 		eventName.setText("");
@@ -259,23 +266,38 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		effectiveStartDate.setValue(null);
 	}
 
-	private void getSurveys() {
+	private void getSurveyGroups() {
 		surveyService = GWT.create(SurveyService.class);
-		// Set up the callback object.
-		AsyncCallback<SurveyDto[]> surveyCallback = new AsyncCallback<SurveyDto[]>() {
-			public void onFailure(Throwable caught) {
-				// no-op
-			}
+		surveyService.listSurveyGroups(null,
+				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
-			public void onSuccess(SurveyDto[] result) {
+					@Override
+					public void onFailure(Throwable caught) {
+						// no-op
+					}
 
-				if (result != null) {
-					surveys = result;
-					populateSurveyTree();
-				}
-			}
-		};
-		surveyService.listSurvey(surveyCallback);
+					@Override
+					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+						surveys = new HashMap<SurveyGroupDto, ArrayList<SurveyDto>>();
+						if (result != null) {
+
+							for (SurveyGroupDto group : result) {
+								surveys.put(group, null);
+							}
+							populateSurveyTree(null);
+						}
+					}
+				});
+		/*
+		 * // Set up the callback object. AsyncCallback<SurveyDto[]>
+		 * surveyCallback = new AsyncCallback<SurveyDto[]>() { public void
+		 * onFailure(Throwable caught) { // no-op }
+		 * 
+		 * public void onSuccess(SurveyDto[] result) {
+		 * 
+		 * if (result != null) { surveys = result; populateSurveyTree(); } } };
+		 * surveyService.listSurvey(surveyCallback);
+		 */
 	}
 
 	private void getDevices() {
@@ -316,17 +338,55 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		}
 	}
 
-	private void populateSurveyTree() {
-		TreeItem ungroupedSurvey = new TreeItem("Ungrouped");
-		surveyRoot.addItem(ungroupedSurvey);
-		if (surveys != null) {
-			for (int i = 0; i < surveys.length; i++) {
-				TreeItem item = new TreeItem(new Label(surveys[i].getName()));
-				surveyMap.put(item.getWidget(), surveys[i]);
-				surveyDragController.makeDraggable(item.getWidget());
-				ungroupedSurvey.addItem(item);
+	private void populateSurveyTree(TreeItem root) {
+		if (root == null) {
+			for (Entry<SurveyGroupDto, ArrayList<SurveyDto>> groupEntry : surveys
+					.entrySet()) {
+				TreeItem groupItem = new TreeItem(groupEntry.getKey().getCode());
+				groupItem.setUserObject(groupEntry.getKey());
+				if (groupEntry.getValue() == null) {
+					TreeItem dummyItem = new TreeItem(PLEASE_WAIT);
+					dummyItem.setUserObject(DUMMY);
+					groupItem.addItem(dummyItem);
+				} else {
+					for (SurveyDto survey : groupEntry.getValue()) {
+						TreeItem surveyItem = new TreeItem(new Label(
+								getSurveyName(survey)));
+						surveyMap.put(surveyItem.getWidget(), survey);
+						surveyDragController.makeDraggable(surveyItem
+								.getWidget());
+						groupItem.addItem(surveyItem);
+					}
+				}
+				surveyRoot.addItem(groupItem);
+			}
+		} else {
+			// remove the dummy
+			if (root.getChildCount() > 0
+					&& root.getChild(0).getUserObject().equals(DUMMY)) {
+				root.removeItem(root.getChild(0));
+			}
+			ArrayList<SurveyDto> surveyList = surveys.get((SurveyGroupDto) root
+					.getUserObject());
+			if (surveyList != null) {
+				for (int i = 0; i < surveyList.size(); i++) {
+					TreeItem surveyItem = new TreeItem(new Label(
+							getSurveyName(surveyList.get(i))));
+					surveyMap.put(surveyItem.getWidget(), surveyList.get(i));
+					surveyDragController.makeDraggable(surveyItem.getWidget());
+					root.addItem(surveyItem);
+				}
 			}
 		}
+	}
+
+	private String getSurveyName(SurveyDto survey) {
+		String name = survey.getName();
+		if (name == null || name.trim().length() == 0) {
+			name = survey.getKeyId().toString();
+		}
+		name = name + " - v." + survey.getVersion();
+		return name;
 	}
 
 	/**
@@ -375,7 +435,8 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 
 		ScrollPanel scrollPanel = new ScrollPanel();
 
-		scrollPanel.setWidth("150px");
+		scrollPanel.setWidth("200px");
+		scrollPanel.setHeight("200px");
 		scrollPanel.add(sourceTree);
 		availPanel.add(scrollPanel);
 
@@ -683,5 +744,34 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	@Override
 	public void handleEvent(PortletEvent e) {
 		// no-op
+	}
+
+	@Override
+	public void onOpen(OpenEvent<TreeItem> event) {
+		if (event.getTarget() instanceof TreeItem) {
+			final TreeItem item = (TreeItem) event.getTarget();
+			if (item.getUserObject() instanceof SurveyGroupDto) {
+				SurveyGroupDto sg = (SurveyGroupDto) item.getUserObject();
+				// if we haven't yet loaded the surveys, load them
+				if (item.getChildCount() == 1
+						&& item.getChild(0).getUserObject().equals(DUMMY)) {
+					// Set up the callback object.
+					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
+						public void onFailure(Throwable caught) {
+							// no-op
+						}
+
+						public void onSuccess(ArrayList<SurveyDto> result) {
+							surveys.put((SurveyGroupDto) item.getUserObject(),
+									result);
+							populateSurveyTree(item);
+						}
+					};
+					surveyService.listSurveysByGroup(sg.getKeyId().toString(),
+							surveyCallback);
+				}
+			}
+		}
+
 	}
 }
