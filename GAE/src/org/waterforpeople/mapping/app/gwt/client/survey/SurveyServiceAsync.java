@@ -24,7 +24,4 @@ public interface SurveyServiceAsync {
 	void save(SurveyGroupDto value, AsyncCallback<SurveyGroupDto> callback);
 
 	void loadFullSurvey(Long surveyId, AsyncCallback<SurveyDto> callback);
-
-
-
 }
