@@ -119,7 +119,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			public void execute() {
 				exitFullscreen();
 				if (confImage != null) {
-					confImage.setVisible(false);
+					confImage.setVisible(true);
 				}
 			}
 		});
