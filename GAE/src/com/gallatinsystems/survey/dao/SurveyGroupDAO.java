@@ -95,6 +95,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		if (includeQuestions) {
 
 			for (SurveySurveyGroupAssoc item : list) {
+				log.info("SurveyId: " + item.getSurveyId());
 
 				List<SurveyQuestionGroupAssoc> surveyGroupQuestionAssocList = sqgaDao
 						.listBySurveyId(item.getSurveyId());
@@ -115,6 +116,54 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 			}
 		}
 		return sg;
+	}
+
+	public List<SurveyGroup> list(String cursorString, Boolean loadSurveyFlag,
+			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
+		List<SurveyGroup> sgList = null;
+		sgList = super.list(cursorString);
+		if (sgList != null) {
+			SurveyDAO surveyDao = new SurveyDAO();
+
+			QuestionGroupDao qgDao = new QuestionGroupDao();
+			SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
+			QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
+			BaseDAO<Question> questionDAO = new BaseDAO<Question>(
+					Question.class);
+			for (SurveyGroup sg : sgList) {
+				SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
+				List<SurveySurveyGroupAssoc> list = ssgaDao
+						.listBySurveyGroupId(sg.getKey().getId());
+				if (list.size() > 0 && loadSurveyFlag) {
+					for (SurveySurveyGroupAssoc item : list) {
+						Survey survey = surveyDao.getById(item.getSurveyId());
+						List<SurveyQuestionGroupAssoc> surveyGroupQuestionAssocList = sqgaDao
+								.listBySurveyId(item.getSurveyId());
+						if (surveyGroupQuestionAssocList.size() > 0
+								&& loadQuestionGroupFlag) {
+							for (SurveyQuestionGroupAssoc itemSQGA : surveyGroupQuestionAssocList) {
+								QuestionGroup qg = qgDao.getById(itemSQGA
+										.getQuestionGroupId());
+								List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao
+										.listByQuestionGroupId(qg.getKey()
+												.getId());
+								if (qqgaList.size() > 0 && loadQuestionFlag)
+									for (QuestionQuestionGroupAssoc qqgaItem : qqgaList) {
+										Question question = questionDAO
+												.getByKey(qqgaItem
+														.getQuestionId());
+										qg.addQuestion(question, qqgaItem
+												.getOrder());
+									}
+								survey.addQuestionGroup(qg);
+							}
+						}
+						sg.addSurvey(survey);
+					}
+				}
+			}
+		}
+		return sgList;
 	}
 
 }

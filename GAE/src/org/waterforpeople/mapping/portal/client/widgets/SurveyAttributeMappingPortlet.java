@@ -133,7 +133,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	}
 
 	private void loadSurveyGroups() {
-		surveyService.listSurveyGroups(null,
+		surveyService.listSurveyGroups("all",false,false,false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override

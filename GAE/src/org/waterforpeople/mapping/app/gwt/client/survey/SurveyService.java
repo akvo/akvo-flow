@@ -16,7 +16,7 @@ public interface SurveyService extends RemoteService {
 
 	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode);
 
-	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString);
+	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,Boolean loadSurveyFlag,Boolean loadQuestionGroupFlag,Boolean loadQuestionFlag);
 
 	public ArrayList<SurveyDto> getSurveyGroup(String surveyGroupCode);
 

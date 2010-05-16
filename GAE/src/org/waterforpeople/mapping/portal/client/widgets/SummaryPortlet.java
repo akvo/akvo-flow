@@ -56,7 +56,7 @@ public class SummaryPortlet extends Portlet implements OpenHandler<TreeItem> {
 		super(NAME, true, false, WIDTH, HEIGHT);
 		surveyService = GWT.create(SurveyService.class);
 
-		surveyService.listSurveyGroups(null,
+		surveyService.listSurveyGroups("all",false,false,false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override

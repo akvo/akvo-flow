@@ -33,12 +33,13 @@ public class SurveyManagerPortlet extends Portlet {
 	public SurveyManagerPortlet(String title, boolean scrollable,
 			boolean configurable, int width, int height) {
 		super(title, scrollable, configurable, WIDTH, HEIGHT);
-		GWT.create(SurveyService.class);
+		svc = GWT.create(SurveyService.class);
 	}
 
 	public SurveyManagerPortlet(){
 		super(title, scrollable, configurable, WIDTH, HEIGHT);
-		GWT.create(SurveyService.class);
+		svc = GWT.create(SurveyService.class);
+		buildContentPanel();
 	}
 
 	@Override
@@ -71,7 +72,8 @@ public class SurveyManagerPortlet extends Portlet {
 
 	private void loadTree() {
 		surveyTree = new Tree();
-		svc.listSurveyGroups("all",
+		try{
+		svc.listSurveyGroups("all", false, false,false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override
@@ -122,7 +124,9 @@ public class SurveyManagerPortlet extends Portlet {
 						contentPanel.add(surveyTree);
 					}
 
-				});
+				});}catch(NullPointerException ex){
+					System.out.print(ex);
+				}
 
 	}
 

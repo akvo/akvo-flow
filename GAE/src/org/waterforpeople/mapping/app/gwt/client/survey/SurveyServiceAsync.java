@@ -12,8 +12,6 @@ public interface SurveyServiceAsync {
 	void listSurveyQuestionByType(String typeCode,
 			AsyncCallback<SurveyQuestionDto[]> callback);
 
-	void listSurveyGroups(String cursorString,
-			AsyncCallback<ArrayList<SurveyGroupDto>> callback);
 
 	void getSurveyGroup(String surveyGroupCode,
 			AsyncCallback<ArrayList<SurveyDto>> callback);
@@ -24,4 +22,9 @@ public interface SurveyServiceAsync {
 	void save(SurveyGroupDto value, AsyncCallback<SurveyGroupDto> callback);
 
 	void loadFullSurvey(Long surveyId, AsyncCallback<SurveyDto> callback);
+
+
+	void listSurveyGroups(String cursorString, Boolean loadSurveyFlag,
+			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag,
+			AsyncCallback<ArrayList<SurveyGroupDto>> callback);
 }

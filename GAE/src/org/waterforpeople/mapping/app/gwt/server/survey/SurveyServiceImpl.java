@@ -60,11 +60,46 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return surveyDtos;
 	}
 
-	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString) {
+	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString, Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
 		ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
-		for (SurveyGroup canonical : surveyDao.listSurveyGroup(cursorString)) {
+		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+		for (SurveyGroup canonical : surveyGroupDao.list(cursorString, loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag)) {
 			SurveyGroupDto dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(canonical, dto);
+			dto.setSurveyList(null);
+			if (canonical.getSurveyList() != null
+					&& canonical.getSurveyList().size() > 0) {
+				for (Survey survey : canonical.getSurveyList()) {
+					SurveyDto surveyDto = new SurveyDto();
+					DtoMarshaller.copyToDto(survey, surveyDto);
+					surveyDto.setQuestionGroupList(null);
+					if (survey.getQuestionGroupList() != null
+							&& survey.getQuestionGroupList().size() > 0) {
+						for (QuestionGroup questionGroup : survey
+								.getQuestionGroupList()) {
+							QuestionGroupDto questionGroupDto = new QuestionGroupDto();
+							DtoMarshaller.copyToDto(questionGroup,
+									questionGroupDto);
+							if (questionGroup.getQuestionMap() != null
+									&& questionGroup.getQuestionMap().size() > 0) {
+								for (Entry questionEntry : questionGroup
+										.getQuestionMap().entrySet()) {
+									Question question = (Question) questionEntry
+											.getValue();
+									Integer order = (Integer) questionEntry
+											.getKey();
+									QuestionDto questionDto = new QuestionDto();
+									DtoMarshaller.copyToDto(question,
+											questionDto);
+									questionGroupDto.addQuestion(questionDto,
+											order);
+								}
+							}
+							surveyDto.addQuestionGroup(questionGroupDto);
+						}
+					}
+				}
+			}
 			surveyGroupDtoList.add(dto);
 		}
 		return surveyGroupDtoList;
@@ -205,7 +240,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							DtoMarshaller.copyToDto(entry.getValue(), qdto);
 							qdto.setOptionsList(null);
 							qdto.setQuestionHelpList(null);
-							//TODO: marshall options/help
+							// TODO: marshall options/help
 							qDtoMap.put(entry.getKey(), qdto);
 						}
 						qgDto.setQuestionMap(qDtoMap);
