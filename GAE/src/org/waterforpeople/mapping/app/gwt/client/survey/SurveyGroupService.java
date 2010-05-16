@@ -1,8 +1,7 @@
-package com.gallatinsystems.survey.app.web.service;
+package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.List;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

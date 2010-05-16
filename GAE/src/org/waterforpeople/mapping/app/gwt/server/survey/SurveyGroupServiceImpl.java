@@ -1,11 +1,11 @@
-package com.gallatinsystems.survey.app.web;
+package org.waterforpeople.mapping.app.gwt.server.survey;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupService;
 
-import com.gallatinsystems.survey.app.web.service.SurveyGroupService;
 import com.gallatinsystems.survey.helper.SurveyGroupHelper;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 

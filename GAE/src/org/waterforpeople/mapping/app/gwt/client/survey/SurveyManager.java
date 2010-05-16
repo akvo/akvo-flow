@@ -3,8 +3,6 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.util.List;
 
 
-import com.gallatinsystems.survey.app.web.service.SurveyGroupService;
-import com.gallatinsystems.survey.app.web.service.SurveyGroupServiceAsync;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
