@@ -18,7 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
@@ -485,12 +489,46 @@ public class TestHarnessServlet extends HttpServlet {
 			if (mappings != null) {
 				System.out.println(mappings.size());
 			}
-		}else if ("saveSurveyGroup".equals(action)){
+		} else if ("saveSurveyGroup".equals(action)) {
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
 			ssI.test();
-		}else if ("testFindSurvey".equals(action)){
+		} else if ("testFindSurvey".equals(action)) {
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
 			SurveyDto dto = ssI.loadFullSurvey(2349L);
+		} else if ("createTestSurveyForEndToEnd".equals(action)) {
+			SurveyGroupDto sgd = new SurveyGroupDto();
+			sgd.setCode("E2E Test");
+			sgd.setDescription("end2end test");
+
+			SurveyDto surveyDto = new SurveyDto();
+			surveyDto.setDescription("e2e test");
+			SurveyServiceImpl surveySvc = new SurveyServiceImpl();
+
+			QuestionGroupDto qgd = new QuestionGroupDto();
+			qgd.setCode("Question Group 1");
+			qgd.setDescription("Question Group Desc");
+
+			QuestionDto qd = new QuestionDto();
+			qd.setText("Access Point Name:");
+			qd.setType(QuestionType.FREE_TEXT);
+			qgd.addQuestion(qd, 0);
+
+			qd = new QuestionDto();
+			qd.setText("Location:");
+			qd.setType(QuestionType.GEO);
+			qgd.addQuestion(qd, 1);
+
+			qd = new QuestionDto();
+			qd.setText("Photo");
+			qd.setType(QuestionType.PHOTO);
+			qgd.addQuestion(qd, 2);
+
+			surveyDto.addQuestionGroup(qgd);
+
+			surveyDto.setVersion("Version: 1");
+			sgd.addSurvey(surveyDto);
+			sgd = surveySvc.save(sgd);
+			System.out.println(sgd.getKeyId());
 		}
 
 	}
