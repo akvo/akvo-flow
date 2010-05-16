@@ -199,7 +199,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.service.SpreadsheetMappingAttributeServiceImpl</servlet-class>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper.SpreadsheetMappingAttributeServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
