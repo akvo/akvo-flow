@@ -754,6 +754,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 				SurveyGroupDto sg = (SurveyGroupDto) item.getUserObject();
 				// if we haven't yet loaded the surveys, load them
 				if (item.getChildCount() == 1
+						&& item.getChild(0).getUserObject() != null
 						&& item.getChild(0).getUserObject().equals(DUMMY)) {
 					// Set up the callback object.
 					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
