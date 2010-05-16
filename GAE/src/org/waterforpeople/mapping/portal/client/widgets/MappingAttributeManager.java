@@ -1,12 +1,15 @@
-package org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper;
+package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
+import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
 import org.waterforpeople.mapping.app.web.client.dto.MappingDefinitionColumnContainer;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.app.web.client.dto.MappingSpreadsheetDefinition;
 
-import com.google.gwt.core.client.EntryPoint;
+import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -26,7 +29,13 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class MappingAttributeManager implements EntryPoint {
+public class MappingAttributeManager extends Portlet {
+	public MappingAttributeManager(String title, boolean scrollable,
+			boolean configurable, int width, int height) {
+		super(title, scrollable, configurable, width, height);
+		// TODO Auto-generated constructor stub
+	}
+
 	private TextBox spreadSheetTextBox = new TextBox();
 	private ListBox spreadSheetTypeListBox = new ListBox();
 	private Tree spreadsheetMappingTree = new Tree();
@@ -393,5 +402,29 @@ public class MappingAttributeManager implements EntryPoint {
 
 		});
 
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected boolean getReadyForRemove() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected void handleConfigClick() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleEvent(PortletEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
