@@ -18,6 +18,7 @@ import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
@@ -60,10 +61,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return surveyDtos;
 	}
 
-	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString, Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
+	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,
+			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
+			Boolean loadQuestionFlag) {
 		ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
 		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-		for (SurveyGroup canonical : surveyGroupDao.list(cursorString, loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag)) {
+		for (SurveyGroup canonical : surveyGroupDao.list(cursorString,
+				loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag)) {
 			SurveyGroupDto dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(canonical, dto);
 			dto.setSurveyList(null);
@@ -250,5 +254,38 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		return dto;
+	}
+
+	@Override
+	public SurveyDto loadFullSurvey(String surveyName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode) {
+		List<Survey> surveyList = surveyDao
+				.getSurveyForSurveyGroup(surveyGroupCode);
+		List<SurveyDto> surveyDtoList = new ArrayList<SurveyDto>();
+		for (Survey canonical : surveyList) {
+			SurveyDto dto = new SurveyDto();
+			DtoMarshaller.copyToDto(canonical, dto);
+			surveyDtoList.add(dto);
+		}
+		return surveyDtoList;
+	}
+
+	@Override
+	public List<QuestionDto> listQuestionForQuestionGroup(
+			String questionGroupCode) {
+		QuestionDao questionDao =new QuestionDao();
+		 
+		return null;
+	}
+
+	@Override
+	public List<QuestionGroupDto> listQuestionGroupForSurvey(String surveyCode) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

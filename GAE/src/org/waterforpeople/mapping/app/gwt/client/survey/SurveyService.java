@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -34,4 +35,9 @@ public interface SurveyService extends RemoteService {
 	 * @return
 	 */
 	public SurveyDto loadFullSurvey(Long surveyId);
+	public SurveyDto loadFullSurvey(String surveyName);
+	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
+	
+	public List<QuestionGroupDto> listQuestionGroupForSurvey(String surveyCode);
+	public List<QuestionDto> listQuestionForQuestionGroup(String questionGroupCode);
 }
