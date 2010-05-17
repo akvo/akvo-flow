@@ -20,12 +20,15 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SurveyManagerPortlet extends Portlet {
 
@@ -49,7 +52,7 @@ public class SurveyManagerPortlet extends Portlet {
 			"Delete Question Group");
 	private Button deleteQuestionButton = new Button("Delete Question");
 	HorizontalPanel treeContainer = new HorizontalPanel();
-	VerticalPanel detailPanel = new VerticalPanel();
+	VerticalPanel questionDetailPanel = new VerticalPanel();
 
 	HorizontalPanel buttonPanel = new HorizontalPanel();
 
@@ -96,14 +99,22 @@ public class SurveyManagerPortlet extends Portlet {
 
 		loadTree();
 		treeContainer.add(surveyTree);
-		treeContainer.add(detailPanel);
+		treeContainer.add(detailContainer);
 		contentPane.add(treeContainer);
 		contentPane.add(buttonPanel);
 		configureButtonPanel();
 
 	}
+	private VerticalPanel detailContainer = new VerticalPanel();
 
 	private TreeItem selectedItem = null;
+	
+	private void removeAllWidgetsLoadThisWidget(Widget w){
+		for(int i=0;i<detailContainer.getWidgetCount();i++){
+			detailContainer.remove(i);
+		}
+		detailContainer.add(w);
+	}
 
 	private void loadTree() {
 		surveyTree = new Tree();
@@ -124,7 +135,7 @@ public class SurveyManagerPortlet extends Portlet {
 							outerRoot.setText("Survey Groups");
 							surveyTree.addItem(outerRoot);
 							for (SurveyGroupDto item : result) {
-								bindSurveyGroup(item, outerRoot);
+								bindSurveyGroup(item);
 							}
 
 							surveyTree
@@ -135,9 +146,6 @@ public class SurveyManagerPortlet extends Portlet {
 												SelectionEvent<TreeItem> event) {
 											TreeItem item = event
 													.getSelectedItem();
-											selectedItem = item;
-											TreeItem parentItem = item
-													.getParentItem();
 											if (item
 													.getUserObject()
 													.getClass()
@@ -146,6 +154,9 @@ public class SurveyManagerPortlet extends Portlet {
 															"org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto")) {
 												SurveyGroupDto sg = (SurveyGroupDto) item
 														.getUserObject();
+												loadSurveyGroupDetail(sg);
+												
+												
 												svc
 														.listSurveysByGroup(
 																sg
@@ -168,10 +179,9 @@ public class SurveyManagerPortlet extends Portlet {
 																	public void onSuccess(
 																			ArrayList<SurveyDto> result) {
 																		for (SurveyDto surveyDto : result) {
-																			bindSurvey(
-																					surveyDto,
-																					selectedItem);
+																			bindSurvey(surveyDto);
 																		}
+																		
 
 																	}
 
@@ -184,7 +194,8 @@ public class SurveyManagerPortlet extends Portlet {
 															"org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto")) {
 												SurveyDto s = (SurveyDto) item
 														.getUserObject();
-												selectedItem = item;
+												loadSurveyDetail(s);
+												
 												String surveyId = s.getKeyId()
 														.toString();
 												svc
@@ -207,9 +218,7 @@ public class SurveyManagerPortlet extends Portlet {
 																	public void onSuccess(
 																			ArrayList<QuestionGroupDto> result) {
 																		for (QuestionGroupDto qgDto : result) {
-																			bindQuestionGroup(
-																					qgDto,
-																					selectedItem);
+																			bindQuestionGroup(qgDto);
 																		}
 
 																	}
@@ -223,7 +232,8 @@ public class SurveyManagerPortlet extends Portlet {
 															"org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto")) {
 												QuestionGroupDto qgDto = (QuestionGroupDto) item
 														.getUserObject();
-												selectedItem = item;
+												loadQuestionGroupDetail(qgDto);
+												
 												svc
 														.listQuestionsByQuestionGroup(
 																qgDto
@@ -246,9 +256,7 @@ public class SurveyManagerPortlet extends Portlet {
 																	public void onSuccess(
 																			ArrayList<QuestionDto> result) {
 																		for (QuestionDto qDto : result) {
-																			bindQuestion(
-																					qDto,
-																					selectedItem);
+																			bindQuestion(qDto);
 																		}
 																	}
 
@@ -263,6 +271,7 @@ public class SurveyManagerPortlet extends Portlet {
 												QuestionDto questionDto = (QuestionDto) item
 														.getUserObject();
 												loadQuestionDetails(questionDto);
+												
 
 											}
 
@@ -278,29 +287,33 @@ public class SurveyManagerPortlet extends Portlet {
 
 	}
 
-	private void bindSurveyGroup(SurveyGroupDto item, TreeItem parentItem) {
+	private void bindSurveyGroup(SurveyGroupDto item) {
 		TreeItem surveyGroupItem = new TreeItem();
 
 		surveyGroupItem.setUserObject(item);
 		surveyGroupItem.setText(item.getCode());
+		TreeItem parentItem = surveyTree.getItem(0);
 		parentItem.addItem(surveyGroupItem);
 	}
 
-	private void bindSurvey(SurveyDto item, TreeItem parentItem) {
+	private void bindSurvey(SurveyDto item) {
+		TreeItem parentItem = surveyTree.getSelectedItem();
 		TreeItem surveyItem = new TreeItem();
 		surveyItem.setText(item.getName());
 		surveyItem.setUserObject(item);
 		parentItem.addItem(surveyItem);
 	}
 
-	private void bindQuestionGroup(QuestionGroupDto item, TreeItem parentItem) {
+	private void bindQuestionGroup(QuestionGroupDto item) {
+		TreeItem parentItem = surveyTree.getSelectedItem();
 		TreeItem questionGroupItem = new TreeItem();
 		questionGroupItem.setText(item.getCode());
 		questionGroupItem.setUserObject(item);
 		parentItem.addItem(questionGroupItem);
 	}
 
-	private void bindQuestion(QuestionDto item, TreeItem parentItem) {
+	private void bindQuestion(QuestionDto item) {
+		TreeItem parentItem = surveyTree.getSelectedItem();
 		TreeItem questionGroupItem = new TreeItem();
 		questionGroupItem.setText(item.getText());
 		questionGroupItem.setUserObject(item);
@@ -324,7 +337,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert("Clicked Add Survey Group");
+				loadSurveyGroupDetail(null);
 			}
 
 		});
@@ -342,7 +355,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
+				loadSurveyDetail(null);
 
 			}
 
@@ -362,7 +375,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
+				loadQuestionGroupDetail(null);
 
 			}
 
@@ -372,8 +385,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-
+		
 			}
 
 		});
@@ -382,8 +394,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-
+					loadQuestionDetails(null);
 			}
 
 		});
@@ -400,6 +411,7 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void loadQuestionDetails(QuestionDto item) {
+		removeAllWidgetsLoadThisWidget(questionDetailPanel);
 		TextBox questionId = new TextBox();
 		TextBox questionText = new TextBox();
 		if (item != null) {
@@ -433,20 +445,20 @@ public class SurveyManagerPortlet extends Portlet {
 		}
 		Button saveQuestionButton = new Button("Save Question");
 		Button deleteQuestionButton = new Button("Delete Question");
-		detailPanel.add(questionId);
-		detailPanel.add(questionText);
-		detailPanel.add(questionTypeLB);
-		detailPanel.add(saveQuestionButton);
-		detailPanel.add(deleteQuestionButton);
+		questionDetailPanel.add(questionId);
+		questionDetailPanel.add(questionText);
+		questionDetailPanel.add(questionTypeLB);
+		questionDetailPanel.add(saveQuestionButton);
+		questionDetailPanel.add(deleteQuestionButton);
 
 		saveQuestionButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				QuestionDto value = new QuestionDto();
-				TextBox questionId = (TextBox) detailPanel.getWidget(0);
-				TextBox questionText = (TextBox) detailPanel.getWidget(1);
-				ListBox questionTypeLB = (ListBox) detailPanel.getWidget(2);
+				TextBox questionId = (TextBox) questionDetailPanel.getWidget(0);
+				TextBox questionText = (TextBox) questionDetailPanel.getWidget(1);
+				ListBox questionTypeLB = (ListBox) questionDetailPanel.getWidget(2);
 				value.setKeyId(new Long(questionId.getText()));
 				value.setText(questionText.getText());
 				if (questionTypeLB.getSelectedIndex() == 0) {
@@ -462,7 +474,13 @@ public class SurveyManagerPortlet extends Portlet {
 				} else if (questionTypeLB.getSelectedIndex() == 5) {
 					value.setType(QuestionType.VIDEO);
 				}
-				saveQuestion(value);
+				TreeItem item = surveyTree.getSelectedItem();
+				if (item
+						.getUserObject()
+						.equals(
+								"org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto"))
+					saveQuestion(value, ((QuestionGroupDto) item
+							.getUserObject()).getKeyId());
 			}
 
 		});
@@ -471,7 +489,7 @@ public class SurveyManagerPortlet extends Portlet {
 			@Override
 			public void onClick(ClickEvent event) {
 				QuestionDto value = new QuestionDto();
-				TextBox questionId = (TextBox) detailPanel.getWidget(0);
+				TextBox questionId = (TextBox) questionDetailPanel.getWidget(0);
 				value.setKeyId(new Long(questionId.getText()));
 				deleteQuestion(value, 1L);
 			}
@@ -480,40 +498,206 @@ public class SurveyManagerPortlet extends Portlet {
 
 	}
 
-	private void saveQuestion(QuestionDto value) {
-		svc.saveQuestion(value, new AsyncCallback<QuestionDto>() {
+	private void saveQuestion(QuestionDto value, Long questionGroupId) {
+		svc.saveQuestion(value, questionGroupId,
+				new AsyncCallback<QuestionDto>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
 
-			}
+					}
 
-			@Override
-			public void onSuccess(QuestionDto result) {
-				Window.alert("Question Saved");
-			}
+					@Override
+					public void onSuccess(QuestionDto result) {
+						Window.alert("Question Saved");
+					}
 
-		});
+				});
 	}
 
 	private void deleteQuestion(QuestionDto value, Long questionGroupId) {
-		svc.deleteQuestion(value, questionGroupId, new AsyncCallback(){
+		svc.deleteQuestion(value, questionGroupId, new AsyncCallback() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void onSuccess(Object result) {
 				Window.alert("Question Deleted");
-				detailPanel.setVisible(false);
-				//todo implement remove from tree
+				questionDetailPanel.setVisible(false);
+				// todo implement remove from tree
+
+			}
+
+		});
+	}
+	
+	private void loadSurveyGroupDetail(SurveyGroupDto item){
+		TextBox surveyGroupId = new TextBox();
+		TextBox surveyGroupCode = new TextBox();
+		TextBox surveyGroupDesc = new TextBox();
+		
+		if(item!=null){
+			surveyGroupId.setText(item.getKeyId().toString());
+			surveyGroupCode.setText(item.getCode());
+			surveyGroupDesc.setText(item.getDescription());
+		}
+		
+		surveyGroupId.setVisible(false);
+		Button saveSurveyGroupButton = new Button("Save Survey Group");
+		Button deleteSurveyGroupButton = new Button("Delete Survey Group");
+		surveyGroupDetail.add(surveyGroupId);
+		surveyGroupDetail.add(surveyGroupCode);
+		surveyGroupDetail.add(surveyGroupDesc);
+		surveyGroupDetail.add(saveSurveyGroupButton);
+		surveyGroupDetail.add(deleteSurveyGroupButton);
+		saveSurveyGroupButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				SurveyGroupDto dto = new SurveyGroupDto();
+				TextBox surveyGroupId =(TextBox) surveyGroupDetail.getWidget(0);
+				if(surveyGroupId.getText().length()>0){
+					dto.setKeyId(new Long(surveyGroupId.getText()));
+				}
+				TextBox groupCode = (TextBox) surveyGroupDetail.getWidget(1);
+				if(groupCode.getText().length()>0){
+					dto.setCode(groupCode.getText());
+				}
+				TextBox desc = (TextBox)surveyGroupDetail.getWidget(2);
+				if(desc.getText().length()>0){
+					dto.setDescription(desc.getText());
+				}
+				svc.saveSurveyGroup(dto, new AsyncCallback<SurveyGroupDto>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(SurveyGroupDto result) {
+						Window.alert("Survey Group Saved");
+					}
+					
+				});
+			}
+			
+		});
+		deleteSurveyGroupButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
 				
 			}
 			
 		});
+		removeAllWidgetsLoadThisWidget(surveyGroupDetail);
 	}
+	
+	private VerticalPanel surveyGroupDetail = new VerticalPanel();
+	private FlexTable surveyDetail = new FlexTable();
+	private FlexTable questionGroupDetail = new FlexTable();
+	
+	
+	private void loadSurveyDetail(SurveyDto item){
+		TextBox surveyId = new TextBox();
+		TextBox surveyname = new TextBox();
+		TextBox surveyDesc = new TextBox();
+		TextBox version = new TextBox();
+		
+		if(item!=null){
+			surveyId.setText(item.getKeyId().toString());
+			surveyname.setText(item.getName());
+			surveyDesc.setText(item.getDescription());
+			version.setText(item.getVersion());
+		}
+		
+		Button saveSurveyButton = new Button("Save");
+		Button deleteSurveyButton = new Button("Delete");
+		
+		surveyDetail.setWidget(0,0,surveyId);
+		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
+		surveyDetail.setWidget(1,1,surveyname);
+		surveyDetail.setWidget(2,0,new Label("Description"));
+		surveyDetail.setWidget(2,1,surveyDesc);
+		surveyDetail.setWidget(3, 0,new Label("Version"));
+		surveyDetail.setWidget(3,1,version);
+		surveyDetail.setWidget(4,0,saveSurveyButton);
+		surveyDetail.setWidget(4,1,deleteSurveyButton);
+		removeAllWidgetsLoadThisWidget(surveyDetail);
+		
+		
+		saveSurveyButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				SurveyDto surveyDto = new SurveyDto();
+				TreeItem parentItem = surveyTree.getSelectedItem();
+				SurveyGroupDto sgDto = (SurveyGroupDto)parentItem.getUserObject();
+				
+				Long surveyGroupId = sgDto.getKeyId();
+				
+				TextBox surveyId = (TextBox)surveyDetail.getWidget(0,0);
+				if(surveyId.getText().length()>0)
+					surveyDto.setKeyId(new Long(surveyId.getText()));
+				
+				TextBox name =(TextBox)	surveyDetail.getWidget(1,1);
+				if(name.getText().length()>0)
+					surveyDto.setName(name.getText());
+				
+				TextBox desc = (TextBox)surveyDetail.getWidget(2,1);
+				if(desc.getText().length()>0)
+					surveyDto.setDescription(desc.getText());
+				
+				svc.saveSurvey(surveyDto, surveyGroupId, new AsyncCallback<SurveyDto>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(SurveyDto result) {
+						Window.alert("Survey saved");
+						
+					}
+					
+				});
+			}
+			
+		});
+		
+	}
+	
+	private void loadQuestionGroupDetail(QuestionGroupDto item){
+		removeAllWidgetsLoadThisWidget(questionGroupDetail);
+		TextBox questionGroupId = new TextBox();
+		TextBox name = new TextBox();
+		TextBox description = new TextBox();
+		
+		if(item!=null){
+			questionGroupId.setText(item.getKeyId().toString());
+			name.setText(item.getCode());
+			description.setText(item.getDescription());
+		}
+		
+		Button saveQuestionGroupButton = new Button();
+		Button deleteQuestionGroupButton = new Button();
+		questionGroupDetail.setWidget(0,0,questionGroupId);
+		questionGroupDetail.setWidget(1, 0, new Label("Name"));
+		questionGroupDetail.setWidget(1,1,name);
+		questionGroupDetail.setWidget(2,0,new Label("Description"));
+		questionGroupDetail.setWidget(2,1,description);
+		questionGroupDetail.setWidget(4,0,saveQuestionGroupButton);
+		questionGroupDetail.setWidget(4,1,deleteQuestionGroupButton);
+	}
+	
 }

@@ -19,14 +19,12 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
@@ -287,21 +285,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return questionDtoList;
 	}
 
-	@Override
-	public QuestionDto saveQuestion(QuestionDto value) {
-		QuestionDao questionDao = new QuestionDao();
-		Question question = new Question();
-//		question.setKey(KeyFactory.createKey(question.getClass()
-//				.getSimpleName(), value.getKeyId()));
-//		question.setText(value.getText());
-//		question.setType(value.getType());
-		DtoMarshaller.copyToCanonical(question, value);
-		question = questionDao.save(question);
-		value.setKeyId(question.getKey().getId());
-		value.setText(question.getText());
-		value.setType(question.getType());
-		return value;
-	}
+	
 
 	@Override
 	public void deleteQuestion(QuestionDto value, Long questionGroupId) {
@@ -310,6 +294,52 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		DtoMarshaller.copyToCanonical(canonical, value);
 		questionDao.delete(canonical, questionGroupId);
 
+	}
+
+	@Override
+	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId) {
+		QuestionDao questionDao = new QuestionDao();
+		Question question = new Question();
+//		question.setKey(KeyFactory.createKey(question.getClass()
+//				.getSimpleName(), value.getKeyId()));
+//		question.setText(value.getText());
+//		question.setType(value.getType());
+		DtoMarshaller.copyToCanonical(question, value);
+		question = questionDao.save(question, questionGroupId);
+		value.setKeyId(question.getKey().getId());
+		value.setText(question.getText());
+		value.setType(question.getType());
+		return value;
+	}
+
+	@Override
+	public QuestionGroupDto saveQuestionGroup(QuestionGroupDto dto,
+			Long surveyId) {
+		QuestionGroup questionGroup = new QuestionGroup();
+		DtoMarshaller.copyToCanonical(questionGroup, dto);
+		QuestionGroupDao questionGroupDao= new QuestionGroupDao();
+		questionGroup = questionGroupDao.save(questionGroup, surveyId);
+		return null;
+	}
+
+	@Override
+	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId) {
+		Survey canonical = new Survey();
+		DtoMarshaller.copyToCanonical(canonical, surveyDto);
+		canonical = new SurveyDAO().save(canonical, surveyGroupId);
+		DtoMarshaller.copyToDto(canonical, surveyDto);
+		return surveyDto;
+		
+	}
+
+	@Override
+	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto) {
+		SurveyGroup canonical =new SurveyGroup();
+		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+		DtoMarshaller.copyToCanonical(canonical, dto);
+		canonical = surveyGroupDao.save(canonical);
+		DtoMarshaller.copyToDto(canonical, dto);
+		return dto;
 	}
 
 }

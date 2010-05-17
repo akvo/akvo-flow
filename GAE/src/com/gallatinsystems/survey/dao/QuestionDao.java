@@ -42,5 +42,15 @@ public class QuestionDao extends BaseDAO<Question> {
 		
 		
 	}
+	
+	public Question save(Question question, Long questionGroupId){
+		question = super.save(question);
+		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
+		qqga.setQuestionGroupId(questionGroupId);
+		qqga.setQuestionId(question.getKey().getId());
+		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
+		qqgaDao.save(qqga);
+		return question;
+	}
 
 }

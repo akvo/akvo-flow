@@ -21,6 +21,26 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 	public QuestionGroup save(QuestionGroup item) {
 		return super.save(item);
 	}
+	
+	public QuestionGroup save(QuestionGroup item, Long surveyId){
+		item = save(item);
+		SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
+		sqga.setSurveyId(surveyId);
+		sqga.setQuestionGroupId(item.getKey().getId());
+		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
+		sqgaDao.save(sqga);
+		return item;
+	}
+	
+	public void delete(QuestionGroup item, Long surveyId){
+		//ToDo Handle delete and cascades
+		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
+		SurveyQuestionGroupAssoc sgqa = new SurveyQuestionGroupAssoc();
+		sgqa.setSurveyId(surveyId);
+		sgqa.setQuestionGroupId(item.getKey().getId());
+		sqgaDao.delete(sgqa);
+		super.delete(item);
+	}
 
 	public QuestionGroup getById(Long id) {
 		return super.getByKey(id);

@@ -48,9 +48,21 @@ public interface SurveyServiceAsync {
 	void listQuestionsByQuestionGroup(String questionGroupId,
 			AsyncCallback<ArrayList<QuestionDto>> callback);
 
-
-	void saveQuestion(QuestionDto value, AsyncCallback<QuestionDto> callback);
-
-
 	void deleteQuestion(QuestionDto value, Long questionGroupId, AsyncCallback<Void> callback);
+
+
+	void saveSurvey(SurveyDto surveyDto, Long surveyGroupId,
+			AsyncCallback<SurveyDto> callback);
+
+
+	void saveQuestion(QuestionDto value, Long questionGroupId,
+			AsyncCallback<QuestionDto> callback);
+
+
+	void saveQuestionGroup(QuestionGroupDto dto, Long surveyId,
+			AsyncCallback<QuestionGroupDto> callback);
+
+
+	void saveSurveyGroup(SurveyGroupDto dto,
+			AsyncCallback<SurveyGroupDto> callback);
 }

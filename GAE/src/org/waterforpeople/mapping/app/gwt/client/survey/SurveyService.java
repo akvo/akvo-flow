@@ -51,6 +51,10 @@ public interface SurveyService extends RemoteService {
 	
 	public List<QuestionDto> listQuestionForQuestionGroup(
 			String questionGroupCode);
-	public QuestionDto saveQuestion(QuestionDto value);
+	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId);
 	public void deleteQuestion(QuestionDto value, Long questionGroupId);
+	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId);
+	public QuestionGroupDto saveQuestionGroup(QuestionGroupDto dto, Long surveyId);
+	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto);
+	
 }

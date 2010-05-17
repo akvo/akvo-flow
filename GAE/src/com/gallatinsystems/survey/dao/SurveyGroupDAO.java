@@ -45,35 +45,36 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		BaseDAO<Question> questionDAO = new BaseDAO<Question>(Question.class);
 
 		Long surveyGroupId = item.getKey().getId();
-		for (Survey surveyItem : item.getSurveyList()) {
-			surveyItem = surveyDao.save(surveyItem);
-			Long surveyId = surveyItem.getKey().getId();
-			SurveySurveyGroupAssoc ssga = new SurveySurveyGroupAssoc();
-			ssga.setSurveyGroupId(surveyGroupId);
-			ssga.setSurveyId(surveyId);
-			ssgaDAO.save(ssga);
-			// Save Question Group
-			for (QuestionGroup qg : surveyItem.getQuestionGroupList()) {
-				qg = qgDao.save(qg);
-				SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
-				sqga.setQuestionGroupId(qg.getKey().getId());
-				sqga.setSurveyId(surveyItem.getKey().getId());
-				sqgaDao.save(sqga);
-				for (Entry<Integer, Question> questionEntry : qg
-						.getQuestionMap().entrySet()) {
-					Question question = questionEntry.getValue();
-					Integer order = questionEntry.getKey();
-					question = questionDAO.save(question);
-					QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
-					qqga.setQuestionGroupId(qg.getKey().getId());
-					qqga.setQuestionId(question.getKey().getId());
-					qqga.setOrder(order);
-					qqgaDao.save(qqga);
+		if (item.getSurveyList() != null && item.getSurveyList().size() > 0) {
+			for (Survey surveyItem : item.getSurveyList()) {
+				surveyItem = surveyDao.save(surveyItem);
+				Long surveyId = surveyItem.getKey().getId();
+				SurveySurveyGroupAssoc ssga = new SurveySurveyGroupAssoc();
+				ssga.setSurveyGroupId(surveyGroupId);
+				ssga.setSurveyId(surveyId);
+				ssgaDAO.save(ssga);
+				// Save Question Group
+				for (QuestionGroup qg : surveyItem.getQuestionGroupList()) {
+					qg = qgDao.save(qg);
+					SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
+					sqga.setQuestionGroupId(qg.getKey().getId());
+					sqga.setSurveyId(surveyItem.getKey().getId());
+					sqgaDao.save(sqga);
+					for (Entry<Integer, Question> questionEntry : qg
+							.getQuestionMap().entrySet()) {
+						Question question = questionEntry.getValue();
+						Integer order = questionEntry.getKey();
+						question = questionDAO.save(question);
+						QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
+						qqga.setQuestionGroupId(qg.getKey().getId());
+						qqga.setQuestionId(question.getKey().getId());
+						qqga.setOrder(order);
+						qqgaDao.save(qqga);
+					}
 				}
+
 			}
-
 		}
-
 		return item;
 	}
 

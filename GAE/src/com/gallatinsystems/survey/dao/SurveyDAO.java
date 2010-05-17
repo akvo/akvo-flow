@@ -39,6 +39,15 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	public SurveyGroup save(SurveyGroup surveyGroup) {
 		return super.save(surveyGroup);
 	}
+	public Survey save(Survey survey, Long surveyGroupId){
+		survey = super.save(survey);
+		SurveySurveyGroupAssoc ssga = new SurveySurveyGroupAssoc();
+		ssga.setSurveyId(survey.getKey().getId());
+		ssga.setSurveyGroupId(surveyGroupId);
+		SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
+		ssgaDao.save(ssga);
+		return survey;
+	}
 
 	public Survey getById(Long id) {
 		return super.getByKey(id);
