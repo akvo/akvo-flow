@@ -44,6 +44,8 @@ public class SurveyDownloadService extends Service {
 	private static final String SURVEY_FILE_SUFFIX = ".xml";
 	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
+	
+	private static final String NO_SURVEY = "No Survey Found";
 
 	// private static final String SURVEY_LIST_SERVICE_URL =
 	// "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
@@ -173,15 +175,18 @@ public class SurveyDownloadService extends Service {
 		try {
 			String response = HttpUtil.httpGet(SURVEY_SERVICE_URL
 					+ survey.getId());
-
-			survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
-			survey.setType(DEFAULT_TYPE);
-			survey.setLocation(SD_LOC);
-			File file = new File(ConstantUtil.DATA_DIR, survey.getFileName());
-			PrintStream writer = new PrintStream(new FileOutputStream(file));
-			writer.print(response);
-			writer.close();
-			success = true;
+			if (response != null
+					&& !response.trim().equalsIgnoreCase(NO_SURVEY)) {
+				survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
+				survey.setType(DEFAULT_TYPE);
+				survey.setLocation(SD_LOC);
+				File file = new File(ConstantUtil.DATA_DIR, survey
+						.getFileName());
+				PrintStream writer = new PrintStream(new FileOutputStream(file));
+				writer.print(response);
+				writer.close();
+				success = true;
+			}
 		} catch (IOException e) {
 			Log.e(TAG, "Could write survey file " + survey.getFileName(), e);
 		} catch (Exception e) {
