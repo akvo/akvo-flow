@@ -17,7 +17,9 @@ public interface SurveyService extends RemoteService {
 
 	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode);
 
-	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,Boolean loadSurveyFlag,Boolean loadQuestionGroupFlag,Boolean loadQuestionFlag);
+	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,
+			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
+			Boolean loadQuestionFlag);
 
 	public ArrayList<SurveyDto> getSurveyGroup(String surveyGroupCode);
 
@@ -25,6 +27,12 @@ public interface SurveyService extends RemoteService {
 	 * lists all surveys for a group
 	 */
 	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupId);
+
+	public ArrayList<QuestionGroupDto> listQuestionGroupsBySurvey(
+			String surveyId);
+
+	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
+			String questionGroupId);
 
 	public SurveyGroupDto save(SurveyGroupDto value);
 
@@ -35,9 +43,14 @@ public interface SurveyService extends RemoteService {
 	 * @return
 	 */
 	public SurveyDto loadFullSurvey(Long surveyId);
+
 	public SurveyDto loadFullSurvey(String surveyName);
+
 	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
+
 	
-	public List<QuestionGroupDto> listQuestionGroupForSurvey(String surveyCode);
-	public List<QuestionDto> listQuestionForQuestionGroup(String questionGroupCode);
+	public List<QuestionDto> listQuestionForQuestionGroup(
+			String questionGroupCode);
+	public QuestionDto saveQuestion(QuestionDto value);
+	public void deleteQuestion(QuestionDto value, Long questionGroupId);
 }

@@ -268,7 +268,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 
 	private void getSurveyGroups() {
 		surveyService = GWT.create(SurveyService.class);
-		surveyService.listSurveyGroups(null,
+		surveyService.listSurveyGroups("all",true, false, false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override

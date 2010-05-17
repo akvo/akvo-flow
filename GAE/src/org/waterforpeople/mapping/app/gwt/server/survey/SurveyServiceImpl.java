@@ -12,19 +12,21 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
@@ -189,36 +191,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return value;
 	}
 
-	public void test() {
-		int t = 0;
-		SurveyGroupDto sgd = new SurveyGroupDto();
-		sgd.setCode("Survey Group :" + t);
-		sgd.setDescription("Test Survey Group: " + t);
-		for (int i = 0; i < 5; i++) {
-			SurveyDto surveyDto = new SurveyDto();
-			surveyDto.setDescription("test : " + i);
-			for (int q = 0; q < 10; q++) {
-				QuestionGroupDto qgd = new QuestionGroupDto();
-				qgd.setCode("Question Group: " + q);
-				qgd.setDescription("Question Group Desc: " + q);
-				for (int j = 0; j < 10; j++) {
-					QuestionDto qd = new QuestionDto();
-					qd.setText("Question Test: " + j);
-					qd.setType(QuestionType.FREE_TEXT);
-					qgd.addQuestion(qd, j);
-				}
-				surveyDto.addQuestionGroup(qgd);
-			}
-			surveyDto.setVersion("Version: " + i);
-			sgd.addSurvey(surveyDto);
-		}
-		save(sgd);
-
-		SurveyGroupDAO sgDAO = new SurveyGroupDAO();
-		SurveyGroup sgResult = sgDAO.getByKey(sgd.getKeyId());
-		log.info("SurveyGroup Result: " + sgResult);
-	}
-
 	/**
 	 * fully hydrates a single survey object
 	 */
@@ -278,14 +250,66 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<QuestionDto> listQuestionForQuestionGroup(
 			String questionGroupCode) {
-		QuestionDao questionDao =new QuestionDao();
-		 
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QuestionGroupDto> listQuestionGroupForSurvey(String surveyCode) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<QuestionGroupDto> listQuestionGroupsBySurvey(
+			String surveyId) {
+		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
+		List<QuestionGroup> questionGroupList = questionGroupDao
+				.listQuestionGroupsBySurvey(new Long(surveyId));
+		ArrayList<QuestionGroupDto> questionGroupDtoList = new ArrayList<QuestionGroupDto>();
+		for (QuestionGroup canonical : questionGroupList) {
+			QuestionGroupDto dto = new QuestionGroupDto();
+			DtoMarshaller.copyToDto(canonical, dto);
+			questionGroupDtoList.add(dto);
+		}
+		return questionGroupDtoList;
 	}
+
+	@Override
+	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
+			String questionGroupId) {
+		QuestionDao questionDao = new QuestionDao();
+		List<Question> questionList = questionDao
+				.listQuestionsByQuestionGroup(questionGroupId);
+		java.util.ArrayList<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
+		for (Question canonical : questionList) {
+			QuestionDto dto = new QuestionDto();
+			// DtoMarshaller.copyToDto(canonical, dto);
+			dto.setKeyId(canonical.getKey().getId());
+			dto.setText(canonical.getText());
+			dto.setType(canonical.getType());
+			questionDtoList.add(dto);
+		}
+		return questionDtoList;
+	}
+
+	@Override
+	public QuestionDto saveQuestion(QuestionDto value) {
+		QuestionDao questionDao = new QuestionDao();
+		Question question = new Question();
+//		question.setKey(KeyFactory.createKey(question.getClass()
+//				.getSimpleName(), value.getKeyId()));
+//		question.setText(value.getText());
+//		question.setType(value.getType());
+		DtoMarshaller.copyToCanonical(question, value);
+		question = questionDao.save(question);
+		value.setKeyId(question.getKey().getId());
+		value.setText(question.getText());
+		value.setType(question.getType());
+		return value;
+	}
+
+	@Override
+	public void deleteQuestion(QuestionDto value, Long questionGroupId) {
+		QuestionDao questionDao = new QuestionDao();
+		Question canonical = new Question();
+		DtoMarshaller.copyToCanonical(canonical, value);
+		questionDao.delete(canonical, questionGroupId);
+
+	}
+
 }

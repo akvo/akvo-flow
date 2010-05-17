@@ -50,8 +50,20 @@ import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyQuestionGroupAssocDao;
+import com.gallatinsystems.survey.dao.SurveySurveyGroupAssocDao;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
+import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -490,8 +502,88 @@ public class TestHarnessServlet extends HttpServlet {
 				System.out.println(mappings.size());
 			}
 		} else if ("saveSurveyGroup".equals(action)) {
-			SurveyServiceImpl ssI = new SurveyServiceImpl();
-			ssI.test();
+			try {
+				SurveyGroupDAO sgDao = new SurveyGroupDAO();
+				List<SurveyGroup> sgList = sgDao.list("all");
+				for (SurveyGroup sg : sgList) {
+					sgDao.delete(sg);
+				}
+				resp.getWriter().println("Deleted all survey groups");
+
+				SurveyDAO surveyDao = new SurveyDAO();
+				List<Survey> surveyList = surveyDao.list("all");
+				for (Survey survey : surveyList) {
+					surveyDao.delete(survey);
+				}
+				resp.getWriter().println("Deleted all surveys");
+
+				SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
+				List<SurveySurveyGroupAssoc> ssgaList = ssgaDao.list("all");
+				for (SurveySurveyGroupAssoc ssga : ssgaList) {
+					ssgaDao.delete(ssga);
+				}
+				resp.getWriter().println("Deleted all surveysurveygroupassocs");
+				QuestionGroupDao qgDao = new QuestionGroupDao();
+				List<QuestionGroup> qgList = qgDao.list("all");
+				for (QuestionGroup qg : qgList) {
+					qgDao.delete(qg);
+				}
+				resp.getWriter().println("Deleted all question groups");
+
+				SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
+				List<SurveyQuestionGroupAssoc> sgqaList = sqgaDao.list("all");
+				for (SurveyQuestionGroupAssoc sqga : sgqaList) {
+					sqgaDao.delete(sqga);
+				}
+				resp.getWriter().println(
+						"Deleted all surveyquestiongroupassocdao");
+
+				QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
+				List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao.list("all");
+				for (QuestionQuestionGroupAssoc qqga : qqgaList) {
+					qqgaDao.delete(qqga);
+				}
+				resp.getWriter().println(
+						"Deleted all QuestionQuestionGroupsAssocs");
+				QuestionDao qDao = new QuestionDao();
+				List<Question> qList = qDao.list("all");
+				for (Question q : qList) {
+					qDao.delete(q);
+				}
+				resp.getWriter().println("Deleted all questions");
+				for (int t = 0; t < 4; t++) {
+					SurveyGroupDto sgd = new SurveyGroupDto();
+					sgd.setCode("Survey Group :" + t);
+					sgd.setDescription("Test Survey Group: " + t);
+					for (int i = 0; i < 5; i++) {
+						SurveyDto surveyDto = new SurveyDto();
+						surveyDto.setName("Survey:" + i);
+						surveyDto.setDescription("test : " + i);
+						for (int q = 0; q < 10; q++) {
+							QuestionGroupDto qgd = new QuestionGroupDto();
+							qgd.setCode("Question Group: " + q);
+							qgd.setDescription("Question Group Desc: " + q);
+							for (int j = 0; j < 3; j++) {
+								QuestionDto qd = new QuestionDto();
+								qd.setText("Question Test: " + j);
+								qd.setType(QuestionType.FREE_TEXT);
+								qgd.addQuestion(qd, j);
+							}
+							surveyDto.addQuestionGroup(qgd);
+						}
+						surveyDto.setVersion("Version: " + i);
+						sgd.addSurvey(surveyDto);
+					}
+					new SurveyServiceImpl().save(sgd);
+					resp.getWriter().println("Saved: " + sgd.getCode());
+				}
+
+				resp.getWriter().println(
+						"Finished deleting and reloading SurveyGroup graph");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if ("testFindSurvey".equals(action)) {
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
 			SurveyDto dto = ssI.loadFullSurvey(2349L);
