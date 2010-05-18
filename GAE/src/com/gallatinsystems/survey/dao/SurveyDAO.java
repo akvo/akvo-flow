@@ -88,10 +88,10 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return survey;
 	}
 
-	public Long save(String surveyDefinition) {
+	public Long save(Long surveyId, String surveyDocument) {
 		SurveyContainer sc = new SurveyContainer();
 		com.google.appengine.api.datastore.Text surveyText = new com.google.appengine.api.datastore.Text(
-				surveyDefinition);
+				surveyDocument);
 		sc.setSurveyDocument(surveyText);
 		sc = super.save(sc);
 		return sc.getKey().getId();

@@ -56,8 +56,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		if (mgrReq.getAction() == null) {
 			if (mgrReq.getSurveyDoc() != null) {
 				SurveyDAO surveyDAO = new SurveyDAO();
-				resp.setMessage("Survey : "
-						+ surveyDAO.save(mgrReq.getSurveyDoc()));
+//				resp.setMessage("Survey : "
+//						+ surveyDAO.save(mgrReq.getSurveyDoc()));
 			} else if (mgrReq.getSurveyInstanceId() != null) {
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 				SurveyInstance si = siDAO

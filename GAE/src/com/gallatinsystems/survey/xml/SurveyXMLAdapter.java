@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import com.gallatinsystems.survey.domain.xml.Question;
@@ -26,6 +28,16 @@ public class SurveyXMLAdapter {
 		StringReader sr = new StringReader(xmlDoc);
 		Survey survey = (Survey) unmarshaller.unmarshal(sr);
 		return survey;
+	}
+	
+	public String marshal(Survey survey) throws JAXBException{
+		JAXBContext jc = JAXBContext
+		.newInstance("com.gallatinsystems.survey.domain");
+		java.io.StringWriter sw =new java.io.StringWriter();
+		Marshaller marshaller = jc.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		marshaller.marshal(survey, sw);
+		return sw.toString();
 	}
 
 	public void printMarshalledDocument(Survey survey) {

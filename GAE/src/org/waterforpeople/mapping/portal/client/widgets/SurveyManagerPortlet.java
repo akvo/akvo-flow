@@ -105,12 +105,13 @@ public class SurveyManagerPortlet extends Portlet {
 		configureButtonPanel();
 
 	}
+
 	private VerticalPanel detailContainer = new VerticalPanel();
 
 	private TreeItem selectedItem = null;
-	
-	private void removeAllWidgetsLoadThisWidget(Widget w){
-		for(int i=0;i<detailContainer.getWidgetCount();i++){
+
+	private void removeAllWidgetsLoadThisWidget(Widget w) {
+		for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
 			detailContainer.remove(i);
 		}
 		detailContainer.add(w);
@@ -155,8 +156,7 @@ public class SurveyManagerPortlet extends Portlet {
 												SurveyGroupDto sg = (SurveyGroupDto) item
 														.getUserObject();
 												loadSurveyGroupDetail(sg);
-												
-												
+
 												svc
 														.listSurveysByGroup(
 																sg
@@ -181,7 +181,6 @@ public class SurveyManagerPortlet extends Portlet {
 																		for (SurveyDto surveyDto : result) {
 																			bindSurvey(surveyDto);
 																		}
-																		
 
 																	}
 
@@ -195,7 +194,7 @@ public class SurveyManagerPortlet extends Portlet {
 												SurveyDto s = (SurveyDto) item
 														.getUserObject();
 												loadSurveyDetail(s);
-												
+
 												String surveyId = s.getKeyId()
 														.toString();
 												svc
@@ -233,7 +232,7 @@ public class SurveyManagerPortlet extends Portlet {
 												QuestionGroupDto qgDto = (QuestionGroupDto) item
 														.getUserObject();
 												loadQuestionGroupDetail(qgDto);
-												
+
 												svc
 														.listQuestionsByQuestionGroup(
 																qgDto
@@ -271,7 +270,6 @@ public class SurveyManagerPortlet extends Portlet {
 												QuestionDto questionDto = (QuestionDto) item
 														.getUserObject();
 												loadQuestionDetails(questionDto);
-												
 
 											}
 
@@ -385,7 +383,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-		
+
 			}
 
 		});
@@ -394,7 +392,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-					loadQuestionDetails(null);
+				loadQuestionDetails(null);
 			}
 
 		});
@@ -457,8 +455,10 @@ public class SurveyManagerPortlet extends Portlet {
 			public void onClick(ClickEvent event) {
 				QuestionDto value = new QuestionDto();
 				TextBox questionId = (TextBox) questionDetailPanel.getWidget(0);
-				TextBox questionText = (TextBox) questionDetailPanel.getWidget(1);
-				ListBox questionTypeLB = (ListBox) questionDetailPanel.getWidget(2);
+				TextBox questionText = (TextBox) questionDetailPanel
+						.getWidget(1);
+				ListBox questionTypeLB = (ListBox) questionDetailPanel
+						.getWidget(2);
 				value.setKeyId(new Long(questionId.getText()));
 				value.setText(questionText.getText());
 				if (questionTypeLB.getSelectedIndex() == 0) {
@@ -535,18 +535,18 @@ public class SurveyManagerPortlet extends Portlet {
 
 		});
 	}
-	
-	private void loadSurveyGroupDetail(SurveyGroupDto item){
+
+	private void loadSurveyGroupDetail(SurveyGroupDto item) {
 		TextBox surveyGroupId = new TextBox();
 		TextBox surveyGroupCode = new TextBox();
 		TextBox surveyGroupDesc = new TextBox();
-		
-		if(item!=null){
+
+		if (item != null) {
 			surveyGroupId.setText(item.getKeyId().toString());
 			surveyGroupCode.setText(item.getCode());
 			surveyGroupDesc.setText(item.getDescription());
 		}
-		
+
 		surveyGroupId.setVisible(false);
 		Button saveSurveyGroupButton = new Button("Save Survey Group");
 		Button deleteSurveyGroupButton = new Button("Delete Survey Group");
@@ -555,149 +555,182 @@ public class SurveyManagerPortlet extends Portlet {
 		surveyGroupDetail.add(surveyGroupDesc);
 		surveyGroupDetail.add(saveSurveyGroupButton);
 		surveyGroupDetail.add(deleteSurveyGroupButton);
-		saveSurveyGroupButton.addClickHandler(new ClickHandler(){
+		saveSurveyGroupButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				SurveyGroupDto dto = new SurveyGroupDto();
-				TextBox surveyGroupId =(TextBox) surveyGroupDetail.getWidget(0);
-				if(surveyGroupId.getText().length()>0){
+				TextBox surveyGroupId = (TextBox) surveyGroupDetail
+						.getWidget(0);
+				if (surveyGroupId.getText().length() > 0) {
 					dto.setKeyId(new Long(surveyGroupId.getText()));
 				}
 				TextBox groupCode = (TextBox) surveyGroupDetail.getWidget(1);
-				if(groupCode.getText().length()>0){
+				if (groupCode.getText().length() > 0) {
 					dto.setCode(groupCode.getText());
 				}
-				TextBox desc = (TextBox)surveyGroupDetail.getWidget(2);
-				if(desc.getText().length()>0){
+				TextBox desc = (TextBox) surveyGroupDetail.getWidget(2);
+				if (desc.getText().length() > 0) {
 					dto.setDescription(desc.getText());
 				}
-				svc.saveSurveyGroup(dto, new AsyncCallback<SurveyGroupDto>(){
+				svc.saveSurveyGroup(dto, new AsyncCallback<SurveyGroupDto>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
-						
+
 					}
 
 					@Override
 					public void onSuccess(SurveyGroupDto result) {
 						Window.alert("Survey Group Saved");
 					}
-					
+
 				});
 			}
-			
+
 		});
-		deleteSurveyGroupButton.addClickHandler(new ClickHandler(){
+		deleteSurveyGroupButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
 		removeAllWidgetsLoadThisWidget(surveyGroupDetail);
 	}
-	
+
 	private VerticalPanel surveyGroupDetail = new VerticalPanel();
 	private FlexTable surveyDetail = new FlexTable();
 	private FlexTable questionGroupDetail = new FlexTable();
-	
-	
-	private void loadSurveyDetail(SurveyDto item){
+
+	private void loadSurveyDetail(SurveyDto item) {
 		TextBox surveyId = new TextBox();
 		TextBox surveyname = new TextBox();
 		TextBox surveyDesc = new TextBox();
 		TextBox version = new TextBox();
-		
-		if(item!=null){
+
+		if (item != null) {
 			surveyId.setText(item.getKeyId().toString());
 			surveyname.setText(item.getName());
 			surveyDesc.setText(item.getDescription());
 			version.setText(item.getVersion());
 		}
-		
+
 		Button saveSurveyButton = new Button("Save");
 		Button deleteSurveyButton = new Button("Delete");
-		
-		surveyDetail.setWidget(0,0,surveyId);
+		Button publishSurveyButton = new Button("Publish");
+
+		surveyDetail.setWidget(0, 0, surveyId);
 		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
-		surveyDetail.setWidget(1,1,surveyname);
-		surveyDetail.setWidget(2,0,new Label("Description"));
-		surveyDetail.setWidget(2,1,surveyDesc);
-		surveyDetail.setWidget(3, 0,new Label("Version"));
-		surveyDetail.setWidget(3,1,version);
-		surveyDetail.setWidget(4,0,saveSurveyButton);
-		surveyDetail.setWidget(4,1,deleteSurveyButton);
+		surveyDetail.setWidget(1, 1, surveyname);
+		surveyDetail.setWidget(2, 0, new Label("Description"));
+		surveyDetail.setWidget(2, 1, surveyDesc);
+		surveyDetail.setWidget(3, 0, new Label("Version"));
+		surveyDetail.setWidget(3, 1, version);
+		surveyDetail.setWidget(4, 0, saveSurveyButton);
+		surveyDetail.setWidget(4, 1, deleteSurveyButton);
+		surveyDetail.setWidget(4, 2, publishSurveyButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
-		
-		
-		saveSurveyButton.addClickHandler(new ClickHandler(){
+
+		saveSurveyButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				SurveyDto surveyDto = new SurveyDto();
 				TreeItem parentItem = surveyTree.getSelectedItem();
-				SurveyGroupDto sgDto = (SurveyGroupDto)parentItem.getUserObject();
-				
+				SurveyGroupDto sgDto = (SurveyGroupDto) parentItem
+						.getUserObject();
+
 				Long surveyGroupId = sgDto.getKeyId();
-				
-				TextBox surveyId = (TextBox)surveyDetail.getWidget(0,0);
-				if(surveyId.getText().length()>0)
+
+				TextBox surveyId = (TextBox) surveyDetail.getWidget(0, 0);
+				if (surveyId.getText().length() > 0)
 					surveyDto.setKeyId(new Long(surveyId.getText()));
-				
-				TextBox name =(TextBox)	surveyDetail.getWidget(1,1);
-				if(name.getText().length()>0)
+
+				TextBox name = (TextBox) surveyDetail.getWidget(1, 1);
+				if (name.getText().length() > 0)
 					surveyDto.setName(name.getText());
-				
-				TextBox desc = (TextBox)surveyDetail.getWidget(2,1);
-				if(desc.getText().length()>0)
+
+				TextBox desc = (TextBox) surveyDetail.getWidget(2, 1);
+				if (desc.getText().length() > 0)
 					surveyDto.setDescription(desc.getText());
-				
-				svc.saveSurvey(surveyDto, surveyGroupId, new AsyncCallback<SurveyDto>(){
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-						
-					}
+				svc.saveSurvey(surveyDto, surveyGroupId,
+						new AsyncCallback<SurveyDto>() {
 
-					@Override
-					public void onSuccess(SurveyDto result) {
-						Window.alert("Survey saved");
-						
-					}
-					
-				});
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void onSuccess(SurveyDto result) {
+								Window.alert("Survey saved");
+
+							}
+
+						});
 			}
-			
+
 		});
-		
+
+		publishSurveyButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Long surveyId = 0L;
+				TextBox surveyIdTB = (TextBox) surveyDetail.getWidget(0, 0);
+				if (surveyIdTB.getText().length() > 0) {
+					surveyId = new Long(surveyIdTB.getText());
+					svc.publishSurvey(surveyId, new AsyncCallback<String>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+
+						}
+
+						@Override
+						public void onSuccess(String result) {
+							Window.alert(result);
+
+						}
+
+					});
+				} else {
+					Window.alert("Please save survey before publishing");
+				}
+			}
+
+		});
+
 	}
-	
-	private void loadQuestionGroupDetail(QuestionGroupDto item){
+
+	private void loadQuestionGroupDetail(QuestionGroupDto item) {
 		removeAllWidgetsLoadThisWidget(questionGroupDetail);
 		TextBox questionGroupId = new TextBox();
 		TextBox name = new TextBox();
 		TextBox description = new TextBox();
-		
-		if(item!=null){
+
+		if (item != null) {
 			questionGroupId.setText(item.getKeyId().toString());
 			name.setText(item.getCode());
 			description.setText(item.getDescription());
 		}
-		
+
 		Button saveQuestionGroupButton = new Button();
 		Button deleteQuestionGroupButton = new Button();
-		questionGroupDetail.setWidget(0,0,questionGroupId);
+		questionGroupDetail.setWidget(0, 0, questionGroupId);
 		questionGroupDetail.setWidget(1, 0, new Label("Name"));
-		questionGroupDetail.setWidget(1,1,name);
-		questionGroupDetail.setWidget(2,0,new Label("Description"));
-		questionGroupDetail.setWidget(2,1,description);
-		questionGroupDetail.setWidget(4,0,saveQuestionGroupButton);
-		questionGroupDetail.setWidget(4,1,deleteQuestionGroupButton);
+		questionGroupDetail.setWidget(1, 1, name);
+		questionGroupDetail.setWidget(2, 0, new Label("Description"));
+		questionGroupDetail.setWidget(2, 1, description);
+		questionGroupDetail.setWidget(4, 0, saveQuestionGroupButton);
+		questionGroupDetail.setWidget(4, 1, deleteQuestionGroupButton);
 	}
-	
+
 }

@@ -54,7 +54,11 @@ public class QuestionGroup {
     protected Heading heading;
     @XmlElement(required = true)
     protected List<Question> question;
-    @XmlAttribute(required = true)
+    public void setQuestion(List<Question> question) {
+		this.question = question;
+	}
+
+	@XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String order;

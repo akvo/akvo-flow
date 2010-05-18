@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Survey{
 
     @XmlElement(required = true)
-    protected List<QuestionGroup> questionGroup;
+	private List<QuestionGroup> questionGroup;
 
     /**
      * Gets the value of the questionGroup property.
@@ -75,5 +75,9 @@ public class Survey{
         }
         return this.questionGroup;
     }
+
+	public void setQuestionGroup(List<QuestionGroup> questionGroup) {
+		this.questionGroup = questionGroup;
+	}
 
 }

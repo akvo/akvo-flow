@@ -25,6 +25,8 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.Survey.SurveyStatus;
+import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
@@ -285,8 +287,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return questionDtoList;
 	}
 
-	
-
 	@Override
 	public void deleteQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
@@ -300,10 +300,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
 		Question question = new Question();
-//		question.setKey(KeyFactory.createKey(question.getClass()
-//				.getSimpleName(), value.getKeyId()));
-//		question.setText(value.getText());
-//		question.setType(value.getType());
+		// question.setKey(KeyFactory.createKey(question.getClass()
+		// .getSimpleName(), value.getKeyId()));
+		// question.setText(value.getText());
+		// question.setType(value.getType());
 		DtoMarshaller.copyToCanonical(question, value);
 		question = questionDao.save(question, questionGroupId);
 		value.setKeyId(question.getKey().getId());
@@ -317,7 +317,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Long surveyId) {
 		QuestionGroup questionGroup = new QuestionGroup();
 		DtoMarshaller.copyToCanonical(questionGroup, dto);
-		QuestionGroupDao questionGroupDao= new QuestionGroupDao();
+		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 		questionGroup = questionGroupDao.save(questionGroup, surveyId);
 		return null;
 	}
@@ -325,21 +325,50 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId) {
 		Survey canonical = new Survey();
+		canonical.setStatus(SurveyStatus.IN_PROGRESS);
 		DtoMarshaller.copyToCanonical(canonical, surveyDto);
 		canonical = new SurveyDAO().save(canonical, surveyGroupId);
 		DtoMarshaller.copyToDto(canonical, surveyDto);
 		return surveyDto;
-		
+
 	}
 
 	@Override
 	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto) {
-		SurveyGroup canonical =new SurveyGroup();
+		SurveyGroup canonical = new SurveyGroup();
 		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 		DtoMarshaller.copyToCanonical(canonical, dto);
 		canonical = surveyGroupDao.save(canonical);
 		DtoMarshaller.copyToDto(canonical, dto);
 		return dto;
+	}
+
+	@Override
+	public String publishSurvey(Long surveyId) {
+		try {
+			SurveyDAO surveyDao = new SurveyDAO();
+			Survey survey = surveyDao.loadFullSurvey(surveyId);
+			SurveyXMLAdapter sax = new SurveyXMLAdapter();
+			com.gallatinsystems.survey.domain.xml.Survey surveyXML = new com.gallatinsystems.survey.domain.xml.Survey();
+			for(QuestionGroup qg:survey.getQuestionGroupList()){
+				for(Entry<Integer,Question> qEntry:qg.getQuestionMap().entrySet()){
+					Question q = qEntry.getValue();
+					com.gallatinsystems.survey.domain.xml.Question qXML = new com.gallatinsystems.survey.domain.xml.Question();
+					//ToDo marshall xml 
+					//qXML.setText(q.getText());
+				}
+			}
+			String surveyDocument = sax.marshal(surveyXML);
+			surveyDao.save(surveyId, surveyDocument);
+			survey.setStatus(SurveyStatus.PUBLISHED);
+			surveyDao.save(survey);
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return "Could not publish survey " + ex.getMessage();
+		}
+
+		return "Survey successfully published";
 	}
 
 }

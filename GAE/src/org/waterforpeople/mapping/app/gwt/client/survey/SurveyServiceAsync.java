@@ -65,4 +65,7 @@ public interface SurveyServiceAsync {
 
 	void saveSurveyGroup(SurveyGroupDto dto,
 			AsyncCallback<SurveyGroupDto> callback);
+
+
+	void publishSurvey(Long surveyId, AsyncCallback<String> callback);
 }

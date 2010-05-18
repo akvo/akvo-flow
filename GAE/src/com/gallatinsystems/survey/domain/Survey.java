@@ -16,6 +16,7 @@ public class Survey extends BaseDomain{
 	private String description;
 	@NotPersistent
 	private ArrayList<QuestionGroup> questionGroupList;
+	private SurveyStatus status = null;
 	
 	public void addQuestionGroup(QuestionGroup questionGroup){
 		if(questionGroupList==null){
@@ -49,6 +50,10 @@ public class Survey extends BaseDomain{
 		this.description = description;
 	}
 	
+	public enum SurveyStatus{
+		IN_PROGRESS, PUBLISHED
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
@@ -78,6 +83,14 @@ public class Survey extends BaseDomain{
 		result.append("}");
 
 		return result.toString();
+	}
+
+	public void setStatus(SurveyStatus status) {
+		this.status = status;
+	}
+
+	public SurveyStatus getStatus() {
+		return status;
 	}
 
 }
