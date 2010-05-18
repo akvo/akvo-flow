@@ -303,10 +303,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
 		Question question = new Question();
-		// question.setKey(KeyFactory.createKey(question.getClass()
-		// .getSimpleName(), value.getKeyId()));
-		// question.setText(value.getText());
-		// question.setType(value.getType());
 		DtoMarshaller.copyToCanonical(question, value);
 		question = questionDao.save(question, questionGroupId);
 		value.setKeyId(question.getKey().getId());
@@ -322,7 +318,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		DtoMarshaller.copyToCanonical(questionGroup, dto);
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 		questionGroup = questionGroupDao.save(questionGroup, surveyId);
-		return null;
+		DtoMarshaller.copyToDto(questionGroup, dto);
+		return dto;
 	}
 
 	@Override
