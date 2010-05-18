@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import com.gallatinsystems.survey.domain.xml.ObjectFactory;
 import com.gallatinsystems.survey.domain.xml.Question;
 import com.gallatinsystems.survey.domain.xml.QuestionGroup;
 import com.gallatinsystems.survey.domain.xml.Survey;
@@ -29,11 +29,12 @@ public class SurveyXMLAdapter {
 		Survey survey = (Survey) unmarshaller.unmarshal(sr);
 		return survey;
 	}
-	
-	public String marshal(Survey survey) throws JAXBException{
+
+	public String marshal(Survey survey) throws JAXBException {
+		
 		JAXBContext jc = JAXBContext
-		.newInstance("com.gallatinsystems.survey.domain");
-		java.io.StringWriter sw =new java.io.StringWriter();
+				.newInstance("com.gallatinsystems.survey.domain.xml");
+		java.io.StringWriter sw = new java.io.StringWriter();
 		Marshaller marshaller = jc.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 		marshaller.marshal(survey, sw);
@@ -51,13 +52,13 @@ public class SurveyXMLAdapter {
 	}
 
 	public static void main(String[] args) {
-		SurveyXMLAdapter surveyXMLAdapter = new SurveyXMLAdapter();		
+		SurveyXMLAdapter surveyXMLAdapter = new SurveyXMLAdapter();
 		try {
 			surveyXMLAdapter.unmarshall(readFileAsString(args[0]));
 		} catch (JAXBException e) {
-			log.log(Level.SEVERE,"Could not get survey from xml",e);
+			log.log(Level.SEVERE, "Could not get survey from xml", e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"Could not read file",e);
+			log.log(Level.SEVERE, "Could not read file", e);
 		}
 	}
 

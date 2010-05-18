@@ -36,6 +36,7 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Survey.SurveyStatus;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Heading;
+import com.gallatinsystems.survey.domain.xml.ObjectFactory;
 import com.gallatinsystems.survey.domain.xml.Option;
 import com.gallatinsystems.survey.domain.xml.Options;
 import com.gallatinsystems.survey.domain.xml.Text;
@@ -469,11 +470,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			SurveyDAO surveyDao = new SurveyDAO();
 			Survey survey = surveyDao.loadFullSurvey(surveyId);
 			SurveyXMLAdapter sax = new SurveyXMLAdapter();
-			com.gallatinsystems.survey.domain.xml.Survey surveyXML = new com.gallatinsystems.survey.domain.xml.Survey();
+			ObjectFactory objFactory = new ObjectFactory();
+			
+			com.gallatinsystems.survey.domain.xml.Survey surveyXML = objFactory.createSurvey();
 			ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup> questionGroupXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup>();
 			for (QuestionGroup qg : survey.getQuestionGroupList()) {
-				com.gallatinsystems.survey.domain.xml.QuestionGroup qgXML = new com.gallatinsystems.survey.domain.xml.QuestionGroup();
-				Heading heading = new Heading();
+				com.gallatinsystems.survey.domain.xml.QuestionGroup qgXML = objFactory.createQuestionGroup();
+				Heading heading = objFactory.createHeading();
 				heading.setContent(qg.getCode());
 				qgXML.setHeading(heading);
 				
@@ -483,20 +486,20 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
 						.entrySet()) {
 					Question q = qEntry.getValue();
-					com.gallatinsystems.survey.domain.xml.Question qXML = new com.gallatinsystems.survey.domain.xml.Question();
+					com.gallatinsystems.survey.domain.xml.Question qXML = objFactory.createQuestion();
 					//ToDo set dependency xml
-					Dependency dependency = new Dependency();
+					Dependency dependency = objFactory.createDependency();
 
 					if (q.getOptionContainer() != null) {
 						OptionContainer oc = q.getOptionContainer();
-						Options options = new Options();
+						Options options = objFactory.createOptions();
 						options
 								.setAllowOther(oc.getAllowOtherFlag()
 										.toString());
 						if (oc.getOptionsList() != null) {
 							ArrayList<Option> optionList = new ArrayList<Option>();
 							for (QuestionOption qo : oc.getOptionsList()) {
-								Option option = new Option();
+								Option option = objFactory.createOption();
 								option.setContent(qo.getText());
 								option.setValue(qo.getCode());
 								optionList.add(option);
@@ -517,7 +520,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					}
 					
 					if(q.getValidationRule()!=null){
-						ValidationRule validationRule = new ValidationRule();
+						ValidationRule validationRule = objFactory.createValidationRule();
 						//ToDo set validation rule xml 
 					}
 					
