@@ -130,7 +130,6 @@ public class SurveyManagerPortlet extends Portlet {
 
 						}
 
-						@SuppressWarnings("deprecation")
 						@Override
 						public void onSuccess(ArrayList<SurveyGroupDto> result) {
 							TreeItem outerRoot = new TreeItem();
@@ -414,10 +413,17 @@ public class SurveyManagerPortlet extends Portlet {
 		TextBox questionId = new TextBox();
 		questionId.setVisible(false);
 		TextBox questionText = new TextBox();
+		TextBox tip = new TextBox();
+		TextBox validationRule = new TextBox();
+
 		if (item != null) {
 			questionId.setText(item.getKeyId().toString());
-
-			questionText.setText(item.getText());
+			if (item.getText() != null)
+				questionText.setText(item.getText());
+			if (item.getTip() != null)
+				tip.setText(item.getTip());
+			if (item.getValidationRule() != null)
+				validationRule.setText(item.getValidationRule());
 		}
 		ListBox questionTypeLB = new ListBox();
 		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO
@@ -452,8 +458,12 @@ public class SurveyManagerPortlet extends Portlet {
 		questionDetailPanel.setWidget(1, 1, questionText);
 		questionDetailPanel.setWidget(2, 0, new Label("Question Type"));
 		questionDetailPanel.setWidget(2, 1, questionTypeLB);
-		questionDetailPanel.setWidget(3, 0, saveQuestionButton);
-		questionDetailPanel.setWidget(3, 1, deleteQuestionButton);
+		questionDetailPanel.setWidget(3, 0, new Label("Question Tool Tip"));
+		questionDetailPanel.setWidget(3, 1, tip);
+		questionDetailPanel.setWidget(4, 0, new Label("Validation Rule"));
+		questionDetailPanel.setWidget(4, 1, validationRule);
+		questionDetailPanel.setWidget(5, 0, saveQuestionButton);
+		questionDetailPanel.setWidget(5, 1, deleteQuestionButton);
 
 		saveQuestionButton.addClickHandler(new ClickHandler() {
 
@@ -516,13 +526,21 @@ public class SurveyManagerPortlet extends Portlet {
 		TextBox questionId = (TextBox) questionDetailPanel.getWidget(0, 0);
 		TextBox questionText = (TextBox) questionDetailPanel.getWidget(1, 1);
 		ListBox questionTypeLB = (ListBox) questionDetailPanel.getWidget(2, 1);
-		
+
+		TextBox tip = (TextBox) questionDetailPanel.getWidget(3, 1);
+		TextBox validationRule = (TextBox) questionDetailPanel.getWidget(4, 1);
+
 		if (questionId.getText().length() > 0)
 			value.setKeyId(new Long(questionId.getText()));
-		
+
 		if (questionText.getText().length() > 0)
 			value.setText(questionText.getText());
-		
+
+		if (tip.getText().length() > 0)
+			value.setTip(tip.getText());
+		if (validationRule.getText().length() > 0)
+			value.setValidationRule(validationRule.getText());
+
 		if (questionTypeLB.getSelectedIndex() == 0) {
 			value.setType(QuestionType.FREE_TEXT);
 		} else if (questionTypeLB.getSelectedIndex() == 1) {
@@ -711,7 +729,6 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				QuestionGroupDto questionGroupDto = getQuestionGroupDto();
 				try {
 					saveQuestionGroup();
 				} catch (Exception ex) {

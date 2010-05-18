@@ -83,6 +83,9 @@ public class Options {
         }
         return this.option;
     }
+    public void setOptionList(List<Option> list){
+    	this.option=list;
+    }
 
     /**
      * Gets the value of the allowOther property.

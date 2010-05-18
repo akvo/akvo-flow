@@ -16,6 +16,35 @@ public class Question extends BaseDomain {
 	private static final long serialVersionUID = -4708385830894435407L;
 
 	private String text;
+	private String validationRule;
+	public String getValidationRule() {
+		return validationRule;
+	}
+
+	public void setValidationRule(String validationRule) {
+		this.validationRule = validationRule;
+	}
+
+	public String getTip() {
+		return tip;
+	}
+
+	public void setTip(String tip) {
+		this.tip = tip;
+	}
+
+	public OptionContainer getOptionContainer() {
+		return optionContainer;
+	}
+
+	public void setOptionContainer(OptionContainer optionContainer) {
+		this.optionContainer = optionContainer;
+	}
+
+
+
+	private String tip;
+	private OptionContainer optionContainer = null;
 	
 	private QuestionDto.QuestionType type;
 	private ArrayList<QuestionOption> optionsList;

@@ -18,8 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -564,10 +567,35 @@ public class TestHarnessServlet extends HttpServlet {
 							qgd.setCode("Question Group: " + q);
 							qgd.setDescription("Question Group Desc: " + q);
 							for (int j = 0; j < 3; j++) {
+								QuestionHelpDto qhd = new QuestionHelpDto();
+								qhd.setResourceUrl("www.waterforpeople.org");
+								qhd.setText("help text");
+								
+								QuestionOptionDto qo = new QuestionOptionDto();
+								qo.setCode("opt1");
+								qo.setText("Question Option 1 Display");
+								
+								OptionContainerDto optionContainerDto = new OptionContainerDto();
+								optionContainerDto.setAllowOtherFlag(false);
+								
+								optionContainerDto.addQuestionOption(qo);			
+								
 								QuestionDto qd = new QuestionDto();
+								QuestionDto qd1 = new QuestionDto();
 								qd.setText("Question Test: " + j);
 								qd.setType(QuestionType.FREE_TEXT);
+								qd.setTip("test tip" + j);
+								qd.setValidationRule("validation rule : " + j);
+								qd.addQuestionHelp(qhd);
 								qgd.addQuestion(qd, j);
+								
+								qd1.setText("option question"+j);
+								qd1.setType(QuestionType.OPTION);
+								qd1.setOptionContainer(optionContainerDto);
+								qd1.addQuestionHelp(qhd);
+								qd1.setTip("test tip" + j);
+								qd1.setValidationRule("validation rule : " + j);
+								qgd.addQuestion(qd1, j+4);
 							}
 							surveyDto.addQuestionGroup(qgd);
 						}

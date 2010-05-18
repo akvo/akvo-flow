@@ -13,15 +13,10 @@ public class QuestionDto extends BaseDto {
 	private String text;
 
 	private QuestionType type;
-	private ArrayList<QuestionOptionDto> optionsList;
+	private OptionContainerDto optionContainer = null;
 	private ArrayList<QuestionHelpDto> questionHelpList;
-
-	public void addOption(QuestionOptionDto questionOption) {
-		if (optionsList == null) {
-			optionsList = new ArrayList<QuestionOptionDto>();
-		}
-		optionsList.add(questionOption);
-	}
+	private String tip = null;
+	private String validationRule = null;
 
 	public void addQuestionHelp(QuestionHelpDto questionHelp) {
 		if (questionHelpList == null) {
@@ -46,20 +41,36 @@ public class QuestionDto extends BaseDto {
 		this.type = type;
 	}
 
-	public ArrayList<QuestionOptionDto> getOptionsList() {
-		return optionsList;
-	}
-
-	public void setOptionsList(ArrayList<QuestionOptionDto> optionsList) {
-		this.optionsList = optionsList;
-	}
-
 	public ArrayList<QuestionHelpDto> getQuestionHelpList() {
 		return questionHelpList;
 	}
 
 	public void setQuestionHelpList(ArrayList<QuestionHelpDto> questionHelpList) {
 		this.questionHelpList = questionHelpList;
+	}
+
+	public void setOptionContainer(OptionContainerDto optionContainer) {
+		this.optionContainer = optionContainer;
+	}
+
+	public OptionContainerDto getOptionContainer() {
+		return optionContainer;
+	}
+
+	public void setTip(String tip) {
+		this.tip = tip;
+	}
+
+	public String getTip() {
+		return tip;
+	}
+
+	public void setValidationRule(String validationRule) {
+		this.validationRule = validationRule;
+	}
+
+	public String getValidationRule() {
+		return validationRule;
 	}
 
 	public enum QuestionType {

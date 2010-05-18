@@ -1,13 +1,18 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
@@ -21,12 +26,23 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionHelp;
+import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Survey.SurveyStatus;
+import com.gallatinsystems.survey.domain.xml.Dependency;
+import com.gallatinsystems.survey.domain.xml.Heading;
+import com.gallatinsystems.survey.domain.xml.Option;
+import com.gallatinsystems.survey.domain.xml.Options;
+import com.gallatinsystems.survey.domain.xml.Text;
+import com.gallatinsystems.survey.domain.xml.Tip;
+import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
@@ -182,7 +198,63 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (Entry<Integer, QuestionDto> qDto : qgDto.getQuestionMap()
 						.entrySet()) {
 					Question q = new Question();
-					DtoMarshaller.copyToCanonical(q, qDto.getValue());
+					QuestionDto qdto = qDto.getValue();
+
+					// Freaking BeanUtils
+					if (qdto.getKeyId() != null)
+						q.setKey((KeyFactory.createKey(Question.class
+								.getSimpleName(), qdto.getKeyId())));
+
+					if (qdto.getText() != null)
+						q.setText(qdto.getText());
+					if (qdto.getTip() != null)
+						q.setTip(qdto.getTip());
+					if (qdto.getType() != null)
+						q.setType(qdto.getType());
+					if (qdto.getValidationRule() != null)
+						q.setValidationRule(qdto.getValidationRule());
+
+					if (qDto.getValue().getQuestionHelpList() != null) {
+						ArrayList<QuestionHelpDto> qHListDto = qDto.getValue()
+								.getQuestionHelpList();
+						for (QuestionHelpDto qhDto : qHListDto) {
+							QuestionHelp qh = new QuestionHelp();
+							// Beanutils throws a concurrent exception so need
+							// to copy props by hand
+							qh.setResourceUrl(qhDto.getResourceUrl());
+							qh.setText(qhDto.getText());
+							q.addQuestionHelp(qh);
+						}
+					}
+
+					if (qDto.getValue().getOptionContainer() != null) {
+						OptionContainerDto ocDto = qDto.getValue()
+								.getOptionContainer();
+						q.setOptionContainer(null);
+						OptionContainer oc = new OptionContainer();
+						if (ocDto.getAllowOtherFlag() != null)
+							oc.setAllowOtherFlag(ocDto.getAllowOtherFlag());
+
+						if (ocDto.getOptionsList() != null) {
+							ArrayList<QuestionOptionDto> optionDtoList = ocDto
+									.getOptionsList();
+							for (QuestionOptionDto qoDto : optionDtoList) {
+								QuestionOption oo = new QuestionOption();
+								if (qoDto.getKeyId() != null)
+									oo.setKey((KeyFactory.createKey(
+											QuestionOption.class
+													.getSimpleName(), qoDto
+													.getKeyId())));
+								if (qoDto.getCode() != null)
+									oo.setCode(qoDto.getCode());
+								if (qoDto.getText() != null)
+									oo.setText(qoDto.getText());
+								oc.addQuestionOption(oo);
+
+							}
+						}
+
+					}
 					qg.addQuestion(q, qDto.getKey());
 				}
 				survey.addQuestionGroup(qg);
@@ -217,9 +289,54 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 								.getQuestionMap().entrySet()) {
 							QuestionDto qdto = new QuestionDto();
 							DtoMarshaller.copyToDto(entry.getValue(), qdto);
-							qdto.setOptionsList(null);
-							qdto.setQuestionHelpList(null);
 							// TODO: marshall options/help
+
+							if (entry.getValue() != null) {
+								Question q = entry.getValue();
+								if (q.getQuestionHelpList() != null) {
+									for (QuestionHelp qh : q
+											.getQuestionHelpList()) {
+										QuestionHelpDto qhDto = new QuestionHelpDto();
+										try {
+											BeanUtils.copyProperties(qhDto, qh);
+											qdto.addQuestionHelp(qhDto);
+										} catch (IllegalAccessException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (InvocationTargetException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+									if (q.getOptionContainer() != null) {
+										OptionContainer oc = q
+												.getOptionContainer();
+										OptionContainerDto ocDto = new OptionContainerDto();
+
+										try {
+											BeanUtils.copyProperties(ocDto, oc);
+											ocDto.setOptionsList(null);
+											if (oc.getOptionsList() != null) {
+												for (QuestionOption qo : oc
+														.getOptionsList()) {
+													QuestionOptionDto qoDto = new QuestionOptionDto();
+													BeanUtils.copyProperties(
+															qoDto, qo);
+													ocDto
+															.addQuestionOption(qoDto);
+												}
+											}
+										} catch (IllegalAccessException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (InvocationTargetException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+								}
+							}
+
 							qDtoMap.put(entry.getKey(), qdto);
 						}
 						qgDto.setQuestionMap(qDtoMap);
@@ -285,6 +402,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			dto.setKeyId(canonical.getKey().getId());
 			dto.setText(canonical.getText());
 			dto.setType(canonical.getType());
+			dto.setTip(canonical.getTip());
+			dto.setValidationRule(canonical.getValidationRule());
 			questionDtoList.add(dto);
 		}
 		return questionDtoList;
@@ -350,15 +469,65 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Survey survey = surveyDao.loadFullSurvey(surveyId);
 			SurveyXMLAdapter sax = new SurveyXMLAdapter();
 			com.gallatinsystems.survey.domain.xml.Survey surveyXML = new com.gallatinsystems.survey.domain.xml.Survey();
+			ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup> questionGroupXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup>();
 			for (QuestionGroup qg : survey.getQuestionGroupList()) {
+				com.gallatinsystems.survey.domain.xml.QuestionGroup qgXML = new com.gallatinsystems.survey.domain.xml.QuestionGroup();
+				Heading heading = new Heading();
+				heading.setContent(qg.getCode());
+				qgXML.setHeading(heading);
+				
+				//ToDo: implement questionGroup order attribute
+				//qgXML.setOrder(qg.getOrder());
+				ArrayList<com.gallatinsystems.survey.domain.xml.Question> questionXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.Question>();
 				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
 						.entrySet()) {
 					Question q = qEntry.getValue();
 					com.gallatinsystems.survey.domain.xml.Question qXML = new com.gallatinsystems.survey.domain.xml.Question();
+					//ToDo set dependency xml
+					Dependency dependency = new Dependency();
+
+					if (q.getOptionContainer() != null) {
+						OptionContainer oc = q.getOptionContainer();
+						Options options = new Options();
+						options
+								.setAllowOther(oc.getAllowOtherFlag()
+										.toString());
+						if (oc.getOptionsList() != null) {
+							ArrayList<Option> optionList = new ArrayList<Option>();
+							for (QuestionOption qo : oc.getOptionsList()) {
+								Option option = new Option();
+								option.setContent(qo.getText());
+								option.setValue(qo.getCode());
+								optionList.add(option);
+							}
+							options.setOptionList(optionList);
+						}
+						qXML.setOptions(options);
+					}
+					if (q.getText() != null) {
+						Text text = new Text();
+						text.setContent(q.getText());
+						qXML.setText(text);
+					}
+					if(q.getTip()!=null){
+						Tip tip = new Tip();
+						tip.setContent(q.getTip());
+						qXML.setTip(tip);
+					}
+					
+					if(q.getValidationRule()!=null){
+						ValidationRule validationRule = new ValidationRule();
+						//ToDo set validation rule xml 
+					}
+					
 					// ToDo marshall xml
 					// qXML.setText(q.getText());
+					questionXMLList.add(qXML);
 				}
+				qgXML.setQuestion(questionXMLList);
+				questionGroupXMLList.add(qgXML);
 			}
+			surveyXML.setQuestionGroup(questionGroupXMLList);
 			String surveyDocument = sax.marshal(surveyXML);
 			surveyDao.save(surveyId, surveyDocument);
 			survey.setStatus(SurveyStatus.PUBLISHED);
