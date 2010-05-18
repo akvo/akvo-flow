@@ -120,6 +120,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							surveyDto.addQuestionGroup(questionGroupDto);
 						}
 					}
+					dto.addSurvey(surveyDto);
 				}
 			}
 			surveyGroupDtoList.add(dto);

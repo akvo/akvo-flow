@@ -570,16 +570,16 @@ public class TestHarnessServlet extends HttpServlet {
 								QuestionHelpDto qhd = new QuestionHelpDto();
 								qhd.setResourceUrl("www.waterforpeople.org");
 								qhd.setText("help text");
-								
+
 								QuestionOptionDto qo = new QuestionOptionDto();
 								qo.setCode("opt1");
 								qo.setText("Question Option 1 Display");
-								
+
 								OptionContainerDto optionContainerDto = new OptionContainerDto();
 								optionContainerDto.setAllowOtherFlag(false);
-								
-								optionContainerDto.addQuestionOption(qo);			
-								
+
+								optionContainerDto.addQuestionOption(qo);
+
 								QuestionDto qd = new QuestionDto();
 								QuestionDto qd1 = new QuestionDto();
 								qd.setText("Question Test: " + j);
@@ -588,22 +588,21 @@ public class TestHarnessServlet extends HttpServlet {
 								qd.setValidationRule("validation rule : " + j);
 								qd.addQuestionHelp(qhd);
 								qgd.addQuestion(qd, j);
-								
-								qd1.setText("option question"+j);
+
+								qd1.setText("option question" + j);
 								qd1.setType(QuestionType.OPTION);
 								qd1.setOptionContainer(optionContainerDto);
 								qd1.addQuestionHelp(qhd);
 								qd1.setTip("test tip" + j);
 								qd1.setValidationRule("validation rule : " + j);
-								qgd.addQuestion(qd1, j+4);
+								qgd.addQuestion(qd1, j + 4);
 							}
 							surveyDto.addQuestionGroup(qgd);
 						}
 						surveyDto.setVersion("Version: " + i);
 						sgd.addSurvey(surveyDto);
 					}
-					new SurveyServiceImpl().save(sgd);
-					resp.getWriter().println("Saved: " + sgd.getCode());
+					SurveyGroupDto sgDto = new SurveyServiceImpl().save(sgd);
 				}
 
 				resp.getWriter().println(
@@ -612,7 +611,20 @@ public class TestHarnessServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if ("testFindSurvey".equals(action)) {
+		}else if("testPublishSurvey".equals(action)){
+			try{
+			SurveyGroupDto sgDto = new SurveyServiceImpl().listSurveyGroups(null, true, false, false).get(0);
+			resp.getWriter().println("Got Survey Group: " + sgDto.getCode() + " Survey: " + sgDto.getSurveyList().get(0).getKeyId());
+			resp.getWriter().println(
+					"Result of publishing survey: "
+							+ new SurveyServiceImpl()
+									.publishSurvey(sgDto
+											.getSurveyList().get(0)
+											.getKeyId()));
+			}catch(IOException ex){
+				ex.printStackTrace();
+			}
+		}else if ("testFindSurvey".equals(action)) {
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
 			SurveyDto dto = ssI.loadFullSurvey(2349L);
 		} else if ("createTestSurveyForEndToEnd".equals(action)) {
