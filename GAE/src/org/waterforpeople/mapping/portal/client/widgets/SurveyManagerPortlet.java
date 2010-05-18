@@ -486,22 +486,28 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void saveQuestion() throws Exception {
+		QuestionDto dto = getQuestionDto();
+		Long parentId = null;
+		if (dto.getKeyId() == null) {
+			parentId = getCurrentId();
+		} else {
+			parentId = getParentId(QuestionGroupDto.class);
+		}
 
-		svc.saveQuestion(getQuestionDto(), getParentId(QuestionGroupDto.class),
-				new AsyncCallback<QuestionDto>() {
+		svc.saveQuestion(dto, parentId, new AsyncCallback<QuestionDto>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
 
-					}
+			}
 
-					@Override
-					public void onSuccess(QuestionDto result) {
-						Window.alert("Question Saved");
-					}
+			@Override
+			public void onSuccess(QuestionDto result) {
+				Window.alert("Question Saved");
+			}
 
-				});
+		});
 
 	}
 
@@ -510,8 +516,13 @@ public class SurveyManagerPortlet extends Portlet {
 		TextBox questionId = (TextBox) questionDetailPanel.getWidget(0, 0);
 		TextBox questionText = (TextBox) questionDetailPanel.getWidget(1, 1);
 		ListBox questionTypeLB = (ListBox) questionDetailPanel.getWidget(2, 1);
-		value.setKeyId(new Long(questionId.getText()));
-		value.setText(questionText.getText());
+		
+		if (questionId.getText().length() > 0)
+			value.setKeyId(new Long(questionId.getText()));
+		
+		if (questionText.getText().length() > 0)
+			value.setText(questionText.getText());
+		
 		if (questionTypeLB.getSelectedIndex() == 0) {
 			value.setType(QuestionType.FREE_TEXT);
 		} else if (questionTypeLB.getSelectedIndex() == 1) {
@@ -633,7 +644,8 @@ public class SurveyManagerPortlet extends Portlet {
 				try {
 					saveSurvey();
 				} catch (Exception e) {
-					Window.alert("Could not save survey no survey group selected");
+					Window
+							.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -727,18 +739,22 @@ public class SurveyManagerPortlet extends Portlet {
 		Long parentId = null;
 		String className = clazz.getName();
 		if (clazz.getName().equals(SurveyGroupDto.class.getName())
-				&& parentItem.getUserObject().getClass().getName().equals(clazz.getName()))
+				&& parentItem.getUserObject().getClass().getName().equals(
+						clazz.getName()))
 			parentId = ((SurveyGroupDto) (parentItem.getUserObject()))
 					.getKeyId();
 		else if (clazz.getName().equals(SurveyDto.class.getName())
-				&& parentItem.getUserObject().getClass().getName().equals(clazz.getName()))
+				&& parentItem.getUserObject().getClass().getName().equals(
+						clazz.getName()))
 			parentId = ((SurveyDto) (parentItem.getUserObject())).getKeyId();
 		else if (clazz.getName().equals(QuestionGroupDto.class.getName())
-				&& parentItem.getUserObject().getClass().getName().equals(clazz.getName()))
+				&& parentItem.getUserObject().getClass().getName().equals(
+						clazz.getName()))
 			parentId = ((QuestionGroupDto) (parentItem.getUserObject()))
 					.getKeyId();
 		else if (clazz.getName().equals(QuestionDto.class.getName())
-				&& parentItem.getUserObject().getClass().getName().equals(clazz.getName()))
+				&& parentItem.getUserObject().getClass().getName().equals(
+						clazz.getName()))
 			parentId = ((QuestionDto) (parentItem.getUserObject())).getKeyId();
 		else
 			throw new Exception(
@@ -765,8 +781,14 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void saveQuestionGroup() throws Exception {
-		svc.saveQuestionGroup(getQuestionGroupDto(),
-				getParentId(SurveyDto.class),
+		QuestionGroupDto dto = getQuestionGroupDto();
+		Long parentId = null;
+		if (dto.getKeyId() == null)
+			parentId = getCurrentId();
+		else
+			parentId = getParentId(SurveyDto.class);
+
+		svc.saveQuestionGroup(dto, parentId,
 				new AsyncCallback<QuestionGroupDto>() {
 
 					@Override
@@ -787,25 +809,35 @@ public class SurveyManagerPortlet extends Portlet {
 				});
 	}
 
+	private Long getCurrentId() {
+		TreeItem item = surveyTree.getSelectedItem();
+		return ((BaseDto) item.getUserObject()).getKeyId();
+	}
+
 	private void saveSurvey() throws Exception {
-		svc.saveSurvey(getSurveyDto(), getParentId(SurveyGroupDto.class),
-				new AsyncCallback<SurveyDto>() {
+		SurveyDto dto = getSurveyDto();
+		Long parentId = null;
+		if (dto.getKeyId() == null)
+			parentId = getCurrentId();
+		else
+			parentId = getParentId(SurveyGroupDto.class);
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+		svc.saveSurvey(dto, parentId, new AsyncCallback<SurveyDto>() {
 
-					}
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
 
-					@Override
-					public void onSuccess(SurveyDto result) {
-						TextBox surveyId = (TextBox) surveyDetail.getWidget(0,
-								0);
-						surveyId.setText(result.getKeyId().toString());
-						Window.alert("Saved Survey");
-					}
+			}
 
-				});
+			@Override
+			public void onSuccess(SurveyDto result) {
+				TextBox surveyId = (TextBox) surveyDetail.getWidget(0, 0);
+				surveyId.setText(result.getKeyId().toString());
+				Window.alert("Saved Survey");
+			}
+
+		});
 	}
 
 	private SurveyGroupDto getSurveyGroupDto() {
