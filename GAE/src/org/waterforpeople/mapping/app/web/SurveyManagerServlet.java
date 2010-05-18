@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyManagerRequest;
+import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
@@ -69,8 +70,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				}
 
 			} else if (mgrReq.getSurveyId() != null) {
-				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-				SurveyContainer container = siDAO.getSurveyDocument(mgrReq
+				SurveyContainerDao scDao = new SurveyContainerDao();
+				SurveyContainer container = scDao.findBySurveyId(mgrReq
 						.getSurveyId());
 				if (container != null) {
 					resp.setMessage(container.getSurveyDocument().getValue());

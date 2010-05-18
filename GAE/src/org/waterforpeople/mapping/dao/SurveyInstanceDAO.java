@@ -39,9 +39,5 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		super(SurveyInstance.class);
 	}
 
-	public SurveyContainer getSurveyDocument(Long id) {
-		SurveyContainer si = null;		
-		si = (SurveyContainer) getByKey(id, SurveyContainer.class);
-		return si;
-	}
+	
 }

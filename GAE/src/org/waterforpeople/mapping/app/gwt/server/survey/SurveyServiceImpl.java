@@ -18,6 +18,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
@@ -32,6 +33,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Survey.SurveyStatus;
 import com.gallatinsystems.survey.domain.xml.Dependency;
@@ -533,7 +535,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 			surveyXML.setQuestionGroup(questionGroupXMLList);
 			String surveyDocument = sax.marshal(surveyXML);
-			surveyDao.save(surveyId, surveyDocument);
+			SurveyContainerDao scDao  = new SurveyContainerDao();
+			SurveyContainer sc = new SurveyContainer();
+			sc.setSurveyId(surveyId);
+			sc.setSurveyDocument( new com.google.appengine.api.datastore.Text(
+					surveyDocument));
+			scDao.save(sc);
 			survey.setStatus(SurveyStatus.PUBLISHED);
 			surveyDao.save(survey);
 
