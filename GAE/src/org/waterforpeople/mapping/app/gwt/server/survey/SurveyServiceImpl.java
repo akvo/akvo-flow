@@ -536,7 +536,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return "Could not publish survey: /n " +ex.getCause() + " /n"+ ex.getMessage();
+			return "Could not publish survey: \n cause: " +ex.getCause() + " \n message"+ ex.getMessage() + "\n stack trace:  " + ex.getStackTrace();
 		}
 
 		return "Survey successfully published";
