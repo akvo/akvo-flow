@@ -33,6 +33,7 @@ import org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
+import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.Community;
@@ -64,6 +65,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
@@ -611,20 +613,35 @@ public class TestHarnessServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else if("testPublishSurvey".equals(action)){
-			try{
-			SurveyGroupDto sgDto = new SurveyServiceImpl().listSurveyGroups(null, true, false, false).get(0);
-			resp.getWriter().println("Got Survey Group: " + sgDto.getCode() + " Survey: " + sgDto.getSurveyList().get(0).getKeyId());
-			resp.getWriter().println(
-					"Result of publishing survey: "
-							+ new SurveyServiceImpl()
-									.publishSurvey(sgDto
-											.getSurveyList().get(0)
-											.getKeyId()));
-			}catch(IOException ex){
+		} else if ("testPublishSurvey".equals(action)) {
+			try {
+				SurveyGroupDto sgDto = new SurveyServiceImpl()
+						.listSurveyGroups(null, true, false, false).get(0);
+				resp.getWriter().println(
+						"Got Survey Group: " + sgDto.getCode() + " Survey: "
+								+ sgDto.getSurveyList().get(0).getKeyId());
+				SurveyContainerDao scDao = new SurveyContainerDao();
+				SurveyContainer sc = scDao.findBySurveyId(sgDto.getSurveyList()
+						.get(0).getKeyId());
+				if (sc != null) {
+					scDao.delete(sc);
+					resp.getWriter().println(
+							"Deleted existing SurveyContainer for: "
+									+ sgDto.getSurveyList().get(0).getKeyId());
+				}
+				resp.getWriter().println(
+						"Result of publishing survey: "
+								+ new SurveyServiceImpl().publishSurvey(sgDto
+										.getSurveyList().get(0).getKeyId()));
+				sc = scDao.findBySurveyId(sgDto.getSurveyList().get(0)
+						.getKeyId());
+				resp.getWriter().println(
+						"Survey Document result from publish: \n\n\n\n"
+								+ sc.getSurveyDocument().getValue());
+			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-		}else if ("testFindSurvey".equals(action)) {
+		} else if ("testFindSurvey".equals(action)) {
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
 			SurveyDto dto = ssI.loadFullSurvey(2349L);
 		} else if ("createTestSurveyForEndToEnd".equals(action)) {
