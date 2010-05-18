@@ -155,6 +155,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				dto.setVersion(s.getVersion() != null ? s.getVersion()
 						.toString() : "");
 				dto.setKeyId(s.getKey().getId());
+				if (s.getStatus() != null) {
+					dto.setStatus(s.getStatus().toString());
+				}
 				surveyDtos.add(dto);
 			}
 		}
@@ -350,12 +353,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Survey survey = surveyDao.loadFullSurvey(surveyId);
 			SurveyXMLAdapter sax = new SurveyXMLAdapter();
 			com.gallatinsystems.survey.domain.xml.Survey surveyXML = new com.gallatinsystems.survey.domain.xml.Survey();
-			for(QuestionGroup qg:survey.getQuestionGroupList()){
-				for(Entry<Integer,Question> qEntry:qg.getQuestionMap().entrySet()){
+			for (QuestionGroup qg : survey.getQuestionGroupList()) {
+				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
+						.entrySet()) {
 					Question q = qEntry.getValue();
 					com.gallatinsystems.survey.domain.xml.Question qXML = new com.gallatinsystems.survey.domain.xml.Question();
-					//ToDo marshall xml 
-					//qXML.setText(q.getText());
+					// ToDo marshall xml
+					// qXML.setText(q.getText());
 				}
 			}
 			String surveyDocument = sax.marshal(surveyXML);

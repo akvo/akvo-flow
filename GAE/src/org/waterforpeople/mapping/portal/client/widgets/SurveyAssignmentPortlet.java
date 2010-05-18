@@ -66,6 +66,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 	private static final String GRID_HEADER_CSS = "gridCell-header";
 	private static final String DUMMY = "DUMMY";
 	private static final String PLEASE_WAIT = "Loading...";
+	private static final String IN_PROGRESS_STATUS = "IN_PROGRESS";
 	private static final int MAX_ITEMS = 20;
 	private static final int HEIGHT = 1600;
 	private static final int WIDTH = 900;
@@ -97,12 +98,14 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 
 	private HashMap<String, ArrayList<DeviceDto>> devices;
 	private HashMap<SurveyGroupDto, ArrayList<SurveyDto>> surveys;
+	private HashMap<Long, SurveyDto> unreleasedSurveys;
 
 	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
 
 	public SurveyAssignmentPortlet() {
 		super(NAME, true, false, WIDTH, HEIGHT);
+		unreleasedSurveys = new HashMap<Long, SurveyDto>();
 		inputPanel = new DockPanel();
 		contentPanel = new DockPanel();
 		inputPanel = new DockPanel();
@@ -268,7 +271,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 
 	private void getSurveyGroups() {
 		surveyService = GWT.create(SurveyService.class);
-		surveyService.listSurveyGroups("all",true, false, false,
+		surveyService.listSurveyGroups("all", true, false, false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override
@@ -288,16 +291,6 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 						}
 					}
 				});
-		/*
-		 * // Set up the callback object. AsyncCallback<SurveyDto[]>
-		 * surveyCallback = new AsyncCallback<SurveyDto[]>() { public void
-		 * onFailure(Throwable caught) { // no-op }
-		 * 
-		 * public void onSuccess(SurveyDto[] result) {
-		 * 
-		 * if (result != null) { surveys = result; populateSurveyTree(); } } };
-		 * surveyService.listSurvey(surveyCallback);
-		 */
 	}
 
 	private void getDevices() {
@@ -373,6 +366,12 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 					TreeItem surveyItem = new TreeItem(new Label(
 							getSurveyName(surveyList.get(i))));
 					surveyMap.put(surveyItem.getWidget(), surveyList.get(i));
+					if (surveyList.get(i).getStatus() != null
+							&& IN_PROGRESS_STATUS.equalsIgnoreCase(surveyList
+									.get(i).getStatus())) {
+						unreleasedSurveys.put(surveyList.get(i).getKeyId(),
+								surveyList.get(i));
+					}
 					surveyDragController.makeDraggable(surveyItem.getWidget());
 					root.addItem(surveyItem);
 				}
@@ -548,6 +547,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 	 * persists it to the server
 	 */
 	private void saveAssignment() {
+
 		SurveyAssignmentDto dto = new SurveyAssignmentDto();
 		ArrayList<DeviceDto> dtoList = new ArrayList<DeviceDto>();
 		for (int i = 0; i < selectedDevices.getItemCount(); i++) {
@@ -572,6 +572,25 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 		dto.setLanguage(language.getValue(language.getSelectedIndex()));
 		ArrayList<String> errors = dto.getErrorMessages();
 		if (errors.size() == 0) {
+			boolean hasUnreleased = false;
+			StringBuffer msg = new StringBuffer(
+					"The following surveys must be released before they will be distributed to the devices: <br><ul>");
+			for (SurveyDto survey : dto.getSurveys()) {
+				SurveyDto unreleased = unreleasedSurveys.get(survey.getKeyId());
+				if (unreleased != null) {
+					hasUnreleased = true;
+					msg.append("<li>").append(
+							unreleased.getName() != null ? unreleased.getName()
+									: unreleased.getKeyId()).append(" - v.")
+							.append(unreleased.getVersion()).append("</li>");
+				}
+			}
+			msg.append("</ul>");
+			if (hasUnreleased) {
+				MessageDialog warnDialog = new MessageDialog("Information", msg
+						.toString());
+				warnDialog.showRelativeTo(saveButton);
+			}
 			surveyAssignmentService.saveSurveyAssignment(dto,
 					new AsyncCallback<Void>() {
 

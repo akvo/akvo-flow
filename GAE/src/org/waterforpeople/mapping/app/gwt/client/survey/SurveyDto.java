@@ -9,6 +9,7 @@ public class SurveyDto extends BaseDto {
 	private String name;
 	private String version;
 	private String description;
+	private String status;
 	private ArrayList<QuestionGroupDto> questionGroupList;
 
 	public void addQuestionGroup(QuestionGroupDto questionGroup) {
@@ -48,5 +49,13 @@ public class SurveyDto extends BaseDto {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }
