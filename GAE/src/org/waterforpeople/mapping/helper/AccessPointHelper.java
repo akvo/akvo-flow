@@ -181,6 +181,13 @@ public class AccessPointHelper {
 
 	private String getFieldForQuestion(List<SurveyAttributeMapping> mappings,
 			String questionId) {
+		if(mappings != null){
+			for(SurveyAttributeMapping mapping: mappings){
+				if(mapping.getSurveyQuestionId().equals(questionId)){
+					return mapping.getAttributeName();
+				}
+			}
+		}
 		return null;
 	}
 

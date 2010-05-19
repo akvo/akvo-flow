@@ -560,11 +560,11 @@ public class TestHarnessServlet extends HttpServlet {
 					SurveyGroupDto sgd = new SurveyGroupDto();
 					sgd.setCode("Survey Group :" + t);
 					sgd.setDescription("Test Survey Group: " + t);
-					for (int i = 0; i < 5; i++) {
+					for (int i = 0; i < 2; i++) {
 						SurveyDto surveyDto = new SurveyDto();
-						surveyDto.setName("Survey:" + i);
+						surveyDto.setName("Survey a:" + i);
 						surveyDto.setDescription("test : " + i);
-						for (int q = 0; q < 10; q++) {
+						for (int q = 0; q < 5; q++) {
 							QuestionGroupDto qgd = new QuestionGroupDto();
 							qgd.setCode("Question Group: " + q);
 							qgd.setDescription("Question Group Desc: " + q);
