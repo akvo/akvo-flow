@@ -211,10 +211,10 @@ public class SurveyDbAdapter {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
 				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL,
-				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL, RESPONDENT_TABLE+"."+SURVEY_FK_COL },
-				SUBMITTED_FLAG_COL + "= 'true' AND (" + DELIVERED_DATE_COL
-						+ " is null OR " + MEDIA_SENT_COL + " <> 'true')",
-				null, null, null, null);
+				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
+				RESPONDENT_TABLE + "." + SURVEY_FK_COL }, SUBMITTED_FLAG_COL
+				+ "= 'true' AND (" + DELIVERED_DATE_COL + " is null OR "
+				+ MEDIA_SENT_COL + " <> 'true')", null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -619,7 +619,8 @@ public class SurveyDbAdapter {
 		updatedValues.put(LOCATION_COL, survey.getLocation());
 		updatedValues.put(FILENAME_COL, survey.getFileName());
 		updatedValues.put(DISP_NAME_COL, survey.getName());
-		updatedValues.put(LANGUAGE_COL, survey.getLanguage());
+		updatedValues.put(LANGUAGE_COL, survey.getLanguage() != null ? survey
+				.getLanguage().toLowerCase() : survey.getLanguage());
 		updatedValues.put(HELP_DOWNLOADED_COL, survey.isHelpDownloaded() ? "Y"
 				: "N");
 		updatedValues.put(DELETED_COL, ConstantUtil.NOT_DELETED);
@@ -679,7 +680,8 @@ public class SurveyDbAdapter {
 		String[] whereParams = null;
 		if (language != null) {
 			whereClause += " and " + LANGUAGE_COL + " = ?";
-			whereParams = new String[] { ConstantUtil.IS_DELETED, language.toLowerCase().trim() };
+			whereParams = new String[] { ConstantUtil.IS_DELETED,
+					language.toLowerCase().trim() };
 		} else {
 			whereParams = new String[] { ConstantUtil.IS_DELETED };
 		}
