@@ -556,7 +556,7 @@ public class TestHarnessServlet extends HttpServlet {
 					qDao.delete(q);
 				}
 				resp.getWriter().println("Deleted all questions");
-				for (int t = 0; t < 4; t++) {
+				for (int t = 0; t < 2; t++) {
 					SurveyGroupDto sgd = new SurveyGroupDto();
 					sgd.setCode("Survey Group :" + t);
 					sgd.setDescription("Test Survey Group: " + t);

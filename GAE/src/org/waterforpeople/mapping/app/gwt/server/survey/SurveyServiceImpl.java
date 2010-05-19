@@ -503,7 +503,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							.createQuestion();
 					qXML.setId(new String("" + q.getKey().getId() + ""));
 					// ToDo fix
-					qXML.setMandatory("true");
+					qXML.setMandatory("false");
 
 					if (q.getType().equals(QuestionType.FREE_TEXT))
 						qXML.setType(FREE_QUESTION_TYPE);
