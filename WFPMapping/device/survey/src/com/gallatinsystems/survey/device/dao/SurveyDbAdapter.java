@@ -56,7 +56,7 @@ public class SurveyDbAdapter {
 	public static final String DELETED_COL = "deleted_flag";
 	public static final String MEDIA_SENT_COL = "media_sent_flag";
 	public static final String HELP_DOWNLOADED_COL = "help_downloaded_flag";
-	public static final String LANGUAGE_COL = "language";
+	public static final String LANGUAGE_COL = "language";	
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -66,7 +66,7 @@ public class SurveyDbAdapter {
 	 * Database creation sql statement
 	 */
 	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key, "
-			+ "display_name text not null, version real, type text, location text, filename text, language, help_downloaded_flag text, deleted_flag text);";
+			+ "display_name text not null, version real, type text, location text, filename text, remote_survey_id text, language, help_downloaded_flag text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text);";
@@ -212,7 +212,7 @@ public class SurveyDbAdapter {
 				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
 				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL,
 				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
-				RESPONDENT_TABLE + "." + SURVEY_FK_COL }, SUBMITTED_FLAG_COL
+				RESPONDENT_TABLE + "." + SURVEY_FK_COL, }, SUBMITTED_FLAG_COL
 				+ "= 'true' AND (" + DELIVERED_DATE_COL + " is null OR "
 				+ MEDIA_SENT_COL + " <> 'true')", null, null, null, null);
 		if (cursor != null) {
