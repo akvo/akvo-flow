@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
@@ -42,13 +43,13 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
 	private AccessPointHelper aph;
-	
-	public TaskServlet(){
+
+	public TaskServlet() {
 		aph = new AccessPointHelper();
 	}
 
-	private ArrayList<String> processFile(String fileName) {
-		ArrayList<String> surveyIds = new ArrayList<String>();
+	private ArrayList<SurveyInstance> processFile(String fileName) {
+		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 		try {
 			URL url = new URL(
 					"http://waterforpeople.s3.amazonaws.com/devicezip/"
@@ -69,15 +70,15 @@ public class TaskServlet extends AbstractRestApiServlet {
 			} else {
 				Long userID = 1L;
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-				Long surveyId = siDAO.save(collectionDate, deviceFile, userID,
-						unparsedLines);					
-				surveyIds.add(surveyId.toString());
+				SurveyInstance inst = siDAO.save(collectionDate, deviceFile,
+						userID, unparsedLines);
+				surveyInstances.add(inst);
 			}
 			zis.close();
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
 		}
-		return surveyIds;
+		return surveyInstances;
 	}
 
 	private ArrayList<String> extractDataFromZip(ZipInputStream zis)
@@ -178,10 +179,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 	}
 
 	private void addAccessPoint(TaskRequest req) {
-		Long surveyId = req.getSurveyId();
-		log.info("Received Task Queue calls for surveyId: " + surveyId);
-		
-		aph.processSurveyInstance(surveyId.toString());
+		Long surveyInstanceId = req.getSurveyId();
+		log.info("Received Task Queue calls for surveyInstanceId: "
+				+ surveyInstanceId);
+
+		aph.processSurveyInstance(surveyInstanceId.toString());
 	}
 
 	/**
@@ -196,10 +198,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private void ingestFile(TaskRequest req) {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
-			ArrayList<String> surveyIds = processFile(req.getFileName());
+			ArrayList<SurveyInstance> surveyInstances = processFile(req
+					.getFileName());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
-			for (String key : surveyIds) {
-				ProcessingAction pa = dispatch(key);
+			for (SurveyInstance instance : surveyInstances) {
+				ProcessingAction pa = dispatch(instance.getKey().getId() + "");
 				// Queue queue = QueueFactory.getDefaultQueue();
 				TaskOptions options = url(pa.getDispatchURL());
 				Iterator it = pa.getParams().keySet().iterator();
@@ -207,11 +210,12 @@ public class TaskServlet extends AbstractRestApiServlet {
 					options.param("key", (String) it.next());
 				}
 				// queue.add(options);
-				log.info("Received Task Queue calls for surveyKey: " + key);				
-				aph.processSurveyInstance(key);				
+				log.info("Received Task Queue calls for surveyInstanceKey: "
+						+ instance.getKey().getId() + "");
+				aph.processSurveyInstance(instance.getKey().getId() + "");
 				summQueue.add(url("/app_worker/datasummarization").param(
-						"objectKey", key).param("type",
-						"SurveyInstance"));
+						"objectKey", instance.getKey().getId() + "").param(
+						"type", "SurveyInstance"));
 			}
 		}
 	}

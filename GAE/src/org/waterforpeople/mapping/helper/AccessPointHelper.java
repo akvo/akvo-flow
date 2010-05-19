@@ -46,12 +46,12 @@ public class AccessPointHelper {
 		return apDAO.getByKey(id);
 	}
 
-	public void processSurveyInstance(String surveyId) {
+	public void processSurveyInstance(String surveyInstanceId) {
 		// Get the survey and QuestionAnswerStore
 		// Get the surveyDefinition
 
 		SurveyInstanceDAO sid = new SurveyInstanceDAO();
-		SurveyInstance si = sid.getByKey(Long.parseLong(surveyId));
+		SurveyInstance si = sid.getByKey(Long.parseLong(surveyInstanceId));
 		ArrayList<QuestionAnswerStore> questionAnswerList = si
 				.getQuestionAnswersStore();
 
@@ -71,10 +71,11 @@ public class AccessPointHelper {
 		 */
 
 		AccessPoint ap;
-
-		ap = parseAccessPoint(new Long(surveyId), questionAnswerList,
-				AccessPoint.AccessPointType.WATER_POINT);
-		saveAccessPoint(ap);
+		if (si != null) {
+			ap = parseAccessPoint(new Long(si.getSurveyId()),
+					questionAnswerList, AccessPoint.AccessPointType.WATER_POINT);
+			saveAccessPoint(ap);
+		}
 
 	}
 
@@ -127,7 +128,7 @@ public class AccessPointHelper {
 							ap.setAltitude(geoC.getAltitude());
 						} else {
 							// if it's a value or OTHER type
-							Field f = ap.getClass().getField(field);
+							Field f = ap.getClass().getDeclaredField(field);
 							if (!f.isAccessible()) {
 								f.setAccessible(true);
 							}
@@ -181,9 +182,9 @@ public class AccessPointHelper {
 
 	private String getFieldForQuestion(List<SurveyAttributeMapping> mappings,
 			String questionId) {
-		if(mappings != null){
-			for(SurveyAttributeMapping mapping: mappings){
-				if(mapping.getSurveyQuestionId().equals(questionId)){
+		if (mappings != null) {
+			for (SurveyAttributeMapping mapping : mappings) {
+				if (mapping.getSurveyQuestionId().equals(questionId)) {
 					return mapping.getAttributeName();
 				}
 			}

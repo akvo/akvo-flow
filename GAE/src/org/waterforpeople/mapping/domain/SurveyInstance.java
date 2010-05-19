@@ -12,22 +12,32 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class SurveyInstance extends BaseDomain{
-		
+public class SurveyInstance extends BaseDomain {
+
 	private static final long serialVersionUID = 5840846001731305734L;
 
 	@Persistent
 	private Long userID;
-	
+
 	@Persistent
 	private Date collectionDate;
-	
-	@Persistent 
+
+	@Persistent
 	private DeviceFiles deviceFile;
-	
+
 	@Persistent(mappedBy = "surveyInstance")
 	private ArrayList<QuestionAnswerStore> questionAnswersStore;
-	
+
+	private Long surveyId;
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
 	public Long getUserID() {
 		return userID;
 	}
@@ -59,8 +69,8 @@ public class SurveyInstance extends BaseDomain{
 	public void setQuestionAnswersStore(
 			ArrayList<QuestionAnswerStore> questionAnswersStore) {
 		this.questionAnswersStore = questionAnswersStore;
-	}	
-	
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
