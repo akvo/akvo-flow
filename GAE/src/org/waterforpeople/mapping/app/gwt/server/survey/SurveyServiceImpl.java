@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -299,8 +299,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							QuestionDto qdto = new QuestionDto();
 							DtoMarshaller.copyToDto(entry.getValue(), qdto);
 							qdto.setQuestionHelpList(null);
-							// TODO: marshall options/help
-
 							if (entry.getValue() != null) {
 								Question q = entry.getValue();
 								if (q.getQuestionHelpList() != null) {
@@ -310,12 +308,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 										try {
 											BeanUtils.copyProperties(qhDto, qh);
 											qdto.addQuestionHelp(qhDto);
-										} catch (IllegalAccessException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (InvocationTargetException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
+										} catch (Exception e) {
+											log
+													.error(
+															"Could not marshall question help",
+															e);
 										}
 									}
 									if (q.getOptionContainer() != null) {
@@ -336,12 +333,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 															.addQuestionOption(qoDto);
 												}
 											}
-										} catch (IllegalAccessException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (InvocationTargetException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
+										} catch (Exception e) {
+											log
+													.error(
+															"Could not marshall question options",
+															e);
 										}
 									}
 								}
@@ -514,7 +510,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				heading.setContent(qg.getCode());
 				qgXML.setHeading(heading);
 
-				// ToDo: implement questionGroup order attribute
+				// TODO: implement questionGroup order attribute
 				// qgXML.setOrder(qg.getOrder());
 				ArrayList<com.gallatinsystems.survey.domain.xml.Question> questionXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.Question>();
 				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
