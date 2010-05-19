@@ -74,7 +74,7 @@ public class QuestionDto extends BaseDto {
 	}
 
 	public enum QuestionType {
-		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO
+		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN
 	}
 
 }

@@ -17,6 +17,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
@@ -465,6 +466,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		DtoMarshaller.copyToDto(canonical, dto);
 		return dto;
 	}
+	
+	public static final String FREE_QUESTION_TYPE = "free";
+    public static final String OPTION_QUESTION_TYPE = "option";
+    public static final String GEO_QUESTION_TYPE = "geo";
+    public static final String VIDEO_QUESTION_TYPE = "video";
+    public static final String PHOTO_QUESTION_TYPE = "photo";
+    public static final String SCAN_QUESTION_TYPE = "scan";
 
 	@Override
 	public String publishSurvey(Long surveyId) {
@@ -492,6 +500,25 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					Question q = qEntry.getValue();
 					com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
 							.createQuestion();
+					qXML.setId(new String(""+q.getKey().getId()+""));
+					//ToDo fix
+					qXML.setMandatory("true");
+					
+					if(q.getType().equals(QuestionType.FREE_TEXT))
+						qXML.setType(FREE_QUESTION_TYPE);
+					else if(q.getType().equals(QuestionType.GEO))
+							qXML.setType(GEO_QUESTION_TYPE);
+//					else if(q.getType().equals(QuestionType.NUMBER)
+//							qXML.setType()
+					else if(q.getType().equals(QuestionType.OPTION))
+							qXML.setType(OPTION_QUESTION_TYPE);
+					else if(q.getType().equals(QuestionType.PHOTO))
+						qXML.setType(PHOTO_QUESTION_TYPE);
+					else if(q.getType().equals(QuestionType.VIDEO))
+						qXML.setType(VIDEO_QUESTION_TYPE);
+					else if(q.getType().equals(QuestionType.SCAN))
+						qXML.setType(SCAN_QUESTION_TYPE);
+					
 					if (qEntry.getKey() != null)
 						qXML.setOrder(qEntry.getKey().toString());
 					// ToDo set dependency xml
@@ -529,7 +556,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					if (q.getValidationRule() != null) {
 						ValidationRule validationRule = objFactory
 								.createValidationRule();
+						
 						// ToDo set validation rule xml
+						//validationRule.setAllowDecimal(value)
 					}
 
 					// ToDo marshall xml
