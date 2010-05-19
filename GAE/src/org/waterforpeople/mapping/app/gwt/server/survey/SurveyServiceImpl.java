@@ -473,23 +473,28 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Survey survey = surveyDao.loadFullSurvey(surveyId);
 			SurveyXMLAdapter sax = new SurveyXMLAdapter();
 			ObjectFactory objFactory = new ObjectFactory();
-			
-			com.gallatinsystems.survey.domain.xml.Survey surveyXML = objFactory.createSurvey();
+
+			com.gallatinsystems.survey.domain.xml.Survey surveyXML = objFactory
+					.createSurvey();
 			ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup> questionGroupXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup>();
 			for (QuestionGroup qg : survey.getQuestionGroupList()) {
-				com.gallatinsystems.survey.domain.xml.QuestionGroup qgXML = objFactory.createQuestionGroup();
+				com.gallatinsystems.survey.domain.xml.QuestionGroup qgXML = objFactory
+						.createQuestionGroup();
 				Heading heading = objFactory.createHeading();
 				heading.setContent(qg.getCode());
 				qgXML.setHeading(heading);
-				
-				//ToDo: implement questionGroup order attribute
-				//qgXML.setOrder(qg.getOrder());
+
+				// ToDo: implement questionGroup order attribute
+				// qgXML.setOrder(qg.getOrder());
 				ArrayList<com.gallatinsystems.survey.domain.xml.Question> questionXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.Question>();
 				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
 						.entrySet()) {
 					Question q = qEntry.getValue();
-					com.gallatinsystems.survey.domain.xml.Question qXML = objFactory.createQuestion();
-					//ToDo set dependency xml
+					com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
+							.createQuestion();
+					if (qEntry.getKey() != null)
+						qXML.setOrder(qEntry.getKey().toString());
+					// ToDo set dependency xml
 					Dependency dependency = objFactory.createDependency();
 
 					if (q.getOptionContainer() != null) {
@@ -515,17 +520,18 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						text.setContent(q.getText());
 						qXML.setText(text);
 					}
-					if(q.getTip()!=null){
+					if (q.getTip() != null) {
 						Tip tip = new Tip();
 						tip.setContent(q.getTip());
 						qXML.setTip(tip);
 					}
-					
-					if(q.getValidationRule()!=null){
-						ValidationRule validationRule = objFactory.createValidationRule();
-						//ToDo set validation rule xml 
+
+					if (q.getValidationRule() != null) {
+						ValidationRule validationRule = objFactory
+								.createValidationRule();
+						// ToDo set validation rule xml
 					}
-					
+
 					// ToDo marshall xml
 					// qXML.setText(q.getText());
 					questionXMLList.add(qXML);
@@ -535,10 +541,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 			surveyXML.setQuestionGroup(questionGroupXMLList);
 			String surveyDocument = sax.marshal(surveyXML);
-			SurveyContainerDao scDao  = new SurveyContainerDao();
+			SurveyContainerDao scDao = new SurveyContainerDao();
 			SurveyContainer sc = new SurveyContainer();
 			sc.setSurveyId(surveyId);
-			sc.setSurveyDocument( new com.google.appengine.api.datastore.Text(
+			sc.setSurveyDocument(new com.google.appengine.api.datastore.Text(
 					surveyDocument));
 			scDao.save(sc);
 			survey.setStatus(SurveyStatus.PUBLISHED);
@@ -547,9 +553,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			StringBuilder sb = new StringBuilder();
-			sb.append("Could not publish survey: \n cause: " +ex.getCause() + " \n message"+ ex.getMessage() + "\n stack trace:  ");
-			for(StackTraceElement ste:ex.getStackTrace()){
-				sb.append("        "+ste+"\n");
+			sb.append("Could not publish survey: \n cause: " + ex.getCause()
+					+ " \n message" + ex.getMessage() + "\n stack trace:  ");
+			for (StackTraceElement ste : ex.getStackTrace()) {
+				sb.append("        " + ste + "\n");
 			}
 			return sb.toString();
 		}
