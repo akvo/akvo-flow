@@ -140,7 +140,7 @@ public class SurveyHandler extends DefaultHandler {
 			currentQuestion.setType(attributes.getValue(TYPE));
 			currentQuestion.setId(attributes.getValue(ID));
 			String validation = attributes.getValue(VALIDATION_TYPE);
-			if (validation != null) {
+			if (validation != null && validation.trim().length() > 0) {
 				currentQuestion
 						.setValidationRule(new ValidationRule(validation));
 			}
