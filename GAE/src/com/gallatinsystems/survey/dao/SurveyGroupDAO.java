@@ -42,7 +42,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
 		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
-		BaseDAO<Question> questionDAO = new BaseDAO<Question>(Question.class);
+		QuestionDao questionDAO = new QuestionDao();
 
 		Long surveyGroupId = item.getKey().getId();
 		if (item.getSurveyList() != null && item.getSurveyList().size() > 0) {
@@ -64,12 +64,12 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 							.getQuestionMap().entrySet()) {
 						Question question = questionEntry.getValue();
 						Integer order = questionEntry.getKey();
-						question = questionDAO.save(question);
-						QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
-						qqga.setQuestionGroupId(qg.getKey().getId());
-						qqga.setQuestionId(question.getKey().getId());
-						qqga.setOrder(order);
-						qqgaDao.save(qqga);
+						question = questionDAO.save(question, qg.getKey().getId());
+//						QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
+//						qqga.setQuestionGroupId(qg.getKey().getId());
+//						qqga.setQuestionId(question.getKey().getId());
+//						qqga.setOrder(order);
+//						qqgaDao.save(qqga);
 					}
 				}
 

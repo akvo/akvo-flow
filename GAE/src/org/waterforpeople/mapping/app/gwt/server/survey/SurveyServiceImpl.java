@@ -239,6 +239,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						OptionContainer oc = new OptionContainer();
 						if (ocDto.getAllowOtherFlag() != null)
 							oc.setAllowOtherFlag(ocDto.getAllowOtherFlag());
+						if (ocDto.getAllowMultipleFlag() != null)
+							oc.setAllowMultipleFlag(ocDto
+									.getAllowMultipleFlag());
 
 						if (ocDto.getOptionsList() != null) {
 							ArrayList<QuestionOptionDto> optionDtoList = ocDto
@@ -258,6 +261,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 							}
 						}
+						q.setOptionContainer(oc);
 
 					}
 					qg.addQuestion(q, qDto.getKey());
@@ -410,6 +414,23 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			dto.setType(canonical.getType());
 			dto.setTip(canonical.getTip());
 			dto.setValidationRule(canonical.getValidationRule());
+			if (canonical.getOptionContainer() != null) {
+				OptionContainer oc = canonical.getOptionContainer();
+				OptionContainerDto ocDto = new OptionContainerDto();
+				ocDto.setKeyId(oc.getKey().getId());
+				ocDto.setAllowMultipleFlag(oc.getAllowMultipleFlag());
+				ocDto.setAllowOtherFlag(oc.getAllowOtherFlag());
+				if (oc.getOptionsList() != null) {
+					for (QuestionOption qo : oc.getOptionsList()) {
+						QuestionOptionDto qoDto = new QuestionOptionDto();
+						qoDto.setKeyId(qo.getKey().getId());
+						qoDto.setCode(qo.getCode());
+						qoDto.setText(qo.getText());
+						ocDto.addQuestionOption(qoDto);
+					}
+				}
+				dto.setOptionContainer(ocDto);
+			}
 			questionDtoList.add(dto);
 		}
 		return questionDtoList;

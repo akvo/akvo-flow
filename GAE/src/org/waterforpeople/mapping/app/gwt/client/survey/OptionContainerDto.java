@@ -3,12 +3,15 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class OptionContainerDto implements Serializable {
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+
+public class OptionContainerDto extends BaseDto implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4002853404925002791L;
 	private ArrayList<QuestionOptionDto> optionsList = null;
+	private Boolean allowMultipleFlag = null;
 
 	public Boolean getAllowOtherFlag() {
 		return allowOtherFlag;
@@ -32,5 +35,13 @@ public class OptionContainerDto implements Serializable {
 		if (optionsList == null)
 			optionsList = new ArrayList<QuestionOptionDto>();
 		optionsList.add(questionOption);
+	}
+
+	public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
+		this.allowMultipleFlag = allowMultipleFlag;
+	}
+
+	public Boolean getAllowMultipleFlag() {
+		return allowMultipleFlag;
 	}
 }

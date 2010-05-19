@@ -12,6 +12,8 @@ public class QuestionOption extends BaseDomain{
 	/**
 	 * 
 	 */
+	private OptionContainer optionContainer =null;
+	
 	private String text;
 	private String code;
 	public String getText() {
@@ -56,5 +58,11 @@ public class QuestionOption extends BaseDomain{
 		result.append("}");
 
 		return result.toString();
+	}
+	public void setOptionContainer(OptionContainer optionContainer) {
+		this.optionContainer = optionContainer;
+	}
+	public OptionContainer getOptionContainer() {
+		return optionContainer;
 	}
 }

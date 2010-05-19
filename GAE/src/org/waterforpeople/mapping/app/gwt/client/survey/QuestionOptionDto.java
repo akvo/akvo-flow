@@ -1,12 +1,16 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import java.io.Serializable;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class QuestionOptionDto extends BaseDto {
+public class QuestionOptionDto extends BaseDto implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8925764841259376220L;
+	
+	
+	private static final long serialVersionUID = 6237222655812167675L;
 	/**
 	 * 
 	 */

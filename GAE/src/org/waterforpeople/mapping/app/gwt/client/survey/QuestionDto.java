@@ -17,6 +17,7 @@ public class QuestionDto extends BaseDto {
 	private ArrayList<QuestionHelpDto> questionHelpList;
 	private String tip = null;
 	private String validationRule = null;
+	private Boolean mandatoryFlag = null;
 
 	public void addQuestionHelp(QuestionHelpDto questionHelp) {
 		if (questionHelpList == null) {
@@ -71,6 +72,14 @@ public class QuestionDto extends BaseDto {
 
 	public String getValidationRule() {
 		return validationRule;
+	}
+
+	public void setMandatoryFlag(Boolean mandatoryFlag) {
+		this.mandatoryFlag = mandatoryFlag;
+	}
+
+	public Boolean getMandatoryFlag() {
+		return mandatoryFlag;
 	}
 
 	public enum QuestionType {

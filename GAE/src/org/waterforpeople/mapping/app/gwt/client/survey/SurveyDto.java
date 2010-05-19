@@ -11,7 +11,7 @@ public class SurveyDto extends BaseDto {
 	private String description;
 	private String status;
 	private ArrayList<QuestionGroupDto> questionGroupList;
-
+	
 	public void addQuestionGroup(QuestionGroupDto questionGroup) {
 		if (questionGroupList == null) {
 			questionGroupList = new ArrayList<QuestionGroupDto>();

@@ -2,8 +2,10 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
@@ -14,6 +16,8 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -21,6 +25,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -517,6 +522,8 @@ public class SurveyManagerPortlet extends Portlet {
 		});
 	}
 
+	private FlexTable questionOptionDetail = new FlexTable();
+
 	private void loadQuestionDetails(QuestionDto item) {
 		removeAllWidgetsLoadThisWidget(questionDetailPanel);
 		TextBox questionId = new TextBox();
@@ -524,6 +531,7 @@ public class SurveyManagerPortlet extends Portlet {
 		TextBox questionText = new TextBox();
 		TextBox tip = new TextBox();
 		TextBox validationRule = new TextBox();
+		CheckBox mandatoryQuestion = new CheckBox();
 
 		if (item != null) {
 			questionId.setText(item.getKeyId().toString());
@@ -533,6 +541,11 @@ public class SurveyManagerPortlet extends Portlet {
 				tip.setText(item.getTip());
 			if (item.getValidationRule() != null)
 				validationRule.setText(item.getValidationRule());
+			if (item.getMandatoryFlag() != null)
+				if (item.getMandatoryFlag())
+					mandatoryQuestion.setValue(item.getMandatoryFlag());
+				else
+					mandatoryQuestion.setValue(item.getMandatoryFlag());
 		}
 		ListBox questionTypeLB = new ListBox();
 		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO
@@ -548,6 +561,8 @@ public class SurveyManagerPortlet extends Portlet {
 				questionTypeLB.setSelectedIndex(0);
 			} else if (qType.equals(QuestionType.OPTION)) {
 				questionTypeLB.setSelectedIndex(1);
+				loadQuestionOptionDetail(item);
+				questionDetailPanel.setWidget(6, 0, questionOptionDetail);
 			} else if (qType.equals(QuestionType.NUMBER)) {
 				questionTypeLB.setSelectedIndex(2);
 			} else if (qType.equals(QuestionType.GEO)) {
@@ -558,6 +573,21 @@ public class SurveyManagerPortlet extends Portlet {
 				questionTypeLB.setSelectedIndex(5);
 			}
 		}
+
+		questionTypeLB.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				if (((ListBox) event.getSource()).getSelectedIndex() == 1) {
+					loadQuestionOptionDetail(null);
+					questionDetailPanel.setWidget(6, 0, questionOptionDetail);
+				} else {
+					questionDetailPanel.removeRow(6);
+				}
+			}
+
+		});
+
 		Button saveQuestionButton = new Button("Save Question");
 		Button deleteQuestionButton = new Button("Delete Question");
 		questionId.setVisible(false);
@@ -571,8 +601,10 @@ public class SurveyManagerPortlet extends Portlet {
 		questionDetailPanel.setWidget(3, 1, tip);
 		questionDetailPanel.setWidget(4, 0, new Label("Validation Rule"));
 		questionDetailPanel.setWidget(4, 1, validationRule);
-		questionDetailPanel.setWidget(5, 0, saveQuestionButton);
-		questionDetailPanel.setWidget(5, 1, deleteQuestionButton);
+		questionDetailPanel.setWidget(5, 0, new Label("Mandatory Question"));
+		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
+		questionDetailPanel.setWidget(7, 0, saveQuestionButton);
+		questionDetailPanel.setWidget(7, 1, deleteQuestionButton);
 
 		saveQuestionButton.addClickHandler(new ClickHandler() {
 
@@ -601,6 +633,86 @@ public class SurveyManagerPortlet extends Portlet {
 			}
 
 		});
+
+	}
+
+	private void loadQuestionOptionDetail(QuestionDto item) {
+		Integer row = 0;
+		OptionContainerDto ocDto = null;
+		ArrayList<QuestionOptionDto> questionOptionList = null;
+		CheckBox allowOther = new CheckBox();
+		CheckBox allowMultiple = new CheckBox();
+		TextBox ocId = new TextBox();
+
+		if (item != null) {
+			ocDto = item.getOptionContainer();
+			if (ocDto != null) {
+				if(ocDto.getAllowMultipleFlag()!=null){
+					allowMultiple.setValue(ocDto.getAllowMultipleFlag());
+				}
+				if(ocDto.getKeyId()!=null)
+					ocId.setText(ocDto.getKeyId().toString());
+				if(ocDto.getAllowOtherFlag()!=null)
+					allowOther.setValue(ocDto.getAllowOtherFlag());
+				if (ocDto.getOptionsList() != null)
+					questionOptionList = ocDto.getOptionsList();
+			}
+		}
+
+		questionOptionDetail.setWidget(row, 0, new Label("Allow Other"));
+		questionOptionDetail.setWidget(row, 1, allowOther);
+		questionOptionDetail.setWidget(row, 2, new Label("Allow Multiple"));
+		questionOptionDetail.setWidget(row, 3, allowMultiple);
+		questionOptionDetail.setWidget(row, 4, ocId);
+
+		row++;
+
+		if (ocDto != null) {
+			if (ocDto.getAllowOtherFlag() != null)
+				allowOther.setValue(ocDto.getAllowOtherFlag());
+			if (ocDto.getAllowMultipleFlag() != null)
+				allowMultiple.setValue(ocDto.getAllowMultipleFlag());
+		}
+
+		if (questionOptionList != null) {
+			for (QuestionOptionDto qoDto : questionOptionList) {
+				loadQuestionOptionRowDetail(qoDto, row++);
+			}
+		}
+
+		Button addNewOptionButton = new Button("Add New Option");
+		Button deleteOptionButton = new Button("Delete Option");
+
+		questionOptionDetail.setWidget(row, 0, addNewOptionButton);
+		addNewOptionButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadQuestionOptionRowDetail(null, questionOptionDetail
+						.getRowCount() + 1);
+			}
+
+		});
+	}
+
+	private void loadQuestionOptionRowDetail(QuestionOptionDto item, Integer row) {
+		TextBox optionValue = new TextBox();
+		TextBox optionText = new TextBox();
+		TextBox optionId = new TextBox();
+		if (item != null) {
+			if (item.getKeyId() != null)
+				optionId.setText(item.getKeyId().toString());
+			if (item.getCode() != null)
+				optionValue.setText(item.getCode());
+			if (item.getText() != null)
+				optionText.setText(item.getText());
+		}
+
+		questionOptionDetail.setWidget(row, 0, new Label("Option Value"));
+		questionOptionDetail.setWidget(row, 1, optionValue);
+		questionOptionDetail.setWidget(row, 2, new Label("Option Text"));
+		questionOptionDetail.setWidget(row, 3, optionText);
+		questionOptionDetail.setWidget(row, 4, optionId);
 
 	}
 
@@ -639,6 +751,8 @@ public class SurveyManagerPortlet extends Portlet {
 
 		TextBox tip = (TextBox) questionDetailPanel.getWidget(3, 1);
 		TextBox validationRule = (TextBox) questionDetailPanel.getWidget(4, 1);
+		CheckBox mandatoryQuestion = (CheckBox) questionDetailPanel.getWidget(
+				5, 1);
 
 		if (questionId.getText().length() > 0)
 			value.setKeyId(new Long(questionId.getText()));
@@ -651,10 +765,34 @@ public class SurveyManagerPortlet extends Portlet {
 		if (validationRule.getText().length() > 0)
 			value.setValidationRule(validationRule.getText());
 
+		value.setMandatoryFlag(mandatoryQuestion.getValue());
+
 		if (questionTypeLB.getSelectedIndex() == 0) {
 			value.setType(QuestionType.FREE_TEXT);
 		} else if (questionTypeLB.getSelectedIndex() == 1) {
 			value.setType(QuestionType.OPTION);
+			FlexTable questionOptionTable = (FlexTable) questionDetailPanel
+					.getWidget(6, 0);
+			CheckBox allowOther = (CheckBox) questionOptionDetail.getWidget(0,
+					1);
+			CheckBox allowMultiple = (CheckBox) questionOptionDetail.getWidget(
+					0, 3);
+			OptionContainerDto ocDto = new OptionContainerDto();
+			ocDto.setAllowMultipleFlag(allowMultiple.getValue());
+			ocDto.setAllowOtherFlag(allowOther.getValue());
+
+			for (int row = 2; row < questionOptionTable.getRowCount() - 1; row++) {
+				QuestionOptionDto qoDto = new QuestionOptionDto();
+				TextBox optionValue = (TextBox) questionOptionDetail.getWidget(
+						row, 1);
+				TextBox optionText = (TextBox) questionOptionDetail.getWidget(
+						row, 3);
+				TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
+				qoDto.setCode(optionValue.getText());
+				qoDto.setText(optionText.getText());
+				qoDto.setKeyId(new Long(qoId.getText()));
+			}
+
 		} else if (questionTypeLB.getSelectedIndex() == 2) {
 			value.setType(QuestionType.NUMBER);
 		} else if (questionTypeLB.getSelectedIndex() == 3) {
@@ -743,9 +881,13 @@ public class SurveyManagerPortlet extends Portlet {
 
 		if (item != null) {
 			surveyId.setText(item.getKeyId().toString());
-			surveyname.setText(item.getName());
-			surveyDesc.setText(item.getDescription());
-			version.setText(item.getVersion());
+			if (item.getName() != null)
+				surveyname.setText(item.getName());
+			if (item.getDescription() != null)
+				surveyDesc.setText(item.getDescription());
+			if (item.getVersion() != null)
+				version.setText(item.getVersion());
+
 		}
 
 		Button saveSurveyButton = new Button("Save");
@@ -971,10 +1113,6 @@ public class SurveyManagerPortlet extends Portlet {
 			}
 
 		});
-
-	}
-
-	public void addOrUpdateSurveyTreeItem(SurveyDto item) {
 
 	}
 
