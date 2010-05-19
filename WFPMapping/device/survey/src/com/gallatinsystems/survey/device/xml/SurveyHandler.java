@@ -129,14 +129,35 @@ public class SurveyHandler extends DefaultHandler {
 		super.startElement(uri, localName, name, attributes);
 		if (localName.equalsIgnoreCase(QUESTION_GROUP)) {
 			currentQuestionGroup = new QuestionGroup();
-			currentQuestionGroup.setOrder(Integer.parseInt(attributes
-					.getValue(ORDER)));
+			if (attributes.getValue(ORDER) != null) {
+				currentQuestionGroup.setOrder(Integer.parseInt(attributes
+						.getValue(ORDER)));
+			} else {
+				int count = 1;
+				if (survey != null && survey.getQuestionGroups() != null) {
+					count = survey.getQuestionGroups().size() + 2;
+				}
+				currentQuestionGroup.setOrder(count);
+			}
 		} else if (localName.equalsIgnoreCase(QUESTION)) {
 			currentQuestion = new Question();
-			currentQuestion.setOrder(Integer.parseInt(attributes
-					.getValue(ORDER)));
-			currentQuestion.setMandatory(Boolean.parseBoolean(attributes
-					.getValue(MANDATORY)));
+			if (attributes.getValue(ORDER) != null) {
+				currentQuestion.setOrder(Integer.parseInt(attributes
+						.getValue(ORDER)));
+			} else {
+				int count = 1;
+				if (currentQuestionGroup != null
+						&& currentQuestionGroup.getQuestions() != null) {
+					count = currentQuestionGroup.getQuestions().size() + 2;
+				}
+				currentQuestion.setOrder(count);
+			}
+			if (attributes.getValue(MANDATORY) != null) {
+				currentQuestion.setMandatory(Boolean.parseBoolean(attributes
+						.getValue(MANDATORY)));
+			} else {
+				currentQuestion.setMandatory(false);
+			}
 			currentQuestion.setType(attributes.getValue(TYPE));
 			currentQuestion.setId(attributes.getValue(ID));
 			String validation = attributes.getValue(VALIDATION_TYPE);
@@ -147,11 +168,19 @@ public class SurveyHandler extends DefaultHandler {
 		} else if (localName.equalsIgnoreCase(OPTIONS)) {
 			currentOptions = new ArrayList<Option>();
 			if (currentQuestion != null) {
-				currentQuestion.setAllowOther(Boolean.parseBoolean(attributes
-						.getValue(ALLOW_OTHER)));
+				if (attributes.getValue(ALLOW_OTHER) != null) {
+					currentQuestion.setAllowOther(Boolean
+							.parseBoolean(attributes.getValue(ALLOW_OTHER)));
+				} else {
+					currentQuestion.setAllowOther(false);
+				}
 				currentQuestion.setRenderType(attributes.getValue(RENDER_TYPE));
-				currentQuestion.setAllowMultiple(Boolean
-						.parseBoolean(attributes.getValue(ALLOW_MULT)));
+				if (attributes.getValue(ALLOW_MULT) != null) {
+					currentQuestion.setAllowMultiple(Boolean
+							.parseBoolean(attributes.getValue(ALLOW_MULT)));
+				} else {
+					currentQuestion.setAllowMultiple(false);
+				}
 			}
 		} else if (localName.equalsIgnoreCase(OPTION)) {
 			currentOption = new Option();
