@@ -243,8 +243,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 		if (qdto.getOptionContainer() != null) {
 			OptionContainerDto ocDto = qdto.getOptionContainer();
-			q.setOptionContainer(null);
 			OptionContainer oc = new OptionContainer();
+			if(ocDto.getKeyId()!=null)
+				oc.setKey(KeyFactory.createKey(OptionContainer.class.getSimpleName(), ocDto.getKeyId()));
 			if (ocDto.getAllowOtherFlag() != null)
 				oc.setAllowOtherFlag(ocDto.getAllowOtherFlag());
 			if (ocDto.getAllowMultipleFlag() != null)

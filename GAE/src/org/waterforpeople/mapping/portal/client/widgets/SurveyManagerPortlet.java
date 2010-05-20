@@ -647,12 +647,12 @@ public class SurveyManagerPortlet extends Portlet {
 		if (item != null) {
 			ocDto = item.getOptionContainer();
 			if (ocDto != null) {
-				if(ocDto.getAllowMultipleFlag()!=null){
+				if (ocDto.getAllowMultipleFlag() != null) {
 					allowMultiple.setValue(ocDto.getAllowMultipleFlag());
 				}
-				if(ocDto.getKeyId()!=null)
+				if (ocDto.getKeyId() != null)
 					ocId.setText(ocDto.getKeyId().toString());
-				if(ocDto.getAllowOtherFlag()!=null)
+				if (ocDto.getAllowOtherFlag() != null)
 					allowOther.setValue(ocDto.getAllowOtherFlag());
 				if (ocDto.getOptionsList() != null)
 					questionOptionList = ocDto.getOptionsList();
@@ -773,15 +773,21 @@ public class SurveyManagerPortlet extends Portlet {
 			value.setType(QuestionType.OPTION);
 			FlexTable questionOptionTable = (FlexTable) questionDetailPanel
 					.getWidget(6, 0);
+
 			CheckBox allowOther = (CheckBox) questionOptionDetail.getWidget(0,
 					1);
 			CheckBox allowMultiple = (CheckBox) questionOptionDetail.getWidget(
 					0, 3);
+
+			TextBox ocId = (TextBox) questionOptionDetail.getWidget(0, 4);
+
 			OptionContainerDto ocDto = new OptionContainerDto();
+			if (ocId.getText().length() > 0)
+				ocDto.setKeyId(new Long(ocId.getText()));
 			ocDto.setAllowMultipleFlag(allowMultiple.getValue());
 			ocDto.setAllowOtherFlag(allowOther.getValue());
 
-			for (int row = 2; row < questionOptionTable.getRowCount() - 1; row++) {
+			for (int row = 1; row < questionOptionTable.getRowCount() - 1; row++) {
 				QuestionOptionDto qoDto = new QuestionOptionDto();
 				TextBox optionValue = (TextBox) questionOptionDetail.getWidget(
 						row, 1);
@@ -791,7 +797,9 @@ public class SurveyManagerPortlet extends Portlet {
 				qoDto.setCode(optionValue.getText());
 				qoDto.setText(optionText.getText());
 				qoDto.setKeyId(new Long(qoId.getText()));
+				ocDto.addQuestionOption(qoDto);
 			}
+			value.setOptionContainer(ocDto);
 
 		} else if (questionTypeLB.getSelectedIndex() == 2) {
 			value.setType(QuestionType.NUMBER);
