@@ -66,6 +66,7 @@ import com.gallatinsystems.survey.dao.SurveySurveyGroupAssocDao;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionHelp;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
@@ -510,6 +511,82 @@ public class TestHarnessServlet extends HttpServlet {
 			if (mappings != null) {
 				System.out.println(mappings.size());
 			}
+		} else if ("deleteSurveyGraph".equals(action)) {
+			try {
+				SurveyGroupDAO sgDao = new SurveyGroupDAO();
+				List<SurveyGroup> sgList = sgDao.list("all");
+				for (SurveyGroup sg : sgList) {
+					sgDao.delete(sg);
+				}
+
+				resp.getWriter().println("Deleted all survey groups");
+
+				SurveyDAO surveyDao = new SurveyDAO();
+				List<Survey> surveyList = surveyDao.list("all");
+				for (Survey survey : surveyList) {
+					surveyDao.delete(survey);
+				}
+				resp.getWriter().println("Deleted all surveys");
+
+				SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
+				List<SurveySurveyGroupAssoc> ssgaList = ssgaDao.list("all");
+				for (SurveySurveyGroupAssoc ssga : ssgaList) {
+					ssgaDao.delete(ssga);
+				}
+				resp.getWriter().println("Deleted all surveysurveygroupassocs");
+				QuestionGroupDao qgDao = new QuestionGroupDao();
+				List<QuestionGroup> qgList = qgDao.list("all");
+				for (QuestionGroup qg : qgList) {
+					qgDao.delete(qg);
+				}
+				resp.getWriter().println("Deleted all question groups");
+
+				SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
+				List<SurveyQuestionGroupAssoc> sgqaList = sqgaDao.list("all");
+				for (SurveyQuestionGroupAssoc sqga : sgqaList) {
+					sqgaDao.delete(sqga);
+				}
+				resp.getWriter().println(
+						"Deleted all surveyquestiongroupassocdao");
+
+				QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
+				List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao.list("all");
+				for (QuestionQuestionGroupAssoc qqga : qqgaList) {
+					qqgaDao.delete(qqga);
+				}
+				resp.getWriter().println(
+						"Deleted all QuestionQuestionGroupsAssocs");
+				QuestionDao qDao = new QuestionDao();
+				List<Question> qList = qDao.list("all");
+				for (Question q : qList) {
+					qDao.delete(q);
+				}
+				resp.getWriter().println("Deleted all Questions");
+
+				QuestionOptionDao qoDao = new QuestionOptionDao();
+				List<QuestionOption> qoList = qoDao.list("all");
+				for (QuestionOption qo : qoList)
+					qoDao.delete(qo);
+				resp.getWriter().println("Deleted all QuestionOptions");
+
+				OptionContainerDao ocDao = new OptionContainerDao();
+				List<OptionContainer> ocList = ocDao.list("all");
+				for (OptionContainer oc : ocList)
+					ocDao.delete(oc);
+				resp.getWriter().println("Deleted all OptionContainer");
+				
+				BaseDAO<QuestionHelp> qhDao = new BaseDAO<QuestionHelp>(
+						QuestionHelp.class);
+				List<QuestionHelp> qhList = qhDao.list("all");
+				for (QuestionHelp qh : qhList)
+					qhDao.delete(qh);
+				resp.getWriter().println("Deleted all QuestionHelp");
+				
+				resp.getWriter().println("Everything");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if ("saveSurveyGroup".equals(action)) {
 			try {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
@@ -560,6 +637,13 @@ public class TestHarnessServlet extends HttpServlet {
 					qDao.delete(q);
 				}
 				resp.getWriter().println("Deleted all Questions");
+
+				BaseDAO<QuestionHelp> qhDao = new BaseDAO<QuestionHelp>(
+						QuestionHelp.class);
+				List<QuestionHelp> qhList = qhDao.list("all");
+				for (QuestionHelp qh : qhList)
+					qhDao.delete(qh);
+				resp.getWriter().println("Deleted all QuestionHelp");
 
 				QuestionOptionDao qoDao = new QuestionOptionDao();
 				List<QuestionOption> qoList = qoDao.list("all");
@@ -659,21 +743,24 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-		}else if("testQuestionOption".equals(action)){ 
+		} else if ("testQuestionOption".equals(action)) {
 			QuestionDao qDao = new QuestionDao();
 			List<Question> qList = qDao.list("all");
-			for(Question q:qList){
-				if(q.getOptionContainer()!=null){
+			for (Question q : qList) {
+				if (q.getOptionContainer() != null) {
 					try {
-						resp.getWriter().println("OC: " + q.getOptionContainer().getKey());
+						resp.getWriter().println(
+								"OC: " + q.getOptionContainer().getKey());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					if(q.getOptionContainer().getOptionsList()!=null){
-						for(QuestionOption qo:q.getOptionContainer().getOptionsList()){
+					if (q.getOptionContainer().getOptionsList() != null) {
+						for (QuestionOption qo : q.getOptionContainer()
+								.getOptionsList()) {
 							try {
-								resp.getWriter().println(qo.getCode() + " " + qo.getText());
+								resp.getWriter().println(
+										qo.getCode() + " " + qo.getText());
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -682,7 +769,7 @@ public class TestHarnessServlet extends HttpServlet {
 					}
 				}
 			}
-		}else if ("testFindSurvey".equals(action)) {
+		} else if ("testFindSurvey".equals(action)) {
 			SurveyServiceImpl ssI = new SurveyServiceImpl();
 			SurveyDto dto = ssI.loadFullSurvey(2349L);
 		} else if ("createTestSurveyForEndToEnd".equals(action)) {

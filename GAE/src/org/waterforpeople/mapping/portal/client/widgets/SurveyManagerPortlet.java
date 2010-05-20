@@ -525,7 +525,10 @@ public class SurveyManagerPortlet extends Portlet {
 	private FlexTable questionOptionDetail = new FlexTable();
 
 	private void loadQuestionDetails(QuestionDto item) {
-		removeAllWidgetsLoadThisWidget(questionDetailPanel);
+		
+		questionOptionDetail.removeAllRows();
+		questionDetailPanel.removeAllRows();
+
 		TextBox questionId = new TextBox();
 		questionId.setVisible(false);
 		TextBox questionText = new TextBox();
@@ -633,11 +636,13 @@ public class SurveyManagerPortlet extends Portlet {
 			}
 
 		});
-
+		this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
+		
+		
 	}
 
 	private void loadQuestionOptionDetail(QuestionDto item) {
-		questionOptionDetail.removeAllRows();
+		//questionOptionDetail.removeAllRows();
 		Integer row = 0;
 		OptionContainerDto ocDto = null;
 		ArrayList<QuestionOptionDto> questionOptionList = null;
@@ -690,7 +695,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				
+
 				loadQuestionOptionRowDetail(null, questionOptionDetail
 						.getRowCount());
 			}
@@ -699,7 +704,7 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void loadQuestionOptionRowDetail(QuestionOptionDto item, Integer row) {
-		
+
 		TextBox optionValue = new TextBox();
 		TextBox optionText = new TextBox();
 		TextBox optionId = new TextBox();

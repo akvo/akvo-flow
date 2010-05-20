@@ -214,6 +214,59 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return value;
 	}
 
+	private QuestionDto marshalQuestionDto(Question q) {
+		QuestionDto qDto = new QuestionDto();
+
+		qDto.setKeyId(q.getKey().getId());
+
+		if (q.getText() != null)
+			qDto.setText(q.getText());
+		if (q.getTip() != null)
+			qDto.setTip(q.getTip());
+		if (q.getType() != null)
+			qDto.setType(q.getType());
+		if (q.getValidationRule() != null)
+			qDto.setValidationRule(q.getValidationRule());
+
+		if (q.getQuestionHelpList() != null) {
+			ArrayList<QuestionHelp> qHList = q.getQuestionHelpList();
+			for (QuestionHelp qh : qHList) {
+				QuestionHelpDto qhDto = new QuestionHelpDto();
+				// Beanutils throws a concurrent exception so need
+				// to copy props by hand
+				qhDto.setResourceUrl(qh.getResourceUrl());
+				qhDto.setText(qhDto.getText());
+				qDto.addQuestionHelp(qhDto);
+			}
+		}
+
+		if (q.getOptionContainer() != null) {
+			OptionContainer oc = q.getOptionContainer();
+			OptionContainerDto ocDto = new OptionContainerDto();
+			ocDto.setKeyId(oc.getKey().getId());
+			if (oc.getAllowOtherFlag() != null)
+				ocDto.setAllowOtherFlag(oc.getAllowOtherFlag());
+			if (oc.getAllowMultipleFlag() != null)
+				ocDto.setAllowMultipleFlag(oc.getAllowMultipleFlag());
+
+			if (oc.getOptionsList() != null) {
+				ArrayList<QuestionOption> optionList = oc.getOptionsList();
+				for (QuestionOption qo : optionList) {
+					QuestionOptionDto ooDto = new QuestionOptionDto();
+					ooDto.setKeyId(qo.getKey().getId());
+					if (qo.getCode() != null)
+						ooDto.setCode(qo.getCode());
+					if (qo.getText() != null)
+						ooDto.setText(qo.getText());
+					ocDto.addQuestionOption(ooDto);
+
+				}
+			}
+			qDto.setOptionContainer(ocDto);
+		}
+		return qDto;
+	}
+
 	private Question marshalQuestion(QuestionDto qdto) {
 		Question q = new Question();
 		if (qdto.getKeyId() != null)
@@ -244,8 +297,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (qdto.getOptionContainer() != null) {
 			OptionContainerDto ocDto = qdto.getOptionContainer();
 			OptionContainer oc = new OptionContainer();
-			if(ocDto.getKeyId()!=null)
-				oc.setKey(KeyFactory.createKey(OptionContainer.class.getSimpleName(), ocDto.getKeyId()));
+			if (ocDto.getKeyId() != null)
+				oc.setKey(KeyFactory.createKey(OptionContainer.class
+						.getSimpleName(), ocDto.getKeyId()));
 			if (ocDto.getAllowOtherFlag() != null)
 				oc.setAllowOtherFlag(ocDto.getAllowOtherFlag());
 			if (ocDto.getAllowMultipleFlag() != null)
@@ -444,10 +498,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDao questionDao = new QuestionDao();
 		Question question = marshalQuestion(value);
 		question = questionDao.save(question, questionGroupId);
-		value.setKeyId(question.getKey().getId());
-		value.setText(question.getText());
-		value.setType(question.getType());
-		return value;
+		
+		return marshalQuestionDto(question);
 	}
 
 	@Override
@@ -545,7 +597,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						options
 								.setAllowOther(oc.getAllowOtherFlag()
 										.toString());
-						
+
 						if (oc.getOptionsList() != null) {
 							ArrayList<Option> optionList = new ArrayList<Option>();
 							for (QuestionOption qo : oc.getOptionsList()) {
