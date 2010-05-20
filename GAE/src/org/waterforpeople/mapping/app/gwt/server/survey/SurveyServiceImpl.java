@@ -202,68 +202,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				qg.setQuestionList(null);
 				for (Entry<Integer, QuestionDto> qDto : qgDto.getQuestionMap()
 						.entrySet()) {
-					Question q = new Question();
-					QuestionDto qdto = qDto.getValue();
-
-					// Freaking BeanUtils
-					if (qdto.getKeyId() != null)
-						q.setKey((KeyFactory.createKey(Question.class
-								.getSimpleName(), qdto.getKeyId())));
-
-					if (qdto.getText() != null)
-						q.setText(qdto.getText());
-					if (qdto.getTip() != null)
-						q.setTip(qdto.getTip());
-					if (qdto.getType() != null)
-						q.setType(qdto.getType());
-					if (qdto.getValidationRule() != null)
-						q.setValidationRule(qdto.getValidationRule());
-
-					if (qDto.getValue().getQuestionHelpList() != null) {
-						ArrayList<QuestionHelpDto> qHListDto = qDto.getValue()
-								.getQuestionHelpList();
-						for (QuestionHelpDto qhDto : qHListDto) {
-							QuestionHelp qh = new QuestionHelp();
-							// Beanutils throws a concurrent exception so need
-							// to copy props by hand
-							qh.setResourceUrl(qhDto.getResourceUrl());
-							qh.setText(qhDto.getText());
-							q.addQuestionHelp(qh);
-						}
-					}
-
-					if (qDto.getValue().getOptionContainer() != null) {
-						OptionContainerDto ocDto = qDto.getValue()
-								.getOptionContainer();
-						q.setOptionContainer(null);
-						OptionContainer oc = new OptionContainer();
-						if (ocDto.getAllowOtherFlag() != null)
-							oc.setAllowOtherFlag(ocDto.getAllowOtherFlag());
-						if (ocDto.getAllowMultipleFlag() != null)
-							oc.setAllowMultipleFlag(ocDto
-									.getAllowMultipleFlag());
-
-						if (ocDto.getOptionsList() != null) {
-							ArrayList<QuestionOptionDto> optionDtoList = ocDto
-									.getOptionsList();
-							for (QuestionOptionDto qoDto : optionDtoList) {
-								QuestionOption oo = new QuestionOption();
-								if (qoDto.getKeyId() != null)
-									oo.setKey((KeyFactory.createKey(
-											QuestionOption.class
-													.getSimpleName(), qoDto
-													.getKeyId())));
-								if (qoDto.getCode() != null)
-									oo.setCode(qoDto.getCode());
-								if (qoDto.getText() != null)
-									oo.setText(qoDto.getText());
-								oc.addQuestionOption(oo);
-
-							}
-						}
-						q.setOptionContainer(oc);
-
-					}
+					Question q = marshalQuestion(qDto.getValue());
 					qg.addQuestion(q, qDto.getKey());
 				}
 				survey.addQuestionGroup(qg);
@@ -273,6 +212,64 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 		DtoMarshaller.copyToDto(sgDao.save(surveyGroup), value);
 		return value;
+	}
+
+	private Question marshalQuestion(QuestionDto qdto) {
+		Question q = new Question();
+		if (qdto.getKeyId() != null)
+			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(), qdto
+					.getKeyId())));
+
+		if (qdto.getText() != null)
+			q.setText(qdto.getText());
+		if (qdto.getTip() != null)
+			q.setTip(qdto.getTip());
+		if (qdto.getType() != null)
+			q.setType(qdto.getType());
+		if (qdto.getValidationRule() != null)
+			q.setValidationRule(qdto.getValidationRule());
+
+		if (qdto.getQuestionHelpList() != null) {
+			ArrayList<QuestionHelpDto> qHListDto = qdto.getQuestionHelpList();
+			for (QuestionHelpDto qhDto : qHListDto) {
+				QuestionHelp qh = new QuestionHelp();
+				// Beanutils throws a concurrent exception so need
+				// to copy props by hand
+				qh.setResourceUrl(qhDto.getResourceUrl());
+				qh.setText(qhDto.getText());
+				q.addQuestionHelp(qh);
+			}
+		}
+
+		if (qdto.getOptionContainer() != null) {
+			OptionContainerDto ocDto = qdto.getOptionContainer();
+			q.setOptionContainer(null);
+			OptionContainer oc = new OptionContainer();
+			if (ocDto.getAllowOtherFlag() != null)
+				oc.setAllowOtherFlag(ocDto.getAllowOtherFlag());
+			if (ocDto.getAllowMultipleFlag() != null)
+				oc.setAllowMultipleFlag(ocDto.getAllowMultipleFlag());
+
+			if (ocDto.getOptionsList() != null) {
+				ArrayList<QuestionOptionDto> optionDtoList = ocDto
+						.getOptionsList();
+				for (QuestionOptionDto qoDto : optionDtoList) {
+					QuestionOption oo = new QuestionOption();
+					if (qoDto.getKeyId() != null)
+						oo.setKey((KeyFactory.createKey(QuestionOption.class
+								.getSimpleName(), qoDto.getKeyId())));
+					if (qoDto.getCode() != null)
+						oo.setCode(qoDto.getCode());
+					if (qoDto.getText() != null)
+						oo.setText(qoDto.getText());
+					oc.addQuestionOption(oo);
+
+				}
+			}
+			q.setOptionContainer(oc);
+		}
+
+		return q;
 	}
 
 	/**
@@ -444,8 +441,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
-		Question question = new Question();
-		DtoMarshaller.copyToCanonical(question, value);
+		Question question = marshalQuestion(value);
 		question = questionDao.save(question, questionGroupId);
 		value.setKeyId(question.getKey().getId());
 		value.setText(question.getText());
