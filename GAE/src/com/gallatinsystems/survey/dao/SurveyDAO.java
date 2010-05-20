@@ -6,16 +6,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
@@ -65,8 +63,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			QuestionGroupDao qGroupDao = new QuestionGroupDao();
 			SurveyQuestionGroupAssocDao surveyQGAssocDao = new SurveyQuestionGroupAssocDao();
 			QuestionQuestionGroupAssocDao qqGroupAssocDao = new QuestionQuestionGroupAssocDao();
-			BaseDAO<Question> questionDao = new BaseDAO<Question>(
-					Question.class);
+			QuestionDao questionDao = new QuestionDao();
 			// get all the question groups for the survey
 			List<SurveyQuestionGroupAssoc> surveyGroupQuestionAssocList = surveyQGAssocDao
 					.listBySurveyId(survey.getKey().getId());
@@ -77,10 +74,12 @@ public class SurveyDAO extends BaseDAO<Survey> {
 						.getQuestionGroupId());
 				List<QuestionQuestionGroupAssoc> qqgaList = qqGroupAssocDao
 						.listByQuestionGroupId(qg.getKey().getId());
+				int i = 0;
 				for (QuestionQuestionGroupAssoc qqgaItem : qqgaList) {
 					Question question = questionDao.getByKey(qqgaItem
 							.getQuestionId());
-					qg.addQuestion(question, qqgaItem.getOrder());
+					//ToDo fix
+					qg.addQuestion(question, i++);
 				}
 				survey.addQuestionGroup(qg);
 			}

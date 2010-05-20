@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
@@ -64,6 +65,11 @@ public class QuestionDao extends BaseDAO<Question> {
 			new OptionContainerDao().save(question.getOptionContainer());
 
 		return question;
+	}
+	public Question getByKey(Long id){
+		Question q = super.getByKey(id);
+		
+		return q;
 	}
 
 }

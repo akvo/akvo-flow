@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -498,7 +497,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDao questionDao = new QuestionDao();
 		Question question = marshalQuestion(value);
 		question = questionDao.save(question, questionGroupId);
-		
+
 		return marshalQuestionDto(question);
 	}
 
@@ -548,11 +547,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Survey survey = surveyDao.loadFullSurvey(surveyId);
 			SurveyXMLAdapter sax = new SurveyXMLAdapter();
 			ObjectFactory objFactory = new ObjectFactory();
-
+		
+			//System.out.println("XML Marshalling for survey: " + surveyId);
 			com.gallatinsystems.survey.domain.xml.Survey surveyXML = objFactory
 					.createSurvey();
 			ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup> questionGroupXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup>();
 			for (QuestionGroup qg : survey.getQuestionGroupList()) {
+				//System.out.println("	QuestionGroup: " + qg.getKey().getId() + ":"
+//						+ qg.getCode() + ":" + qg.getDescription());
 				com.gallatinsystems.survey.domain.xml.QuestionGroup qgXML = objFactory
 						.createQuestionGroup();
 				Heading heading = objFactory.createHeading();
@@ -565,11 +567,34 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
 						.entrySet()) {
 					Question q = qEntry.getValue();
+					//System.out.println("		Question: " + q.getKey().getId() + ":"
+//							+ q.getText() + ":" + q.getType().toString());
 					com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
 							.createQuestion();
 					qXML.setId(new String("" + q.getKey().getId() + ""));
 					// ToDo fix
 					qXML.setMandatory("false");
+					if (q.getText() != null) {
+						Text text = new Text();
+						text.setContent(q.getText());
+						qXML.setText(text);
+					}
+					if (q.getTip() != null) {
+						Tip tip = new Tip();
+						tip.setContent(q.getTip());
+						qXML.setTip(tip);
+					}
+
+					if (q.getValidationRule() != null) {
+						ValidationRule validationRule = objFactory
+								.createValidationRule();
+
+						// ToDo set validation rule xml
+						// validationRule.setAllowDecimal(value)
+					}
+
+					// ToDo marshall xml
+					// qXML.setText(q.getText());
 
 					if (q.getType().equals(QuestionType.FREE_TEXT))
 						qXML.setType(FREE_QUESTION_TYPE);
@@ -593,6 +618,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 					if (q.getOptionContainer() != null) {
 						OptionContainer oc = q.getOptionContainer();
+						//System.out.println("			OptionContainer: " + oc.getKey().getId()
+//								+ ":" + oc.getAllowMultipleFlag() + ":"
+//								+ oc.getAllowOtherFlag());
 						Options options = objFactory.createOptions();
 						options
 								.setAllowOther(oc.getAllowOtherFlag()
@@ -600,7 +628,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 						if (oc.getOptionsList() != null) {
 							ArrayList<Option> optionList = new ArrayList<Option>();
+							//System.out.println("				ocList size:" + optionList.size());
 							for (QuestionOption qo : oc.getOptionsList()) {
+								//System.out.println("						option:" + qo.getKey().getId()
+//										+ ":" + qo.getCode() + ":"
+//										+ qo.getText());
 								Option option = objFactory.createOption();
 								option.setContent(qo.getText());
 								option.setValue(qo.getCode());
@@ -610,27 +642,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						}
 						qXML.setOptions(options);
 					}
-					if (q.getText() != null) {
-						Text text = new Text();
-						text.setContent(q.getText());
-						qXML.setText(text);
-					}
-					if (q.getTip() != null) {
-						Tip tip = new Tip();
-						tip.setContent(q.getTip());
-						qXML.setTip(tip);
-					}
-
-					if (q.getValidationRule() != null) {
-						ValidationRule validationRule = objFactory
-								.createValidationRule();
-
-						// ToDo set validation rule xml
-						// validationRule.setAllowDecimal(value)
-					}
-
-					// ToDo marshall xml
-					// qXML.setText(q.getText());
 					questionXMLList.add(qXML);
 				}
 				qgXML.setQuestion(questionXMLList);
