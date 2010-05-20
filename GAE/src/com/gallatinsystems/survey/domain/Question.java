@@ -17,6 +17,7 @@ public class Question extends BaseDomain {
 
 	private String text;
 	private String validationRule;
+	private QuestionDependency dependQuestion = null;
 	public String getValidationRule() {
 		return validationRule;
 	}
@@ -127,5 +128,13 @@ public class Question extends BaseDomain {
 		result.append("}");
 
 		return result.toString();
+	}
+
+	public void setDependQuestion(QuestionDependency dependQuestion) {
+		this.dependQuestion = dependQuestion;
+	}
+
+	public QuestionDependency getDependQuestion() {
+		return dependQuestion;
 	}
 }

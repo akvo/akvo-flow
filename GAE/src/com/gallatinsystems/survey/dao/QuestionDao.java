@@ -25,7 +25,7 @@ public class QuestionDao extends BaseDAO<Question> {
 				.listByQuestionGroupId(new Long(questionGroupCode));
 		java.util.ArrayList<Question> questionList = new ArrayList<Question>();
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
-			Question question = super.getByKey(qqga.getQuestionId());
+			Question question = getByKey(qqga.getQuestionId());
 			questionList.add(question);
 //			if(question.getOptionContainer()!=null){
 //				log.info("OC: " + question.getOptionContainer().getKey());

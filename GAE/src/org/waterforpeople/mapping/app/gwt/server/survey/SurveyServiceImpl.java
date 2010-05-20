@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
@@ -29,6 +30,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -263,6 +265,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 			qDto.setOptionContainer(ocDto);
 		}
+
+		if (q.getDependQuestion() != null) {
+			QuestionDependency qd = q.getDependQuestion();
+			QuestionDependencyDto qdDto = new QuestionDependencyDto();
+			qdDto.setKeyId(qd.getKey().getId());
+			qdDto.setQuestionId(qd.getQuestionId());
+			qDto.setQuestionDependency(qdDto);
+		}
 		return qDto;
 	}
 
@@ -321,6 +331,16 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				}
 			}
 			q.setOptionContainer(oc);
+		}
+		if (qdto.getQuestionDependency() != null) {
+			QuestionDependency qd = new QuestionDependency();
+			if (qdto.getQuestionDependency().getKeyId() != null)
+				qd.setKey(KeyFactory.createKey(QuestionDependency.class
+						.getSimpleName(), qdto.getQuestionDependency()
+						.getKeyId()));
+
+			qd.setQuestionId(qdto.getQuestionDependency().getQuestionId());
+			q.setDependQuestion(qd);
 		}
 
 		return q;
@@ -454,30 +474,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				.listQuestionsByQuestionGroup(questionGroupId);
 		java.util.ArrayList<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
 		for (Question canonical : questionList) {
-			QuestionDto dto = new QuestionDto();
-			// DtoMarshaller.copyToDto(canonical, dto);
-			dto.setKeyId(canonical.getKey().getId());
-			dto.setText(canonical.getText());
-			dto.setType(canonical.getType());
-			dto.setTip(canonical.getTip());
-			dto.setValidationRule(canonical.getValidationRule());
-			if (canonical.getOptionContainer() != null) {
-				OptionContainer oc = canonical.getOptionContainer();
-				OptionContainerDto ocDto = new OptionContainerDto();
-				ocDto.setKeyId(oc.getKey().getId());
-				ocDto.setAllowMultipleFlag(oc.getAllowMultipleFlag());
-				ocDto.setAllowOtherFlag(oc.getAllowOtherFlag());
-				if (oc.getOptionsList() != null) {
-					for (QuestionOption qo : oc.getOptionsList()) {
-						QuestionOptionDto qoDto = new QuestionOptionDto();
-						qoDto.setKeyId(qo.getKey().getId());
-						qoDto.setCode(qo.getCode());
-						qoDto.setText(qo.getText());
-						ocDto.addQuestionOption(qoDto);
-					}
-				}
-				dto.setOptionContainer(ocDto);
-			}
+			QuestionDto dto = this.marshalQuestionDto(canonical);
+
 			questionDtoList.add(dto);
 		}
 		return questionDtoList;
@@ -547,14 +545,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Survey survey = surveyDao.loadFullSurvey(surveyId);
 			SurveyXMLAdapter sax = new SurveyXMLAdapter();
 			ObjectFactory objFactory = new ObjectFactory();
-		
-			//System.out.println("XML Marshalling for survey: " + surveyId);
+
+			// System.out.println("XML Marshalling for survey: " + surveyId);
 			com.gallatinsystems.survey.domain.xml.Survey surveyXML = objFactory
 					.createSurvey();
 			ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup> questionGroupXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup>();
 			for (QuestionGroup qg : survey.getQuestionGroupList()) {
-				//System.out.println("	QuestionGroup: " + qg.getKey().getId() + ":"
-//						+ qg.getCode() + ":" + qg.getDescription());
+				// System.out.println("	QuestionGroup: " + qg.getKey().getId() +
+				// ":"
+				// + qg.getCode() + ":" + qg.getDescription());
 				com.gallatinsystems.survey.domain.xml.QuestionGroup qgXML = objFactory
 						.createQuestionGroup();
 				Heading heading = objFactory.createHeading();
@@ -567,8 +566,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
 						.entrySet()) {
 					Question q = qEntry.getValue();
-					//System.out.println("		Question: " + q.getKey().getId() + ":"
-//							+ q.getText() + ":" + q.getType().toString());
+					// System.out.println("		Question: " + q.getKey().getId() +
+					// ":"
+					// + q.getText() + ":" + q.getType().toString());
 					com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
 							.createQuestion();
 					qXML.setId(new String("" + q.getKey().getId() + ""));
@@ -615,12 +615,19 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						qXML.setOrder(qEntry.getKey().toString());
 					// ToDo set dependency xml
 					Dependency dependency = objFactory.createDependency();
+					if (q.getDependQuestion() != null) {
+						dependency.setQuestion(q.getDependQuestion()
+								.getQuestionId().toString());
+						dependency.setAnswerValue("yes-no");
+						qXML.setDependency(dependency);
+					}
 
 					if (q.getOptionContainer() != null) {
 						OptionContainer oc = q.getOptionContainer();
-						//System.out.println("			OptionContainer: " + oc.getKey().getId()
-//								+ ":" + oc.getAllowMultipleFlag() + ":"
-//								+ oc.getAllowOtherFlag());
+						// System.out.println("			OptionContainer: " +
+						// oc.getKey().getId()
+						// + ":" + oc.getAllowMultipleFlag() + ":"
+						// + oc.getAllowOtherFlag());
 						Options options = objFactory.createOptions();
 						options
 								.setAllowOther(oc.getAllowOtherFlag()
@@ -628,11 +635,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 						if (oc.getOptionsList() != null) {
 							ArrayList<Option> optionList = new ArrayList<Option>();
-							//System.out.println("				ocList size:" + optionList.size());
+							// System.out.println("				ocList size:" +
+							// optionList.size());
 							for (QuestionOption qo : oc.getOptionsList()) {
-								//System.out.println("						option:" + qo.getKey().getId()
-//										+ ":" + qo.getCode() + ":"
-//										+ qo.getText());
+								// System.out.println("						option:" +
+								// qo.getKey().getId()
+								// + ":" + qo.getCode() + ":"
+								// + qo.getText());
 								Option option = objFactory.createOption();
 								option.setContent(qo.getText());
 								option.setValue(qo.getCode());
@@ -654,7 +663,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			sc.setSurveyId(surveyId);
 			sc.setSurveyDocument(new com.google.appengine.api.datastore.Text(
 					surveyDocument));
-			scDao.save(sc);
+			SurveyContainer scFound = scDao.findBySurveyId(sc.getSurveyId());
+			if (scFound != null) {
+				scFound.setSurveyDocument(sc.getSurveyDocument());
+				scDao.save(scFound);
+			} else
+				scDao.save(sc);
 			survey.setStatus(SurveyStatus.PUBLISHED);
 			surveyDao.save(survey);
 

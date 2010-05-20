@@ -18,6 +18,8 @@ public class QuestionDto extends BaseDto {
 	private String tip = null;
 	private String validationRule = null;
 	private Boolean mandatoryFlag = null;
+	private QuestionDependencyDto questionDependency = null;
+	
 
 	public void addQuestionHelp(QuestionHelpDto questionHelp) {
 		if (questionHelpList == null) {
@@ -82,8 +84,15 @@ public class QuestionDto extends BaseDto {
 		return mandatoryFlag;
 	}
 
+	public void setQuestionDependency(QuestionDependencyDto questionDependency) {
+		this.questionDependency = questionDependency;
+	}
+
+	public QuestionDependencyDto getQuestionDependency() {
+		return questionDependency;
+	}
+
 	public enum QuestionType {
 		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN
 	}
-
 }

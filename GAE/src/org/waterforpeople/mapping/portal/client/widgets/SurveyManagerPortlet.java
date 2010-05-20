@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -525,7 +526,7 @@ public class SurveyManagerPortlet extends Portlet {
 	private FlexTable questionOptionDetail = new FlexTable();
 
 	private void loadQuestionDetails(QuestionDto item) {
-		
+
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
 
@@ -535,6 +536,7 @@ public class SurveyManagerPortlet extends Portlet {
 		TextBox tip = new TextBox();
 		TextBox validationRule = new TextBox();
 		CheckBox mandatoryQuestion = new CheckBox();
+		CheckBox dependentQuestion = new CheckBox();
 
 		if (item != null) {
 			questionId.setText(item.getKeyId().toString());
@@ -590,6 +592,19 @@ public class SurveyManagerPortlet extends Portlet {
 			}
 
 		});
+		
+
+		dependentQuestion.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				CheckBox dependentCB = (CheckBox) event.getSource();
+				
+				loadDependencyTable(dependentCB.getValue());
+
+			}
+
+		});
 
 		Button saveQuestionButton = new Button("Save Question");
 		Button deleteQuestionButton = new Button("Delete Question");
@@ -606,9 +621,15 @@ public class SurveyManagerPortlet extends Portlet {
 		questionDetailPanel.setWidget(4, 1, validationRule);
 		questionDetailPanel.setWidget(5, 0, new Label("Mandatory Question"));
 		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
-		questionDetailPanel.setWidget(7, 0, saveQuestionButton);
-		questionDetailPanel.setWidget(7, 1, deleteQuestionButton);
-
+		questionDetailPanel.setWidget(7, 0, new Label(
+				"Question Dependant On Other Question"));
+		questionDetailPanel.setWidget(7, 1, dependentQuestion);
+		questionDetailPanel.setWidget(9, 0, saveQuestionButton);
+		questionDetailPanel.setWidget(9, 1, deleteQuestionButton);
+		if(item!=null && item.getQuestionDependency()!=null){
+			dependentQuestion.setValue(true);
+			loadDependencyTable(true);
+		}
 		saveQuestionButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -637,12 +658,69 @@ public class SurveyManagerPortlet extends Portlet {
 
 		});
 		this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
-		
-		
+
+	}
+
+	private void loadDependencyTable(Boolean dependentValue) {
+		 
+		if (dependentValue) {
+			questionDetailPanel.setWidget(8, 0, new Label(
+					"Dependent on Quesiton"));
+			ListBox questionLB = new ListBox();
+			TreeItem questionGroup = surveyTree.getSelectedItem();
+			QuestionDependencyDto item=null;
+			if (questionGroup != null
+					&& questionGroup
+							.getUserObject()
+							.getClass()
+							.getName()
+							.equals(
+									"org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto")) {
+				QuestionDto qDto = (QuestionDto)questionGroup.getUserObject();
+				if(qDto!=null&&qDto.getQuestionDependency()!=null)
+					item = qDto.getQuestionDependency();
+				
+				questionGroup = questionGroup.getParentItem();
+			}
+			if (questionGroup != null
+					&& questionGroup
+							.getUserObject()
+							.getClass()
+							.getName()
+							.equals(
+									"org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto")) {
+				for (int i = 0; i < questionGroup.getChildCount(); i++) {
+					TextBox questId = (TextBox) questionDetailPanel.getWidget(
+							0, 0);
+
+					TreeItem questionItem = questionGroup.getChild(i);
+					if (!((QuestionDto) questionItem.getUserObject())
+							.getKeyId().toString().equals(questId.getText())) {
+						String question = ((QuestionDto) questionItem
+								.getUserObject()).getText();
+						String id = ((QuestionDto) questionItem.getUserObject())
+								.getKeyId().toString();
+						questionLB.addItem(question, id);
+						if(item!=null&&id.equals(item.getQuestionId().toString()))
+							questionLB.setSelectedIndex(i);
+					}
+				}
+				questionDetailPanel.setWidget(8, 1, questionLB);
+				TextBox dependentQId = new TextBox();
+				
+				if(item!=null&&item.getKeyId()!=null)
+					dependentQId.setText(item.getKeyId().toString());
+				
+				dependentQId.setVisible(false);
+				questionDetailPanel.setWidget(8, 2, dependentQId);
+			}
+		}else{
+				questionDetailPanel.removeRow(8);
+		}
 	}
 
 	private void loadQuestionOptionDetail(QuestionDto item) {
-		//questionOptionDetail.removeAllRows();
+		// questionOptionDetail.removeAllRows();
 		Integer row = 0;
 		OptionContainerDto ocDto = null;
 		ArrayList<QuestionOptionDto> questionOptionList = null;
@@ -820,6 +898,18 @@ public class SurveyManagerPortlet extends Portlet {
 			value.setType(QuestionType.PHOTO);
 		} else if (questionTypeLB.getSelectedIndex() == 5) {
 			value.setType(QuestionType.VIDEO);
+		}
+		
+		CheckBox dependentQuestionFlag = (CheckBox)questionDetailPanel.getWidget(7, 1);
+		if(dependentQuestionFlag.getValue()){
+			ListBox questionLB = (ListBox)questionDetailPanel.getWidget(8,1);
+			String selectedValue = questionLB.getValue(questionLB.getSelectedIndex());
+			QuestionDependencyDto qdDto = new QuestionDependencyDto();
+			qdDto.setQuestionId(new Long(selectedValue));
+			value.setQuestionDependency(qdDto);
+			TextBox dependentQId=(TextBox)questionDetailPanel.getWidget(8, 2);
+			if(dependentQId.getText().length()>0)
+				qdDto.setKeyId(new Long(dependentQId.getText()));
 		}
 
 		return value;
