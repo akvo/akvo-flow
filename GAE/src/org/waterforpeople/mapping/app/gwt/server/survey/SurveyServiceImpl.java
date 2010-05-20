@@ -545,6 +545,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						options
 								.setAllowOther(oc.getAllowOtherFlag()
 										.toString());
+						
 						if (oc.getOptionsList() != null) {
 							ArrayList<Option> optionList = new ArrayList<Option>();
 							for (QuestionOption qo : oc.getOptionsList()) {

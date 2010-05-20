@@ -46,7 +46,7 @@ public class SurveyManagerPortlet extends Portlet {
 	private static Boolean scrollable = true;
 	private static Boolean configurable = false;
 	private static final int HEIGHT = 800;
-	private static final int WIDTH = 800;
+	private static final int WIDTH = 1080;
 
 	private Button addSurveyGroupButton = new Button("Add Survey Group");
 	private Button addSurveyButton = new Button("Add Survey");
@@ -562,7 +562,7 @@ public class SurveyManagerPortlet extends Portlet {
 			} else if (qType.equals(QuestionType.OPTION)) {
 				questionTypeLB.setSelectedIndex(1);
 				loadQuestionOptionDetail(item);
-				questionDetailPanel.setWidget(6, 0, questionOptionDetail);
+				questionDetailPanel.setWidget(6, 2, questionOptionDetail);
 			} else if (qType.equals(QuestionType.NUMBER)) {
 				questionTypeLB.setSelectedIndex(2);
 			} else if (qType.equals(QuestionType.GEO)) {
@@ -580,7 +580,7 @@ public class SurveyManagerPortlet extends Portlet {
 			public void onChange(ChangeEvent event) {
 				if (((ListBox) event.getSource()).getSelectedIndex() == 1) {
 					loadQuestionOptionDetail(null);
-					questionDetailPanel.setWidget(6, 0, questionOptionDetail);
+					questionDetailPanel.setWidget(6, 2, questionOptionDetail);
 				} else {
 					questionDetailPanel.removeRow(6);
 				}
@@ -637,12 +637,14 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void loadQuestionOptionDetail(QuestionDto item) {
+		questionOptionDetail.removeAllRows();
 		Integer row = 0;
 		OptionContainerDto ocDto = null;
 		ArrayList<QuestionOptionDto> questionOptionList = null;
 		CheckBox allowOther = new CheckBox();
 		CheckBox allowMultiple = new CheckBox();
 		TextBox ocId = new TextBox();
+		ocId.setVisible(false);
 
 		if (item != null) {
 			ocDto = item.getOptionContainer();
@@ -688,6 +690,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				
 				loadQuestionOptionRowDetail(null, questionOptionDetail
 						.getRowCount());
 			}
@@ -696,9 +699,11 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void loadQuestionOptionRowDetail(QuestionOptionDto item, Integer row) {
+		
 		TextBox optionValue = new TextBox();
 		TextBox optionText = new TextBox();
 		TextBox optionId = new TextBox();
+		optionId.setVisible(false);
 		if (item != null) {
 			if (item.getKeyId() != null)
 				optionId.setText(item.getKeyId().toString());
@@ -772,7 +777,7 @@ public class SurveyManagerPortlet extends Portlet {
 		} else if (questionTypeLB.getSelectedIndex() == 1) {
 			value.setType(QuestionType.OPTION);
 			FlexTable questionOptionTable = (FlexTable) questionDetailPanel
-					.getWidget(6, 0);
+					.getWidget(6, 2);
 
 			CheckBox allowOther = (CheckBox) questionOptionDetail.getWidget(0,
 					1);
