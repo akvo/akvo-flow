@@ -17,9 +17,10 @@ public class OptionContainerDao extends BaseDAO<OptionContainer> {
 	}
 	
 	public OptionContainer save(OptionContainer oc){
+		QuestionOptionDao optDao = new QuestionOptionDao();
 		if(oc.getOptionsList()!=null)
 			for(QuestionOption qo:oc.getOptionsList())
-				new QuestionOptionDao().save(qo);
+				optDao.save(qo);
 		return super.save(oc);
 	}
 
