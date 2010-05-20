@@ -683,13 +683,13 @@ public class SurveyManagerPortlet extends Portlet {
 		Button addNewOptionButton = new Button("Add New Option");
 		Button deleteOptionButton = new Button("Delete Option");
 
-		questionOptionDetail.setWidget(row, 0, addNewOptionButton);
+		questionDetailPanel.setWidget(7, 2, addNewOptionButton);
 		addNewOptionButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				loadQuestionOptionRowDetail(null, questionOptionDetail
-						.getRowCount() + 1);
+						.getRowCount());
 			}
 
 		});
@@ -787,7 +787,7 @@ public class SurveyManagerPortlet extends Portlet {
 			ocDto.setAllowMultipleFlag(allowMultiple.getValue());
 			ocDto.setAllowOtherFlag(allowOther.getValue());
 
-			for (int row = 1; row < questionOptionTable.getRowCount() - 1; row++) {
+			for (int row = 1; row < questionOptionTable.getRowCount(); row++) {
 				QuestionOptionDto qoDto = new QuestionOptionDto();
 				TextBox optionValue = (TextBox) questionOptionDetail.getWidget(
 						row, 1);
@@ -796,7 +796,8 @@ public class SurveyManagerPortlet extends Portlet {
 				TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
 				qoDto.setCode(optionValue.getText());
 				qoDto.setText(optionText.getText());
-				qoDto.setKeyId(new Long(qoId.getText()));
+				if (qoId.getText().length() > 0)
+					qoDto.setKeyId(new Long(qoId.getText()));
 				ocDto.addQuestionOption(qoDto);
 			}
 			value.setOptionContainer(ocDto);
