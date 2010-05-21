@@ -412,6 +412,7 @@ public class SurveyManagerPortlet extends Portlet {
 		TreeItem parentItem = surveyTree.getSelectedItem();
 		TreeItem questionItem = new TreeItem();
 		Boolean foundQuestionFlag = false;
+		
 		for (int i = 0; i < parentItem.getChildCount(); i++) {
 			QuestionDto qDto = (QuestionDto) parentItem.getChild(i)
 					.getUserObject();
@@ -915,6 +916,9 @@ public class SurveyManagerPortlet extends Portlet {
 			@Override
 			public void onSuccess(QuestionDto result) {
 				bindQuestion(result);
+				if(result.getQuestionDependency()!=null)
+					((TextBox)questionDetailPanel.getWidget(8, 4)).setText(result.getQuestionDependency().getKeyId().toString());
+			
 				Window.alert("Question Saved");
 			}
 
