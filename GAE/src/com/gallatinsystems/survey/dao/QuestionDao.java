@@ -60,11 +60,11 @@ public class QuestionDao extends BaseDAO<Question> {
 		qqga.setQuestionId(question.getKey().getId());
 		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
 		qqgaDao.save(qqga);
-		OptionContainerDao ocDao = new OptionContainerDao();
-		
-		if (question.getOptionContainer() != null){
-			OptionContainer oc = ocDao.save(question.getOptionContainer());
-		}
+//		OptionContainerDao ocDao = new OptionContainerDao();
+//		
+//		if (question.getOptionContainer() != null){
+//			OptionContainer oc = ocDao.save(question.getOptionContainer());
+//		}
 
 		return question;
 	}
