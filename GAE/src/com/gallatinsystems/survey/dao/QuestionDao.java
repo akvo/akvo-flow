@@ -57,7 +57,8 @@ public class QuestionDao extends BaseDAO<Question> {
 
 		if (question.getOptionContainer() != null) {
 			OptionContainerDao ocDao = new OptionContainerDao();
-			question.getOptionContainer().setQuestionId(question.getKey().getId());
+			question.getOptionContainer().setQuestionId(
+					question.getKey().getId());
 			OptionContainer oc = ocDao.save(question.getOptionContainer());
 			question.setOptionContainer(oc);
 		}
@@ -86,10 +87,13 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	private void setOptionContainer(Question question) {
-		OptionContainerDao ocDao = new OptionContainerDao();
-		OptionContainer oc = ocDao.findByQuestionId(question.getKey().getId());
-		if (oc != null)
-			question.setOptionContainer(oc);
+		if (question != null) {
+			OptionContainerDao ocDao = new OptionContainerDao();
+			OptionContainer oc = ocDao.findByQuestionId(question.getKey()
+					.getId());
+			if (oc != null)
+				question.setOptionContainer(oc);
+		}
 	}
 
 }
