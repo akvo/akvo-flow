@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
@@ -587,7 +588,7 @@ public class SurveyManagerPortlet extends Portlet {
 				if (((ListBox) event.getSource()).getSelectedIndex() == 1) {
 					loadQuestionOptionDetail(null);
 					questionDetailPanel.setWidget(6, 2, questionOptionDetail);
-					questionDetailPanel.getWidget(6,2).setVisible(true);
+					questionDetailPanel.getWidget(6, 2).setVisible(true);
 				} else {
 					if (questionDetailPanel.getCellCount(6) >= 2)
 						questionDetailPanel.getWidget(6, 2).setVisible(false);
@@ -671,6 +672,7 @@ public class SurveyManagerPortlet extends Portlet {
 			questionDetailPanel.setWidget(8, 0, new Label(
 					"Dependent on Quesiton"));
 			ListBox questionLB = new ListBox();
+			ListBox answerLB = new ListBox();
 			TreeItem questionGroup = surveyTree.getSelectedItem();
 			QuestionDependencyDto item = null;
 			if (questionGroup != null
@@ -699,7 +701,7 @@ public class SurveyManagerPortlet extends Portlet {
 
 					TreeItem questionItem = questionGroup.getChild(i);
 					if (!((QuestionDto) questionItem.getUserObject())
-							.getKeyId().toString().equals(questId.getText())) {
+							.getKeyId().toString().equals(questId.getText())&&((QuestionDto)questionItem.getUserObject()).getType().equals(QuestionType.OPTION)) {
 						String question = ((QuestionDto) questionItem
 								.getUserObject()).getText();
 						String id = ((QuestionDto) questionItem.getUserObject())
@@ -718,6 +720,56 @@ public class SurveyManagerPortlet extends Portlet {
 
 				dependentQId.setVisible(false);
 				questionDetailPanel.setWidget(8, 2, dependentQId);
+				answerLB.setVisible(false);
+				questionDetailPanel.setWidget(8, 3, answerLB);
+
+				questionLB.addClickHandler(new ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						ListBox questionLBox = (ListBox) event.getSource();
+						Integer selectedIndex = questionLBox.getSelectedIndex();
+						String value = questionLBox.getValue(selectedIndex);
+						TreeItem questionGroup = surveyTree.getSelectedItem();
+						if(questionGroup != null
+								&& questionGroup
+										.getUserObject()
+										.getClass()
+										.getName()
+										.equals(
+												"org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto")){
+							questionGroup = questionGroup.getParentItem();
+						}
+						if (questionGroup != null
+								&& questionGroup
+										.getUserObject()
+										.getClass()
+										.getName()
+										.equals(
+												"org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto")) {
+							Boolean foundQuestion = false;
+							for (int i = 0; i < questionGroup.getChildCount(); i++) {
+								QuestionDto qDto = (QuestionDto) questionGroup
+										.getChild(i).getUserObject();
+								if (qDto.getKeyId().toString().equals(value)) {
+									ListBox answerLB = (ListBox) questionDetailPanel
+											.getWidget(8, 3);
+									List<QuestionOptionDto> qoList = qDto
+											.getOptionContainerDto()
+											.getOptionsList();
+									for (QuestionOptionDto qoDto : qoList) {
+										answerLB.addItem(qoDto.getText(), qoDto
+												.getCode());
+									}
+									foundQuestion = true;
+									answerLB.setVisible(true);
+								}
+								if(foundQuestion)
+									break;
+							}
+						}
+					}
+				});
 			}
 		} else {
 			questionDetailPanel.removeRow(8);
@@ -918,6 +970,10 @@ public class SurveyManagerPortlet extends Portlet {
 					.getWidget(8, 2);
 			if (dependentQId.getText().length() > 0)
 				qdDto.setKeyId(new Long(dependentQId.getText()));
+			ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
+			String selectedAnswerValue = answerLB.getValue(answerLB
+					.getSelectedIndex());
+			qdDto.setAnswerValue(selectedAnswerValue);
 		}
 
 		return value;

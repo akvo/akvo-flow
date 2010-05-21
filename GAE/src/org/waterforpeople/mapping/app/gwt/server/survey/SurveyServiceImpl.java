@@ -271,6 +271,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			QuestionDependencyDto qdDto = new QuestionDependencyDto();
 			qdDto.setKeyId(qd.getKey().getId());
 			qdDto.setQuestionId(qd.getQuestionId());
+			qdDto.setAnswerValue(qd.getAnswerValue());
 			qDto.setQuestionDependency(qdDto);
 		}
 		return qDto;
@@ -340,7 +341,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						.getKeyId()));
 
 			qd.setQuestionId(qdto.getQuestionDependency().getQuestionId());
+			qd.setAnswerValue(qdto.getQuestionDependency().getAnswerValue());
 			q.setDependQuestion(qd);
+			
 		}
 
 		return q;
@@ -367,52 +370,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						HashMap<Integer, QuestionDto> qDtoMap = new HashMap<Integer, QuestionDto>();
 						for (Entry<Integer, Question> entry : qg
 								.getQuestionMap().entrySet()) {
-							QuestionDto qdto = new QuestionDto();							
-							DtoMarshaller.copyToDto(entry.getValue(), qdto);
-							qdto.setQuestionHelpList(null);
-							if (entry.getValue() != null) {
-								Question q = entry.getValue();
-								if (q.getQuestionHelpList() != null) {
-									for (QuestionHelp qh : q
-											.getQuestionHelpList()) {
-										QuestionHelpDto qhDto = new QuestionHelpDto();
-										try {
-											BeanUtils.copyProperties(qhDto, qh);
-											qdto.addQuestionHelp(qhDto);
-										} catch (Exception e) {
-											log
-													.error(
-															"Could not marshall question help",
-															e);
-										}
-									}
-									if (q.getOptionContainer() != null) {
-										OptionContainer oc = q
-												.getOptionContainer();
-										OptionContainerDto ocDto = new OptionContainerDto();
-
-										try {
-											BeanUtils.copyProperties(ocDto, oc);
-											ocDto.setOptionsList(null);
-											if (oc.getOptionsList() != null) {
-												for (QuestionOption qo : oc
-														.getOptionsList()) {
-													QuestionOptionDto qoDto = new QuestionOptionDto();
-													BeanUtils.copyProperties(
-															qoDto, qo);
-													ocDto
-															.addQuestionOption(qoDto);
-												}
-											}
-										} catch (Exception e) {
-											log
-													.error(
-															"Could not marshall question options",
-															e);
-										}
-									}
-								}
-							}
+							QuestionDto qdto = this.marshalQuestionDto(entry
+									.getValue());
 
 							qDtoMap.put(entry.getKey(), qdto);
 						}
@@ -618,7 +577,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					if (q.getDependQuestion() != null) {
 						dependency.setQuestion(q.getDependQuestion()
 								.getQuestionId().toString());
-						dependency.setAnswerValue("yes-no");
+						dependency.setAnswerValue(q.getDependQuestion().getAnswerValue());
 						qXML.setDependency(dependency);
 					}
 

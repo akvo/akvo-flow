@@ -23,5 +23,14 @@ public class QuestionDependency extends BaseDomain implements Serializable {
 		return questionId;
 	}
 	
+	public void setAnswerValue(String answerValue) {
+		this.answerValue = answerValue;
+	}
+
+	public String getAnswerValue() {
+		return answerValue;
+	}
+
+	private String answerValue = null;
 
 }
