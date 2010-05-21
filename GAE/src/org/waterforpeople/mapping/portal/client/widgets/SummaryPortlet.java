@@ -97,7 +97,7 @@ public class SummaryPortlet extends Portlet implements OpenHandler<TreeItem> {
 					for (int i = 0; i < result.length; i++) {
 						TreeItem tItem = new TreeItem(result[i]
 								.getPhoneNumber());
-						surveyRoot.addItem(tItem);
+						deviceRoot.addItem(tItem);
 
 					}
 				}
