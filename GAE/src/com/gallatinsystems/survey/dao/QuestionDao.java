@@ -81,7 +81,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	public Question getByKey(Long id) {
 		Question q = super.getByKey(id);
-
+		setOptionContainer(q);
 		return q;
 	}
 
