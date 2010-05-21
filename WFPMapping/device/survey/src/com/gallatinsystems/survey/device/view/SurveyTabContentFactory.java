@@ -66,7 +66,12 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	 */
 	public View createTabContent(String tag) {
 		scrollView = new ScrollView(context);
+		scrollView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.WRAP_CONTENT));
+
 		TableLayout table = new TableLayout(context);
+		table.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.WRAP_CONTENT));
 
 		scrollView.addView(table);
 		questionMap = new HashMap<String, QuestionView>();
