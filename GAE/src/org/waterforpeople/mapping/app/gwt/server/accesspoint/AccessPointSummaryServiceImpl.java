@@ -45,31 +45,36 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 			if (status == null) {
 				// if we're not selecting by status, collapse based on it
 				for (int i = 0; i < summaries.size(); i++) {
-					Long curVal = countMap.get(summaries.get(i).getStatus()
-							.toString());
-					if (curVal == null) {
-						curVal = summaries.get(i).getCount() != null ? summaries
-								.get(i).getCount()
-								: new Long(1);
-					} else {
-						curVal = curVal
-								+ (summaries.get(i).getCount() != null ? summaries
-										.get(i).getCount()
-										: new Long(1));
+					if (summaries.get(i).getStatus() != null) {
+						Long curVal = countMap.get(summaries.get(i).getStatus()
+								.toString());
+						if (curVal == null) {
+							curVal = summaries.get(i).getCount() != null ? summaries
+									.get(i).getCount()
+									: new Long(1);
+						} else {
+							curVal = curVal
+									+ (summaries.get(i).getCount() != null ? summaries
+											.get(i).getCount()
+											: new Long(1));
+						}
+						countMap.put(summaries.get(i).getStatus().toString(),
+								curVal);
 					}
-					countMap.put(summaries.get(i).getStatus().toString(),
-							curVal);
 				}
 			} else {
 				// if we're selecting by status, collapse based on Country
 				for (int i = 0; i < summaries.size(); i++) {
-					Long curVal = countMap.get(summaries.get(i).getCountry());
-					if (curVal == null) {
-						curVal = summaries.get(i).getCount();
-					} else {
-						curVal = curVal + summaries.get(i).getCount();
+					if (summaries.get(i).getCountry() != null) {
+						Long curVal = countMap.get(summaries.get(i)
+								.getCountry());
+						if (curVal == null) {
+							curVal = summaries.get(i).getCount();
+						} else {
+							curVal = curVal + summaries.get(i).getCount();
+						}
+						countMap.put(summaries.get(i).getCountry(), curVal);
 					}
-					countMap.put(summaries.get(i).getCountry(), curVal);
 				}
 			}
 			dtoList = new AccessPointSummaryDto[countMap.keySet().size()];
