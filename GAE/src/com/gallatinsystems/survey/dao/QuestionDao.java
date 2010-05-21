@@ -24,19 +24,13 @@ public class QuestionDao extends BaseDAO<Question> {
 		List<QuestionQuestionGroupAssoc> qqgaList = new QuestionQuestionGroupAssocDao()
 				.listByQuestionGroupId(new Long(questionGroupCode));
 		java.util.ArrayList<Question> questionList = new ArrayList<Question>();
+
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
 			Question question = getByKey(qqga.getQuestionId());
+			setOptionContainer(question);
 			questionList.add(question);
-//			if(question.getOptionContainer()!=null){
-//				log.info("OC: " + question.getOptionContainer().getKey());
-//				if(question.getOptionContainer().getOptionsList()!=null){
-//					for(QuestionOption qo : question.getOptionContainer().getOptionsList()){
-//						log.info("QO: " + qo.getKey() + ":" + qo.getCode()+":"+qo.getText());
-//					}
-//				}
-//			}
-//			
 		}
+
 		return questionList;
 	}
 
@@ -60,18 +54,42 @@ public class QuestionDao extends BaseDAO<Question> {
 		qqga.setQuestionId(question.getKey().getId());
 		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
 		qqgaDao.save(qqga);
-//		OptionContainerDao ocDao = new OptionContainerDao();
-//		
-//		if (question.getOptionContainer() != null){
-//			OptionContainer oc = ocDao.save(question.getOptionContainer());
-//		}
+
+		if (question.getOptionContainer() != null) {
+			OptionContainerDao ocDao = new OptionContainerDao();
+			question.getOptionContainer().setQuestionId(question.getKey().getId());
+			OptionContainer oc = ocDao.save(question.getOptionContainer());
+			question.setOptionContainer(oc);
+		}
 
 		return question;
 	}
-	public Question getByKey(Long id){
+
+	public Question save(Question question) {
+		question = super.save(question);
+
+		if (question.getOptionContainer() != null) {
+			OptionContainerDao ocDao = new OptionContainerDao();
+			question.getOptionContainer().setQuestionId(
+					question.getKey().getId());
+			OptionContainer oc = ocDao.save(question.getOptionContainer());
+			question.setOptionContainer(oc);
+		}
+
+		return question;
+	}
+
+	public Question getByKey(Long id) {
 		Question q = super.getByKey(id);
-		
+
 		return q;
+	}
+
+	private void setOptionContainer(Question question) {
+		OptionContainerDao ocDao = new OptionContainerDao();
+		OptionContainer oc = ocDao.findByQuestionId(question.getKey().getId());
+		if (oc != null)
+			question.setOptionContainer(oc);
 	}
 
 }

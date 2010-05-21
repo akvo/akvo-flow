@@ -134,8 +134,6 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		Question question = new Question();
 		question.setText("Question2");
 		question.setType(QuestionDto.QuestionType.OPTION);
-		question.addOption(questionOption);
-		question.addOption(questionOption2);
 		question.addQuestionHelp(questionHelp);
 
 		// super.save(question);

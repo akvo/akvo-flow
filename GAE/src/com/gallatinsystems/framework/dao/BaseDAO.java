@@ -66,6 +66,22 @@ public class BaseDAO<T extends BaseDomain> {
 
 		return obj;
 	}
+	
+	
+	public <E extends BaseDomain> E saveAndFlush(E obj){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		if (obj.getCreatedDateTime() == null) {
+			obj.setCreatedDateTime(new Date());
+		}
+		if (obj.getLastUpdateDateTime() == null) {
+			obj.setLastUpdateDateTime(new Date());
+		}
+
+		obj = pm.makePersistent(obj);
+		pm.flush();
+
+		return obj;
+	}
 
 	public T saveOrUpdate(T object) {
 		return save(object);

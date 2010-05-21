@@ -5,15 +5,13 @@ import java.lang.reflect.Field;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-@PersistenceCapable(detachable="true")
+@PersistenceCapable
 public class QuestionOption extends BaseDomain{
 	
 	private static final long serialVersionUID = 8925764841259376220L;
 	/**
 	 * 
 	 */
-	private OptionContainer optionContainer =null;
-	
 	private String text;
 	private String code;
 	public String getText() {
@@ -59,10 +57,6 @@ public class QuestionOption extends BaseDomain{
 
 		return result.toString();
 	}
-	public void setOptionContainer(OptionContainer optionContainer) {
-		this.optionContainer = optionContainer;
-	}
-	public OptionContainer getOptionContainer() {
-		return optionContainer;
-	}
+
+	
 }

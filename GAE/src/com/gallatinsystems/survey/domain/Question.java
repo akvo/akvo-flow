@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.domain;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -45,18 +46,13 @@ public class Question extends BaseDomain {
 
 
 	private String tip;
+	@NotPersistent
 	private OptionContainer optionContainer = null;
 	
 	private QuestionDto.QuestionType type;
-	private ArrayList<QuestionOption> optionsList;
 	private ArrayList<QuestionHelp> questionHelpList;
 	
-	public void addOption(QuestionOption questionOption){
-		if(optionsList==null){
-			optionsList = new ArrayList<QuestionOption>();
-		}
-		optionsList.add(questionOption);
-	}
+	
 	
 	public void addQuestionHelp(QuestionHelp questionHelp){
 		if(questionHelpList==null){
@@ -81,13 +77,7 @@ public class Question extends BaseDomain {
 		this.type = type;
 	}
 
-	public ArrayList<QuestionOption> getOptionsList() {
-		return optionsList;
-	}
-
-	public void setOptionsList(ArrayList<QuestionOption> optionsList) {
-		this.optionsList = optionsList;
-	}
+	
 
 	public ArrayList<QuestionHelp> getQuestionHelpList() {
 		return questionHelpList;

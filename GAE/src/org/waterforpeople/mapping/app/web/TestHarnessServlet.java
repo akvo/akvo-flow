@@ -55,6 +55,7 @@ import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.survey.dao.OptionContainerDao;
+import com.gallatinsystems.survey.dao.OptionContainerQuestionOptionAssocDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
@@ -64,6 +65,7 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveySurveyGroupAssocDao;
 import com.gallatinsystems.survey.domain.OptionContainer;
+import com.gallatinsystems.survey.domain.OptionContainerQuestionOptionAssoc;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
@@ -511,7 +513,24 @@ public class TestHarnessServlet extends HttpServlet {
 			if (mappings != null) {
 				System.out.println(mappings.size());
 			}
-		} else if ("deleteSurveyGraph".equals(action)) {
+		}else if("optionContainer".equals(action)){ 
+			Question question = new Question();
+			question.setText("test option harness");
+			OptionContainer oc = new OptionContainer();
+			oc.setAllowMultipleFlag(false);
+			oc.setAllowOtherFlag(false);
+			for(int i=0;i<3;i++){
+				QuestionOption qo = new QuestionOption();
+				qo.setCode("r"+i);
+				qo.setText("r"+i);
+				oc.addQuestionOption(qo);
+			}
+			question.setOptionContainer(oc);
+			QuestionDao qDao = new QuestionDao();
+			qDao.save(question);
+			
+			
+		}else if ("deleteSurveyGraph".equals(action)) {
 			try {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				List<SurveyGroup> sgList = sgDao.list("all");
@@ -581,6 +600,13 @@ public class TestHarnessServlet extends HttpServlet {
 				for (QuestionHelp qh : qhList)
 					qhDao.delete(qh);
 				resp.getWriter().println("Deleted all QuestionHelp");
+				
+				OptionContainerQuestionOptionAssocDao ocqaDao = new OptionContainerQuestionOptionAssocDao();
+				List<OptionContainerQuestionOptionAssoc> ocqoalist = ocqaDao.list("all");
+				for(OptionContainerQuestionOptionAssoc o: ocqoalist){
+					ocqaDao.delete(o);
+				}
+				resp.getWriter().println("Deleted all OptionoContainerQuestionOptionAssoc");
 				
 				resp.getWriter().println("Everything");
 			} catch (IOException e) {
