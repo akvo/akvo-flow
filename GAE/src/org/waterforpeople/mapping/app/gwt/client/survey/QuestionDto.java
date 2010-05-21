@@ -13,7 +13,7 @@ public class QuestionDto extends BaseDto {
 	private String text;
 
 	private QuestionType type;
-	private OptionContainerDto optionContainer = null;
+	private OptionContainerDto optionContainerDto = null;
 	private ArrayList<QuestionHelpDto> questionHelpList;
 	private String tip = null;
 	private String validationRule = null;
@@ -52,12 +52,12 @@ public class QuestionDto extends BaseDto {
 		this.questionHelpList = questionHelpList;
 	}
 
-	public void setOptionContainer(OptionContainerDto optionContainer) {
-		this.optionContainer = optionContainer;
+	public void setOptionContainerDto(OptionContainerDto optionContainer) {
+		this.optionContainerDto = optionContainer;
 	}
 
-	public OptionContainerDto getOptionContainer() {
-		return optionContainer;
+	public OptionContainerDto getOptionContainerDto() {
+		return optionContainerDto;
 	}
 
 	public void setTip(String tip) {

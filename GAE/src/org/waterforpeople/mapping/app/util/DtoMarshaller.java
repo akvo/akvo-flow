@@ -48,7 +48,7 @@ public class DtoMarshaller {
 			DateLocaleConverter converter = new DateLocaleConverter(locale,pattern);
 			converter.setLenient(true);
 			ConvertUtils.register(converter, java.util.Date.class);
-			BeanUtils.copyProperties(dto, canonical);
+			BeanUtils.copyProperties(dto, canonical);			
 			if (canonical.getKey() != null) {
 				dto.setKeyId(canonical.getKey().getId());
 			}

@@ -695,7 +695,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 								qd1.setText("option question" + j);
 								qd1.setType(QuestionType.OPTION);
-								qd1.setOptionContainer(optionContainerDto);
+								qd1.setOptionContainerDto(optionContainerDto);
 								qd1.addQuestionHelp(qhd);
 								qd1.setTip("test tip" + j);
 								qd1.setValidationRule("validation rule : " + j);

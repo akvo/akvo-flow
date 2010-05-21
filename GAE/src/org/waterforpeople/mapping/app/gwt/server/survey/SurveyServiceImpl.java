@@ -263,7 +263,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 				}
 			}
-			qDto.setOptionContainer(ocDto);
+			qDto.setOptionContainerDto(ocDto);
 		}
 
 		if (q.getDependQuestion() != null) {
@@ -303,8 +303,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 
-		if (qdto.getOptionContainer() != null) {
-			OptionContainerDto ocDto = qdto.getOptionContainer();
+		if (qdto.getOptionContainerDto() != null) {
+			OptionContainerDto ocDto = qdto.getOptionContainerDto();
 			OptionContainer oc = new OptionContainer();
 			if (ocDto.getKeyId() != null)
 				oc.setKey(KeyFactory.createKey(OptionContainer.class
@@ -367,7 +367,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						HashMap<Integer, QuestionDto> qDtoMap = new HashMap<Integer, QuestionDto>();
 						for (Entry<Integer, Question> entry : qg
 								.getQuestionMap().entrySet()) {
-							QuestionDto qdto = new QuestionDto();
+							QuestionDto qdto = new QuestionDto();							
 							DtoMarshaller.copyToDto(entry.getValue(), qdto);
 							qdto.setQuestionHelpList(null);
 							if (entry.getValue() != null) {

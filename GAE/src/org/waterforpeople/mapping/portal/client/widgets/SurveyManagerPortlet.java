@@ -730,7 +730,7 @@ public class SurveyManagerPortlet extends Portlet {
 		ocId.setVisible(false);
 
 		if (item != null) {
-			ocDto = item.getOptionContainer();
+			ocDto = item.getOptionContainerDto();
 			if (ocDto != null) {
 				if (ocDto.getAllowMultipleFlag() != null) {
 					allowMultiple.setValue(ocDto.getAllowMultipleFlag());
@@ -888,7 +888,7 @@ public class SurveyManagerPortlet extends Portlet {
 					qoDto.setKeyId(new Long(qoId.getText()));
 				ocDto.addQuestionOption(qoDto);
 			}
-			value.setOptionContainer(ocDto);
+			value.setOptionContainerDto(ocDto);
 
 		} else if (questionTypeLB.getSelectedIndex() == 2) {
 			value.setType(QuestionType.NUMBER);
