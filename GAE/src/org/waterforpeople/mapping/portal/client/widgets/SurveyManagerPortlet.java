@@ -662,6 +662,9 @@ public class SurveyManagerPortlet extends Portlet {
 			}
 
 		});
+		if (item != null && item.getQuestionDependency() != null) {
+			loadDependencyTable(true);
+		}
 		this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
 
 	}
@@ -669,6 +672,7 @@ public class SurveyManagerPortlet extends Portlet {
 	private void loadDependencyTable(Boolean dependentValue) {
 
 		if (dependentValue) {
+			QuestionDto qDto = null;
 			questionDetailPanel.setWidget(8, 0, new Label(
 					"Dependent on Quesiton"));
 			ListBox questionLB = new ListBox();
@@ -682,7 +686,7 @@ public class SurveyManagerPortlet extends Portlet {
 							.getName()
 							.equals(
 									"org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto")) {
-				QuestionDto qDto = (QuestionDto) questionGroup.getUserObject();
+				qDto = (QuestionDto) questionGroup.getUserObject();
 				if (qDto != null && qDto.getQuestionDependency() != null)
 					item = qDto.getQuestionDependency();
 
@@ -701,15 +705,20 @@ public class SurveyManagerPortlet extends Portlet {
 
 					TreeItem questionItem = questionGroup.getChild(i);
 					if (!((QuestionDto) questionItem.getUserObject())
-							.getKeyId().toString().equals(questId.getText())&&((QuestionDto)questionItem.getUserObject()).getType().equals(QuestionType.OPTION)) {
+							.getKeyId().toString().equals(questId.getText())
+							&& ((QuestionDto) questionItem.getUserObject())
+									.getType().equals(QuestionType.OPTION)) {
 						String question = ((QuestionDto) questionItem
 								.getUserObject()).getText();
 						String id = ((QuestionDto) questionItem.getUserObject())
 								.getKeyId().toString();
 						questionLB.addItem(question, id);
-						if (item != null
-								&& id.equals(item.getQuestionId().toString()))
+						String questDepId = null;
+						if (item != null)
+							questDepId = item.getQuestionId().toString();
+						if (questDepId != null && questDepId.equals(id)) {
 							questionLB.setSelectedIndex(i);
+						}
 					}
 				}
 				questionDetailPanel.setWidget(8, 1, questionLB);
@@ -728,51 +737,74 @@ public class SurveyManagerPortlet extends Portlet {
 					@Override
 					public void onClick(ClickEvent event) {
 						ListBox questionLBox = (ListBox) event.getSource();
-						Integer selectedIndex = questionLBox.getSelectedIndex();
-						String value = questionLBox.getValue(selectedIndex);
-						TreeItem questionGroup = surveyTree.getSelectedItem();
-						if(questionGroup != null
-								&& questionGroup
-										.getUserObject()
-										.getClass()
-										.getName()
-										.equals(
-												"org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto")){
-							questionGroup = questionGroup.getParentItem();
-						}
-						if (questionGroup != null
-								&& questionGroup
-										.getUserObject()
-										.getClass()
-										.getName()
-										.equals(
-												"org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto")) {
-							Boolean foundQuestion = false;
-							for (int i = 0; i < questionGroup.getChildCount(); i++) {
-								QuestionDto qDto = (QuestionDto) questionGroup
-										.getChild(i).getUserObject();
-								if (qDto.getKeyId().toString().equals(value)) {
-									ListBox answerLB = (ListBox) questionDetailPanel
-											.getWidget(8, 3);
-									List<QuestionOptionDto> qoList = qDto
-											.getOptionContainerDto()
-											.getOptionsList();
-									for (QuestionOptionDto qoDto : qoList) {
-										answerLB.addItem(qoDto.getText(), qoDto
-												.getCode());
-									}
-									foundQuestion = true;
-									answerLB.setVisible(true);
-								}
-								if(foundQuestion)
-									break;
-							}
-						}
+						loadDepQA(questionLBox);
 					}
 				});
+				TextBox qDepId = new TextBox();
+				questionDetailPanel.setWidget(8, 4, qDepId);
+				if (qDto != null && qDto.getQuestionDependency() != null) {
+					// set existing value
+					qDepId.setText(qDto.getQuestionDependency().getKeyId()
+							.toString());
+					loadDepQA(questionLB);
+					Boolean foundAnswer = false;
+					for (int i = 0; i < answerLB.getItemCount(); i++) {
+						if (answerLB.getValue(i).equals(
+								qDto.getQuestionDependency().getAnswerValue())) {
+							answerLB.setSelectedIndex(i);
+							foundAnswer = true;
+						}
+						if (foundAnswer)
+							break;
+					}
+				}
 			}
 		} else {
 			questionDetailPanel.removeRow(8);
+		}
+	}
+
+	private void loadDepQA(ListBox questionLBox) {
+		Integer selectedIndex = questionLBox.getSelectedIndex();
+		String value = questionLBox.getValue(selectedIndex);
+		TreeItem questionGroup = surveyTree.getSelectedItem();
+
+		if (questionGroup != null
+				&& questionGroup
+						.getUserObject()
+						.getClass()
+						.getName()
+						.equals(
+								"org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto")) {
+			questionGroup = questionGroup.getParentItem();
+		}
+		if (questionGroup != null
+				&& questionGroup
+						.getUserObject()
+						.getClass()
+						.getName()
+						.equals(
+								"org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto")) {
+			Boolean foundQuestion = false;
+			for (int i = 0; i < questionGroup.getChildCount(); i++) {
+				QuestionDto qDto = (QuestionDto) questionGroup.getChild(i)
+						.getUserObject();
+				if (qDto.getKeyId().toString().equals(value)) {
+					ListBox answerLB = (ListBox) questionDetailPanel.getWidget(
+							8, 3);
+					List<QuestionOptionDto> qoList = qDto
+							.getOptionContainerDto().getOptionsList();
+					for (QuestionOptionDto qoDto : qoList) {
+						answerLB.addItem(qoDto.getText(), qoDto.getCode());
+					}
+					TextBox qDepAnsId = new TextBox();
+
+					foundQuestion = true;
+					answerLB.setVisible(true);
+				}
+				if (foundQuestion)
+					break;
+			}
 		}
 	}
 
@@ -974,6 +1006,9 @@ public class SurveyManagerPortlet extends Portlet {
 			String selectedAnswerValue = answerLB.getValue(answerLB
 					.getSelectedIndex());
 			qdDto.setAnswerValue(selectedAnswerValue);
+			TextBox qDepId = (TextBox) questionDetailPanel.getWidget(8, 4);
+			if (qDepId.getText().length() > 0)
+				qdDto.setKeyId(new Long(qDepId.getText()));
 		}
 
 		return value;
