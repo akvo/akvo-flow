@@ -152,11 +152,9 @@ public class BaseDAO<T extends BaseDomain> {
 		List<E> results = null;
 		this.prepareCursor(cursorString, query);
 		results = (List<E>) query.execute();
-		
+
 		return results;
 	}
-
-	
 
 	/**
 	 * returns a single object based on the property value
@@ -196,9 +194,6 @@ public class BaseDAO<T extends BaseDomain> {
 		return listByProperty(propertyName, propertyValue, propertyType,
 				concreteClass);
 	}
-	
-	
-	
 
 	/**
 	 * convenience method to list all instances of the type passed in that match
@@ -232,7 +227,7 @@ public class BaseDAO<T extends BaseDomain> {
 
 		return results;
 	}
-	
+
 	/**
 	 * deletes an object from the db
 	 * 
@@ -294,10 +289,12 @@ public class BaseDAO<T extends BaseDomain> {
 				filter.append(" && ");
 				param.append(", ");
 			}
+			String paramValName = paramName + "Param"
+					+ paramMap.keySet().size();
 			filter.append(paramName).append(" ").append(operator).append(" ")
-					.append(paramName).append("Param");
-			param.append(type).append(" ").append(paramName).append("Param");
-			paramMap.put(paramName + "Param", value);
+					.append(paramValName);
+			param.append(type).append(" ").append(paramValName);
+			paramMap.put(paramValName, value);
 		}
 	}
 
@@ -319,7 +316,7 @@ public class BaseDAO<T extends BaseDomain> {
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
 			query.setExtensions(extensionMap);
 		}
-		if (cursorString==null||!cursorString.equals(Constants.ALL_RESULTS))
+		if (cursorString == null || !cursorString.equals(Constants.ALL_RESULTS))
 			query.setRange(0, 20);
 	}
 }
