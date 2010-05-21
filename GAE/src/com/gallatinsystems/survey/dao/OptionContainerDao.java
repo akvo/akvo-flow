@@ -23,7 +23,7 @@ public class OptionContainerDao extends BaseDAO<OptionContainer> {
 		QuestionOptionDao optDao = new QuestionOptionDao();
 		if (oc.getOptionsList() != null)
 			for (QuestionOption qo : oc.getOptionsList()) {
-				qo = optDao.save(qo);
+//				qo = optDao.save(qo);
 				if (qo.getKey() == null)
 					log
 							.info("NNNNNNNNNNOOOOOOOOOOOOOOOOKKKKKKKKKKKEEEEEEEEEEEYYYYYYY"
