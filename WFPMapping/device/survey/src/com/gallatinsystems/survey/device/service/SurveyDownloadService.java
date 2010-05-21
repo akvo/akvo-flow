@@ -55,9 +55,12 @@ public class SurveyDownloadService extends Service {
 	private static final String SURVEY_LIST_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?surveyId=";
 
+	//private static final String SURVEY_LIST_SERVICE_URL = "http://192.168.0.100:8888/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
+	//private static final String SURVEY_SERVICE_URL = "http://192.168.0.100:8888/surveymanager?surveyId=";
+	
 	private SurveyDbAdapter databaseAdaptor;
 
-	private static final String SD_LOC = "scdard";
+	private static final String SD_LOC = "sdcard";
 
 	private Thread thread;
 
@@ -282,7 +285,7 @@ public class SurveyDownloadService extends Service {
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
 			response = HttpUtil.httpGet(SURVEY_LIST_SERVICE_URL
-					+ StatusUtil.getPhoneNumber(this));
+					+StatusUtil.getPhoneNumber(this));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {
