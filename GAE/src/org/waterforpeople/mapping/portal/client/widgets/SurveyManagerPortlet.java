@@ -587,8 +587,12 @@ public class SurveyManagerPortlet extends Portlet {
 				if (((ListBox) event.getSource()).getSelectedIndex() == 1) {
 					loadQuestionOptionDetail(null);
 					questionDetailPanel.setWidget(6, 2, questionOptionDetail);
+					questionDetailPanel.getWidget(6,2).setVisible(true);
 				} else {
-					questionDetailPanel.removeRow(6);
+					if (questionDetailPanel.getCellCount(6) >= 2)
+						questionDetailPanel.getWidget(6, 2).setVisible(false);
+
+					// questionDetailPanel.removeRow(6);
 				}
 			}
 
