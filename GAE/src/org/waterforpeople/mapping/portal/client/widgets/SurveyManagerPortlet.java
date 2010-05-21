@@ -794,8 +794,10 @@ public class SurveyManagerPortlet extends Portlet {
 							8, 3);
 					List<QuestionOptionDto> qoList = qDto
 							.getOptionContainerDto().getOptionsList();
-					for (QuestionOptionDto qoDto : qoList) {
-						answerLB.addItem(qoDto.getText(), qoDto.getCode());
+					if (qoList != null) {
+						for (QuestionOptionDto qoDto : qoList) {
+							answerLB.addItem(qoDto.getText(), qoDto.getCode());
+						}
 					}
 					TextBox qDepAnsId = new TextBox();
 
