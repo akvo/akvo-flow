@@ -31,7 +31,8 @@ public class PortletFactory {
 			{ DisplayContentManager.NAME, DisplayContentManager.DESCRIPTION },
 			{ SurveyAttributeMappingPortlet.NAME,
 					SurveyAttributeMappingPortlet.DESCRIPTION },
-			{ SurveyManagerPortlet.NAME, SurveyManagerPortlet.DESCRIPTION } };
+			{ SurveyManagerPortlet.NAME, SurveyManagerPortlet.DESCRIPTION },
+			{ DataUploadPortlet.NAME, DataUploadPortlet.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {
@@ -64,6 +65,8 @@ public class PortletFactory {
 			return new SurveyAttributeMappingPortlet();
 		} else if (name.equals(SurveyManagerPortlet.NAME)) {
 			return new SurveyManagerPortlet();
+		} else if (name.equals(DataUploadPortlet.NAME)) {
+			return new DataUploadPortlet();
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

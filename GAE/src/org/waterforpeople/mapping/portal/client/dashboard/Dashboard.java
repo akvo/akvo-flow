@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
@@ -154,11 +155,16 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			}
 		});
-		
+
 		mgrMenu.addItem("Survey manager", new Command() {
 			public void execute() {
 				launchFullscreen(SurveyManagerPortlet.NAME);
 
+			}
+		});
+		mgrMenu.addItem("Data Upload", new Command() {
+			public void execute() {
+				launchFullscreen(DataUploadPortlet.NAME);
 			}
 		});
 
