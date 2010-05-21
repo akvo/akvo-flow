@@ -41,7 +41,7 @@ public class QuestionView extends TableLayout implements
 	private static final String TEXT_HELP = "txt";
 	private static final String PHOTO_HELP = "photo";
 
-	protected static final int DEFAULT_WIDTH = 300;
+	protected static final int DEFAULT_WIDTH = 280;
 	private TextView questionText;
 	protected Question question;
 	private QuestionResponse response;
