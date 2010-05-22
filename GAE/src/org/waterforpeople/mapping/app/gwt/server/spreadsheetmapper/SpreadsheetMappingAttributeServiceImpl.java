@@ -325,9 +325,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									try {
 										QuestionDependency dependency = new QuestionDependency();
 										dependency.setAnswerValue(parts[1]);
-										dependencyMap.put(questionList
-												.get(Integer.parseInt(parts[0]
-														.trim())), dependency);
+										dependency.setQuestionId(Long
+												.parseLong(parts[0].trim()));
+										dependencyMap.put(q, dependency);
 									} catch (Exception e) {
 										log
 												.log(
@@ -360,9 +360,17 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					.entrySet()) {
 				Question q = entry.getKey();
 				QuestionDependency dep = entry.getValue();
-				dep.setQuestionId(q.getKey().getId());
-				q.setDependQuestion(dep);
-				qDao.save(q);
+				Question parent = questionList.get(dep.getQuestionId()
+						.intValue() - 1);
+				if (parent != null) {
+					dep.setQuestionId(parent.getKey().getId());
+					q.setDependQuestion(dep);
+					qDao.save(q);
+				} else {
+					log.log(Level.SEVERE,
+							"Couldn't find the parent question for the dependency: "
+									+ q.getText());
+				}
 			}
 
 		} catch (IOException e) {
