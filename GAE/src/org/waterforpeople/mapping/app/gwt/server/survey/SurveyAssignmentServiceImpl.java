@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
@@ -37,7 +37,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	private static final long serialVersionUID = 3956064184547647245L;
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger
-			.getLogger(SurveyAssignmentServiceImpl.class);
+			.getLogger(SurveyAssignmentServiceImpl.class.getName());
 
 	public SurveyAssignmentServiceImpl() {
 		surveyAssignmentDao = new BaseDAO<SurveyAssignment>(

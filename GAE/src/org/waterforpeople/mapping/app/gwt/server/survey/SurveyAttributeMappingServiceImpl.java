@@ -3,8 +3,9 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -27,7 +28,7 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 
 	private static final long serialVersionUID = 3087554890568140336L;
 	private static final Logger logger = Logger
-			.getLogger(SurveyAttributeMappingServiceImpl.class);
+			.getLogger(SurveyAttributeMappingServiceImpl.class.getName());
 	private SurveyAttributeMappingDao mappingDao;
 
 	public SurveyAttributeMappingServiceImpl() {
@@ -80,7 +81,7 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 					domain = mappingDao.save(domain);
 					dto.setKeyId(domain.getKey().getId());
 				} catch (Exception e) {
-					logger.error("Could not save mapping", e);
+					logger.log(Level.SEVERE,"Could not save mapping", e);
 				}
 			}
 		}

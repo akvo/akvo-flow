@@ -2,8 +2,9 @@ package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
@@ -13,7 +14,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	private static final Logger logger = Logger
-			.getLogger(SurveyInstanceDAO.class);
+			.getLogger(SurveyInstanceDAO.class.getName());
 
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, ArrayList<String> unparsedLines) {
@@ -29,7 +30,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				try {
 					si.setSurveyId(Long.parseLong(parts[0]));
 				} catch (NumberFormatException e) {
-					logger.error("Could not parse survey id: " + parts[0]);
+					logger.log(Level.SEVERE,"Could not parse survey id: " + parts[0]);
 				}
 			}
 			qas.setArbitratyNumber(new Long(parts[1]));
