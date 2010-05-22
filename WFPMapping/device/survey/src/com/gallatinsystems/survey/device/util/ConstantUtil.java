@@ -48,6 +48,7 @@ public class ConstantUtil {
 	 * rendering options
 	 */
 	public static final String SPINNER_RENDER_MODE = "spinner";
+	public static final String RADIO_RENDER_MODE = "radio";
 
 	/**
 	 * response types

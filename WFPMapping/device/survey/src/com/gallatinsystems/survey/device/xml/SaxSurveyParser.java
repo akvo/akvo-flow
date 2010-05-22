@@ -20,7 +20,7 @@ public class SaxSurveyParser implements SurveyParser {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
             SAXParser parser = factory.newSAXParser();
-            SurveyHandler handler = new SurveyHandler();
+            SurveyHandler handler = new SurveyHandler();            
             parser.parse(inputStream, handler);
             return handler.getSurvey();
         } catch (Exception e) {
