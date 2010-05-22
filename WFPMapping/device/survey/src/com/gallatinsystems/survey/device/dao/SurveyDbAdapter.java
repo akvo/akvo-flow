@@ -66,7 +66,7 @@ public class SurveyDbAdapter {
 	 * Database creation sql statement
 	 */
 	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key, "
-			+ "display_name text not null, version real, type text, location text, filename text, remote_survey_id text, language, help_downloaded_flag text, deleted_flag text);";
+			+ "display_name text not null, version real, type text, location text, filename text, language, help_downloaded_flag text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text);";
@@ -108,7 +108,7 @@ public class SurveyDbAdapter {
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 
-	private static final int DATABASE_VERSION = 37;
+	private static final int DATABASE_VERSION = 40;
 
 	private final Context context;
 
