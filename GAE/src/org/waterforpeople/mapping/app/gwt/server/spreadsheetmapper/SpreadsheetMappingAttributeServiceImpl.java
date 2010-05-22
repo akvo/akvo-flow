@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpSession;
@@ -20,9 +23,11 @@ import com.gallatinsystems.common.data.spreadsheet.GoogleSpreadsheetAdapter;
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
@@ -223,7 +228,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 			sg.setCode("HondurasSurveyLoader");
 			Survey surveyCommunityWater = new Survey();
-		
+			HashMap<Question, QuestionDependency> dependencyMap = new HashMap<Question, QuestionDependency>();
+			ArrayList<Question> questionList = new ArrayList<Question>();
 			QuestionGroup qgBase = new QuestionGroup();
 			qgBase.setCode("Base");
 			QuestionGroup qgWater = new QuestionGroup();
@@ -237,6 +243,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				QuestionGroup targetQG = null;
 				ArrayList<ColumnContainer> ccl = row.getColumnContainersList();
 				Question q = new Question();
+				questionList.add(q);
 				OptionContainer oc = new OptionContainer();
 				for (ColumnContainer cc : ccl) {
 					String colName = cc.getColName();
@@ -245,20 +252,18 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							+ colContents);
 					if (colContents != null) {
 						if (colName.toLowerCase().equals("survey")) {
-							
-								targetSurvey = surveyCommunityWater;
-								targetSurvey.setName(colContents);
-						}
-						if (colName.toLowerCase().equals("questiongroup")) {
+
+							targetSurvey = surveyCommunityWater;
+							targetSurvey.setName(colContents);
+						} else if (colName.toLowerCase()
+								.equals("questiongroup")) {
 							if (colContents.toLowerCase().equals(
 									"Base".toLowerCase())) {
 								targetQG = qgBase;
 							}
-						}
-						if (colName.toLowerCase().equals("question")) {
+						} else if (colName.toLowerCase().equals("question")) {
 							q.setText(colContents);
-						}
-						if (colName.toLowerCase().equals("questiontype")) {
+						} else if (colName.toLowerCase().equals("questiontype")) {
 							if (colContents.toLowerCase().equals(
 									"FREE".toLowerCase()))
 								q.setType(QuestionType.FREE_TEXT);
@@ -280,16 +285,14 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							else if (colContents.toLowerCase().equals(
 									"VIDEO".toLowerCase()))
 								q.setType(QuestionType.VIDEO);
-						}
-
-						if (colName.toLowerCase().equals(
+						} else if (colName.toLowerCase().equals(
 								"Options".toLowerCase())
 								&& q.getType().equals(QuestionType.OPTION)) {
 							String[] splitColContents = colContents.trim()
 									.split(";");
 							for (String item : splitColContents) {
 								String[] optionParts = item.trim().split("\\|");
-								if (optionParts.length ==2) {
+								if (optionParts.length == 2) {
 									String optionVal = optionParts[0];
 									String text = optionParts[1];
 									log.info("Val:" + optionVal + " Text:"
@@ -301,8 +304,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								}
 
 							}
-						}
-						if ((colName.equals("AllowOther") || colName
+						} else if ((colName.equals("AllowOther") || colName
 								.equals("AllowMultiple"))
 								&& q.getType().equals(QuestionType.OPTION)) {
 							if (colName.equals("AllowOther"))
@@ -311,6 +313,27 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							if (colName.equals("AllowMultiple"))
 								oc.setAllowMultipleFlag(new Boolean(colContents
 										.toLowerCase()));
+						} else if (colName.equalsIgnoreCase("DependQuestion")) {
+							if (colContents != null
+									&& colContents.trim().length() > 0) {
+								String[] parts = colContents.trim()
+										.split("\\|");
+								if (parts != null && parts.length >= 2) {
+									try {
+										QuestionDependency dependency = new QuestionDependency();
+										dependency.setAnswerValue(parts[1]);
+										dependencyMap.put(questionList
+												.get(Integer.parseInt(parts[0]
+														.trim())), dependency);
+									} catch (Exception e) {
+										log
+												.log(
+														Level.SEVERE,
+														"Can't set dependency. The question number in the dependency column isn't an integer");
+									}
+								}
+
+							}
 						}
 
 					}
@@ -328,6 +351,16 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			sg.addSurvey(surveyCommunityWater);
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			sgDao.save(sg);
+			//now go through and re-save the dependencies
+			QuestionDao qDao = new QuestionDao();
+			for(Entry<Question,QuestionDependency> entry: dependencyMap.entrySet()){
+				Question q = entry.getKey();
+				QuestionDependency dep = entry.getValue();
+				dep.setQuestionId(q.getKey().getId());
+				q.setDependQuestion(dep);
+				qDao.save(q);
+			}
+			
 
 		} catch (IOException e) {
 			e.printStackTrace();
