@@ -21,6 +21,7 @@ import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.SurveyLoaderPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
@@ -165,6 +166,11 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.addItem("Data Upload", new Command() {
 			public void execute() {
 				launchFullscreen(DataUploadPortlet.NAME);
+			}
+		});
+		mgrMenu.addItem("Survey Loader", new Command() {
+			public void execute() {
+				launchFullscreen(SurveyLoaderPortlet.NAME);
 			}
 		});
 

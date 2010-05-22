@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+@RemoteServiceRelativePath("spreadsheetattributemapperrpc")
 public interface SpreadsheetMappingAttributeService extends RemoteService {
 	public ArrayList<String> listSpreadsheets();
 
