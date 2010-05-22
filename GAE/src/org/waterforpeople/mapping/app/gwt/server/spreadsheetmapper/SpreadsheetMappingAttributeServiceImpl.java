@@ -15,6 +15,9 @@ import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpread
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
+import com.gallatinsystems.common.data.spreadsheet.GoogleSpreadsheetAdapter;
+import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
+import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
 import com.google.gdata.util.ServiceException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -198,5 +201,29 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 		}
 		return null;
+	}
+
+	@Override
+	public void processSurveySpreadsheet(String spreadsheetName)  {
+		setCreds();
+			
+		try {
+			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
+					sessionToken, privateKey);	
+			SpreadsheetContainer sc = gsa
+					.getSpreadsheetContents(spreadsheetName);
+			for (RowContainer row : sc.getRowContainerList()) {
+				log.info(row.toString());
+				
+				
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
 	}
 }
