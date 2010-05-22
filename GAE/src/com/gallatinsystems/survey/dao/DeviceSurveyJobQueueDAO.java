@@ -14,7 +14,7 @@ public class DeviceSurveyJobQueueDAO {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
 		query.setFilter("devicePhoneNumber == devicePhoneNumberParam");
-		query.declareParameters("Long idParam");
+		query.declareParameters("String devicePhoneNumberParam");
 		List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query
 				.execute(devicePhoneNumber);
 		return results;
