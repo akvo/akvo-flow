@@ -342,7 +342,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			qd.setQuestionId(qdto.getQuestionDependency().getQuestionId());
 			qd.setAnswerValue(qdto.getQuestionDependency().getAnswerValue());
 			q.setDependQuestion(qd);
-			
+
 		}
 
 		return q;
@@ -521,95 +521,101 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				// TODO: implement questionGroup order attribute
 				// qgXML.setOrder(qg.getOrder());
 				ArrayList<com.gallatinsystems.survey.domain.xml.Question> questionXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.Question>();
-				for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
-						.entrySet()) {
-					Question q = qEntry.getValue();
-					// System.out.println("		Question: " + q.getKey().getId() +
-					// ":"
-					// + q.getText() + ":" + q.getType().toString());
-					com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
-							.createQuestion();
-					qXML.setId(new String("" + q.getKey().getId() + ""));
-					// ToDo fix
-					qXML.setMandatory("false");
-					if (q.getText() != null) {
-						Text text = new Text();
-						text.setContent(q.getText());
-						qXML.setText(text);
-					}
-					if (q.getTip() != null) {
-						Tip tip = new Tip();
-						tip.setContent(q.getTip());
-						qXML.setTip(tip);
-					}
+				if (qg.getQuestionMap() != null) {
+					for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
+							.entrySet()) {
+						Question q = qEntry.getValue();
+						// System.out.println("		Question: " +
+						// q.getKey().getId() +
+						// ":"
+						// + q.getText() + ":" + q.getType().toString());
+						com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
+								.createQuestion();
+						qXML.setId(new String("" + q.getKey().getId() + ""));
+						// ToDo fix
+						qXML.setMandatory("false");
+						if (q.getText() != null) {
+							Text text = new Text();
+							text.setContent(q.getText());
+							qXML.setText(text);
+						}
+						if (q.getTip() != null) {
+							Tip tip = new Tip();
+							tip.setContent(q.getTip());
+							qXML.setTip(tip);
+						}
 
-					if (q.getValidationRule() != null) {
-						ValidationRule validationRule = objFactory
-								.createValidationRule();
+						if (q.getValidationRule() != null) {
+							ValidationRule validationRule = objFactory
+									.createValidationRule();
 
-						// ToDo set validation rule xml
-						// validationRule.setAllowDecimal(value)
-					}
+							// ToDo set validation rule xml
+							// validationRule.setAllowDecimal(value)
+						}
 
-					// ToDo marshall xml
-					// qXML.setText(q.getText());
+						// ToDo marshall xml
+						// qXML.setText(q.getText());
 
-					if (q.getType().equals(QuestionType.FREE_TEXT))
-						qXML.setType(FREE_QUESTION_TYPE);
-					else if (q.getType().equals(QuestionType.GEO))
-						qXML.setType(GEO_QUESTION_TYPE);
-					// else if(q.getType().equals(QuestionType.NUMBER)
-					// qXML.setType()
-					else if (q.getType().equals(QuestionType.OPTION))
-						qXML.setType(OPTION_QUESTION_TYPE);
-					else if (q.getType().equals(QuestionType.PHOTO))
-						qXML.setType(PHOTO_QUESTION_TYPE);
-					else if (q.getType().equals(QuestionType.VIDEO))
-						qXML.setType(VIDEO_QUESTION_TYPE);
-					else if (q.getType().equals(QuestionType.SCAN))
-						qXML.setType(SCAN_QUESTION_TYPE);
+						if (q.getType().equals(QuestionType.FREE_TEXT))
+							qXML.setType(FREE_QUESTION_TYPE);
+						else if (q.getType().equals(QuestionType.GEO))
+							qXML.setType(GEO_QUESTION_TYPE);
+						// else if(q.getType().equals(QuestionType.NUMBER)
+						// qXML.setType()
+						else if (q.getType().equals(QuestionType.OPTION))
+							qXML.setType(OPTION_QUESTION_TYPE);
+						else if (q.getType().equals(QuestionType.PHOTO))
+							qXML.setType(PHOTO_QUESTION_TYPE);
+						else if (q.getType().equals(QuestionType.VIDEO))
+							qXML.setType(VIDEO_QUESTION_TYPE);
+						else if (q.getType().equals(QuestionType.SCAN))
+							qXML.setType(SCAN_QUESTION_TYPE);
 
-					if (qEntry.getKey() != null)
-						qXML.setOrder(qEntry.getKey().toString());
-					// ToDo set dependency xml
-					Dependency dependency = objFactory.createDependency();
-					if (q.getDependQuestion() != null) {
-						dependency.setQuestion(q.getDependQuestion()
-								.getQuestionId().toString());
-						dependency.setAnswerValue(q.getDependQuestion().getAnswerValue());
-						qXML.setDependency(dependency);
-					}
+						if (qEntry.getKey() != null)
+							qXML.setOrder(qEntry.getKey().toString());
+						// ToDo set dependency xml
+						Dependency dependency = objFactory.createDependency();
+						if (q.getDependQuestion() != null) {
+							dependency.setQuestion(q.getDependQuestion()
+									.getQuestionId().toString());
+							dependency.setAnswerValue(q.getDependQuestion()
+									.getAnswerValue());
+							qXML.setDependency(dependency);
+						}
 
-					if (q.getOptionContainer() != null) {
-						OptionContainer oc = q.getOptionContainer();
-						// System.out.println("			OptionContainer: " +
-						// oc.getKey().getId()
-						// + ":" + oc.getAllowMultipleFlag() + ":"
-						// + oc.getAllowOtherFlag());
-						Options options = objFactory.createOptions();
-						options
-								.setAllowOther(oc.getAllowOtherFlag()
+						if (q.getOptionContainer() != null) {
+							OptionContainer oc = q.getOptionContainer();
+							// System.out.println("			OptionContainer: " +
+							// oc.getKey().getId()
+							// + ":" + oc.getAllowMultipleFlag() + ":"
+							// + oc.getAllowOtherFlag());
+							Options options = objFactory.createOptions();
+//							if(oc.getAllowMultipleFlag()!=null)
+//								options.setAllowMultiple()
+							if (oc.getAllowOtherFlag() != null)
+								options.setAllowOther(oc.getAllowOtherFlag()
 										.toString());
 
-						if (oc.getOptionsList() != null) {
-							ArrayList<Option> optionList = new ArrayList<Option>();
-							// System.out.println("				ocList size:" +
-							// optionList.size());
-							for (QuestionOption qo : oc.getOptionsList()) {
-								// System.out.println("						option:" +
-								// qo.getKey().getId()
-								// + ":" + qo.getCode() + ":"
-								// + qo.getText());
-								Option option = objFactory.createOption();
-								option.setContent(qo.getText());
-								option.setValue(qo.getCode());
-								optionList.add(option);
+							if (oc.getOptionsList() != null) {
+								ArrayList<Option> optionList = new ArrayList<Option>();
+								// System.out.println("				ocList size:" +
+								// optionList.size());
+								for (QuestionOption qo : oc.getOptionsList()) {
+									// System.out.println("						option:" +
+									// qo.getKey().getId()
+									// + ":" + qo.getCode() + ":"
+									// + qo.getText());
+									Option option = objFactory.createOption();
+									option.setContent(qo.getText());
+									option.setValue(qo.getCode());
+									optionList.add(option);
+								}
+								options.setOptionList(optionList);
 							}
-							options.setOptionList(optionList);
+							qXML.setOptions(options);
 						}
-						qXML.setOptions(options);
+						questionXMLList.add(qXML);
 					}
-					questionXMLList.add(qXML);
 				}
 				qgXML.setQuestion(questionXMLList);
 				questionGroupXMLList.add(qgXML);
@@ -635,9 +641,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			StringBuilder sb = new StringBuilder();
 			sb.append("Could not publish survey: \n cause: " + ex.getCause()
 					+ " \n message" + ex.getMessage() + "\n stack trace:  ");
-			for (StackTraceElement ste : ex.getStackTrace()) {
-				sb.append("        " + ste + "\n");
-			}
+//			for (StackTraceElement ste : ex.getStackTrace()) {
+//				sb.append("        " + ste + "\n");
+//			}
 			return sb.toString();
 		}
 
