@@ -262,7 +262,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								targetQG = qgBase;
 							}
 						} else if (colName.toLowerCase().equals("question")) {
-							q.setText(colContents);
+							if (colContents.trim().length() > 500)
+								q.setText(colContents.trim().substring(0, 500));
+							else
+								q.setText(colContents.trim());
 						} else if (colName.toLowerCase().equals("questiontype")) {
 							if (colContents.toLowerCase().equals(
 									"FREE".toLowerCase()))
@@ -351,16 +354,16 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			sg.addSurvey(surveyCommunityWater);
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			sgDao.save(sg);
-			//now go through and re-save the dependencies
+			// now go through and re-save the dependencies
 			QuestionDao qDao = new QuestionDao();
-			for(Entry<Question,QuestionDependency> entry: dependencyMap.entrySet()){
+			for (Entry<Question, QuestionDependency> entry : dependencyMap
+					.entrySet()) {
 				Question q = entry.getKey();
 				QuestionDependency dep = entry.getValue();
 				dep.setQuestionId(q.getKey().getId());
 				q.setDependQuestion(dep);
 				qDao.save(q);
 			}
-			
 
 		} catch (IOException e) {
 			e.printStackTrace();
