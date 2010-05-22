@@ -14,6 +14,8 @@ import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Tree;
@@ -26,7 +28,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Christopher Fagiani
  * 
  */
-public class SurveyTree implements OpenHandler<TreeItem> {
+public class SurveyTree implements OpenHandler<TreeItem>,
+		SelectionHandler<TreeItem> {
 
 	private static final String DUMMY = "DUMMY";
 	private static final String PLEASE_WAIT = "Loading...";
@@ -87,8 +90,10 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 		this.dragController = dragController;
 		if (rootedByItem) {
 			surveyRootItem.getTree().addOpenHandler(this);
+			surveyRootItem.getTree().addSelectionHandler(this);
 		} else {
 			surveyRootTree.addOpenHandler(this);
+			surveyRootTree.addSelectionHandler(this);
 		}
 		surveyService.listSurveyGroups("all", false, false, false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
@@ -180,47 +185,7 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 	 */
 	@Override
 	public void onOpen(OpenEvent<TreeItem> event) {
-		if (event.getTarget() instanceof TreeItem) {
-			final TreeItem item = (TreeItem) event.getTarget();
-			if (item.getUserObject() instanceof SurveyGroupDto) {
-				SurveyGroupDto sg = (SurveyGroupDto) item.getUserObject();
-				// if we haven't yet loaded the surveys, load them
-				if (item.getChildCount() == 1
-						&& item.getChild(0).getUserObject().equals(DUMMY)) {
-					// Set up the callback object.
-					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
-						public void onFailure(Throwable caught) {
-							// no-op
-						}
-
-						public void onSuccess(ArrayList<SurveyDto> result) {
-							surveys.put((SurveyGroupDto) item.getUserObject(),
-									result);
-							// remove the dummy
-							if (item.getChild(0).getUserObject().equals(DUMMY)) {
-								item.removeItem(item.getChild(0));
-							}
-							if (result != null) {
-								for (int i = 0; i < result.size(); i++) {
-									addSurveyToTree(item, result.get(i));
-									if (!PUBLISHED_STATUS
-											.equalsIgnoreCase(result.get(i)
-													.getStatus())) {
-										unreleasedSurveys.put(result.get(i)
-												.getKeyId(), result.get(i));
-									}
-								}
-							}
-						}
-					};
-					surveyService.listSurveysByGroup(sg.getKeyId().toString(),
-							surveyCallback);
-				}
-			} else if (loadSurveyDetails
-					&& item.getUserObject() instanceof SurveyDto) {
-				// TODO - load question groups
-			}
-		}
+		loadChild((TreeItem) event.getTarget());
 	}
 
 	/**
@@ -309,5 +274,51 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 		}
 		name = name + " - v." + survey.getVersion();
 		return name;
+	}
+
+	@Override
+	public void onSelection(SelectionEvent<TreeItem> event) {
+		loadChild(event.getSelectedItem());
+	}
+
+	private void loadChild(final TreeItem item) {
+
+		if (item.getUserObject() instanceof SurveyGroupDto) {
+			SurveyGroupDto sg = (SurveyGroupDto) item.getUserObject();
+			// if we haven't yet loaded the surveys, load them
+			if (item.getChildCount() == 1
+					&& item.getChild(0).getUserObject().equals(DUMMY)) {
+				// Set up the callback object.
+				AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
+					public void onFailure(Throwable caught) {
+						// no-op
+					}
+
+					public void onSuccess(ArrayList<SurveyDto> result) {
+						surveys.put((SurveyGroupDto) item.getUserObject(),
+								result);
+						// remove the dummy
+						if (item.getChild(0).getUserObject().equals(DUMMY)) {
+							item.removeItem(item.getChild(0));
+						}
+						if (result != null) {
+							for (int i = 0; i < result.size(); i++) {
+								addSurveyToTree(item, result.get(i));
+								if (!PUBLISHED_STATUS.equalsIgnoreCase(result
+										.get(i).getStatus())) {
+									unreleasedSurveys.put(result.get(i)
+											.getKeyId(), result.get(i));
+								}
+							}
+						}
+					}
+				};
+				surveyService.listSurveysByGroup(sg.getKeyId().toString(),
+						surveyCallback);
+			}
+		} else if (loadSurveyDetails
+				&& item.getUserObject() instanceof SurveyDto) {
+			// TODO - load question groups
+		}
 	}
 }
