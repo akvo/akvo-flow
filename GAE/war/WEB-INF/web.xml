@@ -203,7 +203,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
-		<url-pattern>/spreadsheetattributemapper</url-pattern>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/spreadsheetattributemapperrpc</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DataSummarization</servlet-name>
