@@ -26,7 +26,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 
 	public SurveyManagerServlet() {
 		super();
-		setMode(AbstractRestApiServlet.XHTML_MODE);
+		setMode(AbstractRestApiServlet.XML_MODE);
 	}
 
 	private static final long serialVersionUID = 4400244780977729721L;
@@ -74,6 +74,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				SurveyContainer container = scDao.findBySurveyId(mgrReq
 						.getSurveyId());
 				if (container != null) {
+					
 					resp.setMessage(container.getSurveyDocument().getValue());
 				} else {
 					resp.setMessage("No Survey Found");
