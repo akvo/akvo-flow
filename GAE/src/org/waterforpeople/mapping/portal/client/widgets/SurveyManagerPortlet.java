@@ -410,7 +410,10 @@ public class SurveyManagerPortlet extends Portlet {
 		}
 
 		if (!foundQuestionFlag) {
-			questionItem.setText(item.getText());
+			if (item.getText().trim().length() > 15)
+				questionItem.setText(item.getText().substring(0, 15));
+			else
+				questionItem.setText(item.getText().trim());
 			questionItem.setUserObject(item);
 			parentItem.addItem(questionItem);
 		}
