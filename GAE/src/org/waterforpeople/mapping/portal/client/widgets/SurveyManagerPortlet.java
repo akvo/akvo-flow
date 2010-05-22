@@ -412,13 +412,16 @@ public class SurveyManagerPortlet extends Portlet {
 		TreeItem parentItem = surveyTree.getSelectedItem();
 		TreeItem questionItem = new TreeItem();
 		Boolean foundQuestionFlag = false;
-		
+
 		for (int i = 0; i < parentItem.getChildCount(); i++) {
 			QuestionDto qDto = (QuestionDto) parentItem.getChild(i)
 					.getUserObject();
 			if (qDto.getKeyId().equals(item.getKeyId())) {
 				questionItem = parentItem.getChild(i);
-				questionItem.setText(item.getText());
+				if (item.getText().trim().length() > 15)
+					questionItem.setText(item.getText().substring(0, 15));
+				else
+					questionItem.setText(item.getText().trim());
 				questionItem.setUserObject(item);
 				foundQuestionFlag = true;
 				break;
@@ -916,9 +919,11 @@ public class SurveyManagerPortlet extends Portlet {
 			@Override
 			public void onSuccess(QuestionDto result) {
 				bindQuestion(result);
-				if(result.getQuestionDependency()!=null)
-					((TextBox)questionDetailPanel.getWidget(8, 4)).setText(result.getQuestionDependency().getKeyId().toString());
-			
+				if (result.getQuestionDependency() != null)
+					((TextBox) questionDetailPanel.getWidget(8, 4))
+							.setText(result.getQuestionDependency().getKeyId()
+									.toString());
+
 				Window.alert("Question Saved");
 			}
 
@@ -941,7 +946,7 @@ public class SurveyManagerPortlet extends Portlet {
 			value.setKeyId(new Long(questionId.getText()));
 
 		if (questionText.getText().length() > 0)
-			value.setText(questionText.getText());
+			value.setText(questionText.getText().trim());
 
 		if (tip.getText().length() > 0)
 			value.setTip(tip.getText());
