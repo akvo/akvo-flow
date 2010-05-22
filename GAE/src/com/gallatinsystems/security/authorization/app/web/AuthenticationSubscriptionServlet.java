@@ -69,7 +69,8 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 	
 	private void processToken(HttpServletRequest req, HttpServletResponse resp) {
 		HttpSession session = req.getSession(true);
-		if (session.getValue("sessionToken") == null) {
+		//if (session.getValue("sessionToken") == null) {
+		if(true){
 			log.info("QueryString: " + req.getQueryString());
 			String singleUseToken = AuthSubUtil.getTokenFromReply(req
 					.getQueryString());
@@ -99,7 +100,7 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 		}
 		try {
 			((HttpServletResponse) resp)
-					.sendRedirect("/SpreadsheetMapping.html");
+					.sendRedirect("/Dashboard.html?gwt.codesvr=127.0.0.1:9997");
 			//((HttpServletResponse)resp).sendRedirect("/SpreadsheetMapping.html?gwt.codesvr=127.0.0.1:9997");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -995,7 +995,7 @@ public class SurveyManagerPortlet extends Portlet {
 			if (dependentQId.getText().length() > 0)
 				qdDto.setKeyId(new Long(dependentQId.getText()));
 			ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
-			String selectedAnswerValue = answerLB.getValue(answerLB
+			String selectedAnswerValue = answerLB.getItemText(answerLB
 					.getSelectedIndex());
 			qdDto.setAnswerValue(selectedAnswerValue);
 			TextBox qDepId = (TextBox) questionDetailPanel.getWidget(8, 4);

@@ -13,11 +13,20 @@ import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingDefini
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
 import com.gallatinsystems.common.data.spreadsheet.GoogleSpreadsheetAdapter;
+import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.OptionContainer;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.gdata.util.ServiceException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -82,10 +91,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	@Override
 	public ArrayList<String> listSpreadsheets() {
 		setCreds();
-		log.info("listingSpreadsheets");
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
-				sessionToken, privateKey);
-		return helper.listSpreadsheets();
+		return this.listSpreadsheetsFromFeed(null);
 	}
 
 	@Override
@@ -104,7 +110,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		setCreds();
 		try {
 			new SpreadsheetAccessPointAdapter(sessionToken, privateKey)
-					.processSpreadsheetOfAccessPoints(mapDef.getSpreadsheetURL());
+					.processSpreadsheetOfAccessPoints(mapDef
+							.getSpreadsheetURL());
 			return new String("Processed Successfully");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -112,7 +119,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			String message =new String("Could not save spreadsheet : ");
+			String message = new String("Could not save spreadsheet : ");
 			message.concat(e.getMessage());
 			return message;
 		}
@@ -204,26 +211,131 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	}
 
 	@Override
-	public void processSurveySpreadsheet(String spreadsheetName)  {
+	public void processSurveySpreadsheet(String spreadsheetName) {
 		setCreds();
-			
+
 		try {
 			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
-					sessionToken, privateKey);	
+					sessionToken, privateKey);
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
+			SurveyGroup sg = new SurveyGroup();
+
+			sg.setCode("HondurasSurveyLoader");
+			Survey surveyCommunityWater = new Survey();
+		
+			QuestionGroup qgBase = new QuestionGroup();
+			qgBase.setCode("Base");
+			QuestionGroup qgWater = new QuestionGroup();
+			qgWater.setCode("Water");
+			QuestionGroup qgSanitation = new QuestionGroup();
+			qgSanitation.setCode("Sanitation");
+			ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
+			int i = 0;
 			for (RowContainer row : sc.getRowContainerList()) {
-				log.info(row.toString());
-				
-				
+				Survey targetSurvey = null;
+				QuestionGroup targetQG = null;
+				ArrayList<ColumnContainer> ccl = row.getColumnContainersList();
+				Question q = new Question();
+				OptionContainer oc = new OptionContainer();
+				for (ColumnContainer cc : ccl) {
+					String colName = cc.getColName();
+					String colContents = cc.getColContents();
+					log.info("colName: " + colName + " colContents: "
+							+ colContents);
+					if (colContents != null) {
+						if (colName.toLowerCase().equals("survey")) {
+							
+								targetSurvey = surveyCommunityWater;
+								targetSurvey.setName(colContents);
+						}
+						if (colName.toLowerCase().equals("questiongroup")) {
+							if (colContents.toLowerCase().equals(
+									"Base".toLowerCase())) {
+								targetQG = qgBase;
+							}
+						}
+						if (colName.toLowerCase().equals("question")) {
+							q.setText(colContents);
+						}
+						if (colName.toLowerCase().equals("questiontype")) {
+							if (colContents.toLowerCase().equals(
+									"FREE".toLowerCase()))
+								q.setType(QuestionType.FREE_TEXT);
+							else if (colContents.toLowerCase().equals(
+									"GEO".toLowerCase()))
+								q.setType(QuestionType.GEO);
+							else if (colContents.toLowerCase().equals(
+									"NUMBER".toLowerCase()))
+								q.setType(QuestionType.NUMBER);
+							else if (colContents.toLowerCase().equals(
+									"OPTION".toLowerCase()))
+								q.setType(QuestionType.OPTION);
+							else if (colContents.toLowerCase().equals(
+									"PHOTO".toLowerCase()))
+								q.setType(QuestionType.PHOTO);
+							else if (colContents.toLowerCase().equals(
+									"SCAN".toLowerCase()))
+								q.setType(QuestionType.SCAN);
+							else if (colContents.toLowerCase().equals(
+									"VIDEO".toLowerCase()))
+								q.setType(QuestionType.VIDEO);
+						}
+
+						if (colName.toLowerCase().equals(
+								"Options".toLowerCase())
+								&& q.getType().equals(QuestionType.OPTION)) {
+							String[] splitColContents = colContents.trim()
+									.split(";");
+							for (String item : splitColContents) {
+								String[] optionParts = item.trim().split("\\|");
+								if (optionParts.length ==2) {
+									String optionVal = optionParts[0];
+									String text = optionParts[1];
+									log.info("Val:" + optionVal + " Text:"
+											+ text);
+									QuestionOption qo = new QuestionOption();
+									qo.setCode(optionVal);
+									qo.setText(text);
+									qoList.add(qo);
+								}
+
+							}
+						}
+						if ((colName.equals("AllowOther") || colName
+								.equals("AllowMultiple"))
+								&& q.getType().equals(QuestionType.OPTION)) {
+							if (colName.equals("AllowOther"))
+								oc.setAllowOtherFlag(new Boolean(colContents
+										.toLowerCase()));
+							if (colName.equals("AllowMultiple"))
+								oc.setAllowMultipleFlag(new Boolean(colContents
+										.toLowerCase()));
+						}
+
+					}
+
+				}
+				if (q.getType().equals(QuestionType.OPTION)) {
+					oc.setOptionsList(qoList);
+					q.setOptionContainer(oc);
+				}
+				targetQG.addQuestion(q, i++);
+				log.info("added: " + q.toString() + " :" + targetQG.getCode());
 			}
+			surveyCommunityWater.addQuestionGroup(qgWater);
+			surveyCommunityWater.addQuestionGroup(qgBase);
+			sg.addSurvey(surveyCommunityWater);
+			SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			sgDao.save(sg);
+
 		} catch (IOException e) {
 			e.printStackTrace();
-			
+
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
+
 		}
 	}
 }

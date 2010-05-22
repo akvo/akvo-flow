@@ -54,25 +54,30 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 				ssga.setSurveyId(surveyId);
 				ssgaDAO.save(ssga);
 				// Save Question Group
-				for (QuestionGroup qg : surveyItem.getQuestionGroupList()) {
-					qg = qgDao.save(qg);
-					SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
-					sqga.setQuestionGroupId(qg.getKey().getId());
-					sqga.setSurveyId(surveyItem.getKey().getId());
-					sqgaDao.save(sqga);
-					for (Entry<Integer, Question> questionEntry : qg
-							.getQuestionMap().entrySet()) {
-						Question question = questionEntry.getValue();
-						Integer order = questionEntry.getKey();
-						question = questionDAO.save(question, qg.getKey().getId());
-//						QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
-//						qqga.setQuestionGroupId(qg.getKey().getId());
-//						qqga.setQuestionId(question.getKey().getId());
-//						qqga.setOrder(order);
-//						qqgaDao.save(qqga);
+				if (surveyItem.getQuestionGroupList() != null) {
+					for (QuestionGroup qg : surveyItem.getQuestionGroupList()) {
+						qg = qgDao.save(qg);
+						SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
+						sqga.setQuestionGroupId(qg.getKey().getId());
+						sqga.setSurveyId(surveyItem.getKey().getId());
+						sqgaDao.save(sqga);
+						if (qg.getQuestionMap() != null) {
+							for (Entry<Integer, Question> questionEntry : qg
+									.getQuestionMap().entrySet()) {
+								Question question = questionEntry.getValue();
+								Integer order = questionEntry.getKey();
+								question = questionDAO.save(question, qg
+										.getKey().getId());
+								// QuestionQuestionGroupAssoc qqga = new
+								// QuestionQuestionGroupAssoc();
+								// qqga.setQuestionGroupId(qg.getKey().getId());
+								//qqga.setQuestionId(question.getKey().getId());
+								// qqga.setOrder(order);
+								// qqgaDao.save(qqga);
+							}
+						}
 					}
 				}
-
 			}
 		}
 		return item;
