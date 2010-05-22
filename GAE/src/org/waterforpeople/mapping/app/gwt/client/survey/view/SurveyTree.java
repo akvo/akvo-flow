@@ -30,6 +30,7 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 
 	private static final String DUMMY = "DUMMY";
 	private static final String PLEASE_WAIT = "Loading...";
+	private static final String PUBLISHED_STATUS = "PUBLISHED";
 	private TreeItem surveyRootItem;
 	private Tree surveyRootTree;
 	private boolean rootedByItem;
@@ -38,7 +39,16 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 	private TreeDragController dragController;
 	private HashMap<Widget, BaseDto> surveyMap;
 	private HashMap<SurveyGroupDto, ArrayList<SurveyDto>> surveys;
+	private HashMap<Long, SurveyDto> unreleasedSurveys;
 
+	/**
+	 * constructs a survey tree rooted at the tree level (survey groups have no
+	 * parent)
+	 * 
+	 * @param root
+	 * @param dragController
+	 * @param loadDetails
+	 */
 	public SurveyTree(Tree root, TreeDragController dragController,
 			boolean loadDetails) {
 		rootedByItem = false;
@@ -46,6 +56,14 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 		initialize(dragController, loadDetails);
 	}
 
+	/**
+	 * creates a survey tree rooted at an item already installed in a tree (all
+	 * survey groups have a common parent)
+	 * 
+	 * @param root
+	 * @param dragController
+	 * @param loadDetails
+	 */
 	public SurveyTree(TreeItem root, TreeDragController dragController,
 			boolean loadDetails) {
 		rootedByItem = true;
@@ -53,8 +71,15 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 		initialize(dragController, loadDetails);
 	}
 
+	/**
+	 * constructs local members and adds handlers.
+	 * 
+	 * @param dragController
+	 * @param loadDetails
+	 */
 	private void initialize(TreeDragController dragController,
 			boolean loadDetails) {
+		unreleasedSurveys = new HashMap<Long, SurveyDto>();
 		loadSurveyDetails = loadDetails;
 		surveyService = GWT.create(SurveyService.class);
 		surveyMap = new HashMap<Widget, BaseDto>();
@@ -147,6 +172,12 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 		return false;
 	}
 
+	/**
+	 * handles the open even for a tree node. If the node is a group node and it
+	 * has not yet been loaded, this will call the server to get the surveys in
+	 * that group. If the node has already been loaded, then the cached copy is
+	 * used instead.
+	 */
 	@Override
 	public void onOpen(OpenEvent<TreeItem> event) {
 		if (event.getTarget() instanceof TreeItem) {
@@ -172,6 +203,12 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 							if (result != null) {
 								for (int i = 0; i < result.size(); i++) {
 									addSurveyToTree(item, result.get(i));
+									if (!PUBLISHED_STATUS
+											.equalsIgnoreCase(result.get(i)
+													.getStatus())) {
+										unreleasedSurveys.put(result.get(i)
+												.getKeyId(), result.get(i));
+									}
 								}
 							}
 						}
@@ -186,10 +223,35 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 		}
 	}
 
+	/**
+	 * returns true if the survey identified by the id passed in is released.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public boolean isReleased(Long id) {
+		if (unreleasedSurveys.get(id) != null) {
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	/**
+	 * returns a map keyed on the tree widget labels values are the SurveyDto
+	 * objects.
+	 * 
+	 * @return
+	 */
 	public HashMap<Widget, BaseDto> getItemMap() {
 		return surveyMap;
 	}
 
+	/**
+	 * resets the visual state of the tree by collapsing all nodes and re-adding
+	 * any removed survey items.
+	 */
 	public void reset() {
 		if (rootedByItem) {
 			surveyRootItem.removeItems();
@@ -219,6 +281,12 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 
 	}
 
+	/**
+	 * adds an item to the tree and installs the drag controller (if non-null)
+	 * 
+	 * @param parent
+	 * @param survey
+	 */
 	private void addSurveyToTree(TreeItem parent, SurveyDto survey) {
 		TreeItem surveyItem = new TreeItem(new Label(getSurveyName(survey)));
 		surveyMap.put(surveyItem.getWidget(), survey);
@@ -228,6 +296,12 @@ public class SurveyTree implements OpenHandler<TreeItem> {
 		parent.addItem(surveyItem);
 	}
 
+	/**
+	 * forms the display name of a survey
+	 * 
+	 * @param survey
+	 * @return
+	 */
 	private String getSurveyName(SurveyDto survey) {
 		String name = survey.getName();
 		if (name == null || name.trim().length() == 0) {

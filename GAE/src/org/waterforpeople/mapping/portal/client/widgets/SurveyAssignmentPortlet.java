@@ -58,7 +58,6 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
-	private static final String IN_PROGRESS_STATUS = "IN_PROGRESS";
 	@SuppressWarnings("unused")
 	private static final int MAX_ITEMS = 20;
 	private static final int HEIGHT = 1600;
@@ -91,14 +90,12 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private SurveyTree surveyTree;
 
 	private HashMap<String, ArrayList<DeviceDto>> devices;
-	private HashMap<Long, SurveyDto> unreleasedSurveys;
 
 	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
 
 	public SurveyAssignmentPortlet() {
 		super(NAME, true, false, WIDTH, HEIGHT);
-		unreleasedSurveys = new HashMap<Long, SurveyDto>();
 		inputPanel = new DockPanel();
 		contentPanel = new DockPanel();
 		inputPanel = new DockPanel();
@@ -487,13 +484,15 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			StringBuffer msg = new StringBuffer(
 					"The following surveys must be released before they will be distributed to the devices: <br><ul>");
 			for (SurveyDto survey : dto.getSurveys()) {
-				SurveyDto unreleased = unreleasedSurveys.get(survey.getKeyId());
-				if (unreleased != null) {
+				if (surveyTree.isReleased(survey.getKeyId())) {
 					hasUnreleased = true;
 					msg.append("<li>").append(
-							unreleased.getName() != null ? unreleased.getName()
-									: unreleased.getKeyId()).append(" - v.")
-							.append(unreleased.getVersion()).append("</li>");
+							survey.getName() != null ? survey.getName()
+									: survey.getKeyId()).append(" - v.")
+							.append(
+									survey.getVersion() != null ? survey
+											.getVersion() : "0")
+							.append("</li>");
 				}
 			}
 			msg.append("</ul>");
@@ -582,7 +581,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 						}
 
 						@Override
-						public void onSuccess(Void result) {							
+						public void onSuccess(Void result) {
 							reset();
 							if (currentGrid != null) {
 								currentGrid.removeRow(currentSelection);
