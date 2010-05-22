@@ -18,4 +18,6 @@ public interface SurveyAssignmentService extends RemoteService {
 	 * @return
 	 */
 	public SurveyAssignmentDto[] listSurveyAssignments();
+	
+	public void deleteSurveyAssignment(SurveyAssignmentDto dto);
 }

@@ -12,9 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
@@ -28,8 +26,6 @@ import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.OpenEvent;
-import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -55,17 +51,15 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * @author Christopher Fagiani
  * 
  */
-public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
-		OpenHandler<TreeItem> {
+public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	public static final String NAME = "Survey Assignment Portlet";
 	public static final String DESCRIPTION = "Assigns surveys to devices";
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
-	private static final String DUMMY = "DUMMY";
-	private static final String PLEASE_WAIT = "Loading...";
 	private static final String IN_PROGRESS_STATUS = "IN_PROGRESS";
+	@SuppressWarnings("unused")
 	private static final int MAX_ITEMS = 20;
 	private static final int HEIGHT = 1600;
 	private static final int WIDTH = 900;
@@ -83,7 +77,6 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 	private DockPanel contentPanel;
 	private TreeDragController deviceDragController;
 	private TreeDragController surveyDragController;
-	private SurveyServiceAsync surveyService;
 	private SurveyAssignmentServiceAsync surveyAssignmentService;
 	private Button saveButton;
 	private Button resetButton;
@@ -92,11 +85,12 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 	private Button createButton;
 	private DockPanel inputPanel;
 	private VerticalPanel gridPanel;
+	private Grid currentGrid;
 	private SurveyAssignmentDto[] currentDtoList;
 	private int currentSelection = -1;
+	private SurveyTree surveyTree;
 
 	private HashMap<String, ArrayList<DeviceDto>> devices;
-	private HashMap<SurveyGroupDto, ArrayList<SurveyDto>> surveys;
 	private HashMap<Long, SurveyDto> unreleasedSurveys;
 
 	private Map<Widget, BaseDto> deviceMap;
@@ -123,11 +117,11 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 				selectedDevices, treeHost, deviceMap);
 
 		surveyRoot = new Tree();
-		surveyRoot.addOpenHandler(this);
+
 		selectedSurveys = new ListBox();
 		surveyDragController = installTreeSelector("Surveys", surveyRoot,
 				selectedSurveys, treeHost, surveyMap);
-
+		surveyTree = new SurveyTree(surveyRoot, surveyDragController, false);
 		inputPanel.add(treeHost, DockPanel.CENTER);
 
 		surveyAssignmentService = GWT.create(SurveyAssignmentService.class);
@@ -162,7 +156,6 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 		setContent(contentPanel);
 
 		getDevices();
-		getSurveyGroups();
 		getAssignments(null);
 	}
 
@@ -188,36 +181,31 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 	private void updateDataGrid() {
 		gridPanel.clear();
 		if (currentDtoList != null) {
-			Grid grid = new Grid(currentDtoList.length + 1, 4);
-			grid.addClickHandler(this);
+			currentGrid = new Grid(currentDtoList.length + 1, 4);
+			currentGrid.addClickHandler(this);
 			// build headers
-			grid.setText(0, 0, "Event");
-			grid.setText(0, 1, "Language");
-			grid.setText(0, 2, "Start");
-			grid.setText(0, 3, "End");
-			setGridRowStyle(grid, 0, false);
+			currentGrid.setText(0, 0, "Event");
+			currentGrid.setText(0, 1, "Language");
+			currentGrid.setText(0, 2, "Start");
+			currentGrid.setText(0, 3, "End");
+			setGridRowStyle(currentGrid, 0, false);
 			for (int i = 1; i < currentDtoList.length + 1; i++) {
-				grid
-						.setWidget(i, 0, new Label(currentDtoList[i - 1]
-								.getName()));
+				currentGrid.setWidget(i, 0, new Label(currentDtoList[i - 1]
+						.getName()));
 
-				grid.setWidget(i, 1, new Label(currentDtoList[i - 1]
+				currentGrid.setWidget(i, 1, new Label(currentDtoList[i - 1]
 						.getLanguage()));
-				grid
-						.setWidget(
-								i,
-								2,
-								currentDtoList[i - 1].getStartDate() != null ? new Label(
-										DATE_FMT.format(currentDtoList[i - 1]
-												.getStartDate()))
-										: new Label(""));
-				grid.setWidget(i, 3,
+				currentGrid.setWidget(i, 2, currentDtoList[i - 1]
+						.getStartDate() != null ? new Label(DATE_FMT
+						.format(currentDtoList[i - 1].getStartDate()))
+						: new Label(""));
+				currentGrid.setWidget(i, 3,
 						currentDtoList[i - 1].getEndDate() != null ? new Label(
 								DATE_FMT.format(currentDtoList[i - 1]
 										.getEndDate())) : new Label(""));
-				setGridRowStyle(grid, i, false);
+				setGridRowStyle(currentGrid, i, false);
 			}
-			gridPanel.add(grid);
+			gridPanel.add(currentGrid);
 		} else {
 			gridPanel.add(new Label("No Assignments"));
 		}
@@ -257,39 +245,14 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 		selectedDevices.clear();
 		selectedSurveys.clear();
 		deviceRoot.clear();
-		surveyRoot.clear();
+		surveyTree.reset();
 
 		populateDeviceTree();
-		populateSurveyTree(null);
 
 		language.setSelectedIndex(0);
 		eventName.setText("");
 		effectiveEndDate.setValue(null);
 		effectiveStartDate.setValue(null);
-	}
-
-	private void getSurveyGroups() {
-		surveyService = GWT.create(SurveyService.class);
-		surveyService.listSurveyGroups("all", true, false, false,
-				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						// no-op
-					}
-
-					@Override
-					public void onSuccess(ArrayList<SurveyGroupDto> result) {
-						surveys = new HashMap<SurveyGroupDto, ArrayList<SurveyDto>>();
-						if (result != null) {
-
-							for (SurveyGroupDto group : result) {
-								surveys.put(group, null);
-							}
-							populateSurveyTree(null);
-						}
-					}
-				});
 	}
 
 	private void getDevices() {
@@ -328,63 +291,6 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 				deviceRoot.addItem(group);
 			}
 		}
-	}
-
-	private void populateSurveyTree(TreeItem root) {
-		if (root == null) {
-			for (Entry<SurveyGroupDto, ArrayList<SurveyDto>> groupEntry : surveys
-					.entrySet()) {
-				TreeItem groupItem = new TreeItem(groupEntry.getKey().getCode());
-				groupItem.setUserObject(groupEntry.getKey());
-				if (groupEntry.getValue() == null) {
-					TreeItem dummyItem = new TreeItem(PLEASE_WAIT);
-					dummyItem.setUserObject(DUMMY);
-					groupItem.addItem(dummyItem);
-				} else {
-					for (SurveyDto survey : groupEntry.getValue()) {
-						TreeItem surveyItem = new TreeItem(new Label(
-								getSurveyName(survey)));
-						surveyMap.put(surveyItem.getWidget(), survey);
-						surveyDragController.makeDraggable(surveyItem
-								.getWidget());
-						groupItem.addItem(surveyItem);
-					}
-				}
-				surveyRoot.addItem(groupItem);
-			}
-		} else {
-			// remove the dummy
-			if (root.getChildCount() > 0
-					&& root.getChild(0).getUserObject().equals(DUMMY)) {
-				root.removeItem(root.getChild(0));
-			}
-			ArrayList<SurveyDto> surveyList = surveys.get((SurveyGroupDto) root
-					.getUserObject());
-			if (surveyList != null) {
-				for (int i = 0; i < surveyList.size(); i++) {
-					TreeItem surveyItem = new TreeItem(new Label(
-							getSurveyName(surveyList.get(i))));
-					surveyMap.put(surveyItem.getWidget(), surveyList.get(i));
-					if (surveyList.get(i).getStatus() != null
-							&& IN_PROGRESS_STATUS.equalsIgnoreCase(surveyList
-									.get(i).getStatus())) {
-						unreleasedSurveys.put(surveyList.get(i).getKeyId(),
-								surveyList.get(i));
-					}
-					surveyDragController.makeDraggable(surveyItem.getWidget());
-					root.addItem(surveyItem);
-				}
-			}
-		}
-	}
-
-	private String getSurveyName(SurveyDto survey) {
-		String name = survey.getName();
-		if (name == null || name.trim().length() == 0) {
-			name = survey.getKeyId().toString();
-		}
-		name = name + " - v." + survey.getVersion();
-		return name;
 	}
 
 	/**
@@ -467,8 +373,14 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 						for (Widget selectedItem : event.getContext().selectedWidgets) {
 							if (selectedItem instanceof Label) {
 								Label lbl = (Label) selectedItem;
-								addUniqueItemToList(lbl, dtoMap, sourceTree,
-										targetBox);
+								if (sourceTree == surveyRoot) {
+									addUniqueItemToList(lbl, surveyTree
+											.getItemMap(), sourceTree,
+											targetBox);
+								} else {
+									addUniqueItemToList(lbl, dtoMap,
+											sourceTree, targetBox);
+								}
 							}
 						}
 					}
@@ -654,6 +566,33 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 	}
 
 	/**
+	 * deletes the currently selected assignment
+	 */
+	private void deleteAssignment() {
+		if (currentSelection > 0) {
+			surveyAssignmentService.deleteSurveyAssignment(
+					currentDtoList[currentSelection - 1],
+					new AsyncCallback<Void>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							MessageDialog errDia = new MessageDialog("Error",
+									"Cannot delete assignment");
+							errDia.showRelativeTo(gridPanel);
+						}
+
+						@Override
+						public void onSuccess(Void result) {							
+							reset();
+							if (currentGrid != null) {
+								currentGrid.removeRow(currentSelection);
+							}
+						}
+					});
+		}
+	}
+
+	/**
 	 * removes the item that represents the object with a key == keyId from the
 	 * tree passed in. This will recurse through all levels of the tree until a
 	 * match is found or all nodes have been visited.
@@ -711,7 +650,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == saveButton) {
 			saveAssignment();
 		} else if (event.getSource() == deleteButton) {
-
+			deleteAssignment();
 		} else if (event.getSource() == editButton) {
 			populateInputPanelFromSelection();
 			inputPanel.setVisible(true);
@@ -746,35 +685,5 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 				}
 			}
 		}
-	}
-
-	@Override
-	public void onOpen(OpenEvent<TreeItem> event) {
-		if (event.getTarget() instanceof TreeItem) {
-			final TreeItem item = (TreeItem) event.getTarget();
-			if (item.getUserObject() instanceof SurveyGroupDto) {
-				SurveyGroupDto sg = (SurveyGroupDto) item.getUserObject();
-				// if we haven't yet loaded the surveys, load them
-				if (item.getChildCount() == 1
-						&& item.getChild(0).getUserObject() != null
-						&& item.getChild(0).getUserObject().equals(DUMMY)) {
-					// Set up the callback object.
-					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
-						public void onFailure(Throwable caught) {
-							// no-op
-						}
-
-						public void onSuccess(ArrayList<SurveyDto> result) {
-							surveys.put((SurveyGroupDto) item.getUserObject(),
-									result);
-							populateSurveyTree(item);
-						}
-					};
-					surveyService.listSurveysByGroup(sg.getKeyId().toString(),
-							surveyCallback);
-				}
-			}
-		}
-
 	}
 }

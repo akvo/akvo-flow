@@ -6,6 +6,7 @@ import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.task.domain.Task;
 
 public class DeviceSurveyJobQueueDAO {
 
@@ -33,5 +34,29 @@ public class DeviceSurveyJobQueueDAO {
 		List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query
 				.execute();
 		return results;
+	}
+
+	/**
+	 * delete a job with the phone number and survey id passed in
+	 * 
+	 * @param phoneNumbers
+	 * @param surveyId
+	 */
+	public void deleteJob(String phone, Long surveyId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		if (phone != null && surveyId != null) {
+
+			javax.jdo.Query query = pm.newQuery(Task.class);
+			String filterString = "devicePhoneNumber = devicePhoneParam && surveyId = surveyIdParam";
+			String paramString = "String devicePhoneParam, Long surveyIdParam";
+
+			query.setFilter(filterString);
+			query.declareParameters(paramString);
+			DeviceSurveyJobQueue job = (DeviceSurveyJobQueue) query.execute(
+					phone, surveyId);
+			if (job != null) {
+				pm.deletePersistent(job);
+			}
+		}
 	}
 }

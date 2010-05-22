@@ -3,7 +3,6 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
@@ -37,13 +36,12 @@ public class SummaryPortlet extends Portlet {
 	private static final String GOOGLE_EARTH_IMAGE = "images/google_earth_icon.png";
 	private static final String SURVEY_IMAGE = "images/surveys.png";
 	private static final String DEVICE_IMAGE = "images/device.png";
-	private static final String DUMMY = "DUMMY";
-	private static final String PLEASE_WAIT = "Loading...";
-	private SurveyServiceAsync surveyService;
 	private TreeItem surveyRoot;
+	@SuppressWarnings("unused")
 	private SurveyTree surveyTree;
 	private TreeItem deviceRoot;
 	private TreeItem userRoot;
+	@SuppressWarnings("unused")
 	private TreeItem kmlRoot;
 
 	public SummaryPortlet() {
@@ -89,9 +87,7 @@ public class SummaryPortlet extends Portlet {
 			}
 		};
 		userService.listUser(userCallback);
-
 		setContent(constructTree());
-
 	}
 
 	private Tree constructTree() {
@@ -102,7 +98,7 @@ public class SummaryPortlet extends Portlet {
 		panel.add(new Image(SURVEY_IMAGE));
 		panel.add(new Label("Surveys"));
 		surveyRoot = t.addItem(panel);
-		surveyTree = new SurveyTree(surveyRoot, false);
+		surveyTree = new SurveyTree(surveyRoot, null, false);
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(USER_IMAGE));

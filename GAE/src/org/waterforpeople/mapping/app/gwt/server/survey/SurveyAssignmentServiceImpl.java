@@ -155,4 +155,31 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 		return results;
 	}
 
+	/**
+	 * deletes an assignment from the datastore
+	 */
+	@Override
+	public void deleteSurveyAssignment(SurveyAssignmentDto dto) {
+		if (dto != null) {
+			SurveyAssignment assignment = surveyAssignmentDao.getByKey(dto
+					.getKeyId());
+			if (assignment != null) {
+				if (assignment.getDeviceIds() != null
+						&& dto.getSurveys() != null) {
+					for (Long deviceId : assignment.getDeviceIds()) {
+						Device d = deviceDao.getByKey(deviceId);
+						if (d != null) {
+							for (SurveyDto survey : dto.getSurveys()) {
+								deviceSurveyJobQueueDAO.deleteJob(d
+										.getPhoneNumber(), survey.getKeyId());
+							}
+						}
+					}
+				}
+				surveyAssignmentDao.delete(assignment);
+			}
+		}
+
+	}
+
 }

@@ -9,4 +9,7 @@ public interface SurveyAssignmentServiceAsync {
 
 	void listSurveyAssignments(AsyncCallback<SurveyAssignmentDto[]> callback);
 
+	void deleteSurveyAssignment(SurveyAssignmentDto dto,
+			AsyncCallback<Void> callback);
+
 }

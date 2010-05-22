@@ -1,16 +1,22 @@
 package org.waterforpeople.mapping.app.gwt.client.survey.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -20,19 +26,45 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Christopher Fagiani
  * 
  */
-public class SurveyTree extends Widget implements OpenHandler<TreeItem> {
+public class SurveyTree implements OpenHandler<TreeItem> {
 
 	private static final String DUMMY = "DUMMY";
 	private static final String PLEASE_WAIT = "Loading...";
-	private TreeItem surveyRoot;
+	private TreeItem surveyRootItem;
+	private Tree surveyRootTree;
+	private boolean rootedByItem;
 	private SurveyServiceAsync surveyService;
 	private boolean loadSurveyDetails;
+	private TreeDragController dragController;
+	private HashMap<Widget, BaseDto> surveyMap;
+	private HashMap<SurveyGroupDto, ArrayList<SurveyDto>> surveys;
 
-	public SurveyTree(TreeItem root, boolean loadDetails) {
+	public SurveyTree(Tree root, TreeDragController dragController,
+			boolean loadDetails) {
+		rootedByItem = false;
+		surveyRootTree = root;
+		initialize(dragController, loadDetails);
+	}
+
+	public SurveyTree(TreeItem root, TreeDragController dragController,
+			boolean loadDetails) {
+		rootedByItem = true;
+		surveyRootItem = root;
+		initialize(dragController, loadDetails);
+	}
+
+	private void initialize(TreeDragController dragController,
+			boolean loadDetails) {
 		loadSurveyDetails = loadDetails;
 		surveyService = GWT.create(SurveyService.class);
-		surveyRoot = root;
-		root.getTree().addOpenHandler(this);
+		surveyMap = new HashMap<Widget, BaseDto>();
+		surveys = new HashMap<SurveyGroupDto, ArrayList<SurveyDto>>();
+		this.dragController = dragController;
+		if (rootedByItem) {
+			surveyRootItem.getTree().addOpenHandler(this);
+		} else {
+			surveyRootTree.addOpenHandler(this);
+		}
 		surveyService.listSurveyGroups("all", false, false, false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
@@ -46,6 +78,7 @@ public class SurveyTree extends Widget implements OpenHandler<TreeItem> {
 					public void onSuccess(ArrayList<SurveyGroupDto> result) {
 						if (result != null) {
 							for (int i = 0; i < result.size(); i++) {
+								surveys.put(result.get(i), null);
 								TreeItem tItem = new TreeItem(result.get(i)
 										.getCode());
 								tItem.setUserObject(result.get(i));
@@ -54,13 +87,64 @@ public class SurveyTree extends Widget implements OpenHandler<TreeItem> {
 								TreeItem dummyItem = new TreeItem(PLEASE_WAIT);
 								dummyItem.setUserObject(DUMMY);
 								tItem.addItem(dummyItem);
-								surveyRoot.addItem(tItem);
-
+								if (rootedByItem) {
+									surveyRootItem.addItem(tItem);
+								} else {
+									surveyRootTree.addItem(tItem);
+								}
 							}
 						}
-
 					}
 				});
+	}
+
+	/**
+	 * removes the survey with the key passed in from the tree
+	 * 
+	 * @param surveyKeyId
+	 */
+	public void removeItem(Long surveyKeyId) {
+		if (rootedByItem) {
+			if (surveyKeyId != null && surveyRootItem != null) {
+				for (int i = 0; i < surveyRootItem.getChildCount(); i++) {
+					if (removeItem(surveyKeyId, surveyRootItem.getChild(i))) {
+						break;
+					}
+				}
+			}
+		} else {
+			if (surveyKeyId != null && surveyRootTree != null) {
+				for (int i = 0; i < surveyRootTree.getItemCount(); i++) {
+					if (removeItem(surveyKeyId, surveyRootTree.getItem(i))) {
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * recurses through the tree until the victim item is found or until all
+	 * nodes are searched. If found, the victim is removed from the tree and
+	 * execution terminates.
+	 * 
+	 * @param surveyKeyId
+	 * @param treeItem
+	 * @return
+	 */
+	private boolean removeItem(Long surveyKeyId, TreeItem treeItem) {
+		SurveyDto dto = (SurveyDto) surveyMap.get(treeItem.getWidget());
+		if (dto != null && dto.getKeyId().equals(surveyKeyId)) {
+			treeItem.remove();
+			return true;
+		} else if (treeItem.getChildCount() > 0) {
+			for (int i = 0; i < treeItem.getChildCount(); i++) {
+				if (removeItem(surveyKeyId, treeItem.getChild(i))) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -79,20 +163,15 @@ public class SurveyTree extends Widget implements OpenHandler<TreeItem> {
 						}
 
 						public void onSuccess(ArrayList<SurveyDto> result) {
+							surveys.put((SurveyGroupDto) item.getUserObject(),
+									result);
 							// remove the dummy
 							if (item.getChild(0).getUserObject().equals(DUMMY)) {
 								item.removeItem(item.getChild(0));
 							}
 							if (result != null) {
 								for (int i = 0; i < result.size(); i++) {
-									String name = result.get(i).getName();
-									if (name == null
-											|| name.trim().length() == 0) {
-										name = result.get(i).getKeyId()
-												.toString();
-									}
-									item.addItem(name + " - v."
-											+ result.get(i).getVersion());
+									addSurveyToTree(item, result.get(i));
 								}
 							}
 						}
@@ -107,4 +186,54 @@ public class SurveyTree extends Widget implements OpenHandler<TreeItem> {
 		}
 	}
 
+	public HashMap<Widget, BaseDto> getItemMap() {
+		return surveyMap;
+	}
+
+	public void reset() {
+		if (rootedByItem) {
+			surveyRootItem.removeItems();
+		} else {
+			surveyRootTree.removeItems();
+		}
+		surveyMap.clear();
+		for (Entry<SurveyGroupDto, ArrayList<SurveyDto>> groupEntry : surveys
+				.entrySet()) {
+			TreeItem groupItem = new TreeItem(groupEntry.getKey().getCode());
+			groupItem.setUserObject(groupEntry.getKey());
+			if (groupEntry.getValue() == null) {
+				TreeItem dummyItem = new TreeItem(PLEASE_WAIT);
+				dummyItem.setUserObject(DUMMY);
+				groupItem.addItem(dummyItem);
+			} else {
+				for (SurveyDto survey : groupEntry.getValue()) {
+					addSurveyToTree(groupItem, survey);
+				}
+			}
+			if (rootedByItem) {
+				surveyRootItem.addItem(groupItem);
+			} else {
+				surveyRootTree.addItem(groupItem);
+			}
+		}
+
+	}
+
+	private void addSurveyToTree(TreeItem parent, SurveyDto survey) {
+		TreeItem surveyItem = new TreeItem(new Label(getSurveyName(survey)));
+		surveyMap.put(surveyItem.getWidget(), survey);
+		if (dragController != null) {
+			dragController.makeDraggable(surveyItem.getWidget());
+		}
+		parent.addItem(surveyItem);
+	}
+
+	private String getSurveyName(SurveyDto survey) {
+		String name = survey.getName();
+		if (name == null || name.trim().length() == 0) {
+			name = survey.getKeyId().toString();
+		}
+		name = name + " - v." + survey.getVersion();
+		return name;
+	}
 }
