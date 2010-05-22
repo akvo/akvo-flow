@@ -6,6 +6,7 @@ import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMa
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -66,8 +67,9 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 			svc.processSurveySpreadsheet(selection, new AsyncCallback<Void>() {
 				@Override
 				public void onFailure(Throwable caught) {
-					// TODO Auto-generated method stub
-
+					MessageDialog errDia = new MessageDialog("Error",
+							"Cannot import spreadsheet into survey.");
+					errDia.showRelativeTo(processSpreadsheetButton);
 				}
 
 				@Override
@@ -85,8 +87,9 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 			@Override
 			public void onFailure(Throwable caught) {
 
-				// TODO Auto-generated method stub
-
+				MessageDialog errDia = new MessageDialog("Error",
+						"Cannot list spreadsheets.");
+				errDia.showRelativeTo(processSpreadsheetButton);
 			}
 
 			@Override
