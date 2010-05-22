@@ -16,7 +16,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -79,24 +78,6 @@ public class SurveyManagerPortlet extends Portlet {
 	@Override
 	public String getName() {
 		return NAME;
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private VerticalPanel contentPane = null;

@@ -10,7 +10,6 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerS
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -309,22 +308,6 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 			contentPane.add(lineChart);
 		}
 
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		// no-op. nothing to do before remove
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op. this portlet does not support config
 	}
 
 	public String getName() {

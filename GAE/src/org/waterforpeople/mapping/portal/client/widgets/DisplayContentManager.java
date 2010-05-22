@@ -71,14 +71,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// TODO Auto-generated method stub
-
+		return NAME;
 	}
 
 	private void buildEntryTable() {

@@ -322,24 +322,34 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 
 	/**
 	 * method that is invoked by the portlet container whenever another portlet
-	 * raises an event.
+	 * raises an event. Subclasses should override this method if they want to
+	 * react to portlet events. The default implementation does nothing.
 	 * 
 	 * @param e
 	 */
-	public abstract void handleEvent(PortletEvent e);
+	public void handleEvent(PortletEvent e) {
+		// no-op
+	}
 
 	/**
 	 * called immediately before a portlet is removed from the ui. If you need
 	 * to do any cleanup (persisting of data, for instance) before the portlet
 	 * is closed, do it here. If the method returns false, then the close will
-	 * be aborted.
+	 * be aborted. Subclasses should override this if they want to do anything
+	 * prior to removing the portlet from the UI. The default implementation
+	 * does nothing.
 	 */
-	protected abstract boolean getReadyForRemove();
+	protected boolean getReadyForRemove() {
+		return true;
+	}
 
 	/**
-	 * handles the response to the click of the "configure" button
+	 * handles the response to the click of the "configure" button. Subclasses
+	 * should override this method if they have specific configuration they want
+	 * to allow.The default implementation does nothing.
 	 */
-	protected abstract void handleConfigClick();
+	protected void handleConfigClick() {
+	}
 
 	public abstract String getName();
 

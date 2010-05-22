@@ -16,7 +16,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -133,7 +132,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	}
 
 	private void loadSurveyGroups() {
-		surveyService.listSurveyGroups("all",false,false,false,
+		surveyService.listSurveyGroups("all", false, false, false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override
@@ -458,22 +457,6 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		} else if (event.getSource() == saveButton) {
 			saveMapping();
 		}
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op
-
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
 	}
 
 	@Override

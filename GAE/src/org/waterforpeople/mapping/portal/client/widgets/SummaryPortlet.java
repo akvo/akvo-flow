@@ -14,7 +14,6 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -167,22 +166,6 @@ public class SummaryPortlet extends Portlet implements OpenHandler<TreeItem> {
 		kmlRoot = t.addItem(panel);
 
 		return t;
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		// no-op. nothing to do before remove
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op. this portlet does not support config
 	}
 
 	public String getName() {

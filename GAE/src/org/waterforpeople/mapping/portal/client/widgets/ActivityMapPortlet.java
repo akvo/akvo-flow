@@ -5,7 +5,6 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryS
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -234,11 +233,6 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 		headerPanel.add(regionPanel);
 
 		return headerPanel;
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
 	}
 
 	public String getName() {

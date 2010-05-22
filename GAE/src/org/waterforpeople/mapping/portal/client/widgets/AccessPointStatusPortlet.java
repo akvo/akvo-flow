@@ -5,7 +5,6 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryS
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -246,18 +245,6 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 		apService.listAccessPointStatusSummary(countryCode, communityCode,
 				type, year, null, apCallback);
 	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		// no-op. nothing to do before remove
-		return true;
-	}
-
 
 	public String getName() {
 		return NAME;

@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -83,23 +82,6 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 	}
 
 	@Override
-	protected boolean getReadyForRemove() {
-		return false;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op
-
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
-
-	}
-
-	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == submitBtn) {
 			submitBtn.setVisible(false);
@@ -107,7 +89,6 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 			statusLabel.setVisible(true);
 			form.submit();
 		}
-
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMa
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -17,6 +16,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 
+/**
+ * Portlet that allows import of a google docs spreadsheet into a Survey object.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 
 	public static final String NAME = "Survey Loader";
@@ -25,11 +30,8 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 	private static final int HEIGHT = 300;
 
 	private SpreadsheetMappingAttributeServiceAsync svc;
-
 	private ListBox spreadsheetLB;
-
 	private HorizontalPanel contentPanel;
-
 	private Button processSpreadsheetButton;
 
 	public SurveyLoaderPortlet() {
@@ -54,23 +56,6 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 	@Override
 	public String getName() {
 		return NAME;
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op
-
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
-
 	}
 
 	@Override

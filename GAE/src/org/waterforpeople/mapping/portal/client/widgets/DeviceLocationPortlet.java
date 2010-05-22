@@ -5,7 +5,6 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.maps.client.InfoWindow;
 import com.google.gwt.maps.client.InfoWindowContent;
@@ -58,6 +57,7 @@ public class DeviceLocationPortlet extends Portlet {
 
 	/**
 	 * constructs a marker and it's corresponding infoWindow
+	 * 
 	 * @param point
 	 * @param device
 	 * @return
@@ -83,22 +83,6 @@ public class DeviceLocationPortlet extends Portlet {
 		// add zoom control
 		map.addControl(new LargeMapControl());
 		return map;
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		// no-op. nothing to do before remove
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op. this portlet does not support config
 	}
 
 	public String getName() {

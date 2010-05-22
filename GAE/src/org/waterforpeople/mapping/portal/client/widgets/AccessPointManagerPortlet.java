@@ -14,7 +14,6 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.Un
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -88,23 +87,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	@Override
 	public String getName() {
 		return NAME;
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**

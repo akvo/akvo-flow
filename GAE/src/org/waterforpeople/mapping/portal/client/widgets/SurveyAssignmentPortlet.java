@@ -23,7 +23,6 @@ import com.allen_sauer.gwt.dnd.client.drop.DropController;
 import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
@@ -747,22 +746,6 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler,
 				}
 			}
 		}
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op
-
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
 	}
 
 	@Override

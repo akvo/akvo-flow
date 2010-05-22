@@ -9,7 +9,6 @@ import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMa
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -406,25 +405,7 @@ public class MappingAttributeManager extends Portlet {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return NAME;
 	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

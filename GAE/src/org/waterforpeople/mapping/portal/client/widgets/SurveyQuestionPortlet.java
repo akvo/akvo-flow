@@ -8,7 +8,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -81,8 +80,6 @@ public class SurveyQuestionPortlet extends Portlet {
 		};
 		surveyService.listSurveyQuestionByType("option", surveyCallback);
 
-		
-
 	}
 
 	/**
@@ -93,7 +90,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	private Options createOptions() {
 		Options options = Options.create();
 		// this is needed so we can display html pop-ups over the flash content
-		options.setHeight(HEIGHT-60);
+		options.setHeight(HEIGHT - 60);
 		options.setWidth(WIDTH);
 		return options;
 	}
@@ -110,9 +107,9 @@ public class SurveyQuestionPortlet extends Portlet {
 
 			public void onSuccess(final SurveySummaryDto[] result) {
 
-				if (result != null) {					
+				if (result != null) {
 					Runnable onLoadCallback = new Runnable() {
-						public void run() {							
+						public void run() {
 							if (pieChart != null) {
 								// remove the old chart
 								pieChart.removeFromParent();
@@ -122,7 +119,8 @@ public class SurveyQuestionPortlet extends Portlet {
 							dataTable.addColumn(ColumnType.NUMBER, "Count");
 							for (int i = 0; i < result.length; i++) {
 								dataTable.addRow();
-								dataTable.setValue(i, 0, result[i].getResponseText());
+								dataTable.setValue(i, 0, result[i]
+										.getResponseText());
 								dataTable.setValue(i, 1, result[i].getCount());
 							}
 							pieChart = new PieChart(dataTable, createOptions());
@@ -136,22 +134,6 @@ public class SurveyQuestionPortlet extends Portlet {
 			}
 		};
 		surveyService.listResponses(question, surveyCallback);
-	}
-
-	@Override
-	public void handleEvent(PortletEvent e) {
-		// no-op
-	}
-
-	@Override
-	protected boolean getReadyForRemove() {
-		// no-op. nothing to do before remove
-		return true;
-	}
-
-	@Override
-	protected void handleConfigClick() {
-		// no-op. this portlet does not support config
 	}
 
 	public String getName() {
