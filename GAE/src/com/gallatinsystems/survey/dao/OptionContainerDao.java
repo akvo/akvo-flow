@@ -57,7 +57,7 @@ public class OptionContainerDao extends BaseDAO<OptionContainer> {
 		OptionContainerQuestionOptionAssocDao qcqoDao = new OptionContainerQuestionOptionAssocDao();
 		List<OptionContainerQuestionOptionAssoc> ocqoaList = qcqoDao
 				.listByOptionContainerId(oc.getKey().getId());
-		log.info("size"+ocqoaList.size());
+		//log.info("size"+ocqoaList.size());
 		for (OptionContainerQuestionOptionAssoc ocqoa : ocqoaList) {
 			QuestionOption qo = optDao.getByKey(ocqoa.getQuestionOptionId());
 			oc.addQuestionOption(qo);
