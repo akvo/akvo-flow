@@ -722,6 +722,8 @@ public class SurveyManagerPortlet extends Portlet {
 									.getType().equals(QuestionType.OPTION)) {
 						String question = ((QuestionDto) questionItem
 								.getUserObject()).getText();
+						if(question.length()>50)
+							question = question.substring(0,50);
 						String id = ((QuestionDto) questionItem.getUserObject())
 								.getKeyId().toString();
 						questionLB.addItem(question, id);
