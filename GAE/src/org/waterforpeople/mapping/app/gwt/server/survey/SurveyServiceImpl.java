@@ -556,8 +556,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							qXML.setType(FREE_QUESTION_TYPE);
 						else if (q.getType().equals(QuestionType.GEO))
 							qXML.setType(GEO_QUESTION_TYPE);
-						// else if(q.getType().equals(QuestionType.NUMBER)
-						// qXML.setType()
+						else if(q.getType().equals(QuestionType.NUMBER)){
+							qXML.setType(FREE_QUESTION_TYPE);
+							ValidationRule vrule = new ValidationRule();
+							vrule.setValidationType("numeric");							
+							vrule.setSigned("false");
+							qXML.setValidationRule(vrule);
+						 }						
 						else if (q.getType().equals(QuestionType.OPTION))
 							qXML.setType(OPTION_QUESTION_TYPE);
 						else if (q.getType().equals(QuestionType.PHOTO))
