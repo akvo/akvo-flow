@@ -235,10 +235,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			QuestionGroup qgWater = new QuestionGroup();
 			qgWater.setCode("Water");
 			QuestionGroup qgSanitation = new QuestionGroup();
-			qgSanitation.setCode("Sanitation");
-			ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
+			qgSanitation.setCode("Sanitation");			
 			int i = 0;
 			for (RowContainer row : sc.getRowContainerList()) {
+				ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
 				Survey targetSurvey = null;
 				QuestionGroup targetQG = null;
 				ArrayList<ColumnContainer> ccl = row.getColumnContainersList();
