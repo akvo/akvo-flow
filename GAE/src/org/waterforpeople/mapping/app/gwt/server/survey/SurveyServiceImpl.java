@@ -524,11 +524,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				if (qg.getQuestionMap() != null) {
 					for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
 							.entrySet()) {
-						Question q = qEntry.getValue();
-						// System.out.println("		Question: " +
-						// q.getKey().getId() +
-						// ":"
-						// + q.getText() + ":" + q.getType().toString());
+						Question q = qEntry.getValue();						
 						com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
 								.createQuestion();
 						qXML.setId(new String("" + q.getKey().getId() + ""));
