@@ -17,6 +17,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
@@ -50,8 +51,11 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.poweroptdesc)));
 		list.add(createMap(resources.getString(R.string.gpsstatuslabel),
 				resources.getString(R.string.gpsstatusdesc)));
+		list.add(createMap(resources.getString(R.string.reloadsurveyslabel), resources
+				.getString(R.string.reloadsurveysdesc)));
 		list.add(createMap(resources.getString(R.string.aboutlabel), resources
 				.getString(R.string.aboutdesc)));
+		
 		String[] fromKeys = { LABEL, DESC };
 		int[] toIds = { R.id.optionLabel, R.id.optionDesc };
 
@@ -126,7 +130,29 @@ public class SettingsActivity extends ListActivity {
 							}
 						});
 				builder.show();
-			} else {
+			} else if (resources.getString(R.string.reloadsurveyslabel).equals(val)) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				TextView tipText = new TextView(this);
+				tipText.setText(R.string.reloadconftext);
+				builder.setTitle(R.string.conftitle);
+				builder.setView(tipText);
+				builder.setPositiveButton(R.string.okbutton,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								SurveyDbAdapter database = new SurveyDbAdapter(SettingsActivity.this);
+								database.open();
+								database.deleteAllSurveys();
+								database.close();								
+							}
+						});
+				builder.setNegativeButton(R.string.cancelbutton,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+				builder.show();
+			}else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
 					i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.SEND);

@@ -109,11 +109,15 @@ public class SurveyViewActivity extends TabActivity implements
 			// question group
 			TabHost tabHost = getTabHost();
 			for (QuestionGroup group : survey.getQuestionGroups()) {
-				SurveyTabContentFactory factory = new SurveyTabContentFactory(
-						this, group, databaseAdapter);
-				tabHost.addTab(tabHost.newTabSpec(group.getHeading())
-						.setIndicator(group.getHeading()).setContent(factory));
-				tabContentFactories.add(factory);
+				if (group.getQuestions() != null
+						&& group.getQuestions().size() > 0) {
+					SurveyTabContentFactory factory = new SurveyTabContentFactory(
+							this, group, databaseAdapter);
+					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
+							.setIndicator(group.getHeading()).setContent(
+									factory));
+					tabContentFactories.add(factory);
+				}
 			}
 		}
 	}
@@ -226,7 +230,7 @@ public class SurveyViewActivity extends TabActivity implements
 		} else if (QuestionInteractionEvent.PHOTO_TIP_VIEW.equals(event
 				.getEventType())) {
 			Intent intent = new Intent(this, ImageBrowserActivity.class);
-			
+
 			intent.putExtra(ConstantUtil.SURVEY_ID_KEY, surveyId);
 			intent.putExtra(ConstantUtil.IMAGE_URL_LIST_KEY, event.getSource()
 					.getQuestion().getImages());

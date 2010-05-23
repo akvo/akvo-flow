@@ -56,7 +56,7 @@ public class SurveyDbAdapter {
 	public static final String DELETED_COL = "deleted_flag";
 	public static final String MEDIA_SENT_COL = "media_sent_flag";
 	public static final String HELP_DOWNLOADED_COL = "help_downloaded_flag";
-	public static final String LANGUAGE_COL = "language";	
+	public static final String LANGUAGE_COL = "language";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -94,7 +94,7 @@ public class SurveyDbAdapter {
 			"insert into preferences values('plot.interval','60000')",
 			"insert into preferences values('user.lastuser.id','')",
 			"insert into preferences values('location.sendbeacon','true')",
-			"insert into preferences values('survey.precachehelp','0')" ,
+			"insert into preferences values('survey.precachehelp','0')",
 			"insert into preferences values('upload.server','0')" };
 
 	private static final String DATABASE_NAME = "surveydata";
@@ -781,5 +781,14 @@ public class SurveyDbAdapter {
 		updatedValues.put(VALUE_COL, value);
 		database.update(PREFERENCES_TABLE, updatedValues, KEY_COL + " = ?",
 				new String[] { key });
+	}
+
+	/**
+	 * deletes all the surveys from the database 
+	 * surveys;
+	 */
+	public void deleteAllSurveys() {
+		database.delete(SURVEY_TABLE, null,
+				null);
 	}
 }

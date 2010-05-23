@@ -94,4 +94,8 @@
 	<string name="techtype">Technology Type: </string>
 	<string name="navigate">View on Map</string>
 	<string name="serverlabel">Data Server (only change if instructed)</string>
+	<string name="reloadsurveyslabel">Reload all surveys</string>
+	<string name="reloadsurveysdesc">Deletes and re-downloads assigned surveys (only run if instructed)</string>
+	<string name="conftitle">Please Confirm</string>
+	<string name="reloadconftext">Are you sure you want to purge and re-download surveys?</string>
 </resources>
