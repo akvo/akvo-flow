@@ -1,7 +1,13 @@
 package com.gallatinsystems.common.data.spreadsheet.domain;
 
-public class ColumnContainer {
+import javax.jdo.annotations.PersistenceCapable;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
+
+@PersistenceCapable
+public class ColumnContainer extends BaseDomain {
+
+	private static final long serialVersionUID = -2474877330894380548L;
 	private String colName;
 	private String colContents;
 

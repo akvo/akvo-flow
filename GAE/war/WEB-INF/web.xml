@@ -37,6 +37,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/app_worker/task</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>SpreadsheetImport</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.SpreadsheetImportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpreadsheetImport</servlet-name>
+		<url-pattern>/app_worker/sheetimport</url-pattern>
+	</servlet-mapping>	
+	<servlet>
 		<servlet-name>SurveyManager</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SurveyManagerServlet</servlet-class>
 	</servlet>

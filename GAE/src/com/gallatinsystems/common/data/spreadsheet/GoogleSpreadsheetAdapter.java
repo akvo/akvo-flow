@@ -168,7 +168,11 @@ public class GoogleSpreadsheetAdapter {
 				ColumnContainer col = new ColumnContainer();
 
 				col.setColName(tag);
-				col.setColContents(entry.getCustomElements().getValue(tag));
+				String val = entry.getCustomElements().getValue(tag);
+				if(val != null && val.length()>500){
+					val = val.substring(0, 500);
+				}
+				col.setColContents(val);
 				colList.add(col);
 			}
 			row.setColumnContainersList(colList);
