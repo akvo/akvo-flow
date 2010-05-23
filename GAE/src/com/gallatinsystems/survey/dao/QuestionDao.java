@@ -21,6 +21,8 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	public QuestionDao() {
 		super(Question.class);
+		qqgaDao = new QuestionQuestionGroupAssocDao();
+		ocDao = new OptionContainerDao();
 	}
 
 	public List<Question> listQuestionsByQuestionGroup(String questionGroupCode) {
