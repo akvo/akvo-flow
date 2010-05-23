@@ -50,11 +50,8 @@ public class DataSyncService extends Service {
 
 	private static final int COMPLETE_ID = 1;
 
-	// private static final String NOTIFICATION_URL =
-	// "http://watermappingmonitoring.appspot.com/processor?action=submit&fileName=";
-	// private static final String NOTIFICATION_URL =
-	// "http://192.168.0.100:8888/processor?action=submit&fileName=";
-	private static final String NOTIFICATION_URL = "http://watermapmonitordev.appspot.com/processor?action=submit&fileName=";
+	private static final String NOTIFICATION_BASE = "http://watermapmonitordev.appspot.com";
+	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
 	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 	private static final String S3_KEY = "1JZZVDSNFFQYF23ZYJ02";
 	private static final String S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
@@ -113,6 +110,14 @@ public class DataSyncService extends Service {
 		databaseAdaptor.open();
 		String uploadOption = databaseAdaptor
 				.findPreference(ConstantUtil.CELL_UPLOAD_SETTING_KEY);
+		String serverBase = databaseAdaptor
+				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+		if (serverBase == null || serverBase.trim().length() > 0) {
+			serverBase = getResources().getStringArray(R.array.servers)[Integer
+					.parseInt(serverBase)];
+		} else {
+			serverBase = NOTIFICATION_BASE;
+		}
 		int uploadIndex = -1;
 		if (uploadOption != null && uploadOption.trim().length() > 0) {
 			uploadIndex = Integer.parseInt(uploadOption);
@@ -136,7 +141,7 @@ public class DataSyncService extends Service {
 						&& (idList[0].size() > 0 || idList[1].size() > 0)) {
 					if (ConstantUtil.SEND.equals(type)) {
 						sendFile(fileName);
-						if (sendProcessingNotification(destName)) {
+						if (sendProcessingNotification(serverBase, destName)) {
 							if (idList[0].size() > 0) {
 								databaseAdaptor
 										.markDataAsSent(
@@ -184,10 +189,11 @@ public class DataSyncService extends Service {
 	 * @param fileName
 	 * @return
 	 */
-	private boolean sendProcessingNotification(String fileName) {
+	private boolean sendProcessingNotification(String serverBase,
+			String fileName) {
 		boolean success = false;
 		try {
-			HttpUtil.httpGet(NOTIFICATION_URL + fileName);
+			HttpUtil.httpGet(serverBase + NOTIFICATION_PATH + fileName);
 			success = true;
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send processing call", e);
@@ -405,9 +411,11 @@ public class DataSyncService extends Service {
 			if (data != null && data.isFirst()) {
 				do {
 					buf
-							.append(data
-									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL))).append(",");
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
+							.append(",");
 					String value = data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_COL));
 					String type = data

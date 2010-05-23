@@ -121,6 +121,7 @@ public class ConstantUtil {
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
 	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
 	public static final String PRECACHE_HELP_SETTING_KEY = "survey.precachehelp";
+	public static final String SERVER_SETTING_KEY ="upload.server";
 
 	/**
 	 * index values into string arrays

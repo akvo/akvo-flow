@@ -37,10 +37,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private TextView uploadOptionTextView;
 	private TextView languageTextView;
 	private TextView precacheHelpTextView;
+	private TextView serverTextView;
 	private SurveyDbAdapter database;
 	private String[] languageArray;
 	private String[] uploadArray;
 	private String[] precacheHelpArray;
+	private String[] serverArray;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,11 +55,13 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		uploadOptionTextView = (TextView) findViewById(R.id.uploadoptionvalue);
 		languageTextView = (TextView) findViewById(R.id.surveylangvalue);
 		precacheHelpTextView = (TextView) findViewById(R.id.precachehelpvalue);
+		serverTextView = (TextView) findViewById(R.id.servervalue);
 
 		Resources res = getResources();
 		languageArray = res.getStringArray(R.array.languages);
 		uploadArray = res.getStringArray(R.array.celluploadoptions);
 		precacheHelpArray = res.getStringArray(R.array.precachehelpoptions);
+		serverArray = res.getStringArray(R.array.servers);
 	}
 
 	/**
@@ -93,6 +97,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					.parseInt(val)]);
 		}
 
+		val = settings.get(ConstantUtil.SERVER_SETTING_KEY);
+		if (val != null) {
+			serverTextView.setText(serverArray[Integer.parseInt(val)]);
+		}
 	}
 
 	/**
@@ -111,6 +119,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		((ImageButton) findViewById(R.id.suveylangbutton))
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.precachehelpbutton))
+				.setOnClickListener(this);
+		((ImageButton) findViewById(R.id.serverbutton))
 				.setOnClickListener(this);
 	}
 
@@ -143,6 +153,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					precacheHelpTextView,
 					precacheHelpArray[ConstantUtil.PRECACHE_HELP_ALLWAYS_IDX],
 					ConstantUtil.PRECACHE_INTENT);
+		} else if (R.id.serverbutton == v.getId()) {
+			showPreferenceDialog(R.string.serverlabel, R.array.servers,
+					ConstantUtil.SERVER_SETTING_KEY, serverArray,
+					serverTextView, null, null);
 		}
 	}
 
@@ -178,7 +192,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 						database.savePreference(settingKey, which + "");
 						currentValView.setText(valueArray[which]);
 						if (actionValue != null && actionIntent != null) {
-							if (valueArray[which].equals(actionValue)) {								
+							if (valueArray[which].equals(actionValue)) {
 								sendBroadcast(new Intent(actionIntent));
 							}
 						}

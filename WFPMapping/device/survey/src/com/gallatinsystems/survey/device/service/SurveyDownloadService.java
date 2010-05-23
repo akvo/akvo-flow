@@ -44,20 +44,13 @@ public class SurveyDownloadService extends Service {
 	private static final String SURVEY_FILE_SUFFIX = ".xml";
 	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
-	
+
 	private static final String NO_SURVEY = "No Survey Found";
 
-	// private static final String SURVEY_LIST_SERVICE_URL =
-	// "http://watermappingmonitoring.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
-	// private static final String SURVEY_SERVICE_URL =
-	// "http://watermappingmonitoring.appspot.com/surveymanager?surveyId=";
+	private static final String SERVER_BASE = "http://watermapmonitordev.appspot.com";
+	private static final String SURVEY_LIST_SERVICE_PATH = "/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
+	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
 
-	private static final String SURVEY_LIST_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
-	private static final String SURVEY_SERVICE_URL = "http://watermapmonitordev.appspot.com/surveymanager?surveyId=";
-
-	//private static final String SURVEY_LIST_SERVICE_URL = "http://192.168.0.100:8888/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
-	//private static final String SURVEY_SERVICE_URL = "http://192.168.0.100:8888/surveymanager?surveyId=";
-	
 	private SurveyDbAdapter databaseAdaptor;
 
 	private static final String SD_LOC = "sdcard";
@@ -102,13 +95,20 @@ public class SurveyDownloadService extends Service {
 		if (isAbleToRun()) {
 			try {
 				lock.acquire();
-				ArrayList<Survey> surveys = checkForSurveys();
 				databaseAdaptor = new SurveyDbAdapter(this);
 				databaseAdaptor.open();
 				int precacheOption = Integer
 						.parseInt(databaseAdaptor
 								.findPreference(ConstantUtil.PRECACHE_HELP_SETTING_KEY));
-
+				String serverBase = databaseAdaptor
+						.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+				if (serverBase == null || serverBase.trim().length() > 0) {
+					serverBase = getResources().getStringArray(R.array.servers)[Integer
+							.parseInt(serverBase)];
+				} else {
+					serverBase = SERVER_BASE;
+				}
+				ArrayList<Survey> surveys = checkForSurveys(serverBase);
 				if (surveys != null && surveys.size() > 0) {
 					// create directory if not there
 					FileUtil.findOrCreateDir(ConstantUtil.DATA_DIR);
@@ -120,7 +120,7 @@ public class SurveyDownloadService extends Service {
 						for (int i = 0; i < surveys.size(); i++) {
 							Survey survey = surveys.get(i);
 							try {
-								if (downloadSurvey(survey)) {
+								if (downloadSurvey(serverBase, survey)) {
 									databaseAdaptor.saveSurvey(survey);
 									downloadHelp(survey, precacheOption);
 									updateCount++;
@@ -173,11 +173,11 @@ public class SurveyDownloadService extends Service {
 	 * Downloads the survey based on the ID and then updates the survey object
 	 * with the filename and location
 	 */
-	private boolean downloadSurvey(Survey survey) {
+	private boolean downloadSurvey(String serverBase, Survey survey) {
 		boolean success = false;
 		try {
-			String response = HttpUtil.httpGet(SURVEY_SERVICE_URL
-					+ survey.getId());
+			String response = HttpUtil.httpGet(serverBase
+					+ SURVEY_SERVICE_SERVICE_PATH + survey.getId());
 			if (response != null
 					&& !response.trim().equalsIgnoreCase(NO_SURVEY)) {
 				survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
@@ -280,12 +280,12 @@ public class SurveyDownloadService extends Service {
 	 * @return - an arrayList of Survey objects with the id and version
 	 *         populated
 	 */
-	private ArrayList<Survey> checkForSurveys() {
+	private ArrayList<Survey> checkForSurveys(String serverBase) {
 		String response = null;
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
-			response = HttpUtil.httpGet(SURVEY_LIST_SERVICE_URL
-					+StatusUtil.getPhoneNumber(this));
+			response = HttpUtil.httpGet(serverBase + SURVEY_LIST_SERVICE_PATH
+					+ StatusUtil.getPhoneNumber(this));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {

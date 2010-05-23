@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
@@ -29,7 +30,8 @@ public class LocationService extends Service {
 	private static final long INITIAL_DELAY = 60000;
 	private static final long INTERVAL = 300000;
 	private static boolean sendBeacon = true;
-	private static final String BEACON_SERVICE_URL = "http://watermapmonitordev.appspot.com/locationBeacon?action=beacon&phoneNumber=";
+	private static final String BEACON_SERVICE_PATH = "/locationBeacon?action=beacon&phoneNumber=";
+	private static final String BEACON_SERVICE_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String LAT = "&lat=";
 	private static final String LON = "&lon=";
 	private static final String ACC = "&acc=";
@@ -55,6 +57,16 @@ public class LocationService extends Service {
 		if (val != null) {
 			sendBeacon = Boolean.parseBoolean(val);
 		}
+		String serverBase = database
+				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+		if (serverBase == null || serverBase.trim().length() > 0) {
+			serverBase = getResources().getStringArray(R.array.servers)[Integer
+					.parseInt(serverBase)];
+		} else {
+			serverBase = BEACON_SERVICE_BASE;
+		}
+		final String server = serverBase;
+
 		database.close();
 		if (timer == null && sendBeacon) {
 			timer = new Timer(true);
@@ -66,7 +78,8 @@ public class LocationService extends Service {
 						String provider = locMgr.getBestProvider(
 								locationCriteria, true);
 						if (provider != null) {
-							sendLocation(locMgr.getLastKnownLocation(provider));
+							sendLocation(server, locMgr
+									.getLastKnownLocation(provider));
 						}
 					}
 				}
@@ -87,10 +100,10 @@ public class LocationService extends Service {
 	 * 
 	 * @param loc
 	 */
-	private void sendLocation(Location loc) {
+	private void sendLocation(String serverBase, Location loc) {
 		if (loc != null) {
 			try {
-				HttpUtil.httpGet(BEACON_SERVICE_URL
+				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
 						+ StatusUtil.getPhoneNumber(this) + LAT
 						+ loc.getLatitude() + LON + loc.getLongitude() + ACC
 						+ loc.getAccuracy());
