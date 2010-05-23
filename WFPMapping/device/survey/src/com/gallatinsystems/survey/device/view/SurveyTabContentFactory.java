@@ -76,7 +76,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		scrollView.addView(table);
 		questionMap = new HashMap<String, QuestionView>();
 
-		ArrayList<Question> questions = questionGroup.getQuestions();
+		ArrayList<Question> questions = questionGroup.getQuestions();		
 		for (int i = 0; i < questions.size(); i++) {
 			QuestionView questionView = null;
 			Question q = questions.get(i);
