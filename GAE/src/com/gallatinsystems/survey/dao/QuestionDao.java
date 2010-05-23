@@ -10,9 +10,13 @@ import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 
 public class QuestionDao extends BaseDAO<Question> {
 
+	private QuestionQuestionGroupAssocDao qqgaDao;
+	private OptionContainerDao ocDao;
+	
 	public QuestionDao(Class<Question> e) {
 		super(e);
-		// TODO Auto-generated constructor stub
+		qqgaDao = new QuestionQuestionGroupAssocDao();
+		 ocDao = new OptionContainerDao();
 	}
 
 	public QuestionDao() {
@@ -50,12 +54,11 @@ public class QuestionDao extends BaseDAO<Question> {
 		question = super.save(question);
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
 		qqga.setQuestionGroupId(questionGroupId);
-		qqga.setQuestionId(question.getKey().getId());
-		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
+		qqga.setQuestionId(question.getKey().getId());		
 		qqgaDao.save(qqga);
 
 		if (question.getOptionContainer() != null) {
-			OptionContainerDao ocDao = new OptionContainerDao();
+			
 			question.getOptionContainer().setQuestionId(
 					question.getKey().getId());
 			OptionContainer oc = ocDao.save(question.getOptionContainer());
@@ -67,7 +70,6 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	public Question save(Question question) {
 		question = super.save(question);
-
 		if (question.getOptionContainer() != null) {
 			OptionContainerDao ocDao = new OptionContainerDao();
 			question.getOptionContainer().setQuestionId(
@@ -75,7 +77,6 @@ public class QuestionDao extends BaseDAO<Question> {
 			OptionContainer oc = ocDao.save(question.getOptionContainer());
 			question.setOptionContainer(oc);
 		}
-
 		return question;
 	}
 
