@@ -142,17 +142,11 @@ public class GoogleSpreadsheetAdapter {
 
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 		for (int i = 0; i < spreadsheets.size(); i++) {
-			SpreadsheetEntry entry = spreadsheets.get(i);
-			log.info(entry.getTitle().getPlainText());
+			SpreadsheetEntry entry = spreadsheets.get(i);			
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
-				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				log.info("worksheetsize: " + worksheets.size());
+				List<WorksheetEntry> worksheets = entry.getWorksheets();				
 				for (int j = 0; j < worksheets.size(); j++) {
-					WorksheetEntry worksheet = worksheets.get(j);
-					String title = worksheet.getTitle().getPlainText();
-					int rowCount = worksheet.getRowCount();
-					int colCount = worksheet.getColCount();
-
+					WorksheetEntry worksheet = worksheets.get(j);					
 					return getListFeed(worksheet);
 				}
 			}
@@ -166,8 +160,7 @@ public class GoogleSpreadsheetAdapter {
 		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
 		SpreadsheetContainer sbc = new SpreadsheetContainer();
 		for (ListEntry entry : feed.getEntries()) {
-			// row
-			StringBuilder sb = new StringBuilder();
+			// row			
 			RowContainer row = new RowContainer();
 			ArrayList<ColumnContainer> colList = new ArrayList<ColumnContainer>();
 			for (String tag : entry.getCustomElements().getTags()) {

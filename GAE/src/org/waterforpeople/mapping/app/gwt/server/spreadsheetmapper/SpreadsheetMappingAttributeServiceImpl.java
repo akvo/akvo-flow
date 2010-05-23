@@ -331,12 +331,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 														"Can't set dependency. The question number in the dependency column isn't an integer");
 									}
 								}
-
 							}
 						}
-
 					}
-
 				}
 				if (q.getType().equals(QuestionType.OPTION)) {
 					oc.setOptionsList(qoList);
