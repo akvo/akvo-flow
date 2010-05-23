@@ -248,8 +248,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				for (ColumnContainer cc : ccl) {
 					String colName = cc.getColName();
 					String colContents = cc.getColContents();
-					log.info("colName: " + colName + " colContents: "
-							+ colContents);
 					if (colContents != null) {
 						if (colName.toLowerCase().equals("survey")) {
 
@@ -298,8 +296,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								if (optionParts.length == 2) {
 									String optionVal = optionParts[0];
 									String text = optionParts[1];
-									log.info("Val:" + optionVal + " Text:"
-											+ text);
 									QuestionOption qo = new QuestionOption();
 									qo.setCode(optionVal);
 									qo.setText(text);
@@ -347,7 +343,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					q.setOptionContainer(oc);
 				}
 				targetQG.addQuestion(q, i++);
-				log.info("added: " + q.toString() + " :" + targetQG.getCode());
 			}
 			surveyCommunityWater.addQuestionGroup(qgWater);
 			surveyCommunityWater.addQuestionGroup(qgBase);
