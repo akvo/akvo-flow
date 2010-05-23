@@ -3,9 +3,9 @@
 	<questionGroup order="1">
 		<heading>Water Point Questions</heading>
 		<question id="q1" order="1" mandatory="true" type="option">
-			<text>Location?</text>
+			<text>Location? This is a really long question to see how it looks in the UI if we have english and spanish.</text>
 			<options allowOther="true" renderType="spinner">
-				<option value="r">Rural</option>
+				<option value="r">Rural blah blha blhal how does the spinner handle wrapping</option>
 				<option value="pu">Peri-Urban</option>
 				<option value="st">Small Town</option>
 				<option value="u">Urban</option>
@@ -35,7 +35,7 @@
 		<question id="q6" order="6" mandatory="false" type="option">
 			<text>Source?</text>
 			<options allowOther="true" allowMultiple="true">
-				<option value="s">Spring</option>
+				<option value="s">Spring jdljlkdjlkj lkjlajd ioj dal does this wrap to the next line if this is of epic proportions</option>
 				<option value="b">Borehole</option>
 				<option value="lhd">Lined hand-dug well</option>
 				<option value="uhd">Unlined hand-dug well</option>

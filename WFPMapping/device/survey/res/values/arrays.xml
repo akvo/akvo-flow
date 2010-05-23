@@ -14,4 +14,8 @@
 		<item>WiFi Only</item>
 		<item>Never</item>
 	</string-array>
+	<string-array name="servers">
+		<item>http://watermapmonitordev.appspot.com</item>
+		<item>http://watermappingmonitoring.appspot.com</item>
+	</string-array>
 </resources>
