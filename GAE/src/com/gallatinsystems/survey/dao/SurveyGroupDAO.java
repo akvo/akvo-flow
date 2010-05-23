@@ -101,7 +101,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 						.listBySurveyId(item.getSurveyId());
 				Survey survey = surveyDao.getById(item.getSurveyId());
 				for (SurveyQuestionGroupAssoc itemSQGA : surveyGroupQuestionAssocList) {
-					QuestionGroup qg = qgDao.getById(itemSQGA
+					QuestionGroup qg = qgDao.getByKey(itemSQGA
 							.getQuestionGroupId());
 					List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao
 							.listByQuestionGroupId(qg.getKey().getId());
@@ -135,7 +135,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 						if (surveyGroupQuestionAssocList.size() > 0
 								&& loadQuestionGroupFlag) {
 							for (SurveyQuestionGroupAssoc itemSQGA : surveyGroupQuestionAssocList) {
-								QuestionGroup qg = qgDao.getById(itemSQGA
+								QuestionGroup qg = qgDao.getByKey(itemSQGA
 										.getQuestionGroupId());
 								List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao
 										.listByQuestionGroupId(qg.getKey()

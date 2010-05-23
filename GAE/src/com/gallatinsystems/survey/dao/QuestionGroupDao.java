@@ -8,18 +8,9 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 
 public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
-
-	public QuestionGroupDao(Class e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-
+	
 	public QuestionGroupDao() {
 		super(QuestionGroup.class);
-	}
-
-	public QuestionGroup save(QuestionGroup item) {
-		return super.save(item);
 	}
 	
 	public QuestionGroup save(QuestionGroup item, Long surveyId){
@@ -39,15 +30,11 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		sgqa.setSurveyId(surveyId);
 		sgqa.setQuestionGroupId(item.getKey().getId());
 		sqgaDao.delete(sgqa);
-		super.delete(item);
-	}
-
-	public QuestionGroup getById(Long id) {
-		return super.getByKey(id);
+		delete(item);
 	}
 
 	public QuestionGroup getId(String questionGroupCode) {
-		return super.findByProperty("code", questionGroupCode, "String");
+		return findByProperty("code", questionGroupCode, "String");
 	}
 
 	public List<QuestionGroup> listQuestionGroupsBySurvey(Long surveyId) {

@@ -70,7 +70,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			// for each question group id, load the full question group and then
 			// populate its questions
 			for (SurveyQuestionGroupAssoc itemSQGA : surveyGroupQuestionAssocList) {
-				QuestionGroup qg = qGroupDao.getById(itemSQGA
+				QuestionGroup qg = qGroupDao.getByKey(itemSQGA
 						.getQuestionGroupId());
 				List<QuestionQuestionGroupAssoc> qqgaList = qqGroupAssocDao
 						.listByQuestionGroupId(qg.getKey().getId());

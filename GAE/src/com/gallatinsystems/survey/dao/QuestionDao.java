@@ -12,11 +12,11 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	private QuestionQuestionGroupAssocDao qqgaDao;
 	private OptionContainerDao ocDao;
-	
+
 	public QuestionDao(Class<Question> e) {
 		super(e);
 		qqgaDao = new QuestionQuestionGroupAssocDao();
-		 ocDao = new OptionContainerDao();
+		ocDao = new OptionContainerDao();
 	}
 
 	public QuestionDao() {
@@ -54,11 +54,11 @@ public class QuestionDao extends BaseDAO<Question> {
 		question = super.save(question);
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
 		qqga.setQuestionGroupId(questionGroupId);
-		qqga.setQuestionId(question.getKey().getId());		
+		qqga.setQuestionId(question.getKey().getId());
 		qqgaDao.save(qqga);
 
 		if (question.getOptionContainer() != null) {
-			
+
 			question.getOptionContainer().setQuestionId(
 					question.getKey().getId());
 			OptionContainer oc = ocDao.save(question.getOptionContainer());
