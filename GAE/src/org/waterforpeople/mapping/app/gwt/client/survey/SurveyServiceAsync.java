@@ -45,7 +45,7 @@ public interface SurveyServiceAsync {
 			AsyncCallback<ArrayList<QuestionGroupDto>> callback);
 
 
-	void listQuestionsByQuestionGroup(String questionGroupId,
+	void listQuestionsByQuestionGroup(String questionGroupId,boolean needDetails,
 			AsyncCallback<ArrayList<QuestionDto>> callback);
 
 	void deleteQuestion(QuestionDto value, Long questionGroupId, AsyncCallback<Void> callback);
@@ -68,4 +68,8 @@ public interface SurveyServiceAsync {
 
 
 	void publishSurvey(Long surveyId, AsyncCallback<String> callback);
+
+
+	void loadQuestionDetails(Long questionId,
+			AsyncCallback<QuestionDto> callback);
 }

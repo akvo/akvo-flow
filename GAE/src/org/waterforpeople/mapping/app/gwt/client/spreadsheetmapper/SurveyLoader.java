@@ -37,7 +37,7 @@ public class SurveyLoader implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				svc.processSurveySpreadsheet(spreadsheetLB.getItemText(spreadsheetLB.getSelectedIndex()), new AsyncCallback(){
+				svc.processSurveySpreadsheet(spreadsheetLB.getItemText(spreadsheetLB.getSelectedIndex()), 0,null,new AsyncCallback(){
 
 					@Override
 					public void onFailure(Throwable caught) {

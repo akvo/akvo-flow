@@ -26,6 +26,7 @@ import com.gallatinsystems.common.data.spreadsheet.dao.SpreadsheetDao;
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
+import com.gallatinsystems.security.authorization.utility.TokenUtility;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.OptionContainer;
@@ -50,10 +51,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	private static final long serialVersionUID = 7708378583408245812L;
 	private String sessionToken = null;
 	private PrivateKey privateKey = null;
-	private SpreadsheetDao spreadsheetDao;
+	
 
 	public SpreadsheetMappingAttributeServiceImpl() {
-		spreadsheetDao = new SpreadsheetDao();
+	
 	}
 
 	public void setCreds() {
@@ -61,6 +62,21 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			sessionToken = getSessionTokenFromSession();
 			privateKey = getPrivateKeyFromSession();
 		}
+	}
+	
+	public void setCreds(String token){
+		sessionToken = token;
+		TokenUtility util = new TokenUtility();
+		try {
+			privateKey = util.getPrivateKey();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	private String getSessionTokenFromSession() {
@@ -222,7 +238,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	}
 
 	@Override
-	public void processSurveySpreadsheet(String spreadsheetName) {
+	public void processSurveySpreadsheet(String spreadsheetName, int startRow, Long groupId) {
 		setCreds();
 
 		try {
@@ -231,30 +247,15 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
 			sc.setSpreadsheetName(spreadsheetName);
-			spreadsheetDao.save(sc);
-			Queue importQueue = QueueFactory.getQueue("spreadsheetImport");
-			importQueue.add(url("/app_worker/sheetimport").param("identifier",
-					sc.getSpreadsheetName()).param("type", "Survey").param(
-					"action", "processFile"));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-		}
-	}
-
-	public void processSavedSpreadsheet(String name) {
-
-		SpreadsheetContainer sc = spreadsheetDao.findByName(name);
+			if(startRow == -1){
+				setDependencies(sc, groupId);
+			}else{
+					
 		SurveyGroup sg = new SurveyGroup();
 
 		sg.setCode("HondurasSurveyLoader");
 		Survey surveyCommunityWater = new Survey();
-		HashMap<Question, QuestionDependency> dependencyMap = new HashMap<Question, QuestionDependency>();
+		
 		ArrayList<Question> questionList = new ArrayList<Question>();
 		QuestionGroup qgBase = new QuestionGroup();
 		qgBase.setCode("Base");
@@ -262,8 +263,12 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		qgWater.setCode("Water");
 		QuestionGroup qgSanitation = new QuestionGroup();
 		qgSanitation.setCode("Sanitation");
-		int i = 0;
-		for (RowContainer row : sc.getRowContainerList()) {
+		int count = 0;
+		int i =0;
+	
+		for(count = startRow; count < sc.getRowContainerList().size() && i<10; count++){
+			i++;
+			RowContainer row = sc.getRowContainerList().get(count);
 			ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
 			Survey targetSurvey = null;
 			QuestionGroup targetQG = null;
@@ -337,7 +342,73 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						if (colName.equals("AllowMultiple"))
 							oc.setAllowMultipleFlag(new Boolean(colContents
 									.toLowerCase()));
-					} else if (colName.equalsIgnoreCase("DependQuestion")) {
+					} else if (colName.equalsIgnoreCase("QuestionID")){
+						q.setReferenceIndex(colContents.trim());
+					}
+				}
+			}
+			if (q.getType().equals(QuestionType.OPTION)) {
+				oc.setOptionsList(qoList);
+				q.setOptionContainer(oc);
+			}
+			targetQG.addQuestion(q, count);
+		}
+		surveyCommunityWater.addQuestionGroup(qgWater);
+		surveyCommunityWater.addQuestionGroup(qgBase);
+		sg.addSurvey(surveyCommunityWater);
+		if(startRow == 0){
+			SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			sgDao.save(sg);
+		}else{			
+			QuestionDao qDao = new QuestionDao();
+			
+			for(Entry<Integer,Question> qEntry: qgBase.getQuestionMap().entrySet()){
+				qDao.save(qEntry.getValue(),groupId);
+			}
+		}
+		if(count<sc.getRowContainerList().size()){
+			Queue importQueue = QueueFactory.getQueue("spreadsheetImport");
+			importQueue.add(url("/app_worker/sheetimport").param("identifier",
+					sc.getSpreadsheetName()).param("type", "Survey").param(
+					"action", "processFile").param("startRow",count+"").param("questionGroupId", qgBase.getKey()!= null?qgBase.getKey().getId()+"":groupId.toString()).param("sessionToken", sessionToken));
+		}else{
+			Queue importQueue = QueueFactory.getQueue("spreadsheetImport");
+			importQueue.add(url("/app_worker/sheetimport").param("identifier",
+					sc.getSpreadsheetName()).param("type", "Survey").param(
+					"action", "processFile").param("startRow", "-1").param("sessionToken", sessionToken).param("questionGroupId", qgBase.getKey()!= null?qgBase.getKey().getId()+"":groupId.toString()));			
+		}
+		
+			}
+		} catch (IOException e) {
+		e.printStackTrace();
+
+	} catch (ServiceException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+
+	}
+	}
+	
+	
+	private void setDependencies(SpreadsheetContainer sc, Long groupId){		
+		HashMap<Question, QuestionDependency> dependencyMap = new HashMap<Question, QuestionDependency>();
+		//ArrayList<Question> savedQuestions = new ArrayList<Question>();		
+		ArrayList<Question> spreadsheetQuestions = new ArrayList<Question>();
+		int rowIdx = 0;
+		for(RowContainer row: sc.getRowContainerList()){
+			Question q = new Question();
+			for (ColumnContainer cc : row.getColumnContainersList()) {
+				String colName = cc.getColName();
+				String colContents = cc.getColContents();				
+				if (colContents != null) {
+					 if (colName.toLowerCase().equals("question")) {
+						if (colContents.trim().length() > 500)
+							q.setText(colContents.trim().substring(0, 500));
+						else
+							q.setText(colContents.trim());
+					}  else if("QuestionID".equalsIgnoreCase(colName)){
+						q.setReferenceIndex(colContents);
+					}else if (colName.equalsIgnoreCase("DependQuestion")) {
 						if (colContents != null
 								&& colContents.trim().length() > 0) {
 							String[] parts = colContents.trim().split("\\|");
@@ -356,38 +427,38 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								}
 							}
 						}
+					}					 
+				}
+			}
+			spreadsheetQuestions.add(q);
+			rowIdx++;
+		}
+		if(dependencyMap.size()>0){
+		
+			QuestionDao qDao = new QuestionDao();
+		
+				
+				for (Entry<Question, QuestionDependency> entry : dependencyMap
+						.entrySet()) {					
+					Question q = entry.getKey();
+					QuestionDependency dep = entry.getValue();
+					Question parent = spreadsheetQuestions
+							.get(dep.getQuestionId().intValue() - 1);
+					Question savedParent = qDao.findByReferenceId(groupId+"|"+dep.getQuestionId());
+					Question savedChild = qDao.findByReferenceId(groupId+"|"+q.getReferenceIndex());
+					if (savedParent != null) {
+								
+						if(savedParent != null && savedChild!= null){																
+							dep.setQuestionId(savedParent.getKey().getId());
+							savedChild.setDependQuestion(dep);							
+							qDao.save(savedChild);
+						}
+					} else {
+						log.log(Level.SEVERE,
+								"Couldn't find the parent question for the dependency: "
+										+ q.getText());
 					}
 				}
 			}
-			if (q.getType().equals(QuestionType.OPTION)) {
-				oc.setOptionsList(qoList);
-				q.setOptionContainer(oc);
-			}
-			targetQG.addQuestion(q, i++);
-		}
-		surveyCommunityWater.addQuestionGroup(qgWater);
-		surveyCommunityWater.addQuestionGroup(qgBase);
-		sg.addSurvey(surveyCommunityWater);
-		SurveyGroupDAO sgDao = new SurveyGroupDAO();
-		sgDao.save(sg);
-		// now go through and re-save the dependencies
-		QuestionDao qDao = new QuestionDao();
-		for (Entry<Question, QuestionDependency> entry : dependencyMap
-				.entrySet()) {
-			Question q = entry.getKey();
-			QuestionDependency dep = entry.getValue();
-			Question parent = questionList
-					.get(dep.getQuestionId().intValue() - 1);
-			if (parent != null) {
-				dep.setQuestionId(parent.getKey().getId());
-				q.setDependQuestion(dep);
-				qDao.save(q);
-			} else {
-				log.log(Level.SEVERE,
-						"Couldn't find the parent question for the dependency: "
-								+ q.getText());
-			}
-		}
-
 	}
 }

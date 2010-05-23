@@ -19,7 +19,7 @@ public interface SpreadsheetMappingAttributeService extends RemoteService {
 	
 	public MappingDefinitionColumnContainer getMappingSpreadsheetDefinition(String spreadsheetName);
 
-	public void processSurveySpreadsheet(String spreadsheetName);
+	public void processSurveySpreadsheet(String spreadsheetName, int startRow, Long groupId);
 	
 
 	ArrayList<String> listSpreadsheetsFromFeed(String feedURL);

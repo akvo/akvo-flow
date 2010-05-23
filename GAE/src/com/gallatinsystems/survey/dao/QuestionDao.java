@@ -20,14 +20,16 @@ public class QuestionDao extends BaseDAO<Question> {
 		ocDao = new OptionContainerDao();
 	}
 
-	public List<Question> listQuestionsByQuestionGroup(String questionGroupCode) {
+	public List<Question> listQuestionsByQuestionGroup(String questionGroupCode, boolean needDetails) {
 		List<QuestionQuestionGroupAssoc> qqgaList = new QuestionQuestionGroupAssocDao()
 				.listByQuestionGroupId(new Long(questionGroupCode));
 		java.util.ArrayList<Question> questionList = new ArrayList<Question>();
 
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
 			Question question = getByKey(qqga.getQuestionId());
-			setOptionContainer(question);
+			if(needDetails){
+				setOptionContainer(question);
+			}
 			questionList.add(question);
 		}
 
@@ -48,6 +50,17 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	public Question save(Question question, Long questionGroupId) {
+		String existingRef = question.getReferenceIndex();
+		if(existingRef == null){
+			question.setReferenceIndex(questionGroupId+"|");
+		}else if(existingRef.contains("|")){
+			String[] parts = existingRef.split("\\|");
+			if(parts.length>1){
+				question.setReferenceIndex(questionGroupId+"|"+parts[1]);
+			}
+		}else{
+			question.setReferenceIndex(questionGroupId+"|"+existingRef);
+		}
 		question = super.save(question);
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
 		qqga.setQuestionGroupId(questionGroupId);
@@ -65,6 +78,11 @@ public class QuestionDao extends BaseDAO<Question> {
 		return question;
 	}
 
+	public Question findByReferenceId(String refid){
+		Question q = findByProperty("referenceIndex", refid, "String");		
+		return q;
+	}
+	
 	public Question save(Question question) {
 		question = super.save(question);
 		if (question.getOptionContainer() != null) {

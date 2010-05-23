@@ -32,7 +32,7 @@ public interface SurveyService extends RemoteService {
 			String surveyId);
 
 	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
-			String questionGroupId);
+			String questionGroupId, boolean needDetails);
 
 	public SurveyGroupDto save(SurveyGroupDto value);
 
@@ -47,6 +47,8 @@ public interface SurveyService extends RemoteService {
 	public SurveyDto loadFullSurvey(String surveyName);
 
 	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
+	
+	public QuestionDto loadQuestionDetails(Long questionId);
 
 	
 	public List<QuestionDto> listQuestionForQuestionGroup(

@@ -27,7 +27,7 @@ public interface SpreadsheetMappingAttributeServiceAsync {
 	void listSpreadsheetsFromFeed(String feedURL,
 			AsyncCallback<ArrayList<String>> callback);
 
-	void processSurveySpreadsheet(String spreadsheetName,
+	void processSurveySpreadsheet(String spreadsheetName, int startRow,Long groupId,
 			AsyncCallback<Void> callback);
 
 

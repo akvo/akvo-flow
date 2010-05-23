@@ -265,6 +265,7 @@ public class SurveyManagerPortlet extends Portlet {
 																qgDto
 																		.getKeyId()
 																		.toString(),
+																false,
 																new AsyncCallback<ArrayList<QuestionDto>>() {
 
 																	@Override
@@ -304,7 +305,26 @@ public class SurveyManagerPortlet extends Portlet {
 														.setVisible(false);
 												addQuestionButton
 														.setVisible(false);
-												loadQuestionDetails(questionDto);
+												svc
+														.loadQuestionDetails(
+																questionDto
+																		.getKeyId(),
+																new AsyncCallback<QuestionDto>() {
+
+																	@Override
+																	public void onFailure(
+																			Throwable caught) {
+																		// no-op
+
+																	}
+
+																	@Override
+																	public void onSuccess(
+																			QuestionDto result) {
+																		loadQuestionDetails(result);
+
+																	}
+																});
 
 											}
 
@@ -393,7 +413,7 @@ public class SurveyManagerPortlet extends Portlet {
 		TreeItem parentItem = surveyTree.getSelectedItem();
 		TreeItem questionItem = new TreeItem();
 		Boolean foundQuestionFlag = false;
-		Integer count = parentItem.getChildCount()+1;
+		Integer count = parentItem.getChildCount() + 1;
 
 		for (int i = 0; i < parentItem.getChildCount(); i++) {
 			QuestionDto qDto = (QuestionDto) parentItem.getChild(i)
@@ -401,21 +421,23 @@ public class SurveyManagerPortlet extends Portlet {
 			if (qDto.getKeyId().equals(item.getKeyId())) {
 				questionItem = parentItem.getChild(i);
 				if (item.getText().trim().length() > 15)
-					questionItem.setText(count+":"+item.getText().substring(0, 15));
+					questionItem.setText(count + ":"
+							+ item.getText().substring(0, 15));
 				else
 					questionItem.setText(item.getText().trim());
-				questionItem.setUserObject(count+":"+item);
+				questionItem.setUserObject(count + ":" + item);
 				foundQuestionFlag = true;
 				break;
 			}
 		}
 
 		if (!foundQuestionFlag) {
-			
+
 			if (item.getText().trim().length() > 15)
-				questionItem.setText(count+":"+item.getText().substring(0, 15));
+				questionItem.setText(count + ":"
+						+ item.getText().substring(0, 15));
 			else
-				questionItem.setText(count+":"+item.getText().trim());
+				questionItem.setText(count + ":" + item.getText().trim());
 			questionItem.setUserObject(item);
 			parentItem.addItem(questionItem);
 		}

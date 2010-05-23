@@ -64,7 +64,7 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 		String selection = spreadsheetLB.getItemText(spreadsheetLB
 				.getSelectedIndex());
 		if (selection != null && selection.trim().length() > 0) {
-			svc.processSurveySpreadsheet(selection, new AsyncCallback<Void>() {
+			svc.processSurveySpreadsheet(selection,0,null, new AsyncCallback<Void>() {
 				@Override
 				public void onFailure(Throwable caught) {
 					MessageDialog errDia = new MessageDialog("Error",

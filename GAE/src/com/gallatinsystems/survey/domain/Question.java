@@ -16,9 +16,20 @@ public class Question extends BaseDomain {
 	
 	private static final long serialVersionUID = -4708385830894435407L;
 
+	private String referenceIndex;
 	private String text;
 	private String validationRule;
 	private QuestionDependency dependQuestion = null;
+	
+	
+	public String getReferenceIndex() {
+		return referenceIndex;
+	}
+
+	public void setReferenceIndex(String referenceIndex) {
+		this.referenceIndex = referenceIndex;
+	}
+
 	public String getValidationRule() {
 		return validationRule;
 	}

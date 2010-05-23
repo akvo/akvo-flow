@@ -369,7 +369,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						HashMap<Integer, QuestionDto> qDtoMap = new HashMap<Integer, QuestionDto>();
 						for (Entry<Integer, Question> entry : qg
 								.getQuestionMap().entrySet()) {
-							QuestionDto qdto = this.marshalQuestionDto(entry
+							QuestionDto qdto = marshalQuestionDto(entry
 									.getValue());
 
 							qDtoMap.put(entry.getKey(), qdto);
@@ -426,13 +426,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
-			String questionGroupId) {
+			String questionGroupId, boolean needDetails) {
 		QuestionDao questionDao = new QuestionDao();
 		List<Question> questionList = questionDao
-				.listQuestionsByQuestionGroup(questionGroupId);
+				.listQuestionsByQuestionGroup(questionGroupId,needDetails);
 		java.util.ArrayList<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
 		for (Question canonical : questionList) {
-			QuestionDto dto = this.marshalQuestionDto(canonical);
+			QuestionDto dto = marshalQuestionDto(canonical);
 
 			questionDtoList.add(dto);
 		}
@@ -648,6 +648,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 
 		return "Survey successfully published";
+	}
+
+	@Override
+	public QuestionDto loadQuestionDetails(Long questionId) {
+		QuestionDao questionDao = new QuestionDao();
+		Question canonical = questionDao.getByKey(questionId);
+		if(canonical != null){ 
+			return marshalQuestionDto(canonical);
+		}else{
+			return null;
+		}
 	}
 
 }
