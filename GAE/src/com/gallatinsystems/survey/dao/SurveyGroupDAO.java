@@ -20,12 +20,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 
 	public SurveyGroupDAO() {
 		super(SurveyGroup.class);
-	}
-
-	public SurveyGroupDAO(Class<SurveyGroup> e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
+	}	
 
 	public SurveyGroup save(SurveyGroup item) {
 
@@ -40,8 +35,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		SurveyDAO surveyDao = new SurveyDAO();
 		SurveySurveyGroupAssocDao ssgaDAO = new SurveySurveyGroupAssocDao();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
-		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
-		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
+		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();		
 		QuestionDao questionDAO = new QuestionDao();
 
 		Long surveyGroupId = item.getKey().getId();
@@ -65,7 +59,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 							for (Entry<Integer, Question> questionEntry : qg
 									.getQuestionMap().entrySet()) {
 								Question question = questionEntry.getValue();
-								Integer order = questionEntry.getKey();
+								//Integer order = questionEntry.getKey();
 								question = questionDAO.save(question, qg
 										.getKey().getId());
 								// QuestionQuestionGroupAssoc qqga = new
@@ -100,9 +94,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 
 		if (includeQuestions) {
 
-			for (SurveySurveyGroupAssoc item : list) {
-				log.info("SurveyId: " + item.getSurveyId());
-
+			for (SurveySurveyGroupAssoc item : list) {				
 				List<SurveyQuestionGroupAssoc> surveyGroupQuestionAssocList = sqgaDao
 						.listBySurveyId(item.getSurveyId());
 				Survey survey = surveyDao.getById(item.getSurveyId());
