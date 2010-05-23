@@ -12,12 +12,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	private QuestionQuestionGroupAssocDao qqgaDao;
 	private OptionContainerDao ocDao;
-
-	public QuestionDao(Class<Question> e) {
-		super(e);
-		qqgaDao = new QuestionQuestionGroupAssocDao();
-		ocDao = new OptionContainerDao();
-	}
+	
 
 	public QuestionDao() {
 		super(Question.class);
