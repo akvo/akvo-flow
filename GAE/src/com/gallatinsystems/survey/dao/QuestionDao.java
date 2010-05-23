@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -31,6 +32,9 @@ public class QuestionDao extends BaseDAO<Question> {
 				setOptionContainer(question);
 			}
 			questionList.add(question);
+		}
+		if(questionList != null){
+			Collections.sort(questionList);
 		}
 
 		return questionList;
@@ -65,6 +69,7 @@ public class QuestionDao extends BaseDAO<Question> {
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
 		qqga.setQuestionGroupId(questionGroupId);
 		qqga.setQuestionId(question.getKey().getId());
+		qqga.setOrder(question.getOrder());
 		qqgaDao.save(qqga);
 
 		if (question.getOptionContainer() != null) {

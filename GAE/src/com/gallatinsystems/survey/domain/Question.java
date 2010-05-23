@@ -12,16 +12,24 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
-public class Question extends BaseDomain {
-	
+public class Question extends BaseDomain implements Comparable<Question> {
+
 	private static final long serialVersionUID = -4708385830894435407L;
 
 	private String referenceIndex;
 	private String text;
 	private String validationRule;
 	private QuestionDependency dependQuestion = null;
-	
-	
+	private Integer order;
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
 	public String getReferenceIndex() {
 		return referenceIndex;
 	}
@@ -54,24 +62,20 @@ public class Question extends BaseDomain {
 		this.optionContainer = optionContainer;
 	}
 
-
-
 	private String tip;
 	@NotPersistent
 	private OptionContainer optionContainer = null;
-	
+
 	private QuestionDto.QuestionType type;
 	private ArrayList<QuestionHelp> questionHelpList;
-	
-	
-	
-	public void addQuestionHelp(QuestionHelp questionHelp){
-		if(questionHelpList==null){
+
+	public void addQuestionHelp(QuestionHelp questionHelp) {
+		if (questionHelpList == null) {
 			questionHelpList = new ArrayList<QuestionHelp>();
 		}
 		questionHelpList.add(questionHelp);
 	}
-	
+
 	public String getText() {
 		return text;
 	}
@@ -88,8 +92,6 @@ public class Question extends BaseDomain {
 		this.type = type;
 	}
 
-	
-
 	public ArrayList<QuestionHelp> getQuestionHelpList() {
 		return questionHelpList;
 	}
@@ -98,8 +100,6 @@ public class Question extends BaseDomain {
 		this.questionHelpList = questionHelpList;
 	}
 
-	
-	
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
@@ -137,5 +137,20 @@ public class Question extends BaseDomain {
 
 	public QuestionDependency getDependQuestion() {
 		return dependQuestion;
+	}
+
+	@Override
+	public int compareTo(Question o) {
+		if (o != null) {
+			if (o.getOrder() == getOrder()) {
+				return 0;
+			} else if (getOrder() > o.getOrder()) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}else{
+			return 1;
+		}
 	}
 }

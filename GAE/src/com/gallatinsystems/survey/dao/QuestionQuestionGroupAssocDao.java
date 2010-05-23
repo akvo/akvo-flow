@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -14,7 +15,11 @@ public class QuestionQuestionGroupAssocDao extends
 
 	public List<QuestionQuestionGroupAssoc> listByQuestionGroupId(
 			Long questionGroupId) {
-		return listByProperty("questionGroupId", questionGroupId, "Long");
+		List<QuestionQuestionGroupAssoc> assocList = listByProperty("questionGroupId", questionGroupId, "Long");
+		if(assocList != null){
+			Collections.sort(assocList);
+		}
+		return assocList;
 	}
 
 	public List<QuestionQuestionGroupAssoc> listByQuestionId(Long questionId) {

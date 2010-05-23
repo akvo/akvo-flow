@@ -6,7 +6,7 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
-public class QuestionQuestionGroupAssoc extends BaseDomain{
+public class QuestionQuestionGroupAssoc extends BaseDomain implements Comparable<QuestionQuestionGroupAssoc>{
 	
 	private static final long serialVersionUID = 7578071601713731890L;
 	private Long questionGroupId = null;
@@ -66,5 +66,20 @@ public class QuestionQuestionGroupAssoc extends BaseDomain{
 
 	public Integer getOrder() {
 		return order;
+	}
+
+	@Override
+	public int compareTo(QuestionQuestionGroupAssoc o) {
+		if (o != null) {
+			if (o.getOrder() == getOrder()) {
+				return 0;
+			} else if (getOrder() > o.getOrder()) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}else{
+			return 1;
+		}
 	}
 }

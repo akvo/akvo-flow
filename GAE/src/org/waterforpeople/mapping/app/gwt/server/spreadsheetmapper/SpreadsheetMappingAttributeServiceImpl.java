@@ -351,6 +351,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				oc.setOptionsList(qoList);
 				q.setOptionContainer(oc);
 			}
+			//TODO: fix this once we allow different groups
+			q.setOrder(count);
 			targetQG.addQuestion(q, count);
 		}
 		surveyCommunityWater.addQuestionGroup(qgWater);
