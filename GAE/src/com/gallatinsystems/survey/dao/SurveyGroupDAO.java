@@ -158,5 +158,9 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		}
 		return sgList;
 	}
+	
+	public SurveyGroup findBySurveyGroupName(String name){
+		return super.findByProperty("code", name, "String");
+	}
 
 }

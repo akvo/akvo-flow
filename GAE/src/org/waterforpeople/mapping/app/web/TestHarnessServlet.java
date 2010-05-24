@@ -67,6 +67,7 @@ import com.gallatinsystems.survey.dao.SurveySurveyGroupAssocDao;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.OptionContainerQuestionOptionAssoc;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -606,6 +607,14 @@ public class TestHarnessServlet extends HttpServlet {
 				for(OptionContainerQuestionOptionAssoc o: ocqoalist){
 					ocqaDao.delete(o);
 				}
+				
+				
+				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(QuestionDependency.class);
+				List<QuestionDependency> qdepList = qDep.list("all");
+				for(QuestionDependency qd:qdepList)
+					qDep.delete(qd);
+				resp.getWriter().println("Deleted all question dependency");
+
 				resp.getWriter().println("Deleted all OptionoContainerQuestionOptionAssoc");
 				
 				resp.getWriter().println("Everything");
@@ -682,6 +691,12 @@ public class TestHarnessServlet extends HttpServlet {
 				for (OptionContainer oc : ocList)
 					ocDao.delete(oc);
 				resp.getWriter().println("Deleted all OptionContainer");
+				
+				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(QuestionDependency.class);
+				List<QuestionDependency> qdepList = qDep.list("all");
+				for(QuestionDependency qd:qdepList)
+					qDep.delete(qd);
+				resp.getWriter().println("Deleted all question dependency");
 
 				resp.getWriter().println("Deleted all questions");
 				for (int t = 0; t < 2; t++) {

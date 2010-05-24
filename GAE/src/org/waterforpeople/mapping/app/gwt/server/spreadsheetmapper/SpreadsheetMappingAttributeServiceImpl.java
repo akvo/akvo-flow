@@ -51,10 +51,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	private static final long serialVersionUID = 7708378583408245812L;
 	private String sessionToken = null;
 	private PrivateKey privateKey = null;
-	
 
 	public SpreadsheetMappingAttributeServiceImpl() {
-	
+
 	}
 
 	public void setCreds() {
@@ -63,8 +62,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			privateKey = getPrivateKeyFromSession();
 		}
 	}
-	
-	public void setCreds(String token){
+
+	public void setCreds(String token) {
 		sessionToken = token;
 		TokenUtility util = new TokenUtility();
 		try {
@@ -76,7 +75,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private String getSessionTokenFromSession() {
@@ -238,7 +237,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	}
 
 	@Override
-	public void processSurveySpreadsheet(String spreadsheetName, int startRow, Long groupId) {
+	public void processSurveySpreadsheet(String spreadsheetName, int startRow,
+			Long groupId) {
 		setCreds();
 
 		try {
@@ -247,170 +247,195 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
 			sc.setSpreadsheetName(spreadsheetName);
-			if(startRow == -1){
+			if (startRow == -1) {
 				setDependencies(sc, groupId);
-			}else{
-					
-		SurveyGroup sg = new SurveyGroup();
+			} else {
+				SurveyGroupDAO sgDao = new SurveyGroupDAO();
+				SurveyGroup sg = null;
+				String sgName = "HondurasSurveyLoader";
+				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
 
-		sg.setCode("HondurasSurveyLoader");
-		Survey surveyCommunityWater = new Survey();
-		
-		ArrayList<Question> questionList = new ArrayList<Question>();
-		QuestionGroup qgBase = new QuestionGroup();
-		qgBase.setCode("Base");
-		QuestionGroup qgWater = new QuestionGroup();
-		qgWater.setCode("Water");
-		QuestionGroup qgSanitation = new QuestionGroup();
-		qgSanitation.setCode("Sanitation");
-		int count = 0;
-		int i =0;
-	
-		for(count = startRow; count < sc.getRowContainerList().size() && i<10; count++){
-			i++;
-			RowContainer row = sc.getRowContainerList().get(count);
-			ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
-			Survey targetSurvey = null;
-			QuestionGroup targetQG = null;
-			ArrayList<ColumnContainer> ccl = row.getColumnContainersList();
-			Question q = new Question();
-			questionList.add(q);
-			OptionContainer oc = new OptionContainer();
-			for (ColumnContainer cc : ccl) {
-				String colName = cc.getColName();
-				String colContents = cc.getColContents();
-				if (colContents != null) {
-					if (colName.toLowerCase().equals("survey")) {
+				if (sgFound != null)
+					sg = sgFound;
+				else
+					sg = new SurveyGroup();
 
-						targetSurvey = surveyCommunityWater;
-						targetSurvey.setName(colContents);
-					} else if (colName.toLowerCase().equals("questiongroup")) {
-						if (colContents.toLowerCase().equals(
-								"Base".toLowerCase())) {
-							targetQG = qgBase;
-						}
-					} else if (colName.toLowerCase().equals("question")) {
-						if (colContents.trim().length() > 500)
-							q.setText(colContents.trim().substring(0, 500));
-						else
-							q.setText(colContents.trim());
-					} else if (colName.toLowerCase().equals("questiontype")) {
-						if (colContents.toLowerCase().equals(
-								"FREE".toLowerCase()))
-							q.setType(QuestionType.FREE_TEXT);
-						else if (colContents.toLowerCase().equals(
-								"GEO".toLowerCase()))
-							q.setType(QuestionType.GEO);
-						else if (colContents.toLowerCase().equals(
-								"NUMBER".toLowerCase()))
-							q.setType(QuestionType.NUMBER);
-						else if (colContents.toLowerCase().equals(
-								"OPTION".toLowerCase()))
-							q.setType(QuestionType.OPTION);
-						else if (colContents.toLowerCase().equals(
-								"PHOTO".toLowerCase()))
-							q.setType(QuestionType.PHOTO);
-						else if (colContents.toLowerCase().equals(
-								"SCAN".toLowerCase()))
-							q.setType(QuestionType.SCAN);
-						else if (colContents.toLowerCase().equals(
-								"VIDEO".toLowerCase()))
-							q.setType(QuestionType.VIDEO);
-					} else if (colName.toLowerCase().equals(
-							"Options".toLowerCase())
-							&& q.getType().equals(QuestionType.OPTION)) {
-						String[] splitColContents = colContents.trim().split(
-								";");
-						for (String item : splitColContents) {
-							String[] optionParts = item.trim().split("\\|");
-							if (optionParts.length == 2) {
-								String optionVal = optionParts[0];
-								String text = optionParts[1];
-								QuestionOption qo = new QuestionOption();
-								qo.setCode(optionVal);
-								qo.setText(text);
-								qoList.add(qo);
+				sg.setCode(sgName);
+				Survey surveyCommunityWater = new Survey();
+
+				ArrayList<Question> questionList = new ArrayList<Question>();
+				QuestionGroup qgBase = new QuestionGroup();
+				qgBase.setCode("Base");
+				QuestionGroup qgWater = new QuestionGroup();
+				qgWater.setCode("Water");
+				QuestionGroup qgSanitation = new QuestionGroup();
+				qgSanitation.setCode("Sanitation");
+				int count = 0;
+				int i = 0;
+
+				for (count = startRow; count < sc.getRowContainerList().size()
+						&& i < 10; count++) {
+					i++;
+					RowContainer row = sc.getRowContainerList().get(count);
+					ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
+					Survey targetSurvey = null;
+					QuestionGroup targetQG = null;
+					ArrayList<ColumnContainer> ccl = row
+							.getColumnContainersList();
+					Question q = new Question();
+					questionList.add(q);
+					OptionContainer oc = new OptionContainer();
+					for (ColumnContainer cc : ccl) {
+						String colName = cc.getColName();
+						String colContents = cc.getColContents();
+						if (colContents != null) {
+							if (colName.toLowerCase().equals("survey")) {
+
+								targetSurvey = surveyCommunityWater;
+								targetSurvey.setName(colContents);
+							} else if (colName.toLowerCase().equals(
+									"questiongroup")) {
+								qgBase.setCode(colContents.trim());
+								targetQG = qgBase;
+							} else if (colName.toLowerCase().equals("question")) {
+								if (colContents.trim().length() > 500)
+									q.setText(colContents.trim().substring(0,
+											500));
+								else
+									q.setText(colContents.trim());
+							} else if (colName.toLowerCase().equals(
+									"questiontype")) {
+								if (colContents.toLowerCase().equals(
+										"FREE".toLowerCase()))
+									q.setType(QuestionType.FREE_TEXT);
+								else if (colContents.toLowerCase().equals(
+										"GEO".toLowerCase()))
+									q.setType(QuestionType.GEO);
+								else if (colContents.toLowerCase().equals(
+										"NUMBER".toLowerCase()))
+									q.setType(QuestionType.NUMBER);
+								else if (colContents.toLowerCase().equals(
+										"OPTION".toLowerCase()))
+									q.setType(QuestionType.OPTION);
+								else if (colContents.toLowerCase().equals(
+										"PHOTO".toLowerCase()))
+									q.setType(QuestionType.PHOTO);
+								else if (colContents.toLowerCase().equals(
+										"SCAN".toLowerCase()))
+									q.setType(QuestionType.SCAN);
+								else if (colContents.toLowerCase().equals(
+										"VIDEO".toLowerCase()))
+									q.setType(QuestionType.VIDEO);
+							} else if (colName.toLowerCase().equals(
+									"Options".toLowerCase())
+									&& q.getType().equals(QuestionType.OPTION)) {
+								String[] splitColContents = colContents.trim()
+										.split(";");
+								for (String item : splitColContents) {
+									String[] optionParts = item.trim().split(
+											"\\|");
+									if (optionParts.length == 2) {
+										String optionVal = optionParts[0];
+										String text = optionParts[1];
+										QuestionOption qo = new QuestionOption();
+										qo.setCode(optionVal);
+										qo.setText(text);
+										qoList.add(qo);
+									}
+
+								}
+							} else if ((colName.equals("AllowOther") || colName
+									.equals("AllowMultiple"))
+									&& q.getType().equals(QuestionType.OPTION)) {
+								if (colName.equals("AllowOther"))
+									oc.setAllowOtherFlag(new Boolean(
+											colContents.toLowerCase()));
+								if (colName.equals("AllowMultiple"))
+									oc.setAllowMultipleFlag(new Boolean(
+											colContents.toLowerCase()));
+							} else if (colName.equalsIgnoreCase("QuestionID")) {
+								q.setReferenceIndex(colContents.trim());
 							}
-
 						}
-					} else if ((colName.equals("AllowOther") || colName
-							.equals("AllowMultiple"))
-							&& q.getType().equals(QuestionType.OPTION)) {
-						if (colName.equals("AllowOther"))
-							oc.setAllowOtherFlag(new Boolean(colContents
-									.toLowerCase()));
-						if (colName.equals("AllowMultiple"))
-							oc.setAllowMultipleFlag(new Boolean(colContents
-									.toLowerCase()));
-					} else if (colName.equalsIgnoreCase("QuestionID")){
-						q.setReferenceIndex(colContents.trim());
+					}
+					if (q.getType().equals(QuestionType.OPTION)) {
+						oc.setOptionsList(qoList);
+						q.setOptionContainer(oc);
+					}
+					// TODO: fix this once we allow different groups
+					q.setOrder(count);
+					targetQG.addQuestion(q, count);
+				}
+				surveyCommunityWater.addQuestionGroup(qgWater);
+				surveyCommunityWater.addQuestionGroup(qgBase);
+				sg.addSurvey(surveyCommunityWater);
+				if (startRow == 0) {
+					sgDao = new SurveyGroupDAO();
+					sgDao.save(sg);
+				} else {
+					QuestionDao qDao = new QuestionDao();
+
+					for (Entry<Integer, Question> qEntry : qgBase
+							.getQuestionMap().entrySet()) {
+						qDao.save(qEntry.getValue(), groupId);
 					}
 				}
-			}
-			if (q.getType().equals(QuestionType.OPTION)) {
-				oc.setOptionsList(qoList);
-				q.setOptionContainer(oc);
-			}
-			//TODO: fix this once we allow different groups
-			q.setOrder(count);
-			targetQG.addQuestion(q, count);
-		}
-		surveyCommunityWater.addQuestionGroup(qgWater);
-		surveyCommunityWater.addQuestionGroup(qgBase);
-		sg.addSurvey(surveyCommunityWater);
-		if(startRow == 0){
-			SurveyGroupDAO sgDao = new SurveyGroupDAO();
-			sgDao.save(sg);
-		}else{			
-			QuestionDao qDao = new QuestionDao();
-			
-			for(Entry<Integer,Question> qEntry: qgBase.getQuestionMap().entrySet()){
-				qDao.save(qEntry.getValue(),groupId);
-			}
-		}
-		if(count<sc.getRowContainerList().size()){
-			Queue importQueue = QueueFactory.getQueue("spreadsheetImport");
-			importQueue.add(url("/app_worker/sheetimport").param("identifier",
-					sc.getSpreadsheetName()).param("type", "Survey").param(
-					"action", "processFile").param("startRow",count+"").param("questionGroupId", qgBase.getKey()!= null?qgBase.getKey().getId()+"":groupId.toString()).param("sessionToken", sessionToken));
-		}else{
-			Queue importQueue = QueueFactory.getQueue("spreadsheetImport");
-			importQueue.add(url("/app_worker/sheetimport").param("identifier",
-					sc.getSpreadsheetName()).param("type", "Survey").param(
-					"action", "processFile").param("startRow", "-1").param("sessionToken", sessionToken).param("questionGroupId", qgBase.getKey()!= null?qgBase.getKey().getId()+"":groupId.toString()));			
-		}
-		
+				if (count < sc.getRowContainerList().size()) {
+					Queue importQueue = QueueFactory
+							.getQueue("spreadsheetImport");
+					importQueue.add(url("/app_worker/sheetimport").param(
+							"identifier", sc.getSpreadsheetName()).param(
+							"type", "Survey").param("action", "processFile")
+							.param("startRow", count + "").param(
+									"questionGroupId",
+									qgBase.getKey() != null ? qgBase.getKey()
+											.getId()
+											+ "" : groupId.toString()).param(
+									"sessionToken", sessionToken));
+				} else {
+					Queue importQueue = QueueFactory
+							.getQueue("spreadsheetImport");
+					importQueue.add(url("/app_worker/sheetimport").param(
+							"identifier", sc.getSpreadsheetName()).param(
+							"type", "Survey").param("action", "processFile")
+							.param("startRow", "-1").param("sessionToken",
+									sessionToken).param(
+									"questionGroupId",
+									qgBase.getKey() != null ? qgBase.getKey()
+											.getId()
+											+ "" : groupId.toString()));
+				}
+
 			}
 		} catch (IOException e) {
-		e.printStackTrace();
+			e.printStackTrace();
 
-	} catch (ServiceException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 
+		}
 	}
-	}
-	
-	
-	private void setDependencies(SpreadsheetContainer sc, Long groupId){		
+
+	private void setDependencies(SpreadsheetContainer sc, Long groupId) {
 		HashMap<Question, QuestionDependency> dependencyMap = new HashMap<Question, QuestionDependency>();
-		//ArrayList<Question> savedQuestions = new ArrayList<Question>();		
+		// ArrayList<Question> savedQuestions = new ArrayList<Question>();
 		ArrayList<Question> spreadsheetQuestions = new ArrayList<Question>();
 		int rowIdx = 0;
-		for(RowContainer row: sc.getRowContainerList()){
+		for (RowContainer row : sc.getRowContainerList()) {
 			Question q = new Question();
 			for (ColumnContainer cc : row.getColumnContainersList()) {
 				String colName = cc.getColName();
-				String colContents = cc.getColContents();				
+				String colContents = cc.getColContents();
 				if (colContents != null) {
-					 if (colName.toLowerCase().equals("question")) {
+					if (colName.toLowerCase().equals("question")) {
 						if (colContents.trim().length() > 500)
 							q.setText(colContents.trim().substring(0, 500));
 						else
 							q.setText(colContents.trim());
-					}  else if("QuestionID".equalsIgnoreCase(colName)){
+					} else if ("QuestionID".equalsIgnoreCase(colName)) {
 						q.setReferenceIndex(colContents);
-					}else if (colName.equalsIgnoreCase("DependQuestion")) {
+					} else if (colName.equalsIgnoreCase("DependQuestion")) {
 						if (colContents != null
 								&& colContents.trim().length() > 0) {
 							String[] parts = colContents.trim().split("\\|");
@@ -429,38 +454,39 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								}
 							}
 						}
-					}					 
+					}
 				}
 			}
 			spreadsheetQuestions.add(q);
 			rowIdx++;
 		}
-		if(dependencyMap.size()>0){
-		
+		if (dependencyMap.size() > 0) {
+
 			QuestionDao qDao = new QuestionDao();
-		
-				
-				for (Entry<Question, QuestionDependency> entry : dependencyMap
-						.entrySet()) {					
-					Question q = entry.getKey();
-					QuestionDependency dep = entry.getValue();
-					Question parent = spreadsheetQuestions
-							.get(dep.getQuestionId().intValue() - 1);
-					Question savedParent = qDao.findByReferenceId(groupId+"|"+dep.getQuestionId());
-					Question savedChild = qDao.findByReferenceId(groupId+"|"+q.getReferenceIndex());
-					if (savedParent != null) {
-								
-						if(savedParent != null && savedChild!= null){																
-							dep.setQuestionId(savedParent.getKey().getId());
-							savedChild.setDependQuestion(dep);							
-							qDao.save(savedChild);
-						}
-					} else {
-						log.log(Level.SEVERE,
-								"Couldn't find the parent question for the dependency: "
-										+ q.getText());
+
+			for (Entry<Question, QuestionDependency> entry : dependencyMap
+					.entrySet()) {
+				Question q = entry.getKey();
+				QuestionDependency dep = entry.getValue();
+				Question parent = spreadsheetQuestions.get(dep.getQuestionId()
+						.intValue() - 1);
+				Question savedParent = qDao.findByReferenceId(groupId + "|"
+						+ dep.getQuestionId());
+				Question savedChild = qDao.findByReferenceId(groupId + "|"
+						+ q.getReferenceIndex());
+				if (savedParent != null) {
+
+					if (savedParent != null && savedChild != null) {
+						dep.setQuestionId(savedParent.getKey().getId());
+						savedChild.setDependQuestion(dep);
+						qDao.save(savedChild);
 					}
+				} else {
+					log.log(Level.SEVERE,
+							"Couldn't find the parent question for the dependency: "
+									+ q.getText());
 				}
 			}
+		}
 	}
 }
