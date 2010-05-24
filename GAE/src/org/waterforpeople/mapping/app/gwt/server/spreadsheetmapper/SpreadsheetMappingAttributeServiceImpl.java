@@ -266,8 +266,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				ArrayList<Question> questionList = new ArrayList<Question>();
 				QuestionGroup qgBase = new QuestionGroup();
 				qgBase.setCode("Base");
-				QuestionGroup qgWater = new QuestionGroup();
-				qgWater.setCode("Water");
+				
 				QuestionGroup qgSanitation = new QuestionGroup();
 				qgSanitation.setCode("Sanitation");
 				int count = 0;
@@ -366,7 +365,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					q.setOrder(count);
 					targetQG.addQuestion(q, count);
 				}
-				surveyCommunityWater.addQuestionGroup(qgWater);
 				surveyCommunityWater.addQuestionGroup(qgBase);
 				sg.addSurvey(surveyCommunityWater);
 				if (startRow == 0) {
