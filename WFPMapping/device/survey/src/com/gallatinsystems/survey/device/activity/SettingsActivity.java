@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.service.DataSyncService;
+import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -142,7 +143,9 @@ public class SettingsActivity extends ListActivity {
 								SurveyDbAdapter database = new SurveyDbAdapter(SettingsActivity.this);
 								database.open();
 								database.deleteAllSurveys();
-								database.close();								
+								database.close();			
+								getApplicationContext().startService(
+										new Intent(SettingsActivity.this, SurveyDownloadService.class));
 							}
 						});
 				builder.setNegativeButton(R.string.cancelbutton,
