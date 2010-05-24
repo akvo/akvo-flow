@@ -39,8 +39,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class SurveyManagerPortlet extends Portlet {
 
-	private Tree surveyTree = null;
-	private SurveyServiceAsync svc = null;
 	public static final String NAME = "Survey Manager Portlet";
 	public static final String DESCRIPTION = "Manages Create/Edit/Delete of Surveys";
 	private static String title = "";
@@ -58,16 +56,17 @@ public class SurveyManagerPortlet extends Portlet {
 	private Button deleteQuestionGroupButton = new Button(
 			"Delete Question Group");
 	private Button deleteQuestionButton = new Button("Delete Question");
-	HorizontalPanel treeContainer = new HorizontalPanel();
-	FlexTable questionDetailPanel = new FlexTable();
+	private HorizontalPanel treeContainer = new HorizontalPanel();
+	private FlexTable questionDetailPanel = new FlexTable();
 
-	HorizontalPanel buttonPanel = new HorizontalPanel();
-
-	public SurveyManagerPortlet(String title, boolean scrollable,
-			boolean configurable, int width, int height) {
-		super(title, scrollable, configurable, WIDTH, HEIGHT);
-		svc = GWT.create(SurveyService.class);
-	}
+	private HorizontalPanel buttonPanel = new HorizontalPanel();
+	private VerticalPanel contentPane = null;
+	private Tree surveyTree = null;
+	private SurveyServiceAsync svc = null;
+	private VerticalPanel detailContainer = new VerticalPanel();
+	private FlexTable surveyGroupDetail = new FlexTable();
+	private FlexTable surveyDetail = new FlexTable();
+	private FlexTable questionGroupDetail = new FlexTable();
 
 	public SurveyManagerPortlet() {
 		super(title, scrollable, configurable, WIDTH, HEIGHT);
@@ -79,8 +78,6 @@ public class SurveyManagerPortlet extends Portlet {
 	public String getName() {
 		return NAME;
 	}
-
-	private VerticalPanel contentPane = null;
 
 	private void buildContentPanel() {
 		contentPane = new VerticalPanel();
@@ -94,10 +91,6 @@ public class SurveyManagerPortlet extends Portlet {
 		configureButtonPanel();
 
 	}
-
-	private VerticalPanel detailContainer = new VerticalPanel();
-
-	private TreeItem selectedItem = null;
 
 	private void removeAllWidgetsLoadThisWidget(Widget w) {
 		for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
@@ -722,8 +715,8 @@ public class SurveyManagerPortlet extends Portlet {
 									.getType().equals(QuestionType.OPTION)) {
 						String question = ((QuestionDto) questionItem
 								.getUserObject()).getText();
-						if(question.length()>50)
-							question = question.substring(0,50);
+						if (question.length() > 50)
+							question = question.substring(0, 50);
 						String id = ((QuestionDto) questionItem.getUserObject())
 								.getKeyId().toString();
 						questionLB.addItem(question, id);
@@ -813,7 +806,6 @@ public class SurveyManagerPortlet extends Portlet {
 							answerLB.addItem(qoDto.getText(), qoDto.getCode());
 						}
 					}
-					TextBox qDepAnsId = new TextBox();
 
 					foundQuestion = true;
 					answerLB.setVisible(true);
@@ -1036,7 +1028,7 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void deleteQuestion(QuestionDto value, Long questionGroupId) {
-		svc.deleteQuestion(value, questionGroupId, new AsyncCallback() {
+		svc.deleteQuestion(value, questionGroupId, new AsyncCallback<Void>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -1045,13 +1037,11 @@ public class SurveyManagerPortlet extends Portlet {
 			}
 
 			@Override
-			public void onSuccess(Object result) {
+			public void onSuccess(Void result) {
 				Window.alert("Question Deleted");
 				questionDetailPanel.setVisible(false);
 				// todo implement remove from tree
-
 			}
-
 		});
 	}
 
@@ -1096,10 +1086,6 @@ public class SurveyManagerPortlet extends Portlet {
 		});
 		removeAllWidgetsLoadThisWidget(surveyGroupDetail);
 	}
-
-	private FlexTable surveyGroupDetail = new FlexTable();
-	private FlexTable surveyDetail = new FlexTable();
-	private FlexTable questionGroupDetail = new FlexTable();
 
 	private void loadSurveyDetail(SurveyDto item) {
 		TextBox surveyId = new TextBox();
@@ -1235,7 +1221,6 @@ public class SurveyManagerPortlet extends Portlet {
 	private Long getParentId(Class<? extends BaseDto> clazz) throws Exception {
 		TreeItem parentItem = surveyTree.getSelectedItem().getParentItem();
 		Long parentId = null;
-		String className = clazz.getName();
 		if (clazz.getName().equals(SurveyGroupDto.class.getName())
 				&& parentItem.getUserObject().getClass().getName().equals(
 						clazz.getName()))
@@ -1312,16 +1297,12 @@ public class SurveyManagerPortlet extends Portlet {
 		return ((BaseDto) item.getUserObject()).getKeyId();
 	}
 
-	private TreeItem surveyParentItem = null;
-	private Boolean isNewSurveyItem = false;
-
 	private void saveSurvey() throws Exception {
 		SurveyDto dto = getSurveyDto();
 		Long parentId = null;
 		if (dto.getKeyId() == null) {
 			parentId = getCurrentId();
-			isNewSurveyItem = false;
-			surveyParentItem = surveyTree.getSelectedItem();
+
 		} else
 			parentId = getParentId(SurveyGroupDto.class);
 
@@ -1399,5 +1380,4 @@ public class SurveyManagerPortlet extends Portlet {
 
 				});
 	}
-
 }
