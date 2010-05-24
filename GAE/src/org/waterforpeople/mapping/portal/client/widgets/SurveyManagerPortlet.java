@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SurveyManagerPortlet extends Portlet {
+public class SurveyManagerPortlet extends Portlet implements ClickHandler {
 
 	public static final String NAME = "Survey Manager Portlet";
 	public static final String DESCRIPTION = "Manages Create/Edit/Delete of Surveys";
@@ -47,26 +47,29 @@ public class SurveyManagerPortlet extends Portlet {
 	private static final int HEIGHT = 800;
 	private static final int WIDTH = 1080;
 
-	private Button addSurveyGroupButton = new Button("Add Survey Group");
-	private Button addSurveyButton = new Button("Add Survey");
-	private Button addQuestionGroupButton = new Button("Add Question Group");
-	private Button addQuestionButton = new Button("Add Question");
-	private Button deleteSurveyGroupButton = new Button("Delete Survey Group");
-	private Button deleteSurveyButton = new Button("Delete Survey");
-	private Button deleteQuestionGroupButton = new Button(
-			"Delete Question Group");
-	private Button deleteQuestionButton = new Button("Delete Question");
-	private HorizontalPanel treeContainer = new HorizontalPanel();
-	private FlexTable questionDetailPanel = new FlexTable();
-
 	private HorizontalPanel buttonPanel = new HorizontalPanel();
-	private VerticalPanel contentPane = null;
+	private Button addSurveyGroupButton;
+	private Button addSurveyButton;
+	private Button addQuestionGroupButton;
+	private Button addQuestionButton;
+	private Button deleteSurveyGroupButton;
+	private Button deleteSurveyButton;
+	private Button deleteQuestionGroupButton;
+	private Button deleteQuestionButton;
+	
+	private HorizontalPanel treeContainer = new HorizontalPanel();
 	private Tree surveyTree = null;
-	private SurveyServiceAsync svc = null;
+	
+	private VerticalPanel contentPane = null;	
 	private VerticalPanel detailContainer = new VerticalPanel();
 	private FlexTable surveyGroupDetail = new FlexTable();
 	private FlexTable surveyDetail = new FlexTable();
 	private FlexTable questionGroupDetail = new FlexTable();
+	private FlexTable questionOptionDetail = new FlexTable();
+	private FlexTable questionDetailPanel = new FlexTable();
+	
+	private SurveyServiceAsync svc = null;
+
 
 	public SurveyManagerPortlet() {
 		super(title, scrollable, configurable, WIDTH, HEIGHT);
@@ -82,14 +85,12 @@ public class SurveyManagerPortlet extends Portlet {
 	private void buildContentPanel() {
 		contentPane = new VerticalPanel();
 		setContent(contentPane);
-
+		configureButtonPanel();
 		loadTree();
 		treeContainer.add(surveyTree);
 		treeContainer.add(detailContainer);
 		contentPane.add(buttonPanel);
-		contentPane.add(treeContainer);
-		configureButtonPanel();
-
+		contentPane.add(treeContainer);		
 	}
 
 	private void removeAllWidgetsLoadThisWidget(Widget w) {
@@ -437,100 +438,65 @@ public class SurveyManagerPortlet extends Portlet {
 	}
 
 	private void configureButtonPanel() {
-		buttonPanel.add(addSurveyGroupButton);
-		buttonPanel.add(deleteSurveyGroupButton);
-		deleteSurveyGroupButton.setVisible(false);
-		buttonPanel.add(addSurveyButton);
-		buttonPanel.add(deleteSurveyButton);
-		deleteSurveyButton.setVisible(false);
-		buttonPanel.add(addQuestionGroupButton);
-		buttonPanel.add(deleteQuestionGroupButton);
-		deleteQuestionGroupButton.setVisible(false);
-		buttonPanel.add(addQuestionButton);
-		buttonPanel.add(deleteQuestionButton);
-		deleteQuestionButton.setVisible(false);
-		configureButtonHandlers();
+		addSurveyGroupButton = constructAndInstallButton("Add Survey Group",
+				true);
+		deleteSurveyGroupButton = constructAndInstallButton(
+				"Delete Survey Group", false);
+
+		addSurveyButton = constructAndInstallButton("Add Survey", true);
+		deleteSurveyButton = constructAndInstallButton("Delete Survey", false);
+
+		addQuestionGroupButton = constructAndInstallButton(
+				"Add Question Group", true);
+		deleteQuestionGroupButton = constructAndInstallButton(
+				"Delete Question Group", false);
+
+		addQuestionButton = constructAndInstallButton("Add Question", true);
+		deleteQuestionButton = constructAndInstallButton("Delete Question",
+				false);
 	}
 
-	private void configureButtonHandlers() {
-		addSurveyGroupButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadSurveyGroupDetail(null);
-			}
-
-		});
-
-		deleteSurveyGroupButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				Window.alert("Clicked Delete Survey Group");
-			}
-
-		});
-
-		addSurveyButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadSurveyDetail(null);
-
-			}
-
-		});
-
-		deleteSurveyButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
-
-		addQuestionGroupButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadQuestionGroupDetail(null);
-
-			}
-
-		});
-
-		deleteQuestionGroupButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-
-			}
-
-		});
-
-		addQuestionButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadQuestionDetails(null);
-			}
-
-		});
-
-		deleteQuestionButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
+	/**
+	 * constructs a button with the text passed in and installs it in the
+	 * buttonPanel member variable setting this class as a click handler.
+	 * 
+	 * @param text
+	 * @param isVisible
+	 * @return
+	 */
+	private Button constructAndInstallButton(String text, boolean isVisible) {
+		Button b = new Button(text);
+		b.setVisible(isVisible);
+		b.addClickHandler(this);
+		buttonPanel.add(b);
+		return b;
 	}
 
-	private FlexTable questionOptionDetail = new FlexTable();
+	/**
+	 * handles all button clicks for the portlet
+	 */
+	@Override
+	public void onClick(ClickEvent event) {
+		if (event.getSource() == addSurveyGroupButton) {
+			loadSurveyGroupDetail(null);
+		} else if (event.getSource() == deleteSurveyGroupButton) {
+			Window.alert("Clicked Delete Survey Group");
+		} else if (event.getSource() == addSurveyButton) {
+			loadSurveyDetail(null);
+		} else if (event.getSource() == deleteSurveyButton) {
+
+		} else if (event.getSource() == addQuestionGroupButton) {
+			loadQuestionGroupDetail(null);
+		} else if (event.getSource() == deleteQuestionGroupButton) {
+
+		} else if (event.getSource() == addQuestionButton) {
+			loadQuestionDetails(null);
+		} else if (event.getSource() == deleteQuestionButton) {
+
+		}
+	}
+
+
 
 	private void loadQuestionDetails(QuestionDto item) {
 
