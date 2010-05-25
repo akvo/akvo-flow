@@ -185,6 +185,22 @@ public class SurveyTabContentFactory implements TabContentFactory {
 								.createSurveyRespondent(context.getSurveyId(),
 										context.getUserId()));
 						context.resetAllQuestions();
+						// if we do have missing responses, tell the user
+						AlertDialog.Builder builder = new AlertDialog.Builder(v
+								.getContext());
+						TextView tipText = new TextView(v.getContext());
+						builder.setTitle(R.string.savecompletetitle);
+						tipText.setText(R.string.savecompletetext);
+						builder.setView(tipText);
+						builder.setPositiveButton(R.string.okbutton,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+										scrollView.scrollTo(0,0);
+									}
+								});
+						builder.show();
 					} else {
 						// if we do have missing responses, tell the user
 						AlertDialog.Builder builder = new AlertDialog.Builder(v

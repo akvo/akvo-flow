@@ -93,8 +93,8 @@ public class OptionQuestionView extends QuestionView {
 				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 					@SuppressWarnings("unchecked")
 					public void onItemSelected(AdapterView parent, View view,
-							int position, long id) {
-						if (!suppressListeners) {
+							int position, long id) {						
+						if (!suppressListeners) {								
 							// if position is greater than the size of the
 							// array then OTHER is selected
 							if (position > question.getOptions().size()) {
@@ -139,7 +139,8 @@ public class OptionQuestionView extends QuestionView {
 				optionGroup
 						.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 							public void onCheckedChanged(RadioGroup group,
-									int checkedId) {
+									int checkedId) {			
+								optionGroup.requestChildFocus(optionGroup.findViewById(checkedId), optionGroup);
 								handleSelection(checkedId, true);
 							}
 						});
