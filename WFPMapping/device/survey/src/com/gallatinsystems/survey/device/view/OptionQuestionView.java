@@ -94,7 +94,8 @@ public class OptionQuestionView extends QuestionView {
 					@SuppressWarnings("unchecked")
 					public void onItemSelected(AdapterView parent, View view,
 							int position, long id) {						
-						if (!suppressListeners) {								
+						if (!suppressListeners) {	
+							spinner.requestFocus();
 							// if position is greater than the size of the
 							// array then OTHER is selected
 							if (position > question.getOptions().size()) {
