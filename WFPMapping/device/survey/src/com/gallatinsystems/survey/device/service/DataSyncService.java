@@ -50,12 +50,20 @@ public class DataSyncService extends Service {
 
 	private static final int COMPLETE_ID = 1;
 
+	private static final boolean INCLUDE_IMAGES_IN_ZIP = false;
+
 	private static final String NOTIFICATION_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
-	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
-	private static final String S3_KEY = "1JZZVDSNFFQYF23ZYJ02";
-	private static final String S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String S3_SIG = "7/fo9v4qamQJjnbga529k3iZMZE=";
+	private static final String DATA_UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
+	private static final String S3_ID = "1JZZVDSNFFQYF23ZYJ02";
+	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
+	private static final String DATA_S3_SIG = "7/fo9v4qamQJjnbga529k3iZMZE=";
+	private static final String S3_DATA_FILE_PATH = "devicezip";
+	private static final String IMAGE_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAiZHJ1LXRlc3QifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJpbWFnZXMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
+	private static final String IMAGE_S3_SIG = "4cfzyP4VwgBAkJhzkHQIMYpeSz8=";
+	private static final String IMAGE_UPLOAD_URL = "http://dru-test.s3.amazonaws.com/";
+	private static final String S3_IMAGE_FILE_PATH = "images";
+
 	private static final int BUF_SIZE = 2048;
 
 	private SurveyDbAdapter databaseAdaptor;
@@ -140,7 +148,8 @@ public class DataSyncService extends Service {
 				if (fileName != null
 						&& (idList[0].size() > 0 || idList[1].size() > 0)) {
 					if (ConstantUtil.SEND.equals(type)) {
-						sendFile(fileName);
+						sendFile(fileName, S3_DATA_FILE_PATH, DATA_S3_POLICY,
+								DATA_S3_SIG, DATA_UPLOAD_URL);
 						if (sendProcessingNotification(serverBase, destName)) {
 							if (idList[0].size() > 0) {
 								databaseAdaptor
@@ -260,36 +269,51 @@ public class DataSyncService extends Service {
 					byte[] buffer = new byte[BUF_SIZE];
 
 					for (int i = 0; i < imagePaths.size(); i++) {
-						try {
-							BufferedInputStream bin = new BufferedInputStream(
-									new FileInputStream(imagePaths.get(i)));
-							String name = ZIP_IMAGE_DIR;
-							if (imagePaths.get(i).contains("/")) {
-								name = name
-										+ imagePaths.get(i).substring(
-												imagePaths.get(i).lastIndexOf(
-														"/") + 1);
-							} else {
-								name = name + imagePaths.get(i);
+						if (INCLUDE_IMAGES_IN_ZIP) {
+							try {
+								BufferedInputStream bin = new BufferedInputStream(
+										new FileInputStream(imagePaths.get(i)));
+								String name = ZIP_IMAGE_DIR;
+								if (imagePaths.get(i).contains("/")) {
+									name = name
+											+ imagePaths
+													.get(i)
+													.substring(
+															imagePaths
+																	.get(i)
+																	.lastIndexOf(
+																			"/") + 1);
+								} else {
+									name = name + imagePaths.get(i);
+								}
+								zos.putNextEntry(new ZipEntry(name));
+								int bytesRead = bin.read(buffer);
+								while (bytesRead > 0) {
+									zos.write(buffer, 0, bytesRead);
+									bytesRead = bin.read(buffer);
+								}
+								bin.close();
+								zos.closeEntry();
+							} catch (Exception e) {
+								Log.e(TAG, "Could not add image "
+										+ imagePaths.get(i) + " to zip: "
+										+ e.getMessage());
 							}
-							zos.putNextEntry(new ZipEntry(name));
-							int bytesRead = bin.read(buffer);
-							while (bytesRead > 0) {
-								zos.write(buffer, 0, bytesRead);
-								bytesRead = bin.read(buffer);
+						} else {
+							try {
+								sendFile(imagePaths.get(i), S3_IMAGE_FILE_PATH,
+										IMAGE_S3_POLICY, IMAGE_S3_SIG,
+										IMAGE_UPLOAD_URL);
+							} catch (Exception e) {
+								Log.e(TAG, "Could not add image "
+										+ imagePaths.get(i) + " to zip: "
+										+ e.getMessage());
 							}
-							bin.close();
-							zos.closeEntry();
-						} catch (Exception e) {
-							Log.e(TAG, "Could not add image "
-									+ imagePaths.get(i) + " to zip: "
-									+ e.getMessage());
 						}
 					}
+					zos.close();
 				}
-				zos.close();
 			}
-
 		} catch (Exception e) {
 			Log.e(TAG, "Could not save zip: " + e.getMessage(), e);
 			fileName = null;
@@ -483,19 +507,20 @@ public class DataSyncService extends Service {
 	 * 
 	 * @param fileAbsolutePath
 	 */
-	private boolean sendFile(String fileAbsolutePath) {
+	private boolean sendFile(String fileAbsolutePath, String dir,
+			String policy, String sig, String url) {
 
 		try {
 			HttpURLConnection conn = MultipartStream.createConnection(new URL(
-					UPLOAD_URL));
+					url));
 			MultipartStream stream = new MultipartStream(conn.getOutputStream());
-			stream.writeFormField("key", "devicezip/${filename}");
-			stream.writeFormField("AWSAccessKeyId", S3_KEY);
+			stream.writeFormField("key", dir + "/${filename}");
+			stream.writeFormField("AWSAccessKeyId", S3_ID);
 			stream.writeFormField("acl", "public-read");
 			stream.writeFormField("success_action_redirect",
 					"http://www.gallatinsystems.com/SuccessUpload.html");
-			stream.writeFormField("policy", S3_POLICY);
-			stream.writeFormField("signature", S3_SIG);
+			stream.writeFormField("policy", policy);
+			stream.writeFormField("signature", sig);
 			stream.writeFormField("Content-Type", "application/zip");
 			stream.writeFile("file", fileAbsolutePath, null);
 			stream.close();
