@@ -58,11 +58,14 @@ public class DataSyncService extends Service {
 	private static final String S3_ID = "1JZZVDSNFFQYF23ZYJ02";
 	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
 	private static final String DATA_S3_SIG = "7/fo9v4qamQJjnbga529k3iZMZE=";
+	private static final String DATA_CONTENT_TYPE = "application/zip";
 	private static final String S3_DATA_FILE_PATH = "devicezip";
 	private static final String IMAGE_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJpbWFnZXMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String IMAGE_S3_SIG = "FXBhybgyBjd+oG++KUlvq1onIDY=";	
+	private static final String IMAGE_S3_SIG = "FXBhybgyBjd+oG++KUlvq1onIDY=";
+	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
 	private static final String S3_IMAGE_FILE_PATH = "images";
 
+	
 	private static final int BUF_SIZE = 2048;
 
 	private SurveyDbAdapter databaseAdaptor;
@@ -148,7 +151,7 @@ public class DataSyncService extends Service {
 						&& (idList[0].size() > 0 || idList[1].size() > 0)) {
 					if (ConstantUtil.SEND.equals(type)) {
 						sendFile(fileName, S3_DATA_FILE_PATH, DATA_S3_POLICY,
-								DATA_S3_SIG);
+								DATA_S3_SIG, DATA_CONTENT_TYPE);
 						if (sendProcessingNotification(serverBase, destName)) {
 							if (idList[0].size() > 0) {
 								databaseAdaptor
@@ -301,7 +304,7 @@ public class DataSyncService extends Service {
 						} else {
 							try {
 								sendFile(imagePaths.get(i), S3_IMAGE_FILE_PATH,
-										IMAGE_S3_POLICY, IMAGE_S3_SIG);
+										IMAGE_S3_POLICY, IMAGE_S3_SIG, IMAGE_CONTENT_TYPE);
 							} catch (Exception e) {
 								Log.e(TAG, "Could not add image "
 										+ imagePaths.get(i) + " to zip: "
@@ -506,7 +509,7 @@ public class DataSyncService extends Service {
 	 * @param fileAbsolutePath
 	 */
 	private boolean sendFile(String fileAbsolutePath, String dir,
-			String policy, String sig) {
+			String policy, String sig, String contentType) {
 
 		try {
 			HttpURLConnection conn = MultipartStream.createConnection(new URL(
@@ -519,7 +522,7 @@ public class DataSyncService extends Service {
 					"http://www.gallatinsystems.com/SuccessUpload.html");
 			stream.writeFormField("policy", policy);
 			stream.writeFormField("signature", sig);
-			stream.writeFormField("Content-Type", "application/zip");
+			stream.writeFormField("Content-Type", contentType);
 			stream.writeFile("file", fileAbsolutePath, null);
 			stream.close();
 			int code = conn.getResponseCode();
