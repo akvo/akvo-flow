@@ -22,6 +22,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
@@ -93,8 +94,8 @@ public class OptionQuestionView extends QuestionView {
 				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 					@SuppressWarnings("unchecked")
 					public void onItemSelected(AdapterView parent, View view,
-							int position, long id) {						
-						if (!suppressListeners) {	
+							int position, long id) {
+						if (!suppressListeners) {
 							spinner.requestFocus();
 							// if position is greater than the size of the
 							// array then OTHER is selected
@@ -140,15 +141,35 @@ public class OptionQuestionView extends QuestionView {
 				optionGroup
 						.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 							public void onCheckedChanged(RadioGroup group,
-									int checkedId) {			
-								optionGroup.requestChildFocus(optionGroup.findViewById(checkedId), optionGroup);
+									int checkedId) {
+								optionGroup.requestChildFocus(optionGroup
+										.findViewById(checkedId), optionGroup);
 								handleSelection(checkedId, true);
 							}
 						});
 				int i = 0;
 				for (int j = 0; j < options.size(); j++) {
 					Option o = options.get(j);
-					RadioButton rb = new RadioButton(context);
+					RadioButton rb = new RadioButton(context);					
+					rb.setLongClickable(true);
+					rb.setOnLongClickListener(new OnLongClickListener() {
+						@Override
+						public boolean onLongClick(View v) {							
+							AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+							TextView tipText = new TextView(getContext());
+							tipText.setText(((RadioButton)(v)).getText());
+							builder.setTitle(R.string.optiontext);
+							builder.setView(tipText);
+							builder.setPositiveButton(R.string.okbutton,
+									new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog, int id) {
+											dialog.cancel();											
+										}
+									});
+							builder.show();
+							return true;
+						}
+					});
 					rb.setText(o.getText());
 					optionGroup.addView(rb, i++,
 							new LayoutParams(LayoutParams.FILL_PARENT,

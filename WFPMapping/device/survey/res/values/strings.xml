@@ -100,4 +100,5 @@
 	<string name="reloadconftext">Are you sure you want to purge and re-download surveys?</string>
 	<string name="savecompletetitle">Survey submitted</string>
 	<string name="savecompletetext">Survey responses have been saved.</string>
+		<string name="optiontext">Option</string>
 </resources>
