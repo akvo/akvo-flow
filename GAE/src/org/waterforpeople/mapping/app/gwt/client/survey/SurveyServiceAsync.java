@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyServiceAsync {
@@ -10,8 +12,8 @@ public interface SurveyServiceAsync {
 	public void listSurvey(AsyncCallback<SurveyDto[]> callback);
 
 
-	void listSurveyQuestionByType(String typeCode,
-			AsyncCallback<SurveyQuestionDto[]> callback);
+	void listSurveyQuestionByType(QuestionType type,
+			AsyncCallback<QuestionDto[]> callback);
 
 
 	void getSurveyGroup(String surveyGroupCode,

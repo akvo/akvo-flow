@@ -1,11 +1,12 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.google.gwt.core.client.GWT;
@@ -51,21 +52,21 @@ public class SurveyQuestionPortlet extends Portlet {
 
 		SurveyServiceAsync surveyService = GWT.create(SurveyService.class);
 		// Set up the callback object.
-		AsyncCallback<SurveyQuestionDto[]> surveyCallback = new AsyncCallback<SurveyQuestionDto[]>() {
+		AsyncCallback<QuestionDto[]> surveyCallback = new AsyncCallback<QuestionDto[]>() {
 			public void onFailure(Throwable caught) {
 				// no-op
 			}
 
-			public void onSuccess(SurveyQuestionDto[] result) {
+			public void onSuccess(QuestionDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
-						questionListbox.addItem(result[i].getQuestionText(),
-								result[i].getQuestionId());
+						questionListbox.addItem(result[i].getText(),
+								result[i].getKeyId().toString());
 
 					}
 					questionListbox.setVisibleItemCount(1);
 					if (result.length > 0) {
-						buildChart(result[0].getQuestionId());
+						buildChart(result[0].getKeyId().toString());
 					}
 					questionListbox.addChangeHandler(new ChangeHandler() {
 
@@ -78,7 +79,7 @@ public class SurveyQuestionPortlet extends Portlet {
 				}
 			}
 		};
-		surveyService.listSurveyQuestionByType("option", surveyCallback);
+		surveyService.listSurveyQuestionByType(QuestionType.OPTION, surveyCallback);
 
 	}
 

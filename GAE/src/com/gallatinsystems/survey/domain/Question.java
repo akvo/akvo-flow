@@ -21,6 +21,11 @@ public class Question extends BaseDomain implements Comparable<Question> {
 	private String validationRule;
 	private QuestionDependency dependQuestion = null;
 	private Integer order;
+	private String tip;
+	@NotPersistent
+	private OptionContainer optionContainer = null;
+	private QuestionDto.QuestionType type;
+	private ArrayList<QuestionHelp> questionHelpList;
 
 	public Integer getOrder() {
 		return order;
@@ -62,12 +67,6 @@ public class Question extends BaseDomain implements Comparable<Question> {
 		this.optionContainer = optionContainer;
 	}
 
-	private String tip;
-	@NotPersistent
-	private OptionContainer optionContainer = null;
-
-	private QuestionDto.QuestionType type;
-	private ArrayList<QuestionHelp> questionHelpList;
 
 	public void addQuestionHelp(QuestionHelp questionHelp) {
 		if (questionHelpList == null) {

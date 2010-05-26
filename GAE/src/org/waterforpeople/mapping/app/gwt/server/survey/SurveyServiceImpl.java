@@ -137,19 +137,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	 * This method will return a list of all the questions that have a specific
 	 * type code
 	 */
-	public SurveyQuestionDto[] listSurveyQuestionByType(String typeCode) {
+	public QuestionDto[] listSurveyQuestionByType(QuestionType type) {
 
-		SurveyDAO dao = new SurveyDAO();
-		List<SurveyQuestion> qList = dao.listQuestionByType(typeCode);
-		SurveyQuestionDto[] dtoList = null;
+		QuestionDao questionDao = new QuestionDao();
+		List<Question> qList = questionDao.listQuestionByType(type);
+		QuestionDto[] dtoList = null;
 		if (qList != null) {
-			dtoList = new SurveyQuestionDto[qList.size()];
+			dtoList = new QuestionDto[qList.size()];
 			for (int i = 0; i < qList.size(); i++) {
-				SurveyQuestionDto qDto = new SurveyQuestionDto();
-				qDto.setQuestionId(qList.get(i).getId());
-				qDto.setQuestionType(typeCode);
-				qDto.setQuestionText(qList.get(i).getText());
-				dtoList[i] = qDto;
+				dtoList[i] = marshalQuestionDto(qList.get(i));
 			}
 		}
 		return dtoList;
@@ -429,8 +425,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
 			String questionGroupId, boolean needDetails) {
 		QuestionDao questionDao = new QuestionDao();
-		List<Question> questionList = questionDao
-				.listQuestionsByQuestionGroup(questionGroupId,needDetails);
+		List<Question> questionList = questionDao.listQuestionsByQuestionGroup(
+				questionGroupId, needDetails);
 		java.util.ArrayList<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
 		for (Question canonical : questionList) {
 			QuestionDto dto = marshalQuestionDto(canonical);
@@ -525,7 +521,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				if (qg.getQuestionMap() != null) {
 					for (Entry<Integer, Question> qEntry : qg.getQuestionMap()
 							.entrySet()) {
-						Question q = qEntry.getValue();						
+						Question q = qEntry.getValue();
 						com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
 								.createQuestion();
 						qXML.setId(new String("" + q.getKey().getId() + ""));
@@ -557,14 +553,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							qXML.setType(FREE_QUESTION_TYPE);
 						else if (q.getType().equals(QuestionType.GEO))
 							qXML.setType(GEO_QUESTION_TYPE);
-						else if(q.getType().equals(QuestionType.NUMBER)){
+						else if (q.getType().equals(QuestionType.NUMBER)) {
 							qXML.setType(FREE_QUESTION_TYPE);
 							ValidationRule vrule = new ValidationRule();
-							vrule.setValidationType("numeric");							
+							vrule.setValidationType("numeric");
 							vrule.setSigned("false");
 							qXML.setValidationRule(vrule);
-						 }						
-						else if (q.getType().equals(QuestionType.OPTION))
+						} else if (q.getType().equals(QuestionType.OPTION))
 							qXML.setType(OPTION_QUESTION_TYPE);
 						else if (q.getType().equals(QuestionType.PHOTO))
 							qXML.setType(PHOTO_QUESTION_TYPE);
@@ -592,8 +587,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							// + ":" + oc.getAllowMultipleFlag() + ":"
 							// + oc.getAllowOtherFlag());
 							Options options = objFactory.createOptions();
-//							if(oc.getAllowMultipleFlag()!=null)
-//								options.setAllowMultiple()
+							// if(oc.getAllowMultipleFlag()!=null)
+							// options.setAllowMultiple()
 							if (oc.getAllowOtherFlag() != null)
 								options.setAllowOther(oc.getAllowOtherFlag()
 										.toString());
@@ -643,9 +638,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			StringBuilder sb = new StringBuilder();
 			sb.append("Could not publish survey: \n cause: " + ex.getCause()
 					+ " \n message" + ex.getMessage() + "\n stack trace:  ");
-//			for (StackTraceElement ste : ex.getStackTrace()) {
-//				sb.append("        " + ste + "\n");
-//			}
+			// for (StackTraceElement ste : ex.getStackTrace()) {
+			// sb.append("        " + ste + "\n");
+			// }
 			return sb.toString();
 		}
 
@@ -656,9 +651,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public QuestionDto loadQuestionDetails(Long questionId) {
 		QuestionDao questionDao = new QuestionDao();
 		Question canonical = questionDao.getByKey(questionId);
-		if(canonical != null){ 
+		if (canonical != null) {
 			return marshalQuestionDto(canonical);
-		}else{
+		} else {
 			return null;
 		}
 	}

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
@@ -19,6 +21,10 @@ public class QuestionDao extends BaseDAO<Question> {
 		super(Question.class);
 		qqgaDao = new QuestionQuestionGroupAssocDao();
 		ocDao = new OptionContainerDao();
+	}
+	
+	public List<Question> listQuestionByType(QuestionType type){
+		return listByProperty("type", type.toString(), "String");
 	}
 
 	public List<Question> listQuestionsByQuestionGroup(String questionGroupCode, boolean needDetails) {
