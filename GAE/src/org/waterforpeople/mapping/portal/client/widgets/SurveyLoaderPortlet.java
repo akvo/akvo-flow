@@ -90,6 +90,7 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 				MessageDialog errDia = new MessageDialog("Error",
 						"Cannot list spreadsheets.");
 				errDia.showRelativeTo(processSpreadsheetButton);
+				Window.open("/authsub", "_self", ""); 
 			}
 
 			@Override

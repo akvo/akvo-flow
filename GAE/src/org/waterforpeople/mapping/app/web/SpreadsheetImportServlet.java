@@ -28,9 +28,7 @@ public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 		if (SpreadsheetImportRequest.PROCESS_FILE_ACTION
 				.equalsIgnoreCase(importReq.getAction())) {
 			SpreadsheetMappingAttributeServiceImpl mappingService = new SpreadsheetMappingAttributeServiceImpl();	
-			if(importReq.getSessionToken() != null){
-				mappingService.setCreds(importReq.getSessionToken());
-			}
+			
 			mappingService.processSurveySpreadsheet(importReq.getIdentifier(),importReq.getStartRow(), importReq.getGroupId());
 		}
 		return response;

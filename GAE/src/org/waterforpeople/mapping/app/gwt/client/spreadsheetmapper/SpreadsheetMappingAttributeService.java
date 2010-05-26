@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("spreadsheetattributemapperrpc")
 public interface SpreadsheetMappingAttributeService extends RemoteService {
-	public ArrayList<String> listSpreadsheets();
+	public ArrayList<String> listSpreadsheets() throws Exception;
 
 	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName);
 
@@ -22,5 +22,5 @@ public interface SpreadsheetMappingAttributeService extends RemoteService {
 	public void processSurveySpreadsheet(String spreadsheetName, int startRow, Long groupId);
 	
 
-	ArrayList<String> listSpreadsheetsFromFeed(String feedURL);
+	ArrayList<String> listSpreadsheetsFromFeed(String feedURL) throws Exception;
 }

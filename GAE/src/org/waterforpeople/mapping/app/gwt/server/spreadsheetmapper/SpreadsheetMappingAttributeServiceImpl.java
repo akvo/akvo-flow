@@ -22,11 +22,9 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
 import com.gallatinsystems.common.data.spreadsheet.GoogleSpreadsheetAdapter;
-import com.gallatinsystems.common.data.spreadsheet.dao.SpreadsheetDao;
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
-import com.gallatinsystems.security.authorization.utility.TokenUtility;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.OptionContainer;
@@ -49,46 +47,28 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	 * 
 	 */
 	private static final long serialVersionUID = 7708378583408245812L;
-	private String sessionToken = null;
-	private PrivateKey privateKey = null;
 
 	public SpreadsheetMappingAttributeServiceImpl() {
 
 	}
 
-	public void setCreds() {
-		if (sessionToken == null || privateKey == null) {
-			sessionToken = getSessionTokenFromSession();
-			privateKey = getPrivateKeyFromSession();
-		}
-	}
-
-	public void setCreds(String token) {
-		sessionToken = token;
-		TokenUtility util = new TokenUtility();
-		try {
-			privateKey = util.getPrivateKey();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	private String getSessionTokenFromSession() {
+	private String getSessionTokenFromSession() throws Exception {
 		HttpSession session = this.getThreadLocalRequest().getSession();
 		String token = (String) session.getValue("sessionToken");
-
-		return token;
+		if (token != null)
+			return token;
+		else
+			throw new Exception(
+					"Invalid or missing Google Spreadsheet Session Token");
 	}
 
-	private PrivateKey getPrivateKeyFromSession() {
+	private PrivateKey getPrivateKeyFromSession() throws Exception {
 		HttpSession session = this.getThreadLocalRequest().getSession();
 		PrivateKey key = (PrivateKey) session.getValue("privateKey");
-		return key;
+		if (key != null)
+			return key;
+		else
+			throw new Exception("Invalid or missing Private Key");
 	}
 
 	@Override
@@ -98,11 +78,12 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	@Override
 	public ArrayList<String> listSpreadsheetColumns(String spreadsheetName) {
-		setCreds();
+
 		log.info("listingSpreadsheetColumns");
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
-				sessionToken, privateKey);
+
 		try {
+			SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
+					getSessionTokenFromSession(), getPrivateKeyFromSession());
 			return helper.listSpreadsheetColumns(spreadsheetName);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -110,32 +91,42 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e) {
+			// need to reauth
+			e.printStackTrace();
 		}
 		return null;
 	}
 
 	@Override
-	public ArrayList<String> listSpreadsheets() {
-		setCreds();
+	public ArrayList<String> listSpreadsheets() throws Exception {
+
 		return this.listSpreadsheetsFromFeed(null);
 	}
 
 	@Override
 	public void saveSpreadsheetMapping(MappingSpreadsheetDefinition mapDef) {
-		setCreds();
+
 		// TODO change to return status of save or errors if there are any
-		SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
-				sessionToken, privateKey);
+		SpreadsheetMappingAttributeHelper helper;
+		try {
+			helper = new SpreadsheetMappingAttributeHelper(
+					getSessionTokenFromSession(), getPrivateKeyFromSession());
+			helper.saveSpreadsheetMapping(copyToCanonicalObject(mapDef));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// convert to domain object from dto
 
-		helper.saveSpreadsheetMapping(copyToCanonicalObject(mapDef));
+		
 	}
 
 	@Override
 	public String processSpreadsheet(MappingSpreadsheetDefinition mapDef) {
-		setCreds();
 		try {
-			new SpreadsheetAccessPointAdapter(sessionToken, privateKey)
+			new SpreadsheetAccessPointAdapter(getSessionTokenFromSession(),
+					getPrivateKeyFromSession())
 					.processSpreadsheetOfAccessPoints(mapDef
 							.getSpreadsheetURL());
 			return new String("Processed Successfully");
@@ -148,6 +139,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			String message = new String("Could not save spreadsheet : ");
 			message.concat(e.getMessage());
 			return message;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -194,14 +188,17 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	}
 
 	@Override
-	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL) {
-		setCreds();
+	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL) throws Exception {
+
 		if (feedURL == null) {
 			try {
 				try {
-					return new SpreadsheetMappingAttributeHelper(sessionToken,
-							privateKey)
+
+					return new SpreadsheetMappingAttributeHelper(
+							getSessionTokenFromSession(),
+							getPrivateKeyFromSession())
 							.listSpreadsheets("http://spreadsheets.google.com/feeds/spreadsheets/private/full");
+
 				} catch (GeneralSecurityException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -212,6 +209,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			} catch (ServiceException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
 			}
 
 		}
@@ -223,27 +223,33 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			String spreadsheetName) {
 		// TODO Auto-generated method stub
 		MappingDefinitionColumnContainer mapdefCC = new MappingDefinitionColumnContainer();
-		org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition mapDef = new SpreadsheetMappingAttributeHelper(
-				sessionToken, privateKey)
-				.getMappingSpreadsheetDefinition(spreadsheetName);
-		if (mapDef != null) {
-			mapdefCC.setMapDef(copyToDTOObject(mapDef));
-			mapdefCC
-					.setSpreadsheetColsList(listSpreadsheetColumns(spreadsheetName));
-			return mapdefCC;
+		org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition mapDef;
+		try {
+			mapDef = new SpreadsheetMappingAttributeHelper(
+					getSessionTokenFromSession(), getPrivateKeyFromSession())
+					.getMappingSpreadsheetDefinition(spreadsheetName);
+			if (mapDef != null) {
+				mapdefCC.setMapDef(copyToDTOObject(mapDef));
+				mapdefCC
+						.setSpreadsheetColsList(listSpreadsheetColumns(spreadsheetName));
+				return mapdefCC;
 
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 		return null;
 	}
 
 	@Override
 	public void processSurveySpreadsheet(String spreadsheetName, int startRow,
 			Long groupId) {
-		setCreds();
 
 		try {
 			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
-					sessionToken, privateKey);
+					getSessionTokenFromSession(), getPrivateKeyFromSession());
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
 			sc.setSpreadsheetName(spreadsheetName);
@@ -266,7 +272,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				ArrayList<Question> questionList = new ArrayList<Question>();
 				QuestionGroup qgBase = new QuestionGroup();
 				qgBase.setCode("Base");
-				
+
 				QuestionGroup qgSanitation = new QuestionGroup();
 				qgSanitation.setCode("Sanitation");
 				int count = 0;
@@ -389,7 +395,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
 											+ "" : groupId.toString()).param(
-									"sessionToken", sessionToken));
+									"sessionToken",
+									getSessionTokenFromSession()));
 				} else {
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
@@ -397,7 +404,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							"identifier", sc.getSpreadsheetName()).param(
 							"type", "Survey").param("action", "processFile")
 							.param("startRow", "-1").param("sessionToken",
-									sessionToken).param(
+									getSessionTokenFromSession()).param(
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
@@ -412,6 +419,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
