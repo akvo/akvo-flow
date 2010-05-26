@@ -12,11 +12,13 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.R;
@@ -65,7 +67,13 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	 * questions.
 	 */
 	public View createTabContent(String tag) {
+		/*
+		 * vertScrollView = new ScrollView(context);
+		 * vertScrollView.setLayoutParams(new
+		 * LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		 */
 		scrollView = new ScrollView(context);
+		// vertScrollView.addView(scrollView);
 		scrollView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT));
 
@@ -76,7 +84,8 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		scrollView.addView(table);
 		questionMap = new HashMap<String, QuestionView>();
 
-		ArrayList<Question> questions = questionGroup.getQuestions();		
+		ArrayList<Question> questions = questionGroup.getQuestions();
+
 		for (int i = 0; i < questions.size(); i++) {
 			QuestionView questionView = null;
 			Question q = questions.get(i);
@@ -111,6 +120,12 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			questionView
 					.addQuestionInteractionListener((SurveyViewActivity) context);
 			tr.addView(questionView);
+			if (i < questions.size() - 1) {
+				View ruler = new View(context);
+				ruler.setBackgroundColor(0xFF00FF00);
+				questionView.addView(ruler, new ViewGroup.LayoutParams(
+						ViewGroup.LayoutParams.FILL_PARENT, 2));				
+			}
 			table.addView(tr);
 		}
 		// set up listeners for dependencies
@@ -197,7 +212,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 									public void onClick(DialogInterface dialog,
 											int id) {
 										dialog.cancel();
-										scrollView.scrollTo(0,0);
+										scrollView.scrollTo(0, 0);
 									}
 								});
 						builder.show();
