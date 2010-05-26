@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -366,7 +367,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					qgDto.setQuestionMap(null);
 					qGroupDtoList.add(qgDto);
 					if (qg.getQuestionMap() != null) {
-						HashMap<Integer, QuestionDto> qDtoMap = new HashMap<Integer, QuestionDto>();
+						TreeMap<Integer, QuestionDto> qDtoMap = new TreeMap<Integer, QuestionDto>();
 						for (Entry<Integer, Question> entry : qg
 								.getQuestionMap().entrySet()) {
 							QuestionDto qdto = marshalQuestionDto(entry

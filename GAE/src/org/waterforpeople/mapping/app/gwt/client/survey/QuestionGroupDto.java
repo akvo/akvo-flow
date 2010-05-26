@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
@@ -12,7 +12,7 @@ public class QuestionGroupDto extends BaseDto {
 	/**
 	 * 
 	 */
-	private HashMap<Integer, QuestionDto> questionMap = null;
+	private TreeMap<Integer, QuestionDto> questionMap = null;
 
 	private String code;
 	private String description;
@@ -33,17 +33,17 @@ public class QuestionGroupDto extends BaseDto {
 		this.description = description;
 	}
 
-	public void setQuestionMap(HashMap<Integer, QuestionDto> questionMap) {
+	public void setQuestionMap(TreeMap<Integer, QuestionDto> questionMap) {
 		this.questionMap = questionMap;		
 	}
 
-	public HashMap<Integer, QuestionDto> getQuestionMap() {
+	public TreeMap<Integer, QuestionDto> getQuestionMap() {
 		return questionMap;
 	}
 
 	public void addQuestion(QuestionDto item, Integer position) {
 		if (questionMap == null) {
-			questionMap = new HashMap<Integer, QuestionDto>();
+			questionMap = new TreeMap<Integer, QuestionDto>();
 			questionMap.put(position, item);
 		} else {
 			questionMap.put(position, item);
