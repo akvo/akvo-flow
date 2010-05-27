@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.TabHost;
 
@@ -48,6 +50,11 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int VIDEO_ACTIVITY_REQUEST = 2;
 	private static final int SCAN_ACTIVITY_REQUEST = 3;
+	private static final int LARGE_TXT = 1;
+	private static final int NORMAL_TXT = 2;
+
+	private static final float LARGE_TXT_SIZE = 20;
+	private static final float NORMAL_TXT_SIZE = 14;
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
 	private static final String TEMP_VIDEO_NAME_PREFIX = "/wfpVideo";
 	private static final String VIDEO_PREFIX = "file:////";
@@ -61,12 +68,14 @@ public class SurveyViewActivity extends TabActivity implements
 	private String surveyId;
 	private Long respondentId;
 	private String userId;
+	private float currentTextSize;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		currentTextSize = NORMAL_TXT_SIZE;
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
 
@@ -112,7 +121,7 @@ public class SurveyViewActivity extends TabActivity implements
 				if (group.getQuestions() != null
 						&& group.getQuestions().size() > 0) {
 					SurveyTabContentFactory factory = new SurveyTabContentFactory(
-							this, group, databaseAdapter);
+							this, group, databaseAdapter,currentTextSize);
 					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
 							.setIndicator(group.getHeading()).setContent(
 									factory));
@@ -282,6 +291,46 @@ public class SurveyViewActivity extends TabActivity implements
 			}
 		}
 		return missingQuestions;
+	}
+
+	/**
+	 * presents the survey options menu when the user presses the menu key
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, LARGE_TXT, 0, R.string.largetxtoption);
+		menu.add(0, NORMAL_TXT, 1, R.string.normaltxtoption);
+		return true;
+	}
+
+	/**
+	 * handles the button press for the "add" button on the menu
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case LARGE_TXT:
+			updateTextSize(LARGE_TXT_SIZE);
+			return true;
+		case NORMAL_TXT:
+			updateTextSize(NORMAL_TXT_SIZE);
+		}
+		return super.onMenuItemSelected(featureId, item);
+	}
+
+	/**
+	 * iterates over all questions in the tab factories and changes their text
+	 * size
+	 * 
+	 * @param size
+	 */
+	private void updateTextSize(float size) {
+		if (tabContentFactories != null) {
+			for (int i = 0; i < tabContentFactories.size(); i++) {
+				tabContentFactories.get(i).updateTextSize(size);
+			}
+		}
 	}
 
 	@Override

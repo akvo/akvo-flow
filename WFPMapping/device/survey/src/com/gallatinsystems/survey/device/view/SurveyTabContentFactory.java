@@ -12,13 +12,11 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.R;
@@ -47,6 +45,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	private HashMap<String, QuestionView> questionMap;
 	private SurveyDbAdapter databaseAdaptor;
 	private ScrollView scrollView;
+	private float defaultTextSize;
 
 	/**
 	 * stores the context and questionGroup to member fields
@@ -55,10 +54,11 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	 * @param qg
 	 */
 	public SurveyTabContentFactory(SurveyViewActivity c, QuestionGroup qg,
-			SurveyDbAdapter dbAdaptor) {
+			SurveyDbAdapter dbAdaptor, float textSize) {
 		questionGroup = qg;
 		context = c;
 		databaseAdaptor = dbAdaptor;
+		defaultTextSize = textSize;
 	}
 
 	/**
@@ -116,6 +116,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			} else {
 				questionView = new QuestionView(context, q);
 			}
+			questionView.setTextSize(defaultTextSize);
 			questionMap.put(q.getId(), questionView);
 			questionView
 					.addQuestionInteractionListener((SurveyViewActivity) context);
@@ -124,7 +125,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 				View ruler = new View(context);
 				ruler.setBackgroundColor(0xFF00FF00);
 				questionView.addView(ruler, new ViewGroup.LayoutParams(
-						ViewGroup.LayoutParams.FILL_PARENT, 2));				
+						ViewGroup.LayoutParams.FILL_PARENT, 2));
 			}
 			table.addView(tr);
 		}
@@ -323,6 +324,19 @@ public class SurveyTabContentFactory implements TabContentFactory {
 
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * updates text size of all questions in this tab
+	 * @param size
+	 */
+	public void updateTextSize(float size) {
+		defaultTextSize = size;
+		if (questionMap != null) {
+			for (QuestionView qv : questionMap.values()) {
+				qv.setTextSize(size);
 			}
 		}
 	}

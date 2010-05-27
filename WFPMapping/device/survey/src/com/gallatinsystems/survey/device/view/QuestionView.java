@@ -58,7 +58,7 @@ public class QuestionView extends TableLayout implements
 		super(context);
 		question = q;
 		TableRow tr = new TableRow(context);
-		questionText = new TextView(context);
+		questionText = new TextView(context);		
 		questionText.setWidth(DEFAULT_WIDTH);
 		String text = q.getText();
 		if (q.isMandatory()) {
@@ -287,4 +287,7 @@ public class QuestionView extends TableLayout implements
 		return question;
 	}
 
+	public void setTextSize(float size){
+		questionText.setTextSize(size);
+	}
 }

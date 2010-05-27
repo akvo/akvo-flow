@@ -101,4 +101,6 @@
 	<string name="savecompletetitle">Survey submitted</string>
 	<string name="savecompletetext">Survey responses have been saved.</string>
 		<string name="optiontext">Option</string>
+				<string name="largetxtoption">Large Text</string>
+				<string name="normaltxtoption">Normal Text</string>
 </resources>
