@@ -2,14 +2,18 @@ package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
@@ -30,7 +34,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				try {
 					si.setSurveyId(Long.parseLong(parts[0]));
 				} catch (NumberFormatException e) {
-					logger.log(Level.SEVERE,"Could not parse survey id: " + parts[0]);
+					logger.log(Level.SEVERE, "Could not parse survey id: "
+							+ parts[0]);
 				}
 			}
 			qas.setArbitratyNumber(new Long(parts[1]));
@@ -48,6 +53,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	public SurveyInstanceDAO() {
 		super(SurveyInstance.class);
+	}
+
+	public List<SurveyInstance> listByDateRange(Date beginDate,
+			Date endDate) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		ArrayList<SurveyInstance> results = null;
+
+		javax.jdo.Query query = pm.newQuery("select from SurveyInstance "
+				+ "where collectionDate >= beginDateParam ");
+		 query.declareParameters("java.util.Date beginDateParm");
+
+		results = (ArrayList<SurveyInstance>) query.execute(beginDate);
+
+		return results;
 	}
 
 }
