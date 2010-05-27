@@ -24,8 +24,7 @@ public class PortletFactory {
 					AccessPointManagerPortlet.DESCRIPTION },
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
-					AccessPointPerformancePortlet.DESCRIPTION },
-			{ RawDataViewPortlet.NAME, RawDataViewPortlet.DESCRIPTION } };
+					AccessPointPerformancePortlet.DESCRIPTION }};
 
 	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {

@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.gwt.server.surveyinstance;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
@@ -30,12 +31,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public ArrayList<SurveyInstanceDto> listSurveyInstance(Date beginDate) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		ArrayList<SurveyInstance> siList = (ArrayList<SurveyInstance>) dao
+		List<SurveyInstance> siList = dao
 				.list("all");
 		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
 		for (SurveyInstance siItem : siList)
 			siDtoList.add(marshalToDto(siItem));
-		return null;
+		return siDtoList;
 	}
 
 	private SurveyInstanceDto marshalToDto(SurveyInstance si) {
