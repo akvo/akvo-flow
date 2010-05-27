@@ -16,12 +16,14 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class RawDataViewPortlet extends LocationDrivenPortlet {
+	public static final String NAME = "Raw Data Manager";
+	public static final String DESCRIPTION = "Allows the management of raw imported survey data";
 	private static String title;
 	private static String description;
 	private static Boolean scrollable;
 	private static Boolean configurable;
-	private static Integer width;
-	private static Integer height;
+	private static Integer width=1024;
+	private static Integer height=768;
 	private static Boolean useCommunity;
 	private static String specialOption;
 	private static UserDto user;
@@ -31,14 +33,14 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 	public RawDataViewPortlet(String title, boolean scrollable,
 			boolean configurable, int width, int height, UserDto user,
 			boolean useCommunity, String specialOption) {
-		super(title, scrollable, configurable, width, height, user,
-				useCommunity, specialOption);
+		super(NAME, true, false, width, height, null,
+				false, null);
 		setupPortlet();
 	}
 
 	public RawDataViewPortlet() {
-		super(title, scrollable, configurable, width, height, user,
-				useCommunity, specialOption);
+		super(NAME, true, false, width, height, null,
+				false, null);
 		setupPortlet();
 	}
 
@@ -48,12 +50,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 	private void setupPortlet() {
 		bindSvc();
 		loadContentPanel();
-		
+
 	}
-	
-	
-	
-	public String getDescription(){
+
+	public String getDescription() {
 		return description;
 	}
 
@@ -94,12 +94,12 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 
 				});
 	}
+
 	private HorizontalPanel mainHPanel = new HorizontalPanel();
 	private VerticalPanel contentPanel = new VerticalPanel();
-	
 
 	private void bindItemToTree(SurveyInstanceDto item) {
-		TreeItem treeItem= new TreeItem();
+		TreeItem treeItem = new TreeItem();
 		treeItem.setText(item.getKeyId() + ":" + item.getCollectionDate());
 		treeItem.setUserObject(item);
 		surveyImportedTree.addItem(treeItem);

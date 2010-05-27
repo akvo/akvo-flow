@@ -25,7 +25,7 @@ public class PortletFactory {
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
 					AccessPointPerformancePortlet.DESCRIPTION },
-					{RawDataViewPortlet.NAME, RawDataViewPortlet.DESCRIPTION}};
+			{ RawDataViewPortlet.NAME, RawDataViewPortlet.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {
@@ -62,6 +62,8 @@ public class PortletFactory {
 			return new DataUploadPortlet();
 		} else if (name.equals(SurveyLoaderPortlet.NAME)) {
 			return new SurveyLoaderPortlet();
+		} else if (name.equals(RawDataViewPortlet.NAME)) {
+			return new RawDataViewPortlet();
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
