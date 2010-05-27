@@ -2,7 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.SurveyInstance;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class QuestionAnswerDto extends BaseDto{
+public class QuestionAnswerStoreDto extends BaseDto{
 
 	/**
 	 * 
