@@ -2,9 +2,9 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 
-import org.waterforpeople.mapping.app.gwt.client.SurveyInstance.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.gwt.client.SurveyInstance.SurveyInstanceService;
-import org.waterforpeople.mapping.app.gwt.client.SurveyInstance.SurveyInstanceServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.google.gwt.core.client.GWT;

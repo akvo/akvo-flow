@@ -3,9 +3,9 @@ package org.waterforpeople.mapping.app.gwt.server.surveyinstance;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.waterforpeople.mapping.app.gwt.client.SurveyInstance.QuestionAnswerStoreDto;
-import org.waterforpeople.mapping.app.gwt.client.SurveyInstance.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.gwt.client.SurveyInstance.SurveyInstanceService;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;

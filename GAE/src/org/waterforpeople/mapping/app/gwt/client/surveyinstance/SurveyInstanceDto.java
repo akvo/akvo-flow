@@ -20,9 +20,7 @@ public class SurveyInstanceDto extends BaseDto {
 	@Persistent
 	private Date collectionDate;
 
-	@Persistent
-	private DeviceFiles deviceFile;
-
+	
 	@Persistent(mappedBy = "surveyInstance")
 	private ArrayList<QuestionAnswerStoreDto> questionAnswersStore;
 
@@ -52,13 +50,6 @@ public class SurveyInstanceDto extends BaseDto {
 		this.collectionDate = collectionDate;
 	}
 
-	public DeviceFiles getDeviceFile() {
-		return deviceFile;
-	}
-
-	public void setDeviceFile(DeviceFiles deviceFile) {
-		this.deviceFile = deviceFile;
-	}
 
 	public ArrayList<QuestionAnswerStoreDto> getQuestionAnswersStore() {
 		return questionAnswersStore;
