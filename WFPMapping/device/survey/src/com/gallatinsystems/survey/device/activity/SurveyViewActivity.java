@@ -53,7 +53,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int LARGE_TXT = 1;
 	private static final int NORMAL_TXT = 2;
 
-	private static final float LARGE_TXT_SIZE = 20;
+	private static final float LARGE_TXT_SIZE = 22;
 	private static final float NORMAL_TXT_SIZE = 14;
 	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
 	private static final String TEMP_VIDEO_NAME_PREFIX = "/wfpVideo";
