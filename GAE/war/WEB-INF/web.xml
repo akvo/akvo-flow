@@ -233,6 +233,18 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<filter-name>persistenceFilter</filter-name>
 		<filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>
 	</filter>
+
+	<servlet>
+		<servlet-name>SurveyInstanceRpcService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SurveyInstanceRpcService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyinstance</url-pattern>
+	</servlet-mapping>
+
+
+
 	<servlet>
 		<servlet-name>TechnologyTypeRpcService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.TechnologyTypeServiceImpl</servlet-class>
