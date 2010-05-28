@@ -28,7 +28,17 @@ public class DeviceFiles {
 	private Status status = null;
 	@Persistent
 	private String processDate = null;
-	
+
+	private String phoneNumber;
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
 	public String getURI() {
 		return URI;
 	}
@@ -44,7 +54,6 @@ public class DeviceFiles {
 	public void setURI(String uri) {
 		URI = uri;
 	}
-
 
 	public Key getKey() {
 		return key;
@@ -77,15 +86,15 @@ public class DeviceFiles {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DeviceFiles: ");
 		sb.append("\n   Key: " + key.toString());
 		sb.append("\n   URI: " + URI);
 		sb.append("\n   ProcessDate: " + this.processDate);
 		sb.append("\n   Status: " + status);
-		sb.append("\n   ProcessedStatus: "+ this.processedStatus);
+		sb.append("\n   ProcessedStatus: " + this.processedStatus);
 		return sb.toString();
 	}
 }

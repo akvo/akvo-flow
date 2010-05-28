@@ -14,14 +14,26 @@ import com.gallatinsystems.framework.rest.exception.RestValidationException;
  */
 public class TaskRequest extends RestRequest {
 
+	
+	private static final long serialVersionUID = 3002548651592779931L;
 	public static final String ADD_ACCESS_POINT_ACTION = "addAccessPoint";
 	public static final String PROCESS_FILE_ACTION = "processFile";
 
 	private static final String FILE_NAME_PARAM = "fileName";
 	private static final String SURVEY_ID_PARAM = "surveyId";
+	private static final String PHONE_NUM_PARAM = "phoneNumber";
 
 	private String fileName;
 	private Long surveyId;
+	private String phoneNumber;
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 
 	public String getFileName() {
 		return fileName;
@@ -42,8 +54,9 @@ public class TaskRequest extends RestRequest {
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		fileName = req.getParameter(FILE_NAME_PARAM);
+		phoneNumber = req.getParameter(PHONE_NUM_PARAM);
 		try {
-			if(req.getParameter(SURVEY_ID_PARAM)!= null){
+			if (req.getParameter(SURVEY_ID_PARAM) != null) {
 				surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
 			}
 		} catch (Exception e) {
@@ -61,5 +74,5 @@ public class TaskRequest extends RestRequest {
 					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg));
 		}
 	}
-	
+
 }
