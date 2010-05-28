@@ -256,7 +256,7 @@ public class DataSyncService extends Service {
 			if (idsToUpdate[0].size() > 0 || idsToUpdate[1].size() > 0) {
 				File zipFile = new File(fileName);
 				fileName = zipFile.getAbsolutePath();
-
+				Log.i(TAG, "Creating zip file: " + fileName);
 				ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(
 						zipFile));
 				// write the survey data
@@ -315,6 +315,7 @@ public class DataSyncService extends Service {
 						}
 					}
 					zos.close();
+					Log.i(TAG,"Closed zip output stream for file: " + fileName);
 				}
 			}
 		} catch (Exception e) {
@@ -335,6 +336,7 @@ public class DataSyncService extends Service {
 	 */
 	private void writeTextToZip(ZipOutputStream zos, String text,
 			String fileName) throws IOException {
+		Log.i(TAG, "Writing zip entry");
 		zos.putNextEntry(new ZipEntry(fileName));
 		byte[] buffer = new byte[BUF_SIZE];
 		for (int i = 0; i < text.getBytes().length; i += BUF_SIZE) {
@@ -345,6 +347,7 @@ public class DataSyncService extends Service {
 			zos.write(buffer, 0, size);
 		}
 		zos.closeEntry();
+		Log.i(TAG, "Entry Complete");
 	}
 
 	/**
@@ -436,6 +439,7 @@ public class DataSyncService extends Service {
 		try {
 			data = databaseAdaptor.fetchUnsentData();
 			if (data != null && data.isFirst()) {
+				Log.i(TAG, "There is data to send. Forming contents");
 				do {
 					buf
 							.append(
