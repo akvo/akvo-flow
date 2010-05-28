@@ -28,14 +28,17 @@ public class GeoCoordinates {
 	public void setAltitude(Double altitude) {
 		this.altitude = altitude;
 	}
-	
+
 	public GeoCoordinates extractGeoCoordinate(String line) {
-		String[] coordinates = line.split("\\|");
-		this.setLatitude(new Double(coordinates[0]));
-		this.setLongitude(new Double(coordinates[1]));
-		this.setAltitude(new Double(coordinates[2]));
+		if (line != null && line.trim().length() > 0
+				&& !line.trim().equals("||")) {
+			String[] coordinates = line.split("\\|");
+			setLatitude(new Double(coordinates[0]));
+			setLongitude(new Double(coordinates[1]));
+			setAltitude(new Double(coordinates[2]));
+		}
 		return this;
-	}	
+	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
