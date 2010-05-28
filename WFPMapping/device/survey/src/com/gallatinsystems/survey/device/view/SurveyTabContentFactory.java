@@ -123,7 +123,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			tr.addView(questionView);
 			if (i < questions.size() - 1) {
 				View ruler = new View(context);
-				ruler.setBackgroundColor(0xFF00FF00);
+				ruler.setBackgroundColor(0xFFFFFFFF);
 				questionView.addView(ruler, new ViewGroup.LayoutParams(
 						ViewGroup.LayoutParams.FILL_PARENT, 2));
 			}
