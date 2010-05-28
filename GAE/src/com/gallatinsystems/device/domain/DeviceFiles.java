@@ -30,6 +30,15 @@ public class DeviceFiles {
 	private String processDate = null;
 
 	private String phoneNumber;
+	private String checksum;
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
+	}
 
 	public String getPhoneNumber() {
 		return phoneNumber;
