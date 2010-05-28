@@ -10,6 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.Semaphore;
+import java.util.zip.Adler32;
+import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -55,6 +57,7 @@ public class DataSyncService extends Service {
 	private static final String NOTIFICATION_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
 	private static final String NOTIFICATION_PN_PARAM = "&phoneNumber=";
+	private static final String CHECKSUM_PARAM = "&checksum=";
 	private static final String DATA_UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 	private static final String S3_ID = "1JZZVDSNFFQYF23ZYJ02";
 	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
@@ -149,10 +152,15 @@ public class DataSyncService extends Service {
 				}
 				if (fileName != null
 						&& (idList[0].size() > 0 || idList[1].size() > 0)) {
+					String checksum = null;
+					if (idList[2].size() > 0) {
+						checksum = idList[2].iterator().next();
+					}
 					if (ConstantUtil.SEND.equals(type)) {
 						sendFile(fileName, S3_DATA_FILE_PATH, DATA_S3_POLICY,
 								DATA_S3_SIG, DATA_CONTENT_TYPE);
-						if (sendProcessingNotification(serverBase, destName)) {
+						if (sendProcessingNotification(serverBase, destName,
+								checksum)) {
 							if (idList[0].size() > 0) {
 								databaseAdaptor
 										.markDataAsSent(
@@ -201,11 +209,12 @@ public class DataSyncService extends Service {
 	 * @return
 	 */
 	private boolean sendProcessingNotification(String serverBase,
-			String fileName) {
+			String fileName, String checksum) {
 		boolean success = false;
 		try {
 			HttpUtil.httpGet(serverBase + NOTIFICATION_PATH + fileName
-					+ NOTIFICATION_PN_PARAM + StatusUtil.getPhoneNumber(this));
+					+ NOTIFICATION_PN_PARAM + StatusUtil.getPhoneNumber(this)
+					+ CHECKSUM_PARAM + checksum);
 			success = true;
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send processing call", e);
@@ -239,9 +248,10 @@ public class DataSyncService extends Service {
 	 */
 	@SuppressWarnings("unchecked")
 	private HashSet<String>[] formZip(String fileName, boolean dataOnly) {
-		HashSet<String>[] idsToUpdate = new HashSet[2];
+		HashSet<String>[] idsToUpdate = new HashSet[3];
 		idsToUpdate[0] = new HashSet<String>();
 		idsToUpdate[1] = new HashSet<String>();
+		idsToUpdate[2] = new HashSet<String>();
 		StringBuilder surveyBuf = new StringBuilder();
 		ArrayList<String> imagePaths = new ArrayList<String>();
 		StringBuilder regionBuf = new StringBuilder();
@@ -257,8 +267,14 @@ public class DataSyncService extends Service {
 				File zipFile = new File(fileName);
 				fileName = zipFile.getAbsolutePath();
 				Log.i(TAG, "Creating zip file: " + fileName);
-				ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(
-						zipFile));
+				FileOutputStream fout = new FileOutputStream(zipFile);
+				CheckedOutputStream checkedOutStream = new CheckedOutputStream(
+						fout, new Adler32());
+				ZipOutputStream zos = new ZipOutputStream(checkedOutStream);
+
+				// ZipOutputStream zos = new ZipOutputStream(new
+				// FileOutputStream(
+				// zipFile));
 				// write the survey data
 				if (idsToUpdate[0].size() > 0) {
 					writeTextToZip(zos, surveyBuf.toString(), SURVEY_DATA_FILE);
@@ -315,7 +331,11 @@ public class DataSyncService extends Service {
 						}
 					}
 					zos.close();
-					Log.i(TAG,"Closed zip output stream for file: " + fileName);
+					Log.i(TAG, "Closed zip output stream for file: " + fileName
+							+ ". Checksum: "
+							+ checkedOutStream.getChecksum().getValue());
+					idsToUpdate[2].add(""+checkedOutStream.getChecksum()
+							.getValue());
 				}
 			}
 		} catch (Exception e) {
