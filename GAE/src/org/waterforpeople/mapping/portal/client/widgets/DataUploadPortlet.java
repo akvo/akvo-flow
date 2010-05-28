@@ -8,7 +8,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
@@ -44,6 +46,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 	private FormPanel form;
 	private FileUpload upload;
 	private Label statusLabel;
+	private TextBox phoneNumberBox;
 	private Hidden filePath;
 	private Hidden s3Policy;
 	private Hidden s3Sig;
@@ -57,7 +60,13 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 		Label instructions = new Label(
 				"Manual upload of handheld data. You can export the data from the handheld's SD card and upload from your computer");
 		contentPane.add(instructions);
-
+		HorizontalPanel phPanel = new HorizontalPanel();
+		phPanel.add(new Label("Device Phone #: "));
+		phoneNumberBox = new TextBox();		
+		phoneNumberBox.setWidth("100px");
+		phPanel.add(phoneNumberBox);
+		contentPane.add(phPanel);
+		
 		VerticalPanel tempPanel = new VerticalPanel();
 		form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -80,7 +89,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 		form.setWidth("275px");
 
-		upload = new FileUpload();
+		upload = new FileUpload();		
 		upload.setName("file");
 		tempPanel.add(upload);
 		form.setWidget(tempPanel);
@@ -165,6 +174,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 					VerticalPanel vPanel = new VerticalPanel();
 					vPanel.add(new Hidden("action", "submit"));
 					vPanel.add(new Hidden("fileName", filename));
+					vPanel.add(new Hidden("phoneNumber",phoneNumberBox.getText()));
 					tempForm.setWidget(vPanel);
 					tempForm.setVisible(false);
 					contentPane.add(tempForm);
