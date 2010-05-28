@@ -54,6 +54,7 @@ public class DataSyncService extends Service {
 
 	private static final String NOTIFICATION_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
+	private static final String NOTIFICATION_PN_PARAM = "&phoneNumber=";
 	private static final String DATA_UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 	private static final String S3_ID = "1JZZVDSNFFQYF23ZYJ02";
 	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
@@ -65,7 +66,6 @@ public class DataSyncService extends Service {
 	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
 	private static final String S3_IMAGE_FILE_PATH = "images";
 
-	
 	private static final int BUF_SIZE = 2048;
 
 	private SurveyDbAdapter databaseAdaptor;
@@ -204,7 +204,8 @@ public class DataSyncService extends Service {
 			String fileName) {
 		boolean success = false;
 		try {
-			HttpUtil.httpGet(serverBase + NOTIFICATION_PATH + fileName);
+			HttpUtil.httpGet(serverBase + NOTIFICATION_PATH + fileName
+					+ NOTIFICATION_PN_PARAM + StatusUtil.getPhoneNumber(this));
 			success = true;
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send processing call", e);
@@ -304,7 +305,8 @@ public class DataSyncService extends Service {
 						} else {
 							try {
 								sendFile(imagePaths.get(i), S3_IMAGE_FILE_PATH,
-										IMAGE_S3_POLICY, IMAGE_S3_SIG, IMAGE_CONTENT_TYPE);
+										IMAGE_S3_POLICY, IMAGE_S3_SIG,
+										IMAGE_CONTENT_TYPE);
 							} catch (Exception e) {
 								Log.e(TAG, "Could not add image "
 										+ imagePaths.get(i) + " to zip: "
