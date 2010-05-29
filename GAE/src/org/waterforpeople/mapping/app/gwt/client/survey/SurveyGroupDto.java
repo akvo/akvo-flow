@@ -1,15 +1,13 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
-public class SurveyGroupDto extends BaseDto implements Serializable {
-	/**
-	 * 
-	 */
+public class SurveyGroupDto extends BaseDto implements NamedObject {
+
 	private static final long serialVersionUID = -2235565143615667202L;
 
 	private String description;
@@ -60,10 +58,15 @@ public class SurveyGroupDto extends BaseDto implements Serializable {
 	}
 
 	public void addSurvey(SurveyDto item) {
-		if (surveyList == null){
+		if (surveyList == null) {
 			surveyList = new ArrayList<SurveyDto>();
-		}		
-			surveyList.add(item);
+		}
+		surveyList.add(item);
+	}
+
+	@Override
+	public String getDisplayName() {
+		return getCode();
 	}
 
 }

@@ -158,7 +158,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			}
 		});
 
-		mgrMenu.addItem("Survey manager", new Command() {
+		mgrMenu.addItem("Survey Manager", new Command() {
 			public void execute() {
 				launchFullscreen(SurveyManagerPortlet.NAME);
 

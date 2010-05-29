@@ -3,8 +3,9 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.util.ArrayList;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
-public class SurveyDto extends BaseDto {
+public class SurveyDto extends BaseDto implements NamedObject {
 	private static final long serialVersionUID = 6593732844403807030L;
 	private String name;
 	private String version;
@@ -57,5 +58,15 @@ public class SurveyDto extends BaseDto {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@Override
+	public String getDisplayName() {
+		String display = name;
+		if (display == null || display.trim().length() == 0) {
+			display = getKeyId().toString();
+		}
+		display = display + " - v." + getVersion();
+		return display;		
 	}
 }

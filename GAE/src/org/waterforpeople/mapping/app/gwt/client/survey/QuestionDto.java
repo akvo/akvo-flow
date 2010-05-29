@@ -3,11 +3,10 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.util.ArrayList;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
-public class QuestionDto extends BaseDto {
-	/**
-	 * 
-	 */
+public class QuestionDto extends BaseDto implements NamedObject {
+
 	private static final long serialVersionUID = -4708385830894435407L;
 
 	private String text;
@@ -19,7 +18,6 @@ public class QuestionDto extends BaseDto {
 	private String validationRule = null;
 	private Boolean mandatoryFlag = null;
 	private QuestionDependencyDto questionDependency = null;
-	
 
 	public void addQuestionHelp(QuestionHelpDto questionHelp) {
 		if (questionHelpList == null) {
@@ -94,5 +92,10 @@ public class QuestionDto extends BaseDto {
 
 	public enum QuestionType {
 		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN
+	}
+
+	@Override
+	public String getDisplayName() {
+		return getText();
 	}
 }

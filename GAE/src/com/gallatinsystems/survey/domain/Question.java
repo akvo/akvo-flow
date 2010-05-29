@@ -67,7 +67,6 @@ public class Question extends BaseDomain implements Comparable<Question> {
 		this.optionContainer = optionContainer;
 	}
 
-
 	public void addQuestionHelp(QuestionHelp questionHelp) {
 		if (questionHelpList == null) {
 			questionHelpList = new ArrayList<QuestionHelp>();
@@ -140,7 +139,7 @@ public class Question extends BaseDomain implements Comparable<Question> {
 
 	@Override
 	public int compareTo(Question o) {
-		if (o != null) {
+		if (o != null && o.getOrder() != null && getOrder() != null) {
 			if (o.getOrder() == getOrder()) {
 				return 0;
 			} else if (getOrder() > o.getOrder()) {
@@ -148,7 +147,7 @@ public class Question extends BaseDomain implements Comparable<Question> {
 			} else {
 				return -1;
 			}
-		}else{
+		} else {
 			return 1;
 		}
 	}

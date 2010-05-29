@@ -3,15 +3,12 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
-public class QuestionGroupDto extends BaseDto {
-	/**
-	 * 
-	 */
+public class QuestionGroupDto extends BaseDto implements NamedObject {
+
 	private static final long serialVersionUID = -7253934961271624253L;
-	/**
-	 * 
-	 */
+
 	private TreeMap<Integer, QuestionDto> questionMap = null;
 
 	private String code;
@@ -34,7 +31,7 @@ public class QuestionGroupDto extends BaseDto {
 	}
 
 	public void setQuestionMap(TreeMap<Integer, QuestionDto> questionMap) {
-		this.questionMap = questionMap;		
+		this.questionMap = questionMap;
 	}
 
 	public TreeMap<Integer, QuestionDto> getQuestionMap() {
@@ -50,5 +47,10 @@ public class QuestionGroupDto extends BaseDto {
 
 		}
 
+	}
+
+	@Override
+	public String getDisplayName() {
+		return getCode();
 	}
 }

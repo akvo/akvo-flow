@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.OpenEvent;
@@ -34,6 +37,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	private static final String DUMMY = "DUMMY";
 	private static final String PLEASE_WAIT = "Loading...";
 	private static final String PUBLISHED_STATUS = "PUBLISHED";
+	private static final int MAX_Q_LENGTH = 50;
 	private TreeItem surveyRootItem;
 	private Tree surveyRootTree;
 	private boolean rootedByItem;
@@ -43,6 +47,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	private HashMap<Widget, BaseDto> surveyMap;
 	private HashMap<SurveyGroupDto, ArrayList<SurveyDto>> surveys;
 	private HashMap<Long, SurveyDto> unreleasedSurveys;
+	private ArrayList<SurveyTreeListener> listeners;
 
 	/**
 	 * constructs a survey tree rooted at the tree level (survey groups have no
@@ -55,6 +60,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	public SurveyTree(Tree root, TreeDragController dragController,
 			boolean loadDetails) {
 		rootedByItem = false;
+		listeners = new ArrayList<SurveyTreeListener>();
 		surveyRootTree = root;
 		initialize(dragController, loadDetails);
 	}
@@ -101,7 +107,6 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 					@Override
 					public void onFailure(Throwable caught) {
 						// no-op
-
 					}
 
 					@Override
@@ -112,11 +117,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 								TreeItem tItem = new TreeItem(result.get(i)
 										.getCode());
 								tItem.setUserObject(result.get(i));
-								// add a dummy item so we get the "PLUS" on the
-								// group tree item
-								TreeItem dummyItem = new TreeItem(PLEASE_WAIT);
-								dummyItem.setUserObject(DUMMY);
-								tItem.addItem(dummyItem);
+								addDummy(tItem);
 								if (rootedByItem) {
 									surveyRootItem.addItem(tItem);
 								} else {
@@ -229,9 +230,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			TreeItem groupItem = new TreeItem(groupEntry.getKey().getCode());
 			groupItem.setUserObject(groupEntry.getKey());
 			if (groupEntry.getValue() == null) {
-				TreeItem dummyItem = new TreeItem(PLEASE_WAIT);
-				dummyItem.setUserObject(DUMMY);
-				groupItem.addItem(dummyItem);
+				addDummy(groupItem);
 			} else {
 				for (SurveyDto survey : groupEntry.getValue()) {
 					addSurveyToTree(groupItem, survey);
@@ -253,7 +252,11 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	 * @param survey
 	 */
 	private void addSurveyToTree(TreeItem parent, SurveyDto survey) {
-		TreeItem surveyItem = new TreeItem(new Label(getSurveyName(survey)));
+		TreeItem surveyItem = new TreeItem(new Label(survey.getDisplayName()));
+		surveyItem.setUserObject(survey);
+		if (loadSurveyDetails) {
+			addDummy(surveyItem);
+		}
 		surveyMap.put(surveyItem.getWidget(), survey);
 		if (dragController != null) {
 			dragController.makeDraggable(surveyItem.getWidget());
@@ -262,32 +265,27 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	}
 
 	/**
-	 * forms the display name of a survey
-	 * 
-	 * @param survey
-	 * @return
+	 * reacts to clicks of tree items and loads the children.
 	 */
-	private String getSurveyName(SurveyDto survey) {
-		String name = survey.getName();
-		if (name == null || name.trim().length() == 0) {
-			name = survey.getKeyId().toString();
-		}
-		name = name + " - v." + survey.getVersion();
-		return name;
-	}
-
 	@Override
 	public void onSelection(SelectionEvent<TreeItem> event) {
 		loadChild(event.getSelectedItem());
+		if (event.getSelectedItem().getUserObject() != null
+				&& event.getSelectedItem().getUserObject() instanceof BaseDto) {
+			notifyListeners((BaseDto) event.getSelectedItem().getUserObject());
+		}
 	}
 
+	/**
+	 * loads the children of the tree item passed in if it has not yet been
+	 * loaded.
+	 * 
+	 * @param item
+	 */
 	private void loadChild(final TreeItem item) {
-
-		if (item.getUserObject() instanceof SurveyGroupDto) {
-			SurveyGroupDto sg = (SurveyGroupDto) item.getUserObject();
-			// if we haven't yet loaded the surveys, load them
-			if (item.getChildCount() == 1
-					&& item.getChild(0).getUserObject().equals(DUMMY)) {
+		if (item != null && !isLoaded(item)) {
+			if (item.getUserObject() instanceof SurveyGroupDto) {
+				SurveyGroupDto sg = (SurveyGroupDto) item.getUserObject();
 				// Set up the callback object.
 				AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
 					public void onFailure(Throwable caught) {
@@ -297,10 +295,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 					public void onSuccess(ArrayList<SurveyDto> result) {
 						surveys.put((SurveyGroupDto) item.getUserObject(),
 								result);
-						// remove the dummy
-						if (item.getChild(0).getUserObject().equals(DUMMY)) {
-							item.removeItem(item.getChild(0));
-						}
+						removeDummy(item);
 						if (result != null) {
 							for (int i = 0; i < result.size(); i++) {
 								addSurveyToTree(item, result.get(i));
@@ -315,10 +310,225 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 				};
 				surveyService.listSurveysByGroup(sg.getKeyId().toString(),
 						surveyCallback);
+
+			} else if (loadSurveyDetails
+					&& item.getUserObject() instanceof SurveyDto) {
+				surveyService.listQuestionGroupsBySurvey(((SurveyDto) (item
+						.getUserObject())).getKeyId().toString(),
+						new AsyncCallback<ArrayList<QuestionGroupDto>>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// no-op
+							}
+
+							@Override
+							public void onSuccess(
+									ArrayList<QuestionGroupDto> result) {
+								removeDummy(item);
+								if (result != null) {
+									SurveyDto surveyItem = (SurveyDto) item
+											.getUserObject();
+									for (int i = 0; i < result.size(); i++) {
+										surveyItem.addQuestionGroup(result
+												.get(i));
+										TreeItem qGroup = new TreeItem();
+										qGroup.setText(result.get(i).getCode());
+										qGroup.setUserObject(result.get(i));
+										item.addItem(qGroup);
+										addDummy(qGroup);
+									}
+								}
+							}
+
+						});
+			} else if (loadSurveyDetails
+					&& item.getUserObject() instanceof QuestionGroupDto) {
+				surveyService.listQuestionsByQuestionGroup(
+						((QuestionGroupDto) (item.getUserObject())).getKeyId()
+								.toString(), false,
+						new AsyncCallback<ArrayList<QuestionDto>>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// no-op
+							}
+
+							@Override
+							public void onSuccess(ArrayList<QuestionDto> result) {
+								removeDummy(item);
+								if (result != null) {
+									QuestionGroupDto qGroupItem = (QuestionGroupDto) item
+											.getUserObject();
+									for (int i = 0; i < result.size(); i++) {
+										qGroupItem
+												.addQuestion(result.get(i), i);
+										TreeItem qGroup = new TreeItem();
+										String text = result.get(i).getText();
+										if (text != null
+												&& text.trim().length() > MAX_Q_LENGTH) {
+											text = text.substring(0,
+													MAX_Q_LENGTH);
+										}
+										qGroup.setText(result.get(i).getText());
+										qGroup.setUserObject(result.get(i));
+										item.addItem(qGroup);
+									}
+								}
+							}
+						});
 			}
-		} else if (loadSurveyDetails
-				&& item.getUserObject() instanceof SurveyDto) {
-			// TODO - load question groups
 		}
+	}
+
+	/**
+	 * returns true if the tree item has already had it's immediate children
+	 * loaded
+	 * 
+	 * @param item
+	 * @return
+	 */
+	private boolean isLoaded(TreeItem item) {
+		if (item.getChildCount() == 1
+				&& item.getChild(0).getUserObject() != null
+				&& item.getChild(0).getUserObject().equals(DUMMY)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * checks if the first child of the item is the DUMMY widget and, if so,
+	 * removes it from the tree
+	 * 
+	 * @param item
+	 */
+	private void removeDummy(TreeItem item) {
+		if (item.getChildCount() > 0
+				&& item.getChild(0).getUserObject() != null
+				&& item.getChild(0).getUserObject().equals(DUMMY)) {
+			item.removeItem(item.getChild(0));
+		}
+	}
+
+	/**
+	 * adds a dummy item so we get the "PLUS" on the group tree item
+	 * 
+	 * @param parent
+	 */
+	private void addDummy(TreeItem parent) {
+		TreeItem dummyItem = new TreeItem(PLEASE_WAIT);
+		dummyItem.setUserObject(DUMMY);
+		parent.addItem(dummyItem);
+	}
+
+	/**
+	 * adds a listener to this class that will be notified each time the user
+	 * selects a tree item
+	 * 
+	 * @param l
+	 */
+	public void addSurveyListener(SurveyTreeListener l) {
+		listeners.add(l);
+	}
+
+	/**
+	 * notifies all listeners with the selected object
+	 * 
+	 * @param userObject
+	 */
+	protected void notifyListeners(BaseDto userObject) {
+		if (userObject != null) {
+			for (SurveyTreeListener l : listeners) {
+				l.onSurveyTreeSelection(userObject);
+			}
+		}
+	}
+
+	/**
+	 * adds a child of the object passed in to the tree as a child of the node
+	 * that has the parentUserObject and sets the user object for the new node
+	 * 
+	 * @param parentUserObject
+	 * @param child
+	 */
+	public void addChild(BaseDto parentUserObject, NamedObject child) {
+		if (parentUserObject != null) {
+			TreeItem parentItem = findItemByUserObject(parentUserObject);
+			if (parentItem != null) {
+				TreeItem childItem = new TreeItem(child.getDisplayName());
+				childItem.setUserObject(child);
+				parentItem.addItem(childItem);
+			}
+		}
+	}
+
+	/**
+	 * returns the parent user object (if any). If not found, returns null
+	 * 
+	 * @param userObject
+	 * @return
+	 */
+	public BaseDto getParentUserObject(BaseDto userObject) {
+		TreeItem item = findItemByUserObject(userObject);
+		if (item.getParentItem() != null
+				&& item.getParentItem().getUserObject() != null) {
+			if (item.getParentItem().getUserObject() instanceof BaseDto) {
+				return (BaseDto) item.getParentItem().getUserObject();
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * does a depth-first search of the tree until all nodes are searched or the
+	 * node containing userObject is found. If found, it returns the treeItem
+	 * bound to the userObject
+	 * 
+	 * @param userObject
+	 * @return
+	 */
+	protected TreeItem findItemByUserObject(BaseDto userObject) {
+		TreeItem result = null;
+		if (rootedByItem) {
+			result = findItemByUserObject(surveyRootItem, userObject);
+		} else {
+			for (int i = 0; i < surveyRootTree.getItemCount(); i++) {
+				result = findItemByUserObject(surveyRootTree.getItem(i),
+						userObject);
+				if (result != null) {
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * recursively searches the tree until all nodes are exhausted or the object
+	 * is found
+	 * 
+	 * @param curItem
+	 * @param userObject
+	 * @return
+	 */
+	protected TreeItem findItemByUserObject(TreeItem curItem, BaseDto userObject) {
+		TreeItem result = null;
+		if (curItem.getUserObject() != null
+				&& curItem.getUserObject().equals(userObject)) {
+			result = curItem;
+		} else {
+			for (int i = 0; i < curItem.getChildCount(); i++) {
+				result = findItemByUserObject(curItem.getChild(i), userObject);
+				if (result != null) {
+					break;
+				}
+			}
+		}
+		return result;
 	}
 }
