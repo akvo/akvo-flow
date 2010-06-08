@@ -119,26 +119,27 @@ public class DataSyncService extends Service {
 	 *            - either SYNC or EXPORT
 	 */
 	private void runSync(String type, boolean forceFlag) {
-		databaseAdaptor = new SurveyDbAdapter(this);
-		databaseAdaptor.open();
-		String uploadOption = databaseAdaptor
-				.findPreference(ConstantUtil.CELL_UPLOAD_SETTING_KEY);
-		String serverBase = databaseAdaptor
-				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
-		if (serverBase == null || serverBase.trim().length() > 0) {
-			serverBase = getResources().getStringArray(R.array.servers)[Integer
-					.parseInt(serverBase)];
-		} else {
-			serverBase = NOTIFICATION_BASE;
-		}
-		int uploadIndex = -1;
-		if (uploadOption != null && uploadOption.trim().length() > 0) {
-			uploadIndex = Integer.parseInt(uploadOption);
-		}
-		counter++;
-		if (isAbleToRun(type, uploadIndex)) {
-			try {
-				lock.acquire();
+		try {
+			lock.acquire();
+
+			databaseAdaptor = new SurveyDbAdapter(this);
+			databaseAdaptor.open();
+			String uploadOption = databaseAdaptor
+					.findPreference(ConstantUtil.CELL_UPLOAD_SETTING_KEY);
+			String serverBase = databaseAdaptor
+					.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+			if (serverBase == null || serverBase.trim().length() > 0) {
+				serverBase = getResources().getStringArray(R.array.servers)[Integer
+						.parseInt(serverBase)];
+			} else {
+				serverBase = NOTIFICATION_BASE;
+			}
+			int uploadIndex = -1;
+			if (uploadOption != null && uploadOption.trim().length() > 0) {
+				uploadIndex = Integer.parseInt(uploadOption);
+			}
+			counter++;
+			if (isAbleToRun(type, uploadIndex)) {
 				String fileName = createFileName();
 				HashSet<String>[] idList = formZip(fileName,
 						(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex));
@@ -188,13 +189,14 @@ public class DataSyncService extends Service {
 				} else if (forceFlag) {
 					fireNotification(NOTHING, null);
 				}
-			} catch (InterruptedException e) {
-				Log.e(TAG, "Data sync interrupted", e);
-			} finally {
-				lock.release();
+
 			}
+		} catch (InterruptedException e) {
+			Log.e(TAG, "Data sync interrupted", e);
+		} finally {
+			databaseAdaptor.close();
+			lock.release();
 		}
-		databaseAdaptor.close();
 		counter--;
 		if (counter == 0) {
 			stopSelf();
@@ -334,8 +336,8 @@ public class DataSyncService extends Service {
 					Log.i(TAG, "Closed zip output stream for file: " + fileName
 							+ ". Checksum: "
 							+ checkedOutStream.getChecksum().getValue());
-					idsToUpdate[2].add(""+checkedOutStream.getChecksum()
-							.getValue());
+					idsToUpdate[2].add(""
+							+ checkedOutStream.getChecksum().getValue());
 				}
 			}
 		} catch (Exception e) {
