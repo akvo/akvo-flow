@@ -24,7 +24,8 @@ public class PortletFactory {
 					AccessPointManagerPortlet.DESCRIPTION },
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
-					AccessPointPerformancePortlet.DESCRIPTION }};
+					AccessPointPerformancePortlet.DESCRIPTION },
+			{ MappingAttributeManager.NAME, MappingAttributeManager.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {
@@ -63,6 +64,8 @@ public class PortletFactory {
 			return new SurveyLoaderPortlet();
 		} else if (name.equals(RawDataViewPortlet.NAME)) {
 			return new RawDataViewPortlet();
+		} else if (name.equals(MappingAttributeManager.NAME)) {
+			return new MappingAttributeManager();
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

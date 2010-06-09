@@ -17,6 +17,7 @@ import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
+import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.RawDataViewPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
@@ -179,6 +180,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				launchFullscreen(RawDataViewPortlet.NAME);
 			}
 		});
+		mgrMenu.addItem("Import Access Point",new Command(){
+			public void execute(){
+				launchFullscreen(MappingAttributeManager.NAME);
+			}
+		});
+		
 		menu.addItem("Data Managers", mgrMenu);
 
 		statusDock.add(menu, DockPanel.WEST);

@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMa
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -19,6 +20,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -27,12 +29,34 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class MappingAttributeManager extends Portlet {
+
+	public static final String DESCRIPTION = "Import Access Points from Google Doc";
+	public static final String NAME = "Google Doc Access Point Importer";
+	public static final String TITLE = "Import Access Points from Google Docs";
+	private static final String ANY_OPT = "Any";
+	private static final int WIDTH = 1600;
+	private static final int HEIGHT = 800;
+	private VerticalPanel contentPane = new VerticalPanel();
+
+	private Widget buildHeader() {
+
+		onModuleLoad();
+
+		return contentPane;
+	}
+
 	public MappingAttributeManager(String title, boolean scrollable,
 			boolean configurable, int width, int height) {
 		super(title, scrollable, configurable, width, height);
-		// TODO Auto-generated constructor stub
+		setContent(buildHeader());
+	}
+
+	public MappingAttributeManager() {
+		super(TITLE, true, false, WIDTH, HEIGHT);
+		setContent(buildHeader());
 	}
 
 	private TextBox spreadSheetTextBox = new TextBox();
@@ -61,12 +85,16 @@ public class MappingAttributeManager extends Portlet {
 		svc = (SpreadsheetMappingAttributeServiceAsync) GWT
 				.create(SpreadsheetMappingAttributeService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) svc;
-		endpoint.setServiceEntryPoint("/spreadsheetattributemapper");
+		endpoint
+				.setServiceEntryPoint("/org.waterforpeople.mapping.portal.portal/spreadsheetattributemapperrpc");
 		loadAttributes();
 		svc.listSpreadsheetsFromFeed(null, new AsyncCallback() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				MessageDialog errDia = new MessageDialog("Error",
+						"Cannot list spreadsheets. Will reauth with Google");
+				errDia.showRelativeTo(processSpreadsheetButton);
+				Window.open("/authsub", "_self", "");
 			}
 
 			@Override
@@ -123,7 +151,7 @@ public class MappingAttributeManager extends Portlet {
 		mainHPanel.add(mainVLeftPanel);
 		mainHPanel.add(mainVRightPanel);
 
-		RootPanel.get("content").add(mainHPanel);
+		// RootPanel.get("content").add(mainHPanel);
 		spreadsheetMappingTree
 				.addSelectionHandler(new SelectionHandler<TreeItem>() {
 					public void onSelection(SelectionEvent event) {
@@ -188,7 +216,7 @@ public class MappingAttributeManager extends Portlet {
 			}
 
 		});
-
+		contentPane.add(mainHPanel);
 	}
 
 	private void clearColumnMapTable() {
@@ -252,8 +280,8 @@ public class MappingAttributeManager extends Portlet {
 							loadColumnsAndAttributes(existingMapDef
 									.getSpreadsheetColsList(), existingMapDef
 									.getMapDef());
-						}else{
-							
+						} else {
+
 							colMapStatusLabel.setText("No Existing Map Found");
 							colMapStatusLabel.setVisible(false);
 							retrieveSpreadsheetCols();
@@ -407,5 +435,5 @@ public class MappingAttributeManager extends Portlet {
 	public String getName() {
 		return NAME;
 	}
-	
+
 }

@@ -108,6 +108,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 										@Override
 										public void onSelection(
 												SelectionEvent<TreeItem> event) {
+											if (qasDetailGrid!=null)
+												mainHPanel
+														.remove(qasDetailGrid);
 											SurveyInstanceDto siDto = (SurveyInstanceDto) event
 													.getSelectedItem()
 													.getUserObject();
