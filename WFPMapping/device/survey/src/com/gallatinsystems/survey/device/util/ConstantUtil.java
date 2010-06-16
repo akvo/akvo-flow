@@ -121,7 +121,7 @@ public class ConstantUtil {
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
 	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
 	public static final String PRECACHE_HELP_SETTING_KEY = "survey.precachehelp";
-	public static final String SERVER_SETTING_KEY ="upload.server";
+	public static final String SERVER_SETTING_KEY = "upload.server";
 
 	/**
 	 * index values into string arrays
@@ -147,6 +147,13 @@ public class ConstantUtil {
 	 */
 	public static final String BARCODE_CONTENT = "SCAN_RESULT";
 	public static final String BARCODE_FORMAT = "SCAN_RESULT_FORMAT";
+
+	/**
+	 * survey respondent statuses
+	 */
+	public static final String SAVED_STATUS = "SAVED";
+	public static final String DELETED_STATUS = "DELETED";
+	public static final String SUBMITTED_STATUS = "SUBMITTED";
 
 	/**
 	 * prevent instantiation

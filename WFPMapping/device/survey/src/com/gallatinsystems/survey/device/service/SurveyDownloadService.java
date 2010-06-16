@@ -284,8 +284,8 @@ public class SurveyDownloadService extends Service {
 		String response = null;
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
-			response = HttpUtil.httpGet(serverBase + SURVEY_LIST_SERVICE_PATH
-					+ StatusUtil.getPhoneNumber(this));
+			response = HttpUtil.httpGet(serverBase + SURVEY_LIST_SERVICE_PATH+"9175667663");
+					//+ StatusUtil.getPhoneNumber(this));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {

@@ -69,7 +69,7 @@ public class SurveyDbAdapter {
 			+ "display_name text not null, version real, type text, location text, filename text, language, help_downloaded_flag text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
-			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text);";
+			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
 			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null);";
@@ -109,7 +109,7 @@ public class SurveyDbAdapter {
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 
-	private static final int DATABASE_VERSION = 41;
+	private static final int DATABASE_VERSION = 42;
 
 	private final Context context;
 
@@ -258,6 +258,27 @@ public class SurveyDbAdapter {
 				}
 			}
 		}
+	}
+
+	/**
+	 * updates the status of a survey response to the string passed in
+	 * 
+	 * @param surveyRespondentId
+	 * @param status
+	 */
+	public void updateSurveyStatus(String surveyRespondentId, String status) {
+		if (surveyRespondentId != null) {
+			ContentValues updatedValues = new ContentValues();
+			updatedValues.put(STATUS_COL, status);
+			if (database.update(RESPONDENT_TABLE, updatedValues,
+					SURVEY_RESPONDENT_ID_COL + " = ?",
+					new String[] { surveyRespondentId }) < 1) {
+				Log.e(TAG, "Could not update status for Survey_respondent_id "
+						+ surveyRespondentId);
+			}
+
+		}
+
 	}
 
 	/**
@@ -784,11 +805,9 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * deletes all the surveys from the database 
-	 * surveys;
+	 * deletes all the surveys from the database surveys;
 	 */
 	public void deleteAllSurveys() {
-		database.delete(SURVEY_TABLE, null,
-				null);
+		database.delete(SURVEY_TABLE, null, null);
 	}
 }

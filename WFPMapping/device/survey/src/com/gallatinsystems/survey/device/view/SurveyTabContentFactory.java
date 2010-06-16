@@ -3,8 +3,6 @@ package com.gallatinsystems.survey.device.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
@@ -16,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.TabHost.TabContentFactory;
 
 import com.gallatinsystems.survey.device.R;
@@ -27,6 +24,7 @@ import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * Creates the content for a single tab in the survey (corresponds to a
@@ -39,7 +37,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  */
 public class SurveyTabContentFactory implements TabContentFactory {
 
-	private static final int BUTTON_WIDTH = 200;
+	private static final int BUTTON_WIDTH = 150;
 	private QuestionGroup questionGroup;
 	private SurveyViewActivity context;
 	private HashMap<String, QuestionView> questionMap;
@@ -150,6 +148,12 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		// create save/clear buttons
 		TableRow buttonRow = new TableRow(context);
 		LinearLayout group = new LinearLayout(context);
+
+		Button submitButton = new Button(context);
+		submitButton.setText(R.string.submitbutton);
+		submitButton.setWidth(BUTTON_WIDTH);
+		group.addView(submitButton);
+
 		Button saveButton = new Button(context);
 		saveButton.setText(R.string.savebutton);
 		saveButton.setWidth(BUTTON_WIDTH);
@@ -159,6 +163,24 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		group.addView(clearButton);
 		buttonRow.addView(group);
 		table.addView(buttonRow);
+
+		// clicking save will mark the survey as saved and clear the screen
+		saveButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				if (questionMap != null) {
+					// make sure we don't lose anything that was already written
+					saveState(context.getRespondentId());
+					databaseAdaptor.updateSurveyStatus(context
+							.getRespondentId().toString(),
+							ConstantUtil.SAVED_STATUS);
+
+					ViewUtil.showConfirmDialog(R.string.savecompletetitle,
+							R.string.savecompletetext, context);
+
+					context.resetAllQuestions();
+				}
+			}
+		});
 
 		// clicking the clear button just blanks out all responses (across all
 		// tabs)
@@ -171,10 +193,10 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			}
 		});
 
-		// clicking save will check to see if all mandatory questions are
+		// clicking submit will check to see if all mandatory questions are
 		// answered and, if so, will fire a broadcast indicating that data is
 		// available for transfer
-		saveButton.setOnClickListener(new OnClickListener() {
+		submitButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				if (questionMap != null) {
@@ -201,38 +223,13 @@ public class SurveyTabContentFactory implements TabContentFactory {
 								.createSurveyRespondent(context.getSurveyId(),
 										context.getUserId()));
 						context.resetAllQuestions();
-						// if we do have missing responses, tell the user
-						AlertDialog.Builder builder = new AlertDialog.Builder(v
-								.getContext());
-						TextView tipText = new TextView(v.getContext());
-						builder.setTitle(R.string.savecompletetitle);
-						tipText.setText(R.string.savecompletetext);
-						builder.setView(tipText);
-						builder.setPositiveButton(R.string.okbutton,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-										scrollView.scrollTo(0, 0);
-									}
-								});
-						builder.show();
+						ViewUtil.showConfirmDialog(
+								R.string.submitcompletetitle,
+								R.string.submitcompletetext, context);
 					} else {
 						// if we do have missing responses, tell the user
-						AlertDialog.Builder builder = new AlertDialog.Builder(v
-								.getContext());
-						TextView tipText = new TextView(v.getContext());
-						builder.setTitle(R.string.cannotsave);
-						tipText.setText(R.string.mandatorywarning);
-						builder.setView(tipText);
-						builder.setPositiveButton(R.string.okbutton,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-									}
-								});
-						builder.show();
+						ViewUtil.showConfirmDialog(R.string.cannotsave,
+								R.string.mandatorywarning, context);
 					}
 				}
 			}
@@ -330,6 +327,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 
 	/**
 	 * updates text size of all questions in this tab
+	 * 
 	 * @param size
 	 */
 	public void updateTextSize(float size) {

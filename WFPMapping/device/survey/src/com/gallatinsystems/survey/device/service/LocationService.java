@@ -104,7 +104,8 @@ public class LocationService extends Service {
 		if (loc != null) {
 			try {
 				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
-						+ StatusUtil.getPhoneNumber(this) + LAT
+						 +StatusUtil.getPhoneNumber(this) +						
+						LAT
 						+ loc.getLatitude() + LON + loc.getLongitude() + ACC
 						+ loc.getAccuracy());
 			} catch (Exception e) {

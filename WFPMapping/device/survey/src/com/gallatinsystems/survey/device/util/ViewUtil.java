@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.service.DataSyncService;
@@ -30,17 +31,43 @@ public class ViewUtil {
 	public static void showGPSDialog(final Context parentContext) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
 		builder.setMessage(R.string.geodialog).setCancelable(true)
-				.setPositiveButton(R.string.okbutton, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						parentContext.startActivity(new Intent(
-								"android.settings.LOCATION_SOURCE_SETTINGS"));
-					}
-				}).setNegativeButton(R.string.cancelbutton,
+				.setPositiveButton(R.string.okbutton,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								parentContext
+										.startActivity(new Intent(
+												"android.settings.LOCATION_SOURCE_SETTINGS"));
+							}
+						}).setNegativeButton(R.string.cancelbutton,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();
 							}
 						});
+		builder.show();
+	}
+
+	/**
+	 * displays a simple dialog box with only a single, positive button using
+	 * the resource ids of the strings passed in for the title and text.
+	 * 
+	 * @param titleId
+	 * @param textId
+	 * @param parentContext
+	 */
+	public static void showConfirmDialog(int titleId, int textId,
+			Context parentContext) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
+		TextView tipText = new TextView(parentContext);
+		builder.setTitle(titleId);
+		tipText.setText(textId);
+		builder.setView(tipText);
+		builder.setPositiveButton(R.string.okbutton,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
 		builder.show();
 	}
 

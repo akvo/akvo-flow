@@ -9,6 +9,7 @@
 	<string name="elevation">Elevation</string>
 	<string name="savebutton">Save</string>
 	<string name="clearbutton">Clear</string>
+	<string name="submitbutton">Submit</string>
 	<string name="geodialog">GPS must be enabled to do this. Select OK to go to	the settings page. Select Use GPS Satellites and then press the back button to return. Once GPS is enabled you can click Check Geo Location again to get your position.</string>
 	<string name="currentuser">Current User:</string>
 	<string name="lastsync">Last Sync:</string>
@@ -98,7 +99,9 @@
 	<string name="reloadsurveysdesc">Deletes and re-downloads assigned surveys (only run if instructed)</string>
 	<string name="conftitle">Please Confirm</string>
 	<string name="reloadconftext">Are you sure you want to purge and re-download surveys?</string>
-	<string name="savecompletetitle">Survey submitted</string>
+	<string name="submitcompletetitle">Survey submitted</string>
+	<string name="submitcompletetext">Survey responses will be sent to the server.</string>
+	<string name="savecompletetitle">Survey saved</string>
 	<string name="savecompletetext">Survey responses have been saved.</string>
 		<string name="optiontext">Option</string>
 				<string name="largetxtoption">Large Text</string>
