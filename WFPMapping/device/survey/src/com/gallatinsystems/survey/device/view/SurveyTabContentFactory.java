@@ -173,11 +173,9 @@ public class SurveyTabContentFactory implements TabContentFactory {
 					databaseAdaptor.updateSurveyStatus(context
 							.getRespondentId().toString(),
 							ConstantUtil.SAVED_STATUS);
-
 					ViewUtil.showConfirmDialog(R.string.savecompletetitle,
 							R.string.savecompletetext, context);
-
-					context.resetAllQuestions();
+					startNewSurvey();
 				}
 			}
 		});
@@ -215,17 +213,11 @@ public class SurveyTabContentFactory implements TabContentFactory {
 						// available
 						Intent i = new Intent(
 								ConstantUtil.DATA_AVAILABLE_INTENT);
-						context.sendBroadcast(i);
-
-						// create a new response object so we're ready for the
-						// next instance
-						context.setRespondentId(databaseAdaptor
-								.createSurveyRespondent(context.getSurveyId(),
-										context.getUserId()));
-						context.resetAllQuestions();
+						context.sendBroadcast(i);						
 						ViewUtil.showConfirmDialog(
 								R.string.submitcompletetitle,
 								R.string.submitcompletetext, context);
+						startNewSurvey();
 					} else {
 						// if we do have missing responses, tell the user
 						ViewUtil.showConfirmDialog(R.string.cannotsave,
@@ -236,6 +228,18 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		});
 		loadState(context.getRespondentId());
 		return scrollView;
+	}
+
+	/**
+	 * creates a new response object/record and sets the id in the context then
+	 * resets the question view.
+	 */
+	private void startNewSurvey() {
+		// create a new response object so we're ready for the
+		// next instance
+		context.setRespondentId(databaseAdaptor.createSurveyRespondent(context
+				.getSurveyId(), context.getUserId()));
+		context.resetAllQuestions();
 	}
 
 	/**
