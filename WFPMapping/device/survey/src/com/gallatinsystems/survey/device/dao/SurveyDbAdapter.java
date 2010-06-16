@@ -384,8 +384,10 @@ public class SurveyDbAdapter {
 	public long createOrLoadSurveyRespondent(String surveyId, String userId) {
 		Cursor results = database.query(RESPONDENT_TABLE, new String[] { "max("
 				+ SURVEY_RESPONDENT_ID_COL + ")" }, SUBMITTED_FLAG_COL
-				+ "='false' and " + SURVEY_FK_COL + "=?",
-				new String[] { surveyId }, null, null, null);
+				+ "='false' and " + SURVEY_FK_COL + "=? and " + STATUS_COL
+				+ " =?",
+				new String[] { surveyId, ConstantUtil.CURRENT_STATUS }, null,
+				null, null);
 		long id = -1;
 		if (results != null && results.getCount() > 0) {
 			results.moveToFirst();
@@ -409,6 +411,7 @@ public class SurveyDbAdapter {
 		initialValues.put(SURVEY_FK_COL, surveyId);
 		initialValues.put(SUBMITTED_FLAG_COL, "false");
 		initialValues.put(USER_FK_COL, userId);
+		initialValues.put(STATUS_COL, ConstantUtil.CURRENT_STATUS);
 		return database.insert(RESPONDENT_TABLE, null, initialValues);
 	}
 
