@@ -57,6 +57,7 @@ public class SurveyDbAdapter {
 	public static final String MEDIA_SENT_COL = "media_sent_flag";
 	public static final String HELP_DOWNLOADED_COL = "help_downloaded_flag";
 	public static final String LANGUAGE_COL = "language";
+	public static final String SAVED_DATE_COL = "saved_date";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -68,8 +69,8 @@ public class SurveyDbAdapter {
 	private static final String SURVEY_TABLE_CREATE = "create table survey (_id integer primary key, "
 			+ "display_name text not null, version real, type text, location text, filename text, language, help_downloaded_flag text, deleted_flag text);";
 
-	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (survey_respondent_id integer primary key autoincrement, "
-			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text);";
+	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (_id integer primary key autoincrement, "
+			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text, saved_date long);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
 			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null);";
@@ -106,10 +107,11 @@ public class SurveyDbAdapter {
 	private static final String PLOT_POINT_TABLE = "plot_point";
 	private static final String PREFERENCES_TABLE = "preferences";
 
-	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent.survey_respondent_id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
+	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent._id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
+	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 42;
+	private static final int DATABASE_VERSION = 45;
 
 	private final Context context;
 
@@ -210,9 +212,9 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor fetchUnsentData() {
 		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
-				RESPONDENT_TABLE + "." + SURVEY_RESPONDENT_ID_COL, RESP_ID_COL,
-				ANSWER_COL, ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL,
-				EMAIL_COL, DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
+				RESPONDENT_TABLE + "." + PK_ID_COL, RESP_ID_COL, ANSWER_COL,
+				ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL, EMAIL_COL,
+				DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
 				RESPONDENT_TABLE + "." + SURVEY_FK_COL, }, SUBMITTED_FLAG_COL
 				+ "= 'true' AND (" + DELIVERED_DATE_COL + " is null OR "
 				+ MEDIA_SENT_COL + " <> 'true')", null, null, null, null);
@@ -232,8 +234,8 @@ public class SurveyDbAdapter {
 		ContentValues vals = new ContentValues();
 		vals.put(SUBMITTED_FLAG_COL, "true");
 		vals.put(SUBMITTED_DATE_COL, System.currentTimeMillis());
-		database.update(RESPONDENT_TABLE, vals, SURVEY_RESPONDENT_ID_COL + "= "
-				+ respondentId, null);
+		database.update(RESPONDENT_TABLE, vals,
+				PK_ID_COL + "= " + respondentId, null);
 	}
 
 	/**
@@ -250,8 +252,8 @@ public class SurveyDbAdapter {
 			// enhanced FOR ok here since we're dealing with an implicit
 			// iterator anyway
 			for (String id : idList) {
-				if (database.update(RESPONDENT_TABLE, updatedValues,
-						SURVEY_RESPONDENT_ID_COL + " = ?", new String[] { id }) < 1) {
+				if (database.update(RESPONDENT_TABLE, updatedValues, PK_ID_COL
+						+ " = ?", new String[] { id }) < 1) {
 					Log.e(TAG,
 							"Could not update record for Survey_respondent_id "
 									+ id);
@@ -270,9 +272,9 @@ public class SurveyDbAdapter {
 		if (surveyRespondentId != null) {
 			ContentValues updatedValues = new ContentValues();
 			updatedValues.put(STATUS_COL, status);
-			if (database.update(RESPONDENT_TABLE, updatedValues,
-					SURVEY_RESPONDENT_ID_COL + " = ?",
-					new String[] { surveyRespondentId }) < 1) {
+			updatedValues.put(SAVED_DATE_COL, System.currentTimeMillis());
+			if (database.update(RESPONDENT_TABLE, updatedValues, PK_ID_COL
+					+ " = ?", new String[] { surveyRespondentId }) < 1) {
 				Log.e(TAG, "Could not update status for Survey_respondent_id "
 						+ surveyRespondentId);
 			}
@@ -383,11 +385,9 @@ public class SurveyDbAdapter {
 	 */
 	public long createOrLoadSurveyRespondent(String surveyId, String userId) {
 		Cursor results = database.query(RESPONDENT_TABLE, new String[] { "max("
-				+ SURVEY_RESPONDENT_ID_COL + ")" }, SUBMITTED_FLAG_COL
-				+ "='false' and " + SURVEY_FK_COL + "=? and " + STATUS_COL
-				+ " =?",
-				new String[] { surveyId, ConstantUtil.CURRENT_STATUS }, null,
-				null, null);
+				+ PK_ID_COL + ")" }, SUBMITTED_FLAG_COL + "='false' and "
+				+ SURVEY_FK_COL + "=? and " + STATUS_COL + " =?", new String[] {
+				surveyId, ConstantUtil.CURRENT_STATUS }, null, null, null);
 		long id = -1;
 		if (results != null && results.getCount() > 0) {
 			results.moveToFirst();
@@ -694,6 +694,24 @@ public class SurveyDbAdapter {
 		}
 
 		return survey;
+	}
+
+	/**
+	 * lists all survey respondents by status
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public Cursor listSurveyRespondent(String status) {
+		String[] whereParams = { status };
+		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
+				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
+				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL }, "status = ?",
+				whereParams, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
 	}
 
 	/**

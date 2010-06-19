@@ -48,6 +48,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public static final int PLOTTING_ACTIVITY = 4;
 	public static final int PLOT_LIST_ACTIVITY = 5;
 	public static final int NEARBY_ACTIVITY = 6;
+	public static final int REVIEW_ACTIVITY = 7;
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
@@ -210,14 +211,15 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		} else if (selected.equals(ConstantUtil.NEARBY_OP)) {
 			Intent i = new Intent(v.getContext(), NearbyItemActivity.class);
 			startActivityForResult(i, NEARBY_ACTIVITY);
+		} else if (selected.equals(ConstantUtil.REVIEW_OP)) {
+			Intent i = new Intent(v.getContext(), SurveyReviewActivity.class);
+			startActivityForResult(i, REVIEW_ACTIVITY);
 		} else {
-			if (currentUserId != null) {
-				int resourceID = 0;
+			if (currentUserId != null) {				
 				Survey survey = menuViewAdapter.getSelectedSurvey(position);
 				if (survey != null) {
 					Intent i = new Intent(v.getContext(),
-							SurveyViewActivity.class);
-					i.putExtra(ConstantUtil.SURVEY_RESOURCE_ID_KEY, resourceID);
+							SurveyViewActivity.class);					
 					i.putExtra(ConstantUtil.USER_ID_KEY, currentUserId);
 					i.putExtra(ConstantUtil.SURVEY_ID_KEY, survey.getId());
 					startActivityForResult(i, SURVEY_ACTIVITY);

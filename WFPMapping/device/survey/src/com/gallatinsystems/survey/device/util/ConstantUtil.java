@@ -84,6 +84,7 @@ public class ConstantUtil {
 	public static final String CONF_OP = "CONF";
 	public static final String PLOT_OP = "PLOT";
 	public static final String NEARBY_OP = "NEARBY";
+	public static final String REVIEW_OP = "REVIEW";
 
 	/**
 	 * data sync options

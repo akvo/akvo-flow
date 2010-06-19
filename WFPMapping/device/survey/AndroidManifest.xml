@@ -22,6 +22,7 @@
 		<activity android:name=".activity.ImageBrowserActivity" />
 		<activity android:name=".activity.NearbyItemActivity"/>
 		<activity android:name=".activity.NearbyItemDetailActivity"/>
+		<activity android:name=".activity.SurveyReviewActivity"/>
 
 		<service android:name=".service.DataSyncService" />
 		<service android:name=".service.SurveyDownloadService" />

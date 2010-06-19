@@ -95,6 +95,13 @@ public class SurveyViewActivity extends TabActivity implements
 			surveyId = savedInstanceState != null ? savedInstanceState
 					.getString(ConstantUtil.SURVEY_ID_KEY) : "1";
 		}
+		
+		respondentId = extras != null ? extras
+				.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
+		if (respondentId == null) {
+			respondentId = savedInstanceState != null ? savedInstanceState
+					.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
+		}
 
 		Survey survey = null;
 		try {
@@ -104,9 +111,7 @@ public class SurveyViewActivity extends TabActivity implements
 			Log.e(TAG, "Could not load survey xml file");
 		}
 
-		respondentId = savedInstanceState != null ? savedInstanceState
-				.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
-
+	
 		if (respondentId == null) {
 			respondentId = databaseAdapter.createOrLoadSurveyRespondent(
 					surveyId.toString(), userId.toString());
