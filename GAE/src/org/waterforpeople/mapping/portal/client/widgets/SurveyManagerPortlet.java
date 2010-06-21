@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -220,8 +221,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		TextBox questionId = new TextBox();
 		questionId.setVisible(false);
-		TextBox questionText = new TextBox();
-		TextBox tip = new TextBox();
+		TextArea questionText = new TextArea();
+		questionText.setSize("35em", "5em");
+		// questionText.setWidth("40em");
+		TextArea tip = new TextArea();
+		tip.setSize("35em", "5em");
 		TextBox validationRule = new TextBox();
 		CheckBox mandatoryQuestion = new CheckBox();
 		CheckBox dependentQuestion = new CheckBox();
@@ -255,7 +259,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			} else if (qType.equals(QuestionType.OPTION)) {
 				questionTypeLB.setSelectedIndex(1);
 				loadQuestionOptionDetail(item);
-				questionDetailPanel.setWidget(6, 2, questionOptionDetail);
+				// /////////////////////fix
+				// questionDetailPanel.setWidget(6, 0, );
 			} else if (qType.equals(QuestionType.NUMBER)) {
 				questionTypeLB.setSelectedIndex(2);
 			} else if (qType.equals(QuestionType.GEO)) {
@@ -273,13 +278,19 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onChange(ChangeEvent event) {
 				if (((ListBox) event.getSource()).getSelectedIndex() == 1) {
 					loadQuestionOptionDetail(null);
-					questionDetailPanel.setWidget(6, 2, questionOptionDetail);
-					questionDetailPanel.getWidget(6, 2).setVisible(true);
-				} else {
-					if (questionDetailPanel.getCellCount(6) >= 2)
-						questionDetailPanel.getWidget(6, 2).setVisible(false);
+					if (detailContainer.getWidget(1) instanceof FlexTable)
+						questionOptionDetail.setVisible(true);
+					if (questionOptionDetail != null
+							&& detailContainer.getWidget(1) instanceof HorizontalPanel)
+						detailContainer.insert(questionOptionDetail, 1);
+					// Fix
+					// questionDetailPanel.setWidget(6, 1,
+					// questionOptionDetail);
+					// questionDetailPanel.getWidget(6, 1).setVisible(true);
 
-					// questionDetailPanel.removeRow(6);
+				} else {
+					if (detailContainer.getWidget(1) instanceof FlexTable)
+						detailContainer.remove(1);
 				}
 			}
 
@@ -297,6 +308,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		});
 
+		//Fix this section so that multiple buttons aren't created
+		
 		Button saveQuestionButton = new Button("Save Question");
 		Button deleteQuestionButton = new Button("Delete Question");
 		questionId.setVisible(false);
@@ -315,8 +328,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionDetailPanel.setWidget(7, 0, new Label(
 				"Question Dependant On Other Question"));
 		questionDetailPanel.setWidget(7, 1, dependentQuestion);
-		questionDetailPanel.setWidget(9, 0, saveQuestionButton);
-		questionDetailPanel.setWidget(9, 1, deleteQuestionButton);
+
 		if (item != null && item.getQuestionDependency() != null) {
 			dependentQuestion.setValue(true);
 			loadDependencyTable(true);
@@ -351,9 +363,26 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		if (item != null && item.getQuestionDependency() != null) {
 			loadDependencyTable(true);
 		}
-		this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
+
+		for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
+			detailContainer.remove(i);
+		}
+		detailContainer.add(questionDetailPanel);
+		if (questionOptionDetail != null)
+			detailContainer.add(questionOptionDetail);
+		
+		for(int i=0;i<buttonHPanel.getWidgetCount();i++)
+			buttonHPanel.remove(i);
+		
+		buttonHPanel.add(saveQuestionButton);
+		buttonHPanel.add(deleteQuestionButton);
+		
+		detailContainer.add(buttonHPanel);
+		// this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
 
 	}
+
+	private HorizontalPanel buttonHPanel = new HorizontalPanel();
 
 	private void loadDependencyTable(Boolean dependentValue) {
 
@@ -508,9 +537,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 
 		Button addNewOptionButton = new Button("Add New Option");
-		//Button deleteOptionButton = new Button("Delete Option");
+		// Button deleteOptionButton = new Button("Delete Option");
 
-		questionDetailPanel.setWidget(7, 2, addNewOptionButton);
+		questionOptionDetail.setWidget(row, 2, addNewOptionButton);
 		addNewOptionButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -526,7 +555,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	private void loadQuestionOptionRowDetail(QuestionOptionDto item, Integer row) {
 
 		TextBox optionValue = new TextBox();
+		optionValue.setWidth("3em");
 		TextBox optionText = new TextBox();
+		optionText.setWidth("30em");
 		TextBox optionId = new TextBox();
 		optionId.setVisible(false);
 		if (item != null) {
@@ -537,6 +568,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			if (item.getText() != null)
 				optionText.setText(item.getText());
 		}
+		if (row >= 2)
+			row = row - 1;
+
+		questionOptionDetail.insertRow(row);
 
 		questionOptionDetail.setWidget(row, 0, new Label("Option Value"));
 		questionOptionDetail.setWidget(row, 1, optionValue);
@@ -584,11 +619,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private QuestionDto getQuestionDto() {
 		QuestionDto value = new QuestionDto();
+		
 		TextBox questionId = (TextBox) questionDetailPanel.getWidget(0, 0);
-		TextBox questionText = (TextBox) questionDetailPanel.getWidget(1, 1);
+		TextArea questionText = (TextArea) questionDetailPanel.getWidget(1, 1);
 		ListBox questionTypeLB = (ListBox) questionDetailPanel.getWidget(2, 1);
 
-		TextBox tip = (TextBox) questionDetailPanel.getWidget(3, 1);
+		TextArea tip = (TextArea) questionDetailPanel.getWidget(3, 1);
 		TextBox validationRule = (TextBox) questionDetailPanel.getWidget(4, 1);
 		CheckBox mandatoryQuestion = (CheckBox) questionDetailPanel.getWidget(
 				5, 1);
@@ -610,8 +646,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			value.setType(QuestionType.FREE_TEXT);
 		} else if (questionTypeLB.getSelectedIndex() == 1) {
 			value.setType(QuestionType.OPTION);
-			FlexTable questionOptionTable = (FlexTable) questionDetailPanel
-					.getWidget(6, 2);
+			FlexTable questionOptionTable = (FlexTable)detailContainer.getWidget(1) ;
 
 			CheckBox allowOther = (CheckBox) questionOptionDetail.getWidget(0,
 					1);
@@ -626,7 +661,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			ocDto.setAllowMultipleFlag(allowMultiple.getValue());
 			ocDto.setAllowOtherFlag(allowOther.getValue());
 
-			for (int row = 1; row < questionOptionTable.getRowCount(); row++) {
+			for (int row = 1; row < questionOptionTable.getRowCount()-1; row++) {
 				QuestionOptionDto qoDto = new QuestionOptionDto();
 				TextBox optionValue = (TextBox) questionOptionDetail.getWidget(
 						row, 1);

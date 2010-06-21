@@ -37,7 +37,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	private static final String DUMMY = "DUMMY";
 	private static final String PLEASE_WAIT = "Loading...";
 	private static final String PUBLISHED_STATUS = "PUBLISHED";
-	private static final int MAX_Q_LENGTH = 50;
+	private static final int MAX_Q_LENGTH = 20;
 	private TreeItem surveyRootItem;
 	private Tree surveyRootTree;
 	private boolean rootedByItem;
@@ -370,7 +370,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 											text = text.substring(0,
 													MAX_Q_LENGTH);
 										}
-										qGroup.setText(result.get(i).getText());
+										qGroup.setText((i+1)+":"+text);
 										qGroup.setUserObject(result.get(i));
 										item.addItem(qGroup);
 									}
