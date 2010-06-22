@@ -105,9 +105,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	}
 
 	private void removeAllWidgetsLoadThisWidget(Widget w) {
-		for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
-			detailContainer.remove(i);
-		}
+		//for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
+		//	detailContainer.remove(i);
+	//	}
+		treeContainer.remove(detailContainer);
+		detailContainer = new VerticalPanel();
+		treeContainer.add(detailContainer);
 		detailContainer.add(w);
 	}
 
@@ -218,7 +221,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		setButtonState(ButtonState.NONE);
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
-
+		treeContainer.remove(detailContainer);
+		detailContainer = new VerticalPanel();
+		treeContainer.add(detailContainer);
 		TextBox questionId = new TextBox();
 		questionId.setVisible(false);
 		TextArea questionText = new TextArea();
@@ -364,21 +369,19 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			loadDependencyTable(true);
 		}
 
-		for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
-			detailContainer.remove(i);
-		}
+		
 		detailContainer.add(questionDetailPanel);
 		if (questionOptionDetail != null)
 			detailContainer.add(questionOptionDetail);
 		
-		for(int i=0;i<buttonHPanel.getWidgetCount();i++)
-			buttonHPanel.remove(i);
+		buttonHPanel = null;
+		buttonHPanel = new HorizontalPanel();
 		
 		buttonHPanel.add(saveQuestionButton);
 		buttonHPanel.add(deleteQuestionButton);
 		
 		detailContainer.add(buttonHPanel);
-		// this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
+		 //this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
 
 	}
 
