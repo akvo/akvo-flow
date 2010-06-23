@@ -25,10 +25,21 @@ public class OptionContainerDao extends BaseDAO<OptionContainer> {
 		QuestionOptionDao optDao = new QuestionOptionDao();
 		OptionContainerQuestionOptionAssocDao qcqoDao = new OptionContainerQuestionOptionAssocDao();
 		oc = super.save(oc);
+		// Get All OptionContainerQuestionOptionAssocs and delete them
+
+		Long ocId = oc.getKey().getId();
+//Temp fix to delete assocs prior to saving to eliminate dups
+		if (ocId != null)
+			for (OptionContainerQuestionOptionAssoc ocqoa : qcqoDao.listByOptionContainerId(ocId)) {
+				qcqoDao.delete(ocqoa);
+			}
+
 		if (oc.getOptionsList() != null)
 			for (QuestionOption qo : oc.getOptionsList()) {
+				// ToDo: change this to use unowned keys instead of assoc tables
 				qo = optDao.save(qo);
 				OptionContainerQuestionOptionAssoc oqqoa = new OptionContainerQuestionOptionAssoc();
+				// ToDo Lookup and delete or update then insert
 				oqqoa.setOptionContianerId(oc.getKey().getId());
 				oqqoa.setQuestionOptionId(qo.getKey().getId());
 				oqqoa = qcqoDao.save(oqqoa);
@@ -57,7 +68,7 @@ public class OptionContainerDao extends BaseDAO<OptionContainer> {
 		OptionContainerQuestionOptionAssocDao qcqoDao = new OptionContainerQuestionOptionAssocDao();
 		List<OptionContainerQuestionOptionAssoc> ocqoaList = qcqoDao
 				.listByOptionContainerId(oc.getKey().getId());
-		//log.info("size"+ocqoaList.size());
+		// log.info("size"+ocqoaList.size());
 		for (OptionContainerQuestionOptionAssoc ocqoa : ocqoaList) {
 			QuestionOption qo = optDao.getByKey(ocqoa.getQuestionOptionId());
 			oc.addQuestionOption(qo);
