@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * data structure for individual survey questions. Questions have a type which
@@ -33,6 +34,15 @@ public class Question {
 	private ArrayList<Option> options;
 	private boolean allowOther;
 	private boolean allowMultiple;
+
+	private HashMap<String, AltText> altTextMap;
+
+	public void addAltText(AltText altText) {
+		if (altTextMap == null) {
+			altTextMap = new HashMap<String, AltText>();
+		}
+		altTextMap.put(altText.getLanguage(), altText);
+	}
 
 	public boolean isAllowMultiple() {
 		return allowMultiple;
