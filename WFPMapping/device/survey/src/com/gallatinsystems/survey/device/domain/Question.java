@@ -35,12 +35,17 @@ public class Question {
 	private boolean allowOther;
 	private boolean allowMultiple;
 
-	private HashMap<String, AltText> altTextMap;
+	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
+
+	public HashMap<String, AltText> getAltTextMap() {
+		return altTextMap;
+	}
+
+	public AltText getAltText(String lang) {
+		return altTextMap.get(lang);
+	}
 
 	public void addAltText(AltText altText) {
-		if (altTextMap == null) {
-			altTextMap = new HashMap<String, AltText>();
-		}
 		altTextMap.put(altText.getLanguage(), altText);
 	}
 

@@ -34,10 +34,7 @@ import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
 /**
  * main activity for the Field Survey application. It will read in the current
  * survey definition and render the survey UI based on the questions defined.
- * 
- * 
- * 
- * 
+ *  
  * @author Christopher Fagiani
  * 
  */

@@ -4,7 +4,8 @@
 		<heading>Water Point Questions</heading>
 		<question id="q1" order="1" mandatory="true" type="option">
 			<text>Location? This is a really long question to see how it looks in the UI if we have english and spanish.</text>
-			<altText type="translation" language="sp">¿ubicación?</altText>
+			<altText type="translation" language="sp">¿ubicación? este es un texto adicional para poner a prueba la disposición</altText>
+			<altText type="translation" language="fr">emplacement? Ceci est un texte supplémentaire à disposition de test</altText>
 			<options allowOther="true" renderType="spinner">
 				<option value="r">Rural blah blha blhal how does the spinner handle wrapping</option>
 				<option value="pu">Peri-Urban</option>

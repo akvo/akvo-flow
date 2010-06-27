@@ -10,13 +10,23 @@
 		<item>French</item>
 		<item>Spanish</item>		
 	</string-array>
+	<string-array name="languagecodes">
+		<item>en</item>
+		<item>fr</item>
+		<item>sp</item>		
+	</string-array>
+	<string-array name="colors">
+		<item>white</item>
+		<item>red</item>
+		<item>blue</item>		
+	</string-array>
 	<string-array name="precachehelpoptions">
 		<item>Always</item>
 		<item>WiFi Only</item>
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
-	<!--     <item>http://192.168.0.100:8888</item> -->
+	    <!--   <item>http://192.168.0.100:8888</item>-->
 		<item>http://watermapmonitordev.appspot.com</item>
 		<item>http://watermappingmonitoring.appspot.com</item>
 	</string-array>

@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.view;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,8 +14,10 @@ import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.TextView.BufferType;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.domain.AltText;
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
@@ -43,10 +46,13 @@ public class QuestionView extends TableLayout implements
 
 	protected static final int DEFAULT_WIDTH = 290;
 	private TextView questionText;
+
 	protected Question question;
 	private QuestionResponse response;
 	private ArrayList<QuestionInteractionListener> listeners;
 	private ImageButton tipImage;
+	private static String[] langs = null;
+	private static String[] colors = null;
 
 	/**
 	 * install a single tableRow containing a textView with the question text
@@ -57,15 +63,29 @@ public class QuestionView extends TableLayout implements
 	public QuestionView(Context context, Question q) {
 		super(context);
 		question = q;
-		TableRow tr = new TableRow(context);
-		questionText = new TextView(context);		
-		questionText.setWidth(DEFAULT_WIDTH);
-		String text = q.getText();
-		if (q.isMandatory()) {
-			text = text + "*";
+		if(langs == null){
+			langs = context.getResources().getStringArray(R.array.languagecodes);
+			colors = context.getResources().getStringArray(R.array.colors);
+			if(langs == null){
+				langs = new String[0];
+			}
 		}
-		questionText.setText(text);
+		TableRow tr = new TableRow(context);
+		questionText = new TextView(context);
+		questionText.setWidth(DEFAULT_WIDTH);		
+		StringBuilder text = new StringBuilder(q.getText());
+		for(int i =0; i < langs.length; i++){
+			AltText txt = question.getAltText(langs[i]);
+			if(txt != null){
+				text.append(" / <font color='").append(colors[i]).append("'>").append(txt.getText()).append("</font>");
+			}
+		}	
+		if (q.isMandatory()) {
+			text = text.append("*");
+		}
+		questionText.setText(Html.fromHtml(text.toString()), BufferType.SPANNABLE);
 		tr.addView(questionText);
+
 		// if there is a tip for this question, construct an alert dialog box
 		// with the data
 		final int tips = question.getTipCount();
@@ -287,7 +307,7 @@ public class QuestionView extends TableLayout implements
 		return question;
 	}
 
-	public void setTextSize(float size){
+	public void setTextSize(float size) {
 		questionText.setTextSize(size);
 	}
 }
