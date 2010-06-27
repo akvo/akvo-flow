@@ -7,7 +7,8 @@
 	</string-array>
 	<string-array name="languages">
 		<item>English</item>
-		<item>French</item>		
+		<item>French</item>
+		<item>Spanish</item>		
 	</string-array>
 	<string-array name="precachehelpoptions">
 		<item>Always</item>
@@ -15,6 +16,7 @@
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
+	<!--     <item>http://192.168.0.100:8888</item> -->
 		<item>http://watermapmonitordev.appspot.com</item>
 		<item>http://watermappingmonitoring.appspot.com</item>
 	</string-array>

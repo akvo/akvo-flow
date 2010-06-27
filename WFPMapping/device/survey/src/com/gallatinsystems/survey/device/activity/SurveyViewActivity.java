@@ -52,6 +52,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int SCAN_ACTIVITY_REQUEST = 3;
 	private static final int LARGE_TXT = 1;
 	private static final int NORMAL_TXT = 2;
+	private static final int SURVEY_LANG = 3;
 
 	private static final float LARGE_TXT_SIZE = 22;
 	private static final float NORMAL_TXT_SIZE = 14;
@@ -95,7 +96,7 @@ public class SurveyViewActivity extends TabActivity implements
 			surveyId = savedInstanceState != null ? savedInstanceState
 					.getString(ConstantUtil.SURVEY_ID_KEY) : "1";
 		}
-		
+
 		respondentId = extras != null ? extras
 				.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
 		if (respondentId == null) {
@@ -111,7 +112,6 @@ public class SurveyViewActivity extends TabActivity implements
 			Log.e(TAG, "Could not load survey xml file");
 		}
 
-	
 		if (respondentId == null) {
 			respondentId = databaseAdapter.createOrLoadSurveyRespondent(
 					surveyId.toString(), userId.toString());
@@ -126,7 +126,7 @@ public class SurveyViewActivity extends TabActivity implements
 				if (group.getQuestions() != null
 						&& group.getQuestions().size() > 0) {
 					SurveyTabContentFactory factory = new SurveyTabContentFactory(
-							this, group, databaseAdapter,currentTextSize);
+							this, group, databaseAdapter, currentTextSize);
 					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
 							.setIndicator(group.getHeading()).setContent(
 									factory));
@@ -306,6 +306,7 @@ public class SurveyViewActivity extends TabActivity implements
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, LARGE_TXT, 0, R.string.largetxtoption);
 		menu.add(0, NORMAL_TXT, 1, R.string.normaltxtoption);
+		menu.add(0, SURVEY_LANG, 2, R.string.langoption);
 		return true;
 	}
 
@@ -320,8 +321,39 @@ public class SurveyViewActivity extends TabActivity implements
 			return true;
 		case NORMAL_TXT:
 			updateTextSize(NORMAL_TXT_SIZE);
+			return true;
+		case SURVEY_LANG:
+			displayLangSelector();
+			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
+	}
+
+	/**
+	 * displays a dialog box for selection of one or more survey languages
+	 * TODO: implement pre-selection of saved languages (right now it's hard-coded to all false)
+	 */
+	private void displayLangSelector() {
+		AlertDialog dia = new AlertDialog.Builder(this).setTitle(
+				R.string.surveylanglabel).setMultiChoiceItems(
+				R.array.languages, new boolean[] { false, false, false },
+				new DialogInterface.OnMultiChoiceClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which,
+							boolean isChecked) {
+						switch (which) {
+						case DialogInterface.BUTTON_POSITIVE:
+							break;
+						}
+					}
+				}).setPositiveButton("OK",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int clicked) {
+						dialog.dismiss();
+						//TODO: re-render languages
+					}
+				}).create();
+		dia.show();
 	}
 
 	/**

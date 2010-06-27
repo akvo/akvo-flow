@@ -106,6 +106,7 @@
 	<string name="optiontext">Option</string>
 	<string name="largetxtoption">Large Text</string>
 	<string name="normaltxtoption">Normal Text</string>
+	<string name="langoption">Languages</string>
 	<string name="reviewtext">Touch a survey to view/submit.</string>
 	<string name="reviewlabel">Review Saved Surveys</string>
 </resources>
