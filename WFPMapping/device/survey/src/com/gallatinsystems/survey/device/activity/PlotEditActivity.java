@@ -42,7 +42,7 @@ public class PlotEditActivity extends Activity {
 
 		plotId = savedInstanceState != null ? savedInstanceState
 				.getLong(ConstantUtil.ID_KEY) : null;
-		if (plotId == null) {
+		if (plotId == null || plotId == 0L) {
 			Bundle extras = getIntent().getExtras();
 			plotId = extras != null ? new Long(extras
 					.getString(ConstantUtil.ID_KEY)) : null;

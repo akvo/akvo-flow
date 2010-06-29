@@ -96,7 +96,7 @@ public class SurveyViewActivity extends TabActivity implements
 
 		respondentId = extras != null ? extras
 				.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
-		if (respondentId == null) {
+		if (respondentId == null || respondentId == 0L) {
 			respondentId = savedInstanceState != null ? savedInstanceState
 					.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
 		}

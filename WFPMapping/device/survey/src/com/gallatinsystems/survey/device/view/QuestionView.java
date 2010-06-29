@@ -1,7 +1,6 @@
 package com.gallatinsystems.survey.device.view;
 
 import java.util.ArrayList;
-import java.util.Map.Entry;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -51,8 +50,8 @@ public class QuestionView extends TableLayout implements
 	private QuestionResponse response;
 	private ArrayList<QuestionInteractionListener> listeners;
 	private ImageButton tipImage;
-	private static String[] langs = null;
-	private static String[] colors = null;
+	protected static String[] langs = null;
+	protected static String[] colors = null;
 
 	/**
 	 * install a single tableRow containing a textView with the question text

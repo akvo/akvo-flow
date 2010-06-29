@@ -52,7 +52,10 @@
 		<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1159_thumb.jpg" caption="Help message"/>
 			<text>Collection Point?</text>
 			<options allowOther="false">
-				<option value="ph">Public Handpump</option>
+				<option value="ph">
+				<text>Public Handpump</text>
+					<altText type="translation" language="sp">publico</altText>
+					</option>
 				<option value="y">Yard Connection (tap)</option>
 				<option value="h">House Connection (tap)</option>
 				<option value="pp">Public/Private Connection (tap)

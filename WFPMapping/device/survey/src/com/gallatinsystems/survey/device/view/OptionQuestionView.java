@@ -10,6 +10,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +27,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView.BufferType;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.domain.AltText;
 import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
@@ -73,16 +77,16 @@ public class OptionQuestionView extends QuestionView {
 				if (question.isAllowOther()) {
 					extras++;
 				}
-				String[] optionArray = new String[options.size() + extras];
-				optionArray[0] = "";
+				Spanned[] optionArray = new Spanned[options.size() + extras];
+				optionArray[0] = Html.fromHtml("");
 				for (int i = 0; i < options.size(); i++) {
-					optionArray[i + 1] = options.get(i).getText();
+					optionArray[i + 1] = formOptionText(options.get(i));
 				}
 				// put the "other" option in the last slot in the array
 				if (question.isAllowOther()) {
-					optionArray[optionArray.length - 1] = OTHER_TEXT;
+					optionArray[optionArray.length - 1] = Html.fromHtml(OTHER_TEXT);
 				}
-				ArrayAdapter<String> optionAdapter = new ArrayAdapter<String>(
+				ArrayAdapter<CharSequence> optionAdapter = new ArrayAdapter<CharSequence>(
 						context, android.R.layout.simple_spinner_item,
 						optionArray);
 				optionAdapter
@@ -157,7 +161,7 @@ public class OptionQuestionView extends QuestionView {
 						public boolean onLongClick(View v) {							
 							AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 							TextView tipText = new TextView(getContext());
-							tipText.setText(((RadioButton)(v)).getText());
+							tipText.setText(((RadioButton)(v)).getText(), BufferType.SPANNABLE);
 							builder.setTitle(R.string.optiontext);
 							builder.setView(tipText);
 							builder.setPositiveButton(R.string.okbutton,
@@ -170,7 +174,7 @@ public class OptionQuestionView extends QuestionView {
 							return true;
 						}
 					});
-					rb.setText(o.getText());
+					rb.setText(formOptionText(o), BufferType.SPANNABLE);
 					optionGroup.addView(rb, i++,
 							new LayoutParams(LayoutParams.FILL_PARENT,
 									LayoutParams.WRAP_CONTENT));
@@ -192,7 +196,7 @@ public class OptionQuestionView extends QuestionView {
 					CheckBox box = new CheckBox(context);
 					box.setId(i);
 					checkBoxes.add(box);
-					box.setText(options.get(i).getText());
+					box.setText(formOptionText(options.get(i)),BufferType.SPANNABLE);
 					box
 							.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -234,6 +238,18 @@ public class OptionQuestionView extends QuestionView {
 			}
 		}
 		suppressListeners = false;
+	}
+	
+	private Spanned formOptionText(Option opt){
+		StringBuilder text = new StringBuilder(opt.getText());
+		for(int i =0; i < langs.length; i++){
+			AltText txt = opt.getAltText(langs[i]);
+			if(txt != null){
+				text.append(" / <font color='").append(colors[i]).append("'>").append(txt.getText()).append("</font>");
+			}
+		}	
+		
+		return Html.fromHtml(text.toString());
 	}
 
 	/**

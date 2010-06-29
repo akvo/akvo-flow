@@ -41,7 +41,7 @@ public class UserEditActivity extends Activity {
 
 		userId = savedInstanceState != null ? savedInstanceState
 				.getLong(ConstantUtil.ID_KEY) : null;
-		if (userId == null) {
+		if (userId == null || userId == 0L) {
 			Bundle extras = getIntent().getExtras();
 			userId = extras != null ? new Long(extras
 					.getString(ConstantUtil.ID_KEY)) : null;

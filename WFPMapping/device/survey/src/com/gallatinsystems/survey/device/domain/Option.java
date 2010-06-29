@@ -12,13 +12,18 @@ public class Option {
 
 	private String text;
 	private String value;
-	private HashMap<String, AltText> altTextMap;
+	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
 
 	public void addAltText(AltText altText) {
-		if (altTextMap == null) {
-			altTextMap = new HashMap<String, AltText>();
-		}
 		altTextMap.put(altText.getLanguage(), altText);
+	}
+	
+	public HashMap<String, AltText> getAltTextMap() {
+		return altTextMap;
+	}
+
+	public AltText getAltText(String lang) {
+		return altTextMap.get(lang);
 	}
 
 	public String getText() {

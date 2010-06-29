@@ -51,6 +51,7 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String MAX_VAL = "maxVal";
 	private static final String ALT_TEXT = "altText";
 	private static final String LANG = "language";
+	@SuppressWarnings("unused")
 	private static final String TRANSLATION = "translation";
 
 	private Survey survey;
