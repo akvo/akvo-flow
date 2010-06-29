@@ -35,10 +35,10 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 */
 	private static final Integer[] preSurveyButtons = { R.drawable.users };
 	private static final Integer[] preSurveyLabels = { R.string.userlabel };
-	private static final Integer[] postSurveyButtons = { R.drawable.plotting,
-			R.drawable.settings, R.drawable.infoactivity, R.drawable.infoactivity};
-	private static final Integer[] postSurveyLabels = { R.string.plottinglabel,
-			R.string.settingslabel, R.string.nearbylabel, R.string.reviewlabel };
+	private static final Integer[] postSurveyButtons = { R.drawable.disk, R.drawable.plotting,
+			R.drawable.settings, R.drawable.infoactivity};
+	private static final Integer[] postSurveyLabels = {  R.string.reviewlabel,R.string.plottinglabel,
+			R.string.settingslabel, R.string.nearbylabel };
 
 
 	// references to our buttons
@@ -103,11 +103,11 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 				preSurveyButtons.length + surveys.size());
 		ArrayUtil.combineArrays(buttonLabels, postSurveyLabels,
 				preSurveyButtons.length + surveys.size());
-
+		
+		operations.add(ConstantUtil.REVIEW_OP);
 		operations.add(ConstantUtil.PLOT_OP);
 		operations.add(ConstantUtil.CONF_OP);
-		operations.add(ConstantUtil.NEARBY_OP);
-		operations.add(ConstantUtil.REVIEW_OP);
+		operations.add(ConstantUtil.NEARBY_OP);		
 		notifyDataSetChanged();
 	}
 
