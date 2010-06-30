@@ -264,8 +264,6 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			} else if (qType.equals(QuestionType.OPTION)) {
 				questionTypeLB.setSelectedIndex(1);
 				loadQuestionOptionDetail(item);
-				// /////////////////////fix
-				// questionDetailPanel.setWidget(6, 0, );
 			} else if (qType.equals(QuestionType.NUMBER)) {
 				questionTypeLB.setSelectedIndex(2);
 			} else if (qType.equals(QuestionType.GEO)) {
@@ -562,7 +560,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionText = new TextBox();
 		optionText.setWidth("30em");
 		TextBox optionId = new TextBox();
-		optionId.setVisible(false);
+		//optionId.setVisible(true);
 		if (item != null) {
 			if (item.getKeyId() != null)
 				optionId.setText(item.getKeyId().toString());
