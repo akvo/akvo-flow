@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -70,7 +71,6 @@ public class SurveyViewActivity extends TabActivity implements
 	private Long respondentId;
 	private String userId;
 	private float currentTextSize;
-	private String[] languageArray;
 	private boolean[] selectedLanguages;
 	private String[] selectedLanguageCodes;
 
@@ -89,9 +89,10 @@ public class SurveyViewActivity extends TabActivity implements
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
 		Pair<String[], boolean[]> langData = LanguageUtil.loadLanguages(this,
 				langSelection);
-		languageArray = langData.first;
+
 		selectedLanguages = langData.second;
-		selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(this,selectedLanguages);
+		selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(this,
+				selectedLanguages);
 
 		Bundle extras = getIntent().getExtras();
 		userId = extras != null ? extras.getString(ConstantUtil.USER_ID_KEY)
@@ -137,7 +138,8 @@ public class SurveyViewActivity extends TabActivity implements
 				if (group.getQuestions() != null
 						&& group.getQuestions().size() > 0) {
 					SurveyTabContentFactory factory = new SurveyTabContentFactory(
-							this, group, databaseAdapter, currentTextSize, selectedLanguageCodes);
+							this, group, databaseAdapter, currentTextSize,
+							selectedLanguageCodes);
 					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
 							.setIndicator(group.getHeading()).setContent(
 									factory));
@@ -338,9 +340,19 @@ public class SurveyViewActivity extends TabActivity implements
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
 							dialog.dismiss();
-							selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(SurveyViewActivity.this,selectedLanguages);
+							selectedLanguageCodes = LanguageUtil
+									.getSelectedLangageCodes(
+											SurveyViewActivity.this,
+											selectedLanguages);
+							databaseAdapter
+									.savePreference(
+											ConstantUtil.SURVEY_LANG_SETTING_KEY,
+											LanguageUtil
+													.formLanguagePreferenceString(selectedLanguages));
 							for (int i = 0; i < tabContentFactories.size(); i++) {
-								tabContentFactories.get(i).updateQuestionLanguages(selectedLanguageCodes);
+								tabContentFactories.get(i)
+										.updateQuestionLanguages(
+												selectedLanguageCodes);
 							}
 						}
 					});

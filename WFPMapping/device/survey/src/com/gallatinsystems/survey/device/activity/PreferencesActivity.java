@@ -153,21 +153,11 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			ViewUtil.displayLanguageSelector(this, selectedLanguages,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
-							StringBuffer newSelection = new StringBuffer();
-							boolean isFirst = true;
-							for (int i = 0; i < selectedLanguages.length; i++) {
-								if (selectedLanguages[i]) {
-									if (!isFirst) {
-										newSelection.append(",");
-									} else {
-										isFirst = false;
-									}
-									newSelection.append(i);
-								}
-							}
-							database.savePreference(
-									ConstantUtil.SURVEY_LANG_SETTING_KEY,
-									newSelection.toString());
+							database
+									.savePreference(
+											ConstantUtil.SURVEY_LANG_SETTING_KEY,
+											LanguageUtil
+													.formLanguagePreferenceString(selectedLanguages));
 							languageTextView.setText(LanguageUtil
 									.formSelectedLanguageString(languageArray,
 											selectedLanguages));

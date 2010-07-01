@@ -87,4 +87,29 @@ public class LanguageUtil {
 		}
 		return codes.toArray(new String[codes.size()]);
 	}
+
+	/**
+	 * forms a comma-delimited string of array index values used to persist the
+	 * selected languages to the db.
+	 * 
+	 * @param selectedLanguages
+	 * @return
+	 */
+	public static String formLanguagePreferenceString(
+			boolean[] selectedLanguages) {
+		StringBuffer newSelection = new StringBuffer();
+		boolean isFirst = true;
+		for (int i = 0; i < selectedLanguages.length; i++) {
+			if (selectedLanguages[i]) {
+				if (!isFirst) {
+					newSelection.append(",");
+				} else {
+					isFirst = false;
+				}
+				newSelection.append(i);
+			}
+		}
+		return newSelection.toString();
+
+	}
 }

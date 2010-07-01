@@ -42,7 +42,7 @@
 	<string name="aboutlabel">About</string>
 	<string name="aboutdesc">Displays version information.</string>
 	<string name="abouttitle">About - FieldSurvey</string>
-	<string name="abouttext">FieldSurvey\nDeveloped By: Gallatin Systems\nCopyright 2010\nVersion 0.92</string>
+	<string name="abouttext">FieldSurvey\nDeveloped By: Gallatin Systems\nCopyright 2010\nVersion 0.93</string>
 	<string name="gpsstatuslabel">GPS Status</string>
 	<string name="gpsstatusdesc">Launches the GPS Status application if you have it installed on this device.</string>
 	<string name="nogpsstatus">GPS Status is not installed on this device. Please install it using the Android Market.</string>
@@ -111,4 +111,5 @@
 	<string name="reviewlabel">Review Saved Surveys</string>
 	<string name="langmandatorytitle">Invalid Selection</string>
 	<string name="langmandatorytext">You must select at least one language</string>
+	<string name="pleasewait">Please wait</string>
 </resources>
