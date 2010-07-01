@@ -48,8 +48,8 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private float lastAccuracy;
 	private boolean needUpdate = false;
 
-	public GeoQuestionView(Context context, Question q) {
-		super(context, q);
+	public GeoQuestionView(Context context, Question q, String[] langCodes) {
+		super(context, q,langCodes);
 		init();
 	}
 

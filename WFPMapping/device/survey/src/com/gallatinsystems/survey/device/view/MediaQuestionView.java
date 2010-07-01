@@ -28,8 +28,8 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	private String mediaType;
 	
 
-	public MediaQuestionView(Context context, Question q, String type) {
-		super(context, q);
+	public MediaQuestionView(Context context, Question q, String type, String[] langCodes) {
+		super(context, q,langCodes);
 		init(type);
 	}
 

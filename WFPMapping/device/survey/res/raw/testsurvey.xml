@@ -44,7 +44,10 @@
 				<option value="b">Borehole</option>
 				<option value="lhd">Lined hand-dug well</option>
 				<option value="uhd">Unlined hand-dug well</option>
-				<option value="sw">Surface Water</option>
+				<option value="sw">
+				<text>Surface Water</text>
+				<altText type="translation" language="sp">aqua</altText>
+				</option>
 				<option value="p">Piped Supply</option>
 			</options>
 		</question>

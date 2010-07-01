@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -21,6 +22,8 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.LanguageUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * Displays user editable preferences and takes care of persisting them to the
@@ -40,6 +43,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private TextView serverTextView;
 	private SurveyDbAdapter database;
 	private String[] languageArray;
+	private boolean[] selectedLanguages;
 	private String[] uploadArray;
 	private String[] precacheHelpArray;
 	private String[] serverArray;
@@ -58,7 +62,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		serverTextView = (TextView) findViewById(R.id.servervalue);
 
 		Resources res = getResources();
-		languageArray = res.getStringArray(R.array.languages);
+
 		uploadArray = res.getStringArray(R.array.celluploadoptions);
 		precacheHelpArray = res.getStringArray(R.array.precachehelpoptions);
 		serverArray = res.getStringArray(R.array.servers);
@@ -88,9 +92,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			uploadOptionTextView.setText(uploadArray[Integer.parseInt(val)]);
 		}
 		val = settings.get(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-		if (val != null) {
-			languageTextView.setText(languageArray[Integer.parseInt(val)]);
-		}
+		Pair<String[], boolean[]> langs = LanguageUtil.loadLanguages(this, val);
+		languageArray = langs.first;
+		selectedLanguages = langs.second;
+		languageTextView.setText(LanguageUtil.formSelectedLanguageString(
+				languageArray, selectedLanguages));
+
 		val = settings.get(ConstantUtil.PRECACHE_HELP_SETTING_KEY);
 		if (val != null) {
 			precacheHelpTextView.setText(precacheHelpArray[Integer
@@ -143,9 +150,30 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					uploadArray[ConstantUtil.UPLOAD_DATA_ALLWAYS_IDX],
 					ConstantUtil.DATA_AVAILABLE_INTENT);
 		} else if (R.id.suveylangbutton == v.getId()) {
-			showPreferenceDialog(R.string.surveylanglabel, R.array.languages,
-					ConstantUtil.SURVEY_LANG_SETTING_KEY, languageArray,
-					languageTextView, null, null);
+			ViewUtil.displayLanguageSelector(this, selectedLanguages,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int clicked) {
+							StringBuffer newSelection = new StringBuffer();
+							boolean isFirst = true;
+							for (int i = 0; i < selectedLanguages.length; i++) {
+								if (selectedLanguages[i]) {
+									if (!isFirst) {
+										newSelection.append(",");
+									} else {
+										isFirst = false;
+									}
+									newSelection.append(i);
+								}
+							}
+							database.savePreference(
+									ConstantUtil.SURVEY_LANG_SETTING_KEY,
+									newSelection.toString());
+							languageTextView.setText(LanguageUtil
+									.formSelectedLanguageString(languageArray,
+											selectedLanguages));
+							dialog.dismiss();
+						}
+					});
 		} else if (R.id.precachehelpbutton == v.getId()) {
 			showPreferenceDialog(R.string.precachehelpdialogtitle,
 					R.array.precachehelpoptions,

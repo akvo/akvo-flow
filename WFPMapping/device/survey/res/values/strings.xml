@@ -75,7 +75,7 @@
 	<string name="savelastuserlabel">Keep the last selected user logged-in between sessions</string>
 	<string name="uploadoptionlabel">Upload data over cellular network</string>
 	<string name="uploadoptiondialogtitle">Upload via cellular</string>
-	<string name="surveylanglabel">Survey Language</string>
+	<string name="surveylanglabel">Survey Languages</string>
 	<string name="beaconlabel">Send Location Beacons</string>
 	<string name="precachehelplabel">Pre-cache help media</string>
 	<string name="precachehelpdialogtitle">Pre-cache help media</string>
@@ -109,4 +109,6 @@
 	<string name="langoption">Languages</string>
 	<string name="reviewtext">Touch a survey to view/submit.</string>
 	<string name="reviewlabel">Review Saved Surveys</string>
+	<string name="langmandatorytitle">Invalid Selection</string>
+	<string name="langmandatorytext">You must select at least one language</string>
 </resources>

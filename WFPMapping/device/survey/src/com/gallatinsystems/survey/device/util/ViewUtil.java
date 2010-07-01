@@ -57,17 +57,30 @@ public class ViewUtil {
 	 */
 	public static void showConfirmDialog(int titleId, int textId,
 			Context parentContext) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
-		TextView tipText = new TextView(parentContext);
-		builder.setTitle(titleId);
-		tipText.setText(textId);
-		builder.setView(tipText);
-		builder.setPositiveButton(R.string.okbutton,
+		showConfirmDialog(titleId, textId, parentContext,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
 				});
+	}
+
+	/**
+	 * displays a simple dialog box with only a single, positive button using
+	 * the resource ids of the strings passed in for the title and text.
+	 * 
+	 * @param titleId
+	 * @param textId
+	 * @param parentContext
+	 */
+	public static void showConfirmDialog(int titleId, int textId,
+			Context parentContext, DialogInterface.OnClickListener listener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
+		TextView tipText = new TextView(parentContext);
+		builder.setTitle(titleId);
+		tipText.setText(textId);
+		builder.setView(tipText);
+		builder.setPositiveButton(R.string.okbutton, listener);
 		builder.show();
 	}
 
@@ -95,5 +108,60 @@ public class ViewUtil {
 				notificationIntent, 0);
 		notification.setLatestEventInfo(context, headline, body, contentIntent);
 		mNotificationManager.notify(id, notification);
+	}
+
+	/**
+	 * displays a dialog box for selection of one or more survey languages TODO:
+	 * implement pre-selection of saved languages (right now it's hard-coded to
+	 * all false)
+	 */
+	public static void displayLanguageSelector(final Context context,
+			final boolean[] selections,
+			final DialogInterface.OnClickListener listener) {
+		AlertDialog dia = new AlertDialog.Builder(context).setTitle(
+				R.string.surveylanglabel).setMultiChoiceItems(
+				R.array.languages, selections,
+				new DialogInterface.OnMultiChoiceClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which,
+							boolean isChecked) {
+						switch (which) {
+						case DialogInterface.BUTTON_POSITIVE:
+							break;
+						}
+					}
+				}).setPositiveButton("OK",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						boolean isValid = false;
+						for (int i = 0; i < selections.length; i++) {
+							if (selections[i]) {
+								isValid = true;
+								break;
+							}
+						}
+						if (isValid) {
+							listener.onClick(dialog, which);
+						} else {
+							showConfirmDialog(R.string.langmandatorytitle,
+									R.string.langmandatorytext, context,
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											dialog.dismiss();
+											displayLanguageSelector(context,
+													selections, listener);
+										}
+									});
+
+						}
+
+					}
+				}).create();
+		dia.show();
 	}
 }

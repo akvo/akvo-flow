@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.device.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
@@ -44,6 +45,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	private SurveyDbAdapter databaseAdaptor;
 	private ScrollView scrollView;
 	private float defaultTextSize;
+	private String[] languageCodes;
 
 	/**
 	 * stores the context and questionGroup to member fields
@@ -52,11 +54,12 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	 * @param qg
 	 */
 	public SurveyTabContentFactory(SurveyViewActivity c, QuestionGroup qg,
-			SurveyDbAdapter dbAdaptor, float textSize) {
+			SurveyDbAdapter dbAdaptor, float textSize, String[] languageCodes) {
 		questionGroup = qg;
 		context = c;
 		databaseAdaptor = dbAdaptor;
 		defaultTextSize = textSize;
+		this.languageCodes = languageCodes;
 	}
 
 	/**
@@ -92,27 +95,29 @@ public class SurveyTabContentFactory implements TabContentFactory {
 					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 			if (ConstantUtil.OPTION_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
-				questionView = new OptionQuestionView(context, q);
+				questionView = new OptionQuestionView(context, q, languageCodes);
 
 			} else if (ConstantUtil.FREE_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new FreetextQuestionView(context, q);
+				questionView = new FreetextQuestionView(context, q,
+						languageCodes);
 			} else if (ConstantUtil.PHOTO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.PHOTO_QUESTION_TYPE);
+						ConstantUtil.PHOTO_QUESTION_TYPE, languageCodes);
 			} else if (ConstantUtil.VIDEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.VIDEO_QUESTION_TYPE);
+						ConstantUtil.VIDEO_QUESTION_TYPE, languageCodes);
 			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new GeoQuestionView(context, q);
+				questionView = new GeoQuestionView(context, q, languageCodes);
 			} else if (ConstantUtil.SCAN_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new BarcodeQuestionView(context, q);
+				questionView = new BarcodeQuestionView(context, q,
+						languageCodes);
 			} else {
-				questionView = new QuestionView(context, q);
+				questionView = new QuestionView(context, q, languageCodes);
 			}
 			questionView.setTextSize(defaultTextSize);
 			questionMap.put(q.getId(), questionView);
@@ -174,8 +179,16 @@ public class SurveyTabContentFactory implements TabContentFactory {
 							.getRespondentId().toString(),
 							ConstantUtil.SAVED_STATUS);
 					ViewUtil.showConfirmDialog(R.string.savecompletetitle,
-							R.string.savecompletetext, context);
-					startNewSurvey();
+							R.string.savecompletetext, context,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+									startNewSurvey();
+
+								}
+							});
 				}
 			}
 		});
@@ -213,7 +226,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 						// available
 						Intent i = new Intent(
 								ConstantUtil.DATA_AVAILABLE_INTENT);
-						context.sendBroadcast(i);						
+						context.sendBroadcast(i);
 						ViewUtil.showConfirmDialog(
 								R.string.submitcompletetitle,
 								R.string.submitcompletetext, context);
@@ -254,6 +267,19 @@ public class SurveyTabContentFactory implements TabContentFactory {
 				view.resetQuestion();
 			}
 			scrollView.scrollTo(0, 0);
+		}
+	}
+
+	/**
+	 * updates the visible languages for all questions in the tab
+	 * 
+	 * @param langCodes
+	 */
+	public void updateQuestionLanguages(String[] langCodes) {
+		if (questionMap != null) {
+			for (QuestionView view : questionMap.values()) {
+				view.updateSelectedLanguages(langCodes);
+			}
 		}
 	}
 

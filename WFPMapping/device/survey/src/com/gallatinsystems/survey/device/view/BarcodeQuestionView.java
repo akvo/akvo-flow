@@ -27,8 +27,8 @@ public class BarcodeQuestionView extends QuestionView implements
 	private Button barcodeButton;
 	private ImageView completeIcon;
 
-	public BarcodeQuestionView(Context context, Question q) {
-		super(context, q);
+	public BarcodeQuestionView(Context context, Question q, String[] langCodes) {
+		super(context, q,langCodes);
 		init();
 	}
 

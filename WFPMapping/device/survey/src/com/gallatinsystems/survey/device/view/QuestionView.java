@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
@@ -50,7 +51,7 @@ public class QuestionView extends TableLayout implements
 	private QuestionResponse response;
 	private ArrayList<QuestionInteractionListener> listeners;
 	private ImageButton tipImage;
-	protected static String[] langs = null;
+	protected String[] langs = null;
 	protected static String[] colors = null;
 
 	/**
@@ -59,30 +60,18 @@ public class QuestionView extends TableLayout implements
 	 * @param context
 	 * @param q
 	 */
-	public QuestionView(Context context, Question q) {
+	public QuestionView(Context context, Question q, String[] langs) {
 		super(context);
 		question = q;
-		if(langs == null){
-			langs = context.getResources().getStringArray(R.array.languagecodes);
+		this.langs = langs;
+		if (colors == null) {
 			colors = context.getResources().getStringArray(R.array.colors);
-			if(langs == null){
-				langs = new String[0];
-			}
 		}
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
-		questionText.setWidth(DEFAULT_WIDTH);		
-		StringBuilder text = new StringBuilder(q.getText());
-		for(int i =0; i < langs.length; i++){
-			AltText txt = question.getAltText(langs[i]);
-			if(txt != null){
-				text.append(" / <font color='").append(colors[i]).append("'>").append(txt.getText()).append("</font>");
-			}
-		}	
-		if (q.isMandatory()) {
-			text = text.append("*");
-		}
-		questionText.setText(Html.fromHtml(text.toString()), BufferType.SPANNABLE);
+		questionText.setWidth(DEFAULT_WIDTH);
+
+		questionText.setText(formText(), BufferType.SPANNABLE);
 		tr.addView(questionText);
 
 		// if there is a tip for this question, construct an alert dialog box
@@ -116,6 +105,51 @@ public class QuestionView extends TableLayout implements
 				&& question.getDependencies().size() > 0) {
 			setVisibility(View.GONE);
 		}
+	}
+
+	/**
+	 * forms the question text based on the selected languages
+	 * 
+	 * @return
+	 */
+	private Spanned formText() {
+		boolean isFirst = true;
+		StringBuilder text = new StringBuilder();
+		for (int i = 0; i < langs.length; i++) {
+			if (ConstantUtil.ENGLISH_CODE.equalsIgnoreCase(langs[i])) {
+				if(!isFirst){
+					text.append(" / ");
+				}else{
+					isFirst = false;
+				}
+				text.append(question.getText());
+			} else {
+				AltText txt = question.getAltText(langs[i]);
+				if (txt != null) {
+					if(!isFirst){
+						text.append(" / ");
+					}else{
+						isFirst = false;
+					}
+					text.append("<font color='").append(colors[i]).append(
+							"'>").append(txt.getText()).append("</font>");
+				}
+			}
+		}
+		if (question.isMandatory()) {
+			text = text.append("*");
+		}
+		return Html.fromHtml(text.toString());
+	}
+
+	/**
+	 * updates the question's visible languages
+	 * 
+	 * @param languageCodes
+	 */
+	public void updateSelectedLanguages(String[] languageCodes) {
+		langs = languageCodes;
+		questionText.setText(formText());
 	}
 
 	/**

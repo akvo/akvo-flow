@@ -29,8 +29,8 @@ public class FreetextQuestionView extends QuestionView implements
 		OnFocusChangeListener {
 	private EditText freetextEdit;
 
-	public FreetextQuestionView(Context context, Question q) {
-		super(context, q);
+	public FreetextQuestionView(Context context, Question q, String[] langCodes) {
+		super(context, q,langCodes);
 		init();
 	}
 

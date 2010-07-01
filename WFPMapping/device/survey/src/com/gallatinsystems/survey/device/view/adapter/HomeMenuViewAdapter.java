@@ -46,8 +46,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	// this is of type Object since the values can be Integers or Strings
 	private Object[] buttonLabels;
 	private ArrayList<Survey> surveys;	
-	private ArrayList<String> operations;
-	private String language;
+	private ArrayList<String> operations;	
 	private LayoutInflater inflater;
 
 	/**
@@ -55,10 +54,9 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 * 
 	 * @param c
 	 */
-	public HomeMenuViewAdapter(Context c, String language) {
+	public HomeMenuViewAdapter(Context c) {
 		inflater = (LayoutInflater) c
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.language = language;
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);		
 
 	}
 
@@ -120,7 +118,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private ArrayList<Survey> fetchSurveys(Context c) {
 		SurveyDbAdapter database = new SurveyDbAdapter(c);
 		database.open();
-		surveys = database.listSurveys(language);
+		surveys = database.listSurveys(null);
 		database.close();
 		return surveys;
 	}
@@ -204,9 +202,5 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 */
 	public String getSelectedOperation(int index) {
 		return operations.get(index);
-	}
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-
+	}	
 }

@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -28,13 +29,15 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.LanguageUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
 
 /**
  * main activity for the Field Survey application. It will read in the current
  * survey definition and render the survey UI based on the questions defined.
- *  
+ * 
  * @author Christopher Fagiani
  * 
  */
@@ -67,6 +70,9 @@ public class SurveyViewActivity extends TabActivity implements
 	private Long respondentId;
 	private String userId;
 	private float currentTextSize;
+	private String[] languageArray;
+	private boolean[] selectedLanguages;
+	private String[] selectedLanguageCodes;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -78,6 +84,14 @@ public class SurveyViewActivity extends TabActivity implements
 		databaseAdapter.open();
 
 		setContentView(R.layout.main);
+
+		String langSelection = databaseAdapter
+				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
+		Pair<String[], boolean[]> langData = LanguageUtil.loadLanguages(this,
+				langSelection);
+		languageArray = langData.first;
+		selectedLanguages = langData.second;
+		selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(this,selectedLanguages);
 
 		Bundle extras = getIntent().getExtras();
 		userId = extras != null ? extras.getString(ConstantUtil.USER_ID_KEY)
@@ -123,7 +137,7 @@ public class SurveyViewActivity extends TabActivity implements
 				if (group.getQuestions() != null
 						&& group.getQuestions().size() > 0) {
 					SurveyTabContentFactory factory = new SurveyTabContentFactory(
-							this, group, databaseAdapter, currentTextSize);
+							this, group, databaseAdapter, currentTextSize, selectedLanguageCodes);
 					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
 							.setIndicator(group.getHeading()).setContent(
 									factory));
@@ -320,37 +334,19 @@ public class SurveyViewActivity extends TabActivity implements
 			updateTextSize(NORMAL_TXT_SIZE);
 			return true;
 		case SURVEY_LANG:
-			displayLangSelector();
+			ViewUtil.displayLanguageSelector(this, selectedLanguages,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int clicked) {
+							dialog.dismiss();
+							selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(SurveyViewActivity.this,selectedLanguages);
+							for (int i = 0; i < tabContentFactories.size(); i++) {
+								tabContentFactories.get(i).updateQuestionLanguages(selectedLanguageCodes);
+							}
+						}
+					});
 			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
-	}
-
-	/**
-	 * displays a dialog box for selection of one or more survey languages
-	 * TODO: implement pre-selection of saved languages (right now it's hard-coded to all false)
-	 */
-	private void displayLangSelector() {
-		AlertDialog dia = new AlertDialog.Builder(this).setTitle(
-				R.string.surveylanglabel).setMultiChoiceItems(
-				R.array.languages, new boolean[] { false, false, false },
-				new DialogInterface.OnMultiChoiceClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which,
-							boolean isChecked) {
-						switch (which) {
-						case DialogInterface.BUTTON_POSITIVE:
-							break;
-						}
-					}
-				}).setPositiveButton("OK",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int clicked) {
-						dialog.dismiss();
-						//TODO: re-render languages
-					}
-				}).create();
-		dia.show();
 	}
 
 	/**

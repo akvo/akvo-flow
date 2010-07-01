@@ -53,8 +53,8 @@ public class OptionQuestionView extends QuestionView {
 	private Map<Integer, String> idToValueMap;
 	private boolean suppressListeners = false;
 
-	public OptionQuestionView(Context context, Question q) {
-		super(context, q);
+	public OptionQuestionView(Context context, Question q, String[] langCodes) {
+		super(context, q, langCodes);
 		OTHER_TEXT = getResources().getString(R.string.othertext);
 		init();
 	}
@@ -73,25 +73,8 @@ public class OptionQuestionView extends QuestionView {
 					&& ConstantUtil.SPINNER_RENDER_MODE
 							.equalsIgnoreCase(question.getRenderType())) {
 				spinner = new Spinner(context);
-				int extras = 1;
-				if (question.isAllowOther()) {
-					extras++;
-				}
-				Spanned[] optionArray = new Spanned[options.size() + extras];
-				optionArray[0] = Html.fromHtml("");
-				for (int i = 0; i < options.size(); i++) {
-					optionArray[i + 1] = formOptionText(options.get(i));
-				}
-				// put the "other" option in the last slot in the array
-				if (question.isAllowOther()) {
-					optionArray[optionArray.length - 1] = Html.fromHtml(OTHER_TEXT);
-				}
-				ArrayAdapter<CharSequence> optionAdapter = new ArrayAdapter<CharSequence>(
-						context, android.R.layout.simple_spinner_item,
-						optionArray);
-				optionAdapter
-						.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				spinner.setAdapter(optionAdapter);
+
+				initializeSpinnerOptions();
 				// set the selection to the first element
 				spinner.setSelection(0);
 
@@ -154,20 +137,23 @@ public class OptionQuestionView extends QuestionView {
 				int i = 0;
 				for (int j = 0; j < options.size(); j++) {
 					Option o = options.get(j);
-					RadioButton rb = new RadioButton(context);					
+					RadioButton rb = new RadioButton(context);
 					rb.setLongClickable(true);
 					rb.setOnLongClickListener(new OnLongClickListener() {
 						@Override
-						public boolean onLongClick(View v) {							
-							AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+						public boolean onLongClick(View v) {
+							AlertDialog.Builder builder = new AlertDialog.Builder(
+									getContext());
 							TextView tipText = new TextView(getContext());
-							tipText.setText(((RadioButton)(v)).getText(), BufferType.SPANNABLE);
+							tipText.setText(((RadioButton) (v)).getText(),
+									BufferType.SPANNABLE);
 							builder.setTitle(R.string.optiontext);
 							builder.setView(tipText);
 							builder.setPositiveButton(R.string.okbutton,
 									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog, int id) {
-											dialog.cancel();											
+										public void onClick(
+												DialogInterface dialog, int id) {
+											dialog.cancel();
 										}
 									});
 							builder.show();
@@ -196,7 +182,8 @@ public class OptionQuestionView extends QuestionView {
 					CheckBox box = new CheckBox(context);
 					box.setId(i);
 					checkBoxes.add(box);
-					box.setText(formOptionText(options.get(i)),BufferType.SPANNABLE);
+					box.setText(formOptionText(options.get(i)),
+							BufferType.SPANNABLE);
 					box
 							.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -239,16 +226,110 @@ public class OptionQuestionView extends QuestionView {
 		}
 		suppressListeners = false;
 	}
-	
-	private Spanned formOptionText(Option opt){
-		StringBuilder text = new StringBuilder(opt.getText());
-		for(int i =0; i < langs.length; i++){
-			AltText txt = opt.getAltText(langs[i]);
-			if(txt != null){
-				text.append(" / <font color='").append(colors[i]).append("'>").append(txt.getText()).append("</font>");
+
+	/**
+	 * updates the question's visible languages
+	 * 
+	 * @param languageCodes
+	 */
+	@Override
+	public void updateSelectedLanguages(String[] languageCodes) {
+		super.updateSelectedLanguages(languageCodes);
+		if (ConstantUtil.SPINNER_RENDER_MODE.equalsIgnoreCase(question
+				.getRenderType())) {
+			initializeSpinnerOptions();
+			rehydrate(getResponse());
+		} else {
+			ArrayList<Option> options = question.getOptions();
+			if (question.isAllowMultiple()) {
+				for (int i = 0; i < checkBoxes.size(); i++) {
+					// make sure we have a corresponding option (i.e. not the
+					// OTHER option)
+					if (i < options.size()) {
+						checkBoxes.get(i).setText(
+								formOptionText(options.get(i)),
+								BufferType.SPANNABLE);
+					}
+				}
+			} else {
+				
+				for (int i = 0; i < optionGroup.getChildCount(); i++) {
+					// make sure we have a corresponding option (i.e. not the
+					// OTHER option)
+					if (i < options.size()) {
+						((RadioButton) (optionGroup.getChildAt(i)))
+								.setText(formOptionText(options.get(i)));
+					}
+				}								
 			}
-		}	
-		
+		}
+	}
+
+	/**
+	 * sets the spinner content
+	 */
+	private void initializeSpinnerOptions() {
+		int extras = 1;
+		if (question.isAllowOther()) {
+			extras++;
+		}
+		ArrayList<Option> options = question.getOptions();
+		Spanned[] optionArray = new Spanned[options.size() + extras];
+		optionArray[0] = Html.fromHtml("");
+		for (int i = 0; i < options.size(); i++) {
+			optionArray[i + 1] = formOptionText(options.get(i));
+		}
+		// put the "other" option in the last slot in the array
+		if (question.isAllowOther()) {
+			optionArray[optionArray.length - 1] = Html.fromHtml(OTHER_TEXT);
+		}
+		ArrayAdapter<CharSequence> optionAdapter = new ArrayAdapter<CharSequence>(
+				getContext(), android.R.layout.simple_spinner_item, optionArray);
+		optionAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(optionAdapter);
+	}
+
+	/**
+	 * forms the text for an option based on the visible languages
+	 * 
+	 * @param opt
+	 * @return
+	 */
+	private Spanned formOptionText(Option opt) {
+		boolean isFirst = true;
+		StringBuilder text = new StringBuilder();
+		for (int i = 0; i < langs.length; i++) {
+			if (ConstantUtil.ENGLISH_CODE.equalsIgnoreCase(langs[i])) {
+				if (!isFirst) {
+					text.append(" / ");
+				} else {
+					isFirst = false;
+				}
+				text.append(opt.getText());
+
+			} else {
+				AltText txt = opt.getAltText(langs[i]);
+				if (txt != null) {
+					if (!isFirst) {
+						text.append(" / ");
+					} else {
+						isFirst = false;
+					}
+					text.append("<font color='");
+					// spinners have black backgrounds so if the text color is
+					// white, make it black so it shows up
+					if (ConstantUtil.WHITE_COLOR.equalsIgnoreCase(colors[i])
+							&& ConstantUtil.SPINNER_RENDER_MODE
+									.equalsIgnoreCase(question.getRenderType())) {
+						text.append(ConstantUtil.BLACK_COLOR);
+					} else {
+						text.append(colors[i]);
+					}
+					text.append("'>").append(txt.getText()).append("</font>");
+				}
+			}
+		}
 		return Html.fromHtml(text.toString());
 	}
 
