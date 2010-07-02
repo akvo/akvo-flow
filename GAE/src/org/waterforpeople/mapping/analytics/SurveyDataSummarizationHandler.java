@@ -37,6 +37,7 @@ public class SurveyDataSummarizationHandler extends DataSummarizationHandler {
 				.add("org.waterforpeople.mapping.analytics.CommunityLocationSummarizer");
 		apSummarizers
 				.add("org.waterforpeople.mapping.analytics.AccessPointStatusSummarizer");
+		apSummarizers.add("org.waterforpeople.mapping.analytics.MapSummarizer");
 		summarizers.put("AccessPoint", apSummarizers);
 	}
 }

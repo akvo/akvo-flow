@@ -40,8 +40,6 @@ public class MapSummarizer implements DataSummarizer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
 			}
 		}
 		return true;
