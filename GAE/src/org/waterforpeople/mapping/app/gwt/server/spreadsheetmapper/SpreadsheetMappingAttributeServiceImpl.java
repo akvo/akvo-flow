@@ -258,7 +258,12 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			} else {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				SurveyGroup sg = null;
-				String sgName = "HondurasSurveyLoader";
+		
+				String sgName = null;
+				RowContainer rowTitle = sc.getRowContainerList().get(1);
+				sgName = rowTitle.getColumnContainersList().get(0).getColContents();
+				if(sgName==null)
+					sgName="Default";
 				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
 
 				if (sgFound != null)
