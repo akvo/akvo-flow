@@ -3,6 +3,8 @@ package com.gallatinsystems.survey.device.util;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
 /**
@@ -56,6 +58,25 @@ public class StatusUtil {
 	public static String getPhoneNumber(Context context) {
 		TelephonyManager teleMgr = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
-		return teleMgr.getLine1Number();
+		String number = null;
+		if (teleMgr != null) {
+			number = teleMgr.getLine1Number();
+		}
+		if (number == null) {
+			// if we can't get the phone number, use the MAC instead?
+			WifiManager wifiMgr = (WifiManager) context
+					.getSystemService(Context.WIFI_SERVICE);
+			if (wifiMgr != null) {
+				// presumably if we don't have a cell connection, then we must
+				// be connected by WIFI so this should work
+				// TODO: handle the case where we don't have a phone number OR a
+				// WIFI connection
+				WifiInfo info = wifiMgr.getConnectionInfo();
+				if (info != null) {
+					number = info.getMacAddress();
+				}
+			}
+		}
+		return number;
 	}
 }
