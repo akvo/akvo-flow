@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -29,6 +28,7 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.LanguageData;
 import com.gallatinsystems.survey.device.util.LanguageUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
@@ -86,10 +86,10 @@ public class SurveyViewActivity extends TabActivity implements
 
 		String langSelection = databaseAdapter
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-		Pair<String[], boolean[]> langData = LanguageUtil.loadLanguages(this,
+		LanguageData langData = LanguageUtil.loadLanguages(this,
 				langSelection);
 
-		selectedLanguages = langData.second;
+		selectedLanguages = langData.getSelectedLanguages();
 		selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(this,
 				selectedLanguages);
 

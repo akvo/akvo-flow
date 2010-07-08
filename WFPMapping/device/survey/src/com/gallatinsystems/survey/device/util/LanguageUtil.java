@@ -5,7 +5,6 @@ import java.util.StringTokenizer;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Pair;
 
 import com.gallatinsystems.survey.device.R;
 
@@ -25,7 +24,7 @@ public class LanguageUtil {
 	 * @param langSelection
 	 * @return
 	 */
-	public static Pair<String[], boolean[]> loadLanguages(Context context,
+	public static LanguageData loadLanguages(Context context,
 			String langSelection) {
 		Resources res = context.getResources();
 		String[] languageArray = res.getStringArray(R.array.languages);
@@ -39,7 +38,7 @@ public class LanguageUtil {
 				selectedLanguages[Integer.parseInt(strTok.nextToken())] = true;
 			}
 		}
-		return new Pair<String[], boolean[]>(languageArray, selectedLanguages);
+		return new LanguageData(languageArray, selectedLanguages);
 	}
 
 	/**

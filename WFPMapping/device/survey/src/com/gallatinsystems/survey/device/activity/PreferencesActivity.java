@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -22,6 +21,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.LanguageData;
 import com.gallatinsystems.survey.device.util.LanguageUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
@@ -92,9 +92,9 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			uploadOptionTextView.setText(uploadArray[Integer.parseInt(val)]);
 		}
 		val = settings.get(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-		Pair<String[], boolean[]> langs = LanguageUtil.loadLanguages(this, val);
-		languageArray = langs.first;
-		selectedLanguages = langs.second;
+		LanguageData langs = LanguageUtil.loadLanguages(this, val);
+		languageArray = langs.getLanguages();
+		selectedLanguages = langs.getSelectedLanguages();
 		languageTextView.setText(LanguageUtil.formSelectedLanguageString(
 				languageArray, selectedLanguages));
 
