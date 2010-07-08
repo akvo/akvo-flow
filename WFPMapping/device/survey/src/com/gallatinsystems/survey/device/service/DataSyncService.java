@@ -474,10 +474,8 @@ public class DataSyncService extends Service {
 					String type = data
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL));
-					buf
-							.append(data
-									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
+					buf.append(data.getString(data
+							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 					buf
 							.append(",")
 							.append(
@@ -518,7 +516,7 @@ public class DataSyncService extends Service {
 					respondentIds
 							.add(data
 									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_RESPONDENT_ID_COL)));
+											.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 				} while (data.moveToNext());
 			}
 		} catch (Exception e) {
