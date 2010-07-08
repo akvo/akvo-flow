@@ -5,8 +5,6 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +31,7 @@ public class AuthenticationSubscriptionServlet extends HttpServlet {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		if (req.getParameter("token") == null
 				&& req.getSession().getValue("sessionToken") == null) {
@@ -67,6 +66,7 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 	}
 	
 	
+	@SuppressWarnings("deprecation")
 	private void processToken(HttpServletRequest req, HttpServletResponse resp) {
 		HttpSession session = req.getSession(true);
 		//if (session.getValue("sessionToken") == null) {
@@ -100,7 +100,7 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 		}
 		try {
 			((HttpServletResponse) resp)
-					.sendRedirect("/Dashboard.html?gwt.codesvr=127.0.0.1:9997");
+					.sendRedirect("/Dashboard.html");
 			//((HttpServletResponse)resp).sendRedirect("/SpreadsheetMapping.html?gwt.codesvr=127.0.0.1:9997");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
