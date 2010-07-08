@@ -477,7 +477,7 @@ public class DataSyncService extends Service {
 					buf
 							.append(data
 									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_RESPONDENT_ID_COL)));
+											.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 					buf
 							.append(",")
 							.append(
