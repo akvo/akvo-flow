@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper.SpreadsheetMappingAttributeServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.SpreadsheetImportRequest;
@@ -27,6 +28,9 @@ public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 		SpreadsheetImportRequest importReq = (SpreadsheetImportRequest) request;
 		if (SpreadsheetImportRequest.PROCESS_FILE_ACTION
 				.equalsIgnoreCase(importReq.getAction())) {
+			HttpSession session = super.getRequest().getSession(true);
+			
+			session.putValue("sessionToken", importReq.getSessionToken());
 			SpreadsheetMappingAttributeServiceImpl mappingService = new SpreadsheetMappingAttributeServiceImpl();	
 			
 			mappingService.processSurveySpreadsheet(importReq.getIdentifier(),importReq.getStartRow(), importReq.getGroupId());
