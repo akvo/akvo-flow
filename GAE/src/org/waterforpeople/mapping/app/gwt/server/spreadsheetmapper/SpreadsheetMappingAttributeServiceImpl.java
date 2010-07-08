@@ -242,14 +242,12 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 		return null;
 	}
-
-	@Override
-	public void processSurveySpreadsheet(String spreadsheetName, int startRow,
-			Long groupId) {
-
+	
+	public void processSurveySpreadsheetAsync(String tokenString ,PrivateKey key, String spreadsheetName, int startRow, Long groupId){
+		
 		try {
 			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
-					getSessionTokenFromSession(), getPrivateKeyFromSession());
+					tokenString, key);
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
 			sc.setSpreadsheetName(spreadsheetName);
@@ -399,9 +397,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
-											+ "" : groupId.toString()).param(
-									"sessionToken",
-									getSessionTokenFromSession()));
+											+ "" : groupId.toString()).param("sessionToken",
+													tokenString).param("key", key.getEncoded()).param("keySpec",key.getFormat()));
 				} else {
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
@@ -409,7 +406,196 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							"identifier", sc.getSpreadsheetName()).param(
 							"type", "Survey").param("action", "processFile")
 							.param("startRow", "-1").param("sessionToken",
-									getSessionTokenFromSession()).param(
+									tokenString).param("key", key.getEncoded()).param("keySpec",key.getFormat()).param(
+									"questionGroupId",
+									qgBase.getKey() != null ? qgBase.getKey()
+											.getId()
+											+ "" : groupId.toString()));
+				}
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void processSurveySpreadsheet(String spreadsheetName, int startRow,
+			Long groupId) {
+
+		try {
+			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
+					getSessionTokenFromSession(), getPrivateKeyFromSession());
+			SpreadsheetContainer sc = gsa
+					.getSpreadsheetContents(spreadsheetName);
+			sc.setSpreadsheetName(spreadsheetName);
+			if (startRow == -1) {
+				setDependencies(sc, groupId);
+			} else {
+				SurveyGroupDAO sgDao = new SurveyGroupDAO();
+				SurveyGroup sg = null;
+		
+				String sgName = null;
+				RowContainer rowTitle = sc.getRowContainerList().get(1);
+				sgName = rowTitle.getColumnContainersList().get(0).getColContents();
+				if(sgName==null)
+					sgName="Default";
+				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
+
+				if (sgFound != null)
+					sg = sgFound;
+				else
+					sg = new SurveyGroup();
+
+				sg.setCode(sgName);
+				Survey surveyCommunityWater = new Survey();
+
+				ArrayList<Question> questionList = new ArrayList<Question>();
+				QuestionGroup qgBase = new QuestionGroup();
+				qgBase.setCode("Base");
+
+				QuestionGroup qgSanitation = new QuestionGroup();
+				qgSanitation.setCode("Sanitation");
+				int count = 0;
+				int i = 0;
+
+				for (count = startRow; count < sc.getRowContainerList().size()
+						&& i < 10; count++) {
+					i++;
+					RowContainer row = sc.getRowContainerList().get(count);
+					ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
+					Survey targetSurvey = null;
+					QuestionGroup targetQG = null;
+					ArrayList<ColumnContainer> ccl = row
+							.getColumnContainersList();
+					Question q = new Question();
+					questionList.add(q);
+					OptionContainer oc = new OptionContainer();
+					for (ColumnContainer cc : ccl) {
+						String colName = cc.getColName();
+						String colContents = cc.getColContents();
+						if (colContents != null) {
+							if (colName.toLowerCase().equals("survey")) {
+
+								targetSurvey = surveyCommunityWater;
+								targetSurvey.setName(colContents);
+							} else if (colName.toLowerCase().equals(
+									"questiongroup")) {
+								qgBase.setCode(colContents.trim());
+								targetQG = qgBase;
+							} else if (colName.toLowerCase().equals("question")) {
+								if (colContents.trim().length() > 500)
+									q.setText(colContents.trim().substring(0,
+											500));
+								else
+									q.setText(colContents.trim());
+							} else if (colName.toLowerCase().equals(
+									"questiontype")) {
+								if (colContents.toLowerCase().equals(
+										"FREE".toLowerCase()))
+									q.setType(QuestionType.FREE_TEXT);
+								else if (colContents.toLowerCase().equals(
+										"GEO".toLowerCase()))
+									q.setType(QuestionType.GEO);
+								else if (colContents.toLowerCase().equals(
+										"NUMBER".toLowerCase()))
+									q.setType(QuestionType.NUMBER);
+								else if (colContents.toLowerCase().equals(
+										"OPTION".toLowerCase()))
+									q.setType(QuestionType.OPTION);
+								else if (colContents.toLowerCase().equals(
+										"PHOTO".toLowerCase()))
+									q.setType(QuestionType.PHOTO);
+								else if (colContents.toLowerCase().equals(
+										"SCAN".toLowerCase()))
+									q.setType(QuestionType.SCAN);
+								else if (colContents.toLowerCase().equals(
+										"VIDEO".toLowerCase()))
+									q.setType(QuestionType.VIDEO);
+							} else if (colName.toLowerCase().equals(
+									"Options".toLowerCase())
+									&& q.getType().equals(QuestionType.OPTION)) {
+								String[] splitColContents = colContents.trim()
+										.split(";");
+								for (String item : splitColContents) {
+									String[] optionParts = item.trim().split(
+											"\\|");
+									if (optionParts.length == 2) {
+										String optionVal = optionParts[0];
+										String text = optionParts[1];
+										QuestionOption qo = new QuestionOption();
+										qo.setCode(optionVal);
+										qo.setText(text);
+										qoList.add(qo);
+									}
+
+								}
+							} else if ((colName.equals("AllowOther") || colName
+									.equals("AllowMultiple"))
+									&& q.getType().equals(QuestionType.OPTION)) {
+								if (colName.equals("AllowOther"))
+									oc.setAllowOtherFlag(new Boolean(
+											colContents.toLowerCase()));
+								if (colName.equals("AllowMultiple"))
+									oc.setAllowMultipleFlag(new Boolean(
+											colContents.toLowerCase()));
+							} else if (colName.equalsIgnoreCase("QuestionID")) {
+								q.setReferenceIndex(colContents.trim());
+							}
+						}
+					}
+					if (q.getType().equals(QuestionType.OPTION)) {
+						oc.setOptionsList(qoList);
+						q.setOptionContainer(oc);
+					}
+					// TODO: fix this once we allow different groups
+					q.setOrder(count);
+					targetQG.addQuestion(q, count);
+				}
+				surveyCommunityWater.addQuestionGroup(qgBase);
+				sg.addSurvey(surveyCommunityWater);
+				if (startRow == 0) {
+					sgDao = new SurveyGroupDAO();
+					sgDao.save(sg);
+				} else {
+					QuestionDao qDao = new QuestionDao();
+
+					for (Entry<Integer, Question> qEntry : qgBase
+							.getQuestionMap().entrySet()) {
+						qDao.save(qEntry.getValue(), groupId);
+					}
+				}
+				if (count < sc.getRowContainerList().size()) {
+				log.info(			"sessionToken: " + 
+							getSessionTokenFromSession()+" privateKey: "+getPrivateKeyFromSession().getEncoded()+" keySpec: "+ getPrivateKeyFromSession().getFormat());
+					Queue importQueue = QueueFactory
+							.getQueue("spreadsheetImport");
+					importQueue.add(url("/app_worker/sheetimport").param(
+							"identifier", sc.getSpreadsheetName()).param(
+							"type", "Survey").param("action", "processFile")
+							.param("startRow", count + "").param(
+									"questionGroupId",
+									qgBase.getKey() != null ? qgBase.getKey()
+											.getId()
+											+ "" : groupId.toString()).param(
+									"sessionToken",
+									getSessionTokenFromSession()).param("privateKey", getPrivateKeyFromSession().getEncoded()).param("keySpec", getPrivateKeyFromSession().getFormat()));
+				} else {
+					Queue importQueue = QueueFactory
+							.getQueue("spreadsheetImport");
+					importQueue.add(url("/app_worker/sheetimport").param(
+							"identifier", sc.getSpreadsheetName()).param(
+							"type", "Survey").param("action", "processFile")
+							.param("startRow", "-1").param("sessionToken",
+									getSessionTokenFromSession()).param("privateKey", getPrivateKeyFromSession().getEncoded()).param("keySpec", getPrivateKeyFromSession().getFormat()).param(
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()

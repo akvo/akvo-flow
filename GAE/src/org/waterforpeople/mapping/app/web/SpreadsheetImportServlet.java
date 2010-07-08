@@ -1,7 +1,11 @@
 package org.waterforpeople.mapping.app.web;
 
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper.SpreadsheetMappingAttributeServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.SpreadsheetImportRequest;
@@ -9,6 +13,7 @@ import org.waterforpeople.mapping.app.web.dto.SpreadsheetImportRequest;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+
 
 public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 
@@ -28,12 +33,13 @@ public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 		SpreadsheetImportRequest importReq = (SpreadsheetImportRequest) request;
 		if (SpreadsheetImportRequest.PROCESS_FILE_ACTION
 				.equalsIgnoreCase(importReq.getAction())) {
-			HttpSession session = super.getRequest().getSession(true);
 			
-			session.putValue("sessionToken", importReq.getSessionToken());
 			SpreadsheetMappingAttributeServiceImpl mappingService = new SpreadsheetMappingAttributeServiceImpl();	
-			
-			mappingService.processSurveySpreadsheet(importReq.getIdentifier(),importReq.getStartRow(), importReq.getGroupId());
+			String algorithm=importReq.getKeySpec();
+			KeyFactory keyFactory = java.security.KeyFactory.getInstance(algorithm);
+			EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(importReq.getKey());
+			PrivateKey key = keyFactory.generatePrivate(privateKeySpec);
+			mappingService.processSurveySpreadsheetAsync(importReq.getSessionToken(),key,importReq.getIdentifier(),importReq.getStartRow(), importReq.getGroupId());
 		}
 		return response;
 	}

@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.security.PrivateKey;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
@@ -21,6 +23,8 @@ public class SpreadsheetImportRequest extends RestRequest {
 	private String type;
 	private int startRow = 0;
 	private long groupId;
+	private byte[] key = null;
+	private String keySpec = null;
 
 	private String sessionToken;
 
@@ -67,7 +71,7 @@ public class SpreadsheetImportRequest extends RestRequest {
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		identifier = req.getParameter(ID_PARAM);
-		type = req.getParameter(TYPE_PARAM);		
+		type = req.getParameter(TYPE_PARAM);
 		sessionToken = req.getParameter(ST_PARAM);
 		String start = req.getParameter(START_ROW_PARAM);
 		String groupId = req.getParameter(GROUP_ID_PARAM);
@@ -100,4 +104,24 @@ public class SpreadsheetImportRequest extends RestRequest {
 					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg));
 		}
 	}
+
+	public void setKey(byte[] key) {
+		this.key = key;
+	}
+
+	public byte[] getKey() {
+		return key;
+	}
+
+	public void setKeySpec(String keySpec) {
+		this.keySpec = keySpec;
+	}
+
+	public String getKeySpec() {
+		return keySpec;
+	}
+
+
+	
+
 }
