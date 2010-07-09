@@ -405,7 +405,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 											+ "" : groupId.toString()).param(
 									"sessionToken", tokenString).param("privateKey",
 									encodedKey).param("keySpec",
-									key.getFormat()));
+									key.getAlgorithm()));
 				} else {
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
@@ -414,7 +414,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							"type", "Survey").param("action", "processFile")
 							.param("startRow", "-1").param("sessionToken",
 									tokenString).param("privateKey", encodedKey)
-							.param("keySpec", key.getFormat()).param(
+							.param("keySpec", key.getAlgorithm()).param(
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
