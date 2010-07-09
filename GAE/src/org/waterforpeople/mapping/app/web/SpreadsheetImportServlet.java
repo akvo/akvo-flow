@@ -4,6 +4,7 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +17,8 @@ import com.gallatinsystems.framework.rest.RestResponse;
 
 
 public class SpreadsheetImportServlet extends AbstractRestApiServlet {
-
+	private static final Logger log = Logger
+	.getLogger(SpreadsheetImportServlet.class.getName());
 	private static final long serialVersionUID = 4037072154702352658L;
 
 	@Override
@@ -36,9 +38,11 @@ public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 			
 			SpreadsheetMappingAttributeServiceImpl mappingService = new SpreadsheetMappingAttributeServiceImpl();	
 			String algorithm=importReq.getKeySpec();
+			
 			KeyFactory keyFactory = java.security.KeyFactory.getInstance(algorithm);
 			EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(importReq.getKey());
 			PrivateKey key = keyFactory.generatePrivate(privateKeySpec);
+			log.info("Algo: " + algorithm + " key: " + importReq.getKey() + " keySpec: " + importReq.getKeySpec());
 			mappingService.processSurveySpreadsheetAsync(importReq.getSessionToken(),key,importReq.getIdentifier(),importReq.getStartRow(), importReq.getGroupId());
 		}
 		return response;

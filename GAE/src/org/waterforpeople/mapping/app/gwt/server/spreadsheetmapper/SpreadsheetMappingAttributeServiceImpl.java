@@ -119,7 +119,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		}
 		// convert to domain object from dto
 
-		
 	}
 
 	@Override
@@ -188,7 +187,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	}
 
 	@Override
-	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL) throws Exception {
+	public ArrayList<String> listSpreadsheetsFromFeed(String feedURL)
+			throws Exception {
 
 		if (feedURL == null) {
 			try {
@@ -242,9 +242,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 		return null;
 	}
-	
-	public void processSurveySpreadsheetAsync(String tokenString ,PrivateKey key, String spreadsheetName, int startRow, Long groupId){
-		
+
+	public void processSurveySpreadsheetAsync(String tokenString,
+			PrivateKey key, String spreadsheetName, int startRow, Long groupId) {
+
 		try {
 			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
 					tokenString, key);
@@ -256,12 +257,13 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			} else {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				SurveyGroup sg = null;
-		
+
 				String sgName = null;
 				RowContainer rowTitle = sc.getRowContainerList().get(1);
-				sgName = rowTitle.getColumnContainersList().get(0).getColContents();
-				if(sgName==null)
-					sgName="Default";
+				sgName = rowTitle.getColumnContainersList().get(0)
+						.getColContents();
+				if (sgName == null)
+					sgName = "Default";
 				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
 
 				if (sgFound != null)
@@ -397,8 +399,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
-											+ "" : groupId.toString()).param("sessionToken",
-													tokenString).param("key", key.getEncoded()).param("keySpec",key.getFormat()));
+											+ "" : groupId.toString()).param(
+									"sessionToken", tokenString).param("key",
+									key.getEncoded()).param("keySpec",
+									key.getFormat()));
 				} else {
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
@@ -406,7 +410,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							"identifier", sc.getSpreadsheetName()).param(
 							"type", "Survey").param("action", "processFile")
 							.param("startRow", "-1").param("sessionToken",
-									tokenString).param("key", key.getEncoded()).param("keySpec",key.getFormat()).param(
+									tokenString).param("key", key.getEncoded())
+							.param("keySpec", key.getFormat()).param(
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
@@ -442,12 +447,13 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			} else {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				SurveyGroup sg = null;
-		
+
 				String sgName = null;
 				RowContainer rowTitle = sc.getRowContainerList().get(1);
-				sgName = rowTitle.getColumnContainersList().get(0).getColContents();
-				if(sgName==null)
-					sgName="Default";
+				sgName = rowTitle.getColumnContainersList().get(0)
+						.getColContents();
+				if (sgName == null)
+					sgName = "Default";
 				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
 
 				if (sgFound != null)
@@ -574,8 +580,11 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					}
 				}
 				if (count < sc.getRowContainerList().size()) {
-				log.info(			"sessionToken: " + 
-							getSessionTokenFromSession()+" privateKey: "+getPrivateKeyFromSession().getEncoded()+" keySpec: "+ getPrivateKeyFromSession().getFormat());
+					log.info("sessionToken: " + getSessionTokenFromSession()
+							+ " privateKey: "
+							+ getPrivateKeyFromSession().getEncoded()
+							+ " keySpec: "
+							+ getPrivateKeyFromSession().getAlgorithm());
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
 					importQueue.add(url("/app_worker/sheetimport").param(
@@ -587,7 +596,11 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 											.getId()
 											+ "" : groupId.toString()).param(
 									"sessionToken",
-									getSessionTokenFromSession()).param("privateKey", getPrivateKeyFromSession().getEncoded()).param("keySpec", getPrivateKeyFromSession().getFormat()));
+									getSessionTokenFromSession()).param(
+									"privateKey",
+									getPrivateKeyFromSession().getEncoded())
+							.param("keySpec",
+									getPrivateKeyFromSession().getAlgorithm()));
 				} else {
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
@@ -595,7 +608,12 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							"identifier", sc.getSpreadsheetName()).param(
 							"type", "Survey").param("action", "processFile")
 							.param("startRow", "-1").param("sessionToken",
-									getSessionTokenFromSession()).param("privateKey", getPrivateKeyFromSession().getEncoded()).param("keySpec", getPrivateKeyFromSession().getFormat()).param(
+									getSessionTokenFromSession()).param(
+									"privateKey",
+									getPrivateKeyFromSession().getEncoded())
+							.param("keySpec",
+									getPrivateKeyFromSession().getAlgorithm())
+							.param(
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
