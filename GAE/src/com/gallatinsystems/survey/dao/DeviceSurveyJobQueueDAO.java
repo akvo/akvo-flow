@@ -47,7 +47,7 @@ public class DeviceSurveyJobQueueDAO {
 		if (phone != null && surveyId != null) {
 
 			javax.jdo.Query query = pm.newQuery(Task.class);
-			String filterString = "devicePhoneNumber = devicePhoneParam && surveyId = surveyIdParam";
+			String filterString = "devicePhoneNumber == devicePhoneParam && surveyId == surveyIdParam";
 			String paramString = "String devicePhoneParam, Long surveyIdParam";
 
 			query.setFilter(filterString);
