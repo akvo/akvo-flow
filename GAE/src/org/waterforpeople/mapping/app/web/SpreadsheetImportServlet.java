@@ -16,6 +16,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 
 
+
 public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
 	.getLogger(SpreadsheetImportServlet.class.getName());
@@ -40,9 +41,12 @@ public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 			String algorithm=importReq.getKeySpec();
 			
 			KeyFactory keyFactory = java.security.KeyFactory.getInstance(algorithm);
-			EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(importReq.getKey());
+			org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
+			byte[] keyContents = b64encoder.decode(importReq.getKey());
+			EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyContents);
+			log.info("SessionToken: " + importReq.getSessionToken()+"Algo: " + algorithm + " key: " + importReq.getKey() + " keySpec: " + importReq.getKeySpec());
 			PrivateKey key = keyFactory.generatePrivate(privateKeySpec);
-			log.info("Algo: " + algorithm + " key: " + importReq.getKey() + " keySpec: " + importReq.getKeySpec());
+			
 			mappingService.processSurveySpreadsheetAsync(importReq.getSessionToken(),key,importReq.getIdentifier(),importReq.getStartRow(), importReq.getGroupId());
 		}
 		return response;

@@ -389,6 +389,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						qDao.save(qEntry.getValue(), groupId);
 					}
 				}
+				org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
+				
+				byte[] encodedKey  = b64encoder.encode(getPrivateKeyFromSession().getEncoded());
 				if (count < sc.getRowContainerList().size()) {
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
@@ -401,7 +404,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 											.getId()
 											+ "" : groupId.toString()).param(
 									"sessionToken", tokenString).param("key",
-									key.getEncoded()).param("keySpec",
+									encodedKey).param("keySpec",
 									key.getFormat()));
 				} else {
 					Queue importQueue = QueueFactory
@@ -410,7 +413,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							"identifier", sc.getSpreadsheetName()).param(
 							"type", "Survey").param("action", "processFile")
 							.param("startRow", "-1").param("sessionToken",
-									tokenString).param("key", key.getEncoded())
+									tokenString).param("key", encodedKey)
 							.param("keySpec", key.getFormat()).param(
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
@@ -579,6 +582,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						qDao.save(qEntry.getValue(), groupId);
 					}
 				}
+				org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
+				byte[] encodedKey  = b64encoder.encode(getPrivateKeyFromSession().getEncoded());
 				if (count < sc.getRowContainerList().size()) {
 					log.info("sessionToken: " + getSessionTokenFromSession()
 							+ " privateKey: "
@@ -598,7 +603,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									"sessionToken",
 									getSessionTokenFromSession()).param(
 									"privateKey",
-									getPrivateKeyFromSession().getEncoded())
+									encodedKey)
 							.param("keySpec",
 									getPrivateKeyFromSession().getAlgorithm()));
 				} else {
@@ -610,7 +615,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							.param("startRow", "-1").param("sessionToken",
 									getSessionTokenFromSession()).param(
 									"privateKey",
-									getPrivateKeyFromSession().getEncoded())
+									encodedKey)
 							.param("keySpec",
 									getPrivateKeyFromSession().getAlgorithm())
 							.param(
