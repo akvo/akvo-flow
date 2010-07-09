@@ -403,7 +403,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									qgBase.getKey() != null ? qgBase.getKey()
 											.getId()
 											+ "" : groupId.toString()).param(
-									"sessionToken", tokenString).param("key",
+									"sessionToken", tokenString).param("privateKey",
 									encodedKey).param("keySpec",
 									key.getFormat()));
 				} else {
@@ -413,7 +413,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							"identifier", sc.getSpreadsheetName()).param(
 							"type", "Survey").param("action", "processFile")
 							.param("startRow", "-1").param("sessionToken",
-									tokenString).param("key", encodedKey)
+									tokenString).param("privateKey", encodedKey)
 							.param("keySpec", key.getFormat()).param(
 									"questionGroupId",
 									qgBase.getKey() != null ? qgBase.getKey()
