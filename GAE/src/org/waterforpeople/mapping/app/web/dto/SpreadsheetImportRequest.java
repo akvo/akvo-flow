@@ -73,7 +73,7 @@ public class SpreadsheetImportRequest extends RestRequest {
 		identifier = req.getParameter(ID_PARAM);
 		type = req.getParameter(TYPE_PARAM);
 		sessionToken = req.getParameter(ST_PARAM);
-		key = req.getParameter("key").getBytes();
+		key = req.getParameter("privateKey").getBytes();
 		keySpec = req.getParameter("keySpec");
 		String start = req.getParameter(START_ROW_PARAM);
 		String groupId = req.getParameter(GROUP_ID_PARAM);
