@@ -391,7 +391,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				}
 				org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
 				
-				byte[] encodedKey  = b64encoder.encode(getPrivateKeyFromSession().getEncoded());
+				byte[] encodedKey  = b64encoder.encode(key.getEncoded());
 				if (count < sc.getRowContainerList().size()) {
 					Queue importQueue = QueueFactory
 							.getQueue("spreadsheetImport");
