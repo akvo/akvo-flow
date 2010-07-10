@@ -70,7 +70,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		for (SurveyQuestionGroupAssoc item : sqgaList) {
 			Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
 			surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
-					"action", SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP)
+					"action", SurveyAssemblyRequest.ASSEMBLE_QUESTIONS)
 					.param("surveyId", surveyId.toString()).param(
 							"questionGroupId",
 							item.getQuestionGroupId().toString()));
@@ -97,13 +97,16 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			sb.append(marshallQuestion(q));
 		}
 		SurveyXMLFragment sxf = new SurveyXMLFragment();
+		sxf.setSurveyId(surveyId);
+		sxf.setQuestionGroupId(questionGroupId);
 		sxf.setFragmentOrder(startRow / 10);
 		sxf.setFragment(new Text(sb.toString()));
+		sxf.setFragmentType(FRAGMENT_TYPE.QUESTION);
 		if (count == (qqgaList.size() - 1)) {
 			// Assemble the fragments
 			Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
 			surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
-					"action", SurveyAssemblyRequest.ASSEMBLE_SURVEY_FRAGMENTS)
+					"action", SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP)
 					.param("surveyId", surveyId.toString()));
 		}
 	}
@@ -112,6 +115,22 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		return null;
 	}
 
+	private void assembleQuestionGroups(Long surveyId, Long questionGroupId){
+		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
+		List<SurveyXMLFragment> sxmlfList = sxmlfDao.listSurveyFragments(
+				surveyId, questionGroupId);
+		StringBuilder sbQG = new StringBuilder();
+		for(SurveyXMLFragment item: sxmlfList){
+			sbQG.append(item.getFragment().toString());
+		}
+		SurveyXMLFragment sxf = new SurveyXMLFragment();
+		sxf.setSurveyId(surveyId);
+		sxf.setFragment(new Text(sbQG.toString()));
+		sxf.setFragmentType(FRAGMENT_TYPE.QUESTION_GROUP);
+		sbQG = null;
+		sxmlfDao.save(sxf);
+	}
+	
 	private void assembleSurveyFragments(Long surveyId) {
 		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
 		List<SurveyXMLFragment> sxmlfList = sxmlfDao.listSurveyFragments(

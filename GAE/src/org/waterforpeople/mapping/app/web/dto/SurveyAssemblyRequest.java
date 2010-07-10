@@ -13,6 +13,7 @@ public class SurveyAssemblyRequest extends RestRequest {
 
 	public static final String ASSEMBLE_SURVEY = "assembleSurvey";
 	public static final String ASSEMBLE_QUESTION_GROUP = "assembleQuestionGroup";
+	public static final String ASSEMBLE_QUESTIONS = "assembleQuestions";
 	public static final String ASSEMBLE_SURVEY_FRAGMENTS = "assembleSurveyFragments";
 
 	private static final String SURVEY_ID_PARAM = "surveyId";
