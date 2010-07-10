@@ -10,6 +10,7 @@ public class SurveyXMLFragment extends BaseDomain {
 	 */
 	private static final long serialVersionUID = -6955885065118685217L;
 	private Long surveyId = null;
+	private Long questionGroupId =null;
 	private Integer fragmentOrder = null;
 	private Text fragment = null;
 	private FRAGMENT_TYPE fragmentType = null;
@@ -52,6 +53,14 @@ public class SurveyXMLFragment extends BaseDomain {
 
 	public FRAGMENT_TYPE getFragmentType() {
 		return fragmentType;
+	}
+
+	public void setQuestionGroupId(Long questionGroupId) {
+		this.questionGroupId = questionGroupId;
+	}
+
+	public Long getQuestionGroupId() {
+		return questionGroupId;
 	}
 
 	private FRAGMENT_STATUS status = null;
