@@ -23,8 +23,10 @@ public class SurveyAssemblyRequest extends RestRequest {
 	private static final String START_ROW_PARAM = "startRow";
 	private static final String GROUP_ID_PARAM = "questionGroupId";
 	private static final String ST_PARAM = "sessionToken";
+	private static final String LAST_GROUP_FLAG_PARAM = "lastGroupFlag";
 
 	private Long surveyId = null;
+	private Boolean lastGroupFlag = null;
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -63,7 +65,9 @@ public class SurveyAssemblyRequest extends RestRequest {
 			questionGroupId = Long.parseLong(req.getParameter(GROUP_ID_PARAM));
 		if (req.getParameter(START_ROW_PARAM) != null)
 			startRow = Integer.parseInt(req.getParameter(START_ROW_PARAM));
-
+		if (req.getParameter(LAST_GROUP_FLAG_PARAM) != null)
+			setLastGroupFlag(Boolean.parseBoolean(req
+					.getParameter(LAST_GROUP_FLAG_PARAM)));
 	}
 
 	public void setQuestionGroupId(Long questionGroupId) {
@@ -72,6 +76,14 @@ public class SurveyAssemblyRequest extends RestRequest {
 
 	public Long getQuestionGroupId() {
 		return questionGroupId;
+	}
+
+	public void setLastGroupFlag(Boolean lastGroupFlag) {
+		this.lastGroupFlag = lastGroupFlag;
+	}
+
+	public Boolean getLastGroupFlag() {
+		return lastGroupFlag;
 	}
 
 }
