@@ -274,23 +274,38 @@ public class QuestionView extends TableLayout implements
 					Dependency d = dependencies.get(i);
 					if (d.getQuestion().equalsIgnoreCase(
 							event.getSource().getQuestion().getId())) {
-						// if we're here, then the question on which we depend
-						// has been answered. Check the value to see if it's the
-						// one we are looking for
-						if (d.getAnswer() != null
-								&& event.getSource().getResponse(true) != null
-								&& d.getAnswer().equalsIgnoreCase(
-										event.getSource().getResponse(true)
-												.getValue())) {
-							setVisibility(View.VISIBLE);
+						if (handleDependencyParentResponse(d, event.getSource()
+								.getResponse(true))) {
 							break;
-						} else {
-							setVisibility(View.GONE);
 						}
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * updates the state of this question view based on the value in the
+	 * dependency parent response. This method returns true if there is a value
+	 * match and false otherwise.
+	 * 
+	 * @param dep
+	 * @param resp
+	 * @return
+	 */
+	public boolean handleDependencyParentResponse(Dependency dep,
+			QuestionResponse resp) {
+		// if we're here, then the question on which we depend
+		// has been answered. Check the value to see if it's the
+		// one we are looking for
+		if (dep.getAnswer() != null && resp != null
+				&& dep.getAnswer().equalsIgnoreCase(resp.getValue())) {
+			setVisibility(View.VISIBLE);
+			return true;
+		} else {
+			setVisibility(View.GONE);
+		}
+		return false;
 	}
 
 	/**
@@ -300,8 +315,7 @@ public class QuestionView extends TableLayout implements
 	public void captureResponse() {
 		// NO OP
 	}
-	
-	
+
 	/**
 	 * this method should be overridden by subclasses so they can record input
 	 * in a QuestionResponse object
@@ -309,9 +323,7 @@ public class QuestionView extends TableLayout implements
 	public void captureResponse(boolean suppressListeners) {
 		// NO OP
 	}
-	
-	
-	
+
 	/**
 	 * this method should be overridden by subclasses so they can manage the UI
 	 * changes when resetting the value
@@ -331,14 +343,14 @@ public class QuestionView extends TableLayout implements
 		}
 		return response;
 	}
-	
+
 	public QuestionResponse getResponse() {
-	
+
 		return getResponse(false);
 	}
-	
-	public void setResponse(QuestionResponse response){
-		setResponse(response,false);
+
+	public void setResponse(QuestionResponse response) {
+		setResponse(response, false);
 	}
 
 	public void setResponse(QuestionResponse response, boolean suppressListeners) {
@@ -354,7 +366,7 @@ public class QuestionView extends TableLayout implements
 		} else {
 			this.response = response;
 		}
-		if(!suppressListeners){
+		if (!suppressListeners) {
 			notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
 		}
 	}

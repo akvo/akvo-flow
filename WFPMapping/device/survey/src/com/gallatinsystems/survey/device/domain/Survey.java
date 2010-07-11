@@ -52,7 +52,8 @@ public class Survey {
 			helpDownloaded = false;
 		}
 	}
-
+	
+	
 	public String getType() {
 		return type;
 	}

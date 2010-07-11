@@ -26,6 +26,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
+import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
@@ -76,6 +77,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private boolean[] selectedLanguages;
 	private String[] selectedLanguageCodes;
 	private HashMap<QuestionGroup, SurveyTabContentFactory> factoryMap;
+	private Survey survey;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -119,7 +121,7 @@ public class SurveyViewActivity extends TabActivity implements
 					.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
 		}
 
-		Survey survey = null;
+		
 		try {
 			survey = SurveyDao.loadSurvey(databaseAdapter.findSurvey(surveyId),
 					getResources());
@@ -172,7 +174,7 @@ public class SurveyViewActivity extends TabActivity implements
 			ArrayList<Question> groupQuestions = factoryEntry.getKey()
 					.getQuestions();
 			for (int i = 0; i < groupQuestions.size(); i++) {
-				Question q = groupQuestions.get(i);				
+				Question q = groupQuestions.get(i);
 				ArrayList<Dependency> dependencies = q.getDependencies();
 				if (dependencies != null) {
 					for (int j = 0; j < dependencies.size(); j++) {
@@ -184,18 +186,30 @@ public class SurveyViewActivity extends TabActivity implements
 						if (depQ != null && parentQ != null) {
 							parentQ.addQuestionInteractionListener(depQ);
 							if (parentQ.getResponse(true) != null
-									&& parentQ.getResponse(true).hasValue() && parentQ != depQ) {
+									&& parentQ.getResponse(true).hasValue()
+									&& parentQ != depQ) {
 								QuestionInteractionEvent event = new QuestionInteractionEvent(
 										QuestionInteractionEvent.QUESTION_ANSWER_EVENT,
 										parentQ);
 								depQ.onQuestionInteraction(event);
 							}
+						} else if (depQ != null) {
+							// if we're here, it's possible that the parent view
+							// hasn't been hydrated yet. So check the master
+							// question map for a response and use that to
+							// inform the child
+							QuestionResponse resp = databaseAdapter.findSingleResponse(respondentId,dep.getQuestion());
+							if(resp != null){
+								depQ.handleDependencyParentResponse(dep,resp);
+							}
+							
 						}
 					}
 				}
 			}
 		}
 	}
+		
 
 	/**
 	 * looks across all question factories for a question with the ID passed in

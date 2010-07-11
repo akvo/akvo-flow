@@ -353,6 +353,36 @@ public class SurveyDbAdapter {
 	}
 
 	/**
+	 * loads a single question response
+	 * @param respondentId
+	 * @param questionId
+	 * @return
+	 */
+	public QuestionResponse findSingleResponse(Long respondentId,
+			String questionId) {
+		QuestionResponse resp = null;
+		Cursor cursor = database.query(RESPONSE_TABLE, new String[] {
+				RESP_ID_COL, QUESTION_FK_COL, ANSWER_COL, ANSWER_TYPE_COL,
+				SURVEY_RESPONDENT_ID_COL }, SURVEY_RESPONDENT_ID_COL
+				+ "=? and " + QUESTION_FK_COL + "=?", new String[] {
+				respondentId.toString(), questionId }, null, null, null);
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+				resp = new QuestionResponse();
+				resp.setQuestionId(questionId);
+				resp.setRespondentId(respondentId);
+				resp.setType(cursor.getString(cursor
+						.getColumnIndexOrThrow(ANSWER_TYPE_COL)));
+				resp.setValue(cursor.getString(cursor
+						.getColumnIndexOrThrow(ANSWER_COL)));
+			}
+			cursor.close();
+		}
+		return resp;
+	}
+
+	/**
 	 * if the response has the ID populated, it will update the database row,
 	 * otherwise it will be inserted
 	 * 
