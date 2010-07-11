@@ -238,7 +238,7 @@ public class OptionQuestionView extends QuestionView {
 		if (ConstantUtil.SPINNER_RENDER_MODE.equalsIgnoreCase(question
 				.getRenderType())) {
 			initializeSpinnerOptions();
-			rehydrate(getResponse());
+			rehydrate(getResponse(true));
 		} else {
 			ArrayList<Option> options = question.getOptions();
 			if (question.isAllowMultiple()) {

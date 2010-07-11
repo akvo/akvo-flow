@@ -20,7 +20,6 @@ import android.widget.TabHost.TabContentFactory;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.activity.SurveyViewActivity;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
-import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
@@ -47,6 +46,10 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	private float defaultTextSize;
 	private String[] languageCodes;
 
+	public HashMap<String, QuestionView> getQuestionMap() {
+		return questionMap;
+	}
+
 	/**
 	 * stores the context and questionGroup to member fields
 	 * 
@@ -56,6 +59,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	public SurveyTabContentFactory(SurveyViewActivity c, QuestionGroup qg,
 			SurveyDbAdapter dbAdaptor, float textSize, String[] languageCodes) {
 		questionGroup = qg;
+		questionMap = new HashMap<String, QuestionView>();
 		context = c;
 		databaseAdaptor = dbAdaptor;
 		defaultTextSize = textSize;
@@ -83,7 +87,6 @@ public class SurveyTabContentFactory implements TabContentFactory {
 				LayoutParams.WRAP_CONTENT));
 
 		scrollView.addView(table);
-		questionMap = new HashMap<String, QuestionView>();
 
 		ArrayList<Question> questions = questionGroup.getQuestions();
 
@@ -132,23 +135,9 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			}
 			table.addView(tr);
 		}
-		// set up listeners for dependencies
-		// we have to do this after all views are created so it can't be
-		// combined with the loop above
-		for (int i = 0; i < questions.size(); i++) {
-			Question q = questions.get(i);
-			ArrayList<Dependency> dependencies = q.getDependencies();
-			if (dependencies != null) {
-				for (int j = 0; j < dependencies.size(); j++) {
-					Dependency dep = dependencies.get(j);
-					QuestionView parentQ = questionMap.get(dep.getQuestion());
-					QuestionView depQ = questionMap.get(q.getId());
-					if (depQ != null && parentQ != null) {
-						parentQ.addQuestionInteractionListener(depQ);
-					}
-				}
-			}
-		}
+		// set up listeners for dependencies. Since the dependencies can span
+		// groups, the parent needs to do this
+		context.establishDependencies(questionGroup);
 
 		// create save/clear buttons
 		TableRow buttonRow = new TableRow(context);
@@ -377,10 +366,11 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	public void saveState(Long respondentId) {
 		if (questionMap != null) {
 			for (QuestionView q : questionMap.values()) {
-				if (q.getResponse() != null && q.getResponse().hasValue()) {
-					q.getResponse().setRespondentId(respondentId);
+				if (q.getResponse(true) != null
+						&& q.getResponse(true).hasValue()) {
+					q.getResponse(true).setRespondentId(respondentId);
 					databaseAdaptor.createOrUpdateSurveyResponse(q
-							.getResponse());
+							.getResponse(true));
 				}
 			}
 		}

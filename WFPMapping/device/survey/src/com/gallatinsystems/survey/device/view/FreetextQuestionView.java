@@ -30,7 +30,7 @@ public class FreetextQuestionView extends QuestionView implements
 	private EditText freetextEdit;
 
 	public FreetextQuestionView(Context context, Question q, String[] langCodes) {
-		super(context, q,langCodes);
+		super(context, q, langCodes);
 		init();
 	}
 
@@ -66,8 +66,17 @@ public class FreetextQuestionView extends QuestionView implements
 	 * pulls the data out of the fields and saves it as a response object
 	 */
 	public void captureResponse() {
+		captureResponse(false);
+	}
+
+	/**
+	 * pulls the data out of the fields and saves it as a response object,
+	 * possibly suppressing listeners
+	 */
+	public void captureResponse(boolean suppressListeners) {
 		setResponse(new QuestionResponse(freetextEdit.getText().toString(),
-				ConstantUtil.VALUE_RESPONSE_TYPE, getQuestion().getId()));
+				ConstantUtil.VALUE_RESPONSE_TYPE, getQuestion().getId()),
+				suppressListeners);
 	}
 
 	public void rehydrate(QuestionResponse resp) {

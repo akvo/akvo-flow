@@ -117,22 +117,22 @@ public class QuestionView extends TableLayout implements
 		StringBuilder text = new StringBuilder();
 		for (int i = 0; i < langs.length; i++) {
 			if (ConstantUtil.ENGLISH_CODE.equalsIgnoreCase(langs[i])) {
-				if(!isFirst){
+				if (!isFirst) {
 					text.append(" / ");
-				}else{
+				} else {
 					isFirst = false;
 				}
 				text.append(question.getText());
 			} else {
 				AltText txt = question.getAltText(langs[i]);
 				if (txt != null) {
-					if(!isFirst){
+					if (!isFirst) {
 						text.append(" / ");
-					}else{
+					} else {
 						isFirst = false;
 					}
-					text.append("<font color='").append(colors[i]).append(
-							"'>").append(txt.getText()).append("</font>");
+					text.append("<font color='").append(colors[i]).append("'>")
+							.append(txt.getText()).append("</font>");
 				}
 			}
 		}
@@ -225,7 +225,8 @@ public class QuestionView extends TableLayout implements
 		if (listeners == null) {
 			listeners = new ArrayList<QuestionInteractionListener>();
 		}
-		if (listener != null) {
+		if (listener != null && !listeners.contains(listener)
+				&& listener != this) {
 			listeners.add(listener);
 		}
 	}
@@ -259,7 +260,7 @@ public class QuestionView extends TableLayout implements
 	 * 
 	 */
 	public void resetQuestion() {
-		setResponse(null);
+		setResponse(null, false);
 	}
 
 	public void onQuestionInteraction(QuestionInteractionEvent event) {
@@ -277,9 +278,9 @@ public class QuestionView extends TableLayout implements
 						// has been answered. Check the value to see if it's the
 						// one we are looking for
 						if (d.getAnswer() != null
-								&& event.getSource().getResponse() != null
+								&& event.getSource().getResponse(true) != null
 								&& d.getAnswer().equalsIgnoreCase(
-										event.getSource().getResponse()
+										event.getSource().getResponse(true)
 												.getValue())) {
 							setVisibility(View.VISIBLE);
 							break;
@@ -299,7 +300,18 @@ public class QuestionView extends TableLayout implements
 	public void captureResponse() {
 		// NO OP
 	}
-
+	
+	
+	/**
+	 * this method should be overridden by subclasses so they can record input
+	 * in a QuestionResponse object
+	 */
+	public void captureResponse(boolean suppressListeners) {
+		// NO OP
+	}
+	
+	
+	
 	/**
 	 * this method should be overridden by subclasses so they can manage the UI
 	 * changes when resetting the value
@@ -307,20 +319,29 @@ public class QuestionView extends TableLayout implements
 	 * @param resp
 	 */
 	public void rehydrate(QuestionResponse resp) {
-		setResponse(resp);
+		setResponse(resp, true);
 	}
 
-	public QuestionResponse getResponse() {
+	public QuestionResponse getResponse(boolean suppressListeners) {
 		if (response == null
 				|| (ConstantUtil.VALUE_RESPONSE_TYPE.equals(response.getType()) && (response
 						.getValue() == null || response.getValue().trim()
 						.length() == 0))) {
-			captureResponse();
+			captureResponse(suppressListeners);
 		}
 		return response;
 	}
+	
+	public QuestionResponse getResponse() {
+	
+		return getResponse(false);
+	}
+	
+	public void setResponse(QuestionResponse response){
+		setResponse(response,false);
+	}
 
-	public void setResponse(QuestionResponse response) {
+	public void setResponse(QuestionResponse response, boolean suppressListeners) {
 		if (response != null) {
 			if (this.response == null) {
 				this.response = response;
@@ -333,7 +354,9 @@ public class QuestionView extends TableLayout implements
 		} else {
 			this.response = response;
 		}
-		notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
+		if(!suppressListeners){
+			notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
+		}
 	}
 
 	public Question getQuestion() {

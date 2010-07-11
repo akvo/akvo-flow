@@ -3,6 +3,8 @@ package com.gallatinsystems.survey.device.activity;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
@@ -21,6 +23,7 @@ import android.widget.TabHost;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDao;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.Survey;
@@ -72,6 +75,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private float currentTextSize;
 	private boolean[] selectedLanguages;
 	private String[] selectedLanguageCodes;
+	private HashMap<QuestionGroup, SurveyTabContentFactory> factoryMap;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -79,6 +83,7 @@ public class SurveyViewActivity extends TabActivity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		currentTextSize = NORMAL_TXT_SIZE;
+		factoryMap = new HashMap<QuestionGroup, SurveyTabContentFactory>();
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
 
@@ -86,8 +91,7 @@ public class SurveyViewActivity extends TabActivity implements
 
 		String langSelection = databaseAdapter
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-		LanguageData langData = LanguageUtil.loadLanguages(this,
-				langSelection);
+		LanguageData langData = LanguageUtil.loadLanguages(this, langSelection);
 
 		selectedLanguages = langData.getSelectedLanguages();
 		selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(this,
@@ -139,6 +143,7 @@ public class SurveyViewActivity extends TabActivity implements
 					SurveyTabContentFactory factory = new SurveyTabContentFactory(
 							this, group, databaseAdapter, currentTextSize,
 							selectedLanguageCodes);
+					factoryMap.put(group, factory);
 					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
 							.setIndicator(group.getHeading()).setContent(
 									factory));
@@ -146,6 +151,73 @@ public class SurveyViewActivity extends TabActivity implements
 				}
 			}
 		}
+	}
+
+	/**
+	 * sets up question dependencies across question groups and registers
+	 * questionInteractionListeners on the dependent views. This should be
+	 * called each time a new tab is hydrated. It will iterate over all
+	 * questions in the survey and install dependencies and the
+	 * questionInteractionListeners. After installation, it will check to see if
+	 * the parent question contains a response. If so, it will fire a
+	 * questionInteractionEvent to ensure dependent questions are put into the
+	 * correct state
+	 * 
+	 * @param group
+	 */
+	public void establishDependencies(QuestionGroup group) {
+		// iterate over all groups we've processed
+		for (Entry<QuestionGroup, SurveyTabContentFactory> factoryEntry : factoryMap
+				.entrySet()) {
+			ArrayList<Question> groupQuestions = factoryEntry.getKey()
+					.getQuestions();
+			for (int i = 0; i < groupQuestions.size(); i++) {
+				Question q = groupQuestions.get(i);
+				if(q.getText().equals("How many ppm of fecal coliforms were present on the day of collection?")){
+					System.out.println("HI");
+				}
+				ArrayList<Dependency> dependencies = q.getDependencies();
+				if (dependencies != null) {
+					for (int j = 0; j < dependencies.size(); j++) {
+						Dependency dep = dependencies.get(j);
+						QuestionView parentQ = findQuestionView(dep
+								.getQuestion());
+						QuestionView depQ = factoryEntry.getValue()
+								.getQuestionMap().get(q.getId());
+						if (depQ != null && parentQ != null) {
+							parentQ.addQuestionInteractionListener(depQ);
+							if (parentQ.getResponse(true) != null
+									&& parentQ.getResponse(true).hasValue() && parentQ != depQ) {
+								QuestionInteractionEvent event = new QuestionInteractionEvent(
+										QuestionInteractionEvent.QUESTION_ANSWER_EVENT,
+										parentQ);
+								depQ.onQuestionInteraction(event);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * looks across all question factories for a question with the ID passed in
+	 * and returns the first match.
+	 * 
+	 * @param questionId
+	 * @return
+	 */
+	private QuestionView findQuestionView(String questionId) {
+		QuestionView view = null;
+		for (SurveyTabContentFactory factory : factoryMap.values()) {
+			if (factory.getQuestionMap() != null) {
+				view = factory.getQuestionMap().get(questionId);
+				if (view != null) {
+					break;
+				}
+			}
+		}
+		return view;
 	}
 
 	/**

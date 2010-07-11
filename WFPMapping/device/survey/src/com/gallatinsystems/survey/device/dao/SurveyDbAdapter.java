@@ -88,6 +88,7 @@ public class SurveyDbAdapter {
 			"insert into survey values(999992,'Houshold Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
 			"insert into survey values(999993,'Public Institution Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
 			"insert into survey values(999994,'Mapping', 1.0,'Mapping','res','mappingsurvey','english','N','N')",
+			"insert into survey values(999995,'Testnew', 1.0,'Survey','res','multisurvey','english','N','N')",
 			"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
