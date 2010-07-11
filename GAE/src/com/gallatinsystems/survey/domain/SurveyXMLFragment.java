@@ -1,8 +1,10 @@
 package com.gallatinsystems.survey.domain;
 
+import javax.jdo.annotations.PersistenceCapable;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
-
+@PersistenceCapable
 public class SurveyXMLFragment extends BaseDomain {
 
 	/**
