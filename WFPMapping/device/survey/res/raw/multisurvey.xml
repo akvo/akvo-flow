@@ -243,7 +243,7 @@
 			<text>Was water quality sample taken from the improved system?</text>
 		</question>
 		<question id="314" mandatory="false" type="free" order="16">
-			<dependency question="314" answer-value="Yes" />
+			<dependency question="225" answer-value="Yes" />
 			<text>How many ppm of fecal coliforms were present on the day of
 				collection?</text>
 			<validationRule signed="false" validationType="numeric" />
