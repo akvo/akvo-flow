@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="utf-8"?>
+<survey>
+	<questionGroup>
+		<heading>General</heading>
+		<question id="29" mandatory="false" type="geo" order="0">
+			<text>Location</text>
+		</question>
+		<question id="31" mandatory="false" type="photo" order="1">
+			<text>Waterpoint Photo</text>
+		</question>
+		<question id="33" mandatory="false" type="free" order="2">
+			<text>Interviewee</text>
+		</question>
+		<question id="35" mandatory="false" type="free" order="3">
+			<text>Position of Interviewee</text>
+		</question>
+		<question id="37" mandatory="false" type="free" order="4">
+			<text>Name of waterpoint photo</text>
+		</question>
+		<question id="39" mandatory="false" type="free" order="5">
+			<text>Waterpoint photo caption</text>
+		</question>
+		<question id="41" mandatory="false" type="option" order="6">
+			<options>
+				<option value="1">Public Institution Baseline</option>
+				<option value="2">Public Institution Monitoring</option>
+				<option value="3">Public Institution Evaluation</option>
+			</options>
+			<text>Survey Type</text>
+		</question>
+		<question id="50" mandatory="false" type="option" order="7">
+			<options>
+				<option value="1">Rural</option>
+				<option value="2">Peri-Urban</option>
+				<option value="3">Small Town</option>
+				<option value="4">Urban</option>
+			</options>
+			<text>Location Type</text>
+		</question>
+		<question id="61" mandatory="false" type="free" order="8">
+			<text>Name of Community</text>
+		</question>
+		<question id="63" mandatory="false" type="free" order="9">
+			<text>Public Institution Code</text>
+		</question>
+		<question id="65" mandatory="false" type="option" order="10">
+			<options>
+				<option value="24">Chikwawa, Malawi</option>
+				<option value="24">Rumphi, Malawi</option>
+				<option value="26">Blantyre, Malawi</option>
+			</options>
+			<text>Political Subdivision</text>
+		</question>
+		<question id="74" mandatory="false" type="option" order="11">
+			<options>
+				<option value="1"> Health Post/Clinic</option>
+				<option value="2"> School</option>
+				<option value="3"> Health Post/Clinic and School</option>
+				<option value="4"> Don't Know</option>
+			</options>
+			<text>Type(s) of Public Institutions using water point.</text>
+		</question>
+		<question id="85" mandatory="false" type="option" order="12">
+			<dependency question="74"
+				answer-value="School; Health Post/Clinic and School" />
+			<options>
+				<option value="1">Crèche/Nursery School/Pre-Primary</option>
+				<option value="2"> Primary</option>
+				<option value="3"> Secondary</option>
+				<option value="4"> Crèche/Nursery/Pre-Primary School and Primary
+				</option>
+				<option value="5">Crèche/Nursery School/Pre-Primary and Secondary
+				</option>
+				<option value="6">Crèche/Nursery School/Pre-Primary, Primary and
+					Secondary</option>
+				<option value="7">Primary and Secondary</option>
+				<option value="8">Don't Know</option>
+			</options>
+			<text>What type(s) of schools are using water point?</text>
+		</question>
+		<question id="104" mandatory="false" type="option" order="13">
+			<dependency question="74"
+				answer-value="Health Post/Clinic; Health Post/Clinic and School" />
+			<options>
+				<option value="1">Local Clinic</option>
+				<option value="2"> Regional Health Post</option>
+				<option value="3"> Don't Know</option>
+			</options>
+			<text>What type of health post is using the water point?</text>
+		</question>
+	</questionGroup>
+	<questionGroup>
+		<heading>Water</heading>
+		<question id="113" mandatory="false" type="free" order="0">
+			<text>Name of School or Health Post</text>
+		</question>
+		<question id="115" mandatory="false" type="option" order="1">
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Is there an improved water system?</text>
+		</question>
+		<question id="124" mandatory="false" type="option" order="2">
+			<dependency question="115" answer-value="No" />
+			<options>
+				<option value="1">River</option>
+				<option value="2">Unprotected Spring</option>
+				<option value="3">Gravity system with low quality</option>
+				<option value="4">Pond</option>
+				<option value="5">Lake</option>
+				<option value="6">Scoop hole</option>
+				<option value="7">Unprotected/unlined well</option>
+			</options>
+			<text>What is the type of the unimproved water system?</text>
+		</question>
+		<question id="141" mandatory="false" type="option" order="3">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="1">Gravity Fed, household taps</option>
+				<option value="2"> Gravity Fed, public taps</option>
+				<option value="3"> Gravity Fed, combination of household and
+					public taps</option>
+				<option value="4"> Ph8 Handpump</option>
+				<option value="5"> Ph8 handpump with AMAL filter</option>
+				<option value="6"> AfriDev handpump</option>
+				<option value="7"> Rope Pump</option>
+				<option value="8"> Malda handpump</option>
+				<option value="9"> School-based Amal, multitap water system
+				</option>
+				<option value="10"> Mark II</option>
+				<option value="11"> Mark III</option>
+				<option value="12"> Mark IV</option>
+				<option value="13"> PHE6 Handpump</option>
+				<option value="14"> PHE 6 Handpump with AMAL filter</option>
+				<option value="15"> School-based multi-tap water system</option>
+				<option value="16"> Motorized Pump</option>
+				<option value="17"> Electric Pump</option>
+				<option value="18"> Diesel</option>
+				<option value="19"> Noria Pump</option>
+				<option value="20">Rainwater Catchment</option>
+			</options>
+			<text>What is the type of the improved water system?</text>
+		</question>
+		<question id="184" mandatory="false" type="free" order="4">
+			<dependency question="115" answer-value="Yes" />
+			<text>Estimated population using the improved water system.</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="186" mandatory="false" type="free" order="5">
+			<dependency question="115" answer-value="Yes" />
+			<text>Estimated number of other community members (not including
+				students, staff or patients) are using the water point?</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="188" mandatory="false" type="free" order="6">
+			<dependency question="115" answer-value="Yes" />
+			<text>Year of construction of the improved water system.</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="190" mandatory="false" type="option" order="7">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Is the waterpoint part of a Water For People supported project?
+			</text>
+		</question>
+		<question id="199" mandatory="false" type="free" order="8">
+			<dependency question="190" answer-value="Yes" />
+			<text>When was the Water For People project completed?</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="201" mandatory="false" type="option" order="9">
+			<dependency question="190" answer-value="No" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Does Water For People have plans for a project involving this
+				water point</text>
+		</question>
+		<question id="210" mandatory="false" type="option" order="10">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Is the improved water supply system part of a community
+				project?</text>
+		</question>
+		<question id="219" mandatory="false" type="option" order="11">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="0"> No</option>
+				<option value="1"> Yes</option>
+				<option value="2"> Don't Know</option>
+			</options>
+			<text>Does the improved source provide drinking water every day of
+				the year?</text>
+		</question>
+		<question id="228" mandatory="false" type="option" order="12">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Has the improved system been down for more than 1 day in the
+				last 30 days?</text>
+		</question>
+		<question id="237" mandatory="false" type="option" order="13">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Are there any current problems with the system that require
+				attention?</text>
+		</question>
+		<question id="246" mandatory="false" type="option" order="14">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Is water available from the improved system on the day of the
+				visit?</text>
+		</question>
+		<question id="255" mandatory="false" type="option" order="15">
+			<dependency question="246" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Was water quality sample taken from the improved system?</text>
+		</question>
+		<question id="314" mandatory="false" type="free" order="16">
+			<dependency question="314" answer-value="Yes" />
+			<text>How many ppm of fecal coliforms were present on the day of
+				collection?</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="316" mandatory="false" type="option" order="17">
+			<dependency question="314" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Does the level of fecal coliforms on the day of the visit meet
+				government minimum standards?</text>
+		</question>
+		<question id="323" mandatory="false" type="option" order="18">
+			<dependency question="246" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Could not Calculate</option>
+			</options>
+			<text>Does the quantity of water available from the improved system
+				on the day of the visit meet government minimum standards?
+				(Calculate liters per minute to determine how much water is
+				available in a day. Divide this number by number of users and
+				compare to government regulations)</text>
+		</question>
+		<question id="332" mandatory="false" type="option" order="19">
+			<dependency question="323" answer-value="No" />
+			<options>
+				<option value="1">Long down times</option>
+				<option value="2">Irregular supply</option>
+				<option value="3">Long Lines or Queues</option>
+				<option value="4">Broken System</option>
+				<option value="5">Political Reasons</option>
+				<option value="6">Failure to pay/disconnect</option>
+			</options>
+			<text>What is the primary reason for inadequate water supply.</text>
+		</question>
+	</questionGroup>
+	<questionGroup>
+		<heading>Finance</heading>
+		<question id="262" mandatory="false" type="option" order="0">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="1">School Budget</option>
+				<option value="2">PTA</option>
+				<option value="3">Sponsoring Organization</option>
+				<option value="4">Local Government</option>
+				<option value="5">Community Water Committee/Board (funds for
+					school not separated from community water funds)</option>
+				<option value="6">Public Institution has no funds for operation
+					and maintenance</option>
+			</options>
+			<text>Where does money come from to operate and maintain the improved
+				water system?</text>
+		</question>
+		<question id="277" mandatory="false" type="option" order="1">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Are there records that the monitoring team has reviewed
+				regarding improved water point finance?</text>
+		</question>
+		<question id="286" mandatory="false" type="option" order="2">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Are the financial records up to date completed thru the last
+				month?</text>
+		</question>
+		<question id="293" mandatory="false" type="option" order="3">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Is there documentation showing income for the last month?
+			</text>
+		</question>
+		<question id="300" mandatory="false" type="option" order="4">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Is there documentation for expenses for the last month?</text>
+		</question>
+		<question id="307" mandatory="false" type="option" order="5">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Is there a positive balance? (income less expenditures)</text>
+		</question>
+		<question id="440" mandatory="false" type="option" order="6">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Is the balance sufficient to replace the most expensive part of
+				this particular system?</text>
+		</question>
+		<question id="447" mandatory="false" type="option" order="7">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Is the balance sufficient to replace the entire system?</text>
+		</question>
+		<question id="454" mandatory="false" type="option" order="8">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="1">Follow-up support needed</option>
+				<option value="2">Significant follow-up needed</option>
+				<option value="4">Records are well managed</option>
+			</options>
+			<text>Based on the team’s review of the records, is further
+				administrative/financial training required?</text>
+		</question>
+		<question id="463" mandatory="false" type="option" order="9">
+			<dependency question="277" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+			<text>Based on the team’s review of the records, is there anything in
+				the accounts that raises concerns about how the money is being used?
+			</text>
+		</question>
+	</questionGroup>
+	<questionGroup>
+		<heading>Public Institution</heading>
+		<question id="347" mandatory="false" type="option" order="0">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="1">Water Committee/Board</option>
+				<option value="2">Individual Owner of system</option>
+				<option value="3">Private Company (Business, Co-Operative, etc.)
+				</option>
+				<option value="4">Private Operator</option>
+				<option value="5">School Committee/PTA</option>
+				<option value="6">Local Government</option>
+				<option value="7">NGO</option>
+				<option value="8">Church Group</option>
+				<option value="9">No designated manager/plumber</option>
+			</options>
+			<text>Who manages the improved water system?</text>
+		</question>
+		<question id="368" mandatory="false" type="option" order="1">
+			<dependency question="115" answer-value="Yes" />
+			<options>
+				<option value="1">Water Committee/Board</option>
+				<option value="2">Individual Owner of system</option>
+				<option value="3">Private Company (Business, Co-Operative, etc.)
+				</option>
+				<option value="4">Private Operator</option>
+				<option value="5">School Committee/PTA</option>
+				<option value="6">Local Government</option>
+				<option value="7">NGO</option>
+				<option value="8">Church Group</option>
+				<option value="9">No designated manager/plumber</option>
+			</options>
+			<text>Who is primarily responsible for performing local maintenance
+				and repairs on the improved water system?</text>
+		</question>
+		<question id="389" mandatory="false" type="option" order="2">
+			<options>
+				<option value="1">Functioning and Meets Government Standards
+				</option>
+				<option value="2">Functioning but with problems</option>
+				<option value="3">Broken down system</option>
+				<option value="98">No improved system</option>
+			</options>
+			<text>What is the operational status of the improved water system?
+				(WWC judgment)</text>
+		</question>
+	</questionGroup>
+	<questionGroup>
+		<heading>Sanitation</heading>
+		<question id="400" mandatory="false" type="option" order="0">
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Does the institution have improved sanitation facilities?
+			</text>
+		</question>
+		<question id="409" mandatory="false" type="option" order="1">
+			<options>
+				<option value="1">VIP</option>
+				<option value="2"> Improved Pit Latrine</option>
+				<option value="3"> Urine Diversion/Skyloo</option>
+				<option value="4"> Fossa Alterna</option>
+				<option value="5"> Arbor Loo</option>
+				<option value="6"> Public Latrine</option>
+				<option value="7"> Pour Flush Latrine</option>
+				<option value="8"> Flush Toilet</option>
+				<option value="9"> Traditional/Unimproved Latrine</option>
+				<option value="10"> Open Defecation</option>
+				<option value="11"> Hand dug ditches</option>
+				<option value="12"> Cat Method</option>
+				<option value="14"> Don't Know</option>
+			</options>
+			<text>What type of sanitation does the public institution use?
+				(Observation)</text>
+		</question>
+		<question id="438" mandatory="false" type="free" order="2">
+			<dependency question="400" answer-value="Yes" />
+			<text>In what year was the sanitation project implemented?</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="470" mandatory="false" type="free" order="3">
+			<text>How many unisex latrines/toilets does the public institution
+				have?</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="472" mandatory="false" type="free" order="4">
+			<text>How many latrines/toilets does the public institution have for
+				Male students/patients?</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="474" mandatory="false" type="free" order="5">
+			<text>How many latrines/toilets does the public institution have for
+				Female students/patients?</text>
+			<validationRule signed="false" validationType="numeric" />
+		</question>
+		<question id="476" mandatory="false" type="option" order="6">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Does the number of improved latrines meet minimum government
+				standards for latrine/pupil ratio?</text>
+		</question>
+		<question id="485" mandatory="false" type="option" order="7">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+				<option value="2">Do not Know</option>
+			</options>
+			<text>Is there evidence that the improved latrine(s) are being used?
+			</text>
+		</question>
+		<question id="494" mandatory="false" type="option" order="8">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="0"> No</option>
+				<option value="1"> Yes</option>
+				<option value="2"> Latrine does not need water</option>
+			</options>
+			<text>If improved toilet needs water, is water available near the
+				latrine on the day of the visit? (Observation)</text>
+		</question>
+		<question id="503" mandatory="false" type="option" order="9">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="1"> Functional</option>
+				<option value="2"> Latrine Full</option>
+				<option value="3"> Latrine used but technical problems evident
+				</option>
+				<option value="4"> Latrine not being used due to
+					structral/technical probelms</option>
+				<option value="5"> Cannot access facility</option>
+			</options>
+			<text>What is the current state of the improved sanitation facility?
+				(Observation)</text>
+		</question>
+		<question id="516" mandatory="false" type="option" order="10">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="0"> No</option>
+				<option value="1"> Yes</option>
+				<option value="2"> Don't Know</option>
+			</options>
+			<text>Is there urine and/or feces on the floor/walls/seat etc of the
+				improved latrine?) (Observation)</text>
+		</question>
+		<question id="525" mandatory="false" type="option" order="11">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="0"> No</option>
+				<option value="1"> Yes</option>
+				<option value="2"> Don't Know</option>
+			</options>
+			<text>Is there human feces within 3M of the house?(Observation)
+			</text>
+		</question>
+		<question id="534" mandatory="false" type="option" order="12">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="0"> No</option>
+				<option value="1"> Yes</option>
+				<option value="2"> Don't Know</option>
+			</options>
+			<text>Is there water available for handwashing within 3 meters of the
+				improved latrine? (Observation)</text>
+		</question>
+		<question id="543" mandatory="false" type="option" order="13">
+			<dependency question="400" answer-value="Yes" />
+			<options>
+				<option value="0"> No</option>
+				<option value="1"> Yes</option>
+				<option value="2"> Don't Know</option>
+			</options>
+			<text>Is there soap or other cleansing agent for handwashing
+				available near of the improved latrine? (Observation)</text>
+		</question>
+		<question id="552" mandatory="false" type="option" order="14">
+			<options>
+				<option value="0"> No</option>
+				<option value="1"> Yes</option>
+			</options>
+			<text>When do you wash your hands with soap?) Note: DO NOT READ
+				CORRECT RESPONSES ALOUD Ask aproximately 10% of students| (after
+				defecating, before eating, after cleaning a baby's bottom, before
+				cooking)</text>
+		</question>
+	</questionGroup>
+</survey>
