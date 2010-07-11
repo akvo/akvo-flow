@@ -172,10 +172,7 @@ public class SurveyViewActivity extends TabActivity implements
 			ArrayList<Question> groupQuestions = factoryEntry.getKey()
 					.getQuestions();
 			for (int i = 0; i < groupQuestions.size(); i++) {
-				Question q = groupQuestions.get(i);
-				if(q.getText().equals("How many ppm of fecal coliforms were present on the day of collection?")){
-					System.out.println("HI");
-				}
+				Question q = groupQuestions.get(i);				
 				ArrayList<Dependency> dependencies = q.getDependencies();
 				if (dependencies != null) {
 					for (int j = 0; j < dependencies.size(); j++) {

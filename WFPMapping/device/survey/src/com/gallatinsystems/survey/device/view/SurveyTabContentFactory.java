@@ -334,7 +334,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 					}
 				}
 				if (questionMap != null) {
-					// update the quesiton view to reflect the loaded data
+					// update the question view to reflect the loaded data
 					if (questionMap.get(resp.getQuestionId()) != null) {
 						questionMap.get(resp.getQuestionId()).rehydrate(resp);
 
