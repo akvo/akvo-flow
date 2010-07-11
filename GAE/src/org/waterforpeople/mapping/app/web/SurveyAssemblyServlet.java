@@ -131,6 +131,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		for (QuestionQuestionGroupAssoc item : qqgaList) {
 			Question q = questionDao.getByKey(item.getQuestionId());
+			//ToDo : wrap marshalledQuestion with questionGroup
 			sb.append(marshallQuestion(q));
 			count++;
 		}
