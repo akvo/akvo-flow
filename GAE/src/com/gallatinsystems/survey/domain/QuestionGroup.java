@@ -19,11 +19,20 @@ public class QuestionGroup extends BaseDomain {
 
 	private String code;
 	private String description;
+	private String path;
 	@NotPersistent
 	private List<Question> questionList;
 
 	@NotPersistent
 	private TreeMap<Integer, Question> questionMap = null;
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	public String getCode() {
 		return code;

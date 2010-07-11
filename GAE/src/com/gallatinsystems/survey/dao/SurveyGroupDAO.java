@@ -58,6 +58,9 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 				// Save Question Group
 				if (surveyItem.getQuestionGroupList() != null) {
 					for (QuestionGroup qg : surveyItem.getQuestionGroupList()) {
+						if(qg.getPath()==null){
+							qg.setPath(item.getCode()+"/"+surveyItem.getName());
+						}
 						qg = qgDao.save(qg);
 						SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
 						sqga.setQuestionGroupId(qg.getKey().getId());

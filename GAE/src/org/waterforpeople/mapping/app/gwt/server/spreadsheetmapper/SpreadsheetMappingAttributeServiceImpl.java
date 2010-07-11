@@ -26,6 +26,7 @@ import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
@@ -43,13 +44,12 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		RemoteServiceServlet implements SpreadsheetMappingAttributeService {
 	private static final Logger log = Logger
 			.getLogger(SpreadsheetMappingAttributeServiceImpl.class.getName());
-	/**
-	 *
-	 */
+	private QuestionGroupDao questionGroupDao;
+
 	private static final long serialVersionUID = 7708378583408245812L;
 
 	public SpreadsheetMappingAttributeServiceImpl() {
-
+		questionGroupDao = new QuestionGroupDao();
 	}
 
 	private String getSessionTokenFromSession() throws Exception {
@@ -247,26 +247,29 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			PrivateKey key, String spreadsheetName, int startRow, Long groupId) {
 
 		try {
+			org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
+			byte[] encodedKey = b64encoder.encode(key.getEncoded());
 			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
 					tokenString, key);
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
 			sc.setSpreadsheetName(spreadsheetName);
+			RowContainer rowTitle = sc.getRowContainerList().get(1);
+			String sgName = rowTitle.getColumnContainersList().get(0)
+					.getColContents();
+			if (sgName == null) {
+				sgName = "Default";
+			}
+
 			if (startRow == -1) {
-				setDependencies(sc, groupId);
-			} else {
+				setDependencies(sc);
+			} else if (startRow == -2) {
+				// create the survey and all groups. We'll take care of the
+				// questions in another iteration
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				SurveyGroup sg = null;
-
-				String sgName = null;
-				RowContainer rowTitle = sc.getRowContainerList().get(1);
-				sgName = rowTitle.getColumnContainersList().get(0)
-						.getColContents();
-				if (sgName == null) {
-					sgName = "Default";
-				}
 				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
-
+				HashMap<String, QuestionGroup> groupMap = new HashMap<String, QuestionGroup>();
 				if (sgFound != null) {
 					sg = sgFound;
 				} else {
@@ -274,11 +277,42 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				}
 
 				sg.setCode(sgName);
-				Survey surveyCommunityWater = new Survey();
+				Survey survey = new Survey();
+				sg.addSurvey(survey);
+				// iterate over entire sheet to get the group names
+				for (int i = 0; i < sc.getRowContainerList().size(); i++) {
+					RowContainer row = sc.getRowContainerList().get(i);
+					ArrayList<ColumnContainer> ccl = row
+							.getColumnContainersList();
+					for (ColumnContainer cc : ccl) {
+						String colName = cc.getColName();
+						String colContents = cc.getColContents();
+						if (colContents != null) {
+							if (colName.toLowerCase().equals("survey")) {
+								survey.setName(colContents.trim());
+							} else if (colName.toLowerCase().equals(
+									"questiongroup")) {
 
-				ArrayList<Question> questionList = new ArrayList<Question>();
-				QuestionGroup qgBase = new QuestionGroup();
-				qgBase.setCode("Base");
+								QuestionGroup group = groupMap.get(colContents
+										.trim());
+								if (group == null) {
+									group = new QuestionGroup();
+									group.setCode(colContents.trim());									
+									survey.addQuestionGroup(group);
+									groupMap.put(colContents.trim(), group);
+								}
+							}
+						}
+					}
+				}
+				sgDao.save(sg);
+				// send the message to start question processing
+				sendSurveyProcessingMessage(spreadsheetName, 0, null,
+						tokenString, encodedKey, key.getAlgorithm());
+			} else {
+				// now process the questions			
+				String currentPath = null;
+				HashMap<String, QuestionGroup> groupMap = new HashMap<String, QuestionGroup>();
 
 				int count = 0;
 				int i = 0;
@@ -287,26 +321,31 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						&& i < 10; count++) {
 					i++;
 					RowContainer row = sc.getRowContainerList().get(count);
-					ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
-					Survey targetSurvey = null;
+					ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();					
 					QuestionGroup targetQG = null;
 					ArrayList<ColumnContainer> ccl = row
 							.getColumnContainersList();
-					Question q = new Question();
-					questionList.add(q);
+					Question q = new Question();				
 					OptionContainer oc = new OptionContainer();
 					for (ColumnContainer cc : ccl) {
 						String colName = cc.getColName();
 						String colContents = cc.getColContents();
 						if (colContents != null) {
 							if (colName.toLowerCase().equals("survey")) {
-
-								targetSurvey = surveyCommunityWater;
-								targetSurvey.setName(colContents);
+								if (currentPath == null) {
+									currentPath = sgName + "/" + colContents;								
+								}
 							} else if (colName.toLowerCase().equals(
 									"questiongroup")) {
-								qgBase.setCode(colContents.trim());
-								targetQG = qgBase;
+								String groupName = colContents.trim();
+								targetQG = groupMap.get(groupName);
+								if (targetQG == null) {
+									targetQG = questionGroupDao
+											.getByPath(groupName,currentPath);
+									if(targetQG != null){
+										groupMap.put(groupName, targetQG);
+									}
+								}
 							} else if (colName.toLowerCase().equals("question")) {
 								if (colContents.trim().length() > 500)
 									q.setText(colContents.trim().substring(0,
@@ -353,7 +392,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 										qo.setText(text);
 										qoList.add(qo);
 									}
-
 								}
 							} else if ((colName.equals("AllowOther") || colName
 									.equals("AllowMultiple"))
@@ -376,36 +414,27 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						q.setOptionContainer(oc);
 					}
 					// TODO: fix this once we allow different groups
-					q.setOrder(count);
+					//add new param "question offset" to subtract?
+					q.setOrder(count);					
 					targetQG.addQuestion(q, count);
 				}
-				surveyCommunityWater.addQuestionGroup(qgBase);
-				sg.addSurvey(surveyCommunityWater);
-				if (startRow == 0) {
-					sgDao = new SurveyGroupDAO();
-					sgDao.save(sg);
-				} else {
-					QuestionDao qDao = new QuestionDao();
 
-					for (Entry<Integer, Question> qEntry : qgBase
+				QuestionDao qDao = new QuestionDao();
+				for (QuestionGroup group : groupMap.values()) {
+					Long curGroupId = group.getKey().getId();
+					for (Entry<Integer, Question> qEntry : group
 							.getQuestionMap().entrySet()) {
-						qDao.save(qEntry.getValue(), groupId);
+						qDao.save(qEntry.getValue(), curGroupId);
 					}
 				}
-				org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
 
-				byte[] encodedKey = b64encoder.encode(key.getEncoded());
 				if (count < sc.getRowContainerList().size()) {
 
 					sendSurveyProcessingMessage(sc.getSpreadsheetName(), count,
-							qgBase.getKey() != null ? qgBase.getKey().getId()
-									+ "" : groupId.toString(), tokenString,
-							encodedKey, key.getAlgorithm());
+							null, tokenString, encodedKey, key.getAlgorithm());
 				} else {
 					sendSurveyProcessingMessage(sc.getSpreadsheetName(), -1,
-							qgBase.getKey() != null ? qgBase.getKey().getId()
-									+ "" : groupId.toString(), tokenString,
-							encodedKey, key.getAlgorithm());
+							null, tokenString, encodedKey, key.getAlgorithm());
 				}
 			}
 		} catch (Exception e) {
@@ -427,7 +456,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				spreadsheetName).param("type", "Survey").param("action",
 				"processFile").param("startRow", startRow + "").param(
 				"sessionToken", token).param("privateKey", key).param(
-				"keySpec", keySpec).param("questionGroupId", questionGroupId));
+				"keySpec", keySpec));// .param("questionGroupId",
+		// questionGroupId));
 	}
 
 	@Override
@@ -442,7 +472,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		}
 	}
 
-	private void setDependencies(SpreadsheetContainer sc, Long groupId) {
+	private void setDependencies(SpreadsheetContainer sc) {
 		HashMap<Question, QuestionDependency> dependencyMap = new HashMap<Question, QuestionDependency>();
 		// ArrayList<Question> savedQuestions = new ArrayList<Question>();
 		ArrayList<Question> spreadsheetQuestions = new ArrayList<Question>();
@@ -495,10 +525,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				QuestionDependency dep = entry.getValue();
 				Question parent = spreadsheetQuestions.get(dep.getQuestionId()
 						.intValue() - 1);
-				Question savedParent = qDao.findByReferenceId(groupId + "|"
-						+ dep.getQuestionId());
-				Question savedChild = qDao.findByReferenceId(groupId + "|"
-						+ q.getReferenceIndex());
+				Question savedParent = qDao.findByReferenceId(dep
+						.getQuestionId().toString());
+				Question savedChild = qDao.findByReferenceId(q
+						.getReferenceIndex());
 				if (savedParent != null) {
 
 					if (savedParent != null && savedChild != null) {

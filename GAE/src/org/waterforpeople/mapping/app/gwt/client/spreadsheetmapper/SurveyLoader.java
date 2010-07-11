@@ -24,36 +24,31 @@ public class SurveyLoader implements EntryPoint {
 	ListBox spreadsheetLB = new ListBox();
 	HorizontalPanel contentPanel = new HorizontalPanel();
 	Button processSpreadsheetButton = new Button();
-	
+
 	private void buildHeader() {
 		svc = GWT.create(SpreadsheetMappingAttributeService.class);
 		bindListSpreadsheets();
 		contentPanel.add(processSpreadsheetButton);
 	}
-	
-	
-	private void addClickHandlers(){
-		processSpreadsheetButton.addClickHandler(new ClickHandler(){
+
+	private void addClickHandlers() {
+		processSpreadsheetButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				svc.processSurveySpreadsheet(spreadsheetLB.getItemText(spreadsheetLB.getSelectedIndex()), 0,null,new AsyncCallback(){
-
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					@Override
-					public void onSuccess(Object result) {
-						Window.alert("Imported Survey");
-						
-					}
-					
-				});
+				svc.processSurveySpreadsheet(spreadsheetLB
+						.getItemText(spreadsheetLB.getSelectedIndex()), -2,
+						null, new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+							}
+							@Override
+							public void onSuccess(Void v) {
+								Window.alert("Imported Survey");
+							}
+						});
 			}
-			
 		});
 	}
 
@@ -63,7 +58,6 @@ public class SurveyLoader implements EntryPoint {
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
@@ -73,14 +67,12 @@ public class SurveyLoader implements EntryPoint {
 				}
 				contentPanel.add(spreadsheetLB);
 			}
-
 		});
 	}
 
 	@Override
 	public void onModuleLoad() {
 		// TODO Auto-generated method stub
-
 	}
 
 }

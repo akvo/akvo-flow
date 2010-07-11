@@ -60,17 +60,6 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	public Question save(Question question, Long questionGroupId) {
-		String existingRef = question.getReferenceIndex();
-		if(existingRef == null){
-			question.setReferenceIndex(questionGroupId+"|");
-		}else if(existingRef.contains("|")){
-			String[] parts = existingRef.split("\\|");
-			if(parts.length>1){
-				question.setReferenceIndex(questionGroupId+"|"+parts[1]);
-			}
-		}else{
-			question.setReferenceIndex(questionGroupId+"|"+existingRef);
-		}
 		question = super.save(question);
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
 		qqga.setQuestionGroupId(questionGroupId);

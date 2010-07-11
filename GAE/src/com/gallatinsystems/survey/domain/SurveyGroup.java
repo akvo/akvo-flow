@@ -19,6 +19,7 @@ public class SurveyGroup extends BaseDomain {
 	private String code;
 	private Date createdDateTime;
 	private Date lastUpdateDateTime;
+	
 	@NotPersistent 
 	private ArrayList<Survey> surveyList = null;
 	public Key getKey() {
