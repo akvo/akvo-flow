@@ -54,7 +54,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	private String getSessionTokenFromSession() throws Exception {
 		HttpSession session = this.getThreadLocalRequest().getSession();
-		String token = (String) session.getValue("sessionToken");
+
+		String token = (String) session.getAttribute("sessionToken");
 		if (token != null)
 			return token;
 		else
@@ -64,7 +65,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	private PrivateKey getPrivateKeyFromSession() throws Exception {
 		HttpSession session = this.getThreadLocalRequest().getSession();
-		PrivateKey key = (PrivateKey) session.getValue("privateKey");
+		PrivateKey key = (PrivateKey) session.getAttribute("privateKey");
 		if (key != null)
 			return key;
 		else
@@ -297,7 +298,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 										.trim());
 								if (group == null) {
 									group = new QuestionGroup();
-									group.setCode(colContents.trim());									
+									group.setCode(colContents.trim());
 									survey.addQuestionGroup(group);
 									groupMap.put(colContents.trim(), group);
 								}
@@ -307,10 +308,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				}
 				sgDao.save(sg);
 				// send the message to start question processing
-				sendSurveyProcessingMessage(spreadsheetName, 0, null,
-						tokenString, encodedKey, key.getAlgorithm());
+				sendSurveyProcessingMessage(spreadsheetName, 0, tokenString,
+						encodedKey, key.getAlgorithm());
 			} else {
-				// now process the questions			
+				// now process the questions
 				String currentPath = null;
 				HashMap<String, QuestionGroup> groupMap = new HashMap<String, QuestionGroup>();
 
@@ -321,11 +322,11 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						&& i < 10; count++) {
 					i++;
 					RowContainer row = sc.getRowContainerList().get(count);
-					ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();					
+					ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
 					QuestionGroup targetQG = null;
 					ArrayList<ColumnContainer> ccl = row
 							.getColumnContainersList();
-					Question q = new Question();				
+					Question q = new Question();
 					OptionContainer oc = new OptionContainer();
 					for (ColumnContainer cc : ccl) {
 						String colName = cc.getColName();
@@ -333,16 +334,16 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						if (colContents != null) {
 							if (colName.toLowerCase().equals("survey")) {
 								if (currentPath == null) {
-									currentPath = sgName + "/" + colContents;								
+									currentPath = sgName + "/" + colContents;
 								}
 							} else if (colName.toLowerCase().equals(
 									"questiongroup")) {
 								String groupName = colContents.trim();
 								targetQG = groupMap.get(groupName);
 								if (targetQG == null) {
-									targetQG = questionGroupDao
-											.getByPath(groupName,currentPath);
-									if(targetQG != null){
+									targetQG = questionGroupDao.getByPath(
+											groupName, currentPath);
+									if (targetQG != null) {
 										groupMap.put(groupName, targetQG);
 									}
 								}
@@ -414,8 +415,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						q.setOptionContainer(oc);
 					}
 					// TODO: fix this once we allow different groups
-					//add new param "question offset" to subtract?
-					q.setOrder(count);					
+					// add new param "question offset" to subtract?
+					q.setOrder(count);
 					targetQG.addQuestion(q, count);
 				}
 
@@ -431,10 +432,10 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				if (count < sc.getRowContainerList().size()) {
 
 					sendSurveyProcessingMessage(sc.getSpreadsheetName(), count,
-							null, tokenString, encodedKey, key.getAlgorithm());
+							tokenString, encodedKey, key.getAlgorithm());
 				} else {
 					sendSurveyProcessingMessage(sc.getSpreadsheetName(), -1,
-							null, tokenString, encodedKey, key.getAlgorithm());
+							tokenString, encodedKey, key.getAlgorithm());
 				}
 			}
 		} catch (Exception e) {
@@ -449,15 +450,13 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	 * 
 	 */
 	private void sendSurveyProcessingMessage(String spreadsheetName,
-			int startRow, String questionGroupId, String token, byte[] key,
-			String keySpec) {
+			int startRow, String token, byte[] key, String keySpec) {
 		Queue importQueue = QueueFactory.getQueue("spreadsheetImport");
 		importQueue.add(url("/app_worker/sheetimport").param("identifier",
 				spreadsheetName).param("type", "Survey").param("action",
 				"processFile").param("startRow", startRow + "").param(
 				"sessionToken", token).param("privateKey", key).param(
-				"keySpec", keySpec));// .param("questionGroupId",
-		// questionGroupId));
+				"keySpec", keySpec));
 	}
 
 	@Override
@@ -474,7 +473,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 	private void setDependencies(SpreadsheetContainer sc) {
 		HashMap<Question, QuestionDependency> dependencyMap = new HashMap<Question, QuestionDependency>();
-		// ArrayList<Question> savedQuestions = new ArrayList<Question>();
 		ArrayList<Question> spreadsheetQuestions = new ArrayList<Question>();
 		int rowIdx = 0;
 		for (RowContainer row : sc.getRowContainerList()) {
@@ -523,8 +521,11 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					.entrySet()) {
 				Question q = entry.getKey();
 				QuestionDependency dep = entry.getValue();
-				Question parent = spreadsheetQuestions.get(dep.getQuestionId()
-						.intValue() - 1);
+				/*
+				 * Question parent =
+				 * spreadsheetQuestions.get(dep.getQuestionId() .intValue() -
+				 * 1);
+				 */
 				Question savedParent = qDao.findByReferenceId(dep
 						.getQuestionId().toString());
 				Question savedChild = qDao.findByReferenceId(q
