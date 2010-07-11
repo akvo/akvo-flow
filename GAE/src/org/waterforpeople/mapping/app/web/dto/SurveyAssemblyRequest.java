@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web.dto;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyAssemblyRequest extends RestRequest {
@@ -12,6 +13,7 @@ public class SurveyAssemblyRequest extends RestRequest {
 	private static final long serialVersionUID = -4264292935305363469L;
 
 	public static final String ASSEMBLE_SURVEY = "assembleSurvey";
+	public static final String DISPATCH_ASSEMBLE_QUESTION_GROUP = "dispatchAssembleQuestionGroup";
 	public static final String ASSEMBLE_QUESTION_GROUP = "assembleQuestionGroup";
 	public static final String ASSEMBLE_QUESTIONS = "assembleQuestions";
 	public static final String ASSEMBLE_SURVEY_FRAGMENTS = "assembleSurveyFragments";
@@ -46,13 +48,21 @@ public class SurveyAssemblyRequest extends RestRequest {
 
 	@Override
 	protected void populateErrors() {
-		// TODO Auto-generated method stub
-
+		if (surveyId == null) {
+			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+					RestError.MISSING_PRAM_ERROR_MESSAGE, SURVEY_ID_PARAM
+							+ " cannot be null"));
+		}
 	}
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
-		// TODO Auto-generated method stub
+		if (req.getParameter(SURVEY_ID_PARAM) != null)
+			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
+		if (req.getParameter(GROUP_ID_PARAM) != null)
+			questionGroupId = Long.parseLong(req.getParameter(GROUP_ID_PARAM));
+		if (req.getParameter(START_ROW_PARAM) != null)
+			startRow = Integer.parseInt(req.getParameter(START_ROW_PARAM));
 
 	}
 
