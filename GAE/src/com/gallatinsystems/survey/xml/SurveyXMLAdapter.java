@@ -31,7 +31,18 @@ public class SurveyXMLAdapter {
 	}
 
 	public String marshal(Survey survey) throws JAXBException {
-		
+
+		JAXBContext jc = JAXBContext
+				.newInstance("com.gallatinsystems.survey.domain.xml");
+		java.io.StringWriter sw = new java.io.StringWriter();
+		Marshaller marshaller = jc.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		marshaller.marshal(survey, sw);
+		return sw.toString();
+	}
+
+	public String marshal(Question survey) throws JAXBException {
+
 		JAXBContext jc = JAXBContext
 				.newInstance("com.gallatinsystems.survey.domain.xml");
 		java.io.StringWriter sw = new java.io.StringWriter();
