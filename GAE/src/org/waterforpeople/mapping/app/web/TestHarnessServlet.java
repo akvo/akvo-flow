@@ -64,6 +64,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveySurveyGroupAssocDao;
+import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.OptionContainerQuestionOptionAssoc;
 import com.gallatinsystems.survey.domain.Question;
@@ -77,6 +78,7 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
+import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -847,6 +849,14 @@ public class TestHarnessServlet extends HttpServlet {
 			sgd.addSurvey(surveyDto);
 			sgd = surveySvc.save(sgd);
 			System.out.println(sgd.getKeyId());
+		}else if ("deleteSurveyFragments".equals(action)){
+			SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
+			List<SurveyXMLFragment> frags = sxmlfDao.list("all");
+			if(frags != null){
+				for(SurveyXMLFragment frag : frags){
+					sxmlfDao.delete(frag);
+				}
+			}
 		}
 
 	}

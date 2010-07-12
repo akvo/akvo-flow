@@ -832,7 +832,20 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				TextBox surveyIdTB = (TextBox) surveyDetail.getWidget(0, 0);
 				if (surveyIdTB.getText().length() > 0) {
 					surveyId = new Long(surveyIdTB.getText());
-					svc.publishSurvey(surveyId, new AsyncCallback<String>() {
+					svc.publishSurveyAsync(surveyId, new AsyncCallback<Void>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							Window.alert("Could not publish survey");							
+						}
+
+						@Override
+						public void onSuccess(Void result) {
+							Window.alert("Survey published");
+							
+						}
+					});
+					/*svc.publishSurvey(surveyId, new AsyncCallback<String>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
@@ -846,7 +859,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 						}
 
-					});
+					});*/
 				} else {
 					Window.alert("Please save survey before publishing");
 				}

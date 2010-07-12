@@ -65,8 +65,7 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 		}
 	}
 	
-	
-	@SuppressWarnings("deprecation")
+		
 	private void processToken(HttpServletRequest req, HttpServletResponse resp) {
 		HttpSession session = req.getSession(true);
 		//if (session.getValue("sessionToken") == null) {
@@ -78,14 +77,14 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 
 			TokenUtility tk = new TokenUtility();
 			try {
-				if (session.getValue("sessionToken") == null) {
+				if (session.getAttribute("sessionToken") == null) {
 					String sessionToken = tk
 							.generateSessionTokenFromSingleUse(singleUseToken);
-					session.putValue("sessionToken", sessionToken);
+					session.setAttribute("sessionToken", sessionToken);
 				}
-				if (session.getValue("privateKey") == null) {
+				if (session.getAttribute("privateKey") == null) {
 					PrivateKey privateKey = tk.getPrivateKey();
-					session.putValue("privateKey", privateKey);
+					session.setAttribute("privateKey", privateKey);
 				}
 			} catch (AuthenticationException e1) {
 				// TODO Auto-generated catch block
@@ -100,8 +99,8 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 		}
 		try {
 			((HttpServletResponse) resp)
-					.sendRedirect("/Dashboard.html");
-			//((HttpServletResponse)resp).sendRedirect("/SpreadsheetMapping.html?gwt.codesvr=127.0.0.1:9997");
+				.sendRedirect("/Dashboard.html");
+			//((HttpServletResponse)resp).sendRedirect("/Dashboard.html?gwt.codesvr=127.0.0.1:9997");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

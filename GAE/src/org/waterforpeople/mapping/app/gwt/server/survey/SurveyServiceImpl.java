@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
@@ -48,6 +51,8 @@ import com.gallatinsystems.survey.domain.xml.Tip;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
@@ -492,6 +497,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public static final String VIDEO_QUESTION_TYPE = "video";
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
+
+	@Override
+	public void publishSurveyAsync(Long surveyId) {
+		Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
+		surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
+				"action", SurveyAssemblyRequest.ASSEMBLE_SURVEY).param(
+				"surveyId", surveyId.toString()));
+	}
 
 	@Override
 	public String publishSurvey(Long surveyId) {

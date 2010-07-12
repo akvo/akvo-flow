@@ -17,13 +17,13 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
-import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
@@ -42,9 +42,7 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
 			.getLogger(SurveyAssemblyServlet.class.getName());
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -6044156962558183224L;
 
 	@Override
@@ -65,14 +63,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		} else if (SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
 			this.dispatchAssembleQuestionGroup(importReq.getSurveyId(),
-					importReq.getQuestionGroupId(), importReq
-							.getLastGroupFlag());
+					importReq.getQuestionGroupId());
 		} else if (SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
 			assembleQuestionGroups(importReq.getSurveyId());
 		}
 
-		return null;
+		return response;
 	}
 
 	@Override
@@ -91,15 +88,30 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		List<SurveyQuestionGroupAssoc> sqgaList = sqgadao
 				.listBySurveyId(surveyId);
 		ArrayList<Long> questionGroupIdList = new ArrayList<Long>();
-		for (SurveyQuestionGroupAssoc item : sqgaList)
+		StringBuilder builder = new StringBuilder();
+		int count = 1;
+		for (SurveyQuestionGroupAssoc item : sqgaList){
 			questionGroupIdList.add(item.getQuestionGroupId());
-		int count = 0;
-		Boolean lastGroupFlag = false;
-		for (Long item : questionGroupIdList) {
-			Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
-
-			if (count == (questionGroupIdList.size() - 1))
+			builder.append(item.getQuestionGroupId().toString());
+			if(count < sqgaList.size()){
+				builder.append(",");
+			}
+				count++;
+		}
+		count =0;
+		
+		Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
+		surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
+				"action",
+				SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP)
+				.param("surveyId", surveyId.toString()).param(
+						"questionGroupId",builder.toString()));
+		
+		/*Boolean lastGroupFlag = false;
+		 for (Long item : questionGroupIdList) {
+			if (count == (questionGroupIdList.size() - 1)) {
 				lastGroupFlag = true;
+			}
 			surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
 					"action",
 					SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP)
@@ -107,48 +119,59 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 							"questionGroupId", item.toString()).param(
 							"lastGroupFlag", lastGroupFlag.toString()));
 			count++;
-		}
+		}*/
 
 	}
 
 	private void dispatchAssembleQuestionGroup(Long surveyId,
-			Long questionGroupId, Boolean lastGroupFlag) {
-		QuestionQuestionGroupAssocDao qgqaDao = new QuestionQuestionGroupAssocDao();
-		List<QuestionQuestionGroupAssoc> qqgaList = qgqaDao
-				.listByQuestionGroupId(questionGroupId);
+			String questionGroupIds) {
+		boolean isLast = true;
+		String currentId = questionGroupIds;
+		String remainingIds = null;
+		if(questionGroupIds.contains(",")){
+			isLast = false;
+			currentId = questionGroupIds.substring(0,questionGroupIds.indexOf(","));
+			remainingIds = questionGroupIds.substring(questionGroupIds.indexOf(",")+1);
+		}
 		QuestionDao questionDao = new QuestionDao();
-		StringBuilder sb = new StringBuilder();
+		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
+		QuestionGroup group = questionGroupDao.getByKey(Long.parseLong(currentId));
+		List<Question> questionList = questionDao.listQuestionsByQuestionGroup(
+				currentId, true);
+
+		StringBuilder sb = new StringBuilder("<questionGroup><heading>").append(
+				group.getCode()).append("</heading>");
 		int count = 0;
-		int i = 0;
+		
 
-		/*
-		 * for (count = startRow; count < qqgaList.size() && i < 10; count++) {
-		 * i++; // get the question list // process 10 records and save then
-		 * spawn new queue job Question q =
-		 * questionDao.getByKey(qqgaList.get(count) .getQuestionId());
-		 * sb.append(marshallQuestion(q)); }
-		 */
+		if (questionList != null) {
 
-		for (QuestionQuestionGroupAssoc item : qqgaList) {
-			Question q = questionDao.getByKey(item.getQuestionId());
-			//ToDo : wrap marshalledQuestion with questionGroup
-			sb.append(marshallQuestion(q));
-			count++;
+			for (Question q : questionList) {
+				sb.append(marshallQuestion(q));
+				count++;
+			}
 		}
 		SurveyXMLFragment sxf = new SurveyXMLFragment();
 		sxf.setSurveyId(surveyId);
-		sxf.setQuestionGroupId(questionGroupId);
+		sxf.setQuestionGroupId(Long.parseLong(currentId));
 		// sxf.setFragmentOrder(startRow / 10);
-		sxf.setFragment(new Text(sb.toString()));
-		sxf.setFragmentType(FRAGMENT_TYPE.QUESTION);
+		sxf.setFragment(new Text(sb.append("</questionGroup>").toString()));
+		
+		sxf.setFragmentType(FRAGMENT_TYPE.QUESTION_GROUP);
 		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
 		sxmlfDao.save(sxf);
-		if (lastGroupFlag) {
-			// Assemble the fragments
-			Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
+		Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
+		if (isLast) {
+			// Assemble the fragments			
 			surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
 					"action", SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP)
 					.param("surveyId", surveyId.toString()));
+		} else{
+			surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
+					"action",
+					SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP)
+					.param("surveyId", surveyId.toString()).param(
+							"questionGroupId",remainingIds));
 		}
 	}
 
@@ -208,8 +231,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		else if (q.getType().equals(QuestionType.SCAN))
 			qXML.setType(SCAN_QUESTION_TYPE);
 
-		if (q.getKey() != null)
-			qXML.setOrder(q.getKey().toString());
+		if (q.getOrder() != null) {
+			qXML.setOrder(q.getOrder().toString());
+		}
 		// ToDo set dependency xml
 		Dependency dependency = objFactory.createDependency();
 		if (q.getDependQuestion() != null) {
@@ -249,11 +273,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			}
 			qXML.setOptions(options);
 		}
-		com.gallatinsystems.survey.domain.xml.Question questionXML = objFactory
-				.createQuestion();
+
 		String questionDocument = null;
 		try {
-			questionDocument = sax.marshal(questionXML);
+			questionDocument = sax.marshal(qXML);
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -263,7 +286,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				.replace(
 						"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
 						"");
-		log.info(questionDocument);
 		return questionDocument;
 	}
 
@@ -273,7 +295,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				surveyId, SurveyXMLFragment.FRAGMENT_TYPE.QUESTION_GROUP);
 		StringBuilder sbQG = new StringBuilder();
 		for (SurveyXMLFragment item : sxmlfList) {
-			sbQG.append(item.getFragment().toString());
+			sbQG.append(item.getFragment().getValue());
 		}
 		StringBuilder completeSurvey = new StringBuilder();
 		String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey>";
@@ -282,7 +304,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		completeSurvey.append(sbQG.toString());
 		sbQG = null;
 		completeSurvey.append(surveyFooter);
-		log.info(completeSurvey.toString());
+		
 		SurveyContainer sc = new SurveyContainer();
 		sc.setSurveyDocument(new Text(completeSurvey.toString()));
 		sc.setSurveyId(surveyId);

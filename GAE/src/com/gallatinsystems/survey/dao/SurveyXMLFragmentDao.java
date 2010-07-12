@@ -2,8 +2,6 @@ package com.gallatinsystems.survey.dao;
 
 import java.util.List;
 
-import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
-
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 

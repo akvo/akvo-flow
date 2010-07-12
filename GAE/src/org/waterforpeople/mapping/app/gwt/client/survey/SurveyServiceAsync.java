@@ -74,4 +74,7 @@ public interface SurveyServiceAsync {
 
 	void loadQuestionDetails(Long questionId,
 			AsyncCallback<QuestionDto> callback);
+
+
+	void publishSurveyAsync(Long surveyId, AsyncCallback<Void> callback);
 }

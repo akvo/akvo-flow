@@ -27,16 +27,13 @@ public class QuestionDao extends BaseDAO<Question> {
 		return listByProperty("type", type.toString(), "String");
 	}
 
-	public List<Question> listQuestionsByQuestionGroup(String questionGroupCode, boolean needDetails) {
+	public List<Question> listQuestionsByQuestionGroup(String questionGroupId, boolean needDetails) {
 		List<QuestionQuestionGroupAssoc> qqgaList = new QuestionQuestionGroupAssocDao()
-				.listByQuestionGroupId(new Long(questionGroupCode));
+				.listByQuestionGroupId(new Long(questionGroupId));
 		java.util.ArrayList<Question> questionList = new ArrayList<Question>();
 
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
-			Question question = getByKey(qqga.getQuestionId());
-			if(needDetails){
-				setOptionContainer(question);
-			}
+			Question question = getByKey(qqga.getQuestionId());			
 			questionList.add(question);
 		}
 		if(questionList != null){
@@ -102,7 +99,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	private void setOptionContainer(Question question) {
-		if (question != null) {
+		if (question != null && QuestionType.OPTION == question.getType()) {
 			OptionContainerDao ocDao = new OptionContainerDao();
 			OptionContainer oc = ocDao.findByQuestionId(question.getKey()
 					.getId());

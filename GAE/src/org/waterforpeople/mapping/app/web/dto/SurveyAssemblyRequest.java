@@ -27,7 +27,9 @@ public class SurveyAssemblyRequest extends RestRequest {
 
 	private Long surveyId = null;
 	private Boolean lastGroupFlag = null;
-
+	private int startRow = 0;
+	private String questionGroupId = null;
+	
 	public Long getSurveyId() {
 		return surveyId;
 	}
@@ -36,7 +38,7 @@ public class SurveyAssemblyRequest extends RestRequest {
 		this.surveyId = surveyId;
 	}
 
-	private int startRow = 0;
+	
 
 	public int getStartRow() {
 		return startRow;
@@ -46,7 +48,7 @@ public class SurveyAssemblyRequest extends RestRequest {
 		this.startRow = startRow;
 	}
 
-	private Long questionGroupId = null;
+	
 
 	@Override
 	protected void populateErrors() {
@@ -62,7 +64,7 @@ public class SurveyAssemblyRequest extends RestRequest {
 		if (req.getParameter(SURVEY_ID_PARAM) != null)
 			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
 		if (req.getParameter(GROUP_ID_PARAM) != null)
-			questionGroupId = Long.parseLong(req.getParameter(GROUP_ID_PARAM));
+			questionGroupId = req.getParameter(GROUP_ID_PARAM);
 		if (req.getParameter(START_ROW_PARAM) != null)
 			startRow = Integer.parseInt(req.getParameter(START_ROW_PARAM));
 		if (req.getParameter(LAST_GROUP_FLAG_PARAM) != null)
@@ -70,11 +72,11 @@ public class SurveyAssemblyRequest extends RestRequest {
 					.getParameter(LAST_GROUP_FLAG_PARAM)));
 	}
 
-	public void setQuestionGroupId(Long questionGroupId) {
+	public void setQuestionGroupId(String questionGroupId) {
 		this.questionGroupId = questionGroupId;
 	}
 
-	public Long getQuestionGroupId() {
+	public String getQuestionGroupId() {
 		return questionGroupId;
 	}
 
