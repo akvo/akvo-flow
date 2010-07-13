@@ -96,8 +96,8 @@ public class SurveyDownloadService extends Service {
 	/**
 	 * if no surveyId is passed in, this will check for new surveys and, if
 	 * there are some new ones, downloads them to the DATA_DIR. If a surveyId is
-	 * passed in, then that specific survey will be downloaded IF it's not
-	 * already on the device.
+	 * passed in, then that specific survey will be downloaded. If it's already
+	 * on the device, the survey will be replaced with the new one.
 	 */
 	private void checkAndDownload(String surveyId) {
 		if (isAbleToRun()) {
@@ -117,13 +117,13 @@ public class SurveyDownloadService extends Service {
 					serverBase = SERVER_BASE;
 				}
 				ArrayList<Survey> surveys = null;
+
 				if (surveyId != null && surveyId.trim().length() > 0) {
-					Survey s = databaseAdaptor.findSurvey(surveyId);
-					//if we already have the survey, delete it first
-					if (s != null) {
-						databaseAdaptor.deleteSurvey(s.getId(),true);
-					}
 					surveys = getSurveyHeader(serverBase, surveyId);
+					if (surveys != null && surveys.size() > 0) {
+						// if we already have the survey, delete it first
+						databaseAdaptor.deleteSurvey(surveyId.trim(), true);
+					}
 				} else {
 					surveys = checkForSurveys(serverBase);
 				}
