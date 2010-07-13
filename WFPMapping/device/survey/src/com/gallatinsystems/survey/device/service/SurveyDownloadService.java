@@ -49,6 +49,7 @@ public class SurveyDownloadService extends Service {
 
 	private static final String SERVER_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String SURVEY_LIST_SERVICE_PATH = "/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
+	private static final String SURVEY_HEADER_SERVICE_PATH = "/surveymanager?action=getSurveyHeader&surveyId=";
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
 
 	private SurveyDbAdapter databaseAdaptor;
@@ -73,7 +74,12 @@ public class SurveyDownloadService extends Service {
 		thread = new Thread(new Runnable() {
 			public void run() {
 				if (intent != null) {
-					checkAndDownload();
+					String surveyId = null;
+					if (intent.getExtras() != null) {
+						surveyId = intent.getExtras().getString(
+								ConstantUtil.SURVEY_ID_KEY);
+					}
+					checkAndDownload(surveyId);
 				}
 			}
 		});
@@ -88,10 +94,12 @@ public class SurveyDownloadService extends Service {
 	}
 
 	/**
-	 * checks for new surveys and, if there are some new ones, downloads them to
-	 * the DATA_DIR
+	 * if no surveyId is passed in, this will check for new surveys and, if
+	 * there are some new ones, downloads them to the DATA_DIR. If a surveyId is
+	 * passed in, then that specific survey will be downloaded IF it's not
+	 * already on the device.
 	 */
-	private void checkAndDownload() {
+	private void checkAndDownload(String surveyId) {
 		if (isAbleToRun()) {
 			try {
 				lock.acquire();
@@ -108,7 +116,17 @@ public class SurveyDownloadService extends Service {
 				} else {
 					serverBase = SERVER_BASE;
 				}
-				ArrayList<Survey> surveys = checkForSurveys(serverBase);
+				ArrayList<Survey> surveys = null;
+				if (surveyId != null && surveyId.trim().length() > 0) {
+					Survey s = databaseAdaptor.findSurvey(surveyId);
+					//if we already have the survey, delete it first
+					if (s != null) {
+						databaseAdaptor.deleteSurvey(s.getId(),true);
+					}
+					surveys = getSurveyHeader(serverBase, surveyId);
+				} else {
+					surveys = checkForSurveys(serverBase);
+				}
 				if (surveys != null && surveys.size() > 0) {
 					// create directory if not there
 					FileUtil.findOrCreateDir(ConstantUtil.DATA_DIR);
@@ -133,7 +151,6 @@ public class SurveyDownloadService extends Service {
 							fireNotification(updateCount);
 						}
 					}
-
 				}
 
 				// now check if any previously downloaded surveys still need
@@ -271,6 +288,47 @@ public class SurveyDownloadService extends Service {
 				}
 			}
 		});
+	}
+
+	/**
+	 * invokes a service call to get the header information for a single survey
+	 * 
+	 * @param serverBase
+	 * @param surveyId
+	 * @return
+	 */
+	private ArrayList<Survey> getSurveyHeader(String serverBase, String surveyId) {
+		String response = null;
+		ArrayList<Survey> surveys = new ArrayList<Survey>();
+		try {
+			response = HttpUtil.httpGet(serverBase + SURVEY_HEADER_SERVICE_PATH
+					+ surveyId);
+			if (response != null) {
+				StringTokenizer strTok = new StringTokenizer(response, "\n");
+				while (strTok.hasMoreTokens()) {
+					String currentLine = strTok.nextToken();
+					String[] touple = currentLine.split(",");
+					if (touple.length < 4) {
+						Log
+								.e(TAG,
+										"Survey list response is in an unrecognized format");
+					} else {
+						Survey temp = new Survey();
+						temp.setId(touple[0]);
+						temp.setName(touple[1]);
+						temp.setLanguage(touple[2]);
+						temp.setVersion(Double.parseDouble(touple[3]));
+						temp.setType(ConstantUtil.FILE_SURVEY_LOCATION_TYPE);
+						surveys.add(temp);
+					}
+				}
+			}
+		} catch (HttpException e) {
+			Log.e(TAG, "Server returned an unexpected response", e);
+		} catch (Exception e) {
+			Log.e(TAG, "Could not send processing call", e);
+		}
+		return surveys;
 	}
 
 	/**

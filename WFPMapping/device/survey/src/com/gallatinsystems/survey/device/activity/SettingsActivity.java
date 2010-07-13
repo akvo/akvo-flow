@@ -10,8 +10,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -33,7 +35,6 @@ public class SettingsActivity extends ListActivity {
 
 	private static final String LABEL = "label";
 	private static final String DESC = "desc";
-	
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,11 +53,13 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.poweroptdesc)));
 		list.add(createMap(resources.getString(R.string.gpsstatuslabel),
 				resources.getString(R.string.gpsstatusdesc)));
-		list.add(createMap(resources.getString(R.string.reloadsurveyslabel), resources
-				.getString(R.string.reloadsurveysdesc)));
+		list.add(createMap(resources.getString(R.string.reloadsurveyslabel),
+				resources.getString(R.string.reloadsurveysdesc)));
+		list.add(createMap(resources.getString(R.string.downloadsurveylabel),
+				resources.getString(R.string.downloadsurveydesc)));
 		list.add(createMap(resources.getString(R.string.aboutlabel), resources
 				.getString(R.string.aboutdesc)));
-		
+
 		String[] fromKeys = { LABEL, DESC };
 		int[] toIds = { R.id.optionLabel, R.id.optionDesc };
 
@@ -89,11 +92,10 @@ public class SettingsActivity extends ListActivity {
 		if (label != null) {
 			String val = label.getText().toString();
 			Resources resources = getResources();
-			if(resources.getString(R.string.prefoptlabel).equals(val)){
+			if (resources.getString(R.string.prefoptlabel).equals(val)) {
 				Intent i = new Intent(this, PreferencesActivity.class);
 				startActivity(i);
-			}
-			else if (resources.getString(R.string.poweroptlabel).equals(val)) {
+			} else if (resources.getString(R.string.poweroptlabel).equals(val)) {
 				WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
 				if (!wm.isWifiEnabled()) {
 					wm.setWifiEnabled(true);
@@ -131,7 +133,8 @@ public class SettingsActivity extends ListActivity {
 							}
 						});
 				builder.show();
-			} else if (resources.getString(R.string.reloadsurveyslabel).equals(val)) {
+			} else if (resources.getString(R.string.reloadsurveyslabel).equals(
+					val)) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				TextView tipText = new TextView(this);
 				tipText.setText(R.string.reloadconftext);
@@ -140,12 +143,14 @@ public class SettingsActivity extends ListActivity {
 				builder.setPositiveButton(R.string.okbutton,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								SurveyDbAdapter database = new SurveyDbAdapter(SettingsActivity.this);
+								SurveyDbAdapter database = new SurveyDbAdapter(
+										SettingsActivity.this);
 								database.open();
 								database.deleteAllSurveys();
-								database.close();			
+								database.close();
 								getApplicationContext().startService(
-										new Intent(SettingsActivity.this, SurveyDownloadService.class));
+										new Intent(SettingsActivity.this,
+												SurveyDownloadService.class));
 							}
 						});
 				builder.setNegativeButton(R.string.cancelbutton,
@@ -155,7 +160,47 @@ public class SettingsActivity extends ListActivity {
 							}
 						});
 				builder.show();
-			}else {
+			} else if (resources.getString(R.string.downloadsurveylabel)
+					.equals(val)) {
+				AlertDialog.Builder inputDialog = new AlertDialog.Builder(this);
+
+				inputDialog.setTitle(R.string.downloadsurveylabel);
+				inputDialog.setMessage(R.string.downloadsurveyinstr);
+
+				// Set an EditText view to get user input
+				final EditText input = new EditText(this);
+
+				input.setKeyListener(new DigitsKeyListener(false, false));
+				inputDialog.setView(input);
+
+				inputDialog.setPositiveButton("Ok",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								String value = input.getText().toString();
+								if (value != null && value.trim().length() > 0) {
+									Intent downloadIntent = new Intent(
+											SettingsActivity.this,
+											SurveyDownloadService.class);
+									downloadIntent.putExtra(
+											ConstantUtil.SURVEY_ID_KEY, value);
+									getApplicationContext().startService(
+											downloadIntent);
+								}
+							}
+						});
+
+				inputDialog.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								// Canceled.
+							}
+						});
+
+				inputDialog.show();
+
+			} else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
 					i.putExtra(ConstantUtil.OP_TYPE_KEY, ConstantUtil.SEND);

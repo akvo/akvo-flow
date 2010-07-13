@@ -354,6 +354,7 @@ public class SurveyDbAdapter {
 
 	/**
 	 * loads a single question response
+	 * 
 	 * @param respondentId
 	 * @param questionId
 	 * @return
@@ -795,11 +796,16 @@ public class SurveyDbAdapter {
 	 * 
 	 * @param surveyId
 	 */
-	public void deleteSurvey(String surveyId) {
-		ContentValues updatedValues = new ContentValues();
-		updatedValues.put(DELETED_COL, ConstantUtil.IS_DELETED);
-		database.update(SURVEY_TABLE, updatedValues, PK_ID_COL + " = ?",
-				new String[] { surveyId });
+	public void deleteSurvey(String surveyId, boolean physicalDelete) {
+		if (!physicalDelete) {
+			ContentValues updatedValues = new ContentValues();
+			updatedValues.put(DELETED_COL, ConstantUtil.IS_DELETED);
+			database.update(SURVEY_TABLE, updatedValues, PK_ID_COL + " = ?",
+					new String[] { surveyId });
+		} else {
+			database.delete(SURVEY_TABLE, PK_ID_COL + " = ? ",
+					new String[] { surveyId });
+		}
 	}
 
 	/**

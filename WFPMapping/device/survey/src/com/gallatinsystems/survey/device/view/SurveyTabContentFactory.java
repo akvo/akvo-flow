@@ -255,7 +255,9 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			for (QuestionView view : questionMap.values()) {
 				view.resetQuestion();
 			}
-			scrollView.scrollTo(0, 0);
+			if(scrollView != null){
+				scrollView.scrollTo(0, 0);
+			}
 		}
 	}
 

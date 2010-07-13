@@ -171,7 +171,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 		database.open();
 		Survey itemToDelete = getSelectedSurvey(position);
 		if (itemToDelete != null) {
-			database.deleteSurvey(itemToDelete.getId());
+			database.deleteSurvey(itemToDelete.getId(),false);
 			database.close();
 			surveys.remove(itemToDelete);
 			// update the view
