@@ -19,6 +19,15 @@ public class SurveyAttributeMapping extends BaseDomain {
 	private String attributeName;
 	private Long surveyId;
 	private String surveyQuestionId;
+	private Long questionGroupId;
+
+	public Long getQuestionGroupId() {
+		return questionGroupId;
+	}
+
+	public void setQuestionGroupId(Long questionGroupId) {
+		this.questionGroupId = questionGroupId;
+	}
 
 	public String getObjectName() {
 		return objectName;

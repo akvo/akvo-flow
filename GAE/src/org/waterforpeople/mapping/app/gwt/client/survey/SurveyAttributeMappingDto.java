@@ -16,6 +16,15 @@ public class SurveyAttributeMappingDto extends BaseDto {
 	private String surveyQuestionId;
 	private String objectName;
 	private String attributeName;
+	private Long questionGroupId;
+
+	public Long getQuestionGroupId() {
+		return questionGroupId;
+	}
+
+	public void setQuestionGroupId(Long questionGroupId) {
+		this.questionGroupId = questionGroupId;
+	}
 
 	public Long getSurveyId() {
 		return surveyId;

@@ -39,6 +39,15 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 					GeoLocationService gl = new GeoLocationServiceGeonamesImpl();
 					GeoPlace gp = gl.findGeoPlace(ap.getLatitude().toString(),
 							ap.getLongitude().toString());
+					if(gp == null){
+						String countryCode = gl.getCountryCodeForPoint(ap.getLatitude().toString(),
+							ap.getLongitude().toString());
+						if(countryCode != null){
+							gp = new GeoPlace();
+							gp.setCountryCode(countryCode);
+							gp.setCountryName(countryCode);
+						}
+					}
 					if (gp != null) {
 						Country ourCountry = commDao.findCountryByCode(gp
 								.getCountryCode());

@@ -22,5 +22,6 @@ public interface SurveyAttributeMappingService extends RemoteService {
 	public TreeMap<String,String> listObjectAttributes(String objectName);
 	
 	public ArrayList<SurveyAttributeMappingDto> saveMappings(ArrayList<SurveyAttributeMappingDto> mappings);
+	public ArrayList<SurveyAttributeMappingDto> saveMappings(Long questionGroupId, ArrayList<SurveyAttributeMappingDto> mappings);
 
 }

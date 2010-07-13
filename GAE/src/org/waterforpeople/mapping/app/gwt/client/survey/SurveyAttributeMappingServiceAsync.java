@@ -15,4 +15,8 @@ public interface SurveyAttributeMappingServiceAsync {
 
 	void saveMappings(ArrayList<SurveyAttributeMappingDto> mappings,
 			AsyncCallback<ArrayList<SurveyAttributeMappingDto>> callback);
+
+	void saveMappings(Long questionGroupId,
+			ArrayList<SurveyAttributeMappingDto> mappings,
+			AsyncCallback<ArrayList<SurveyAttributeMappingDto>> callback);
 }

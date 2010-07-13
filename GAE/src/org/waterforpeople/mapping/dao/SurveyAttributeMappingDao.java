@@ -30,6 +30,15 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 	public List<SurveyAttributeMapping> listMappingsBySurvey(Long surveyId) {
 		return listByProperty("surveyId", surveyId, "Long");
 	}
+	
+	/**
+	 * lists all mappings for a particular question id
+	 * @param questionGroupId
+	 * @return
+	 */
+	public List<SurveyAttributeMapping> listMappingsByQuestionGroup(Long questionGroupId) {
+		return listByProperty("questionGroupId", questionGroupId, "Long");
+	}
 
 	/**
 	 * deletes all mappings for a given surveyId
@@ -38,6 +47,19 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 	 */
 	public void deleteMappingsForSurvey(Long surveyId) {
 		List<SurveyAttributeMapping> mappings = listMappingsBySurvey(surveyId);
+		if (mappings != null && mappings.size() > 0) {
+			PersistenceManager pm = PersistenceFilter.getManager();
+			pm.deletePersistentAll(mappings);
+		}
+	}
+	
+	/**
+	 * deletes all mappings for a given questionGroupId
+	 * 
+	 * @param surveyId
+	 */
+	public void deleteMappingsForQuestionGroup(Long questionGroupId) {
+		List<SurveyAttributeMapping> mappings = listMappingsByQuestionGroup(questionGroupId);
 		if (mappings != null && mappings.size() > 0) {
 			PersistenceManager pm = PersistenceFilter.getManager();
 			pm.deletePersistentAll(mappings);

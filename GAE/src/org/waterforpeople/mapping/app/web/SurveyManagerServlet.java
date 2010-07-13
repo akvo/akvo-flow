@@ -18,6 +18,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 
 public class SurveyManagerServlet extends AbstractRestApiServlet {
@@ -55,10 +56,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		SurveyManagerRequest mgrReq = (SurveyManagerRequest) req;
 		RestResponse resp = new RestResponse();
 		if (mgrReq.getAction() == null) {
-			if (mgrReq.getSurveyDoc() != null) {
-				SurveyDAO surveyDAO = new SurveyDAO();
-//				resp.setMessage("Survey : "
-//						+ surveyDAO.save(mgrReq.getSurveyDoc()));
+			if (mgrReq.getSurveyDoc() != null) {				
+				// resp.setMessage("Survey : "
+				// + surveyDAO.save(mgrReq.getSurveyDoc()));
 			} else if (mgrReq.getSurveyInstanceId() != null) {
 				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 				SurveyInstance si = siDAO
@@ -74,7 +74,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				SurveyContainer container = scDao.findBySurveyId(mgrReq
 						.getSurveyId());
 				if (container != null) {
-					
+
 					resp.setMessage(container.getSurveyDocument().getValue());
 				} else {
 					resp.setMessage("No Survey Found");
@@ -85,6 +85,22 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				.equalsIgnoreCase(req.getAction())) {
 			if (mgrReq.getPhoneNumber() != null) {
 				resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber()));
+			}
+		} else if (SurveyManagerRequest.GET_SURVEY_HEADER_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+			if (mgrReq.getSurveyId() != null) {
+				SurveyDAO surveyDao = new SurveyDAO();
+				Survey survey = surveyDao.getById(mgrReq.getSurveyId());
+				if (survey != null) {
+					StringBuilder sb = new StringBuilder();
+					sb.append(survey.getKey().getId() + ",").append(
+							survey.getName() != null ? survey.getName()
+									: "Survey " + survey.getKey().getId())
+							.append(",EN,").append(
+									survey.getVersion() != null ? survey
+											.getVersion() : "1");
+					resp.setMessage(sb.toString());
+				}
 			}
 		}
 		return resp;

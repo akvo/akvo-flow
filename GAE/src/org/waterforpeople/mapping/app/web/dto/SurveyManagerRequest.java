@@ -15,6 +15,7 @@ public class SurveyManagerRequest extends RestRequest {
 	private static final long serialVersionUID = -1914332708852551948L;
 
 	public static final String GET_AVAIL_DEVICE_SURVEY_ACTION = "getAvailableSurveysDevice";
+	public static final String GET_SURVEY_HEADER_ACTION  = "getSurveyHeader";
 
 	private static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
 	private static final String SURVEY_ID_PARAM = "surveyId";
