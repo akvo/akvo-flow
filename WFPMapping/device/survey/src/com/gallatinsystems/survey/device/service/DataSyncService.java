@@ -471,6 +471,10 @@ public class DataSyncService extends Service {
 							.append(",");
 					String value = data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_COL));
+					if (value != null) {
+						value = value.trim();
+						value = value.replaceAll("\\n", " ");
+					}
 					String type = data
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL));
@@ -513,10 +517,8 @@ public class DataSyncService extends Service {
 							|| ConstantUtil.VIDEO_RESPONSE_TYPE.equals(type)) {
 						imagePaths.add(value);
 					}
-					respondentIds
-							.add(data
-									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
+					respondentIds.add(data.getString(data
+							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 				} while (data.moveToNext());
 			}
 		} catch (Exception e) {

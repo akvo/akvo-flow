@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -32,9 +33,11 @@ public class LocationService extends Service {
 	private static boolean sendBeacon = true;
 	private static final String BEACON_SERVICE_PATH = "/locationBeacon?action=beacon&phoneNumber=";
 	private static final String BEACON_SERVICE_BASE = "http://watermapmonitordev.appspot.com";
+	private static final String VER = "&ver=";
 	private static final String LAT = "&lat=";
 	private static final String LON = "&lon=";
 	private static final String ACC = "&acc=";
+	private String version;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -57,10 +60,12 @@ public class LocationService extends Service {
 		if (val != null) {
 			sendBeacon = Boolean.parseBoolean(val);
 		}
+		Resources resources = getResources();
+		version = resources.getString(R.string.appversion);
 		String serverBase = database
 				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 		if (serverBase == null || serverBase.trim().length() > 0) {
-			serverBase = getResources().getStringArray(R.array.servers)[Integer
+			serverBase = resources.getStringArray(R.array.servers)[Integer
 					.parseInt(serverBase)];
 		} else {
 			serverBase = BEACON_SERVICE_BASE;
@@ -104,10 +109,9 @@ public class LocationService extends Service {
 		if (loc != null) {
 			try {
 				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
-						 +StatusUtil.getPhoneNumber(this) +						
-						LAT
+						+ StatusUtil.getPhoneNumber(this) + LAT
 						+ loc.getLatitude() + LON + loc.getLongitude() + ACC
-						+ loc.getAccuracy());
+						+ loc.getAccuracy() + VER + version);
 			} catch (Exception e) {
 				// TODO: log error
 			}

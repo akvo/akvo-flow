@@ -123,7 +123,9 @@ public class SettingsActivity extends ListActivity {
 			} else if (resources.getString(R.string.aboutlabel).equals(val)) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				TextView tipText = new TextView(this);
-				tipText.setText(R.string.abouttext);
+				String txt = resources.getString(R.string.abouttext)
+						+" "+ resources.getString(R.string.appversion);
+				tipText.setText(txt);
 				builder.setTitle(R.string.abouttitle);
 				builder.setView(tipText);
 				builder.setPositiveButton(R.string.okbutton,

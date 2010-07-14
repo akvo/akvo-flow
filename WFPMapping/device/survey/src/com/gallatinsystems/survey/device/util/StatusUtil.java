@@ -62,7 +62,9 @@ public class StatusUtil {
 		if (teleMgr != null) {
 			number = teleMgr.getLine1Number();
 		}
-		if (number == null || number.trim().length() == 0) {
+		if (number == null || number.trim().length() == 0
+				|| number.trim().equalsIgnoreCase("null")
+				|| number.trim().equalsIgnoreCase("unknown")) {
 			// if we can't get the phone number, use the MAC instead?
 			WifiManager wifiMgr = (WifiManager) context
 					.getSystemService(Context.WIFI_SERVICE);
