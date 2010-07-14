@@ -322,10 +322,10 @@ public class KMLGenerator {
 			try {
 				sb.append(bindPlacemark(ap, vmName));
 			} catch (Exception e) {
-				log.log(Level.SEVERE, "Error generating placemarks: " + ap.toString(), e);
+				log.log(Level.SEVERE, "Error generating placemarks: "
+						+ ap.toString(), e);
 			}
 		}
-
 		return sb.toString();
 	}
 
@@ -339,9 +339,11 @@ public class KMLGenerator {
 			} else {
 				context.put("collectionDate", "N/A");
 			}
+			
 			context.put("latitude", ap.getLatitude());
 			context.put("longitude", ap.getLongitude());
 			context.put("altitude", ap.getAltitude());
+			
 			if (ap.getCommunityCode() != null)
 				context.put("communityCode", ap.getCommunityCode());
 			else
@@ -353,25 +355,27 @@ public class KMLGenerator {
 				context
 						.put("photoUrl",
 								"http://waterforpeople.s3.amazonaws.com/images/wfplogo.jpg");
-
-			if (ap.getPointType().equals(
-					AccessPoint.AccessPointType.WATER_POINT)) {
-				context.put("typeOfPoint", "Water");
-				context.put("type", "water");
-			} else if (ap.getPointType().equals(
-					AccessPointType.SANITATION_POINT)) {
-				context.put("typeOfPoint", "Sanitation");
-				context.put("type", "sanitation");
-			} else if (ap.getPointType().equals(
-					AccessPointType.PUBLIC_INSTITUTION)) {
-				context.put("typeOfPoint", "Public Institutions");
-				context.put("type", "public_institutions");
-			} else if (ap.getPointType().equals(AccessPointType.HEALTH_POSTS)) {
-				context.put("typeOfPoint", "Health Posts");
-				context.put("type", "health_posts");
-			} else if (ap.getPointType().equals(AccessPointType.SCHOOL)) {
-				context.put("typeOfPoint", "School");
-				context.put("type", "school");
+			if (ap.getPointType() != null) {
+				if (ap.getPointType().equals(
+						AccessPoint.AccessPointType.WATER_POINT)) {
+					context.put("typeOfPoint", "Water");
+					context.put("type", "water");
+				} else if (ap.getPointType().equals(
+						AccessPointType.SANITATION_POINT)) {
+					context.put("typeOfPoint", "Sanitation");
+					context.put("type", "sanitation");
+				} else if (ap.getPointType().equals(
+						AccessPointType.PUBLIC_INSTITUTION)) {
+					context.put("typeOfPoint", "Public Institutions");
+					context.put("type", "public_institutions");
+				} else if (ap.getPointType().equals(
+						AccessPointType.HEALTH_POSTS)) {
+					context.put("typeOfPoint", "Health Posts");
+					context.put("type", "health_posts");
+				} else if (ap.getPointType().equals(AccessPointType.SCHOOL)) {
+					context.put("typeOfPoint", "School");
+					context.put("type", "school");
+				}
 			} else {
 				context.put("typeOfPoint", "Water");
 				context.put("type", "water");
@@ -515,7 +519,11 @@ public class KMLGenerator {
 				context.put("description", "Unknown");
 
 			// Need to check this
-			encodeStatus(ap.getPointType(), ap.getPointStatus(), context);
+			if (ap.getPointType() != null)
+				encodeStatus(ap.getPointType(), ap.getPointStatus(), context);
+			else {
+				context.put("pinStyle", "pushpinblk");
+			}
 			String output = mergeContext(context, vmName);
 			return output;
 		}
