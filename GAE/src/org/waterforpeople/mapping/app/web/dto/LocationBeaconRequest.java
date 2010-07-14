@@ -18,11 +18,21 @@ public class LocationBeaconRequest extends RestRequest {
 	private static final String LAT_PARAM = "lat";
 	private static final String LON_PARAM = "lon";
 	private static final String ACC_PARAM = "acc";
+	private static final String VER_PARAM = "ver";
 	private static final long serialVersionUID = 4549010911554976717L;
 	private String phoneNumber;
 	private Double lat;
 	private Double lon;
 	private Double accuracy;
+	private String appVersion;
+
+	public String getAppVersion() {
+		return appVersion;
+	}
+
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
+	}
 
 	public String getPhoneNumber() {
 		return phoneNumber;
@@ -72,12 +82,13 @@ public class LocationBeaconRequest extends RestRequest {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PRAM_ERROR_MESSAGE, PHONE_PARAM
 							+ " cannot be null"));
-		}
+		}		
 	}
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		phoneNumber = req.getParameter(PHONE_PARAM);
+		appVersion = req.getParameter(VER_PARAM);
 		try {
 			lat = Double.parseDouble(req.getParameter(LAT_PARAM));
 			lon = Double.parseDouble(req.getParameter(LON_PARAM));
