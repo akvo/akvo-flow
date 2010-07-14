@@ -73,7 +73,7 @@ public class QuestionQuestionGroupAssoc extends BaseDomain implements Comparable
 		if (o != null) {
 			if (o.getOrder() == getOrder()) {
 				return 0;
-			} else if (getOrder() > o.getOrder()) {
+			} else if (getOrder() != null && getOrder()> o.getOrder()) {
 				return 1;
 			} else {
 				return -1;
