@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.web;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -315,14 +316,16 @@ public class KMLGenerator {
 		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
 
 		List<AccessPoint> entries = apDAO.list(Constants.ALL_RESULTS);
-		try {
-			// loop through accessPoints and bind to variables
-			for (AccessPoint ap : entries) {
+
+		// loop through accessPoints and bind to variables
+		for (AccessPoint ap : entries) {
+			try {
 				sb.append(bindPlacemark(ap, vmName));
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "Error generating placemarks: " + ap.toString(), e);
 			}
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Error generating placemarks", e);
 		}
+
 		return sb.toString();
 	}
 
@@ -339,8 +342,18 @@ public class KMLGenerator {
 			context.put("latitude", ap.getLatitude());
 			context.put("longitude", ap.getLongitude());
 			context.put("altitude", ap.getAltitude());
-			context.put("communityCode", ap.getCommunityCode());
-			context.put("photoUrl", ap.getPhotoURL());
+			if (ap.getCommunityCode() != null)
+				context.put("communityCode", ap.getCommunityCode());
+			else
+				context.put("communityCode", "Unknown" + new Date());
+
+			if (ap.getPhotoURL() != null)
+				context.put("photoUrl", ap.getPhotoURL());
+			else
+				context
+						.put("photoUrl",
+								"http://waterforpeople.s3.amazonaws.com/images/wfplogo.jpg");
+
 			if (ap.getPointType().equals(
 					AccessPoint.AccessPointType.WATER_POINT)) {
 				context.put("typeOfPoint", "Water");
@@ -359,6 +372,9 @@ public class KMLGenerator {
 			} else if (ap.getPointType().equals(AccessPointType.SCHOOL)) {
 				context.put("typeOfPoint", "School");
 				context.put("type", "school");
+			} else {
+				context.put("typeOfPoint", "Water");
+				context.put("type", "water");
 			}
 
 			if (ap.getTypeTechnologyString() == null) {
@@ -492,7 +508,12 @@ public class KMLGenerator {
 						.getProvideAdequateQuantity()));
 			}
 
-			context.put("description", ap.getDescription());
+			if (ap.getDescription() != null
+					|| !ap.getDescription().trim().equals(""))
+				context.put("description", ap.getDescription());
+			else
+				context.put("description", "Unknown");
+
 			// Need to check this
 			encodeStatus(ap.getPointType(), ap.getPointStatus(), context);
 			String output = mergeContext(context, vmName);
