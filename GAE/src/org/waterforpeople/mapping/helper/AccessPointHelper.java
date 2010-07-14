@@ -286,8 +286,10 @@ public class AccessPointHelper {
 	public AccessPoint saveAccessPoint(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
 		if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
-			ap.setGeocells(GeocellManager.generateGeoCell(new Point(ap
-					.getLatitude(), ap.getLongitude())));
+			if (ap.getLatitude() != null && ap.getLongitude() != null) {
+				ap.setGeocells(GeocellManager.generateGeoCell(new Point(ap
+						.getLatitude(), ap.getLongitude())));
+			}
 		}
 		ap = apDao.save(ap);
 		Queue summQueue = QueueFactory.getQueue("dataSummarization");

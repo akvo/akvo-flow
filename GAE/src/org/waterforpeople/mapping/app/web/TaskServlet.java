@@ -48,7 +48,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 		aph = new AccessPointHelper();
 	}
 
-	private ArrayList<SurveyInstance> processFile(String fileName, String phoneNumber, String checksum) {
+	private ArrayList<SurveyInstance> processFile(String fileName,
+			String phoneNumber, String checksum) {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 		try {
 			URL url = new URL(
@@ -65,16 +66,18 @@ public class TaskServlet extends AbstractRestApiServlet {
 			deviceFile.setChecksum(checksum);
 			Date collectionDate = new Date();
 
-			if (unparsedLines.get(0).equals("regionFlag=true")) {
-				unparsedLines.remove(0);
-				GeoRegionHelper grh = new GeoRegionHelper();
-				grh.processRegionsSurvey(unparsedLines);
-			} else {
-				Long userID = 1L;
-				SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-				SurveyInstance inst = siDAO.save(collectionDate, deviceFile,
-						userID, unparsedLines);
-				surveyInstances.add(inst);
+			if (unparsedLines != null && unparsedLines.size() > 0) {
+				if (unparsedLines.get(0).equals("regionFlag=true")) {
+					unparsedLines.remove(0);
+					GeoRegionHelper grh = new GeoRegionHelper();
+					grh.processRegionsSurvey(unparsedLines);
+				} else {
+					Long userID = 1L;
+					SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
+					SurveyInstance inst = siDAO.save(collectionDate,
+							deviceFile, userID, unparsedLines);
+					surveyInstances.add(inst);
+				}
 			}
 			zis.close();
 		} catch (Exception e) {
@@ -201,7 +204,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
 			ArrayList<SurveyInstance> surveyInstances = processFile(req
-					.getFileName(), req.getPhoneNumber(),req.getChecksum());
+					.getFileName(), req.getPhoneNumber(), req.getChecksum());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			for (SurveyInstance instance : surveyInstances) {
 				ProcessingAction pa = dispatch(instance.getKey().getId() + "");

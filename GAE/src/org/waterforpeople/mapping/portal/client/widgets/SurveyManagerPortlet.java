@@ -330,10 +330,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
 		questionDetailPanel.setWidget(7, 0, new Label(
 				"Question Dependant On Other Question"));
-		questionDetailPanel.setWidget(7, 1, dependentQuestion);
+		questionDetailPanel.setWidget(7, 1, dependentQuestion);		
 
 		if (item != null && item.getQuestionDependency() != null) {
-			dependentQuestion.setValue(true);
+			dependentQuestion.setValue(true);			
 			loadDependencyTable(true);
 		}
 		saveQuestionButton.addClickHandler(new ClickHandler() {
@@ -622,6 +622,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		QuestionDto value = new QuestionDto();
 		
 		TextBox questionId = (TextBox) questionDetailPanel.getWidget(0, 0);
+		//TextBox dependencyId = (TextBox) questionDetailPanel.getWidget(0, 0);
 		TextArea questionText = (TextArea) questionDetailPanel.getWidget(1, 1);
 		ListBox questionTypeLB = (ListBox) questionDetailPanel.getWidget(2, 1);
 
@@ -693,7 +694,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			ListBox questionLB = (ListBox) questionDetailPanel.getWidget(8, 1);
 			String selectedValue = questionLB.getValue(questionLB
 					.getSelectedIndex());
-			QuestionDependencyDto qdDto = new QuestionDependencyDto();
+			QuestionDependencyDto qdDto = new QuestionDependencyDto();			
 			qdDto.setQuestionId(new Long(selectedValue));
 			value.setQuestionDependency(qdDto);
 			TextBox dependentQId = (TextBox) questionDetailPanel

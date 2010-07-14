@@ -386,8 +386,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									String[] optionParts = item.trim().split(
 											"\\|");
 									if (optionParts.length == 2) {
-										String optionVal = optionParts[0];
-										String text = optionParts[1];
+										String optionVal = optionParts[0].trim();										
+										String text = optionParts[1].trim();
+										text.replaceAll("\\n", " ");
 										QuestionOption qo = new QuestionOption();
 										qo.setCode(optionVal);
 										qo.setText(text);

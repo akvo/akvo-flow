@@ -27,6 +27,7 @@ import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -455,6 +456,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDao questionDao = new QuestionDao();
 		Question question = marshalQuestion(value);
 		question = questionDao.save(question, questionGroupId);
+		if(question.getDependQuestion() != null){
+			BaseDAO<QuestionDependency> dependencyDao = new BaseDAO<QuestionDependency>(QuestionDependency.class);
+			dependencyDao.save(question.getDependQuestion());
+		}
 
 		return marshalQuestionDto(question);
 	}
