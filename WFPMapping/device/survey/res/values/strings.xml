@@ -115,5 +115,5 @@
 	<string name="downloadsurveylabel">Download Survey</string>
 	<string name="downloadsurveydesc">Downloads arbitrary surveys (only run if instructed)</string>
 	<string name="downloadsurveyinstr">Enter the survey id you wish to download.</string>
-	<string name="appversion">0.97.3</string>
+	<string name="appversion">0.97.4</string>
 </resources>
