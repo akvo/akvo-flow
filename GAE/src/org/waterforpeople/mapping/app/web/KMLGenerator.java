@@ -512,8 +512,7 @@ public class KMLGenerator {
 						.getProvideAdequateQuantity()));
 			}
 
-			if (ap.getDescription() != null
-					|| !ap.getDescription().trim().equals(""))
+			if (ap.getDescription() !=null)
 				context.put("description", ap.getDescription());
 			else
 				context.put("description", "Unknown");
