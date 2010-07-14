@@ -119,24 +119,28 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "Could not save test region", e);
 			}
-		} else if ("testAPKml".equals("action")) {
-			AccessPoint ap= new AccessPoint();
-			ap.setCollectionDate(new Date());
-			ap.setLatitude(15.16939);
-			ap.setLongitude(-90.90918);
-			ap.setAltitude(0.0);
-			ap.setCommunityCode("test"+new Date());
-			ap.setCommunityName("test" + new Date());
-			ap.setPhotoURL("http://test.com");
-			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-			ap.setCountryCode("OT");
-			AccessPointDao apDao = new AccessPointDao();
-			apDao.save(ap);
-			try{
-				resp.getWriter().print("Saved AP: " + ap.toString());
-			}catch(IOException e){
-				log.log(Level.SEVERE, "Could not save ap");
+		} else if ("testAPKml".equals(action)) {
+			for (int i = 0; i < 5; i++) {
+				AccessPoint ap = new AccessPoint();
+				ap.setCollectionDate(new Date());
+				ap.setLatitude(15.16939);
+				ap.setLongitude(-90.90918);
+				ap.setAltitude(0.0);
+				ap.setCommunityCode("test" + new Date());
+				ap.setCommunityName("test" + new Date());
+				ap.setPhotoURL("http://test.com");
+				ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+				ap.setCountryCode("OT");
+				ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+				AccessPointDao apDao = new AccessPointDao();
+				apDao.save(ap);
+				try {
+					resp.getWriter().print("Saved AP: " + ap.toString());
+				} catch (IOException e) {
+					log.log(Level.SEVERE, "Could not save ap");
+				}
 			}
+
 		} else if ("testSurveyQuestion".equals(action)) {
 			SurveyDAO surveyDao = new SurveyDAO();
 			SurveyQuestion q = new SurveyQuestion();
