@@ -119,6 +119,24 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "Could not save test region", e);
 			}
+		} else if ("testAPKml".equals("action")) {
+			AccessPoint ap= new AccessPoint();
+			ap.setCollectionDate(new Date());
+			ap.setLatitude(15.16939);
+			ap.setLongitude(-90.90918);
+			ap.setAltitude(0.0);
+			ap.setCommunityCode("test"+new Date());
+			ap.setCommunityName("test" + new Date());
+			ap.setPhotoURL("http://test.com");
+			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+			ap.setCountryCode("OT");
+			AccessPointDao apDao = new AccessPointDao();
+			apDao.save(ap);
+			try{
+				resp.getWriter().print("Saved AP: " + ap.toString());
+			}catch(IOException e){
+				log.log(Level.SEVERE, "Could not save ap");
+			}
 		} else if ("testSurveyQuestion".equals(action)) {
 			SurveyDAO surveyDao = new SurveyDAO();
 			SurveyQuestion q = new SurveyQuestion();
@@ -516,24 +534,23 @@ public class TestHarnessServlet extends HttpServlet {
 			if (mappings != null) {
 				System.out.println(mappings.size());
 			}
-		}else if("optionContainer".equals(action)){ 
+		} else if ("optionContainer".equals(action)) {
 			Question question = new Question();
 			question.setText("test option harness");
 			OptionContainer oc = new OptionContainer();
 			oc.setAllowMultipleFlag(false);
 			oc.setAllowOtherFlag(false);
-			for(int i=0;i<3;i++){
+			for (int i = 0; i < 3; i++) {
 				QuestionOption qo = new QuestionOption();
-				qo.setCode("r"+i);
-				qo.setText("r"+i);
+				qo.setCode("r" + i);
+				qo.setText("r" + i);
 				oc.addQuestionOption(qo);
 			}
 			question.setOptionContainer(oc);
 			QuestionDao qDao = new QuestionDao();
 			qDao.save(question);
-			
-			
-		}else if ("deleteSurveyGraph".equals(action)) {
+
+		} else if ("deleteSurveyGraph".equals(action)) {
 			try {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				List<SurveyGroup> sgList = sgDao.list("all");
@@ -596,29 +613,31 @@ public class TestHarnessServlet extends HttpServlet {
 				for (OptionContainer oc : ocList)
 					ocDao.delete(oc);
 				resp.getWriter().println("Deleted all OptionContainer");
-				
+
 				BaseDAO<QuestionHelp> qhDao = new BaseDAO<QuestionHelp>(
 						QuestionHelp.class);
 				List<QuestionHelp> qhList = qhDao.list("all");
 				for (QuestionHelp qh : qhList)
 					qhDao.delete(qh);
 				resp.getWriter().println("Deleted all QuestionHelp");
-				
+
 				OptionContainerQuestionOptionAssocDao ocqaDao = new OptionContainerQuestionOptionAssocDao();
-				List<OptionContainerQuestionOptionAssoc> ocqoalist = ocqaDao.list("all");
-				for(OptionContainerQuestionOptionAssoc o: ocqoalist){
+				List<OptionContainerQuestionOptionAssoc> ocqoalist = ocqaDao
+						.list("all");
+				for (OptionContainerQuestionOptionAssoc o : ocqoalist) {
 					ocqaDao.delete(o);
 				}
-				
-				
-				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(QuestionDependency.class);
+
+				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(
+						QuestionDependency.class);
 				List<QuestionDependency> qdepList = qDep.list("all");
-				for(QuestionDependency qd:qdepList)
+				for (QuestionDependency qd : qdepList)
 					qDep.delete(qd);
 				resp.getWriter().println("Deleted all question dependency");
 
-				resp.getWriter().println("Deleted all OptionoContainerQuestionOptionAssoc");
-				
+				resp.getWriter().println(
+						"Deleted all OptionoContainerQuestionOptionAssoc");
+
 				resp.getWriter().println("Everything");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -693,10 +712,11 @@ public class TestHarnessServlet extends HttpServlet {
 				for (OptionContainer oc : ocList)
 					ocDao.delete(oc);
 				resp.getWriter().println("Deleted all OptionContainer");
-				
-				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(QuestionDependency.class);
+
+				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(
+						QuestionDependency.class);
 				List<QuestionDependency> qdepList = qDep.list("all");
-				for(QuestionDependency qd:qdepList)
+				for (QuestionDependency qd : qdepList)
 					qDep.delete(qd);
 				resp.getWriter().println("Deleted all question dependency");
 
@@ -849,11 +869,11 @@ public class TestHarnessServlet extends HttpServlet {
 			sgd.addSurvey(surveyDto);
 			sgd = surveySvc.save(sgd);
 			System.out.println(sgd.getKeyId());
-		}else if ("deleteSurveyFragments".equals(action)){
+		} else if ("deleteSurveyFragments".equals(action)) {
 			SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
 			List<SurveyXMLFragment> frags = sxmlfDao.list("all");
-			if(frags != null){
-				for(SurveyXMLFragment frag : frags){
+			if (frags != null) {
+				for (SurveyXMLFragment frag : frags) {
 					sxmlfDao.delete(frag);
 				}
 			}
