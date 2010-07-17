@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -32,6 +33,8 @@ public class NearbyItemActivity extends ListActivity implements
 	private Criteria locationCriteria;
 	private ProgressDialog progressDialog;
 	private ArrayList<PointOfInterestDto> pointsOfInterest;
+	private Handler dataHandler;
+	private Runnable resultsUpdater;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,14 @@ public class NearbyItemActivity extends ListActivity implements
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
 		progressDialog = ProgressDialog.show(this, "Please wait...",
 				"Loading nearby items...", true);
+		progressDialog.setCancelable(true);
+
+		dataHandler = new Handler();
+		resultsUpdater = new Runnable() {
+			public void run() {
+				updateUi();
+			}
+		};
 
 		String provider = locMgr.getBestProvider(locationCriteria, true);
 		if (provider != null) {
@@ -53,23 +64,34 @@ public class NearbyItemActivity extends ListActivity implements
 						1000, 0, this);
 			}
 		}
-
 	}
 
-	/**
-	 * loads the data from the server.
-	 * TODO: make this work if offline too by loading from db
-	 * @param lat
-	 * @param lon
-	 */
-	private void loadData(Double lat, Double lon) {
-		pointsOfInterest = PointOfInterestService.getNearbyAccessPoints(lat,
-				lon);
+	private void updateUi() {
 		if (pointsOfInterest != null) {
 			setListAdapter(new ArrayAdapter<PointOfInterestDto>(this,
 					R.layout.itemlistrow, pointsOfInterest));
 		}
 		progressDialog.dismiss();
+	}
+
+	/**
+	 * loads the data from the server. TODO: make this work if offline too by
+	 * loading from db
+	 * 
+	 * @param lat
+	 * @param lon
+	 */
+	private void loadData(final Double lat, final Double lon) {
+		// Fire off a thread to do some work that we shouldn't do directly in
+		// the UI thread
+		Thread t = new Thread() {
+			public void run() {
+				pointsOfInterest = PointOfInterestService
+						.getNearbyAccessPoints(lat, lon);
+				dataHandler.post(resultsUpdater);
+			}
+		};
+		t.start();
 	}
 
 	/**
