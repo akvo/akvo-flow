@@ -49,6 +49,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public static final int PLOT_LIST_ACTIVITY = 5;
 	public static final int NEARBY_ACTIVITY = 6;
 	public static final int REVIEW_ACTIVITY = 7;
+	public static final int WF_CALC_ACTIVITY = 8;
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
@@ -114,7 +115,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			}
 		}
 		database.close();
-	}	
+	}
 
 	/**
 	 * presents a single "edit" option when the user long-clicks a list item
@@ -198,12 +199,16 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		} else if (selected.equals(ConstantUtil.REVIEW_OP)) {
 			Intent i = new Intent(v.getContext(), SurveyReviewActivity.class);
 			startActivityForResult(i, REVIEW_ACTIVITY);
+		} else if (selected.equals(ConstantUtil.WATERFLOW_CALC_OP)) {
+			Intent i = new Intent(v.getContext(),
+					WaterflowCalculatorActivity.class);
+			startActivityForResult(i, WF_CALC_ACTIVITY);
 		} else {
-			if (currentUserId != null) {				
+			if (currentUserId != null) {
 				Survey survey = menuViewAdapter.getSelectedSurvey(position);
 				if (survey != null) {
 					Intent i = new Intent(v.getContext(),
-							SurveyViewActivity.class);					
+							SurveyViewActivity.class);
 					i.putExtra(ConstantUtil.USER_ID_KEY, currentUserId);
 					i.putExtra(ConstantUtil.SURVEY_ID_KEY, survey.getId());
 					startActivityForResult(i, SURVEY_ACTIVITY);

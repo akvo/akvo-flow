@@ -8,17 +8,17 @@
 	<string-array name="languages">
 		<item>English</item>
 		<item>French</item>
-		<item>Spanish</item>		
+		<item>Spanish</item>
 	</string-array>
 	<string-array name="languagecodes">
 		<item>en</item>
 		<item>fr</item>
-		<item>sp</item>		
+		<item>sp</item>
 	</string-array>
 	<string-array name="colors">
 		<item>white</item>
 		<item>red</item>
-		<item>blue</item>		
+		<item>blue</item>
 	</string-array>
 	<string-array name="precachehelpoptions">
 		<item>Always</item>
@@ -26,8 +26,25 @@
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
-	    <!--   <item>http://192.168.0.100:8888</item>-->
+		<!-- <item>http://192.168.0.100:8888</item> -->
 		<item>http://watermapmonitordev.appspot.com</item>
 		<item>http://watermappingmonitoring.appspot.com</item>
+	</string-array>
+	<string-array name="lengthmetric">
+		<item>millimeters</item>
+		<item>centimeters</item>
+		<item>meters</item>		
+	</string-array>
+	<string-array name="velocitymetric">
+		<item>mm / second</item>
+		<item>mm / minute</item>
+		<item>cm / second</item>
+		<item>cm / minute</item>
+		<item>m / second</item>
+		<item>m / minute</item>		
+	</string-array>
+	<string-array name="flowratemetric">
+		<item>liter / second</item>
+		<item>liter / minute</item>		
 	</string-array>
 </resources>

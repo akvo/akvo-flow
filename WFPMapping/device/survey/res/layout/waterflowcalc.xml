@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="fill_parent"
+	android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical">
+	<TextView android:text="@string/calctext"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textSize="22dip" android:paddingBottom="18dip"></TextView>
+	<TableLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+		<TableRow android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+			<RelativeLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+				<TextView android:layout_width="wrap_content" android:text="@string/dialabel"
+					android:layout_alignParentLeft="true" android:layout_height="wrap_content"
+					android:id="@+id/dialabel" android:textSize="16dip"></TextView>
+				<EditText android:layout_width="wrap_content"
+					android:layout_toRightOf="@id/dialabel" android:id="@+id/diaedit"
+					android:layout_height="wrap_content" android:width="100dip"></EditText>
+				<Spinner android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_toRightOf="@id/diaedit"
+					android:id="@+id/diametricspinner" android:layout_alignParentRight="true"></Spinner>
+			</RelativeLayout>
+		</TableRow>
+		<TableRow android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+			<RelativeLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+				<TextView android:layout_width="wrap_content" android:text="@string/velocitylabel"
+					android:layout_alignParentLeft="true" android:layout_height="wrap_content"
+					android:id="@+id/velocitylabel" android:textSize="16dip"></TextView>
+				<EditText android:layout_width="wrap_content"
+					android:layout_toRightOf="@id/velocitylabel" android:id="@+id/velocityedit"
+					android:layout_height="wrap_content" android:width="100dip"
+					android:layout_alignLeft="@id/diaedit" />
+				<Spinner android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_toRightOf="@id/velocityedit"
+					android:id="@+id/velocitymetricspinner"
+					android:layout_alignParentRight="true"></Spinner>
+			</RelativeLayout>
+		</TableRow>
+		<TableRow android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+			<RelativeLayout android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+				<TextView android:layout_width="wrap_content" android:text="@string/flowratelabel"
+					android:layout_alignParentLeft="true" android:layout_height="wrap_content"
+					android:id="@+id/flowratelabel" android:textSize="16dip"></TextView>
+				<EditText android:layout_width="wrap_content"
+					android:layout_toRightOf="@id/flowratelabel" android:id="@+id/flowrateedit"
+					android:layout_height="wrap_content" android:width="100dip"
+					android:layout_alignLeft="@id/velocityedit" />
+				<Spinner android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:layout_toRightOf="@id/flowrateedit"
+					android:id="@+id/flowratemetricspinner"
+					android:layout_alignParentRight="true"></Spinner>
+			</RelativeLayout>
+		</TableRow>
+	</TableLayout>
+	<Button android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/solvebutton"
+		android:text="@string/solvebutton" />
+</LinearLayout>

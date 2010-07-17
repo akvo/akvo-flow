@@ -85,6 +85,7 @@ public class ConstantUtil {
 	public static final String PLOT_OP = "PLOT";
 	public static final String NEARBY_OP = "NEARBY";
 	public static final String REVIEW_OP = "REVIEW";
+	public static final String WATERFLOW_CALC_OP = "WFCALC";
 
 	/**
 	 * data sync options

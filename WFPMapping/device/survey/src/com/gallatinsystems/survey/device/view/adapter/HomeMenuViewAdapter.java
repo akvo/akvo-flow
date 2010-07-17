@@ -28,25 +28,26 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  */
 public class HomeMenuViewAdapter extends BaseAdapter {
 
-	private static final String TAG = "Home Menu View Adapter";	
-	
+	private static final String TAG = "Home Menu View Adapter";
+
 	/**
 	 * statically defined menu options
 	 */
 	private static final Integer[] preSurveyButtons = { R.drawable.users };
 	private static final Integer[] preSurveyLabels = { R.string.userlabel };
-	private static final Integer[] postSurveyButtons = { R.drawable.disk, R.drawable.plotting,
-			R.drawable.settings};//, R.drawable.infoactivity};
-	private static final Integer[] postSurveyLabels = {  R.string.reviewlabel,R.string.plottinglabel,
-			R.string.settingslabel};//, R.string.nearbylabel };
-
+	private static final Integer[] postSurveyButtons = { R.drawable.disk,
+			R.drawable.plotting, R.drawable.infoactivity, R.drawable.calc,
+			R.drawable.settings };
+	private static final Integer[] postSurveyLabels = { R.string.reviewlabel,
+			R.string.plottinglabel, R.string.nearbylabel,
+			R.string.waterflowcalclabel, R.string.settingslabel };
 
 	// references to our buttons
 	private Integer[] buttonImages = new Integer[0];
 	// this is of type Object since the values can be Integers or Strings
 	private Object[] buttonLabels;
-	private ArrayList<Survey> surveys;	
-	private ArrayList<String> operations;	
+	private ArrayList<Survey> surveys;
+	private ArrayList<String> operations;
 	private LayoutInflater inflater;
 
 	/**
@@ -56,11 +57,10 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 */
 	public HomeMenuViewAdapter(Context c) {
 		inflater = (LayoutInflater) c
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);		
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 	}
 
-	
 	/**
 	 * gets all surveys from the db and uses them to instantiate the views
 	 * 
@@ -88,7 +88,8 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 		operations.add(ConstantUtil.USER_OP);
 
 		for (int i = 0; i < surveys.size(); i++) {
-			if (ConstantUtil.SURVEY_TYPE.equalsIgnoreCase(surveys.get(i).getType())) {
+			if (ConstantUtil.SURVEY_TYPE.equalsIgnoreCase(surveys.get(i)
+					.getType())) {
 				buttonImages[preSurveyButtons.length + i] = R.drawable.checklist;
 			} else {
 				buttonImages[preSurveyButtons.length + i] = R.drawable.map;
@@ -101,11 +102,13 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 				preSurveyButtons.length + surveys.size());
 		ArrayUtil.combineArrays(buttonLabels, postSurveyLabels,
 				preSurveyButtons.length + surveys.size());
-		
+
 		operations.add(ConstantUtil.REVIEW_OP);
 		operations.add(ConstantUtil.PLOT_OP);
+		operations.add(ConstantUtil.NEARBY_OP);
+		operations.add(ConstantUtil.WATERFLOW_CALC_OP);
 		operations.add(ConstantUtil.CONF_OP);
-		//operations.add(ConstantUtil.NEARBY_OP);		
+
 		notifyDataSetChanged();
 	}
 
@@ -171,11 +174,11 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 		database.open();
 		Survey itemToDelete = getSelectedSurvey(position);
 		if (itemToDelete != null) {
-			database.deleteSurvey(itemToDelete.getId(),false);
+			database.deleteSurvey(itemToDelete.getId(), false);
 			database.close();
 			surveys.remove(itemToDelete);
 			// update the view
-			initializeValues();			
+			initializeValues();
 		}
 	}
 
@@ -202,5 +205,5 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 */
 	public String getSelectedOperation(int index) {
 		return operations.get(index);
-	}	
+	}
 }

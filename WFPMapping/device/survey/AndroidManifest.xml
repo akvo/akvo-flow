@@ -23,6 +23,7 @@
 		<activity android:name=".activity.NearbyItemActivity"/>
 		<activity android:name=".activity.NearbyItemDetailActivity"/>
 		<activity android:name=".activity.SurveyReviewActivity"/>
+		<activity android:name=".activity.WaterflowCalculatorActivity"/>
 
 		<service android:name=".service.DataSyncService" />
 		<service android:name=".service.SurveyDownloadService" />
@@ -39,8 +40,6 @@
 		
 		<uses-library android:name="com.google.android.maps" />
 	</application>
-
-
 
 	<uses-sdk android:minSdkVersion="6" />
 
