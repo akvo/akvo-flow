@@ -125,6 +125,8 @@
 	<string name="dialabel">Diameter</string>
 	<string name="velocitylabel">Velocity</string>
 	<string name="flowratelabel">Flow Rate</string>
+	<string name="onlyonecanbeblank">Only one input field can be blank.</string>
+	<string name="invalidinput">Invalid Input</string>
 	<string name="solvebutton">Solve</string>
 	<string name="appversion">0.98.0</string>
 </resources>

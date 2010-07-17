@@ -57,7 +57,13 @@
 			</RelativeLayout>
 		</TableRow>
 	</TableLayout>
-	<Button android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/solvebutton"
-		android:text="@string/solvebutton" />
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal">
+		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/solvebutton"
+			android:text="@string/solvebutton" />
+		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/clearbutton"
+			android:text="@string/clearbutton" />
+	</LinearLayout>
 </LinearLayout>
