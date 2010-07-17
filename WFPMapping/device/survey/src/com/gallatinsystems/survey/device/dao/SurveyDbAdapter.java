@@ -864,9 +864,17 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * deletes all the surveys from the database surveys;
+	 * deletes all the surveys from the database
 	 */
 	public void deleteAllSurveys() {
 		database.delete(SURVEY_TABLE, null, null);
+	}
+
+	/**
+	 * deletes all survey responses from the database
+	 */
+	public void deleteAllResponses(){
+		database.delete(RESPONSE_TABLE, null,null);
+		database.delete(RESPONDENT_TABLE, null,null);				
 	}
 }

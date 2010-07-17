@@ -53,6 +53,7 @@ public class QuestionView extends TableLayout implements
 	private ImageButton tipImage;
 	protected String[] langs = null;
 	protected static String[] colors = null;
+	protected boolean readOnly;
 
 	/**
 	 * install a single tableRow containing a textView with the question text
@@ -60,7 +61,8 @@ public class QuestionView extends TableLayout implements
 	 * @param context
 	 * @param q
 	 */
-	public QuestionView(Context context, Question q, String[] langs) {
+	public QuestionView(Context context, Question q, String[] langs,
+			boolean readOnly) {
 		super(context);
 		question = q;
 		this.langs = langs;
@@ -70,6 +72,7 @@ public class QuestionView extends TableLayout implements
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
 		questionText.setWidth(DEFAULT_WIDTH);
+		this.readOnly = readOnly;
 
 		questionText.setText(formText(), BufferType.SPANNABLE);
 		tr.addView(questionText);

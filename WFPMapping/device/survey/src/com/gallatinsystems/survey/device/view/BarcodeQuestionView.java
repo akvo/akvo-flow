@@ -27,8 +27,9 @@ public class BarcodeQuestionView extends QuestionView implements
 	private Button barcodeButton;
 	private ImageView completeIcon;
 
-	public BarcodeQuestionView(Context context, Question q, String[] langCodes) {
-		super(context, q,langCodes);
+	public BarcodeQuestionView(Context context, Question q, String[] langCodes,
+			boolean readOnly) {
+		super(context, q, langCodes, readOnly);
 		init();
 	}
 
@@ -40,6 +41,9 @@ public class BarcodeQuestionView extends QuestionView implements
 		barcodeButton.setText(R.string.scanbarcode);
 
 		barcodeButton.setOnClickListener(this);
+		if (readOnly) {
+			barcodeButton.setEnabled(false);
+		}
 		completeIcon = new ImageView(context);
 		completeIcon.setImageResource(R.drawable.checkmark);
 		completeIcon.setVisibility(View.GONE);
@@ -66,8 +70,8 @@ public class BarcodeQuestionView extends QuestionView implements
 	}
 
 	/**
-	 * restores the data and turns on the complete icon if the
-	 * content is non-null
+	 * restores the data and turns on the complete icon if the content is
+	 * non-null
 	 */
 	public void rehydrate(QuestionResponse resp) {
 		super.rehydrate(resp);

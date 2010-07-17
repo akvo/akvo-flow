@@ -110,6 +110,7 @@ public class ConstantUtil {
 	public static final String IMAGE_URL_LIST_KEY = "imageurls";
 	public static final String IMAGE_CAPTION_LIST_KEY = "imagecaps";
 	public static final String AP_KEY = "accesspoint";
+	public static final String READONLY_KEY = "readonly";
 
 	/**
 	 * settings keys
@@ -122,7 +123,7 @@ public class ConstantUtil {
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
 	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
 	public static final String PRECACHE_HELP_SETTING_KEY = "survey.precachehelp";
-	public static final String SERVER_SETTING_KEY = "upload.server";	
+	public static final String SERVER_SETTING_KEY = "upload.server";		
 
 	/**
 	 * index values into string arrays

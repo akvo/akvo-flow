@@ -80,6 +80,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private String[] selectedLanguageCodes;
 	private HashMap<QuestionGroup, SurveyTabContentFactory> factoryMap;
 	private Survey survey;
+	private boolean readOnly;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -87,6 +88,7 @@ public class SurveyViewActivity extends TabActivity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		currentTextSize = NORMAL_TXT_SIZE;
+		readOnly = false;
 		factoryMap = new HashMap<QuestionGroup, SurveyTabContentFactory>();
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
@@ -107,6 +109,14 @@ public class SurveyViewActivity extends TabActivity implements
 		if (userId == null) {
 			userId = savedInstanceState != null ? savedInstanceState
 					.getString(ConstantUtil.USER_ID_KEY) : null;
+		}
+
+		if (extras != null && extras.containsKey(ConstantUtil.READONLY_KEY)) {
+			readOnly = extras.getBoolean(ConstantUtil.READONLY_KEY);
+		}
+		if (savedInstanceState != null
+				&& savedInstanceState.containsKey(ConstantUtil.READONLY_KEY)) {
+			readOnly = savedInstanceState.getBoolean(ConstantUtil.READONLY_KEY);
 		}
 
 		surveyId = extras != null ? extras
@@ -145,7 +155,7 @@ public class SurveyViewActivity extends TabActivity implements
 						&& group.getQuestions().size() > 0) {
 					SurveyTabContentFactory factory = new SurveyTabContentFactory(
 							this, group, databaseAdapter, currentTextSize,
-							selectedLanguageCodes);
+							selectedLanguageCodes, readOnly);
 					factoryMap.put(group, factory);
 					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
 							.setIndicator(group.getHeading()).setContent(
@@ -444,25 +454,29 @@ public class SurveyViewActivity extends TabActivity implements
 					});
 			return true;
 		case CLEAR_SURVEY:
-			resetAllQuestions();
+			if (!readOnly) {
+				resetAllQuestions();
+			}
 			return true;
 		case SAVE_SURVEY:
-			// make sure we don't lose anything that was already written
-			for (int i = 0; i < tabContentFactories.size(); i++) {
-				tabContentFactories.get(i).saveState(respondentId);
-				databaseAdapter.updateSurveyStatus(respondentId.toString(),
-						ConstantUtil.SAVED_STATUS);
-				ViewUtil.showConfirmDialog(R.string.savecompletetitle,
-						R.string.savecompletetext, this,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								dialog.dismiss();
-								startNewSurvey();
+			if (!readOnly) {
+				// make sure we don't lose anything that was already written
+				for (int i = 0; i < tabContentFactories.size(); i++) {
+					tabContentFactories.get(i).saveState(respondentId);
+					databaseAdapter.updateSurveyStatus(respondentId.toString(),
+							ConstantUtil.SAVED_STATUS);
+					ViewUtil.showConfirmDialog(R.string.savecompletetitle,
+							R.string.savecompletetext, this,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+									startNewSurvey();
 
-							}
-						});
+								}
+							});
+				}
 			}
 			return true;
 		}

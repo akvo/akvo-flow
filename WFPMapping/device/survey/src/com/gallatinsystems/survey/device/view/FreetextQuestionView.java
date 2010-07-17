@@ -29,8 +29,9 @@ public class FreetextQuestionView extends QuestionView implements
 		OnFocusChangeListener {
 	private EditText freetextEdit;
 
-	public FreetextQuestionView(Context context, Question q, String[] langCodes) {
-		super(context, q, langCodes);
+	public FreetextQuestionView(Context context, Question q,
+			String[] langCodes, boolean readOnly) {
+		super(context, q, langCodes, readOnly);
 		init();
 	}
 
@@ -39,6 +40,9 @@ public class FreetextQuestionView extends QuestionView implements
 		TableRow tr = new TableRow(context);
 		freetextEdit = new EditText(context);
 		freetextEdit.setWidth(DEFAULT_WIDTH);
+		if (readOnly) {
+			freetextEdit.setFocusable(false);
+		}
 		ValidationRule rule = getQuestion().getValidationRule();
 		if (rule != null) {
 			// set the maximum length

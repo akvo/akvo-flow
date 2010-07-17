@@ -26,10 +26,10 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	private Button mediaButton;
 	private ImageView completeIcon;
 	private String mediaType;
-	
 
-	public MediaQuestionView(Context context, Question q, String type, String[] langCodes) {
-		super(context, q,langCodes);
+	public MediaQuestionView(Context context, Question q, String type,
+			String[] langCodes, boolean readOnly) {
+		super(context, q, langCodes, readOnly);
 		init(type);
 	}
 
@@ -44,6 +44,9 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 			mediaButton.setText(R.string.takevideo);
 		}
 		mediaButton.setOnClickListener(this);
+		if (readOnly) {
+			mediaButton.setEnabled(false);
+		}
 		completeIcon = new ImageView(context);
 		completeIcon.setImageResource(R.drawable.checkmark);
 		completeIcon.setVisibility(View.GONE);
@@ -68,8 +71,8 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	public void questionComplete(Bundle mediaData) {
 		if (mediaData != null) {
 			completeIcon.setVisibility(View.VISIBLE);
-			setResponse(new QuestionResponse(mediaData
-					.getString(ConstantUtil.MEDIA_FILE_KEY),
+			setResponse(new QuestionResponse(
+					mediaData.getString(ConstantUtil.MEDIA_FILE_KEY),
 					ConstantUtil.PHOTO_QUESTION_TYPE.equals(mediaType) ? ConstantUtil.IMAGE_RESPONSE_TYPE
 							: ConstantUtil.VIDEO_RESPONSE_TYPE, getQuestion()
 							.getId()));

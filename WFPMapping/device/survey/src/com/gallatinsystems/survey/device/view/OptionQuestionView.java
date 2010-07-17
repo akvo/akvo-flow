@@ -53,8 +53,9 @@ public class OptionQuestionView extends QuestionView {
 	private Map<Integer, String> idToValueMap;
 	private boolean suppressListeners = false;
 
-	public OptionQuestionView(Context context, Question q, String[] langCodes) {
-		super(context, q, langCodes);
+	public OptionQuestionView(Context context, Question q, String[] langCodes,
+			boolean readOnly) {
+		super(context, q, langCodes, readOnly);
 		OTHER_TEXT = getResources().getString(R.string.othertext);
 		init();
 	}
@@ -122,7 +123,9 @@ public class OptionQuestionView extends QuestionView {
 					}
 				});
 				tr.addView(spinner);
-
+				if (readOnly) {
+					spinner.setEnabled(false);
+				}
 			} else if (!question.isAllowMultiple()) {
 				optionGroup = new RadioGroup(context);
 				optionGroup
@@ -175,6 +178,11 @@ public class OptionQuestionView extends QuestionView {
 					idToValueMap.put(rb.getId(), OTHER_TEXT);
 				}
 				tr.addView(optionGroup);
+				if (readOnly) {
+					for (int j = 0; j < optionGroup.getChildCount(); j++) {
+						optionGroup.getChildAt(j).setEnabled(false);
+					}
+				}
 			} else {
 				checkBoxes = new ArrayList<CheckBox>();
 				for (int i = 0; i < options.size(); i++) {
@@ -219,6 +227,11 @@ public class OptionQuestionView extends QuestionView {
 					boxRow.addView(box);
 					addView(boxRow);
 				}
+				if (readOnly) {
+					for (int i = 0; i < checkBoxes.size(); i++) {
+						checkBoxes.get(i).setEnabled(false);
+					}
+				}
 			}
 			if (tr.getChildCount() > 0) {
 				addView(tr);
@@ -252,7 +265,7 @@ public class OptionQuestionView extends QuestionView {
 					}
 				}
 			} else {
-				
+
 				for (int i = 0; i < optionGroup.getChildCount(); i++) {
 					// make sure we have a corresponding option (i.e. not the
 					// OTHER option)
@@ -260,7 +273,7 @@ public class OptionQuestionView extends QuestionView {
 						((RadioButton) (optionGroup.getChildAt(i)))
 								.setText(formOptionText(options.get(i)));
 					}
-				}								
+				}
 			}
 		}
 	}

@@ -48,8 +48,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private float lastAccuracy;
 	private boolean needUpdate = false;
 
-	public GeoQuestionView(Context context, Question q, String[] langCodes) {
-		super(context, q,langCodes);
+	public GeoQuestionView(Context context, Question q, String[] langCodes,
+			boolean readOnly) {
+		super(context, q, langCodes, readOnly);
 		init();
 	}
 
@@ -66,7 +67,6 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		latField.setWidth(DEFAULT_WIDTH);
 		latField.setOnFocusChangeListener(this);
 		latField.setKeyListener(numericListener);
-	
 
 		latLabel = new TextView(context);
 		latLabel.setText(R.string.lat);
@@ -81,7 +81,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		lonField.setWidth(DEFAULT_WIDTH);
 		lonField.setKeyListener(numericListener);
 		lonField.setOnFocusChangeListener(this);
-		
+
 		lonLabel = new TextView(context);
 		lonLabel.setText(R.string.lon);
 
@@ -113,6 +113,12 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		tr.addView(geoButton);
 		addView(tr);
 
+		if (readOnly) {
+			latField.setFocusable(false);
+			lonField.setFocusable(false);
+			elevationField.setFocusable(false);
+			geoButton.setEnabled(false);
+		}
 	}
 
 	/**

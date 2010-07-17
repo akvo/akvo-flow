@@ -45,6 +45,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	private ScrollView scrollView;
 	private float defaultTextSize;
 	private String[] languageCodes;
+	private boolean readOnly;
 
 	public HashMap<String, QuestionView> getQuestionMap() {
 		return questionMap;
@@ -57,13 +58,15 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	 * @param qg
 	 */
 	public SurveyTabContentFactory(SurveyViewActivity c, QuestionGroup qg,
-			SurveyDbAdapter dbAdaptor, float textSize, String[] languageCodes) {
+			SurveyDbAdapter dbAdaptor, float textSize, String[] languageCodes,
+			boolean readOnly) {
 		questionGroup = qg;
 		questionMap = new HashMap<String, QuestionView>();
 		context = c;
 		databaseAdaptor = dbAdaptor;
 		defaultTextSize = textSize;
 		this.languageCodes = languageCodes;
+		this.readOnly = readOnly;
 	}
 
 	/**
@@ -98,29 +101,29 @@ public class SurveyTabContentFactory implements TabContentFactory {
 					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 			if (ConstantUtil.OPTION_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
-				questionView = new OptionQuestionView(context, q, languageCodes);
+				questionView = new OptionQuestionView(context, q, languageCodes, readOnly);
 
 			} else if (ConstantUtil.FREE_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new FreetextQuestionView(context, q,
-						languageCodes);
+						languageCodes, readOnly);
 			} else if (ConstantUtil.PHOTO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.PHOTO_QUESTION_TYPE, languageCodes);
+						ConstantUtil.PHOTO_QUESTION_TYPE, languageCodes, readOnly);
 			} else if (ConstantUtil.VIDEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.VIDEO_QUESTION_TYPE, languageCodes);
+						ConstantUtil.VIDEO_QUESTION_TYPE, languageCodes, readOnly);
 			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new GeoQuestionView(context, q, languageCodes);
+				questionView = new GeoQuestionView(context, q, languageCodes, readOnly);
 			} else if (ConstantUtil.SCAN_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new BarcodeQuestionView(context, q,
-						languageCodes);
+						languageCodes, readOnly);
 			} else {
-				questionView = new QuestionView(context, q, languageCodes);
+				questionView = new QuestionView(context, q, languageCodes, readOnly);
 			}
 			questionView.setTextSize(defaultTextSize);
 			questionMap.put(q.getId(), questionView);
@@ -147,16 +150,21 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		submitButton.setText(R.string.submitbutton);
 		submitButton.setWidth(BUTTON_WIDTH);
 		group.addView(submitButton);
+		if(readOnly){
+			submitButton.setEnabled(false);
+		}
 
 		Button saveButton = new Button(context);
 		saveButton.setText(R.string.savebutton);
 		saveButton.setWidth(BUTTON_WIDTH);
-		//TODO: remove save button once we have confirmation that we want it on the menu
+		// TODO: remove save button once we have confirmation that we want it on
+		// the menu
 		saveButton.setVisibility(View.GONE);
 		group.addView(saveButton);
 		Button clearButton = new Button(context);
 		clearButton.setText(R.string.clearbutton);
-		//TODO: remove clear button once we have confirmation that we want it on the menu
+		// TODO: remove clear button once we have confirmation that we want it
+		// on the menu
 		clearButton.setVisibility(View.GONE);
 		group.addView(clearButton);
 		buttonRow.addView(group);
@@ -259,7 +267,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			for (QuestionView view : questionMap.values()) {
 				view.resetQuestion();
 			}
-			if(scrollView != null){
+			if (scrollView != null) {
 				scrollView.scrollTo(0, 0);
 			}
 		}

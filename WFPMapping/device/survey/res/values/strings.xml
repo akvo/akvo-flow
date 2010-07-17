@@ -107,7 +107,9 @@
 	<string name="largetxtoption">Large Text</string>
 	<string name="normaltxtoption">Normal Text</string>
 	<string name="langoption">Languages</string>
-	<string name="reviewtext">Touch a survey to view/submit.</string>
+	<string name="reviewtext">Touch a survey to view.</string>
+	<string name="savedsurveyslabel">Saved surveys</string>
+	<string name="submittedsurveyslabel">Submitted Surveys (read only)</string>
 	<string name="reviewlabel">Review Saved Surveys</string>
 	<string name="langmandatorytitle">Invalid Selection</string>
 	<string name="langmandatorytext">You must select at least one language</string>
@@ -115,5 +117,8 @@
 	<string name="downloadsurveylabel">Download Survey</string>
 	<string name="downloadsurveydesc">Downloads arbitrary surveys (only run if instructed)</string>
 	<string name="downloadsurveyinstr">Enter the survey id you wish to download.</string>
-	<string name="appversion">0.97.4</string>
+	<string name="deleteall">Delete all</string>
+	<string name="submittedsurveysmenu">Submitted Surveys</string>
+	<string name="deleteallwarning">This will delete all survey responses (saved AND submitted) on the device. Click OK to proceed or cancel to abort.</string>
+	<string name="appversion">0.98.0</string>
 </resources>
