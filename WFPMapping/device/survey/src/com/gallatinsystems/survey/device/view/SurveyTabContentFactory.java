@@ -151,9 +151,13 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		Button saveButton = new Button(context);
 		saveButton.setText(R.string.savebutton);
 		saveButton.setWidth(BUTTON_WIDTH);
+		//TODO: remove save button once we have confirmation that we want it on the menu
+		saveButton.setVisibility(View.GONE);
 		group.addView(saveButton);
 		Button clearButton = new Button(context);
 		clearButton.setText(R.string.clearbutton);
+		//TODO: remove clear button once we have confirmation that we want it on the menu
+		clearButton.setVisibility(View.GONE);
 		group.addView(clearButton);
 		buttonRow.addView(group);
 		table.addView(buttonRow);

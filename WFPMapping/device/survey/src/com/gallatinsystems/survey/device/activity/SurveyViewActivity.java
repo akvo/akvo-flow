@@ -57,6 +57,8 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int LARGE_TXT = 1;
 	private static final int NORMAL_TXT = 2;
 	private static final int SURVEY_LANG = 3;
+	private static final int SAVE_SURVEY = 4;
+	private static final int CLEAR_SURVEY = 5;
 
 	private static final float LARGE_TXT_SIZE = 22;
 	private static final float NORMAL_TXT_SIZE = 14;
@@ -121,7 +123,6 @@ public class SurveyViewActivity extends TabActivity implements
 					.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
 		}
 
-		
 		try {
 			survey = SurveyDao.loadSurvey(databaseAdapter.findSurvey(surveyId),
 					getResources());
@@ -198,18 +199,19 @@ public class SurveyViewActivity extends TabActivity implements
 							// hasn't been hydrated yet. So check the master
 							// question map for a response and use that to
 							// inform the child
-							QuestionResponse resp = databaseAdapter.findSingleResponse(respondentId,dep.getQuestion());
-							if(resp != null){
-								depQ.handleDependencyParentResponse(dep,resp);
+							QuestionResponse resp = databaseAdapter
+									.findSingleResponse(respondentId, dep
+											.getQuestion());
+							if (resp != null) {
+								depQ.handleDependencyParentResponse(dep, resp);
 							}
-							
+
 						}
 					}
 				}
 			}
 		}
 	}
-		
 
 	/**
 	 * looks across all question factories for a question with the ID passed in
@@ -402,6 +404,8 @@ public class SurveyViewActivity extends TabActivity implements
 		menu.add(0, LARGE_TXT, 0, R.string.largetxtoption);
 		menu.add(0, NORMAL_TXT, 1, R.string.normaltxtoption);
 		menu.add(0, SURVEY_LANG, 2, R.string.langoption);
+		menu.add(0, SAVE_SURVEY, 3, R.string.savebutton);
+		menu.add(0, CLEAR_SURVEY, 4, R.string.clearbutton);
 		return true;
 	}
 
@@ -439,8 +443,42 @@ public class SurveyViewActivity extends TabActivity implements
 						}
 					});
 			return true;
+		case CLEAR_SURVEY:
+			resetAllQuestions();
+			return true;
+		case SAVE_SURVEY:
+			// make sure we don't lose anything that was already written
+			for (int i = 0; i < tabContentFactories.size(); i++) {
+				tabContentFactories.get(i).saveState(respondentId);
+				databaseAdapter.updateSurveyStatus(respondentId.toString(),
+						ConstantUtil.SAVED_STATUS);
+				ViewUtil.showConfirmDialog(R.string.savecompletetitle,
+						R.string.savecompletetext, this,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+								startNewSurvey();
+
+							}
+						});
+			}
+			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
+	}
+
+	/**
+	 * creates a new response object/record and sets the id in the context then
+	 * resets the question view.
+	 */
+	private void startNewSurvey() {
+		// create a new response object so we're ready for the
+		// next instance
+		setRespondentId(databaseAdapter
+				.createSurveyRespondent(surveyId, userId));
+		resetAllQuestions();
 	}
 
 	/**
