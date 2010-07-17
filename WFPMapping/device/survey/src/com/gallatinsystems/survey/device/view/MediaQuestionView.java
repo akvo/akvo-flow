@@ -1,6 +1,9 @@
 package com.gallatinsystems.survey.device.view;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -49,6 +52,8 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 		}
 		completeIcon = new ImageView(context);
 		completeIcon.setImageResource(R.drawable.checkmark);
+		completeIcon.setClickable(true);
+		completeIcon.setOnClickListener(this);
 		completeIcon.setVisibility(View.GONE);
 		tr.addView(mediaButton);
 		tr.addView(completeIcon);
@@ -59,12 +64,25 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	 * handle the action button click
 	 */
 	public void onClick(View v) {
-		if (ConstantUtil.PHOTO_QUESTION_TYPE.equals(mediaType)) {
-			notifyQuestionListeners(QuestionInteractionEvent.TAKE_PHOTO_EVENT);
-		} else {
-			notifyQuestionListeners(QuestionInteractionEvent.TAKE_VIDEO_EVENT);
+		if (v == completeIcon
+				&& ConstantUtil.PHOTO_QUESTION_TYPE.equals(mediaType)) {
+			Dialog dia = new Dialog(getContext());
+			ImageView imageView = new ImageView(getContext());
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inSampleSize = 2;
+			Bitmap bm = BitmapFactory.decodeFile(getResponse().getValue(),
+					options);
+			imageView.setImageBitmap(bm);
+			dia.setContentView(imageView, new LayoutParams(
+					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+			dia.show();
+		} else if (v == mediaButton) {
+			if (ConstantUtil.PHOTO_QUESTION_TYPE.equals(mediaType)) {
+				notifyQuestionListeners(QuestionInteractionEvent.TAKE_PHOTO_EVENT);
+			} else {
+				notifyQuestionListeners(QuestionInteractionEvent.TAKE_VIDEO_EVENT);
+			}
 		}
-
 	}
 
 	@Override
