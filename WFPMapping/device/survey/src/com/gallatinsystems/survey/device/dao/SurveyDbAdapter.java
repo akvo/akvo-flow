@@ -235,6 +235,7 @@ public class SurveyDbAdapter {
 		ContentValues vals = new ContentValues();
 		vals.put(SUBMITTED_FLAG_COL, "true");
 		vals.put(SUBMITTED_DATE_COL, System.currentTimeMillis());
+		vals.put(STATUS_COL, ConstantUtil.SUBMITTED_STATUS);
 		database.update(RESPONDENT_TABLE, vals,
 				PK_ID_COL + "= " + respondentId, null);
 	}
