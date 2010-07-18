@@ -123,7 +123,9 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 						AnnotatedTimeLine.PACKAGE);
 			}
 		};
-		siService.listInstanceSummaryByLocation(countryCode, communityCode,
+		siService.listInstanceSummaryByLocation(
+				ALL_OPT.equals(countryCode) ? null : countryCode, ALL_OPT
+						.equals(communityCode) ? null : communityCode,
 				siCallback);
 	}
 
@@ -165,7 +167,7 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 		options.setWindowMode(WindowMode.TRANSPARENT);
 		return options;
 	}
-	
+
 	public String getName() {
 		return NAME;
 	}

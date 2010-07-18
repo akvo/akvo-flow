@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.dao;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 
@@ -30,13 +31,15 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 	public List<SurveyAttributeMapping> listMappingsBySurvey(Long surveyId) {
 		return listByProperty("surveyId", surveyId, "Long");
 	}
-	
+
 	/**
 	 * lists all mappings for a particular question id
+	 * 
 	 * @param questionGroupId
 	 * @return
 	 */
-	public List<SurveyAttributeMapping> listMappingsByQuestionGroup(Long questionGroupId) {
+	public List<SurveyAttributeMapping> listMappingsByQuestionGroup(
+			Long questionGroupId) {
 		return listByProperty("questionGroupId", questionGroupId, "Long");
 	}
 
@@ -52,7 +55,7 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 			pm.deletePersistentAll(mappings);
 		}
 	}
-	
+
 	/**
 	 * deletes all mappings for a given questionGroupId
 	 * 
@@ -64,6 +67,32 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 			PersistenceManager pm = PersistenceFilter.getManager();
 			pm.deletePersistentAll(mappings);
 		}
+	}
+
+	/**
+	 * returns a single mapping object that corresponds to the attribute passed
+	 * in for a given survey.
+	 * 
+	 * @param surveyId
+	 * @param attributeName
+	 * @return - mapping or null if no match
+	 */
+	@SuppressWarnings("unchecked")
+	public SurveyAttributeMapping findMappingForAttribute(Long surveyId,
+			String attributeName) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		Query q = pm.newQuery(SurveyAttributeMapping.class);
+		q
+				.setFilter("surveyId == surveyIdParam && attributeName == attrNameParam");
+		q.declareParameters("Long surveyIdParam, String attrNameParam");		
+		List<SurveyAttributeMapping> mappingList = (List<SurveyAttributeMapping>) q
+				.execute(surveyId, attributeName);
+		if (mappingList != null && mappingList.size() > 0) {
+			return mappingList.get(0);
+		} else {
+			return null;
+		}
+
 	}
 
 }

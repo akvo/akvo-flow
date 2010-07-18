@@ -3,7 +3,6 @@ package org.waterforpeople.mapping.helper;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -17,7 +16,6 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.beoui.geocell.GeocellManager;
@@ -29,7 +27,6 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class AccessPointHelper {
 
-	private static final String VALUE_TYPE = "VALUE";
 	private static final String GEO_TYPE = "GEO";
 	private static final String PHOTO_TYPE = "IMAGE";
 	private SurveyAttributeMappingDao mappingDao;
@@ -51,9 +48,9 @@ public class AccessPointHelper {
 		// Get the surveyDefinition
 
 		SurveyInstanceDAO sid = new SurveyInstanceDAO();
-		SurveyInstance si = sid.getByKey(Long.parseLong(surveyInstanceId));
-		ArrayList<QuestionAnswerStore> questionAnswerList = si
-				.getQuestionAnswersStore();
+
+		List<QuestionAnswerStore> questionAnswerList = sid
+				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId));
 
 		// Hardcoded for dev need to identify the map key between SurveyInstance
 		// and Survey
@@ -71,16 +68,17 @@ public class AccessPointHelper {
 		 */
 
 		AccessPoint ap;
-		if (si != null) {
-			ap = parseAccessPoint(new Long(si.getSurveyId()),
-					questionAnswerList, AccessPoint.AccessPointType.WATER_POINT);
+		if (questionAnswerList != null && questionAnswerList.size() > 0) {
+			ap = parseAccessPoint(new Long(questionAnswerList.get(0)
+					.getSurveyId()), questionAnswerList,
+					AccessPoint.AccessPointType.WATER_POINT);
 			saveAccessPoint(ap);
 		}
 
 	}
 
 	private AccessPoint parseAccessPoint(Long surveyId,
-			ArrayList<QuestionAnswerStore> questionAnswerList,
+			List<QuestionAnswerStore> questionAnswerList,
 			AccessPoint.AccessPointType accessPointType) {
 		AccessPoint ap = null;
 		List<SurveyAttributeMapping> mappings = mappingDao
@@ -109,7 +107,7 @@ public class AccessPointHelper {
 	 * @return
 	 */
 	private AccessPoint parseAccessPoint(Long surveyId,
-			ArrayList<QuestionAnswerStore> questionAnswerList,
+			List<QuestionAnswerStore> questionAnswerList,
 			List<SurveyAttributeMapping> mappings) {
 		AccessPoint ap = new AccessPoint();
 		if (questionAnswerList != null) {
@@ -202,7 +200,7 @@ public class AccessPointHelper {
 	 * @return
 	 */
 	private AccessPoint hardCodedparseWaterPoint(
-			ArrayList<QuestionAnswerStore> questionAnswerList) {
+			List<QuestionAnswerStore> questionAnswerList) {
 		AccessPoint ap = new AccessPoint();
 		Properties props = System.getProperties();
 

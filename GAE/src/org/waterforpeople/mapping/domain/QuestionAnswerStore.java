@@ -10,10 +10,7 @@ import javax.jdo.annotations.Persistent;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class QuestionAnswerStore extends BaseDomain{
-	/**
-	 * 
-	 */
+public class QuestionAnswerStore extends BaseDomain {	
 	private static final long serialVersionUID = 3726562582080475960L;
 
 	@Persistent
@@ -25,8 +22,25 @@ public class QuestionAnswerStore extends BaseDomain{
 	@Persistent
 	private String value;
 	private Date collectionDate;
-	
-	
+	private Long surveyId;
+	private Long surveyInstanceId;
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public Long getSurveyInstanceId() {
+		return surveyInstanceId;
+	}
+
+	public void setSurveyInstanceId(Long surveyInstanceId) {
+		this.surveyInstanceId = surveyInstanceId;
+	}
+
 	public Date getCollectionDate() {
 		return collectionDate;
 	}
@@ -34,6 +48,7 @@ public class QuestionAnswerStore extends BaseDomain{
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
+
 	@Persistent
 	private SurveyInstance surveyInstance;
 
@@ -52,7 +67,6 @@ public class QuestionAnswerStore extends BaseDomain{
 	public void setArbitratyNumber(Long arbitratyNumber) {
 		this.arbitratyNumber = arbitratyNumber;
 	}
-
 
 	public String getType() {
 		return type;
@@ -77,6 +91,7 @@ public class QuestionAnswerStore extends BaseDomain{
 	public void setQuestionID(String questionID) {
 		this.questionID = questionID;
 	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

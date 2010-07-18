@@ -68,12 +68,12 @@ public class LocationBeaconRequest extends RestRequest {
 
 	@Override
 	protected void populateErrors() {
-		if (lat == null) {
+		if (lon != null && lat == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, LAT_PARAM
 							+ " cannot be null"));
 		}
-		if (lon == null) {
+		if (lat != null && lon == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, LON_PARAM
 							+ " cannot be null"));
@@ -82,7 +82,7 @@ public class LocationBeaconRequest extends RestRequest {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, PHONE_PARAM
 							+ " cannot be null"));
-		}		
+		}
 	}
 
 	@Override
@@ -90,9 +90,15 @@ public class LocationBeaconRequest extends RestRequest {
 		phoneNumber = req.getParameter(PHONE_PARAM);
 		appVersion = req.getParameter(VER_PARAM);
 		try {
-			lat = Double.parseDouble(req.getParameter(LAT_PARAM));
-			lon = Double.parseDouble(req.getParameter(LON_PARAM));
-			accuracy = Double.parseDouble(req.getParameter(ACC_PARAM));
+			if (req.getParameter(LAT_PARAM) != null) {
+				lat = Double.parseDouble(req.getParameter(LAT_PARAM));
+			}
+			if (req.getParameter(LON_PARAM) != null) {
+				lon = Double.parseDouble(req.getParameter(LON_PARAM));
+			}
+			if (req.getParameter(ACC_PARAM) != null) {
+				accuracy = Double.parseDouble(req.getParameter(ACC_PARAM));
+			}
 		} catch (NumberFormatException e) {
 			throw new RestValidationException(new RestError(
 					RestError.BAD_DATATYPE_CODE,

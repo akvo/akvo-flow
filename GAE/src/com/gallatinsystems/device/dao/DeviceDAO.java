@@ -36,11 +36,13 @@ public class DeviceDAO extends BaseDAO<Device> {
 			d = new Device();
 			d.setCreatedDateTime(new Date());
 			d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-			d.setPhoneNumber(phoneNumber);			
+			d.setPhoneNumber(phoneNumber);
 		}
-		d.setLastKnownAccuracy(accuracy);
-		d.setLastKnownLat(lat);
-		d.setLastKnownLon(lon);
+		if (lat != null && lon != null) {
+			d.setLastKnownLat(lat);
+			d.setLastKnownLon(lon);
+			d.setLastKnownAccuracy(accuracy);
+		}
 		d.setLastLocationBeaconTime(new Date());
 		d.setGallatinSoftwareManifest(version);
 		save(d);

@@ -5,9 +5,11 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
+import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
@@ -23,8 +25,15 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 
 	private static Logger logger = Logger
 			.getLogger(SurveyInstanceSummarizer.class.getName());
-	// TODO: find a better way of identifying the community?
-	private static final String COMMUNITY_QUESTION_ID = "qm1";
+
+	private static final String COMMUNITY_QUESTION_ATTRIBUTE = "communityCode";
+	private SurveyInstanceDAO instanceDao;
+	private SurveyAttributeMappingDao mappingDao;
+
+	public SurveyInstanceSummarizer() {
+		instanceDao = new SurveyInstanceDAO();
+		mappingDao = new SurveyAttributeMappingDao();
+	}
 
 	/**
 	 * looks up a survey instance then finds it's corresponding community (by
@@ -35,31 +44,31 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 	@Override
 	public boolean performSummarization(String key, String type) {
 		if (key != null) {
-			SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
+
 			SurveyInstance instance = instanceDao.getByKey(new Long(key));
 			if (instance != null) {
-				String communityCode = null;
-				if (instance.getQuestionAnswersStore() != null) {
-					for (QuestionAnswerStore ans : instance
-							.getQuestionAnswersStore()) {
-						if (COMMUNITY_QUESTION_ID.equals(ans.getQuestionID())) {
-							communityCode = ans.getValue();
-							break;
-						}
-					}
-					if (communityCode != null) {
+				SurveyAttributeMapping mapping = mappingDao
+						.findMappingForAttribute(instance.getSurveyId(),
+								COMMUNITY_QUESTION_ATTRIBUTE);
+				if (mapping != null) {
+					// if the survey has the attribute mapped, find the
+					// appropriate question
+					QuestionAnswerStore qas = instanceDao
+							.findQuestionAnswerStoreForQuestion(new Long(key),
+									mapping.getSurveyQuestionId());
+					if (qas != null && qas.getValue() != null) {
 						CommunityDao commDao = new CommunityDao();
-						Community community = commDao
-								.findCommunityByCode(communityCode);
+						Community community = commDao.findCommunityByCode(qas
+								.getValue());
 						if (community != null) {
 							SurveyInstanceSummaryDao.incrementCount(community
 									.getCommunityCode(), community
-									.getCountryCode(), instance.getCollectionDate());
+									.getCountryCode(), instance
+									.getCollectionDate());
 						} else {
 							logger
-									.log(
-											Level.SEVERE,
-											"Couldn't find community for instance. Is the questionID set correctly on the summarizer?");
+									.log(Level.SEVERE,
+											"Couldn't find community for instance. Was the community saved correctly?");
 						}
 					}
 				}

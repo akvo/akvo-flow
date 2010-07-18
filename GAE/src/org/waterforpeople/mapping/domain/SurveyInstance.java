@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -25,7 +26,7 @@ public class SurveyInstance extends BaseDomain {
 	@Persistent
 	private DeviceFiles deviceFile;
 
-	@Persistent(mappedBy = "surveyInstance")
+	@NotPersistent
 	private ArrayList<QuestionAnswerStore> questionAnswersStore;
 
 	private Long surveyId;
