@@ -4,6 +4,7 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
+import com.gallatinsystems.common.util.UploadUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -52,6 +54,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
 
+	private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
+	private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
+	private static final String SURVEY_UPLOAD_SIG = "surveyuploadsig";
+	private static final String SURVEY_UPLOAD_POLICY = "surveyuploadpolicy";
+	private static final String S3_ID = "aws_identifier";
+
 	@Override
 	protected RestRequest convertRequest() throws Exception {
 		HttpServletRequest req = getRequest();
@@ -85,12 +93,23 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		return response;
 	}
 
+	/**
+	 * uploads full survey XML to S3
+	 * 
+	 * @param surveyId
+	 */
 	private void uploadSurvey(Long surveyId) {
 		SurveyContainerDao scDao = new SurveyContainerDao();
 		SurveyContainer sc = scDao.findBySurveyId(surveyId);
-		if (sc != null) {
-			// TODO: upload to S3
-		}
+		Properties props = System.getProperties();
+
+		UploadUtil.sendStringAsFile(sc.getSurveyId() + ".xml", sc
+				.getSurveyDocument().getValue(), props
+				.getProperty(SURVEY_UPLOAD_DIR), props
+				.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
+				props.getProperty(SURVEY_UPLOAD_POLICY), props
+						.getProperty(SURVEY_UPLOAD_SIG), "text/xml");
+
 		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null);
 	}
 
@@ -331,12 +350,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		SurveyContainerDao scDao = new SurveyContainerDao();
 		SurveyContainer sc = scDao.findBySurveyId(surveyId);
-		if(sc == null){
+		if (sc == null) {
 			sc = new SurveyContainer();
 		}
 		sc.setSurveyDocument(new Text(completeSurvey.toString()));
 		sc.setSurveyId(surveyId);
-		
+
 		scDao.save(sc);
 
 		sendQueueMessage(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId,
