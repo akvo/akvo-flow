@@ -322,7 +322,7 @@ public class KMLGenerator {
 			try {
 				sb.append(bindPlacemark(ap, vmName));
 			} catch (Exception e) {
-				log.log(Level.SEVERE, "Error generating placemarks: "
+				log.log(Level.INFO, "Error generating placemarks: "
 						+ ap.toString(), e);
 			}
 		}
