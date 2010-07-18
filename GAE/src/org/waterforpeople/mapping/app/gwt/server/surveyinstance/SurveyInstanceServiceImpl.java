@@ -18,9 +18,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceService {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9175237700587455358L;
 
 	@Override

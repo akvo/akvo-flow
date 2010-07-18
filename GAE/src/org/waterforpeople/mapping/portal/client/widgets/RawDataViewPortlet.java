@@ -13,7 +13,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -21,22 +20,17 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.visualization.client.formatters.DateFormat;
 
 public class RawDataViewPortlet extends LocationDrivenPortlet {
 	public static final String NAME = "Raw Data Manager";
 	public static final String DESCRIPTION = "Allows the management of raw imported survey data";
 	private static String title;
 	private static String description;
-	private static Boolean scrollable;
-	private static Boolean configurable;
 	private static Integer width = 1024;
 	private static Integer height = 768;
-	private static Boolean useCommunity;
-	private static String specialOption;
-	private static UserDto user;
-
-	private Tree surveyImportedTree = new Tree();
+	private SurveyInstanceServiceAsync svc;
+	private Grid qasDetailGrid;
+	private Tree surveyImportedTree;
 
 	public RawDataViewPortlet(String title, boolean scrollable,
 			boolean configurable, int width, int height, UserDto user,
@@ -50,13 +44,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 		setupPortlet();
 	}
 
-	private SurveyInstanceServiceAsync svc = null;
-	private ServiceDefTarget endpoint = null;
-
 	private void setupPortlet() {
 		bindSvc();
 		loadContentPanel();
-
 	}
 
 	public String getDescription() {
@@ -65,12 +55,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 
 	private void bindSvc() {
 		svc = GWT.create(SurveyInstanceService.class);
-		endpoint = (ServiceDefTarget) svc;
-		endpoint
-				.setServiceEntryPoint("/org.waterforpeople.mapping.portal.portal/surveyinstance");
 	}
 
 	private void loadContentPanel() {
+		surveyImportedTree = new Tree();
 		loadSurveyImportTree();
 		contentPanel.add(mainHPanel);
 		setWidget(contentPanel);
@@ -80,8 +68,6 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 	public String getName() {
 		return title;
 	}
-
-	Grid qasDetailGrid = null;
 
 	private void loadSurveyImportTree() {
 		mainHPanel.add(new Label("Imported Surveys"));
@@ -108,7 +94,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 										@Override
 										public void onSelection(
 												SelectionEvent<TreeItem> event) {
-											if (qasDetailGrid!=null)
+											if (qasDetailGrid != null)
 												mainHPanel
 														.remove(qasDetailGrid);
 											SurveyInstanceDto siDto = (SurveyInstanceDto) event
