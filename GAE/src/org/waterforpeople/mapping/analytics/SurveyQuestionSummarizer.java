@@ -5,7 +5,6 @@ import java.util.List;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 
@@ -22,14 +21,11 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
 	public boolean performSummarization(String key, String type) {
 		if (key != null) {
 			SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
-			SurveyInstance instance = instanceDao.getByKey(new Long(key));
-			if (instance != null) {
-				List<QuestionAnswerStore> answers = instance
-						.getQuestionAnswersStore();
-				if (answers != null) {
-					for (QuestionAnswerStore answer : answers) {
-						SurveyQuestionSummaryDao.incrementCount(answer);
-					}
+			List<QuestionAnswerStore> answers = instanceDao
+					.listQuestionAnswerStore(new Long(key));
+			if (answers != null) {
+				for (QuestionAnswerStore answer : answers) {
+					SurveyQuestionSummaryDao.incrementCount(answer);
 				}
 			}
 		}
