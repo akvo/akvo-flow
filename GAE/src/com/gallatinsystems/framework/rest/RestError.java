@@ -16,7 +16,7 @@ public class RestError implements Serializable{
 	public static final String UNKNOWN_ERROR_MESSAGE = "Unknown error";
 	public static final String UNNOWN_ERROR_CODE = "5000";
 	public static final String MISSING_PARAM_ERROR_CODE = "5001";
-	public static final String MISSING_PRAM_ERROR_MESSAGE = "Missing mandatory parameter";
+	public static final String MISSING_PARAM_ERROR_MESSAGE = "Missing mandatory parameter";
 	public static final String BAD_DATATYPE_CODE = "5002";
 	public static final String BAD_DATATYPE_MESSAGE = "Invalid data type";
 

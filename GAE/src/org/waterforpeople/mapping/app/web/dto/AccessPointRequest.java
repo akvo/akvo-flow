@@ -39,12 +39,12 @@ public class AccessPointRequest extends RestRequest {
 	protected void populateErrors() {
 		if (lat == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PRAM_ERROR_MESSAGE, LAT_PARAM
+					RestError.MISSING_PARAM_ERROR_MESSAGE, LAT_PARAM
 							+ " cannot be null"));
 		}
 		if (lon == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PRAM_ERROR_MESSAGE, LON_PARAM
+					RestError.MISSING_PARAM_ERROR_MESSAGE, LON_PARAM
 							+ " cannot be null"));
 		}
 	}

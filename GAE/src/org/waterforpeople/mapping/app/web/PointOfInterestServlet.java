@@ -55,8 +55,9 @@ public class PointOfInterestServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		PointOfInterestRequest piReq = (PointOfInterestRequest) req;
 		return convertToResponse(accessPointDao.listNearbyAccessPoints(piReq
-				.getLat(), piReq.getLon(), geoService.getCountryCodeForPoint(
-				piReq.getLat().toString(), piReq.getLon().toString()),
+				.getLat(), piReq.getLon(), piReq.getCountry() != null ? piReq
+				.getCountry() : geoService.getCountryCodeForPoint(piReq
+				.getLat().toString(), piReq.getLon().toString()),
 				MAX_DISTANCE_METERS));
 	}
 

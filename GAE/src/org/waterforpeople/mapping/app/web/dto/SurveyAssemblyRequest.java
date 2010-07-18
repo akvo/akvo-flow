@@ -56,7 +56,7 @@ public class SurveyAssemblyRequest extends RestRequest {
 	protected void populateErrors() {
 		if (surveyId == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PRAM_ERROR_MESSAGE, SURVEY_ID_PARAM
+					RestError.MISSING_PARAM_ERROR_MESSAGE, SURVEY_ID_PARAM
 							+ " cannot be null"));
 		}
 	}

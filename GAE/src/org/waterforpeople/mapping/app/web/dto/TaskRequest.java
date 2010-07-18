@@ -80,7 +80,7 @@ public class TaskRequest extends RestRequest {
 		if (getAction() == null) {
 			String errorMsg = ACTION_PARAM + " is mandatory";
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PRAM_ERROR_MESSAGE, errorMsg));
+					RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
 		}
 	}
 
