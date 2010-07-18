@@ -51,6 +51,7 @@ public class SurveyDownloadService extends Service {
 	private static final String SURVEY_LIST_SERVICE_PATH = "/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_HEADER_SERVICE_PATH = "/surveymanager?action=getSurveyHeader&surveyId=";
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
+	private static final String SURVEY_S3_URL = "http://waterforpeople.s3.amazonaws.com/surveys/";
 
 	private SurveyDbAdapter databaseAdaptor;
 
@@ -193,8 +194,7 @@ public class SurveyDownloadService extends Service {
 	private boolean downloadSurvey(String serverBase, Survey survey) {
 		boolean success = false;
 		try {
-			String response = HttpUtil.httpGet(serverBase
-					+ SURVEY_SERVICE_SERVICE_PATH + survey.getId());
+			String response = HttpUtil.httpGet(SURVEY_S3_URL + survey.getId()+".xml");
 			if (response != null
 					&& !response.trim().equalsIgnoreCase(NO_SURVEY)) {
 				survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
