@@ -20,19 +20,27 @@ import com.gallatinsystems.survey.device.util.HttpUtil;
  */
 public class PointOfInterestService {
 	private static final String TAG = "PointOfInterestService";
-	private static final String SERVICE_URL = "http://watermapmonitordev.appspot.com/pointofinterest?action=getnearby&lat=";
+	private static final String SERVICE_URL = "http://watermapmonitordev.appspot.com/pointofinterest?action=getnearby";
+	private static final String LAT_PARAM = "&lat=";
+	private static final String LON_PARAM = "&lon=";
+	private static final String COUNTRY_PARAM = "&country=";
 
 	/**
 	 * 
 	 * calls a service to get all the access points near the position passed in.
 	 */
 	public static ArrayList<PointOfInterestDto> getNearbyAccessPoints(
-			Double lat, Double lon) {
+			Double lat, Double lon, String country) {
 
 		ArrayList<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
 		try {
-			String response = HttpUtil.httpGet(SERVICE_URL + lat + "&lon="
-					+ lon);
+			String url = SERVICE_URL;
+			if (country == null || country.trim().length() == 0) {
+				url = url + LAT_PARAM + lat + LON_PARAM + lon;
+			} else {
+				url = url + COUNTRY_PARAM + country;
+			}
+			String response = HttpUtil.httpGet(url);
 			if (response != null) {
 				JSONObject json = new JSONObject(response);
 				if (json != null) {

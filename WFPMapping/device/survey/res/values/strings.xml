@@ -128,5 +128,8 @@
 	<string name="onlyonecanbeblank">Only one input field can be blank.</string>
 	<string name="invalidinput">Invalid Input</string>
 	<string name="solvebutton">Solve</string>
+	<string name="countryselection">Select Country</string>
+	<string name="loadingnearby">Loading nearby points</string>
 	<string name="appversion">0.98.0</string>
+	
 </resources>

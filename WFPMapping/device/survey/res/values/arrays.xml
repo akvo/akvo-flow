@@ -53,7 +53,13 @@
 	<string-array name="flowratemetric">
 		<item>liter / second</item>
 	</string-array>
-		<string-array name="flowconversion">		
+	<string-array name="flowconversion">
 		<item>1</item>
+	</string-array>
+	<string-array name="countries">
+		<item>HN</item>
+		<item>GT</item>
+		<item>MW</item>
+		<item>RW</item>
 	</string-array>
 </resources>

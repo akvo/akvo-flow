@@ -2,16 +2,21 @@ package com.gallatinsystems.survey.device.activity;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -28,25 +33,43 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 public class NearbyItemActivity extends ListActivity implements
 		LocationListener {
 
-	private static int NEARBY_DETAIL_ACTIVITY = 1;
+	private static final int NEARBY_DETAIL_ACTIVITY = 1;
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private ProgressDialog progressDialog;
 	private ArrayList<PointOfInterestDto> pointsOfInterest;
 	private Handler dataHandler;
 	private Runnable resultsUpdater;
+	private String country;
+	private String[] countries;
+	private volatile boolean isRunning;
+	private Thread dataThread;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.nearbyitem);
+		Resources resources = getResources();
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
-		progressDialog = ProgressDialog.show(this, "Please wait...",
-				"Loading nearby items...", true);
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setTitle(R.string.pleasewait);
+		progressDialog.setMessage(resources.getString(R.string.loadingnearby));
+		isRunning = false;
 		progressDialog.setCancelable(true);
+		progressDialog
+				.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						if (isRunning && dataThread != null) {
+							dataThread.interrupt();
+						}
+					}
+				});
 
+		countries = resources.getStringArray(R.array.countries);
 		dataHandler = new Handler();
 		resultsUpdater = new Runnable() {
 			public void run() {
@@ -58,7 +81,7 @@ public class NearbyItemActivity extends ListActivity implements
 		if (provider != null) {
 			Location loc = locMgr.getLastKnownLocation(provider);
 			if (loc != null) {
-				loadData(loc.getLatitude(), loc.getLongitude());
+				loadData(loc.getLatitude(), loc.getLongitude(), country);
 			} else {
 				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 						1000, 0, this);
@@ -66,12 +89,17 @@ public class NearbyItemActivity extends ListActivity implements
 		}
 	}
 
+	/**
+	 * updates the ui with the results of the service call that was running in
+	 * the background thread.
+	 */
 	private void updateUi() {
 		if (pointsOfInterest != null) {
 			setListAdapter(new ArrayAdapter<PointOfInterestDto>(this,
 					R.layout.itemlistrow, pointsOfInterest));
 		}
 		progressDialog.dismiss();
+		isRunning = false;
 	}
 
 	/**
@@ -81,17 +109,22 @@ public class NearbyItemActivity extends ListActivity implements
 	 * @param lat
 	 * @param lon
 	 */
-	private void loadData(final Double lat, final Double lon) {
+	private void loadData(final Double lat, final Double lon,
+			final String country) {
+		isRunning = true;
+		progressDialog.show();
+
 		// Fire off a thread to do some work that we shouldn't do directly in
 		// the UI thread
-		Thread t = new Thread() {
+		dataThread = new Thread() {
 			public void run() {
 				pointsOfInterest = PointOfInterestService
-						.getNearbyAccessPoints(lat, lon);
+						.getNearbyAccessPoints(lat, lon, country);
 				dataHandler.post(resultsUpdater);
+
 			}
 		};
-		t.start();
+		dataThread.start();
 	}
 
 	/**
@@ -106,10 +139,42 @@ public class NearbyItemActivity extends ListActivity implements
 		startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
 	}
 
+	/**
+	 * displays the country selection menu
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {	
+		displayCountrySelection();
+		// return false so this method will be invoked on each press of the menu
+		// button
+		return false;
+	}
+
+	/**
+	 * displays country selection dialog box
+	 */
+	private void displayCountrySelection() {
+		AlertDialog dia = new AlertDialog.Builder(this).setTitle(
+
+		R.string.countryselection).setItems(R.array.countries,
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						country = countries[which];
+						loadData(null, null, country);
+					}
+				}).create();
+		dia.show();
+	}
+		
+
 	@Override
 	public void onLocationChanged(Location location) {
 		locMgr.removeUpdates(this);
-		loadData(location.getLatitude(), location.getLongitude());
+		if (!isRunning) {
+			loadData(location.getLatitude(), location.getLongitude(), country);
+		}
 	}
 
 	@Override
