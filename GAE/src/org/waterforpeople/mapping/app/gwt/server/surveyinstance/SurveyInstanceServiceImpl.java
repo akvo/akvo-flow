@@ -29,17 +29,14 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public ArrayList<SurveyInstanceDto> listSurveyInstance(Date beginDate) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		List<SurveyInstance> siList=null;
-		Calendar c = Calendar.getInstance();
-		c.add(Calendar.DAY_OF_MONTH, -5);
-		beginDate = c.getTime();
-		if(beginDate==null)
-		siList = dao
-				.list("all");
-		else
-			siList = dao.listByDateRange(c.getTime(), null);
-				
-				
+		List<SurveyInstance> siList = null;
+		if (beginDate == null) {
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.DAY_OF_MONTH, -5);
+			beginDate = c.getTime();
+		}
+		siList = dao.listByDateRange(beginDate, null);
+
 		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
 		for (SurveyInstance siItem : siList)
 			siDtoList.add(marshalToDto(siItem));
@@ -50,8 +47,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDto siDto = new SurveyInstanceDto();
 		DtoMarshaller.copyToDto(si, siDto);
 		siDto.setQuestionAnswersStore(null);
-		for(QuestionAnswerStore qas:si.getQuestionAnswersStore())
-		{
+		for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
 			QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
 			DtoMarshaller.copyToDto(qas, qasDto);
 			siDto.addQuestionAnswerStore(qasDto);

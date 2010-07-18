@@ -6,7 +6,6 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -31,30 +30,24 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
 	private Tree surveyImportedTree;
-
-	public RawDataViewPortlet(String title, boolean scrollable,
-			boolean configurable, int width, int height, UserDto user,
-			boolean useCommunity, String specialOption) {
-		super(NAME, true, false, width, height, null, false, null);
-		setupPortlet();
-	}
+	private HorizontalPanel mainHPanel;
+	private VerticalPanel contentPanel;
 
 	public RawDataViewPortlet() {
 		super(NAME, true, false, width, height, null, false, null);
+		mainHPanel = new HorizontalPanel();
+		contentPanel = new VerticalPanel();
+		svc = GWT.create(SurveyInstanceService.class);
+
 		setupPortlet();
 	}
 
 	private void setupPortlet() {
-		bindSvc();
 		loadContentPanel();
 	}
 
 	public String getDescription() {
 		return description;
-	}
-
-	private void bindSvc() {
-		svc = GWT.create(SurveyInstanceService.class);
 	}
 
 	private void loadContentPanel() {
@@ -151,11 +144,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 		qasDetailGrid.setWidget(iRow, 1, qType);
 		qasDetailGrid.setWidget(iRow, 2, qValue);
 		qasDetailGrid.setWidget(iRow, 3, qCollectionDate);
-
 	}
-
-	private HorizontalPanel mainHPanel = new HorizontalPanel();
-	private VerticalPanel contentPanel = new VerticalPanel();
 
 	private void bindItemToTree(SurveyInstanceDto item) {
 		TreeItem treeItem = new TreeItem();
@@ -166,5 +155,4 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 		treeItem.setUserObject(item);
 		surveyImportedTree.addItem(treeItem);
 	}
-
 }
