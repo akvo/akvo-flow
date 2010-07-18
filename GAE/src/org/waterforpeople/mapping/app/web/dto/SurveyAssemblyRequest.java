@@ -17,6 +17,8 @@ public class SurveyAssemblyRequest extends RestRequest {
 	public static final String ASSEMBLE_QUESTION_GROUP = "assembleQuestionGroup";
 	public static final String ASSEMBLE_QUESTIONS = "assembleQuestions";
 	public static final String ASSEMBLE_SURVEY_FRAGMENTS = "assembleSurveyFragments";
+	public static final String DISTRIBUTE_SURVEY = "distributeSurvey";
+	public static final String CLEANUP = "cleanup";
 
 	private static final String SURVEY_ID_PARAM = "surveyId";
 	private static final String TYPE_PARAM = "type";

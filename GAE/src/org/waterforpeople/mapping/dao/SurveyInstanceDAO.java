@@ -56,8 +56,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<SurveyInstance> listByDateRange(Date beginDate,
-			Date endDate) {
+	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		List<SurveyInstance> results = null;
 		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
@@ -67,5 +66,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		return results;
 	}
+	
 
 }

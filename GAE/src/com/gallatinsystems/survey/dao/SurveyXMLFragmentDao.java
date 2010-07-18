@@ -2,27 +2,36 @@ package com.gallatinsystems.survey.dao;
 
 import java.util.List;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.survey.domain.SurveyXMLFragment;
+import javax.jdo.PersistenceManager;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 
 public class SurveyXMLFragmentDao extends BaseDAO<SurveyXMLFragment> {
 
-	public SurveyXMLFragmentDao(Class<SurveyXMLFragment> e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-	
-	public SurveyXMLFragmentDao(){
+	public SurveyXMLFragmentDao() {
 		super(SurveyXMLFragment.class);
 	}
-	
-	public List<SurveyXMLFragment> listSurveyFragments(Long surveyId, SurveyXMLFragment.FRAGMENT_TYPE type){
-		List<SurveyXMLFragment> surveyFragmentList = super.listByProperty("surveyId", surveyId, "Long", SurveyXMLFragment.class);
+
+	public List<SurveyXMLFragment> listSurveyFragments(Long surveyId,
+			SurveyXMLFragment.FRAGMENT_TYPE type) {
+		List<SurveyXMLFragment> surveyFragmentList = listByProperty("surveyId",
+				surveyId, "Long", SurveyXMLFragment.class);
 		return surveyFragmentList;
 	}
-	public List<SurveyXMLFragment> listSurveyFragments(Long surveyId, Long questionGroupId){
-		return null;
-	}
 
+	/**
+	 * deletes all fragments for the surveyId passed in
+	 * 
+	 * @param surveyId
+	 */
+	public void deleteFragmentsForSurvey(Long surveyId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		List<SurveyXMLFragment> surveyFragmentList = listByProperty("surveyId",
+				surveyId, "Long", SurveyXMLFragment.class);
+		if (surveyFragmentList != null) {
+			pm.deletePersistentAll(surveyFragmentList);
+		}
+	}
 }
