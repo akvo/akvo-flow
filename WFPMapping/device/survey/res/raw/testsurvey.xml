@@ -30,7 +30,7 @@
 		<question id="q3" order="3" mandatory="false" type="photo">
 			<text>Water Point Photo</text>
 		</question>
-		<question id="q4" order="4" mandatory="false" type="geo">
+		<question id="q4" order="4" mandatory="false" type="geo" locked="true">
 			<text>Location</text>
 		</question>
 		<question id="q5" order="5" mandatory="false" type="free">
