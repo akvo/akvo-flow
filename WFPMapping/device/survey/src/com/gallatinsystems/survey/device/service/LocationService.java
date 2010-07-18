@@ -10,6 +10,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -37,6 +38,7 @@ public class LocationService extends Service {
 	private static final String LAT = "&lat=";
 	private static final String LON = "&lon=";
 	private static final String ACC = "&acc=";
+	private static final String TAG = "LocationService";
 	private String version;
 
 	public IBinder onBind(Intent intent) {
@@ -106,15 +108,22 @@ public class LocationService extends Service {
 	 * @param loc
 	 */
 	private void sendLocation(String serverBase, Location loc) {
-		if (loc != null) {
-			try {
+		try {
+			if (loc != null) {
+
 				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
 						+ StatusUtil.getPhoneNumber(this) + LAT
 						+ loc.getLatitude() + LON + loc.getLongitude() + ACC
 						+ loc.getAccuracy() + VER + version);
-			} catch (Exception e) {
-				// TODO: log error
+			} else {
+				// if location is null, send an update anyway, just without
+				// lat/lon
+				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
+						+ StatusUtil.getPhoneNumber(this) + VER + version);
+
 			}
+		} catch (Exception e) {
+			Log.e(TAG, "Could not send location beacon", e);
 		}
 	}
 

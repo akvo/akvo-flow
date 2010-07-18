@@ -79,6 +79,6 @@ public class StatusUtil {
 				}
 			}
 		}
-		return number;
+		return number;		
 	}
 }
