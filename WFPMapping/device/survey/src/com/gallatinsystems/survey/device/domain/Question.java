@@ -34,6 +34,15 @@ public class Question {
 	private ArrayList<Option> options;
 	private boolean allowOther;
 	private boolean allowMultiple;
+	private boolean locked;
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
 
 	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
 

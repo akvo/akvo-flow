@@ -119,6 +119,11 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 			elevationField.setFocusable(false);
 			geoButton.setEnabled(false);
 		}
+		if (question.isLocked()) {
+			latField.setFocusable(false);
+			lonField.setFocusable(false);
+			elevationField.setFocusable(false);
+		}
 	}
 
 	/**

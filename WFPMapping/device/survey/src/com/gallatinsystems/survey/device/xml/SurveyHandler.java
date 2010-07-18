@@ -51,6 +51,7 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String MAX_VAL = "maxVal";
 	private static final String ALT_TEXT = "altText";
 	private static final String LANG = "language";
+	private static final String LOCKED = "locked";
 	@SuppressWarnings("unused")
 	private static final String TRANSLATION = "translation";
 
@@ -189,6 +190,13 @@ public class SurveyHandler extends DefaultHandler {
 			} else {
 				currentQuestion.setMandatory(false);
 			}
+			if (attributes.getValue(LOCKED) != null) {
+				currentQuestion.setLocked(Boolean.parseBoolean(attributes
+						.getValue(LOCKED)));
+			} else {
+				currentQuestion.setLocked(false);
+			}
+			
 			currentQuestion.setType(attributes.getValue(TYPE));
 			currentQuestion.setId(attributes.getValue(ID));
 			String validation = attributes.getValue(VALIDATION_TYPE);
