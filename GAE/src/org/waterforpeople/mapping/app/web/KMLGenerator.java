@@ -330,7 +330,7 @@ public class KMLGenerator {
 	}
 
 	public String bindPlacemark(AccessPoint ap, String vmName) throws Exception {
-		if (!ap.getCountryCode().equals("MW")) {
+		if (ap.getCountryCode()!= null && !ap.getCountryCode().equals("MW")) {
 			VelocityContext context = new VelocityContext();
 			if (ap.getCollectionDate() != null) {
 				String formattedDate = DateFormat.getDateInstance(

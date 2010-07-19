@@ -47,10 +47,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDto siDto = new SurveyInstanceDto();
 		DtoMarshaller.copyToDto(si, siDto);
 		siDto.setQuestionAnswersStore(null);
-		for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
-			QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-			DtoMarshaller.copyToDto(qas, qasDto);
-			siDto.addQuestionAnswerStore(qasDto);
+		if (si.getQuestionAnswersStore() != null) {
+			for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
+				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
+				DtoMarshaller.copyToDto(qas, qasDto);
+				siDto.addQuestionAnswerStore(qasDto);
+			}
 		}
 		return siDto;
 	}
