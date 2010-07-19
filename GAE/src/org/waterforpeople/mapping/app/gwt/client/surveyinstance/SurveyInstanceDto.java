@@ -2,10 +2,10 @@ package org.waterforpeople.mapping.app.gwt.client.surveyinstance;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.jdo.annotations.Persistent;
 
-import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class SurveyInstanceDto extends BaseDto {
@@ -22,7 +22,7 @@ public class SurveyInstanceDto extends BaseDto {
 
 	
 	@Persistent(mappedBy = "surveyInstance")
-	private ArrayList<QuestionAnswerStoreDto> questionAnswersStore;
+	private List<QuestionAnswerStoreDto> questionAnswersStore;
 
 	private Long surveyId;
 
@@ -51,12 +51,12 @@ public class SurveyInstanceDto extends BaseDto {
 	}
 
 
-	public ArrayList<QuestionAnswerStoreDto> getQuestionAnswersStore() {
+	public List<QuestionAnswerStoreDto> getQuestionAnswersStore() {
 		return questionAnswersStore;
 	}
 
 	public void setQuestionAnswersStore(
-			ArrayList<QuestionAnswerStoreDto> questionAnswersStore) {
+			List<QuestionAnswerStoreDto> questionAnswersStore) {
 		this.questionAnswersStore = questionAnswersStore;
 	}
 	public void addQuestionAnswerStore(QuestionAnswerStoreDto item){

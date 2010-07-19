@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
@@ -87,32 +88,38 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 										@Override
 										public void onSelection(
 												SelectionEvent<TreeItem> event) {
-											if (qasDetailGrid != null)
+											if (qasDetailGrid != null) {
 												mainHPanel
 														.remove(qasDetailGrid);
-											SurveyInstanceDto siDto = (SurveyInstanceDto) event
+											}
+											final SurveyInstanceDto siDto = (SurveyInstanceDto) event
 													.getSelectedItem()
 													.getUserObject();
+											if (siDto.getQuestionAnswersStore() != null) {
+												populateQuestions(siDto
+														.getQuestionAnswersStore());
+											} else {
+												svc
+														.listQuestionsByInstance(
+																siDto
+																		.getKeyId(),
+																new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
-											qasDetailGrid = new Grid(siDto
-													.getQuestionAnswersStore()
-													.size() + 1, 4);
-											qasDetailGrid.setWidget(0, 0,
-													new Label("Row Id"));
-											qasDetailGrid.setWidget(0, 1,
-													new Label("Question Type"));
-											qasDetailGrid.setWidget(0, 2,
-													new Label("Answer Value"));
-											qasDetailGrid
-													.setWidget(0, 3, new Label(
-															"Collection Date"));
-											Integer iRow = 0;
-											for (QuestionAnswerStoreDto qasDto : siDto
-													.getQuestionAnswersStore()) {
-												qasDto.setCollectionDate(siDto
-														.getCollectionDate());
-												bindQASRow(qasDto, ++iRow);
-												mainHPanel.add(qasDetailGrid);
+																	@Override
+																	public void onFailure(
+																			Throwable caught) {
+																		// no-op
+																	}
+
+																	@Override
+																	public void onSuccess(
+																			List<QuestionAnswerStoreDto> result) {
+																		siDto
+																				.setQuestionAnswersStore(result);
+																		populateQuestions(result);
+																	}
+
+																});
 											}
 										}
 									});
@@ -120,6 +127,21 @@ public class RawDataViewPortlet extends LocationDrivenPortlet {
 					}
 
 				});
+	}
+
+	private void populateQuestions(List<QuestionAnswerStoreDto> questions) {
+		if (questions != null) {
+			qasDetailGrid = new Grid(questions.size() + 1, 4);
+			qasDetailGrid.setWidget(0, 0, new Label("Question Id"));
+			qasDetailGrid.setWidget(0, 1, new Label("Question Type"));
+			qasDetailGrid.setWidget(0, 2, new Label("Answer Value"));
+			qasDetailGrid.setWidget(0, 3, new Label("Collection Date"));
+			Integer iRow = 0;
+			for (QuestionAnswerStoreDto qasDto : questions) {
+				bindQASRow(qasDto, ++iRow);
+				mainHPanel.add(qasDetailGrid);
+			}
+		}
 	}
 
 	private void bindQASRow(QuestionAnswerStoreDto qasDto, Integer iRow) {

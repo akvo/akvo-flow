@@ -43,6 +43,21 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		return siDtoList;
 	}
 
+	public List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId) {
+		List<QuestionAnswerStoreDto> questionDtos = new ArrayList<QuestionAnswerStoreDto>();
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		List<QuestionAnswerStore> questions = dao
+				.listQuestionAnswerStore(instanceId);
+		if (questions != null) {
+			for (QuestionAnswerStore qas : questions) {
+				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
+				DtoMarshaller.copyToDto(qas, qasDto);
+				questionDtos.add(qasDto);
+			}
+		}
+		return questionDtos;
+	}
+
 	private SurveyInstanceDto marshalToDto(SurveyInstance si) {
 		SurveyInstanceDto siDto = new SurveyInstanceDto();
 		DtoMarshaller.copyToDto(si, siDto);
