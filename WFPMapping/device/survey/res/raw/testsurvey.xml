@@ -2,6 +2,9 @@
 <survey>
 	<questionGroup order="1">
 		<heading>Water Point Questions</heading>
+		<question id="1q" order="0" mandatory="false" type="track">
+			<text>Record distance to water point</text>
+		</question>
 		<question id="q1" order="1" mandatory="true" type="option">
 			<text>Location? This is a really long question to see how it looks in the UI if we have english and spanish.</text>
 			<altText type="translation" language="sp">¿ubicación? este es un texto adicional para poner a prueba la disposición</altText>

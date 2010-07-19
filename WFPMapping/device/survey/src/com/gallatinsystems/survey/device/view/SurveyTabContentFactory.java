@@ -101,7 +101,8 @@ public class SurveyTabContentFactory implements TabContentFactory {
 					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 			if (ConstantUtil.OPTION_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
-				questionView = new OptionQuestionView(context, q, languageCodes, readOnly);
+				questionView = new OptionQuestionView(context, q,
+						languageCodes, readOnly);
 
 			} else if (ConstantUtil.FREE_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
@@ -110,20 +111,28 @@ public class SurveyTabContentFactory implements TabContentFactory {
 			} else if (ConstantUtil.PHOTO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.PHOTO_QUESTION_TYPE, languageCodes, readOnly);
+						ConstantUtil.PHOTO_QUESTION_TYPE, languageCodes,
+						readOnly);
 			} else if (ConstantUtil.VIDEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.VIDEO_QUESTION_TYPE, languageCodes, readOnly);
+						ConstantUtil.VIDEO_QUESTION_TYPE, languageCodes,
+						readOnly);
 			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new GeoQuestionView(context, q, languageCodes, readOnly);
+				questionView = new GeoQuestionView(context, q, languageCodes,
+						readOnly);
 			} else if (ConstantUtil.SCAN_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new BarcodeQuestionView(context, q,
 						languageCodes, readOnly);
+			} else if (ConstantUtil.TRACK_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
+				questionView = new GeoTrackQuestionView(context, q,
+						languageCodes, readOnly);
 			} else {
-				questionView = new QuestionView(context, q, languageCodes, readOnly);
+				questionView = new QuestionView(context, q, languageCodes,
+						readOnly);
 			}
 			questionView.setTextSize(defaultTextSize);
 			questionMap.put(q.getId(), questionView);
@@ -150,7 +159,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		submitButton.setText(R.string.submitbutton);
 		submitButton.setWidth(BUTTON_WIDTH);
 		group.addView(submitButton);
-		if(readOnly){
+		if (readOnly) {
 			submitButton.setEnabled(false);
 		}
 
