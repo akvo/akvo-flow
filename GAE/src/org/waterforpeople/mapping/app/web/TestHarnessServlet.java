@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
@@ -120,27 +122,38 @@ public class TestHarnessServlet extends HttpServlet {
 				log.log(Level.SEVERE, "Could not save test region", e);
 			}
 		} else if ("testAPKml".equals(action)) {
-			for (int i = 0; i < 5; i++) {
+			AccessPointDao apDao = new AccessPointDao();
+			apDao.list("all");
+			for(AccessPoint ap : apDao.list("all")){
+				apDao.delete(ap);
+				try {
+					resp.getWriter().print("Finished Deleting AP: " + ap.toString());
+				} catch (IOException e) {
+					log.log(Level.SEVERE, "Could not delete ap");
+				}
+			}
+			for (int i = 0; i < 1000; i++) {
 				AccessPoint ap = new AccessPoint();
 				ap.setCollectionDate(new Date());
-				ap.setLatitude(15.16939);
-				ap.setLongitude(-90.90918);
+				ap.setLatitude(15.16939 + (new Random().nextDouble() / 1000));
+				ap.setLongitude(-90.90918 + (new Random().nextDouble() / 1000));
 				ap.setAltitude(0.0);
 				ap.setCommunityCode("test" + new Date());
 				ap.setCommunityName("test" + new Date());
 				ap.setPhotoURL("http://test.com");
 				ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+				ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
 				ap.setCountryCode("OT");
-				ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
-				AccessPointDao apDao = new AccessPointDao();
+				ap.setTypeTechnologyString("Other");
 				apDao.save(ap);
+				MapSummarizer ms = new MapSummarizer();
+				ms.performSummarization("" +ap.getKey().getId(), "");
 				try {
 					resp.getWriter().print("Saved AP: " + ap.toString());
 				} catch (IOException e) {
 					log.log(Level.SEVERE, "Could not save ap");
 				}
 			}
-
 		} else if ("testSurveyQuestion".equals(action)) {
 			SurveyDAO surveyDao = new SurveyDAO();
 			SurveyQuestion q = new SurveyQuestion();
