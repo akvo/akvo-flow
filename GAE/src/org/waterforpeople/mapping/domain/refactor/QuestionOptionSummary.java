@@ -45,6 +45,4 @@ public class QuestionOptionSummary extends BaseDomain {
 	public void setQuestionOptionText(Text questionOptionText) {
 		this.questionOptionText = questionOptionText;
 	}
-	
-	
 }
