@@ -85,6 +85,10 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 		}
 	}
 
+	/**
+	 * display the completion icon and install the response in the question
+	 * object
+	 */
 	@Override
 	public void questionComplete(Bundle mediaData) {
 		if (mediaData != null) {

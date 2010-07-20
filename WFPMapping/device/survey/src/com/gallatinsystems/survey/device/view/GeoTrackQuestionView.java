@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TableRow;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
@@ -11,7 +12,7 @@ import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 
 /**
  *This question view handles geographic tracking operations (a stop/start
- * button that toggles the recording of waypoints).
+ * button that toggles the recording of way points).
  * 
  * @author Christopher Fagiani
  * 
@@ -30,11 +31,18 @@ public class GeoTrackQuestionView extends QuestionView implements
 		trackButton.setText(R.string.starttrack);
 		trackButton.setOnClickListener(this);
 		trackButton.setWidth(BUTTON_WIDTH);
-		addView(trackButton, new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT));
+		TableRow tr = new TableRow(context);
+		tr.addView(trackButton);
+		addView(tr);
 		isRunning = false;
 	}
 
+	/**
+	 * starts or stops the background service to record track information and
+	 * fires an event to tell the survey view whether or not to allow survey
+	 * submission/save/clear
+	 * 
+	 */
 	@Override
 	public void onClick(View v) {
 		if (!isRunning) {
@@ -47,4 +55,5 @@ public class GeoTrackQuestionView extends QuestionView implements
 			isRunning = false;
 		}
 	}
+
 }

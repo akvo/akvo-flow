@@ -3,7 +3,6 @@ package com.gallatinsystems.survey.device.view;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
@@ -46,6 +45,7 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	private float defaultTextSize;
 	private String[] languageCodes;
 	private boolean readOnly;
+	private Button submitButton;
 
 	public HashMap<String, QuestionView> getQuestionMap() {
 		return questionMap;
@@ -67,6 +67,20 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		defaultTextSize = textSize;
 		this.languageCodes = languageCodes;
 		this.readOnly = readOnly;
+		submitButton = new Button(context);
+		submitButton.setText(R.string.submitbutton);
+		submitButton.setWidth(BUTTON_WIDTH);
+	}
+
+	/**
+	 * disables/enables submit button
+	 * 
+	 * @param isEnabled
+	 */
+	public void toggleButtons(boolean isEnabled) {
+		if(submitButton != null){
+			submitButton.setEnabled(isEnabled);
+		}
 	}
 
 	/**
@@ -75,13 +89,8 @@ public class SurveyTabContentFactory implements TabContentFactory {
 	 * questions.
 	 */
 	public View createTabContent(String tag) {
-		/*
-		 * vertScrollView = new ScrollView(context);
-		 * vertScrollView.setLayoutParams(new
-		 * LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-		 */
+
 		scrollView = new ScrollView(context);
-		// vertScrollView.addView(scrollView);
 		scrollView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT));
 
@@ -155,64 +164,14 @@ public class SurveyTabContentFactory implements TabContentFactory {
 		TableRow buttonRow = new TableRow(context);
 		LinearLayout group = new LinearLayout(context);
 
-		Button submitButton = new Button(context);
-		submitButton.setText(R.string.submitbutton);
-		submitButton.setWidth(BUTTON_WIDTH);
+		
 		group.addView(submitButton);
 		if (readOnly) {
 			submitButton.setEnabled(false);
 		}
 
-		Button saveButton = new Button(context);
-		saveButton.setText(R.string.savebutton);
-		saveButton.setWidth(BUTTON_WIDTH);
-		// TODO: remove save button once we have confirmation that we want it on
-		// the menu
-		saveButton.setVisibility(View.GONE);
-		group.addView(saveButton);
-		Button clearButton = new Button(context);
-		clearButton.setText(R.string.clearbutton);
-		// TODO: remove clear button once we have confirmation that we want it
-		// on the menu
-		clearButton.setVisibility(View.GONE);
-		group.addView(clearButton);
 		buttonRow.addView(group);
 		table.addView(buttonRow);
-
-		// clicking save will mark the survey as saved and clear the screen
-		saveButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				if (questionMap != null) {
-					// make sure we don't lose anything that was already written
-					saveState(context.getRespondentId());
-					databaseAdaptor.updateSurveyStatus(context
-							.getRespondentId().toString(),
-							ConstantUtil.SAVED_STATUS);
-					ViewUtil.showConfirmDialog(R.string.savecompletetitle,
-							R.string.savecompletetext, context,
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-									startNewSurvey();
-
-								}
-							});
-				}
-			}
-		});
-
-		// clicking the clear button just blanks out all responses (across all
-		// tabs)
-		clearButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				if (questionMap != null) {
-					context.resetAllQuestions();
-				}
-			}
-		});
 
 		// clicking submit will check to see if all mandatory questions are
 		// answered and, if so, will fire a broadcast indicating that data is

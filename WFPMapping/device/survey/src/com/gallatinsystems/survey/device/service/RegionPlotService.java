@@ -35,7 +35,7 @@ public class RegionPlotService extends Service implements LocationListener {
 	private Timer timer;
 
 	/**
-	 * if not already running (i.e. if timer is null) then open the databse,
+	 * if not already running (i.e. if timer is null) then open the database,
 	 * register as a location listener and construct and start a new timer.
 	 */
 	public int onStartCommand(final Intent intent, int flags, int startid) {

@@ -81,6 +81,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private HashMap<QuestionGroup, SurveyTabContentFactory> factoryMap;
 	private Survey survey;
 	private boolean readOnly;
+	private boolean isTrackRecording;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -92,7 +93,7 @@ public class SurveyViewActivity extends TabActivity implements
 		factoryMap = new HashMap<QuestionGroup, SurveyTabContentFactory>();
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
-
+		isTrackRecording = false;
 		setContentView(R.layout.main);
 
 		String langSelection = databaseAdapter
@@ -386,7 +387,30 @@ public class SurveyViewActivity extends TabActivity implements
 						});
 				builder.show();
 			}
+		} else if (QuestionInteractionEvent.START_TRACK.equals(event
+				.getEventType())) {
+			isTrackRecording = true;
+			toggleTabButtons(false);
+		} else if (QuestionInteractionEvent.END_TRACK.equals(event
+				.getEventType())) {
+			isTrackRecording = false;
+			toggleTabButtons(true);
 		}
+	}
+
+	/**
+	 * iterates over all tabConentFactories and toggles their submission/menu
+	 * buttons
+	 * 
+	 * @param isEnabled
+	 */
+	private void toggleTabButtons(boolean isEnabled) {
+		if (tabContentFactories != null) {
+			for (int i = 0; i < tabContentFactories.size(); i++) {
+				tabContentFactories.get(i).toggleButtons(isEnabled);
+			}
+		}
+
 	}
 
 	/**
@@ -416,6 +440,14 @@ public class SurveyViewActivity extends TabActivity implements
 		menu.add(0, SURVEY_LANG, 2, R.string.langoption);
 		menu.add(0, SAVE_SURVEY, 3, R.string.savebutton);
 		menu.add(0, CLEAR_SURVEY, 4, R.string.clearbutton);
+		return true;
+	}
+
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		super.onMenuOpened(featureId, menu);
+		menu.getItem(3).setEnabled(!isTrackRecording);
+		menu.getItem(4).setEnabled(!isTrackRecording);
 		return true;
 	}
 
@@ -566,6 +598,10 @@ public class SurveyViewActivity extends TabActivity implements
 
 	public String getUserId() {
 		return userId;
+	}
+
+	public boolean isTrackRecording() {
+		return isTrackRecording;
 	}
 
 }
