@@ -132,6 +132,7 @@
 	<string name="loadingnearby">Loading nearby points</string>
 	<string name="starttrack">Start Track</string>
 	<string name="endtrack">End Track</string>
-	<string name="appversion">0.98.0</string>
-	
+	<string name="trackstartnotification">Track Recording Started</string>
+	<string name="trackendnotification">Track Recording Stopped</string>
+	<string name="appversion">0.98.0</string>	
 </resources>

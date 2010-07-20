@@ -96,18 +96,33 @@ public class ViewUtil {
 	 *            - unique (within app) ID of notification
 	 */
 	public static void fireNotification(String headline, String body,
-			Context context, int id) {
+			Context context, int id, Integer iconId) {
 		String ns = Context.NOTIFICATION_SERVICE;
-		NotificationManager mNotificationManager = (NotificationManager) context
+		NotificationManager notifcationMgr = (NotificationManager) context
 				.getSystemService(ns);
 		int icon = R.drawable.info;
+		if (iconId != null) {
+			icon = iconId;
+		}
 		Notification notification = new Notification(icon, headline, System
 				.currentTimeMillis());
 		Intent notificationIntent = new Intent(context, DataSyncService.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
 		notification.setLatestEventInfo(context, headline, body, contentIntent);
-		mNotificationManager.notify(id, notification);
+		notifcationMgr.notify(id, notification);
+	}
+
+	/**
+	 * cancels a previously fired notification
+	 * 
+	 * @param id
+	 */
+	public static void cancelNotification(int id, Context context) {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager notifcationMgr = (NotificationManager) context
+				.getSystemService(ns);
+		notifcationMgr.cancel(id);
 	}
 
 	/**
@@ -164,5 +179,5 @@ public class ViewUtil {
 				}).create();
 		dia.show();
 	}
-	
+
 }

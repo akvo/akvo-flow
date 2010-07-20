@@ -58,6 +58,7 @@ public class ConstantUtil {
 	public static final String IMAGE_RESPONSE_TYPE = "IMAGE";
 	public static final String VIDEO_RESPONSE_TYPE = "VIDEO";
 	public static final String GEO_RESPONSE_TYPE = "GEO";
+	public static final String TRACK_RESPONSE_TYPE = "TRACK";
 	public static final String OTHER_RESPONSE_TYPE = "OTHER";
 
 	/**

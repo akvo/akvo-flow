@@ -29,6 +29,7 @@
 		<service android:name=".service.SurveyDownloadService" />
 		<service android:name=".service.RegionPlotService" />
 		<service android:name=".service.LocationService" />
+		<service android:name=".service.GeoTrackService" />
 
 		<receiver android:name=".broadcast.BroadcastDispatcher" >
 			<intent-filter>

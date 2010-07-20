@@ -382,7 +382,7 @@ public class SurveyDownloadService extends Service {
 	private void fireNotification(int count) {
 		String text = getResources().getText(R.string.surveysupdated)
 				.toString();
-		ViewUtil.fireNotification(text, text, this, COMPLETE_ID);
+		ViewUtil.fireNotification(text, text, this, COMPLETE_ID,null);
 	}
 
 	/**

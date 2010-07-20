@@ -47,6 +47,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private EditText elevationField;
 	private float lastAccuracy;
 	private boolean needUpdate = false;
+	
 
 	public GeoQuestionView(Context context, Question q, String[] langCodes,
 			boolean readOnly) {

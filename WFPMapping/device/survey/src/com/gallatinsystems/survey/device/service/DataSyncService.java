@@ -240,7 +240,7 @@ public class DataSyncService extends Service {
 			tickerText = getResources().getText(R.string.nothingtoexport);
 		}
 		ViewUtil.fireNotification(tickerText.toString(),
-				fileName != null ? fileName : "", this, COMPLETE_ID);
+				fileName != null ? fileName : "", this, COMPLETE_ID,null);
 	}
 
 	/**
