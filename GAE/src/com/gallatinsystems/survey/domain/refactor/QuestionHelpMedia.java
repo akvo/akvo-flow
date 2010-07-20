@@ -31,4 +31,9 @@ public class QuestionHelpMedia extends BaseDomain{
 	public void setTextMap(HashMap<String, String> textMap) {
 		this.textMap = textMap;
 	};
+	public void addText(String langCode,String text){
+		if(textMap==null)
+			textMap=new HashMap<String,String>();
+		textMap.put(langCode, text);
+	}
 }

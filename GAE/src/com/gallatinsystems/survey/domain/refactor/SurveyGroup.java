@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.domain.refactor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -29,6 +30,11 @@ public class SurveyGroup extends BaseDomain {
 	}
 	public List<Key> getSurveyList() {
 		return surveyList;
+	}
+	public void addSurveyKey(Key surveyKey){
+		if(surveyList==null)
+			surveyList = new ArrayList<Key>();
+		surveyList.add(surveyKey);
 	}
 	public void setSurveyList(List<Key> surveyList) {
 		this.surveyList = surveyList;

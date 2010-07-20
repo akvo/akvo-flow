@@ -24,4 +24,9 @@ public class QuestionOption extends BaseDomain{
 	public void setOptionMap(HashMap<String, String> optionMap) {
 		this.optionMap = optionMap;
 	}
+	public void addOptionMap(String langCode, String text){
+		if(optionMap==null)
+			optionMap= new HashMap<String,String>();
+		optionMap.put(langCode, text);
+	}
 }
