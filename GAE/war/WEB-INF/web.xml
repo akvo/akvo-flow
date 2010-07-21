@@ -277,6 +277,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>PhotoUpload</servlet-name>
 		<url-pattern>/webapp/photoupload</url-pattern>
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>SurveyRestApi</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.SurveyRestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SurveyRestApi</servlet-name>
+		<url-pattern>/webapp/surveyrestapi</url-pattern>
+	</servlet-mapping>
 	<filter-mapping>
 		<filter-name>persistenceFilter</filter-name>
 		<url-pattern>*</url-pattern>
