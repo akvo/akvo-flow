@@ -81,6 +81,8 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
+import com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia;
+import com.gallatinsystems.survey.domain.refactor.Question.Type;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -124,10 +126,11 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("testAPKml".equals(action)) {
 			AccessPointDao apDao = new AccessPointDao();
 			apDao.list("all");
-			for(AccessPoint ap : apDao.list("all")){
+			for (AccessPoint ap : apDao.list("all")) {
 				apDao.delete(ap);
 				try {
-					resp.getWriter().print("Finished Deleting AP: " + ap.toString());
+					resp.getWriter().print(
+							"Finished Deleting AP: " + ap.toString());
 				} catch (IOException e) {
 					log.log(Level.SEVERE, "Could not delete ap");
 				}
@@ -147,13 +150,78 @@ public class TestHarnessServlet extends HttpServlet {
 				ap.setTypeTechnologyString("Other");
 				apDao.save(ap);
 				MapSummarizer ms = new MapSummarizer();
-				ms.performSummarization("" +ap.getKey().getId(), "");
+				ms.performSummarization("" + ap.getKey().getId(), "");
 				try {
 					resp.getWriter().print("Saved AP: " + ap.toString());
 				} catch (IOException e) {
 					log.log(Level.SEVERE, "Could not save ap");
 				}
 			}
+		} else if ("saveSurveyGroupRefactor".equals(action)) {
+			com.gallatinsystems.survey.dao.refactor.SurveyGroupDao sgDao = new com.gallatinsystems.survey.dao.refactor.SurveyGroupDao();
+			com.gallatinsystems.survey.dao.refactor.SurveyDao surveyDao = new com.gallatinsystems.survey.dao.refactor.SurveyDao();
+			com.gallatinsystems.survey.dao.refactor.QuestionGroupDao qgDao = new com.gallatinsystems.survey.dao.refactor.QuestionGroupDao();
+			com.gallatinsystems.survey.dao.refactor.QuestionDao qDao = new com.gallatinsystems.survey.dao.refactor.QuestionDao();
+			com.gallatinsystems.survey.dao.refactor.QuestionHelpMediaDao qhmDao = new com.gallatinsystems.survey.dao.refactor.QuestionHelpMediaDao();
+			com.gallatinsystems.survey.dao.refactor.QuestionOptionDao qoDao = new com.gallatinsystems.survey.dao.refactor.QuestionOptionDao();
+
+			for (int i = 0; i < 10; i++) {
+				com.gallatinsystems.survey.domain.refactor.SurveyGroup sg = new com.gallatinsystems.survey.domain.refactor.SurveyGroup();
+				sg.setCode(i + ":" + new Date());
+				sg.setName(i + ":" + new Date());
+				for (int j = 0; j < 10; j++) {
+					com.gallatinsystems.survey.domain.refactor.Survey survey = new com.gallatinsystems.survey.domain.refactor.Survey();
+					survey.addName("en", j + ":" + new Date());
+					survey.addName("es", j + ":" + new Date());
+					for (int k = 0; k < 10; k++) {
+						com.gallatinsystems.survey.domain.refactor.QuestionGroup qg = new com.gallatinsystems.survey.domain.refactor.QuestionGroup();
+						qg.addDesc("en", k + ":" + new Date());
+						qg.addDesc("es", j + ":" + new Date());
+						for(int l = 0;l<10;l++){
+							com.gallatinsystems.survey.domain.refactor.Question q = new com.gallatinsystems.survey.domain.refactor.Question();
+							q.setType(Type.OPTION);
+							q.setAllowMultipleFlag(false);
+							q.setAllowOtherFlag(false);
+							q.setDependentFlag(false);
+							q.addText("en", l+":"+new Date());
+							q.addText("es", l+":"+new Date());
+							q.addTip("en", l+":"+new Date());
+							q.addTip("en", l+":"+new Date());
+							for(int m=0;m<10;m++){
+								com.gallatinsystems.survey.domain.refactor.QuestionOption qo = new com.gallatinsystems.survey.domain.refactor.QuestionOption();
+								qo.addOptionMap("en", m + ":" + new Date());
+								qo.addOptionMap("es", m + ":" + new Date());
+								qo.setCode(m+":"+new Date());
+								qoDao.save(qo);
+								q.addQuestionOption("en", qo.getKey());
+							}
+							for(int n=0;n<10;n++){
+								com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia();
+								qhm.addText("en", n + ":" + new Date());
+								qhm.addText("en", n + ":" + new Date());
+								qhm.setType(QuestionHelpMedia.Type.PHOTO);
+								qhm.setUrl("http://test.com/"+n+".jpg");
+								qhmDao.save(qhm);
+								q.addHelpMedia(n,qhm.getKey());
+							}
+							qDao.save(q);
+							qg.addQuestion(l, q.getKey());
+						}
+						qgDao.save(qg);
+						survey.addQuestionGroup(k, qg.getKey());
+					}
+					surveyDao.save(survey);
+					sg.addSurveyKey(survey.getKey());
+				}
+				sgDao.save(sg);
+				try {
+					resp.getWriter().print(
+							"Saved SurveyGroup: " + sg.toString());
+				} catch (IOException e) {
+					log.log(Level.SEVERE, "Could not save sg");
+				}
+			}
+
 		} else if ("testSurveyQuestion".equals(action)) {
 			SurveyDAO surveyDao = new SurveyDAO();
 			SurveyQuestion q = new SurveyQuestion();
