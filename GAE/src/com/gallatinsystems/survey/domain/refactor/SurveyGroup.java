@@ -3,9 +3,11 @@ package com.gallatinsystems.survey.domain.refactor;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.annotations.PersistenceCapable;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
-
+@PersistenceCapable
 public class SurveyGroup extends BaseDomain {
 	
 	/**

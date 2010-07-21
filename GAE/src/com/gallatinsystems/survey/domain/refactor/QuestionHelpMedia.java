@@ -2,8 +2,11 @@ package com.gallatinsystems.survey.domain.refactor;
 
 import java.util.HashMap;
 
-import com.gallatinsystems.framework.domain.BaseDomain;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
+@PersistenceCapable
 public class QuestionHelpMedia extends BaseDomain{
 	/**
 	 * 
@@ -11,6 +14,7 @@ public class QuestionHelpMedia extends BaseDomain{
 	private static final long serialVersionUID = 7035250558880867571L;
 	private String url=null;
 	private Type type=null;
+	@Persistent(serialized="true") 
 	HashMap<String,String> textMap =null;
 	public enum Type{PHOTO,VIDEO}
 	public String getUrl() {

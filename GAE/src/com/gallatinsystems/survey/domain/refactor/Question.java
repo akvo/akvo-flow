@@ -2,9 +2,12 @@ package com.gallatinsystems.survey.domain.refactor;
 
 import java.util.HashMap;
 
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
-
+@PersistenceCapable
 public class Question extends BaseDomain {
 	/**
 	 * 
@@ -16,14 +19,18 @@ public class Question extends BaseDomain {
 	};
 
 	private Type type = null;
+	@Persistent(serialized="true") 
 	private HashMap<String, String> tipMap;
+	@Persistent(serialized="true") 
 	private HashMap<String, String> textMap;
 	private Boolean dependentFlag = null;
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
 	private Key dependentQuestionKey = null;
+	@Persistent(serialized="true") 
 	private HashMap<String, Key> questionOptionMap = null;
 	private String validationRule = null;
+	@Persistent(serialized="true") 
 	private HashMap<Integer, Key> questionHelpMediaMap = null;
 
 	public void addTip(String langCode, String tip) {

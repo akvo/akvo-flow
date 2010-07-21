@@ -1,20 +1,25 @@
 package com.gallatinsystems.survey.domain.refactor;
 
 import java.util.HashMap;
-import java.util.List;
+
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
-
+@PersistenceCapable
 public class Survey extends BaseDomain {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8638039212962768687L;
+	@Persistent(serialized="true") 
 	private HashMap<String, String> nameMap = null;
 	private String code = null;
+	@Persistent(serialized="true") 
 	private HashMap<String, String> descMap = null;
 	private Status status = null;
+	@Persistent(serialized="true") 
 	private HashMap<Integer, Key> questionGroupMap = null;
 	private Double version = null;
 

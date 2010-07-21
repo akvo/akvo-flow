@@ -1,9 +1,11 @@
 package com.gallatinsystems.survey.domain.refactor;
 
+import javax.jdo.annotations.PersistenceCapable;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
-
+@PersistenceCapable
 public class QuestionOptionSummary extends BaseDomain {
 
 	/**
