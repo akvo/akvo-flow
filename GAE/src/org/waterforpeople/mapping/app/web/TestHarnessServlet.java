@@ -165,19 +165,19 @@ public class TestHarnessServlet extends HttpServlet {
 			com.gallatinsystems.survey.dao.refactor.QuestionHelpMediaDao qhmDao = new com.gallatinsystems.survey.dao.refactor.QuestionHelpMediaDao();
 			com.gallatinsystems.survey.dao.refactor.QuestionOptionDao qoDao = new com.gallatinsystems.survey.dao.refactor.QuestionOptionDao();
 
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 2; i++) {
 				com.gallatinsystems.survey.domain.refactor.SurveyGroup sg = new com.gallatinsystems.survey.domain.refactor.SurveyGroup();
 				sg.setCode(i + ":" + new Date());
 				sg.setName(i + ":" + new Date());
-				for (int j = 0; j < 2; j++) {
+				for (int j = 0; j < 10; j++) {
 					com.gallatinsystems.survey.domain.refactor.Survey survey = new com.gallatinsystems.survey.domain.refactor.Survey();
 					survey.addName("en", j + ":" + new Date());
 					survey.addName("es", j + ":" + new Date());
-					for (int k = 0; k < 2; k++) {
+					for (int k = 0; k < 10; k++) {
 						com.gallatinsystems.survey.domain.refactor.QuestionGroup qg = new com.gallatinsystems.survey.domain.refactor.QuestionGroup();
 						qg.addDesc("en", k + ":" + new Date());
 						qg.addDesc("es", j + ":" + new Date());
-						for(int l = 0;l<2;l++){
+						for(int l = 0;l<10;l++){
 							com.gallatinsystems.survey.domain.refactor.Question q = new com.gallatinsystems.survey.domain.refactor.Question();
 							q.setType(Type.OPTION);
 							q.setAllowMultipleFlag(false);
@@ -187,7 +187,7 @@ public class TestHarnessServlet extends HttpServlet {
 							q.addText("es", l+":"+new Date());
 							q.addTip("en", l+":"+new Date());
 							q.addTip("en", l+":"+new Date());
-							for(int m=0;m<3;m++){
+							for(int m=0;m<10;m++){
 								com.gallatinsystems.survey.domain.refactor.QuestionOption qo = new com.gallatinsystems.survey.domain.refactor.QuestionOption();
 								qo.addOptionMap("en", m + ":" + new Date());
 								qo.addOptionMap("es", m + ":" + new Date());
@@ -195,7 +195,7 @@ public class TestHarnessServlet extends HttpServlet {
 								qoDao.save(qo);
 								q.addQuestionOption("en", qo.getKey());
 							}
-							for(int n=0;n<3;n++){
+							for(int n=0;n<10;n++){
 								com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia();
 								qhm.addText("en", n + ":" + new Date());
 								qhm.addText("en", n + ":" + new Date());
