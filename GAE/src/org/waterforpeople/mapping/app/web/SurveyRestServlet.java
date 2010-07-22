@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,10 +12,12 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
@@ -90,6 +91,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			survey = surveyDao.getByPath(surveyName, surveyGroupName);
 
 		if (survey == null) {
+			survey = new Survey();
 			survey.setName(surveyName);
 			survey.setPath(surveyGroupName);
 			survey = surveyDao.save(survey, sg.getKey().getId());
@@ -125,6 +127,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		
 		//deal with options and dependencies
 		q = qDao.save(q);
+		
+		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
+		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
+		qqga.setQuestionGroupId(qg.getKey().getId());
+		qqga.setQuestionId(q.getKey().getId());
+		qqga.setOrder(questionOrder);
+		qqgaDao.save(qqga);
 		
 		return true;
 	}
