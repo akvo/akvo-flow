@@ -31,7 +31,7 @@ public class SurveyRestRequest extends RestRequest {
 	private String surveyGroupName = null;
 	private String surveyName = null;
 	private String questionGroupName = null;
-	private Long questionId = null;
+	private Integer questionId = null;
 	private String questionText = null;
 	private String questionType = null;
 	private String options = null;
@@ -64,11 +64,11 @@ public class SurveyRestRequest extends RestRequest {
 		this.questionGroupName = questionGroupName;
 	}
 
-	public Long getQuestionId() {
+	public Integer getQuestionId() {
 		return questionId;
 	}
 
-	public void setQuestionId(Long questionId) {
+	public void setQuestionId(Integer questionId) {
 		this.questionId = questionId;
 	}
 
@@ -137,7 +137,7 @@ public class SurveyRestRequest extends RestRequest {
 		if(req.getParameter(QUESTION_GROUP_NAME_PARAM)!=null)
 			questionGroupName = req.getParameter(QUESTION_GROUP_NAME_PARAM);
 		if(req.getParameter(QUESTION_ID_PARAM)!=null)
-			questionId = Long.parseLong(req.getParameter(QUESTION_ID_PARAM));
+			questionId = Integer.parseInt(req.getParameter(QUESTION_ID_PARAM));
 		if(req.getParameter(QUESTION_TEXT_PARAM)!=null)
 			questionText = req.getParameter(QUESTION_TEXT_PARAM);
 		if(req.getParameter(QUESTION_TYPE_PARAM)!=null)
