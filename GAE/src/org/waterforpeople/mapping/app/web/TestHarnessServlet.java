@@ -805,8 +805,14 @@ public class TestHarnessServlet extends HttpServlet {
 					qDep.delete(qd);
 				resp.getWriter().println("Deleted all question dependency");
 
+				BaseDAO<OptionContainerQuestionOptionAssoc> ocqoaDao = new BaseDAO<OptionContainerQuestionOptionAssoc>(OptionContainerQuestionOptionAssoc.class);
+				List<OptionContainerQuestionOptionAssoc> ocqoaList = ocqoaDao.list("all");
+				for(OptionContainerQuestionOptionAssoc item : ocqoaList){
+					ocqoaDao.delete(item);
+				}
+				
 				resp.getWriter().println("Deleted all questions");
-				for (int t = 0; t < 2; t++) {
+				/*for (int t = 0; t < 2; t++) {
 					SurveyGroupDto sgd = new SurveyGroupDto();
 					sgd.setCode("Survey Group :" + t);
 					sgd.setDescription("Test Survey Group: " + t);
@@ -855,7 +861,7 @@ public class TestHarnessServlet extends HttpServlet {
 						sgd.addSurvey(surveyDto);
 					}
 					SurveyGroupDto sgDto = new SurveyServiceImpl().save(sgd);
-				}
+				}*/
 
 				resp.getWriter().println(
 						"Finished deleting and reloading SurveyGroup graph");

@@ -101,11 +101,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		QuestionGroup qg = new QuestionGroup();
 		if (questionGroupName != null) {
-			qg = qgDao.getByPath(surveyGroupName, surveyName);
+			qg = qgDao.getByPath(questionGroupName, surveyGroupName + "/" + surveyName);
 		}
 
 		if (qg == null) {
-			String path = surveyName + "/" + questionGroupName;
+			String path =surveyGroupName + "/" + surveyName;
 			qg = new QuestionGroup();
 			qg.setCode(questionGroupName);
 			qg.setPath(path);
