@@ -10,13 +10,16 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.survey.dao.OptionContainerDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -68,13 +71,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			String options, String dependentQuestion, Boolean allowOtherFlag,
 			Boolean allowMultipleFlag, Boolean mandatoryFlag,
 			Integer questionOrder) throws UnsupportedEncodingException {
-		
+
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		QuestionDao qDao = new QuestionDao();
-		
-		
+
 		SurveyGroup sg = null;
 		if (surveyGroupName != null) {
 			sg = sgDao.findBySurveyGroupName(surveyGroupName);
@@ -82,7 +84,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		if (sg == null) {
 			sg = new SurveyGroup();
-			sg.setCode(surveyName);
+			sg.setCode(surveyGroupName);
 			sg = sgDao.save(sg);
 		}
 
@@ -113,28 +115,45 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		Question q = new Question();
 		q.setText(questionText);
 		q.setOrder(questionOrder);
-		
+
 		if (questionType.equals("GEO"))
 			q.setType(QuestionDto.QuestionType.GEO);
-		else if(questionType.equals("FREE_TEXT"))
+		else if (questionType.equals("FREE_TEXT"))
 			q.setType(QuestionDto.QuestionType.FREE_TEXT);
-		else if(questionType.equals("OPTION"))
+		else if (questionType.equals("OPTION")) {
+			OptionContainerDao ocDao = new OptionContainerDao();
+			OptionContainer oc = new OptionContainer();
+			oc.setAllowMultipleFlag(allowMultipleFlag);
+			oc.setAllowOtherFlag(allowOtherFlag);
 			q.setType(QuestionDto.QuestionType.OPTION);
-		else if(questionType.equals("PHOTO"))
+			String[] optionsParts = options.split(";");
+			for (String option : optionsParts) {
+				String[] parts = option.split("\\|");
+				String value = parts[0];
+				String text = parts[1];
+				QuestionOption qo = new QuestionOption();
+				qo.setCode(value);
+				qo.setText(text);
+				oc.addQuestionOption(qo);
+			}
+			ocDao.save(oc);
+			q.setOptionContainer(oc);
+		} else if (questionType.equals("PHOTO"))
 			q.setType(QuestionDto.QuestionType.PHOTO);
-		else if(questionType.equals("NUMBER"))
+		else if (questionType.equals("NUMBER"))
 			q.setType(QuestionDto.QuestionType.NUMBER);
-		
-		//deal with options and dependencies
+
+		// deal with options and dependencies
+
 		q = qDao.save(q);
-		
+
 		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
 		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
 		qqga.setQuestionGroupId(qg.getKey().getId());
 		qqga.setQuestionId(q.getKey().getId());
 		qqga.setOrder(questionOrder);
 		qqgaDao.save(qqga);
-		
+
 		return true;
 	}
 }
