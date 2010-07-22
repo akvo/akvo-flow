@@ -217,7 +217,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
-	private void loadQuestionDetails(QuestionDto item) {
+	private void loadQuestionDetails(QuestionDto item){
 		setButtonState(ButtonState.NONE);
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();

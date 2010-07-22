@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +19,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
@@ -25,7 +27,8 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyRestServlet extends AbstractRestApiServlet {
-
+	private static final Logger log = Logger.getLogger(TaskServlet.class
+			.getName());
 	/**
 	 * 
 	 */
@@ -53,7 +56,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 					importReq.getOptions(), importReq.getDependQuestion(),
 					importReq.getAllowOtherFlag(), importReq
 							.getAllowMultipleFlag(), importReq
-							.getMandatoryFlag(), importReq.getQuestionId());
+							.getMandatoryFlag(), importReq.getQuestionId(), importReq.getQuestionGroupOrder());
 		}
 		response.setCode("200");
 		response.setMessage("Record Saved status: " + questionSaved);
@@ -70,7 +73,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			String questionGroupName, String questionType, String questionText,
 			String options, String dependentQuestion, Boolean allowOtherFlag,
 			Boolean allowMultipleFlag, Boolean mandatoryFlag,
-			Integer questionOrder) throws UnsupportedEncodingException {
+			Integer questionOrder, Integer questionGroupOrder) throws UnsupportedEncodingException {
 
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
@@ -109,16 +112,17 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			qg = new QuestionGroup();
 			qg.setCode(questionGroupName);
 			qg.setPath(path);
-			qg = qgDao.save(qg, survey.getKey().getId());
+			qg = qgDao.save(qg, survey.getKey().getId(), questionGroupOrder);
 		}
 
 		Question q = new Question();
 		q.setText(questionText);
 		q.setOrder(questionOrder);
+		
 
 		if (questionType.equals("GEO"))
 			q.setType(QuestionDto.QuestionType.GEO);
-		else if (questionType.equals("FREE_TEXT"))
+		else if (questionType.equals("FREE"))
 			q.setType(QuestionDto.QuestionType.FREE_TEXT);
 		else if (questionType.equals("OPTION")) {
 			OptionContainerDao ocDao = new OptionContainerDao();
@@ -144,7 +148,23 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(QuestionDto.QuestionType.NUMBER);
 
 		// deal with options and dependencies
-
+		String questionPath = surveyGroupName+"/"+surveyName;
+		q.setPath(questionPath);
+		
+		if(dependentQuestion!=null && dependentQuestion.trim().length()>1)
+		{
+			String[] parts = dependentQuestion.split("\\|");
+			Integer quesitonOrderId = new Integer(parts[0]);
+			String answer = parts[1];
+			Question dependsOnQuestion = qDao.getByPath(quesitonOrderId, questionPath);
+			if(dependsOnQuestion!=null){
+				QuestionDependency qd = new QuestionDependency();
+				qd.setAnswerValue(answer);
+				qd.setQuestionId(dependsOnQuestion.getKey().getId());
+				q.setDependQuestion(qd);
+			}
+				
+		}
 		q = qDao.save(q);
 
 		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
@@ -153,7 +173,10 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		qqga.setQuestionId(q.getKey().getId());
 		qqga.setOrder(questionOrder);
 		qqgaDao.save(qqga);
-
+		
+		
+		
+		log.info("Just saved " + surveyGroupName + ":" +surveyName +":"+questionGroupName+":" + questionOrder);
 		return true;
 	}
 }

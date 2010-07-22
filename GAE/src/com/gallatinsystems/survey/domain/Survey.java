@@ -17,6 +17,7 @@ public class Survey extends BaseDomain{
 	@NotPersistent
 	private ArrayList<QuestionGroup> questionGroupList;
 	private SurveyStatus status = null;
+	private String path = null;
 	
 	public void addQuestionGroup(QuestionGroup questionGroup){
 		if(questionGroupList==null){
@@ -91,6 +92,14 @@ public class Survey extends BaseDomain{
 
 	public SurveyStatus getStatus() {
 		return status;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getPath() {
+		return path;
 	}
 
 }

@@ -13,6 +13,7 @@ public class SurveyQuestionGroupAssoc extends BaseDomain{
 	
 	private Long questionGroupId = null;
 	private Long surveyId = null;
+	private Integer order = null;
 	
 	
 	
@@ -69,6 +70,18 @@ public class SurveyQuestionGroupAssoc extends BaseDomain{
 
 	public Long getSurveyId() {
 		return surveyId;
+	}
+
+
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
+
+
+	public Integer getOrder() {
+		return order;
 	}
 
 }

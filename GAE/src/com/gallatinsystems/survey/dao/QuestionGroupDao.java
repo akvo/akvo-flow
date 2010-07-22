@@ -16,12 +16,14 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		super(QuestionGroup.class);
 	}
 
-	public QuestionGroup save(QuestionGroup item, Long surveyId) {
+	public QuestionGroup save(QuestionGroup item, Long surveyId, Integer order) {
 		item = save(item);
 		SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
 		sqga.setSurveyId(surveyId);
 		sqga.setQuestionGroupId(item.getKey().getId());
 		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
+		if (order != null)
+			sqga.setOrder(order);
 		sqgaDao.save(sqga);
 		return item;
 	}
@@ -56,11 +58,11 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionGroup.class);
 		query.setFilter(" path == pathParam && code == codeParam");
-		query.declareParameters("String pathParam, String codeParam");		
+		query.declareParameters("String pathParam, String codeParam");
 		List results = (List) query.execute(path, code);
-		if(results != null && results.size()>0){
-			return (QuestionGroup)results.get(0);
-		}else{
+		if (results != null && results.size() > 0) {
+			return (QuestionGroup) results.get(0);
+		} else {
 			return null;
 		}
 	}

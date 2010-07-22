@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -13,6 +14,7 @@ import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelp;
@@ -219,4 +221,16 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return surveyList;
 	}
 
+	public Survey getByPath(String code, String path) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Survey.class);
+		query.setFilter(" path == pathParam && name == codeParam");
+		query.declareParameters("String pathParam, String codeParam");		
+		List results = (List) query.execute(path, code);
+		if(results != null && results.size()>0){
+			return (Survey)results.get(0);
+		}else{
+			return null;
+		}
+	}
 }

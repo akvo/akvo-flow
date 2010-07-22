@@ -27,6 +27,7 @@ public class SurveyRestRequest extends RestRequest {
 	private static final String ALLOW_OTHER_PARAM = "allowOther";
 	private static final String ALLOW_MULTIPLE_PARAM = "allowMultiple";
 	private static final String MANDATORY_PARAM = "mandatory";
+	private static final String QUESTION_GROUP_ORDER_PARAM = "questionGroupOrder";
 
 	private String surveyGroupName = null;
 	private String surveyName = null;
@@ -39,6 +40,7 @@ public class SurveyRestRequest extends RestRequest {
 	private Boolean allowOtherFlag = null;
 	private Boolean allowMultipleFlag = null;
 	private Boolean mandatoryFlag = null;
+	private Integer questionGroupOrder = null;
 
 	public String getSurveyGroupName() {
 		return surveyGroupName;
@@ -152,11 +154,21 @@ public class SurveyRestRequest extends RestRequest {
 			allowOtherFlag = Boolean.parseBoolean(req.getParameter(ALLOW_OTHER_PARAM));
 		if(req.getParameter(MANDATORY_PARAM)!=null)
 			mandatoryFlag = Boolean.parseBoolean(MANDATORY_PARAM);
+		if(req.getParameter(QUESTION_GROUP_ORDER_PARAM)!=null)
+			questionGroupOrder = Integer.parseInt(req.getParameter(QUESTION_GROUP_ORDER_PARAM));
 	}
 
 	@Override
 	public void populateErrors() {
 		// no-op right now?
+	}
+
+	public void setQuestionGroupOrder(Integer questionGroupOrder) {
+		this.questionGroupOrder = questionGroupOrder;
+	}
+
+	public Integer getQuestionGroupOrder() {
+		return questionGroupOrder;
 	}
 
 }

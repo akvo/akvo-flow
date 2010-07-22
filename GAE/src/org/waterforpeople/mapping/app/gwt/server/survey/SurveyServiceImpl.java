@@ -470,7 +470,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionGroup questionGroup = new QuestionGroup();
 		DtoMarshaller.copyToCanonical(questionGroup, dto);
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
-		questionGroup = questionGroupDao.save(questionGroup, surveyId);
+		questionGroup = questionGroupDao.save(questionGroup, surveyId,null);
 		DtoMarshaller.copyToDto(questionGroup, dto);
 		return dto;
 	}

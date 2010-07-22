@@ -26,7 +26,8 @@ public class Question extends BaseDomain implements Comparable<Question> {
 	private OptionContainer optionContainer = null;
 	private QuestionDto.QuestionType type;
 	private ArrayList<QuestionHelp> questionHelpList;
-
+	private String path = null;
+	
 	public Integer getOrder() {
 		return order;
 	}
@@ -150,5 +151,13 @@ public class Question extends BaseDomain implements Comparable<Question> {
 		} else {
 			return 1;
 		}
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getPath() {
+		return path;
 	}
 }

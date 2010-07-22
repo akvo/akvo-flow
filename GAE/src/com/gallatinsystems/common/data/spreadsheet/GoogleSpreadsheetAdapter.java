@@ -114,7 +114,6 @@ public class GoogleSpreadsheetAdapter {
 			SpreadsheetEntry entry = spreadsheets.get(i);
 			String title = entry.getTitle().getPlainText();
 			spreadsheetNamesList.add(title);
-			log.info("-> spreadsheets: " + title);
 		}
 		return spreadsheetNamesList;
 	}
@@ -139,16 +138,20 @@ public class GoogleSpreadsheetAdapter {
 
 	private SpreadsheetContainer loadSpreadsheet(String spreadsheetName)
 			throws IOException, ServiceException {
-
+		log.info("Inside loadSpreadsheet");
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+
 		for (int i = 0; i < spreadsheets.size(); i++) {
 			SpreadsheetEntry entry = spreadsheets.get(i);			
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
-				List<WorksheetEntry> worksheets = entry.getWorksheets();				
-				for (int j = 0; j < worksheets.size(); j++) {
-					WorksheetEntry worksheet = worksheets.get(j);					
+				log.info("Found spreadsheet");
+				List<WorksheetEntry> worksheets = entry.getWorksheets();
+				log.info("Got worksheet");
+				//for (int j = 0; j < worksheets.size(); j++) {
+					WorksheetEntry worksheet = worksheets.get(0);
+					log.info("got 0 worksheet contents.");
 					return getListFeed(worksheet);
-				}
+				//}
 			}
 		}
 		return null;
@@ -159,6 +162,7 @@ public class GoogleSpreadsheetAdapter {
 		URL listFeedUrl = worksheetEntry.getListFeedUrl();
 		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
 		SpreadsheetContainer sbc = new SpreadsheetContainer();
+		int i = 0;
 		for (ListEntry entry : feed.getEntries()) {
 			// row			
 			RowContainer row = new RowContainer();

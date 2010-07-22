@@ -249,22 +249,28 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 		try {
 			org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
+			log.info("Inside processSurveySpreadsheetAsync prior to GoogleSpreadsheet Adapter call");
 			byte[] encodedKey = b64encoder.encode(key.getEncoded());
 			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
 					tokenString, key);
+			log.info("Just made spreadsheet call");
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
+			log.info("Just got spreadsheet contents");
+			
 			sc.setSpreadsheetName(spreadsheetName);
 			RowContainer rowTitle = sc.getRowContainerList().get(1);
 			String sgName = rowTitle.getColumnContainersList().get(0)
 					.getColContents();
 			if (sgName == null) {
 				sgName = "Default";
-			}
+			}else
+				log.info("Begining to process: " + sgName);
 
 			if (startRow == -1) {
 				setDependencies(sc);
 			} else if (startRow == -2) {
+				log.info("Getting the question groups");
 				// create the survey and all groups. We'll take care of the
 				// questions in another iteration
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
@@ -307,7 +313,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					}
 				}
 				sgDao.save(sg);
+				log.info("Done getting the question groups");
 				// send the message to start question processing
+				log.info("Dispatching async calls for: " + spreadsheetName);
 				sendSurveyProcessingMessage(spreadsheetName, 0, tokenString,
 						encodedKey, key.getAlgorithm());
 			} else {

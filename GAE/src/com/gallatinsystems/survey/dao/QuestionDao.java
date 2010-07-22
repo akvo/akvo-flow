@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.jdo.PersistenceManager;
+
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 
 public class QuestionDao extends BaseDAO<Question> {
@@ -105,6 +109,19 @@ public class QuestionDao extends BaseDAO<Question> {
 					.getId());
 			if (oc != null)
 				question.setOptionContainer(oc);
+		}
+	}
+	
+	public Question getByPath(Integer order, String path) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Question.class);
+		query.setFilter(" path == pathParam && order == orderParam");
+		query.declareParameters("String pathParam, String orderParam");
+		List results = (List) query.execute(path, order);
+		if (results != null && results.size() > 0) {
+			return (Question) results.get(0);
+		} else {
+			return null;
 		}
 	}
 
