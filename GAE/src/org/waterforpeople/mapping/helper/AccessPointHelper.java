@@ -3,7 +3,10 @@ package org.waterforpeople.mapping.helper;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -24,6 +27,7 @@ import com.gallatinsystems.common.util.DateUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+
 
 public class AccessPointHelper {
 
@@ -51,33 +55,38 @@ public class AccessPointHelper {
 
 		List<QuestionAnswerStore> questionAnswerList = sid
 				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId));
-		
-		AccessPoint ap;
+
+		Collection<AccessPoint> apList;
 		if (questionAnswerList != null && questionAnswerList.size() > 0) {
-			ap = parseAccessPoint(new Long(questionAnswerList.get(0)
+			apList = parseAccessPoint(new Long(questionAnswerList.get(0)
 					.getSurveyId()), questionAnswerList,
 					AccessPoint.AccessPointType.WATER_POINT);
-			saveAccessPoint(ap);
+			if (apList != null) {
+				for (AccessPoint ap : apList) {
+					saveAccessPoint(ap);
+				}
+			}
 		}
-
 	}
 
-	private AccessPoint parseAccessPoint(Long surveyId,
+	private Collection<AccessPoint> parseAccessPoint(Long surveyId,
 			List<QuestionAnswerStore> questionAnswerList,
 			AccessPoint.AccessPointType accessPointType) {
-		AccessPoint ap = null;
+		Collection<AccessPoint> apList = null;
 		List<SurveyAttributeMapping> mappings = mappingDao
 				.listMappingsBySurvey(surveyId);
 		if (mappings == null) {
 			if (accessPointType == AccessPointType.WATER_POINT) {
-				ap = hardCodedparseWaterPoint(questionAnswerList);
+				AccessPoint ap = hardCodedparseWaterPoint(questionAnswerList);
+				apList = new ArrayList<AccessPoint>();
+				apList.add(ap);
 			} else if (accessPointType == AccessPointType.SANITATION_POINT) {
 
 			}
 		} else {
-			ap = parseAccessPoint(surveyId, questionAnswerList, mappings);
+			apList = parseAccessPoint(surveyId, questionAnswerList, mappings);
 		}
-		return ap;
+		return apList;
 	}
 
 	/**
@@ -91,84 +100,104 @@ public class AccessPointHelper {
 	 * @param mappings
 	 * @return
 	 */
-	private AccessPoint parseAccessPoint(Long surveyId,
+	private Collection<AccessPoint> parseAccessPoint(Long surveyId,
 			List<QuestionAnswerStore> questionAnswerList,
 			List<SurveyAttributeMapping> mappings) {
-		AccessPoint ap = new AccessPoint();
+		HashMap<String, AccessPoint> apMap = new HashMap<String, AccessPoint>();
 		if (questionAnswerList != null) {
 			Properties props = System.getProperties();
 			String photo_url_root = props.getProperty("photo_url_root");
 			for (QuestionAnswerStore qas : questionAnswerList) {
-				String field = getFieldForQuestion(mappings, qas
-						.getQuestionID());
-				if (field != null) {
-					try {
-						if (GEO_TYPE.equalsIgnoreCase(qas.getType())) {
-							GeoCoordinates geoC = new GeoCoordinates()
-									.extractGeoCoordinate(qas.getValue());
-							ap.setLatitude(geoC.getLatitude());
-							ap.setLongitude(geoC.getLongitude());
-							ap.setAltitude(geoC.getAltitude());
-						} else {
-							// if it's a value or OTHER type
-							Field f = ap.getClass().getDeclaredField(field);
-							if (!f.isAccessible()) {
-								f.setAccessible(true);
+				SurveyAttributeMapping mapping = getMappingForQuestion(
+						mappings, qas.getQuestionID());
+				if (mapping != null) {
+					List<String> types = mapping.getApTypes();
+					if (types == null || types.size() == 0) {
+						// default the list to be access point if nothing is
+						// specified (for backward compatibility)
+						types.add(AccessPointType.WATER_POINT.toString());
+					}
+					for (String type : types) {
+						try {
+							AccessPoint ap = apMap.get(type);
+							if (ap == null) {
+								ap = new AccessPoint();
+								ap.setPointType(AccessPointType.valueOf(type));
+								ap.setCollectionDate(new Date());
+								apMap.put(type, ap);
 							}
-							if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())) {
-								String[] photoParts = qas.getValue().split("/");
-								String newURL = photo_url_root + photoParts[2];
-								f.set(ap, newURL);
+							if (GEO_TYPE.equalsIgnoreCase(qas.getType())) {
+								GeoCoordinates geoC = new GeoCoordinates()
+										.extractGeoCoordinate(qas.getValue());
+								ap.setLatitude(geoC.getLatitude());
+								ap.setLongitude(geoC.getLongitude());
+								ap.setAltitude(geoC.getAltitude());
 							} else {
-								if (f.getType() == String.class) {
-									f.set(ap, qas.getValue());
-								} else if (f.getType() == AccessPoint.Status.class) {
-									String val = qas.getValue();
-									if ("High".equalsIgnoreCase(val)) {
-										f
-												.set(
-														ap,
-														AccessPoint.Status.FUNCTIONING_HIGH);
-									} else if ("Ok".equalsIgnoreCase(val)) {
-										f
-												.set(
-														ap,
-														AccessPoint.Status.FUNCTIONING_OK);
-									} else {
-										f
-												.set(
-														ap,
-														AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+								// if it's a value or OTHER type
+								Field f = ap.getClass().getDeclaredField(
+										mapping.getAttributeName());
+								if (!f.isAccessible()) {
+									f.setAccessible(true);
+								}
+								if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())) {
+									String[] photoParts = qas.getValue().split(
+											"/");
+									String newURL = photo_url_root
+											+ photoParts[2];
+									f.set(ap, newURL);
+								} else {
+									if (f.getType() == String.class) {
+										f.set(ap, qas.getValue());
+									} else if (f.getType() == AccessPoint.Status.class) {
+										String val = qas.getValue();
+										if ("High".equalsIgnoreCase(val)) {
+											f
+													.set(
+															ap,
+															AccessPoint.Status.FUNCTIONING_HIGH);
+										} else if ("Ok".equalsIgnoreCase(val)) {
+											f
+													.set(
+															ap,
+															AccessPoint.Status.FUNCTIONING_OK);
+										} else {
+											f
+													.set(
+															ap,
+															AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+										}
 									}
 								}
 							}
+						} catch (NoSuchFieldException e) {
+							logger
+									.log(
+											Level.SEVERE,
+											"Could not map field to access point: "
+													+ mapping
+															.getAttributeName()
+													+ ". Check the surveyAttribueMapping for surveyId "
+													+ surveyId);
+						} catch (IllegalAccessException e) {
+							logger.log(Level.SEVERE,
+									"Could not set field to access point: "
+											+ mapping.getAttributeName()
+											+ ". Illegal access.");
 						}
-					} catch (NoSuchFieldException e) {
-						logger
-								.log(
-										Level.SEVERE,
-										"Could not map field to access point: "
-												+ field
-												+ ". Check the surveyAttribueMapping for surveyId "
-												+ surveyId);
-					} catch (IllegalAccessException e) {
-						logger.log(Level.SEVERE,
-								"Could not set field to access point: " + field
-										+ ". Illegal access.");
 					}
 				}
 			}
-			ap.setCollectionDate(new Date());
+
 		}
-		return ap;
+		return apMap.values();
 	}
 
-	private String getFieldForQuestion(List<SurveyAttributeMapping> mappings,
-			String questionId) {
+	private SurveyAttributeMapping getMappingForQuestion(
+			List<SurveyAttributeMapping> mappings, String questionId) {
 		if (mappings != null) {
 			for (SurveyAttributeMapping mapping : mappings) {
 				if (mapping.getSurveyQuestionId().equals(questionId)) {
-					return mapping.getAttributeName();
+					return mapping;
 				}
 			}
 		}

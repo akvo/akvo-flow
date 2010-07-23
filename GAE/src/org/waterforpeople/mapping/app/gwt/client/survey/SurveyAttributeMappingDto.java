@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import java.util.List;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
@@ -17,6 +19,15 @@ public class SurveyAttributeMappingDto extends BaseDto {
 	private String objectName;
 	private String attributeName;
 	private Long questionGroupId;
+	private List<String> apTypes;
+
+	public List<String> getApTypes() {
+		return apTypes;
+	}
+
+	public void setApTypes(List<String> apTypes) {
+		this.apTypes = apTypes;
+	}
 
 	public Long getQuestionGroupId() {
 		return questionGroupId;

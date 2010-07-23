@@ -2,9 +2,11 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAttributeMappingDto;
@@ -54,8 +56,8 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private ListBox surveyListbox;
 	private ListBox questionGroupListbox;
 
-
 	private HashMap<String, ListBox> attributeListboxes;
+	private HashMap<String, ListBox> typeListboxes;
 
 	private TreeMap<String, String> attributes;
 
@@ -169,11 +171,13 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		if (questions != null) {
 
 			attributeListboxes = new HashMap<String, ListBox>();
+			typeListboxes = new HashMap<String, ListBox>();
 
-			Grid grid = new Grid(questions.size() + 1, 2);
+			Grid grid = new Grid(questions.size() + 1, 3);
 			// build headers
 			grid.setText(0, 0, "Question Text");
 			grid.setText(0, 1, "Attribute");
+			grid.setText(0, 2, "Point Type");
 			setGridRowStyle(grid, 0, false);
 
 			int count = 1;
@@ -194,6 +198,14 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 					grid.setWidget(count, 1, attrListbox);
 					attributeListboxes.put(currentSurveySelection.getKeyId()
 							+ ":" + q.getKeyId(), attrListbox);
+					ListBox typeListbox = new ListBox(true);
+					for (int i = 0; i < AccessPointType.values().length; i++) {
+						String val = AccessPointType.values()[i].toString();
+						typeListbox.addItem(val, val);
+					}
+					grid.setWidget(count, 2, typeListbox);
+					typeListboxes.put(currentSurveySelection.getKeyId() + ":"
+							+ q.getKeyId(), typeListbox);
 					setGridRowStyle(grid, count, false);
 					count++;
 				}
@@ -362,16 +374,17 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 							ArrayList<SurveyAttributeMappingDto> result) {
 						if (result != null) {
 							for (SurveyAttributeMappingDto dto : result) {
-								ListBox box = attributeListboxes.get(dto
-										.getSurveyId()
-										+ ":" + dto.getSurveyQuestionId());
+								ListBox box = findListBox(dto,
+										attributeListboxes);
 								if (box != null) {
-									for (int i = 0; i < box.getItemCount(); i++) {
-										if (box.getValue(i) != null
-												&& box.getValue(i).equals(
-														dto.getAttributeName())) {
-											box.setSelectedIndex(i);
-											break;
+									selectBoxItem(dto.getAttributeName(), box);
+								}
+								if (dto.getApTypes() != null && dto.getApTypes().size()>0) {
+									ListBox typeBox = findListBox(dto,
+											typeListboxes);
+									if (typeBox != null) {
+										for (String type : dto.getApTypes()) {
+											selectBoxItem(type, typeBox);
 										}
 									}
 								}
@@ -379,6 +392,35 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 						}
 					}
 				});
+	}
+
+	/**
+	 * iterates over contents of a list box and selects the item in it if it
+	 * matches the value
+	 * 
+	 * @param val
+	 * @param box
+	 */
+	private void selectBoxItem(String val, ListBox box) {
+		for (int i = 0; i < box.getItemCount(); i++) {
+			if (box.getValue(i) != null && box.getValue(i).equals(val)) {
+				box.setSelectedIndex(i);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * finds a list box in the map passed in using the composite key formed from
+	 * the dto
+	 * 
+	 * @param dto
+	 * @param boxMap
+	 * @return
+	 */
+	private ListBox findListBox(SurveyAttributeMappingDto dto,
+			HashMap<String, ListBox> boxMap) {
+		return boxMap.get(dto.getSurveyId() + ":" + dto.getSurveyQuestionId());
 	}
 
 	private void populateSurveyList(ArrayList<SurveyDto> surveyItems) {
@@ -453,20 +495,30 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 			ArrayList<SurveyAttributeMappingDto> mappingDtoList = new ArrayList<SurveyAttributeMappingDto>();
 
 			for (QuestionDto q : currentQuestionList) {
-				ListBox attrBox = attributeListboxes.get(currentSurveySelection
-						.getKeyId()
-						+ ":" + q.getKeyId());
+				SurveyAttributeMappingDto dto = new SurveyAttributeMappingDto();
+				dto
+						.setQuestionGroupId(currentQuestionGroupSelection
+								.getKeyId());
+				dto.setSurveyId(currentSurveySelection.getKeyId());
+				dto.setSurveyQuestionId(q.getKeyId().toString());
+				ListBox attrBox = findListBox(dto, attributeListboxes);
 				if (attrBox != null) {
 					String val = attrBox.getValue(attrBox.getSelectedIndex());
 					if (val != null && val.trim().length() > 0) {
-						SurveyAttributeMappingDto dto = new SurveyAttributeMappingDto();
-						dto.setQuestionGroupId(currentQuestionGroupSelection
-								.getKeyId());
-						dto.setSurveyId(currentSurveySelection.getKeyId());
+
 						dto.setObjectName(MAP_TARGET_OBJECT_NAME);
-						dto.setAttributeName(val);
-						dto.setSurveyQuestionId(q.getKeyId().toString());
+						dto.setAttributeName(val);						
 						mappingDtoList.add(dto);
+					}
+					ListBox typeBox = findListBox(dto, typeListboxes);
+					if (typeBox != null) {
+						List<String> typeList = new ArrayList<String>();
+						for (int i = 0; i < typeBox.getItemCount(); i++) {
+							if (typeBox.isItemSelected(i)) {
+								typeList.add(typeBox.getValue(i));
+							}
+						}
+						dto.setApTypes(typeList);
 					}
 				}
 			}

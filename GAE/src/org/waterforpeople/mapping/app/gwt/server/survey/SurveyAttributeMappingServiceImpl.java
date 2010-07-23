@@ -49,6 +49,12 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 			for (SurveyAttributeMapping mapping : mappingList) {
 				SurveyAttributeMappingDto dto = new SurveyAttributeMappingDto();
 				DtoMarshaller.copyToDto(mapping, dto);
+				dto.setApTypes(null);
+				if (mapping.getApTypes() != null) {
+					List<String> newList = new ArrayList<String>();
+					newList.addAll(mapping.getApTypes());
+					dto.setApTypes(newList);
+				}
 				dtoList.add(dto);
 			}
 		}
@@ -81,19 +87,19 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 					domain = mappingDao.save(domain);
 					dto.setKeyId(domain.getKey().getId());
 				} catch (Exception e) {
-					logger.log(Level.SEVERE,"Could not save mapping", e);
+					logger.log(Level.SEVERE, "Could not save mapping", e);
 				}
 			}
 		}
 		return mappings;
 	}
-	
+
 	/**
 	 * saves all the mappings in a list for a specific question group
 	 */
 	@Override
-	public ArrayList<SurveyAttributeMappingDto> saveMappings(Long questionGroupId,
-			ArrayList<SurveyAttributeMappingDto> mappings) {
+	public ArrayList<SurveyAttributeMappingDto> saveMappings(
+			Long questionGroupId, ArrayList<SurveyAttributeMappingDto> mappings) {
 		if (mappings != null && mappings.size() > 0) {
 			// first, delete all the old mappings
 			mappingDao.deleteMappingsForQuestionGroup(questionGroupId);
@@ -105,7 +111,7 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 					domain = mappingDao.save(domain);
 					dto.setKeyId(domain.getKey().getId());
 				} catch (Exception e) {
-					logger.log(Level.SEVERE,"Could not save mapping", e);
+					logger.log(Level.SEVERE, "Could not save mapping", e);
 				}
 			}
 		}

@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.domain;
 
+import java.util.List;
+
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -20,6 +22,15 @@ public class SurveyAttributeMapping extends BaseDomain {
 	private Long surveyId;
 	private String surveyQuestionId;
 	private Long questionGroupId;
+	private List<String> apTypes;
+
+	public List<String> getApTypes() {
+		return apTypes;
+	}
+
+	public void setApTypes(List<String> apTypes) {
+		this.apTypes = apTypes;
+	}
 
 	public Long getQuestionGroupId() {
 		return questionGroupId;
