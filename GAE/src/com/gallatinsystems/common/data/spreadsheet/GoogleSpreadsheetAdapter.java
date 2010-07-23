@@ -65,6 +65,7 @@ public class GoogleSpreadsheetAdapter {
 
 	SpreadsheetService service;
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws IOException, ServiceException {
 		String spreadsheetName = args[0];
 		String googleUserName = args[1];
@@ -89,14 +90,10 @@ public class GoogleSpreadsheetAdapter {
 			SpreadsheetEntry entry = spreadsheets.get(i);
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
 				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				for (int j = 0; j < worksheets.size(); j++) {
-					WorksheetEntry worksheet = worksheets.get(j);
-					String title = worksheet.getTitle().getPlainText();
-					int rowCount = worksheet.getRowCount();
-					int colCount = worksheet.getColCount();
-
+				//for (int j = 0; j < worksheets.size(); j++) {
+					WorksheetEntry worksheet = worksheets.get(0);				
 					return listColumns(worksheet);
-				}
+				//}
 			}
 		}
 		return null;
@@ -125,7 +122,7 @@ public class GoogleSpreadsheetAdapter {
 		URL listFeedUrl = worksheetEntry.getListFeedUrl();
 		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
 		ArrayList<String> columns = new ArrayList<String>();
-		int i = 0;
+		
 		for (ListEntry entry : feed.getEntries()) {
 			// row
 			for (String tag : entry.getCustomElements().getTags()) {
@@ -162,7 +159,7 @@ public class GoogleSpreadsheetAdapter {
 		URL listFeedUrl = worksheetEntry.getListFeedUrl();
 		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
 		SpreadsheetContainer sbc = new SpreadsheetContainer();
-		int i = 0;
+	
 		for (ListEntry entry : feed.getEntries()) {
 			// row			
 			RowContainer row = new RowContainer();
@@ -210,17 +207,10 @@ public class GoogleSpreadsheetAdapter {
 		return tableEntry;
 	}
 
+	@SuppressWarnings("unused")
 	private void getTableFeed(SpreadsheetEntry spreadsheetEntry)
 			throws IOException, ServiceException {
 		TableEntry tableEntry = createTableFeed(spreadsheetEntry);
-		// URL recordFeedUrl = tableEntry.getRecordFeedUrl();
-		// RecordFeed feed = service.getFeed(recordFeedUrl, RecordFeed.class);
-		// for (RecordEntry entry : feed.getEntries()) {
-		// log.info("Title: " + entry.getTitle().getPlainText());
-		// for (Field field : entry.getFields()) {
-		// log.info("<field name=" + field.getName() + ">"
-		// + field.getValue() + "</field>");
-		// }
-		// }
+	
 	}
 }

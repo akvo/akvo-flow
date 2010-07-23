@@ -2,7 +2,6 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.List;
 
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,7 +10,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -32,11 +30,12 @@ public class SurveyManager implements EntryPoint {
 	private HorizontalPanel detailHPanel = new HorizontalPanel();
 	SurveyGroupServiceAsync svc;
 	ServiceDefTarget endpoint;
+	@SuppressWarnings("unchecked")
 	AsyncCallback callback;
 
+	@SuppressWarnings("unchecked")
 	public void onModuleLoad() {
-		actionType="load";
-		
+		actionType = "load";
 
 		svc = (SurveyGroupServiceAsync) GWT.create(SurveyGroupService.class);
 		endpoint = (ServiceDefTarget) svc;
@@ -77,6 +76,7 @@ public class SurveyManager implements EntryPoint {
 		addToPanel();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addToPanel() {
 		if (actionType.equals("load")) {
 			svc.listSurveyGroups("desc", callback);
@@ -93,7 +93,7 @@ public class SurveyManager implements EntryPoint {
 		vPanel.add(hPanel);
 		vPanel.add(addPanel);
 		mainPanel.add(vPanel);
-		//RootPanel.get("survey").add(mainPanel);
+		// RootPanel.get("survey").add(mainPanel);
 	}
 
 	private void loadSurveyTree(List<SurveyGroupDto> surveyGroupList) {
@@ -104,21 +104,18 @@ public class SurveyManager implements EntryPoint {
 
 	String actionType = new String();
 
-	private void addEventHandlers() {
-
-	}
-	
 	private void addItem(ClickEvent event) {
 		if (surveyTree.getItemCount() == 0) {
 			actionType = "createSurveyGroup";
 		} else {
-			TreeItem selectedItem = surveyTree.getSelectedItem();
+			surveyTree.getSelectedItem();
 		}
 		nameBox.setVisible(true);
 		saveButton.setVisible(true);
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void saveDetailItem(ClickEvent event) {
 		actionType = "createSurveyGroup";
 		nameBox.setVisible(true);
@@ -127,7 +124,6 @@ public class SurveyManager implements EntryPoint {
 		sg.setCode(nameBox.getText());
 		sg.setDescription(nameBox.getSelectedText());
 		svc.saveSurveyGroup(sg, callback);
-
 	}
 
 }

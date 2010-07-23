@@ -15,6 +15,7 @@ public class SurveyDetailsForm extends DetailForm {
 	
 	final VerticalPanel panel = new VerticalPanel();
 
+	@SuppressWarnings("unused")
 	private String[] controlList = {"TextBox|surveyId|null","TextBox|surveyName|Survey Name"};
 	
 	private void loadControls() {

@@ -130,9 +130,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		String imageURL = fileName.substring(fileName
 				.indexOf("http://waterforpeople.s3.amazonaws.com/"));
 		String bucket = "waterforpeople";
-		String rootURL = "http://waterforpeople.s3.amazonaws.com/";
 		Random rand = new Random();
-		String totalURL = imageURL + "?random=" + rand.nextInt();
 		InputStream in;
 		ByteArrayOutputStream out = null;
 		URL url;

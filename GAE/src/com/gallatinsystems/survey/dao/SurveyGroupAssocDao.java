@@ -5,16 +5,14 @@ import java.util.List;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
 
+public class SurveyGroupAssocDao extends BaseDAO<SurveyGroupAssoc> {
 
-public class SurveyGroupAssocDao extends BaseDAO {
-
-	public SurveyGroupAssocDao(Class e) {
-		super(e);
-		// TODO Auto-generated constructor stub
+	public SurveyGroupAssocDao() {
+		super(SurveyGroupAssoc.class);
 	}
 
-	
-	public List<SurveyGroupAssoc> findSurveyGroupAssocByCode(String surveyGroupCode){
-		return (List<SurveyGroupAssoc>)super.listByProperty("SurveyGroupCode", surveyGroupCode, "String");
+	public List<SurveyGroupAssoc> findSurveyGroupAssocByCode(
+			String surveyGroupCode) {
+		return listByProperty("SurveyGroupCode", surveyGroupCode, "String");
 	}
 }

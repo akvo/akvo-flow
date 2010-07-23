@@ -43,6 +43,7 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(SurveyAssemblyServlet.class.getName());
 

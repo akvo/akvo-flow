@@ -12,7 +12,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import com.gallatinsystems.survey.domain.xml.ObjectFactory;
 import com.gallatinsystems.survey.domain.xml.Question;
 import com.gallatinsystems.survey.domain.xml.QuestionGroup;
 import com.gallatinsystems.survey.domain.xml.Survey;

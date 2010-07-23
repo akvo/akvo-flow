@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.app.web.dto;
 
-import java.security.PrivateKey;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;

@@ -34,10 +34,12 @@ public class MappingAttributeManager extends Portlet {
 	public static final String DESCRIPTION = "Import Access Points from Google Doc";
 	public static final String NAME = "Google Doc Access Point Importer";
 	public static final String TITLE = "Import Access Points from Google Docs";
-	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane = new VerticalPanel();
+	@SuppressWarnings("unused")
+	private ArrayList<String> spreadsheetCols = null;
+	private ArrayList<String> objectAttributes = new ArrayList<String>();
 
 	private Widget buildHeader() {
 
@@ -86,22 +88,23 @@ public class MappingAttributeManager extends Portlet {
 		endpoint
 				.setServiceEntryPoint("/org.waterforpeople.mapping.portal.portal/spreadsheetattributemapperrpc");
 		loadAttributes();
-		svc.listSpreadsheetsFromFeed(null, new AsyncCallback() {
-			@Override
-			public void onFailure(Throwable caught) {
-				MessageDialog errDia = new MessageDialog("Error",
-						"Cannot list spreadsheets. Will reauth with Google");
-				errDia.showRelativeTo(processSpreadsheetButton);
-				Window.open("/authsub", "_self", "");
-			}
+		svc.listSpreadsheetsFromFeed(null,
+				new AsyncCallback<ArrayList<String>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						MessageDialog errDia = new MessageDialog("Error",
+								"Cannot list spreadsheets. Will reauth with Google");
+						errDia.showRelativeTo(processSpreadsheetButton);
+						Window.open("/authsub", "_self", "");
+					}
 
-			@Override
-			public void onSuccess(Object result) {
-				loadSpreadsheetTree((ArrayList<String>) result);
-				treeStatusLabel.setVisible(false);
-				spreadsheetMappingTree.setVisible(true);
-			}
-		});
+					@Override
+					public void onSuccess(ArrayList<String> result) {
+						loadSpreadsheetTree(result);
+						treeStatusLabel.setVisible(false);
+						spreadsheetMappingTree.setVisible(true);
+					}
+				});
 
 		spreadSheetTypeListBox.addItem("Google Spreadsheet");
 		spreadSheetTypeListBox.addItem("Excel Spreadsheet");
@@ -152,7 +155,7 @@ public class MappingAttributeManager extends Portlet {
 		// RootPanel.get("content").add(mainHPanel);
 		spreadsheetMappingTree
 				.addSelectionHandler(new SelectionHandler<TreeItem>() {
-					public void onSelection(SelectionEvent event) {
+					public void onSelection(SelectionEvent<TreeItem> event) {
 						spreadsheetNameHPanel.setVisible(true);
 						colMapStatusLabel.setVisible(true);
 						colMapTable.setVisible(false);
@@ -190,7 +193,7 @@ public class MappingAttributeManager extends Portlet {
 				colMapStatusLabel.setVisible(true);
 				MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 				mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
-				svc.processSpreadsheet(mapDef, new AsyncCallback() {
+				svc.processSpreadsheet(mapDef, new AsyncCallback<String>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -199,13 +202,13 @@ public class MappingAttributeManager extends Portlet {
 					}
 
 					@Override
-					public void onSuccess(Object result) {
+					public void onSuccess(String result) {
 						colMapTable.setVisible(true);
 						colMapStatusLabel.setVisible(false);
 						colMapStatusLabel
 								.setText("Please wait loading columns");
 
-						Window.alert((String) result);
+						Window.alert(result);
 
 					}
 
@@ -221,19 +224,19 @@ public class MappingAttributeManager extends Portlet {
 		colMapTable.removeAllRows();
 	}
 
+	@SuppressWarnings("unused")
 	private void setSpreadsheetCols() {
 		svc.listSpreadsheetColumns(spreadSheetTextBox.getText().trim(),
-				new AsyncCallback() {
+				new AsyncCallback<ArrayList<String>>() {
 
 					@Override
-					public void onSuccess(Object result) {
-						spreadsheetCols = (ArrayList<String>) result;
+					public void onSuccess(ArrayList<String> result) {
+						spreadsheetCols = result;
 
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
 
 					}
 				});
@@ -259,11 +262,9 @@ public class MappingAttributeManager extends Portlet {
 				});
 	}
 
-	private ArrayList<String> spreadsheetCols = null;
-
 	private void existingMapAyncCalls(String spreadsheetName) {
 		svc.getMappingSpreadsheetDefinition(spreadsheetName,
-				new AsyncCallback() {
+				new AsyncCallback<MappingDefinitionColumnContainer>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -272,9 +273,10 @@ public class MappingAttributeManager extends Portlet {
 					}
 
 					@Override
-					public void onSuccess(Object result) {
+					public void onSuccess(
+							MappingDefinitionColumnContainer result) {
 						if (result != null) {
-							MappingDefinitionColumnContainer existingMapDef = (MappingDefinitionColumnContainer) result;
+							MappingDefinitionColumnContainer existingMapDef = result;
 							loadColumnsAndAttributes(existingMapDef
 									.getSpreadsheetColsList(), existingMapDef
 									.getMapDef());
@@ -295,8 +297,6 @@ public class MappingAttributeManager extends Portlet {
 		existingMapAyncCalls(spreadsheetName);
 
 	}
-
-	private MappingSpreadsheetDefinition existingMapDef = null;
 
 	private void loadSpreadsheetTree(ArrayList<String> spreadsheetList) {
 		TreeItem outerRoot = new TreeItem("Google Docs Spreadsheets");
@@ -357,25 +357,16 @@ public class MappingAttributeManager extends Portlet {
 		saveSpreadsheetMapButton.setVisible(true);
 	}
 
-	private ArrayList<String> objectAttributes = new ArrayList<String>();
-
-	private Integer patternMatch(String colItem) {
-
-		return -1;
-	}
-
 	private ArrayList<String> loadAttributes() {
-		svc.listObjectAttributes(null, new AsyncCallback() {
-
+		svc.listObjectAttributes(null, new AsyncCallback<ArrayList<String>>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
-			public void onSuccess(Object result) {
-				objectAttributes = (ArrayList<String>) result;
+			public void onSuccess(ArrayList<String> result) {
+				objectAttributes = result;
 
 			}
 
@@ -407,7 +398,7 @@ public class MappingAttributeManager extends Portlet {
 		}
 		mapDef.setColumnMap(columnMap);
 
-		svc.saveSpreadsheetMapping(mapDef, new AsyncCallback() {
+		svc.saveSpreadsheetMapping(mapDef, new AsyncCallback<Void>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -416,7 +407,7 @@ public class MappingAttributeManager extends Portlet {
 			}
 
 			@Override
-			public void onSuccess(Object result) {
+			public void onSuccess(Void result) {
 				colMapTable.setVisible(true);
 				colMapStatusLabel.setVisible(false);
 				colMapStatusLabel.setText("Please wait loading columns");

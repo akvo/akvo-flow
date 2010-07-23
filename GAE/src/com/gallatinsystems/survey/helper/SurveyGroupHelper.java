@@ -7,6 +7,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyGroupHelper {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(SurveyGroupHelper.class
 			.getName());
 	

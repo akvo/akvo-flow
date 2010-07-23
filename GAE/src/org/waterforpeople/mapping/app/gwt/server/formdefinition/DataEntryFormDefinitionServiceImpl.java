@@ -23,12 +23,9 @@ public class DataEntryFormDefinitionServiceImpl extends RemoteServiceServlet
 		helper = new DataEntryFormDefinitionHelper();
 	}
 
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(DataEntryFormDefinitionServiceImpl.class.getName());
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9016921150148102482L;
 
 	public void delete(DataEntryFormDefinitionDto item) {

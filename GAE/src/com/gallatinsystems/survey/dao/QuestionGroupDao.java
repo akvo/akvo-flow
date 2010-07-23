@@ -54,14 +54,15 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		return qgList;
 	}
 
+	@SuppressWarnings("unchecked")
 	public QuestionGroup getByPath(String code, String path) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionGroup.class);
 		query.setFilter(" path == pathParam && code == codeParam");
 		query.declareParameters("String pathParam, String codeParam");
-		List results = (List) query.execute(path, code);
+		List<QuestionGroup> results = (List<QuestionGroup>) query.execute(path, code);
 		if (results != null && results.size() > 0) {
-			return (QuestionGroup) results.get(0);
+			return results.get(0);
 		} else {
 			return null;
 		}

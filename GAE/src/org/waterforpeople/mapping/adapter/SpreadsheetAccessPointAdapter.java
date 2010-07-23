@@ -38,14 +38,14 @@ public class SpreadsheetAccessPointAdapter {
 			PrivateKey privateKey) {
 		this.privateKey = privateKey;
 		this.sessionToken = sessionToken;
-		 apHelper = new AccessPointHelper();
+		apHelper = new AccessPointHelper();
 	}
 
 	public void processSpreadsheetOfAccessPoints(String spreadsheetName)
 			throws IOException, ServiceException {
 		loadTechnologyTypes();
 		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
-				sessionToken, privateKey);		
+				sessionToken, privateKey);
 		try {
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
@@ -85,6 +85,7 @@ public class SpreadsheetAccessPointAdapter {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private AccessPoint processRow(RowContainer row, String spreadsheetName) {
 		AccessPoint ap = new AccessPoint();
 		// Structure of string from GoogleSpreadsheet
@@ -233,13 +234,18 @@ public class SpreadsheetAccessPointAdapter {
 											.equals("borken-down system")
 									|| col.getColContents().toLowerCase()
 											.trim()
-											.equals("broken-down system")||
-											col.getColContents().trim().toLowerCase().equals("broken down")) {
+											.equals("broken-down system")
+									|| col.getColContents().trim()
+											.toLowerCase()
+											.equals("broken down")) {
 								// Red
 								ap
 										.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
 							} else if (col.getColContents().toLowerCase()
-									.equals("no improved system")|| (col.getColContents().trim().toLowerCase().equals("no improved system"))) {
+									.equals("no improved system")
+									|| (col.getColContents().trim()
+											.toLowerCase()
+											.equals("no improved system"))) {
 								// No improved system Black
 								ap
 										.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
@@ -264,23 +270,23 @@ public class SpreadsheetAccessPointAdapter {
 						if (paramTypeClass.contains("Double")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseDouble(col.getColContents());
-							Object retobj = meth.invoke(ap, arglist);
+							meth.invoke(ap, arglist);
 						} else if (paramTypeClass.contains("String")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = col.getColContents();
-							Object retobj = meth.invoke(ap, arglist);
+							meth.invoke(ap, arglist);
 						} else if (paramTypeClass.contains("Date")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseDate(col.getColContents());
-							Object retobj = meth.invoke(ap, arglist);
+							meth.invoke(ap, arglist);
 						} else if (paramTypeClass.contains("Long")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseLong(col.getColContents());
-							Object retobj = meth.invoke(ap, arglist);
+							meth.invoke(ap, arglist);
 						} else if (paramTypeClass.contains("Boolean")) {
 							Object arglist[] = new Object[1];
 							arglist[0] = parseBoolean(col.getColContents());
-							Object retobj = meth.invoke(ap, arglist);
+							meth.invoke(ap, arglist);
 						}
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
@@ -340,6 +346,7 @@ public class SpreadsheetAccessPointAdapter {
 		return ap;
 	}
 
+	@SuppressWarnings("deprecation")
 	private Date parseDate(String value) {
 		Date date;
 		try {
@@ -390,7 +397,7 @@ public class SpreadsheetAccessPointAdapter {
 		return retVal;
 	}
 
-	private HashMap getColsToAttributeMap(String spreadsheetName) {
+	private HashMap<String, String> getColsToAttributeMap(String spreadsheetName) {
 		SpreadsheetMappingAttributeHelper samh = new SpreadsheetMappingAttributeHelper(
 				sessionToken, privateKey);
 		MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();

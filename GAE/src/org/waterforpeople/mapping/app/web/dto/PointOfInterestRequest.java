@@ -56,7 +56,7 @@ public class PointOfInterestRequest extends RestRequest {
 		if (country == null && lon == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, LON_PARAM
-							+ " cannot be nullif no " + COUNTRY_PARAM
+							+ " cannot be null if no " + COUNTRY_PARAM
 							+ " is supplied"));
 		}
 	}

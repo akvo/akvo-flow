@@ -2,7 +2,6 @@ package org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MappingSpreadsheetDefinition implements Serializable {
 	/**

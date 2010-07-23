@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.domain.KML;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.google.appengine.api.datastore.Text;
 
 public class KMLDAO extends BaseDAO<KML> {
 	@SuppressWarnings("unused")

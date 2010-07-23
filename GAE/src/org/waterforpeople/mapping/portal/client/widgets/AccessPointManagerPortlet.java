@@ -6,7 +6,6 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointTechnologyTypeDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
@@ -112,7 +111,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				configureTechTypeListBox(event);
+				//TODO: implement on change
+				//configureTechTypeListBox(event);
 			}
 
 		});
@@ -181,10 +181,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointTypeListBox.addItem("Sanitation Point",
 				AccessPointType.SANITATION_POINT.toString());
 	}
-
-	private void configureTechTypeListBox(ChangeEvent event) {
-		AccessPointTechnologyTypeDto techType;
-	}
+	
 
 	/**
 	 * constructs a search criteria object using values from the form

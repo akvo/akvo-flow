@@ -19,24 +19,23 @@ import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2270875281089527752L;
-
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(SpreadsheetProcessorServlet.class.getName());
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String spreadsheetName = req.getParameter("spreadsheetName");
 		String listColumns = req.getParameter("listColumns");
-		SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter(null,null);
+		SpreadsheetAccessPointAdapter sapa = new SpreadsheetAccessPointAdapter(
+				null, null);
 		String clearAccessPointFlag = req.getParameter("clearAccessPointFlag");
-		
-		if(clearAccessPointFlag.equals("doIt")){
-			BaseDAO<AccessPoint> baseDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
+
+		if (clearAccessPointFlag.equals("doIt")) {
+			BaseDAO<AccessPoint> baseDAO = new BaseDAO<AccessPoint>(
+					AccessPoint.class);
 			List<AccessPoint> apList = baseDAO.list(Constants.ALL_RESULTS);
-			for(AccessPoint item: apList){
+			for (AccessPoint item : apList) {
 				try {
 					resp.getWriter().println("Deleting: " + item.toString());
 				} catch (IOException e) {
@@ -45,15 +44,15 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 				}
 				baseDAO.delete(item);
 			}
-			
+
 			try {
-				resp.getWriter().println("FINISHED ACCESSPOINT TABLE SHOULD BE EMPTY");
+				resp.getWriter().println(
+						"FINISHED ACCESSPOINT TABLE SHOULD BE EMPTY");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		else if (!spreadsheetName.trim().isEmpty()) {
+		} else if (!spreadsheetName.trim().isEmpty()) {
 			if (listColumns != null && listColumns.equals("true")) {
 				try {
 					StringBuilder sb = new StringBuilder();

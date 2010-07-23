@@ -10,10 +10,6 @@ import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 
 public class SurveyQuestionGroupAssocDao extends BaseDAO<SurveyQuestionGroupAssoc> {
 
-	public SurveyQuestionGroupAssocDao(Class e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
 	
 	public SurveyQuestionGroupAssocDao(){
 		super(SurveyQuestionGroupAssoc.class);
@@ -31,6 +27,7 @@ public class SurveyQuestionGroupAssocDao extends BaseDAO<SurveyQuestionGroupAsso
 		return super.listByProperty("questionGroupId", questionGroupId, "Long");
 	}
 
+	@SuppressWarnings("unchecked")
 	public void delete(SurveyQuestionGroupAssoc item){
 		if(item.getKey()==null){
 			Long surveyId = item.getSurveyId();

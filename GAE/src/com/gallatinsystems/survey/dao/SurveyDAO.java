@@ -124,8 +124,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		questionOption.setText("test text");
 
 		QuestionOption questionOption2 = new QuestionOption();
-		questionOption.setCode("test2");
-		questionOption.setText("test text");
+		questionOption2.setCode("test2");
+		questionOption2.setText("test text");
 
 		QuestionHelp questionHelp = new QuestionHelp();
 		questionHelp.setText("Help");
@@ -221,14 +221,15 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return surveyList;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Survey getByPath(String code, String path) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Survey.class);
 		query.setFilter(" path == pathParam && name == codeParam");
 		query.declareParameters("String pathParam, String codeParam");		
-		List results = (List) query.execute(path, code);
+		List<Survey> results = (List<Survey>) query.execute(path, code);
 		if(results != null && results.size()>0){
-			return (Survey)results.get(0);
+			return results.get(0);
 		}else{
 			return null;
 		}

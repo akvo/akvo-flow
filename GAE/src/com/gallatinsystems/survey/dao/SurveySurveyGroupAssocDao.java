@@ -7,21 +7,12 @@ import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 
 public class SurveySurveyGroupAssocDao extends BaseDAO<SurveySurveyGroupAssoc> {
 
-	public SurveySurveyGroupAssocDao(Class e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
-	public SurveySurveyGroupAssocDao(){
+	public SurveySurveyGroupAssocDao() {
 		super(SurveySurveyGroupAssoc.class);
 	}
-	
-	@SuppressWarnings("unchecked")
-	public SurveySurveyGroupAssoc save(SurveySurveyGroupAssoc ssga){
-		return (SurveySurveyGroupAssoc) super.save(ssga);
-	}
-	@SuppressWarnings("unchecked")
-	public List<SurveySurveyGroupAssoc> listBySurveyGroupId(Long id){
-		return (List<SurveySurveyGroupAssoc>) super.listByProperty("surveyGroupId", id, "Long");
+
+	public List<SurveySurveyGroupAssoc> listBySurveyGroupId(Long id) {
+		return listByProperty("surveyGroupId", id, "Long");
 	}
 
 }

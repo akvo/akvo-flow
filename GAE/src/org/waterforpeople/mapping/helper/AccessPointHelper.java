@@ -51,22 +51,7 @@ public class AccessPointHelper {
 
 		List<QuestionAnswerStore> questionAnswerList = sid
 				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId));
-
-		// Hardcoded for dev need to identify the map key between SurveyInstance
-		// and Survey
-		// Survey surveyDefinition = surveyDAO.get(39L);
-
-		/*
-		 * For Monday I am mapping questionIds from QuestionAnswer to values in
-		 * mappingsurvey this needs to be replaced by a mapping between the two
-		 * tables for Tuesday Lat/Lon/Alt from q4 geo WaterPointPhotoURL = qm2
-		 * typeOfWaterPointTech = qm5 communityCode = qm1 constructionDate = qm4
-		 * numberOfHouseholdsUsingWaterPoint = qm6 costPer = qm7
-		 * farthestHouseholdfromWaterPoint = qm8
-		 * CurrentManagementStructureWaterPoint = qm9 waterSystemStatus = qm10
-		 * sanitationPointPhotoURL =q3 waterPointCaption = qm3
-		 */
-
+		
 		AccessPoint ap;
 		if (questionAnswerList != null && questionAnswerList.size() > 0) {
 			ap = parseAccessPoint(new Long(questionAnswerList.get(0)

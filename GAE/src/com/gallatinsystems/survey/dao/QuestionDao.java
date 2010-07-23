@@ -12,35 +12,34 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 
 public class QuestionDao extends BaseDAO<Question> {
 
 	private QuestionQuestionGroupAssocDao qqgaDao;
 	private OptionContainerDao ocDao;
-	
 
 	public QuestionDao() {
 		super(Question.class);
 		qqgaDao = new QuestionQuestionGroupAssocDao();
 		ocDao = new OptionContainerDao();
 	}
-	
-	public List<Question> listQuestionByType(QuestionType type){
+
+	public List<Question> listQuestionByType(QuestionType type) {
 		return listByProperty("type", type.toString(), "String");
 	}
 
-	public List<Question> listQuestionsByQuestionGroup(String questionGroupId, boolean needDetails) {
+	public List<Question> listQuestionsByQuestionGroup(String questionGroupId,
+			boolean needDetails) {
 		List<QuestionQuestionGroupAssoc> qqgaList = new QuestionQuestionGroupAssocDao()
 				.listByQuestionGroupId(new Long(questionGroupId));
 		java.util.ArrayList<Question> questionList = new ArrayList<Question>();
 
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
-			Question question = getByKey(qqga.getQuestionId());			
+			Question question = getByKey(qqga.getQuestionId());
 			questionList.add(question);
 		}
-		if(questionList != null){
+		if (questionList != null) {
 			Collections.sort(questionList);
 		}
 
@@ -79,11 +78,11 @@ public class QuestionDao extends BaseDAO<Question> {
 		return question;
 	}
 
-	public Question findByReferenceId(String refid){
-		Question q = findByProperty("referenceIndex", refid, "String");		
+	public Question findByReferenceId(String refid) {
+		Question q = findByProperty("referenceIndex", refid, "String");
 		return q;
 	}
-	
+
 	public Question save(Question question) {
 		question = super.save(question);
 		if (question.getOptionContainer() != null) {
@@ -111,15 +110,16 @@ public class QuestionDao extends BaseDAO<Question> {
 				question.setOptionContainer(oc);
 		}
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public Question getByPath(Integer order, String path) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
 		query.setFilter(" path == pathParam && order == orderParam");
 		query.declareParameters("String pathParam, String orderParam");
-		List results = (List) query.execute(path, order);
+		List<Question> results = (List<Question>) query.execute(path, order);
 		if (results != null && results.size() > 0) {
-			return (Question) results.get(0);
+			return results.get(0);
 		} else {
 			return null;
 		}

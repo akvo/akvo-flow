@@ -2,12 +2,11 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 
-import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateMappingDto;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerService;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateMappingDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
-import com.gallatinsystems.framework.gwt.portlet.client.PortletEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -24,7 +23,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Display Mapping";
 	public static final String NAME = "Display Mapping Manager";
 
-	private static final String ANY_OPT = "Any";
+	
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
@@ -112,8 +111,6 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 			@Override
 			public void onSuccess(ArrayList<DisplayTemplateMappingDto> result) {
 				Integer row = 1;
-				int column = 0;
-
 				for (DisplayTemplateMappingDto rowItem : result) {
 					addDetailRow(rowItem, row);
 				}
@@ -193,7 +190,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 				savedRow = iRow;
 				Long keyId = new Long(
 						((Label) dspEntryTable.getWidget(iRow, 5)).getText());
-				svc.delete(keyId, new AsyncCallback() {
+				svc.delete(keyId, new AsyncCallback<Void>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -202,7 +199,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 					}
 
 					@Override
-					public void onSuccess(Object result) {
+					public void onSuccess(Void result) {
 						dspEntryTable.removeRow(savedRow);
 
 					}

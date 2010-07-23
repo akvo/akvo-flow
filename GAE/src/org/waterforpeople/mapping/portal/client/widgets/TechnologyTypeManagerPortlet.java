@@ -24,14 +24,15 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Technology Types for Access Points";
 	public static final String NAME = "Technology Type Manager";
 
-	private static final String ALL_OPT = "All";
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
 	private TechnologyTypeServiceAsync svc;
 	// Search UI Elements
 	private VerticalPanel mainVPanel = new VerticalPanel();
-	private FlexTable searchTable = new FlexTable();
+	private FlexTable entryTable = new FlexTable();
+	private int savedRowId = 0;
+	private int deleteRowId = 0;
 
 	public TechnologyTypeManagerPortlet(String title, boolean scrollable,
 			boolean configurable, int width, int height) {
@@ -46,10 +47,10 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 				.setServiceEntryPoint("/org.waterforpeople.mapping.portal.portal/technologytype");
 
 	}
+
 	private static final String TITLE = "Manage System Technology Types";
 	private static final Boolean SCROLLABLE = true;
 	private static final Boolean CONFIGURABLE = false;
-	
 
 	public TechnologyTypeManagerPortlet() {
 		super(TITLE, SCROLLABLE, CONFIGURABLE, WIDTH, HEIGHT);
@@ -63,6 +64,7 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 				.setServiceEntryPoint("/org.waterforpeople.mapping.portal.portal/technologytype");
 
 	}
+
 	private ServiceDefTarget endpoint;
 
 	@Override
@@ -83,11 +85,8 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 		return grid;
 	}
 
-	private ArrayList<TechnologyTypeDto> existingItems;
-	private FlexTable entryTable = new FlexTable();
-
 	private void buildEntryScreen() {
-		createHeaderRow ();
+		createHeaderRow();
 		svc.list(new AsyncCallback<ArrayList<TechnologyTypeDto>>() {
 
 			@Override
@@ -95,7 +94,6 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 				addControlButtons();
 			}
 
-			
 			@Override
 			public void onSuccess(ArrayList<TechnologyTypeDto> result) {
 				int row = 1;
@@ -104,39 +102,37 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 					row++;
 				}
 				addControlButtons();
-				
+
 			}
 
 		});
 
 	}
-	
-	private void addControlButtons(){
+
+	private void addControlButtons() {
 		Integer numRows = entryTable.getRowCount();
 		Button addNewTechType = new Button("Add New");
-		
-		addNewTechType.addClickHandler(new ClickHandler(){
+
+		addNewTechType.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				//Add new row for data entry
+				// Add new row for data entry
 				Integer numRows = entryTable.getRowCount();
-				entryTable.insertRow(numRows-1);
-				createDetailRow(null, numRows-1);
+				entryTable.insertRow(numRows - 1);
+				createDetailRow(null, numRows - 1);
 			}
-			
+
 		});
 		entryTable.setWidget(numRows, 1, addNewTechType);
 	}
 
-	private Integer icurrentRow = 0;
-	private void createHeaderRow (){
-		entryTable.setWidget(0,0,new Label("Code"));
-		entryTable.setWidget(0,1, new Label("Name"));
-		entryTable.setWidget(0,2, new Label("Description"));
+	private void createHeaderRow() {
+		entryTable.setWidget(0, 0, new Label("Code"));
+		entryTable.setWidget(0, 1, new Label("Name"));
+		entryTable.setWidget(0, 2, new Label("Description"));
 	}
-	private int savedRowId = 0;
-	private int deleteRowId = 0;
+
 	private void createDetailRow(TechnologyTypeDto item, Integer row) {
 		TextBox codeTB = new TextBox();
 		if (item != null)
@@ -177,7 +173,7 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 
 				Button calledButton = (Button) event.getSource();
 				Integer iRow = new Integer(calledButton.getTitle());
-				savedRowId = iRow; 
+				savedRowId = iRow;
 				TechnologyTypeDto techTypeDto = getObjectFromRow(iRow);
 				svc.save(techTypeDto, new AsyncCallback<TechnologyTypeDto>() {
 
@@ -189,7 +185,8 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 
 					@Override
 					public void onSuccess(TechnologyTypeDto result) {
-						Label idLabel = (Label)entryTable.getWidget(savedRowId, 5);
+						Label idLabel = (Label) entryTable.getWidget(
+								savedRowId, 5);
 						idLabel.setText(result.getKeyId().toString());
 					}
 
@@ -197,7 +194,6 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 			}
 
 		});
-		
 
 		deleteButton.addClickHandler(new ClickHandler() {
 
@@ -208,7 +204,7 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 				Integer iRow = new Integer(calledButton.getTitle());
 				deleteRowId = iRow;
 				id = new Long(((Label) entryTable.getWidget(iRow, 5)).getText());
-				svc.delete(id, new AsyncCallback() {
+				svc.delete(id, new AsyncCallback<Void>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -217,7 +213,7 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 					}
 
 					@Override
-					public void onSuccess(Object result) {
+					public void onSuccess(Void result) {
 						entryTable.removeRow(deleteRowId);
 					}
 
@@ -244,6 +240,5 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 		techType.setDescription(descriptionTB.getText());
 		return techType;
 	}
-	
-	
+
 }

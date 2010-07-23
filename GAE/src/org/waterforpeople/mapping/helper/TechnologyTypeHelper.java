@@ -9,6 +9,7 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class TechnologyTypeHelper {
+	 @SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(TechnologyTypeHelper.class
 			.getName());
 

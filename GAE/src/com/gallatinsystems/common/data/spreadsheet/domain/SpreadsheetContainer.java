@@ -2,13 +2,9 @@ package com.gallatinsystems.common.data.spreadsheet.domain;
 
 import java.util.ArrayList;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class SpreadsheetContainer extends BaseDomain{

@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.dao.DisplayTemplateMappingDAO;
 import org.waterforpeople.mapping.domain.DisplayTemplateMapping;
 
 public class DisplayTemplateMappingHelper {
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 			.getLogger(DisplayTemplateMappingHelper.class.getName());
 	public List<DisplayTemplateMapping> save(

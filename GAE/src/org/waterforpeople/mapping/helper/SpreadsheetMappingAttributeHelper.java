@@ -16,6 +16,7 @@ import com.gallatinsystems.common.util.ClassAttributeUtil;
 import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetMappingAttributeHelper {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(SpreadsheetMappingAttributeHelper.class.getName());
 
@@ -75,9 +76,8 @@ public class SpreadsheetMappingAttributeHelper {
 
 	public MappingSpreadsheetDefinition saveSpreadsheetMapping(
 			MappingSpreadsheetDefinition mapDef) {
-		MappingSpreadsheetDefintionDAO baseDAO = new MappingSpreadsheetDefintionDAO(
-				MappingSpreadsheetDefinition.class);
-		return baseDAO.save(mapDef);
+		MappingSpreadsheetDefintionDAO mappingDao = new MappingSpreadsheetDefintionDAO();
+		return mappingDao.save(mapDef);
 	}
 
 	public ArrayList<String> listSpreadsheets(String feedURL)
@@ -88,8 +88,7 @@ public class SpreadsheetMappingAttributeHelper {
 
 	public MappingSpreadsheetDefinition getMappingSpreadsheetDefinition(
 			String spreadsheetName) {
-		MappingSpreadsheetDefintionDAO baseDAO = new MappingSpreadsheetDefintionDAO(
-				MappingSpreadsheetDefinition.class);
+		MappingSpreadsheetDefintionDAO baseDAO = new MappingSpreadsheetDefintionDAO();
 		return baseDAO.findBySpreadsheetURL(spreadsheetName);
 	}
 }

@@ -21,10 +21,10 @@ public class SurveyAssemblyRequest extends RestRequest {
 	public static final String CLEANUP = "cleanup";
 
 	private static final String SURVEY_ID_PARAM = "surveyId";
-	private static final String TYPE_PARAM = "type";
+	
 	private static final String START_ROW_PARAM = "startRow";
 	private static final String GROUP_ID_PARAM = "questionGroupId";
-	private static final String ST_PARAM = "sessionToken";
+	
 	private static final String LAST_GROUP_FLAG_PARAM = "lastGroupFlag";
 
 	private Long surveyId = null;

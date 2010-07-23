@@ -9,13 +9,9 @@ import com.gallatinsystems.survey.domain.OptionContainerQuestionOptionAssoc;
 import com.gallatinsystems.survey.domain.QuestionOption;
 
 public class OptionContainerDao extends BaseDAO<OptionContainer> {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(OptionContainerDao.class
 			.getName());
-
-	public OptionContainerDao(Class e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
 
 	public OptionContainerDao() {
 		super(OptionContainer.class);
@@ -28,9 +24,10 @@ public class OptionContainerDao extends BaseDAO<OptionContainer> {
 		// Get All OptionContainerQuestionOptionAssocs and delete them
 
 		Long ocId = oc.getKey().getId();
-//Temp fix to delete assocs prior to saving to eliminate dups
+		// Temp fix to delete assocs prior to saving to eliminate dups
 		if (ocId != null)
-			for (OptionContainerQuestionOptionAssoc ocqoa : qcqoDao.listByOptionContainerId(ocId)) {
+			for (OptionContainerQuestionOptionAssoc ocqoa : qcqoDao
+					.listByOptionContainerId(ocId)) {
 				qcqoDao.delete(ocqoa);
 			}
 

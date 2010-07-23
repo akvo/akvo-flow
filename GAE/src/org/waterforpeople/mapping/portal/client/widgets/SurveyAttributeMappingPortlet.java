@@ -54,6 +54,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private ListBox surveyListbox;
 	private ListBox questionGroupListbox;
 
+
 	private HashMap<String, ListBox> attributeListboxes;
 
 	private TreeMap<String, String> attributes;

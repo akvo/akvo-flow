@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 public class ClassAttributeUtil {
 	private static HashMap<String, TreeMap<String, String>> classAttributeMap = new HashMap<String, TreeMap<String, String>>();
 
+	@SuppressWarnings("unchecked")
 	public static TreeMap<String, String> listObjectAttributes(String className) {
 		TreeMap<String,String> attributesList = classAttributeMap
 				.get(className);

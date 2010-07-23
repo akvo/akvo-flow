@@ -32,6 +32,7 @@ public class MappingDisplayHelper {
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private String buildDocument() {
 		StringBuilder kmlSB = new StringBuilder();
 		kmlSB.append(buildPlacemarks());
@@ -41,6 +42,7 @@ public class MappingDisplayHelper {
 
 	private VelocityEngine engine = null;
 
+	@SuppressWarnings("unused")
 	private void setupEngine() {
 		engine = new VelocityEngine();
 		engine.setProperty("runtime.log.logsystem.class",

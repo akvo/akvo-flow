@@ -3,7 +3,6 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -17,13 +16,11 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyQuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
-import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
@@ -59,6 +56,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyService {
 
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
@@ -115,11 +113,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 									questionGroupDto);
 							if (questionGroup.getQuestionMap() != null
 									&& questionGroup.getQuestionMap().size() > 0) {
-								for (Entry questionEntry : questionGroup
+								for (Entry<Integer, Question> questionEntry : questionGroup
 										.getQuestionMap().entrySet()) {
-									Question question = (Question) questionEntry
+									Question question = questionEntry
 											.getValue();
-									Integer order = (Integer) questionEntry
+									Integer order = questionEntry
 											.getKey();
 									QuestionDto questionDto = new QuestionDto();
 									DtoMarshaller.copyToDto(question,
@@ -511,7 +509,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				"surveyId", surveyId.toString()));
 	}
 
-	@Override
+	@Override	
 	public String publishSurvey(Long surveyId) {
 		try {
 			SurveyDAO surveyDao = new SurveyDAO();
@@ -560,7 +558,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							ValidationRule validationRule = objFactory
 									.createValidationRule();
 
-							// ToDo set validation rule xml
+							// TODO: set validation rule xml
 							// validationRule.setAllowDecimal(value)
 						}
 

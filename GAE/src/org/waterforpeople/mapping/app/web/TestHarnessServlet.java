@@ -20,11 +20,8 @@ import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -91,6 +88,7 @@ public class TestHarnessServlet extends HttpServlet {
 			.getName());
 	private static final long serialVersionUID = -5673118002247715049L;
 
+	@SuppressWarnings("unused")	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		if ("testBaseDomain".equals(action)) {
@@ -177,32 +175,32 @@ public class TestHarnessServlet extends HttpServlet {
 						com.gallatinsystems.survey.domain.refactor.QuestionGroup qg = new com.gallatinsystems.survey.domain.refactor.QuestionGroup();
 						qg.addDesc("en", k + ":" + new Date());
 						qg.addDesc("es", j + ":" + new Date());
-						for(int l = 0;l<10;l++){
+						for (int l = 0; l < 10; l++) {
 							com.gallatinsystems.survey.domain.refactor.Question q = new com.gallatinsystems.survey.domain.refactor.Question();
 							q.setType(Type.OPTION);
 							q.setAllowMultipleFlag(false);
 							q.setAllowOtherFlag(false);
 							q.setDependentFlag(false);
-							q.addText("en", l+":"+new Date());
-							q.addText("es", l+":"+new Date());
-							q.addTip("en", l+":"+new Date());
-							q.addTip("en", l+":"+new Date());
-							for(int m=0;m<10;m++){
+							q.addText("en", l + ":" + new Date());
+							q.addText("es", l + ":" + new Date());
+							q.addTip("en", l + ":" + new Date());
+							q.addTip("en", l + ":" + new Date());
+							for (int m = 0; m < 10; m++) {
 								com.gallatinsystems.survey.domain.refactor.QuestionOption qo = new com.gallatinsystems.survey.domain.refactor.QuestionOption();
 								qo.addOptionMap("en", m + ":" + new Date());
 								qo.addOptionMap("es", m + ":" + new Date());
-								qo.setCode(m+":"+new Date());
+								qo.setCode(m + ":" + new Date());
 								qoDao.save(qo);
 								q.addQuestionOption("en", qo.getKey());
 							}
-							for(int n=0;n<10;n++){
+							for (int n = 0; n < 10; n++) {
 								com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia();
 								qhm.addText("en", n + ":" + new Date());
 								qhm.addText("en", n + ":" + new Date());
 								qhm.setType(QuestionHelpMedia.Type.PHOTO);
-								qhm.setUrl("http://test.com/"+n+".jpg");
+								qhm.setUrl("http://test.com/" + n + ".jpg");
 								qhmDao.save(qhm);
-								q.addHelpMedia(n,qhm.getKey());
+								q.addHelpMedia(n, qhm.getKey());
 							}
 							qDao.save(q);
 							qg.addQuestion(l, q.getKey());
@@ -805,63 +803,55 @@ public class TestHarnessServlet extends HttpServlet {
 					qDep.delete(qd);
 				resp.getWriter().println("Deleted all question dependency");
 
-				BaseDAO<OptionContainerQuestionOptionAssoc> ocqoaDao = new BaseDAO<OptionContainerQuestionOptionAssoc>(OptionContainerQuestionOptionAssoc.class);
-				List<OptionContainerQuestionOptionAssoc> ocqoaList = ocqoaDao.list("all");
-				for(OptionContainerQuestionOptionAssoc item : ocqoaList){
+				BaseDAO<OptionContainerQuestionOptionAssoc> ocqoaDao = new BaseDAO<OptionContainerQuestionOptionAssoc>(
+						OptionContainerQuestionOptionAssoc.class);
+				List<OptionContainerQuestionOptionAssoc> ocqoaList = ocqoaDao
+						.list("all");
+				for (OptionContainerQuestionOptionAssoc item : ocqoaList) {
 					ocqoaDao.delete(item);
 				}
-				
+
 				resp.getWriter().println("Deleted all questions");
-				/*for (int t = 0; t < 2; t++) {
-					SurveyGroupDto sgd = new SurveyGroupDto();
-					sgd.setCode("Survey Group :" + t);
-					sgd.setDescription("Test Survey Group: " + t);
-					for (int i = 0; i < 2; i++) {
-						SurveyDto surveyDto = new SurveyDto();
-						surveyDto.setName("Survey a:" + i);
-						surveyDto.setDescription("test : " + i);
-						for (int q = 0; q < 5; q++) {
-							QuestionGroupDto qgd = new QuestionGroupDto();
-							qgd.setCode("Question Group: " + q);
-							qgd.setDescription("Question Group Desc: " + q);
-							for (int j = 0; j < 3; j++) {
-								QuestionHelpDto qhd = new QuestionHelpDto();
-								qhd.setResourceUrl("www.waterforpeople.org");
-								qhd.setText("help text");
-
-								QuestionOptionDto qo = new QuestionOptionDto();
-								qo.setCode("opt1");
-								qo.setText("Question Option 1 Display");
-
-								OptionContainerDto optionContainerDto = new OptionContainerDto();
-								optionContainerDto.setAllowOtherFlag(false);
-
-								optionContainerDto.addQuestionOption(qo);
-
-								QuestionDto qd = new QuestionDto();
-								QuestionDto qd1 = new QuestionDto();
-								qd.setText("Question Test: " + j);
-								qd.setType(QuestionType.FREE_TEXT);
-								qd.setTip("test tip" + j);
-								qd.setValidationRule("validation rule : " + j);
-								qd.addQuestionHelp(qhd);
-								qgd.addQuestion(qd, j);
-
-								qd1.setText("option question" + j);
-								qd1.setType(QuestionType.OPTION);
-								qd1.setOptionContainerDto(optionContainerDto);
-								qd1.addQuestionHelp(qhd);
-								qd1.setTip("test tip" + j);
-								qd1.setValidationRule("validation rule : " + j);
-								qgd.addQuestion(qd1, j + 4);
-							}
-							surveyDto.addQuestionGroup(qgd);
-						}
-						surveyDto.setVersion("Version: " + i);
-						sgd.addSurvey(surveyDto);
-					}
-					SurveyGroupDto sgDto = new SurveyServiceImpl().save(sgd);
-				}*/
+				/*
+				 * for (int t = 0; t < 2; t++) { SurveyGroupDto sgd = new
+				 * SurveyGroupDto(); sgd.setCode("Survey Group :" + t);
+				 * sgd.setDescription("Test Survey Group: " + t); for (int i =
+				 * 0; i < 2; i++) { SurveyDto surveyDto = new SurveyDto();
+				 * surveyDto.setName("Survey a:" + i);
+				 * surveyDto.setDescription("test : " + i); for (int q = 0; q <
+				 * 5; q++) { QuestionGroupDto qgd = new QuestionGroupDto();
+				 * qgd.setCode("Question Group: " + q);
+				 * qgd.setDescription("Question Group Desc: " + q); for (int j =
+				 * 0; j < 3; j++) { QuestionHelpDto qhd = new QuestionHelpDto();
+				 * qhd.setResourceUrl("www.waterforpeople.org");
+				 * qhd.setText("help text");
+				 * 
+				 * QuestionOptionDto qo = new QuestionOptionDto();
+				 * qo.setCode("opt1"); qo.setText("Question Option 1 Display");
+				 * 
+				 * OptionContainerDto optionContainerDto = new
+				 * OptionContainerDto();
+				 * optionContainerDto.setAllowOtherFlag(false);
+				 * 
+				 * optionContainerDto.addQuestionOption(qo);
+				 * 
+				 * QuestionDto qd = new QuestionDto(); QuestionDto qd1 = new
+				 * QuestionDto(); qd.setText("Question Test: " + j);
+				 * qd.setType(QuestionType.FREE_TEXT); qd.setTip("test tip" +
+				 * j); qd.setValidationRule("validation rule : " + j);
+				 * qd.addQuestionHelp(qhd); qgd.addQuestion(qd, j);
+				 * 
+				 * qd1.setText("option question" + j);
+				 * qd1.setType(QuestionType.OPTION);
+				 * qd1.setOptionContainerDto(optionContainerDto);
+				 * qd1.addQuestionHelp(qhd); qd1.setTip("test tip" + j);
+				 * qd1.setValidationRule("validation rule : " + j);
+				 * qgd.addQuestion(qd1, j + 4); }
+				 * surveyDto.addQuestionGroup(qgd); }
+				 * surveyDto.setVersion("Version: " + i);
+				 * sgd.addSurvey(surveyDto); } SurveyGroupDto sgDto = new
+				 * SurveyServiceImpl().save(sgd); }
+				 */
 
 				resp.getWriter().println(
 						"Finished deleting and reloading SurveyGroup graph");

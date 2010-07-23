@@ -1,12 +1,10 @@
 package org.waterforpeople.mapping.app.gwt.server.accesspoint;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeService;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.helper.TechnologyTypeHelper;
 
@@ -15,10 +13,9 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class TechnologyTypeServiceImpl extends RemoteServiceServlet implements TechnologyTypeService {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 6949048018976964011L;
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 	.getLogger(TechnologyTypeServiceImpl.class.getName());
 

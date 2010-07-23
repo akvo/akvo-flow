@@ -5,10 +5,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 
 public class SurveyContainerDao extends BaseDAO<SurveyContainer> {
 
-	public SurveyContainerDao(Class e) {
-		super(e);
-		// TODO Auto-generated constructor stub
-	}
 	public SurveyContainerDao(){
 		super(SurveyContainer.class);
 	}

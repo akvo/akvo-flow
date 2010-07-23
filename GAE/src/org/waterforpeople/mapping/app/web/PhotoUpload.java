@@ -1,10 +1,8 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +20,6 @@ import services.S3Driver;
 
 public class PhotoUpload extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4496360086104690603L;
 	private static final Logger log = Logger.getLogger(PhotoUpload.class
 			.getName());
@@ -41,11 +36,9 @@ public class PhotoUpload extends HttpServlet {
 		try {
 			FileItemIterator iterator = upload.getItemIterator(req);
 			while (iterator.hasNext()) {
-				FileItemStream item = iterator.next();
-				String rootURL = "http://waterforpeople.s3.amazonaws.com/";
+				FileItemStream item = iterator.next();			
 				InputStream in = item.openStream();
-				ByteArrayOutputStream out = null;
-				URL url;
+				ByteArrayOutputStream out = null;				
 				try {
 
 					in =  item.openStream();

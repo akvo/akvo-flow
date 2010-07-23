@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
