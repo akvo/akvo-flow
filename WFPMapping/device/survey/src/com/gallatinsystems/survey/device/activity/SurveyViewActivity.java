@@ -54,8 +54,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int VIDEO_ACTIVITY_REQUEST = 2;
 	private static final int SCAN_ACTIVITY_REQUEST = 3;
-	private static final int LARGE_TXT = 1;
-	private static final int NORMAL_TXT = 2;
+	private static final int TXT_SIZE = 1;
 	private static final int SURVEY_LANG = 3;
 	private static final int SAVE_SURVEY = 4;
 	private static final int CLEAR_SURVEY = 5;
@@ -435,19 +434,24 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, LARGE_TXT, 0, R.string.largetxtoption);
-		menu.add(0, NORMAL_TXT, 1, R.string.normaltxtoption);
+		menu.add(0, TXT_SIZE, 0, R.string.largetxtoption);
+		menu.add(0, SAVE_SURVEY, 1, R.string.savestartnew);
 		menu.add(0, SURVEY_LANG, 2, R.string.langoption);
-		menu.add(0, SAVE_SURVEY, 3, R.string.savebutton);
-		menu.add(0, CLEAR_SURVEY, 4, R.string.clearbutton);
+		menu.add(0, CLEAR_SURVEY, 3, R.string.clearbutton);
 		return true;
 	}
 
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		super.onMenuOpened(featureId, menu);
+		if (currentTextSize == LARGE_TXT_SIZE) {
+			menu.getItem(0).setTitle(R.string.normaltxtoption);
+		} else {
+			menu.getItem(0).setTitle(R.string.largetxtoption);
+		}
+		menu.getItem(1).setEnabled(!isTrackRecording);
 		menu.getItem(3).setEnabled(!isTrackRecording);
-		menu.getItem(4).setEnabled(!isTrackRecording);
+
 		return true;
 	}
 
@@ -457,11 +461,12 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
-		case LARGE_TXT:
-			updateTextSize(LARGE_TXT_SIZE);
-			return true;
-		case NORMAL_TXT:
-			updateTextSize(NORMAL_TXT_SIZE);
+		case TXT_SIZE:
+			if (currentTextSize == LARGE_TXT_SIZE) {
+				updateTextSize(NORMAL_TXT_SIZE);
+			} else {
+				updateTextSize(LARGE_TXT_SIZE);
+			}
 			return true;
 		case SURVEY_LANG:
 			ViewUtil.displayLanguageSelector(this, selectedLanguages,
@@ -539,6 +544,7 @@ public class SurveyViewActivity extends TabActivity implements
 				tabContentFactories.get(i).updateTextSize(size);
 			}
 		}
+		currentTextSize = size;
 	}
 
 	@Override
