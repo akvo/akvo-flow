@@ -50,6 +50,7 @@ public class SurveyDownloadService extends Service {
 	private static final String SERVER_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String SURVEY_LIST_SERVICE_PATH = "/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_HEADER_SERVICE_PATH = "/surveymanager?action=getSurveyHeader&surveyId=";
+	@SuppressWarnings("unused")
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
 	private static final String SURVEY_S3_URL = "http://waterforpeople.s3.amazonaws.com/surveys/";
 
