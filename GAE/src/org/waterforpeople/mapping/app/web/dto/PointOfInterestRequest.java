@@ -71,8 +71,11 @@ public class PointOfInterestRequest extends RestRequest {
 			}
 		}
 		try {
-			lat = Double.parseDouble(req.getParameter(LAT_PARAM));
-			lon = Double.parseDouble(req.getParameter(LON_PARAM));
+			if (req.getParameter(LAT_PARAM) != null
+					&& req.getParameter(LON_PARAM) != null) {
+				lat = Double.parseDouble(req.getParameter(LAT_PARAM));
+				lon = Double.parseDouble(req.getParameter(LON_PARAM));
+			}
 		} catch (NumberFormatException e) {
 			throw new RestValidationException(
 					new RestError(RestError.BAD_DATATYPE_CODE,
