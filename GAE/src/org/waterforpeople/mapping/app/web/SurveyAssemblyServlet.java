@@ -136,6 +136,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		 * 1, Select survey based on surveyId 2. Retrieve all question groups
 		 * fire off queue tasks
 		 */
+		
 		SurveyQuestionGroupAssocDao sqgadao = new SurveyQuestionGroupAssocDao();
 		List<SurveyQuestionGroupAssoc> sqgaList = sqgadao
 				.listBySurveyId(surveyId);
@@ -188,8 +189,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 					.indexOf(",") + 1);
 		}
 		SurveyQuestionGroupAssocDao sqgDao = new SurveyQuestionGroupAssocDao();
-		SurveyQuestionGroupAssoc sqga = sqgDao.listByQuestionGroupId(Long.parseLong(currentId)).get(0);
-		
+		SurveyQuestionGroupAssoc sqga = sqgDao.listByQuestionGroupId(
+				Long.parseLong(currentId)).get(0);
+
 		QuestionDao questionDao = new QuestionDao();
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 		QuestionGroup group = questionGroupDao.getByKey(Long
