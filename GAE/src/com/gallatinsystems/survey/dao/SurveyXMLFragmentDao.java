@@ -17,7 +17,7 @@ public class SurveyXMLFragmentDao extends BaseDAO<SurveyXMLFragment> {
 	public List<SurveyXMLFragment> listSurveyFragments(Long surveyId,
 			SurveyXMLFragment.FRAGMENT_TYPE type) {
 		List<SurveyXMLFragment> surveyFragmentList = listByProperty("surveyId",
-				surveyId, "Long", SurveyXMLFragment.class);
+				surveyId, "Long",  "fragmentOrder",SurveyXMLFragment.class);
 		return surveyFragmentList;
 	}
 

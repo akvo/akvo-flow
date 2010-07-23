@@ -15,7 +15,7 @@ public class QuestionQuestionGroupAssocDao extends
 
 	public List<QuestionQuestionGroupAssoc> listByQuestionGroupId(
 			Long questionGroupId) {
-		List<QuestionQuestionGroupAssoc> assocList = listByProperty("questionGroupId", questionGroupId, "Long");
+		List<QuestionQuestionGroupAssoc> assocList = listByProperty("questionGroupId", questionGroupId, "Long", "order");
 		if(assocList != null){
 			Collections.sort(assocList);
 		}

@@ -88,10 +88,24 @@ public class TestHarnessServlet extends HttpServlet {
 			.getName());
 	private static final long serialVersionUID = -5673118002247715049L;
 
-	@SuppressWarnings("unused")	
+	@SuppressWarnings("unused")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
-		if ("testBaseDomain".equals(action)) {
+		if ("testSurveyOrdering".equals(action)) {
+			SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			SurveyGroup sgItem = sgDao.list("all").get(0);
+			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
+			for(Survey item: sgItem.getSurveyList()){
+				SurveyDAO sDao = new SurveyDAO();
+				item = sDao.loadFullSurvey(item.getKey().getId());
+				for(QuestionGroup qg:item.getQuestionGroupList()){
+					log.info(qg.getCode());
+					
+				}
+			}
+			
+		} else if ("testBaseDomain".equals(action)) {
+
 			SurveyDAO surveyDAO = new SurveyDAO();
 			surveyDAO.test();
 			String outString = surveyDAO.getForTest();

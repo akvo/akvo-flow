@@ -187,6 +187,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			remainingIds = questionGroupIds.substring(questionGroupIds
 					.indexOf(",") + 1);
 		}
+		SurveyQuestionGroupAssocDao sqgDao = new SurveyQuestionGroupAssocDao();
+		SurveyQuestionGroupAssoc sqga = sqgDao.listByQuestionGroupId(Long.parseLong(currentId)).get(0);
+		
 		QuestionDao questionDao = new QuestionDao();
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 		QuestionGroup group = questionGroupDao.getByKey(Long
@@ -208,7 +211,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyXMLFragment sxf = new SurveyXMLFragment();
 		sxf.setSurveyId(surveyId);
 		sxf.setQuestionGroupId(Long.parseLong(currentId));
-		// sxf.setFragmentOrder(startRow / 10);
+		sxf.setFragmentOrder(sqga.getOrder());
 		sxf.setFragment(new Text(sb.append("</questionGroup>").toString()));
 
 		sxf.setFragmentType(FRAGMENT_TYPE.QUESTION_GROUP);
