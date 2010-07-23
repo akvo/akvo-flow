@@ -111,8 +111,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				//TODO: implement on change
-				//configureTechTypeListBox(event);
+				// TODO: implement on change
+				// configureTechTypeListBox(event);
 			}
 
 		});
@@ -181,7 +181,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointTypeListBox.addItem("Sanitation Point",
 				AccessPointType.SANITATION_POINT.toString());
 	}
-	
 
 	/**
 	 * constructs a search criteria object using values from the form
@@ -228,7 +227,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 	private void loadAccessPoint(ArrayList<AccessPointDto> apDtoList) {
 
-		
 		int i = 1;
 		if (apDtoList == null || apDtoList.size() == 0) {
 			accessPointFT.clear();
@@ -241,12 +239,16 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				Label keyIdLabel = new Label(apDto.getKeyId().toString());
 				// keyIdLabel.setVisible(false);
 				accessPointFT.setWidget(i, 0, keyIdLabel);
-				accessPointFT.setWidget(i, 1, new Label(apDto
-						.getCommunityCode()));
-				accessPointFT.setWidget(i, 2, new Label(apDto.getLatitude()
-						.toString()));
-				accessPointFT.setWidget(i, 3, new Label(apDto.getLongitude()
-						.toString()));
+				if (apDto.getCommunityCode() != null) {
+					accessPointFT.setWidget(i, 1, new Label(apDto
+							.getCommunityCode()));
+				}
+				if (apDto.getLatitude() != null && apDto.getLongitude() != null) {
+					accessPointFT.setWidget(i, 2, new Label(apDto.getLatitude()
+							.toString()));
+					accessPointFT.setWidget(i, 3, new Label(apDto
+							.getLongitude().toString()));
+				}
 				Button editAccessPoint = new Button("edit");
 				editAccessPoint.setTitle(keyIdLabel.getText());
 				Button deleteAccessPoint = new Button("delete");
@@ -302,9 +304,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				accessPointFT.setWidget(i + 1, 1, nextSet);
 			} else if (i < 21) {
 				nextSet.setVisible(false);
-				for (int j = i-1; j < accessPointFT.getRowCount(); j++)
+				for (int j = i - 1; j < accessPointFT.getRowCount(); j++)
 					accessPointFT.removeRow(j);
-				
+
 			}
 			statusLabel.setText("Done loading access points");
 			statusLabel.setVisible(false);
@@ -491,8 +493,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					((Image) accessPointDetail.getWidget(9, 2)).setVisible(false);
-					accessPointDetail.setWidget(9, 4, new Label("Please wait while image is rotated 90 Degrees"));
+					((Image) accessPointDetail.getWidget(9, 2))
+							.setVisible(false);
+					accessPointDetail.setWidget(9, 4, new Label(
+							"Please wait while image is rotated 90 Degrees"));
 					svc.rotateImage(((TextBox) accessPointDetail
 							.getWidget(9, 1)).getText(),
 							new AsyncCallback<Boolean>() {
@@ -505,12 +509,14 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 								@Override
 								public void onSuccess(Boolean result) {
 									Integer random = Random.nextInt();
-									Image photo = ((Image) accessPointDetail.getWidget(9, 2));
-									accessPointDetail.getWidget(9, 4).setVisible(false);
-											photo.setUrl(((TextBox) accessPointDetail
-													.getWidget(9, 1)).getText()
-													+ "?random=" + random);
-											photo.setVisible(true);
+									Image photo = ((Image) accessPointDetail
+											.getWidget(9, 2));
+									accessPointDetail.getWidget(9, 4)
+											.setVisible(false);
+									photo.setUrl(((TextBox) accessPointDetail
+											.getWidget(9, 1)).getText()
+											+ "?random=" + random);
+									photo.setVisible(true);
 								}
 							});
 				}
@@ -635,8 +641,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Boolean ok = Window
-						.confirm("Any changes made will be lost");
+				Boolean ok = Window.confirm("Any changes made will be lost");
 				if (ok) {
 					accessPointDetail.setVisible(false);
 					statusLabel.setVisible(false);

@@ -330,7 +330,7 @@ public class KMLGenerator {
 	}
 
 	public String bindPlacemark(AccessPoint ap, String vmName) throws Exception {
-		if (ap.getCountryCode()!= null && !ap.getCountryCode().equals("MW")) {
+		if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW")) {
 			VelocityContext context = new VelocityContext();
 			if (ap.getCollectionDate() != null) {
 				String formattedDate = DateFormat.getDateInstance(
@@ -339,11 +339,11 @@ public class KMLGenerator {
 			} else {
 				context.put("collectionDate", "N/A");
 			}
-			
+
 			context.put("latitude", ap.getLatitude());
 			context.put("longitude", ap.getLongitude());
 			context.put("altitude", ap.getAltitude());
-			
+
 			if (ap.getCommunityCode() != null)
 				context.put("communityCode", ap.getCommunityCode());
 			else
@@ -512,7 +512,7 @@ public class KMLGenerator {
 						.getProvideAdequateQuantity()));
 			}
 
-			if (ap.getDescription() !=null)
+			if (ap.getDescription() != null)
 				context.put("description", ap.getDescription());
 			else
 				context.put("description", "Unknown");
@@ -617,20 +617,27 @@ public class KMLGenerator {
 	private String encodeStatusString(AccessPoint.Status status,
 			VelocityContext context) {
 
-		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-			context.put("waterSystemStatus",
-					"System Functioning and Meets Government Standards");
-			return "System Functioning and Meets Government Standards";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
-			context.put("waterSystemStatus", "Functioning but with Problems");
-			return "Functioning but with Problems";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-			context.put("waterSystemStatus", "Broken-down system");
-			return "Broken-down system";
-		} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-			context.put("waterSystemStatus", "No Improved System");
-			return "No Improved System";
-		} else {
+		if (status != null) {
+			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+				context.put("waterSystemStatus",
+						"System Functioning and Meets Government Standards");
+				return "System Functioning and Meets Government Standards";
+			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
+				context.put("waterSystemStatus",
+						"Functioning but with Problems");
+				return "Functioning but with Problems";
+			} else if (status
+					.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+				context.put("waterSystemStatus", "Broken-down system");
+				return "Broken-down system";
+			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+				context.put("waterSystemStatus", "No Improved System");
+				return "No Improved System";
+			} else {
+				context.put("waterSystemStatus", "Unknown");
+				return "Unknown";
+			}
+		}else{
 			context.put("waterSystemStatus", "Unknown");
 			return "Unknown";
 		}
