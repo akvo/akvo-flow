@@ -20,7 +20,8 @@ import com.gallatinsystems.survey.device.util.HttpUtil;
  */
 public class PointOfInterestService {
 	private static final String TAG = "PointOfInterestService";
-	private static final String SERVICE_URL = "http://watermapmonitordev.appspot.com/pointofinterest?action=getnearby";
+	private static final String DEFAULT_SERVICE_URL = "http://watermapmonitordev.appspot.com";
+	private static final String ACTION_PARAM="/pointofinterest?action=getnearby";
 	private static final String LAT_PARAM = "&lat=";
 	private static final String LON_PARAM = "&lon=";
 	private static final String COUNTRY_PARAM = "&country=";
@@ -30,11 +31,16 @@ public class PointOfInterestService {
 	 * calls a service to get all the access points near the position passed in.
 	 */
 	public static ArrayList<PointOfInterestDto> getNearbyAccessPoints(
-			Double lat, Double lon, String country) {
+			Double lat, Double lon, String country, String serviceBase) {
 
 		ArrayList<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
 		try {
-			String url = SERVICE_URL;
+			String url = null;
+			if(serviceBase != null){
+				url = serviceBase + ACTION_PARAM;
+			}else{
+				url = DEFAULT_SERVICE_URL + ACTION_PARAM;
+			}
 			if (country == null || country.trim().length() == 0) {
 				url = url + LAT_PARAM + lat + LON_PARAM + lon;
 			} else {
@@ -44,7 +50,7 @@ public class PointOfInterestService {
 			if (response != null) {
 				JSONObject json = new JSONObject(response);
 				if (json != null) {
-					JSONArray arr = json.getJSONArray("pointOfInterestDto");
+					JSONArray arr = json.getJSONArray("pointsOfInterest");
 					if (arr != null) {
 						for (int i = 0; i < arr.length(); i++) {
 							if (arr.getJSONObject(i) != null) {
@@ -73,7 +79,7 @@ public class PointOfInterestService {
 			try {
 				dto.setLatitude(json.getDouble("latitude"));
 				dto.setLongitude(json.getDouble("longitude"));
-				dto.setName(json.getString("communityCode"));
+				dto.setName(json.getString("name"));
 				dto.setType(json.getString("type"));
 				dto.setPropertyNames(convertToStringList(json
 						.getJSONArray("propertyNames")));

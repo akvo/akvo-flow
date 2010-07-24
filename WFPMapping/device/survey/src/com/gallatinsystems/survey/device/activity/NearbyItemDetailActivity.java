@@ -42,6 +42,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	private Criteria locationCriteria;
 	private TextView nameField;
 	private TextView distanceField;
+	private TextView typeField;
 	private ScrollView scrollView;
 	private ImageView arrowView;
 	private PointOfInterestDto pointOfInterest;
@@ -74,6 +75,7 @@ public class NearbyItemDetailActivity extends Activity implements
 
 		nameField = (TextView) findViewById(R.id.pointNameField);
 		distanceField = (TextView) findViewById(R.id.distanceField);
+		typeField = (TextView) findViewById(R.id.pointTypeField);
 		scrollView = (ScrollView) findViewById(R.id.pointscroll);
 		arrowView = (ImageView) findViewById(R.id.arrowView);
 		arrowBitmap = BitmapFactory.decodeResource(getResources(),
@@ -109,7 +111,8 @@ public class NearbyItemDetailActivity extends Activity implements
 	 */
 	private void populateFields() {
 		if (pointOfInterest != null) {
-			nameField.setText(pointOfInterest.getName());
+			nameField.setText(" "+pointOfInterest.getName());
+			typeField.setText(" "+pointOfInterest.getType());
 			if (pointOfInterest.getPropertyNames() != null) {
 				for (int i = 0; i < pointOfInterest.getPropertyNames().size(); i++) {
 					if (pointOfInterest.getPropertyValues().size() > i) {
@@ -120,7 +123,7 @@ public class NearbyItemDetailActivity extends Activity implements
 							l.setOrientation(LinearLayout.HORIZONTAL);
 							TextView labelView = new TextView(this);
 							labelView.setText(pointOfInterest
-									.getPropertyNames().get(i));
+									.getPropertyNames().get(i)+": ");
 							l.addView(labelView);
 							TextView valView = new TextView(this);
 							valView.setText(val);
@@ -195,7 +198,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	private void launchNavigation() {
 		Intent mapsIntent = new Intent(Intent.ACTION_VIEW);
 		mapsIntent.setData(Uri.parse("geo:" + pointOfInterest.getLatitude()
-				+ "," + pointOfInterest.getLongitude() + "z=16"));
+				+ "," + pointOfInterest.getLongitude() + "?z=18"));
 		startActivity(mapsIntent);
 	}
 
@@ -229,4 +232,5 @@ public class NearbyItemDetailActivity extends Activity implements
 
 		}
 	}
+		
 }

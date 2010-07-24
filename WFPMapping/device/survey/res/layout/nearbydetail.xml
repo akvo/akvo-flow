@@ -13,6 +13,14 @@
 	<LinearLayout android:orientation="horizontal"
 		android:layout_width="fill_parent" android:layout_height="wrap_content">
 		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/pointtypelabel" />
+		<TextView android:id="@+id/pointTypeField"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_weight="1" />
+	</LinearLayout>
+	<LinearLayout android:orientation="horizontal"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:text="@string/distance" />
 		<TextView android:id="@+id/distanceField"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -20,5 +28,6 @@
 		<ImageView android:id="@+id/arrowView"
 			android:layout_height="wrap_content" android:layout_width="wrap_content" />
 	</LinearLayout>
-	<ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/pointscroll"/>
+	<ScrollView android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:id="@+id/pointscroll" />
 </LinearLayout>

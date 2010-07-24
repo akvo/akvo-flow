@@ -113,7 +113,7 @@ public class SurveyDownloadService extends Service {
 								.findPreference(ConstantUtil.PRECACHE_HELP_SETTING_KEY));
 				String serverBase = databaseAdaptor
 						.findPreference(ConstantUtil.SERVER_SETTING_KEY);
-				if (serverBase == null || serverBase.trim().length() > 0) {
+				if (serverBase != null && serverBase.trim().length() > 0) {
 					serverBase = getResources().getStringArray(R.array.servers)[Integer
 							.parseInt(serverBase)];
 				} else {

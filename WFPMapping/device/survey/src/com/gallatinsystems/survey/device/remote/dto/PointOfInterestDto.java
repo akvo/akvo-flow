@@ -66,4 +66,14 @@ public class PointOfInterestDto implements Serializable {
 		this.propertyValues = propertyValues;
 	}
 
+	public String toString(){
+		StringBuilder builder= new StringBuilder();
+		if(name != null){
+			builder.append(name).append("\n");
+		}
+		if(latitude != null && longitude != null){
+			builder.append(latitude).append(",").append(longitude);
+		}
+		return builder.toString();
+	}
 }

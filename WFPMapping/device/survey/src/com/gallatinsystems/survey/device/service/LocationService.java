@@ -66,7 +66,7 @@ public class LocationService extends Service {
 		version = resources.getString(R.string.appversion);
 		String serverBase = database
 				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
-		if (serverBase == null || serverBase.trim().length() > 0) {
+		if (serverBase != null && serverBase.trim().length() > 0) {
 			serverBase = resources.getStringArray(R.array.servers)[Integer
 					.parseInt(serverBase)];
 		} else {

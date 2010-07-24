@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.remote.PointOfInterestService;
 import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
@@ -44,11 +45,23 @@ public class NearbyItemActivity extends ListActivity implements
 	private String[] countries;
 	private volatile boolean isRunning;
 	private Thread dataThread;
+	private SurveyDbAdapter databaseAdapter;
+	private String serverBase;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		databaseAdapter = new SurveyDbAdapter(this);
+		databaseAdapter.open();
+		serverBase = databaseAdapter
+				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+		if (serverBase != null && serverBase.trim().length() > 0) {
+			serverBase = getResources().getStringArray(R.array.servers)[Integer
+					.parseInt(serverBase)];
+		} else {
+			serverBase = null;
+		}
 		setContentView(R.layout.nearbyitem);
 		Resources resources = getResources();
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -89,6 +102,14 @@ public class NearbyItemActivity extends ListActivity implements
 		}
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (databaseAdapter != null) {
+			databaseAdapter.close();
+		}
+	}
+
 	/**
 	 * updates the ui with the results of the service call that was running in
 	 * the background thread.
@@ -119,7 +140,7 @@ public class NearbyItemActivity extends ListActivity implements
 		dataThread = new Thread() {
 			public void run() {
 				pointsOfInterest = PointOfInterestService
-						.getNearbyAccessPoints(lat, lon, country);
+						.getNearbyAccessPoints(lat, lon, country,serverBase);
 				dataHandler.post(resultsUpdater);
 
 			}
@@ -143,7 +164,7 @@ public class NearbyItemActivity extends ListActivity implements
 	 * displays the country selection menu
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {	
+	public boolean onCreateOptionsMenu(Menu menu) {
 		displayCountrySelection();
 		// return false so this method will be invoked on each press of the menu
 		// button
@@ -167,7 +188,6 @@ public class NearbyItemActivity extends ListActivity implements
 				}).create();
 		dia.show();
 	}
-		
 
 	@Override
 	public void onLocationChanged(Location location) {
