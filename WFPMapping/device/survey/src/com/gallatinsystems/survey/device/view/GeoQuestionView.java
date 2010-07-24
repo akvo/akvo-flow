@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 	private static final int DEFAULT_WIDTH = 200;
 	private static final float UNKNOWN_ACCURACY = 99999999f;
-	private static final float ACCURACY_THRESHOLD = 100f;
+	private static final float ACCURACY_THRESHOLD = 200f;
 	private static final String DELIM = "|";
 	private Button geoButton;
 	private TextView latLabel;
@@ -45,9 +46,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private EditText lonField;
 	private TextView elevationLabel;
 	private EditText elevationField;
+	private ImageView statusIndicator;
 	private float lastAccuracy;
 	private boolean needUpdate = false;
-	
 
 	public GeoQuestionView(Context context, Question q, String[] langCodes,
 			boolean readOnly) {
@@ -63,6 +64,11 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		TableRow innerRow = new TableRow(context);
 
 		DigitsKeyListener numericListener = new DigitsKeyListener(true, true);
+
+		statusIndicator = new ImageView(context);
+		statusIndicator.setImageResource(R.drawable.greencircle);
+		statusIndicator.setClickable(false);
+		statusIndicator.setVisibility(View.GONE);
 
 		latField = new EditText(context);
 		latField.setWidth(DEFAULT_WIDTH);
@@ -112,6 +118,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		geoButton.setText(R.string.getgeo);
 		geoButton.setOnClickListener(this);
 		tr.addView(geoButton);
+		tr.addView(statusIndicator);
 		addView(tr);
 
 		if (readOnly) {
@@ -161,6 +168,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	 * @param loc
 	 */
 	private void populateLocation(Location loc) {
+		if (loc.hasAccuracy() && loc.getAccuracy() < ACCURACY_THRESHOLD) {
+			statusIndicator.setImageResource(R.drawable.greencircle);
+			statusIndicator.setVisibility(View.VISIBLE);
+		} else {
+			statusIndicator.setImageResource(R.drawable.redcircle);
+			statusIndicator.setVisibility(View.VISIBLE);
+		}
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
 		elevationField.setText(loc.getAltitude() + "");
