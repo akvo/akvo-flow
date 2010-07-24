@@ -30,6 +30,7 @@ public class SurveyDao {
 	public static Survey loadSurvey(Survey survey, Resources res)
 			throws FileNotFoundException {
 		if (survey != null) {
+			String tempName = survey.getName();
 			SaxSurveyParser parser = new SaxSurveyParser();
 			if (RESOURCE_LOCATION.equalsIgnoreCase(survey.getLocation())) {
 				// load from resource
@@ -40,6 +41,11 @@ public class SurveyDao {
 				survey = parser.parse(new FileInputStream(DATA_DIR
 						+ survey.getFileName()));
 
+			}
+			if (survey != null
+					&& (survey.getName() == null || survey.getName().trim()
+							.length() == 0)) {
+				survey.setName(tempName);
 			}
 		}
 		return survey;

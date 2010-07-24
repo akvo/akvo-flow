@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDao;
@@ -36,7 +37,8 @@ import com.gallatinsystems.survey.device.util.LanguageData;
 import com.gallatinsystems.survey.device.util.LanguageUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
-import com.gallatinsystems.survey.device.view.SurveyTabContentFactory;
+import com.gallatinsystems.survey.device.view.SubmitTabContentFactory;
+import com.gallatinsystems.survey.device.view.SurveyQuestionTabContentFactory;
 
 /**
  * main activity for the Field Survey application. It will read in the current
@@ -58,6 +60,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int SURVEY_LANG = 3;
 	private static final int SAVE_SURVEY = 4;
 	private static final int CLEAR_SURVEY = 5;
+	private static final String SUBMIT_TAB_TAG = "subtag";
 
 	private static final float LARGE_TXT_SIZE = 22;
 	private static final float NORMAL_TXT_SIZE = 14;
@@ -68,7 +71,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final String VIDEO_TYPE = "video/*";
 	private static final String IMAGE_SUFFIX = ".jpg";
 	private static final String VIDEO_SUFFIX = ".mp4";
-	private ArrayList<SurveyTabContentFactory> tabContentFactories;
+	private ArrayList<SurveyQuestionTabContentFactory> tabContentFactories;
 	private QuestionView eventQuestionSource;
 	private SurveyDbAdapter databaseAdapter;
 	private String surveyId;
@@ -77,10 +80,13 @@ public class SurveyViewActivity extends TabActivity implements
 	private float currentTextSize;
 	private boolean[] selectedLanguages;
 	private String[] selectedLanguageCodes;
-	private HashMap<QuestionGroup, SurveyTabContentFactory> factoryMap;
+	private HashMap<QuestionGroup, SurveyQuestionTabContentFactory> factoryMap;
+	private SubmitTabContentFactory submissionTab;
 	private Survey survey;
 	private boolean readOnly;
 	private boolean isTrackRecording;
+	private TabHost tabHost;
+	private int tabCount;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -89,11 +95,12 @@ public class SurveyViewActivity extends TabActivity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		currentTextSize = NORMAL_TXT_SIZE;
 		readOnly = false;
-		factoryMap = new HashMap<QuestionGroup, SurveyTabContentFactory>();
+		factoryMap = new HashMap<QuestionGroup, SurveyQuestionTabContentFactory>();
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
 		isTrackRecording = false;
 		setContentView(R.layout.main);
+		tabCount = 0;
 
 		String langSelection = databaseAdapter
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
@@ -136,6 +143,7 @@ public class SurveyViewActivity extends TabActivity implements
 		try {
 			survey = SurveyDao.loadSurvey(databaseAdapter.findSurvey(surveyId),
 					getResources());
+
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "Could not load survey xml file");
 		}
@@ -146,14 +154,16 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 
 		if (survey != null) {
-			tabContentFactories = new ArrayList<SurveyTabContentFactory>();
+			TextView title = (TextView) findViewById(R.id.titletext);
+			title.setText(survey.getName());
+			tabContentFactories = new ArrayList<SurveyQuestionTabContentFactory>();
 			// if the device has an active survey, create a tab for each
 			// question group
-			TabHost tabHost = getTabHost();
+			tabHost = getTabHost();
 			for (QuestionGroup group : survey.getQuestionGroups()) {
 				if (group.getQuestions() != null
 						&& group.getQuestions().size() > 0) {
-					SurveyTabContentFactory factory = new SurveyTabContentFactory(
+					SurveyQuestionTabContentFactory factory = new SurveyQuestionTabContentFactory(
 							this, group, databaseAdapter, currentTextSize,
 							selectedLanguageCodes, readOnly);
 					factoryMap.put(group, factory);
@@ -161,7 +171,27 @@ public class SurveyViewActivity extends TabActivity implements
 							.setIndicator(group.getHeading()).setContent(
 									factory));
 					tabContentFactories.add(factory);
+					tabCount++;
 				}
+			}
+			if (!readOnly) {
+				// if we're not in read-only mode, we need to add the submission
+				// tab
+				submissionTab = new SubmitTabContentFactory(this,
+						databaseAdapter, currentTextSize, selectedLanguageCodes);
+				tabCount++;
+				tabHost.addTab(tabHost.newTabSpec(SUBMIT_TAB_TAG).setIndicator(
+						getString(R.string.submitbutton)).setContent(
+						submissionTab));
+				tabHost
+						.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+							@Override
+							public void onTabChanged(String tabId) {
+								if (SUBMIT_TAB_TAG.equals(tabId)) {
+									submissionTab.refreshView();
+								}
+							}
+						});
 			}
 		}
 	}
@@ -180,7 +210,7 @@ public class SurveyViewActivity extends TabActivity implements
 	 */
 	public void establishDependencies(QuestionGroup group) {
 		// iterate over all groups we've processed
-		for (Entry<QuestionGroup, SurveyTabContentFactory> factoryEntry : factoryMap
+		for (Entry<QuestionGroup, SurveyQuestionTabContentFactory> factoryEntry : factoryMap
 				.entrySet()) {
 			ArrayList<Question> groupQuestions = factoryEntry.getKey()
 					.getQuestions();
@@ -232,7 +262,7 @@ public class SurveyViewActivity extends TabActivity implements
 	 */
 	private QuestionView findQuestionView(String questionId) {
 		QuestionView view = null;
-		for (SurveyTabContentFactory factory : factoryMap.values()) {
+		for (SurveyQuestionTabContentFactory factory : factoryMap.values()) {
 			if (factory.getQuestionMap() != null) {
 				view = factory.getQuestionMap().get(questionId);
 				if (view != null) {
@@ -241,6 +271,16 @@ public class SurveyViewActivity extends TabActivity implements
 			}
 		}
 		return view;
+	}
+
+	/**
+	 * moves focus to the next tab in the tab host
+	 */
+	public void advanceTab() {
+		int curTab = tabHost.getCurrentTab();
+		if (curTab < tabCount) {
+			tabHost.setCurrentTab(curTab + 1);
+		}
 	}
 
 	/**
@@ -302,6 +342,10 @@ public class SurveyViewActivity extends TabActivity implements
 	public void resetAllQuestions() {
 		for (int i = 0; i < tabContentFactories.size(); i++) {
 			tabContentFactories.get(i).resetTabQuestions();
+		}
+		tabHost.setCurrentTab(0);
+		if (submissionTab != null) {
+			submissionTab.refreshView();
 		}
 	}
 
@@ -567,7 +611,7 @@ public class SurveyViewActivity extends TabActivity implements
 	protected void onPause() {
 		super.onPause();
 		if (tabContentFactories != null) {
-			for (SurveyTabContentFactory tab : tabContentFactories) {
+			for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
 				tab.saveState(respondentId);
 			}
 		}
@@ -577,7 +621,7 @@ public class SurveyViewActivity extends TabActivity implements
 	protected void onResume() {
 		super.onResume();
 		if (tabContentFactories != null) {
-			for (SurveyTabContentFactory tab : tabContentFactories) {
+			for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
 				tab.loadState(respondentId);
 			}
 		}

@@ -381,4 +381,20 @@ public class QuestionView extends TableLayout implements
 	public void setTextSize(float size) {
 		questionText.setTextSize(size);
 	}
+
+	/**
+	 * hides or shows the tips button
+	 * @param isSuppress
+	 */
+	public void suppressHelp(boolean isSuppress) {
+		if (isSuppress) {
+			if (tipImage != null) {
+				tipImage.setVisibility(View.GONE);
+			}
+		} else {
+			if (tipImage != null) {
+				tipImage.setVisibility(View.VISIBLE);
+			}
+		}
+	}
 }

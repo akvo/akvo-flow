@@ -49,7 +49,7 @@
 	<string name="otherinstructions">Please enter a description</string>
 	<string name="okbutton">OK</string>
 	<string name="cancelbutton">Cancel</string>
-	<string name="mandatorywarning">You must answer all questions marked with a *</string>
+	<string name="mandatorywarning">Questions marked with a * are mandatory. You must answer the following questions before you can submit:</string>
 	<string name="cannotsave">Cannot submit responses</string>
 	<string name="plottinglabel">Area Plotting</string>
 	<string name="addpoint">Add Point</string>
@@ -134,5 +134,8 @@
 	<string name="endtrack">End Track</string>
 	<string name="trackstartnotification">Track Recording Started</string>
 	<string name="trackendnotification">Track Recording Stopped</string>
-	<string name="appversion">0.98.0</string>	
+	<string name="savestartnew">Save and Start New</string>
+	<string name="nextbutton">Next</string>
+	<string name="submittext">If you are finished with the survey, press submit to send the data. Once you press submit, you can review the data but you will not be able to edit it.</string>	
+	<string name="appversion">0.98.1</string>	
 </resources>
