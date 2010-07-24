@@ -585,7 +585,18 @@ public class SurveyViewActivity extends TabActivity implements
 			return true;
 		case CLEAR_SURVEY:
 			if (!readOnly) {
-				resetAllQuestions();
+				ViewUtil.showConfirmDialog(R.string.cleartitle,
+						R.string.cleardesc, this,true,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								resetAllQuestions();
+								dialog.dismiss();
+							}
+						});
+
 			}
 			return true;
 		case SAVE_SURVEY:
@@ -597,7 +608,7 @@ public class SurveyViewActivity extends TabActivity implements
 				databaseAdapter.updateSurveyStatus(respondentId.toString(),
 						ConstantUtil.SAVED_STATUS);
 				ViewUtil.showConfirmDialog(R.string.savecompletetitle,
-						R.string.savecompletetext, this,
+						R.string.savecompletetext, this,false,
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,

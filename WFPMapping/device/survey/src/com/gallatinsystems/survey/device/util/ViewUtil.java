@@ -57,7 +57,7 @@ public class ViewUtil {
 	 */
 	public static void showConfirmDialog(int titleId, int textId,
 			Context parentContext) {
-		showConfirmDialog(titleId, textId, parentContext,
+		showConfirmDialog(titleId, textId, parentContext, false,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
@@ -66,21 +66,33 @@ public class ViewUtil {
 	}
 
 	/**
-	 * displays a simple dialog box with only a single, positive button using
-	 * the resource ids of the strings passed in for the title and text.
+	 * displays a simple dialog box with a single positive button and an
+	 * optional (based on a flag) cancel button using the resource ids of the
+	 * strings passed in for the title and text.
 	 * 
 	 * @param titleId
 	 * @param textId
 	 * @param parentContext
 	 */
 	public static void showConfirmDialog(int titleId, int textId,
-			Context parentContext, DialogInterface.OnClickListener listener) {
+			Context parentContext, boolean includeNegative,
+			DialogInterface.OnClickListener listener) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
 		TextView tipText = new TextView(parentContext);
 		builder.setTitle(titleId);
 		tipText.setText(textId);
 		builder.setView(tipText);
 		builder.setPositiveButton(R.string.okbutton, listener);
+		if (includeNegative) {
+			builder.setNegativeButton(R.string.cancelbutton,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+
+						}
+					});
+		}
 		builder.show();
 	}
 
@@ -161,7 +173,7 @@ public class ViewUtil {
 							listener.onClick(dialog, which);
 						} else {
 							showConfirmDialog(R.string.langmandatorytitle,
-									R.string.langmandatorytext, context,
+									R.string.langmandatorytext, context, false,
 									new DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(

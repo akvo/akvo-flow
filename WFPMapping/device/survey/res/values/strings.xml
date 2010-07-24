@@ -141,5 +141,7 @@
 	<string name="nextbutton">Next</string>
 	<string name="submittext">If you are finished with the survey, press submit to send the data. Once you press submit, you can review the data but you will not be able to edit it.</string>
 	<string name="donebutton">Done</string>
+	<string name="cleartitle">Clear Survey Answers</string>
+	<string name="cleardesc">Are you sure you want to clear your responses?</string>
 	<string name="appversion">0.98.3</string>	
 </resources>
