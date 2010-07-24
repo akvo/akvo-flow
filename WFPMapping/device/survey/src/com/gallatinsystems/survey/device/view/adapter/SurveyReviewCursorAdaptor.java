@@ -36,6 +36,12 @@ public class SurveyReviewCursorAdaptor extends CursorAdapter {
 		TextView dateView = (TextView) view.findViewById(R.id.text2);
 		long millis = cursor.getLong(cursor
 				.getColumnIndex(SurveyDbAdapter.SAVED_DATE_COL));
+		// if millis is long, that's because we never saved the survey (just
+		// submitted it) so use that date instead
+		if (millis == 0) {
+			millis = cursor.getLong(cursor
+					.getColumnIndex(SurveyDbAdapter.SUBMITTED_DATE_COL));
+		}
 		// Format the date string
 		Date date = new Date(millis);
 		dateView.setText(DateFormat.getLongDateFormat(context).format(date)

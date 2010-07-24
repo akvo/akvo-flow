@@ -739,7 +739,7 @@ public class SurveyDbAdapter {
 		String[] whereParams = { status };
 		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
-				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL }, "status = ?",
+				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL, SUBMITTED_DATE_COL}, "status = ?",
 				whereParams, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
