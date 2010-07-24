@@ -165,6 +165,11 @@ public class SurveyViewActivity extends TabActivity implements
 			// if the device has an active survey, create a tab for each
 			// question group
 			tabHost = getTabHost();
+			String screenOn = databaseAdapter
+					.findPreference(ConstantUtil.SCREEN_ON_KEY);
+			if (screenOn != null && Boolean.parseBoolean(screenOn.trim())) {
+				tabHost.setKeepScreenOn(true);
+			}
 			for (QuestionGroup group : survey.getQuestionGroups()) {
 				if (group.getQuestions() != null
 						&& group.getQuestions().size() > 0) {
@@ -680,6 +685,10 @@ public class SurveyViewActivity extends TabActivity implements
 
 	protected void onDestroy() {
 		super.onDestroy();
+		// make sure we're not keeping the screen on once we're destroyed
+		if (tabHost != null) {
+			tabHost.setKeepScreenOn(false);
+		}
 		if (databaseAdapter != null) {
 			databaseAdapter.close();
 		}

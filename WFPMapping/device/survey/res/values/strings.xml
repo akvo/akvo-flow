@@ -39,6 +39,8 @@
 	<string name="sendoptdesc">Sends survey data to server. You must have data access (cellular or wi-fi) to perform this operation.</string>
 	<string name="poweroptlabel">Power Management</string>
 	<string name="poweroptdesc">Toggles Wi-Fi to better manage battery life.</string>
+	<string name="screenoptlabel">Keep Screen on During Survey Input</string>
+	<string name="screenoptdesc">Prevents the screen from turning off while in survey entry mode. Be sure to manually shut the screen off (or exit the app) when not in use to avoid draining the battery.</string>
 	<string name="aboutlabel">About</string>
 	<string name="aboutdesc">Displays version information.</string>
 	<string name="abouttitle">About - FieldSurvey</string>
@@ -139,5 +141,5 @@
 	<string name="nextbutton">Next</string>
 	<string name="submittext">If you are finished with the survey, press submit to send the data. Once you press submit, you can review the data but you will not be able to edit it.</string>
 	<string name="donebutton">Done</string>
-	<string name="appversion">0.98.2</string>	
+	<string name="appversion">0.98.3</string>	
 </resources>

@@ -84,11 +84,10 @@ public class SurveyDbAdapter {
 	private static final String PREFERENCES_TABLE_CREATE = "create table preferences (key text primary key, value text);";
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
-			"insert into survey values(999991,'Community Waterpoint Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			"insert into survey values(999992,'Houshold Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			"insert into survey values(999993,'Public Institution Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			"insert into survey values(999994,'Mapping', 1.0,'Mapping','res','mappingsurvey','english','N','N')",
-			"insert into survey values(999995,'Malawi Test', 1.0,'Survey','res','multisurvey','english','N','N')",
+			"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
+			//"insert into survey values(999992,'Houshold Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
+			//"insert into survey values(999993,'Public Institution Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
+			//"insert into survey values(999994,'Mapping', 1.0,'Mapping','res','mappingsurvey','english','N','N')",			
 			"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
@@ -97,7 +96,8 @@ public class SurveyDbAdapter {
 			"insert into preferences values('user.lastuser.id','')",
 			"insert into preferences values('location.sendbeacon','true')",
 			"insert into preferences values('survey.precachehelp','0')",
-			"insert into preferences values('upload.server','0')" };
+			"insert into preferences values('upload.server','0')",
+			"insert into preferences values('screen.keepon','true')"};
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -112,7 +112,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 45;
+	private static final int DATABASE_VERSION = 46;
 
 	private final Context context;
 

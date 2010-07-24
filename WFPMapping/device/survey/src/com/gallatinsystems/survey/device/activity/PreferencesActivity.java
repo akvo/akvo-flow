@@ -37,6 +37,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 
 	private CheckBox saveUserCheckbox;
 	private CheckBox beaconCheckbox;
+	private CheckBox screenOnCheckbox;
 	private TextView uploadOptionTextView;
 	private TextView languageTextView;
 	private TextView precacheHelpTextView;
@@ -55,6 +56,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 
 		saveUserCheckbox = (CheckBox) findViewById(R.id.lastusercheckbox);
 		beaconCheckbox = (CheckBox) findViewById(R.id.beaconcheckbox);
+		screenOnCheckbox = (CheckBox) findViewById(R.id.screenoptcheckbox);
 
 		uploadOptionTextView = (TextView) findViewById(R.id.uploadoptionvalue);
 		languageTextView = (TextView) findViewById(R.id.surveylangvalue);
@@ -78,6 +80,13 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			saveUserCheckbox.setChecked(true);
 		} else {
 			saveUserCheckbox.setChecked(false);
+		}
+
+		val = settings.get(ConstantUtil.SCREEN_ON_KEY);
+		if (val != null && Boolean.parseBoolean(val)) {
+			screenOnCheckbox.setChecked(true);
+		} else {
+			screenOnCheckbox.setChecked(false);
 		}
 
 		val = settings.get(ConstantUtil.LOCATION_BEACON_SETTING_KEY);
@@ -121,6 +130,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		populateFields();
 		saveUserCheckbox.setOnCheckedChangeListener(this);
 		beaconCheckbox.setOnCheckedChangeListener(this);
+		screenOnCheckbox.setOnCheckedChangeListener(this);
 		((ImageButton) findViewById(R.id.uploadoptionbutton))
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.suveylangbutton))
@@ -228,7 +238,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		if (buttonView == saveUserCheckbox) {
 			database.savePreference(ConstantUtil.USER_SAVE_SETTING_KEY, ""
 					+ isChecked);
-		} else {
+		} else if (buttonView == beaconCheckbox) {
 			database.savePreference(ConstantUtil.LOCATION_BEACON_SETTING_KEY,
 					"" + isChecked);
 			if (isChecked) {
@@ -238,6 +248,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			} else {
 				stopService(new Intent(this, LocationService.class));
 			}
+		} else if (buttonView == screenOnCheckbox) {
+			database.savePreference(ConstantUtil.SCREEN_ON_KEY, "" + isChecked);
 		}
 	}
 }

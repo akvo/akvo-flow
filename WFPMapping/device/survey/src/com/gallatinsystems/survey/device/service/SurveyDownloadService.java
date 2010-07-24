@@ -40,7 +40,7 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  */
 public class SurveyDownloadService extends Service {
 
-	private static final String TAG = "SURVEY_DOWNLOAD_ACTIVITY";
+	private static final String TAG = "SURVEY_DOWNLOAD_SERVICE";
 
 	private static final String SURVEY_FILE_SUFFIX = ".xml";
 	private static final String DEFAULT_TYPE = "Survey";
@@ -257,7 +257,7 @@ public class SurveyDownloadService extends Service {
 											.getHelpByType(
 													ConstantUtil.IMAGE_HELP_TYPE);
 									ArrayList<String> images = new ArrayList<String>();
-									for (int x = 0; i < helpList.size(); x++) {
+									for (int x = 0; x < helpList.size(); x++) {
 										images.add(helpList.get(x).getValue());
 									}
 									if (images != null) {
@@ -340,7 +340,7 @@ public class SurveyDownloadService extends Service {
 		} catch (HttpException e) {
 			Log.e(TAG, "Server returned an unexpected response", e);
 		} catch (Exception e) {
-			Log.e(TAG, "Could not send processing call", e);
+			Log.e(TAG, "Could not get survey headers", e);
 		}
 		return surveys;
 	}
