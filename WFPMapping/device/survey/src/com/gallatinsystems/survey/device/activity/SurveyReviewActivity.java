@@ -28,17 +28,17 @@ import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
  */
 public class SurveyReviewActivity extends ListActivity {
 
-	private SurveyDbAdapter databaseAdaptor;
+	private SurveyDbAdapter databaseAdapter;
 	private static final int SAVED_SURVEYS = 1;
 	private static final int SUBMITTED_SURVEYS = 2;
-	private static final int DELETE_ALL = 3;	
+	private static final int DELETE_ALL = 3;
 	private String currentStatusMode = ConstantUtil.SAVED_STATUS;
-	private TextView viewTypeLabel;	
+	private TextView viewTypeLabel;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);		
-		requestWindowFeature(Window.FEATURE_NO_TITLE);		
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		if (savedInstanceState != null) {
 			String state = savedInstanceState
 					.getString(ConstantUtil.STATUS_KEY);
@@ -49,8 +49,8 @@ public class SurveyReviewActivity extends ListActivity {
 
 		setContentView(R.layout.surveyreview);
 		viewTypeLabel = (TextView) findViewById(R.id.viewtypelabel);
-		databaseAdaptor = new SurveyDbAdapter(this);
-		databaseAdaptor.open();
+		databaseAdapter = new SurveyDbAdapter(this);
+		databaseAdapter.open();
 		getData();
 	}
 
@@ -60,7 +60,7 @@ public class SurveyReviewActivity extends ListActivity {
 		} else {
 			viewTypeLabel.setText(R.string.submittedsurveyslabel);
 		}
-		Cursor dataCursor = databaseAdaptor
+		Cursor dataCursor = databaseAdapter
 				.listSurveyRespondent(currentStatusMode);
 		startManagingCursor(dataCursor);
 
@@ -106,7 +106,7 @@ public class SurveyReviewActivity extends ListActivity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									databaseAdaptor.deleteAllResponses();
+									databaseAdapter.deleteAllResponses();
 									getData();
 								}
 							}).setNegativeButton(R.string.cancelbutton,
@@ -139,10 +139,10 @@ public class SurveyReviewActivity extends ListActivity {
 				.getTag(SurveyReviewCursorAdaptor.SURVEY_ID_KEY)).toString());
 		i.putExtra(ConstantUtil.RESPONDENT_ID_KEY, (Long) view
 				.getTag(SurveyReviewCursorAdaptor.RESP_ID_KEY));
-		if(ConstantUtil.SUBMITTED_STATUS.equals(currentStatusMode)){
-			i.putExtra(ConstantUtil.READONLY_KEY,true);
+		if (ConstantUtil.SUBMITTED_STATUS.equals(currentStatusMode)) {
+			i.putExtra(ConstantUtil.READONLY_KEY, true);
 		}
-		databaseAdaptor.close();
+		databaseAdapter.close();
 		setResult(RESULT_OK, intent);
 		finish();
 		startActivity(i);
@@ -153,6 +153,13 @@ public class SurveyReviewActivity extends ListActivity {
 		super.onSaveInstanceState(outState);
 		if (outState != null) {
 			outState.putString(ConstantUtil.STATUS_KEY, currentStatusMode);
+		}
+	}
+
+	protected void onDestroy() {
+		super.onDestroy();
+		if (databaseAdapter != null) {
+			databaseAdapter.close();
 		}
 	}
 
