@@ -543,21 +543,21 @@ public class SurveyViewActivity extends TabActivity implements
 			if (!readOnly) {
 				// make sure we don't lose anything that was already written
 				for (int i = 0; i < tabContentFactories.size(); i++) {
-					tabContentFactories.get(i).saveState(respondentId);
-					databaseAdapter.updateSurveyStatus(respondentId.toString(),
-							ConstantUtil.SAVED_STATUS);
-					ViewUtil.showConfirmDialog(R.string.savecompletetitle,
-							R.string.savecompletetext, this,
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-									startNewSurvey();
-
-								}
-							});
+					tabContentFactories.get(i).saveState(respondentId);								
 				}
+				databaseAdapter.updateSurveyStatus(respondentId.toString(),
+						ConstantUtil.SAVED_STATUS);		
+				ViewUtil.showConfirmDialog(R.string.savecompletetitle,
+						R.string.savecompletetext, this,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+								startNewSurvey();
+
+							}
+						});
 			}
 			return true;
 		}
