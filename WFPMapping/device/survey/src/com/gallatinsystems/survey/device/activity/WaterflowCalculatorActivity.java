@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.method.DigitsKeyListener;
@@ -14,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -29,6 +31,7 @@ public class WaterflowCalculatorActivity extends Activity implements
 
 	private Button solveButton;
 	private Button clearButton;
+	private Button doneButton;
 	private EditText diameterText;
 	private EditText velocityText;
 	private EditText flowRateText;
@@ -40,11 +43,13 @@ public class WaterflowCalculatorActivity extends Activity implements
 	private String[] flowConversion;
 	private int selectedLengthMetric;
 	private int selectedVelMetric;
+	private EditText lastSolvedText;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.waterflowcalc);
+		doneButton = (Button) findViewById(R.id.donebutton);
 		solveButton = (Button) findViewById(R.id.solvebutton);
 		clearButton = (Button) findViewById(R.id.clearbutton);
 		diameterText = (EditText) findViewById(R.id.diaedit);
@@ -57,13 +62,14 @@ public class WaterflowCalculatorActivity extends Activity implements
 		lengthConversion = res.getStringArray(R.array.lengthconversion);
 		velocityConversion = res.getStringArray(R.array.velocityconversion);
 		flowConversion = res.getStringArray(R.array.flowconversion);
-		initializeViews();
+		initializeViews(getIntent().getStringExtra(ConstantUtil.MODE_KEY));
 	}
 
 	/**
 	 * loads options into the spinners
 	 */
-	private void initializeViews() {
+	private void initializeViews(String mode) {
+		lastSolvedText = null;
 		DigitsKeyListener digitKeyListener = new DigitsKeyListener(false, true);
 		diameterText.setKeyListener(digitKeyListener);
 		velocityText.setKeyListener(digitKeyListener);
@@ -78,8 +84,15 @@ public class WaterflowCalculatorActivity extends Activity implements
 				R.array.flowratemetric, android.R.layout.simple_spinner_item));
 		solveButton.setOnClickListener(this);
 		clearButton.setOnClickListener(this);
+		doneButton.setOnClickListener(this);
 		selectedLengthMetric = 0;
 		selectedVelMetric = 0;
+		if (mode != null
+				&& ConstantUtil.SURVEY_RESULT_MODE.equalsIgnoreCase(mode)) {
+			doneButton.setVisibility(View.VISIBLE);
+		} else {
+			doneButton.setVisibility(View.GONE);
+		}
 
 	}
 
@@ -97,7 +110,7 @@ public class WaterflowCalculatorActivity extends Activity implements
 			flowRateMetricSpinner.setSelection(0);
 			selectedLengthMetric = 0;
 			selectedVelMetric = 0;
-		} else {
+		} else if (v == solveButton) {
 			Double dia = extractDouble(diameterText, diaMetricSpinner
 					.getSelectedItemPosition(), lengthConversion);
 			Double vel = extractDouble(velocityText, velocityMetricSpinner
@@ -122,6 +135,14 @@ public class WaterflowCalculatorActivity extends Activity implements
 				ViewUtil.showConfirmDialog(R.string.invalidinput,
 						R.string.onlyonecanbeblank, this);
 			}
+		} else if (v == doneButton) {
+			Intent resultData = new Intent();
+			if (lastSolvedText != null) {
+				resultData.putExtra(ConstantUtil.CALC_RESULT_KEY,
+						lastSolvedText.getText().toString());
+			}
+			setResult(RESULT_OK, resultData);
+			finish();
 		}
 	}
 
@@ -142,6 +163,7 @@ public class WaterflowCalculatorActivity extends Activity implements
 		} else {
 			txt.setText("");
 		}
+		lastSolvedText = txt;
 	}
 
 	/**

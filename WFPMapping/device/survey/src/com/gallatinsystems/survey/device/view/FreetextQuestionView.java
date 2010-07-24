@@ -72,7 +72,8 @@ public class FreetextQuestionView extends QuestionView implements
 	public void captureResponse() {
 		captureResponse(false);
 	}
-
+	
+	
 	/**
 	 * pulls the data out of the fields and saves it as a response object,
 	 * possibly suppressing listeners
@@ -82,7 +83,7 @@ public class FreetextQuestionView extends QuestionView implements
 				ConstantUtil.VALUE_RESPONSE_TYPE, getQuestion().getId()),
 				suppressListeners);
 	}
-
+	
 	public void rehydrate(QuestionResponse resp) {
 		super.rehydrate(resp);
 		if (resp != null) {
@@ -96,7 +97,7 @@ public class FreetextQuestionView extends QuestionView implements
 	}
 
 	/**
-	 * caputures the response and runs validation on loss of focus
+	 * Captures the response and runs validation on loss of focus
 	 */
 	@Override
 	public void onFocusChange(View view, boolean hasFocus) {

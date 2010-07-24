@@ -40,10 +40,6 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 public class QuestionView extends TableLayout implements
 		QuestionInteractionListener {
 
-	private static final String VIDEO_HELP = "video";
-	private static final String TEXT_HELP = "txt";
-	private static final String PHOTO_HELP = "photo";
-
 	protected static final int DEFAULT_WIDTH = 290;
 	private TextView questionText;
 
@@ -79,7 +75,7 @@ public class QuestionView extends TableLayout implements
 
 		// if there is a tip for this question, construct an alert dialog box
 		// with the data
-		final int tips = question.getTipCount();
+		final int tips = question.getHelpTypeCount();
 		if (tips > 0) {
 			tipImage = new ImageButton(context);
 			tipImage.setImageResource(android.R.drawable.ic_dialog_info);
@@ -90,12 +86,17 @@ public class QuestionView extends TableLayout implements
 					if (tips > 1) {
 						displayHelpChoices();
 					} else {
-						if (question.getTip() != null) {
-							displayHelp(TEXT_HELP);
-						} else if (question.getVideo() != null) {
-							displayHelp(VIDEO_HELP);
+						if (question.getHelpByType(ConstantUtil.TIP_HELP_TYPE)
+								.size() > 0) {
+							displayHelp(ConstantUtil.TIP_HELP_TYPE);
+						} else if (question.getHelpByType(
+								ConstantUtil.VIDEO_HELP_TYPE).size() > 0) {
+							displayHelp(ConstantUtil.VIDEO_HELP_TYPE);
+						} else if (question.getHelpByType(
+								ConstantUtil.IMAGE_HELP_TYPE).size() > 0) {
+							displayHelp(ConstantUtil.IMAGE_HELP_TYPE);
 						} else {
-							displayHelp(PHOTO_HELP);
+							displayHelp(ConstantUtil.ACTIVITY_HELP_TYPE);
 						}
 					}
 				}
@@ -159,32 +160,47 @@ public class QuestionView extends TableLayout implements
 	 * displays a dialog box with options for each of the help types that have
 	 * been initialized for this particular question.
 	 */
+	@SuppressWarnings("unchecked")
 	private void displayHelpChoices() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(R.string.helpheading);
-		final CharSequence[] items = new CharSequence[question.getTipCount()];
+		final CharSequence[] items = new CharSequence[question
+				.getHelpTypeCount()];
 		final Resources resources = getResources();
 		int itemIndex = 0;
+		ArrayList tempList = question
+				.getHelpByType(ConstantUtil.IMAGE_HELP_TYPE);
 
-		if (question.getImages() != null && question.getImages().size() > 0) {
+		if (tempList != null && tempList.size() > 0) {
 			items[itemIndex++] = resources.getString(R.string.photohelpoption);
 		}
-		if (question.getVideo() != null) {
+		tempList = question.getHelpByType(ConstantUtil.VIDEO_HELP_TYPE);
+		if (tempList != null && tempList.size() > 0) {
 			items[itemIndex++] = resources.getString(R.string.videohelpoption);
 		}
-		if (question.getTip() != null) {
+		tempList = question.getHelpByType(ConstantUtil.TIP_HELP_TYPE);
+		if (tempList != null && tempList.size() > 0) {
 			items[itemIndex++] = resources.getString(R.string.texthelpoption);
 		}
+		tempList = question.getHelpByType(ConstantUtil.ACTIVITY_HELP_TYPE);
+		if (tempList != null && tempList.size() > 0) {
+			items[itemIndex++] = resources
+					.getString(R.string.activityhelpoption);
+		}
+
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				String val = items[id].toString();
 				if (resources.getString(R.string.texthelpoption).equals(val)) {
-					displayHelp(TEXT_HELP);
+					displayHelp(ConstantUtil.TIP_HELP_TYPE);
 				} else if (resources.getString(R.string.videohelpoption)
 						.equals(val)) {
-					displayHelp(VIDEO_HELP);
+					displayHelp(ConstantUtil.VIDEO_HELP_TYPE);
+				} else if (resources.getString(R.string.photohelpoption)
+						.equals(val)) {
+					displayHelp(ConstantUtil.IMAGE_HELP_TYPE);
 				} else {
-					displayHelp(PHOTO_HELP);
+					displayHelp(ConstantUtil.ACTIVITY_HELP_TYPE);
 				}
 				dialog.dismiss();
 			}
@@ -198,12 +214,12 @@ public class QuestionView extends TableLayout implements
 	 * @param type
 	 */
 	private void displayHelp(String type) {
-		if (VIDEO_HELP.equals(type)) {
+		if (ConstantUtil.VIDEO_HELP_TYPE.equals(type)) {
 			notifyQuestionListeners(QuestionInteractionEvent.VIDEO_TIP_VIEW);
-		} else if (TEXT_HELP.equals(type)) {
+		} else if (ConstantUtil.TIP_HELP_TYPE.equals(type)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 			TextView tipText = new TextView(getContext());
-			tipText.setText(Html.fromHtml(question.getTip()));
+			//tipText.setText(Html.fromHtml(question.getTip()));
 			builder.setView(tipText);
 			builder.setPositiveButton(R.string.okbutton,
 					new DialogInterface.OnClickListener() {
@@ -212,8 +228,10 @@ public class QuestionView extends TableLayout implements
 						}
 					});
 			builder.show();
-		} else {
+		} else if (ConstantUtil.IMAGE_HELP_TYPE.equals(type)) {
 			notifyQuestionListeners(QuestionInteractionEvent.PHOTO_TIP_VIEW);
+		} else {
+			notifyQuestionListeners(QuestionInteractionEvent.ACTIVITY_TIP_VIEW);
 		}
 	}
 
@@ -384,6 +402,7 @@ public class QuestionView extends TableLayout implements
 
 	/**
 	 * hides or shows the tips button
+	 * 
 	 * @param isSuppress
 	 */
 	public void suppressHelp(boolean isSuppress) {

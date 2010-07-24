@@ -11,6 +11,7 @@ import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
+import com.gallatinsystems.survey.device.domain.QuestionHelp;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.domain.ValidationRule;
 
@@ -34,24 +35,21 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String OPTION = "option";
 	private static final String VALUE = "value";
 	private static final String OPTIONS = "options";
-	private static final String ALLOW_OTHER = "allowOther";
-	private static final String TIP = "tip";
+	private static final String ALLOW_OTHER = "allowOther";	
 	private static final String VALIDATION_TYPE = "validationType";
 	private static final String VALIDATION_RULE = "validationRule";
 	private static final String MAX_LENGTH = "maxLength";
 	private static final String ALLOW_DEC = "allowDecimal";
 	private static final String ALLOW_SIGN = "signed";
 	private static final String RENDER_TYPE = "renderType";
-	private static final String VIDEO = "video";
-	private static final String IMAGE = "image";
-	private static final String CAPTION = "caption";
-	private static final String SRC = "src";
 	private static final String ALLOW_MULT = "allowMultiple";
 	private static final String MIN_VAL = "minVal";
 	private static final String MAX_VAL = "maxVal";
 	private static final String ALT_TEXT = "altText";
 	private static final String LANG = "language";
-	private static final String LOCKED = "locked";
+	private static final String LOCKED = "locked";	
+	private static final String HELP= "help";
+
 	@SuppressWarnings("unused")
 	private static final String TRANSLATION = "translation";
 
@@ -63,6 +61,7 @@ public class SurveyHandler extends DefaultHandler {
 	private ArrayList<Option> currentOptions;
 	private ValidationRule currentValidation;
 	private AltText currentAltText;
+	private QuestionHelp currentHelp;
 
 	private StringBuilder builder;
 
@@ -82,7 +81,7 @@ public class SurveyHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String name)
 			throws SAXException {
 		super.endElement(uri, localName, name);
-		if (this.currentQuestionGroup != null) {
+		if (currentQuestionGroup != null) {
 			if (localName.equalsIgnoreCase(HEADING)) {
 				currentQuestionGroup.setHeading(builder.toString().trim());
 			} else if (localName.equalsIgnoreCase(QUESTION)) {
@@ -95,18 +94,19 @@ public class SurveyHandler extends DefaultHandler {
 		}
 		if (currentQuestion != null) {
 			// <text> can appear multiple places. We need to make sure we're not
-			// in the context of an option here
-			if (localName.equalsIgnoreCase(TEXT) && currentOption == null) {
+			// in the context of an option or help here
+			if (localName.equalsIgnoreCase(TEXT) && currentOption == null && currentHelp == null) {
 				currentQuestion.setText(builder.toString().trim());
 			} else if (localName.equalsIgnoreCase(OPTIONS)) {
 				currentQuestion.setOptions(currentOptions);
 				currentOptions = null;
-			} else if (localName.equalsIgnoreCase(TIP)) {
-				currentQuestion.setTip(builder.toString().trim());
 			} else if (localName.equalsIgnoreCase(VALIDATION_RULE)) {
 				currentQuestion.setValidationRule(currentValidation);
 				currentValidation = null;
-			}
+			}else if(localName.equalsIgnoreCase(HELP)){								
+				currentQuestion.addQuestionHelp(currentHelp);				
+				currentHelp = null;
+			}		
 		}
 		if (currentOption != null) {
 			// the null check here is to handle "old" style options that don't
@@ -132,14 +132,24 @@ public class SurveyHandler extends DefaultHandler {
 			}
 		}
 		if (currentAltText != null) {
-			currentAltText.setText(builder.toString().trim());
-			if (currentOption != null) {
-				currentOption.addAltText(currentAltText);
-			} else if (currentQuestion != null) {
-				currentQuestion.addAltText(currentAltText);
+			if (localName.equalsIgnoreCase(ALT_TEXT)) {
+				currentAltText.setText(builder.toString().trim());
+				if (currentHelp != null) {
+					currentHelp.addAltText(currentAltText);
+				} else if (currentOption != null) {
+					currentOption.addAltText(currentAltText);
+				} else if (currentQuestion != null) {
+					currentQuestion.addAltText(currentAltText);
+				}
+				currentAltText = null;
 			}
-			currentAltText = null;
 		}
+		if(currentHelp != null){
+			if(localName.equalsIgnoreCase(TEXT)){
+				currentHelp.setText(builder.toString().trim());
+			}
+		}				
+		
 		builder.setLength(0);
 	}
 
@@ -196,7 +206,7 @@ public class SurveyHandler extends DefaultHandler {
 			} else {
 				currentQuestion.setLocked(false);
 			}
-			
+
 			currentQuestion.setType(attributes.getValue(TYPE));
 			currentQuestion.setId(attributes.getValue(ID));
 			String validation = attributes.getValue(VALIDATION_TYPE);
@@ -240,19 +250,14 @@ public class SurveyHandler extends DefaultHandler {
 			currentValidation.setMaxLength(attributes.getValue(MAX_LENGTH));
 			currentValidation.setMinVal(attributes.getValue(MIN_VAL));
 			currentValidation.setMaxVal(attributes.getValue(MAX_VAL));
-		} else if (localName.equalsIgnoreCase(VIDEO)) {
-			if (currentQuestion != null) {
-				currentQuestion.setVideo(attributes.getValue(SRC));
-			}
-		} else if (localName.equalsIgnoreCase(IMAGE)) {
-			if (currentQuestion != null) {
-				currentQuestion.addImage(attributes.getValue(SRC));
-				currentQuestion.addImageCaption(attributes.getValue(CAPTION));
-			}
 		} else if (localName.equalsIgnoreCase(ALT_TEXT)) {
 			currentAltText = new AltText();
 			currentAltText.setLanguage(attributes.getValue(LANG));
 			currentAltText.setType(attributes.getValue(TYPE));
+		} else if (localName.equalsIgnoreCase(HELP)) {
+			currentHelp = new QuestionHelp();
+			currentHelp.setType(attributes.getValue(TYPE));
+			currentHelp.setValue(attributes.getValue(VALUE));
 		}
 	}
 }

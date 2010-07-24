@@ -3,6 +3,8 @@ package com.gallatinsystems.survey.device.domain;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.gallatinsystems.survey.device.util.ConstantUtil;
+
 /**
  * data structure for individual survey questions. Questions have a type which
  * can be any one of:
@@ -21,20 +23,20 @@ public class Question {
 	private String id;
 	private String text;
 	private int order;
-	private String tip;
 	private ValidationRule validationRule;
 	private String renderType;
-	private String video;
-	private ArrayList<String> images;
-
-	private ArrayList<String> imageCaptions;
-
+	private ArrayList<QuestionHelp> questionHelp;
 	private boolean mandatory;
 	private String type;
 	private ArrayList<Option> options;
 	private boolean allowOther;
 	private boolean allowMultiple;
 	private boolean locked;
+	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
+
+	public ArrayList<QuestionHelp> getQuestionHelp() {
+		return questionHelp;
+	}
 
 	public boolean isLocked() {
 		return locked;
@@ -43,8 +45,6 @@ public class Question {
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
-
-	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
 
 	public HashMap<String, AltText> getAltTextMap() {
 		return altTextMap;
@@ -67,14 +67,6 @@ public class Question {
 	}
 
 	private ArrayList<Dependency> dependencies;
-
-	public ArrayList<String> getImages() {
-		return images;
-	}
-
-	public ArrayList<String> getImageCaptions() {
-		return imageCaptions;
-	}
 
 	public String getRenderType() {
 		return renderType;
@@ -148,25 +140,30 @@ public class Question {
 		this.allowOther = allowOther;
 	}
 
-	public void addImage(String img) {
-		if (images == null) {
-			images = new ArrayList<String>();
-		}
-		images.add(img);
-	}
-
-	public void addImageCaption(String cap) {
-		if (imageCaptions == null) {
-			imageCaptions = new ArrayList<String>();
-		}
-		imageCaptions.add(cap);
-	}
-
 	public void addDependency(Dependency dep) {
 		if (dependencies == null) {
 			dependencies = new ArrayList<Dependency>();
 		}
 		dependencies.add(dep);
+	}
+
+	public ArrayList<QuestionHelp> getHelpByType(String type) {
+		ArrayList<QuestionHelp> help =  new ArrayList<QuestionHelp>();;
+		if (questionHelp != null && type != null) {			
+			for (int i = 0; i < questionHelp.size(); i++) {
+				if (type.equalsIgnoreCase(questionHelp.get(i).getType())) {
+					help.add(questionHelp.get(i));
+				}
+			}
+		}
+		return help;
+	}
+
+	public void addQuestionHelp(QuestionHelp help) {
+		if (questionHelp == null) {
+			questionHelp = new ArrayList<QuestionHelp>();
+		}
+		questionHelp.add(help);
 	}
 
 	public ValidationRule getValidationRule() {
@@ -177,36 +174,23 @@ public class Question {
 		this.validationRule = validationRule;
 	}
 
-	public String getTip() {
-		return tip;
-	}
-
-	public void setTip(String tip) {
-		this.tip = tip;
-	}
-
-	public String getVideo() {
-		return video;
-	}
-
-	public void setVideo(String video) {
-		this.video = video;
-	}
-
 	/**
-	 * counts the number of non-null help tips
+	 * counts the number of non-empty help tip types
 	 * 
 	 * @return
 	 */
-	public int getTipCount() {
+	public int getHelpTypeCount() {
 		int count = 0;
-		if (tip != null) {
+		if (getHelpByType(ConstantUtil.IMAGE_HELP_TYPE).size() > 0) {
 			count++;
 		}
-		if (video != null) {
+		if (getHelpByType(ConstantUtil.TIP_HELP_TYPE).size() > 0) {
 			count++;
 		}
-		if (images != null && images.size() > 0) {
+		if (getHelpByType(ConstantUtil.VIDEO_HELP_TYPE).size() > 0) {
+			count++;
+		}
+		if (getHelpByType(ConstantUtil.ACTIVITY_HELP_TYPE).size() > 0) {
 			count++;
 		}
 		return count;

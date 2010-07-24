@@ -1,5 +1,9 @@
 package com.gallatinsystems.survey.device.util;
 
+import java.util.HashMap;
+
+import com.gallatinsystems.survey.device.activity.WaterflowCalculatorActivity;
+
 /**
  * Class to hold all public constants used in the application
  * 
@@ -41,10 +45,13 @@ public class ConstantUtil {
 	public static final String TRACK_QUESTION_TYPE = "track";
 
 	/**
-	 * help media types
+	 * help types
 	 */
-	public static final String VIDEO_MEDIA_TYPE = "video";
-	public static final String IMAGE_MEDIA_TYPE = "image";
+	public static final String VIDEO_HELP_TYPE = "video";
+	public static final String IMAGE_HELP_TYPE = "image";
+	public static final String ACTIVITY_HELP_TYPE = "activity";
+	public static final String TIP_HELP_TYPE = "tip";
+
 	/**
 	 * rendering options
 	 */
@@ -114,6 +121,8 @@ public class ConstantUtil {
 	public static final String IMAGE_CAPTION_LIST_KEY = "imagecaps";
 	public static final String AP_KEY = "accesspoint";
 	public static final String READONLY_KEY = "readonly";
+	public static final String CALC_RESULT_KEY = "calcresult";
+	public static final String MODE_KEY = "mode";
 
 	/**
 	 * settings keys
@@ -172,7 +181,23 @@ public class ConstantUtil {
 	public static final String WHITE_COLOR = "white";
 	public static final String BLACK_COLOR = "black";
 
-	
+	/**
+	 * sub-activty options
+	 */
+	public static final String STANDALONE_MODE = "standalone";
+	public static final String SURVEY_RESULT_MODE = "surveyresult";
+
+	/**
+	 * recognized help activities
+	 */
+	@SuppressWarnings("unchecked")
+	public static final HashMap<String, Class> HELP_ACTIVITIES = new HashMap<String, Class>() {	
+		private static final long serialVersionUID = -6196886832065440000L;
+		{
+			put("waterflowcalculator", WaterflowCalculatorActivity.class);
+		}
+	};
+
 	/**
 	 * prevent instantiation
 	 */

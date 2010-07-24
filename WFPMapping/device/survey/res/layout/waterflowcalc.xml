@@ -65,5 +65,8 @@
 		<Button android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/clearbutton"
 			android:text="@string/clearbutton" />
+			<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/donebutton"
+			android:text="@string/donebutton" />
 	</LinearLayout>
 </LinearLayout>

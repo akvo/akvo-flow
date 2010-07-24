@@ -65,6 +65,7 @@
 	<string name="texthelpoption">View Help Text</string>
 	<string name="videohelpoption">View Help Video</string>
 	<string name="photohelpoption">View Help Photos</string>
+	<string name="activityhelpoption">Launch Calculator</string>
 	<string name="helpheading">Help Options</string>
 	<string name="toggleplotmode">Toggle Plot Mode</string>
 	<string name="plotsettings">Settings</string>
@@ -136,6 +137,7 @@
 	<string name="trackendnotification">Track Recording Stopped</string>
 	<string name="savestartnew">Save and Start New</string>
 	<string name="nextbutton">Next</string>
-	<string name="submittext">If you are finished with the survey, press submit to send the data. Once you press submit, you can review the data but you will not be able to edit it.</string>	
-	<string name="appversion">0.98.1</string>	
+	<string name="submittext">If you are finished with the survey, press submit to send the data. Once you press submit, you can review the data but you will not be able to edit it.</string>
+	<string name="donebutton">Done</string>
+	<string name="appversion">0.98.2</string>	
 </resources>

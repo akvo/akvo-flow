@@ -24,6 +24,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDao;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionHelp;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
@@ -195,7 +196,8 @@ public class SurveyDownloadService extends Service {
 	private boolean downloadSurvey(String serverBase, Survey survey) {
 		boolean success = false;
 		try {
-			String response = HttpUtil.httpGet(SURVEY_S3_URL + survey.getId()+".xml");
+			String response = HttpUtil.httpGet(SURVEY_S3_URL + survey.getId()
+					+ ".xml");
 			if (response != null
 					&& !response.trim().equalsIgnoreCase(NO_SURVEY)) {
 				survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
@@ -240,13 +242,24 @@ public class SurveyDownloadService extends Service {
 									.getQuestionGroups().get(i).getQuestions();
 							if (questions != null) {
 								for (int j = 0; j < questions.size(); j++) {
-									if (questions.get(j).getVideo() != null) {
+									if (questions.get(j).getHelpByType(
+											ConstantUtil.VIDEO_HELP_TYPE)
+											.size() > 0) {
 										fileSet
-												.add(questions.get(j)
-														.getVideo());
+												.add(questions
+														.get(j)
+														.getHelpByType(
+																ConstantUtil.VIDEO_HELP_TYPE)
+														.get(0).getValue());
 									}
-									ArrayList<String> images = questions.get(j)
-											.getImages();
+									ArrayList<QuestionHelp> helpList = questions
+											.get(j)
+											.getHelpByType(
+													ConstantUtil.IMAGE_HELP_TYPE);
+									ArrayList<String> images = new ArrayList<String>();
+									for (int x = 0; i < helpList.size(); x++) {
+										images.add(helpList.get(i).getValue());
+									}
 									if (images != null) {
 										for (int k = 0; k < images.size(); k++) {
 											fileSet.add(images.get(k));
@@ -383,7 +396,7 @@ public class SurveyDownloadService extends Service {
 	private void fireNotification(int count) {
 		String text = getResources().getText(R.string.surveysupdated)
 				.toString();
-		ViewUtil.fireNotification(text, text, this, COMPLETE_ID,null);
+		ViewUtil.fireNotification(text, text, this, COMPLETE_ID, null);
 	}
 
 	/**

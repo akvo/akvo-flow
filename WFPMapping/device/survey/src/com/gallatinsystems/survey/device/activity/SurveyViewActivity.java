@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.Semaphore;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
@@ -27,6 +28,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
+import com.gallatinsystems.survey.device.domain.QuestionHelp;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
@@ -56,6 +58,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int VIDEO_ACTIVITY_REQUEST = 2;
 	private static final int SCAN_ACTIVITY_REQUEST = 3;
+	private static final int ACTIVITY_HELP_REQ = 4;
 	private static final int TXT_SIZE = 1;
 	private static final int SURVEY_LANG = 3;
 	private static final int SAVE_SURVEY = 4;
@@ -87,6 +90,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private boolean isTrackRecording;
 	private TabHost tabHost;
 	private int tabCount;
+	private volatile Semaphore restoreGate;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -100,6 +104,7 @@ public class SurveyViewActivity extends TabActivity implements
 		databaseAdapter.open();
 		isTrackRecording = false;
 		setContentView(R.layout.main);
+		restoreGate = new Semaphore(1);
 		tabCount = 0;
 
 		String langSelection = databaseAdapter
@@ -294,44 +299,62 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// on activity return
-		if (requestCode == PHOTO_ACTIVITY_REQUEST
-				|| requestCode == VIDEO_ACTIVITY_REQUEST) {
-			if (resultCode == RESULT_OK) {
-				String filePrefix = null;
-				String fileSuffix = null;
-				if (requestCode == PHOTO_ACTIVITY_REQUEST) {
-					filePrefix = TEMP_PHOTO_NAME_PREFIX;
-					fileSuffix = IMAGE_SUFFIX;
-				} else {
-					filePrefix = TEMP_VIDEO_NAME_PREFIX;
-					fileSuffix = VIDEO_SUFFIX;
-				}
+		try {
+			restoreGate.acquire();
 
-				File f = new File(Environment.getExternalStorageDirectory()
-						.getAbsolutePath()
-						+ filePrefix + fileSuffix);
-				String newName = Environment.getExternalStorageDirectory()
-						.getAbsolutePath()
-						+ filePrefix + System.nanoTime() + fileSuffix;
-				f.renameTo(new File(newName));
-
-				try {
-					if (eventQuestionSource != null) {
-						Bundle photoData = new Bundle();
-						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
-								newName);
-						eventQuestionSource.questionComplete(photoData);
+			if (requestCode == PHOTO_ACTIVITY_REQUEST
+					|| requestCode == VIDEO_ACTIVITY_REQUEST) {
+				if (resultCode == RESULT_OK) {
+					String filePrefix = null;
+					String fileSuffix = null;
+					if (requestCode == PHOTO_ACTIVITY_REQUEST) {
+						filePrefix = TEMP_PHOTO_NAME_PREFIX;
+						fileSuffix = IMAGE_SUFFIX;
+					} else {
+						filePrefix = TEMP_VIDEO_NAME_PREFIX;
+						fileSuffix = VIDEO_SUFFIX;
 					}
-				} catch (Exception e) {
-					Log.e(ACTIVITY_NAME, e.getMessage());
-				} finally {
-					eventQuestionSource = null;
+
+					File f = new File(Environment.getExternalStorageDirectory()
+							.getAbsolutePath()
+							+ filePrefix + fileSuffix);
+					String newName = Environment.getExternalStorageDirectory()
+							.getAbsolutePath()
+							+ filePrefix + System.nanoTime() + fileSuffix;
+					f.renameTo(new File(newName));
+
+					try {
+						if (eventQuestionSource != null) {
+							Bundle photoData = new Bundle();
+							photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
+									newName);
+							eventQuestionSource.questionComplete(photoData);
+						}
+					} catch (Exception e) {
+						Log.e(ACTIVITY_NAME, e.getMessage());
+					} finally {
+						eventQuestionSource = null;
+					}
+				}
+			} else if (requestCode == SCAN_ACTIVITY_REQUEST) {
+				if (resultCode == RESULT_OK) {
+					eventQuestionSource.questionComplete(data.getExtras());
+				}
+			} else if (requestCode == ACTIVITY_HELP_REQ) {
+				if (resultCode == RESULT_OK) {
+					eventQuestionSource.setResponse(new QuestionResponse(data
+							.getStringExtra(ConstantUtil.CALC_RESULT_KEY),
+							ConstantUtil.VALUE_RESPONSE_TYPE,
+							eventQuestionSource.getQuestion().getId()));
+					databaseAdapter
+							.createOrUpdateSurveyResponse(eventQuestionSource
+									.getResponse(true));
 				}
 			}
-		} else if (requestCode == SCAN_ACTIVITY_REQUEST) {
-			if (resultCode == RESULT_OK) {
-				eventQuestionSource.questionComplete(data.getExtras());
-			}
+		} catch (Exception e) {
+			Log.w(TAG, "Could not acquire semaphore", e);
+		} finally {
+			restoreGate.release();
 		}
 	}
 
@@ -375,7 +398,8 @@ public class SurveyViewActivity extends TabActivity implements
 				.getEventType())) {
 			Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
 			Uri uri = null;
-			String src = event.getSource().getQuestion().getVideo().trim();
+			String src = event.getSource().getQuestion().getHelpByType(
+					ConstantUtil.VIDEO_HELP_TYPE).get(0).getValue().trim();
 			if (src.toLowerCase().startsWith(HTTP_PREFIX)) {
 				// first see if we have a precached copy of the file
 				String localFile = FileUtil.convertRemoteToLocalFile(src,
@@ -397,11 +421,31 @@ public class SurveyViewActivity extends TabActivity implements
 			Intent intent = new Intent(this, ImageBrowserActivity.class);
 
 			intent.putExtra(ConstantUtil.SURVEY_ID_KEY, surveyId);
-			intent.putExtra(ConstantUtil.IMAGE_URL_LIST_KEY, event.getSource()
-					.getQuestion().getImages());
-			intent.putExtra(ConstantUtil.IMAGE_CAPTION_LIST_KEY, event
-					.getSource().getQuestion().getImageCaptions());
+			ArrayList<QuestionHelp> helpList = event.getSource().getQuestion()
+					.getHelpByType(ConstantUtil.IMAGE_HELP_TYPE);
+			ArrayList<String> urls = new ArrayList<String>();
+			ArrayList<String> captions = new ArrayList<String>();
+			for (int i = 0; i < helpList.size(); i++) {
+				urls.add(helpList.get(i).getValue());
+				captions.add(helpList.get(i).getText());
+			}
+			intent.putExtra(ConstantUtil.IMAGE_URL_LIST_KEY, urls);
+			intent.putExtra(ConstantUtil.IMAGE_CAPTION_LIST_KEY, captions);
 			startActivity(intent);
+		} else if (QuestionInteractionEvent.ACTIVITY_TIP_VIEW.equals(event
+				.getEventType())) {
+			eventQuestionSource = event.getSource();
+			try {
+				Intent i = new Intent(this, ConstantUtil.HELP_ACTIVITIES
+						.get(event.getSource().getQuestion().getHelpByType(
+								ConstantUtil.ACTIVITY_HELP_TYPE).get(0)
+								.getValue()));
+				i.putExtra(ConstantUtil.MODE_KEY,
+						ConstantUtil.SURVEY_RESULT_MODE);
+				startActivityForResult(i, ACTIVITY_HELP_REQ);
+			} catch (Exception e) {
+				Log.e(TAG, "Could not start activity help", e);
+			}
 		} else if (QuestionInteractionEvent.TAKE_VIDEO_EVENT.equals(event
 				.getEventType())) {
 			// fire off the intent
@@ -543,10 +587,10 @@ public class SurveyViewActivity extends TabActivity implements
 			if (!readOnly) {
 				// make sure we don't lose anything that was already written
 				for (int i = 0; i < tabContentFactories.size(); i++) {
-					tabContentFactories.get(i).saveState(respondentId);								
+					tabContentFactories.get(i).saveState(respondentId);
 				}
 				databaseAdapter.updateSurveyStatus(respondentId.toString(),
-						ConstantUtil.SAVED_STATUS);		
+						ConstantUtil.SAVED_STATUS);
 				ViewUtil.showConfirmDialog(R.string.savecompletetitle,
 						R.string.savecompletetext, this,
 						new DialogInterface.OnClickListener() {
@@ -619,11 +663,18 @@ public class SurveyViewActivity extends TabActivity implements
 
 	@Override
 	protected void onResume() {
-		super.onResume();
-		if (tabContentFactories != null) {
-			for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
-				tab.loadState(respondentId);
+		try {
+			restoreGate.acquire();
+			super.onResume();
+			if (tabContentFactories != null) {
+				for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
+					tab.loadState(respondentId);
+				}
 			}
+		} catch (InterruptedException e) {
+			Log.w(TAG, "Error getting semaphore", e);
+		} finally {
+			restoreGate.release();
 		}
 	}
 

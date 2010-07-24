@@ -2,30 +2,54 @@
 <survey>
 	<questionGroup order="1">
 		<heading>Water Point Questions</heading>
+		<question id="0q" order="0" mandatory="false" type="free">
+			<text>Record distance to water point</text>
+			<validationRule validationType="numeric" allowDecimal="true"
+				signed="false" />
+			<help type="activity" value="waterflowcalculator">
+				<text>Launch Calculator</text>
+				<altText type="translation" language="sp">lanzamiento de la
+					calculadora</altText>
+			</help>
+		</question>
 		<question id="1q" order="0" mandatory="false" type="track">
 			<text>Record distance to water point</text>
 		</question>
 		<question id="q1" order="1" mandatory="true" type="option">
-			<text>Location? This is a really long question to see how it looks in the UI if we have english and spanish.</text>
-			<altText type="translation" language="sp">¿ubicación? este es un texto adicional para poner a prueba la disposición</altText>
-			<altText type="translation" language="fr">emplacement? Ceci est un texte supplémentaire à disposition de test</altText>
+			<text>Location? This is a really long question to see how it looks in
+				the UI if we have english and spanish.</text>
+			<altText type="translation" language="sp">¿ubicación? este es un
+				texto adicional para poner a prueba la disposición</altText>
+			<altText type="translation" language="fr">emplacement? Ceci est un
+				texte supplémentaire à disposition de test</altText>
 			<options allowOther="true" renderType="spinner">
-				<option value="r">Rural blah blha blhal how does the spinner handle wrapping</option>
+				<option value="r">Rural blah blha blhal how does the spinner
+					handle wrapping</option>
 				<option value="pu">Peri-Urban</option>
 				<option value="st">Small Town</option>
 				<option value="u">
 					<text>Urban</text>
 					<altText type="translation" language="sp">urbano</altText>
 				</option>
-			</options>			
-			<video src="http://www.gallatinsystems.com/WFPDevice/video/demoVid.mp4"/>
-			<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1085_thumb.jpg" caption="Handpump"/>		            
-		<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/EmptyingJugThumb.jpg" caption="Waterpoint example"/>
-		<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1159_thumb.jpg" caption="Cistern"/>
+			</options>
+			<help type="video"
+				value="http://www.gallatinsystems.com/WFPDevice/video/demoVid.mp4" />
+			<help type="image"
+				value="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1085_thumb.jpg">
+				<text>Handpump</text>
+			</help>
+			<help type="image"
+				value="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/EmptyingJugThumb.jpg">
+				<text>Waterpoint example</text>
+			</help>
+			<help type="image"
+				value="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1159_thumb.jpg">
+				<text>Cistern</text>
+			</help>
 		</question>
-		<question id="q2" order="2" mandatory="true" type="free">		
+		<question id="q2" order="2" mandatory="true" type="free">
 			<text>Name of Community?</text>
-			<validationRule validationType="name" maxLength="50"/>
+			<validationRule validationType="name" maxLength="50" />
 		</question>
 		<question id="q91" order="3" mandatory="false" type="video">
 			<text>Water Point Video</text>
@@ -33,35 +57,37 @@
 		<question id="q3" order="3" mandatory="false" type="photo">
 			<text>Water Point Photo</text>
 		</question>
-		<question id="q4" order="4" mandatory="false" type="geo" locked="true">
+		<question id="q4" order="4" mandatory="false" type="geo"
+			locked="true">
 			<text>Location</text>
 		</question>
 		<question id="q5" order="5" mandatory="false" type="free">
 			<text>Year of Construction?</text>
-			<validationRule validationType="numeric" maxLength="4" allowDecimal="false" signed="false" minVal="1900" maxVal="2010"/>
+			<validationRule validationType="numeric" maxLength="4"
+				allowDecimal="false" signed="false" minVal="1900" maxVal="2010" />
 		</question>
 		<question id="q6" order="6" mandatory="false" type="option">
 			<text>Source?</text>
 			<options allowOther="true" allowMultiple="true">
-				<option value="s">Spring jdljlkdjlkj lkjlajd ioj dal does this wrap to the next line if this is of epic proportions</option>
+				<option value="s">Spring jdljlkdjlkj lkjlajd ioj dal does this
+					wrap to the next line if this is of epic proportions</option>
 				<option value="b">Borehole</option>
 				<option value="lhd">Lined hand-dug well</option>
 				<option value="uhd">Unlined hand-dug well</option>
 				<option value="sw">
-				<text>Surface Water</text>
-				<altText type="translation" language="sp">aqua</altText>
+					<text>Surface Water</text>
+					<altText type="translation" language="sp">aqua</altText>
 				</option>
 				<option value="p">Piped Supply</option>
 			</options>
 		</question>
-		<question id="q7" order="7" mandatory="false" type="option">
-		<image src="http://ww2.waterforpeople.org/image-gallery-admin/uploads/thumbnail/IMG_1159_thumb.jpg" caption="Help message"/>
+		<question id="q7" order="7" mandatory="false" type="option">			
 			<text>Collection Point?</text>
 			<options allowOther="false">
 				<option value="ph">
-				<text>Public Handpump</text>
+					<text>Public Handpump</text>
 					<altText type="translation" language="sp">publico</altText>
-					</option>
+				</option>
 				<option value="y">Yard Connection (tap)</option>
 				<option value="h">House Connection (tap)</option>
 				<option value="pp">Public/Private Connection (tap)
@@ -70,19 +96,19 @@
 		</question>
 		<question id="q8" order="8" mandatory="false" type="option">
 			<text>What is the operational status of the improved water
-				system?</text>
+				system?
+			</text>
 			<options allowOther="false">
 				<option value="h">High</option>
 				<option value="ok">Ok</option>
 				<option value="p">Poor</option>
 			</options>
-			<tip><![CDATA[<b>High</b> = Water is flowing in adequate quantity and quality, meets govt standards and has no significant broken parts/problems.<br>
+			<help type="tip"><text><![CDATA[<b>High</b> = Water is flowing in adequate quantity and quality, meets govt standards and has no significant broken parts/problems.<br>
     <b>Ok</b> = Water is flowing but is either not adequate quantity or quality, or does not meet govt. standards, or has broken parts, leaks or problems.<br>
-    <b>Poor</b> =System does not function.]]></tip>
-    <video src="http://www.gallatinsystems.com/WFPDevice/video/demoVid.mp4"/>
+    <b>Poor</b> =System does not function.]]></text></help>			
 		</question>
-			<question id="q9" order="9" mandatory="false" type="scan">
-			<text>Waterpoint barcode?</text>			
+		<question id="q9" order="9" mandatory="false" type="scan">
+			<text>Waterpoint barcode?</text>
 		</question>
 	</questionGroup>
 	<questionGroup order="2">
