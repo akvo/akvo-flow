@@ -38,13 +38,18 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public List<AccessPoint> listNearbyAccessPoints(Double lat, Double lon,
 			String countryCode, double maxDistance) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		Point loc = new Point(lat, lon);
-		List<Object> params = new ArrayList<Object>();
-		params.add(countryCode);
-		GeocellQuery gq = new GeocellQuery("countryCode == countryCodeParam",
-				"String countryCodeParam", params);
-		return GeocellManager.proximityFetch(loc, MAX_RESULTS, maxDistance,
-				AccessPoint.class, gq, pm);
+		if (lat != null && lon != null) {
+			Point loc = new Point(lat, lon);
+			List<Object> params = new ArrayList<Object>();
+			params.add(countryCode);
+			GeocellQuery gq = new GeocellQuery(
+					"countryCode == countryCodeParam",
+					"String countryCodeParam", params);
+			return GeocellManager.proximityFetch(loc, MAX_RESULTS, maxDistance,
+					AccessPoint.class, gq, pm);
+		} else {
+			return listAccessPointByLocation(countryCode, null, null, null);
+		}
 	}
 
 	/**
@@ -75,7 +80,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
-		super.prepareCursor(cursorString, query);
+		prepareCursor(cursorString, query);
 
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
@@ -117,7 +122,6 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				collDateFrom, paramMap, GTE_OP);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				collDateTo, paramMap, LTE_OP);
-		
 
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
@@ -126,7 +130,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			query.declareImports("import java.util.Date");
 		}
 
-		super.prepareCursor(cursorString, query);
+		prepareCursor(cursorString, query);
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
 
