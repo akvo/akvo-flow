@@ -258,7 +258,7 @@ public class SurveyDownloadService extends Service {
 													ConstantUtil.IMAGE_HELP_TYPE);
 									ArrayList<String> images = new ArrayList<String>();
 									for (int x = 0; i < helpList.size(); x++) {
-										images.add(helpList.get(i).getValue());
+										images.add(helpList.get(x).getValue());
 									}
 									if (images != null) {
 										for (int k = 0; k < images.size(); k++) {
