@@ -72,7 +72,14 @@ public class FreetextQuestionView extends QuestionView implements
 	public void captureResponse() {
 		captureResponse(false);
 	}
-	
+
+	@Override
+	public void setResponse(QuestionResponse resp){
+		if(resp != null && freetextEdit != null){
+			freetextEdit.setText(resp.getValue());
+		}
+		super.setResponse(resp);
+	}
 	
 	/**
 	 * pulls the data out of the fields and saves it as a response object,
@@ -97,7 +104,7 @@ public class FreetextQuestionView extends QuestionView implements
 	}
 
 	/**
-	 * Captures the response and runs validation on loss of focus
+	 * caputures the response and runs validation on loss of focus
 	 */
 	@Override
 	public void onFocusChange(View view, boolean hasFocus) {
