@@ -85,9 +85,9 @@ public class SurveyDbAdapter {
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
 			"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			//"insert into survey values(999992,'Houshold Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			//"insert into survey values(999993,'Public Institution Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			//"insert into survey values(999994,'Mapping', 1.0,'Mapping','res','mappingsurvey','english','N','N')",			
+			// "insert into survey values(999992,'Houshold Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
+			// "insert into survey values(999993,'Public Institution Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
+			// "insert into survey values(999994,'Mapping', 1.0,'Mapping','res','mappingsurvey','english','N','N')",
 			"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
@@ -97,7 +97,7 @@ public class SurveyDbAdapter {
 			"insert into preferences values('location.sendbeacon','true')",
 			"insert into preferences values('survey.precachehelp','0')",
 			"insert into preferences values('upload.server','0')",
-			"insert into preferences values('screen.keepon','true')"};
+			"insert into preferences values('screen.keepon','true')" };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -407,6 +407,41 @@ public class SurveyDbAdapter {
 			}
 		}
 		return id;
+	}
+
+	/**
+	 * inserts or updates a question response after first looking to see if it
+	 * already exists in the database.
+	 * 
+	 * @param resp
+	 * @return
+	 */
+	public QuestionResponse createOrUpdateSurveyResponseForQuestion(
+			QuestionResponse resp) {
+		QuestionResponse responseToSave = findSingleResponse(resp
+				.getRespondentId(), resp.getQuestionId());
+		if (responseToSave != null) {
+			responseToSave.setValue(resp.getValue());
+		} else {
+			responseToSave = resp;
+		}
+		long id = -1;
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(ANSWER_COL, responseToSave.getValue());
+		initialValues.put(ANSWER_TYPE_COL, responseToSave.getType());
+		initialValues.put(QUESTION_FK_COL, responseToSave.getQuestionId());
+		initialValues.put(SURVEY_RESPONDENT_ID_COL, responseToSave
+				.getRespondentId());
+		if (responseToSave.getId() == null) {
+			id = database.insert(RESPONSE_TABLE, null, initialValues);
+		} else {
+			if (database.update(RESPONSE_TABLE, initialValues, RESP_ID_COL
+					+ "=?", new String[] { responseToSave.getId().toString() }) > 0) {
+				id = responseToSave.getId();
+			}
+		}
+		responseToSave.setId(id);
+		return responseToSave;
 	}
 
 	/**
@@ -737,9 +772,10 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor listSurveyRespondent(String status) {
 		String[] whereParams = { status };
-		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
-				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
-				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL, SUBMITTED_DATE_COL}, "status = ?",
+		Cursor cursor = database.query(RESPONDENT_JOIN,
+				new String[] { RESPONDENT_TABLE + "." + PK_ID_COL,
+						DISP_NAME_COL, SAVED_DATE_COL, SURVEY_FK_COL,
+						USER_FK_COL, SUBMITTED_DATE_COL }, "status = ?",
 				whereParams, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
@@ -873,8 +909,8 @@ public class SurveyDbAdapter {
 	/**
 	 * deletes all survey responses from the database
 	 */
-	public void deleteAllResponses(){
-		database.delete(RESPONSE_TABLE, null,null);
-		database.delete(RESPONDENT_TABLE, null,null);				
+	public void deleteAllResponses() {
+		database.delete(RESPONSE_TABLE, null, null);
+		database.delete(RESPONDENT_TABLE, null, null);
 	}
 }

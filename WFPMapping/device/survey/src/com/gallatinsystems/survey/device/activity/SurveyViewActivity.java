@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.concurrent.Semaphore;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
@@ -90,7 +89,6 @@ public class SurveyViewActivity extends TabActivity implements
 	private boolean isTrackRecording;
 	private TabHost tabHost;
 	private int tabCount;
-	private volatile Semaphore restoreGate;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -104,7 +102,6 @@ public class SurveyViewActivity extends TabActivity implements
 		databaseAdapter.open();
 		isTrackRecording = false;
 		setContentView(R.layout.main);
-		restoreGate = new Semaphore(1);
 		tabCount = 0;
 
 		String langSelection = databaseAdapter
@@ -305,7 +302,6 @@ public class SurveyViewActivity extends TabActivity implements
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// on activity return
 		try {
-			restoreGate.acquire();
 
 			if (requestCode == PHOTO_ACTIVITY_REQUEST
 					|| requestCode == VIDEO_ACTIVITY_REQUEST) {
@@ -347,19 +343,18 @@ public class SurveyViewActivity extends TabActivity implements
 				}
 			} else if (requestCode == ACTIVITY_HELP_REQ) {
 				if (resultCode == RESULT_OK) {
-					eventQuestionSource.setResponse(new QuestionResponse(data
-							.getStringExtra(ConstantUtil.CALC_RESULT_KEY),
-							ConstantUtil.VALUE_RESPONSE_TYPE,
-							eventQuestionSource.getQuestion().getId()));
-					databaseAdapter
-							.createOrUpdateSurveyResponse(eventQuestionSource
-									.getResponse(true));
+					QuestionResponse resp = new QuestionResponse(null,respondentId,
+							eventQuestionSource.getQuestion().getId(),
+							data.getStringExtra(ConstantUtil.CALC_RESULT_KEY),
+							ConstantUtil.VALUE_RESPONSE_TYPE);
+
+					resp = databaseAdapter
+							.createOrUpdateSurveyResponseForQuestion(resp);
+					eventQuestionSource.setResponse(resp);
 				}
 			}
 		} catch (Exception e) {
 			Log.w(TAG, "Could not acquire semaphore", e);
-		} finally {
-			restoreGate.release();
 		}
 	}
 
@@ -398,6 +393,7 @@ public class SurveyViewActivity extends TabActivity implements
 							.getExternalStorageDirectory().getAbsolutePath()
 							+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX)));
 			eventQuestionSource = event.getSource();
+
 			startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
 		} else if (QuestionInteractionEvent.VIDEO_TIP_VIEW.equals(event
 				.getEventType())) {
@@ -420,6 +416,7 @@ public class SurveyViewActivity extends TabActivity implements
 				uri = Uri.parse(VIDEO_PREFIX + src);
 			}
 			intent.setDataAndType(uri, VIDEO_TYPE);
+
 			startActivity(intent);
 		} else if (QuestionInteractionEvent.PHOTO_TIP_VIEW.equals(event
 				.getEventType())) {
@@ -436,6 +433,7 @@ public class SurveyViewActivity extends TabActivity implements
 			}
 			intent.putExtra(ConstantUtil.IMAGE_URL_LIST_KEY, urls);
 			intent.putExtra(ConstantUtil.IMAGE_CAPTION_LIST_KEY, captions);
+
 			startActivity(intent);
 		} else if (QuestionInteractionEvent.ACTIVITY_TIP_VIEW.equals(event
 				.getEventType())) {
@@ -447,6 +445,7 @@ public class SurveyViewActivity extends TabActivity implements
 								.getValue()));
 				i.putExtra(ConstantUtil.MODE_KEY,
 						ConstantUtil.SURVEY_RESULT_MODE);
+
 				startActivityForResult(i, ACTIVITY_HELP_REQ);
 			} catch (Exception e) {
 				Log.e(TAG, "Could not start activity help", e);
@@ -461,11 +460,13 @@ public class SurveyViewActivity extends TabActivity implements
 							.getExternalStorageDirectory().getAbsolutePath()
 							+ TEMP_VIDEO_NAME_PREFIX + VIDEO_SUFFIX)));
 			eventQuestionSource = event.getSource();
+
 			startActivityForResult(i, VIDEO_ACTIVITY_REQUEST);
 		} else if (QuestionInteractionEvent.SCAN_BARCODE_EVENT.equals(event
 				.getEventType())) {
 			Intent intent = new Intent(ConstantUtil.BARCODE_SCAN_INTENT);
 			try {
+
 				startActivityForResult(intent, SCAN_ACTIVITY_REQUEST);
 				eventQuestionSource = event.getSource();
 			} catch (ActivityNotFoundException ex) {
@@ -586,7 +587,7 @@ public class SurveyViewActivity extends TabActivity implements
 		case CLEAR_SURVEY:
 			if (!readOnly) {
 				ViewUtil.showConfirmDialog(R.string.cleartitle,
-						R.string.cleardesc, this,true,
+						R.string.cleardesc, this, true,
 						new DialogInterface.OnClickListener() {
 
 							@Override
@@ -608,7 +609,7 @@ public class SurveyViewActivity extends TabActivity implements
 				databaseAdapter.updateSurveyStatus(respondentId.toString(),
 						ConstantUtil.SAVED_STATUS);
 				ViewUtil.showConfirmDialog(R.string.savecompletetitle,
-						R.string.savecompletetext, this,false,
+						R.string.savecompletetext, this, false,
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,
@@ -680,17 +681,14 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	protected void onResume() {
 		try {
-			restoreGate.acquire();
 			super.onResume();
 			if (tabContentFactories != null) {
 				for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
 					tab.loadState(respondentId);
 				}
 			}
-		} catch (InterruptedException e) {
-			Log.w(TAG, "Error getting semaphore", e);
-		} finally {
-			restoreGate.release();
+		} catch (Exception e) {
+			Log.w(TAG, "Error while restoring", e);
 		}
 	}
 
