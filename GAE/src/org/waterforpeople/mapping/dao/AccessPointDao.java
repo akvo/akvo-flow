@@ -48,7 +48,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			return GeocellManager.proximityFetch(loc, MAX_RESULTS, maxDistance,
 					AccessPoint.class, gq, pm);
 		} else {
-			return listAccessPointByLocation(countryCode, null, null,cursor);
+			return listAccessPointByLocation(countryCode, null,null, null,cursor);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointByLocation(String country,
-			String community, String type, String cursorString) {
+			String community, String type, Date updatedSinceDate, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		Map<String, Object> paramMap = null;
@@ -77,6 +77,11 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				"String", community, paramMap);
 		appendNonNullParam("pointType", filterString, paramString, "String",
 				type, paramMap);
+		appendNonNullParam("lastUpdateDateTime", filterString,paramString, "Date",updatedSinceDate,paramMap,GTE_OP);
+		if(updatedSinceDate != null){
+		       query.declareImports("import java.util.Date");
+		}
+		query.setOrdering("lastUpdateDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 

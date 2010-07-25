@@ -179,7 +179,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			String community, String type) {
 		AccessPointDao apDAO = new AccessPointDao();
 		List<AccessPoint> summaries = apDAO.listAccessPointByLocation(country,
-				community, type, "all");
+				community, type, null, "all");
 		AccessPointDto[] dtoList = null;
 
 		if (summaries != null) {
