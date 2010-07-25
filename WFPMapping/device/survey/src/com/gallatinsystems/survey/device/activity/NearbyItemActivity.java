@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -35,6 +36,8 @@ public class NearbyItemActivity extends ListActivity implements
 		LocationListener {
 
 	private static final int NEARBY_DETAIL_ACTIVITY = 1;
+	private static final int NAVIGATE_OPT = 2;
+	private static final int COUNTRY_OPT = 3;
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private ProgressDialog progressDialog;
@@ -140,7 +143,7 @@ public class NearbyItemActivity extends ListActivity implements
 		dataThread = new Thread() {
 			public void run() {
 				pointsOfInterest = PointOfInterestService
-						.getNearbyAccessPoints(lat, lon, country,serverBase);
+						.getNearbyAccessPoints(lat, lon, country, serverBase);
 				dataHandler.post(resultsUpdater);
 
 			}
@@ -161,14 +164,54 @@ public class NearbyItemActivity extends ListActivity implements
 	}
 
 	/**
-	 * displays the country selection menu
+	 * presents a single view on map button when the user clicks the menu key
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		displayCountrySelection();
-		// return false so this method will be invoked on each press of the menu
-		// button
-		return false;
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, NAVIGATE_OPT, 0, R.string.navigate);
+		menu.add(0, COUNTRY_OPT, 0, R.string.countryselection);
+		return true;
+	}
+
+	/**
+	 * handles the button press for the "add" button on the menu
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case NAVIGATE_OPT:
+			launchNavigation();
+			return true;
+		case COUNTRY_OPT:
+			displayCountrySelection();
+			return true;
+		}
+		return super.onMenuItemSelected(featureId, item);
+	}
+
+	/**
+	 * disables the map option if no results are loaded
+	 */
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		super.onMenuOpened(featureId, menu);
+		if (pointsOfInterest == null || pointsOfInterest.size() == 0) {
+			menu.getItem(0).setEnabled(false);
+		} else {
+			menu.getItem(0).setEnabled(true);
+		}
+
+		return true;
+	}
+
+	/**
+	 * launches map view and zooms in on point of interest
+	 */
+	private void launchNavigation() {
+		Intent mapsIntent = new Intent(this, PointOfInterestMapActivity.class);
+		mapsIntent.putExtra(ConstantUtil.POINTS_KEY, pointsOfInterest);
+		startActivity(mapsIntent);
 	}
 
 	/**

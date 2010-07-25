@@ -24,6 +24,7 @@
 		<activity android:name=".activity.NearbyItemDetailActivity"/>
 		<activity android:name=".activity.SurveyReviewActivity"/>
 		<activity android:name=".activity.WaterflowCalculatorActivity"/>
+		<activity android:name=".activity.PointOfInterestMapActivity"/>
 
 		<service android:name=".service.DataSyncService" />
 		<service android:name=".service.SurveyDownloadService" />

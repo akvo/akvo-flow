@@ -1,5 +1,7 @@
 package com.gallatinsystems.survey.device.activity;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +17,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -111,8 +112,8 @@ public class NearbyItemDetailActivity extends Activity implements
 	 */
 	private void populateFields() {
 		if (pointOfInterest != null) {
-			nameField.setText(" "+pointOfInterest.getName());
-			typeField.setText(" "+pointOfInterest.getType());
+			nameField.setText(" " + pointOfInterest.getName());
+			typeField.setText(" " + pointOfInterest.getType());
 			if (pointOfInterest.getPropertyNames() != null) {
 				for (int i = 0; i < pointOfInterest.getPropertyNames().size(); i++) {
 					if (pointOfInterest.getPropertyValues().size() > i) {
@@ -123,7 +124,8 @@ public class NearbyItemDetailActivity extends Activity implements
 							l.setOrientation(LinearLayout.HORIZONTAL);
 							TextView labelView = new TextView(this);
 							labelView.setText(pointOfInterest
-									.getPropertyNames().get(i)+": ");
+									.getPropertyNames().get(i)
+									+ ": ");
 							l.addView(labelView);
 							TextView valView = new TextView(this);
 							valView.setText(val);
@@ -137,7 +139,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	}
 
 	/**
-	 * presents a single button ("Add") when the user clicks the menu key
+	 * presents a single view on map button when the user clicks the menu key
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -193,12 +195,14 @@ public class NearbyItemDetailActivity extends Activity implements
 	}
 
 	/**
-	 * launches google maps application set to zoom in on point of interest
+	 * launches map view and zooms in on point of interest
 	 */
 	private void launchNavigation() {
-		Intent mapsIntent = new Intent(Intent.ACTION_VIEW);
-		mapsIntent.setData(Uri.parse("geo:" + pointOfInterest.getLatitude()
-				+ "," + pointOfInterest.getLongitude() + "?z=18"));
+		Intent mapsIntent = new Intent(this, PointOfInterestMapActivity.class);
+
+		ArrayList<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
+		dtoList.add(pointOfInterest);
+		mapsIntent.putExtra(ConstantUtil.POINTS_KEY, dtoList);
 		startActivity(mapsIntent);
 	}
 
@@ -232,5 +236,5 @@ public class NearbyItemDetailActivity extends Activity implements
 
 		}
 	}
-		
+
 }
