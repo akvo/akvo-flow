@@ -15,9 +15,30 @@ public class AccessPointRequest extends RestRequest {
 	private static final long serialVersionUID = 2511688888372190068L;
 	private static final String LAT_PARAM = "lat";
 	private static final String LON_PARAM = "lon";
+	private static final String COUNTRY_PARAM = "country";
+	private static final String CURSOR_PARAM = "cursor";
 
 	private Double lat;
 	private Double lon;
+	private String country;
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getCursor() {
+		return cursor;
+	}
+
+	public void setCursor(String cursor) {
+		this.cursor = cursor;
+	}
+
+	private String cursor;
 
 	public Double getLat() {
 		return lat;
@@ -37,23 +58,36 @@ public class AccessPointRequest extends RestRequest {
 
 	@Override
 	protected void populateErrors() {
-		if (lat == null) {
+		if (country == null && lat == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, LAT_PARAM
-							+ " cannot be null"));
+							+ " cannot be null if no " + COUNTRY_PARAM
+							+ " is supplied"));
 		}
-		if (lon == null) {
+		if (country == null && lon == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, LON_PARAM
-							+ " cannot be null"));
+							+ " cannot be null if no " + COUNTRY_PARAM
+							+ " is supplied"));
 		}
 	}
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
+		country = req.getParameter(COUNTRY_PARAM);
+		cursor = req.getParameter(CURSOR_PARAM);
+		if (country != null) {
+			country = country.trim().toUpperCase();
+			if (country.length() == 0) {
+				country = null;
+			}
+		}
 		try {
-			lat = Double.parseDouble(req.getParameter(LAT_PARAM));
-			lon = Double.parseDouble(req.getParameter(LON_PARAM));
+			if (req.getParameter(LAT_PARAM) != null
+					&& req.getParameter(LON_PARAM) != null) {
+				lat = Double.parseDouble(req.getParameter(LAT_PARAM));
+				lon = Double.parseDouble(req.getParameter(LON_PARAM));
+			}
 		} catch (NumberFormatException e) {
 			throw new RestValidationException(
 					new RestError(RestError.BAD_DATATYPE_CODE,
@@ -61,6 +95,5 @@ public class AccessPointRequest extends RestRequest {
 							"lat, lon must be doubles"),
 					"Lat/lon must be doubles", e);
 		}
-
 	}
 }

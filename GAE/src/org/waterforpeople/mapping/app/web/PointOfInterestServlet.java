@@ -54,18 +54,21 @@ public class PointOfInterestServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		PointOfInterestRequest piReq = (PointOfInterestRequest) req;
-		return convertToResponse(accessPointDao.listNearbyAccessPoints(piReq
+		List<AccessPoint> results = accessPointDao.listNearbyAccessPoints(piReq
 				.getLat(), piReq.getLon(), piReq.getCountry() != null ? piReq
 				.getCountry() : geoService.getCountryCodeForPoint(piReq
 				.getLat().toString(), piReq.getLon().toString()),
-				MAX_DISTANCE_METERS));
+				MAX_DISTANCE_METERS, piReq.getCursor());
+
+		return convertToResponse(results, AccessPointDao.getCursor(results));
 	}
 
 	/**
 	 * converts the domain objects to dtos and then installs them in an
 	 * AccessPointResponse object
 	 */
-	protected PointOfInterestResponse convertToResponse(List<AccessPoint> apList) {
+	protected PointOfInterestResponse convertToResponse(
+			List<AccessPoint> apList, String cursor) {
 		PointOfInterestResponse resp = new PointOfInterestResponse();
 		if (apList != null) {
 			List<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
@@ -82,6 +85,7 @@ public class PointOfInterestServlet extends AbstractRestApiServlet {
 			}
 			resp.setPointsOfInterest(dtoList);
 		}
+		resp.setCursor(cursor);
 		return resp;
 	}
 

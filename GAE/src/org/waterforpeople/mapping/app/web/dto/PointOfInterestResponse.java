@@ -15,6 +15,15 @@ import com.gallatinsystems.framework.rest.RestResponse;
 public class PointOfInterestResponse extends RestResponse {
 	private static final long serialVersionUID = 1548249617327473969L;
 	private List<PointOfInterestDto> pointsOfInterest;
+	private String cursor;
+
+	public String getCursor() {
+		return cursor;
+	}
+
+	public void setCursor(String cursor) {
+		this.cursor = cursor;
+	}
 
 	public List<PointOfInterestDto> getPointsOfInterest() {
 		return pointsOfInterest;

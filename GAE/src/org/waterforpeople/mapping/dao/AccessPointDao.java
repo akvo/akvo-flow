@@ -36,9 +36,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	 * maxDistance meters away or less are returned
 	 */
 	public List<AccessPoint> listNearbyAccessPoints(Double lat, Double lon,
-			String countryCode, double maxDistance) {
+			String countryCode, double maxDistance, String cursor) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		if (lat != null && lon != null) {
+		if (lat != null && lon != null) {			
 			Point loc = new Point(lat, lon);
 			List<Object> params = new ArrayList<Object>();
 			params.add(countryCode);
@@ -48,7 +48,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			return GeocellManager.proximityFetch(loc, MAX_RESULTS, maxDistance,
 					AccessPoint.class, gq, pm);
 		} else {
-			return listAccessPointByLocation(countryCode, null, null, null);
+			return listAccessPointByLocation(countryCode, null, null,cursor);
 		}
 	}
 

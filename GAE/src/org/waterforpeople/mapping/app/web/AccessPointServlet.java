@@ -54,9 +54,11 @@ public class AccessPointServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		AccessPointRequest apReq = (AccessPointRequest) req;
 		return convertToResponse(accessPointDao.listNearbyAccessPoints(apReq
-				.getLat(), apReq.getLon(), geoService.getCountryCodeForPoint(
-				apReq.getLat().toString(), apReq.getLon().toString()),
-				MAX_DISTANCE_METERS));
+				.getLat(), apReq.getLon(),
+				apReq.getCountry() == null ? geoService.getCountryCodeForPoint(
+						apReq.getLat().toString(), apReq.getLon().toString())
+						: apReq.getCountry(), MAX_DISTANCE_METERS, apReq
+						.getCursor()));
 	}
 
 	/**

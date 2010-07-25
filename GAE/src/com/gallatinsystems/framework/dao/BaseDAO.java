@@ -353,9 +353,13 @@ public class BaseDAO<T extends BaseDomain> {
 
 	@SuppressWarnings("unchecked")
 	public static String getCursor(List results) {
-		if (results.size() > 0) {
+		if (results != null && results.size() > 0) {
 			Cursor cursor = JDOCursorHelper.getCursor(results);
-			return cursor.toWebSafeString();
+			if(cursor != null){
+				return cursor.toWebSafeString();
+			}else{
+				return null;
+			}
 		}
 		return null;
 

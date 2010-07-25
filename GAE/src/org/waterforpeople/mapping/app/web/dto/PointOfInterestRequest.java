@@ -16,10 +16,20 @@ public class PointOfInterestRequest extends RestRequest {
 	private static final String LAT_PARAM = "lat";
 	private static final String LON_PARAM = "lon";
 	private static final String COUNTRY_PARAM = "country";
+	private static final String CURSOR_PARAM = "cursor";
 
 	private Double lat;
 	private Double lon;
 	private String country;
+	private String cursor;
+
+	public String getCursor() {
+		return cursor;
+	}
+
+	public void setCursor(String cursor) {
+		this.cursor = cursor;
+	}
 
 	public String getCountry() {
 		return country;
@@ -64,6 +74,7 @@ public class PointOfInterestRequest extends RestRequest {
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		country = req.getParameter(COUNTRY_PARAM);
+		cursor = req.getParameter(CURSOR_PARAM);
 		if (country != null) {
 			country = country.trim().toUpperCase();
 			if (country.length() == 0) {
