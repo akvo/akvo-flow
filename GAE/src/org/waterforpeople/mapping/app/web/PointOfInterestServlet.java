@@ -74,6 +74,7 @@ public class PointOfInterestServlet extends AbstractRestApiServlet {
 			List<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
 			for (AccessPoint ap : apList) {
 				PointOfInterestDto dto = new PointOfInterestDto();
+				dto.setId(ap.getKey().getId());
 				dto.setName(ap.getCommunityCode());
 				dto.setType(ap.getPointType() != null ? ap.getPointType()
 						.toString() : "AccessPoint");

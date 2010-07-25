@@ -17,14 +17,25 @@ public class PointOfInterestDto implements Serializable {
 	private String name;
 	private Double latitude;
 	private Double longitude;
+	private Long id;
 	private List<String> propertyNames;
 	private List<String> propertyValues;
+
 
 	public PointOfInterestDto() {
 		propertyNames = new ArrayList<String>();
 		propertyValues = new ArrayList<String>();
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	
 	public String getType() {
 		return type;
 	}
