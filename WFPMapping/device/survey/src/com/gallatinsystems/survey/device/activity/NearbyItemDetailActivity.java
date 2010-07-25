@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.device.activity;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -52,6 +53,8 @@ public class NearbyItemDetailActivity extends Activity implements
 	private float lastBearing;
 	private float lastOrientation;
 	private Sensor orientSensor;
+	private NumberFormat distanceFormat;
+	private String[] units;
 
 	private static final float MIN_CHANGE = 2f;
 
@@ -61,6 +64,7 @@ public class NearbyItemDetailActivity extends Activity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		lastBearing = -999f;
 		lastOrientation = 0f;
+		distanceFormat = NumberFormat.getInstance();
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0,
 				this);
@@ -69,7 +73,7 @@ public class NearbyItemDetailActivity extends Activity implements
 		orientSensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 		sensorMgr.registerListener(this, orientSensor,
 				SensorManager.SENSOR_DELAY_NORMAL);
-
+		units = getResources().getStringArray(R.array.distancemesures);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
 		setContentView(R.layout.nearbydetail);
@@ -172,7 +176,14 @@ public class NearbyItemDetailActivity extends Activity implements
 	@Override
 	public void onLocationChanged(Location loc) {
 		// set the distance value
-		distanceField.setText(apLocation.distanceTo(loc) + "");
+		float distance = apLocation.distanceTo(loc);
+		int unitsIdx = 0;
+		if (distance > 1000) {
+			distance /= 1000;
+			unitsIdx = 1;
+		}
+		distanceField.setText(" "+distanceFormat.format(distance) + " "
+				+ units[unitsIdx]);
 		// only update the bearing and the corresponding image representation of
 		// it if it changed more than MIN_CHANGE degrees
 		// so we're not always manipulating the image

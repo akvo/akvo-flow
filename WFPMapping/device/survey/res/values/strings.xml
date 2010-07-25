@@ -92,7 +92,7 @@
 	<string name="nothingnearby">No nearby access points</string>
 	<string name="nearbyinstructions">Click on an access point to see details. Press back to return to main menu.</string>
 	<string name="pointname">Point Name: </string>
-	<string name="distance">Distance (meters): </string>
+	<string name="distance">Distance: </string>
 	<string name="pointtypelabel">Point Type:</string>
 	<string name="nearbylabel">Nearby Access Points</string>
 	<string name="itemstatus">Status: </string>
@@ -145,5 +145,5 @@
 	<string name="cleartitle">Clear Survey Answers</string>
 	<string name="cleardesc">Are you sure you want to clear your responses?</string>
 	<string name="pointofinterestitle">Point Details</string>	
-	<string name="appversion">0.98.4</string>	
+	<string name="appversion">0.98.5</string>	
 </resources>
