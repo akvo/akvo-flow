@@ -6,10 +6,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.graphics.Bitmap;
@@ -36,6 +39,9 @@ public class HttpUtil {
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response = null;
 		String responseString = null;
+		HttpUriRequest request = new HttpGet(url);
+		request.setHeader("Accept-Encoding", "gzip");
+		request.setHeader("User-Agent", "gzip");
 		response = client.execute(new HttpGet(url));
 		if (response.getStatusLine().getStatusCode() != 200) {
 			throw new HttpException("Server error: "
@@ -147,8 +153,16 @@ public class HttpUtil {
 		String result = null;
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(response
-					.getEntity().getContent()));
+			Header contentEncoding = response
+					.getFirstHeader("Content-Encoding");
+			if (contentEncoding != null
+					&& contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+				reader = new BufferedReader(new InputStreamReader(
+						new GZIPInputStream(response.getEntity().getContent())));
+			} else {
+				reader = new BufferedReader(new InputStreamReader(response
+						.getEntity().getContent()));
+			}
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 

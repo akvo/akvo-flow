@@ -104,11 +104,15 @@ public class PointOfInterestService {
 	private static PointOfInterestDto convertToPointOfInterestDto(
 			JSONObject json) {
 		PointOfInterestDto dto = null;
-		if (json != null) {
+		if (json != null && json.has("name")) {
 			dto = new PointOfInterestDto();
 			try {
-				dto.setLatitude(json.getDouble("latitude"));
-				dto.setLongitude(json.getDouble("longitude"));
+				if(json.has("latitude")){
+					dto.setLatitude(json.getDouble("latitude"));
+				}
+				if(json.has("longitude")){
+					dto.setLongitude(json.getDouble("longitude"));
+				}
 				dto.setName(json.getString("name"));
 				dto.setType(json.getString("type"));
 				dto.setPropertyNames(convertToStringList(json
