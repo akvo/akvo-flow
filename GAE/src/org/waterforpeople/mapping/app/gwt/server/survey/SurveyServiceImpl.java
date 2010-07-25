@@ -117,8 +117,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 										.getQuestionMap().entrySet()) {
 									Question question = questionEntry
 											.getValue();
-									Integer order = questionEntry
-											.getKey();
+									Integer order = questionEntry.getKey();
 									QuestionDto questionDto = new QuestionDto();
 									DtoMarshaller.copyToDto(question,
 											questionDto);
@@ -440,6 +439,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return questionDtoList;
 	}
 
+	
 	@Override
 	public void deleteQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
@@ -454,8 +454,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDao questionDao = new QuestionDao();
 		Question question = marshalQuestion(value);
 		question = questionDao.save(question, questionGroupId);
-		if(question.getDependQuestion() != null){
-			BaseDAO<QuestionDependency> dependencyDao = new BaseDAO<QuestionDependency>(QuestionDependency.class);
+		if (question.getDependQuestion() != null) {
+			BaseDAO<QuestionDependency> dependencyDao = new BaseDAO<QuestionDependency>(
+					QuestionDependency.class);
 			dependencyDao.save(question.getDependQuestion());
 		}
 
@@ -468,7 +469,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionGroup questionGroup = new QuestionGroup();
 		DtoMarshaller.copyToCanonical(questionGroup, dto);
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
-		questionGroup = questionGroupDao.save(questionGroup, surveyId,null);
+		questionGroup = questionGroupDao.save(questionGroup, surveyId, null);
 		DtoMarshaller.copyToDto(questionGroup, dto);
 		return dto;
 	}
@@ -509,7 +510,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				"surveyId", surveyId.toString()));
 	}
 
-	@Override	
+	@Override
 	public String publishSurvey(Long surveyId) {
 		try {
 			SurveyDAO surveyDao = new SurveyDAO();

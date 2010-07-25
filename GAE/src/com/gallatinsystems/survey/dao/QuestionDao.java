@@ -34,16 +34,32 @@ public class QuestionDao extends BaseDAO<Question> {
 		List<QuestionQuestionGroupAssoc> qqgaList = new QuestionQuestionGroupAssocDao()
 				.listByQuestionGroupId(new Long(questionGroupId));
 		java.util.ArrayList<Question> questionList = new ArrayList<Question>();
-
 		for (QuestionQuestionGroupAssoc qqga : qqgaList) {
-			Question question = getByKey(qqga.getQuestionId());
+			Question question = null;
+			if (needDetails) {
+				question = getByKey(qqga.getQuestionId());
+			} else {
+				question = getQuestionHeader(qqga.getQuestionId());
+			}
 			questionList.add(question);
 		}
+
 		if (questionList != null) {
 			Collections.sort(questionList);
 		}
 
 		return questionList;
+	}
+
+	/**
+	 * loads the Question object but NOT any associated options
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Question getQuestionHeader(Long id) {
+		return super.getByKey(id);
+
 	}
 
 	public void delete(Question question, Long questionGroupId) {

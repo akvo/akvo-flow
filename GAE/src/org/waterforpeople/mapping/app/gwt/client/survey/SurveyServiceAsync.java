@@ -77,4 +77,5 @@ public interface SurveyServiceAsync {
 
 
 	void publishSurveyAsync(Long surveyId, AsyncCallback<Void> callback);
+
 }

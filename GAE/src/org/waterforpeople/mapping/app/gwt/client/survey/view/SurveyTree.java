@@ -370,13 +370,32 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 											text = text.substring(0,
 													MAX_Q_LENGTH);
 										}
-										qGroup.setText((i+1)+":"+text);
+										qGroup.setText((i + 1) + ":" + text);
 										qGroup.setUserObject(result.get(i));
 										item.addItem(qGroup);
 									}
 								}
 							}
 						});
+			}
+		} else if (item != null && item.getUserObject() != null
+				&& item.getUserObject() instanceof QuestionDto) {
+			QuestionDto dto = (QuestionDto) item.getUserObject();
+			if (QuestionDto.QuestionType.OPTION == dto.getType()
+					&& dto.getOptionContainerDto() == null) {
+				surveyService.loadQuestionDetails(dto.getKeyId(),
+						new AsyncCallback<QuestionDto>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								// no-op
+							}
+
+							@Override
+							public void onSuccess(QuestionDto result) {
+								item.setUserObject(result);
+							}
+						});
+
 			}
 		}
 	}
