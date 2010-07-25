@@ -47,14 +47,23 @@ public class NearbyItemActivity extends ListActivity implements
 	private String country;
 	private String[] countries;
 	private volatile boolean isRunning;
+	private volatile boolean additive;
 	private Thread dataThread;
 	private SurveyDbAdapter databaseAdapter;
 	private String serverBase;
+	private PointOfInterestDto loadMorePlaceholder;
+	private PointOfInterestService pointOfInterestService;
+	private Double lastLat;
+	private Double lastLon;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		pointOfInterestService = new PointOfInterestService();
+		loadMorePlaceholder = new PointOfInterestDto();
+		loadMorePlaceholder.setName(getString(R.string.loadmore));
+		additive = false;
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
 		serverBase = databaseAdapter
@@ -136,16 +145,31 @@ public class NearbyItemActivity extends ListActivity implements
 	private void loadData(final Double lat, final Double lon,
 			final String country) {
 		isRunning = true;
+		lastLat = lat;
+		lastLon = lon;
 		progressDialog.show();
 
 		// Fire off a thread to do some work that we shouldn't do directly in
 		// the UI thread
 		dataThread = new Thread() {
 			public void run() {
-				pointsOfInterest = PointOfInterestService
-						.getNearbyAccessPoints(lat, lon, country, serverBase);
-				dataHandler.post(resultsUpdater);
+				ArrayList<PointOfInterestDto> newPoints = pointOfInterestService
+						.getNearbyAccessPoints(lat, lon, country, serverBase,
+								additive);
 
+				if (additive && pointsOfInterest != null) {
+					pointsOfInterest.remove(loadMorePlaceholder);
+				}
+				if (additive && newPoints != null) {
+					pointsOfInterest.addAll(newPoints);
+				} else {
+					pointsOfInterest = newPoints;
+				}
+				if (pointOfInterestService.hasMore()) {
+					pointsOfInterest.add(loadMorePlaceholder);
+				}
+				dataHandler.post(resultsUpdater);
+				additive = false;
 			}
 		};
 		dataThread.start();
@@ -159,8 +183,14 @@ public class NearbyItemActivity extends ListActivity implements
 			long id) {
 		super.onListItemClick(list, view, position, id);
 		Intent i = new Intent(this, NearbyItemDetailActivity.class);
-		i.putExtra(ConstantUtil.AP_KEY, pointsOfInterest.get(position));
-		startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
+		PointOfInterestDto dto = pointsOfInterest.get(position);
+		if (dto == loadMorePlaceholder) {
+			additive = true;
+			loadData(lastLat, lastLon, country);
+		} else {
+			i.putExtra(ConstantUtil.AP_KEY, pointsOfInterest.get(position));
+			startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
+		}
 	}
 
 	/**
@@ -226,6 +256,7 @@ public class NearbyItemActivity extends ListActivity implements
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						country = countries[which];
+						additive = false;
 						loadData(null, null, country);
 					}
 				}).create();

@@ -144,6 +144,7 @@
 	<string name="donebutton">Done</string>
 	<string name="cleartitle">Clear Survey Answers</string>
 	<string name="cleardesc">Are you sure you want to clear your responses?</string>
-	<string name="pointofinterestitle">Point Details</string>	
-	<string name="appversion">0.98.5</string>	
+	<string name="pointofinterestitle">Point Details</string>
+	<string name="loadmore">Load more...</string>	
+	<string name="appversion">0.98.6</string>	
 </resources>
