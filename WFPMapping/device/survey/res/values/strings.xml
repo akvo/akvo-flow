@@ -148,5 +148,5 @@
 	<string name="loadmore">Load more...</string>
 	<string name="uselocal">Use Downloaded Points</string>
 	<string name="useserver">Get Points From Server</string>	
-	<string name="appversion">0.98.7</string>	
+	<string name="appversion">0.98.8</string>	
 </resources>

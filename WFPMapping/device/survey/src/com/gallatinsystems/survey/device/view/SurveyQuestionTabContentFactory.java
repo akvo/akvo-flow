@@ -16,6 +16,7 @@ import android.widget.TableRow;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.activity.SurveyViewActivity;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
@@ -63,7 +64,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 	 */
 	public View createTabContent(String tag) {
 		ScrollView scrollView = createSurveyTabContent();
-	
+
 		TableLayout table = new TableLayout(context);
 		table.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT));
@@ -151,35 +152,32 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 		// clicking submit will check to see if all mandatory questions are
 		// answered and, if so, will fire a broadcast indicating that data is
 		// available for transfer
-		/*	nextButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-			
-				 * if (questionMap != null) { // make sure we don't lose
-				 * anything that was already // written
-				 * saveState(context.getRespondentId()); // get the list (across
-				 * all tabs) of missing mandatory // responses
-				 * ArrayList<Question> missingQuestions = context
-				 * .checkMandatory(); if (missingQuestions.size() == 0) { // if
-				 * we have no missing responses, submit the // survey
-				 * databaseAdaptor.submitResponses(context
-				 * .getRespondentId().toString());
-				 * 
-				 * // send a broadcast message indicating new data is //
-				 * available Intent i = new Intent(
-				 * ConstantUtil.DATA_AVAILABLE_INTENT);
-				 * context.sendBroadcast(i); ViewUtil.showConfirmDialog(
-				 * R.string.submitcompletetitle, R.string.submitcompletetext,
-				 * context); startNewSurvey(); } else { // if we do have missing
-				 * responses, tell the user
-				 * ViewUtil.showConfirmDialog(R.string.cannotsave,
-				 * R.string.mandatorywarning, context); } }
-				 
-
-				context.advanceTab();
-
-			}
-		});*/
+		/*
+		 * nextButton.setOnClickListener(new OnClickListener() {
+		 * 
+		 * public void onClick(View v) {
+		 * 
+		 * if (questionMap != null) { // make sure we don't lose anything that
+		 * was already // written saveState(context.getRespondentId()); // get
+		 * the list (across all tabs) of missing mandatory // responses
+		 * ArrayList<Question> missingQuestions = context .checkMandatory(); if
+		 * (missingQuestions.size() == 0) { // if we have no missing responses,
+		 * submit the // survey databaseAdaptor.submitResponses(context
+		 * .getRespondentId().toString());
+		 * 
+		 * // send a broadcast message indicating new data is // available
+		 * Intent i = new Intent( ConstantUtil.DATA_AVAILABLE_INTENT);
+		 * context.sendBroadcast(i); ViewUtil.showConfirmDialog(
+		 * R.string.submitcompletetitle, R.string.submitcompletetext, context);
+		 * startNewSurvey(); } else { // if we do have missing responses, tell
+		 * the user ViewUtil.showConfirmDialog(R.string.cannotsave,
+		 * R.string.mandatorywarning, context); } }
+		 * 
+		 * 
+		 * context.advanceTab();
+		 * 
+		 * } });
+		 */
 		loadState(context.getRespondentId());
 		return scrollView;
 	}
@@ -316,4 +314,25 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 		}
 	}
 
+	/**
+	 * checks if the dependency passed in is satisfied (i.e. if a question view
+	 * exists with the id and answer that match the dependency values)
+	 * 
+	 * @param dep
+	 * @return
+	 */
+	public boolean isDependencySatisfied(Dependency dep) {
+		boolean isSatisfied = false;
+		if (questionMap != null) {
+			QuestionView view = questionMap.get(dep.getQuestion());
+			if (view != null) {
+				QuestionResponse resp = view.getResponse(true);
+				if (resp != null && resp.hasValue()
+						&& resp.getValue().equalsIgnoreCase(dep.getAnswer())) {
+					isSatisfied = true;
+				}
+			}
+		}
+		return isSatisfied;
+	}
 }

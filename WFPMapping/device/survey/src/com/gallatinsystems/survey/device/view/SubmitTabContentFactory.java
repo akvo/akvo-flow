@@ -92,6 +92,9 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 				QuestionView qv = new QuestionView(context, missingQuestions
 						.get(i), languageCodes, true);
 				qv.suppressHelp(true);
+				// force the view to be visible (if the question has
+				// dependencies, it'll be hidden by default)
+				qv.setVisibility(View.VISIBLE);
 				View ruler = new View(context);
 				ruler.setBackgroundColor(0xFFFFFFFF);
 				qv.addView(ruler, new ViewGroup.LayoutParams(
@@ -104,9 +107,7 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 		TableRow row = new TableRow(context);
 		row.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT));
-		if (submitButton.getParent() != null) {
 
-		}
 		row.addView(submitButton);
 		table.addView(row);
 		return replaceViewContent(table);

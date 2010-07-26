@@ -343,8 +343,9 @@ public class SurveyViewActivity extends TabActivity implements
 				}
 			} else if (requestCode == ACTIVITY_HELP_REQ) {
 				if (resultCode == RESULT_OK) {
-					QuestionResponse resp = new QuestionResponse(null,respondentId,
-							eventQuestionSource.getQuestion().getId(),
+					QuestionResponse resp = new QuestionResponse(null,
+							respondentId, eventQuestionSource.getQuestion()
+									.getId(),
 							data.getStringExtra(ConstantUtil.CALC_RESULT_KEY),
 							ConstantUtil.VALUE_RESPONSE_TYPE);
 
@@ -514,9 +515,36 @@ public class SurveyViewActivity extends TabActivity implements
 	public ArrayList<Question> checkMandatory() {
 		ArrayList<Question> missingQuestions = new ArrayList<Question>();
 		if (tabContentFactories != null) {
+			ArrayList<Question> candidateMissingQuestions = new ArrayList<Question>();
 			for (int i = 0; i < tabContentFactories.size(); i++) {
-				missingQuestions.addAll(tabContentFactories.get(i)
+				candidateMissingQuestions.addAll(tabContentFactories.get(i)
 						.checkMandatoryQuestions());
+			}
+
+			// now make sure that the candidate missing questions are really
+			// missing by seeing if their dependencies are fulfilled
+			for (int i = 0; i < candidateMissingQuestions.size(); i++) {
+				ArrayList<Dependency> dependencies = candidateMissingQuestions
+						.get(i).getDependencies();
+				if (dependencies != null) {
+					int satisfiedCount = 0;
+					for (int j = 0; j < dependencies.size(); j++) {
+						for (int k = 0; k < tabContentFactories.size(); k++) {
+							if (tabContentFactories.get(k)
+									.isDependencySatisfied(dependencies.get(j))) {
+								satisfiedCount++;
+								break;
+							}
+						}
+						if(satisfiedCount == dependencies.size()){
+							missingQuestions.add(candidateMissingQuestions
+									.get(i));
+						}
+
+					}
+				} else {
+					missingQuestions.add(candidateMissingQuestions.get(i));
+				}
 			}
 		}
 		return missingQuestions;
