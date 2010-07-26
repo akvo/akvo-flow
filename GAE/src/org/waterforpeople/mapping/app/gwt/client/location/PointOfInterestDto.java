@@ -15,16 +15,24 @@ public class PointOfInterestDto implements Serializable {
 	private static final long serialVersionUID = -8505831823416882347L;
 	private String type;
 	private String name;
+	private String country;
 	private Double latitude;
 	private Double longitude;
 	private Long id;
 	private List<String> propertyNames;
 	private List<String> propertyValues;
 
-
 	public PointOfInterestDto() {
 		propertyNames = new ArrayList<String>();
 		propertyValues = new ArrayList<String>();
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public Long getId() {
@@ -35,7 +43,6 @@ public class PointOfInterestDto implements Serializable {
 		this.id = id;
 	}
 
-	
 	public String getType() {
 		return type;
 	}

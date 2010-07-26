@@ -80,6 +80,7 @@ public class PointOfInterestServlet extends AbstractRestApiServlet {
 						.toString() : "AccessPoint");
 				dto.setLatitude(ap.getLatitude());
 				dto.setLongitude(ap.getLongitude());
+				dto.setCountry(ap.getCountryCode());
 				dto.addProperty("status", ap.getPointStatus() != null ? ap
 						.getPointStatus().toString() : "unknown");
 				dtoList.add(dto);
