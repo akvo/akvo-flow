@@ -23,8 +23,8 @@ import android.widget.ListView;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.remote.PointOfInterestService;
-import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -38,20 +38,22 @@ public class NearbyItemActivity extends ListActivity implements
 	private static final int NEARBY_DETAIL_ACTIVITY = 1;
 	private static final int NAVIGATE_OPT = 2;
 	private static final int COUNTRY_OPT = 3;
+	private static final int SERVER_OPT = 4;
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private ProgressDialog progressDialog;
-	private ArrayList<PointOfInterestDto> pointsOfInterest;
+	private ArrayList<PointOfInterest> pointsOfInterest;
 	private Handler dataHandler;
 	private Runnable resultsUpdater;
 	private String country;
 	private String[] countries;
+	private boolean useServer;
 	private volatile boolean isRunning;
 	private volatile boolean additive;
 	private Thread dataThread;
 	private SurveyDbAdapter databaseAdapter;
 	private String serverBase;
-	private PointOfInterestDto loadMorePlaceholder;
+	private PointOfInterest loadMorePlaceholder;
 	private PointOfInterestService pointOfInterestService;
 	private Double lastLat;
 	private Double lastLon;
@@ -61,7 +63,8 @@ public class NearbyItemActivity extends ListActivity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		pointOfInterestService = new PointOfInterestService();
-		loadMorePlaceholder = new PointOfInterestDto();
+		useServer = true;
+		loadMorePlaceholder = new PointOfInterest();
 		loadMorePlaceholder.setName(getString(R.string.loadmore));
 		additive = false;
 		databaseAdapter = new SurveyDbAdapter(this);
@@ -128,8 +131,11 @@ public class NearbyItemActivity extends ListActivity implements
 	 */
 	private void updateUi() {
 		if (pointsOfInterest != null) {
-			setListAdapter(new ArrayAdapter<PointOfInterestDto>(this,
+			setListAdapter(new ArrayAdapter<PointOfInterest>(this,
 					R.layout.itemlistrow, pointsOfInterest));
+		} else {
+			setListAdapter(new ArrayAdapter<PointOfInterest>(this,
+					R.layout.itemlistrow, new ArrayList<PointOfInterest>()));			
 		}
 		progressDialog.dismiss();
 		isRunning = false;
@@ -153,26 +159,47 @@ public class NearbyItemActivity extends ListActivity implements
 		// the UI thread
 		dataThread = new Thread() {
 			public void run() {
-				ArrayList<PointOfInterestDto> newPoints = pointOfInterestService
-						.getNearbyAccessPoints(lat, lon, country, serverBase,
-								additive);
+				if (useServer) {
+					ArrayList<PointOfInterest> newPoints = pointOfInterestService
+							.getNearbyAccessPoints(lat, lon, country,
+									serverBase, additive);
+					savePoints(newPoints);
 
-				if (additive && pointsOfInterest != null) {
-					pointsOfInterest.remove(loadMorePlaceholder);
-				}
-				if (additive && newPoints != null) {
-					pointsOfInterest.addAll(newPoints);
+					if (additive && pointsOfInterest != null) {
+						pointsOfInterest.remove(loadMorePlaceholder);
+					}
+					if (additive && newPoints != null) {
+						pointsOfInterest.addAll(newPoints);
+					} else {
+						pointsOfInterest = newPoints;
+					}
+					if (pointOfInterestService.hasMore()) {
+						pointsOfInterest.add(loadMorePlaceholder);
+					}
 				} else {
-					pointsOfInterest = newPoints;
-				}
-				if (pointOfInterestService.hasMore()) {
-					pointsOfInterest.add(loadMorePlaceholder);
+					pointsOfInterest = databaseAdapter
+							.listPointsOfInterest(country);
 				}
 				dataHandler.post(resultsUpdater);
 				additive = false;
 			}
 		};
 		dataThread.start();
+	}
+
+	/**
+	 * saves points of interest to the db
+	 * 
+	 * @param points
+	 */
+	private void savePoints(ArrayList<PointOfInterest> points) {
+		if (points != null) {
+			for (int i = 0; i < points.size(); i++) {
+				if (points.get(i).getId() != null) {
+					databaseAdapter.saveOrUpdatePointOfInterest(points.get(i));
+				}
+			}
+		}
 	}
 
 	/**
@@ -183,7 +210,7 @@ public class NearbyItemActivity extends ListActivity implements
 			long id) {
 		super.onListItemClick(list, view, position, id);
 		Intent i = new Intent(this, NearbyItemDetailActivity.class);
-		PointOfInterestDto dto = pointsOfInterest.get(position);
+		PointOfInterest dto = pointsOfInterest.get(position);
 		if (dto == loadMorePlaceholder) {
 			additive = true;
 			loadData(lastLat, lastLon, country);
@@ -200,7 +227,8 @@ public class NearbyItemActivity extends ListActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, NAVIGATE_OPT, 0, R.string.navigate);
-		menu.add(0, COUNTRY_OPT, 0, R.string.countryselection);
+		menu.add(0, COUNTRY_OPT, 1, R.string.countryselection);
+		menu.add(0, SERVER_OPT, 2, R.string.uselocal);
 		return true;
 	}
 
@@ -216,6 +244,10 @@ public class NearbyItemActivity extends ListActivity implements
 		case COUNTRY_OPT:
 			displayCountrySelection();
 			return true;
+		case SERVER_OPT:
+			useServer = !useServer;
+			loadData(lastLat, lastLon, country);
+			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
@@ -230,6 +262,11 @@ public class NearbyItemActivity extends ListActivity implements
 			menu.getItem(0).setEnabled(false);
 		} else {
 			menu.getItem(0).setEnabled(true);
+		}
+		if (useServer) {
+			menu.getItem(2).setTitle(R.string.uselocal);
+		} else {
+			menu.getItem(2).setTitle(R.string.useserver);
 		}
 
 		return true;

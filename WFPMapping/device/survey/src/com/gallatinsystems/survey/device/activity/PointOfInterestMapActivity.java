@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.Window;
 
 import com.gallatinsystems.survey.device.R;
-import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
+import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.GeoUtil;
 import com.gallatinsystems.survey.device.view.PointsOfInterestOverlay;
@@ -29,7 +29,7 @@ public class PointOfInterestMapActivity extends MapActivity {
 	private MapView mapView;
 	private MapController mapController;
 	private static final int INITIAL_ZOOM_LEVEL = 14;
-	private ArrayList<PointOfInterestDto> points;
+	private ArrayList<PointOfInterest> points;
 	private PointsOfInterestOverlay overlay;
 
 	@Override
@@ -45,7 +45,7 @@ public class PointOfInterestMapActivity extends MapActivity {
 		mapController.setZoom(INITIAL_ZOOM_LEVEL);
 		// turn on zoom controls
 		mapView.setBuiltInZoomControls(true);
-		points = (ArrayList<PointOfInterestDto>) getIntent().getExtras()
+		points = (ArrayList<PointOfInterest>) getIntent().getExtras()
 				.getSerializable(ConstantUtil.POINTS_KEY);
 		initializeOverlay();
 
@@ -60,7 +60,7 @@ public class PointOfInterestMapActivity extends MapActivity {
 		if (points != null) {
 			overlay = new PointsOfInterestOverlay(this);
 			for (int i = 0; i < points.size(); i++) {
-				PointOfInterestDto dto = points.get(i);
+				PointOfInterest dto = points.get(i);
 				if (dto.getLatitude() != null && dto.getLongitude() != null) {
 					if (firstPoint == null) {
 						firstPoint = GeoUtil.convertToPoint(dto.getLatitude(),
@@ -85,7 +85,7 @@ public class PointOfInterestMapActivity extends MapActivity {
 	 * @param idx
 	 * @return
 	 */
-	public PointOfInterestDto getPoint(int idx) {
+	public PointOfInterest getPoint(int idx) {
 		if (idx > -1 && points != null && points.size() > idx) {
 			return points.get(idx);
 		} else {

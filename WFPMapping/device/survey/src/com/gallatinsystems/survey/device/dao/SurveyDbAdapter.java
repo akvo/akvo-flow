@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
@@ -41,6 +42,7 @@ public class SurveyDbAdapter {
 	public static final String SUBMITTED_DATE_COL = "submitted_date";
 	public static final String DELIVERED_DATE_COL = "delivered_date";
 	public static final String CREATED_DATE_COL = "created_date";
+	public static final String UPDATED_DATE_COL = "updated_date";
 	public static final String PLOT_FK_COL = "plot_id";
 	public static final String LAT_COL = "lat";
 	public static final String LON_COL = "lon";
@@ -58,6 +60,9 @@ public class SurveyDbAdapter {
 	public static final String HELP_DOWNLOADED_COL = "help_downloaded_flag";
 	public static final String LANGUAGE_COL = "language";
 	public static final String SAVED_DATE_COL = "saved_date";
+	public static final String COUNTRY_COL = "country";
+	public static final String PROP_NAME_COL = "property_names";
+	public static final String PROP_VAL_COL = "property_values";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -83,6 +88,8 @@ public class SurveyDbAdapter {
 
 	private static final String PREFERENCES_TABLE_CREATE = "create table preferences (key text primary key, value text);";
 
+	private static final String POINT_OF_INTEREST_TABLE_CREATE = "create table point_of_interest (_id integer primary key, country text, display_name text, lat real, lon real, property_names text, property_values text, updated_date integer);";
+
 	private static final String[] DEFAULT_INSERTS = new String[] {
 			"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
 			// "insert into survey values(999992,'Houshold Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
@@ -107,12 +114,13 @@ public class SurveyDbAdapter {
 	private static final String PLOT_TABLE = "plot";
 	private static final String PLOT_POINT_TABLE = "plot_point";
 	private static final String PREFERENCES_TABLE = "preferences";
+	private static final String POINT_OF_INTEREST_TABLE = "point_of_interest";
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent._id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 46;
+	private static final int DATABASE_VERSION = 48;
 
 	private final Context context;
 
@@ -139,6 +147,7 @@ public class SurveyDbAdapter {
 			db.execSQL(PLOT_TABLE_CREATE);
 			db.execSQL(PLOT_POINT_TABLE_CREATE);
 			db.execSQL(PREFERENCES_TABLE_CREATE);
+			db.execSQL(POINT_OF_INTEREST_TABLE_CREATE);
 			for (int i = 0; i < DEFAULT_INSERTS.length; i++) {
 				db.execSQL(DEFAULT_INSERTS[i]);
 			}
@@ -155,6 +164,7 @@ public class SurveyDbAdapter {
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
 			onCreate(db);
 		}
 	}
@@ -913,4 +923,103 @@ public class SurveyDbAdapter {
 		database.delete(RESPONSE_TABLE, null, null);
 		database.delete(RESPONDENT_TABLE, null, null);
 	}
+
+	/**
+	 * saves or updates a PointOfInterests
+	 * 
+	 * @param id
+	 * @param country
+	 * @param jsonString
+	 */
+	public void saveOrUpdatePointOfInterest(PointOfInterest point) {
+		Cursor cursor = database.query(POINT_OF_INTEREST_TABLE,
+				new String[] { PK_ID_COL }, PK_ID_COL + "=?",
+				new String[] { point.getId().toString() }, null, null, null);
+		boolean isUpdate = false;
+		if (cursor != null && cursor.getCount() > 0) {
+			isUpdate = true;
+		}
+		if (cursor != null) {
+			cursor.close();
+		}
+		ContentValues updatedValues = new ContentValues();
+		updatedValues.put(PK_ID_COL, point.getId());
+		updatedValues.put(COUNTRY_COL, point.getCountry() != null ? point
+				.getCountry() : "unknown");
+		updatedValues.put(DISP_NAME_COL, point.getName() != null ? point
+				.getName() : "unknown");
+		updatedValues.put(UPDATED_DATE_COL, System.currentTimeMillis());
+		String temp = point.getPropertyNamesString();
+		if (temp != null) {
+			updatedValues.put(PROP_NAME_COL, temp);
+		}
+		temp = point.getPropertyValuesString();
+		if (temp != null) {
+			updatedValues.put(PROP_VAL_COL, temp);
+		}
+		if (point.getLatitude() != null) {
+			updatedValues.put(LAT_COL, point.getLatitude());
+		}
+		if (point.getLongitude() != null) {
+			updatedValues.put(LON_COL, point.getLongitude());
+		}
+
+		if (isUpdate) {
+			database.update(POINT_OF_INTEREST_TABLE, updatedValues, PK_ID_COL
+					+ "=?", new String[] { point.getId().toString() });
+		} else {
+			database.insert(POINT_OF_INTEREST_TABLE, null, updatedValues);
+		}
+	}
+
+	/**
+	 * lists all points of interest, optionally filtering by country code
+	 * 
+	 * @param country
+	 * @return
+	 */
+	public ArrayList<PointOfInterest> listPointsOfInterest(String country) {
+		ArrayList<PointOfInterest> points = null;
+		String whereClause = null;
+		String[] whereValues = null;
+		if (country != null) {
+			whereClause = COUNTRY_COL + "=?";
+			whereValues = new String[] { country };
+		}
+		Cursor cursor = database.query(POINT_OF_INTEREST_TABLE, new String[] {
+				PK_ID_COL, COUNTRY_COL, DISP_NAME_COL, UPDATED_DATE_COL,
+				LAT_COL, LON_COL, PROP_NAME_COL, PROP_VAL_COL }, whereClause,
+				whereValues, null, null, null);
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+
+				cursor.moveToFirst();
+				points = new ArrayList<PointOfInterest>();
+				do {
+					PointOfInterest point = new PointOfInterest();
+					point.setName(cursor.getString(cursor
+							.getColumnIndexOrThrow(DISP_NAME_COL)));
+					point.setCountry(cursor.getString(cursor
+							.getColumnIndexOrThrow(COUNTRY_COL)));
+					point.setId(cursor.getLong(cursor
+							.getColumnIndexOrThrow(PK_ID_COL)));
+					point.setPropertyNames(cursor.getString(cursor
+							.getColumnIndexOrThrow(PROP_NAME_COL)));
+					point.setPropertyValues(cursor.getString(cursor
+							.getColumnIndexOrThrow(PROP_VAL_COL)));
+					point.setLatitude(cursor.getDouble(cursor
+							.getColumnIndexOrThrow(LAT_COL)));
+					point.setLongitude(cursor.getDouble(cursor
+							.getColumnIndexOrThrow(LON_COL)));
+
+					points.add(point);
+
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return points;
+	}
+
 }

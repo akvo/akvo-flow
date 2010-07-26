@@ -28,7 +28,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
-import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
+import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -47,7 +47,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	private TextView typeField;
 	private ScrollView scrollView;
 	private ImageView arrowView;
-	private PointOfInterestDto pointOfInterest;
+	private PointOfInterest pointOfInterest;
 	private Bitmap arrowBitmap;
 	private Location apLocation;
 	private float lastBearing;
@@ -86,12 +86,12 @@ public class NearbyItemDetailActivity extends Activity implements
 		arrowBitmap = BitmapFactory.decodeResource(getResources(),
 				R.drawable.uparrow);
 
-		pointOfInterest = savedInstanceState != null ? (PointOfInterestDto) savedInstanceState
+		pointOfInterest = savedInstanceState != null ? (PointOfInterest) savedInstanceState
 				.getSerializable(ConstantUtil.AP_KEY)
 				: null;
 		if (pointOfInterest == null) {
 			Bundle extras = getIntent().getExtras();
-			pointOfInterest = extras != null ? (PointOfInterestDto) extras
+			pointOfInterest = extras != null ? (PointOfInterest) extras
 					.getSerializable(ConstantUtil.AP_KEY) : null;
 		}
 		apLocation = new Location(LocationManager.GPS_PROVIDER);
@@ -211,7 +211,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	private void launchNavigation() {
 		Intent mapsIntent = new Intent(this, PointOfInterestMapActivity.class);
 
-		ArrayList<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
+		ArrayList<PointOfInterest> dtoList = new ArrayList<PointOfInterest>();
 		dtoList.add(pointOfInterest);
 		mapsIntent.putExtra(ConstantUtil.POINTS_KEY, dtoList);
 		startActivity(mapsIntent);

@@ -1,7 +1,6 @@
 package com.gallatinsystems.survey.device.remote;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,7 +8,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
+import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 
 /**
@@ -37,10 +36,10 @@ public class PointOfInterestService {
 	 * NOTE: this service is STATEFUL in that it maintains a cursor value
 	 * therefore the method is NOT threadsafe.
 	 */
-	public ArrayList<PointOfInterestDto> getNearbyAccessPoints(Double lat,
+	public ArrayList<PointOfInterest> getNearbyAccessPoints(Double lat,
 			Double lon, String country, String serviceBase, boolean useCursor) {
 
-		ArrayList<PointOfInterestDto> dtoList = new ArrayList<PointOfInterestDto>();
+		ArrayList<PointOfInterest> dtoList = new ArrayList<PointOfInterest>();
 		try {
 			String url = null;
 			if (serviceBase != null) {
@@ -99,32 +98,36 @@ public class PointOfInterestService {
 	}
 
 	/**
-	 * converts a JSON object to an PointOfInterestDto
+	 * converts a JSON object to an PointOfInterest
 	 */
-	private static PointOfInterestDto convertToPointOfInterestDto(
+	public static PointOfInterest convertToPointOfInterestDto(
 			JSONObject json) {
-		PointOfInterestDto dto = null;
+		PointOfInterest point = null;
 		if (json != null && json.has("name")) {
-			dto = new PointOfInterestDto();
+			point = new PointOfInterest();
 			try {
 				if(json.has("latitude")){
-					dto.setLatitude(json.getDouble("latitude"));
+					point.setLatitude(json.getDouble("latitude"));
 				}
 				if(json.has("longitude")){
-					dto.setLongitude(json.getDouble("longitude"));
+					point.setLongitude(json.getDouble("longitude"));
 				}
-				dto.setName(json.getString("name"));
-				dto.setType(json.getString("type"));
-				dto.setPropertyNames(convertToStringList(json
+				if(json.has("id")){
+					point.setId(json.getLong("id"));
+				}
+				point.setName(json.getString("name"));
+				point.setType(json.getString("type"));
+				point.setCountry(json.getString("country"));
+				point.setPropertyNames(convertToStringList(json
 						.getJSONArray("propertyNames")));
-				dto.setPropertyValues(convertToStringList(json
+				point.setPropertyValues(convertToStringList(json
 						.getJSONArray("propertyValues")));
 
 			} catch (JSONException e) {
 				Log.e(TAG, "Could not parse points", e);
 			}
 		}
-		return dto;
+		return point;
 	}
 
 	/**
@@ -135,9 +138,9 @@ public class PointOfInterestService {
 	 * @return
 	 * @throws JSONException
 	 */
-	private static List<String> convertToStringList(JSONArray arr)
+	private static ArrayList<String> convertToStringList(JSONArray arr)
 			throws JSONException {
-		List<String> list = new ArrayList<String>();
+		ArrayList<String> list = new ArrayList<String>();
 		if (arr != null) {
 			for (int i = 0; i < arr.length(); i++) {
 				list.add(arr.getString(i));

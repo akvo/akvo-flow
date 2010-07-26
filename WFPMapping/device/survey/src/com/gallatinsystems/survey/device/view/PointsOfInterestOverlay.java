@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.activity.PointOfInterestMapActivity;
-import com.gallatinsystems.survey.device.remote.dto.PointOfInterestDto;
+import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
@@ -40,7 +40,7 @@ public class PointsOfInterestOverlay extends GeoOverlay {
 				.getZoomLevel());
 		if (matchingPointIndex > -1) {
 			Context ctx = mapView.getContext();
-			PointOfInterestDto pointDetails = pointActivity
+			PointOfInterest pointDetails = pointActivity
 					.getPoint(matchingPointIndex);
 			AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 			builder.setTitle(R.string.pointofinterestitle);

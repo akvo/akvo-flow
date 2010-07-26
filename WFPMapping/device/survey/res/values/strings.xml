@@ -145,6 +145,8 @@
 	<string name="cleartitle">Clear Survey Answers</string>
 	<string name="cleardesc">Are you sure you want to clear your responses?</string>
 	<string name="pointofinterestitle">Point Details</string>
-	<string name="loadmore">Load more...</string>	
-	<string name="appversion">0.98.6</string>	
+	<string name="loadmore">Load more...</string>
+	<string name="uselocal">Use Downloaded Points</string>
+	<string name="useserver">Get Points From Server</string>	
+	<string name="appversion">0.98.7</string>	
 </resources>
