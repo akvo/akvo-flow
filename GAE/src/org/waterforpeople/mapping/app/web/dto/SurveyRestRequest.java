@@ -153,7 +153,9 @@ public class SurveyRestRequest extends RestRequest {
 		if(req.getParameter(ALLOW_OTHER_PARAM)!=null)
 			allowOtherFlag = Boolean.parseBoolean(req.getParameter(ALLOW_OTHER_PARAM));
 		if(req.getParameter(MANDATORY_PARAM)!=null)
-			mandatoryFlag = Boolean.parseBoolean(MANDATORY_PARAM);
+			mandatoryFlag = Boolean.parseBoolean(req.getParameter(MANDATORY_PARAM));
+		else
+			mandatoryFlag = false;
 		if(req.getParameter(QUESTION_GROUP_ORDER_PARAM)!=null)
 			questionGroupOrder = Integer.parseInt(req.getParameter(QUESTION_GROUP_ORDER_PARAM));
 	}

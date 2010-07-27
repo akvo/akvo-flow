@@ -146,7 +146,10 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(QuestionDto.QuestionType.PHOTO);
 		else if (questionType.equals("NUMBER"))
 			q.setType(QuestionDto.QuestionType.NUMBER);
-
+		
+		if(mandatoryFlag!=null)
+			q.setMandatory(mandatoryFlag);
+		
 		// deal with options and dependencies
 		String questionPath = surveyGroupName+"/"+surveyName;
 		q.setPath(questionPath);

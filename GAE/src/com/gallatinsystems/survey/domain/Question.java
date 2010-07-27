@@ -27,6 +27,7 @@ public class Question extends BaseDomain implements Comparable<Question> {
 	private QuestionDto.QuestionType type;
 	private ArrayList<QuestionHelp> questionHelpList;
 	private String path = null;
+	private Boolean mandatory = null;
 	
 	public Integer getOrder() {
 		return order;
@@ -159,5 +160,13 @@ public class Question extends BaseDomain implements Comparable<Question> {
 
 	public String getPath() {
 		return path;
+	}
+
+	public void setMandatory(Boolean mandatory) {
+		this.mandatory = mandatory;
+	}
+
+	public Boolean getMandatory() {
+		return mandatory;
 	}
 }

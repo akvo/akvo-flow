@@ -136,7 +136,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		 * 1, Select survey based on surveyId 2. Retrieve all question groups
 		 * fire off queue tasks
 		 */
-		
+
 		SurveyQuestionGroupAssocDao sqgadao = new SurveyQuestionGroupAssocDao();
 		List<SurveyQuestionGroupAssoc> sqgaList = sqgadao
 				.listBySurveyId(surveyId);
@@ -282,6 +282,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		if (q.getOrder() != null) {
 			qXML.setOrder(q.getOrder().toString());
+		}
+		if (q.getMandatory() != null) {
+			qXML.setMandatory(q.getMandatory().toString());
 		}
 		// ToDo set dependency xml
 		Dependency dependency = objFactory.createDependency();

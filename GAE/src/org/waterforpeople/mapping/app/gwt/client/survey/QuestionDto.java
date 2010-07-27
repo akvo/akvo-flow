@@ -19,6 +19,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Boolean mandatoryFlag = null;
 	private QuestionDependencyDto questionDependency = null;
 
+
 	public void addQuestionHelp(QuestionHelpDto questionHelp) {
 		if (questionHelpList == null) {
 			questionHelpList = new ArrayList<QuestionHelpDto>();
