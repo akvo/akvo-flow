@@ -7,6 +7,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
@@ -192,4 +195,61 @@ public class ViewUtil {
 		dia.show();
 	}
 
+	/**
+	 * shows an authentication dialog that asks for the administrator passcode
+	 * 
+	 * @param parentContext
+	 * @param listener
+	 */
+	public static void showAdminAuthDialog(final Context parentContext,
+			final AdminAuthDialogListener listener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
+		LinearLayout main = new LinearLayout(parentContext);
+		main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.WRAP_CONTENT));
+		main.setOrientation(LinearLayout.VERTICAL);
+		TextView tipText = new TextView(parentContext);
+		builder.setTitle(R.string.authtitle);
+		tipText.setText(R.string.authtext);
+		main.addView(tipText);
+		final EditText input = new EditText(parentContext);
+		main.addView(input);
+		builder.setView(main);
+		builder.setPositiveButton(R.string.okbutton,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String val = input.getText().toString();
+						if (ConstantUtil.ADMIN_AUTH_CODE.equals(val)) {
+							listener.onAuthenticated();
+							dialog.dismiss();
+						} else {
+							showConfirmDialog(R.string.authfailed,
+									R.string.invalidpassword, parentContext);
+							dialog.dismiss();
+						}
+					}
+				});
+
+		builder.setNegativeButton(R.string.cancelbutton,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+
+		builder.show();
+	}
+
+	/**
+	 * interface that should be implemented by uses of the AdminAuthDialog to be
+	 * notified when authorization is successful
+	 * 
+	 * 
+	 * 
+	 */
+	public interface AdminAuthDialogListener {
+		void onAuthenticated();
+	}
 }

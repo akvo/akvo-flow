@@ -23,6 +23,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * Displays the settings menu and handles the user choices
@@ -123,8 +124,8 @@ public class SettingsActivity extends ListActivity {
 			} else if (resources.getString(R.string.aboutlabel).equals(val)) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				TextView tipText = new TextView(this);
-				String txt = resources.getString(R.string.abouttext)
-						+" "+ resources.getString(R.string.appversion);
+				String txt = resources.getString(R.string.abouttext) + " "
+						+ resources.getString(R.string.appversion);
 				tipText.setText(txt);
 				builder.setTitle(R.string.abouttitle);
 				builder.setView(tipText);
@@ -137,70 +138,107 @@ public class SettingsActivity extends ListActivity {
 				builder.show();
 			} else if (resources.getString(R.string.reloadsurveyslabel).equals(
 					val)) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				TextView tipText = new TextView(this);
-				tipText.setText(R.string.reloadconftext);
-				builder.setTitle(R.string.conftitle);
-				builder.setView(tipText);
-				builder.setPositiveButton(R.string.okbutton,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								SurveyDbAdapter database = new SurveyDbAdapter(
+				ViewUtil.showAdminAuthDialog(this,
+						new ViewUtil.AdminAuthDialogListener() {
+
+							@Override
+							public void onAuthenticated() {
+								AlertDialog.Builder builder = new AlertDialog.Builder(
 										SettingsActivity.this);
-								database.open();
-								database.deleteAllSurveys();
-								database.close();
-								getApplicationContext().startService(
-										new Intent(SettingsActivity.this,
-												SurveyDownloadService.class));
+								TextView tipText = new TextView(
+										SettingsActivity.this);
+								tipText.setText(R.string.reloadconftext);
+								builder.setTitle(R.string.conftitle);
+								builder.setView(tipText);
+								builder.setPositiveButton(R.string.okbutton,
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												SurveyDbAdapter database = new SurveyDbAdapter(
+														SettingsActivity.this);
+												database.open();
+												database.deleteAllSurveys();
+												database.close();
+												getApplicationContext()
+														.startService(
+																new Intent(
+																		SettingsActivity.this,
+																		SurveyDownloadService.class));
+											}
+										});
+								builder.setNegativeButton(
+										R.string.cancelbutton,
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												dialog.cancel();
+											}
+										});
+								builder.show();
 							}
 						});
-				builder.setNegativeButton(R.string.cancelbutton,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.cancel();
-							}
-						});
-				builder.show();
+
 			} else if (resources.getString(R.string.downloadsurveylabel)
 					.equals(val)) {
-				AlertDialog.Builder inputDialog = new AlertDialog.Builder(this);
+				ViewUtil.showAdminAuthDialog(this,
+						new ViewUtil.AdminAuthDialogListener() {
 
-				inputDialog.setTitle(R.string.downloadsurveylabel);
-				inputDialog.setMessage(R.string.downloadsurveyinstr);
+							@Override
+							public void onAuthenticated() {
+								AlertDialog.Builder inputDialog = new AlertDialog.Builder(
+										SettingsActivity.this);
+								inputDialog
+										.setTitle(R.string.downloadsurveylabel);
+								inputDialog
+										.setMessage(R.string.downloadsurveyinstr);
 
-				// Set an EditText view to get user input
-				final EditText input = new EditText(this);
+								// Set an EditText view to get user input
+								final EditText input = new EditText(
+										SettingsActivity.this);
 
-				input.setKeyListener(new DigitsKeyListener(false, false));
-				inputDialog.setView(input);
+								input.setKeyListener(new DigitsKeyListener(
+										false, false));
+								inputDialog.setView(input);
 
-				inputDialog.setPositiveButton("Ok",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								String value = input.getText().toString();
-								if (value != null && value.trim().length() > 0) {
-									Intent downloadIntent = new Intent(
-											SettingsActivity.this,
-											SurveyDownloadService.class);
-									downloadIntent.putExtra(
-											ConstantUtil.SURVEY_ID_KEY, value);
-									getApplicationContext().startService(
-											downloadIntent);
-								}
+								inputDialog.setPositiveButton("Ok",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int whichButton) {
+												String value = input.getText()
+														.toString();
+												if (value != null
+														&& value.trim()
+																.length() > 0) {
+													Intent downloadIntent = new Intent(
+															SettingsActivity.this,
+															SurveyDownloadService.class);
+													downloadIntent
+															.putExtra(
+																	ConstantUtil.SURVEY_ID_KEY,
+																	value);
+													getApplicationContext()
+															.startService(
+																	downloadIntent);
+												}
+											}
+										});
+
+								inputDialog.setNegativeButton("Cancel",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int whichButton) {
+												// Canceled.
+											}
+										});
+
+								inputDialog.show();
+
 							}
 						});
-
-				inputDialog.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								// Canceled.
-							}
-						});
-
-				inputDialog.show();
 
 			} else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);

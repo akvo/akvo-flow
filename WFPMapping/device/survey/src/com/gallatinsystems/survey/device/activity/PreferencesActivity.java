@@ -182,9 +182,18 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					precacheHelpArray[ConstantUtil.PRECACHE_HELP_ALLWAYS_IDX],
 					ConstantUtil.PRECACHE_INTENT);
 		} else if (R.id.serverbutton == v.getId()) {
-			showPreferenceDialog(R.string.serverlabel, R.array.servers,
-					ConstantUtil.SERVER_SETTING_KEY, serverArray,
-					serverTextView, null, null);
+			ViewUtil.showAdminAuthDialog(this,
+					new ViewUtil.AdminAuthDialogListener() {
+						@Override
+						public void onAuthenticated() {
+							showPreferenceDialog(R.string.serverlabel,
+									R.array.servers,
+									ConstantUtil.SERVER_SETTING_KEY,
+									serverArray, serverTextView, null, null);
+
+						}
+					});
+
 		}
 	}
 

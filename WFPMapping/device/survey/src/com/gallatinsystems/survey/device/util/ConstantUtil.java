@@ -190,6 +190,11 @@ public class ConstantUtil {
 	public static final String SURVEY_RESULT_MODE = "surveyresult";
 
 	/**
+	 * "code" to prevent unauthorized use of administrative settings/preferences
+	 */
+	public static final String ADMIN_AUTH_CODE = "12345";
+	
+	/**
 	 * recognized help activities
 	 */
 	@SuppressWarnings("unchecked")
