@@ -104,9 +104,14 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 							dataTable.addColumn(ColumnType.DATE, "Date");
 							dataTable.addColumn(ColumnType.NUMBER, "Count");
 							for (int i = 0; i < result.length; i++) {
-								dataTable.addRow();
-								dataTable.setValue(i, 0, result[i].getDate());
-								dataTable.setValue(i, 1, result[i].getCount());
+								if (result[i] != null && result[i].getDate() != null) {
+									dataTable.addRow();
+									dataTable.setValue(i, 0, result[i]
+											.getDate());
+									dataTable.setValue(i, 1, result[i]
+											.getCount() != null ? result[i]
+											.getCount() : 0);
+								}
 							}
 							if (timeLine != null) {
 								// remove the old chart
