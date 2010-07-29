@@ -118,7 +118,7 @@ public class KMLGenerator {
 					.list("all");
 			AccessPointDao apDao = new AccessPointDao();
 			List<AccessPoint> waterAPList = apDao.searchAccessPoints(
-					countryCode, null, null, null, "WATER_POINT", null, "all");
+					countryCode, null, null, null, "WATER_POINT", null, null,null,"all");
 			for (TechnologyType techType : techTypeList) {
 				// log.info("TechnologyType: " + techType.getName());
 				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
@@ -138,7 +138,7 @@ public class KMLGenerator {
 			}
 
 			List<AccessPoint> sanitationAPList = apDao.searchAccessPoints(
-					countryCode, null, null, null, "SANITATION_POINT", null,
+					countryCode, null, null, null, "SANITATION_POINT", null,null,null,
 					"all");
 			HashMap<String, AccessPoint> sanitationMap = new HashMap<String, AccessPoint>();
 			for (AccessPoint item : sanitationAPList) {

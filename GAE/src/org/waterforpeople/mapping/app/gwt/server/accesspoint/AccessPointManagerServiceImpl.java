@@ -51,7 +51,9 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				.getCountryCode(), searchCriteria.getCommunityCode(),
 				searchCriteria.getCollectionDateFrom(), searchCriteria
 						.getCollectionDateTo(), searchCriteria.getPointType(),
-				searchCriteria.getTechType(), cursorString);
+				searchCriteria.getTechType(), searchCriteria
+						.getConstructionDateFrom(), searchCriteria
+						.getConstructionDateTo(), cursorString);
 		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 		for (AccessPoint apItem : pointList) {
 			AccessPointDto apDto = AccessPointServiceSupport
@@ -60,7 +62,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		}
 
 		ResponseDto<ArrayList<AccessPointDto>> container = new ResponseDto<ArrayList<AccessPointDto>>();
-		container.setCursorString(BaseDAO.getCursor(pointList));
+		container.setCursorString(AccessPointDao.getCursor(pointList));
 		container.setPayload(apDtoList);
 
 		return container;

@@ -38,7 +38,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public List<AccessPoint> listNearbyAccessPoints(Double lat, Double lon,
 			String countryCode, double maxDistance, String cursor) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		if (lat != null && lon != null) {			
+		if (lat != null && lon != null) {
 			Point loc = new Point(lat, lon);
 			List<Object> params = new ArrayList<Object>();
 			params.add(countryCode);
@@ -48,7 +48,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			return GeocellManager.proximityFetch(loc, MAX_RESULTS, maxDistance,
 					AccessPoint.class, gq, pm);
 		} else {
-			return listAccessPointByLocation(countryCode, null,null, null,cursor);
+			return listAccessPointByLocation(countryCode, null, null, null,
+					cursor);
 		}
 	}
 
@@ -62,7 +63,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointByLocation(String country,
-			String community, String type, Date updatedSinceDate, String cursorString) {
+			String community, String type, Date updatedSinceDate,
+			String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		Map<String, Object> paramMap = null;
@@ -77,9 +79,10 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				"String", community, paramMap);
 		appendNonNullParam("pointType", filterString, paramString, "String",
 				type, paramMap);
-		appendNonNullParam("lastUpdateDateTime", filterString,paramString, "Date",updatedSinceDate,paramMap,GTE_OP);
-		if(updatedSinceDate != null){
-		       query.declareImports("import java.util.Date");
+		appendNonNullParam("lastUpdateDateTime", filterString, paramString,
+				"Date", updatedSinceDate, paramMap, GTE_OP);
+		if (updatedSinceDate != null) {
+			query.declareImports("import java.util.Date");
 		}
 		query.setOrdering("lastUpdateDateTime desc");
 		query.setFilter(filterString.toString());
@@ -107,7 +110,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	@SuppressWarnings("unchecked")
 	public List<AccessPoint> searchAccessPoints(String country,
 			String community, Date collDateFrom, Date collDateTo, String type,
-			String tech, String cursorString) {
+			String tech, Date constructionDateFrom, Date constructionDateTo,
+			String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		StringBuilder filterString = new StringBuilder();
@@ -127,11 +131,16 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				collDateFrom, paramMap, GTE_OP);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				collDateTo, paramMap, LTE_OP);
+		appendNonNullParam("constructionDate", filterString, paramString,
+				"Date", constructionDateFrom, paramMap, GTE_OP);
+		appendNonNullParam("constructionDate", filterString, paramString,
+				"Date", constructionDateTo, paramMap, LTE_OP);
 
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
-		if (collDateFrom != null || collDateTo != null) {
+		if (collDateFrom != null || collDateTo != null
+				|| constructionDateFrom != null || constructionDateTo != null) {
 			query.declareImports("import java.util.Date");
 		}
 

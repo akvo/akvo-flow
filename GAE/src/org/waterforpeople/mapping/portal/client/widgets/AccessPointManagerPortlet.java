@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.Un
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -157,11 +158,11 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		searchTable.setWidget(2, 1, accessPointTypeListBox);
 		searchTable.setWidget(2, 2, technologyTypeLabel);
 		searchTable.setWidget(2, 3, techTypeListBox);
-		searchTable.setWidget(3, 0, searchButton);
-		searchTable.setWidget(3, 1, createNewAccessPoint);
-		searchTable.setWidget(4, 0, new Label("Construction Date From: "));
-		searchTable.setWidget(4, 1, constructionDateDPLower);
-		searchTable.setWidget(4, 2, constructionDateDPUpper);
+		searchTable.setWidget(3, 0, new Label("Construction Date From: "));
+		searchTable.setWidget(3, 1, constructionDateDPLower);
+		searchTable.setWidget(3, 2, constructionDateDPUpper);
+		searchTable.setWidget(4, 0, searchButton);
+		searchTable.setWidget(4, 1, createNewAccessPoint);
 
 		mainVPanel.add(searchTable);
 	}
@@ -193,6 +194,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		dto.setCountryCode(getSelectedCountry());
 		dto.setCollectionDateFrom(collectionDateDPLower.getValue());
 		dto.setCollectionDateTo(collectionDateDPUpper.getValue());
+		dto.setConstructionDateFrom(constructionDateDPLower.getValue());
+		dto.setConstructionDateTo(constructionDateDPUpper.getValue());
 		dto.setPointType(getSelectedValue(accessPointTypeListBox));
 		return dto;
 	}
@@ -204,25 +207,45 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		statusLabel.setText("Please wait loading access points");
 		statusLabel.setVisible(true);
 		mainVPanel.add(statusLabel);
+		final AccessPointSearchCriteriaDto searchDto = formSearchCriteria();
+		boolean isOkay = true;
+		if (searchDto != null) {
+			if (searchDto.getCollectionDateFrom() != null
+					|| searchDto.getCollectionDateTo() != null) {
+				if (searchDto.getConstructionDateFrom() != null
+						|| searchDto.getConstructionDateTo() != null) {
+					MessageDialog errDia = new MessageDialog(
+							"Invalid search criteria",
+							"Sorry, only one date range can be selected for a search at a time. If you specify collection date, you cannot also specify a construction date. Please change the criteria and retry your search");
+					errDia.showRelativeTo(searchTable);
+					isOkay = false;
+				}
+			}
+		}
+		// reset cursor since we're doing a new search
+		setAccessPointCursor("");
 
-		// svc.listAllAccessPoints(0, 0, new AsyncCallback() {
-		svc.listAccessPoints(formSearchCriteria(), getAccessPointCursor(),
-				new AsyncCallback() {
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+		if (isOkay) {
+			svc.listAccessPoints(searchDto, getAccessPointCursor(),
+					new AsyncCallback() {
+						@Override
+						public void onFailure(Throwable caught) {
+							MessageDialog errDia = new MessageDialog(
+									"Application Error", "Cannot search");
+							errDia.showRelativeTo(searchTable);
 
-					}
+						}
 
-					@Override
-					public void onSuccess(Object result) {
-						ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>) result;
-						setAccessPointCursor(container.getCursorString());
-						loadAccessPoint((ArrayList<AccessPointDto>) container
-								.getPayload());
-					}
+						@Override
+						public void onSuccess(Object result) {
+							ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>) result;
+							setAccessPointCursor(container.getCursorString());
+							loadAccessPoint((ArrayList<AccessPointDto>) container
+									.getPayload());
+						}
 
-				});
+					});
+		}
 	}
 
 	private void loadAccessPoint(ArrayList<AccessPointDto> apDtoList) {

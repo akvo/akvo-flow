@@ -11,8 +11,26 @@ public class AccessPointSearchCriteriaDto implements Serializable {
 	private String communityCode;
 	private Date collectionDateFrom;
 	private Date collectionDateTo;
+	private Date constructionDateFrom;
+	private Date constructionDateTo;
 	private String pointType;
 	private String techType;
+
+	public Date getConstructionDateFrom() {
+		return constructionDateFrom;
+	}
+
+	public void setConstructionDateFrom(Date constructionDateFrom) {
+		this.constructionDateFrom = constructionDateFrom;
+	}
+
+	public Date getConstructionDateTo() {
+		return constructionDateTo;
+	}
+
+	public void setConstructionDateTo(Date constructionDateTo) {
+		this.constructionDateTo = constructionDateTo;
+	}
 
 	public String getCountryCode() {
 		return countryCode;
