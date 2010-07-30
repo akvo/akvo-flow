@@ -20,6 +20,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -45,6 +46,11 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
 	public static final String NAME = "Access Point Manager";
 
+	private static final String EVEN_ROW_CSS = "gridCell-even";
+	private static final String ODD_ROW_CSS = "gridCell-odd";
+	private static final String GRID_HEADER_CSS = "gridCell-header";
+
+
 	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
@@ -63,7 +69,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private Button searchButton = new Button("Search");
 
 	private FlexTable accessPointFT = new FlexTable();
-
 	private AccessPointManagerServiceAsync svc;
 
 	private Label statusLabel = new Label();
@@ -76,12 +81,15 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private ListBox statusLB = new ListBox();
 	private List<String> cursorArray;
 	private int currentPage;
+	private DateTimeFormat dateFormat;
+
 
 	public AccessPointManagerPortlet(UserDto user) {
 		super(NAME, true, false, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
+		dateFormat = DateTimeFormat.getShortDateFormat();
 		contentPane.add(header);
 		setContent(contentPane);
 
@@ -103,7 +111,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	/**
 	 * constructs and installs the menu for this portlet. Also wires in the
 	 * event handlers so we can update on menu value change
-	 * 
+	 *
 	 * @return
 	 */
 	private Widget buildHeader() {
@@ -146,7 +154,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		if (currentPage < cursorArray.size()) {
 			cursorArray.set(currentPage, cursor);
 		} else {
-			cursorArray.add(cursor);			
+			cursorArray.add(cursor);
 		}
 	}
 
@@ -210,7 +218,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 	/**
 	 * constructs a search criteria object using values from the form
-	 * 
+	 *
 	 * @return
 	 */
 	private AccessPointSearchCriteriaDto formSearchCriteria() {
@@ -297,6 +305,13 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 					accessPointFT.setWidget(i, 3, new Label(apDto
 							.getLongitude().toString()));
 				}
+				if(apDto.getPointType() != null){
+					accessPointFT.setWidget(i,4, new Label(apDto.getPointType().name()));
+				}
+				if(apDto.getCollectionDate() != null){
+					accessPointFT.setWidget(i,5, new Label(dateFormat.format(apDto.getCollectionDate())));
+				}
+
 				Button editAccessPoint = new Button("edit");
 				editAccessPoint.setTitle(keyIdLabel.getText());
 				Button deleteAccessPoint = new Button("delete");
@@ -326,8 +341,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 					}
 
 				});
-				accessPointFT.setWidget(i, 4, buttonHPanel);
-				i++;
+				accessPointFT.setWidget(i, 6, buttonHPanel);
+				setGridRowStyle(accessPointFT, i);
+				i++;				
 				statusLabel.setText("loading row: " + i + " of "
 						+ apDtoList.size());
 
@@ -382,7 +398,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointFT.setWidget(0, 1, new Label("Community Code"));
 		accessPointFT.setWidget(0, 2, new Label("Latitude"));
 		accessPointFT.setWidget(0, 3, new Label("Longitude"));
-		accessPointFT.setWidget(0, 4, new Label("Edit/Delete"));
+		accessPointFT.setWidget(0, 4, new Label("Point Type"));
+		accessPointFT.setWidget(0, 5, new Label("Collection Date"));
+		accessPointFT.setWidget(0, 6, new Label("Edit/Delete"));
+		setGridRowStyle(accessPointFT,0);
 	}
 
 	private FlexTable accessPointDetail = new FlexTable();
@@ -850,7 +869,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	 * helper method to get value out of a listbox. If "Any" is selected, it's
 	 * translated to null since the service expects null to be passed in rather
 	 * than "all" if you don't want to filter by that param
-	 * 
+	 *
 	 * @param lb
 	 * @return
 	 */
@@ -866,4 +885,30 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			return null;
 		}
 	}
+
+		/**
+		 * sets the css for a row in a grid. the top row will get the header style
+		 * and other rows get either the even or odd style.
+		 *
+		 * @param grid
+		 * @param row
+		 * @param selected
+		 */
+		private void setGridRowStyle(FlexTable grid, int row) {
+			String style = "";
+				if (row > 0) {
+					if (row % 2 == 0) {
+						style = EVEN_ROW_CSS;
+					} else {
+						style = ODD_ROW_CSS;
+					}
+				} else {
+					style = GRID_HEADER_CSS;
+				}
+
+			for (int i = 0; i < grid.getCellCount(row); i++) {
+				grid.getCellFormatter().setStyleName(row, i, style);
+			}
+		}
+
 }
