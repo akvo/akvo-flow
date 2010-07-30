@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
@@ -73,6 +74,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private DateBox constructionDateDPUpper = new DateBox();
 
 	private ListBox statusLB = new ListBox();
+	private List<String> cursorArray;
+	private int currentPage;
 
 	public AccessPointManagerPortlet(UserDto user) {
 		super(NAME, true, false, WIDTH, HEIGHT, user, true,
@@ -81,12 +84,20 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		Widget header = buildHeader();
 		contentPane.add(header);
 		setContent(contentPane);
+
+		cursorArray = new ArrayList<String>();
+		resetCursorArray();
 		svc = GWT.create(AccessPointManagerService.class);
 	}
 
 	@Override
 	public String getName() {
 		return NAME;
+	}
+
+	private void resetCursorArray() {
+		currentPage = 0;
+		cursorArray.clear();
 	}
 
 	/**
@@ -104,7 +115,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				processClickEvent();
+				processClickEvent(true);
 			}
 		});
 
@@ -127,19 +138,33 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			}
 
 		});
-		hiddenAccessPointCursorString.setVisible(false);
-		mainVPanel.add(hiddenAccessPointCursorString);
+
 		return grid;
 	}
 
 	private void setAccessPointCursor(String cursor) {
-		hiddenAccessPointCursorString.setText(cursor);
+		if (currentPage < cursorArray.size()) {
+			cursorArray.set(currentPage, cursor);
+		} else {
+			cursorArray.add(cursor);			
+		}
 	}
 
-	private String getAccessPointCursor() {
-		if (hiddenAccessPointCursorString.getText().trim().equals(""))
+	private String getAccessPointCursor(int page) {
+		if (page >= 0) {
+			if (page < cursorArray.size()) {
+				if (cursorArray.get(page) != null
+						&& cursorArray.get(page).trim().length() == 0) {
+					return null;
+				} else {
+					return cursorArray.get(page);
+				}
+			} else {
+				return null;
+			}
+		} else {
 			return null;
-		return hiddenAccessPointCursorString.getText();
+		}
 	}
 
 	private Button createNewAccessPoint = new Button("Create New Access Point");
@@ -200,10 +225,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		return dto;
 	}
 
-	private Label hiddenAccessPointCursorString = new Label();
-
 	@SuppressWarnings("unchecked")
-	private void processClickEvent() {
+	private void processClickEvent(boolean isNewSearch) {
 		statusLabel.setText("Please wait loading access points");
 		statusLabel.setVisible(true);
 		mainVPanel.add(statusLabel);
@@ -223,11 +246,13 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			}
 		}
 		// reset cursor since we're doing a new search
-		setAccessPointCursor("");
+		if (isNewSearch) {
+			resetCursorArray();
+		}
 
 		if (isOkay) {
-			svc.listAccessPoints(searchDto, getAccessPointCursor(),
-					new AsyncCallback() {
+			svc.listAccessPoints(searchDto,
+					getAccessPointCursor(currentPage - 1), new AsyncCallback() {
 						@Override
 						public void onFailure(Throwable caught) {
 							MessageDialog errDia = new MessageDialog(
@@ -311,18 +336,31 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			Button nextSet = new Button("Next 20");
 			nextSet.setVisible(true);
 			Button previousSet = new Button("Previous 20");
+			if (currentPage > 0) {
+				previousSet.setVisible(true);
+			}else{
+				previousSet.setVisible(false);
+			}
 
 			nextSet.addClickHandler(new ClickHandler() {
-
 				@Override
 				public void onClick(ClickEvent event) {
-					processClickEvent();
+					currentPage ++;
+					processClickEvent(false);
 
 				}
-
 			});
-			// ToDo: implement previous handling
-			// accessPointFT.setWidget(i + 1, 0, previousSet);
+
+			previousSet.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					currentPage--;
+					processClickEvent(false);
+
+				}
+			});
+
+			accessPointFT.setWidget(i + 1, 0, previousSet);
 			if (i == 21) {
 				accessPointFT.setWidget(i + 1, 1, nextSet);
 			} else if (i < 21) {
