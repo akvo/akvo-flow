@@ -15,6 +15,24 @@ public class MapFragment extends BaseDomain {
 	private String code = null;
 	private String displayName=null;
 	private String displayDesc = null;
+	private String countryCode = null;
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	public String getTechnologyType() {
+		return technologyType;
+	}
+
+	public void setTechnologyType(String technologyType) {
+		this.technologyType = technologyType;
+	}
+
+	private String technologyType = null;
 	
 	public String getDisplayName() {
 		return displayName;

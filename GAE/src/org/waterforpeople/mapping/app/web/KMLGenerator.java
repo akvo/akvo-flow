@@ -24,6 +24,9 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.gis.map.dao.MapFragmentDao;
+import com.gallatinsystems.gis.map.domain.MapFragment;
+import com.google.appengine.api.datastore.Text;
 
 public class KMLGenerator {
 	private static final Logger log = Logger.getLogger(KMLGenerator.class
@@ -106,6 +109,11 @@ public class KMLGenerator {
 		context.put("techFolders", techFolders.toString());
 		return mergeContext(context, vmName);
 
+	}
+
+	public void generateCountryOrderedPlacemarks(
+			String vmName, String countryCode, String technologyType) {
+		
 	}
 
 	public HashMap<String, ArrayList<String>> generateCountrySpecificPlacemarks(
@@ -330,7 +338,9 @@ public class KMLGenerator {
 	}
 
 	public String bindPlacemark(AccessPoint ap, String vmName) throws Exception {
-		if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW")) {
+		//if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW")) {
+		if (ap.getCountryCode() != null) {
+			
 			VelocityContext context = new VelocityContext();
 			if (ap.getCollectionDate() != null) {
 				String formattedDate = DateFormat.getDateInstance(
@@ -637,7 +647,7 @@ public class KMLGenerator {
 				context.put("waterSystemStatus", "Unknown");
 				return "Unknown";
 			}
-		}else{
+		} else {
 			context.put("waterSystemStatus", "Unknown");
 			return "Unknown";
 		}

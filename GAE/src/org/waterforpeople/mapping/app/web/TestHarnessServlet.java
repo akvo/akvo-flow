@@ -53,6 +53,8 @@ import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.gallatinsystems.gis.map.dao.MapFragmentDao;
+import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.survey.dao.OptionContainerDao;
 import com.gallatinsystems.survey.dao.OptionContainerQuestionOptionAssocDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -95,15 +97,15 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
-			for(Survey item: sgItem.getSurveyList()){
+			for (Survey item : sgItem.getSurveyList()) {
 				SurveyDAO sDao = new SurveyDAO();
 				item = sDao.loadFullSurvey(item.getKey().getId());
-				for(QuestionGroup qg:item.getQuestionGroupList()){
+				for (QuestionGroup qg : item.getQuestionGroupList()) {
 					log.info(qg.getCode());
-					
+
 				}
 			}
-			
+
 		} else if ("testBaseDomain".equals(action)) {
 
 			SurveyDAO surveyDAO = new SurveyDAO();
@@ -135,9 +137,38 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "Could not save test region", e);
 			}
+		} else if ("clearAccessPoint".equals(action)) {
+			try {
+
+				AccessPointDao apDao = new AccessPointDao();
+				for (AccessPoint ap : apDao.list("all")) {
+					apDao.delete(ap);
+					try {
+						resp.getWriter().print(
+								"Finished Deleting AP: " + ap.toString());
+					} catch (IOException e) {
+						log.log(Level.SEVERE, "Could not delete ap");
+					}
+				}
+				resp.getWriter().print("Deleted AccessPoints complete");
+				BaseDAO<AccessPointStatusSummary> apsDao = new BaseDAO<AccessPointStatusSummary>(
+						AccessPointStatusSummary.class);
+				for (AccessPointStatusSummary item : apsDao.list("all")) {
+					apsDao.delete(item);
+				}
+				resp.getWriter().print("Deleted AccessPointStatusSummary");
+				MapFragmentDao mfDao = new MapFragmentDao();
+				for(MapFragment item:mfDao.list("all")){
+					mfDao.delete(item);
+				}
+				resp.getWriter().print("Cleared MapFragment Table");
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Could not clear AP and APStatusSummary",
+						e);
+			}
+
 		} else if ("testAPKml".equals(action)) {
 			AccessPointDao apDao = new AccessPointDao();
-			apDao.list("all");
 			for (AccessPoint ap : apDao.list("all")) {
 				apDao.delete(ap);
 				try {

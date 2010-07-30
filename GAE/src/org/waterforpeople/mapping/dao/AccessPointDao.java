@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.GeocellQuery;
@@ -149,6 +150,17 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				.executeWithMap(paramMap);
 
 		return results;
+	}
+
+	public List<AccessPoint> listAccessPointsByTechnology(
+			String countryCode, String technologyType, String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
+		q.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
+		q.declareParameters("String countryCodeParam, String typeTechnologyParam");
+		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode, technologyType);
+		return result;
+
 	}
 
 }
