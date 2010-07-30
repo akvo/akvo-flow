@@ -1,6 +1,7 @@
 package com.gallatinsystems.gis.location;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
@@ -59,22 +60,39 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 	private String callApi(String base, String lat, String lon) {
 		String result = null;
 		try {
-			URL url = new URL(base + LAT_PARAM + "=" + lat + "&" + LON_PARAM
-					+ "=" + lon);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					url.openStream()));
-			String line = null;
-			StringBuilder builder = new StringBuilder();
-			while ((line = reader.readLine()) != null) {
-				builder.append(line);
+			result = invokeApi(base, lat, lon);
+		} catch (IOException ie) {
+			// retry because of timeout
+			log.log(Level.INFO, "Timeout for " + base,ie);
+			try {
+				result = invokeApi(base, lat, lon);
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Couldn't invoke geonames on the retry"
+						+ base, e);
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "Could not invoke geonames api vai url "
+						+ base, e);
 			}
-			reader.close();
-			result = builder.toString();
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not invoke geonames api vai url "
 					+ base, e);
 		}
 		return result;
+	}
+
+	private String invokeApi(String base, String lat, String lon)
+			throws IOException, Exception {
+		URL url = new URL(base + LAT_PARAM + "=" + lat + "&" + LON_PARAM + "="
+				+ lon);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(url
+				.openStream()));
+		String line = null;
+		StringBuilder builder = new StringBuilder();
+		while ((line = reader.readLine()) != null) {
+			builder.append(line);
+		}
+		reader.close();
+		return builder.toString();
 	}
 
 	private GeoPlaces parseXml(String xmlString) {
