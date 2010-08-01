@@ -21,7 +21,6 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -53,7 +52,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 						.getCollectionDateTo(), searchCriteria.getPointType(),
 				searchCriteria.getTechType(), searchCriteria
 						.getConstructionDateFrom(), searchCriteria
-						.getConstructionDateTo(), cursorString);
+						.getConstructionDateTo(), searchCriteria.getOrderBy(), searchCriteria.getOrderByDir(), cursorString);
 		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 		for (AccessPoint apItem : pointList) {
 			AccessPointDto apDto = AccessPointServiceSupport

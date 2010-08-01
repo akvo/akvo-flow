@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
@@ -49,7 +51,22 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
+	private static final String DEFAULT_SORT_FIELD = "Id";
+	private static final String ASC_SORT = "asc";
+	private static final String DSC_SORT = "desc";
+	private static final String DEFAULT_SORT_DIR = ASC_SORT;
 
+	private static final Map<String, String> HEADING_MAP = new HashMap<String, String>() {
+		private static final long serialVersionUID = 7335900220247051642L;
+		{
+			put("Id", "key");
+			put("Community Code", "communityCode");
+			put("Latitude", "latitude");
+			put("Longitude", "longitude");
+			put("Point Type", "pointType");
+			put("Collection Date", "collectionDate");
+		}
+	};
 
 	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 1600;
@@ -82,7 +99,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private List<String> cursorArray;
 	private int currentPage;
 	private DateTimeFormat dateFormat;
-
+	private String currentSortField;
+	private String currentSortDirection;
+	private FlexTable accessPointDetail = new FlexTable();
 
 	public AccessPointManagerPortlet(UserDto user) {
 		super(NAME, true, false, WIDTH, HEIGHT, user, true,
@@ -92,7 +111,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		dateFormat = DateTimeFormat.getShortDateFormat();
 		contentPane.add(header);
 		setContent(contentPane);
-
+		currentSortDirection = DEFAULT_SORT_DIR;
+		currentSortField = DEFAULT_SORT_FIELD;
 		cursorArray = new ArrayList<String>();
 		resetCursorArray();
 		svc = GWT.create(AccessPointManagerService.class);
@@ -111,7 +131,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	/**
 	 * constructs and installs the menu for this portlet. Also wires in the
 	 * event handlers so we can update on menu value change
-	 *
+	 * 
 	 * @return
 	 */
 	private Widget buildHeader() {
@@ -123,6 +143,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				currentSortDirection = DEFAULT_SORT_DIR;
+				currentSortField = DEFAULT_SORT_FIELD;
 				processClickEvent(true);
 			}
 		});
@@ -218,7 +240,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 	/**
 	 * constructs a search criteria object using values from the form
-	 *
+	 * 
 	 * @return
 	 */
 	private AccessPointSearchCriteriaDto formSearchCriteria() {
@@ -230,6 +252,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		dto.setConstructionDateFrom(constructionDateDPLower.getValue());
 		dto.setConstructionDateTo(constructionDateDPUpper.getValue());
 		dto.setPointType(getSelectedValue(accessPointTypeListBox));
+		dto.setOrderBy(HEADING_MAP.get(currentSortField));
+		dto.setOrderByDir(currentSortDirection);
 		return dto;
 	}
 
@@ -305,11 +329,13 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 					accessPointFT.setWidget(i, 3, new Label(apDto
 							.getLongitude().toString()));
 				}
-				if(apDto.getPointType() != null){
-					accessPointFT.setWidget(i,4, new Label(apDto.getPointType().name()));
+				if (apDto.getPointType() != null) {
+					accessPointFT.setWidget(i, 4, new Label(apDto
+							.getPointType().name()));
 				}
-				if(apDto.getCollectionDate() != null){
-					accessPointFT.setWidget(i,5, new Label(dateFormat.format(apDto.getCollectionDate())));
+				if (apDto.getCollectionDate() != null) {
+					accessPointFT.setWidget(i, 5, new Label(dateFormat
+							.format(apDto.getCollectionDate())));
 				}
 
 				Button editAccessPoint = new Button("edit");
@@ -343,7 +369,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				});
 				accessPointFT.setWidget(i, 6, buttonHPanel);
 				setGridRowStyle(accessPointFT, i);
-				i++;				
+				i++;
 				statusLabel.setText("loading row: " + i + " of "
 						+ apDtoList.size());
 
@@ -354,14 +380,14 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			Button previousSet = new Button("Previous 20");
 			if (currentPage > 0) {
 				previousSet.setVisible(true);
-			}else{
+			} else {
 				previousSet.setVisible(false);
 			}
 
 			nextSet.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					currentPage ++;
+					currentPage++;
 					processClickEvent(false);
 
 				}
@@ -394,17 +420,38 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	}
 
 	private void loadAccessPointHeaderRow() {
-		accessPointFT.setWidget(0, 0, new Label("Id"));
-		accessPointFT.setWidget(0, 1, new Label("Community Code"));
-		accessPointFT.setWidget(0, 2, new Label("Latitude"));
-		accessPointFT.setWidget(0, 3, new Label("Longitude"));
-		accessPointFT.setWidget(0, 4, new Label("Point Type"));
-		accessPointFT.setWidget(0, 5, new Label("Collection Date"));
-		accessPointFT.setWidget(0, 6, new Label("Edit/Delete"));
-		setGridRowStyle(accessPointFT,0);
+		addHeaderItem(0, "Id", true);
+		addHeaderItem(1, "Community Code", true);
+		addHeaderItem(2, "Latitude", true);
+		addHeaderItem(3, "Longitude", true);
+		addHeaderItem(4, "Point Type", true);
+		addHeaderItem(5, "Collection Date", true);
+		addHeaderItem(6, "Edit/Delete", false);
+		setGridRowStyle(accessPointFT, 0);
 	}
 
-	private FlexTable accessPointDetail = new FlexTable();
+	private void addHeaderItem(int col, final String text, boolean sortable) {
+		Label temp = new Label(text);
+		if (sortable) {
+			temp.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					if (currentSortField.equals(text)) {
+						if (ASC_SORT.equals(currentSortDirection)) {
+							currentSortDirection = DSC_SORT;
+						} else {
+							currentSortDirection = ASC_SORT;
+						}
+					} else {
+						currentSortField = text;
+						currentSortDirection = DEFAULT_SORT_DIR;
+					}
+					processClickEvent(true);
+				}
+			});
+		}
+		accessPointFT.setWidget(0, col, temp);
+	}
 
 	private void loadAccessPointDetailTable(Long id) {
 		accessPointFT.setVisible(false);
@@ -869,7 +916,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	 * helper method to get value out of a listbox. If "Any" is selected, it's
 	 * translated to null since the service expects null to be passed in rather
 	 * than "all" if you don't want to filter by that param
-	 *
+	 * 
 	 * @param lb
 	 * @return
 	 */
@@ -886,29 +933,29 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		}
 	}
 
-		/**
-		 * sets the css for a row in a grid. the top row will get the header style
-		 * and other rows get either the even or odd style.
-		 *
-		 * @param grid
-		 * @param row
-		 * @param selected
-		 */
-		private void setGridRowStyle(FlexTable grid, int row) {
-			String style = "";
-				if (row > 0) {
-					if (row % 2 == 0) {
-						style = EVEN_ROW_CSS;
-					} else {
-						style = ODD_ROW_CSS;
-					}
-				} else {
-					style = GRID_HEADER_CSS;
-				}
-
-			for (int i = 0; i < grid.getCellCount(row); i++) {
-				grid.getCellFormatter().setStyleName(row, i, style);
+	/**
+	 * sets the css for a row in a grid. the top row will get the header style
+	 * and other rows get either the even or odd style.
+	 * 
+	 * @param grid
+	 * @param row
+	 * @param selected
+	 */
+	private void setGridRowStyle(FlexTable grid, int row) {
+		String style = "";
+		if (row > 0) {
+			if (row % 2 == 0) {
+				style = EVEN_ROW_CSS;
+			} else {
+				style = ODD_ROW_CSS;
 			}
+		} else {
+			style = GRID_HEADER_CSS;
 		}
+
+		for (int i = 0; i < grid.getCellCount(row); i++) {
+			grid.getCellFormatter().setStyleName(row, i, style);
+		}
+	}
 
 }

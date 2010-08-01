@@ -24,9 +24,6 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.gis.map.dao.MapFragmentDao;
-import com.gallatinsystems.gis.map.domain.MapFragment;
-import com.google.appengine.api.datastore.Text;
 
 public class KMLGenerator {
 	private static final Logger log = Logger.getLogger(KMLGenerator.class
@@ -126,7 +123,8 @@ public class KMLGenerator {
 					.list("all");
 			AccessPointDao apDao = new AccessPointDao();
 			List<AccessPoint> waterAPList = apDao.searchAccessPoints(
-					countryCode, null, null, null, "WATER_POINT", null, null,null,"all");
+					countryCode, null, null, null, "WATER_POINT", null, null,
+					null, null, null, "all");
 			for (TechnologyType techType : techTypeList) {
 				// log.info("TechnologyType: " + techType.getName());
 				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
@@ -146,8 +144,8 @@ public class KMLGenerator {
 			}
 
 			List<AccessPoint> sanitationAPList = apDao.searchAccessPoints(
-					countryCode, null, null, null, "SANITATION_POINT", null,null,null,
-					"all");
+					countryCode, null, null, null, "SANITATION_POINT", null,
+					null, null, null, null, "all");
 			HashMap<String, AccessPoint> sanitationMap = new HashMap<String, AccessPoint>();
 			for (AccessPoint item : sanitationAPList) {
 				sanitationMap.put(item.getGeocells().toString(), item);

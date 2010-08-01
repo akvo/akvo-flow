@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.GeocellQuery;
@@ -112,7 +111,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public List<AccessPoint> searchAccessPoints(String country,
 			String community, Date collDateFrom, Date collDateTo, String type,
 			String tech, Date constructionDateFrom, Date constructionDateTo,
-			String cursorString) {
+			String orderByField, String orderByDir, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		StringBuilder filterString = new StringBuilder();
@@ -137,6 +136,13 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		appendNonNullParam("constructionDate", filterString, paramString,
 				"Date", constructionDateTo, paramMap, LTE_OP);
 
+		if (orderByField != null) {
+			String ordering = orderByDir;
+			if (ordering == null) {
+				ordering = "asc";
+			}
+			query.setOrdering(orderByField + " " + ordering);
+		}
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
@@ -152,6 +158,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return results;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointsByTechnology(
 			String countryCode, String technologyType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();

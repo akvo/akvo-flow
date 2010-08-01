@@ -15,6 +15,24 @@ public class AccessPointSearchCriteriaDto implements Serializable {
 	private Date constructionDateTo;
 	private String pointType;
 	private String techType;
+	private String orderBy;
+	private String orderByDir;
+
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+
+	public String getOrderByDir() {
+		return orderByDir;
+	}
+
+	public void setOrderByDir(String orderByDir) {
+		this.orderByDir = orderByDir;
+	}
 
 	public Date getConstructionDateFrom() {
 		return constructionDateFrom;
