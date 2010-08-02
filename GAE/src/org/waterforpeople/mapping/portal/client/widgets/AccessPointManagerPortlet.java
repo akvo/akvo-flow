@@ -48,6 +48,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
 	public static final String NAME = "Access Point Manager";
 
+	private static final String DOWN_IMG = "images/downarrow.gif";
+	private static final String UP_IMG = "images/uparrow.gif";
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
@@ -259,6 +261,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 	@SuppressWarnings("unchecked")
 	private void processClickEvent(boolean isNewSearch) {
+		if (accessPointFT != null) {			
+			accessPointFT.removeAllRows();
+		}
 		statusLabel.setText("Please wait loading access points");
 		statusLabel.setVisible(true);
 		mainVPanel.add(statusLabel);
@@ -431,9 +436,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	}
 
 	private void addHeaderItem(int col, final String text, boolean sortable) {
+		HorizontalPanel panel = new HorizontalPanel();
 		Label temp = new Label(text);
+		panel.add(temp);
 		if (sortable) {
-			temp.addClickHandler(new ClickHandler() {
+
+			ClickHandler handler = new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					if (currentSortField.equals(text)) {
@@ -448,9 +456,23 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 					}
 					processClickEvent(true);
 				}
-			});
+			};
+			temp.addClickHandler(handler);
+
+			if (currentSortField.equals(text)) {
+				if (currentSortDirection != null
+						&& currentSortDirection.equals(ASC_SORT)) {
+					Image img = new Image(UP_IMG);
+					img.addClickHandler(handler);
+					panel.add(img);
+				} else {
+					Image img = new Image(DOWN_IMG);
+					img.addClickHandler(handler);
+					panel.add(img);
+				}
+			}
 		}
-		accessPointFT.setWidget(0, col, temp);
+		accessPointFT.setWidget(0, col, panel);
 	}
 
 	private void loadAccessPointDetailTable(Long id) {
