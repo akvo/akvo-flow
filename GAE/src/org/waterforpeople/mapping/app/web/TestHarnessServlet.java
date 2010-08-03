@@ -2,7 +2,9 @@ package org.waterforpeople.mapping.app.web;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,7 +13,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipInputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,14 +44,17 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
+import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.SurveyQuestion.QuestionAnswerType;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
+import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
@@ -55,6 +62,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.domain.MapFragment;
+import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.survey.dao.OptionContainerDao;
 import com.gallatinsystems.survey.dao.OptionContainerQuestionOptionAssocDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -158,7 +166,7 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 				resp.getWriter().print("Deleted AccessPointStatusSummary");
 				MapFragmentDao mfDao = new MapFragmentDao();
-				for(MapFragment item:mfDao.list("all")){
+				for (MapFragment item : mfDao.list("all")) {
 					mfDao.delete(item);
 				}
 				resp.getWriter().print("Cleared MapFragment Table");
@@ -167,38 +175,129 @@ public class TestHarnessServlet extends HttpServlet {
 						e);
 			}
 
-		} else if ("testAPKml".equals(action)) {
+		} else if ("loadLots".equals(action)) {
+			MapFragmentDao mfDao = new MapFragmentDao();
 			AccessPointDao apDao = new AccessPointDao();
-			for (AccessPoint ap : apDao.list("all")) {
-				apDao.delete(ap);
-				try {
-					resp.getWriter().print(
-							"Finished Deleting AP: " + ap.toString());
-				} catch (IOException e) {
-					log.log(Level.SEVERE, "Could not delete ap");
-				}
-			}
-			for (int i = 0; i < 1000; i++) {
+
+			for (int i = 0; i < 2000; i++) {
 				AccessPoint ap = new AccessPoint();
 				ap.setCollectionDate(new Date());
-				ap.setLatitude(15.16939 + (new Random().nextDouble() / 1000));
-				ap.setLongitude(-90.90918 + (new Random().nextDouble() / 1000));
+				ap.setLatitude(15 + (new Random().nextDouble() / 10));
+				ap.setLongitude(-90 + (new Random().nextDouble() / 10));
 				ap.setAltitude(0.0);
 				ap.setCommunityCode("test" + new Date());
 				ap.setCommunityName("test" + new Date());
 				ap.setPhotoURL("http://test.com");
 				ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 				ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-				ap.setCountryCode("OT");
-				ap.setTypeTechnologyString("Other");
+				if (i % 2 == 0)
+					ap.setCountryCode("MW");
+				else
+					ap.setCountryCode("GT");
+				if (i % 2 == 0)
+					ap.setTypeTechnologyString("Kiosk");
+				else
+					ap.setTypeTechnologyString("Afridev Handpump");
 				apDao.save(ap);
 				MapSummarizer ms = new MapSummarizer();
 				ms.performSummarization("" + ap.getKey().getId(), "");
-				try {
-					resp.getWriter().print("Saved AP: " + ap.toString());
-				} catch (IOException e) {
-					log.log(Level.SEVERE, "Could not save ap");
+				if(i%50==0)
+					log.log(Level.INFO,"Loaded to " + i);
+			}
+			try {
+				resp.getWriter().println("Finished loading aps");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else if ("testAPKml".equals(action)) {
+			MapFragmentDao mfDao = new MapFragmentDao();
+			// for (MapFragment item : mfDao.list("all")) {
+			// mfDao.delete(item);
+			// }
+			//			
+			// BaseDAO<Country> countryDao = new
+			// BaseDAO<Country>(Country.class);
+			// for(Country c:countryDao.list("all"))
+			// countryDao.delete(c);
+			//			
+			// Country c1 = new Country();
+			// c1.setIsoAlpha2Code("MW");
+			// countryDao.save(c1);
+			// Country c2 = new Country();
+			// c2.setIsoAlpha2Code("GT");
+			// countryDao.save(c2);
+			//			
+			// AccessPointDao apDao = new AccessPointDao();
+			// for (AccessPoint ap : apDao.list("all")) {
+			// apDao.delete(ap);
+			//
+			// }
+			// for (int i = 0; i < 2000; i++) {
+			// AccessPoint ap = new AccessPoint();
+			// ap.setCollectionDate(new Date());
+			// ap.setLatitude(15 + (new Random().nextDouble() / 10));
+			// ap.setLongitude(-90 + (new Random().nextDouble() / 10));
+			// ap.setAltitude(0.0);
+			// ap.setCommunityCode("test" + new Date());
+			// ap.setCommunityName("test" + new Date());
+			// ap.setPhotoURL("http://test.com");
+			// ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+			// ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+			// if (i % 2 == 0)
+			// ap.setCountryCode("MW");
+			// else
+			// ap.setCountryCode("GT");
+			// if (i % 2 == 0)
+			// ap.setTypeTechnologyString("Kiosk");
+			// else
+			// ap.setTypeTechnologyString("Afridev Handpump");
+			// apDao.save(ap);
+			// MapSummarizer ms = new MapSummarizer();
+			// ms.performSummarization("" + ap.getKey().getId(), "");
+			//
+			// }
+
+			BaseDAO<TechnologyType> ttDao = new BaseDAO<TechnologyType>(
+					TechnologyType.class);
+			List<TechnologyType> ttList = ttDao.list("all");
+			for (TechnologyType tt : ttList)
+				ttDao.delete(tt);
+
+			TechnologyType tt = new TechnologyType();
+			tt.setCode("Afridev Handpump");
+			tt.setName("Afridev Handpump");
+			ttDao.save(tt);
+
+			TechnologyType tt2 = new TechnologyType();
+			tt2.setCode("Kiosk");
+			tt2.setName("Kiosk");
+			ttDao.save(tt2);
+
+			KMLHelper kmlHelper = new KMLHelper();
+			kmlHelper.buildMap();
+
+			List<MapFragment> mfList = mfDao.searchMapFragments("ALL", null,
+					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all");
+			try {
+
+				for (MapFragment mfItem : mfList) {
+					String contents = ZipUtil
+							.unZip(mfItem.getBlob().getBytes());
+					log
+							.log(Level.INFO, "Contents Length: "
+									+ contents.length());
+					resp.setContentType("application/vnd.google-earth.kmz+xml");
+					ServletOutputStream out = resp.getOutputStream();
+					resp.setHeader("Content-Disposition",
+							"inline; filename=waterforpeoplemapping.kmz;");
+
+					out.write(mfItem.getBlob().getBytes());
+					out.flush();
 				}
+			} catch (IOException ie) {
+				log.log(Level.SEVERE, "Could not list fragment");
 			}
 		} else if ("saveSurveyGroupRefactor".equals(action)) {
 			com.gallatinsystems.survey.dao.refactor.SurveyGroupDao sgDao = new com.gallatinsystems.survey.dao.refactor.SurveyGroupDao();

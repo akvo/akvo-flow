@@ -1,9 +1,11 @@
 package com.gallatinsystems.common.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
@@ -33,6 +35,27 @@ public class ZipUtil {
 		}
 		return bos;
 
+	}
+
+	public static String unZip(byte[] contents) throws IOException {
+		ByteArrayInputStream zipContents = new ByteArrayInputStream(contents);
+		ZipInputStream zis = new ZipInputStream(zipContents);
+		ZipEntry entry;
+		StringBuilder line = new StringBuilder();
+		while ((entry = zis.getNextEntry()) != null) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			byte[] buffer = new byte[2048];
+			int size;
+			while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+				out.write(buffer, 0, size);
+			}
+			line.append(out.toString());
+
+			out.close();
+		}
+		zis.closeEntry();
+
+		return line.toString();
 	}
 
 }

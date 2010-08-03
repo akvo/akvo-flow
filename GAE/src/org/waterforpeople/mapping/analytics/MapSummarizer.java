@@ -32,10 +32,11 @@ public class MapSummarizer implements DataSummarizer {
 					if (placemark != null) {
 						MapFragment mf = new MapFragment();
 						mf.setFragmentValue(new Text(placemark));
-						mf.setFragmentType(FRAGMENTTYPE.PLACEMARK);
+						mf.setFragmentType(FRAGMENTTYPE.COUNTRY_INDIVIDUAL_PLACEMARK);
 						mf.setCreatedDateTime(new Date());
 						mf.setCountryCode(ap.getCountryCode());
 						mf.setTechnologyType(ap.getTypeTechnologyString());
+						mf.setPointType(ap.getPointType());
 						BaseDAO<MapFragment> mapFragmentDao = new BaseDAO<MapFragment>(
 								MapFragment.class);
 						mapFragmentDao.save(mf);

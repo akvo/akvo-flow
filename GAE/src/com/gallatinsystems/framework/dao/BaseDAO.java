@@ -25,6 +25,8 @@ public class BaseDAO<T extends BaseDomain> {
 	protected static final String LTE_OP = " <= ";
 	private Class<T> concreteClass;
 	protected Logger log;
+	
+	public enum CURSOR_TYPE {all};
 
 	public BaseDAO(Class<T> e) {
 		setDomainClass(e);

@@ -2,7 +2,10 @@ package com.gallatinsystems.gis.map.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable
@@ -16,6 +19,16 @@ public class MapFragment extends BaseDomain {
 	private String displayName=null;
 	private String displayDesc = null;
 	private String countryCode = null;
+	private AccessPointType pointType = null;
+	private Blob blob = null;
+	public Blob getBlob() {
+		return blob;
+	}
+
+	public void setBlob(Blob blob) {
+		this.blob = blob;
+	}
+
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -82,12 +95,20 @@ public class MapFragment extends BaseDomain {
 		return code;
 	}
 
+	public void setPointType(AccessPointType pointType) {
+		this.pointType = pointType;
+	}
+
+	public AccessPointType getPointType() {
+		return pointType;
+	}
+
 	private FRAGMENTTYPE fragmentType=null;
 	private Text fragmentValue = null;
 	private Long parentId = null;
 	
 	public enum FRAGMENTTYPE{
-		FOLDER,PLACEMARK
+		COUNTRY_INDIVIDUAL_PLACEMARK, COUNTRY_TECH_PLACEMARK_LIST,COUNTRY_ALL_PLACEMARKS, GLOBAL_ALL_PLACEMARKS, PLACEMARK
 	}
 
 }

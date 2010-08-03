@@ -70,12 +70,14 @@ public class KMLGenerator {
 		String document = null;
 		try {
 			VelocityContext context = new VelocityContext();
-			HashMap<String, ArrayList<String>> mwOutputMap = generateCountrySpecificPlacemarks(
-					"PlacemarkTabsMW.vm", "MW");
+			//HashMap<String, ArrayList<String>> mwOutputMap = generateCountrySpecificPlacemarks(
+			//		"PlacemarkTabsMW.vm", "MW");
 			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm");
-			String folderContents = generateFolderContents(mwOutputMap,
-					"Folders.vm");
-			context.put("folderContents", otherCountryOutput + folderContents);
+			
+//			String folderContents = generateFolderContents(mwOutputMap,
+//					"Folders.vm");
+//			context.put("folderContents", otherCountryOutput + folderContents);
+			context.put("folderContents", otherCountryOutput);
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
@@ -107,6 +109,9 @@ public class KMLGenerator {
 		return mergeContext(context, vmName);
 
 	}
+	
+	
+	
 
 	public void generateCountryOrderedPlacemarks(
 			String vmName, String countryCode, String technologyType) {
@@ -176,46 +181,6 @@ public class KMLGenerator {
 		}
 
 		return null;
-	}
-
-	class FolderDto {
-		private String countryCode = null;
-		private String communityName = null;
-		private String technologyName = null;
-		private String placemark = null;
-
-		public String getCountryCode() {
-			return countryCode;
-		}
-
-		public void setCountryCode(String countryCode) {
-			this.countryCode = countryCode;
-		}
-
-		public String getCommunityName() {
-			return communityName;
-		}
-
-		public void setCommunityName(String communityName) {
-			this.communityName = communityName;
-		}
-
-		public String getTechnologyName() {
-			return technologyName;
-		}
-
-		public void setTechnologyName(String technologyName) {
-			this.technologyName = technologyName;
-		}
-
-		public String getPlacemark() {
-			return placemark;
-		}
-
-		public void setPlacemark(String placemark) {
-			this.placemark = placemark;
-		}
-
 	}
 
 	private HashMap<String, String> loadContextBindings(AccessPoint waterAP,

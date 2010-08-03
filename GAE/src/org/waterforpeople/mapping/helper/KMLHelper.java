@@ -1,11 +1,14 @@
 package org.waterforpeople.mapping.helper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.velocity.Template;
@@ -16,9 +19,13 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.domain.MapFragment;
+import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Text;
 
 public class KMLHelper {
@@ -27,6 +34,17 @@ public class KMLHelper {
 
 	private VelocityEngine engine;
 
+	public KMLHelper() {
+		engine = new VelocityEngine();
+		engine.setProperty("runtime.log.logsystem.class",
+				"org.apache.velocity.runtime.log.NullLogChute");
+		try {
+			engine.init();
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not initialize velocity", e);
+		}
+	}
+
 	public String getKMZ(String country) throws Exception {
 		String vmName = "";
 		if (country == null) {
@@ -34,7 +52,8 @@ public class KMLHelper {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			VelocityContext context = new VelocityContext();
 			StringBuilder sbCountries = new StringBuilder();
-			List<MapFragment> mfList = mfDao.getAllCountriesMapFragments();
+			List<MapFragment> mfList = null; //mfDao.getAllCountriesMapFragments
+			// ();
 			for (MapFragment item : mfList) {
 				context.put("countryPlacemarks", item);
 			}
@@ -392,5 +411,116 @@ public class KMLHelper {
 		} else {
 			return "Unknown";
 		}
+	}
+
+	private String generateFolderContents(String countryCode, String techType,
+			String mapFragmentText) throws Exception {
+		VelocityContext context = new VelocityContext();
+		StringBuilder techFolders = new StringBuilder();
+		context.put("techFolderName", techType);
+		context.put("techPlacemarks", mapFragmentText);
+		techFolders.append(mergeContext(context, "techFolders.vm"));
+		return techFolders.toString();
+	}
+
+	public void buildMap() {
+		// Select all individual placemarks, but techtype and country
+		// Save Each tech type to MapFragment
+		// Select all Placemarks by techType order by techType for a country
+		// bind to folder vm
+		// Save a complete country order by countryName
+		// Save complete kml to mapfragment
+		// Save to s3?
+		BaseDAO<Country> countryDao = new BaseDAO<Country>(Country.class);
+		BaseDAO<TechnologyType> techTypeDao = new BaseDAO<TechnologyType>(
+				TechnologyType.class);
+		MapFragmentDao mfDao = new MapFragmentDao();
+
+		List<Country> countryList = countryDao.list("all");
+		StringBuilder kml = new StringBuilder();
+		List<TechnologyType> techTypeList = techTypeDao.list("all");
+		if (countryList != null)
+			for (Country country : countryList) {
+				if (country != null)
+					if (techTypeList != null)
+						for (TechnologyType tt : techTypeList) {
+							if (tt != null)
+								buildCountryTechTypeFragment(country
+										.getIsoAlpha2Code(), tt.getCode());
+						}
+				List<MapFragment> mfList = mfDao.searchMapFragments(country.getIsoAlpha2Code(), null,
+						null, null, FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST,
+						"all");
+				StringBuilder sbAllCountryPlacemark = new StringBuilder();
+
+				for (MapFragment mfItem : mfList) {
+					try {
+						sbAllCountryPlacemark.append(ZipUtil.unZip(mfItem
+								.getBlob().getBytes()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				VelocityContext context = new VelocityContext();
+
+				context.put("country", country.getIsoAlpha2Code());
+				context.put("techFolders", sbAllCountryPlacemark.toString());
+				try {
+					kml.append(mergeContext(context, "Folders.vm"));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		VelocityContext context = new VelocityContext();
+		context.put("folderContents", kml.toString());
+		try {
+			String completeKML = mergeContext(context, "Document.vm");
+			MapFragment mf = new MapFragment();
+			mf.setCountryCode("ALL");
+			mf.setFragmentType(FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS);
+			ByteArrayOutputStream bos = ZipUtil.generateZip(completeKML);
+			mf.setBlob(new Blob(bos.toByteArray()));
+			mfDao.save(mf);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void buildCountryTechTypeFragment(String countryCode, String techType) {
+		StringBuilder sbTechList = new StringBuilder();
+		MapFragmentDao mfDao = new MapFragmentDao();
+		String mfTechItemsByCountry = null;
+		List<MapFragment> mfList = mfDao.listFragmentsByCountryAndTechType(
+				countryCode, techType);
+		for (MapFragment mfItem : mfList) {
+			sbTechList.append(mfItem.getFragmentValue().getValue());
+		}
+		try {
+			mfTechItemsByCountry = generateFolderContents(countryCode,
+					techType, sbTechList.toString());
+		} catch (Exception e) {
+			// log.Log(LogLevel.ERROR,
+			// "Could not generate country tech folders for: " + countryCode +
+			// ":" + techType + e);
+		}
+		MapFragment mf = new MapFragment();
+		mf.setFragmentType(FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST);
+		mf.setCountryCode(countryCode);
+		mf.setTechnologyType(techType);
+		// mf.setFragmentValue(new Text(mfTechItemsByCountry));
+		ByteArrayOutputStream os = ZipUtil.generateZip(mfTechItemsByCountry);
+		Blob blob = new Blob(os.toByteArray());
+
+		mf.setBlob(blob);
+		log.log(Level.INFO, "Size of techItemsByCountry: "
+				+ mfTechItemsByCountry.length());
+		mfDao.save(mf);
 	}
 }
