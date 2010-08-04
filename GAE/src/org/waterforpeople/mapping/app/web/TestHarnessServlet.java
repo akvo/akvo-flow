@@ -363,6 +363,10 @@ public class TestHarnessServlet extends HttpServlet {
 								qhm.addAltTextKey(tqhm.getKey());
 								qhm.setType(QuestionHelpMedia.Type.PHOTO);
 								qhm.setUrl("http://test.com/" + n + ".jpg");
+								BaseDAO<QuestionHelpMedia> qhmDao = new BaseDAO<QuestionHelpMedia>(QuestionHelpMedia.class);
+								qhmDao.save(qhm);
+								tqhm.setParentId(qhm.getKey().getId());
+								tDao.save(tqhm);
 								q.addHelpMedia(n, qhm);
 							}
 							qg.addQuestion(l, q);
