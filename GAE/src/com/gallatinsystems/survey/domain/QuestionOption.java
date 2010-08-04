@@ -1,62 +1,63 @@
 package com.gallatinsystems.survey.domain;
 
-import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Key;
+
 @PersistenceCapable
-public class QuestionOption extends BaseDomain{
-	
-	private static final long serialVersionUID = 8925764841259376220L;
+public class QuestionOption extends BaseDomain {
+
 	/**
 	 * 
 	 */
-	private String text;
-	private String code;
-	public String getText() {
-		return text;
+	private static final long serialVersionUID = 2794521663923141747L;
+	private String code = null;
+	@Persistent(serialized = "true")
+	private List<String> optionList = null;
+	@Persistent(serialized = "true")
+	private List<Key> altOptionKeyList = null;
+
+	public void addOption(String text) {
+		if (optionList == null)
+			optionList = new ArrayList<String>();
+		optionList.add(text);
 	}
-	public void setText(String text) {
-		this.text = text;
+
+	public void addAltOptionKey(Key altOptionKey) {
+		if (getAltOptionKeyList() == null)
+			setAltOptionKeyList(new ArrayList<Key>());
+		getAltOptionKeyList().add(altOptionKey);
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
 
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
+	public void setOptionList(List<String> optionList) {
+		this.optionList = optionList;
+	}
 
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
+	public List<String> getOptionList() {
+		return optionList;
+	}
 
-		// print field names paired with their values
-		for (Field field : fields) {
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
+	public void setAltOptionKeyList(List<Key> altOptionKeyList) {
+		this.altOptionKeyList = altOptionKeyList;
+	}
 
-		return result.toString();
+	public List<Key> getAltOptionKeyList() {
+		return altOptionKeyList;
 	}
 
 	
+
 }

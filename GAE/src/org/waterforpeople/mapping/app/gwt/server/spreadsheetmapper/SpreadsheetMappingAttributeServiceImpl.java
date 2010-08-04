@@ -27,7 +27,7 @@ import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDao;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionDependency;
@@ -273,7 +273,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				log.info("Getting the question groups");
 				// create the survey and all groups. We'll take care of the
 				// questions in another iteration
-				SurveyGroupDAO sgDao = new SurveyGroupDAO();
+				SurveyGroupDao sgDao = new SurveyGroupDao();
 				SurveyGroup sg = null;
 				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
 				HashMap<String, QuestionGroup> groupMap = new HashMap<String, QuestionGroup>();

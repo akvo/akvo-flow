@@ -1,6 +1,8 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,18 +13,13 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.survey.dao.OptionContainerDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
-import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
@@ -56,7 +53,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 					importReq.getOptions(), importReq.getDependQuestion(),
 					importReq.getAllowOtherFlag(), importReq
 							.getAllowMultipleFlag(), importReq
-							.getMandatoryFlag(), importReq.getQuestionId(), importReq.getQuestionGroupOrder());
+							.getMandatoryFlag(), importReq.getQuestionId(),
+					importReq.getQuestionGroupOrder());
 		}
 		response.setCode("200");
 		response.setMessage("Record Saved status: " + questionSaved);
@@ -73,7 +71,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			String questionGroupName, String questionType, String questionText,
 			String options, String dependentQuestion, Boolean allowOtherFlag,
 			Boolean allowMultipleFlag, Boolean mandatoryFlag,
-			Integer questionOrder, Integer questionGroupOrder) throws UnsupportedEncodingException {
+			Integer questionOrder, Integer questionGroupOrder)
+			throws UnsupportedEncodingException {
 
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
@@ -92,94 +91,106 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		}
 
 		Survey survey = null;
-		if (surveyName != null)
-			survey = surveyDao.getByPath(surveyName, surveyGroupName);
+		if (sg.getSurveyList() != null)
+			for (Survey item : sg.getSurveyList()) {
+				if (survey.getCode().equals(surveyName)) {
+					survey = item;
+				}
+			}
 
 		if (survey == null) {
 			survey = new Survey();
-			survey.setName(surveyName);
+			survey.setNameMap(parseLangMap(surveyName));
 			survey.setPath(surveyGroupName);
-			survey = surveyDao.save(survey, sg.getKey().getId());
+			survey.setCode(surveyName);
 		}
 
-		QuestionGroup qg = new QuestionGroup();
-		if (questionGroupName != null) {
-			qg = qgDao.getByPath(questionGroupName, surveyGroupName + "/" + surveyName);
-		}
+		QuestionGroup qg = null;
+		if (survey.getQuestionGroupMap() != null)
+			for (Map.Entry<Integer, QuestionGroup> qgEntry : survey
+					.getQuestionGroupMap().entrySet()) {
+				if (qgEntry.getValue().getCode().equals(questionGroupName))
+					qg = qgEntry.getValue();
+			}
 
 		if (qg == null) {
-			String path =surveyGroupName + "/" + surveyName;
+			
+			String path = surveyGroupName + "/" + surveyName;
 			qg = new QuestionGroup();
 			qg.setCode(questionGroupName);
+			qg.setNameMap(parseLangMap(questionGroupName));
 			qg.setPath(path);
-			qg = qgDao.save(qg, survey.getKey().getId(), questionGroupOrder);
+			qg.setDescMap(parseLangMap(questionGroupName));
+			qg.setNameMap(parseLangMap(questionGroupName));
 		}
 
+		survey.addQuestionGroup(questionGroupOrder, qg);
+
 		Question q = new Question();
-		q.setText(questionText);
+		q.setTextMap(parseLangMap(questionText));
 		q.setOrder(questionOrder);
-		
 
 		if (questionType.equals("GEO"))
-			q.setType(QuestionDto.QuestionType.GEO);
+			q.setType(Question.Type.GEO);
 		else if (questionType.equals("FREE"))
-			q.setType(QuestionDto.QuestionType.FREE_TEXT);
+			q.setType(Question.Type.TEXT);
 		else if (questionType.equals("OPTION")) {
-			OptionContainerDao ocDao = new OptionContainerDao();
-			OptionContainer oc = new OptionContainer();
-			oc.setAllowMultipleFlag(allowMultipleFlag);
-			oc.setAllowOtherFlag(allowOtherFlag);
-			q.setType(QuestionDto.QuestionType.OPTION);
-			String[] optionsParts = options.split(";");
-			for (String option : optionsParts) {
-				String[] parts = option.split("\\|");
-				String value = parts[0];
-				String text = parts[1];
-				QuestionOption qo = new QuestionOption();
-				qo.setCode(value);
-				qo.setText(text);
-				oc.addQuestionOption(qo);
-			}
-			ocDao.save(oc);
-			q.setOptionContainer(oc);
+			// oc.setAllowMultipleFlag(allowMultipleFlag);
+			// oc.setAllowOtherFlag(allowOtherFlag);
+			// q.setType(QuestionDto.QuestionType.OPTION);
+			// String[] optionsParts = options.split(";");
+			// for (String option : optionsParts) {
+			// String[] parts = option.split("\\|");
+			// String value = parts[0];
+			// String text = parts[1];
+			// QuestionOption qo = new QuestionOption();
+			// qo.setCode(value);
+			// qo.setText(text);
+			// oc.addQuestionOption(qo);
+			// }
+			// ocDao.save(oc);
+			// q.setOptionContainer(oc);
 		} else if (questionType.equals("PHOTO"))
-			q.setType(QuestionDto.QuestionType.PHOTO);
+			q.setType(Question.Type.PHOTO);
 		else if (questionType.equals("NUMBER"))
-			q.setType(QuestionDto.QuestionType.NUMBER);
-		
-		if(mandatoryFlag!=null)
-			q.setMandatory(mandatoryFlag);
-		
+			q.setType(Question.Type.NUMBER);
+
+		if (mandatoryFlag != null)
+			q.setMandatoryFlag(mandatoryFlag);
+
 		// deal with options and dependencies
-		String questionPath = surveyGroupName+"/"+surveyName;
+		String questionPath = surveyGroupName + "/" + surveyName;
 		q.setPath(questionPath);
-		
-		if(dependentQuestion!=null && dependentQuestion.trim().length()>1)
-		{
+
+		if (dependentQuestion != null && dependentQuestion.trim().length() > 1) {
 			String[] parts = dependentQuestion.split("\\|");
 			Integer quesitonOrderId = new Integer(parts[0]);
 			String answer = parts[1];
-			Question dependsOnQuestion = qDao.getByPath(quesitonOrderId, questionPath);
-			if(dependsOnQuestion!=null){
-				QuestionDependency qd = new QuestionDependency();
-				qd.setAnswerValue(answer);
-				qd.setQuestionId(dependsOnQuestion.getKey().getId());
-				q.setDependQuestion(qd);
+			Question dependsOnQuestion = qDao.getByPath(quesitonOrderId,
+					questionPath);
+			if (dependsOnQuestion != null) {
+				// QuestionDependency qd = new QuestionDependency();
+				// qd.setAnswerValue(answer);
+				// qd.setQuestionId(dependsOnQuestion.getKey().getId());
+				// q.setDependQuestion(qd);
 			}
-				
-		}
-		q = qDao.save(q);
 
-		QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
-		QuestionQuestionGroupAssoc qqga = new QuestionQuestionGroupAssoc();
-		qqga.setQuestionGroupId(qg.getKey().getId());
-		qqga.setQuestionId(q.getKey().getId());
-		qqga.setOrder(questionOrder);
-		qqgaDao.save(qqga);
-		
-		
-		
-		log.info("Just saved " + surveyGroupName + ":" +surveyName +":"+questionGroupName+":" + questionOrder);
+		}
+		qg.addQuestion(questionOrder, q);
+		sgDao.save(sg);
+		log.info("Just saved " + surveyGroupName + ":" + surveyName + ":"
+				+ questionGroupName + ":" + questionOrder);
 		return true;
+	}
+
+	private HashMap<String, String> parseLangMap(String unparsedLangParam) {
+		HashMap<String, String> langMap = new HashMap<String, String>();
+
+		String[] parts = unparsedLangParam.split(";");
+		for (String item : parts) {
+			String[] langParts = item.split("\\|");
+			langMap.put(langParts[0], langParts[1]);
+		}
+		return langMap;
 	}
 }

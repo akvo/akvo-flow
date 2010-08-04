@@ -25,8 +25,10 @@ public class BaseDAO<T extends BaseDomain> {
 	protected static final String LTE_OP = " <= ";
 	private Class<T> concreteClass;
 	protected Logger log;
-	
-	public enum CURSOR_TYPE {all};
+
+	public enum CURSOR_TYPE {
+		all
+	};
 
 	public BaseDAO(Class<T> e) {
 		setDomainClass(e);
@@ -68,9 +70,8 @@ public class BaseDAO<T extends BaseDomain> {
 
 		return obj;
 	}
-	
-	
-	public <E extends BaseDomain> E saveAndFlush(E obj){
+
+	public <E extends BaseDomain> E saveAndFlush(E obj) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		if (obj.getCreatedDateTime() == null) {
 			obj.setCreatedDateTime(new Date());
@@ -100,6 +101,10 @@ public class BaseDAO<T extends BaseDomain> {
 		return getByKey(keyString, concreteClass);
 	}
 
+	public T getByKey(Key key) {
+		return getByKey(key, concreteClass);
+	}
+
 	/**
 	 * convenience method to allow loading of other persistent objects by key
 	 * from this dao
@@ -116,6 +121,19 @@ public class BaseDAO<T extends BaseDomain> {
 		} catch (JDOObjectNotFoundException nfe) {
 			log.warning("No " + clazz.getCanonicalName() + " found with key: "
 					+ k);
+		}
+		return result;
+	}
+
+	public <E extends BaseDomain> E getByKey(Key key, Class<E> clazz) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		E result = null;
+
+		try {
+			result = (E) pm.getObjectById(clazz, key);
+		} catch (JDOObjectNotFoundException nfe) {
+			log.warning("No " + clazz.getCanonicalName() + " found with key: "
+					+ key);
 		}
 		return result;
 	}
@@ -212,8 +230,11 @@ public class BaseDAO<T extends BaseDomain> {
 		return listByProperty(propertyName, propertyValue, propertyType,
 				concreteClass);
 	}
-	protected List<T> listByProperty(String propertyName, Object propertyValue, String propertyType, String orderByCol){
-		return listByProperty(propertyName, propertyValue, propertyType,orderByCol, concreteClass);
+
+	protected List<T> listByProperty(String propertyName, Object propertyValue,
+			String propertyType, String orderByCol) {
+		return listByProperty(propertyName, propertyValue, propertyType,
+				orderByCol, concreteClass);
 	}
 
 	/**
@@ -248,7 +269,7 @@ public class BaseDAO<T extends BaseDomain> {
 
 		return results;
 	}
-	
+
 	/**
 	 * convenience method to list all instances of the type passed in that match
 	 * the property
@@ -265,8 +286,8 @@ public class BaseDAO<T extends BaseDomain> {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends BaseDomain> List<E> listByProperty(
-			String propertyName, Object propertyValue, String propertyType, String orderByCol,
-			Class<E> clazz) {
+			String propertyName, Object propertyValue, String propertyType,
+			String orderByCol, Class<E> clazz) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		List<E> results = null;
 
@@ -357,9 +378,9 @@ public class BaseDAO<T extends BaseDomain> {
 	public static String getCursor(List results) {
 		if (results != null && results.size() > 0) {
 			Cursor cursor = JDOCursorHelper.getCursor(results);
-			if(cursor != null){
+			if (cursor != null) {
 				return cursor.toWebSafeString();
-			}else{
+			} else {
 				return null;
 			}
 		}

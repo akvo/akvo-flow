@@ -1,76 +1,105 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 
-import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class QuestionGroup extends BaseDomain {
-
-	private static final long serialVersionUID = -7253934961271624253L;
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -6831602386813027856L;
+	private String name = null;
+	private String desc = null;
 
-	private String code;
-	private String description;
-	private String path;
-	@NotPersistent
-	private List<Question> questionList;
+	@Persistent(serialized = "true")
+	private HashMap<Integer, Question> questionMap = null;
+	@Persistent(serialized = "true")
+	private List<Key> altNameKeyList = null;
+	@Persistent(serialized = "true")
+	private List<Key> altDescList = null;
+	private String code = null;
+	private String path = null;
 
-	@NotPersistent
-	private TreeMap<Integer, Question> questionMap = null;
-
-	public String getPath() {
-		return path;
+	public List<Key> getNameKeyList() {
+		return altNameKeyList;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setNameKeyList(List<Key> nameList) {
+		this.altNameKeyList = nameList;
 	}
 
-	public String getCode() {
-		return code;
+	public void addQuestion(Integer order, Question question) {
+		if (getQuestionMap() == null)
+			setQuestionMap(new HashMap<Integer, Question>());
+		getQuestionMap().put(order, question);
+	}
+
+	public void addAltNameKey(Key altNameKey) {
+		if (altNameKeyList == null)
+			altNameKeyList = new ArrayList<Key>();
+		altNameKeyList.add(altNameKey);
+	}
+
+	public void addAltDescKey(Key altDesc) {
+		if (getAltDescList() == null)
+			setAltDescList(new ArrayList<Key>());
+		getAltDescList().add(altDesc);
+	}
+
+	public void setQuestionMap(HashMap<Integer, Question> questionMap) {
+		this.questionMap = questionMap;
+	}
+
+	public HashMap<Integer, Question> getQuestionMap() {
+		return questionMap;
 	}
 
 	public void setCode(String code) {
 		this.code = code;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getCode() {
+		return code;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setPath(String path) {
+		this.path = path;
 	}
 
-	public TreeMap<Integer, Question> getQuestionMap() {
-		return questionMap;
+	public String getPath() {
+		return path;
 	}
 
-	public void addQuestion(Question item, Integer key) {
-		if (questionMap == null || questionList == null) {
-			questionMap = new TreeMap<Integer, Question>();
-			questionList = new ArrayList<Question>();
-		}
-		questionList.add(item);
-		questionMap.put(key, item);
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setQuestionList(ArrayList<Question> qList) {
-		questionList = qList;
-		questionMap = new TreeMap<Integer, Question>();
-		if (questionList != null) {
-			for (int i = 0; i < questionList.size(); i++) {
-				questionMap.put(i, questionList.get(i));
-			}
-		}
+	public String getName() {
+		return name;
 	}
 
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setAltDescList(List<Key> altDescList) {
+		this.altDescList = altDescList;
+	}
+
+	public List<Key> getAltDescList() {
+		return altDescList;
+	}
 }

@@ -1,66 +1,71 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Unique;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+
+@PersistenceCapable
 public class SurveyGroup extends BaseDomain {
-	
-	private static final long serialVersionUID = 9001451397587572330L;	
-	private String description;
-	@Unique(name="SURVEYGROUP_CODE_IDX")
-	private String code;
-	private Date createdDateTime;
-	private Date lastUpdateDateTime;
-	
-	@NotPersistent 
-	private ArrayList<Survey> surveyList = null;
-	public Key getKey() {
-		return key;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8941584684617286776L;
+	private String name = null;
+	private String code = null;
+	@Persistent(serialized = "true")
+	private List<Key> altNameKeyList = null;
+	@Persistent(serialized = "true")
+	private List<Survey> surveyList = null;
+
+	public String getName() {
+		return name;
 	}
-	public void setKey(Key key) {
-		this.key = key;
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
-	public Date getCreatedDateTime() {
-		return createdDateTime;
-	}
-	public void setCreatedDateTime(Date createdDateTime) {
-		this.createdDateTime = createdDateTime;
-	}
-	public Date getLastUpdateDateTime() {
-		return lastUpdateDateTime;
-	}
-	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
-		this.lastUpdateDateTime = lastUpdateDateTime;
-	}
-	public void setSurveyList(ArrayList<Survey> surveyList) {
+
+	public void setSurveyList(List<Survey> surveyList) {
 		this.surveyList = surveyList;
 	}
-	public ArrayList<Survey> getSurveyList() {
+
+	public List<Survey> getSurveyList() {
 		return surveyList;
 	}
-	public void addSurvey(Survey item){
-		if(surveyList==null)
+
+	public void addSurvey(Survey survey) {
+		if (surveyList == null)
 			surveyList = new ArrayList<Survey>();
-		surveyList.add(item);
+		surveyList.add(survey);
 	}
+
+	public void addAltNameKeyList(Key altNameKey){
+		if(altNameKey==null)
+			this.altNameKeyList = new ArrayList<Key>();
+		getAltNameKeyList().add(altNameKey);
+	}
+	
+	public void setAltNameKey(List<Key> altNameKey) {
+		this.altNameKeyList = altNameKey;
+	}
+
+	public List<Key> getAltNameKeyList() {
+		return altNameKeyList;
+	}
+
+	
 }

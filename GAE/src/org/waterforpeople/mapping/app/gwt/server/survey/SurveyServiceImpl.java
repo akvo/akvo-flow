@@ -28,7 +28,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDao;
 import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionDependency;
@@ -92,7 +92,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
 			Boolean loadQuestionFlag) {
 		ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
-		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+		SurveyGroupDao surveyGroupDao = new SurveyGroupDao();
 		for (SurveyGroup canonical : surveyGroupDao.list(cursorString,
 				loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag)) {
 			SurveyGroupDto dto = new SurveyGroupDto();
@@ -187,7 +187,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SurveyGroupDto save(SurveyGroupDto value) {
-		SurveyGroupDAO sgDao = new SurveyGroupDAO();
+		SurveyGroupDao sgDao = new SurveyGroupDao();
 		SurveyGroup surveyGroup = new SurveyGroup();
 		DtoMarshaller.copyToCanonical(surveyGroup, value);
 		surveyGroup.setSurveyList(null);
@@ -488,7 +488,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto) {
 		SurveyGroup canonical = new SurveyGroup();
-		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+		SurveyGroupDao surveyGroupDao = new SurveyGroupDao();
 		DtoMarshaller.copyToCanonical(canonical, dto);
 		canonical = surveyGroupDao.save(canonical);
 		DtoMarshaller.copyToDto(canonical, dto);

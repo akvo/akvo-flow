@@ -1,4 +1,4 @@
-package com.gallatinsystems.survey.domain.refactor;
+package com.gallatinsystems.survey.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
 

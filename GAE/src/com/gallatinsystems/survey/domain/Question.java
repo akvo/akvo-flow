@@ -1,48 +1,110 @@
 package com.gallatinsystems.survey.domain;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.PersistenceCapable;
-
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
-public class Question extends BaseDomain implements Comparable<Question> {
+public class Question extends BaseDomain {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9123426646238761996L;
 
-	private static final long serialVersionUID = -4708385830894435407L;
+	public enum Type {
+		GEO, TEXT, OPTION, VIDEO, PHOTO, NUMBER
+	};
 
-	private String referenceIndex;
-	private String text;
-	private String validationRule;
-	private QuestionDependency dependQuestion = null;
-	private Integer order;
-	private String tip;
-	@NotPersistent
-	private OptionContainer optionContainer = null;
-	private QuestionDto.QuestionType type;
-	private ArrayList<QuestionHelp> questionHelpList;
+	private Type type = null;
+	private String tip = null;
+	private String text = null;
+	@Persistent(serialized = "true")
+	private List<Key> altTipKeyList;
+	@Persistent(serialized = "true")
+	private List<Key> altTextList;
+	private Boolean dependentFlag = null;
+	private Boolean allowMultipleFlag = null;
+	private Boolean allowOtherFlag = null;
+	private Key dependentQuestionKey = null;
+	@Persistent(serialized = "true")
+	private HashMap<String, QuestionOption> questionOptionMap = null;
+	private String validationRule = null;
+	@Persistent(serialized = "true")
+	private HashMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
+	// ToDo: Legacy to comply with import ordering needs to be removed later
+	private Integer order = null;
+	private Boolean mandatoryFlag = null;
 	private String path = null;
-	private Boolean mandatory = null;
-	
-	public Integer getOrder() {
-		return order;
+
+	public void addAltTipKey(Key altTipKey) {
+		if (altTipKeyList == null)
+			altTipKeyList = new ArrayList<Key>();
+		altTipKeyList.add(altTipKey);
 	}
 
-	public void setOrder(Integer order) {
-		this.order = order;
+	public void addAltTextKey(Key altTextKey) {
+		if (altTextList == null)
+			altTextList = new ArrayList<Key>();
+		altTextList.add(altTextKey);
 	}
 
-	public String getReferenceIndex() {
-		return referenceIndex;
+	public void addQuestionOption(String langCode, QuestionOption questionOption) {
+		if (getQuestionOptionMap() == null)
+			setQuestionOptionMap(new HashMap<String, QuestionOption>());
+		getQuestionOptionMap().put(langCode, questionOption);
 	}
 
-	public void setReferenceIndex(String referenceIndex) {
-		this.referenceIndex = referenceIndex;
+	public void addHelpMedia(Integer order, QuestionHelpMedia questionHelpMedia) {
+		if (getQuestionHelpMediaMap() == null)
+			setQuestionHelpMediaMap(new HashMap<Integer, QuestionHelpMedia>());
+		getQuestionHelpMediaMap().put(order, questionHelpMedia);
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public Boolean getDependentFlag() {
+		return dependentFlag;
+	}
+
+	public void setDependentFlag(Boolean dependentFlag) {
+		this.dependentFlag = dependentFlag;
+	}
+
+	public Boolean getAllowMultipleFlag() {
+		return allowMultipleFlag;
+	}
+
+	public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
+		this.allowMultipleFlag = allowMultipleFlag;
+	}
+
+	public Boolean getAllowOtherFlag() {
+		return allowOtherFlag;
+	}
+
+	public void setAllowOtherFlag(Boolean allowOtherFlag) {
+		this.allowOtherFlag = allowOtherFlag;
+	}
+
+	public Key getDependentQuestionKey() {
+		return dependentQuestionKey;
+	}
+
+	public void setDependentQuestionKey(Key dependentQuestionKey) {
+		this.dependentQuestionKey = dependentQuestionKey;
 	}
 
 	public String getValidationRule() {
@@ -53,105 +115,38 @@ public class Question extends BaseDomain implements Comparable<Question> {
 		this.validationRule = validationRule;
 	}
 
-	public String getTip() {
-		return tip;
+	public void setQuestionOptionMap(
+			HashMap<String, QuestionOption> questionOptionMap) {
+		this.questionOptionMap = questionOptionMap;
 	}
 
-	public void setTip(String tip) {
-		this.tip = tip;
+	public HashMap<String, QuestionOption> getQuestionOptionMap() {
+		return questionOptionMap;
 	}
 
-	public OptionContainer getOptionContainer() {
-		return optionContainer;
+	public void setQuestionHelpMediaMap(
+			HashMap<Integer, QuestionHelpMedia> questionHelpMediaMap) {
+		this.questionHelpMediaMap = questionHelpMediaMap;
 	}
 
-	public void setOptionContainer(OptionContainer optionContainer) {
-		this.optionContainer = optionContainer;
+	public HashMap<Integer, QuestionHelpMedia> getQuestionHelpMediaMap() {
+		return questionHelpMediaMap;
 	}
 
-	public void addQuestionHelp(QuestionHelp questionHelp) {
-		if (questionHelpList == null) {
-			questionHelpList = new ArrayList<QuestionHelp>();
-		}
-		questionHelpList.add(questionHelp);
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 
-	public String getText() {
-		return text;
+	public Integer getOrder() {
+		return order;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void setMandatoryFlag(Boolean mandatoryFlag) {
+		this.mandatoryFlag = mandatoryFlag;
 	}
 
-	public QuestionType getType() {
-		return type;
-	}
-
-	public void setType(QuestionType type) {
-		this.type = type;
-	}
-
-	public ArrayList<QuestionHelp> getQuestionHelpList() {
-		return questionHelpList;
-	}
-
-	public void setQuestionHelpList(ArrayList<QuestionHelp> questionHelpList) {
-		this.questionHelpList = questionHelpList;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
-
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
-
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
-
-		// print field names paired with their values
-		for (Field field : fields) {
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
-
-		return result.toString();
-	}
-
-	public void setDependQuestion(QuestionDependency dependQuestion) {
-		this.dependQuestion = dependQuestion;
-	}
-
-	public QuestionDependency getDependQuestion() {
-		return dependQuestion;
-	}
-
-	@Override
-	public int compareTo(Question o) {
-		if (o != null && o.getOrder() != null && getOrder() != null) {
-			if (o.getOrder() == getOrder()) {
-				return 0;
-			} else if (getOrder() > o.getOrder()) {
-				return 1;
-			} else {
-				return -1;
-			}
-		} else {
-			return 1;
-		}
+	public Boolean getMandatoryFlag() {
+		return mandatoryFlag;
 	}
 
 	public void setPath(String path) {
@@ -162,11 +157,22 @@ public class Question extends BaseDomain implements Comparable<Question> {
 		return path;
 	}
 
-	public void setMandatory(Boolean mandatory) {
-		this.mandatory = mandatory;
+	
+
+	public void setTip(String tip) {
+		this.tip = tip;
 	}
 
-	public Boolean getMandatory() {
-		return mandatory;
+	public String getTip() {
+		return tip;
 	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public String getText() {
+		return text;
+	}
+
 }

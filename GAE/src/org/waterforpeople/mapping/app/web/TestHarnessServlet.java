@@ -2,18 +2,16 @@ package org.waterforpeople.mapping.app.web;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -63,33 +61,24 @@ import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
-import com.gallatinsystems.survey.dao.OptionContainerDao;
-import com.gallatinsystems.survey.dao.OptionContainerQuestionOptionAssocDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
-import com.gallatinsystems.survey.dao.QuestionQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.dao.SurveyQuestionGroupAssocDao;
-import com.gallatinsystems.survey.dao.SurveySurveyGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
-import com.gallatinsystems.survey.domain.OptionContainer;
-import com.gallatinsystems.survey.domain.OptionContainerQuestionOptionAssoc;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.QuestionHelp;
+import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
-import com.gallatinsystems.survey.domain.QuestionQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
-import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
-import com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia;
-import com.gallatinsystems.survey.domain.refactor.Question.Type;
+import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.Question.Type;
+import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -105,14 +94,6 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
-			for (Survey item : sgItem.getSurveyList()) {
-				SurveyDAO sDao = new SurveyDAO();
-				item = sDao.loadFullSurvey(item.getKey().getId());
-				for (QuestionGroup qg : item.getQuestionGroupList()) {
-					log.info(qg.getCode());
-
-				}
-			}
 
 		} else if ("testBaseDomain".equals(action)) {
 
@@ -201,8 +182,8 @@ public class TestHarnessServlet extends HttpServlet {
 				apDao.save(ap);
 				MapSummarizer ms = new MapSummarizer();
 				ms.performSummarization("" + ap.getKey().getId(), "");
-				if(i%50==0)
-					log.log(Level.INFO,"Loaded to " + i);
+				if (i % 50 == 0)
+					log.log(Level.INFO, "Loaded to " + i);
 			}
 			try {
 				resp.getWriter().println("Finished loading aps");
@@ -300,68 +281,146 @@ public class TestHarnessServlet extends HttpServlet {
 				log.log(Level.SEVERE, "Could not list fragment");
 			}
 		} else if ("saveSurveyGroupRefactor".equals(action)) {
-			com.gallatinsystems.survey.dao.refactor.SurveyGroupDao sgDao = new com.gallatinsystems.survey.dao.refactor.SurveyGroupDao();
-			com.gallatinsystems.survey.dao.refactor.SurveyDao surveyDao = new com.gallatinsystems.survey.dao.refactor.SurveyDao();
-			com.gallatinsystems.survey.dao.refactor.QuestionGroupDao qgDao = new com.gallatinsystems.survey.dao.refactor.QuestionGroupDao();
-			com.gallatinsystems.survey.dao.refactor.QuestionDao qDao = new com.gallatinsystems.survey.dao.refactor.QuestionDao();
-			com.gallatinsystems.survey.dao.refactor.QuestionHelpMediaDao qhmDao = new com.gallatinsystems.survey.dao.refactor.QuestionHelpMediaDao();
-			com.gallatinsystems.survey.dao.refactor.QuestionOptionDao qoDao = new com.gallatinsystems.survey.dao.refactor.QuestionOptionDao();
+
+			com.gallatinsystems.survey.dao.SurveyGroupDAO sgDao = new com.gallatinsystems.survey.dao.SurveyGroupDAO();
+			BaseDAO<Translation> tDao = new BaseDAO<Translation>(
+					Translation.class);
+
+			for (Translation t : tDao.list("all"))
+				tDao.delete(t);
+			// clear out old surveys
+			List<SurveyGroup> sgList = sgDao.list("all");
+			for (SurveyGroup item : sgList)
+				sgDao.delete(item);
+
+			try {
+				resp.getWriter().println("Finished clearing surveyGroup table");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			for (int i = 0; i < 2; i++) {
-				com.gallatinsystems.survey.domain.refactor.SurveyGroup sg = new com.gallatinsystems.survey.domain.refactor.SurveyGroup();
+				com.gallatinsystems.survey.domain.SurveyGroup sg = new com.gallatinsystems.survey.domain.SurveyGroup();
 				sg.setCode(i + ":" + new Date());
 				sg.setName(i + ":" + new Date());
 				for (int j = 0; j < 10; j++) {
-					com.gallatinsystems.survey.domain.refactor.Survey survey = new com.gallatinsystems.survey.domain.refactor.Survey();
-					survey.addName("en", j + ":" + new Date());
-					survey.addName("es", j + ":" + new Date());
+					com.gallatinsystems.survey.domain.Survey survey = new com.gallatinsystems.survey.domain.Survey();
+					survey.setName(j + ":" + new Date());
+					Translation t = new Translation();
+					t.setLanguageCode("es");
+					t.setText(j + ":" + new Date());
+					t.setParentType(ParentType.SURVEY_NAME);
+					tDao.save(t);
+					survey.addAltName(t.getKey());
 					for (int k = 0; k < 10; k++) {
-						com.gallatinsystems.survey.domain.refactor.QuestionGroup qg = new com.gallatinsystems.survey.domain.refactor.QuestionGroup();
-						qg.addDesc("en", k + ":" + new Date());
-						qg.addDesc("es", j + ":" + new Date());
+						com.gallatinsystems.survey.domain.QuestionGroup qg = new com.gallatinsystems.survey.domain.QuestionGroup();
+						qg.setName("en:" + j + new Date());
+						qg.setDesc("en:desc: " + j + new Date());
+						qg.setCode("en:" + j + new Date());
+						Translation t2 = new Translation();
+						t2.setLanguageCode("es");
+						t2.setParentType(ParentType.QUESTION_GROUP_NAME);
+						t2.setText("es:" + k + new Date());
+						tDao.save(t2);
+						qg.addAltDescKey(t2.getKey());
+						qg.addAltNameKey(t2.getKey());
 						for (int l = 0; l < 10; l++) {
-							com.gallatinsystems.survey.domain.refactor.Question q = new com.gallatinsystems.survey.domain.refactor.Question();
+							com.gallatinsystems.survey.domain.Question q = new com.gallatinsystems.survey.domain.Question();
 							q.setType(Type.OPTION);
 							q.setAllowMultipleFlag(false);
 							q.setAllowOtherFlag(false);
 							q.setDependentFlag(false);
-							q.addText("en", l + ":" + new Date());
-							q.addText("es", l + ":" + new Date());
-							q.addTip("en", l + ":" + new Date());
-							q.addTip("en", l + ":" + new Date());
+							q.setMandatoryFlag(true);
+							q.setText("en:" + l + ":" + new Date());
+							q.setTip("en:" + l + ":" + new Date());
+							Translation tq = new Translation();
+							tq.setLanguageCode("es");
+							tq.setText("es" + l + ":" + new Date());
+							tq.setParentType(ParentType.QUESTION_TEXT);
+							tDao.save(tq);
+							q.addAltTextKey(tq.getKey());
 							for (int m = 0; m < 10; m++) {
-								com.gallatinsystems.survey.domain.refactor.QuestionOption qo = new com.gallatinsystems.survey.domain.refactor.QuestionOption();
-								qo.addOptionMap("en", m + ":" + new Date());
-								qo.addOptionMap("es", m + ":" + new Date());
+								com.gallatinsystems.survey.domain.QuestionOption qo = new com.gallatinsystems.survey.domain.QuestionOption();
+								qo.addOption("en:" + m + ":" + new Date());
+								Translation tqo = new Translation();
+								tqo.setLanguageCode("es");
+								tqo.setText("es:" + m + ":" + new Date());
+								tqo.setParentType(ParentType.QUESTION_OPTION);
+								tDao.save(tqo);
+								qo.addAltOptionKey(tqo.getKey());
 								qo.setCode(m + ":" + new Date());
-								qoDao.save(qo);
-								q.addQuestionOption("en", qo.getKey());
 							}
 							for (int n = 0; n < 10; n++) {
-								com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.refactor.QuestionHelpMedia();
-								qhm.addText("en", n + ":" + new Date());
-								qhm.addText("en", n + ":" + new Date());
+								com.gallatinsystems.survey.domain.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.QuestionHelpMedia();
+								qhm.setText("en:" + n + ":" + new Date());
+								Translation tqhm = new Translation();
+								tqhm.setLanguageCode("es");
+								tqhm.setText("es:" + n + ":" + new Date());
+								tqhm
+										.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
+								tDao.save(tqhm);
+								qhm.addAltTextKey(tqhm.getKey());
 								qhm.setType(QuestionHelpMedia.Type.PHOTO);
 								qhm.setUrl("http://test.com/" + n + ".jpg");
-								qhmDao.save(qhm);
-								q.addHelpMedia(n, qhm.getKey());
+								q.addHelpMedia(n, qhm);
 							}
-							qDao.save(q);
-							qg.addQuestion(l, q.getKey());
+							qg.addQuestion(l, q);
 						}
-						qgDao.save(qg);
-						survey.addQuestionGroup(k, qg.getKey());
+						survey.addQuestionGroup(k, qg);
 					}
-					surveyDao.save(survey);
-					sg.addSurveyKey(survey.getKey());
+					sg.addSurvey(survey);
+
 				}
 				sgDao.save(sg);
-				try {
-					resp.getWriter().print(
-							"Saved SurveyGroup: " + sg.toString());
-				} catch (IOException e) {
-					log.log(Level.SEVERE, "Could not save sg");
+				log.log(Level.INFO, "Finished Saving sg: "
+						+ sg.getKey().toString());
+
+			}
+			try {
+				List<SurveyGroup> savedSurveyGroups = sgDao.list("all");
+				for (SurveyGroup sgItem : savedSurveyGroups) {
+					resp.getWriter().println("SG: " + sgItem.getCode());
+					for (Survey survey : sgItem.getSurveyList()) {
+						resp.getWriter().println(
+								"   Survey:" + survey.getName());
+						for (Map.Entry<Integer, QuestionGroup> entry : survey
+								.getQuestionGroupMap().entrySet()) {
+							resp.getWriter().println(
+									"     QuestionGroup: " + entry.getKey()
+											+ ":" + entry.getValue().getDesc());
+							for (Map.Entry<Integer, Question> questionEntry : entry
+									.getValue().getQuestionMap().entrySet()) {
+								resp.getWriter().println(
+										"         Question"
+												+ questionEntry.getKey()
+												+ ":"
+												+ questionEntry.getValue()
+														.getText());
+								for (Map.Entry<Integer, QuestionHelpMedia> qhmEntry : questionEntry
+										.getValue().getQuestionHelpMediaMap()
+										.entrySet()) {
+									resp.getWriter().println(
+											"             QuestionHelpMedia"
+													+ qhmEntry.getKey()
+													+ ":"
+													+ qhmEntry.getValue()
+															.getText());
+									for (Key tKey : qhmEntry.getValue()
+											.getAltTextKeyList()) {
+										Translation t = tDao.getByKey(tKey);
+										resp.getWriter().println(
+												"                 QHMAltText"
+														+ t.getLanguageCode()
+														+ ":" + t.getText());
+									}
+								}
+							}
+						}
+					}
 				}
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Could not save sg");
 			}
 
 		} else if ("testSurveyQuestion".equals(action)) {
@@ -738,14 +797,6 @@ public class TestHarnessServlet extends HttpServlet {
 			d.setInServiceDate(new Date());
 			deviceDao.save(d);
 
-		} else if ("createSurvey".equals(action)) {
-			Survey s = new Survey();
-			s.setName("test");
-			SurveyDAO surveyDao = new SurveyDAO();
-			surveyDao.save(s);
-			s = new Survey();
-			s.setName("test 2");
-			surveyDao.save(s);
 		} else if ("saveAPMapping".equals(action)) {
 			SurveyAttributeMapping mapping = new SurveyAttributeMapping();
 			mapping.setAttributeName("status");
@@ -761,22 +812,6 @@ public class TestHarnessServlet extends HttpServlet {
 			if (mappings != null) {
 				System.out.println(mappings.size());
 			}
-		} else if ("optionContainer".equals(action)) {
-			Question question = new Question();
-			question.setText("test option harness");
-			OptionContainer oc = new OptionContainer();
-			oc.setAllowMultipleFlag(false);
-			oc.setAllowOtherFlag(false);
-			for (int i = 0; i < 3; i++) {
-				QuestionOption qo = new QuestionOption();
-				qo.setCode("r" + i);
-				qo.setText("r" + i);
-				oc.addQuestionOption(qo);
-			}
-			question.setOptionContainer(oc);
-			QuestionDao qDao = new QuestionDao();
-			qDao.save(question);
-
 		} else if ("deleteSurveyGraph".equals(action)) {
 			try {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
@@ -794,11 +829,6 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 				resp.getWriter().println("Deleted all surveys");
 
-				SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
-				List<SurveySurveyGroupAssoc> ssgaList = ssgaDao.list("all");
-				for (SurveySurveyGroupAssoc ssga : ssgaList) {
-					ssgaDao.delete(ssga);
-				}
 				resp.getWriter().println("Deleted all surveysurveygroupassocs");
 				QuestionGroupDao qgDao = new QuestionGroupDao();
 				List<QuestionGroup> qgList = qgDao.list("all");
@@ -807,21 +837,6 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 				resp.getWriter().println("Deleted all question groups");
 
-				SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
-				List<SurveyQuestionGroupAssoc> sgqaList = sqgaDao.list("all");
-				for (SurveyQuestionGroupAssoc sqga : sgqaList) {
-					sqgaDao.delete(sqga);
-				}
-				resp.getWriter().println(
-						"Deleted all surveyquestiongroupassocdao");
-
-				QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
-				List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao.list("all");
-				for (QuestionQuestionGroupAssoc qqga : qqgaList) {
-					qqgaDao.delete(qqga);
-				}
-				resp.getWriter().println(
-						"Deleted all QuestionQuestionGroupsAssocs");
 				QuestionDao qDao = new QuestionDao();
 				List<Question> qList = qDao.list("all");
 				for (Question q : qList) {
@@ -834,33 +849,6 @@ public class TestHarnessServlet extends HttpServlet {
 				for (QuestionOption qo : qoList)
 					qoDao.delete(qo);
 				resp.getWriter().println("Deleted all QuestionOptions");
-
-				OptionContainerDao ocDao = new OptionContainerDao();
-				List<OptionContainer> ocList = ocDao.list("all");
-				for (OptionContainer oc : ocList)
-					ocDao.delete(oc);
-				resp.getWriter().println("Deleted all OptionContainer");
-
-				BaseDAO<QuestionHelp> qhDao = new BaseDAO<QuestionHelp>(
-						QuestionHelp.class);
-				List<QuestionHelp> qhList = qhDao.list("all");
-				for (QuestionHelp qh : qhList)
-					qhDao.delete(qh);
-				resp.getWriter().println("Deleted all QuestionHelp");
-
-				OptionContainerQuestionOptionAssocDao ocqaDao = new OptionContainerQuestionOptionAssocDao();
-				List<OptionContainerQuestionOptionAssoc> ocqoalist = ocqaDao
-						.list("all");
-				for (OptionContainerQuestionOptionAssoc o : ocqoalist) {
-					ocqaDao.delete(o);
-				}
-
-				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(
-						QuestionDependency.class);
-				List<QuestionDependency> qdepList = qDep.list("all");
-				for (QuestionDependency qd : qdepList)
-					qDep.delete(qd);
-				resp.getWriter().println("Deleted all question dependency");
 
 				resp.getWriter().println(
 						"Deleted all OptionoContainerQuestionOptionAssoc");
@@ -886,11 +874,6 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 				resp.getWriter().println("Deleted all surveys");
 
-				SurveySurveyGroupAssocDao ssgaDao = new SurveySurveyGroupAssocDao();
-				List<SurveySurveyGroupAssoc> ssgaList = ssgaDao.list("all");
-				for (SurveySurveyGroupAssoc ssga : ssgaList) {
-					ssgaDao.delete(ssga);
-				}
 				resp.getWriter().println("Deleted all surveysurveygroupassocs");
 				QuestionGroupDao qgDao = new QuestionGroupDao();
 				List<QuestionGroup> qgList = qgDao.list("all");
@@ -899,21 +882,6 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 				resp.getWriter().println("Deleted all question groups");
 
-				SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
-				List<SurveyQuestionGroupAssoc> sgqaList = sqgaDao.list("all");
-				for (SurveyQuestionGroupAssoc sqga : sgqaList) {
-					sqgaDao.delete(sqga);
-				}
-				resp.getWriter().println(
-						"Deleted all surveyquestiongroupassocdao");
-
-				QuestionQuestionGroupAssocDao qqgaDao = new QuestionQuestionGroupAssocDao();
-				List<QuestionQuestionGroupAssoc> qqgaList = qqgaDao.list("all");
-				for (QuestionQuestionGroupAssoc qqga : qqgaList) {
-					qqgaDao.delete(qqga);
-				}
-				resp.getWriter().println(
-						"Deleted all QuestionQuestionGroupsAssocs");
 				QuestionDao qDao = new QuestionDao();
 				List<Question> qList = qDao.list("all");
 				for (Question q : qList) {
@@ -921,39 +889,11 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 				resp.getWriter().println("Deleted all Questions");
 
-				BaseDAO<QuestionHelp> qhDao = new BaseDAO<QuestionHelp>(
-						QuestionHelp.class);
-				List<QuestionHelp> qhList = qhDao.list("all");
-				for (QuestionHelp qh : qhList)
-					qhDao.delete(qh);
-				resp.getWriter().println("Deleted all QuestionHelp");
-
 				QuestionOptionDao qoDao = new QuestionOptionDao();
 				List<QuestionOption> qoList = qoDao.list("all");
 				for (QuestionOption qo : qoList)
 					qoDao.delete(qo);
 				resp.getWriter().println("Deleted all QuestionOptions");
-
-				OptionContainerDao ocDao = new OptionContainerDao();
-				List<OptionContainer> ocList = ocDao.list("all");
-				for (OptionContainer oc : ocList)
-					ocDao.delete(oc);
-				resp.getWriter().println("Deleted all OptionContainer");
-
-				BaseDAO<QuestionDependency> qDep = new BaseDAO<QuestionDependency>(
-						QuestionDependency.class);
-				List<QuestionDependency> qdepList = qDep.list("all");
-				for (QuestionDependency qd : qdepList)
-					qDep.delete(qd);
-				resp.getWriter().println("Deleted all question dependency");
-
-				BaseDAO<OptionContainerQuestionOptionAssoc> ocqoaDao = new BaseDAO<OptionContainerQuestionOptionAssoc>(
-						OptionContainerQuestionOptionAssoc.class);
-				List<OptionContainerQuestionOptionAssoc> ocqoaList = ocqoaDao
-						.list("all");
-				for (OptionContainerQuestionOptionAssoc item : ocqoaList) {
-					ocqoaDao.delete(item);
-				}
 
 				resp.getWriter().println("Deleted all questions");
 				/*
@@ -1030,32 +970,6 @@ public class TestHarnessServlet extends HttpServlet {
 								+ sc.getSurveyDocument().getValue());
 			} catch (IOException ex) {
 				ex.printStackTrace();
-			}
-		} else if ("testQuestionOption".equals(action)) {
-			QuestionDao qDao = new QuestionDao();
-			List<Question> qList = qDao.list("all");
-			for (Question q : qList) {
-				if (q.getOptionContainer() != null) {
-					try {
-						resp.getWriter().println(
-								"OC: " + q.getOptionContainer().getKey());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					if (q.getOptionContainer().getOptionsList() != null) {
-						for (QuestionOption qo : q.getOptionContainer()
-								.getOptionsList()) {
-							try {
-								resp.getWriter().println(
-										qo.getCode() + " " + qo.getText());
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				}
 			}
 		} else if ("testFindSurvey".equals(action)) {
 			SurveyServiceImpl ssI = new SurveyServiceImpl();

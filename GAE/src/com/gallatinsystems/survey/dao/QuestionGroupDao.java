@@ -1,6 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -8,7 +8,7 @@ import javax.jdo.PersistenceManager;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
+import com.gallatinsystems.survey.domain.Survey;
 
 public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
@@ -18,23 +18,11 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
 	public QuestionGroup save(QuestionGroup item, Long surveyId, Integer order) {
 		item = save(item);
-		SurveyQuestionGroupAssoc sqga = new SurveyQuestionGroupAssoc();
-		sqga.setSurveyId(surveyId);
-		sqga.setQuestionGroupId(item.getKey().getId());
-		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
-		if (order != null)
-			sqga.setOrder(order);
-		sqgaDao.save(sqga);
 		return item;
 	}
 
 	public void delete(QuestionGroup item, Long surveyId) {
-		// ToDo Handle delete and cascades
-		SurveyQuestionGroupAssocDao sqgaDao = new SurveyQuestionGroupAssocDao();
-		SurveyQuestionGroupAssoc sgqa = new SurveyQuestionGroupAssoc();
-		sgqa.setSurveyId(surveyId);
-		sgqa.setQuestionGroupId(item.getKey().getId());
-		sqgaDao.delete(sgqa);
+		
 		delete(item);
 	}
 
@@ -42,16 +30,11 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		return findByProperty("code", questionGroupCode, "String");
 	}
 
-	public List<QuestionGroup> listQuestionGroupsBySurvey(Long surveyId) {
-		SurveyQuestionGroupAssocDao sqgDao = new SurveyQuestionGroupAssocDao();
-		List<SurveyQuestionGroupAssoc> sgqList = sqgDao
-				.listBySurveyId(surveyId);
-		List<QuestionGroup> qgList = new ArrayList<QuestionGroup>();
-		for (SurveyQuestionGroupAssoc sqga : sgqList) {
-			QuestionGroup qg = super.getByKey(sqga.getQuestionGroupId());
-			qgList.add(qg);
-		}
-		return qgList;
+	public HashMap<Integer,QuestionGroup> listQuestionGroupsBySurvey(Long surveyId) {
+		SurveyDAO surveyDao = new SurveyDAO();
+		Survey survey = surveyDao.getByKey(surveyId);
+		
+		return survey.getQuestionGroupMap();
 	}
 
 	@SuppressWarnings("unchecked")
