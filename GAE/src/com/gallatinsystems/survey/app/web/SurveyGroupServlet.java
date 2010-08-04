@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.SurveySurveyGroupAssoc;
 import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
 
 public class SurveyGroupServlet extends HttpServlet {
@@ -33,10 +32,9 @@ public class SurveyGroupServlet extends HttpServlet {
 				SurveyGroup.class);
 		if (action != null && action.equals("addSurveyGroup")) {
 			String code = req.getParameter("code");
-			String description = req.getParameter("description");
+			//String description = req.getParameter("description");
 			SurveyGroup surveyGroup = new SurveyGroup();
-			surveyGroup.setCode(code);
-			surveyGroup.setDescription(description);
+			surveyGroup.setCode(code);						
 			surveyGroupDAO.save(surveyGroup);
 			outString = surveyGroup.toString();
 		} else if (action != null && action.equals("associateSurveyGroup")) {
@@ -50,13 +48,7 @@ public class SurveyGroupServlet extends HttpServlet {
 		} else if (action != null
 				&& action.equals("associateSurveyToSurveyGroup")) {
 
-			Long surveyId = new Long(req.getParameter("surveyId"));
-			Long surveyGroupId = new Long(req.getParameter("surveyGroupId"));
-			SurveySurveyGroupAssoc ssga = new SurveySurveyGroupAssoc();
-			ssga.setSurveyId(surveyId);
-			ssga.setSurveyGroupId(surveyGroupId);
-			surveyGroupDAO.save(ssga);
-			outString = ssga.toString();
+			throw new RuntimeException("associateSurveyToSurveyGroup is Not Implemented");
 		}
 		resp.setContentType("text/html");
 		try {
