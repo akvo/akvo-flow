@@ -1,10 +1,9 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
-import javax.jdo.annotations.Element;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -26,7 +25,7 @@ public class Survey extends BaseDomain {
 	private List<Key> altDescKeyList = null;
 	private Status status = null;
 	@Persistent(serialized = "true")
-	private HashMap<Integer, QuestionGroup> questionGroupMap = null;
+	private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
 	private Double version = null;
 	private String path = null;
 
@@ -96,17 +95,17 @@ public class Survey extends BaseDomain {
 	}
 
 	public void setQuestionGroupMap(
-			HashMap<Integer, QuestionGroup> questionGroupMap) {
+			TreeMap<Integer, QuestionGroup> questionGroupMap) {
 		this.questionGroupMap = questionGroupMap;
 	}
 
-	public HashMap<Integer, QuestionGroup> getQuestionGroupMap() {
+	public TreeMap<Integer, QuestionGroup> getQuestionGroupMap() {
 		return questionGroupMap;
 	}
 
 	public void addQuestionGroup(Integer order, QuestionGroup questionGroup) {
 		if (questionGroupMap == null)
-			questionGroupMap = new HashMap<Integer, QuestionGroup>();
+			questionGroupMap = new TreeMap<Integer, QuestionGroup>();
 		questionGroupMap.put(order, questionGroup);
 	}
 
