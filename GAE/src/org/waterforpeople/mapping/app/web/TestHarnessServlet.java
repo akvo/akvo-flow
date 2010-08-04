@@ -325,7 +325,7 @@ public class TestHarnessServlet extends HttpServlet {
 						tDao.save(t2);
 						qg.addAltDescKey(t2.getKey());
 						qg.addAltNameKey(t2.getKey());
-						for (int l = 0; l < 10; l++) {
+						for (int l = 0; l < 2; l++) {
 							com.gallatinsystems.survey.domain.Question q = new com.gallatinsystems.survey.domain.Question();
 							q.setType(Type.OPTION);
 							q.setAllowMultipleFlag(false);
