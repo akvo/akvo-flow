@@ -30,8 +30,7 @@ public class SurveyGroupServiceImpl extends RemoteServiceServlet implements
 		if (sgList != null) {
 			for (com.gallatinsystems.survey.domain.SurveyGroup surveyGroup : sgList) {
 				SurveyGroupDto item = new SurveyGroupDto();
-				item.setCode(surveyGroup.getCode());
-				item.setDescription(surveyGroup.getDescription());
+				item.setCode(surveyGroup.getCode());				
 				item.setKeyId(surveyGroup.getKey().getId());
 				item.setCreatedDateTime(surveyGroup.getCreatedDateTime());
 				item.setLastUpdateDateTime(surveyGroup.getLastUpdateDateTime());
@@ -48,8 +47,7 @@ public class SurveyGroupServiceImpl extends RemoteServiceServlet implements
 		if (sgList != null) {
 			for (com.gallatinsystems.survey.domain.SurveyGroup surveyGroup : sgList) {
 				SurveyGroupDto item = new SurveyGroupDto();
-				item.setCode(surveyGroup.getCode());
-				item.setDescription(surveyGroup.getDescription());
+				item.setCode(surveyGroup.getCode());				
 				item.setKeyId(surveyGroup.getKey().getId());
 				item.setCreatedDateTime(surveyGroup.getCreatedDateTime());
 				item.setLastUpdateDateTime(surveyGroup.getLastUpdateDateTime());
@@ -61,8 +59,7 @@ public class SurveyGroupServiceImpl extends RemoteServiceServlet implements
 	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto surveyGroup) {
 		SurveyGroupHelper sgh = new SurveyGroupHelper();
 		com.gallatinsystems.survey.domain.SurveyGroup sg = new com.gallatinsystems.survey.domain.SurveyGroup();
-		sg.setCode(surveyGroup.getCode());
-		sg.setDescription(surveyGroup.getDescription());
+		sg.setCode(surveyGroup.getCode());		
 		sg = sgh.saveSurveyGroup(sg);
 		surveyGroup.setKeyId(sg.getKey().getId());
 		return surveyGroup;
