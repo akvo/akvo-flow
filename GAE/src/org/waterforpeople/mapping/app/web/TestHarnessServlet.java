@@ -97,7 +97,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 		} else if ("testBaseDomain".equals(action)) {
 
-			SurveyDAO surveyDAO = new SurveyDAO();			
+			SurveyDAO surveyDAO = new SurveyDAO();
 			String outString = surveyDAO.getForTest();
 			BaseDAO<AccessPoint> pointDao = new BaseDAO<AccessPoint>(
 					AccessPoint.class);
@@ -279,7 +279,38 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException ie) {
 				log.log(Level.SEVERE, "Could not list fragment");
 			}
-		} else if ("saveSurveyGroupRefactor".equals(action)) {
+		} else if ("deleteSurveyGraph".equals(action)) {
+			SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			SurveyDAO surveyDao = new SurveyDAO();
+			QuestionGroupDao qgDao = new QuestionGroupDao();
+			QuestionDao qDao = new QuestionDao();
+			BaseDAO<Translation> tDao = new BaseDAO<Translation>(
+					Translation.class);
+			QuestionHelpMediaDao qhmDao = new QuestionHelpMediaDao();
+			QuestionOptionDao qoDao = new QuestionOptionDao();
+
+			for (SurveyGroup sg : sgDao.list("all"))
+				sgDao.delete(sg);
+			for (Survey s : surveyDao.list("all"))
+				surveyDao.delete(s);
+			for(QuestionGroup qg:qgDao.list("all"))
+				qgDao.delete(qg);
+			for(Question q:qDao.list("all"))
+				qDao.delete(q);
+			for(Translation t:tDao.list("all"))
+				tDao.delete(t);
+			for(QuestionOption qo:qoDao.list("all"))
+				qoDao.delete(qo);
+			for(QuestionHelpMedia qhm:qhmDao.list("all"))
+				qhmDao.delete(qhm);
+			try{
+				resp.getWriter().println("Finished deleting survey graph");
+			}catch(IOException iex){
+				log.log(Level.SEVERE,"couldn't delete surveyGraph" + iex);
+			}
+		}
+
+		else if ("saveSurveyGroupRefactor".equals(action)) {
 
 			com.gallatinsystems.survey.dao.SurveyGroupDAO sgDao = new com.gallatinsystems.survey.dao.SurveyGroupDAO();
 			BaseDAO<Translation> tDao = new BaseDAO<Translation>(
@@ -360,12 +391,12 @@ public class TestHarnessServlet extends HttpServlet {
 							q.addTranslation(tq);
 							for (int m = 0; m < 10; m++) {
 								com.gallatinsystems.survey.domain.QuestionOption qo = new com.gallatinsystems.survey.domain.QuestionOption();
-								qo.setOrder(m);								
+								qo.setOrder(m);
 								qo.setText(m + ":" + new Date());
 								qo.setCode(m + ":" + new Date());
 								qo.setQuestionId(q.getKey().getId());
 								qo = questionOptionDao.save(qo);
-								
+
 								Translation tqo = new Translation();
 								tqo.setLanguageCode("es");
 								tqo.setText("es:" + m + ":" + new Date());
@@ -382,7 +413,7 @@ public class TestHarnessServlet extends HttpServlet {
 								qhm.setUrl("http://test.com/" + n + ".jpg");
 								qhm.setQuestionId(q.getKey().getId());
 								qhm = helpDao.save(qhm);
-								
+
 								Translation tqhm = new Translation();
 								tqhm.setLanguageCode("es");
 								tqhm.setText("es:" + n + ":" + new Date());
@@ -390,7 +421,7 @@ public class TestHarnessServlet extends HttpServlet {
 										.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
 								tqhm.setParentId(qhm.getKey().getId());
 								tDao.save(tqhm);
-								qhm.addTranslation(tqhm);																															
+								qhm.addTranslation(tqhm);
 								q.addHelpMedia(n, qhm);
 							}
 							qg.addQuestion(l, q);
@@ -398,7 +429,7 @@ public class TestHarnessServlet extends HttpServlet {
 						survey.addQuestionGroup(k, qg);
 					}
 					sg.addSurvey(survey);
-				}				
+				}
 				log.log(Level.INFO, "Finished Saving sg: "
 						+ sg.getKey().toString());
 			}
@@ -431,14 +462,15 @@ public class TestHarnessServlet extends HttpServlet {
 													+ ":"
 													+ qhmEntry.getValue()
 															.getText());
-									/*for (Key tKey : qhmEntry.getValue()
-											.getAltTextKeyList()) {
-										Translation t = tDao.getByKey(tKey);
-										resp.getWriter().println(
-												"                 QHMAltText"
-														+ t.getLanguageCode()
-														+ ":" + t.getText());
-									}*/
+									/*
+									 * for (Key tKey : qhmEntry.getValue()
+									 * .getAltTextKeyList()) { Translation t =
+									 * tDao.getByKey(tKey);
+									 * resp.getWriter().println(
+									 * "                 QHMAltText" +
+									 * t.getLanguageCode() + ":" + t.getText());
+									 * }
+									 */
 								}
 							}
 						}
