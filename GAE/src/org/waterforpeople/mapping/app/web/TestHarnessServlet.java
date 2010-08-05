@@ -293,20 +293,20 @@ public class TestHarnessServlet extends HttpServlet {
 				sgDao.delete(sg);
 			for (Survey s : surveyDao.list("all"))
 				surveyDao.delete(s);
-			for(QuestionGroup qg:qgDao.list("all"))
+			for (QuestionGroup qg : qgDao.list("all"))
 				qgDao.delete(qg);
-			for(Question q:qDao.list("all"))
+			for (Question q : qDao.list("all"))
 				qDao.delete(q);
-			for(Translation t:tDao.list("all"))
+			for (Translation t : tDao.list("all"))
 				tDao.delete(t);
-			for(QuestionOption qo:qoDao.list("all"))
+			for (QuestionOption qo : qoDao.list("all"))
 				qoDao.delete(qo);
-			for(QuestionHelpMedia qhm:qhmDao.list("all"))
+			for (QuestionHelpMedia qhm : qhmDao.list("all"))
 				qhmDao.delete(qhm);
-			try{
+			try {
 				resp.getWriter().println("Finished deleting survey graph");
-			}catch(IOException iex){
-				log.log(Level.SEVERE,"couldn't delete surveyGraph" + iex);
+			} catch (IOException iex) {
+				log.log(Level.SEVERE, "couldn't delete surveyGraph" + iex);
 			}
 		}
 
@@ -868,52 +868,6 @@ public class TestHarnessServlet extends HttpServlet {
 					.listMappingsBySurvey(1L);
 			if (mappings != null) {
 				System.out.println(mappings.size());
-			}
-		} else if ("deleteSurveyGraph".equals(action)) {
-			try {
-				SurveyGroupDAO sgDao = new SurveyGroupDAO();
-				List<SurveyGroup> sgList = sgDao.list("all");
-				for (SurveyGroup sg : sgList) {
-					sgDao.delete(sg);
-				}
-
-				resp.getWriter().println("Deleted all survey groups");
-
-				SurveyDAO surveyDao = new SurveyDAO();
-				List<Survey> surveyList = surveyDao.list("all");
-				for (Survey survey : surveyList) {
-					surveyDao.delete(survey);
-				}
-				resp.getWriter().println("Deleted all surveys");
-
-				resp.getWriter().println("Deleted all surveysurveygroupassocs");
-				QuestionGroupDao qgDao = new QuestionGroupDao();
-				List<QuestionGroup> qgList = qgDao.list("all");
-				for (QuestionGroup qg : qgList) {
-					qgDao.delete(qg);
-				}
-				resp.getWriter().println("Deleted all question groups");
-
-				QuestionDao qDao = new QuestionDao();
-				List<Question> qList = qDao.list("all");
-				for (Question q : qList) {
-					qDao.delete(q);
-				}
-				resp.getWriter().println("Deleted all Questions");
-
-				QuestionOptionDao qoDao = new QuestionOptionDao();
-				List<QuestionOption> qoList = qoDao.list("all");
-				for (QuestionOption qo : qoList)
-					qoDao.delete(qo);
-				resp.getWriter().println("Deleted all QuestionOptions");
-
-				resp.getWriter().println(
-						"Deleted all OptionoContainerQuestionOptionAssoc");
-
-				resp.getWriter().println("Everything");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		} else if ("saveSurveyGroup".equals(action)) {
 			try {
