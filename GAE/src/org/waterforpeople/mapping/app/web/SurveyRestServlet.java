@@ -95,7 +95,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		if (sg == null) {
 			sg = new SurveyGroup();
 			sg.setCode(surveyGroupName);
-			sg = sgDao.save(sg);
+			sgDao.save(sg);
 		}
 
 		Survey survey = null;
@@ -107,6 +107,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			survey.setName(surveyName);
 			survey.setPath(surveyPath);
 			survey.setCode(surveyName);
+			survey.setSurveyGroupId(sg.getKey().getId());
+			surveyDao.save(survey);
 		}
 
 		QuestionGroup qg = null;
@@ -119,6 +121,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			qg.setCode(questionGroupName);
 			qg.setPath(qgPath);
 			survey.addQuestionGroup(questionGroupOrder, qg);
+			qg.setSurveyId(survey.getKey().getId());
+			qgDao.save(qg);
 		}
 
 		Question q = new Question();
@@ -127,6 +131,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		q.setPath(questionPath);
 		q.setOrder(questionOrder);
 		q.setReferenceId(questionOrder.toString());
+		q.setQuestionGroupId(qg.getKey().getId());
 
 		for (Map.Entry<String, String> qTextItem : parseLangMap(questionText)
 				.entrySet()) {
