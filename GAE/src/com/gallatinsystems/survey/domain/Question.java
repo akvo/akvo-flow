@@ -36,6 +36,15 @@ public class Question extends BaseDomain {
 	private Integer order = null;
 	private Boolean mandatoryFlag = null;
 	private String path = null;
+	private String referenceId;
+
+	public String getReferenceId() {
+		return referenceId;
+	}
+
+	public void setReferenceId(String referenceId) {
+		this.referenceId = referenceId;
+	}
 
 	public String getDependentQuestionAnswer() {
 		return dependentQuestionAnswer;
