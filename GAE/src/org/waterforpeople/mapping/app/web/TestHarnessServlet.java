@@ -97,8 +97,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 		} else if ("testBaseDomain".equals(action)) {
 
-			SurveyDAO surveyDAO = new SurveyDAO();
-			surveyDAO.test();
+			SurveyDAO surveyDAO = new SurveyDAO();			
 			String outString = surveyDAO.getForTest();
 			BaseDAO<AccessPoint> pointDao = new BaseDAO<AccessPoint>(
 					AccessPoint.class);
