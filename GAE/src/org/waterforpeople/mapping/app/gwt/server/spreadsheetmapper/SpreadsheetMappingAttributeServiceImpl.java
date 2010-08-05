@@ -306,7 +306,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								if (group == null) {
 									group = new QuestionGroup();
 									group.setCode(colContents.trim());
-									survey.addQuestionGroup(group);
+									//TODO: Check with Chris to make sure the order param is correct
+									survey.addQuestionGroup(i,group);
 									groupMap.put(colContents.trim(), group);
 								}
 							}
