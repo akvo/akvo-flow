@@ -7,7 +7,6 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class Question extends BaseDomain {
@@ -26,16 +25,33 @@ public class Question extends BaseDomain {
 	private Boolean dependentFlag = null;
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
-	private Key dependentQuestionKey = null;
+	private Long dependentQuestionId;
+	private String dependentQuestionAnswer;
 	@NotPersistent
 	private TreeMap<Integer, QuestionOption> questionOptionMap = null;
 	private String validationRule = null;
 	@NotPersistent
-	private HashMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
+	private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
 	private Long questionGroupId;
 	private Integer order = null;
 	private Boolean mandatoryFlag = null;
 	private String path = null;
+
+	public String getDependentQuestionAnswer() {
+		return dependentQuestionAnswer;
+	}
+
+	public void setDependentQuestionAnswer(String dependentQuestionAnswer) {
+		this.dependentQuestionAnswer = dependentQuestionAnswer;
+	}
+
+	public Long getDependentQuestionId() {
+		return dependentQuestionId;
+	}
+
+	public void setDependentQuestionId(Long dependentQuestionId) {
+		this.dependentQuestionId = dependentQuestionId;
+	}
 
 	public Long getQuestionGroupId() {
 		return questionGroupId;
@@ -63,7 +79,7 @@ public class Question extends BaseDomain {
 
 	public void addHelpMedia(Integer order, QuestionHelpMedia questionHelpMedia) {
 		if (getQuestionHelpMediaMap() == null)
-			setQuestionHelpMediaMap(new HashMap<Integer, QuestionHelpMedia>());
+			setQuestionHelpMediaMap(new TreeMap<Integer, QuestionHelpMedia>());
 		getQuestionHelpMediaMap().put(order, questionHelpMedia);
 	}
 
@@ -99,14 +115,6 @@ public class Question extends BaseDomain {
 		this.allowOtherFlag = allowOtherFlag;
 	}
 
-	public Key getDependentQuestionKey() {
-		return dependentQuestionKey;
-	}
-
-	public void setDependentQuestionKey(Key dependentQuestionKey) {
-		this.dependentQuestionKey = dependentQuestionKey;
-	}
-
 	public String getValidationRule() {
 		return validationRule;
 	}
@@ -125,11 +133,11 @@ public class Question extends BaseDomain {
 	}
 
 	public void setQuestionHelpMediaMap(
-			HashMap<Integer, QuestionHelpMedia> questionHelpMediaMap) {
+			TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap) {
 		this.questionHelpMediaMap = questionHelpMediaMap;
 	}
 
-	public HashMap<Integer, QuestionHelpMedia> getQuestionHelpMediaMap() {
+	public TreeMap<Integer, QuestionHelpMedia> getQuestionHelpMediaMap() {
 		return questionHelpMediaMap;
 	}
 

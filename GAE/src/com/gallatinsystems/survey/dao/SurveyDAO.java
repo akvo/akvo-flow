@@ -21,9 +21,11 @@ import com.google.appengine.api.datastore.Key;
 public class SurveyDAO extends BaseDAO<Survey> {
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
+	private QuestionGroupDao questionGroupDao;
 
 	public SurveyDAO() {
 		super(Survey.class);
+		questionGroupDao = new QuestionGroupDao();
 	}
 
 	public SurveyGroup save(SurveyGroup surveyGroup) {
@@ -32,7 +34,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
 	public Survey save(Survey survey, Key surveyGroupKey) {
 		survey = super.save(survey);
-		
+
 		return survey;
 	}
 
@@ -50,8 +52,10 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	 * @param id
 	 * @return
 	 */
-	public Survey loadFullSurvey(Key key) {
-		Survey survey = getByKey(key);
+	public Survey loadFullSurvey(Long surveyId) {
+		Survey survey = getById(surveyId);
+		survey.setQuestionGroupMap(questionGroupDao
+				.listQuestionGroupsBySurvey(survey.getKey().getId()));
 		return survey;
 	}
 
@@ -71,7 +75,6 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
 		return sb.toString();
 	}
-
 
 	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
 		SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
@@ -108,10 +111,9 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return list(SurveyGroup.class, cursorString);
 	}
 
-	public List<Survey> listSurveysByGroup(Long surveyGroupId){
+	public List<Survey> listSurveysByGroup(Long surveyGroupId) {
 		return listByProperty("surveyGroupId", surveyGroupId, "Long");
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	public Survey getByPath(String code, String path) {

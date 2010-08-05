@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
 
@@ -13,8 +14,13 @@ import com.google.appengine.api.datastore.Key;
 
 public class QuestionDao extends BaseDAO<Question> {
 
+	private QuestionOptionDao optionDao;
+	private QuestionHelpMediaDao helpDao;
+
 	public QuestionDao() {
 		super(Question.class);
+		optionDao = new QuestionOptionDao();
+		helpDao = new QuestionHelpMediaDao();
 	}
 
 	public List<Question> listQuestionByType(QuestionType type) {
@@ -56,9 +62,30 @@ public class QuestionDao extends BaseDAO<Question> {
 		Question q = super.getByKey(id);
 		return q;
 	}
-	
-	public Question getByKey(Key key){
+
+	public Question getByKey(Key key) {
 		return super.getByKey(key);
+	}
+
+	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
+			Long questionGroupId, boolean needDetails) {
+		List<Question> qList = listByProperty("questionGroupId",
+				questionGroupId, "Long");
+		TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
+		if (qList != null) {
+			int i = 1;
+			for (Question q : qList) {
+				map.put(q.getOrder() != null ? q.getOrder() : i, q);
+				i++;
+				if (needDetails) {
+					q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q
+							.getKey().getId()));
+					q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
+							.getKey().getId()));
+				}
+			}
+		}
+		return map;
 	}
 
 	@SuppressWarnings("unchecked")

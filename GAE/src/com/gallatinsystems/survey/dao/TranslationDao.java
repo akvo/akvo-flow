@@ -1,0 +1,50 @@
+package com.gallatinsystems.survey.dao;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.jdo.PersistenceManager;
+
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.gis.map.domain.MapFragment;
+import com.gallatinsystems.survey.domain.Translation;
+
+public class TranslationDao extends BaseDAO<Translation> {
+
+	public TranslationDao() {
+		super(Translation.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Translation> findTranslations(
+			Translation.ParentType parentType, Long parentId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(MapFragment.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("parentType", filterString, paramString,
+				"ParentType", parentType, paramMap);
+		appendNonNullParam("parentId", filterString, paramString, "Long",
+				parentId, paramMap);
+		query
+				.declareImports("import com.gallatinsystems.survey.domain.Translation.ParentType");
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		HashMap<String, Translation> translations = new HashMap<String, Translation>();
+		List<Translation> translationList = (List<Translation>) query
+				.executeWithMap(paramMap);
+		if (translationList != null) {
+			for (Translation t : translationList) {
+				translations.put(t.getLanguageCode(), t);
+			}
+		}
+		return translations;
+	}
+
+}

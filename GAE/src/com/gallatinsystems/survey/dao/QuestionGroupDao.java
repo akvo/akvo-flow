@@ -1,14 +1,13 @@
 package com.gallatinsystems.survey.dao;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.Survey;
 
 public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
@@ -22,7 +21,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 	}
 
 	public void delete(QuestionGroup item, Long surveyId) {
-		
+
 		delete(item);
 	}
 
@@ -30,11 +29,20 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		return findByProperty("code", questionGroupCode, "String");
 	}
 
-	public HashMap<Integer,QuestionGroup> listQuestionGroupsBySurvey(Long surveyId) {
-		SurveyDAO surveyDao = new SurveyDAO();
-		Survey survey = surveyDao.getByKey(surveyId);
-		
-		return survey.getQuestionGroupMap();
+	public TreeMap<Integer, QuestionGroup> listQuestionGroupsBySurvey(
+			Long surveyId) {
+		List<QuestionGroup> groups = listByProperty("surveyId", surveyId,
+				"Long");
+		TreeMap<Integer, QuestionGroup> map = new TreeMap<Integer, QuestionGroup>();
+		if (groups != null) {
+			int i = 1;
+			for (QuestionGroup group : groups) {
+				map.put(group.getOrder() != null ? group.getOrder() : i, group);
+				i++;
+			}
+
+		}
+		return map;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -43,7 +51,8 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		javax.jdo.Query query = pm.newQuery(QuestionGroup.class);
 		query.setFilter(" path == pathParam && code == codeParam");
 		query.declareParameters("String pathParam, String codeParam");
-		List<QuestionGroup> results = (List<QuestionGroup>) query.execute(path, code);
+		List<QuestionGroup> results = (List<QuestionGroup>) query.execute(path,
+				code);
 		if (results != null && results.size() > 0) {
 			return results.get(0);
 		} else {

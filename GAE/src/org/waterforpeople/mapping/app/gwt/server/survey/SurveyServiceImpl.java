@@ -28,17 +28,14 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDao;
-import com.gallatinsystems.survey.domain.OptionContainer;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.QuestionHelp;
+import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.Survey.SurveyStatus;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Heading;
 import com.gallatinsystems.survey.domain.xml.ObjectFactory;
@@ -55,6 +52,13 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyService {
+
+	public static final String FREE_QUESTION_TYPE = "free";
+	public static final String OPTION_QUESTION_TYPE = "option";
+	public static final String GEO_QUESTION_TYPE = "geo";
+	public static final String VIDEO_QUESTION_TYPE = "video";
+	public static final String PHOTO_QUESTION_TYPE = "photo";
+	public static final String SCAN_QUESTION_TYPE = "scan";
 
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger
@@ -92,7 +96,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
 			Boolean loadQuestionFlag) {
 		ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
-		SurveyGroupDao surveyGroupDao = new SurveyGroupDao();
+		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 		for (SurveyGroup canonical : surveyGroupDao.list(cursorString,
 				loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag)) {
 			SurveyGroupDto dto = new SurveyGroupDto();
@@ -104,10 +108,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					SurveyDto surveyDto = new SurveyDto();
 					DtoMarshaller.copyToDto(survey, surveyDto);
 					surveyDto.setQuestionGroupList(null);
-					if (survey.getQuestionGroupList() != null
-							&& survey.getQuestionGroupList().size() > 0) {
+					if (survey.getQuestionGroupMap() != null
+							&& survey.getQuestionGroupMap().size() > 0) {
 						for (QuestionGroup questionGroup : survey
-								.getQuestionGroupList()) {
+								.getQuestionGroupMap().values()) {
 							QuestionGroupDto questionGroupDto = new QuestionGroupDto();
 							DtoMarshaller.copyToDto(questionGroup,
 									questionGroupDto);
@@ -165,7 +169,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupId) {
 		SurveyDAO dao = new SurveyDAO();
-		List<Survey> surveys = dao.getSurveyForSurveyGroup(surveyGroupId);
+		List<Survey> surveys = dao.listSurveysByGroup(Long
+				.parseLong(surveyGroupId));
 		ArrayList<SurveyDto> surveyDtos = null;
 		if (surveys != null) {
 			surveyDtos = new ArrayList<SurveyDto>();
@@ -187,7 +192,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SurveyGroupDto save(SurveyGroupDto value) {
-		SurveyGroupDao sgDao = new SurveyGroupDao();
+		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyGroup surveyGroup = new SurveyGroup();
 		DtoMarshaller.copyToCanonical(surveyGroup, value);
 		surveyGroup.setSurveyList(null);
@@ -195,17 +200,18 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			// SurveyDto item = value.getSurveyList().get(0);
 			Survey survey = new Survey();
 			DtoMarshaller.copyToCanonical(survey, item);
-			survey.setQuestionGroupList(null);
+			survey.setQuestionGroupMap(null);
+			int order = 1;
 			for (QuestionGroupDto qgDto : item.getQuestionGroupList()) {
 				QuestionGroup qg = new QuestionGroup();
 				DtoMarshaller.copyToCanonical(qg, qgDto);
-				qg.setQuestionList(null);
+				survey.addQuestionGroup(order++, qg);
+				int qOrder = 1;
 				for (Entry<Integer, QuestionDto> qDto : qgDto.getQuestionMap()
 						.entrySet()) {
 					Question q = marshalQuestion(qDto.getValue());
-					qg.addQuestion(q, qDto.getKey());
+					qg.addQuestion(qOrder++, q);
 				}
-				survey.addQuestionGroup(qg);
 			}
 			surveyGroup.addSurvey(survey);
 		}
@@ -224,53 +230,44 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (q.getTip() != null)
 			qDto.setTip(q.getTip());
 		if (q.getType() != null)
-			qDto.setType(q.getType());
+			qDto.setType(QuestionDto.QuestionType.valueOf(q.getType()
+					.toString()));
 		if (q.getValidationRule() != null)
 			qDto.setValidationRule(q.getValidationRule());
 
-		if (q.getQuestionHelpList() != null) {
-			ArrayList<QuestionHelp> qHList = q.getQuestionHelpList();
-			for (QuestionHelp qh : qHList) {
+		if (q.getQuestionHelpMediaMap() != null) {
+			for (QuestionHelpMedia qh : q.getQuestionHelpMediaMap().values()) {
 				QuestionHelpDto qhDto = new QuestionHelpDto();
 				// Beanutils throws a concurrent exception so need
 				// to copy props by hand
-				qhDto.setResourceUrl(qh.getResourceUrl());
+				qhDto.setResourceUrl(qh.getUrl());
 				qhDto.setText(qhDto.getText());
 				qDto.addQuestionHelp(qhDto);
 			}
 		}
 
-		if (q.getOptionContainer() != null) {
-			OptionContainer oc = q.getOptionContainer();
+		if (q.getQuestionOptionMap() != null) {
 			OptionContainerDto ocDto = new OptionContainerDto();
-			ocDto.setKeyId(oc.getKey().getId());
-			if (oc.getAllowOtherFlag() != null)
-				ocDto.setAllowOtherFlag(oc.getAllowOtherFlag());
-			if (oc.getAllowMultipleFlag() != null)
-				ocDto.setAllowMultipleFlag(oc.getAllowMultipleFlag());
-
-			if (oc.getOptionsList() != null) {
-				ArrayList<QuestionOption> optionList = oc.getOptionsList();
-				for (QuestionOption qo : optionList) {
-					QuestionOptionDto ooDto = new QuestionOptionDto();
-					ooDto.setKeyId(qo.getKey().getId());
-					if (qo.getCode() != null)
-						ooDto.setCode(qo.getCode());
-					if (qo.getText() != null)
-						ooDto.setText(qo.getText());
-					ocDto.addQuestionOption(ooDto);
-
-				}
+			if (q.getAllowOtherFlag() != null)
+				ocDto.setAllowOtherFlag(q.getAllowOtherFlag());
+			if (q.getAllowMultipleFlag() != null)
+				ocDto.setAllowMultipleFlag(q.getAllowMultipleFlag());
+			for (QuestionOption qo : q.getQuestionOptionMap().values()) {
+				QuestionOptionDto ooDto = new QuestionOptionDto();
+				ooDto.setKeyId(qo.getKey().getId());
+				if (qo.getCode() != null)
+					ooDto.setCode(qo.getCode());
+				if (qo.getText() != null)
+					ooDto.setText(qo.getText());
+				ocDto.addQuestionOption(ooDto);
 			}
 			qDto.setOptionContainerDto(ocDto);
 		}
 
-		if (q.getDependQuestion() != null) {
-			QuestionDependency qd = q.getDependQuestion();
+		if (q.getDependentQuestionId() != null) {
 			QuestionDependencyDto qdDto = new QuestionDependencyDto();
-			qdDto.setKeyId(qd.getKey().getId());
-			qdDto.setQuestionId(qd.getQuestionId());
-			qdDto.setAnswerValue(qd.getAnswerValue());
+			qdDto.setQuestionId(q.getDependentQuestionId());
+			qdDto.setAnswerValue(q.getDependentQuestionAnswer());
 			qDto.setQuestionDependency(qdDto);
 		}
 		return qDto;
@@ -287,32 +284,32 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (qdto.getTip() != null)
 			q.setTip(qdto.getTip());
 		if (qdto.getType() != null)
-			q.setType(qdto.getType());
+			q.setType(Question.Type.valueOf(qdto.getType().toString()));
 		if (qdto.getValidationRule() != null)
 			q.setValidationRule(qdto.getValidationRule());
 
 		if (qdto.getQuestionHelpList() != null) {
 			ArrayList<QuestionHelpDto> qHListDto = qdto.getQuestionHelpList();
+			int i = 1;
 			for (QuestionHelpDto qhDto : qHListDto) {
-				QuestionHelp qh = new QuestionHelp();
+				QuestionHelpMedia qh = new QuestionHelpMedia();
 				// Beanutils throws a concurrent exception so need
 				// to copy props by hand
-				qh.setResourceUrl(qhDto.getResourceUrl());
+				qh.setUrl(qhDto.getResourceUrl());
 				qh.setText(qhDto.getText());
-				q.addQuestionHelp(qh);
+				q.addHelpMedia(i++, qh);
 			}
 		}
 
 		if (qdto.getOptionContainerDto() != null) {
 			OptionContainerDto ocDto = qdto.getOptionContainerDto();
-			OptionContainer oc = new OptionContainer();
-			if (ocDto.getKeyId() != null)
-				oc.setKey(KeyFactory.createKey(OptionContainer.class
-						.getSimpleName(), ocDto.getKeyId()));
-			if (ocDto.getAllowOtherFlag() != null)
-				oc.setAllowOtherFlag(ocDto.getAllowOtherFlag());
-			if (ocDto.getAllowMultipleFlag() != null)
-				oc.setAllowMultipleFlag(ocDto.getAllowMultipleFlag());
+
+			if (ocDto.getAllowOtherFlag() != null) {
+				q.setAllowOtherFlag(ocDto.getAllowOtherFlag());
+			}
+			if (ocDto.getAllowMultipleFlag() != null) {
+				q.setAllowMultipleFlag(ocDto.getAllowMultipleFlag());
+			}
 
 			if (ocDto.getOptionsList() != null) {
 				ArrayList<QuestionOptionDto> optionDtoList = ocDto
@@ -326,23 +323,16 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						oo.setCode(qoDto.getCode());
 					if (qoDto.getText() != null)
 						oo.setText(qoDto.getText());
-					oc.addQuestionOption(oo);
-
+					q.addQuestionOption(oo);
 				}
 			}
-			q.setOptionContainer(oc);
 		}
 		if (qdto.getQuestionDependency() != null) {
-			QuestionDependency qd = new QuestionDependency();
-			if (qdto.getQuestionDependency().getKeyId() != null)
-				qd.setKey(KeyFactory.createKey(QuestionDependency.class
-						.getSimpleName(), qdto.getQuestionDependency()
-						.getKeyId()));
-
-			qd.setQuestionId(qdto.getQuestionDependency().getQuestionId());
-			qd.setAnswerValue(qdto.getQuestionDependency().getAnswerValue());
-			q.setDependQuestion(qd);
-
+			q.setDependentQuestionId(qdto.getQuestionDependency()
+					.getQuestionId());
+			q.setDependentQuestionAnswer(qdto.getQuestionDependency()
+					.getAnswerValue());
+			q.setDependentFlag(true);
 		}
 
 		return q;
@@ -358,9 +348,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			dto = new SurveyDto();
 			DtoMarshaller.copyToDto(survey, dto);
 			dto.setQuestionGroupList(null);
-			if (survey.getQuestionGroupList() != null) {
+			if (survey.getQuestionGroupMap() != null) {
 				ArrayList<QuestionGroupDto> qGroupDtoList = new ArrayList<QuestionGroupDto>();
-				for (QuestionGroup qg : survey.getQuestionGroupList()) {
+				for (QuestionGroup qg : survey.getQuestionGroupMap().values()) {
 					QuestionGroupDto qgDto = new QuestionGroupDto();
 					DtoMarshaller.copyToDto(qg, qgDto);
 					qgDto.setQuestionMap(null);
@@ -390,9 +380,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode) {
-		List<Survey> surveyList = surveyDao
-				.getSurveyForSurveyGroup(surveyGroupCode);
+	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupId) {
+		List<Survey> surveyList = surveyDao.listSurveysByGroup(Long
+				.parseLong(surveyGroupId));
 		List<SurveyDto> surveyDtoList = new ArrayList<SurveyDto>();
 		for (Survey canonical : surveyList) {
 			SurveyDto dto = new SurveyDto();
@@ -413,10 +403,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public ArrayList<QuestionGroupDto> listQuestionGroupsBySurvey(
 			String surveyId) {
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
-		List<QuestionGroup> questionGroupList = questionGroupDao
+		TreeMap<Integer, QuestionGroup> questionGroupList = questionGroupDao
 				.listQuestionGroupsBySurvey(new Long(surveyId));
 		ArrayList<QuestionGroupDto> questionGroupDtoList = new ArrayList<QuestionGroupDto>();
-		for (QuestionGroup canonical : questionGroupList) {
+		for (QuestionGroup canonical : questionGroupList.values()) {
 			QuestionGroupDto dto = new QuestionGroupDto();
 			DtoMarshaller.copyToDto(canonical, dto);
 			questionGroupDtoList.add(dto);
@@ -428,10 +418,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
 			String questionGroupId, boolean needDetails) {
 		QuestionDao questionDao = new QuestionDao();
-		List<Question> questionList = questionDao.listQuestionsByQuestionGroup(
-				questionGroupId, needDetails);
+		TreeMap<Integer, Question> questionList = questionDao
+				.listQuestionsByQuestionGroup(Long.parseLong(questionGroupId),
+						needDetails);
 		java.util.ArrayList<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
-		for (Question canonical : questionList) {
+		for (Question canonical : questionList.values()) {
 			QuestionDto dto = marshalQuestionDto(canonical);
 
 			questionDtoList.add(dto);
@@ -439,7 +430,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return questionDtoList;
 	}
 
-	
 	@Override
 	public void deleteQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
@@ -454,11 +444,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDao questionDao = new QuestionDao();
 		Question question = marshalQuestion(value);
 		question = questionDao.save(question, questionGroupId);
-		if (question.getDependQuestion() != null) {
-			BaseDAO<QuestionDependency> dependencyDao = new BaseDAO<QuestionDependency>(
-					QuestionDependency.class);
-			dependencyDao.save(question.getDependQuestion());
-		}
 
 		return marshalQuestionDto(question);
 	}
@@ -477,9 +462,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId) {
 		Survey canonical = new Survey();
-		canonical.setStatus(SurveyStatus.IN_PROGRESS);
+		canonical.setStatus(Survey.Status.NOT_PUBLISHED);
 		DtoMarshaller.copyToCanonical(canonical, surveyDto);
-		canonical = new SurveyDAO().save(canonical, surveyGroupId);
+		canonical = new SurveyDAO().save(canonical);
 		DtoMarshaller.copyToDto(canonical, surveyDto);
 		return surveyDto;
 
@@ -488,19 +473,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto) {
 		SurveyGroup canonical = new SurveyGroup();
-		SurveyGroupDao surveyGroupDao = new SurveyGroupDao();
+		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 		DtoMarshaller.copyToCanonical(canonical, dto);
 		canonical = surveyGroupDao.save(canonical);
 		DtoMarshaller.copyToDto(canonical, dto);
 		return dto;
 	}
-
-	public static final String FREE_QUESTION_TYPE = "free";
-	public static final String OPTION_QUESTION_TYPE = "option";
-	public static final String GEO_QUESTION_TYPE = "geo";
-	public static final String VIDEO_QUESTION_TYPE = "video";
-	public static final String PHOTO_QUESTION_TYPE = "photo";
-	public static final String SCAN_QUESTION_TYPE = "scan";
 
 	@Override
 	public void publishSurveyAsync(Long surveyId) {
@@ -522,7 +500,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			com.gallatinsystems.survey.domain.xml.Survey surveyXML = objFactory
 					.createSurvey();
 			ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup> questionGroupXMLList = new ArrayList<com.gallatinsystems.survey.domain.xml.QuestionGroup>();
-			for (QuestionGroup qg : survey.getQuestionGroupList()) {
+			for (QuestionGroup qg : survey.getQuestionGroupMap().values()) {
 				// System.out.println("	QuestionGroup: " + qg.getKey().getId() +
 				// ":"
 				// + qg.getCode() + ":" + qg.getDescription());
@@ -589,43 +567,34 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							qXML.setOrder(qEntry.getKey().toString());
 						// ToDo set dependency xml
 						Dependency dependency = objFactory.createDependency();
-						if (q.getDependQuestion() != null) {
-							dependency.setQuestion(q.getDependQuestion()
-									.getQuestionId().toString());
-							dependency.setAnswerValue(q.getDependQuestion()
-									.getAnswerValue());
+						if (q.getDependentQuestionId() != null) {
+							dependency.setQuestion(q.getDependentQuestionId()
+									.toString());
+							dependency.setAnswerValue(q
+									.getDependentQuestionAnswer());
 							qXML.setDependency(dependency);
 						}
 
-						if (q.getOptionContainer() != null) {
-							OptionContainer oc = q.getOptionContainer();
-							// System.out.println("			OptionContainer: " +
-							// oc.getKey().getId()
-							// + ":" + oc.getAllowMultipleFlag() + ":"
-							// + oc.getAllowOtherFlag());
-							Options options = objFactory.createOptions();
-							// if(oc.getAllowMultipleFlag()!=null)
-							// options.setAllowMultiple()
-							if (oc.getAllowOtherFlag() != null)
-								options.setAllowOther(oc.getAllowOtherFlag()
-										.toString());
+						if (q.getQuestionOptionMap() != null
+								&& q.getQuestionOptionMap().size() > 0) {
 
-							if (oc.getOptionsList() != null) {
-								ArrayList<Option> optionList = new ArrayList<Option>();
-								// System.out.println("				ocList size:" +
-								// optionList.size());
-								for (QuestionOption qo : oc.getOptionsList()) {
-									// System.out.println("						option:" +
-									// qo.getKey().getId()
-									// + ":" + qo.getCode() + ":"
-									// + qo.getText());
-									Option option = objFactory.createOption();
-									option.setContent(qo.getText());
-									option.setValue(qo.getCode());
-									optionList.add(option);
-								}
-								options.setOptionList(optionList);
+							Options options = objFactory.createOptions();
+
+							if (q.getAllowOtherFlag() != null) {
+								options.setAllowOther(q.getAllowOtherFlag()
+										.toString());
 							}
+
+							ArrayList<Option> optionList = new ArrayList<Option>();
+							for (QuestionOption qo : q.getQuestionOptionMap()
+									.values()) {
+								Option option = objFactory.createOption();
+								option.setContent(qo.getText());
+								option.setValue(qo.getCode());
+								optionList.add(option);
+							}
+							options.setOptionList(optionList);
+
 							qXML.setOptions(options);
 						}
 						questionXMLList.add(qXML);
@@ -647,7 +616,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				scDao.save(scFound);
 			} else
 				scDao.save(sc);
-			survey.setStatus(SurveyStatus.PUBLISHED);
+			survey.setStatus(Survey.Status.PUBLISHED);
 			surveyDao.save(survey);
 
 		} catch (Exception ex) {
@@ -655,9 +624,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			StringBuilder sb = new StringBuilder();
 			sb.append("Could not publish survey: \n cause: " + ex.getCause()
 					+ " \n message" + ex.getMessage() + "\n stack trace:  ");
-			// for (StackTraceElement ste : ex.getStackTrace()) {
-			// sb.append("        " + ste + "\n");
-			// }
+			
 			return sb.toString();
 		}
 
