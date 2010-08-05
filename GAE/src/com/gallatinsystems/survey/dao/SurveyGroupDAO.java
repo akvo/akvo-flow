@@ -26,14 +26,31 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		questionDAO = new QuestionDao();
 
 	}
-	
+
+	/**
+	 * saves the survey group and any surveys contained therein
+	 * 
+	 * @param group
+	 * @return
+	 */
+	public SurveyGroup save(SurveyGroup group) {
+		group = super.save(group);
+		if (group.getSurveyList() != null) {
+			for (Survey s : group.getSurveyList()) {
+				s.setSurveyGroupId(group.getKey().getId());
+				surveyDao.save(s);
+			}
+		}
+		return group;
+	}
+
 	public SurveyGroup getByKey(Long id, boolean includeQuestions) {
 		SurveyGroup sg = getByKey(id);
 
-		
 		return sg;
 	}
-	public SurveyGroup getByKey(Key key){
+
+	public SurveyGroup getByKey(Key key) {
 		return super.getByKey(key);
 	}
 
@@ -41,11 +58,11 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
 		List<SurveyGroup> sgList = null;
 		sgList = super.list(cursorString);
-		
+
 		return sgList;
 	}
-	
-	public SurveyGroup findBySurveyGroupName(String name){
+
+	public SurveyGroup findBySurveyGroupName(String name) {
 		return super.findByProperty("code", name, "String");
 	}
 

@@ -72,9 +72,6 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return sb.toString();
 	}
 
-	public void test() {
-
-	}
 
 	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
 		SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
@@ -96,7 +93,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	public List<SurveyContainer> listSurveyContainers() {
-		return super.list(SurveyContainer.class, "all");
+		return list(SurveyContainer.class, "all");
 	}
 
 	/**
@@ -108,9 +105,12 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	public List<SurveyGroup> listSurveyGroup(String cursorString) {
-		return super.list(SurveyGroup.class, cursorString);
+		return list(SurveyGroup.class, cursorString);
 	}
 
+	public List<Survey> listSurveysByGroup(Long surveyGroupId){
+		return listByProperty("surveyGroupId", surveyGroupId, "Long");
+	}
 	
 
 	@SuppressWarnings("unchecked")
