@@ -5,6 +5,7 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,14 +21,11 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyQuestionGroupAssocDao;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
-import com.gallatinsystems.survey.domain.OptionContainer;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.SurveyContainer;
-import com.gallatinsystems.survey.domain.SurveyQuestionGroupAssoc;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.xml.Dependency;
@@ -136,26 +134,27 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		 * 1, Select survey based on surveyId 2. Retrieve all question groups
 		 * fire off queue tasks
 		 */
-
-		SurveyQuestionGroupAssocDao sqgadao = new SurveyQuestionGroupAssocDao();
-		List<SurveyQuestionGroupAssoc> sqgaList = sqgadao
-				.listBySurveyId(surveyId);
-		ArrayList<Long> questionGroupIdList = new ArrayList<Long>();
-		StringBuilder builder = new StringBuilder();
-		int count = 1;
-		for (SurveyQuestionGroupAssoc item : sqgaList) {
-			questionGroupIdList.add(item.getQuestionGroupId());
-			builder.append(item.getQuestionGroupId().toString());
-			if (count < sqgaList.size()) {
-				builder.append(",");
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+		TreeMap<Integer, QuestionGroup> qgList = qgDao
+				.listQuestionGroupsBySurvey(surveyId);
+		if (qgList != null) {
+			ArrayList<Long> questionGroupIdList = new ArrayList<Long>();
+			StringBuilder builder = new StringBuilder();
+			int count = 1;
+			for (QuestionGroup item : qgList.values()) {
+				questionGroupIdList.add(item.getKey().getId());
+				builder.append(item.getKey().getId());
+				if (count < qgList.size()) {
+					builder.append(",");
+				}
+				count++;
 			}
-			count++;
-		}
-		count = 0;
+			count = 0;
 
-		sendQueueMessage(
-				SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
-				surveyId, builder.toString());
+			sendQueueMessage(
+					SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
+					surveyId, builder.toString());
+		}
 	}
 
 	/**
@@ -188,24 +187,20 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			remainingIds = questionGroupIds.substring(questionGroupIds
 					.indexOf(",") + 1);
 		}
-		SurveyQuestionGroupAssocDao sqgDao = new SurveyQuestionGroupAssocDao();
-		SurveyQuestionGroupAssoc sqga = sqgDao.listByQuestionGroupId(
-				Long.parseLong(currentId)).get(0);
 
 		QuestionDao questionDao = new QuestionDao();
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 		QuestionGroup group = questionGroupDao.getByKey(Long
 				.parseLong(currentId));
-		List<Question> questionList = questionDao.listQuestionsByQuestionGroup(
-				currentId, true);
+		TreeMap<Integer, Question> questionList = questionDao
+				.listQuestionsByQuestionGroup(Long.parseLong(currentId), true);
 
 		StringBuilder sb = new StringBuilder("<questionGroup><heading>")
 				.append(group.getCode()).append("</heading>");
 		int count = 0;
 
 		if (questionList != null) {
-
-			for (Question q : questionList) {
+			for (Question q : questionList.values()) {
 				sb.append(marshallQuestion(q));
 				count++;
 			}
@@ -213,7 +208,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyXMLFragment sxf = new SurveyXMLFragment();
 		sxf.setSurveyId(surveyId);
 		sxf.setQuestionGroupId(Long.parseLong(currentId));
-		sxf.setFragmentOrder(sqga.getOrder());
+		sxf.setFragmentOrder(group.getOrder());
 		sxf.setFragment(new Text(sb.append("</questionGroup>").toString()));
 
 		sxf.setFragmentType(FRAGMENT_TYPE.QUESTION_GROUP);
@@ -254,11 +249,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		if (q.getValidationRule() != null) {
 			ValidationRule validationRule = objFactory.createValidationRule();
 
-			// ToDo set validation rule xml
+			// TODO set validation rule xml
 			// validationRule.setAllowDecimal(value)
 		}
 
-		// ToDo marshall xml
+		// TODO marshall xml
 		// qXML.setText(q.getText());
 
 		if (q.getType().equals(QuestionType.FREE_TEXT))
@@ -283,46 +278,33 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		if (q.getOrder() != null) {
 			qXML.setOrder(q.getOrder().toString());
 		}
-		if (q.getMandatory() != null) {
-			qXML.setMandatory(q.getMandatory().toString());
+		if (q.getMandatoryFlag() != null) {
+			qXML.setMandatory(q.getMandatoryFlag().toString());
 		}
 		// ToDo set dependency xml
 		Dependency dependency = objFactory.createDependency();
-		if (q.getDependQuestion() != null) {
-			dependency.setQuestion(q.getDependQuestion().getQuestionId()
-					.toString());
-			dependency.setAnswerValue(q.getDependQuestion().getAnswerValue());
+		if (q.getDependentQuestionId() != null) {
+			dependency.setQuestion(q.getDependentQuestionId().toString());
+			dependency.setAnswerValue(q.getDependentQuestionAnswer());
 			qXML.setDependency(dependency);
 		}
 
-		if (q.getOptionContainer() != null) {
-			OptionContainer oc = q.getOptionContainer();
-			// System.out.println("			OptionContainer: " +
-			// oc.getKey().getId()
-			// + ":" + oc.getAllowMultipleFlag() + ":"
-			// + oc.getAllowOtherFlag());
+		if (q.getQuestionOptionMap() != null
+				&& q.getQuestionOptionMap().size() > 0) {
 			Options options = objFactory.createOptions();
-			// if(oc.getAllowMultipleFlag()!=null)
-			// options.setAllowMultiple()
-			if (oc.getAllowOtherFlag() != null)
-				options.setAllowOther(oc.getAllowOtherFlag().toString());
-
-			if (oc.getOptionsList() != null) {
-				ArrayList<Option> optionList = new ArrayList<Option>();
-				// System.out.println("				ocList size:" +
-				// optionList.size());
-				for (QuestionOption qo : oc.getOptionsList()) {
-					// System.out.println("						option:" +
-					// qo.getKey().getId()
-					// + ":" + qo.getCode() + ":"
-					// + qo.getText());
-					Option option = objFactory.createOption();
-					option.setContent(qo.getText());
-					option.setValue(qo.getCode());
-					optionList.add(option);
-				}
-				options.setOptionList(optionList);
+			if (q.getAllowOtherFlag() != null) {
+				options.setAllowOther(q.getAllowOtherFlag().toString());
 			}
+
+			ArrayList<Option> optionList = new ArrayList<Option>();
+			for (QuestionOption qo : q.getQuestionOptionMap().values()) {
+				Option option = objFactory.createOption();
+				option.setContent(qo.getText());
+				option.setValue(qo.getCode());
+				optionList.add(option);
+			}
+			options.setOptionList(optionList);
+
 			qXML.setOptions(options);
 		}
 
