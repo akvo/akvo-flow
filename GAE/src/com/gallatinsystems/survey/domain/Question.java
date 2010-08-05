@@ -15,7 +15,7 @@ public class Question extends BaseDomain {
 	private static final long serialVersionUID = -9123426646238761996L;
 
 	public enum Type {
-		GEO, TEXT, OPTION, VIDEO, PHOTO, NUMBER
+		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK
 	};
 
 	private Type type = null;
