@@ -7,6 +7,8 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,10 +29,8 @@ import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyGroupDao;
-import com.gallatinsystems.survey.domain.OptionContainer;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionDependency;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
@@ -249,7 +249,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 		try {
 			org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
-			log.info("Inside processSurveySpreadsheetAsync prior to GoogleSpreadsheet Adapter call");
+			log
+					.info("Inside processSurveySpreadsheetAsync prior to GoogleSpreadsheet Adapter call");
 			byte[] encodedKey = b64encoder.encode(key.getEncoded());
 			GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
 					tokenString, key);
@@ -257,14 +258,14 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			SpreadsheetContainer sc = gsa
 					.getSpreadsheetContents(spreadsheetName);
 			log.info("Just got spreadsheet contents");
-			
+
 			sc.setSpreadsheetName(spreadsheetName);
 			RowContainer rowTitle = sc.getRowContainerList().get(1);
 			String sgName = rowTitle.getColumnContainersList().get(0)
 					.getColContents();
 			if (sgName == null) {
 				sgName = "Default";
-			}else
+			} else
 				log.info("Begining to process: " + sgName);
 
 			if (startRow == -1) {
@@ -273,7 +274,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				log.info("Getting the question groups");
 				// create the survey and all groups. We'll take care of the
 				// questions in another iteration
-				SurveyGroupDao sgDao = new SurveyGroupDao();
+				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				SurveyGroup sg = null;
 				SurveyGroup sgFound = sgDao.findBySurveyGroupName(sgName);
 				HashMap<String, QuestionGroup> groupMap = new HashMap<String, QuestionGroup>();
@@ -330,12 +331,11 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						&& i < 10; count++) {
 					i++;
 					RowContainer row = sc.getRowContainerList().get(count);
-					ArrayList<QuestionOption> qoList = new ArrayList<QuestionOption>();
+					TreeMap<Integer, QuestionOption> optionMap = new TreeMap<Integer, QuestionOption>();
 					QuestionGroup targetQG = null;
 					ArrayList<ColumnContainer> ccl = row
 							.getColumnContainersList();
 					Question q = new Question();
-					OptionContainer oc = new OptionContainer();
 					for (ColumnContainer cc : ccl) {
 						String colName = cc.getColName();
 						String colContents = cc.getColContents();
@@ -365,68 +365,80 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 									"questiontype")) {
 								if (colContents.toLowerCase().equals(
 										"FREE".toLowerCase())) {
-									q.setType(QuestionType.FREE_TEXT);
+									q.setType(Question.Type.FREE_TEXT);
 								} else if (colContents.toLowerCase().equals(
 										"GEO".toLowerCase())) {
-									q.setType(QuestionType.GEO);
+									q.setType(Question.Type.GEO);
 								} else if (colContents.toLowerCase().equals(
 										"NUMBER".toLowerCase())) {
-									q.setType(QuestionType.NUMBER);
+									q.setType(Question.Type.NUMBER);
 								} else if (colContents.toLowerCase().equals(
 										"OPTION".toLowerCase())) {
-									q.setType(QuestionType.OPTION);
+									q.setType(Question.Type.OPTION);
 								} else if (colContents.toLowerCase().equals(
 										"PHOTO".toLowerCase())) {
-									q.setType(QuestionType.PHOTO);
+									q.setType(Question.Type.PHOTO);
 								} else if (colContents.toLowerCase().equals(
 										"SCAN".toLowerCase())) {
-									q.setType(QuestionType.SCAN);
+									q.setType(Question.Type.SCAN);
 								} else if (colContents.toLowerCase().equals(
 										"VIDEO".toLowerCase())) {
-									q.setType(QuestionType.VIDEO);
+									q.setType(Question.Type.VIDEO);
 								}
 							} else if (colName.toLowerCase().equals(
 									"Options".toLowerCase())
 									&& q.getType().equals(QuestionType.OPTION)) {
 								String[] splitColContents = colContents.trim()
 										.split(";");
+								int optCount = 1;
 								for (String item : splitColContents) {
 									String[] optionParts = item.trim().split(
 											"\\|");
 									if (optionParts.length == 2) {
-										String optionVal = optionParts[0].trim();										
+										String optionVal = optionParts[0]
+												.trim();
 										String text = optionParts[1].trim();
 										text.replaceAll("\\n", " ");
 										QuestionOption qo = new QuestionOption();
 										qo.setCode(optionVal);
 										qo.setText(text);
-										qoList.add(qo);
+										optionMap.put(optCount++, qo);
 									}
 								}
 							} else if ((colName.equals("AllowOther") || colName
 									.equals("AllowMultiple"))
 									&& q.getType().equals(QuestionType.OPTION)) {
 								if (colName.equals("AllowOther")) {
-									oc.setAllowOtherFlag(new Boolean(
-											colContents.toLowerCase()));
+									q.setAllowOtherFlag(new Boolean(colContents
+											.toLowerCase()));
 								}
 								if (colName.equals("AllowMultiple")) {
-									oc.setAllowMultipleFlag(new Boolean(
+									q.setAllowMultipleFlag(new Boolean(
 											colContents.toLowerCase()));
 								}
 							} else if (colName.equalsIgnoreCase("QuestionID")) {
-								q.setReferenceIndex(colContents.trim());
+								q.setReferenceId(colContents.trim());
+							} else if (colName.equalsIgnoreCase("Order")) {
+								if (colContents.trim().length() > 0) {
+									try {
+										q.setOrder(Integer.parseInt(colContents
+												.trim()));
+									} catch (Exception e) {
+										log
+												.warning("Order column contains non integer value");
+									}
+								}
 							}
 						}
 					}
 					if (q.getType().equals(QuestionType.OPTION)) {
-						oc.setOptionsList(qoList);
-						q.setOptionContainer(oc);
+						q.setQuestionOptionMap(optionMap);
+
 					}
-					// TODO: fix this once we allow different groups
-					// add new param "question offset" to subtract?
-					q.setOrder(count);
-					targetQG.addQuestion(q, count);
+					if (q.getOrder() == null) {
+						q.setOrder(count);
+					}
+					targetQG.addQuestion(q.getOrder(), q);
 				}
 
 				QuestionDao qDao = new QuestionDao();
@@ -481,7 +493,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	}
 
 	private void setDependencies(SpreadsheetContainer sc) {
-		HashMap<Question, QuestionDependency> dependencyMap = new HashMap<Question, QuestionDependency>();
+		// HashMap<Question, QuestionDependency> dependencyMap = new
+		// HashMap<Question, QuestionDependency>();
+		List<Question> questionsWithDependencies = new ArrayList<Question>();
 		ArrayList<Question> spreadsheetQuestions = new ArrayList<Question>();
 		int rowIdx = 0;
 		for (RowContainer row : sc.getRowContainerList()) {
@@ -496,18 +510,17 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 						else
 							q.setText(colContents.trim());
 					} else if ("QuestionID".equalsIgnoreCase(colName)) {
-						q.setReferenceIndex(colContents);
+						q.setReferenceId(colContents);
 					} else if (colName.equalsIgnoreCase("DependQuestion")) {
 						if (colContents != null
 								&& colContents.trim().length() > 0) {
 							String[] parts = colContents.trim().split("\\|");
 							if (parts != null && parts.length >= 2) {
 								try {
-									QuestionDependency dependency = new QuestionDependency();
-									dependency.setAnswerValue(parts[1]);
-									dependency.setQuestionId(Long
+									q.setDependentQuestionId(Long
 											.parseLong(parts[0].trim()));
-									dependencyMap.put(q, dependency);
+									q.setDependentQuestionAnswer(parts[1]);
+									questionsWithDependencies.add(q);
 								} catch (Exception e) {
 									log
 											.log(
@@ -522,29 +535,20 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			spreadsheetQuestions.add(q);
 			rowIdx++;
 		}
-		if (dependencyMap.size() > 0) {
-
+		// now interate over the dependencies and update the keys from the
+		// reference id to the datastore id
+		if (questionsWithDependencies.size() > 0) {
 			QuestionDao qDao = new QuestionDao();
+			for (Question q : questionsWithDependencies) {
 
-			for (Entry<Question, QuestionDependency> entry : dependencyMap
-					.entrySet()) {
-				Question q = entry.getKey();
-				QuestionDependency dep = entry.getValue();
-				/*
-				 * Question parent =
-				 * spreadsheetQuestions.get(dep.getQuestionId() .intValue() -
-				 * 1);
-				 */
-				Question savedParent = qDao.findByReferenceId(dep
-						.getQuestionId().toString());
+				Question savedParent = qDao.findByReferenceId(q
+						.getReferenceId());
 				Question savedChild = qDao.findByReferenceId(q
-						.getReferenceIndex());
+						.getDependentQuestionId().toString());
 				if (savedParent != null) {
-
 					if (savedParent != null && savedChild != null) {
-						dep.setQuestionId(savedParent.getKey().getId());
-						savedChild.setDependQuestion(dep);
-						qDao.save(savedChild);
+						q.setDependentQuestionId(savedChild.getKey().getId());
+						qDao.save(q);
 					}
 				} else {
 					log.log(Level.SEVERE,
