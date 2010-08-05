@@ -1,37 +1,54 @@
 package com.gallatinsystems.survey.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class QuestionOption extends BaseDomain {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2794521663923141747L;
 	private String code = null;
-	@Persistent(serialized = "true")
-	private List<String> optionList = null;
-	@Persistent(serialized = "true")
-	private List<Key> altOptionKeyList = null;
+	private String text;
+	@NotPersistent
+	private HashMap<String, Translation> translationMap;
+	private Long questionId;
+	private Integer order;
 
-	public void addOption(String text) {
-		if (optionList == null)
-			optionList = new ArrayList<String>();
-		optionList.add(text);
+	
+	public String getText() {
+		return text;
 	}
 
-	public void addAltOptionKey(Key altOptionKey) {
-		if (getAltOptionKeyList() == null)
-			setAltOptionKeyList(new ArrayList<Key>());
-		getAltOptionKeyList().add(altOptionKey);
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
+	public Long getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(Long questionId) {
+		this.questionId = questionId;
+	}
+
+	public HashMap<String, Translation> getTranslationMap() {
+		return translationMap;
+	}
+
+	public void setTranslationMap(HashMap<String, Translation> translationMap) {
+		this.translationMap = translationMap;
 	}
 
 	public String getCode() {
@@ -42,22 +59,11 @@ public class QuestionOption extends BaseDomain {
 		this.code = code;
 	}
 
-	public void setOptionList(List<String> optionList) {
-		this.optionList = optionList;
+	public void addTranslation(Translation t) {
+		if (translationMap == null) {
+			translationMap = new HashMap<String, Translation>();
+		}
+		translationMap.put(t.getLanguageCode(), t);
 	}
-
-	public List<String> getOptionList() {
-		return optionList;
-	}
-
-	public void setAltOptionKeyList(List<Key> altOptionKeyList) {
-		this.altOptionKeyList = altOptionKeyList;
-	}
-
-	public List<Key> getAltOptionKeyList() {
-		return altOptionKeyList;
-	}
-
-	
 
 }

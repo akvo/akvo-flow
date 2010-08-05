@@ -1,21 +1,17 @@
 package com.gallatinsystems.survey.domain;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.TreeMap;
 
-import javax.jdo.annotations.Element;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class Question extends BaseDomain {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -9123426646238761996L;
 
 	public enum Type {
@@ -25,40 +21,44 @@ public class Question extends BaseDomain {
 	private Type type = null;
 	private String tip = null;
 	private String text = null;
-	@Persistent(serialized = "true")
-	private List<Key> altTipKeyList;
-	@Persistent(serialized = "true")
-	private List<Key> altTextList;
+	@NotPersistent
+	private HashMap<String, Translation> translationMap;
 	private Boolean dependentFlag = null;
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
 	private Key dependentQuestionKey = null;
-	@Persistent(serialized = "true")
-	private HashMap<String, QuestionOption> questionOptionMap = null;
+	@NotPersistent
+	private TreeMap<Integer, QuestionOption> questionOptionMap = null;
 	private String validationRule = null;
-	@Persistent(serialized = "true")
+	@NotPersistent
 	private HashMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
-	// ToDo: Legacy to comply with import ordering needs to be removed later
+	private Long questionGroupId;
 	private Integer order = null;
 	private Boolean mandatoryFlag = null;
 	private String path = null;
 
-	public void addAltTipKey(Key altTipKey) {
-		if (altTipKeyList == null)
-			altTipKeyList = new ArrayList<Key>();
-		altTipKeyList.add(altTipKey);
+	public Long getQuestionGroupId() {
+		return questionGroupId;
 	}
 
-	public void addAltTextKey(Key altTextKey) {
-		if (altTextList == null)
-			altTextList = new ArrayList<Key>();
-		altTextList.add(altTextKey);
+	public void setQuestionGroupId(Long questionGroupId) {
+		this.questionGroupId = questionGroupId;
 	}
 
-	public void addQuestionOption(String langCode, QuestionOption questionOption) {
+	public HashMap<String, Translation> getTranslationMap() {
+		return translationMap;
+	}
+
+	public void setTranslationMap(HashMap<String, Translation> translationMap) {
+		this.translationMap = translationMap;
+	}
+
+	public void addQuestionOption(QuestionOption questionOption) {
 		if (getQuestionOptionMap() == null)
-			setQuestionOptionMap(new HashMap<String, QuestionOption>());
-		getQuestionOptionMap().put(langCode, questionOption);
+			setQuestionOptionMap(new TreeMap<Integer, QuestionOption>());
+		getQuestionOptionMap().put(
+				questionOption.getOrder() != null ? questionOption.getOrder()
+						: getQuestionOptionMap().size() + 1, questionOption);
 	}
 
 	public void addHelpMedia(Integer order, QuestionHelpMedia questionHelpMedia) {
@@ -116,11 +116,11 @@ public class Question extends BaseDomain {
 	}
 
 	public void setQuestionOptionMap(
-			HashMap<String, QuestionOption> questionOptionMap) {
+			TreeMap<Integer, QuestionOption> questionOptionMap) {
 		this.questionOptionMap = questionOptionMap;
 	}
 
-	public HashMap<String, QuestionOption> getQuestionOptionMap() {
+	public TreeMap<Integer, QuestionOption> getQuestionOptionMap() {
 		return questionOptionMap;
 	}
 
@@ -157,8 +157,6 @@ public class Question extends BaseDomain {
 		return path;
 	}
 
-	
-
 	public void setTip(String tip) {
 		this.tip = tip;
 	}
@@ -173,6 +171,13 @@ public class Question extends BaseDomain {
 
 	public String getText() {
 		return text;
+	}
+
+	public void addTranslation(Translation t) {
+		if (translationMap == null) {
+			translationMap = new HashMap<String, Translation>();
+		}
+		translationMap.put(t.getLanguageCode(), t);
 	}
 
 }

@@ -1,13 +1,11 @@
 package com.gallatinsystems.survey.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class QuestionHelpMedia extends BaseDomain {
@@ -18,11 +16,28 @@ public class QuestionHelpMedia extends BaseDomain {
 	private String url = null;
 	private Type type = null;
 	private String text = null;
-	@Persistent(serialized = "true")
-	private List<Key> altTextKeyList = null;
+	private Long questionId;
+	@NotPersistent
+	private HashMap<String, Translation> translationMap;
 
 	public enum Type {
-		PHOTO, VIDEO
+		PHOTO, VIDEO, TEXT
+	}
+
+	public Long getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(Long questionId) {
+		this.questionId = questionId;
+	}
+
+	public HashMap<String, Translation> getTranslationMap() {
+		return translationMap;
+	}
+
+	public void setTranslationMap(HashMap<String, Translation> translationMap) {
+		this.translationMap = translationMap;
 	}
 
 	public String getUrl() {
@@ -49,18 +64,11 @@ public class QuestionHelpMedia extends BaseDomain {
 		return text;
 	}
 
-	
-	public void addAltTextKey(Key altTextKey) {
-		if (getAltTextKeyList() == null)
-			setAltTextKeyList(new ArrayList<Key>());
-		getAltTextKeyList().add(altTextKey);
+	public void addTranslation(Translation t) {
+		if (translationMap == null) {
+			translationMap = new HashMap<String, Translation>();
+		}
+		translationMap.put(t.getLanguageCode(), t);
 	}
 
-	public void setAltTextKeyList(List<Key> altTextKeyList) {
-		this.altTextKeyList = altTextKeyList;
-	}
-
-	public List<Key> getAltTextKeyList() {
-		return altTextKeyList;
-	}
 }

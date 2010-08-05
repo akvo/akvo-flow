@@ -26,13 +26,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		questionDAO = new QuestionDao();
 
 	}
-
-	public SurveyGroup save(SurveyGroup item) {
-
-		item = super.save(item);
-		return item;
-	}
-
+	
 	public SurveyGroup getByKey(Long id, boolean includeQuestions) {
 		SurveyGroup sg = getByKey(id);
 

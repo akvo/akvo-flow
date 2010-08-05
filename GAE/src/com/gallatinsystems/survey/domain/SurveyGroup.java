@@ -1,27 +1,32 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
-public class SurveyGroup extends BaseDomain {
+public class SurveyGroup extends BaseDomain { 
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8941584684617286776L;
 	private String name = null;
 	private String code = null;
-	@Persistent(serialized = "true")
-	private List<Key> altNameKeyList = null;
-	@Persistent(serialized = "true")
+	@NotPersistent
+	private HashMap<String, Translation> altTextMap;
+	@NotPersistent
 	private List<Survey> surveyList = null;
+
+	public HashMap<String, Translation> getAltTextMap() {
+		return altTextMap;
+	}
+
+	public void setAltTextMap(HashMap<String, Translation> altTextMap) {
+		this.altTextMap = altTextMap;
+	}
 
 	public String getName() {
 		return name;
@@ -53,19 +58,4 @@ public class SurveyGroup extends BaseDomain {
 		surveyList.add(survey);
 	}
 
-	public void addAltNameKeyList(Key altNameKey){
-		if(altNameKey==null)
-			this.altNameKeyList = new ArrayList<Key>();
-		getAltNameKeyList().add(altNameKey);
-	}
-	
-	public void setAltNameKey(List<Key> altNameKey) {
-		this.altNameKeyList = altNameKey;
-	}
-
-	public List<Key> getAltNameKeyList() {
-		return altNameKeyList;
-	}
-
-	
 }

@@ -63,6 +63,7 @@ import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
@@ -78,7 +79,6 @@ import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -299,32 +299,45 @@ public class TestHarnessServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
+			SurveyDAO surveyDao = new SurveyDAO();
+			QuestionGroupDao questionGroupDao = new QuestionGroupDao();
+			QuestionDao questionDao = new QuestionDao();
+			QuestionOptionDao questionOptionDao = new QuestionOptionDao();
+			QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
 			for (int i = 0; i < 2; i++) {
 				com.gallatinsystems.survey.domain.SurveyGroup sg = new com.gallatinsystems.survey.domain.SurveyGroup();
 				sg.setCode(i + ":" + new Date());
 				sg.setName(i + ":" + new Date());
+				sg = sgDao.save(sg);
 				for (int j = 0; j < 10; j++) {
 					com.gallatinsystems.survey.domain.Survey survey = new com.gallatinsystems.survey.domain.Survey();
 					survey.setName(j + ":" + new Date());
+					survey.setSurveyGroupId(sg.getKey().getId());
+					survey = surveyDao.save(survey);
 					Translation t = new Translation();
 					t.setLanguageCode("es");
 					t.setText(j + ":" + new Date());
 					t.setParentType(ParentType.SURVEY_NAME);
+					t.setParentId(survey.getKey().getId());
 					tDao.save(t);
-					survey.addAltName(t.getKey());
+					survey.addTranslation(t);
 					for (int k = 0; k < 10; k++) {
 						com.gallatinsystems.survey.domain.QuestionGroup qg = new com.gallatinsystems.survey.domain.QuestionGroup();
 						qg.setName("en:" + j + new Date());
 						qg.setDesc("en:desc: " + j + new Date());
 						qg.setCode("en:" + j + new Date());
+						qg.setSurveyId(survey.getKey().getId());
+						qg.setOrder(k);
+						qg = questionGroupDao.save(qg);
+
 						Translation t2 = new Translation();
 						t2.setLanguageCode("es");
 						t2.setParentType(ParentType.QUESTION_GROUP_NAME);
 						t2.setText("es:" + k + new Date());
+						t2.setParentId(qg.getKey().getId());
 						tDao.save(t2);
-						qg.addAltDescKey(t2.getKey());
-						qg.addAltNameKey(t2.getKey());
+						qg.addTranslation(t2);
+
 						for (int l = 0; l < 2; l++) {
 							com.gallatinsystems.survey.domain.Question q = new com.gallatinsystems.survey.domain.Question();
 							q.setType(Type.OPTION);
@@ -332,41 +345,53 @@ public class TestHarnessServlet extends HttpServlet {
 							q.setAllowOtherFlag(false);
 							q.setDependentFlag(false);
 							q.setMandatoryFlag(true);
+							q.setQuestionGroupId(qg.getKey().getId());
+							q.setOrder(l);
 							q.setText("en:" + l + ":" + new Date());
 							q.setTip("en:" + l + ":" + new Date());
+
+							q = questionDao.save(q);
+
 							Translation tq = new Translation();
 							tq.setLanguageCode("es");
 							tq.setText("es" + l + ":" + new Date());
 							tq.setParentType(ParentType.QUESTION_TEXT);
+							tq.setParentId(q.getKey().getId());
 							tDao.save(tq);
-							q.addAltTextKey(tq.getKey());
+							q.addTranslation(tq);
 							for (int m = 0; m < 10; m++) {
 								com.gallatinsystems.survey.domain.QuestionOption qo = new com.gallatinsystems.survey.domain.QuestionOption();
-								qo.addOption("en:" + m + ":" + new Date());
+								qo.setOrder(m);								
+								qo.setText(m + ":" + new Date());
+								qo.setCode(m + ":" + new Date());
+								qo.setQuestionId(q.getKey().getId());
+								qo = questionOptionDao.save(qo);
+								
 								Translation tqo = new Translation();
 								tqo.setLanguageCode("es");
 								tqo.setText("es:" + m + ":" + new Date());
 								tqo.setParentType(ParentType.QUESTION_OPTION);
+								tqo.setParentId(qo.getKey().getId());
 								tDao.save(tqo);
-								qo.addAltOptionKey(tqo.getKey());
-								qo.setCode(m + ":" + new Date());
+								qo.addTranslation(tqo);
+								q.addQuestionOption(qo);
 							}
 							for (int n = 0; n < 10; n++) {
 								com.gallatinsystems.survey.domain.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.QuestionHelpMedia();
 								qhm.setText("en:" + n + ":" + new Date());
+								qhm.setType(QuestionHelpMedia.Type.PHOTO);
+								qhm.setUrl("http://test.com/" + n + ".jpg");
+								qhm.setQuestionId(q.getKey().getId());
+								qhm = helpDao.save(qhm);
+								
 								Translation tqhm = new Translation();
 								tqhm.setLanguageCode("es");
 								tqhm.setText("es:" + n + ":" + new Date());
 								tqhm
 										.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
-								tDao.save(tqhm);
-								qhm.addAltTextKey(tqhm.getKey());
-								qhm.setType(QuestionHelpMedia.Type.PHOTO);
-								qhm.setUrl("http://test.com/" + n + ".jpg");
-								BaseDAO<QuestionHelpMedia> qhmDao = new BaseDAO<QuestionHelpMedia>(QuestionHelpMedia.class);
-								qhmDao.save(qhm);
 								tqhm.setParentId(qhm.getKey().getId());
 								tDao.save(tqhm);
+								qhm.addTranslation(tqhm);																															
 								q.addHelpMedia(n, qhm);
 							}
 							qg.addQuestion(l, q);
@@ -374,12 +399,9 @@ public class TestHarnessServlet extends HttpServlet {
 						survey.addQuestionGroup(k, qg);
 					}
 					sg.addSurvey(survey);
-
-				}
-				sgDao.save(sg);
+				}				
 				log.log(Level.INFO, "Finished Saving sg: "
 						+ sg.getKey().toString());
-
 			}
 			try {
 				List<SurveyGroup> savedSurveyGroups = sgDao.list("all");
@@ -410,14 +432,14 @@ public class TestHarnessServlet extends HttpServlet {
 													+ ":"
 													+ qhmEntry.getValue()
 															.getText());
-									for (Key tKey : qhmEntry.getValue()
+									/*for (Key tKey : qhmEntry.getValue()
 											.getAltTextKeyList()) {
 										Translation t = tDao.getByKey(tKey);
 										resp.getWriter().println(
 												"                 QHMAltText"
 														+ t.getLanguageCode()
 														+ ":" + t.getText());
-									}
+									}*/
 								}
 							}
 						}

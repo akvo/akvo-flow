@@ -1,14 +1,12 @@
 package com.gallatinsystems.survey.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.TreeMap;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class Survey extends BaseDomain {
@@ -16,35 +14,36 @@ public class Survey extends BaseDomain {
 	 * 
 	 */
 	private static final long serialVersionUID = -8638039212962768687L;
-	@Persistent(serialized = "true")
-	private List<Key> altNameKeyList = null;
+	@NotPersistent
+	private HashMap<String, Translation> translationMap;
 	private String code = null;
 	private String name = null;
 	private String desc = null;
-	@Persistent(serialized = "true")
-	private List<Key> altDescKeyList = null;
 	private Status status = null;
-	@Persistent(serialized = "true")
+	@NotPersistent
 	private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
 	private Double version = null;
 	private String path = null;
+	private Long surveyGroupId;
 
 	public enum Status {
 		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED
 	};
 
-	public List<Key> getAltNameList() {
-		return altNameKeyList;
+	public Long getSurveyGroupId() {
+		return surveyGroupId;
 	}
 
-	public void setAltNameList(List<Key> altNameList) {
-		this.altNameKeyList = altNameList;
+	public void setSurveyGroupId(Long surveyGroupId) {
+		this.surveyGroupId = surveyGroupId;
 	}
 
-	public void addAltName(Key item) {
-		if (altNameKeyList == null)
-			altNameKeyList = new ArrayList<Key>();
-		altNameKeyList.add(item);
+	public HashMap<String, Translation> getTranslationMap() {
+		return translationMap;
+	}
+
+	public void setTranslationMap(HashMap<String, Translation> translationMap) {
+		this.translationMap = translationMap;
 	}
 
 	public String getName() {
@@ -61,13 +60,6 @@ public class Survey extends BaseDomain {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
-	}
-
-	
-	public void addAltDescKey(Key altDesc) {
-		if (getAltDescKeyList() == null)
-			setAltDescKeyList(new ArrayList<Key>());
-		getAltDescKeyList().add(altDesc);
 	}
 
 	public String getCode() {
@@ -117,12 +109,11 @@ public class Survey extends BaseDomain {
 		return path;
 	}
 
-	public void setAltDescKeyList(List<Key> altDescKeyList) {
-		this.altDescKeyList = altDescKeyList;
-	}
-
-	public List<Key> getAltDescKeyList() {
-		return altDescKeyList;
+	public void addTranslation(Translation t) {
+		if (translationMap == null) {
+			translationMap = new HashMap<String, Translation>();
+		}
+		translationMap.put(t.getLanguageCode(), t);
 	}
 
 }

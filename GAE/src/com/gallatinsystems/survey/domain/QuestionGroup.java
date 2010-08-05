@@ -1,15 +1,12 @@
 package com.gallatinsystems.survey.domain;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.TreeMap;
 
-import javax.jdo.annotations.Element;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class QuestionGroup extends BaseDomain {
@@ -20,46 +17,50 @@ public class QuestionGroup extends BaseDomain {
 	private String name = null;
 	private String desc = null;
 
-	@Persistent(serialized = "true")
-	private HashMap<Integer, Question> questionMap = null;
-	@Persistent(serialized = "true")
-	private List<Key> altNameKeyList = null;
-	@Persistent(serialized = "true")
-	private List<Key> altDescList = null;
+	@NotPersistent
+	private TreeMap<Integer, Question> questionMap;
+	@NotPersistent
+	private HashMap<String, Translation> translationMap;
 	private String code = null;
 	private String path = null;
+	private Long surveyId;
+	private Integer order;
 
-	public List<Key> getNameKeyList() {
-		return altNameKeyList;
+	public Integer getOrder() {
+		return order;
 	}
 
-	public void setNameKeyList(List<Key> nameList) {
-		this.altNameKeyList = nameList;
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public HashMap<String, Translation> getTranslationMap() {
+		return translationMap;
+	}
+
+	public void setTranslationMap(HashMap<String, Translation> translationMap) {
+		this.translationMap = translationMap;
 	}
 
 	public void addQuestion(Integer order, Question question) {
 		if (getQuestionMap() == null)
-			setQuestionMap(new HashMap<Integer, Question>());
+			setQuestionMap(new TreeMap<Integer, Question>());
 		getQuestionMap().put(order, question);
 	}
 
-	public void addAltNameKey(Key altNameKey) {
-		if (altNameKeyList == null)
-			altNameKeyList = new ArrayList<Key>();
-		altNameKeyList.add(altNameKey);
-	}
-
-	public void addAltDescKey(Key altDesc) {
-		if (getAltDescList() == null)
-			setAltDescList(new ArrayList<Key>());
-		getAltDescList().add(altDesc);
-	}
-
-	public void setQuestionMap(HashMap<Integer, Question> questionMap) {
+	public void setQuestionMap(TreeMap<Integer, Question> questionMap) {
 		this.questionMap = questionMap;
 	}
 
-	public HashMap<Integer, Question> getQuestionMap() {
+	public TreeMap<Integer, Question> getQuestionMap() {
 		return questionMap;
 	}
 
@@ -95,11 +96,11 @@ public class QuestionGroup extends BaseDomain {
 		return desc;
 	}
 
-	public void setAltDescList(List<Key> altDescList) {
-		this.altDescList = altDescList;
+	public void addTranslation(Translation t) {
+		if (translationMap == null) {
+			translationMap = new HashMap<String, Translation>();
+		}
+		translationMap.put(t.getLanguageCode(), t);
 	}
 
-	public List<Key> getAltDescList() {
-		return altDescList;
-	}
 }

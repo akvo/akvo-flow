@@ -14,7 +14,7 @@ public class Translation extends BaseDomain {
 	private String languageCode = null;
 	private String text  = null;
 	private Long parentId = null;
-	private ParentType parentType = null;
+	private ParentType parentType = null;	
 	
 	public String getLanguageCode() {
 		return languageCode;
