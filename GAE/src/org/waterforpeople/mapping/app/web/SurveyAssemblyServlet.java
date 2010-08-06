@@ -29,10 +29,10 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.xml.Dependency;
+import com.gallatinsystems.survey.domain.xml.Help;
 import com.gallatinsystems.survey.domain.xml.ObjectFactory;
 import com.gallatinsystems.survey.domain.xml.Option;
 import com.gallatinsystems.survey.domain.xml.Options;
-import com.gallatinsystems.survey.domain.xml.Tip;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.Text;
@@ -241,9 +241,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			qXML.setText(t);
 		}
 		if (q.getTip() != null) {
-			Tip tip = new Tip();
-			tip.setContent(q.getTip());
-			qXML.setTip(tip);
+			Help tip = new Help();
+			com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+			t.setContent(q.getTip());
+			tip.setText(t);
+			qXML.setHelp(tip);
 		}
 
 		if (q.getValidationRule() != null) {
@@ -299,11 +301,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			ArrayList<Option> optionList = new ArrayList<Option>();
 			for (QuestionOption qo : q.getQuestionOptionMap().values()) {
 				Option option = objFactory.createOption();
-				option.setContent(qo.getText());
+				com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+				t.setContent(qo.getText());
+				option.addContent(t);
 				option.setValue(qo.getCode());
 				optionList.add(option);
 			}
-			options.setOptionList(optionList);
+			options.setOption(optionList);
 
 			qXML.setOptions(options);
 		}
