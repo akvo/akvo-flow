@@ -71,7 +71,11 @@ public class QuestionGroup {
         return heading;
     }
 
-    /**
+    public void setQuestion(List<Question> question) {
+		this.question = question;
+	}
+
+	/**
      * Sets the value of the heading property.
      * 
      * @param value

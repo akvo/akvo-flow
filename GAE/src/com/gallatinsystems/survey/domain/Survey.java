@@ -30,6 +30,10 @@ public class Survey extends BaseDomain {
 		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED
 	};
 
+	public Survey() {
+		questionGroupMap = new TreeMap<Integer, QuestionGroup>();
+	}
+
 	public Long getSurveyGroupId() {
 		return surveyGroupId;
 	}
@@ -96,9 +100,13 @@ public class Survey extends BaseDomain {
 	}
 
 	public void addQuestionGroup(Integer order, QuestionGroup questionGroup) {
-		if (questionGroupMap == null)
-			questionGroupMap = new TreeMap<Integer, QuestionGroup>();
+
 		questionGroupMap.put(order, questionGroup);
+	}
+
+	public void addQuestionGroup(QuestionGroup questionGroup) {
+		addQuestionGroup(questionGroup.getOrder() != null ? questionGroup
+				.getOrder() : getQuestionGroupMap().size() + 1, questionGroup);
 	}
 
 	public void setPath(String path) {
