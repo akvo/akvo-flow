@@ -28,11 +28,10 @@ public class TranslationDao extends BaseDAO<Translation> {
 		paramMap = new HashMap<String, Object>();
 
 		appendNonNullParam("parentType", filterString, paramString,
-				"ParentType", parentType, paramMap);
+				"String", parentType.toString(), paramMap);
 		appendNonNullParam("parentId", filterString, paramString, "Long",
 				parentId, paramMap);
-		query
-				.declareImports("import com.gallatinsystems.survey.domain.Translation.ParentType");
+		
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 

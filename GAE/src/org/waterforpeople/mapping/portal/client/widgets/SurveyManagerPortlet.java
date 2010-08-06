@@ -448,7 +448,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				questionDetailPanel.setWidget(8, 4, qDepId);
 				if (qDto != null && qDto.getQuestionDependency() != null) {
 					// set existing value
-					qDepId.setText(qDto.getQuestionDependency().getKeyId()
+					qDepId.setText(qDto.getQuestionDependency().getQuestionId()
 							.toString());
 					loadDepQA(questionLB, questionGroup);
 					Boolean foundAnswer = false;

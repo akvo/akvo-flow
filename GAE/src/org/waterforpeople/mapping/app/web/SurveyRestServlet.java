@@ -16,8 +16,10 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -84,6 +86,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
+		QuestionOptionDao optionDao = new QuestionOptionDao();
+		TranslationDao translationDao = new TranslationDao();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		QuestionDao qDao = new QuestionDao();
 		BaseDAO<Translation> tDao = new BaseDAO<Translation>(Translation.class);
@@ -153,11 +157,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setAllowOtherFlag(allowOtherFlag);
 			q.setType(Type.OPTION);
 			QuestionOption qo = new QuestionOption();
-			for(QuestionOptionContainer qoc:parseQuestionOption(options)){
-				if(qoc.getLangCode().equals("en")){
+			for (QuestionOptionContainer qoc : parseQuestionOption(options)) {
+				if (qoc.getLangCode().equals("en")) {
 					qo.setCode(qoc.getOption());
 					qo.setText(qoc.getOption());
-				}else{
+				} else {
 					Translation t = new Translation();
 					t.setLanguageCode(qoc.langCode);
 					t.setText(qoc.getOption());
@@ -176,7 +180,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		// deal with options and dependencies
 
-		 if (dependentQuestion != null && dependentQuestion.trim().length() > 1) {
+		if (dependentQuestion != null && dependentQuestion.trim().length() > 1) {
 			String[] parts = dependentQuestion.split("\\|");
 			Integer quesitonOrderId = new Integer(parts[0]);
 			String answer = parts[1];
@@ -188,10 +192,33 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				q.setDependentQuestionAnswer(answer);
 			}
 
-		}else{
+		} else {
 			q.setDependentFlag(false);
 		}
 		qDao.save(q);
+
+		// now update the question id in the children and save
+		if (q.getQuestionOptionMap() != null) {
+			for (QuestionOption opt : q.getQuestionOptionMap().values()) {
+				opt.setQuestionId(q.getKey().getId());
+				optionDao.save(opt);
+				if (opt.getTranslationMap() != null) {
+					for (Translation t : opt.getTranslationMap().values()) {
+						t.setParentId(opt.getKey().getId());
+						t.setParentType(ParentType.QUESTION_OPTION);
+						translationDao.save(t);
+					}
+				}
+			}
+		}
+		if (q.getTranslationMap() != null) {
+			for (Translation t : q.getTranslationMap().values()) {
+				t.setParentId(q.getKey().getId());
+				t.setParentType(ParentType.QUESTION_TEXT);
+				translationDao.save(t);
+			}
+		}
+
 		qg.addQuestion(questionOrder, q);
 		qgDao.save(qg);
 		surveyDao.save(survey);
@@ -212,16 +239,16 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		return langMap;
 	}
 
-	private ArrayList<QuestionOptionContainer> parseQuestionOption(String questionOption) {
+	private ArrayList<QuestionOptionContainer> parseQuestionOption(
+			String questionOption) {
 		ArrayList<QuestionOptionContainer> qoList = new ArrayList<QuestionOptionContainer>();
 
 		String[] parts = questionOption.split("#");
 		for (String item : parts) {
 			for (Map.Entry<String, String> entry : parseLangMap(item)
 					.entrySet()) {
-				qoList
-						.add(new QuestionOptionContainer(entry.getKey(), entry
-								.getValue()));
+				qoList.add(new QuestionOptionContainer(entry.getKey(), entry
+						.getValue()));
 			}
 		}
 		return qoList;

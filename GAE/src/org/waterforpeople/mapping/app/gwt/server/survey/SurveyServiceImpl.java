@@ -638,7 +638,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public QuestionDto loadQuestionDetails(Long questionId) {
 		QuestionDao questionDao = new QuestionDao();
-		Question canonical = questionDao.getByKey(questionId);
+		Question canonical = questionDao.getByKey(questionId,true);
 		if (canonical != null) {
 			return marshalQuestionDto(canonical);
 		} else {

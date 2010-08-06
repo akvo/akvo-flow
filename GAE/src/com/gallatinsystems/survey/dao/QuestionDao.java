@@ -58,8 +58,16 @@ public class QuestionDao extends BaseDAO<Question> {
 		return question;
 	}
 
-	public Question getByKey(Long id) {
-		Question q = super.getByKey(id);
+	public Question getByKey(Long id, boolean needDetails) {
+		Question q = getByKey(id);
+		if (needDetails) {
+			q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q.getKey()
+					.getId()));
+			if (Question.Type.OPTION == q.getType()) {
+				q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
+						.getKey().getId()));
+			}
+		}
 		return q;
 	}
 
@@ -80,8 +88,10 @@ public class QuestionDao extends BaseDAO<Question> {
 				if (needDetails) {
 					q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q
 							.getKey().getId()));
-					q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
-							.getKey().getId()));
+					if (Question.Type.OPTION == q.getType()) {
+						q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
+								.getKey().getId()));
+					}
 				}
 			}
 		}
