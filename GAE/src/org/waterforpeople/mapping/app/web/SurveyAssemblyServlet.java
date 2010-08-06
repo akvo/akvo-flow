@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
@@ -258,23 +257,23 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		// TODO marshall xml
 		// qXML.setText(q.getText());
 
-		if (q.getType().equals(QuestionType.FREE_TEXT))
+		if (q.getType().equals(Question.Type.FREE_TEXT))
 			qXML.setType(FREE_QUESTION_TYPE);
-		else if (q.getType().equals(QuestionType.GEO))
+		else if (q.getType().equals(Question.Type.GEO))
 			qXML.setType(GEO_QUESTION_TYPE);
-		else if (q.getType().equals(QuestionType.NUMBER)) {
+		else if (q.getType().equals(Question.Type.NUMBER)) {
 			qXML.setType(FREE_QUESTION_TYPE);
 			ValidationRule vrule = new ValidationRule();
 			vrule.setValidationType("numeric");
 			vrule.setSigned("false");
 			qXML.setValidationRule(vrule);
-		} else if (q.getType().equals(QuestionType.OPTION))
+		} else if (q.getType().equals(Question.Type.OPTION))
 			qXML.setType(OPTION_QUESTION_TYPE);
-		else if (q.getType().equals(QuestionType.PHOTO))
+		else if (q.getType().equals(Question.Type.PHOTO))
 			qXML.setType(PHOTO_QUESTION_TYPE);
-		else if (q.getType().equals(QuestionType.VIDEO))
+		else if (q.getType().equals(Question.Type.VIDEO))
 			qXML.setType(VIDEO_QUESTION_TYPE);
-		else if (q.getType().equals(QuestionType.SCAN))
+		else if (q.getType().equals(Question.Type.SCAN))
 			qXML.setType(SCAN_QUESTION_TYPE);
 
 		if (q.getOrder() != null) {
