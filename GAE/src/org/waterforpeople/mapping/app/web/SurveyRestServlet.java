@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.web;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -155,25 +156,28 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		else if (questionType.equals("OPTION")) {
 			q.setAllowMultipleFlag(allowMultipleFlag);
 			q.setAllowOtherFlag(allowOtherFlag);
-			q.setType(Type.OPTION);			
+			q.setType(Type.OPTION);
 			for (QuestionOptionContainer qoc : parseQuestionOption(options)) {
 				QuestionOption qo = new QuestionOption();
-				if (qoc.getLangCode().equals("en")) {
-					qo.setCode(qoc.getOption());
-					qo.setText(qoc.getOption());
-				} else {
-					Translation t = new Translation();
-					t.setLanguageCode(qoc.langCode);
-					t.setText(qoc.getOption());
-					t.setParentType(ParentType.QUESTION_TEXT);
-					qo.addTranslation(t);
-				}
+				qo.setText(qoc.getOption());
+				qo.setCode(qoc.getOption());
+				if(qoc.getAltLangs()!= null){
+					for(QuestionOptionContainer altOpt : qoc.getAltLangs()){
+						Translation t = new Translation();
+						t.setLanguageCode(altOpt.langCode);
+						t.setText(altOpt.getOption());
+						t.setParentType(ParentType.QUESTION_TEXT);
+						qo.addTranslation(t);					
+					}
+				}								
 				q.addQuestionOption(qo);
-			}			
-		} else if (questionType.equals("PHOTO"))
+			}
+		} else if (questionType.equals("PHOTO")){
 			q.setType(Question.Type.PHOTO);
-		else if (questionType.equals("NUMBER"))
+		}
+		else if (questionType.equals("NUMBER")){
 			q.setType(Question.Type.NUMBER);
+		}
 
 		if (mandatoryFlag != null)
 			q.setMandatoryFlag(mandatoryFlag);
@@ -244,12 +248,15 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		ArrayList<QuestionOptionContainer> qoList = new ArrayList<QuestionOptionContainer>();
 
 		String[] parts = questionOption.split("#");
-		for (String item : parts) {
-			for (Map.Entry<String, String> entry : parseLangMap(item)
-					.entrySet()) {
-				qoList.add(new QuestionOptionContainer(entry.getKey(), entry
-						.getValue()));
+		for (String option : parts) {
+			Map<String,String> langVals = parseLangMap(option);
+			String english = langVals.remove("en");
+			QuestionOptionContainer container = new QuestionOptionContainer("en", english);			
+			for (Map.Entry<String, String> entry : langVals.entrySet()) {
+				container.addAltLang(new QuestionOptionContainer(entry.getKey(), entry
+					.getValue()));
 			}
+			qoList.add(container);
 		}
 		return qoList;
 	}
@@ -263,6 +270,19 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		private String langCode = null;
 		private String option = null;
+		private List<QuestionOptionContainer> altLangs;
+
+		public List<QuestionOptionContainer> getAltLangs() {
+			return altLangs;
+		}
+		
+		
+		public void addAltLang(QuestionOptionContainer container){
+			if(altLangs == null){
+				altLangs = new ArrayList<QuestionOptionContainer>();				
+			}
+			altLangs.add(container);
+		}
 
 		public void setLangCode(String langCode) {
 			this.langCode = langCode;
