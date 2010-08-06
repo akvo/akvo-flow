@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.xml.SurveyGroupAssoc;
 
 public class SurveyGroupServlet extends HttpServlet {
 
@@ -38,13 +37,7 @@ public class SurveyGroupServlet extends HttpServlet {
 			surveyGroupDAO.save(surveyGroup);
 			outString = surveyGroup.toString();
 		} else if (action != null && action.equals("associateSurveyGroup")) {
-			String surveyGroupFromCode = req.getParameter("surveyGroupFrom");
-			String surveyGroupToCode = req.getParameter("surveyGroupTo");
-			SurveyGroupAssoc surveyGroupAssoc = new SurveyGroupAssoc();
-			surveyGroupAssoc.setSurveyGroupFromCode(surveyGroupFromCode);
-			surveyGroupAssoc.setSurveyGroupToCode(surveyGroupToCode);
-			surveyGroupDAO.save(surveyGroupAssoc);
-			outString = surveyGroupAssoc.toString();
+			throw new RuntimeException("associateSurveyGroup not implemented");
 		} else if (action != null
 				&& action.equals("associateSurveyToSurveyGroup")) {
 
