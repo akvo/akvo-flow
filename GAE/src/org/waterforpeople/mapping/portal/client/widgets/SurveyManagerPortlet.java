@@ -105,9 +105,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	}
 
 	private void removeAllWidgetsLoadThisWidget(Widget w) {
-		//for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
-		//	detailContainer.remove(i);
-	//	}
+		// for (int i = 0; i < detailContainer.getWidgetCount(); i++) {
+		// detailContainer.remove(i);
+		// }
 		treeContainer.remove(detailContainer);
 		detailContainer = new VerticalPanel();
 		treeContainer.add(detailContainer);
@@ -217,7 +217,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
-	private void loadQuestionDetails(QuestionDto item){
+	private void loadQuestionDetails(QuestionDto item) {
 		setButtonState(ButtonState.NONE);
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
@@ -311,8 +311,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		});
 
-		//Fix this section so that multiple buttons aren't created
-		
+		// Fix this section so that multiple buttons aren't created
+
 		Button saveQuestionButton = new Button("Save Question");
 		Button deleteQuestionButton = new Button("Delete Question");
 		questionId.setVisible(false);
@@ -330,10 +330,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
 		questionDetailPanel.setWidget(7, 0, new Label(
 				"Question Dependant On Other Question"));
-		questionDetailPanel.setWidget(7, 1, dependentQuestion);		
+		questionDetailPanel.setWidget(7, 1, dependentQuestion);
 
 		if (item != null && item.getQuestionDependency() != null) {
-			dependentQuestion.setValue(true);			
+			dependentQuestion.setValue(true);
 			loadDependencyTable(true);
 		}
 		saveQuestionButton.addClickHandler(new ClickHandler() {
@@ -367,19 +367,18 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			loadDependencyTable(true);
 		}
 
-		
 		detailContainer.add(questionDetailPanel);
 		if (questionOptionDetail != null)
 			detailContainer.add(questionOptionDetail);
-		
+
 		buttonHPanel = null;
 		buttonHPanel = new HorizontalPanel();
-		
+
 		buttonHPanel.add(saveQuestionButton);
 		buttonHPanel.add(deleteQuestionButton);
-		
+
 		detailContainer.add(buttonHPanel);
-		 //this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
+		// this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
 
 	}
 
@@ -475,20 +474,45 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			for (QuestionDto qDto : questionGroup.getQuestionMap().values()) {
 
 				if (qDto.getKeyId().toString().equals(value)) {
-					ListBox answerLB = (ListBox) questionDetailPanel.getWidget(
-							8, 3);
-					List<QuestionOptionDto> qoList = qDto
-							.getOptionContainerDto().getOptionsList();
-					if (qoList != null) {
-						for (QuestionOptionDto qoDto : qoList) {
-							answerLB.addItem(qoDto.getText(), qoDto.getCode());
-						}
+					if (qDto.getOptionContainerDto() != null) {
+						updateDependencyAnswerSelection(qDto
+								.getOptionContainerDto().getOptionsList());
+					} else {
+						// if the option container is null, we probably have not
+						// yet loaded the question details. so do it now
+						svc.loadQuestionDetails(qDto.getKeyId(),
+								new AsyncCallback<QuestionDto>() {
+
+									@Override
+									public void onSuccess(QuestionDto result) {
+										if (result.getOptionContainerDto() != null) {
+											updateDependencyAnswerSelection(result
+													.getOptionContainerDto()
+													.getOptionsList());
+										}
+									}
+
+									@Override
+									public void onFailure(Throwable caught) {
+										Window.alert("Could not load answers");
+
+									}
+								});
 					}
-					answerLB.setVisible(true);
 					break;
 				}
 			}
 		}
+	}
+
+	private void updateDependencyAnswerSelection(List<QuestionOptionDto> qoList) {
+		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
+		if (qoList != null) {
+			for (QuestionOptionDto qoDto : qoList) {
+				answerLB.addItem(qoDto.getText(), qoDto.getCode());
+			}
+		}
+		answerLB.setVisible(true);
 	}
 
 	private void loadQuestionOptionDetail(QuestionDto item) {
@@ -560,7 +584,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionText = new TextBox();
 		optionText.setWidth("30em");
 		TextBox optionId = new TextBox();
-		//optionId.setVisible(true);
+		// optionId.setVisible(true);
 		if (item != null) {
 			if (item.getKeyId() != null)
 				optionId.setText(item.getKeyId().toString());
@@ -597,7 +621,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				Window.alert("Could not save question");
 
 			}
 
@@ -620,9 +644,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private QuestionDto getQuestionDto() {
 		QuestionDto value = new QuestionDto();
-		
+
 		TextBox questionId = (TextBox) questionDetailPanel.getWidget(0, 0);
-		//TextBox dependencyId = (TextBox) questionDetailPanel.getWidget(0, 0);
+		// TextBox dependencyId = (TextBox) questionDetailPanel.getWidget(0, 0);
 		TextArea questionText = (TextArea) questionDetailPanel.getWidget(1, 1);
 		ListBox questionTypeLB = (ListBox) questionDetailPanel.getWidget(2, 1);
 
@@ -648,7 +672,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			value.setType(QuestionType.FREE_TEXT);
 		} else if (questionTypeLB.getSelectedIndex() == 1) {
 			value.setType(QuestionType.OPTION);
-			FlexTable questionOptionTable = (FlexTable)detailContainer.getWidget(1) ;
+			FlexTable questionOptionTable = (FlexTable) detailContainer
+					.getWidget(1);
 
 			CheckBox allowOther = (CheckBox) questionOptionDetail.getWidget(0,
 					1);
@@ -663,7 +688,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			ocDto.setAllowMultipleFlag(allowMultiple.getValue());
 			ocDto.setAllowOtherFlag(allowOther.getValue());
 
-			for (int row = 1; row < questionOptionTable.getRowCount()-1; row++) {
+			for (int row = 1; row < questionOptionTable.getRowCount() - 1; row++) {
 				QuestionOptionDto qoDto = new QuestionOptionDto();
 				TextBox optionValue = (TextBox) questionOptionDetail.getWidget(
 						row, 1);
@@ -694,7 +719,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			ListBox questionLB = (ListBox) questionDetailPanel.getWidget(8, 1);
 			String selectedValue = questionLB.getValue(questionLB
 					.getSelectedIndex());
-			QuestionDependencyDto qdDto = new QuestionDependencyDto();			
+			QuestionDependencyDto qdDto = new QuestionDependencyDto();
 			qdDto.setQuestionId(new Long(selectedValue));
 			value.setQuestionDependency(qdDto);
 			TextBox dependentQId = (TextBox) questionDetailPanel
@@ -718,7 +743,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				Window.alert("Could not delete question");
 
 			}
 
@@ -726,7 +751,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onSuccess(Void result) {
 				Window.alert("Question Deleted");
 				questionDetailPanel.setVisible(false);
-				// todo implement remove from tree
+				// TODO implement remove from tree
 			}
 		});
 	}
@@ -837,30 +862,30 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 						@Override
 						public void onFailure(Throwable caught) {
-							Window.alert("Could not publish survey");							
+							Window.alert("Could not publish survey");
 						}
 
 						@Override
 						public void onSuccess(Void result) {
 							Window.alert("Survey published");
-							
+
 						}
 					});
-					/*svc.publishSurvey(surveyId, new AsyncCallback<String>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void onSuccess(String result) {
-							Window.alert(result);
-
-						}
-
-					});*/
+					/*
+					 * svc.publishSurvey(surveyId, new AsyncCallback<String>() {
+					 * 
+					 * @Override public void onFailure(Throwable caught) { //
+					 * TODO Auto-generated method stub
+					 * 
+					 * }
+					 * 
+					 * @Override public void onSuccess(String result) {
+					 * Window.alert(result);
+					 * 
+					 * }
+					 * 
+					 * });
+					 */
 				} else {
 					Window.alert("Please save survey before publishing");
 				}
@@ -952,7 +977,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						Window.alert("Could not save question group");
 					}
 
 					@Override
@@ -983,7 +1008,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				Window.alert("Could not save survey");
 			}
 
 			@Override
@@ -1048,7 +1073,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				Window.alert("Could not save survey group");
 
 			}
 

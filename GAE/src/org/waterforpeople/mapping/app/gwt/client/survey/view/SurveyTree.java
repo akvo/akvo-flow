@@ -272,7 +272,19 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 		loadChild(event.getSelectedItem());
 		if (event.getSelectedItem().getUserObject() != null
 				&& event.getSelectedItem().getUserObject() instanceof BaseDto) {
-			notifyListeners((BaseDto) event.getSelectedItem().getUserObject());
+			// if the object in question is a question, we need special logic to
+			// prevent it being displayed if it's not fully loaded
+			if (event.getSelectedItem().getUserObject() instanceof QuestionDto) {
+				QuestionDto q = (QuestionDto) event.getSelectedItem()
+						.getUserObject();
+				if (QuestionDto.QuestionType.OPTION == q.getType()
+						&& q.getOptionContainerDto() != null) {
+					notifyListeners(q);
+				}
+			} else {
+				notifyListeners((BaseDto) event.getSelectedItem()
+						.getUserObject());
+			}
 		}
 	}
 
@@ -393,6 +405,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 							@Override
 							public void onSuccess(QuestionDto result) {
 								item.setUserObject(result);
+								notifyListeners(result);
 							}
 						});
 

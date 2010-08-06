@@ -6,9 +6,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class Translation extends BaseDomain {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1297504186153393251L;
 	
 	private String languageCode = null;
@@ -47,7 +45,7 @@ public class Translation extends BaseDomain {
 	public void setParentType(ParentType parentType) {
 		this.parentType = parentType;
 	}
-
+	
 	public enum ParentType {SURVEY_GROUP_NAME, SURVEY_GROUP_DESC, SURVEY_NAME, SURVEY_DESC, QUESTION_GROUP_DESC, QUESTION_GROUP_NAME, QUESTION_NAME,QUESTION_DESC, QUESTION_TEXT, QUESTION_TIP ,QUESTION_HELP_TEXT , QUESTION_OPTION, QUESTION_HELP_MEDIA_TEXT};
 
 }
