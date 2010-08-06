@@ -155,9 +155,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		else if (questionType.equals("OPTION")) {
 			q.setAllowMultipleFlag(allowMultipleFlag);
 			q.setAllowOtherFlag(allowOtherFlag);
-			q.setType(Type.OPTION);
-			QuestionOption qo = new QuestionOption();
+			q.setType(Type.OPTION);			
 			for (QuestionOptionContainer qoc : parseQuestionOption(options)) {
+				QuestionOption qo = new QuestionOption();
 				if (qoc.getLangCode().equals("en")) {
 					qo.setCode(qoc.getOption());
 					qo.setText(qoc.getOption());
@@ -168,8 +168,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 					t.setParentType(ParentType.QUESTION_TEXT);
 					qo.addTranslation(t);
 				}
-			}
-			q.addQuestionOption(qo);
+				q.addQuestionOption(qo);
+			}			
 		} else if (questionType.equals("PHOTO"))
 			q.setType(Question.Type.PHOTO);
 		else if (questionType.equals("NUMBER"))
