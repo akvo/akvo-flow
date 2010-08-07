@@ -497,6 +497,21 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	}
 
 	/**
+	 * finds the tree node (if any) that has the user object passed in and
+	 * replaces it with the new one
+	 * 
+	 * @param userObject
+	 */
+	public void replaceUserObject(BaseDto userObject, BaseDto newObject) {
+		if (userObject != null) {
+			TreeItem treeItem = findItemByUserObject(userObject);
+			if (treeItem != null) {
+				treeItem.setUserObject(newObject);
+			}
+		}
+	}
+
+	/**
 	 * returns the parent user object (if any). If not found, returns null
 	 * 
 	 * @param userObject

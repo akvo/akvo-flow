@@ -363,9 +363,6 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			}
 
 		});
-		if (item != null && item.getQuestionDependency() != null) {
-			loadDependencyTable(true);
-		}
 
 		detailContainer.add(questionDetailPanel);
 		if (questionOptionDetail != null)
@@ -435,12 +432,13 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				answerLB.setVisible(false);
 				questionDetailPanel.setWidget(8, 3, answerLB);
 
-				questionLB.addClickHandler(new ClickHandler() {
+				questionLB.addChangeHandler(new ChangeHandler() {
 
 					@Override
-					public void onClick(ClickEvent event) {
+					public void onChange(ChangeEvent event) {
 						ListBox questionLBox = (ListBox) event.getSource();
 						loadDepQA(questionLBox, questionGroup);
+
 					}
 				});
 				TextBox qDepId = new TextBox();
@@ -507,6 +505,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private void updateDependencyAnswerSelection(List<QuestionOptionDto> qoList) {
 		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
+		answerLB.clear();
 		if (qoList != null) {
 			for (QuestionOptionDto qoDto : qoList) {
 				answerLB.addItem(qoDto.getText(), qoDto.getCode());
@@ -607,8 +606,13 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	}
 
 	private void saveQuestion() throws Exception {
-		QuestionDto dto = getQuestionDto();		
-		Long parentId = currentSelection.getKeyId();
+		QuestionDto dto = getQuestionDto();
+		Long parentId = null;
+		if (currentSelection instanceof QuestionDto) {
+			parentId = ((QuestionDto) currentSelection).getQuestionGroupId();
+		} else if (currentSelection instanceof QuestionGroupDto) {
+			parentId = currentSelection.getKeyId();
+		}
 		final BaseDto treeParent = currentSelection;
 		final boolean isNew;
 		if (dto.getKeyId() != null) {
@@ -622,18 +626,20 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert("Could not save question");
-
 			}
 
 			@Override
 			public void onSuccess(QuestionDto result) {
 				if (isNew) {
 					surveyTree.addChild(treeParent, result);
+				}else{
+					surveyTree.replaceUserObject(currentSelection,result);
+					currentSelection = result;
 				}
 				if (result.getQuestionDependency() != null)
 					((TextBox) questionDetailPanel.getWidget(8, 4))
-							.setText(result.getQuestionDependency().getKeyId()
-									.toString());
+							.setText(result.getQuestionDependency()
+									.getQuestionId().toString());
 
 				Window.alert("Question Saved");
 			}
@@ -699,6 +705,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				qoDto.setText(optionText.getText());
 				if (qoId.getText().length() > 0)
 					qoDto.setKeyId(new Long(qoId.getText()));
+				qoDto.setOrder(row);
 				ocDto.addQuestionOption(qoDto);
 			}
 			value.setOptionContainerDto(ocDto);

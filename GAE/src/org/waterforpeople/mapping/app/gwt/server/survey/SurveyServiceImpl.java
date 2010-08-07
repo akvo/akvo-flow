@@ -143,10 +143,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	 * This method will return a list of all the questions that have a specific
 	 * type code
 	 */
-	public QuestionDto[] listSurveyQuestionByType(Long surveyId, QuestionType type) {
+	public QuestionDto[] listSurveyQuestionByType(Long surveyId,
+			QuestionType type) {
 
 		QuestionDao questionDao = new QuestionDao();
-		List<Question> qList = questionDao.listQuestionByType(surveyId, Question.Type.valueOf(type.toString()));
+		List<Question> qList = questionDao.listQuestionByType(surveyId,
+				Question.Type.valueOf(type.toString()));
 		QuestionDto[] dtoList = null;
 		if (qList != null) {
 			dtoList = new QuestionDto[qList.size()];
@@ -223,6 +225,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDto qDto = new QuestionDto();
 
 		qDto.setKeyId(q.getKey().getId());
+		qDto.setQuestionGroupId(q.getQuestionGroupId());
 
 		if (q.getText() != null)
 			qDto.setText(q.getText());
@@ -278,6 +281,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(), qdto
 					.getKeyId())));
 
+		q.setQuestionGroupId(qdto.getQuestionGroupId());
+
 		if (qdto.getText() != null)
 			q.setText(qdto.getText());
 		if (qdto.getTip() != null)
@@ -322,6 +327,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						oo.setCode(qoDto.getCode());
 					if (qoDto.getText() != null)
 						oo.setText(qoDto.getText());
+					oo.setOrder(qoDto.getOrder());
 					q.addQuestionOption(oo);
 				}
 			}
@@ -527,7 +533,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							qXML.setText(text);
 						}
 						if (q.getTip() != null) {
-							
+
 							Help tip = new Help();
 							Text t = new Text();
 							t.setContent(q.getTip());
@@ -592,8 +598,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 									.values()) {
 								Option option = objFactory.createOption();
 								Text t = new Text();
-								t.setContent(qo.getText());								
-								option.addContent(t);															
+								t.setContent(qo.getText());
+								option.addContent(t);
 								option.setValue(qo.getCode());
 								optionList.add(option);
 							}
@@ -628,7 +634,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			StringBuilder sb = new StringBuilder();
 			sb.append("Could not publish survey: \n cause: " + ex.getCause()
 					+ " \n message" + ex.getMessage() + "\n stack trace:  ");
-			
+
 			return sb.toString();
 		}
 
@@ -638,7 +644,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public QuestionDto loadQuestionDetails(Long questionId) {
 		QuestionDao questionDao = new QuestionDao();
-		Question canonical = questionDao.getByKey(questionId,true);
+		Question canonical = questionDao.getByKey(questionId, true);
 		if (canonical != null) {
 			return marshalQuestionDto(canonical);
 		} else {

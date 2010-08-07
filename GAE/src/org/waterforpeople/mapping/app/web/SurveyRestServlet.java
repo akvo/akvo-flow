@@ -156,10 +156,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setAllowMultipleFlag(allowMultipleFlag);
 			q.setAllowOtherFlag(allowOtherFlag);
 			q.setType(Type.OPTION);
+			int i =1;
 			for (QuestionOptionContainer qoc : parseQuestionOption(options)) {
 				QuestionOption qo = new QuestionOption();
 				qo.setText(qoc.getOption());
 				qo.setCode(qoc.getOption());
+				qo.setOrder(i++);
 				if (qoc.getAltLangs() != null) {
 					for (QuestionOptionContainer altOpt : qoc.getAltLangs()) {
 						Translation t = new Translation();

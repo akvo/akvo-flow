@@ -13,6 +13,15 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
 	private String code;
 	private String description;
+	private Long surveyId;
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
 
 	public String getCode() {
 		return code;

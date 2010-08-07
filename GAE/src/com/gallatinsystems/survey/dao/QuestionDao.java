@@ -9,6 +9,8 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionHelpMedia;
+import com.gallatinsystems.survey.domain.QuestionOption;
 import com.google.appengine.api.datastore.Key;
 
 public class QuestionDao extends BaseDAO<Question> {
@@ -60,6 +62,19 @@ public class QuestionDao extends BaseDAO<Question> {
 			}
 		}
 		question = save(question);
+		if (question.getQuestionOptionMap() != null) {
+			for (QuestionOption opt : question.getQuestionOptionMap().values()) {
+				opt.setQuestionId(question.getKey().getId());
+				save(opt);
+			}
+		}
+		if (question.getQuestionHelpMediaMap() != null) {
+			for (QuestionHelpMedia help : question.getQuestionHelpMediaMap()
+					.values()) {
+				help.setQuestionId(question.getKey().getId());
+				save(help);
+			}
+		}
 		return question;
 	}
 
@@ -68,10 +83,6 @@ public class QuestionDao extends BaseDAO<Question> {
 		return q;
 	}
 
-	public Question save(Question question) {
-		question = super.save(question);
-		return question;
-	}
 
 	public Question getByKey(Long id, boolean needDetails) {
 		Question q = getByKey(id);
