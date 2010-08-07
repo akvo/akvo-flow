@@ -437,7 +437,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					@Override
 					public void onChange(ChangeEvent event) {
 						ListBox questionLBox = (ListBox) event.getSource();
-						loadDepQA(questionLBox, questionGroup);
+						loadDepQA(questionLBox, questionGroup,null);
 
 					}
 				});
@@ -447,17 +447,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					// set existing value
 					qDepId.setText(qDto.getQuestionDependency().getQuestionId()
 							.toString());
-					loadDepQA(questionLB, questionGroup);
-					Boolean foundAnswer = false;
-					for (int i = 0; i < answerLB.getItemCount(); i++) {
-						if (answerLB.getValue(i).equals(
-								qDto.getQuestionDependency().getAnswerValue())) {
-							answerLB.setSelectedIndex(i);
-							foundAnswer = true;
-						}
-						if (foundAnswer)
-							break;
-					}
+					loadDepQA(questionLB, questionGroup,qDto.getQuestionDependency().getAnswerValue());
+					
 				}
 			}
 		} else {
@@ -465,7 +456,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
-	private void loadDepQA(ListBox questionLBox, QuestionGroupDto questionGroup) {
+	private void loadDepQA(ListBox questionLBox, QuestionGroupDto questionGroup, final String selectedAnswer) {
 		Integer selectedIndex = questionLBox.getSelectedIndex();
 		String value = questionLBox.getValue(selectedIndex);
 		if (questionGroup != null) {
@@ -474,7 +465,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				if (qDto.getKeyId().toString().equals(value)) {
 					if (qDto.getOptionContainerDto() != null) {
 						updateDependencyAnswerSelection(qDto
-								.getOptionContainerDto().getOptionsList());
+								.getOptionContainerDto().getOptionsList(), selectedAnswer);						
 					} else {
 						// if the option container is null, we probably have not
 						// yet loaded the question details. so do it now
@@ -486,7 +477,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 										if (result.getOptionContainerDto() != null) {
 											updateDependencyAnswerSelection(result
 													.getOptionContainerDto()
-													.getOptionsList());
+													.getOptionsList(), selectedAnswer);
 										}
 									}
 
@@ -503,14 +494,23 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
-	private void updateDependencyAnswerSelection(List<QuestionOptionDto> qoList) {
+	private void updateDependencyAnswerSelection(List<QuestionOptionDto> qoList, String selectedAnswer) {
 		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
 		answerLB.clear();
+		int answerIndex = -1;
 		if (qoList != null) {
+			int i =0;
 			for (QuestionOptionDto qoDto : qoList) {
 				answerLB.addItem(qoDto.getText(), qoDto.getCode());
+				if(selectedAnswer != null && selectedAnswer.equals(qoDto.getCode())){
+					answerIndex =i; 
+				}
+				i++;
 			}
 		}
+		if(answerIndex>-1){
+			answerLB.setSelectedIndex(answerIndex);
+		}		
 		answerLB.setVisible(true);
 	}
 
