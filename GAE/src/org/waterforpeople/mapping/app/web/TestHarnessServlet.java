@@ -48,6 +48,7 @@ import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.domain.MapFragment;
@@ -58,7 +59,6 @@ import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -178,57 +178,11 @@ public class TestHarnessServlet extends HttpServlet {
 			try {
 				resp.getWriter().println("Finished loading aps");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		} else if ("testAPKml".equals(action)) {
 			MapFragmentDao mfDao = new MapFragmentDao();
-			// for (MapFragment item : mfDao.list("all")) {
-			// mfDao.delete(item);
-			// }
-			//			
-			// BaseDAO<Country> countryDao = new
-			// BaseDAO<Country>(Country.class);
-			// for(Country c:countryDao.list("all"))
-			// countryDao.delete(c);
-			//			
-			// Country c1 = new Country();
-			// c1.setIsoAlpha2Code("MW");
-			// countryDao.save(c1);
-			// Country c2 = new Country();
-			// c2.setIsoAlpha2Code("GT");
-			// countryDao.save(c2);
-			//			
-			// AccessPointDao apDao = new AccessPointDao();
-			// for (AccessPoint ap : apDao.list("all")) {
-			// apDao.delete(ap);
-			//
-			// }
-			// for (int i = 0; i < 2000; i++) {
-			// AccessPoint ap = new AccessPoint();
-			// ap.setCollectionDate(new Date());
-			// ap.setLatitude(15 + (new Random().nextDouble() / 10));
-			// ap.setLongitude(-90 + (new Random().nextDouble() / 10));
-			// ap.setAltitude(0.0);
-			// ap.setCommunityCode("test" + new Date());
-			// ap.setCommunityName("test" + new Date());
-			// ap.setPhotoURL("http://test.com");
-			// ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-			// ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-			// if (i % 2 == 0)
-			// ap.setCountryCode("MW");
-			// else
-			// ap.setCountryCode("GT");
-			// if (i % 2 == 0)
-			// ap.setTypeTechnologyString("Kiosk");
-			// else
-			// ap.setTypeTechnologyString("Afridev Handpump");
-			// apDao.save(ap);
-			// MapSummarizer ms = new MapSummarizer();
-			// ms.performSummarization("" + ap.getKey().getId(), "");
-			//
-			// }
 
 			BaseDAO<TechnologyType> ttDao = new BaseDAO<TechnologyType>(
 					TechnologyType.class);
@@ -271,29 +225,13 @@ public class TestHarnessServlet extends HttpServlet {
 				log.log(Level.SEVERE, "Could not list fragment");
 			}
 		} else if ("deleteSurveyGraph".equals(action)) {
-			SurveyGroupDAO sgDao = new SurveyGroupDAO();
-			SurveyDAO surveyDao = new SurveyDAO();
-			QuestionGroupDao qgDao = new QuestionGroupDao();
-			QuestionDao qDao = new QuestionDao();
-			BaseDAO<Translation> tDao = new BaseDAO<Translation>(
-					Translation.class);
-			QuestionHelpMediaDao qhmDao = new QuestionHelpMediaDao();
-			QuestionOptionDao qoDao = new QuestionOptionDao();
-
-			for (SurveyGroup sg : sgDao.list("all"))
-				sgDao.delete(sg);
-			for (Survey s : surveyDao.list("all"))
-				surveyDao.delete(s);
-			for (QuestionGroup qg : qgDao.list("all"))
-				qgDao.delete(qg);
-			for (Question q : qDao.list("all"))
-				qDao.delete(q);
-			for (Translation t : tDao.list("all"))
-				tDao.delete(t);
-			for (QuestionOption qo : qoDao.list("all"))
-				qoDao.delete(qo);
-			for (QuestionHelpMedia qhm : qhmDao.list("all"))
-				qhmDao.delete(qhm);
+			deleteAll(SurveyGroup.class);
+			deleteAll(Survey.class);
+			deleteAll(QuestionGroup.class);
+			deleteAll(Question.class);
+			deleteAll(Translation.class);
+			deleteAll(QuestionOption.class);
+			deleteAll(QuestionHelpMedia.class);
 			try {
 				resp.getWriter().println("Finished deleting survey graph");
 			} catch (IOException iex) {
@@ -317,7 +255,7 @@ public class TestHarnessServlet extends HttpServlet {
 			try {
 				resp.getWriter().println("Finished clearing surveyGroup table");
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+
 				e1.printStackTrace();
 			}
 			SurveyDAO surveyDao = new SurveyDAO();
@@ -471,7 +409,7 @@ public class TestHarnessServlet extends HttpServlet {
 				log.log(Level.SEVERE, "Could not save sg");
 			}
 
-		}else if ("createAP".equals(action)) {
+		} else if ("createAP".equals(action)) {
 			AccessPoint ap = new AccessPoint();
 			ap.setCollectionDate(new Date());
 			ap.setCommunityCode("Geneva");
@@ -795,12 +733,12 @@ public class TestHarnessServlet extends HttpServlet {
 					qoDao.delete(qo);
 				resp.getWriter().println("Deleted all QuestionOptions");
 
-				resp.getWriter().println("Deleted all questions");				
+				resp.getWriter().println("Deleted all questions");
 
 				resp.getWriter().println(
 						"Finished deleting and reloading SurveyGroup graph");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 		} else if ("testPublishSurvey".equals(action)) {
@@ -834,11 +772,22 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("createTestSurveyForEndToEnd".equals(action)) {
 			createTestSurveyForEndToEnd();
 		} else if ("deleteSurveyFragments".equals(action)) {
-			deleteSurveyFragments();
+			deleteAll(SurveyXMLFragment.class);
 		}
 	}
-	
-	private void createTestSurveyForEndToEnd(){
+
+	@SuppressWarnings("unchecked")
+	private <T extends BaseDomain> void deleteAll(Class<T> type) {
+		BaseDAO<T> baseDao = new BaseDAO(type);
+		List<T> items = baseDao.list("all");
+		if (items != null) {
+			for (T item : items) {
+				baseDao.delete(item);
+			}
+		}
+	}
+
+	private void createTestSurveyForEndToEnd() {
 		SurveyGroupDto sgd = new SurveyGroupDto();
 		sgd.setCode("E2E Test");
 		sgd.setDescription("end2end test");
@@ -873,18 +822,5 @@ public class TestHarnessServlet extends HttpServlet {
 		sgd = surveySvc.save(sgd);
 		System.out.println(sgd.getKeyId());
 	}
-	
-		
-	/**
-	 * deletes xml survey fragments
-	 */
-	private void deleteSurveyFragments(){
-		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
-		List<SurveyXMLFragment> frags = sxmlfDao.list("all");
-		if (frags != null) {
-			for (SurveyXMLFragment frag : frags) {
-				sxmlfDao.delete(frag);
-			}
-		}
-	}
+
 }
