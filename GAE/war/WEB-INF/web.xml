@@ -283,7 +283,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyRestApi</servlet-name>
-		<url-pattern>/webapp/surveyrestapi</url-pattern>
+		<url-pattern>/surveyrestapi</url-pattern>
 	</servlet-mapping>
 	<filter-mapping>
 		<filter-name>persistenceFilter</filter-name>
