@@ -1,6 +1,10 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.ArrayList;
+
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
@@ -34,25 +38,116 @@ public class SurveyQuestionPortlet extends Portlet {
 	public static final String NAME = "Survey Answer Breakdown";
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 400;
+
+	private SurveyServiceAsync surveyService;
+
 	private VerticalPanel contentPane;
 	private PieChart pieChart;
-
 	private ListBox questionListbox;
+	private ListBox surveyGroupListbox;
+	private ListBox surveyListbox;
 
 	public SurveyQuestionPortlet() {
 		super(NAME, false, false, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
-		HorizontalPanel header = new HorizontalPanel();
-		header.add(new Label("Survey Question: "));
 		questionListbox = new ListBox();
-		header.add(questionListbox);
+		surveyGroupListbox = new ListBox();
+		surveyListbox = new ListBox();
+
+		VerticalPanel header = new VerticalPanel();
+		HorizontalPanel line = new HorizontalPanel();
+		line.add(new Label("Survey Group: "));
+		line.add(surveyGroupListbox);
+		line.add(new Label("Survey: "));
+		line.add(surveyListbox);
+		header.add(line);
+		line = new HorizontalPanel();
+		line.add(new Label("Survey Question: "));
+		line.add(questionListbox);
+		header.add(line);
 
 		contentPane.add(header);
 		setContent(contentPane);
+		surveyService = GWT.create(SurveyService.class);
+		loadSurveyGroups();
 
-		SurveyServiceAsync surveyService = GWT.create(SurveyService.class);
+	}
+
+	private void loadSurveyGroups() {
+
 		// Set up the callback object.
-		AsyncCallback<QuestionDto[]> surveyCallback = new AsyncCallback<QuestionDto[]>() {
+		AsyncCallback<ArrayList<SurveyGroupDto>> surveyGroupCallback = new AsyncCallback<ArrayList<SurveyGroupDto>>() {
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			public void onSuccess(ArrayList<SurveyGroupDto> result) {
+				surveyGroupListbox.addItem("", "");
+				if (result != null) {
+					for (int i = 0; i < result.size(); i++) {
+						surveyGroupListbox.addItem(result.get(i)
+								.getDisplayName(), result.get(i).getKeyId()
+								.toString());
+
+					}
+					surveyGroupListbox.setVisibleItemCount(1);
+					surveyGroupListbox.addChangeHandler(new ChangeHandler() {
+						@Override
+						public void onChange(ChangeEvent event) {
+							ListBox lb = (ListBox) event.getSource();
+							if (lb.getSelectedIndex() == 0) {
+								surveyListbox.clear();
+							} else {
+								loadSurveys(lb.getValue(lb.getSelectedIndex()));
+							}
+						}
+					});
+				}
+			}
+		};
+		surveyService.listSurveyGroups(null, false, false, false,
+				surveyGroupCallback);
+	}
+
+	private void loadSurveys(String groupId) {
+		surveyListbox.clear();
+		// Set up the callback object.
+		AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			public void onSuccess(ArrayList<SurveyDto> result) {
+				surveyListbox.addItem("", "");
+				if (result != null) {
+					for (int i = 0; i < result.size(); i++) {
+						surveyListbox.addItem(result.get(i).getDisplayName(),
+								result.get(i).getKeyId().toString());
+
+					}
+					surveyListbox.setVisibleItemCount(1);
+					surveyListbox.addChangeHandler(new ChangeHandler() {
+						@Override
+						public void onChange(ChangeEvent event) {
+							ListBox lb = (ListBox) event.getSource();
+							if (lb.getSelectedIndex() > 0) {
+								loadSurveyQuestion(Long.parseLong(lb
+										.getValue(lb.getSelectedIndex())));
+							} else {
+								questionListbox.clear();
+							}
+						}
+					});
+				}
+			}
+		};
+		surveyService.listSurveysByGroup(groupId, surveyCallback);
+	}
+
+	private void loadSurveyQuestion(Long surveyId) {
+		questionListbox.clear();
+		// Set up the callback object.
+		AsyncCallback<QuestionDto[]> surveyQuestionCallback = new AsyncCallback<QuestionDto[]>() {
 			public void onFailure(Throwable caught) {
 				// no-op
 			}
@@ -60,8 +155,8 @@ public class SurveyQuestionPortlet extends Portlet {
 			public void onSuccess(QuestionDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
-						questionListbox.addItem(result[i].getText(),
-								result[i].getKeyId().toString());
+						questionListbox.addItem(result[i].getText(), result[i]
+								.getKeyId().toString());
 
 					}
 					questionListbox.setVisibleItemCount(1);
@@ -79,8 +174,8 @@ public class SurveyQuestionPortlet extends Portlet {
 				}
 			}
 		};
-		surveyService.listSurveyQuestionByType(QuestionType.OPTION, surveyCallback);
-
+		surveyService.listSurveyQuestionByType(surveyId, QuestionType.OPTION,
+				surveyQuestionCallback);
 	}
 
 	/**

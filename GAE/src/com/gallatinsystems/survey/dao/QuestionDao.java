@@ -5,11 +5,10 @@ import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.google.appengine.api.datastore.Key;
 
 public class QuestionDao extends BaseDAO<Question> {
@@ -23,8 +22,17 @@ public class QuestionDao extends BaseDAO<Question> {
 		helpDao = new QuestionHelpMediaDao();
 	}
 
-	public List<Question> listQuestionByType(QuestionType type) {
-		return listByProperty("type", type.toString(), "String");
+	@SuppressWarnings("unchecked")
+	public List<Question> listQuestionByType(Long surveyId, Question.Type type) {
+		if (surveyId == null) {
+			return listByProperty("type", type.toString(), "String");
+		} else {
+			PersistenceManager pm = PersistenceFilter.getManager();
+			javax.jdo.Query query = pm.newQuery(Question.class);
+			query.setFilter("surveyId == surveyIdParam && type == typeParam");
+			query.declareParameters("Long surveyIdParam, String typeParam");
+			return (List<Question>) query.execute(surveyId, type);
+		}
 	}
 
 	/**
@@ -44,7 +52,14 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	public Question save(Question question, Long questionGroupId) {
-		question = super.save(question);
+		if (questionGroupId != null) {
+			question.setQuestionGroupId(questionGroupId);
+			QuestionGroup group = getByKey(questionGroupId, QuestionGroup.class);
+			if (group != null) {
+				question.setSurveyId(group.getSurveyId());
+			}
+		}
+		question = save(question);
 		return question;
 	}
 

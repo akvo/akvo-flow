@@ -33,10 +33,19 @@ public class Question extends BaseDomain {
 	@NotPersistent
 	private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
 	private Long questionGroupId;
+	private Long surveyId;
 	private Integer order = null;
 	private Boolean mandatoryFlag = null;
 	private String path = null;
 	private String referenceId;
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
 
 	public String getReferenceId() {
 		return referenceId;

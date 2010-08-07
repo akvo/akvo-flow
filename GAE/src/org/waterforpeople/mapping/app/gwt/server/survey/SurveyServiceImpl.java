@@ -143,10 +143,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	 * This method will return a list of all the questions that have a specific
 	 * type code
 	 */
-	public QuestionDto[] listSurveyQuestionByType(QuestionType type) {
+	public QuestionDto[] listSurveyQuestionByType(Long surveyId, QuestionType type) {
 
 		QuestionDao questionDao = new QuestionDao();
-		List<Question> qList = questionDao.listQuestionByType(type);
+		List<Question> qList = questionDao.listQuestionByType(surveyId, Question.Type.valueOf(type.toString()));
 		QuestionDto[] dtoList = null;
 		if (qList != null) {
 			dtoList = new QuestionDto[qList.size()];
@@ -645,5 +645,4 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			return null;
 		}
 	}
-
 }

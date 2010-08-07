@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -90,8 +89,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		QuestionOptionDao optionDao = new QuestionOptionDao();
 		TranslationDao translationDao = new TranslationDao();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
-		QuestionDao qDao = new QuestionDao();
-		BaseDAO<Translation> tDao = new BaseDAO<Translation>(Translation.class);
+		QuestionDao qDao = new QuestionDao();		
 		SurveyGroup sg = null;
 		if (surveyGroupName != null) {
 			sg = sgDao.findBySurveyGroupName(surveyGroupName);
@@ -137,6 +135,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		q.setOrder(questionOrder);
 		q.setReferenceId(questionOrder.toString());
 		q.setQuestionGroupId(qg.getKey().getId());
+		q.setSurveyId(survey.getKey().getId());
 
 		for (Map.Entry<String, String> qTextItem : parseLangMap(questionText)
 				.entrySet()) {
@@ -161,21 +160,20 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				QuestionOption qo = new QuestionOption();
 				qo.setText(qoc.getOption());
 				qo.setCode(qoc.getOption());
-				if(qoc.getAltLangs()!= null){
-					for(QuestionOptionContainer altOpt : qoc.getAltLangs()){
+				if (qoc.getAltLangs() != null) {
+					for (QuestionOptionContainer altOpt : qoc.getAltLangs()) {
 						Translation t = new Translation();
 						t.setLanguageCode(altOpt.langCode);
 						t.setText(altOpt.getOption());
 						t.setParentType(ParentType.QUESTION_TEXT);
-						qo.addTranslation(t);					
+						qo.addTranslation(t);
 					}
-				}								
+				}
 				q.addQuestionOption(qo);
 			}
-		} else if (questionType.equals("PHOTO")){
+		} else if (questionType.equals("PHOTO")) {
 			q.setType(Question.Type.PHOTO);
-		}
-		else if (questionType.equals("NUMBER")){
+		} else if (questionType.equals("NUMBER")) {
 			q.setType(Question.Type.NUMBER);
 		}
 
@@ -249,12 +247,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		String[] parts = questionOption.split("#");
 		for (String option : parts) {
-			Map<String,String> langVals = parseLangMap(option);
+			Map<String, String> langVals = parseLangMap(option);
 			String english = langVals.remove("en");
-			QuestionOptionContainer container = new QuestionOptionContainer("en", english);			
+			QuestionOptionContainer container = new QuestionOptionContainer(
+					"en", english);
 			for (Map.Entry<String, String> entry : langVals.entrySet()) {
-				container.addAltLang(new QuestionOptionContainer(entry.getKey(), entry
-					.getValue()));
+				container.addAltLang(new QuestionOptionContainer(
+						entry.getKey(), entry.getValue()));
 			}
 			qoList.add(container);
 		}
@@ -275,11 +274,10 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		public List<QuestionOptionContainer> getAltLangs() {
 			return altLangs;
 		}
-		
-		
-		public void addAltLang(QuestionOptionContainer container){
-			if(altLangs == null){
-				altLangs = new ArrayList<QuestionOptionContainer>();				
+
+		public void addAltLang(QuestionOptionContainer container) {
+			if (altLangs == null) {
+				altLangs = new ArrayList<QuestionOptionContainer>();
 			}
 			altLangs.add(container);
 		}
@@ -288,6 +286,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			this.langCode = langCode;
 		}
 
+		@SuppressWarnings("unused")
 		public String getLangCode() {
 			return langCode;
 		}

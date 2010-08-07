@@ -18,7 +18,24 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private String validationRule = null;
 	private Boolean mandatoryFlag = null;
 	private QuestionDependencyDto questionDependency = null;
+	private Long surveyId;
+	private Long questionGroupId;
 
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public Long getQuestionGroupId() {
+		return questionGroupId;
+	}
+
+	public void setQuestionGroupId(Long questionGroupId) {
+		this.questionGroupId = questionGroupId;
+	}
 
 	public void addQuestionHelp(QuestionHelpDto questionHelp) {
 		if (questionHelpList == null) {
@@ -91,7 +108,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return questionDependency;
 	}
 
-	public enum QuestionType {		
+	public enum QuestionType {
 		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK
 	}
 

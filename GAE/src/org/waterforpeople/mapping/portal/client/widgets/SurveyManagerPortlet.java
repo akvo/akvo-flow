@@ -607,7 +607,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	}
 
 	private void saveQuestion() throws Exception {
-		QuestionDto dto = getQuestionDto();
+		QuestionDto dto = getQuestionDto();		
 		Long parentId = currentSelection.getKeyId();
 		final BaseDto treeParent = currentSelection;
 		final boolean isNew;
