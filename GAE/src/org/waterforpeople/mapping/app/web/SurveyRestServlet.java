@@ -80,7 +80,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			Integer questionOrder, Integer questionGroupOrder)
 			throws UnsupportedEncodingException {
 
-		// TODO:Change Impl Later if we support multiple langs
+		// TODO: Change Impl Later if we support multiple langs
 		surveyName = parseLangMap(surveyName).get("en");
 		questionGroupName = parseLangMap(questionGroupName).get("en");
 
@@ -89,7 +89,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		QuestionOptionDao optionDao = new QuestionOptionDao();
 		TranslationDao translationDao = new TranslationDao();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
-		QuestionDao qDao = new QuestionDao();		
+		QuestionDao qDao = new QuestionDao();
 		SurveyGroup sg = null;
 		if (surveyGroupName != null) {
 			sg = sgDao.findBySurveyGroupName(surveyGroupName);
@@ -156,7 +156,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setAllowMultipleFlag(allowMultipleFlag);
 			q.setAllowOtherFlag(allowOtherFlag);
 			q.setType(Type.OPTION);
-			int i =1;
+			int i = 1;
 			for (QuestionOptionContainer qoc : parseQuestionOption(options)) {
 				QuestionOption qo = new QuestionOption();
 				qo.setText(qoc.getOption());
@@ -236,12 +236,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		HashMap<String, String> langMap = new HashMap<String, String>();
 
 		String[] parts = unparsedLangParam.split(";");
-		for (String item : parts) {			
+		for (String item : parts) {
 			String[] langParts = item.split("\\|");
-			if(langParts.length == 1){
-				//if there is no language indicator, assume it's english
+			if (langParts.length == 1) {
+				// if there is no language indicator, assume it's English
 				langMap.put("en", langParts[0]);
-			}else{
+			} else {
 				langMap.put(langParts[0], langParts[1]);
 			}
 		}
@@ -253,18 +253,51 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		ArrayList<QuestionOptionContainer> qoList = new ArrayList<QuestionOptionContainer>();
 
 		String[] parts = questionOption.split("#");
-		for (String option : parts) {
-			Map<String, String> langVals = parseLangMap(option);
-			String english = langVals.remove("en");
-			QuestionOptionContainer container = new QuestionOptionContainer(
-					"en", english);
-			for (Map.Entry<String, String> entry : langVals.entrySet()) {
-				container.addAltLang(new QuestionOptionContainer(
-						entry.getKey(), entry.getValue()));
+		// if parts is only 1 then we only have 1 language
+		if (parts != null && parts.length == 1) {
+			String[] options = questionOption.split(";");
+			for (int i = 0; i < options.length; i++) {
+				QuestionOptionContainer opt = parseEnglishOnlyOption(options[i]);
+				if (opt != null) {
+					qoList.add(opt);
+				}
 			}
-			qoList.add(container);
+		} else if (parts != null) {
+			for (String option : parts) {
+				Map<String, String> langVals = parseLangMap(option);
+				String english = langVals.remove("en");
+				QuestionOptionContainer container = new QuestionOptionContainer(
+						"en", english);
+				for (Map.Entry<String, String> entry : langVals.entrySet()) {
+					container.addAltLang(new QuestionOptionContainer(entry
+							.getKey(), entry.getValue()));
+				}
+				qoList.add(container);
+			}
 		}
 		return qoList;
+	}
+
+	/**
+	 * handles parsing of the "old" style question options that only have a
+	 * single language. The language will be defaulted to English
+	 * 
+	 * @param option
+	 * @return
+	 */
+	private QuestionOptionContainer parseEnglishOnlyOption(String option) {
+		QuestionOptionContainer opt = null;
+		String[] val = option.split("\\|");
+		String value = null;
+		if (val.length == 2) {
+			value = val[1];
+		} else if (val.length == 1) {
+			value = val[0];
+		}
+		if (value != null) {
+			opt = new QuestionOptionContainer("en", value);
+		}
+		return opt;
 	}
 
 	private class QuestionOptionContainer {

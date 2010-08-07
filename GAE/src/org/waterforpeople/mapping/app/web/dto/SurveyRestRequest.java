@@ -132,32 +132,50 @@ public class SurveyRestRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
-		if (req.getParameter(SURVEY_GROUP_NAME_PARAM) != null)
-			surveyGroupName = req.getParameter(SURVEY_GROUP_NAME_PARAM);
-		if(req.getParameter(SURVEY_NAME_PARAM)!=null)
-			surveyName = req.getParameter(SURVEY_NAME_PARAM);
-		if(req.getParameter(QUESTION_GROUP_NAME_PARAM)!=null)
-			questionGroupName = req.getParameter(QUESTION_GROUP_NAME_PARAM);
-		if(req.getParameter(QUESTION_ID_PARAM)!=null)
-			questionId = Integer.parseInt(req.getParameter(QUESTION_ID_PARAM));
-		if(req.getParameter(QUESTION_TEXT_PARAM)!=null)
-			questionText = req.getParameter(QUESTION_TEXT_PARAM);
-		if(req.getParameter(QUESTION_TYPE_PARAM)!=null)
-			questionType = req.getParameter(QUESTION_TYPE_PARAM);
-		if(req.getParameter(OPTIONS_PARAM)!=null)
-			options = req.getParameter(OPTIONS_PARAM);
-		if(req.getParameter(DEPEND_QUESTION_PARAM)!=null)
-			dependQuestion = req.getParameter(DEPEND_QUESTION_PARAM);
-		if(req.getParameter(ALLOW_MULTIPLE_PARAM)!=null)
-			allowMultipleFlag = Boolean.parseBoolean(req.getParameter(ALLOW_MULTIPLE_PARAM));
-		if(req.getParameter(ALLOW_OTHER_PARAM)!=null)
-			allowOtherFlag = Boolean.parseBoolean(req.getParameter(ALLOW_OTHER_PARAM));
-		if(req.getParameter(MANDATORY_PARAM)!=null)
-			mandatoryFlag = Boolean.parseBoolean(req.getParameter(MANDATORY_PARAM));
-		else
+		if (req.getParameter(SURVEY_GROUP_NAME_PARAM) != null) {
+			surveyGroupName = req.getParameter(SURVEY_GROUP_NAME_PARAM).trim();
+		}
+		if (req.getParameter(SURVEY_NAME_PARAM) != null) {
+			surveyName = req.getParameter(SURVEY_NAME_PARAM).trim();
+		}
+		if (req.getParameter(QUESTION_GROUP_NAME_PARAM) != null) {
+			questionGroupName = req.getParameter(QUESTION_GROUP_NAME_PARAM)
+					.trim();
+		}
+		if (req.getParameter(QUESTION_ID_PARAM) != null) {
+			questionId = Integer.parseInt(req.getParameter(QUESTION_ID_PARAM)
+					.trim());
+		}
+		if (req.getParameter(QUESTION_TEXT_PARAM) != null) {
+			questionText = req.getParameter(QUESTION_TEXT_PARAM).trim();
+		}
+		if (req.getParameter(QUESTION_TYPE_PARAM) != null) {
+			questionType = req.getParameter(QUESTION_TYPE_PARAM).trim();
+		}
+		if (req.getParameter(OPTIONS_PARAM) != null) {
+			options = req.getParameter(OPTIONS_PARAM).trim();
+		}
+		if (req.getParameter(DEPEND_QUESTION_PARAM) != null) {
+			dependQuestion = req.getParameter(DEPEND_QUESTION_PARAM).trim();
+		}
+		if (req.getParameter(ALLOW_MULTIPLE_PARAM) != null) {
+			allowMultipleFlag = Boolean.parseBoolean(req.getParameter(
+					ALLOW_MULTIPLE_PARAM).trim());
+		}
+		if (req.getParameter(ALLOW_OTHER_PARAM) != null) {
+			allowOtherFlag = Boolean.parseBoolean(req.getParameter(
+					ALLOW_OTHER_PARAM).trim());
+		}
+		if (req.getParameter(MANDATORY_PARAM) != null) {
+			mandatoryFlag = Boolean.parseBoolean(req.getParameter(
+					MANDATORY_PARAM).trim());
+		} else {
 			mandatoryFlag = false;
-		if(req.getParameter(QUESTION_GROUP_ORDER_PARAM)!=null)
-			questionGroupOrder = Integer.parseInt(req.getParameter(QUESTION_GROUP_ORDER_PARAM));
+		}
+		if (req.getParameter(QUESTION_GROUP_ORDER_PARAM) != null) {
+			questionGroupOrder = Integer.parseInt(req.getParameter(
+					QUESTION_GROUP_ORDER_PARAM).trim());
+		}
 	}
 
 	@Override
