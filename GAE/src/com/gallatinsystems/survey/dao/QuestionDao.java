@@ -24,6 +24,7 @@ public class QuestionDao extends BaseDAO<Question> {
 		super(Question.class);
 		optionDao = new QuestionOptionDao();
 		helpDao = new QuestionHelpMediaDao();
+		translationDao = new TranslationDao();
 	}
 
 	@SuppressWarnings("unchecked")
