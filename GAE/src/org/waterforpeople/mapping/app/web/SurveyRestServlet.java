@@ -123,6 +123,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			qg.setName(questionGroupName);
 			qg.setCode(questionGroupName);
 			qg.setPath(qgPath);
+			qg.setOrder(questionGroupOrder);
 			survey.addQuestionGroup(questionGroupOrder, qg);
 			qg.setSurveyId(survey.getKey().getId());
 			qgDao.save(qg);
