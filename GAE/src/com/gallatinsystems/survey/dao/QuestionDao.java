@@ -11,12 +11,14 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.datastore.Key;
 
 public class QuestionDao extends BaseDAO<Question> {
 
 	private QuestionOptionDao optionDao;
 	private QuestionHelpMediaDao helpDao;
+	private TranslationDao translationDao;
 
 	public QuestionDao() {
 		super(Question.class);
@@ -118,6 +120,7 @@ public class QuestionDao extends BaseDAO<Question> {
 						q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
 								.getKey().getId()));
 					}
+					q.setTranslationMap(translationDao.findTranslations(ParentType.QUESTION_TEXT, q.getKey().getId()));
 				}
 			}
 		}
