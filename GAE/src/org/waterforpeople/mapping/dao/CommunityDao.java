@@ -8,7 +8,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 
 /**
- * Data access methods for communities and countriesF
+ * Data access methods for communities and countries
  * 
  * @author Christopher Fagiani
  * 

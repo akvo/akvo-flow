@@ -43,12 +43,12 @@ public class GeoPlace {
 		this.lat = lat;
 	}
 
-	public Double getLon() {
-		return lon;
+	public Double getLng() {
+		return lng;
 	}
 
-	public void setLon(Double lon) {
-		this.lon = lon;
+	public void setLng(Double lon) {
+		this.lng = lon;
 	}
 
 	public String getGeonameId() {
@@ -63,7 +63,7 @@ public class GeoPlace {
 	private String countryCode;
 	private String countryName;
 	private Double lat;
-	private Double lon;
+	private Double lng;
 	private String geonameId;
 
 }

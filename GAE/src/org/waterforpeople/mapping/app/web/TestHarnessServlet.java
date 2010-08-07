@@ -21,16 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
-import org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
@@ -41,11 +37,9 @@ import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.domain.SurveyQuestion;
 import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
-import org.waterforpeople.mapping.domain.SurveyQuestion.QuestionAnswerType;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -53,9 +47,6 @@ import org.waterforpeople.mapping.helper.KMLHelper;
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
-import com.gallatinsystems.device.dao.DeviceDAO;
-import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
@@ -480,51 +471,7 @@ public class TestHarnessServlet extends HttpServlet {
 				log.log(Level.SEVERE, "Could not save sg");
 			}
 
-		} else if ("testSurveyQuestion".equals(action)) {
-			SurveyDAO surveyDao = new SurveyDAO();
-			SurveyQuestion q = new SurveyQuestion();
-			q.setId("q6");
-			q.setText("Source");
-			q.setType(QuestionAnswerType.option);
-			surveyDao.save(q);
-			q = new SurveyQuestion();
-			q.setId("q7");
-			q.setText("Collection Point");
-			q.setType(QuestionAnswerType.option);
-			surveyDao.save(q);
-
-			SurveyQuestionSummary summ = new SurveyQuestionSummary();
-			summ.setQuestionId("q6");
-			summ.setCount(new Long(10));
-			summ.setResponse("Spring");
-			surveyDao.save(summ);
-			summ = new SurveyQuestionSummary();
-			summ.setQuestionId("q6");
-			summ.setCount(new Long(7));
-			summ.setResponse("Borehole");
-			surveyDao.save(summ);
-			summ = new SurveyQuestionSummary();
-			summ.setQuestionId("q6");
-			summ.setCount(new Long(22));
-			summ.setResponse("Surface Water");
-			surveyDao.save(summ);
-			summ = new SurveyQuestionSummary();
-			summ.setQuestionId("q7");
-			summ.setCount(new Long(19));
-			summ.setResponse("Public Handpump");
-			surveyDao.save(summ);
-			summ = new SurveyQuestionSummary();
-			summ.setQuestionId("q7");
-			summ.setCount(new Long(32));
-			summ.setResponse("Yard Connection");
-			surveyDao.save(summ);
-			summ = new SurveyQuestionSummary();
-			summ.setQuestionId("q7");
-			summ.setCount(new Long(3));
-			summ.setResponse("House Connection");
-			surveyDao.save(summ);
-
-		} else if ("createAP".equals(action)) {
+		}else if ("createAP".equals(action)) {
 			AccessPoint ap = new AccessPoint();
 			ap.setCollectionDate(new Date());
 			ap.setCommunityCode("Geneva");
@@ -776,45 +723,6 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setPointType(AccessPointType.WATER_POINT);
 
 			apHelper.saveAccessPoint(ap);
-		} else if ("createQuestionLookup".equals(action)) {
-			SurveyDAO surveyDao = new SurveyDAO();
-			SurveyQuestion q = new SurveyQuestion();
-			q.setId("qm5");
-			q.setText("Technology Type");
-			q.setType(QuestionAnswerType.option);
-			surveyDao.save(q);
-			q = new SurveyQuestion();
-			q.setId("qm8");
-			q.setText("Is farthest household within 500m");
-			q.setType(QuestionAnswerType.option);
-			surveyDao.save(q);
-			q = new SurveyQuestion();
-			q.setId("qm9");
-			q.setText("Management Structure");
-			q.setType(QuestionAnswerType.option);
-			surveyDao.save(q);
-			q = new SurveyQuestion();
-			q.setId("qm10");
-			q.setText("Status");
-			q.setType(QuestionAnswerType.option);
-			surveyDao.save(q);
-		} else if ("testUser".equals(action)) {
-			UserServiceImpl userSvc = new UserServiceImpl();
-			UserDto u = userSvc.getCurrentUserConfig();
-			if (u != null) {
-				UserConfigDto cdto = userSvc.findUserConfigItem(u
-						.getEmailAddress(), "DASHBOARD", "System Summary");
-				if (cdto != null) {
-					System.out.println("HI: " + cdto.getValue());
-					cdto.setValue("0,0");
-					userSvc.updateUserConfigItem(u.getEmailAddress(),
-							"DASHBOARD", cdto);
-					cdto = userSvc.findUserConfigItem(u.getEmailAddress(),
-							"DASHBOARD", "System Summary");
-					System.out.println("HI: " + cdto.getValue());
-				}
-			}
-
 		} else if ("generateGeocells".equals(action)) {
 			AccessPointDao apDao = new AccessPointDao();
 			List<AccessPoint> apList = apDao.list(null);
@@ -835,25 +743,6 @@ public class TestHarnessServlet extends HttpServlet {
 					}
 				}
 			}
-		} else if ("createDevice".equals(action)) {
-			Device d = new Device();
-			d.setCreatedDateTime(new Date());
-			d.setDeviceGroup("testgroup");
-			d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-			d.setEsn("123");
-			d.setPhoneNumber("1234567890");
-			d.setInServiceDate(new Date());
-			DeviceDAO deviceDao = new DeviceDAO();
-			deviceDao.save(d);
-			d = new Device();
-			d.setCreatedDateTime(new Date());
-			d.setDeviceGroup("anothergroup");
-			d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-			d.setEsn("123");
-			d.setPhoneNumber("5555555555");
-			d.setInServiceDate(new Date());
-			deviceDao.save(d);
-
 		} else if ("saveAPMapping".equals(action)) {
 			SurveyAttributeMapping mapping = new SurveyAttributeMapping();
 			mapping.setAttributeName("status");
@@ -906,47 +795,7 @@ public class TestHarnessServlet extends HttpServlet {
 					qoDao.delete(qo);
 				resp.getWriter().println("Deleted all QuestionOptions");
 
-				resp.getWriter().println("Deleted all questions");
-				/*
-				 * for (int t = 0; t < 2; t++) { SurveyGroupDto sgd = new
-				 * SurveyGroupDto(); sgd.setCode("Survey Group :" + t);
-				 * sgd.setDescription("Test Survey Group: " + t); for (int i =
-				 * 0; i < 2; i++) { SurveyDto surveyDto = new SurveyDto();
-				 * surveyDto.setName("Survey a:" + i);
-				 * surveyDto.setDescription("test : " + i); for (int q = 0; q <
-				 * 5; q++) { QuestionGroupDto qgd = new QuestionGroupDto();
-				 * qgd.setCode("Question Group: " + q);
-				 * qgd.setDescription("Question Group Desc: " + q); for (int j =
-				 * 0; j < 3; j++) { QuestionHelpDto qhd = new QuestionHelpDto();
-				 * qhd.setResourceUrl("www.waterforpeople.org");
-				 * qhd.setText("help text");
-				 * 
-				 * QuestionOptionDto qo = new QuestionOptionDto();
-				 * qo.setCode("opt1"); qo.setText("Question Option 1 Display");
-				 * 
-				 * OptionContainerDto optionContainerDto = new
-				 * OptionContainerDto();
-				 * optionContainerDto.setAllowOtherFlag(false);
-				 * 
-				 * optionContainerDto.addQuestionOption(qo);
-				 * 
-				 * QuestionDto qd = new QuestionDto(); QuestionDto qd1 = new
-				 * QuestionDto(); qd.setText("Question Test: " + j);
-				 * qd.setType(QuestionType.FREE_TEXT); qd.setTip("test tip" +
-				 * j); qd.setValidationRule("validation rule : " + j);
-				 * qd.addQuestionHelp(qhd); qgd.addQuestion(qd, j);
-				 * 
-				 * qd1.setText("option question" + j);
-				 * qd1.setType(QuestionType.OPTION);
-				 * qd1.setOptionContainerDto(optionContainerDto);
-				 * qd1.addQuestionHelp(qhd); qd1.setTip("test tip" + j);
-				 * qd1.setValidationRule("validation rule : " + j);
-				 * qgd.addQuestion(qd1, j + 4); }
-				 * surveyDto.addQuestionGroup(qgd); }
-				 * surveyDto.setVersion("Version: " + i);
-				 * sgd.addSurvey(surveyDto); } SurveyGroupDto sgDto = new
-				 * SurveyServiceImpl().save(sgd); }
-				 */
+				resp.getWriter().println("Deleted all questions");				
 
 				resp.getWriter().println(
 						"Finished deleting and reloading SurveyGroup graph");
@@ -982,52 +831,60 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-		} else if ("testFindSurvey".equals(action)) {
-			SurveyServiceImpl ssI = new SurveyServiceImpl();
-			SurveyDto dto = ssI.loadFullSurvey(2349L);
 		} else if ("createTestSurveyForEndToEnd".equals(action)) {
-			SurveyGroupDto sgd = new SurveyGroupDto();
-			sgd.setCode("E2E Test");
-			sgd.setDescription("end2end test");
-
-			SurveyDto surveyDto = new SurveyDto();
-			surveyDto.setDescription("e2e test");
-			SurveyServiceImpl surveySvc = new SurveyServiceImpl();
-
-			QuestionGroupDto qgd = new QuestionGroupDto();
-			qgd.setCode("Question Group 1");
-			qgd.setDescription("Question Group Desc");
-
-			QuestionDto qd = new QuestionDto();
-			qd.setText("Access Point Name:");
-			qd.setType(QuestionType.FREE_TEXT);
-			qgd.addQuestion(qd, 0);
-
-			qd = new QuestionDto();
-			qd.setText("Location:");
-			qd.setType(QuestionType.GEO);
-			qgd.addQuestion(qd, 1);
-
-			qd = new QuestionDto();
-			qd.setText("Photo");
-			qd.setType(QuestionType.PHOTO);
-			qgd.addQuestion(qd, 2);
-
-			surveyDto.addQuestionGroup(qgd);
-
-			surveyDto.setVersion("Version: 1");
-			sgd.addSurvey(surveyDto);
-			sgd = surveySvc.save(sgd);
-			System.out.println(sgd.getKeyId());
+			createTestSurveyForEndToEnd();
 		} else if ("deleteSurveyFragments".equals(action)) {
-			SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
-			List<SurveyXMLFragment> frags = sxmlfDao.list("all");
-			if (frags != null) {
-				for (SurveyXMLFragment frag : frags) {
-					sxmlfDao.delete(frag);
-				}
+			deleteSurveyFragments();
+		}
+	}
+	
+	private void createTestSurveyForEndToEnd(){
+		SurveyGroupDto sgd = new SurveyGroupDto();
+		sgd.setCode("E2E Test");
+		sgd.setDescription("end2end test");
+
+		SurveyDto surveyDto = new SurveyDto();
+		surveyDto.setDescription("e2e test");
+		SurveyServiceImpl surveySvc = new SurveyServiceImpl();
+
+		QuestionGroupDto qgd = new QuestionGroupDto();
+		qgd.setCode("Question Group 1");
+		qgd.setDescription("Question Group Desc");
+
+		QuestionDto qd = new QuestionDto();
+		qd.setText("Access Point Name:");
+		qd.setType(QuestionType.FREE_TEXT);
+		qgd.addQuestion(qd, 0);
+
+		qd = new QuestionDto();
+		qd.setText("Location:");
+		qd.setType(QuestionType.GEO);
+		qgd.addQuestion(qd, 1);
+
+		qd = new QuestionDto();
+		qd.setText("Photo");
+		qd.setType(QuestionType.PHOTO);
+		qgd.addQuestion(qd, 2);
+
+		surveyDto.addQuestionGroup(qgd);
+
+		surveyDto.setVersion("Version: 1");
+		sgd.addSurvey(surveyDto);
+		sgd = surveySvc.save(sgd);
+		System.out.println(sgd.getKeyId());
+	}
+	
+		
+	/**
+	 * deletes xml survey fragments
+	 */
+	private void deleteSurveyFragments(){
+		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
+		List<SurveyXMLFragment> frags = sxmlfDao.list("all");
+		if (frags != null) {
+			for (SurveyXMLFragment frag : frags) {
+				sxmlfDao.delete(frag);
 			}
 		}
-
 	}
 }
