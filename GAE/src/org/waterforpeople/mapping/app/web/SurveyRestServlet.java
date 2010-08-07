@@ -236,9 +236,14 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		HashMap<String, String> langMap = new HashMap<String, String>();
 
 		String[] parts = unparsedLangParam.split(";");
-		for (String item : parts) {
+		for (String item : parts) {			
 			String[] langParts = item.split("\\|");
-			langMap.put(langParts[0], langParts[1]);
+			if(langParts.length == 1){
+				//if there is no language indicator, assume it's english
+				langMap.put("en", langParts[0]);
+			}else{
+				langMap.put(langParts[0], langParts[1]);
+			}
 		}
 		return langMap;
 	}
