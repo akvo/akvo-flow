@@ -33,6 +33,7 @@ public class Question {
 	private boolean allowMultiple;
 	private boolean locked;
 	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
+	private ArrayList<Dependency> dependencies;
 
 	public ArrayList<QuestionHelp> getQuestionHelp() {
 		return questionHelp;
@@ -66,7 +67,7 @@ public class Question {
 		this.allowMultiple = allowMultiple;
 	}
 
-	private ArrayList<Dependency> dependencies;
+	
 
 	public String getRenderType() {
 		return renderType;
