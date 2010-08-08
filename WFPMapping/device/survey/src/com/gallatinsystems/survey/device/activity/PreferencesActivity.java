@@ -107,7 +107,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		languageTextView.setText(LanguageUtil.formSelectedLanguageString(
 				languageArray, selectedLanguages));
 
-		val = settings.get(ConstantUtil.PRECACHE_HELP_SETTING_KEY);
+		val = settings.get(ConstantUtil.PRECACHE_SETTING_KEY);
 		if (val != null) {
 			precacheHelpTextView.setText(precacheHelpArray[Integer
 					.parseInt(val)]);
@@ -177,9 +177,9 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		} else if (R.id.precachehelpbutton == v.getId()) {
 			showPreferenceDialog(R.string.precachehelpdialogtitle,
 					R.array.precachehelpoptions,
-					ConstantUtil.PRECACHE_HELP_SETTING_KEY, precacheHelpArray,
+					ConstantUtil.PRECACHE_SETTING_KEY, precacheHelpArray,
 					precacheHelpTextView,
-					precacheHelpArray[ConstantUtil.PRECACHE_HELP_ALLWAYS_IDX],
+					precacheHelpArray[ConstantUtil.PRECACHE_ALWAYS_IDX],
 					ConstantUtil.PRECACHE_INTENT);
 		} else if (R.id.serverbutton == v.getId()) {
 			ViewUtil.showAdminAuthDialog(this,

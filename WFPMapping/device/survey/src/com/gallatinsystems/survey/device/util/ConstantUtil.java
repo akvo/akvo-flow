@@ -135,9 +135,11 @@ public class ConstantUtil {
 	public static final String PLOT_INTERVAL_SETTING_KEY = "plot.interval";
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
 	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
-	public static final String PRECACHE_HELP_SETTING_KEY = "survey.precachehelp";
+	public static final String PRECACHE_SETTING_KEY = "survey.precachehelp";
 	public static final String SERVER_SETTING_KEY = "upload.server";
 	public static final String SCREEN_ON_KEY = "screen.keepon";
+	public static final String PRECACHE_POINT_COUNTRY_KEY = "precache.points.countries";
+	public static final String PRECACHE_POINT_LIMIT_KEY = "precache.points.limit";
 
 	/**
 	 * index values into string arrays
@@ -146,9 +148,9 @@ public class ConstantUtil {
 	public static final int UPLOAD_DATA_ONLY_IDX = 1;
 	public static final int UPLOAD_NEVER_IDX = 2;
 
-	public static final int PRECACHE_HELP_ALLWAYS_IDX = 0;
-	public static final int PRECACHE_HELP_WIFI_ONLY_IDX = 1;
-	public static final int PRECACHE_HELP_NEVER_IDX = 2;
+	public static final int PRECACHE_ALWAYS_IDX = 0;
+	public static final int PRECACHE_WIFI_ONLY_IDX = 1;
+	public static final int PRECACHE_NEVER_IDX = 2;
 
 	/**
 	 * intents

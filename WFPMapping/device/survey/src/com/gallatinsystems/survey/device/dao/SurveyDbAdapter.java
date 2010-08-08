@@ -88,7 +88,7 @@ public class SurveyDbAdapter {
 
 	private static final String PREFERENCES_TABLE_CREATE = "create table preferences (key text primary key, value text);";
 
-	private static final String POINT_OF_INTEREST_TABLE_CREATE = "create table point_of_interest (_id integer primary key, country text, display_name text, lat real, lon real, property_names text, property_values text, updated_date integer);";
+	private static final String POINT_OF_INTEREST_TABLE_CREATE = "create table point_of_interest (_id integer primary key, country text, display_name text, lat real, lon real, property_names text, property_values text, type text, updated_date integer);";
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
 			"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
@@ -104,7 +104,9 @@ public class SurveyDbAdapter {
 			"insert into preferences values('location.sendbeacon','true')",
 			"insert into preferences values('survey.precachehelp','0')",
 			"insert into preferences values('upload.server','0')",
-			"insert into preferences values('screen.keepon','true')" };
+			"insert into preferences values('screen.keepon','true')",
+			"insert into preferences values('precache.points.countries','GT')",
+			"insert into preferences values('precache.points.limit','200')" };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -120,7 +122,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 48;
+	private static final int DATABASE_VERSION = 50;
 
 	private final Context context;
 
@@ -948,6 +950,8 @@ public class SurveyDbAdapter {
 				.getCountry() : "unknown");
 		updatedValues.put(DISP_NAME_COL, point.getName() != null ? point
 				.getName() : "unknown");
+		updatedValues.put(TYPE_COL, point.getType() != null ? point.getType()
+				: "unknown");
 		updatedValues.put(UPDATED_DATE_COL, System.currentTimeMillis());
 		String temp = point.getPropertyNamesString();
 		if (temp != null) {
@@ -988,8 +992,8 @@ public class SurveyDbAdapter {
 		}
 		Cursor cursor = database.query(POINT_OF_INTEREST_TABLE, new String[] {
 				PK_ID_COL, COUNTRY_COL, DISP_NAME_COL, UPDATED_DATE_COL,
-				LAT_COL, LON_COL, PROP_NAME_COL, PROP_VAL_COL }, whereClause,
-				whereValues, null, null, null);
+				LAT_COL, LON_COL, PROP_NAME_COL, PROP_VAL_COL, TYPE_COL },
+				whereClause, whereValues, null, null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -1000,6 +1004,8 @@ public class SurveyDbAdapter {
 					PointOfInterest point = new PointOfInterest();
 					point.setName(cursor.getString(cursor
 							.getColumnIndexOrThrow(DISP_NAME_COL)));
+					point.setType(cursor.getString(cursor
+							.getColumnIndexOrThrow(TYPE_COL)));
 					point.setCountry(cursor.getString(cursor
 							.getColumnIndexOrThrow(COUNTRY_COL)));
 					point.setId(cursor.getLong(cursor

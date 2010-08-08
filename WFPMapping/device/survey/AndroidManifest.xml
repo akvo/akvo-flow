@@ -31,6 +31,7 @@
 		<service android:name=".service.RegionPlotService" />
 		<service android:name=".service.LocationService" />
 		<service android:name=".service.GeoTrackService" />
+		<service android:name=".service.PrecacheService" />
 
 		<receiver android:name=".broadcast.BroadcastDispatcher" >
 			<intent-filter>

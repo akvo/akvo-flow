@@ -110,7 +110,7 @@ public class SurveyDownloadService extends Service {
 				databaseAdaptor.open();
 				int precacheOption = Integer
 						.parseInt(databaseAdaptor
-								.findPreference(ConstantUtil.PRECACHE_HELP_SETTING_KEY));
+								.findPreference(ConstantUtil.PRECACHE_SETTING_KEY));
 				String serverBase = databaseAdaptor
 						.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 				if (serverBase != null && serverBase.trim().length() > 0) {
@@ -422,7 +422,7 @@ public class SurveyDownloadService extends Service {
 	private boolean canDownload(int precacheOptionIndex) {
 		boolean ok = false;
 		if (precacheOptionIndex > -1
-				&& ConstantUtil.PRECACHE_HELP_WIFI_ONLY_IDX == precacheOptionIndex) {
+				&& ConstantUtil.PRECACHE_WIFI_ONLY_IDX == precacheOptionIndex) {
 			ok = StatusUtil.hasDataConnection(this, true);
 		} else {
 			ok = StatusUtil.hasDataConnection(this, false);

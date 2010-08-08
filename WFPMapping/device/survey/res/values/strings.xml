@@ -80,8 +80,8 @@
 	<string name="uploadoptiondialogtitle">Upload via cellular</string>
 	<string name="surveylanglabel">Survey Languages</string>
 	<string name="beaconlabel">Send Location Beacons</string>
-	<string name="precachehelplabel">Pre-cache help media</string>
-	<string name="precachehelpdialogtitle">Pre-cache help media</string>
+	<string name="precachehelplabel">Pre-cache data and help media</string>
+	<string name="precachehelpdialogtitle">Pre-cache data and help media</string>
 	<string name="scanbarcode">Scan Barcode</string>
 	<string name="barcodeerror">Scanner not installed. Please install the Barcode Scanner app from the Android Market.</string>
 	<string name="imagehelpviewmessage">Click a thumbnail to view larger image. Press back key to return to survey.</string>
@@ -152,5 +152,5 @@
 	<string name="authtext">Please enter the adminstrator passcode: </string>	
 	<string name="authfailed">Authorization Failed</string>
 	<string name="invalidpassword">Invalid passcode</string>
-	<string name="appversion">0.98.11</string>	
+	<string name="appversion">0.98.12</string>	
 </resources>

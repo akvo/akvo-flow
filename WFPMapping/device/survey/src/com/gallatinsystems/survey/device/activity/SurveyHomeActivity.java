@@ -2,6 +2,7 @@ package com.gallatinsystems.survey.device.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.service.LocationService;
+import com.gallatinsystems.survey.device.service.PrecacheService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -84,8 +86,10 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		}
 
 		startSyncService();
-		startDownloadService();
-		startLocationService();
+		startService(SurveyDownloadService.class);
+		startService(LocationService.class);
+		startService(PrecacheService.class);
+
 	}
 
 	/**
@@ -157,19 +161,10 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	}
 
 	/**
-	 * starts up the download service
+	 * starts up a service that takes no input
 	 */
-	private void startDownloadService() {
-		getApplicationContext().startService(
-				new Intent(this, SurveyDownloadService.class));
-	}
-
-	/**
-	 * starts up the location beacon service
-	 */
-	private void startLocationService() {
-		getApplicationContext().startService(
-				new Intent(this, LocationService.class));
+	private <T extends Service> void startService(Class<T> serviceClass) {
+		getApplicationContext().startService(new Intent(this, serviceClass));
 	}
 
 	/**
