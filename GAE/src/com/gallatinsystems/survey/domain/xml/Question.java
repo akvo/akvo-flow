@@ -5,23 +5,28 @@
 // Generated on: 2010.08.05 at 05:55:36 PM MDT 
 //
 
-
 package com.gallatinsystems.survey.domain.xml;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -55,305 +60,257 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "altText",
-    "dependency",
-    "help",
-    "options",
-    "text",
-    "validationRule"
-})
+@XmlType(name = "", propOrder = { "altText", "dependency", "help", "options",
+		"text", "validationRule" })
 @XmlRootElement(name = "question")
 public class Question {
 
-    protected AltText altText;
-    protected Dependency dependency;
-    protected Help help;
-    protected Options options;
-    protected Text text;
-    protected ValidationRule validationRule;
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NMTOKEN")
-    protected String order;
-    @XmlAttribute
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NMTOKEN")
-    protected String locked;
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NMTOKEN")
-    protected String type;
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String mandatory;
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NMTOKEN")
-    protected String id;
+	@XmlElement(required = false)
+	protected List<AltText> altText;
+	protected Dependency dependency;
+	protected Help help;
+	protected Options options;
+	protected Text text;
+	protected ValidationRule validationRule;
+	@XmlAttribute(required = true)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String order;
+	@XmlAttribute
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String locked;
+	@XmlAttribute(required = true)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String type;
+	@XmlAttribute(required = true)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	protected String mandatory;
+	@XmlAttribute(required = true)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String id;
 
-    /**
-     * Gets the value of the altText property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link AltText }
-     *     
-     */
-    public AltText getAltText() {
-        return altText;
-    }
+	public List<AltText> getAltText() {
+		if (altText == null) {
+			altText = new ArrayList<AltText>();
+		}
+		return altText;
+	}
 
-    /**
-     * Sets the value of the altText property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link AltText }
-     *     
-     */
-    public void setAltText(AltText value) {
-        this.altText = value;
-    }
+	public void setAltText(List<AltText> altText) {
+		this.altText = altText;
+	}
 
-    /**
-     * Gets the value of the dependency property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Dependency }
-     *     
-     */
-    public Dependency getDependency() {
-        return dependency;
-    }
+	/**
+	 * Gets the value of the dependency property.
+	 * 
+	 * @return possible object is {@link Dependency }
+	 * 
+	 */
+	public Dependency getDependency() {
+		return dependency;
+	}
 
-    /**
-     * Sets the value of the dependency property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Dependency }
-     *     
-     */
-    public void setDependency(Dependency value) {
-        this.dependency = value;
-    }
+	/**
+	 * Sets the value of the dependency property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Dependency }
+	 * 
+	 */
+	public void setDependency(Dependency value) {
+		this.dependency = value;
+	}
 
-    /**
-     * Gets the value of the help property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Help }
-     *     
-     */
-    public Help getHelp() {
-        return help;
-    }
+	/**
+	 * Gets the value of the help property.
+	 * 
+	 * @return possible object is {@link Help }
+	 * 
+	 */
+	public Help getHelp() {
+		return help;
+	}
 
-    /**
-     * Sets the value of the help property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Help }
-     *     
-     */
-    public void setHelp(Help value) {
-        this.help = value;
-    }
+	/**
+	 * Sets the value of the help property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Help }
+	 * 
+	 */
+	public void setHelp(Help value) {
+		this.help = value;
+	}
 
-    /**
-     * Gets the value of the options property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Options }
-     *     
-     */
-    public Options getOptions() {
-        return options;
-    }
+	/**
+	 * Gets the value of the options property.
+	 * 
+	 * @return possible object is {@link Options }
+	 * 
+	 */
+	public Options getOptions() {
+		return options;
+	}
 
-    /**
-     * Sets the value of the options property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Options }
-     *     
-     */
-    public void setOptions(Options value) {
-        this.options = value;
-    }
+	/**
+	 * Sets the value of the options property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Options }
+	 * 
+	 */
+	public void setOptions(Options value) {
+		this.options = value;
+	}
 
-    /**
-     * Gets the value of the text property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Text }
-     *     
-     */
-    public Text getText() {
-        return text;
-    }
+	/**
+	 * Gets the value of the text property.
+	 * 
+	 * @return possible object is {@link Text }
+	 * 
+	 */
+	public Text getText() {
+		return text;
+	}
 
-    /**
-     * Sets the value of the text property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Text }
-     *     
-     */
-    public void setText(Text value) {
-        this.text = value;
-    }
+	/**
+	 * Sets the value of the text property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Text }
+	 * 
+	 */
+	public void setText(Text value) {
+		this.text = value;
+	}
 
-    /**
-     * Gets the value of the validationRule property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ValidationRule }
-     *     
-     */
-    public ValidationRule getValidationRule() {
-        return validationRule;
-    }
+	/**
+	 * Gets the value of the validationRule property.
+	 * 
+	 * @return possible object is {@link ValidationRule }
+	 * 
+	 */
+	public ValidationRule getValidationRule() {
+		return validationRule;
+	}
 
-    /**
-     * Sets the value of the validationRule property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ValidationRule }
-     *     
-     */
-    public void setValidationRule(ValidationRule value) {
-        this.validationRule = value;
-    }
+	/**
+	 * Sets the value of the validationRule property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link ValidationRule }
+	 * 
+	 */
+	public void setValidationRule(ValidationRule value) {
+		this.validationRule = value;
+	}
 
-    /**
-     * Gets the value of the order property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getOrder() {
-        return order;
-    }
+	/**
+	 * Gets the value of the order property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getOrder() {
+		return order;
+	}
 
-    /**
-     * Sets the value of the order property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setOrder(String value) {
-        this.order = value;
-    }
+	/**
+	 * Sets the value of the order property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setOrder(String value) {
+		this.order = value;
+	}
 
-    /**
-     * Gets the value of the locked property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLocked() {
-        return locked;
-    }
+	/**
+	 * Gets the value of the locked property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getLocked() {
+		return locked;
+	}
 
-    /**
-     * Sets the value of the locked property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLocked(String value) {
-        this.locked = value;
-    }
+	/**
+	 * Sets the value of the locked property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setLocked(String value) {
+		this.locked = value;
+	}
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * Gets the value of the type property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getType() {
+		return type;
+	}
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
-    }
+	/**
+	 * Sets the value of the type property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setType(String value) {
+		this.type = value;
+	}
 
-    /**
-     * Gets the value of the mandatory property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getMandatory() {
-        return mandatory;
-    }
+	/**
+	 * Gets the value of the mandatory property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getMandatory() {
+		return mandatory;
+	}
 
-    /**
-     * Sets the value of the mandatory property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMandatory(String value) {
-        this.mandatory = value;
-    }
+	/**
+	 * Sets the value of the mandatory property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setMandatory(String value) {
+		this.mandatory = value;
+	}
 
-    /**
-     * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getId() {
-        return id;
-    }
+	/**
+	 * Gets the value of the id property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setId(String value) {
-        this.id = value;
-    }
+	/**
+	 * Sets the value of the id property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setId(String value) {
+		this.id = value;
+	}
 
 }

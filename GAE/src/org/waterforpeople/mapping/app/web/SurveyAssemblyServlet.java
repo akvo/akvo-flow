@@ -4,6 +4,7 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -26,7 +27,9 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
+import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
+import com.gallatinsystems.survey.domain.xml.AltText;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Help;
 import com.gallatinsystems.survey.domain.xml.ObjectFactory;
@@ -253,9 +256,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// TODO set validation rule xml
 			// validationRule.setAllowDecimal(value)
 		}
-
-		// TODO marshall xml
-		// qXML.setText(q.getText());
+		qXML.setAltText(formAltText(q.getTranslationMap()));
 
 		if (q.getType().equals(Question.Type.FREE_TEXT))
 			qXML.setType(FREE_QUESTION_TYPE);
@@ -304,7 +305,14 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				t.setContent(qo.getText());
 				option.addContent(t);
 				option.setValue(qo.getCode());
+				List<AltText> altTextList = formAltText(qo.getTranslationMap());
+				if (altTextList != null) {
+					for (AltText alt : altTextList) {
+						option.addContent(alt);
+					}
+				}
 				optionList.add(option);
+
 			}
 			options.setOption(optionList);
 
@@ -324,6 +332,21 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 						"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
 						"");
 		return questionDocument;
+	}
+
+	private List<AltText> formAltText(Map<String, Translation> translationMap) {
+		List<AltText> altTextList = new ArrayList<AltText>();
+		if (translationMap != null) {
+			for (Translation lang : translationMap.values()) {
+				AltText alt = new AltText();
+				alt.setContent(lang.getText());
+				alt.setType("translation");
+				alt.setLanguage(lang.getLanguageCode());
+				altTextList.add(alt);
+			}
+		}
+
+		return altTextList;
 	}
 
 	private void assembleQuestionGroups(Long surveyId) {
