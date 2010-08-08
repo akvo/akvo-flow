@@ -113,7 +113,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	 */
 	protected Widget constructMenu(boolean isConfigurable) {
 		VerticalPanel menuPanel = new VerticalPanel();
-		menuPanel.add(new Image("images/WFP_Logo.png"));
+		menuPanel.add(new Image("images/wfp-logo.gif"));
 		DockPanel statusDock = new DockPanel();
 		statusDock.setPixelSize(1024, 20);
 		statusDock.setStyleName(CSS_SYSTEM_HEAD);
