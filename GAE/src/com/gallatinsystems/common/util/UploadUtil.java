@@ -59,7 +59,7 @@ public class UploadUtil {
 		}
 		out.writeBytes(ENDLINE);
 
-		byte[] allBytes = fileContent.getBytes();
+		byte[] allBytes = fileContent.getBytes("UTF-8");
 
 		out.write(allBytes);
 
