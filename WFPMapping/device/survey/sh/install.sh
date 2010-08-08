@@ -11,10 +11,10 @@ rm /tmp/adbinstalllog.txt
 
 for arg
 do
-	$ANDROID_HOME/tools/adb -s "$arg" install $APK_HOME/WFP_Map_Monitor.apk  >> /tmp/adbinstalllog.txt
-	$ANDROID_HOME/tools/adb -s "$arg" install $APK_HOME/GPSStatus.apk  >> /tmp/adbinstalllog.txt
-	$ANDROID_HOME/tools/adb -s "$arg" install $APK_HOME/Logcat.apk >> /tmp/adbinstalllog.txt
-	$ANDROID_HOME/tools/adb -s "$arg" install $APK_HOME/FileManager-1.1.3.apk >> /tmp/adbinstalllog.txt 
+	$ANDROID_HOME/tools/adb -s "$arg" install -r $APK_HOME/WFP_Map_Monitor.apk  >> /tmp/adbinstalllog.txt
+	$ANDROID_HOME/tools/adb -s "$arg" install -r $APK_HOME/GPSStatus.apk  >> /tmp/adbinstalllog.txt
+	$ANDROID_HOME/tools/adb -s "$arg" install -r $APK_HOME/Logcat.apk >> /tmp/adbinstalllog.txt
+	$ANDROID_HOME/tools/adb -s "$arg" install -r $APK_HOME/FileManager-1.1.3.apk >> /tmp/adbinstalllog.txt 
 done
 
 loggg=$(cat /tmp/adbinstalllog.txt)
