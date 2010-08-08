@@ -18,8 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -39,6 +43,8 @@ public class NearbyItemActivity extends ListActivity implements
 	private static final int NAVIGATE_OPT = 2;
 	private static final int COUNTRY_OPT = 3;
 	private static final int SERVER_OPT = 4;
+	private static final int SEARCH_OPT = 5;
+	private static final int DEFAULT_WIDTH = 100;
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private ProgressDialog progressDialog;
@@ -109,7 +115,7 @@ public class NearbyItemActivity extends ListActivity implements
 		if (provider != null) {
 			Location loc = locMgr.getLastKnownLocation(provider);
 			if (loc != null) {
-				loadData(loc.getLatitude(), loc.getLongitude(), country);
+				loadData(loc.getLatitude(), loc.getLongitude(), country, null);
 			} else {
 				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 						1000, 0, this);
@@ -135,7 +141,7 @@ public class NearbyItemActivity extends ListActivity implements
 					R.layout.itemlistrow, pointsOfInterest));
 		} else {
 			setListAdapter(new ArrayAdapter<PointOfInterest>(this,
-					R.layout.itemlistrow, new ArrayList<PointOfInterest>()));			
+					R.layout.itemlistrow, new ArrayList<PointOfInterest>()));
 		}
 		progressDialog.dismiss();
 		isRunning = false;
@@ -149,7 +155,7 @@ public class NearbyItemActivity extends ListActivity implements
 	 * @param lon
 	 */
 	private void loadData(final Double lat, final Double lon,
-			final String country) {
+			final String country, final String prefix) {
 		isRunning = true;
 		lastLat = lat;
 		lastLon = lon;
@@ -178,7 +184,7 @@ public class NearbyItemActivity extends ListActivity implements
 					}
 				} else {
 					pointsOfInterest = databaseAdapter
-							.listPointsOfInterest(country);
+							.listPointsOfInterest(country, prefix);
 				}
 				dataHandler.post(resultsUpdater);
 				additive = false;
@@ -213,7 +219,7 @@ public class NearbyItemActivity extends ListActivity implements
 		PointOfInterest dto = pointsOfInterest.get(position);
 		if (dto == loadMorePlaceholder) {
 			additive = true;
-			loadData(lastLat, lastLon, country);
+			loadData(lastLat, lastLon, country, null);
 		} else {
 			i.putExtra(ConstantUtil.AP_KEY, pointsOfInterest.get(position));
 			startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
@@ -227,8 +233,9 @@ public class NearbyItemActivity extends ListActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, NAVIGATE_OPT, 0, R.string.navigate);
-		menu.add(0, COUNTRY_OPT, 1, R.string.countryselection);
-		menu.add(0, SERVER_OPT, 2, R.string.uselocal);
+		menu.add(0, SEARCH_OPT, 1, R.string.searchpoints);
+		menu.add(0, COUNTRY_OPT, 2, R.string.countryselection);
+		menu.add(0, SERVER_OPT, 3, R.string.uselocal);
 		return true;
 	}
 
@@ -246,7 +253,10 @@ public class NearbyItemActivity extends ListActivity implements
 			return true;
 		case SERVER_OPT:
 			useServer = !useServer;
-			loadData(lastLat, lastLon, country);
+			loadData(lastLat, lastLon, country, null);
+			return true;
+		case SEARCH_OPT:
+			displaySearchDialog();
 			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
@@ -264,9 +274,11 @@ public class NearbyItemActivity extends ListActivity implements
 			menu.getItem(0).setEnabled(true);
 		}
 		if (useServer) {
-			menu.getItem(2).setTitle(R.string.uselocal);
+			menu.getItem(3).setTitle(R.string.uselocal);
+			menu.getItem(1).setEnabled(false);
 		} else {
-			menu.getItem(2).setTitle(R.string.useserver);
+			menu.getItem(3).setTitle(R.string.useserver);
+			menu.getItem(1).setEnabled(true);
 		}
 
 		return true;
@@ -294,9 +306,49 @@ public class NearbyItemActivity extends ListActivity implements
 					public void onClick(DialogInterface dialog, int which) {
 						country = countries[which];
 						additive = false;
-						loadData(null, null, country);
+						loadData(null, null, country, null);
 					}
 				}).create();
+		dia.show();
+	}
+
+	/**
+	 * displays a simple search dialog that allows the user to filter the list
+	 * of points based on the criteria selected
+	 */
+	private void displaySearchDialog() {
+		final EditText nameText = new EditText(this);
+		nameText.setWidth(DEFAULT_WIDTH);
+		TextView label = new TextView(this);
+		label.setText(R.string.pointname);
+		LinearLayout layout = new LinearLayout(this);
+		layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.WRAP_CONTENT));
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.addView(label);
+		layout.addView(nameText);
+		AlertDialog dia = new AlertDialog.Builder(this).setView(layout)
+				.setTitle(R.string.searchpoints).setPositiveButton(
+						R.string.okbutton,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								additive = false;
+								loadData(null, null, country, nameText
+										.getText().toString());
+							}
+						}).setNegativeButton(R.string.cancelbutton,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+
+							}
+						}).create();
+
 		dia.show();
 	}
 
@@ -304,7 +356,8 @@ public class NearbyItemActivity extends ListActivity implements
 	public void onLocationChanged(Location location) {
 		locMgr.removeUpdates(this);
 		if (!isRunning) {
-			loadData(location.getLatitude(), location.getLongitude(), country);
+			loadData(location.getLatitude(), location.getLongitude(), country,
+					null);
 		}
 	}
 

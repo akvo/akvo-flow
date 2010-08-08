@@ -62,7 +62,7 @@
 		<item>MW</item>
 		<item>RW</item>
 		<item>US</item>
-	</string-array>
+	</string-array>	
 	<string-array name="distancemesures">
 		<item>meters</item>
 		<item>kilometers</item>

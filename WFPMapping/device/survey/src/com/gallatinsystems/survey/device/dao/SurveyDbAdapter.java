@@ -989,13 +989,27 @@ public class SurveyDbAdapter {
 	 * @param country
 	 * @return
 	 */
-	public ArrayList<PointOfInterest> listPointsOfInterest(String country) {
+	public ArrayList<PointOfInterest> listPointsOfInterest(String country,
+			String prefix) {
 		ArrayList<PointOfInterest> points = null;
 		String whereClause = null;
 		String[] whereValues = null;
+
 		if (country != null) {
 			whereClause = COUNTRY_COL + "=?";
 			whereValues = new String[] { country };
+
+		}
+		if (prefix != null && prefix.trim().length() > 0) {
+			if(country != null){
+				whereClause = whereClause + " AND " + DISP_NAME_COL + " like ?";
+				whereValues = new String[2];
+				whereValues[0] = country;
+				whereValues[1] = prefix + "%";
+			}else{
+				whereClause = DISP_NAME_COL + " like ?";
+				whereValues = new String[] { prefix + "%" };
+			}
 		}
 		Cursor cursor = database.query(POINT_OF_INTEREST_TABLE, new String[] {
 				PK_ID_COL, COUNTRY_COL, DISP_NAME_COL, UPDATED_DATE_COL,
