@@ -149,35 +149,6 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 		buttonRow.addView(group);
 		table.addView(buttonRow);
 
-		// clicking submit will check to see if all mandatory questions are
-		// answered and, if so, will fire a broadcast indicating that data is
-		// available for transfer
-		/*
-		 * nextButton.setOnClickListener(new OnClickListener() {
-		 * 
-		 * public void onClick(View v) {
-		 * 
-		 * if (questionMap != null) { // make sure we don't lose anything that
-		 * was already // written saveState(context.getRespondentId()); // get
-		 * the list (across all tabs) of missing mandatory // responses
-		 * ArrayList<Question> missingQuestions = context .checkMandatory(); if
-		 * (missingQuestions.size() == 0) { // if we have no missing responses,
-		 * submit the // survey databaseAdaptor.submitResponses(context
-		 * .getRespondentId().toString());
-		 * 
-		 * // send a broadcast message indicating new data is // available
-		 * Intent i = new Intent( ConstantUtil.DATA_AVAILABLE_INTENT);
-		 * context.sendBroadcast(i); ViewUtil.showConfirmDialog(
-		 * R.string.submitcompletetitle, R.string.submitcompletetext, context);
-		 * startNewSurvey(); } else { // if we do have missing responses, tell
-		 * the user ViewUtil.showConfirmDialog(R.string.cannotsave,
-		 * R.string.mandatorywarning, context); } }
-		 * 
-		 * 
-		 * context.advanceTab();
-		 * 
-		 * } });
-		 */
 		loadState(context.getRespondentId());
 		return scrollView;
 	}
@@ -277,7 +248,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					if (questionMap.get(resp.getQuestionId()) != null) {
 						questionMap.get(resp.getQuestionId()).rehydrate(resp);
 
-					}
+					}					
 				}
 			}
 		}

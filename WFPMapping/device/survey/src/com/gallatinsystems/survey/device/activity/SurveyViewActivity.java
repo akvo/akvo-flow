@@ -286,7 +286,7 @@ public class SurveyViewActivity extends TabActivity implements
 	public void advanceTab() {
 		int curTab = tabHost.getCurrentTab();
 		if (curTab < tabCount) {
-			tabHost.setCurrentTab(curTab + 1);
+			tabHost.setCurrentTab(curTab + 1);					
 		}
 	}
 
@@ -365,9 +365,9 @@ public class SurveyViewActivity extends TabActivity implements
 	 */
 	public void resetAllQuestions() {
 		for (int i = 0; i < tabContentFactories.size(); i++) {
-			tabContentFactories.get(i).resetTabQuestions();
+			tabContentFactories.get(i).resetTabQuestions();			
 		}
-		tabHost.setCurrentTab(0);
+		tabHost.setCurrentTab(0);		
 		if (submissionTab != null) {
 			submissionTab.refreshView();
 		}
