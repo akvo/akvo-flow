@@ -28,7 +28,7 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 		databaseAdaptor = dbAdaptor;
 		defaultTextSize = textSize;
 		this.languageCodes = languageCodes;
-		
+
 	}
 
 	protected ScrollView createSurveyTabContent() {
@@ -78,6 +78,15 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 		if (actionButton != null) {
 			actionButton.setEnabled(isEnabled);
 		}
+	}
+
+	/**
+	 * updates the language codes that this tab will use
+	 * 
+	 * @param langCodes
+	 */
+	protected void updateSelectedLanguages(String[] langCodes) {
+		languageCodes = langCodes;
 	}
 
 }

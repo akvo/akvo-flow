@@ -203,6 +203,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 	 * @param langCodes
 	 */
 	public void updateQuestionLanguages(String[] langCodes) {
+		updateSelectedLanguages(langCodes);
 		if (questionMap != null) {
 			for (QuestionView view : questionMap.values()) {
 				view.updateSelectedLanguages(langCodes);
