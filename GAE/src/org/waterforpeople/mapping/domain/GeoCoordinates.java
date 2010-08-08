@@ -33,9 +33,13 @@ public class GeoCoordinates {
 		if (line != null && line.trim().length() > 0
 				&& !line.trim().equals("||")) {
 			String[] coordinates = line.split("\\|");
-			setLatitude(new Double(coordinates[0]));
-			setLongitude(new Double(coordinates[1]));
-			setAltitude(new Double(coordinates[2]));
+			if (coordinates.length > 1) {
+				setLatitude(new Double(coordinates[0]));
+				setLongitude(new Double(coordinates[1]));
+			}
+			if (coordinates.length > 2) {
+				setAltitude(new Double(coordinates[2]));
+			}
 		}
 		return this;
 	}
