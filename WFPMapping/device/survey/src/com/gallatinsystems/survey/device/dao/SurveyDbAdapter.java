@@ -919,6 +919,13 @@ public class SurveyDbAdapter {
 	}
 
 	/**
+	 * deletes all the points of interest
+	 */
+	public void deleteAllPoints() {
+		database.delete(POINT_OF_INTEREST_TABLE, null, null);
+	}
+
+	/**
 	 * deletes all survey responses from the database
 	 */
 	public void deleteAllResponses() {

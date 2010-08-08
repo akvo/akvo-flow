@@ -56,6 +56,8 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.gpsstatusdesc)));
 		list.add(createMap(resources.getString(R.string.reloadsurveyslabel),
 				resources.getString(R.string.reloadsurveysdesc)));
+		list.add(createMap(resources.getString(R.string.flushpointslabel),
+				resources.getString(R.string.flushpointsdesc)));
 		list.add(createMap(resources.getString(R.string.downloadsurveylabel),
 				resources.getString(R.string.downloadsurveydesc)));
 		list.add(createMap(resources.getString(R.string.aboutlabel), resources
@@ -240,6 +242,19 @@ public class SettingsActivity extends ListActivity {
 							}
 						});
 
+			} else if (resources.getString(R.string.flushpointslabel).equals(
+					val)) {
+				ViewUtil.showAdminAuthDialog(this,
+						new ViewUtil.AdminAuthDialogListener() {
+							@Override
+							public void onAuthenticated() {
+								SurveyDbAdapter database = new SurveyDbAdapter(
+										SettingsActivity.this);
+								database.open();
+								database.deleteAllPoints();
+								database.close();
+							}
+						});
 			} else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {

@@ -99,6 +99,8 @@
 	<string name="techtype">Technology Type: </string>
 	<string name="navigate">View on Map</string>
 	<string name="serverlabel">Data Server (only change if instructed)</string>
+	<string name="flushpointslabel">Delete cached access points</string>
+	<string name="flushpointsdesc">Deletes the cached access points in the Nearby Points section. They will be re-downloaded on next launch if precache is enabled.</string>
 	<string name="reloadsurveyslabel">Reload all surveys</string>
 	<string name="reloadsurveysdesc">Deletes and re-downloads assigned surveys (only run if instructed)</string>
 	<string name="conftitle">Please Confirm</string>
