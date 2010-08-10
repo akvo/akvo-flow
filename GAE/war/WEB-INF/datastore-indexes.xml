@@ -5,6 +5,19 @@
         <property name="countryCode" direction="desc" />
         <property name="collectionDate" direction="desc" />
     </datastore-index>
+    
+      <datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="pointType" direction="asc"/>
+        <property name="collectionDate" direction="asc"/>
+    </datastore-index>   
+    
+    <datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="pointType" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
+         
         <!-- Used 1 time in query history -->
     <datastore-index kind="UserConfig" ancestor="true" source="auto">
         <property name="config_INTEGER_IDX" direction="asc"/>
