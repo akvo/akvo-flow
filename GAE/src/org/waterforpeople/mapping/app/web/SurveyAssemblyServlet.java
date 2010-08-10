@@ -283,7 +283,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		if (q.getMandatoryFlag() != null) {
 			qXML.setMandatory(q.getMandatoryFlag().toString());
 		}
-		// ToDo set dependency xml
 		Dependency dependency = objFactory.createDependency();
 		if (q.getDependentQuestionId() != null) {
 			dependency.setQuestion(q.getDependentQuestionId().toString());
@@ -297,6 +296,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			if (q.getAllowOtherFlag() != null) {
 				options.setAllowOther(q.getAllowOtherFlag().toString());
 			}
+			if(q.getAllowMultipleFlag()!=null){
+				options.setAllowMultiple(q.getAllowMultipleFlag().toString());
+			}
+				
 
 			ArrayList<Option> optionList = new ArrayList<Option>();
 			for (QuestionOption qo : q.getQuestionOptionMap().values()) {
