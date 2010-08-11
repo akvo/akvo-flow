@@ -22,7 +22,7 @@ public class SurveyXMLAdapter {
 
 	public Survey unmarshall(String xmlDoc) throws JAXBException {
 		JAXBContext jc = JAXBContext
-				.newInstance("com.gallatinsystems.survey.domain");
+				.newInstance("com.gallatinsystems.survey.domain.xml");
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		StringReader sr = new StringReader(xmlDoc);
 		Survey survey = (Survey) unmarshaller.unmarshal(sr);
