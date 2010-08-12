@@ -70,13 +70,15 @@ public class KMLGenerator {
 		String document = null;
 		try {
 			VelocityContext context = new VelocityContext();
-			//HashMap<String, ArrayList<String>> mwOutputMap = generateCountrySpecificPlacemarks(
-			//		"PlacemarkTabsMW.vm", "MW");
+			// HashMap<String, ArrayList<String>> mwOutputMap =
+			// generateCountrySpecificPlacemarks(
+			// "PlacemarkTabsMW.vm", "MW");
 			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm");
-			
-//			String folderContents = generateFolderContents(mwOutputMap,
-//					"Folders.vm");
-//			context.put("folderContents", otherCountryOutput + folderContents);
+
+			// String folderContents = generateFolderContents(mwOutputMap,
+			// "Folders.vm");
+			// context.put("folderContents", otherCountryOutput +
+			// folderContents);
 			context.put("folderContents", otherCountryOutput);
 			context
 					.put("regionPlacemark",
@@ -109,13 +111,10 @@ public class KMLGenerator {
 		return mergeContext(context, vmName);
 
 	}
-	
-	
-	
 
-	public void generateCountryOrderedPlacemarks(
-			String vmName, String countryCode, String technologyType) {
-		
+	public void generateCountryOrderedPlacemarks(String vmName,
+			String countryCode, String technologyType) {
+
 	}
 
 	public HashMap<String, ArrayList<String>> generateCountrySpecificPlacemarks(
@@ -234,7 +233,7 @@ public class KMLGenerator {
 			contextBindingsMap.put("latitude", encodeNullDefault(waterAP
 					.getLatitude().toString(), "Unknown"));
 			contextBindingsMap.put("altitude", encodeNullDefault(waterAP
-					.getAltitude().toString(), "Unknown"));
+					.getAltitude().toString(), "0.0"));
 			contextBindingsMap.put("pinStyle", encodePinStyle(waterAP
 					.getPointType(), waterAP.getPointStatus()));
 			return contextBindingsMap;
@@ -301,9 +300,10 @@ public class KMLGenerator {
 	}
 
 	public String bindPlacemark(AccessPoint ap, String vmName) throws Exception {
-		//if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW")) {
+		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
+		// {
 		if (ap.getCountryCode() != null) {
-			
+
 			VelocityContext context = new VelocityContext();
 			if (ap.getCollectionDate() != null) {
 				String formattedDate = DateFormat.getDateInstance(
@@ -315,7 +315,10 @@ public class KMLGenerator {
 
 			context.put("latitude", ap.getLatitude());
 			context.put("longitude", ap.getLongitude());
-			context.put("altitude", ap.getAltitude());
+			if (ap.getAltitude() == null)
+				context.put("altitude", 0.0);
+			else
+				context.put("altitude", ap.getAltitude());
 
 			if (ap.getCommunityCode() != null)
 				context.put("communityCode", ap.getCommunityCode());
@@ -617,7 +620,9 @@ public class KMLGenerator {
 	}
 
 	private String encodeStatusString(AccessPoint.Status status) {
-
+		if (status == null) {
+			return "Unknown";
+		}
 		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
 			return "System Functioning and Meets Government Standards";
 		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
