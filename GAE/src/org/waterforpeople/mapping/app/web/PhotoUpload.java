@@ -53,7 +53,7 @@ public class PhotoUpload extends HttpServlet {
 					log.log(Level.SEVERE, "Could not rotate image", e);
 				}
 				S3Driver s3 = new S3Driver();
-				s3.uploadFile(bucket, item.getName(), out.toByteArray());
+				s3.uploadFile(bucket, "images/"+item.getName(), out.toByteArray());
 			}
 		} catch (FileUploadException e) {
 			// TODO Auto-generated catch block
