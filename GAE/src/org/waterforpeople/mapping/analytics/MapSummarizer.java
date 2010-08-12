@@ -2,17 +2,20 @@ package org.waterforpeople.mapping.analytics;
 
 import java.util.Date;
 
-import org.mortbay.log.Log;
+import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.web.KMLGenerator;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.google.appengine.api.datastore.Text;
 
 public class MapSummarizer implements DataSummarizer {
+	private static Logger log = Logger.getLogger(AbstractRestApiServlet.class
+			.getName());
 
 	@Override
 	public boolean performSummarization(String key, String type) {
@@ -32,7 +35,8 @@ public class MapSummarizer implements DataSummarizer {
 					if (placemark != null) {
 						MapFragment mf = new MapFragment();
 						mf.setFragmentValue(new Text(placemark));
-						mf.setFragmentType(FRAGMENTTYPE.COUNTRY_INDIVIDUAL_PLACEMARK);
+						mf
+								.setFragmentType(FRAGMENTTYPE.COUNTRY_INDIVIDUAL_PLACEMARK);
 						mf.setCreatedDateTime(new Date());
 						mf.setCountryCode(ap.getCountryCode());
 						mf.setTechnologyType(ap.getTypeTechnologyString());
@@ -40,8 +44,9 @@ public class MapSummarizer implements DataSummarizer {
 						BaseDAO<MapFragment> mapFragmentDao = new BaseDAO<MapFragment>(
 								MapFragment.class);
 						mapFragmentDao.save(mf);
-					}else{
-						Log.info("Could not save MapFragment for placemark: " + ap.toString());
+					} else {
+						log.info("Could not save MapFragment for placemark: "
+								+ ap.toString());
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
