@@ -261,7 +261,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 	@SuppressWarnings("unchecked")
 	private void processClickEvent(boolean isNewSearch) {
-		if (accessPointFT != null) {			
+		if (accessPointFT != null) {
 			accessPointFT.removeAllRows();
 		}
 		statusLabel.setText("Please wait loading access points");
@@ -325,9 +325,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				// keyIdLabel.setVisible(false);
 				accessPointFT.setWidget(i, 0, keyIdLabel);
 				if (apDto.getCommunityCode() != null) {
-					accessPointFT.setWidget(i, 1, new Label(apDto
-							.getCommunityCode()));
+					String communityCode = apDto.getCommunityCode();
+					if (communityCode.length() > 10)
+						communityCode = communityCode.substring(0, 10);
+					accessPointFT.setWidget(i, 1, new Label(communityCode));
 				}
+
 				if (apDto.getLatitude() != null && apDto.getLongitude() != null) {
 					accessPointFT.setWidget(i, 2, new Label(apDto.getLatitude()
 							.toString()));
@@ -503,6 +506,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		TextBox communityCodeTB = new TextBox();
 		if (accessPointDto != null)
 			communityCodeTB.setText(accessPointDto.getCommunityCode());
+
 		accessPointDetail.setWidget(0, 1, communityCodeTB);
 
 		accessPointDetail.setWidget(1, 0, new Label("Latititude: "));
@@ -525,7 +529,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointDetail.setWidget(3, 0, new Label("Collection Date: "));
 		DateBox pickerCollectionDate = new DateBox();
 		if (accessPointDto != null)
-			pickerCollectionDate.setValue(accessPointDto.getConstructionDate());
+			pickerCollectionDate.setValue(accessPointDto.getCollectionDate());
 		accessPointDetail.setWidget(3, 1, pickerCollectionDate);
 
 		// accessPointDetail.setWidget(4, 0, new
@@ -605,7 +609,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
 						.getWidget(9, 3)).getWidget()).getFilename();
 				((TextBox) accessPointDetail.getWidget(9, 1))
-						.setText("http://waterforpeople.s3.amazonaws.com/"
+						.setText("http://waterforpeople.s3.amazonaws.com/images/"
 								+ fileName);
 
 				Image i = ((Image) accessPointDetail.getWidget(9, 2));
@@ -613,12 +617,13 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 				if (i == null) {
 					Image photo = new Image();
-					photo.setUrl("http://waterforpeople.s3.amazonaws.com/"
-							+ fileName);
+					photo
+							.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
+									+ fileName);
 					photo.setHeight("200px");
 					accessPointDetail.setWidget(9, 2, photo);
 				} else {
-					i.setUrl("http://waterforpeople.s3.amazonaws.com/"
+					i.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
 							+ fileName);
 				}
 			}
