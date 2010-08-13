@@ -374,39 +374,25 @@ public class OptionQuestionView extends QuestionView {
 				setResponse(new QuestionResponse(idToValueMap.get(checkedId),
 						ConstantUtil.VALUE_RESPONSE_TYPE, question.getId()));
 			} else {
-				String newVal = idToValueMap.get(checkedId);
 				// if there is already a response and we support multiple, we
 				// have to combine
 				QuestionResponse r = getResponse();
-				String[] vals = r.getValue().split("\\|");
-				boolean found = false;
-				for (int i = 0; i < vals.length; i++) {
-					if (vals[i].equals(newVal)) {
-						found = true;
-						break;
-					}
-				}
-				if (found && !isChecked) {
-					// if it's not longer selected, we need to remove the value
-					// from the packed string
-					StringBuilder buf = new StringBuilder();
-					int count = 0;
-					for (int j = 0; j < vals.length; j++) {
-						if (!vals[j].equals(newVal)) {
+				StringBuffer newResponse = new StringBuffer();
+				int count = 0;
+				if (checkBoxes != null) {
+					for (int i = 0; i < checkBoxes.size(); i++) {
+						if (checkBoxes.get(i).isChecked()) {
 							if (count > 0) {
-								buf.append("|");
+								newResponse.append("|");
 							}
-							buf.append(vals[j]);
+							newResponse.append(idToValueMap.get(checkBoxes.get(
+									i).getId()));
 							count++;
 						}
 					}
-					r.setValue(buf.toString());
-				} else if (isChecked) {
-					// add the new val to the packed values
-					r.setValue(r.getValue() + "|" + newVal);
-					r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 				}
-
+				r.setValue(newResponse.toString());
+				r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 			}
 		}
 	}
