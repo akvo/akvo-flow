@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -306,13 +307,20 @@ public class KMLGenerator {
 
 			VelocityContext context = new VelocityContext();
 			if (ap.getCollectionDate() != null) {
+				String timestamp = DateFormatUtils.formatUTC(ap.getCollectionDate(), DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(ap.getCollectionDate());
+				log.log(Level.INFO,"ap: " + ap.getLatitude()+"/"+ap.getLongitude()+" Date: uf: " + ap.getCollectionDate() + " formatted: " + formattedDate);
 				context.put("collectionDate", formattedDate);
+				context.put("timestamp",timestamp);
 			} else {
-				context.put("collectionDate", "N/A");
+				String timestamp = DateFormatUtils.formatUTC(new Date(), DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+				String formattedDate = DateFormat.getDateInstance(
+						DateFormat.SHORT).format(new Date());
+				context.put("collectionDate", formattedDate);
+				context.put("timestamp",timestamp);
 			}
-
+			
 			context.put("latitude", ap.getLatitude());
 			context.put("longitude", ap.getLongitude());
 			if (ap.getAltitude() == null)

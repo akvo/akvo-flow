@@ -149,31 +149,49 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("loadLots".equals(action)) {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			AccessPointDao apDao = new AccessPointDao();
+			for (int j = 0; j < 1; j++) {
+				double lat = 15 + (new Random().nextDouble() / 10);
+				double lon = -90 + (new Random().nextDouble() / 10);
+				for (int i = 0; i < 5; i++) {
+					AccessPoint ap = new AccessPoint();
+					ap.setLatitude(lat);
+					ap.setLongitude(lon);
+					Calendar calendar = Calendar.getInstance();
+					Date today = new Date();
+					calendar.setTime(today);
+					calendar.add(Calendar.YEAR, -1 * i);
+					System.out
+							.println("AP: " + ap.getLatitude() + "/"
+									+ ap.getLongitude() + "Date: "
+									+ calendar.getTime());
+					ap.setCollectionDate(calendar.getTime());
+					ap.setAltitude(0.0);
+					ap.setCommunityCode("test" + new Date());
+					ap.setCommunityName("test" + new Date());
+					ap.setPhotoURL("http://test.com");
+					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+					if (i == 0)
+						ap
+								.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+					else if (i == 1)
+						ap
+								.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+					else if (i == 2)
+						ap.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
+					else
+						ap.setPointStatus(Status.NO_IMPROVED_SYSTEM);
 
-			for (int i = 0; i < 2000; i++) {
-				AccessPoint ap = new AccessPoint();
-				ap.setCollectionDate(new Date());
-				ap.setLatitude(15 + (new Random().nextDouble() / 10));
-				ap.setLongitude(-90 + (new Random().nextDouble() / 10));
-				ap.setAltitude(0.0);
-				ap.setCommunityCode("test" + new Date());
-				ap.setCommunityName("test" + new Date());
-				ap.setPhotoURL("http://test.com");
-				ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-				ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-				if (i % 2 == 0)
-					ap.setCountryCode("MW");
-				else
-					ap.setCountryCode("GT");
-				if (i % 2 == 0)
-					ap.setTypeTechnologyString("Kiosk");
-				else
-					ap.setTypeTechnologyString("Afridev Handpump");
-				apDao.save(ap);
-				MapSummarizer ms = new MapSummarizer();
-				ms.performSummarization("" + ap.getKey().getId(), "");
-				if (i % 50 == 0)
-					log.log(Level.INFO, "Loaded to " + i);
+					
+					if (i % 2 == 0)
+						ap.setTypeTechnologyString("Kiosk");
+					else
+						ap.setTypeTechnologyString("Afridev Handpump");
+					apDao.save(ap);
+					MapSummarizer ms = new MapSummarizer();
+					ms.performSummarization("" + ap.getKey().getId(), "");
+					if (i % 50 == 0)
+						log.log(Level.INFO, "Loaded to " + i);
+				}
 			}
 			try {
 				resp.getWriter().println("Finished loading aps");
