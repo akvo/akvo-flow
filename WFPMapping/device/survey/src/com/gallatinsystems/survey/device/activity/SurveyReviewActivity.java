@@ -55,11 +55,13 @@ public class SurveyReviewActivity extends ListActivity {
 	}
 
 	private void getData() {
+		String label = null;
 		if (ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
-			viewTypeLabel.setText(R.string.savedsurveyslabel);
+			label = getString(R.string.savedsurveyslabel);
 		} else {
-			viewTypeLabel.setText(R.string.submittedsurveyslabel);
+			label = getString(R.string.submittedsurveyslabel);
 		}
+
 		Cursor dataCursor = databaseAdapter
 				.listSurveyRespondent(currentStatusMode);
 		startManagingCursor(dataCursor);
@@ -67,6 +69,11 @@ public class SurveyReviewActivity extends ListActivity {
 		SurveyReviewCursorAdaptor surveys = new SurveyReviewCursorAdaptor(this,
 				dataCursor);
 		setListAdapter(surveys);
+		if (dataCursor != null) {
+			viewTypeLabel.setText(label + " (" + dataCursor.getCount() + ")");
+		} else {
+			viewTypeLabel.setText(label + "(0)");
+		}
 	}
 
 	/**

@@ -24,6 +24,7 @@ import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * basic question view. This just displays the question text. It also provides a
@@ -57,7 +58,7 @@ public class QuestionView extends TableLayout implements
 	 * @param context
 	 * @param q
 	 */
-	public QuestionView(Context context, Question q, String[] langs,
+	public QuestionView(final Context context, Question q, String[] langs,
 			boolean readOnly) {
 		super(context);
 		question = q;
@@ -67,9 +68,28 @@ public class QuestionView extends TableLayout implements
 		}
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
+
 		questionText.setWidth(DEFAULT_WIDTH);
 		this.readOnly = readOnly;
+		if (!readOnly) {
+			questionText.setLongClickable(true);
+			questionText.setOnLongClickListener(new OnLongClickListener() {
 
+				@Override
+				public boolean onLongClick(View v) {
+					ViewUtil.showConfirmDialog(R.string.clearquestion,
+							R.string.clearquestiondesc, context,
+							true, new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									resetQuestion();
+								}
+							});
+					return true;
+				}
+			});
+		}
 		questionText.setText(formText(), BufferType.SPANNABLE);
 		tr.addView(questionText);
 
@@ -219,7 +239,7 @@ public class QuestionView extends TableLayout implements
 		} else if (ConstantUtil.TIP_HELP_TYPE.equals(type)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 			TextView tipText = new TextView(getContext());
-			//tipText.setText(Html.fromHtml(question.getTip()));
+			// tipText.setText(Html.fromHtml(question.getTip()));
 			builder.setView(tipText);
 			builder.setPositiveButton(R.string.okbutton,
 					new DialogInterface.OnClickListener() {

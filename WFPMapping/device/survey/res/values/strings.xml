@@ -155,6 +155,8 @@
 	<string name="authfailed">Authorization Failed</string>
 	<string name="invalidpassword">Invalid passcode</string>
 	<string name="searchpoints">Search Points</string>	
-	<string name="pointtype">Point Type</string>	
-	<string name="appversion">0.98.14</string>	
+	<string name="pointtype">Point Type</string>
+	<string name="clearquestion">Clear Response</string>
+	<string name="clearquestiondesc">Do you want to clear the response to this question?</string>	
+	<string name="appversion">0.98.16</string>	
 </resources>

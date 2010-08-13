@@ -105,7 +105,17 @@ public class UserEditActivity extends Activity {
 	private void saveState() {
 		String name = displayName.getText().toString();
 		String email = emailAddr.getText().toString();
-
+		name = cleanupString(name);
+		email = cleanupString(name);
 		databaseAdaptor.createOrUpdateUser(userId, name, email);
+	}
+
+	private String cleanupString(String input) {
+		if (input != null) {
+			input = input.trim();
+			input = input.replaceAll("\n", " ");
+			input = input.replaceAll(",", " ");
+		}
+		return input;
 	}
 }

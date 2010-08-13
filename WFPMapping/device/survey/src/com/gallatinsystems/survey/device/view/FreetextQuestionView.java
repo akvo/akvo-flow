@@ -162,5 +162,4 @@ public class FreetextQuestionView extends QuestionView implements
 			}
 		}
 	}
-
 }
