@@ -1,4 +1,7 @@
   <Placemark>
+  <TimeStamp>
+  	<when>$timestamp</when>
+  </TimeStamp>
     <!--<name><![CDATA[<strong><font color="red" size="+2">$communityCode</font></strong>]]></name>-->
     <name>$communityCode</name>
     <styleUrl>$pinStyle</styleUrl>
