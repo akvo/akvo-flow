@@ -20,12 +20,9 @@ public class PortletFactory {
 			{ SurveyQuestionPortlet.NAME, SurveyQuestionPortlet.DESCRIPTION },
 			{ AccessPointStatusPortlet.NAME,
 					AccessPointStatusPortlet.DESCRIPTION },
-			{ AccessPointManagerPortlet.NAME,
-					AccessPointManagerPortlet.DESCRIPTION },
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
-					AccessPointPerformancePortlet.DESCRIPTION },
-			{ MappingAttributeManager.NAME, MappingAttributeManager.DESCRIPTION } };
+					AccessPointPerformancePortlet.DESCRIPTION }};
 
 	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {
