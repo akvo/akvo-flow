@@ -38,6 +38,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	public static final String NAME = "Survey Answer Breakdown";
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 400;
+	private static final int MAX_LEN = 40;
 
 	private SurveyServiceAsync surveyService;
 
@@ -155,8 +156,12 @@ public class SurveyQuestionPortlet extends Portlet {
 			public void onSuccess(QuestionDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
-						questionListbox.addItem(result[i].getText(), result[i]
-								.getKeyId().toString());
+						String text = result[i].getText();
+						if (text != null && text.length() > MAX_LEN) {
+							text = text.substring(0, MAX_LEN) + "...";
+						}
+						questionListbox.addItem(text, result[i]
+								.getKeyId().toString());					
 
 					}
 					questionListbox.setVisibleItemCount(1);
