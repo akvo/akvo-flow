@@ -45,6 +45,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			qas.setArbitratyNumber(new Long(parts[1]));
 			qas.setQuestionID(parts[2]);
 			qas.setType(parts[3]);
+			qas.setCollectionDate(collectionDate);
 			if (parts.length > 4) {
 				qas.setValue(parts[4]);
 			}
