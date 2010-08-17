@@ -1,6 +1,8 @@
 package com.gallatinsystems.security.authorization.app.web;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.logging.Logger;
@@ -73,6 +75,11 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 			log.info("QueryString: " + req.getQueryString());
 			String singleUseToken = AuthSubUtil.getTokenFromReply(req
 					.getQueryString());
+			try {
+				singleUseToken = URLDecoder.decode(singleUseToken,"UTF-8");
+			} catch (UnsupportedEncodingException e) {				
+				log.warning("Could not decode token"+e);
+			}
 			log.info("singleUseToken: " + singleUseToken);
 
 			TokenUtility tk = new TokenUtility();
@@ -98,9 +105,9 @@ public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 			}
 		}
 		try {
-			((HttpServletResponse) resp)
-				.sendRedirect("/Dashboard.html");
-			//((HttpServletResponse)resp).sendRedirect("/Dashboard.html?gwt.codesvr=127.0.0.1:9997");
+			//((HttpServletResponse) resp)
+				//.sendRedirect("/Dashboard.html");
+			((HttpServletResponse)resp).sendRedirect("/Dashboard.html?gwt.codesvr=127.0.0.1:9997");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
