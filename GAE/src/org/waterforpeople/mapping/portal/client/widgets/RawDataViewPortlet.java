@@ -73,6 +73,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		surveyInstancePanel.add(instanceGrid);
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		nextButton = new Button("Next");
+		nextButton.setVisible(false);
 		nextButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -83,6 +84,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		});
 
 		previousButton = new Button("Previous");
+		previousButton.setVisible(false);
 		previousButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -93,6 +95,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		});
 		buttonPanel.add(previousButton);
 		buttonPanel.add(nextButton);
+		surveyInstancePanel.add(buttonPanel);
 
 		loadSurveyInstance(true);
 		setWidget(contentPanel);
