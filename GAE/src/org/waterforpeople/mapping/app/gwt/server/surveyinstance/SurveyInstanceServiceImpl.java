@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
@@ -21,26 +22,26 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	private static final long serialVersionUID = -9175237700587455358L;
 
 	@Override
-	public void deleteSurveyInstance(Long id) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public ArrayList<SurveyInstanceDto> listSurveyInstance(Date beginDate) {
+	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
+			Date beginDate, String cursorString) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		List<SurveyInstance> siList = null;
 		if (beginDate == null) {
 			Calendar c = Calendar.getInstance();
-			c.add(Calendar.DAY_OF_MONTH, -5);
+			c.add(Calendar.DAY_OF_MONTH, -90);
 			beginDate = c.getTime();
 		}
-		siList = dao.listByDateRange(beginDate, null);
+		siList = dao.listByDateRange(beginDate, null, cursorString);
+		String newCursor = SurveyInstanceDAO.getCursor(siList);
 
 		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
-		for (SurveyInstance siItem : siList)
+		for (SurveyInstance siItem : siList) {
 			siDtoList.add(marshalToDto(siItem));
-		return siDtoList;
+		}
+		ResponseDto<ArrayList<SurveyInstanceDto>> response = new ResponseDto<ArrayList<SurveyInstanceDto>>();
+		response.setCursorString(newCursor);
+		response.setPayload(siDtoList);
+		return response;
 	}
 
 	public List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId) {

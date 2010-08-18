@@ -19,28 +19,90 @@ import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	private static final long serialVersionUID = -7708214468114860788L;
-	@Persistent
-	
-	@MappableField(displayName="Collection Date")
+
+	@MappableField(displayName = "Collection Date")
 	private Date collectionDate = null;
-	@Persistent
-	@MappableField(displayName="Latitude")
+
+	@MappableField(displayName = "Latitude")
 	private Double latitude = 0.0;
-	@Persistent
-	@MappableField(displayName="Longitude")
+	@MappableField(displayName = "Longitude")
 	private Double longitude = 0.0;
-	@Persistent
-	@MappableField(displayName="Altitude")
+	@MappableField(displayName = "Altitude")
 	private Double altitude = 0.0;
-	@Persistent
-	@MappableField(displayName="Community Code")
+	@MappableField(displayName = "Community Code")
 	private String communityCode = null;
-	@MappableField(displayName="Community Name")
+	@MappableField(displayName = "Community Name")
 	private String communityName = null;
-	@MappableField(displayName="Institution Name")
+	@MappableField(displayName = "Institution Name")
 	private String institutionName = null;
-	@MappableField(displayName="Balloon Title")
+	@MappableField(displayName = "Balloon Title")
 	private String balloonTitle = null;
+	@MappableField(displayName = "Region")
+	private String region;
+	private String photoURL = null;
+	@Persistent
+	private TechnologyType typeTechnology = null;
+
+	private String technologyTypeOther = null;
+
+	private String typeTechnologyString = null;
+	private Date constructionDate = null;
+	@MappableField(displayName = "Year of Construction")
+	private String constructionDateYear = null;
+	@MappableField(displayName = "Number of households using point")
+	private Long numberOfHouseholdsUsingPoint = null;
+	private Double costPer = null;
+	private UnitOfMeasure costPerUnitOfMeasure = null;
+	private Currency costPerCurrency = null;
+	private String farthestHouseholdfromPoint = null;
+	private String currentManagementStructurePoint = null;
+	@Persistent
+	private AccessPoint.Status pointStatus = null;
+	private String otherStatus = null;
+	private String pointPhotoCaption = null;
+	private String description = null;
+	@Persistent
+	private AccessPointType pointType;
+	private String countryCode;
+	private List<String> geocells;
+	@MappableField(displayName = "Estimated Population")
+	private Long extimatedPopulation;
+	@MappableField(displayName = "Estimated Number of Households")
+	private Long estimatedHouseholds;
+	@MappableField(displayName = "Estimated People Per Household")
+	private Long estimatedPeoplePerHouse;
+
+	public Long getExtimatedPopulation() {
+		return extimatedPopulation;
+	}
+
+	public void setExtimatedPopulation(Long extimatedPopulation) {
+		this.extimatedPopulation = extimatedPopulation;
+	}
+
+	public Long getEstimatedHouseholds() {
+		return estimatedHouseholds;
+	}
+
+	public void setEstimatedHouseholds(Long estimatedHouseholds) {
+		this.estimatedHouseholds = estimatedHouseholds;
+	}
+
+	public Long getEstimatedPeoplePerHouse() {
+		return estimatedPeoplePerHouse;
+	}
+
+	public void setEstimatedPeoplePerHouse(Long estimatedPeoplePerHouse) {
+		this.estimatedPeoplePerHouse = estimatedPeoplePerHouse;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
 
 	public String getBalloonTitle() {
 		return balloonTitle;
@@ -133,43 +195,6 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	public void setCommunityName(String communityName) {
 		this.communityName = communityName;
 	}
-
-	@Persistent
-	private String photoURL = null;
-	@Persistent
-	private TechnologyType typeTechnology = null;
-	@Persistent
-	private String technologyTypeOther = null;
-	private String typeTechnologyString = null;
-	@Persistent
-	// ToDo need to implement correct business rule
-	private Date constructionDate = null;
-	private String constructionDateYear = null;
-	@Persistent
-	private Long numberOfHouseholdsUsingPoint = null;
-	@Persistent
-	private Double costPer = null;
-	@Persistent
-	private UnitOfMeasure costPerUnitOfMeasure = null;
-	@Persistent
-	private Currency costPerCurrency = null;
-	@Persistent
-	private String farthestHouseholdfromPoint = null;
-	@Persistent
-	private String currentManagementStructurePoint = null;
-	@Persistent
-	private AccessPoint.Status pointStatus = null;
-	@Persistent
-	private String otherStatus = null;
-	@Persistent
-	private String pointPhotoCaption = null;
-	@Persistent
-	private String description = null;
-	@Persistent
-	private AccessPointType pointType;
-	@Persistent
-	private String countryCode;
-	private List<String> geocells;
 
 	public List<String> getGeocells() {
 		return geocells;
@@ -302,7 +327,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public void setPointStatus(AccessPoint.Status pointStatus) {
 		this.pointStatus = pointStatus;
-	}	
+	}
 
 	public String getPointPhotoCaption() {
 		return pointPhotoCaption;

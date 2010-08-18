@@ -61,12 +61,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate) {
+	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		List<SurveyInstance> results = null;
 		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("collectionDate >= pBeginDate");
 		q.declareParameters("java.util.Date pBeginDate");
+		q.setOrdering("collectionDate desc");
+		
+		prepareCursor(cursorString, q);
+
 		results = (List<SurveyInstance>) q.execute(beginDate);
 
 		return results;
