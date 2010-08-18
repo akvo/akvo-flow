@@ -44,7 +44,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private VerticalPanel surveyInstancePanel;
 	private Button nextButton;
 	private Button previousButton;
-	private VerticalPanel contentPanel;
+	private HorizontalPanel contentPanel;
 	private List<String> cursorArray;
 
 	public RawDataViewPortlet() {
@@ -63,7 +63,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		instanceGrid = new Grid();
 		instanceGrid.addClickHandler(this);
 		qasDetailGrid = new Grid();
-		contentPanel = new VerticalPanel();
+		contentPanel = new HorizontalPanel();
 		surveyInstancePanel = new VerticalPanel();
 
 		contentPanel.add(surveyInstancePanel);
