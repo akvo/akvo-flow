@@ -150,9 +150,13 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 							}
 							if(currentDtoList.size()>=20){
 								nextButton.setVisible(true);
+							}else{
+								nextButton.setVisible(false);
 							}
 							if(currentPage>0){
 								previousButton.setVisible(true);
+							}else{
+								previousButton.setVisible(false);
 							}
 						}else{
 							nextButton.setVisible(false);
