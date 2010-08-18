@@ -2,6 +2,92 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
 	<Document>
 	
+		<Style id="waterpushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="watergreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/water-green-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="waterpushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="wateryellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/water-yellow-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="waterpushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="waterredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/water-red-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>  
+   <Style id="waterpushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="waterblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/water-black-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+  
+  	<Style id="sanipushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="sanigreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-green-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="sanipushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="saniyellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-yell-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="sanipushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="saniredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-red-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="sanipushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="saniblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-black-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+	
+	
+	
+	
+	
 		<Style id="pushpingreen">
 		    <BalloonStyle> 
       <text>$[description]</text> 
@@ -60,7 +146,6 @@
         <color>7dff0000</color>
       </PolyStyle>
     </Style>
-	
 	
 	<name>Water For People Mapping Assesment</name>
 	<description>description</description>

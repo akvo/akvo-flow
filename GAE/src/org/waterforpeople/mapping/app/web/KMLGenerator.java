@@ -307,20 +307,26 @@ public class KMLGenerator {
 
 			VelocityContext context = new VelocityContext();
 			if (ap.getCollectionDate() != null) {
-				String timestamp = DateFormatUtils.formatUTC(ap.getCollectionDate(), DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+				String timestamp = DateFormatUtils.formatUTC(ap
+						.getCollectionDate(), DateFormatUtils.ISO_DATE_FORMAT
+						.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(ap.getCollectionDate());
-				log.log(Level.INFO,"ap: " + ap.getLatitude()+"/"+ap.getLongitude()+" Date: uf: " + ap.getCollectionDate() + " formatted: " + formattedDate);
+				log.log(Level.INFO, "ap: " + ap.getLatitude() + "/"
+						+ ap.getLongitude() + " Date: uf: "
+						+ ap.getCollectionDate() + " formatted: "
+						+ formattedDate);
 				context.put("collectionDate", formattedDate);
-				context.put("timestamp",timestamp);
+				context.put("timestamp", timestamp);
 			} else {
-				String timestamp = DateFormatUtils.formatUTC(new Date(), DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+				String timestamp = DateFormatUtils.formatUTC(new Date(),
+						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(new Date());
 				context.put("collectionDate", formattedDate);
-				context.put("timestamp",timestamp);
+				context.put("timestamp", timestamp);
 			}
-			
+
 			context.put("latitude", ap.getLatitude());
 			context.put("longitude", ap.getLongitude());
 			if (ap.getAltitude() == null)
@@ -502,10 +508,11 @@ public class KMLGenerator {
 				context.put("description", "Unknown");
 
 			// Need to check this
-			if (ap.getPointType() != null)
-				encodeStatus(ap.getPointType(), ap.getPointStatus(), context);
-			else {
-				context.put("pinStyle", "pushpinblk");
+			if (ap.getPointType() != null){
+				context.put("pinStyle",encodePinStyle(ap.getPointType(), ap.getPointStatus()));				
+				encodeStatusString(ap.getPointStatus(), context);
+			}else {
+				context.put("pinStyle", "waterpushpinblk");
 			}
 			String output = mergeContext(context, vmName);
 			return output;
@@ -562,39 +569,22 @@ public class KMLGenerator {
 		}
 	}
 
-	private void encodeStatus(AccessPointType type, AccessPoint.Status status,
-			VelocityContext context) {
-		if (type.equals(AccessPointType.SANITATION_POINT)) {
-			context.put("pinStyle", "pushpinpurple");
-		} else {
-			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-				context.put("pinStyle", "pushpingreen");
-			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
-				context.put("pinStyle", "pushpinyellow");
-			} else if (status
-					.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-				context.put("pinStyle", "pushpinred");
-			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-				context.put("pinStyle", "pushpinblk");
-			} else {
-				context.put("pinStyle", "pushpinblk");
-			}
-		}
-		encodeStatusString(status, context);
-	}
-
 	private String encodePinStyle(AccessPointType type,
 			AccessPoint.Status status) {
+		String prefix = "water";
+		if (AccessPointType.SANITATION_POINT == type) {
+			prefix = "sani";
+		}
 		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-			return "pushpingreen";
+			return prefix + "pushpingreen";
 		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
-			return "pushpinyellow";
+			return prefix + "pushpinyellow";
 		} else if (status.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-			return "pushpinred";
+			return prefix + "pushpinred";
 		} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-			return "pushpinblk";
+			return prefix + "pushpinblk";
 		} else {
-			return "pushpinblk";
+			return prefix + "pushpinblk";
 		}
 	}
 
