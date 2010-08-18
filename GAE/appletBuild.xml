@@ -21,11 +21,12 @@
 
 
 	<target name="compile">
-	 	<javac classpathref="project.classpath" srcdir="${src}" destdir="${build}">
-	 	<exclude name="org/waterforpeople/mapping/portal/**"/>
-	 	<exclude name="com/gallatinsystems/device/**"/>
-	 	<exclude name="com/gallatinsystems/framework/gwt/**"/>
-	 	</javac>
+	 	<javac classpathref="project.classpath" srcdir="${src}:${src}../../src" destdir="${build}">
+		 	<exclude name="org/waterforpeople/mapping/portal/**"/>
+		 	<exclude name="com/gallatinsystems/device/**"/>
+		 	<exclude name="com/gallatinsystems/framework/gwt/**"/>
+		 	<exclude name="com/gallatinsystems/common/utilities/**"/>	 	
+		</javac>
 	 		
 	</target>
 
