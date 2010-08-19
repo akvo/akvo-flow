@@ -97,4 +97,30 @@ public class AccessPointSearchCriteriaDto implements Serializable {
 	public void setTechType(String techType) {
 		this.techType = techType;
 	}
+
+	public String toDelimitedString() {
+		StringBuilder builder = new StringBuilder();
+		appendNonNullParam(builder, "techType", techType);
+		appendNonNullParam(builder, "pointType", pointType);
+		appendNonNullParam(builder, "collectionDateTo", collectionDateTo);
+		appendNonNullParam(builder, "collectionDateFrom", collectionDateFrom);
+		appendNonNullParam(builder, "communityCode", communityCode);
+		appendNonNullParam(builder, "countryCode", countryCode);
+		appendNonNullParam(builder, "techType", techType);
+		appendNonNullParam(builder, "constructionDateTo", constructionDateTo);
+		appendNonNullParam(builder, "constructionDateFrom",
+				constructionDateFrom);
+		return builder.toString();
+
+	}
+
+	private void appendNonNullParam(StringBuilder builder, String name,
+			Object value) {
+		if (value != null) {
+			if (builder.length() > 0) {
+				builder.append(";");
+			}
+			builder.append(name).append("=").append(value);
+		}
+	}
 }

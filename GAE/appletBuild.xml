@@ -3,7 +3,7 @@
 	<property file="build.properties" />
 	<property name="src" location="src"/>  	
 	<property name="build" location="bin"/>
-  	<property name="dist"  location="war/WEB-INF"/>
+  	<property name="dist"  location="war"/>
   	
   	<path id="project.classpath">
 		<pathelement path="war/WEB-INF/classes" />
@@ -14,18 +14,20 @@
 			<include name="shared/**/*.jar" />
 		</fileset>
 		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
-		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
+		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />  		
 		<pathelement location="build" />
 		<pathelement location="src" />
 	</path>
 
 
 	<target name="compile">
-	 	<javac classpathref="project.classpath" srcdir="${src}:${src}../../src" destdir="${build}">
+	 	<javac classpathref="project.classpath" srcdir="${src}" destdir="${build}">
 		 	<exclude name="org/waterforpeople/mapping/portal/**"/>
 		 	<exclude name="com/gallatinsystems/device/**"/>
 		 	<exclude name="com/gallatinsystems/framework/gwt/**"/>
-		 	<exclude name="com/gallatinsystems/common/utilities/**"/>	 	
+		 	<exclude name="com/gallatinsystems/common/utilities/**"/>
+	 		<include name="com/gallatinsystems/framework/gwt/util/**"/>
+	 		<include name="com/gallatinsystems/framework/dataexport/**"/>
 		</javac>
 	 		
 	</target>

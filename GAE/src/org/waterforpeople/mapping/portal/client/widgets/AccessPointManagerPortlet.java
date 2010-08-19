@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -417,6 +418,28 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				nextSet.setVisible(false);
 				for (int j = i - 1; j < accessPointFT.getRowCount(); j++)
 					accessPointFT.removeRow(j);
+
+			}
+			if (apDtoList != null && apDtoList.size() > 0) {
+				Button exportButton = new Button("Export to Excel");
+				accessPointFT.setWidget(i + 2, 0, exportButton);
+				final int size = apDtoList.size();
+				exportButton.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						String appletString ="<applet width='80' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar'>";
+						appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
+						AccessPointSearchCriteriaDto crit = formSearchCriteria();
+						if(crit != null){							
+							appletString+= "<PARAM name='criteria' value='"+crit.toDelimitedString()+"'>";
+						}
+						appletString+="</applet>";
+						HTML html = new HTML();
+						html
+								.setHTML(appletString);
+						accessPointFT.setWidget(size + 2, 1, html);
+					}
+				});
 
 			}
 			statusLabel.setText("Done loading access points");

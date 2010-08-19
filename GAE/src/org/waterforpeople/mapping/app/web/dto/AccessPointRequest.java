@@ -21,6 +21,7 @@ public class AccessPointRequest extends RestRequest {
 	private Double lat;
 	private Double lon;
 	private String country;
+	
 
 	public String getCountry() {
 		return country;

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 
-import com.gallatinsystems.framework.dataexport.DataExporter;
+import com.gallatinsystems.framework.dataexport.applet.DataExporter;
 
 public class AccessPointExporter implements DataExporter {
 

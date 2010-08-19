@@ -1,4 +1,4 @@
-package com.gallatinsystems.framework.dataexport;
+package com.gallatinsystems.framework.dataexport.applet;
 
 import java.io.File;
 import java.util.Map;
@@ -12,5 +12,5 @@ import java.util.Map;
  */
 public interface DataExporter {
 
-	public void export(Map<String, String> criteria, File file);
+	public void export(Map<String, String> criteria, File fileName);
 }
