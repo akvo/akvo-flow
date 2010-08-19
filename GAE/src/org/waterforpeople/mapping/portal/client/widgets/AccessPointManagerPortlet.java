@@ -423,6 +423,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			if (apDtoList != null && apDtoList.size() > 0) {
 				Button exportButton = new Button("Export to Excel");
 				accessPointFT.setWidget(i + 2, 0, exportButton);
+				//TODO: remove the set visiable(false) call once this is tested and working
+				exportButton.setVisible(false);
 				final int size = apDtoList.size();
 				exportButton.addClickHandler(new ClickHandler() {
 					@Override

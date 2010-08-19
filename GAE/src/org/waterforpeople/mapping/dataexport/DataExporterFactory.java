@@ -31,7 +31,7 @@ public class DataExporterFactory {
 				throw new RuntimeException("Could not initilaize constructor");
 			}
 		} else {
-			throw new RuntimeException("Unknown Exporter Type");
+			throw new RuntimeException("Unknown Exporter Type: "+type);
 		}
 	}
 }

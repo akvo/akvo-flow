@@ -12,5 +12,5 @@ import java.util.Map;
  */
 public interface DataExporter {
 
-	public void export(Map<String, String> criteria, File fileName);
+	public void export(Map<String, String> criteria, File fileName, String serverBase);
 }
