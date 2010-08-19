@@ -233,6 +233,51 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		return true;
 	}
 
+	private ArrayList<QuestionOptionContainer> parseQuestionOption(
+			String questionOption) {
+		ArrayList<QuestionOptionContainer> qoList = new ArrayList<QuestionOptionContainer>();
+
+		String[] parts = questionOption.split("#");
+
+		if (parts != null && parts.length == 1) {
+			// if parts is only 1 then we either have 1 option with multiple
+			// languages or only 1 option
+			if (!parts[0].contains("|")) {
+				// if there is no pipe, then it's 1 language only
+				String[] options = parts[0].split(";");
+				for (int i = 0; i < options.length; i++) {
+					QuestionOptionContainer opt = parseEnglishOnlyOption(options[i]
+							.trim());
+					if (opt != null) {
+						qoList.add(opt);
+					}
+				}
+			} else {
+				// if we're here, we have only 1 option but in multiple
+				// languages
+				qoList.add(composeContainer(parts[0]));
+			}
+		} else if (parts != null) {
+			for (String option : parts) {
+
+				qoList.add(composeContainer(option));
+			}
+		}
+		return qoList;
+	}
+
+	private QuestionOptionContainer composeContainer(String option) {
+		Map<String, String> langVals = parseLangMap(option);
+		String english = langVals.remove("en");
+		QuestionOptionContainer container = new QuestionOptionContainer("en",
+				english);
+		for (Map.Entry<String, String> entry : langVals.entrySet()) {
+			container.addAltLang(new QuestionOptionContainer(entry.getKey(),
+					entry.getValue()));
+		}
+		return container;
+	}
+
 	private HashMap<String, String> parseLangMap(String unparsedLangParam) {
 		HashMap<String, String> langMap = new HashMap<String, String>();
 
@@ -241,42 +286,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			String[] langParts = item.split("\\|");
 			if (langParts.length == 1) {
 				// if there is no language indicator, assume it's English
-				langMap.put("en", langParts[0]);
+				langMap.put("en", langParts[0].trim());
 			} else {
-				langMap.put(langParts[0], langParts[1]);
+				langMap.put(langParts[0].trim(), langParts[1].trim());
 			}
 		}
 		return langMap;
-	}
-
-	private ArrayList<QuestionOptionContainer> parseQuestionOption(
-			String questionOption) {
-		ArrayList<QuestionOptionContainer> qoList = new ArrayList<QuestionOptionContainer>();
-
-		String[] parts = questionOption.split("#");
-		// if parts is only 1 then we only have 1 language
-		if (parts != null && parts.length == 1) {
-			String[] options = questionOption.split(";");
-			for (int i = 0; i < options.length; i++) {
-				QuestionOptionContainer opt = parseEnglishOnlyOption(options[i]);
-				if (opt != null) {
-					qoList.add(opt);
-				}
-			}
-		} else if (parts != null) {
-			for (String option : parts) {
-				Map<String, String> langVals = parseLangMap(option);
-				String english = langVals.remove("en");
-				QuestionOptionContainer container = new QuestionOptionContainer(
-						"en", english);
-				for (Map.Entry<String, String> entry : langVals.entrySet()) {
-					container.addAltLang(new QuestionOptionContainer(entry
-							.getKey(), entry.getValue()));
-				}
-				qoList.add(container);
-			}
-		}
-		return qoList;
 	}
 
 	/**
