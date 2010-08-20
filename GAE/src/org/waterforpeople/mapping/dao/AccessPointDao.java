@@ -169,5 +169,5 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return result;
 
 	}
-
+	
 }

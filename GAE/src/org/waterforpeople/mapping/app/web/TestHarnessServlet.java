@@ -807,16 +807,17 @@ public class TestHarnessServlet extends HttpServlet {
 		List<AccessPoint> list = pointDao.searchAccessPoints(null, null, null,
 				null, source.toString(), null, null, null, null, null, null);
 
-		while (list != null && list.size() > 0) {
+		if (list != null && list.size() > 0) {
 			for (AccessPoint point : list) {
 				point.setPointType(dest);
 				pointDao.save(point);
 			}
-			list = pointDao.searchAccessPoints(null, null, null,
-					null, source.toString(), null, null, null, null, null, null);
 		}
-		return true;
-
+		if (list != null && list.size() == 20) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
