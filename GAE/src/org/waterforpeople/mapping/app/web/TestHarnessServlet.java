@@ -171,17 +171,14 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setPhotoURL("http://test.com");
 					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 					if (i == 0)
-						ap
-								.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 					else if (i == 1)
-						ap
-								.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
 					else if (i == 2)
 						ap.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
 					else
 						ap.setPointStatus(Status.NO_IMPROVED_SYSTEM);
 
-					
 					if (i % 2 == 0)
 						ap.setTypeTechnologyString("Kiosk");
 					else
@@ -791,7 +788,35 @@ public class TestHarnessServlet extends HttpServlet {
 			createTestSurveyForEndToEnd();
 		} else if ("deleteSurveyFragments".equals(action)) {
 			deleteAll(SurveyXMLFragment.class);
+		} else if ("migratePIToSchool".equals(action)) {
+			try {
+				resp.getWriter().println(
+						"Has more? "
+								+ migratePointType(
+										AccessPointType.PUBLIC_INSTITUTION,
+										AccessPointType.SCHOOL));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+
+	private boolean migratePointType(AccessPointType source,
+			AccessPointType dest) {
+		AccessPointDao pointDao = new AccessPointDao();
+		List<AccessPoint> list = pointDao.searchAccessPoints(null, null, null,
+				null, source.toString(), null, null, null, null, null, null);
+
+		while (list != null && list.size() > 0) {
+			for (AccessPoint point : list) {
+				point.setPointType(dest);
+				pointDao.save(point);
+			}
+			list = pointDao.searchAccessPoints(null, null, null,
+					null, source.toString(), null, null, null, null, null, null);
+		}
+		return true;
+
 	}
 
 	@SuppressWarnings("unchecked")
