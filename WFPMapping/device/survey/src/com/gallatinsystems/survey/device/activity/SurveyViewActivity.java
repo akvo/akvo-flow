@@ -323,7 +323,6 @@ public class SurveyViewActivity extends TabActivity implements
 							.getAbsolutePath()
 							+ filePrefix + System.nanoTime() + fileSuffix;
 					f.renameTo(new File(newName));
-
 					try {
 						if (eventQuestionSource != null) {
 							Bundle photoData = new Bundle();
@@ -338,6 +337,8 @@ public class SurveyViewActivity extends TabActivity implements
 					} finally {
 						eventQuestionSource = null;
 					}
+				}else{
+					Log.e(ACTIVITY_NAME,"Result of camera op was not ok: "+resultCode);
 				}
 			} else if (requestCode == SCAN_ACTIVITY_REQUEST) {
 				if (resultCode == RESULT_OK) {
@@ -357,7 +358,7 @@ public class SurveyViewActivity extends TabActivity implements
 				}
 			}
 		} catch (Exception e) {
-			Log.w(TAG, "Could not acquire semaphore", e);
+			Log.e(ACTIVITY_NAME, "Error handling activity return", e);
 		}
 	}
 
