@@ -330,6 +330,8 @@ public class SurveyViewActivity extends TabActivity implements
 							photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
 									newName);
 							eventQuestionSource.questionComplete(photoData);
+						}else{
+							Log.e(ACTIVITY_NAME,"eventQuestionSource is somehow null");
 						}
 					} catch (Exception e) {
 						Log.e(ACTIVITY_NAME, e.getMessage());
