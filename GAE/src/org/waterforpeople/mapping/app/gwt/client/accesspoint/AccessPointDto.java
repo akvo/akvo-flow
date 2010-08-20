@@ -192,7 +192,7 @@ public class AccessPointDto implements Serializable {
 	}
 
 	public enum AccessPointType {
-		WATER_POINT, SANITATION_POINT
+		WATER_POINT, SANITATION_POINT, PUBLIC_INSTITUTION, SCHOOL
 	}
 
 	public void setTechnologyTypeOther(String technologyTypeOther) {

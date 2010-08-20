@@ -239,6 +239,11 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				AccessPointType.WATER_POINT.toString());
 		accessPointTypeListBox.addItem("Sanitation Point",
 				AccessPointType.SANITATION_POINT.toString());
+		accessPointTypeListBox.addItem("Public Institution",
+				AccessPointType.PUBLIC_INSTITUTION.toString());
+		accessPointTypeListBox.addItem("School", AccessPointType.SCHOOL
+				.toString());
+
 	}
 
 	/**
@@ -428,7 +433,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 					@Override
 					public void onClick(ClickEvent event) {
 						String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
-						appletString +="<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
+						appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 						appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
 						AccessPointSearchCriteriaDto crit = formSearchCriteria();
 						if (crit != null) {
@@ -741,13 +746,21 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
 		pointType.addItem("Sanitation Type", AccessPointType.SANITATION_POINT
 				.toString());
+		pointType.addItem("Public Institution",
+				AccessPointType.PUBLIC_INSTITUTION.toString());
+		pointType.addItem("School", AccessPointType.SCHOOL.toString());
 		if (accessPointDto != null) {
 			AccessPointType apType = accessPointDto.getPointType();
 			if (apType.equals(AccessPointType.WATER_POINT)) {
 				pointType.setSelectedIndex(0);
-			} else {
+			} else if (apType.equals(AccessPointType.SANITATION_POINT)) {
 				pointType.setSelectedIndex(1);
+			} else if (apType.equals(AccessPointType.PUBLIC_INSTITUTION)) {
+				pointType.setSelectedIndex(2);
+			} else if (apType.equals(AccessPointType.SCHOOL)) {
+				pointType.setSelectedIndex(3);
 			}
+
 		} else {
 			pointType.setSelectedIndex(0);
 		}
@@ -947,8 +960,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		String type = pointTypeLB.getItemText(selectedIndex);
 		if (type.equals("Water Point")) {
 			apDto.setPointType(AccessPointType.WATER_POINT);
-		} else {
+		} else if (type.equals("Sanitation Point")) {
 			apDto.setPointType(AccessPointType.SANITATION_POINT);
+		} else if (type.equals("Public Institution")) {
+			apDto.setPointType(AccessPointType.PUBLIC_INSTITUTION);
+		} else if (type.equals("School")) {
+			apDto.setPointType(AccessPointType.SCHOOL);
 		}
 
 		TextBox farthestPointFromTB = (TextBox) accessPointDetail.getWidget(13,
@@ -1008,5 +1025,4 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			grid.getCellFormatter().setStyleName(row, i, style);
 		}
 	}
-
 }

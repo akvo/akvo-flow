@@ -379,7 +379,8 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 								if (box != null) {
 									selectBoxItem(dto.getAttributeName(), box);
 								}
-								if (dto.getApTypes() != null && dto.getApTypes().size()>0) {
+								if (dto.getApTypes() != null
+										&& dto.getApTypes().size() > 0) {
 									ListBox typeBox = findListBox(dto,
 											typeListboxes);
 									if (typeBox != null) {
@@ -507,7 +508,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 					if (val != null && val.trim().length() > 0) {
 
 						dto.setObjectName(MAP_TARGET_OBJECT_NAME);
-						dto.setAttributeName(val);						
+						dto.setAttributeName(val);
 						mappingDtoList.add(dto);
 					}
 					ListBox typeBox = findListBox(dto, typeListboxes);

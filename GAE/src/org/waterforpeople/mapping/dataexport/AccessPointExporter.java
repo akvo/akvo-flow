@@ -24,9 +24,16 @@ import org.waterforpeople.mapping.app.web.dto.AccessPointResponse;
 
 import com.gallatinsystems.framework.dataexport.applet.DataExporter;
 
+/**
+ * 
+ * This class can export access point search results to a tab delimited file. It
+ * will attempt to output all fields in the AccessPointDto. As of now, columns
+ * are in lexical order.
+ * 
+ * @author Christopher Fagiani
+ */
 public class AccessPointExporter implements DataExporter {
 
-	private static String test = "{\"cursor\":\"E9oBZ2piahJ3YXRlcm1hcG1vbml0b3JkZXZyTAsSNgoAGgtBY2Nlc3NQb2ludCMwBXIhGglwb2ludFR5cGUgACoSGhBTQU5JVEFUSU9OX1BPSU5UJAwLEgtBY2Nlc3NQb2ludBisEwyCAQDgAQAU\",\"accessPointDto\":[{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Tue Mar 16 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH001\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.13895,\"latitude\":-88.1301,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2463,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Tue Mar 16 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH003\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.12563,\"latitude\":-88.14027,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2464,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Fri Mar 19 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH002\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.12763,\"latitude\":-88.20085,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2465,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Tue Mar 16 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH004\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.13503,\"latitude\":-88.13686,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2466,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Wed Mar 17 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH005\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.1978,\"latitude\":-88.20903,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2467,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":null,\"pointPhotoCaption\":null,\"collectionDate\":\"Fri Mar 12 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH006\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":0,\"latitude\":0,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2468,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":null,\"pointPhotoCaption\":null,\"collectionDate\":\"Mon Mar 15 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH007\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":0,\"latitude\":0,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2469,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Thu Mar 18 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH011\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.10719,\"latitude\":-88.15065,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2470,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Fri Mar 12 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH008\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.91108,\"latitude\":-88.11142,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2471,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Thu Mar 18 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH009\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.12944,\"latitude\":-88.16258,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2472,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":null,\"pointPhotoCaption\":null,\"collectionDate\":\"Mon Mar 15 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH010\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":0,\"latitude\":0,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2473,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Wed Mar 17 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH012\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.19403,\"latitude\":-88.21888,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2474,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":null,\"otherStatus\":\"Functional\",\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":null,\"collectionDate\":\"Fri Mar 19 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH013\",\"description\":null,\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":null,\"year\":2010,\"longitude\":15.14981,\"latitude\":-88.18618,\"currentManagementStructurePoint\":null,\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2475,\"pointType\":{}},{\"costPer\":null,\"costPerUnitOfMeasure\":null,\"photoURL\":\"\",\"otherStatus\":null,\"altitude\":0,\"numberOfHouseholdsUsingPoint\":null,\"countryCode\":\"AQ\",\"pointPhotoCaption\":\"\",\"collectionDate\":\"Thu Mar 11 00:00:00 UTC 2010\",\"constructionDate\":null,\"costPerCurrency\":null,\"communityCode\":\"CH014\",\"description\":\"\",\"technologyTypeOther\":null,\"farthestHouseholdfromPoint\":\"\",\"year\":2010,\"longitude\":15.11812,\"latitude\":-88.18198,\"currentManagementStructurePoint\":\"\",\"typeTechnology\":null,\"pointStatus\":{},\"keyId\":2476,\"pointType\":{}}]}";
 	private static final String SERVLET_URL = "/accesspoint?action=search&";
 	private static final String RESPONSE_KEY = "accessPointDto";
 	private static final String NULL_STR = "null";
@@ -35,24 +42,11 @@ public class AccessPointExporter implements DataExporter {
 	private static final DateFormat IN_DATE_FMT = new SimpleDateFormat(
 			"EEE MMM dd HH:mm:ss zzz yyyy");
 
-	public AccessPointExporter() {
-
-	}
-
-	public static void main(String[] args) {
-		AccessPointExporter exp = new AccessPointExporter();
-		try {
-			PrintWriter pw = new PrintWriter("c:\\temp\\test.x");
-			exp.headers = exp.writeHeader(pw);
-			AccessPointResponse resp = exp.parseJson(test);
-			exp.writeData(resp.getAccessPointDto(), exp.headers, pw);
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * Executes the export. It will fetch data from the server in a loop until
+	 * the call returns no results. On each iteration of the loop, it will write
+	 * the data to the file.
+	 */
 	@Override
 	public void export(Map<String, String> criteria, File file,
 			String serverBase) {
@@ -82,7 +76,6 @@ public class AccessPointExporter implements DataExporter {
 			}
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (pw != null) {
@@ -91,6 +84,10 @@ public class AccessPointExporter implements DataExporter {
 		}
 	}
 
+	/**
+	 * converts the criteria map to server parameters. only non-null, non-blank
+	 * parameters are included.
+	 */
 	private String formParams(Map<String, String> criteria) {
 		StringBuilder builder = new StringBuilder();
 		int count = 0;
@@ -107,6 +104,11 @@ public class AccessPointExporter implements DataExporter {
 		return builder.toString();
 	}
 
+	/**
+	 * fetches the data from the server using the fullUrl (url including all
+	 * parameters). The resulting data is read into a string and will be parsed
+	 * into pojos.
+	 */
 	private AccessPointResponse fetchData(String fullUrl) throws Exception {
 		BufferedReader reader = null;
 		String result = null;
@@ -135,6 +137,9 @@ public class AccessPointExporter implements DataExporter {
 		return parseJson(result);
 	}
 
+	/**
+	 * converts the json string into an AccessPointResponse pojo.
+	 */
 	private AccessPointResponse parseJson(String response) throws Exception {
 		System.out.println("response: " + response);
 		AccessPointResponse apResp = new AccessPointResponse();
@@ -159,7 +164,7 @@ public class AccessPointExporter implements DataExporter {
 	}
 
 	/**
-	 * converts a JSON object to an PointOfInterest
+	 * converts a JSON object to an AccessPointDto
 	 */
 	public AccessPointDto convertToAccessPointDto(JSONObject json) {
 		AccessPointDto point = null;
@@ -199,6 +204,11 @@ public class AccessPointExporter implements DataExporter {
 		return point;
 	}
 
+	/**
+	 * uses reflection to get the comprehensive list of fields in the
+	 * AccessPointDto object. It then sorts the fields lexically and writes them
+	 * to the file as the column headers.
+	 */
 	private List<String> writeHeader(PrintWriter pw) {
 		List<String> headers = new ArrayList<String>();
 		Field[] fields = AccessPointDto.class.getDeclaredFields();
@@ -225,6 +235,10 @@ public class AccessPointExporter implements DataExporter {
 		return headers;
 	}
 
+	/**
+	 * uses reflection to fetch the values from the AccessPointDto object and,
+	 * for each field, writes the value to the file
+	 */
 	private void writeData(List<AccessPointDto> dtoList, List<String> cols,
 			PrintWriter pw) throws Exception {
 		for (AccessPointDto dto : dtoList) {

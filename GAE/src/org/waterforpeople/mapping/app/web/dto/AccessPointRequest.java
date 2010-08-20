@@ -21,10 +21,10 @@ public class AccessPointRequest extends RestRequest {
 	private static final String LON_PARAM = "lon";
 	private static final String COUNTRY_PARAM = "country";
 	private static final String COMM_PARAM = "community";
-	private static final String CONST_DATE_FROM_PARAM = "constDtFrom";
-	private static final String CONST_DATE_TO_PARAM = "constDtTo";
-	private static final String COLL_DATE_FROM_PARAM = "collDtFrom";
-	private static final String COLL_DATE_TO_PARAM = "collDtTo";
+	private static final String CONST_DATE_FROM_PARAM = "constructionDateFrom";
+	private static final String CONST_DATE_TO_PARAM = "constructionDateTo";
+	private static final String COLL_DATE_FROM_PARAM = "collectionDateFrom";
+	private static final String COLL_DATE_TO_PARAM = "collectionDateTo";
 	private static final String TYPE_PARAM = "pointType";
 	public static final String CURSOR_PARAM = "cursor";
 	public static final String NEARBY_ACTION = "getnearby";

@@ -60,8 +60,17 @@ public class AccessPointServiceSupport {
 
 		if (AccessPointType.WATER_POINT == apCanonical.getPointType()) {
 			apDto.setPointType(AccessPointDto.AccessPointType.WATER_POINT);
-		} else {
+		} else if (AccessPointType.SANITATION_POINT == apCanonical
+				.getPointType()) {
 			apDto.setPointType(AccessPointDto.AccessPointType.SANITATION_POINT);
+		} else if (AccessPointType.SCHOOL == apCanonical.getPointType()) {
+			apDto.setPointType(AccessPointDto.AccessPointType.SCHOOL);
+		} else if (AccessPointType.PUBLIC_INSTITUTION == apCanonical
+				.getPointType()) {
+			apDto
+					.setPointType(AccessPointDto.AccessPointType.PUBLIC_INSTITUTION);
+		} else {
+			apDto.setPointType(AccessPointDto.AccessPointType.WATER_POINT);
 		}
 
 		return apDto;
@@ -114,9 +123,19 @@ public class AccessPointServiceSupport {
 		}
 		if (AccessPointDto.AccessPointType.WATER_POINT == apDto.getPointType()) {
 			accessPoint.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-		} else {
+		} else if (AccessPointDto.AccessPointType.SANITATION_POINT == apDto
+				.getPointType()) {
 			accessPoint
 					.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
+		} else if (AccessPointDto.AccessPointType.SCHOOL == apDto
+				.getPointType()) {
+			accessPoint.setPointType(AccessPoint.AccessPointType.SCHOOL);
+		} else if (AccessPointDto.AccessPointType.PUBLIC_INSTITUTION == apDto
+				.getPointType()) {
+			accessPoint
+					.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
+		} else {
+			accessPoint.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 		}
 		return accessPoint;
 	}

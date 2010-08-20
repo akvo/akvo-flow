@@ -104,8 +104,8 @@ public class AccessPointSearchCriteriaDto implements Serializable {
 		appendNonNullParam(builder, "pointType", pointType);
 		appendNonNullParam(builder, "collectionDateTo", collectionDateTo);
 		appendNonNullParam(builder, "collectionDateFrom", collectionDateFrom);
-		appendNonNullParam(builder, "communityCode", communityCode);
-		appendNonNullParam(builder, "countryCode", countryCode);
+		appendNonNullParam(builder, "community", communityCode);
+		appendNonNullParam(builder, "country", countryCode);
 		appendNonNullParam(builder, "techType", techType);
 		appendNonNullParam(builder, "constructionDateTo", constructionDateTo);
 		appendNonNullParam(builder, "constructionDateFrom",
