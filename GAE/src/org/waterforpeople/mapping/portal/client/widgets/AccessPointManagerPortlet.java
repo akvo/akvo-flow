@@ -423,22 +423,21 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			if (apDtoList != null && apDtoList.size() > 0) {
 				Button exportButton = new Button("Export to Excel");
 				accessPointFT.setWidget(i + 2, 0, exportButton);
-				//TODO: remove the set visiable(false) call once this is tested and working
-				exportButton.setVisible(false);
 				final int size = apDtoList.size();
 				exportButton.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
-						String appletString ="<applet width='80' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar'>";
+						String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+						appletString +="<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 						appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
 						AccessPointSearchCriteriaDto crit = formSearchCriteria();
-						if(crit != null){							
-							appletString+= "<PARAM name='criteria' value='"+crit.toDelimitedString()+"'>";
+						if (crit != null) {
+							appletString += "<PARAM name='criteria' value='"
+									+ crit.toDelimitedString() + "'>";
 						}
-						appletString+="</applet>";
+						appletString += "</applet>";
 						HTML html = new HTML();
-						html
-								.setHTML(appletString);
+						html.setHTML(appletString);
 						accessPointFT.setWidget(size + 2, 1, html);
 					}
 				});

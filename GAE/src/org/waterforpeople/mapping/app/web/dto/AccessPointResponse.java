@@ -14,6 +14,16 @@ import com.gallatinsystems.framework.rest.RestResponse;
 public class AccessPointResponse extends RestResponse {
 
 	private static final long serialVersionUID = 5595956082396303102L;
+	private List<AccessPointDto> accessPointDto;
+	private String cursor;
+
+	public String getCursor() {
+		return cursor;
+	}
+
+	public void setCursor(String cursor) {
+		this.cursor = cursor;
+	}
 
 	public List<AccessPointDto> getAccessPointDto() {
 		return accessPointDto;
@@ -23,5 +33,4 @@ public class AccessPointResponse extends RestResponse {
 		this.accessPointDto = accessPointDto;
 	}
 
-	private List<AccessPointDto> accessPointDto;
 }

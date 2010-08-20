@@ -53,19 +53,36 @@ public class AccessPointServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		AccessPointRequest apReq = (AccessPointRequest) req;
-		return convertToResponse(accessPointDao.listNearbyAccessPoints(apReq
-				.getLat(), apReq.getLon(),
-				apReq.getCountry() == null ? geoService.getCountryCodeForPoint(
-						apReq.getLat().toString(), apReq.getLon().toString())
-						: apReq.getCountry(), MAX_DISTANCE_METERS, apReq
-						.getCursor()));
+		List<AccessPoint> result = null;
+		String cursor = null;
+		if (AccessPointRequest.NEARBY_ACTION.equalsIgnoreCase(req.getAction())) {
+			result = accessPointDao.listNearbyAccessPoints(apReq.getLat(),
+					apReq.getLon(), apReq.getCountry() == null ? geoService
+							.getCountryCodeForPoint(apReq.getLat().toString(),
+									apReq.getLon().toString()) : apReq
+							.getCountry(), MAX_DISTANCE_METERS, apReq
+							.getCursor());
+		} else if (AccessPointRequest.SEARCH_ACTION.equalsIgnoreCase(req
+				.getAction())) {
+			result = accessPointDao.searchAccessPoints(apReq.getCountry(),
+					apReq.getCommunity(), apReq.getCollectionDateFrom(), apReq
+							.getCollectionDateTo(), apReq.getType(), null,
+					apReq.getConstructionDateFrom(), apReq
+							.getConstructionDateTo(), null, null, apReq
+							.getCursor());		
+		}		
+		if(result != null && result.size()>0){
+			cursor = AccessPointDao.getCursor(result);
+		}
+
+		return convertToResponse(result,cursor);
 	}
 
 	/**
 	 * converts the domain objects to dtos and then installs them in an
 	 * AccessPointResponse object
 	 */
-	protected AccessPointResponse convertToResponse(List<AccessPoint> apList) {
+	protected AccessPointResponse convertToResponse(List<AccessPoint> apList, String cursor) {
 		AccessPointResponse resp = new AccessPointResponse();
 		if (apList != null) {
 			List<AccessPointDto> dtoList = new ArrayList<AccessPointDto>();
@@ -73,6 +90,7 @@ public class AccessPointServlet extends AbstractRestApiServlet {
 				dtoList.add(AccessPointServiceSupport.copyCanonicalToDto(ap));
 			}
 			resp.setAccessPointDto(dtoList);
+			resp.setCursor(cursor);
 		}
 		return resp;
 	}

@@ -1,5 +1,9 @@
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
@@ -16,12 +20,75 @@ public class AccessPointRequest extends RestRequest {
 	private static final String LAT_PARAM = "lat";
 	private static final String LON_PARAM = "lon";
 	private static final String COUNTRY_PARAM = "country";
-	private static final String CURSOR_PARAM = "cursor";
+	private static final String COMM_PARAM = "community";
+	private static final String CONST_DATE_FROM_PARAM = "constDtFrom";
+	private static final String CONST_DATE_TO_PARAM = "constDtTo";
+	private static final String COLL_DATE_FROM_PARAM = "collDtFrom";
+	private static final String COLL_DATE_TO_PARAM = "collDtTo";
+	private static final String TYPE_PARAM = "pointType";
+	public static final String CURSOR_PARAM = "cursor";
+	public static final String NEARBY_ACTION = "getnearby";
+	public static final String SEARCH_ACTION = "search";
+
+	private static final DateFormat DATE_FMT = DateFormat.getDateInstance();
 
 	private Double lat;
 	private Double lon;
 	private String country;
-	
+	private String community;
+	private Date constructionDateFrom;
+	private Date constructionDateTo;
+	private Date collectionDateFrom;
+	private Date collectionDateTo;
+	private String type;
+
+	public String getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(String community) {
+		this.community = community;
+	}
+
+	public Date getConstructionDateFrom() {
+		return constructionDateFrom;
+	}
+
+	public void setConstructionDateFrom(Date constructionDateFrom) {
+		this.constructionDateFrom = constructionDateFrom;
+	}
+
+	public Date getConstructionDateTo() {
+		return constructionDateTo;
+	}
+
+	public void setConstructionDateTo(Date constructionDateTo) {
+		this.constructionDateTo = constructionDateTo;
+	}
+
+	public Date getCollectionDateFrom() {
+		return collectionDateFrom;
+	}
+
+	public void setCollectionDateFrom(Date collectionDateFrom) {
+		this.collectionDateFrom = collectionDateFrom;
+	}
+
+	public Date getCollectionDateTo() {
+		return collectionDateTo;
+	}
+
+	public void setCollectionDateTo(Date collectionDateTo) {
+		this.collectionDateTo = collectionDateTo;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	public String getCountry() {
 		return country;
@@ -59,17 +126,19 @@ public class AccessPointRequest extends RestRequest {
 
 	@Override
 	protected void populateErrors() {
-		if (country == null && lat == null) {
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, LAT_PARAM
-							+ " cannot be null if no " + COUNTRY_PARAM
-							+ " is supplied"));
-		}
-		if (country == null && lon == null) {
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, LON_PARAM
-							+ " cannot be null if no " + COUNTRY_PARAM
-							+ " is supplied"));
+		if (NEARBY_ACTION.equalsIgnoreCase(getAction())) {
+			if (country == null && lat == null) {
+				addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+						RestError.MISSING_PARAM_ERROR_MESSAGE, LAT_PARAM
+								+ " cannot be null if no " + COUNTRY_PARAM
+								+ " is supplied"));
+			}
+			if (country == null && lon == null) {
+				addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+						RestError.MISSING_PARAM_ERROR_MESSAGE, LON_PARAM
+								+ " cannot be null if no " + COUNTRY_PARAM
+								+ " is supplied"));
+			}
 		}
 	}
 
@@ -77,6 +146,8 @@ public class AccessPointRequest extends RestRequest {
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		country = req.getParameter(COUNTRY_PARAM);
 		cursor = req.getParameter(CURSOR_PARAM);
+		community = req.getParameter(COMM_PARAM);
+		type = req.getParameter(TYPE_PARAM);
 		if (country != null) {
 			country = country.trim().toUpperCase();
 			if (country.length() == 0) {
@@ -96,5 +167,27 @@ public class AccessPointRequest extends RestRequest {
 							"lat, lon must be doubles"),
 					"Lat/lon must be doubles", e);
 		}
+		try {
+			collectionDateFrom = parseDate(req
+					.getParameter(COLL_DATE_FROM_PARAM));
+			collectionDateTo = parseDate(req.getParameter(COLL_DATE_TO_PARAM));
+			constructionDateFrom = parseDate(req
+					.getParameter(CONST_DATE_FROM_PARAM));
+			constructionDateTo = parseDate(req
+					.getParameter(CONST_DATE_TO_PARAM));
+		} catch (Exception e) {
+			throw new RestValidationException(new RestError(
+					RestError.BAD_DATATYPE_CODE,
+					RestError.BAD_DATATYPE_MESSAGE, "Cannot parse date"),
+					"Cannot parse date", e);
+		}
+	}
+
+	private Date parseDate(String val) throws ParseException {
+		Date date = null;
+		if (val != null && val.trim().length() > 0) {
+			date = DATE_FMT.parse(val);
+		}
+		return date;
 	}
 }

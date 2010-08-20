@@ -23,6 +23,7 @@ public class DataExportAppletImpl extends JApplet {
 
 	public void init() {
 		statusLabel = new JLabel();
+		getContentPane().add(statusLabel);
 		String type = getParameter("exportType");
 		Map<String, String> criteria = parseCriteria(getParameter("criteria"));
 		doExport(type, criteria, getCodeBase().toString());
@@ -42,13 +43,16 @@ public class DataExportAppletImpl extends JApplet {
 		return crit;
 	}
 
-	public void doExport(String type, Map<String, String> criteriaMap, String serverBase) {
+	public void doExport(String type, Map<String, String> criteriaMap,
+			String serverBase) {
 		JFileChooser chooser = new JFileChooser();
+
 		chooser.showSaveDialog(this);
 		if (chooser.getSelectedFile() != null) {
 			DataExporter exporter = DataExporterFactory.getExporter(type);
-			statusLabel.setText("Exporting");
-			exporter.export(criteriaMap, chooser.getSelectedFile(),serverBase);
+			statusLabel.setText("Exporting...");
+			exporter.export(criteriaMap, chooser.getSelectedFile(), serverBase);
+			statusLabel.setText("Export Complete");
 		}
 
 	}
