@@ -574,6 +574,10 @@ public class KMLGenerator {
 		String prefix = "water";
 		if (AccessPointType.SANITATION_POINT == type) {
 			prefix = "sani";
+		}else if (AccessPointType.SCHOOL == type){
+			prefix ="sch";
+		}else if (AccessPointType.PUBLIC_INSTITUTION == type){
+			prefix = "pub";
 		}
 		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
 			return prefix + "pushpingreen";

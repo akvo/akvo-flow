@@ -86,7 +86,88 @@
 	
 	
 	
-	
+	<Style id="schwaterpushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwatergreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/school-water-green-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="schwaterpushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwateryellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/school-water-yellow-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="schwaterpushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwaterredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/school-water-red-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>  
+   <Style id="schwaterpushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwaterblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/school-water-black-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+  
+  
+  <Style id="pubwaterpushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwatergreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/other-water-green-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="pubwaterpushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwateryellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/other-water-yellow-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="pubwaterpushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwaterredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/other-water-red-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>  
+   <Style id="pubwaterpushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwaterblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/other-water-black-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
 	
 		<Style id="pushpingreen">
 		    <BalloonStyle> 
