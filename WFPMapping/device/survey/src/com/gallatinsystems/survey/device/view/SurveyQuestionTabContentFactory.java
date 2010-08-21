@@ -162,7 +162,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 		// would still need the iterator
 		if (questionMap != null) {
 			for (QuestionView view : questionMap.values()) {
-				view.resetQuestion();
+				view.resetQuestion(false);
 			}
 			resetView();
 		}

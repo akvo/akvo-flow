@@ -463,18 +463,25 @@ public class DataSyncService extends Service {
 			if (data != null && data.isFirst()) {
 				Log.i(TAG, "There is data to send. Forming contents");
 				do {
-					buf
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
-							.append(",");
+				
 					String value = data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_COL));
 					if (value != null) {
 						value = value.trim();
 						value = value.replaceAll("\\n", " ");
 					}
+					
+					if(value == null || value.trim().length()==0){
+						continue;
+					}
+					
+					buf
+					.append(
+							data
+									.getString(data
+											.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
+					.append(",");
+					
 					String type = data
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL));

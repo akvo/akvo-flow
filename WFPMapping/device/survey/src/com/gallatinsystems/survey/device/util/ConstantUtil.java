@@ -124,6 +124,8 @@ public class ConstantUtil {
 	public static final String CALC_RESULT_KEY = "calcresult";
 	public static final String MODE_KEY = "mode";
 	public static final String POINTS_KEY = "points";
+	public static final String QUESTION_ID_KEY = "questionId";
+	public static final String QUESTION_TYPE_KEY = "questionType";
 
 	/**
 	 * settings keys

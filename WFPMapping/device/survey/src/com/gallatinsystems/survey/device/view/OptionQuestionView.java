@@ -51,7 +51,7 @@ public class OptionQuestionView extends QuestionView {
 	private ArrayList<CheckBox> checkBoxes;
 	private Spinner spinner;
 	private Map<Integer, String> idToValueMap;
-	private boolean suppressListeners = false;
+	private volatile boolean suppressListeners = false;
 
 	public OptionQuestionView(Context context, Question q, String[] langCodes,
 			boolean readOnly) {
@@ -440,6 +440,7 @@ public class OptionQuestionView extends QuestionView {
 	/**
 	 * checks off the correct option based on the response value
 	 */
+	@Override
 	public void rehydrate(QuestionResponse resp) {
 		suppressListeners = true;
 		super.rehydrate(resp);
@@ -515,14 +516,20 @@ public class OptionQuestionView extends QuestionView {
 	/**
 	 * clears the selected option
 	 */
-	public void resetQuestion() {
-		super.resetQuestion();
+	@Override
+	public void resetQuestion(boolean fireEvent) {
+		super.resetQuestion(fireEvent);
 		suppressListeners = true;
 		if (optionGroup != null) {
 			optionGroup.clearCheck();
 		}
 		if (spinner != null) {
 			spinner.setSelection(0);
+		}
+		if(checkBoxes != null){
+			for(int i =0; i < checkBoxes.size(); i++){
+				checkBoxes.get(i).setChecked(false);
+			}
 		}
 		suppressListeners = false;
 	}

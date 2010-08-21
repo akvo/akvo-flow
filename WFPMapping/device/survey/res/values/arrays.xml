@@ -28,10 +28,10 @@
 		<item>WiFi Only</item>
 		<item>Never</item>
 	</string-array>
-	<string-array name="servers">
-		<!-- <item>http://192.168.0.102:8888</item> --> 
-				<item>http://watermapmonitordev.appspot.com</item>
+	<string-array name="servers">		  
+		<item>http://watermapmonitordev.appspot.com</item>				
 		<item>http://watermappingmonitoring.appspot.com</item>
+		<item>http://192.168.0.102:8888</item>
 	</string-array>
 	<string-array name="lengthmetric">
 		<item>millimeters</item>

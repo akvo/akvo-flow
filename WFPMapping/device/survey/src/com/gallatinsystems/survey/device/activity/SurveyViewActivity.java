@@ -89,6 +89,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private boolean isTrackRecording;
 	private TabHost tabHost;
 	private int tabCount;
+	private String eventSourceQuestionId;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -140,6 +141,11 @@ public class SurveyViewActivity extends TabActivity implements
 		if (respondentId == null || respondentId == 0L) {
 			respondentId = savedInstanceState != null ? savedInstanceState
 					.getLong(ConstantUtil.RESPONDENT_ID_KEY) : null;
+		}
+
+		if (eventQuestionSource == null && savedInstanceState != null) {
+			eventSourceQuestionId = savedInstanceState
+					.getString(ConstantUtil.QUESTION_ID_KEY);
 		}
 
 		try {
@@ -286,7 +292,7 @@ public class SurveyViewActivity extends TabActivity implements
 	public void advanceTab() {
 		int curTab = tabHost.getCurrentTab();
 		if (curTab < tabCount) {
-			tabHost.setCurrentTab(curTab + 1);					
+			tabHost.setCurrentTab(curTab + 1);
 		}
 	}
 
@@ -302,6 +308,25 @@ public class SurveyViewActivity extends TabActivity implements
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// on activity return
 		try {
+			if (eventQuestionSource == null && eventSourceQuestionId != null) {
+				// if the source object is null but the id isn't, try to find
+				// the
+				// right source
+				if (tabContentFactories != null) {
+					for (int i = 0; i < tabContentFactories.size(); i++) {
+						if (tabContentFactories.get(i).getQuestionMap() != null) {
+							eventQuestionSource = tabContentFactories.get(i)
+									.getQuestionMap()
+									.get(eventSourceQuestionId);
+							if (eventQuestionSource != null) {
+								break;
+							}
+						}
+					}
+				} else {
+					Log.e(ACTIVITY_NAME, "Tab factories are null");
+				}
+			}
 
 			if (requestCode == PHOTO_ACTIVITY_REQUEST
 					|| requestCode == VIDEO_ACTIVITY_REQUEST) {
@@ -324,25 +349,54 @@ public class SurveyViewActivity extends TabActivity implements
 							+ filePrefix + System.nanoTime() + fileSuffix;
 					f.renameTo(new File(newName));
 					try {
+						Bundle photoData = new Bundle();
+						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
+								newName);
 						if (eventQuestionSource != null) {
-							Bundle photoData = new Bundle();
-							photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
-									newName);
 							eventQuestionSource.questionComplete(photoData);
-						}else{
-							Log.e(ACTIVITY_NAME,"eventQuestionSource is somehow null");
+						} else if (eventSourceQuestionId != null) {
+							Log
+									.e(ACTIVITY_NAME,
+											"eventQuestionSource is somehow null. Manually saving question response."); // 
+							saveQuestionResponse(
+									photoData
+											.getString(ConstantUtil.MEDIA_FILE_KEY),
+									(requestCode == PHOTO_ACTIVITY_REQUEST ? ConstantUtil.IMAGE_RESPONSE_TYPE
+											: ConstantUtil.VIDEO_RESPONSE_TYPE),
+									eventSourceQuestionId);
+
+						} else {
+							Log
+									.e(ACTIVITY_NAME,
+											"Both the source object and source question id are null");
 						}
 					} catch (Exception e) {
 						Log.e(ACTIVITY_NAME, e.getMessage());
 					} finally {
 						eventQuestionSource = null;
 					}
-				}else{
-					Log.e(ACTIVITY_NAME,"Result of camera op was not ok: "+resultCode);
+				} else {
+					Log.e(ACTIVITY_NAME, "Result of camera op was not ok: "
+							+ resultCode);
 				}
 			} else if (requestCode == SCAN_ACTIVITY_REQUEST) {
 				if (resultCode == RESULT_OK) {
-					eventQuestionSource.questionComplete(data.getExtras());
+					if (eventQuestionSource != null) {
+						eventQuestionSource.questionComplete(data.getExtras());
+					} else if (eventSourceQuestionId != null) {
+						Log
+								.e(ACTIVITY_NAME,
+										"eventQuestionSource is somehow null. Manually saving question response."); // 
+						saveQuestionResponse(data.getExtras().getString(
+								ConstantUtil.BARCODE_CONTENT),
+								ConstantUtil.VALUE_RESPONSE_TYPE,
+								eventSourceQuestionId);
+
+					} else {
+						Log
+								.e(ACTIVITY_NAME,
+										"Both the source object and source question id are null");
+					}
 				}
 			} else if (requestCode == ACTIVITY_HELP_REQ) {
 				if (resultCode == RESULT_OK) {
@@ -363,14 +417,34 @@ public class SurveyViewActivity extends TabActivity implements
 	}
 
 	/**
+	 * saves or updates a question response for the question id passed in
+	 * 
+	 * @param value
+	 * @param type
+	 * @param questionId
+	 */
+	private void saveQuestionResponse(String value, String type,
+			String questionId) {
+		QuestionResponse resp = databaseAdapter.findSingleResponse(
+				respondentId, eventSourceQuestionId);
+		if (resp == null) {
+			resp = new QuestionResponse(value, type, eventSourceQuestionId);
+		} else {
+			resp.setValue(value);
+			resp.setType(type);
+		}
+		databaseAdapter.createOrUpdateSurveyResponse(resp);
+	}
+
+	/**
 	 * iterates over all tabs and calls their RESET method to blank out the
 	 * questions
 	 */
 	public void resetAllQuestions() {
 		for (int i = 0; i < tabContentFactories.size(); i++) {
-			tabContentFactories.get(i).resetTabQuestions();			
+			tabContentFactories.get(i).resetTabQuestions();
 		}
-		tabHost.setCurrentTab(0);		
+		tabHost.setCurrentTab(0);
 		if (submissionTab != null) {
 			submissionTab.refreshView();
 		}
@@ -396,7 +470,11 @@ public class SurveyViewActivity extends TabActivity implements
 					.fromFile(new File(Environment
 							.getExternalStorageDirectory().getAbsolutePath()
 							+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX)));
-			eventQuestionSource = event.getSource();
+			if (event.getSource() != null) {
+				eventQuestionSource = event.getSource();
+			} else {
+				Log.e(ACTIVITY_NAME, "Question source was null in the event");
+			}
 
 			startActivityForResult(i, PHOTO_ACTIVITY_REQUEST);
 		} else if (QuestionInteractionEvent.VIDEO_TIP_VIEW.equals(event
@@ -441,7 +519,11 @@ public class SurveyViewActivity extends TabActivity implements
 			startActivity(intent);
 		} else if (QuestionInteractionEvent.ACTIVITY_TIP_VIEW.equals(event
 				.getEventType())) {
-			eventQuestionSource = event.getSource();
+			if (event.getSource() != null) {
+				eventQuestionSource = event.getSource();
+			} else {
+				Log.e(ACTIVITY_NAME, "Question source was null in the event");
+			}
 			try {
 				Intent i = new Intent(this, ConstantUtil.HELP_ACTIVITIES
 						.get(event.getSource().getQuestion().getHelpByType(
@@ -463,7 +545,11 @@ public class SurveyViewActivity extends TabActivity implements
 					.fromFile(new File(Environment
 							.getExternalStorageDirectory().getAbsolutePath()
 							+ TEMP_VIDEO_NAME_PREFIX + VIDEO_SUFFIX)));
-			eventQuestionSource = event.getSource();
+			if (event.getSource() != null) {
+				eventQuestionSource = event.getSource();
+			} else {
+				Log.e(ACTIVITY_NAME, "Question source was null in the event");
+			}
 
 			startActivityForResult(i, VIDEO_ACTIVITY_REQUEST);
 		} else if (QuestionInteractionEvent.SCAN_BARCODE_EVENT.equals(event
@@ -472,7 +558,12 @@ public class SurveyViewActivity extends TabActivity implements
 			try {
 
 				startActivityForResult(intent, SCAN_ACTIVITY_REQUEST);
-				eventQuestionSource = event.getSource();
+				if (event.getSource() != null) {
+					eventQuestionSource = event.getSource();
+				} else {
+					Log.e(ACTIVITY_NAME,
+							"Question source was null in the event");
+				}
 			} catch (ActivityNotFoundException ex) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setMessage(R.string.barcodeerror);
@@ -492,6 +583,10 @@ public class SurveyViewActivity extends TabActivity implements
 				.getEventType())) {
 			isTrackRecording = false;
 			toggleTabButtons(true);
+		} else if (QuestionInteractionEvent.QUESTION_CLEAR_EVENT.equals(event
+				.getEventType())) {
+			databaseAdapter.deleteResponse(respondentId.toString(), event
+					.getSource().getQuestion().getId());
 		}
 	}
 
@@ -539,7 +634,7 @@ public class SurveyViewActivity extends TabActivity implements
 								break;
 							}
 						}
-						if(satisfiedCount == dependencies.size()){
+						if (satisfiedCount == dependencies.size()) {
 							missingQuestions.add(candidateMissingQuestions
 									.get(i));
 						}
@@ -625,6 +720,8 @@ public class SurveyViewActivity extends TabActivity implements
 							public void onClick(DialogInterface dialog,
 									int which) {
 								resetAllQuestions();
+								databaseAdapter.deleteResponses(respondentId
+										.toString());
 								dialog.dismiss();
 							}
 						});
@@ -695,6 +792,10 @@ public class SurveyViewActivity extends TabActivity implements
 			}
 			if (userId != null) {
 				outState.putString(ConstantUtil.USER_ID_KEY, userId);
+			}
+			if (eventQuestionSource != null) {
+				outState.putString(ConstantUtil.QUESTION_ID_KEY,
+						eventQuestionSource.getQuestion().getId());
 			}
 		}
 	}

@@ -934,6 +934,26 @@ public class SurveyDbAdapter {
 	}
 
 	/**
+	 * deletes all survey responses from the database for a specific respondent
+	 */
+	public void deleteResponses(String respondentId) {
+		database.delete(RESPONSE_TABLE, SURVEY_RESPONDENT_ID_COL + "=?",
+				new String[] { respondentId });
+	}
+
+	/**
+	 * deletes a single response
+	 * 
+	 * @param respondentId
+	 * @param questionId
+	 */
+	public void deleteResponse(String respondentId, String questionId) {
+		database.delete(RESPONSE_TABLE, SURVEY_RESPONDENT_ID_COL + "=? AND "
+				+ QUESTION_FK_COL + "=?", new String[] { respondentId,
+				questionId });
+	}
+
+	/**
 	 * saves or updates a PointOfInterests
 	 * 
 	 * @param id
@@ -1001,12 +1021,12 @@ public class SurveyDbAdapter {
 
 		}
 		if (prefix != null && prefix.trim().length() > 0) {
-			if(country != null){
+			if (country != null) {
 				whereClause = whereClause + " AND " + DISP_NAME_COL + " like ?";
 				whereValues = new String[2];
 				whereValues[0] = country;
 				whereValues[1] = prefix + "%";
-			}else{
+			} else {
 				whereClause = DISP_NAME_COL + " like ?";
 				whereValues = new String[] { prefix + "%" };
 			}

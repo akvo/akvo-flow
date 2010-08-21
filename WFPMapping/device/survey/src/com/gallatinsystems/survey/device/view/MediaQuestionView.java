@@ -105,6 +105,7 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	 * restores the file path for the file and turns on the complete icon if the
 	 * file exists
 	 */
+	@Override
 	public void rehydrate(QuestionResponse resp) {
 		super.rehydrate(resp);
 		if (resp != null) {
@@ -118,8 +119,9 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	/**
 	 * clears the file path and the complete icon
 	 */
-	public void resetQuestion() {
-		super.resetQuestion();
+	@Override
+	public void resetQuestion(boolean fireEvent) {
+		super.resetQuestion(fireEvent);
 		completeIcon.setVisibility(View.GONE);
 	}
 }

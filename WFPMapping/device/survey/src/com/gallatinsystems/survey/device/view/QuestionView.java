@@ -83,7 +83,7 @@ public class QuestionView extends TableLayout implements
 								
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
-									resetQuestion();
+									resetQuestion(true);
 								}
 							});
 					return true;
@@ -300,8 +300,11 @@ public class QuestionView extends TableLayout implements
 	 * method that should be overridden by sub classes to clear current value
 	 * 
 	 */
-	public void resetQuestion() {
+	public void resetQuestion(boolean fireEvent) {
 		setResponse(null, false);
+		if(fireEvent){
+			notifyQuestionListeners(QuestionInteractionEvent.QUESTION_CLEAR_EVENT);
+		}
 	}
 
 	public void onQuestionInteraction(QuestionInteractionEvent event) {

@@ -186,8 +186,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	/**
 	 * clears out the UI fields
 	 */
-	public void resetQuestion() {
-		super.resetQuestion();
+	@Override
+	public void resetQuestion(boolean fireEvent) {
+		super.resetQuestion(fireEvent);
 		latField.setText("");
 		lonField.setText("");
 		elevationField.setText("");
@@ -197,6 +198,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	 * restores the file path for the file and turns on the complete icon if the
 	 * file exists
 	 */
+	@Override
 	public void rehydrate(QuestionResponse resp) {
 		super.rehydrate(resp);
 		if (resp != null) {

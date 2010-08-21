@@ -71,6 +71,7 @@ public class FreetextQuestionView extends QuestionView implements
 	/**
 	 * pulls the data out of the fields and saves it as a response object
 	 */
+	@Override
 	public void captureResponse() {
 		captureResponse(false);
 	}
@@ -93,6 +94,7 @@ public class FreetextQuestionView extends QuestionView implements
 				suppressListeners);
 	}
 	
+	@Override
 	public void rehydrate(QuestionResponse resp) {
 		super.rehydrate(resp);
 		if (resp != null) {
@@ -100,13 +102,14 @@ public class FreetextQuestionView extends QuestionView implements
 		}
 	}
 
-	public void resetQuestion() {
-		super.resetQuestion();
+	@Override
+	public void resetQuestion(boolean fireEvent) {
+		super.resetQuestion(fireEvent);
 		freetextEdit.setText("");
 	}
 
 	/**
-	 * caputures the response and runs validation on loss of focus
+	 * captures the response and runs validation on loss of focus
 	 */
 	@Override
 	public void onFocusChange(View view, boolean hasFocus) {

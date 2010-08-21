@@ -121,5 +121,4 @@ public class GeoTrackQuestionView extends QuestionView implements
 				Context.BIND_AUTO_CREATE);
 		getContext().startService(i);
 	}
-
 }

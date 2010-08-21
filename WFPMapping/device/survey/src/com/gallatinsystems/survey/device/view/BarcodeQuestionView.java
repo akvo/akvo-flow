@@ -73,6 +73,7 @@ public class BarcodeQuestionView extends QuestionView implements
 	 * restores the data and turns on the complete icon if the content is
 	 * non-null
 	 */
+	@Override
 	public void rehydrate(QuestionResponse resp) {
 		super.rehydrate(resp);
 		if (resp != null) {
@@ -86,8 +87,9 @@ public class BarcodeQuestionView extends QuestionView implements
 	/**
 	 * clears the file path and the complete icon
 	 */
-	public void resetQuestion() {
-		super.resetQuestion();
+	@Override
+	public void resetQuestion(boolean fireEvent) {
+		super.resetQuestion(fireEvent);
 		completeIcon.setVisibility(View.GONE);
 	}
 
