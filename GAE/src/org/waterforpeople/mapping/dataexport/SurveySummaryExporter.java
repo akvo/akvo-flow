@@ -27,7 +27,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 public class SurveySummaryExporter extends AbstractDataExporter {
 
 	public static final String RESPONSE_KEY = "dtoList";
-	private static final String SERVLET_URL = "/surveyrestapi?action=";	
+	private static final String SERVLET_URL = "/surveyrestapi?action=";
 	private static final NumberFormat PCT_FMT = new DecimalFormat("0.00");
 
 	@Override
@@ -69,11 +69,24 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 										count = summary.getCount().intValue();
 									}
 									double pct = (((double) count) / ((double) total)) * 100d;
-									pw.println(group.getDisplayName() + "\t"
-											+ question.getText() + "\t"
-											+ summary.getResponseText() + "\t"
-											+ count + "\t"
-											+ PCT_FMT.format(pct));
+									pw
+											.println((group.getDisplayName() != null ? group
+													.getDisplayName().trim()
+													: "")
+													+ "\t"
+													+ (question.getText() != null ? question
+															.getText().trim()
+															: "")
+													+ "\t"
+													+ (summary
+															.getResponseText() != null ? summary
+															.getResponseText()
+															.trim()
+															: "")
+													+ "\t"
+													+ count
+													+ "\t"
+													+ PCT_FMT.format(pct));
 								}
 							}
 						}
