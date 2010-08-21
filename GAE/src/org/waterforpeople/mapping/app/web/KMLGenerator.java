@@ -575,9 +575,9 @@ public class KMLGenerator {
 		if (AccessPointType.SANITATION_POINT == type) {
 			prefix = "sani";
 		}else if (AccessPointType.SCHOOL == type){
-			prefix ="sch";
+			prefix ="schwater";
 		}else if (AccessPointType.PUBLIC_INSTITUTION == type){
-			prefix = "pub";
+			prefix = "pubwater";
 		}
 		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
 			return prefix + "pushpingreen";
