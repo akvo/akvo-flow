@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+
 /**
  * transfer object for various types of survey summarizations. Instances will
  * most likely be partially populated based on the type of summarization
@@ -11,7 +13,7 @@ import java.util.Date;
  * @author Christopher Fagiani
  * 
  */
-public class SurveySummaryDto implements Serializable {
+public class SurveySummaryDto extends BaseDto  {
 
 	private static final long serialVersionUID = -1966405747413629647L;
 	private String questionId;

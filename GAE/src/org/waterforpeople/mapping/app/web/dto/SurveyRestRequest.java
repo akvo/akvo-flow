@@ -15,11 +15,13 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String SAVE_SURVEY_ACTION = "saveSurvey";
 	public static final String SAVE_QUESTION_GROUP_ACTION = "saveQuestionGroup";
 	public static final String SAVE_QUESTION_ACTION = "saveQuestion";
+	public static final String LIST_GROUP_ACTION = "listGroups";
+	public static final String LIST_QUESTION_ACTION = "listQuestions";
+	public static final String GET_SUMMARY_ACTION = "getSummary";
 
 	private static final String SURVEY_GROUP_NAME_PARAM = "surveyGroupName";
 	private static final String SURVEY_NAME_PARAM = "surveyName";
 	private static final String QUESTION_GROUP_NAME_PARAM = "questionGroupName";
-	private static final String QUESTION_ID_PARAM = "questionID";
 	private static final String QUESTION_TEXT_PARAM = "questionText";
 	private static final String QUESTION_TYPE_PARAM = "questionType";
 	private static final String OPTIONS_PARAM = "options";
@@ -28,6 +30,9 @@ public class SurveyRestRequest extends RestRequest {
 	private static final String ALLOW_MULTIPLE_PARAM = "allowMultiple";
 	private static final String MANDATORY_PARAM = "mandatory";
 	private static final String QUESTION_GROUP_ORDER_PARAM = "questionGroupOrder";
+	public static final String SURVEY_ID_PARAM = "surveyId";
+	public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
+	public static final String QUESTION_ID_PARAM = "questionID";
 
 	private String surveyGroupName = null;
 	private String surveyName = null;
@@ -41,6 +46,24 @@ public class SurveyRestRequest extends RestRequest {
 	private Boolean allowMultipleFlag = null;
 	private Boolean mandatoryFlag = null;
 	private Integer questionGroupOrder = null;
+	private Integer surveyId;
+	private Integer questionGroupId;
+
+	public Integer getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Integer surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public Integer getQuestionGroupId() {
+		return questionGroupId;
+	}
+
+	public void setQuestionGroupId(Integer questionGruopId) {
+		this.questionGroupId = questionGruopId;
+	}
 
 	public String getSurveyGroupName() {
 		return surveyGroupName;
@@ -175,6 +198,17 @@ public class SurveyRestRequest extends RestRequest {
 		if (req.getParameter(QUESTION_GROUP_ORDER_PARAM) != null) {
 			questionGroupOrder = Integer.parseInt(req.getParameter(
 					QUESTION_GROUP_ORDER_PARAM).trim());
+		}
+		if (req.getParameter(SURVEY_ID_PARAM) != null) {
+			surveyId = Integer.parseInt(req.getParameter(SURVEY_ID_PARAM)
+					.trim());
+		}
+		if (req.getParameter(QUESTION_GROUP_ID_PARAM) != null) {
+			questionGroupId = Integer.parseInt(req.getParameter(
+					QUESTION_GROUP_ID_PARAM).trim());
+		}
+		if (req.getParameter(DEPEND_QUESTION_PARAM) != null) {
+			dependQuestion = req.getParameter(DEPEND_QUESTION_PARAM).trim();
 		}
 	}
 

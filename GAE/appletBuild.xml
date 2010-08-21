@@ -23,11 +23,13 @@
 	<target name="compile" depends="makedir">
 	 	<javac classpathref="project.classpath" srcdir="${src}" destdir="${build}" debug="true">		 		 	
 	 		<include name="com/gallatinsystems/framework/dataexport/**"/>
+	 		<include name="com/gallatinsystems/framework/gwt/dto/client/**"/>
 	 		<include name="org/waterforpeople/mapping/dataexport/**"/>
 	 		<include name="org/waterforpeople/mapping/dataexport/**"/>
 	 		<include name="org/waterforpeople/mapping/app/gwt/client/accesspoint/**"/>
+	 		<include name="org/waterforpeople/mapping/app/gwt/client/survey/**"/>
 	 		<include name="org/waterforpeople/mapping/app/web/dto/**"/>	 		
-	 		<include name="com/gallatinsystems/framework/rest/**"/>
+	 		<include name="com/gallatinsystems/framework/rest/**"/>	 		
 		</javac>
 	 		
 	</target>

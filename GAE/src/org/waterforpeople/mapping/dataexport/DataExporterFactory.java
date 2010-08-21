@@ -17,8 +17,8 @@ public class DataExporterFactory {
 		private static final long serialVersionUID = 6562869574473763867L;
 
 		{
-			put("ACCESS_POINT",
-					AccessPointExporter.class);
+			put("ACCESS_POINT", AccessPointExporter.class);
+			put("SURVEY_SUMMARY", SurveySummaryExporter.class);
 		}
 	};
 
@@ -31,7 +31,7 @@ public class DataExporterFactory {
 				throw new RuntimeException("Could not initilaize constructor");
 			}
 		} else {
-			throw new RuntimeException("Unknown Exporter Type: "+type);
+			throw new RuntimeException("Unknown Exporter Type: " + type);
 		}
 	}
 }

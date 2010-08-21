@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -29,6 +30,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -806,7 +808,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		removeAllWidgetsLoadThisWidget(surveyGroupDetail);
 	}
 
-	private void loadSurveyDetail(SurveyDto item) {
+	private void loadSurveyDetail(final SurveyDto item) {
 		setButtonState(ButtonState.QUESTIONGROUP);
 		TextBox surveyId = new TextBox();
 		surveyId.setVisible(false);
@@ -828,6 +830,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button saveSurveyButton = new Button("Save");
 		Button deleteSurveyButton = new Button("Delete");
 		Button publishSurveyButton = new Button("Publish");
+		Button exportSummaryButton = new Button("Export Summary");
 
 		surveyDetail.setWidget(0, 0, surveyId);
 		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
@@ -839,6 +842,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyDetail.setWidget(4, 0, saveSurveyButton);
 		surveyDetail.setWidget(4, 1, deleteSurveyButton);
 		surveyDetail.setWidget(4, 2, publishSurveyButton);
+		surveyDetail.setWidget(4,3,exportSummaryButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
 		saveSurveyButton.addClickHandler(new ClickHandler() {
@@ -877,27 +881,25 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 							Window.alert("Survey published");
 
 						}
-					});
-					/*
-					 * svc.publishSurvey(surveyId, new AsyncCallback<String>() {
-					 * 
-					 * @Override public void onFailure(Throwable caught) { //
-					 * TODO Auto-generated method stub
-					 * 
-					 * }
-					 * 
-					 * @Override public void onSuccess(String result) {
-					 * Window.alert(result);
-					 * 
-					 * }
-					 * 
-					 * });
-					 */
+					});					
 				} else {
 					Window.alert("Please save survey before publishing");
 				}
 			}
-
+		});
+		
+		exportSummaryButton.addClickHandler(new ClickHandler() {			
+			@Override
+			public void onClick(ClickEvent event) {
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
+				appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";								
+					appletString += "<PARAM name='criteria' value=surveyId="+item.getKeyId()+">";											
+				appletString += "</applet>";
+				HTML html = new HTML();
+				html.setHTML(appletString);
+				surveyDetail.setWidget(5, 0, html);				
+			}
 		});
 
 	}

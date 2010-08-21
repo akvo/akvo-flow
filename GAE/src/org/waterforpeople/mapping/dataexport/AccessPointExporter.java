@@ -1,12 +1,8 @@
 package org.waterforpeople.mapping.dataexport;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,15 +10,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.web.dto.AccessPointRequest;
 import org.waterforpeople.mapping.app.web.dto.AccessPointResponse;
-
-import com.gallatinsystems.framework.dataexport.applet.DataExporter;
 
 /**
  * 
@@ -32,7 +25,7 @@ import com.gallatinsystems.framework.dataexport.applet.DataExporter;
  * 
  * @author Christopher Fagiani
  */
-public class AccessPointExporter implements DataExporter {
+public class AccessPointExporter extends AbstractDataExporter {
 
 	private static final String SERVLET_URL = "/accesspoint?action=search&";
 	private static final String RESPONSE_KEY = "accessPointDto";
@@ -72,9 +65,7 @@ public class AccessPointExporter implements DataExporter {
 				// then call again
 				resp = fetchData(serverBase + SERVLET_URL
 						+ formParams(criteria));
-
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -82,27 +73,7 @@ public class AccessPointExporter implements DataExporter {
 				pw.close();
 			}
 		}
-	}
-
-	/**
-	 * converts the criteria map to server parameters. only non-null, non-blank
-	 * parameters are included.
-	 */
-	private String formParams(Map<String, String> criteria) {
-		StringBuilder builder = new StringBuilder();
-		int count = 0;
-		for (Entry<String, String> crit : criteria.entrySet()) {
-			if (crit.getValue() != null && crit.getValue().trim().length() > 0) {
-				if (count > 0) {
-					builder.append("&");
-				}
-				builder.append(crit.getKey().trim()).append("=").append(
-						crit.getValue().trim());
-				count++;
-			}
-		}
-		return builder.toString();
-	}
+	}	
 
 	/**
 	 * fetches the data from the server using the fullUrl (url including all
@@ -110,31 +81,7 @@ public class AccessPointExporter implements DataExporter {
 	 * into pojos.
 	 */
 	private AccessPointResponse fetchData(String fullUrl) throws Exception {
-		BufferedReader reader = null;
-		String result = null;
-		try {
-			URL url = new URL(fullUrl);
-			System.out.println("Calling: " + url.toString());
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setDoOutput(true);
-
-			reader = new BufferedReader(new InputStreamReader(conn
-					.getInputStream()));
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
-			}
-			result = sb.toString();
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-
-		return parseJson(result);
+		return parseJson(fetchDataFromServer(fullUrl));
 	}
 
 	/**
@@ -266,5 +213,4 @@ public class AccessPointExporter implements DataExporter {
 			pw.write("\n");
 		}
 	}
-
 }

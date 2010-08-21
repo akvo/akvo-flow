@@ -5,11 +5,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONObject;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
+import org.waterforpeople.mapping.app.web.dto.SurveyRestResponse;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -32,9 +41,26 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 public class SurveyRestServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
-	/**
-	 * 
-	 */
+
+	private SurveyGroupDAO sgDao;
+	private SurveyDAO surveyDao;
+	private QuestionOptionDao optionDao;
+	private TranslationDao translationDao;
+	private QuestionGroupDao qgDao;
+	private QuestionDao qDao;
+	private SurveyQuestionSummaryDao summaryDao;
+
+	public SurveyRestServlet() {
+		setMode(JSON_MODE);
+		sgDao = new SurveyGroupDAO();
+		surveyDao = new SurveyDAO();
+		optionDao = new QuestionOptionDao();
+		translationDao = new TranslationDao();
+		qgDao = new QuestionGroupDao();
+		qDao = new QuestionDao();
+		summaryDao = new SurveyQuestionSummaryDao();
+	}
+
 	private static final long serialVersionUID = 1165507917062204859L;
 
 	@Override
@@ -47,7 +73,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		RestResponse response = new RestResponse();
+		SurveyRestResponse response = new SurveyRestResponse();
 		SurveyRestRequest importReq = (SurveyRestRequest) req;
 		Boolean questionSaved = null;
 		if (SurveyRestRequest.SAVE_QUESTION_ACTION
@@ -61,16 +87,74 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 							.getAllowMultipleFlag(), importReq
 							.getMandatoryFlag(), importReq.getQuestionId(),
 					importReq.getQuestionGroupOrder());
+			response.setCode("200");
+			response.setMessage("Record Saved status: " + questionSaved);
+		} else if (SurveyRestRequest.LIST_GROUP_ACTION.equals(importReq
+				.getAction())) {
+			response.setDtoList(listQuestionGroups(new Long(importReq
+					.getSurveyId())));
+		} else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(importReq
+				.getAction())) {
+			response.setDtoList(listQuestions(new Long(importReq
+					.getQuestionGroupId())));
+		} else if (SurveyRestRequest.GET_SUMMARY_ACTION.equals(importReq
+				.getAction())) {
+			response.setDtoList(listSummaries(new Long(importReq
+					.getQuestionId())));
 		}
-		response.setCode("200");
-		response.setMessage("Record Saved status: " + questionSaved);
+
 		return response;
 	}
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// TODO Auto-generated method stub
+		getResponse().setStatus(200);
+		JSONObject obj = new JSONObject(resp, true);
+		getResponse().getWriter().println(obj.toString());
+	}
 
+	private List<QuestionGroupDto> listQuestionGroups(Long surveyId) {
+		TreeMap<Integer, QuestionGroup> groups = qgDao
+				.listQuestionGroupsBySurvey(surveyId);
+		List<QuestionGroupDto> dtoList = new ArrayList<QuestionGroupDto>();
+		if (groups != null) {
+			for (QuestionGroup q : groups.values()) {
+				QuestionGroupDto dto = new QuestionGroupDto();
+				DtoMarshaller.copyToDto(q, dto);
+				dtoList.add(dto);
+			}
+		}
+		return dtoList;
+	}
+
+	private List<QuestionDto> listQuestions(Long groupId) {
+		TreeMap<Integer, Question> questions = qDao
+				.listQuestionsByQuestionGroup(groupId, false);
+		List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
+		if (questions != null) {
+			for (Question q : questions.values()) {
+				QuestionDto dto = new QuestionDto();
+				dto.setText(q.getText());
+				dto.setKeyId(q.getKey().getId());
+				dtoList.add(dto);
+			}
+		}
+		return dtoList;
+	}
+
+	private List<SurveySummaryDto> listSummaries(Long questionId) {
+		List<SurveyQuestionSummary> summaries = summaryDao
+				.listByQuestion(questionId.toString());
+		List<SurveySummaryDto> dtoList = new ArrayList<SurveySummaryDto>();
+		if (summaries != null) {
+			for (SurveyQuestionSummary s : summaries) {
+				SurveySummaryDto dto = new SurveySummaryDto();
+				dto.setCount(s.getCount());
+				dto.setResponseText(s.getResponse());
+				dtoList.add(dto);
+			}
+		}
+		return dtoList;
 	}
 
 	private Boolean saveQuestion(String surveyGroupName, String surveyName,
@@ -84,12 +168,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		surveyName = parseLangMap(surveyName).get("en");
 		questionGroupName = parseLangMap(questionGroupName).get("en");
 
-		SurveyGroupDAO sgDao = new SurveyGroupDAO();
-		SurveyDAO surveyDao = new SurveyDAO();
-		QuestionOptionDao optionDao = new QuestionOptionDao();
-		TranslationDao translationDao = new TranslationDao();
-		QuestionGroupDao qgDao = new QuestionGroupDao();
-		QuestionDao qDao = new QuestionDao();
 		SurveyGroup sg = null;
 		if (surveyGroupName != null) {
 			sg = sgDao.findBySurveyGroupName(surveyGroupName);
@@ -318,14 +396,14 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 	private class QuestionOptionContainer {
 
+		private String langCode = null;
+		private String option = null;
+		private List<QuestionOptionContainer> altLangs;
+
 		public QuestionOptionContainer(String langCode, String optionText) {
 			this.setLangCode(langCode);
 			this.setOption(optionText);
 		}
-
-		private String langCode = null;
-		private String option = null;
-		private List<QuestionOptionContainer> altLangs;
 
 		public List<QuestionOptionContainer> getAltLangs() {
 			return altLangs;
@@ -354,6 +432,5 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		public String getOption() {
 			return option;
 		}
-
 	}
 }
