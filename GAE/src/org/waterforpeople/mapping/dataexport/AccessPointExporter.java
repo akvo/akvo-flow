@@ -205,7 +205,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 				} else if (field.getType() == String.class) {
 					String temp = (String) field.get(dto);
 					if (temp != null) {
-						pw.write(temp);
+						pw.write(temp.trim());
 					}
 				}
 				j++;
