@@ -142,9 +142,17 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case DELETE_ID:
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+			final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 					.getMenuInfo();
-			menuViewAdapter.deleteItem(info.position, this);
+			ViewUtil.showAdminAuthDialog(SurveyHomeActivity.this,
+					new ViewUtil.AdminAuthDialogListener() {
+						@Override
+						public void onAuthenticated() {
+							menuViewAdapter.deleteItem(info.position,
+									SurveyHomeActivity.this);
+
+						}
+					});
 
 			return true;
 		}
