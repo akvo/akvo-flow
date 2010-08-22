@@ -94,7 +94,10 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 			} else {
 				buttonImages[preSurveyButtons.length + i] = R.drawable.map;
 			}
-			buttonLabels[preSurveyLabels.length + i] = surveys.get(i).getName();
+			buttonLabels[preSurveyLabels.length + i] = surveys.get(i).getName()
+					+ " v. "
+					+ (surveys.get(i).getVersion() != 0.0d ? surveys.get(i)
+							.getVersion() : "1.0");
 			operations.add(ConstantUtil.SURVEY_OP);
 		}
 

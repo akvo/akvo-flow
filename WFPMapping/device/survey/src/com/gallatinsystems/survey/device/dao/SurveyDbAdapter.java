@@ -92,10 +92,10 @@ public class SurveyDbAdapter {
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
 			"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			// "insert into survey values(999992,'Houshold Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			// "insert into survey values(999993,'Public Institution Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			// "insert into survey values(999994,'Mapping', 1.0,'Mapping','res','mappingsurvey','english','N','N')",
-			"insert into preferences values('survey.language','0')",
+			"insert into survey values(1039101,'Houshold Interview', 1.0,'Survey','res','hh1039101','english','N','N')",
+			"insert into survey values(1062135,'Public Institution', 1.0,'Survey','res','pi1062135','english','N','N')",
+			"insert into survey values(1086117,'CommunityWaterPoint', 1.0,'Survey','res','cwp1086117','english','N','N')",
+		/*	"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
 			"insert into preferences values('plot.default.mode','manual')",
@@ -106,7 +106,7 @@ public class SurveyDbAdapter {
 			"insert into preferences values('upload.server','0')",
 			"insert into preferences values('screen.keepon','true')",
 			"insert into preferences values('precache.points.countries','GT')",
-			"insert into preferences values('precache.points.limit','200')" };
+			"insert into preferences values('precache.points.limit','200')" */};
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -122,7 +122,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 50;
+	private static final int DATABASE_VERSION = 51;
 
 	private final Context context;
 
@@ -142,13 +142,13 @@ public class SurveyDbAdapter {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(USER_TABLE_CREATE);
+		//	db.execSQL(USER_TABLE_CREATE);
 			db.execSQL(SURVEY_TABLE_CREATE);
 			db.execSQL(SURVEY_RESPONDENT_CREATE);
 			db.execSQL(SURVEY_RESPONSE_CREATE);
 			db.execSQL(PLOT_TABLE_CREATE);
 			db.execSQL(PLOT_POINT_TABLE_CREATE);
-			db.execSQL(PREFERENCES_TABLE_CREATE);
+			//db.execSQL(PREFERENCES_TABLE_CREATE);
 			db.execSQL(POINT_OF_INTEREST_TABLE_CREATE);
 			for (int i = 0; i < DEFAULT_INSERTS.length; i++) {
 				db.execSQL(DEFAULT_INSERTS[i]);
@@ -164,8 +164,8 @@ public class SurveyDbAdapter {
 			db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
+			//db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+			//db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
 			onCreate(db);
 		}
@@ -811,7 +811,7 @@ public class SurveyDbAdapter {
 		}
 		Cursor cursor = database.query(SURVEY_TABLE, new String[] { PK_ID_COL,
 				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL,
-				LANGUAGE_COL, HELP_DOWNLOADED_COL }, whereClause, whereParams,
+				LANGUAGE_COL, HELP_DOWNLOADED_COL, VERSION_COL }, whereClause, whereParams,
 				null, null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
@@ -832,6 +832,8 @@ public class SurveyDbAdapter {
 							.getColumnIndexOrThrow(HELP_DOWNLOADED_COL)));
 					survey.setLanguage(cursor.getString(cursor
 							.getColumnIndexOrThrow(LANGUAGE_COL)));
+					survey.setVersion(cursor.getDouble(cursor
+							.getColumnIndexOrThrow(VERSION_COL)));
 					surveys.add(survey);
 				} while (cursor.moveToNext());
 			}
