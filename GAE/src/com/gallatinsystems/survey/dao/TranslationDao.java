@@ -26,8 +26,8 @@ public class TranslationDao extends BaseDAO<Translation> {
 		Map<String, Object> paramMap = null;
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("parentType", filterString, paramString,
-				"String", parentType, paramMap);
+		appendNonNullParam("parentType", filterString, paramString, "String",
+				parentType, paramMap);
 		appendNonNullParam("parentId", filterString, paramString, "Long",
 				parentId, paramMap);
 
@@ -45,4 +45,15 @@ public class TranslationDao extends BaseDAO<Translation> {
 		return translations;
 	}
 
+	public void deleteTranslationsForParent(Long parentId,
+			Translation.ParentType parentType) {
+		HashMap<String, Translation> trans = findTranslations(parentType,
+				parentId);
+		if (trans != null) {
+			PersistenceManager pm = PersistenceFilter.getManager();
+			for (Translation t : trans.values()) {
+				pm.deletePersistent(t);
+			}
+		}
+	}
 }

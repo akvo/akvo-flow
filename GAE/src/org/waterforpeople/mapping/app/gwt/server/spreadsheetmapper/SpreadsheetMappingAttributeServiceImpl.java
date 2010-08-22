@@ -244,6 +244,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		return null;
 	}
 
+	@Deprecated
 	public void processSurveySpreadsheetAsync(String tokenString,
 			PrivateKey key, String spreadsheetName, int startRow, Long groupId) {
 
@@ -306,8 +307,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								if (group == null) {
 									group = new QuestionGroup();
 									group.setCode(colContents.trim());
-									//TODO: Check with Chris to make sure the order param is correct
-									survey.addQuestionGroup(i,group);
+									// TODO: Check with Chris to make sure the
+									// order param is correct
+									survey.addQuestionGroup(i, group);
 									groupMap.put(colContents.trim(), group);
 								}
 							}
@@ -493,6 +495,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		}
 	}
 
+	@Deprecated
 	private void setDependencies(SpreadsheetContainer sc) {
 		// HashMap<Question, QuestionDependency> dependencyMap = new
 		// HashMap<Question, QuestionDependency>();

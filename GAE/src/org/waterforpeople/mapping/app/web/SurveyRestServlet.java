@@ -207,8 +207,19 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			qgDao.save(qg);
 		}
 
-		Question q = new Question();
 		String questionPath = qgPath + "/" + questionGroupName;
+		Question q = qDao.getByPath(questionOrder, questionPath);
+		if (q == null) {
+			q = new Question();
+		} else {
+			// if the question already exists, delete it's children so we don't
+			// get duplicates
+			if (Question.Type.OPTION == q.getType()) {
+				optionDao.deleteOptionsForQuestion(q.getKey().getId());
+			}
+			translationDao.deleteTranslationsForParent(q.getKey().getId(),
+					ParentType.QUESTION_TEXT);
+		}
 		q.setText(parseLangMap(questionText).get("en"));
 		q.setPath(questionPath);
 		q.setOrder(questionOrder);

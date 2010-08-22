@@ -3,7 +3,10 @@ package com.gallatinsystems.survey.dao;
 import java.util.List;
 import java.util.TreeMap;
 
+import javax.jdo.PersistenceManager;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 
@@ -31,5 +34,21 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 			}
 		}
 		return map;
+	}
+
+	/**
+	 * deletes all options associated with a given question
+	 * 
+	 * @param questionId
+	 */
+	public void deleteOptionsForQuestion(Long questionId) {
+		List<QuestionOption> oList = listByProperty("questionId", questionId,
+				"Long");
+		if (oList != null) {
+			PersistenceManager pm = PersistenceFilter.getManager();
+			for (QuestionOption opt : oList) {
+				pm.deletePersistent(opt);
+			}
+		}
 	}
 }
