@@ -38,11 +38,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			pw = new PrintWriter(fileName);
 			writeHeader(pw);
 
-			if (serverBase.trim().endsWith("/")) {
-				serverBase = serverBase.trim().substring(0,
-						serverBase.lastIndexOf("/"));
-			}
-
 			List<QuestionGroupDto> groups = fetchQuestionGroups(serverBase,
 					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM));
 			if (groups != null) {

@@ -49,10 +49,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 			pw = new PrintWriter(file);
 			headers = writeHeader(pw);
 
-			if (serverBase.trim().endsWith("/")) {
-				serverBase = serverBase.trim().substring(0,
-						serverBase.lastIndexOf("/"));
-			}
+			
 			AccessPointResponse resp = fetchData(serverBase + SERVLET_URL
 					+ formParams(criteria));
 

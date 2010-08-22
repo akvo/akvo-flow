@@ -51,6 +51,10 @@ public class DataExportAppletImpl extends JApplet {
 		if (chooser.getSelectedFile() != null) {
 			DataExporter exporter = DataExporterFactory.getExporter(type);
 			statusLabel.setText("Exporting...");
+			if (serverBase.trim().endsWith("/")) {
+				serverBase = serverBase.trim().substring(0,
+						serverBase.lastIndexOf("/"));
+			}
 			exporter.export(criteriaMap, chooser.getSelectedFile(), serverBase);
 			statusLabel.setText("Export Complete");
 		}
