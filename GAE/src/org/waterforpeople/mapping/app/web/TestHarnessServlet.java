@@ -47,6 +47,9 @@ import org.waterforpeople.mapping.helper.KMLHelper;
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -798,6 +801,12 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}else if ("createDevice".equals(action)){
+			DeviceDAO devDao = new DeviceDAO();
+			Device device = new Device();
+			device.setPhoneNumber("9175667663");
+			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);			
+			devDao.save(device);
 		}
 	}
 

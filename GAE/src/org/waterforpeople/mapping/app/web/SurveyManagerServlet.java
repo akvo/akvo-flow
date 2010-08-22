@@ -1,6 +1,8 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,10 +36,27 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 
 	private String getSurveyForPhone(String devicePhoneNumber) {
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+		SurveyDAO surveyDao = new SurveyDAO();
+		Map<Long, Double> versionMap = new HashMap<Long, Double>();
 		StringBuilder sb = new StringBuilder();
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber)) {
+			Double ver = versionMap.get(dsjq.getSurveyID());
+			if (ver == null) {
+				Survey s = surveyDao.getById(dsjq.getSurveyID());
+				if (s != null) {
+					if (s.getVersion() != null) {
+						versionMap.put(dsjq.getSurveyID(), s.getVersion());
+						ver = s.getVersion();
+					} else {
+						versionMap.put(dsjq.getSurveyID(), new Double(1.0));
+						ver = new Double(1.0);
+					}
+
+				}
+			}
 			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
-					+ dsjq.getName() + "," + dsjq.getLanguage() + ",1.0\n");
+					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver
+					+ "\n");
 		}
 		return sb.toString();
 	}
@@ -56,7 +75,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		SurveyManagerRequest mgrReq = (SurveyManagerRequest) req;
 		RestResponse resp = new RestResponse();
 		if (mgrReq.getAction() == null) {
-			if (mgrReq.getSurveyDoc() != null) {				
+			if (mgrReq.getSurveyDoc() != null) {
 				// resp.setMessage("Survey : "
 				// + surveyDAO.save(mgrReq.getSurveyDoc()));
 			} else if (mgrReq.getSurveyInstanceId() != null) {

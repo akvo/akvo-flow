@@ -128,4 +128,23 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			return null;
 		}
 	}
+
+	/**
+	 * increments the survey version by 1
+	 * 
+	 * @param surveyId
+	 */
+	public void incrementVersion(Long surveyId) {
+		Survey s = getByKey(surveyId);
+		if (s != null) {
+			Double v = s.getVersion();
+			if (v == null) {
+				v = new Double(2);
+			} else {
+				v++;
+			}
+			s.setVersion(v);
+			save(s);
+		}
+	}
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;

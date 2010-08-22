@@ -487,6 +487,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void publishSurveyAsync(Long surveyId) {
+		surveyDao.incrementVersion(surveyId);
 		Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
 		surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
 				"action", SurveyAssemblyRequest.ASSEMBLE_SURVEY).param(
@@ -548,9 +549,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							// TODO: set validation rule xml
 							// validationRule.setAllowDecimal(value)
 						}
-
-						// ToDo marshall xml
-						// qXML.setText(q.getText());
 
 						if (q.getType().equals(QuestionType.FREE_TEXT))
 							qXML.setType(FREE_QUESTION_TYPE);
