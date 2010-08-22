@@ -9,8 +9,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -146,17 +146,17 @@ public class SurveySpreadsheetImporter implements DataImporter {
 	}
 
 	@Override
-	public Map<String, String> validate(File file) {
+	public Map<Integer, String> validate(File file) {
 		InputStream inp = null;
 		Sheet sheet1 = null;
-		Map<String, String> errorMap = new HashMap<String, String>();
+		Map<Integer, String> errorMap = new TreeMap<Integer, String>();
 
 		try {
 			inp = new FileInputStream(file);
-			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));			
-			sheet1 = wb.getSheetAt(0);
-			StringBuffer rowError = new StringBuffer();
+			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
+			sheet1 = wb.getSheetAt(0);			
 			for (Row row : sheet1) {
+				StringBuffer rowError = new StringBuffer();
 				if (row.getRowNum() >= 1) {
 					String type = null;
 					for (Cell cell : row) {
@@ -216,24 +216,24 @@ public class SurveySpreadsheetImporter implements DataImporter {
 									if (!(type
 											.equals(QuestionDto.QuestionType.FREE_TEXT
 													.toString())
-											|| !type
+											|| type
 													.equals(QuestionDto.QuestionType.PHOTO
 															.toString())
-											|| !type
+											|| type
 													.equals(QuestionDto.QuestionType.VIDEO
 															.toString())
-											|| !type
+											|| type
 													.equals(QuestionDto.QuestionType.GEO
 															.toString())
-											|| !type
+											|| type
 													.equals(QuestionDto.QuestionType.SCAN
 															.toString())
-											|| !type
+											|| type
 													.equals(QuestionDto.QuestionType.TRACK
 															.toString())
-											|| !type
+											|| type
 													.equals(QuestionDto.QuestionType.NUMBER
-															.toString()) || !type
+															.toString()) || type
 											.equals(QuestionDto.QuestionType.OPTION
 													.toString()))) {
 										rowError
@@ -252,42 +252,33 @@ public class SurveySpreadsheetImporter implements DataImporter {
 								// TODO: validate language codes
 								break;
 							case 8:
+								// TODO: validate dependency
 								break;
 							case 9:
-
-								try {
-									cell.getBooleanCellValue();
-								} catch (Exception e) {
+								if (!validateBooleanField(cell)) {
 									rowError
-											.append("Allow Other must be either TRUE or FALSE");
+											.append("Allow Other must be either TRUE or FALSE\n");
 								}
-
 								break;
 							case 10:
-
-								try {
-									cell.getBooleanCellValue();
-								} catch (Exception e) {
+								if (!validateBooleanField(cell)) {
 									rowError
-											.append("Allow Mulitple must be either TRUE or FALSE");
+											.append("Allow Multiple must be either TRUE or FALSE\n");
 								}
-
 								break;
 							case 11:
-								try {
-									cell.getBooleanCellValue();
-								} catch (Exception e) {
+								if (!validateBooleanField(cell)) {
 									rowError
-											.append("Manditory must be either TRUE or FALSE");
+											.append("Manditory must be either TRUE or FALSE\n");
 								}
+								break;
 							}
 						} catch (Exception e) {
 							rowError.append(e.toString());
 						} finally {
 							if (rowError.toString().trim().length() > 0) {
-								errorMap.put(row.getRowNum() + "", rowError
+								errorMap.put(row.getRowNum() + 1, rowError
 										.toString().trim());
-								System.out.println(rowError.toString());
 							}
 						}
 					}
@@ -306,6 +297,32 @@ public class SurveySpreadsheetImporter implements DataImporter {
 		}
 		return errorMap;
 	}
-	
+
+	/**
+	 * validates a boolean field. We have to try reading it as both a boolean
+	 * and a string column because once we encounter 1 non-boolean, it changes
+	 * the underlying model for the remainder of the spreadsheet.
+	 * 
+	 * @param cell
+	 * @return
+	 */
+	private boolean validateBooleanField(Cell cell) {
+		try {
+			cell.getBooleanCellValue();
+		} catch (Exception e) {
+			try {
+				if (cell.getStringCellValue().trim().length() > 0) {
+					if (!("TRUE".equalsIgnoreCase(cell.getStringCellValue()
+							.trim()) || "FALSE".equalsIgnoreCase(cell
+							.getStringCellValue().trim()))) {
+						return false;
+					}
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return true;
+	}
 
 }

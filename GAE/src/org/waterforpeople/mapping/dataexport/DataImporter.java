@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface DataImporter {
 
-	public Map<String,String> validate(File file);
+	public Map<Integer,String> validate(File file);
 
 	public void executeImport(File file, String serverBase);
 }

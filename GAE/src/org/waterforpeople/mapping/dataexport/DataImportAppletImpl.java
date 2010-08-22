@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
 /**
@@ -38,7 +39,7 @@ public class DataImportAppletImpl extends JApplet {
 		if (chooser.getSelectedFile() != null) {
 			DataImporter importer = DataImporterFactory.getImporter(type);
 			statusLabel.setText("Validating...");
-			Map<String, String> errorMap = importer.validate(chooser
+			Map<Integer, String> errorMap = importer.validate(chooser
 					.getSelectedFile());
 			if (errorMap.size() == 0) {
 				if (serverBase.trim().endsWith("/")) {
@@ -51,17 +52,18 @@ public class DataImportAppletImpl extends JApplet {
 				statusLabel.setText("Vailidation Failed");
 				StringBuilder builder = new StringBuilder();
 				builder.append("The survey has the following errors:\n");
-				for (Entry<String, String> entry : errorMap.entrySet()) {
+				for (Entry<Integer, String> entry : errorMap.entrySet()) {
 					builder.append("Row ").append(entry.getKey()).append(": ")
 							.append(entry.getValue()).append("\n\n");
 				}
 				final JDialog dia = new JDialog();
 				dia.setTitle("Validation Failure");
 				final JTextPane text = new JTextPane();
+				final JScrollPane scroller = new JScrollPane(text);
 				text.setEditable(false);
 				text.setText(builder.toString());
 				dia.getContentPane().setLayout(new BorderLayout());
-				dia.getContentPane().add(text, BorderLayout.CENTER);
+				dia.getContentPane().add(scroller, BorderLayout.CENTER);
 				dia.setSize(400, 400);
 				JButton okButton = new JButton("Ok");
 				okButton.addActionListener(new ActionListener() {
@@ -69,11 +71,11 @@ public class DataImportAppletImpl extends JApplet {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						dia.setVisible(false);
-						text.setText("");
+						text.setText("");						
 					}
 				});
 				dia.getContentPane().add(okButton, BorderLayout.SOUTH);
-				dia.setVisible(true);			
+				dia.setVisible(true);
 			}
 
 		}
