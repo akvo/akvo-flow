@@ -3,17 +3,22 @@ package org.waterforpeople.mapping.dataexport;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
 /**
  * this data importer will read a local excel spreadsheet file using the POI
@@ -28,7 +33,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 
 	@Override
 	public void executeImport(File file, String serverBase) {
-		InputStream inp;
+		InputStream inp = null;
 
 		Sheet sheet1 = null;
 
@@ -129,13 +134,176 @@ public class SurveySpreadsheetImporter implements DataImporter {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (inp != null) {
+				try {
+					inp.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
 	@Override
-	public boolean validate(File file) {
-		// TODO Auto-generated method stub
-		return true;
-	}
+	public Map<String, String> validate(File file) {
+		InputStream inp = null;
+		Sheet sheet1 = null;
+		Map<String, String> errorMap = new HashMap<String, String>();
 
+		try {
+			inp = new FileInputStream(file);
+			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));			
+			sheet1 = wb.getSheetAt(0);
+			StringBuffer rowError = new StringBuffer();
+			for (Row row : sheet1) {
+				if (row.getRowNum() >= 1) {
+					String type = null;
+					for (Cell cell : row) {
+						try {
+							switch (cell.getColumnIndex()) {
+							case 0:
+								if (cell.getStringCellValue().trim().length() == 0) {
+									rowError
+											.append("Survey Group Name is missing\n");
+								}
+								break;
+							case 1:
+								if (cell.getStringCellValue().trim().length() == 0) {
+									rowError.append("Survey Name is missing\n");
+								}
+								break;
+							case 2:
+								try {
+									if (cell.getNumericCellValue() < 0) {
+										rowError
+												.append("Question Group Order must be a positive integer\n");
+									}
+								} catch (Exception e) {
+									rowError
+											.append("Question group order must be a number\n");
+								}
+								break;
+							case 3:
+								if (cell.getStringCellValue().trim().length() == 0) {
+									rowError
+											.append("Question Group Name is missing\n");
+								}
+								break;
+							case 4:
+								try {
+									if (cell.getNumericCellValue() < 0) {
+										rowError
+												.append("Question Id Order must be a positive integer\n");
+									}
+								} catch (Exception e) {
+									rowError
+											.append("Question Id order must be a number\n");
+								}
+								break;
+							case 5:
+								if (cell.getStringCellValue().trim().length() == 0) {
+									rowError
+											.append("Question Text is missing\n");
+								}
+								break;
+							case 6:
+								type = cell.getStringCellValue().trim();
+								if (type.length() == 0) {
+									rowError
+											.append("Question Type is missing\n");
+								} else {
+									if (!(type
+											.equals(QuestionDto.QuestionType.FREE_TEXT
+													.toString())
+											|| !type
+													.equals(QuestionDto.QuestionType.PHOTO
+															.toString())
+											|| !type
+													.equals(QuestionDto.QuestionType.VIDEO
+															.toString())
+											|| !type
+													.equals(QuestionDto.QuestionType.GEO
+															.toString())
+											|| !type
+													.equals(QuestionDto.QuestionType.SCAN
+															.toString())
+											|| !type
+													.equals(QuestionDto.QuestionType.TRACK
+															.toString())
+											|| !type
+													.equals(QuestionDto.QuestionType.NUMBER
+															.toString()) || !type
+											.equals(QuestionDto.QuestionType.OPTION
+													.toString()))) {
+										rowError
+												.append("Invalid question type. Must be either: FREE_TEXT, PHOTO, VIDEO, GEO, NUMBER, OPTION, SCAN, TRACK\n");
+									}
+								}
+								break;
+							case 7:
+								if (QuestionType.OPTION.toString().equals(type)) {
+									if (cell.getStringCellValue().trim()
+											.length() == 0) {
+										rowError
+												.append("Options are missing\n");
+									}
+								}
+								// TODO: validate language codes
+								break;
+							case 8:
+								break;
+							case 9:
+
+								try {
+									cell.getBooleanCellValue();
+								} catch (Exception e) {
+									rowError
+											.append("Allow Other must be either TRUE or FALSE");
+								}
+
+								break;
+							case 10:
+
+								try {
+									cell.getBooleanCellValue();
+								} catch (Exception e) {
+									rowError
+											.append("Allow Mulitple must be either TRUE or FALSE");
+								}
+
+								break;
+							case 11:
+								try {
+									cell.getBooleanCellValue();
+								} catch (Exception e) {
+									rowError
+											.append("Manditory must be either TRUE or FALSE");
+								}
+							}
+						} catch (Exception e) {
+							rowError.append(e.toString());
+						} finally {
+							if (rowError.toString().trim().length() > 0) {
+								errorMap.put(row.getRowNum() + "", rowError
+										.toString().trim());
+								System.out.println(rowError.toString());
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (inp != null) {
+				try {
+					inp.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return errorMap;
+	}
 }

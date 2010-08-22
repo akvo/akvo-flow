@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.dataexport;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * interface for any importer to be run via the import applet
@@ -10,7 +11,7 @@ import java.io.File;
  */
 public interface DataImporter {
 
-	public boolean validate(File file);
+	public Map<String,String> validate(File file);
 
 	public void executeImport(File file, String serverBase);
 }
