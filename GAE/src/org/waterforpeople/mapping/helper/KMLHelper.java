@@ -22,7 +22,9 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.gallatinsystems.gis.map.dao.MapControlDao;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
+import com.gallatinsystems.gis.map.domain.MapControl;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.google.appengine.api.datastore.Blob;
@@ -435,7 +437,9 @@ public class KMLHelper {
 		BaseDAO<TechnologyType> techTypeDao = new BaseDAO<TechnologyType>(
 				TechnologyType.class);
 		MapFragmentDao mfDao = new MapFragmentDao();
-
+		MapControl mc = new MapControl();
+		MapControlDao mcDao = new MapControlDao();
+		mc.setStartDate(new Date());
 		List<Country> countryList = countryDao.list("all");
 		StringBuilder kml = new StringBuilder();
 		List<TechnologyType> techTypeList = techTypeDao.list("all");
@@ -448,9 +452,10 @@ public class KMLHelper {
 								buildCountryTechTypeFragment(country
 										.getIsoAlpha2Code(), tt.getCode());
 						}
-				List<MapFragment> mfList = mfDao.searchMapFragments(country.getIsoAlpha2Code(), null,
-						null, null, FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST,
-						"all");
+				List<MapFragment> mfList = mfDao.searchMapFragments(country
+						.getIsoAlpha2Code(), null, null, null,
+						FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST, "all", null,
+						null);
 				StringBuilder sbAllCountryPlacemark = new StringBuilder();
 
 				for (MapFragment mfItem : mfList) {
@@ -486,9 +491,15 @@ public class KMLHelper {
 			ByteArrayOutputStream bos = ZipUtil.generateZip(completeKML);
 			mf.setBlob(new Blob(bos.toByteArray()));
 			mfDao.save(mf);
+			mc.setEndDate(new Date());
+			mc.setStatus(MapControl.Status.SUCCESS);
+			mcDao.save(mc);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			mc.setEndDate(new Date());
+			mc.setStatus(MapControl.Status.FAILURE);
+			mcDao.save(mc);
 		}
 
 	}
@@ -522,5 +533,28 @@ public class KMLHelper {
 		log.log(Level.INFO, "Size of techItemsByCountry: "
 				+ mfTechItemsByCountry.length());
 		mfDao.save(mf);
+	}
+
+	public Boolean checkCreateNewMap() {
+		Boolean runFlag = false;
+		MapFragmentDao mfDao = new MapFragmentDao();
+		Date lastPointDate = null;
+		AccessPointDao apDao = new AccessPointDao();
+		
+		List<AccessPoint> apList = apDao.listAccessPointsByDateOrdered("createdDateTime", "desc",null); 
+		MapControlDao mcDao = new MapControlDao();
+
+		MapControl mc = mcDao.getLatestRunTime();
+
+		if (apList != null)
+			if (apList.size() > 0)
+				if (apList.get(0) != null)
+					lastPointDate = apList.get(0).getCreatedDateTime();
+
+		if (lastPointDate != null
+				&& (mc == null || mc.getCreatedDateTime().before(lastPointDate)))
+			runFlag = true;
+
+		return runFlag;
 	}
 }

@@ -65,11 +65,16 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 					.generateRegionDocumentString("Regions.vm");
 			resp.setContentType("application/vnd.google-earth.kml+xml");
 			resp.getWriter().println(placemarksDocument);
-		}else if("buildMap".equals(action)){
+		} else if ("buildMap".equals(action)) {
 			KMLHelper kmlHelper = new KMLHelper();
+			if (kmlHelper.checkCreateNewMap()) {
+				kmlHelper.buildMap();
+			}
+		} else if ("getLatestMap".equals(action)) {
 			MapFragmentDao mfDao = new MapFragmentDao();
-			kmlHelper.buildMap();
-			List<MapFragment> mfList = mfDao.searchMapFragments(null,null,null,null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all");
+			List<MapFragment> mfList = mfDao.searchMapFragments(null, null,
+					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",
+					"createdDateTime", "desc");
 			Blob map = mfList.get(0).getBlob();
 			resp.setContentType("application/vnd.google-earth.kmz+xml");
 			ServletOutputStream out = resp.getOutputStream();

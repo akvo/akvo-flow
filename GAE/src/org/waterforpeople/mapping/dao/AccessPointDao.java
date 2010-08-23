@@ -159,15 +159,30 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AccessPoint> listAccessPointsByTechnology(
-			String countryCode, String technologyType, String cursorString) {
+	public List<AccessPoint> listAccessPointsByTechnology(String countryCode,
+			String technologyType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
-		q.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
-		q.declareParameters("String countryCodeParam, String typeTechnologyParam");
-		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode, technologyType);
+		q
+				.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
+		q
+				.declareParameters("String countryCodeParam, String typeTechnologyParam");
+		prepareCursor(cursorString, q);
+		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode,
+				technologyType);
 		return result;
 
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public List<AccessPoint> listAccessPointsByDateOrdered(String dateColumn,
+			String orderDirection, String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
+		q.setOrdering(dateColumn + " " + orderDirection);
+		prepareCursor(cursorString, q);
+		List<AccessPoint> result = (List<AccessPoint>) q.execute();
+		return result;
+	}
+
 }

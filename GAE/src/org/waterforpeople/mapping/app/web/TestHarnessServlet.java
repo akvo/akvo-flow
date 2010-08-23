@@ -188,7 +188,7 @@ public class TestHarnessServlet extends HttpServlet {
 						ap.setTypeTechnologyString("Afridev Handpump");
 					apDao.save(ap);
 					MapSummarizer ms = new MapSummarizer();
-					ms.performSummarization("" + ap.getKey().getId(), "");
+					//ms.performSummarization("" + ap.getKey().getId(), "");
 					if (i % 50 == 0)
 						log.log(Level.INFO, "Loaded to " + i);
 				}
@@ -222,7 +222,7 @@ public class TestHarnessServlet extends HttpServlet {
 			kmlHelper.buildMap();
 
 			List<MapFragment> mfList = mfDao.searchMapFragments("ALL", null,
-					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all");
+					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",null,null);
 			try {
 
 				for (MapFragment mfItem : mfList) {
