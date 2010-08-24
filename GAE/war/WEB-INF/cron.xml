@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
 	<cron>
-		<url>/webapp/waterforpeoplemappinggoogle?action=buildMap</url>
+		<url>/cron/croncommander?action=buildMap</url>
 		<description>Build Map</description>
 		<schedule>every 15 minutes</schedule>
 	</cron>

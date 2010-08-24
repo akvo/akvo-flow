@@ -13,6 +13,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/webapp/waterforpeoplemappinggoogle</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>CronCommanderServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.CronCommanderServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CronCommanderServlet</servlet-name>
+		<url-pattern>/cron/croncommander</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>LocationBeacon</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.LocationBeaconServlet</servlet-class>
 	</servlet>
@@ -303,6 +312,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>*</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/cron/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
 		</auth-constraint>
 	</security-constraint>
 	<welcome-file-list>
