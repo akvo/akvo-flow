@@ -130,5 +130,10 @@
 		<property name="surveyId" direction="asc" />
 		<property name="fragmentOrder" direction="asc" />
 	</datastore-index>
+	
+	<datastore-index kind="MapFragment" ancestor="false" source="manual">
+        <property name="fragmentType" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
 
 </datastore-indexes>
