@@ -202,4 +202,10 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	public String getCursorString() {
 		return accessPointCursor;
 	}
+
+	@Override
+	public List<AccessPointDto> listErrorAccessPoints(String cursorString) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

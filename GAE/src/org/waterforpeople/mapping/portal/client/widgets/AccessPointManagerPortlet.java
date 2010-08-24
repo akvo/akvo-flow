@@ -92,6 +92,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private ListBox techTypeListBox = new ListBox();
 
 	private Button searchButton = new Button("Search");
+	private Button errorsButton = new Button("Show Errors");
 
 	private FlexTable accessPointFT = new FlexTable();
 	private AccessPointManagerServiceAsync svc;
@@ -177,6 +178,17 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 		});
 
+		this.errorsButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				currentSortDirection = DEFAULT_SORT_DIR;
+				currentSortField = DEFAULT_SORT_FIELD;
+				processErrorClickEvent(true);
+			}
+
+		});
+
 		return grid;
 	}
 
@@ -226,6 +238,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		searchTable.setWidget(3, 2, constructionDateDPUpper);
 		searchTable.setWidget(4, 0, searchButton);
 		searchTable.setWidget(4, 1, createNewAccessPoint);
+		searchTable.setWidget(4, 2, errorsButton);
 
 		mainVPanel.add(searchTable);
 	}
@@ -556,8 +569,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		if (accessPointDto != null)
 			longitudeTB.setText(accessPointDto.getLongitude().toString());
 		accessPointDetail.setWidget(2, 1, longitudeTB);
-		
-		if(accessPointDto.getLatitude() != null && accessPointDto.getLongitude() != null){
+
+		if (accessPointDto.getLatitude() != null
+				&& accessPointDto.getLongitude() != null) {
 			MapWidget map = new MapWidget();
 			map.setSize("180px", "180px");
 			map.addControl(new SmallZoomControl());
@@ -566,17 +580,16 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			map.addOverlay(new Marker(point));
 			map.setZoomLevel(12);
 			map.setCenter(point);
-			accessPointDetail.setWidget(0,2,map);
-			accessPointDetail.getFlexCellFormatter().setRowSpan(0,2,5);
+			accessPointDetail.setWidget(0, 2, map);
+			accessPointDetail.getFlexCellFormatter().setRowSpan(0, 2, 5);
 		}
 
-		
 		accessPointDetail.setWidget(3, 0, new Label("Collection Date: "));
 		DateBox pickerCollectionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerCollectionDate.setValue(accessPointDto.getCollectionDate());
 		accessPointDetail.setWidget(3, 1, pickerCollectionDate);
-		
+
 		accessPointDetail.setWidget(4, 0, new Label("Point Construction Date"));
 		DateBox pickerConstructionDate = new DateBox();
 		if (accessPointDto != null)
@@ -647,8 +660,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				Window.alert("File uploaded");
 				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
 						.getWidget(9, 3)).getWidget()).getFilename();
-				if(fileName.toLowerCase().contains(IE_FAKE_PATH)){
-					fileName = fileName.substring(fileName.toLowerCase().indexOf(IE_FAKE_PATH)+IE_FAKE_PATH.length());
+				if (fileName.toLowerCase().contains(IE_FAKE_PATH)) {
+					fileName = fileName.substring(fileName.toLowerCase()
+							.indexOf(IE_FAKE_PATH)
+							+ IE_FAKE_PATH.length());
 				}
 				((TextBox) accessPointDetail.getWidget(9, 1))
 						.setText("http://waterforpeople.s3.amazonaws.com/images/"
@@ -658,7 +673,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				i.setHeight("200px");
 
 				if (i == null) {
-					Image photo = new Image();					
+					Image photo = new Image();
 					photo
 							.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
 									+ fileName);
@@ -1036,6 +1051,43 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 		for (int i = 0; i < grid.getCellCount(row); i++) {
 			grid.getCellFormatter().setStyleName(row, i, style);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void processErrorClickEvent(boolean isNewSearch) {
+		if (accessPointFT != null) {
+			accessPointFT.removeAllRows();
+		}
+		statusLabel.setText("Please wait loading access points");
+		statusLabel.setVisible(true);
+		mainVPanel.add(statusLabel);
+		boolean isOkay = true;
+		// reset cursor since we're doing a new search
+		if (isNewSearch) {
+			resetCursorArray();
+		}
+
+		if (isOkay) {
+			svc.listErrorAccessPoints(getAccessPointCursor(currentPage - 1),
+					new AsyncCallback() {
+						@Override
+						public void onFailure(Throwable caught) {
+							MessageDialog errDia = new MessageDialog(
+									"Application Error", "Cannot search");
+							errDia.showRelativeTo(searchTable);
+
+						}
+
+						@Override
+						public void onSuccess(Object result) {
+							ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>) result;
+							setAccessPointCursor(container.getCursorString());
+							loadAccessPoint((ArrayList<AccessPointDto>) container
+									.getPayload());
+						}
+
+					});
 		}
 	}
 }
