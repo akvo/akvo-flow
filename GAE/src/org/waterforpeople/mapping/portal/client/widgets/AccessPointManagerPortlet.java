@@ -23,6 +23,10 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.control.SmallZoomControl;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -516,8 +520,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-
+				MessageDialog errDia = new MessageDialog(
+						"Error loading details",
+						"The application could not load the access point details. Please try again. If the problem persists, contact an administrator.");
+				errDia.showRelativeTo(searchTable);
 			}
 
 			@Override
@@ -549,24 +555,27 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		if (accessPointDto != null)
 			longitudeTB.setText(accessPointDto.getLongitude().toString());
 		accessPointDetail.setWidget(2, 1, longitudeTB);
+		
+		if(accessPointDto.getLatitude() != null && accessPointDto.getLongitude() != null){
+			MapWidget map = new MapWidget();
+			map.setSize("180px", "180px");
+			map.addControl(new SmallZoomControl());
+			LatLng point = LatLng.newInstance(accessPointDto.getLatitude(),
+					accessPointDto.getLongitude());
+			map.addOverlay(new Marker(point));
+			map.setZoomLevel(12);
+			map.setCenter(point);
+			accessPointDetail.setWidget(0,2,map);
+			accessPointDetail.getFlexCellFormatter().setRowSpan(0,2,5);
+		}
 
-		// accessPointDetail.setWidget(3, 0, new Label("Collection Date: "));
-		// TextBox collectionDateTB = new TextBox();
-		// collectionDateTB.setText(accessPointDto.getCollectionDate()
-		// .toLocaleString());
-		// accessPointDetail.setWidget(3, 1, collectionDateTB);
+		
 		accessPointDetail.setWidget(3, 0, new Label("Collection Date: "));
 		DateBox pickerCollectionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerCollectionDate.setValue(accessPointDto.getCollectionDate());
 		accessPointDetail.setWidget(3, 1, pickerCollectionDate);
-
-		// accessPointDetail.setWidget(4, 0, new
-		// Label("Point Construction Date"));
-		// TextBox constructionDateTB = new TextBox();
-		// constructionDateTB.setText(accessPointDto.getConstructionDate());
-		// accessPointDetail.setWidget(4, 1, constructionDateTB);
-
+		
 		accessPointDetail.setWidget(4, 0, new Label("Point Construction Date"));
 		DateBox pickerConstructionDate = new DateBox();
 		if (accessPointDto != null)
@@ -744,7 +753,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		ListBox pointType = new ListBox();
 		pointType
 				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
-		pointType.addItem("Sanitation Type", AccessPointType.SANITATION_POINT
+		pointType.addItem("Sanitation Point", AccessPointType.SANITATION_POINT
 				.toString());
 		pointType.addItem("Public Institution",
 				AccessPointType.PUBLIC_INSTITUTION.toString());

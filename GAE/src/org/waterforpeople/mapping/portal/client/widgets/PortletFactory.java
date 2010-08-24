@@ -22,7 +22,8 @@ public class PortletFactory {
 					AccessPointStatusPortlet.DESCRIPTION },
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
-					AccessPointPerformancePortlet.DESCRIPTION }};
+					AccessPointPerformancePortlet.DESCRIPTION },
+			{ RecentPointsPortlet.NAME, RecentPointsPortlet.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {
@@ -63,6 +64,8 @@ public class PortletFactory {
 			return new RawDataViewPortlet();
 		} else if (name.equals(MappingAttributeManager.NAME)) {
 			return new MappingAttributeManager();
+		} else if (name.equals(RecentPointsPortlet.NAME)) {
+			return new RecentPointsPortlet();
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

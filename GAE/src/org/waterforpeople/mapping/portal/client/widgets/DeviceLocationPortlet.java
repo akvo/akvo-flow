@@ -56,7 +56,7 @@ public class DeviceLocationPortlet extends Portlet {
 	}
 
 	/**
-	 * constructs a marker and it's corresponding infoWindow
+	 * constructs a marker and its corresponding infoWindow
 	 * 
 	 * @param point
 	 * @param device
