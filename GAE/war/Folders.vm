@@ -1,7 +1,4 @@
 <Folder>
-<name>Malawi</name>
-<Folder>
-<name>Blantyre</name>
+<name>$country</name>
 $techFolders
-</Folder>
 </Folder>
