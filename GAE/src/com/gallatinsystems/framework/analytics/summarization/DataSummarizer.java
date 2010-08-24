@@ -9,13 +9,17 @@ package com.gallatinsystems.framework.analytics.summarization;
  */
 public interface DataSummarizer {
 
+	public static final int BATCH_SIZE = 10;
+
 	/**
 	 * perform and store the summarization.
 	 * 
 	 * @param key
 	 * @param type
-	 * @return - true if summarization succeeded, false if not
+	 * @param offset
+	 *            - integer offset used for batching processing
+	 * @return - true if summarization completed, false if not
 	 */
-	public boolean performSummarization(String key, String type);
+	public boolean performSummarization(String key, String type, Integer offset);
 
 }

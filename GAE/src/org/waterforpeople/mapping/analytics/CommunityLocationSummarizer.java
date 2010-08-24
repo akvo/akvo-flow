@@ -26,7 +26,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 			.getName());
 
 	@Override
-	public boolean performSummarization(String key, String type) {
+	public boolean performSummarization(String key, String type, Integer offset) {
 		if (key != null) {
 			AccessPointDao accessPointDao = new AccessPointDao();
 			AccessPoint ap = accessPointDao.getByKey(new Long(key));

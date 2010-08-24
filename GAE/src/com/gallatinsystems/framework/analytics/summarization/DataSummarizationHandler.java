@@ -72,29 +72,36 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 				}
 			}
 			if (idx < applicableSummarizers.size()) {
+				boolean isCompleted = false;
 				try {
 					Class cls = Class.forName(applicableSummarizers.get(idx));
 					DataSummarizer summarizer = (DataSummarizer) cls
 							.newInstance();
-					summarizer.performSummarization(summarizationRequest
-							.getObjectKey(), summarizationRequest.getType());
+
+					isCompleted = summarizer.performSummarization(
+							summarizationRequest.getObjectKey(),
+							summarizationRequest.getType(),
+							summarizationRequest.getOffset());
 				} catch (Exception e) {
 					log("Could not invoke summarizer", e);
 				}
-				if (idx < applicableSummarizers.size() - 1) {
+				if (!isCompleted) {
+					// if we're not done, increment offset and call the same
+					// summarizer
 					summarizationRequest.setAction(applicableSummarizers
-							.get(idx + 1));
-					// put the item back on the queue with the action updated to
-					// the
-					// next summarization in the chain
-					Queue queue = QueueFactory.getQueue(queueName);
-					queue.add(url(summarizerPath).param(
-							DataSummarizationRequest.ACTION_PARAM,
-							summarizationRequest.getAction()).param(
-							DataSummarizationRequest.OBJECT_KEY,
-							summarizationRequest.getObjectKey()).param(
-							DataSummarizationRequest.OBJECT_TYPE,
-							summarizationRequest.getType()));
+							.get(idx));
+					summarizationRequest.setOffset(summarizationRequest
+							.getOffset()
+							+ DataSummarizer.BATCH_SIZE);
+					invokeSummarizer(summarizationRequest);
+				} else {
+					if (idx < applicableSummarizers.size() - 1) {
+						summarizationRequest.setAction(applicableSummarizers
+								.get(idx + 1));
+						// put the item back on the queue with the action
+						// updated to the next summarization in the chain
+						invokeSummarizer(summarizationRequest);
+					}
 				}
 			}
 		} else {
@@ -102,7 +109,24 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 					+ summarizationRequest.getType());
 		}
 		return response;
+	}
 
+	/**
+	 * puts the summarization request into the queue
+	 * @param request
+	 */
+	private void invokeSummarizer(DataSummarizationRequest request) {
+		Queue queue = QueueFactory.getQueue(queueName);
+		queue
+				.add(url(summarizerPath).param(
+						DataSummarizationRequest.ACTION_PARAM,
+						request.getAction()).param(
+						DataSummarizationRequest.OBJECT_KEY,
+						request.getObjectKey())
+						.param(DataSummarizationRequest.OBJECT_TYPE,
+								request.getType()).param(
+								DataSummarizationRequest.OFFSET_KEY,
+								request.getOffset().toString()));
 	}
 
 	@Override

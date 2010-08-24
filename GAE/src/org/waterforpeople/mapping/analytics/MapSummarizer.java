@@ -18,7 +18,7 @@ public class MapSummarizer implements DataSummarizer {
 			.getName());
 
 	@Override
-	public boolean performSummarization(String key, String type) {
+	public boolean performSummarization(String key, String type, Integer offset) {
 		if (key != null) {
 			BaseDAO<AccessPoint> accessPointDao = new BaseDAO<AccessPoint>(
 					AccessPoint.class);
