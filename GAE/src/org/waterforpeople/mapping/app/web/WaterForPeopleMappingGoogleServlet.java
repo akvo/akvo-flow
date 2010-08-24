@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.dao.KMLDAO;
-import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
@@ -65,11 +64,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 					.generateRegionDocumentString("Regions.vm");
 			resp.setContentType("application/vnd.google-earth.kml+xml");
 			resp.getWriter().println(placemarksDocument);
-		} else if ("buildMap".equals(action)) {
-			KMLHelper kmlHelper = new KMLHelper();
-			if (kmlHelper.checkCreateNewMap()) {
-				kmlHelper.buildMap();
-			}
+		
 		} else if ("getLatestMap".equals(action)) {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			List<MapFragment> mfList = mfDao.searchMapFragments(null, null,
