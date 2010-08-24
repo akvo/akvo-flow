@@ -184,5 +184,15 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> result = (List<AccessPoint>) q.execute();
 		return result;
 	}
+	
+	public List<AccessPoint> listAccessPointsWithErrors(String cursorString){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
+		q.setOrdering("createdDateTime desc");
+		q.setFilter("latitude == 0.0 || longitude == 0.0 || pointStatus == null");
+		prepareCursor(cursorString, q);
+		List<AccessPoint> result = (List<AccessPoint>) q.execute();
+		return result;
+	}
 
 }
