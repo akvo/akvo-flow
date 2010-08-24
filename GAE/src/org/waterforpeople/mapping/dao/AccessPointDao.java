@@ -189,7 +189,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
 		q.setOrdering("createdDateTime desc");
-		q.setFilter("latitude == 0.0 || longitude == 0.0 || pointStatus == null");
+		//q.setFilter("latitude == 0.0 || longitude == 0.0 || pointStatus == null");
+		q.setFilter("latitude == 0.0");
 		prepareCursor(cursorString, q);
 		List<AccessPoint> result = (List<AccessPoint>) q.execute();
 		return result;
