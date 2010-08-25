@@ -22,7 +22,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			.getLogger(SurveyInstanceDAO.class.getName());
 
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
-			Long userID, ArrayList<String> unparsedLines) {
+			Long userID, List<String> unparsedLines) {
 		SurveyInstance si = new SurveyInstance();
 		si.setCollectionDate(collectionDate);
 		si.setDeviceFile(deviceFile);
@@ -49,9 +49,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			if (parts.length > 4) {
 				qas.setValue(parts[4]);
 			}
-			qas = save(qas);
 			qasList.add(qas);
 		}
+		save(qasList);
 		si.setQuestionAnswersStore(qasList);
 		return si;
 	}
@@ -61,14 +61,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate, String cursorString) {
+	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,
+			String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		List<SurveyInstance> results = null;
 		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("collectionDate >= pBeginDate");
 		q.declareParameters("java.util.Date pBeginDate");
 		q.setOrdering("collectionDate desc");
-		
+
 		prepareCursor(cursorString, q);
 
 		results = (List<SurveyInstance>) q.execute(beginDate);
@@ -91,7 +92,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		Query q = pm.newQuery(QuestionAnswerStore.class);
 		q
 				.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
-		q.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+		q
+				.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
 		List<QuestionAnswerStore> result = (List<QuestionAnswerStore>) q
 				.execute(surveyInstanceId, questionId);
 		if (result != null && result.size() > 0) {
@@ -116,4 +118,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		return (List<QuestionAnswerStore>) q.execute(instanceId);
 	}
 
+	/**
+	 * lists all surveyInstance records for a given survey
+	 * @param surveyId
+	 * @return
+	 */
+	public List<SurveyInstance> listSurveyInstanceBySurvey(Long surveyId) {
+		return listByProperty("surveyId", surveyId, "Long");
+	}
 }

@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.app.web;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -857,6 +859,65 @@ public class TestHarnessServlet extends HttpServlet {
 			device.setPhoneNumber("9175667663");
 			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 			devDao.save(device);
+		} else if ("reprocessSurveys".equals(action)) {
+			try {
+				reprocessSurveys(req.getParameter("date"));
+			} catch (ParseException e) {
+				try {
+					resp.getWriter().println("Couldn't reprocess: " + e);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		} else if ("deleteSurveyResponses".equals(action)) {
+			if (req.getParameter("surveyId") == null) {
+				try {
+					resp.getWriter()
+							.println("surveyId is a required parameter");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				deleteSurveyResponses(Integer.parseInt(req
+						.getParameter("surveyId")));
+			}
+
+		}
+	}
+
+	private void deleteSurveyResponses(Integer surveyId) {
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		List<SurveyInstance> instances = dao
+				.listSurveyInstanceBySurvey(new Long(surveyId));
+
+		if (instances != null) {
+			for (SurveyInstance instance : instances) {
+				List<QuestionAnswerStore> questions = dao
+						.listQuestionAnswerStore(instance.getKey().getId());
+				if (questions != null) {
+					dao.delete(questions);
+				}
+				dao.delete(instance);
+			}
+		}
+	}
+
+	private void reprocessSurveys(String date) throws ParseException {
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		Date startDate = null;
+		if (date != null) {
+			DateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+
+			startDate = sdf.parse(date);
+
+			List<SurveyInstance> instances = dao.listByDateRange(startDate,
+					null, null);
+			if (instances != null) {
+				AccessPointHelper aph = new AccessPointHelper();
+				for (SurveyInstance instance : instances) {
+					aph.processSurveyInstance(instance.getKey().getId() + "");
+				}
+			}
 		}
 	}
 

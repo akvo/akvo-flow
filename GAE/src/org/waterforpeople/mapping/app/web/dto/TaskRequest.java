@@ -21,11 +21,21 @@ public class TaskRequest extends RestRequest {
 	private static final String SURVEY_ID_PARAM = "surveyId";
 	private static final String PHONE_NUM_PARAM = "phoneNumber";
 	private static final String CHECKSUM_PARAM = "checksum";
+	public static final String OFFSET_PARAM = "offset";
 
 	private String fileName;
 	private Long surveyId;
 	private String phoneNumber;
 	private String checksum;
+	private Integer offset = 0;
+
+	public Integer getOffset() {
+		return offset;
+	}
+
+	public void setOffset(Integer offset) {
+		this.offset = offset;
+	}
 
 	public String getChecksum() {
 		return checksum;
@@ -72,6 +82,14 @@ public class TaskRequest extends RestRequest {
 			addError(new RestError(RestError.BAD_DATATYPE_CODE,
 					RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
 							+ " must be an integer"));
+		}
+
+		if (req.getParameter(OFFSET_PARAM) != null) {
+			try {
+				offset = Integer.parseInt(req.getParameter(OFFSET_PARAM).trim());
+			} catch (Exception e) {
+				offset = 0;
+			}
 		}
 	}
 

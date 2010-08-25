@@ -33,7 +33,7 @@ public class DisplayTemplateMappingServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public void delete(Long keyId) {
-		dao.delete(null);
+		//TODO: delete
 	}
 
 	@Override

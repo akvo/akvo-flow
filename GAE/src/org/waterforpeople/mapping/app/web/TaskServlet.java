@@ -49,7 +49,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 	}
 
 	private ArrayList<SurveyInstance> processFile(String fileName,
-			String phoneNumber, String checksum) {
+			String phoneNumber, String checksum, Integer offset) {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 		try {
 			URL url = new URL(
@@ -72,11 +72,42 @@ public class TaskServlet extends AbstractRestApiServlet {
 					GeoRegionHelper grh = new GeoRegionHelper();
 					grh.processRegionsSurvey(unparsedLines);
 				} else {
+
+					int lineNum = offset;
+					String curId = null;
+					while (lineNum < unparsedLines.size()) {
+						String[] parts = unparsedLines.get(lineNum).split(",");
+						if (parts.length >= 2) {
+							if (curId == null) {
+								curId = parts[1];
+							} else {
+								// if this isn't the first time through and we
+								// are seeing a new id, break since we'll
+								// process that in another call
+								if (!curId.equals(parts[1])) {
+									break;
+								}
+							}
+						}
+						lineNum++;
+					}
+
 					Long userID = 1L;
+
 					SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
 					SurveyInstance inst = siDAO.save(collectionDate,
-							deviceFile, userID, unparsedLines);
+							deviceFile, userID, unparsedLines.subList(offset,
+									lineNum));
 					surveyInstances.add(inst);
+
+					if (lineNum < unparsedLines.size()) {
+						// if we haven't processed everything yet, invoke a new
+						// service
+						Queue queue = QueueFactory.getDefaultQueue();
+						queue.add(url("/app_worker/task").param("action",
+								"processFile").param("fileName", fileName)
+								.param("offset", lineNum + ""));
+					}
 				}
 			}
 			zis.close();
@@ -204,17 +235,16 @@ public class TaskServlet extends AbstractRestApiServlet {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
 			ArrayList<SurveyInstance> surveyInstances = processFile(req
-					.getFileName(), req.getPhoneNumber(), req.getChecksum());
+					.getFileName(), req.getPhoneNumber(), req.getChecksum(),
+					req.getOffset());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			for (SurveyInstance instance : surveyInstances) {
 				ProcessingAction pa = dispatch(instance.getKey().getId() + "");
-				// Queue queue = QueueFactory.getDefaultQueue();
 				TaskOptions options = url(pa.getDispatchURL());
 				Iterator it = pa.getParams().keySet().iterator();
 				while (it.hasNext()) {
 					options.param("key", (String) it.next());
 				}
-				// queue.add(options);
 				log.info("Received Task Queue calls for surveyInstanceKey: "
 						+ instance.getKey().getId() + "");
 				aph.processSurveyInstance(instance.getKey().getId() + "");
