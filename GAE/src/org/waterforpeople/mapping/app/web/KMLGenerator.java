@@ -74,7 +74,32 @@ public class KMLGenerator {
 			// HashMap<String, ArrayList<String>> mwOutputMap =
 			// generateCountrySpecificPlacemarks(
 			// "PlacemarkTabsMW.vm", "MW");
-			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm");
+			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm", Constants.ALL_RESULTS);
+
+			// String folderContents = generateFolderContents(mwOutputMap,
+			// "Folders.vm");
+			// context.put("folderContents", otherCountryOutput +
+			// folderContents);
+			context.put("folderContents", otherCountryOutput);
+			context
+					.put("regionPlacemark",
+							generateRegionOutlines("Regions.vm"));
+			document = mergeContext(context, "Document.vm");
+			kmlDAO.saveKML(document);
+		} catch (Exception ex) {
+			log.log(Level.SEVERE, "Could create kml", ex);
+		}
+		return document;
+	}
+
+	public String generateDocument(String placemarksVMName, String countryCode) {
+		String document = null;
+		try {
+			VelocityContext context = new VelocityContext();
+			// HashMap<String, ArrayList<String>> mwOutputMap =
+			// generateCountrySpecificPlacemarks(
+			// "PlacemarkTabsMW.vm", "MW");
+			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm", countryCode);
 
 			// String folderContents = generateFolderContents(mwOutputMap,
 			// "Folders.vm");
@@ -279,15 +304,18 @@ public class KMLGenerator {
 		return null;
 	}
 
-	public String generatePlacemarks(String vmName) {
+	public String generatePlacemarks(String vmName, String countryCode) {
 
 		// for testing
 
 		StringBuilder sb = new StringBuilder();
-		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
-
-		List<AccessPoint> entries = apDAO.list(Constants.ALL_RESULTS);
-
+		AccessPointDao apDAO = new AccessPointDao();
+		List<AccessPoint> entries = null;
+		if (countryCode.equals("all"))
+			entries = apDAO.list(Constants.ALL_RESULTS);
+		else
+			entries = apDAO.searchAccessPoints(countryCode, null, null, null,
+					null, null, null, null, null, null, Constants.ALL_RESULTS);
 		// loop through accessPoints and bind to variables
 		for (AccessPoint ap : entries) {
 			try {
@@ -508,10 +536,11 @@ public class KMLGenerator {
 				context.put("description", "Unknown");
 
 			// Need to check this
-			if (ap.getPointType() != null){
-				context.put("pinStyle",encodePinStyle(ap.getPointType(), ap.getPointStatus()));				
+			if (ap.getPointType() != null) {
+				context.put("pinStyle", encodePinStyle(ap.getPointType(), ap
+						.getPointStatus()));
 				encodeStatusString(ap.getPointStatus(), context);
-			}else {
+			} else {
 				context.put("pinStyle", "waterpushpinblk");
 			}
 			String output = mergeContext(context, vmName);
@@ -574,9 +603,9 @@ public class KMLGenerator {
 		String prefix = "water";
 		if (AccessPointType.SANITATION_POINT == type) {
 			prefix = "sani";
-		}else if (AccessPointType.SCHOOL == type){
-			prefix ="schwater";
-		}else if (AccessPointType.PUBLIC_INSTITUTION == type){
+		} else if (AccessPointType.SCHOOL == type) {
+			prefix = "schwater";
+		} else if (AccessPointType.PUBLIC_INSTITUTION == type) {
 			prefix = "pubwater";
 		}
 		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {

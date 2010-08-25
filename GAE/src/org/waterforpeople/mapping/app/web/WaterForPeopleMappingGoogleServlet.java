@@ -32,6 +32,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 		String processFile = req.getParameter("processFile");
 		String showRegion = req.getParameter("showRegion");
 		String action = req.getParameter("action");
+		String countryCode = req.getParameter("countryCode");
 		if (showKML != null) {
 			Long kmlKey = null;
 			if (req.getParameter("kmlID") != null) {
@@ -42,10 +43,16 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 				String kmlString = kmlDAO.getKML(kmlKey);
 				resp.setContentType("application/vnd.google-earth.kml+xml");
 				resp.getWriter().println(kmlString);
+
 			} else {
 				KMLGenerator kmlGen = new KMLGenerator();
-				String placemarksDocument = kmlGen
-						.generateDocument("PlacemarkTabs.vm");
+				String placemarksDocument = null;
+				if (countryCode != null)
+					placemarksDocument = kmlGen.generateDocument(
+							"PlacemarkTabs.vm", countryCode);
+				else
+					placemarksDocument = kmlGen
+							.generateDocument("PlacemarkTabs.vm");
 				// ToDo implement kmz compression now that kmls are so big
 				// application/vnd.google-earth.kmz
 				resp.setContentType("application/vnd.google-earth.kmz+xml");
@@ -64,7 +71,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 					.generateRegionDocumentString("Regions.vm");
 			resp.setContentType("application/vnd.google-earth.kml+xml");
 			resp.getWriter().println(placemarksDocument);
-		
+
 		} else if ("getLatestMap".equals(action)) {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			List<MapFragment> mfList = mfDao.searchMapFragments(null, null,
