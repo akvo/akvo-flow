@@ -135,5 +135,10 @@
         <property name="fragmentType" direction="asc"/>
         <property name="createdDateTime" direction="desc"/>
     </datastore-index>
+    
+    <datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="latitude" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
 
 </datastore-indexes>
