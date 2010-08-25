@@ -1,92 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes autoGenerate="true">
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="__key__" direction="desc" />
 	</datastore-index>
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="communityCode" direction="asc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="communityCode" direction="desc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="latitude" direction="asc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="latitude" direction="desc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="longitude" direction="asc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="longitude" direction="desc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="collectionDate" direction="asc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="collectionDate" direction="desc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
 		<property name="pointType" direction="asc" />
 		<property name="__key__" direction="desc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
 		<property name="pointType" direction="asc" />
 		<property name="communityCode" direction="asc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
 		<property name="pointType" direction="asc" />
 		<property name="communityCode" direction="desc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
@@ -109,36 +85,29 @@
 		<property name="pointType" direction="asc" />
 		<property name="longitude" direction="asc" />
 	</datastore-index>
-
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
 		<property name="pointType" direction="asc" />
 		<property name="longitude" direction="desc" />
 	</datastore-index>
-
-
-
 	<datastore-index kind="UserConfig" ancestor="true"
 		source="manual">
 		<property name="config_INTEGER_IDX" direction="asc" />
 	</datastore-index>
-
 	<datastore-index kind="SurveyXMLFragment" ancestor="false"
 		source="manual">
 		<property name="surveyId" direction="asc" />
 		<property name="fragmentOrder" direction="asc" />
 	</datastore-index>
-	
-	<datastore-index kind="MapFragment" ancestor="false" source="manual">
-        <property name="fragmentType" direction="asc"/>
-        <property name="createdDateTime" direction="desc"/>
-    </datastore-index>
-    
-    <datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="latitude" direction="asc"/>
-        <property name="createdDateTime" direction="desc"/>
-    </datastore-index>
-
+	<datastore-index kind="MapFragment" ancestor="false"
+		source="manual">
+		<property name="fragmentType" direction="asc" />
+		<property name="createdDateTime" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="latitude" direction="asc" />
+		<property name="createdDateTime" direction="desc" />
+	</datastore-index>
 </datastore-indexes>
