@@ -39,6 +39,6 @@ public interface AccessPointManagerServiceAsync {
 	void getCursorString(AsyncCallback<String> callback);
 
 	void listErrorAccessPoints(String cursorString,
-			AsyncCallback<List<AccessPointDto>> callback);
+			AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>> callback);
 
 }

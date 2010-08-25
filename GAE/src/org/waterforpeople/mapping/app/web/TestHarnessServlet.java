@@ -149,6 +149,55 @@ public class TestHarnessServlet extends HttpServlet {
 						e);
 			}
 
+		} else if ("loadErrorPoints".equals(action)) {
+			MapFragmentDao mfDao = new MapFragmentDao();
+			AccessPointDao apDao = new AccessPointDao();
+			for (int j = 0; j < 1; j++) {
+				Double lat = 0.0;
+				Double lon = 0.0;
+				for (int i = 0; i < 5; i++) {
+					AccessPoint ap = new AccessPoint();
+					ap.setLatitude(lat);
+					ap.setLongitude(lon);
+					Calendar calendar = Calendar.getInstance();
+					Date today = new Date();
+					calendar.setTime(today);
+					calendar.add(Calendar.YEAR, -1 * i);
+					System.out
+							.println("AP: " + ap.getLatitude() + "/"
+									+ ap.getLongitude() + "Date: "
+									+ calendar.getTime());
+					ap.setCollectionDate(calendar.getTime());
+					ap.setAltitude(0.0);
+					ap.setCommunityCode("test" + new Date());
+					ap.setCommunityName("test" + new Date());
+					ap.setPhotoURL("http://test.com");
+					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+					if (i == 0)
+						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+					else if (i == 1)
+						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+					else if (i == 2)
+						ap.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
+					else
+						ap.setPointStatus(Status.NO_IMPROVED_SYSTEM);
+
+					if (i % 2 == 0)
+						ap.setTypeTechnologyString("Kiosk");
+					else
+						ap.setTypeTechnologyString("Afridev Handpump");
+					apDao.save(ap);
+					MapSummarizer ms = new MapSummarizer();
+					// ms.performSummarization("" + ap.getKey().getId(), "");
+					if (i % 50 == 0)
+						log.log(Level.INFO, "Loaded to " + i);
+				}
+			}
+			try {
+				resp.getWriter().println("Finished loading aps");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else if ("loadLots".equals(action)) {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			AccessPointDao apDao = new AccessPointDao();
@@ -188,7 +237,7 @@ public class TestHarnessServlet extends HttpServlet {
 						ap.setTypeTechnologyString("Afridev Handpump");
 					apDao.save(ap);
 					MapSummarizer ms = new MapSummarizer();
-					//ms.performSummarization("" + ap.getKey().getId(), "");
+					// ms.performSummarization("" + ap.getKey().getId(), "");
 					if (i % 50 == 0)
 						log.log(Level.INFO, "Loaded to " + i);
 				}
@@ -222,7 +271,8 @@ public class TestHarnessServlet extends HttpServlet {
 			kmlHelper.buildMap();
 
 			List<MapFragment> mfList = mfDao.searchMapFragments("ALL", null,
-					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",null,null);
+					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",
+					null, null);
 			try {
 
 				for (MapFragment mfItem : mfList) {
@@ -801,11 +851,11 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}else if ("createDevice".equals(action)){
+		} else if ("createDevice".equals(action)) {
 			DeviceDAO devDao = new DeviceDAO();
 			Device device = new Device();
 			device.setPhoneNumber("9175667663");
-			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);			
+			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 			devDao.save(device);
 		}
 	}

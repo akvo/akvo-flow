@@ -205,15 +205,20 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	}
 
 	@Override
-	public List<AccessPointDto> listErrorAccessPoints(String cursorString) {
+	public ResponseDto<ArrayList<AccessPointDto>> listErrorAccessPoints(String cursorString) {
 		AccessPointDao apDao = new AccessPointDao();
-		List<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
-		for (AccessPoint apItem : apDao
-				.listAccessPointsWithErrors(cursorString)) {
+		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
+		List<AccessPoint> pointList =   apDao
+		.listAccessPointsWithErrors(cursorString);
+		for (AccessPoint apItem :pointList) {
 			AccessPointDto apDto = AccessPointServiceSupport
 					.copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
 		}
-		return apDtoList;
+		ResponseDto<ArrayList<AccessPointDto>> container = new ResponseDto<ArrayList<AccessPointDto>>();
+		container.setCursorString(AccessPointDao.getCursor(pointList));
+		container.setPayload(apDtoList);
+
+		return container;
 	}
 }

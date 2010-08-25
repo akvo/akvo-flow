@@ -35,6 +35,6 @@ public interface AccessPointManagerService extends RemoteService {
 			AccessPointSearchCriteriaDto searchCriteria, String cursorString);
 	
 	String getCursorString();
-	List<AccessPointDto> listErrorAccessPoints(String cursorString);
+	ResponseDto<ArrayList<AccessPointDto>> listErrorAccessPoints(String cursorString);
 	
 }
