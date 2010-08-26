@@ -62,7 +62,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private static final String ASC_SORT = "asc";
 	private static final String DSC_SORT = "desc";
 	private static final String DEFAULT_SORT_DIR = ASC_SORT;
-	private static final String IE_FAKE_PATH = "c:\\fakepath\\";
+	
 
 	private static final Map<String, String> HEADING_MAP = new HashMap<String, String>() {
 		private static final long serialVersionUID = 7335900220247051642L;
@@ -660,11 +660,14 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				Window.alert("File uploaded");
 				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
 						.getWidget(9, 3)).getWidget()).getFilename();
-				if (fileName.toLowerCase().contains(IE_FAKE_PATH)) {
-					fileName = fileName.substring(fileName.toLowerCase()
-							.indexOf(IE_FAKE_PATH)
-							+ IE_FAKE_PATH.length());
+			
+				if(fileName.contains("/")){
+					fileName = fileName.substring(fileName.lastIndexOf("/")+1);
 				}
+				if(fileName.contains("\\")){
+					fileName = fileName.substring(fileName.lastIndexOf("\\")+1);
+				}
+				
 				((TextBox) accessPointDetail.getWidget(9, 1))
 						.setText("http://waterforpeople.s3.amazonaws.com/images/"
 								+ fileName);
