@@ -206,7 +206,7 @@ public class TestHarnessServlet extends HttpServlet {
 			for (int j = 0; j < 1; j++) {
 				double lat = 15 + (new Random().nextDouble() / 10);
 				double lon = -90 + (new Random().nextDouble() / 10);
-				for (int i = 0; i < 5; i++) {
+				for (int i = 0; i < 15; i++) {
 					AccessPoint ap = new AccessPoint();
 					ap.setLatitude(lat);
 					ap.setLongitude(lon);
@@ -223,7 +223,16 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setCommunityCode("test" + new Date());
 					ap.setCommunityName("test" + new Date());
 					ap.setPhotoURL("http://test.com");
+					ap.setProvideAdequateQuantity(true);
+					ap.setHasSystemBeenDown1DayFlag(false);
+					ap.setMeetGovtQualityStandardFlag(true);
+					ap.setMeetGovtQuantityStandardFlag(false);
+					if(i%2==0)
 					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+					else if(i%3==0)
+						ap.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
+					else
+						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
 					if (i == 0)
 						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 					else if (i == 1)

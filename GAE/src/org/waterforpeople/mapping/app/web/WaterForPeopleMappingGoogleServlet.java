@@ -49,10 +49,10 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 				String placemarksDocument = null;
 				if (countryCode != null)
 					placemarksDocument = kmlGen.generateDocument(
-							"PlacemarkTabs.vm", countryCode);
+							"PlacemarksNewLook.vm", countryCode);
 				else
 					placemarksDocument = kmlGen
-							.generateDocument("PlacemarkTabs.vm");
+							.generateDocument("PlacemarksNewLook.vm");
 				// ToDo implement kmz compression now that kmls are so big
 				// application/vnd.google-earth.kmz
 				resp.setContentType("application/vnd.google-earth.kmz+xml");

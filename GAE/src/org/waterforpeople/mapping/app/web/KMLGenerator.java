@@ -74,7 +74,8 @@ public class KMLGenerator {
 			// HashMap<String, ArrayList<String>> mwOutputMap =
 			// generateCountrySpecificPlacemarks(
 			// "PlacemarkTabsMW.vm", "MW");
-			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm", Constants.ALL_RESULTS);
+			String otherCountryOutput = generatePlacemarks(placemarksVMName,
+					Constants.ALL_RESULTS);
 
 			// String folderContents = generateFolderContents(mwOutputMap,
 			// "Folders.vm");
@@ -99,7 +100,8 @@ public class KMLGenerator {
 			// HashMap<String, ArrayList<String>> mwOutputMap =
 			// generateCountrySpecificPlacemarks(
 			// "PlacemarkTabsMW.vm", "MW");
-			String otherCountryOutput = generatePlacemarks("PlacemarkTabs.vm", countryCode);
+			String otherCountryOutput = generatePlacemarks(
+					"PlacemarkNewLook.vm", countryCode);
 
 			// String folderContents = generateFolderContents(mwOutputMap,
 			// "Folders.vm");
@@ -331,9 +333,12 @@ public class KMLGenerator {
 	public String bindPlacemark(AccessPoint ap, String vmName) throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
+		if (ap.getCountryCode() == null)
+			ap.setCountryCode("Unknown");
 		if (ap.getCountryCode() != null) {
 
 			VelocityContext context = new VelocityContext();
+			context.put("countryCode", ap.getCountryCode());
 			if (ap.getCollectionDate() != null) {
 				String timestamp = DateFormatUtils.formatUTC(ap
 						.getCollectionDate(), DateFormatUtils.ISO_DATE_FORMAT
