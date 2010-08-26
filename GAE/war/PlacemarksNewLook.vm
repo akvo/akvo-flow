@@ -54,14 +54,14 @@ h2 label {
 	margin:0;
 	width:792px;
 	height:43px;
-	background: url("http://localhost:8888/images/geb-wfp-ext_01.jpg") no-repeat;
+	background: url("http://watermapmonitordev.appspot.com/images/geb-wfp-ext_01.jpg") no-repeat;
 	overflow:hidden;
 }
 .content {
 	paddding:0;
 	margin:0;
 	width:792px;
-	background: url("http://localhost:8888/images/main-bg.jpg") left repeat-y;
+	background: url("http://watermapmonitordev.appspot.com/images/main-bg.jpg") left repeat-y;
 }
 .mainContent {
 	padding:0 49px 0 69px;
@@ -73,7 +73,7 @@ h2 label {
 	height:70px;
 	padding:0;
 	margin:0;
-	background:url("http://localhost:8888/images/header-bg.gif") repeat-x bottom;
+	background:url("http://watermapmonitordev.appspot.com/images/header-bg.gif") repeat-x bottom;
 }
 .headerLeft {
 	float:left;
@@ -81,7 +81,7 @@ h2 label {
 	height:65px;
 	padding:0;
 	margin:0;
-	background:url("http://localhost:8888/images/geb-wfp-int_01.gif") no-repeat;
+	background:url("http://watermapmonitordev.appspot.com/images/geb-wfp-int_01.gif") no-repeat;
 	text-indent:-9999px;
 }
 .headerRight {
@@ -134,7 +134,7 @@ p.photoCaption {
 	margin:0;
 	width:792px;
 	height:161px;
-	background:url("http://localhost:8888/images/content-bottom-bg.jpg") no-repeat;
+	background:url("http://watermapmonitordev.appspot.com/images/content-bottom-bg.jpg") no-repeat;
 	overflow:hidden;
 }
 .tinyArrow {
@@ -162,7 +162,7 @@ label.projectLabel{
         	<div class="mainContent">
                 <div class="header">
                 	<div class="headerLeft"></div>
-                    <div class="headerRight"><img src="http://localhost:8888/images/geb-wfp-int_03.gif" width="29" height="65" border="0" /></div>
+                    <div class="headerRight"><img src="http://watermapmonitordev.appspot.com/images/geb-wfp-int_03.gif" width="29" height="65" border="0" /></div>
                 </div>
                 <div class="mainLeft">
                 <h2>Community: <label>$communityName</label></h2>
@@ -189,20 +189,20 @@ label.projectLabel{
 								<li>Estimated Number of Users<label> $numberOfHouseholdsUsingWaterPoint</label></li>
 							
 							
-								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://localhost:8888/images/icon-check.gif" /> #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
-								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://localhost:8888/images/icon-check.gif" /> #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
-								<li>Farthest Household from the Water Point is Within 500 Meters<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://localhost:8888/images/icon-check.gif" /> #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Farthest Household from the Water Point is Within 500 Meters<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
-								<li>Water Quality of Water Meets Government Standards<label>  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://localhost:8888/images/icon-check.gif" /> #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Water Quality of Water Meets Government Standards<label>  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
 							
-								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://localhost:8888/images/icon-check.gif" /> #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 								
 								<li>Tariff/User Fee<label> $costPer</label></li>
@@ -269,20 +269,20 @@ label.projectLabel{
 								<li>Estimated Number of Users<label> $numberOfHouseholdsUsingWaterPoint</label></li>
 							
 							
-								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://localhost:8888/images/icon-check.gif" />  #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
-								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://localhost:8888/images/icon-check.gif" />  #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
-								<li>Farthest Household from the Water Point is Within 500 Meters:<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://localhost:8888/images/icon-check.gif" />  #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Farthest Household from the Water Point is Within 500 Meters:<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
-								<li>Quality of Water Meets Government Standards<label> #if($meetGovtQualityStandardFlag=="Yes")<img src="http://localhost:8888/images/icon-check.gif" />  #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Quality of Water Meets Government Standards<label> #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 							
 							
-								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://localhost:8888/images/icon-check.gif" />  #else<img src="http://localhost:8888/images/icon-x.gif" />#end</label></li>
+								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
 							
 								
 								<li>Tariff/User Fee<label> $costPer</label></li>
@@ -304,7 +304,7 @@ label.projectLabel{
 							
 								<li>Water System Status<label>$waterSystemStatus</label></li>
 							
-						#end                    <li class="italicText">This <label class="projectLabel">[Data Mapping Project]</label> data is provided by Water For People <a href="http://www.waterforpeople.org"><img src="http://localhost:8888/images/geb-wfp-int_14.gif" width="9" height="12" alt="" class="tinyArrow"></a></li>
+						#end                    <li class="italicText">This <label class="projectLabel">[Data Mapping Project]</label> data is provided by Water For People <a href="http://www.waterforpeople.org"><img src="http://watermapmonitordev.appspot.com/images/geb-wfp-int_14.gif" width="9" height="12" alt="" class="tinyArrow"></a></li>
                 </ul>
                 </div>
                 <div class="mainRight">
@@ -312,7 +312,7 @@ label.projectLabel{
                 	
                 	<div class="clear"></div>
                     <div class="mainImage"><img src="$photoUrl" width="180" height="272" border="0" /></div>
-                    <p class="photoCaption"><label>$photoCaption</label><br /><!--<a href="">More images</a><a href=""><img src="http://localhost:8888/images/geb-wfp-int_14.gif" width="9" height="12" alt="" class="tinyArrow"></a>--></p>
+                    <p class="photoCaption"><label>$photoCaption</label><br /><!--<a href="">More images</a><a href=""><img src="http://watermapmonitordev.appspot.com/images/geb-wfp-int_14.gif" width="9" height="12" alt="" class="tinyArrow"></a>--></p>
                     
                 </div>
                 <div class="clear"></div>
