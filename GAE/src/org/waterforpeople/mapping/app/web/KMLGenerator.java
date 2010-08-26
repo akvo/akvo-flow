@@ -101,7 +101,7 @@ public class KMLGenerator {
 			// generateCountrySpecificPlacemarks(
 			// "PlacemarkTabsMW.vm", "MW");
 			String otherCountryOutput = generatePlacemarks(
-					"PlacemarkNewLook.vm", countryCode);
+					"PlacemarksNewLook.vm", countryCode);
 
 			// String folderContents = generateFolderContents(mwOutputMap,
 			// "Folders.vm");
@@ -324,7 +324,7 @@ public class KMLGenerator {
 				sb.append(bindPlacemark(ap, vmName));
 			} catch (Exception e) {
 				log.log(Level.INFO, "Error generating placemarks: "
-						+ ap.toString(), e);
+						+ ap.getCommunityCode(), e);
 			}
 		}
 		return sb.toString();
@@ -345,10 +345,6 @@ public class KMLGenerator {
 						.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(ap.getCollectionDate());
-				log.log(Level.INFO, "ap: " + ap.getLatitude() + "/"
-						+ ap.getLongitude() + " Date: uf: "
-						+ ap.getCollectionDate() + " formatted: "
-						+ formattedDate);
 				context.put("collectionDate", formattedDate);
 				context.put("timestamp", timestamp);
 			} else {
