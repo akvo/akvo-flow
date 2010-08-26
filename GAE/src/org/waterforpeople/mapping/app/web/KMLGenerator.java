@@ -608,15 +608,15 @@ public class KMLGenerator {
 		} else if (AccessPointType.PUBLIC_INSTITUTION == type) {
 			prefix = "pubwater";
 		}
-		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+		if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
 			return prefix + "pushpingreen";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
+		} else if (AccessPoint.Status.FUNCTIONING_OK == status) {
 			return prefix + "pushpinyellow";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+		} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
 			return prefix + "pushpinred";
-		} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+		} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
 			return prefix + "pushpinblk";
-		} else {
+		}else {
 			return prefix + "pushpinblk";
 		}
 	}
@@ -625,19 +625,18 @@ public class KMLGenerator {
 			VelocityContext context) {
 
 		if (status != null) {
-			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+			if (AccessPoint.Status.FUNCTIONING_HIGH  == status) {
 				context.put("waterSystemStatus",
 						"System Functioning and Meets Government Standards");
 				return "System Functioning and Meets Government Standards";
-			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
+			} else if (AccessPoint.Status.FUNCTIONING_OK  == status) {
 				context.put("waterSystemStatus",
 						"Functioning but with Problems");
 				return "Functioning but with Problems";
-			} else if (status
-					.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+			} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS  == status) {
 				context.put("waterSystemStatus", "Broken-down system");
 				return "Broken-down system";
-			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+			} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM  == status) {
 				context.put("waterSystemStatus", "No Improved System");
 				return "No Improved System";
 			} else {
