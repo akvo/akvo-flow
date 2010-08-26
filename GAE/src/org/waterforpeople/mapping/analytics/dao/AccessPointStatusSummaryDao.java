@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.analytics.dao;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +104,29 @@ public class AccessPointStatusSummaryDao extends
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		return (List<AccessPointStatusSummary>) query.executeWithMap(paramMap);
+	}
+
+	/**
+	 * lists the summary objects for a country with a creation date on or after
+	 * the data passed in
+	 * 
+	 * @param country
+	 * @param creationDate
+	 * @param cursorString
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<AccessPointStatusSummary> listByCountryAndCreationDate(
+			String country, Date creationDate, String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
+		query
+				.setFilter("country == countryParam && createdDateTime > dateParam");
+		query.declareParameters("countryParam String, dateParam Date");
+		query.declareImports("import java.util.Date");
+		prepareCursor(cursorString, query);
+		return (List<AccessPointStatusSummary>) query.execute(country,
+				creationDate);
 	}
 
 }

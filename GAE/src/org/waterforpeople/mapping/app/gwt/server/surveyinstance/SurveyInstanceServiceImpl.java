@@ -48,7 +48,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		List<QuestionAnswerStoreDto> questionDtos = new ArrayList<QuestionAnswerStoreDto>();
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		List<QuestionAnswerStore> questions = dao
-				.listQuestionAnswerStore(instanceId);
+				.listQuestionAnswerStore(instanceId,null);
 		if (questions != null) {
 			for (QuestionAnswerStore qas : questions) {
 				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();

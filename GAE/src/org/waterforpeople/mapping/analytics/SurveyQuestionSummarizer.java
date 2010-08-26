@@ -22,7 +22,7 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
 		if (key != null) {
 			SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
 			List<QuestionAnswerStore> answers = instanceDao
-					.listQuestionAnswerStore(new Long(key));
+					.listQuestionAnswerStore(new Long(key),null);
 			if (answers != null) {
 				int i = 0;
 				if(offset != null){

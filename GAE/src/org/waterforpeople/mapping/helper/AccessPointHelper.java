@@ -54,7 +54,7 @@ public class AccessPointHelper {
 		SurveyInstanceDAO sid = new SurveyInstanceDAO();
 
 		List<QuestionAnswerStore> questionAnswerList = sid
-				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId));
+				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId),null);
 
 		Collection<AccessPoint> apList;
 		if (questionAnswerList != null && questionAnswerList.size() > 0) {

@@ -51,6 +51,16 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	}
 
+	/**
+	 * lists minimal question information by surveyId
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
+	public List<Question> listQuestionsBySurvey(Long surveyId) {
+		return listByProperty("surveyId", surveyId, "Long");
+	}
+
 	public void delete(Question question, Long questionGroupId) {
 		super.delete(question);
 
@@ -86,7 +96,6 @@ public class QuestionDao extends BaseDAO<Question> {
 		return q;
 	}
 
-
 	public Question getByKey(Long id, boolean needDetails) {
 		Question q = getByKey(id);
 		if (needDetails) {
@@ -121,7 +130,8 @@ public class QuestionDao extends BaseDAO<Question> {
 						q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
 								.getKey().getId()));
 					}
-					q.setTranslationMap(translationDao.findTranslations(ParentType.QUESTION_TEXT, q.getKey().getId()));
+					q.setTranslationMap(translationDao.findTranslations(
+							ParentType.QUESTION_TEXT, q.getKey().getId()));
 				}
 			}
 		}

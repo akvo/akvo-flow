@@ -20,6 +20,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class BaseDAO<T extends BaseDomain> {
+	public static final int DEFAULT_RESULT_COUNT = 20;
 	protected static final String STRING_TYPE = "String";
 	protected static final String EQ_OP = " == ";
 	protected static final String GTE_OP = " >= ";
@@ -40,7 +41,7 @@ public class BaseDAO<T extends BaseDomain> {
 	 * Injected version of the actual Class to pass for the persistentClass in
 	 * the query creation. This must be set before using this implementation
 	 * class or any derived class.
-	 *
+	 * 
 	 * @param e
 	 *            an instance of the type of object to use for this instance of
 	 *            the DAO implementation.
@@ -52,7 +53,7 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * saves an object to the data store AND closes the persistence manager
 	 * instance to force a flush
-	 *
+	 * 
 	 * @param <E>
 	 * @param obj
 	 * @return
@@ -91,9 +92,9 @@ public class BaseDAO<T extends BaseDomain> {
 		return save(object);
 	}
 
-	public <E extends BaseDomain> Collection<E> save(Collection<E> objList){
-		if(objList != null){
-			for(E item:objList){
+	public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
+		if (objList != null) {
+			for (E item : objList) {
 
 				if (item.getCreatedDateTime() == null) {
 					item.setCreatedDateTime(new Date());
@@ -102,9 +103,9 @@ public class BaseDAO<T extends BaseDomain> {
 					item.setLastUpdateDateTime(new Date());
 				}
 
-		}
-		PersistenceManager pm = PersistenceFilter.getManager();
-		objList = pm.makePersistentAll(objList);
+			}
+			PersistenceManager pm = PersistenceFilter.getManager();
+			objList = pm.makePersistentAll(objList);
 
 		}
 		return objList;
@@ -114,7 +115,7 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * gets the core persistent object for the dao concrete class using the
 	 * string key (obtained from KeyFactory.stringFromKey())
-	 *
+	 * 
 	 * @param keyString
 	 * @return
 	 */
@@ -129,7 +130,7 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * convenience method to allow loading of other persistent objects by key
 	 * from this dao
-	 *
+	 * 
 	 * @param keyString
 	 * @return
 	 */
@@ -179,7 +180,7 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * lists all of the concreteClass instances in the datastore. TODO: if we
 	 * think we'll use this on large tables, we should use Extents
-	 *
+	 * 
 	 * @return
 	 */
 	public List<T> list(String cursorString) {
@@ -188,9 +189,9 @@ public class BaseDAO<T extends BaseDomain> {
 
 	/**
 	 * lists all of the type passed in.
-	 *
+	 * 
 	 * TODO: if we think we'll use this on large tables, we should use Extents
-	 *
+	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -215,7 +216,7 @@ public class BaseDAO<T extends BaseDomain> {
 
 	/**
 	 * returns a single object based on the property value
-	 *
+	 * 
 	 * @param propertyName
 	 * @param propertyValue
 	 * @param propertyType
@@ -235,12 +236,12 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * lists all the objects of the same type as the concreteClass with property
 	 * equal to the value passed in
-	 *
+	 * 
 	 * since using this requires the caller know the persistence data type of
 	 * the field and the field name, this method is protected so that it can
 	 * only be used by subclass DAOs. We don't want those details to leak into
 	 * higher layers of the code.
-	 *
+	 * 
 	 * @param propertyName
 	 * @param propertyValue
 	 * @param propertyType
@@ -261,12 +262,12 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * convenience method to list all instances of the type passed in that match
 	 * the property
-	 *
+	 * 
 	 * since using this requires the caller know the persistence data type of
 	 * the field and the field name, this method is protected so that it can
 	 * only be used by subclass DAOs. We don't want those details to leak into
 	 * higher layers of the code.
-	 *
+	 * 
 	 * @param propertyName
 	 * @param propertyValue
 	 * @param propertyType
@@ -294,12 +295,12 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * convenience method to list all instances of the type passed in that match
 	 * the property
-	 *
+	 * 
 	 * since using this requires the caller know the persistence data type of
 	 * the field and the field name, this method is protected so that it can
 	 * only be used by subclass DAOs. We don't want those details to leak into
 	 * higher layers of the code.
-	 *
+	 * 
 	 * @param propertyName
 	 * @param propertyValue
 	 * @param propertyType
@@ -327,7 +328,7 @@ public class BaseDAO<T extends BaseDomain> {
 
 	/**
 	 * deletes an object from the db
-	 *
+	 * 
 	 * @param <E>
 	 * @param obj
 	 */
@@ -336,21 +337,19 @@ public class BaseDAO<T extends BaseDomain> {
 		pm.deletePersistent(obj);
 	}
 
-/**
-*
-* deletes a list of objects in a single datastore interaction
-*/
-	public <E extends BaseDomain> void delete(List<E> obj){
+	/**
+	 * 
+	 * deletes a list of objects in a single datastore interaction
+	 */
+	public <E extends BaseDomain> void delete(List<E> obj) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		pm.deletePersistentAll(obj);
 	}
 
-
-
 	/**
 	 * utility method to form a hash map of query parameters using an equality
 	 * operator
-	 *
+	 * 
 	 * @param paramName
 	 *            - name of object property
 	 * @param filter
@@ -373,7 +372,7 @@ public class BaseDAO<T extends BaseDomain> {
 
 	/**
 	 * utility method to form a hash map of query parameters
-	 *
+	 * 
 	 * @param paramName
 	 *            - name of object property
 	 * @param filter
@@ -430,6 +429,6 @@ public class BaseDAO<T extends BaseDomain> {
 			query.setExtensions(extensionMap);
 		}
 		if (cursorString == null || !cursorString.equals(Constants.ALL_RESULTS))
-			query.setRange(0, 20);
+			query.setRange(0, DEFAULT_RESULT_COUNT);
 	}
 }

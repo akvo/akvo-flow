@@ -879,27 +879,29 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 			} else {
 				deleteSurveyResponses(Integer.parseInt(req
-						.getParameter("surveyId")));
+						.getParameter("surveyId")), Integer.parseInt(req
+						.getParameter("count")));
 			}
-
 		}
 	}
 
-	private void deleteSurveyResponses(Integer surveyId) {
+	private boolean deleteSurveyResponses(Integer surveyId, Integer count) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		List<SurveyInstance> instances = dao
-				.listSurveyInstanceBySurvey(new Long(surveyId));
+		List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
+				new Long(surveyId), count != null ? count : 100);
 
 		if (instances != null) {
 			for (SurveyInstance instance : instances) {
 				List<QuestionAnswerStore> questions = dao
-						.listQuestionAnswerStore(instance.getKey().getId());
+						.listQuestionAnswerStore(instance.getKey().getId(), count);
 				if (questions != null) {
 					dao.delete(questions);
 				}
 				dao.delete(instance);
 			}
+			return true;
 		}
+		return false;
 	}
 
 	private void reprocessSurveys(String date) throws ParseException {
