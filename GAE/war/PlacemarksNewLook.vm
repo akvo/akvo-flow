@@ -308,11 +308,11 @@ label.projectLabel{
                 </ul>
                 </div>
                 <div class="mainRight">
-                	<div class="systemType"><label>#if($type=="water") Water #elseif($type=="sanitation") Sanitation #else Public Institution #end</label></div>
+                	<div class="systemType"><label>$type</label></div>
                 	
                 	<div class="clear"></div>
                     <div class="mainImage"><img src="$photoUrl" width="180" height="272" border="0" /></div>
-                    <p class="photoCaption"><label>$photoCaption</label><br /><!--<a href="">More images</a><a href=""><img src="http://watermapmonitordev.appspot.com/images/geb-wfp-int_14.gif" width="9" height="12" alt="" class="tinyArrow"></a>--></p>
+                    <p class="photoCaption"><label>$waterPointPhotoCaption</label><br /><!--<a href="">More images</a><a href=""><img src="http://watermapmonitordev.appspot.com/images/geb-wfp-int_14.gif" width="9" height="12" alt="" class="tinyArrow"></a>--></p>
                     
                 </div>
                 <div class="clear"></div>
