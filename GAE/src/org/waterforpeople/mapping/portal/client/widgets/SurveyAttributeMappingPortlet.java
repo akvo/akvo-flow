@@ -405,7 +405,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private void selectBoxItem(String val, ListBox box) {
 		for (int i = 0; i < box.getItemCount(); i++) {
 			if (box.getValue(i) != null && box.getValue(i).equals(val)) {
-				box.setSelectedIndex(i);
+				box.setItemSelected(i,true);				
 				break;
 			}
 		}
