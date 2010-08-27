@@ -122,7 +122,7 @@ public class AccessPointStatusSummaryDao extends
 		javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
 		query
 				.setFilter("country == countryParam && createdDateTime > dateParam");
-		query.declareParameters("countryParam String, dateParam Date");
+		query.declareParameters("String countryParam, Date dateParam");
 		query.declareImports("import java.util.Date");
 		prepareCursor(cursorString, query);
 		return (List<AccessPointStatusSummary>) query.execute(country,

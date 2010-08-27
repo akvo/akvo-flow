@@ -59,7 +59,7 @@
     </BalloonStyle> 
      <IconStyle id="saniyellowpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/san-yell-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-yellow-1.png</href>
       </Icon>
     </IconStyle>
   </Style>

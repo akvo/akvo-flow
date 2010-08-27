@@ -92,7 +92,7 @@ public class DataBackoutRequest extends RestRequest {
 			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM).trim());
 		}
 		if (req.getParameter(QUESTION_ID_PARAM) != null) {
-			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM).trim());
+			surveyId = Long.parseLong(req.getParameter(QUESTION_ID_PARAM).trim());
 		}
 		if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
 			surveyInstanceId = Long.parseLong(req.getParameter(
