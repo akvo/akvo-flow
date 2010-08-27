@@ -118,4 +118,8 @@
         <property name="country" direction="asc"/>
         <property name="createdDateTime" direction="asc"/>
     </datastore-index>
+	 <datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
+        <property name="type" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>
