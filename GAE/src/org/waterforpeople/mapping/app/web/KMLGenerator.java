@@ -193,6 +193,25 @@ public class KMLGenerator {
 		// log.info(waterAP.getCommunityCode());
 		try {
 			HashMap<String, String> contextBindingsMap = new HashMap<String, String>();
+			if (waterAP.getCollectionDate() != null) {
+				String timestamp = DateFormatUtils.formatUTC(waterAP
+						.getCollectionDate(), DateFormatUtils.ISO_DATE_FORMAT
+						.getPattern());
+				String formattedDate = DateFormat.getDateInstance(
+						DateFormat.SHORT).format(waterAP.getCollectionDate());
+				contextBindingsMap.put("collectionDate", formattedDate);
+				contextBindingsMap.put("timestamp", timestamp);
+				String collectionYear = new SimpleDateFormat("yyyy").format(waterAP
+						.getCollectionDate());
+				contextBindingsMap.put("collectionYear", collectionYear);
+			} else {
+				String timestamp = DateFormatUtils.formatUTC(new Date(),
+						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+				String formattedDate = DateFormat.getDateInstance(
+						DateFormat.SHORT).format(new Date());
+				contextBindingsMap.put("collectionDate", formattedDate);
+				contextBindingsMap.put("timestamp", timestamp);
+			}
 			contextBindingsMap.put("communityCode", encodeNullDefault(waterAP
 					.getCommunityCode(), "Unknown"));
 			contextBindingsMap.put("communityName", encodeNullDefault(waterAP
@@ -323,7 +342,8 @@ public class KMLGenerator {
 						DateFormat.SHORT).format(ap.getCollectionDate());
 				context.put("collectionDate", formattedDate);
 				context.put("timestamp", timestamp);
-				String collectionYear = new SimpleDateFormat("yyyy").format(ap.getCollectionDate());
+				String collectionYear = new SimpleDateFormat("yyyy").format(ap
+						.getCollectionDate());
 				context.put("collectionYear", collectionYear);
 			} else {
 				String timestamp = DateFormatUtils.formatUTC(new Date(),
