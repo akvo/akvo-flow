@@ -34,18 +34,27 @@ public class SurveyReviewCursorAdaptor extends CursorAdapter {
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		TextView dateView = (TextView) view.findViewById(R.id.text2);
+		String status = "Sent: ";
 		long millis = cursor.getLong(cursor
-				.getColumnIndex(SurveyDbAdapter.SAVED_DATE_COL));
-		// if millis is long, that's because we never saved the survey (just
-		// submitted it) so use that date instead
+				.getColumnIndex(SurveyDbAdapter.DELIVERED_DATE_COL));
+		// if millis is long, that's because we haven't yet sent it
 		if (millis == 0) {
+			status = "Submitted: ";
 			millis = cursor.getLong(cursor
 					.getColumnIndex(SurveyDbAdapter.SUBMITTED_DATE_COL));
 		}
+		// if millis is still null, then the survey hasn't been submitted yet
+		if (millis == 0) {
+			status = "Saved: ";
+			millis = cursor.getLong(cursor
+					.getColumnIndex(SurveyDbAdapter.SAVED_DATE_COL));
+		}
+
 		// Format the date string
 		Date date = new Date(millis);
-		dateView.setText(DateFormat.getLongDateFormat(context).format(date)
-				+ " " + DateFormat.getTimeFormat(context).format(date));
+		dateView.setText(status
+				+ DateFormat.getLongDateFormat(context).format(date) + " "
+				+ DateFormat.getTimeFormat(context).format(date));
 		TextView headingView = (TextView) view.findViewById(R.id.text1);
 		headingView.setText(cursor.getString(cursor
 				.getColumnIndex(SurveyDbAdapter.DISP_NAME_COL)));
