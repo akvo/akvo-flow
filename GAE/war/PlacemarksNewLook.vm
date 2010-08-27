@@ -3,7 +3,7 @@
   	<when>$timestamp</when>
   </TimeStamp>
     <!--<name><![CDATA[<strong><font color="red" size="+2">$communityCode</font></strong>]]></name>-->
-    <name>$communityCode</name>
+    <name>$communityCode - $collectionYear</name>
     <styleUrl>$pinStyle</styleUrl>
     <description><![CDATA[
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -162,7 +162,41 @@ label.projectLabel{
         	<div class="mainContent">
                 <div class="header">
                 	<div class="headerLeft"></div>
-                    <div class="headerRight"><img src="http://watermapmonitordev.appspot.com/images/geb-wfp-int_03.gif" width="29" height="65" border="0" /></div>
+                    <div class="headerRight">
+	                #if($type=="water" && $waterSystemStatus=="System Functioning and Meets Government Standards")
+	                    <img src="http://watermapmonitordev.appspot.com/images/map/water-green-1.png" width="29" height="65" border="0" />
+					#elseif($type=="water" && $waterSystemStatus=="Functioning but with Problems")
+						<img src="http://watermapmonitordev.appspot.com/images/map/water-yellow-1.png" width="29" height="65" border="0" />
+					#elseif($type=="water" && ($waterSystemStatus=="Broken-down system"))
+						<img src="http://watermapmonitordev.appspot.com/images/map/water-red-1.png" width="29" height="65" border="0" />
+					#elseif($type=="water" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
+						<img src="http://watermapmonitordev.appspot.com/images/map/water-black-1.png" width="29" height="65" border="0" />
+                    #elseif($type=="sanitation" && $waterSystemStatus=="System Functioning and Meets Government Standards")
+                     	<img src="http://watermapmonitordev.appspot.com/images/map/san-green-1.png" width="29" height="65" border="0" />
+					#elseif($type=="sanitation" && $waterSystemStatus=="Functioning but with Problems")	
+						<img src="http://watermapmonitordev.appspot.com/images/map/san-yellow-1.png" width="29" height="65" border="0" />
+					#elseif($type=="sanitation" && $waterSystemStatus=="Broken-down system")
+						<img src="http://watermapmonitordev.appspot.com/images/map/san-red-1.png" width="29" height="65" border="0" />
+					#elseif($type=="sanitation" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
+						<img src="http://watermapmonitordev.appspot.com/images/map/san-black-1.png" width="29" height="65" border="0" />
+					#elseif($type=="school" && $waterSystemStatus=="System Functioning and Meets Government Standards")	
+						<img src="http://watermapmonitordev.appspot.com/images/map/school-water-green-1.png" width="29" height="65" border="0" />
+					#elseif($type=="school" && $waterSystemStatus=="Functioning but with Problems")	
+						<img src="http://watermapmonitordev.appspot.com/images/map/school-water-yellow-1.png" width="29" height="65" border="0" />
+					#elseif($type=="school" && $waterSystemStatus=="Broken-down system")	
+						<img src="http://watermapmonitordev.appspot.com/images/map/school-water-red-1.png" width="29" height="65" border="0" />
+					#elseif($type=="school" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
+						<img src="http://watermapmonitordev.appspot.com/images/map/school-water-black-1.png" width="29" height="65" border="0" />
+					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="System Functioning and Meets Government Standards")	
+						<img src="http://watermapmonitordev.appspot.com/images/map/other-water-green-1.png" width="29" height="65" border="0" />
+					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Functioning but with Problems")	
+						<img src="http://watermapmonitordev.appspot.com/images/map/other-water-yellow-1.png" width="29" height="65" border="0" />
+					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Broken-down system")	
+						<img src="http://watermapmonitordev.appspot.com/images/map/other-water-red-1.png" width="29" height="65" border="0" />
+					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
+						<img src="http://watermapmonitordev.appspot.com/images/map/other-water-black-1.png" width="29" height="65" border="0" />
+					#end
+                    </div>
                 </div>
                 <div class="mainLeft">
                 <h2>Community: <label>$communityName</label></h2>
@@ -189,20 +223,20 @@ label.projectLabel{
 								<li>Estimated Number of Users<label> $numberOfHouseholdsUsingWaterPoint</label></li>
 							
 							
-								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end</label></li>
 							
 							
-								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes#end</label></li>
 							
 							
-								<li>Farthest Household from the Water Point is Within 500 Meters<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Farthest Household from the Water Point is Within 500 Meters<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end</label></li>
 							
 							
-								<li>Water Quality of Water Meets Government Standards<label>  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Water Quality of Water Meets Government Standards<label>  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end</label></li>
 							
 							
 							
-								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end</label></li>
 							
 								
 								<li>Tariff/User Fee<label> $costPer</label></li>
