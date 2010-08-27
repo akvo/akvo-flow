@@ -303,20 +303,20 @@ label.projectLabel{
 								<li>Estimated Number of Users<label> $numberOfHouseholdsUsingWaterPoint</label></li>
 							
 							
-								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end</label></li>
 							
 							
-								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes#end</label></li>
 							
 							
-								<li>Farthest Household from the Water Point is Within 500 Meters:<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Farthest Household from the Water Point is Within 500 Meters<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end</label></li>
 							
 							
-								<li>Quality of Water Meets Government Standards<label> #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Water Quality of Water Meets Government Standards<label>  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end</label></li>
 							
 							
 							
-								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" />  #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" />#end</label></li>
+								<li>Quantity of Water Meets Government Standards<label> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end</label></li>
 							
 								
 								<li>Tariff/User Fee<label> $costPer</label></li>
