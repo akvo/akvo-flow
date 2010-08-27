@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -322,6 +323,8 @@ public class KMLGenerator {
 						DateFormat.SHORT).format(ap.getCollectionDate());
 				context.put("collectionDate", formattedDate);
 				context.put("timestamp", timestamp);
+				String collectionYear = new SimpleDateFormat("yyyy").format(ap.getCollectionDate());
+				context.put("collectionYear", collectionYear);
 			} else {
 				String timestamp = DateFormatUtils.formatUTC(new Date(),
 						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
