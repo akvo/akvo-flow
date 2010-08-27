@@ -2,6 +2,8 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.waterforpeople.mapping.dao.KMLDAO;
 
 import com.gallatinsystems.common.util.ZipUtil;
@@ -47,18 +50,24 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 			} else {
 				KMLGenerator kmlGen = new KMLGenerator();
 				String placemarksDocument = null;
-				if (countryCode != null)
+				String timestamp = DateFormatUtils.formatUTC(new Date(), DateFormatUtils.ISO_DATE_FORMAT
+						.getPattern());
+				if (countryCode != null) {
 					placemarksDocument = kmlGen.generateDocument(
 							"PlacemarksNewLook.vm", countryCode);
-				else
+					resp.setHeader("Content-Disposition",
+							"inline; filename=waterforpeoplemapping_" + countryCode + "_" + timestamp + ".kmz;");
+				} else {
 					placemarksDocument = kmlGen
 							.generateDocument("PlacemarksNewLook.vm");
+					resp.setHeader("Content-Disposition",
+							"inline; filename=waterforpeoplemapping_" + timestamp + "_.kmz;");
+				}
 				// ToDo implement kmz compression now that kmls are so big
 				// application/vnd.google-earth.kmz
 				resp.setContentType("application/vnd.google-earth.kmz+xml");
 				ServletOutputStream out = resp.getOutputStream();
-				resp.setHeader("Content-Disposition",
-						"inline; filename=waterforpeoplemapping.kmz;");
+
 				ByteArrayOutputStream os = ZipUtil
 						.generateZip(placemarksDocument);
 				out.write(os.toByteArray());
