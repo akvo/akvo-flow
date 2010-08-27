@@ -30,11 +30,9 @@ public class KMLGenerator {
 	private static final Logger log = Logger.getLogger(KMLGenerator.class
 			.getName());
 
-	private KMLDAO kmlDAO;
 	private VelocityEngine engine;
 
 	public KMLGenerator() {
-		kmlDAO = new KMLDAO();
 		engine = new VelocityEngine();
 		engine.setProperty("runtime.log.logsystem.class",
 				"org.apache.velocity.runtime.log.NullLogChute");
@@ -64,61 +62,41 @@ public class KMLGenerator {
 		Template t = engine.getTemplate(templateName);
 		StringWriter writer = new StringWriter();
 		t.merge(context, writer);
+		context = null;
 		return writer.toString();
 	}
 
 	public String generateDocument(String placemarksVMName) {
-		String document = null;
 		try {
 			VelocityContext context = new VelocityContext();
-			// HashMap<String, ArrayList<String>> mwOutputMap =
-			// generateCountrySpecificPlacemarks(
-			// "PlacemarkTabsMW.vm", "MW");
-			String otherCountryOutput = generatePlacemarks(placemarksVMName,
-					Constants.ALL_RESULTS);
-
-			// String folderContents = generateFolderContents(mwOutputMap,
-			// "Folders.vm");
-			// context.put("folderContents", otherCountryOutput +
-			// folderContents);
-			context.put("folderContents", otherCountryOutput);
+			context.put("folderContents", generatePlacemarks(placemarksVMName,
+					Constants.ALL_RESULTS));
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
-			document = mergeContext(context, "Document.vm");
-			kmlDAO.saveKML(document);
+			return mergeContext(context, "Document.vm");
 		} catch (Exception ex) {
 			log.log(Level.SEVERE, "Could create kml", ex);
 		}
-		return document;
+		return null;
 	}
 
 	public String generateDocument(String placemarksVMName, String countryCode) {
-		String document = null;
 		try {
 			VelocityContext context = new VelocityContext();
-			// HashMap<String, ArrayList<String>> mwOutputMap =
-			// generateCountrySpecificPlacemarks(
-			// "PlacemarkTabsMW.vm", "MW");
-			String otherCountryOutput = generatePlacemarks(
-					"PlacemarksNewLook.vm", countryCode);
-
-			// String folderContents = generateFolderContents(mwOutputMap,
-			// "Folders.vm");
-			// context.put("folderContents", otherCountryOutput +
-			// folderContents);
-			context.put("folderContents", otherCountryOutput);
+			context.put("folderContents", generatePlacemarks(
+					"PlacemarksNewLook.vm", countryCode));
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
-			document = mergeContext(context, "Document.vm");
-			kmlDAO.saveKML(document);
+			return mergeContext(context, "Document.vm");
 		} catch (Exception ex) {
 			log.log(Level.SEVERE, "Could create kml", ex);
 		}
-		return document;
+		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private String generateFolderContents(
 			HashMap<String, ArrayList<String>> contents, String vmName)
 			throws Exception {
@@ -307,9 +285,6 @@ public class KMLGenerator {
 	}
 
 	public String generatePlacemarks(String vmName, String countryCode) {
-
-		// for testing
-
 		StringBuilder sb = new StringBuilder();
 		AccessPointDao apDAO = new AccessPointDao();
 		List<AccessPoint> entries = null;
@@ -318,6 +293,7 @@ public class KMLGenerator {
 		else
 			entries = apDAO.searchAccessPoints(countryCode, null, null, null,
 					null, null, null, null, null, null, Constants.ALL_RESULTS);
+
 		// loop through accessPoints and bind to variables
 		for (AccessPoint ap : entries) {
 			try {
@@ -545,7 +521,9 @@ public class KMLGenerator {
 				context.put("pinStyle", "waterpushpinblk");
 			}
 			String output = mergeContext(context, vmName);
+			context = null;
 			return output;
+
 		}
 		return null;
 
@@ -617,7 +595,7 @@ public class KMLGenerator {
 			return prefix + "pushpinred";
 		} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
 			return prefix + "pushpinblk";
-		}else {
+		} else {
 			return prefix + "pushpinblk";
 		}
 	}
@@ -626,18 +604,18 @@ public class KMLGenerator {
 			VelocityContext context) {
 
 		if (status != null) {
-			if (AccessPoint.Status.FUNCTIONING_HIGH  == status) {
+			if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
 				context.put("waterSystemStatus",
 						"System Functioning and Meets Government Standards");
 				return "System Functioning and Meets Government Standards";
-			} else if (AccessPoint.Status.FUNCTIONING_OK  == status) {
+			} else if (AccessPoint.Status.FUNCTIONING_OK == status) {
 				context.put("waterSystemStatus",
 						"Functioning but with Problems");
 				return "Functioning but with Problems";
-			} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS  == status) {
+			} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
 				context.put("waterSystemStatus", "Broken-down system");
 				return "Broken-down system";
-			} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM  == status) {
+			} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
 				context.put("waterSystemStatus", "No Improved System");
 				return "No Improved System";
 			} else {
