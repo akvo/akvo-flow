@@ -17,7 +17,6 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.GeoRegionDAO;
-import org.waterforpeople.mapping.dao.KMLDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoRegion;
 import org.waterforpeople.mapping.domain.TechnologyType;
