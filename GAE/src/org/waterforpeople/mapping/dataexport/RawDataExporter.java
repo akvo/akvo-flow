@@ -203,7 +203,6 @@ public class RawDataExporter extends AbstractDataExporter {
 				} else {
 					responseMap.put(key, val);
 				}
-				responseMap.put(strTok.nextToken(), strTok.nextToken());
 			}
 		}
 		return responseMap;
