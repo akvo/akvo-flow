@@ -49,7 +49,6 @@ public class AccessPointExporter extends AbstractDataExporter {
 			pw = new PrintWriter(file);
 			headers = writeHeader(pw);
 
-			
 			AccessPointResponse resp = fetchData(serverBase + SERVLET_URL
 					+ formParams(criteria));
 
@@ -70,7 +69,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 				pw.close();
 			}
 		}
-	}	
+	}
 
 	/**
 	 * fetches the data from the server using the fullUrl (url including all
@@ -128,8 +127,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 											.trim())) {
 								field.set(point, json.getString(header));
 							}
-						}
-						if (field.getType() == Date.class) {
+						} else if (field.getType() == Date.class) {
 							String dateString = json.getString(header);
 							if (dateString != null
 									&& !NULL_STR.equalsIgnoreCase(dateString
@@ -137,7 +135,18 @@ public class AccessPointExporter extends AbstractDataExporter {
 								field.set(point, IN_DATE_FMT.parse(json
 										.getString(header)));
 							}
+						} else if (field.getType() == Double.class) {
+							String doubleString = json.getString(header);
+							if (doubleString != null
+									&& !NULL_STR.equalsIgnoreCase(doubleString
+											.trim())) {
+								field.set(point, Double
+										.parseDouble(doubleString));
+							}
 						}
+						// TODO: handle status fields. Not sure yet if they can
+						// be treated as string or if i have to treat them as
+						// classes since they're an enum
 					}
 				}
 			} catch (Exception e) {
@@ -161,7 +170,8 @@ public class AccessPointExporter extends AbstractDataExporter {
 				if (fields[i].getType() == String.class
 						|| fields[i].getType() == Date.class
 						|| fields[i].getType() == AccessPointDto.AccessPointType.class
-						|| fields[i].getType() == AccessPointDto.Status.class) {
+						|| fields[i].getType() == AccessPointDto.Status.class
+						|| fields[i].getType() == Double.class) {
 					headers.add(fields[i].getName());
 				}
 			}
@@ -203,6 +213,23 @@ public class AccessPointExporter extends AbstractDataExporter {
 					String temp = (String) field.get(dto);
 					if (temp != null) {
 						pw.write(temp.trim());
+					}
+				} else if (field.getType() == Double.class) {
+					Double temp = (Double) field.get(dto);
+					if (temp != null) {
+						pw.write(temp.toString());
+					}
+				} else if (field.getType() == AccessPointDto.AccessPointType.class) {
+					AccessPointDto.AccessPointType type = (AccessPointDto.AccessPointType) field
+							.get(dto);
+					if (type != null) {
+						pw.write(type.toString());
+					}
+				} else if (field.getType() == AccessPointDto.Status.class) {
+					AccessPointDto.Status status = (AccessPointDto.Status) field
+							.get(dto);
+					if (status != null) {
+						pw.write(status.toString());
 					}
 				}
 				j++;

@@ -830,7 +830,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button deleteSurveyButton = new Button("Delete");
 		Button publishSurveyButton = new Button("Publish");
 		Button exportSummaryButton = new Button("Export Summary");
-
+		Button exportRawDataButton = new Button("Export Raw Data");
+		
 		surveyDetail.setWidget(0, 0, surveyId);
 		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
 		surveyDetail.setWidget(1, 1, surveyname);
@@ -842,6 +843,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyDetail.setWidget(4, 1, deleteSurveyButton);
 		surveyDetail.setWidget(4, 2, publishSurveyButton);
 		surveyDetail.setWidget(4,3,exportSummaryButton);
+		surveyDetail.setWidget(4,4,exportRawDataButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
 		saveSurveyButton.addClickHandler(new ClickHandler() {
@@ -893,6 +895,20 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";								
+					appletString += "<PARAM name='criteria' value=surveyId="+item.getKeyId()+">";											
+				appletString += "</applet>";
+				HTML html = new HTML();
+				html.setHTML(appletString);
+				surveyDetail.setWidget(5, 0, html);				
+			}
+		});
+		
+		exportRawDataButton.addClickHandler(new ClickHandler() {			
+			@Override
+			public void onClick(ClickEvent event) {
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
+				appletString += "<PARAM name='exportType' value='RAW_DATA'>";								
 					appletString += "<PARAM name='criteria' value=surveyId="+item.getKeyId()+">";											
 				appletString += "</applet>";
 				HTML html = new HTML();

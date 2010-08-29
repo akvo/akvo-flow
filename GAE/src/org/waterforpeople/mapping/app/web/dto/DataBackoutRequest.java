@@ -24,6 +24,7 @@ public class DataBackoutRequest extends RestRequest {
 	public static final String LIST_INSTANCE_ACTION = "listInstance";
 	public static final String DELETE_ACCESS_POINT_ACTION = "deleteAccessPoint";
 	public static final String DELETE_AP_SUMMARY_ACTION = "deleteAPSummary";
+	public static final String LIST_INSTANCE_RESPONSE_ACTION = "listInstanceResponse";
 
 	public static final String SURVEY_ID_PARAM = "surveyId";
 	public static final String SURVEY_INSTANCE_ID_PARAM = "surveyInstanceId";

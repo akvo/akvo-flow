@@ -83,8 +83,30 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 			response.setMessage(""
 					+ deleteAccessPointSummary(boReq.getCountryCode(), boReq
 							.getDate()));
+		} else if (DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION
+				.equals(boReq.getAction())) {
+			response.setMessage(listResponses(boReq.getSurveyInstanceId()));
 		}
 		return response;
+	}
+
+	private String listResponses(Long surveyInstanceId) {
+		StringBuilder result = new StringBuilder();
+		List<QuestionAnswerStore> qasList = instanceDao
+				.listQuestionAnswerStore(surveyInstanceId, null);
+		if (qasList != null) {
+			boolean isFirst = true;
+			for (QuestionAnswerStore qas : qasList) {
+				if (!isFirst) {
+					result.append("\n");
+				} else {
+					isFirst = false;
+				}
+				result.append(qas.getQuestionID()).append(",").append(
+						qas.getValue());
+			}
+		}
+		return result.toString();
 	}
 
 	/**
