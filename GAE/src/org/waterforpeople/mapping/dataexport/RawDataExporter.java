@@ -174,8 +174,9 @@ public class RawDataExporter extends AbstractDataExporter {
 						pw.print(instanceId);
 						for (String key : idList) {
 							String val = responses.get(key);
+							pw.print("\t");
 							if (val != null) {
-								pw.print("\t" + val.trim());
+								pw.print(val.trim());
 							}
 						}
 						pw.print("\n");
@@ -190,6 +191,18 @@ public class RawDataExporter extends AbstractDataExporter {
 		if (data != null) {
 			StringTokenizer strTok = new StringTokenizer(data, ",\n");
 			while (strTok.hasMoreTokens()) {
+				String key = strTok.nextToken();
+				String val = strTok.nextToken();
+				String oldVal = responseMap.get(key);
+				if (oldVal != null) {
+					if (val != null) {
+						if (oldVal.trim().length() < val.trim().length()) {
+							responseMap.put(key, val);
+						}
+					}
+				} else {
+					responseMap.put(key, val);
+				}
 				responseMap.put(strTok.nextToken(), strTok.nextToken());
 			}
 		}
