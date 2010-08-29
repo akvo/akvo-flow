@@ -57,13 +57,9 @@ public class RawDataExporter extends AbstractDataExporter {
 	private List<String> writeHeader(PrintWriter pw,
 			Map<String, String> questions) {
 		List<String> idList = new ArrayList<String>();
-		boolean isFirst = true;
+		pw.print("Instance");
 		for (Entry<String, String> qEntry : questions.entrySet()) {
-			if (!isFirst) {
-				pw.print("\t");
-			} else {
-				isFirst = false;
-			}
+			pw.print("\t");
 			pw.write(qEntry.getValue());
 			idList.add(qEntry.getKey());
 		}
