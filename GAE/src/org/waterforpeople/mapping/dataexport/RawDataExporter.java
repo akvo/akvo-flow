@@ -177,6 +177,7 @@ public class RawDataExporter extends AbstractDataExporter {
 					Map<String, String> responses = parseInstanceValues(instanceValues);
 					if (responses != null) {
 						pw.print(instanceId);
+						pw.print("\t");
 						pw.print(dateString);
 						for (String key : idList) {
 							String val = responses.get(key);
