@@ -57,7 +57,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	private List<String> writeHeader(PrintWriter pw,
 			Map<String, String> questions) {
 		List<String> idList = new ArrayList<String>();
-		pw.print("Instance");
+		pw.print("Instance\tSubmission Date");
 		for (Entry<String, String> qEntry : questions.entrySet()) {
 			pw.print("\t");
 			pw.write(qEntry.getValue());
@@ -158,11 +158,16 @@ public class RawDataExporter extends AbstractDataExporter {
 			throws Exception {
 		String instanceString = fetchDataFromServer(serverBase
 				+ DATA_SERVLET_PATH + DataBackoutRequest.LIST_INSTANCE_ACTION
-				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId);
+				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId+"&"+DataBackoutRequest.INCLUDE_DATE_PARAM+"=true");
 		if (instanceString != null) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
 				String instanceId = strTok.nextToken();
+				String dateString = "";
+				if(instanceId.contains("|")){
+					dateString = instanceId.substring(instanceId.indexOf("|")+1);
+					instanceId = instanceId.substring(0,instanceId.indexOf("|"));
+				}
 				if (instanceId != null && instanceId.trim().length() > 0) {
 					String instanceValues = fetchDataFromServer(serverBase
 							+ DATA_SERVLET_PATH
@@ -172,6 +177,7 @@ public class RawDataExporter extends AbstractDataExporter {
 					Map<String, String> responses = parseInstanceValues(instanceValues);
 					if (responses != null) {
 						pw.print(instanceId);
+						pw.print(dateString);
 						for (String key : idList) {
 							String val = responses.get(key);
 							pw.print("\t");

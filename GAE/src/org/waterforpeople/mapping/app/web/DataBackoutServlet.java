@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +41,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	private SurveyInstanceDAO instanceDao;
 	private AccessPointDao accessPointDao;
 	private AccessPointStatusSummaryDao apSummaryDao;
+	private static final DateFormat OUT_FMT = new SimpleDateFormat(
+			"dd-MM-yyyy HH:mm:ss z");
 
 	public DataBackoutServlet() {
 		setMode(PLAINTEXT_MODE);
@@ -68,7 +72,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 			deleteQuestionSummary(boReq.getQuestionId());
 		} else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq
 				.getAction())) {
-			response.setMessage(listSurveyInstance(boReq.getSurveyId()));
+			response.setMessage(listSurveyInstance(boReq.getSurveyId(), boReq
+					.includeDate()));
 		} else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
 				.equals(boReq.getAction())) {
 			deleteSurveyInstance(boReq.getSurveyInstanceId());
@@ -163,7 +168,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	 * @param surveyId
 	 * @return
 	 */
-	private String listSurveyInstance(Long surveyId) {
+	private String listSurveyInstance(Long surveyId, boolean includeDate) {
 		List<SurveyInstance> instances = instanceDao
 				.listSurveyInstanceBySurvey(surveyId, null);
 		StringBuilder buffer = new StringBuilder();
@@ -176,6 +181,10 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 					isFirst = false;
 				}
 				buffer.append(i.getKey().getId());
+				if (includeDate && i.getCollectionDate() != null) {
+					buffer.append("|").append(
+							OUT_FMT.format(i.getCollectionDate()));
+				}
 			}
 		}
 		return buffer.toString();

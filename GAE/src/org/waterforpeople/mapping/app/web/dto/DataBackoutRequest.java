@@ -31,6 +31,7 @@ public class DataBackoutRequest extends RestRequest {
 	public static final String QUESTION_ID_PARAM = "questionId";
 	public static final String COUNTRY_PARAM = "countryCode";
 	public static final String DATE_PARAM = "date";
+	public static final String INCLUDE_DATE_PARAM = "includeDate";
 
 	private static final DateFormat inFmt = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -39,9 +40,8 @@ public class DataBackoutRequest extends RestRequest {
 	private Long questionId;
 	private String countryCode;
 	private Date date;
-	
+	private boolean includeDate;
 
-	
 	public Long getSurveyId() {
 		return surveyId;
 	}
@@ -82,6 +82,10 @@ public class DataBackoutRequest extends RestRequest {
 		this.questionId = questionId;
 	}
 
+	public boolean includeDate() {
+		return includeDate;
+	}
+
 	@Override
 	protected void populateErrors() {
 		// TODO: add error checking
@@ -93,7 +97,8 @@ public class DataBackoutRequest extends RestRequest {
 			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM).trim());
 		}
 		if (req.getParameter(QUESTION_ID_PARAM) != null) {
-			questionId = Long.parseLong(req.getParameter(QUESTION_ID_PARAM).trim());
+			questionId = Long.parseLong(req.getParameter(QUESTION_ID_PARAM)
+					.trim());
 		}
 		if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
 			surveyInstanceId = Long.parseLong(req.getParameter(
@@ -101,6 +106,12 @@ public class DataBackoutRequest extends RestRequest {
 		}
 		if (req.getParameter(DATE_PARAM) != null) {
 			date = inFmt.parse(req.getParameter(DATE_PARAM));
+		}
+		if (req.getParameter(INCLUDE_DATE_PARAM) != null) {
+			includeDate = Boolean.parseBoolean(req
+					.getParameter(INCLUDE_DATE_PARAM));
+		} else {
+			includeDate = false;
 		}
 		countryCode = req.getParameter(COUNTRY_PARAM);
 	}
