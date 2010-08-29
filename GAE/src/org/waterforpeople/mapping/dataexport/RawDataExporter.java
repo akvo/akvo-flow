@@ -175,7 +175,7 @@ public class RawDataExporter extends AbstractDataExporter {
 						for (String key : idList) {
 							String val = responses.get(key);
 							if (val != null) {
-								pw.print("\t" + val);
+								pw.print("\t" + val.trim());
 							}
 						}
 						pw.print("\n");
