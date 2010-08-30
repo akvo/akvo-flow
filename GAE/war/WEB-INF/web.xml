@@ -298,6 +298,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>DataBackoutApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.DataBackoutServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>MapAssembly</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.MapAssemblyServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MapAssembly</servlet-name>
+		<url-pattern>/app_worker/mapassembly</url-pattern>
+	</servlet-mapping>	
 	<servlet-mapping>
 		<servlet-name>DataBackoutApi</servlet-name>
 		<url-pattern>/databackout</url-pattern>
