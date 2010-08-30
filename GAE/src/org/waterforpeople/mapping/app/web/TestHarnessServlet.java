@@ -227,6 +227,7 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setHasSystemBeenDown1DayFlag(false);
 					ap.setMeetGovtQualityStandardFlag(true);
 					ap.setMeetGovtQuantityStandardFlag(false);
+					ap.setCountryCode("MW");
 					if(i%2==0)
 					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 					else if(i%3==0)
