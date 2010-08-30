@@ -92,9 +92,9 @@ public class SurveyDbAdapter {
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
 			"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
-			"insert into survey values(1039101,'Houshold Interview', 1.0,'Survey','res','hh1039101','english','N','N')",
-			"insert into survey values(1062135,'Public Institution', 1.0,'Survey','res','pi1062135','english','N','N')",
-			"insert into survey values(1086117,'CommunityWaterPoint', 1.0,'Survey','res','cwp1086117','english','N','N')",
+			// "insert into survey values(1039101,'Houshold Interview', 1.0,'Survey','res','hh1039101','english','N','N')",
+			// "insert into survey values(1062135,'Public Institution', 1.0,'Survey','res','pi1062135','english','N','N')",
+			// "insert into survey values(1086117,'CommunityWaterPoint', 1.0,'Survey','res','cwp1086117','english','N','N')",
 			"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
@@ -784,11 +784,11 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor listSurveyRespondent(String status) {
 		String[] whereParams = { status };
-		Cursor cursor = database.query(RESPONDENT_JOIN,
-				new String[] { RESPONDENT_TABLE + "." + PK_ID_COL,
-						DISP_NAME_COL, SAVED_DATE_COL, SURVEY_FK_COL,
-						USER_FK_COL, SUBMITTED_DATE_COL, DELIVERED_DATE_COL }, "status = ?",
-				whereParams, null, null, null);
+		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
+				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
+				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL, SUBMITTED_DATE_COL,
+				DELIVERED_DATE_COL }, "status = ?", whereParams, null, null,
+				null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -811,8 +811,8 @@ public class SurveyDbAdapter {
 		}
 		Cursor cursor = database.query(SURVEY_TABLE, new String[] { PK_ID_COL,
 				DISP_NAME_COL, LOCATION_COL, FILENAME_COL, TYPE_COL,
-				LANGUAGE_COL, HELP_DOWNLOADED_COL, VERSION_COL }, whereClause, whereParams,
-				null, null, null);
+				LANGUAGE_COL, HELP_DOWNLOADED_COL, VERSION_COL }, whereClause,
+				whereParams, null, null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
