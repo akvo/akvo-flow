@@ -201,8 +201,8 @@ public class KMLGenerator {
 						DateFormat.SHORT).format(waterAP.getCollectionDate());
 				contextBindingsMap.put("collectionDate", formattedDate);
 				contextBindingsMap.put("timestamp", timestamp);
-				String collectionYear = new SimpleDateFormat("yyyy").format(waterAP
-						.getCollectionDate());
+				String collectionYear = new SimpleDateFormat("yyyy")
+						.format(waterAP.getCollectionDate());
 				contextBindingsMap.put("collectionYear", collectionYear);
 			} else {
 				String timestamp = DateFormatUtils.formatUTC(new Date(),
@@ -611,9 +611,10 @@ public class KMLGenerator {
 		}
 		if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
 			return prefix + "pushpingreen";
-		} else if (AccessPoint.Status.FUNCTIONING_OK == status) {
+		} else if (AccessPoint.Status.FUNCTIONING_OK == status
+				|| AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
 			return prefix + "pushpinyellow";
-		} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
+		} else if (AccessPoint.Status.BROKEN_DOWN == status) {
 			return prefix + "pushpinred";
 		} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
 			return prefix + "pushpinblk";
@@ -630,11 +631,12 @@ public class KMLGenerator {
 				context.put("waterSystemStatus",
 						"System Functioning and Meets Government Standards");
 				return "System Functioning and Meets Government Standards";
-			} else if (AccessPoint.Status.FUNCTIONING_OK == status) {
+			} else if (AccessPoint.Status.FUNCTIONING_OK == status
+					|| AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
 				context.put("waterSystemStatus",
 						"Functioning but with Problems");
 				return "Functioning but with Problems";
-			} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
+			} else if (AccessPoint.Status.BROKEN_DOWN == status) {
 				context.put("waterSystemStatus", "Broken-down system");
 				return "Broken-down system";
 			} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
@@ -656,9 +658,10 @@ public class KMLGenerator {
 		}
 		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
 			return "System Functioning and Meets Government Standards";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
+		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
+				|| status.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
 			return "Functioning but with Problems";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+		} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
 			return "Broken-down system";
 		} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
 			return "No Improved System";
