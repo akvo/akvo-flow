@@ -122,4 +122,8 @@
         <property name="type" direction="asc"/>
         <property name="createdDateTime" direction="desc"/>
     </datastore-index>
+     <datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="pointStatus" direction="asc"/>
+        <property name="CollectionDate" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>
