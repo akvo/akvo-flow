@@ -28,7 +28,6 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
-
 public class AccessPointHelper {
 
 	private static final String GEO_TYPE = "GEO";
@@ -54,7 +53,7 @@ public class AccessPointHelper {
 		SurveyInstanceDAO sid = new SurveyInstanceDAO();
 
 		List<QuestionAnswerStore> questionAnswerList = sid
-				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId),null);
+				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId), null);
 
 		Collection<AccessPoint> apList;
 		if (questionAnswerList != null && questionAnswerList.size() > 0) {
@@ -150,22 +149,8 @@ public class AccessPointHelper {
 										f.set(ap, qas.getValue());
 									} else if (f.getType() == AccessPoint.Status.class) {
 										String val = qas.getValue();
-										if ("High".equalsIgnoreCase(val)) {
-											f
-													.set(
-															ap,
-															AccessPoint.Status.FUNCTIONING_HIGH);
-										} else if ("Ok".equalsIgnoreCase(val)) {
-											f
-													.set(
-															ap,
-															AccessPoint.Status.FUNCTIONING_OK);
-										} else {
-											f
-													.set(
-															ap,
-															AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
-										}
+										f.set(ap, encodeStatus(val, ap
+												.getPointType()));
 									}
 								}
 							}
@@ -271,14 +256,7 @@ public class AccessPointHelper {
 			} else if (qas.getQuestionID().equals("qm10")) {
 				String val = qas.getValue();
 				if (val != null) {
-					if ("High".equalsIgnoreCase(val)) {
-						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-					} else if ("Ok".equalsIgnoreCase(val)) {
-						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-					} else {
-						ap
-								.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
-					}
+					ap.setPointStatus(encodeStatus(val, ap.getPointType()));
 				}
 			}
 			ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
@@ -316,4 +294,59 @@ public class AccessPointHelper {
 		return apDao.list(cursorString);
 	}
 
+	private AccessPoint.Status encodeStatus(String statusVal,
+			AccessPoint.AccessPointType pointType) {
+		AccessPoint.Status status = null;
+		statusVal = statusVal.toLowerCase().trim();
+		if (pointType.equals(AccessPointType.WATER_POINT)) {
+
+			if ("functioning but with problems".equals(statusVal)) {
+				status = AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS;
+			} else if ("broken down system".equals(statusVal)) {
+				status = AccessPoint.Status.BROKEN_DOWN;
+			} else if ("no improved system".equals(statusVal))
+				status = AccessPoint.Status.NO_IMPROVED_SYSTEM;
+			else if ("functioning and meets government standards"
+					.equals(statusVal))
+				status = AccessPoint.Status.FUNCTIONING_HIGH;
+			else if ("high".equalsIgnoreCase(statusVal)) {
+				status = AccessPoint.Status.FUNCTIONING_HIGH;
+			} else if ("ok".equalsIgnoreCase(statusVal)) {
+				status = AccessPoint.Status.FUNCTIONING_OK;
+			} else {
+				status = AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS;
+			}
+		} else if (pointType.equals(AccessPointType.SANITATION_POINT)) {
+			if ("latrine full".equals(statusVal))
+				status = AccessPoint.Status.LATRINE_FULL;
+			else if ("Latrine used but technical problems evident"
+					.toLowerCase().trim().equals(statusVal))
+				status = AccessPoint.Status.LATRINE_USED_TECH_PROBLEMS;
+			else if ("Latrine not being used due to structural/technical problems"
+					.toLowerCase().equals(statusVal))
+				status = AccessPoint.Status.LATRINE_NOT_USED_TECH_STRUCT_PROBLEMS;
+			else if ("Do not Know".toLowerCase().equals(statusVal))
+				status = AccessPoint.Status.LATRINE_DO_NOT_KNOW;
+			else if ("Functional".toLowerCase().equals(statusVal))
+				status = AccessPoint.Status.LATRINE_FUNCTIONAL;
+		} else {
+			if ("functioning but with problems".equals(statusVal)) {
+				status = AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS;
+			} else if ("broken down system".equals(statusVal)) {
+				status = AccessPoint.Status.BROKEN_DOWN;
+			} else if ("no improved system".equals(statusVal))
+				status = AccessPoint.Status.NO_IMPROVED_SYSTEM;
+			else if ("functioning and meets government standards"
+					.equals(statusVal))
+				status = AccessPoint.Status.FUNCTIONING_HIGH;
+			else if ("high".equalsIgnoreCase(statusVal)) {
+				status = AccessPoint.Status.FUNCTIONING_HIGH;
+			} else if ("ok".equalsIgnoreCase(statusVal)) {
+				status = AccessPoint.Status.FUNCTIONING_OK;
+			} else {
+				status = AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS;
+			}
+		}
+		return status;
+	}
 }
