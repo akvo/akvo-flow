@@ -226,7 +226,7 @@ label.projectLabel{
 								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end</label></li>
 							
 							
-								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes#end</label></li>
+								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> no #end</label></li>
 							
 							
 								<li>Farthest Household from the Water Point is Within 500 Meters<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> no#end</label></li>
@@ -306,8 +306,7 @@ label.projectLabel{
 								<li>Water Point Provides Enough Water Every Day<label> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end</label></li>
 							
 							
-								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes#end</label></li>
-							
+								<li>Has System Been Down More Than 1 Day<label> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> no #end</label></li>
 							
 								<li>Farthest Household from the Water Point is Within 500 Meters<label> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end</label></li>
 							
