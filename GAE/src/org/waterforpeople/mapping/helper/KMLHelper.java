@@ -449,12 +449,13 @@ public class KMLHelper {
 			for (Country country : countryList) {
 				if (country != null) {
 
-					Queue mapAssemblyQueue = QueueFactory
+	/*				Queue mapAssemblyQueue = QueueFactory
 							.getQueue("mapAssembly");
 					TaskOptions task = url("/app_worker/mapassembly").param(
 							"action", Constants.BUILD_COUNTRY_FRAGMENTS).param(
 							"countryCode", country.getIsoAlpha2Code());
 					mapAssemblyQueue.add(task);
+					*/
 				}
 			}
 	}
@@ -466,13 +467,14 @@ public class KMLHelper {
 		if (countryCode != null)
 			for (TechnologyType tt : techTypeList) {
 				if (tt != null) {
-					Queue mapAssemblyQueue = QueueFactory
+			/*		Queue mapAssemblyQueue = QueueFactory
 							.getQueue("mapAssembly");
 					TaskOptions task = url("/app_worker/mapassembly").param(
 							"action", Constants.BUILD_COUNTRY_FRAGMENTS).param(
 							"countryCode", countryCode).param("techType",
 							tt.getCode());
 					mapAssemblyQueue.add(task);
+				*/
 				}
 			}
 

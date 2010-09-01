@@ -26,12 +26,12 @@ public class CronCommanderServlet extends HttpServlet {
 		String action = req.getParameter("action");
 		if ("buildMap".equals(action)) {
 			KMLHelper kmlHelper = new KMLHelper();
-			if (kmlHelper.checkCreateNewMap()) {
+/*			if (kmlHelper.checkCreateNewMap()) {
 				Queue mapAssemblyQueue = QueueFactory.getQueue("mapAssembly");
 				TaskOptions task = url("/app_worker/mapassembly").param("action",
 						action).param("action", "buildMap");
 				mapAssemblyQueue.add(task);
-			}
+			}*/
 		}
 	}
 

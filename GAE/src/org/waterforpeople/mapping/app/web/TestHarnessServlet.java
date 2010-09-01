@@ -218,7 +218,7 @@ public class TestHarnessServlet extends HttpServlet {
 							.println("AP: " + ap.getLatitude() + "/"
 									+ ap.getLongitude() + "Date: "
 									+ calendar.getTime());
-					ap.setCollectionDate(calendar.getTime());
+					//ap.setCollectionDate(calendar.getTime());
 					ap.setAltitude(0.0);
 					ap.setCommunityCode("test" + new Date());
 					ap.setCommunityName("test" + new Date());
