@@ -3,7 +3,7 @@
   	<when>$timestamp</when>
   </TimeStamp>
     <!--<name><![CDATA[<strong><font color="red" size="+2">$communityCode</font></strong>]]></name>-->
-    <name>$communityCode - $collectionYear</name>
+    <name>$communityCode #if($collectionYear!=null) - $collectionYear #end</name>
     <styleUrl>$pinStyle</styleUrl>
     <description><![CDATA[
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
