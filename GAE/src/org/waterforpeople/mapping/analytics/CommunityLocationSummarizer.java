@@ -51,7 +51,8 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 							gp.setCountryName(countryCode);
 						}
 					}
-					if (gp != null) {
+					if (gp != null && gp.getCountryCode() != null
+							&& gp.getCountryCode().trim().length() <= 3) {
 						Country ourCountry = commDao.findCountryByCode(gp
 								.getCountryCode());
 						if (ourCountry == null) {

@@ -258,24 +258,30 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		}
 		qXML.setAltText(formAltText(q.getTranslationMap()));
 
-		if (q.getType().equals(Question.Type.FREE_TEXT))
+		if (q.getType().equals(Question.Type.FREE_TEXT)) {
 			qXML.setType(FREE_QUESTION_TYPE);
-		else if (q.getType().equals(Question.Type.GEO))
+		} else if (q.getType().equals(Question.Type.GEO)) {
 			qXML.setType(GEO_QUESTION_TYPE);
-		else if (q.getType().equals(Question.Type.NUMBER)) {
+		} else if (q.getType().equals(Question.Type.NUMBER)) {
 			qXML.setType(FREE_QUESTION_TYPE);
 			ValidationRule vrule = new ValidationRule();
 			vrule.setValidationType("numeric");
 			vrule.setSigned("false");
 			qXML.setValidationRule(vrule);
-		} else if (q.getType().equals(Question.Type.OPTION))
+		} else if (q.getType().equals(Question.Type.OPTION)) {
 			qXML.setType(OPTION_QUESTION_TYPE);
-		else if (q.getType().equals(Question.Type.PHOTO))
+		} else if (q.getType().equals(Question.Type.PHOTO)) {
 			qXML.setType(PHOTO_QUESTION_TYPE);
-		else if (q.getType().equals(Question.Type.VIDEO))
+		} else if (q.getType().equals(Question.Type.VIDEO)) {
 			qXML.setType(VIDEO_QUESTION_TYPE);
-		else if (q.getType().equals(Question.Type.SCAN))
+		} else if (q.getType().equals(Question.Type.SCAN)) {
 			qXML.setType(SCAN_QUESTION_TYPE);
+		} else if (q.getType().equals(Question.Type.NAME)) {
+			qXML.setType(FREE_QUESTION_TYPE);
+			ValidationRule vrule = new ValidationRule();
+			vrule.setValidationType("name");
+			qXML.setValidationRule(vrule);
+		}
 
 		if (q.getOrder() != null) {
 			qXML.setOrder(q.getOrder().toString());
@@ -296,10 +302,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			if (q.getAllowOtherFlag() != null) {
 				options.setAllowOther(q.getAllowOtherFlag().toString());
 			}
-			if(q.getAllowMultipleFlag()!=null){
+			if (q.getAllowMultipleFlag() != null) {
 				options.setAllowMultiple(q.getAllowMultipleFlag().toString());
 			}
-				
 
 			ArrayList<Option> optionList = new ArrayList<Option>();
 			for (QuestionOption qo : q.getQuestionOptionMap().values()) {

@@ -238,10 +238,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			}
 		}
 
-		if (questionType.equals("GEO"))
+		if (questionType.equals("GEO")){
 			q.setType(Question.Type.GEO);
-		else if (questionType.equals("FREE_TEXT"))
+		}
+		else if (questionType.equals("FREE_TEXT")){
 			q.setType(Question.Type.FREE_TEXT);
+		}
 		else if (questionType.equals("OPTION")) {
 			q.setAllowMultipleFlag(allowMultipleFlag);
 			q.setAllowOtherFlag(allowOtherFlag);
@@ -267,10 +269,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(Question.Type.PHOTO);
 		} else if (questionType.equals("NUMBER")) {
 			q.setType(Question.Type.NUMBER);
+		}else if (questionType.equals("NAME")){
+			q.setType(Question.Type.NAME);
 		}
 
-		if (mandatoryFlag != null)
+		if (mandatoryFlag != null){
 			q.setMandatoryFlag(mandatoryFlag);
+		}
 
 		// deal with options and dependencies
 

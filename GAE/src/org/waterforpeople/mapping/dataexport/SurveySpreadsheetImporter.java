@@ -154,7 +154,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 		try {
 			inp = new FileInputStream(file);
 			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
-			sheet1 = wb.getSheetAt(0);			
+			sheet1 = wb.getSheetAt(0);
 			for (Row row : sheet1) {
 				StringBuffer rowError = new StringBuffer();
 				if (row.getRowNum() >= 1) {
@@ -232,12 +232,15 @@ public class SurveySpreadsheetImporter implements DataImporter {
 													.equals(QuestionDto.QuestionType.TRACK
 															.toString())
 											|| type
+													.equals(QuestionDto.QuestionType.NAME
+															.toString())
+											|| type
 													.equals(QuestionDto.QuestionType.NUMBER
 															.toString()) || type
 											.equals(QuestionDto.QuestionType.OPTION
 													.toString()))) {
 										rowError
-												.append("Invalid question type. Must be either: FREE_TEXT, PHOTO, VIDEO, GEO, NUMBER, OPTION, SCAN, TRACK\n");
+												.append("Invalid question type. Must be either: FREE_TEXT, PHOTO, VIDEO, GEO, NUMBER, OPTION, SCAN, TRACK, NAME\n");
 									}
 								}
 								break;
