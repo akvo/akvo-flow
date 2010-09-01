@@ -205,12 +205,16 @@ public class KMLGenerator {
 						.format(waterAP.getCollectionDate());
 				contextBindingsMap.put("collectionYear", collectionYear);
 			} else {
+				//TODO: This block is a problem. We should never have data without a collectionDate so this is a hack so it display properly until I can sort out what to do with this data.
 				String timestamp = DateFormatUtils.formatUTC(new Date(),
 						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(new Date());
 				contextBindingsMap.put("collectionDate", formattedDate);
 				contextBindingsMap.put("timestamp", timestamp);
+				String collectionYear = new SimpleDateFormat("yyyy")
+						.format(new Date());
+				contextBindingsMap.put("collectionYear", collectionYear);
 			}
 			contextBindingsMap.put("communityCode", encodeNullDefault(waterAP
 					.getCommunityCode(), "Unknown"));
@@ -366,7 +370,7 @@ public class KMLGenerator {
 			else
 				context.put("communityCode", "Unknown" + new Date());
 
-			if (ap.getPhotoURL() != null)
+			if (ap.getPhotoURL() != null && ap.getPhotoURL().trim() != "")
 				context.put("photoUrl", ap.getPhotoURL());
 			else
 				context
