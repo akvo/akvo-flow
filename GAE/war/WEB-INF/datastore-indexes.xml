@@ -126,10 +126,5 @@
         <property name="pointStatus" direction="asc"/>
         <property name="CollectionDate" direction="desc"/>
     </datastore-index>
-    <datastore-index kind="Country" ancestor="false" source="manual">
-        <property name="isoAlpha2Code" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="Country" ancestor="false" source="manual">
-        <property name="name" direction="asc"/>
-    </datastore-index>
+   
 </datastore-indexes>
