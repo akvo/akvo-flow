@@ -1,5 +1,9 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.List;
+
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
@@ -89,9 +93,9 @@ public class SummaryPortlet extends Portlet {
 		userService.listUser(userCallback);
 		setContent(constructTree());
 	}
-
+	Tree t = null;
 	private Tree constructTree() {
-		Tree t = new Tree();
+		t = new Tree();
 
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
@@ -111,22 +115,51 @@ public class SummaryPortlet extends Portlet {
 		panel.add(new Label("Devices"));
 		deviceRoot = t.addItem(panel);
 
-		panel = new HorizontalPanel();
+		loadCountryMapLinks(t);
+
+		return t;
+	}
+
+	private void loadCountryMapLinks(Tree t){
+		AccessPointManagerServiceAsync apService = GWT.create(AccessPointManagerService.class);
+		AsyncCallback<List<String>> countryCallback = new AsyncCallback<List<String>>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(List<String> result) {
+				for(String countryCode :result)
+				addCountryMapOption(countryCode);
+			}
+		};
+		apService.listCountryCodes(countryCallback);
+			
+		
+	}
+String currentCountryCode = null;
+	private HorizontalPanel addCountryMapOption(String countryCode) {
+		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(GOOGLE_EARTH_IMAGE));
-		Label l = new Label("View Current Map");
+		Label l = new Label("View Current Map for: " + countryCode);
+		currentCountryCode = countryCode;
 		l.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.open("/webapp/waterforpeoplemappinggoogle?showKML=true",
+				String labelText = ((Label)event.getSource()).getText();
+				String countryCode = labelText.split(":")[1].trim();
+				Window.open("/webapp/waterforpeoplemappinggoogle?showKML=true&countryCode=" + countryCode,
 						"KMZ", null);
 			}
 		});
 		panel.add(l);
 		kmlRoot = t.addItem(panel);
-
-		return t;
+		return panel;
 	}
 
 	public String getName() {

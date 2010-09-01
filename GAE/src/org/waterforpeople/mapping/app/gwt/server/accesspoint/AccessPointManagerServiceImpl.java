@@ -21,7 +21,9 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -220,5 +222,15 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		container.setPayload(apDtoList);
 
 		return container;
+	}
+
+	@Override
+	public List<String> listCountryCodes() {
+		BaseDAO<Country> countryDao = new BaseDAO<Country>(Country.class);
+		List<String> countryCodesList = new ArrayList<String>();
+		for(Country item:countryDao.list("all")){
+			countryCodesList.add(item.getIsoAlpha2Code());
+		}
+		return countryCodesList;
 	}
 }

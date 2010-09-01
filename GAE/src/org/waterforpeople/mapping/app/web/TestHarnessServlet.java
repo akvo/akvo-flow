@@ -260,7 +260,20 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
-		} else if ("testAPKml".equals(action)) {
+		} else if("loadCountries".equals(action)){
+			Country c = new Country();
+			c.setIsoAlpha2Code("HN");
+			c.setName("Honduras");
+			
+			BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
+			countryDAO.save(c);
+			
+			Country c2 = new Country();
+			c2.setIsoAlpha2Code("MW");
+			c2.setName("Malawi");
+			countryDAO.save(c2);
+		}	else if ("testAPKml".equals(action)) {
+		
 			MapFragmentDao mfDao = new MapFragmentDao();
 
 			BaseDAO<TechnologyType> ttDao = new BaseDAO<TechnologyType>(

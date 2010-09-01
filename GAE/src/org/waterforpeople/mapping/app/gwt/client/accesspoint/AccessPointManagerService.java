@@ -36,5 +36,5 @@ public interface AccessPointManagerService extends RemoteService {
 	
 	String getCursorString();
 	ResponseDto<ArrayList<AccessPointDto>> listErrorAccessPoints(String cursorString);
-	
+	List<String> listCountryCodes();
 }

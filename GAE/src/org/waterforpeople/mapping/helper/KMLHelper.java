@@ -19,6 +19,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -29,6 +30,10 @@ import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 public class KMLHelper {
 	private static final Logger log = Logger.getLogger(KMLHelper.class
@@ -434,55 +439,82 @@ public class KMLHelper {
 		// Save complete kml to mapfragment
 		// Save to s3?
 		BaseDAO<Country> countryDao = new BaseDAO<Country>(Country.class);
-		BaseDAO<TechnologyType> techTypeDao = new BaseDAO<TechnologyType>(
-				TechnologyType.class);
 		MapFragmentDao mfDao = new MapFragmentDao();
 		MapControl mc = new MapControl();
 		MapControlDao mcDao = new MapControlDao();
 		mc.setStartDate(new Date());
 		List<Country> countryList = countryDao.list("all");
 		StringBuilder kml = new StringBuilder();
-		List<TechnologyType> techTypeList = techTypeDao.list("all");
 		if (countryList != null)
 			for (Country country : countryList) {
-				if (country != null)
-					if (techTypeList != null)
-						for (TechnologyType tt : techTypeList) {
-							if (tt != null)
-								buildCountryTechTypeFragment(country
-										.getIsoAlpha2Code(), tt.getCode());
-						}
-				List<MapFragment> mfList = mfDao.searchMapFragments(country
-						.getIsoAlpha2Code(), null, null, null,
-						FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST, "all", null,
-						null);
-				StringBuilder sbAllCountryPlacemark = new StringBuilder();
+				if (country != null) {
 
-				for (MapFragment mfItem : mfList) {
-					try {
-						sbAllCountryPlacemark.append(ZipUtil.unZip(mfItem
-								.getBlob().getBytes()));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				VelocityContext context = new VelocityContext();
-
-				context.put("country", country.getIsoAlpha2Code());
-				context.put("techFolders", sbAllCountryPlacemark.toString());
-				try {
-					kml.append(mergeContext(context, "Folders.vm"));
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Queue mapAssemblyQueue = QueueFactory
+							.getQueue("mapAssembly");
+					TaskOptions task = url("/app_worker/mapassembly").param(
+							"action", Constants.BUILD_COUNTRY_FRAGMENTS).param(
+							"countryCode", country.getIsoAlpha2Code());
+					mapAssemblyQueue.add(task);
 				}
 			}
+	}
+
+	public void buildCountryFragments(String countryCode) {
+		BaseDAO<TechnologyType> techTypeDao = new BaseDAO<TechnologyType>(
+				TechnologyType.class);
+		List<TechnologyType> techTypeList = techTypeDao.list("all");
+		if (countryCode != null)
+			for (TechnologyType tt : techTypeList) {
+				if (tt != null) {
+					Queue mapAssemblyQueue = QueueFactory
+							.getQueue("mapAssembly");
+					TaskOptions task = url("/app_worker/mapassembly").param(
+							"action", Constants.BUILD_COUNTRY_FRAGMENTS).param(
+							"countryCode", countryCode).param("techType",
+							tt.getCode());
+					mapAssemblyQueue.add(task);
+				}
+			}
+
+	}
+
+	public void assembleCountryTechTypeFragments(String countryCode,
+			String techType) {
+		MapFragmentDao mfDao = new MapFragmentDao();
+		StringBuilder kml = new StringBuilder();
+		List<MapFragment> mfList = mfDao.searchMapFragments(countryCode, null,
+				null, null, FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST, "all",
+				null, null);
+		StringBuilder sbAllCountryPlacemark = new StringBuilder();
+
+		for (MapFragment mfItem : mfList) {
+			try {
+				sbAllCountryPlacemark.append(ZipUtil.unZip(mfItem.getBlob()
+						.getBytes()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		VelocityContext context = new VelocityContext();
-		context.put("folderContents", kml.toString());
+
+		context.put("country", countryCode);
+		context.put("techFolders", sbAllCountryPlacemark.toString());
+		try {
+			kml.append(mergeContext(context, "Folders.vm"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void assembleCompleteMap() {
+		VelocityContext context = new VelocityContext();
+		// context.put("folderContents", kml.toString());
 		try {
 			String completeKML = mergeContext(context, "Document.vm");
 			MapFragment mf = new MapFragment();
@@ -490,18 +522,17 @@ public class KMLHelper {
 			mf.setFragmentType(FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS);
 			ByteArrayOutputStream bos = ZipUtil.generateZip(completeKML);
 			mf.setBlob(new Blob(bos.toByteArray()));
-			mfDao.save(mf);
-			mc.setEndDate(new Date());
-			mc.setStatus(MapControl.Status.SUCCESS);
-			mcDao.save(mc);
+			// mfDao.save(mf);
+			// mc.setEndDate(new Date());
+			// mc.setStatus(MapControl.Status.SUCCESS);
+			// mcDao.save(mc);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			mc.setEndDate(new Date());
-			mc.setStatus(MapControl.Status.FAILURE);
-			mcDao.save(mc);
+			// mc.setEndDate(new Date());
+			// mc.setStatus(MapControl.Status.FAILURE);
+			// mcDao.save(mc);
 		}
-
 	}
 
 	public void buildCountryTechTypeFragment(String countryCode, String techType) {
@@ -540,8 +571,9 @@ public class KMLHelper {
 		MapFragmentDao mfDao = new MapFragmentDao();
 		Date lastPointDate = null;
 		AccessPointDao apDao = new AccessPointDao();
-		
-		List<AccessPoint> apList = apDao.listAccessPointsByDateOrdered("createdDateTime", "desc",null); 
+
+		List<AccessPoint> apList = apDao.listAccessPointsByDateOrdered(
+				"createdDateTime", "desc", null);
 		MapControlDao mcDao = new MapControlDao();
 
 		MapControl mc = mcDao.getLatestRunTime();

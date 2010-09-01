@@ -41,4 +41,6 @@ public interface AccessPointManagerServiceAsync {
 	void listErrorAccessPoints(String cursorString,
 			AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>> callback);
 
+	void listCountryCodes(AsyncCallback<List<String>> callback);
+
 }

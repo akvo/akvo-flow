@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.helper.KMLHelper;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.common.Constants;
 
 public class MapAssemblyServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(MapAssemblyServlet.class
@@ -30,9 +31,21 @@ public class MapAssemblyServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		MapAssemblyRestRequest importReq = (MapAssemblyRestRequest) req;
+		KMLHelper kmlHelper = new KMLHelper();
+
 		if ("buildMap".equals(importReq.getAction())) {
-			KMLHelper kmlHelper = new KMLHelper();
-			//kmlHelper.buildMap();
+			kmlHelper.buildMap();
+		} else if (Constants.BUILD_COUNTRY_FRAGMENTS.equals(importReq
+				.getAction())) {
+			String countryCode = importReq.getCountryCode();
+			if (countryCode != null)
+				kmlHelper.buildCountryFragments(countryCode);
+		} else if (Constants.BUILD_COUNTRY_TECH_TYPE_FRAGMENTS.equals(importReq
+				.getAction())) {
+			String countryCode = importReq.getCountryCode();
+			String techType = importReq.getTechType();
+			if (techType != null && countryCode != null)
+				kmlHelper.buildCountryTechTypeFragment(countryCode, techType);
 		}
 		return null;
 	}
