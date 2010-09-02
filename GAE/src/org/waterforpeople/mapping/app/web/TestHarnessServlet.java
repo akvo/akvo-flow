@@ -48,6 +48,7 @@ import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -228,12 +229,15 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setMeetGovtQualityStandardFlag(true);
 					ap.setMeetGovtQuantityStandardFlag(false);
 					ap.setCountryCode("MW");
-					if(i%2==0)
-					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-					else if(i%3==0)
-						ap.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
+					if (i % 2 == 0)
+						ap
+								.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+					else if (i % 3 == 0)
+						ap
+								.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
 					else
-						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
+						ap
+								.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
 					if (i == 0)
 						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 					else if (i == 1)
@@ -260,20 +264,20 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
-		} else if("loadCountries".equals(action)){
+		} else if ("loadCountries".equals(action)) {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");
 			c.setName("Honduras");
-			
+
 			BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
 			countryDAO.save(c);
-			
+
 			Country c2 = new Country();
 			c2.setIsoAlpha2Code("MW");
 			c2.setName("Malawi");
 			countryDAO.save(c2);
-		}	else if ("testAPKml".equals(action)) {
-		
+		} else if ("testAPKml".equals(action)) {
+
 			MapFragmentDao mfDao = new MapFragmentDao();
 
 			BaseDAO<TechnologyType> ttDao = new BaseDAO<TechnologyType>(
@@ -905,6 +909,33 @@ public class TestHarnessServlet extends HttpServlet {
 						.getParameter("surveyId")), Integer.parseInt(req
 						.getParameter("count")));
 			}
+		} else if ("fixNameQuestion".equals(action)) {
+			if (req.getParameter("questionId") == null) {
+				try {
+					resp.getWriter().println(
+							"questionId is a required parameter");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				fixNameQuestion(req.getParameter("questionId"));
+			}
+		}
+	}
+
+	private void fixNameQuestion(String questionId) {
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		List<QuestionAnswerStore> answers = dao
+				.listQuestionAnswerStoreForQuestion(questionId);
+		if (answers != null) {
+			for (QuestionAnswerStore answer : answers) {
+				if (answer.getValue() != null) {
+					answer.setValue(StringUtil.capitalizeString(answer
+							.getValue()));
+				}
+			}
+			// now persist the changes
+			dao.save(answers);
 		}
 	}
 
@@ -916,7 +947,8 @@ public class TestHarnessServlet extends HttpServlet {
 		if (instances != null) {
 			for (SurveyInstance instance : instances) {
 				List<QuestionAnswerStore> questions = dao
-						.listQuestionAnswerStore(instance.getKey().getId(), count);
+						.listQuestionAnswerStore(instance.getKey().getId(),
+								count);
 				if (questions != null) {
 					dao.delete(questions);
 				}

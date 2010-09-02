@@ -123,6 +123,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	/**
+	 * lists all questionAnswerStore objects for a specific question
+	 * 
+	 * @param questionId
+	 * @return
+	 */
+	public List<QuestionAnswerStore> listQuestionAnswerStoreForQuestion(
+			String questionId) {
+		return listByProperty("questionID", questionId, "String",
+				QuestionAnswerStore.class);
+	}
+
+	/**
 	 * lists all surveyInstance records for a given survey
 	 * 
 	 * @param surveyId
