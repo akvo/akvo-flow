@@ -25,6 +25,8 @@ public class StringUtil {
 			} else if (Character.isWhitespace(chars[i]) || chars[i] == '.'
 					|| chars[i] == '\'') {
 				isFirst = true;
+			}else{
+				chars[i] = Character.toLowerCase(chars[i]);
 			}
 		}
 		return String.valueOf(chars);
