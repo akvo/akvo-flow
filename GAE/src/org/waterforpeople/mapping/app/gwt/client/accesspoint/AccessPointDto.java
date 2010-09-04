@@ -29,12 +29,113 @@ public class AccessPointDto implements Serializable {
 	private Double altitude = 0.0;
 
 	private String communityCode = null;
+	private String communityName = null;
+	private String institutionName = null;
 
 	private String photoURL = null;
 
 	private TechnologyType typeTechnology = null;
 
 	private String TechnologyTypeOther = null;
+	private String typeTechnologyString = null;
+	private String constructionDateYear = null;
+	private Long estimatedPopulation = null;
+	private Long estimatedPeoplePerHouse = null;
+	private Boolean meetGovtQualityStandards = null;
+	private Boolean meetGovtQunatityStandardsFlag = null;
+	private String whoRepairsPoint = null;
+	private String secondaryTechnologyString = null;
+	private Boolean provideAdequateQuantity = null;
+	private Boolean hasSystemBeenDown1DayFlag = null;
+
+	public String getInstitutionName() {
+		return institutionName;
+	}
+
+	public void setInstitutionName(String institutionName) {
+		this.institutionName = institutionName;
+	}
+
+	public String getTypeTechnologyString() {
+		return typeTechnologyString;
+	}
+
+	public void setTypeTechnologyString(String typeTechnologyString) {
+		this.typeTechnologyString = typeTechnologyString;
+	}
+
+	public String getConstructionDateYear() {
+		return constructionDateYear;
+	}
+
+	public void setConstructionDateYear(String constructionDateYear) {
+		this.constructionDateYear = constructionDateYear;
+	}
+
+	public Long getEstimatedPopulation() {
+		return estimatedPopulation;
+	}
+
+	public void setEstimatedPopulation(Long estimatedPopulation) {
+		this.estimatedPopulation = estimatedPopulation;
+	}
+
+	public Long getEstimatedPeoplePerHouse() {
+		return estimatedPeoplePerHouse;
+	}
+
+	public void setEstimatedPeoplePerHouse(Long estimatedPeoplePerHouse) {
+		this.estimatedPeoplePerHouse = estimatedPeoplePerHouse;
+	}
+
+	public Boolean getMeetGovtQualityStandards() {
+		return meetGovtQualityStandards;
+	}
+
+	public void setMeetGovtQualityStandards(Boolean meetGovtQualityStandards) {
+		this.meetGovtQualityStandards = meetGovtQualityStandards;
+	}
+
+	public Boolean getMeetGovtQunatityStandardsFlag() {
+		return meetGovtQunatityStandardsFlag;
+	}
+
+	public void setMeetGovtQunatityStandardsFlag(
+			Boolean meetGovtQunatityStandardsFlag) {
+		this.meetGovtQunatityStandardsFlag = meetGovtQunatityStandardsFlag;
+	}
+
+	public String getWhoRepairsPoint() {
+		return whoRepairsPoint;
+	}
+
+	public void setWhoRepairsPoint(String whoRepairsPoint) {
+		this.whoRepairsPoint = whoRepairsPoint;
+	}
+
+	public String getSecondaryTechnologyString() {
+		return secondaryTechnologyString;
+	}
+
+	public void setSecondaryTechnologyString(String secondaryTechnologyString) {
+		this.secondaryTechnologyString = secondaryTechnologyString;
+	}
+
+	public Boolean getProvideAdequateQuantity() {
+		return provideAdequateQuantity;
+	}
+
+	public void setProvideAdequateQuantity(Boolean provideAdequateQuantity) {
+		this.provideAdequateQuantity = provideAdequateQuantity;
+	}
+
+	public Boolean getHasSystemBeenDown1DayFlag() {
+		return hasSystemBeenDown1DayFlag;
+	}
+
+	public void setHasSystemBeenDown1DayFlag(Boolean hasSystemBeenDown1DayFlag) {
+		this.hasSystemBeenDown1DayFlag = hasSystemBeenDown1DayFlag;
+	}
 
 	private Date constructionDate = null;
 
@@ -258,5 +359,13 @@ public class AccessPointDto implements Serializable {
 		} else {
 			return Status.OTHER;
 		}
+	}
+
+	public void setCommunityName(String communityName) {
+		this.communityName = communityName;
+	}
+
+	public String getCommunityName() {
+		return communityName;
 	}
 }
