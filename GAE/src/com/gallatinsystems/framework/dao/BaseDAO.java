@@ -64,10 +64,7 @@ public class BaseDAO<T extends BaseDomain> {
 		if (obj.getCreatedDateTime() == null) {
 			obj.setCreatedDateTime(new Date());
 		}
-		if (obj.getLastUpdateDateTime() == null) {
-			obj.setLastUpdateDateTime(new Date());
-		}
-
+		obj.setLastUpdateDateTime(new Date());
 		obj = pm.makePersistent(obj);
 
 		return obj;
@@ -78,10 +75,7 @@ public class BaseDAO<T extends BaseDomain> {
 		if (obj.getCreatedDateTime() == null) {
 			obj.setCreatedDateTime(new Date());
 		}
-		if (obj.getLastUpdateDateTime() == null) {
-			obj.setLastUpdateDateTime(new Date());
-		}
-
+		obj.setLastUpdateDateTime(new Date());
 		obj = pm.makePersistent(obj);
 		pm.flush();
 
@@ -99,10 +93,8 @@ public class BaseDAO<T extends BaseDomain> {
 				if (item.getCreatedDateTime() == null) {
 					item.setCreatedDateTime(new Date());
 				}
-				if (item.getLastUpdateDateTime() == null) {
-					item.setLastUpdateDateTime(new Date());
-				}
 
+				item.setLastUpdateDateTime(new Date());
 			}
 			PersistenceManager pm = PersistenceFilter.getManager();
 			objList = pm.makePersistentAll(objList);
