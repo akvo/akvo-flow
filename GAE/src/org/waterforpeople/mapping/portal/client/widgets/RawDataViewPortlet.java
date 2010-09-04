@@ -239,7 +239,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 															}
 														}
 													}
-												}												
+												}
 												populateQuestions(questions);
 											}
 										});
@@ -288,6 +288,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					newAnswer.setValue(newVal.trim());
 					newAnswer.setSurveyId(qasDto.getSurveyId());
 					newAnswer.setSurveyInstanceId(qasDto.getSurveyInstanceId());
+					newAnswer.setOldValue(qasDto.getValue());
 					changedAnswers.put(newAnswer.getKeyId(), newAnswer);
 
 				} else {

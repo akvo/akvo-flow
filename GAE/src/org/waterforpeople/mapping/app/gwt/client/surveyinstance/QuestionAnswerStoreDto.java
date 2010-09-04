@@ -4,13 +4,13 @@ import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class QuestionAnswerStoreDto extends BaseDto{
+public class QuestionAnswerStoreDto extends BaseDto {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7382482717003334827L;
-	
+
 	private Long arbitratyNumber;
 	private String questionID;
 	private String type;
@@ -18,8 +18,16 @@ public class QuestionAnswerStoreDto extends BaseDto{
 	private Date collectionDate;
 	private Long surveyId;
 	private Long surveyInstanceId;
-	
-	
+	private String oldValue;
+
+	public String getOldValue() {
+		return oldValue;
+	}
+
+	public void setOldValue(String oldValue) {
+		this.oldValue = oldValue;
+	}
+
 	public Long getSurveyId() {
 		return surveyId;
 	}
@@ -43,7 +51,6 @@ public class QuestionAnswerStoreDto extends BaseDto{
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
-	
 
 	public Long getArbitratyNumber() {
 		return arbitratyNumber;
@@ -52,7 +59,6 @@ public class QuestionAnswerStoreDto extends BaseDto{
 	public void setArbitratyNumber(Long arbitratyNumber) {
 		this.arbitratyNumber = arbitratyNumber;
 	}
-
 
 	public String getType() {
 		return type;
@@ -77,6 +83,5 @@ public class QuestionAnswerStoreDto extends BaseDto{
 	public void setQuestionID(String questionID) {
 		this.questionID = questionID;
 	}
-
 
 }

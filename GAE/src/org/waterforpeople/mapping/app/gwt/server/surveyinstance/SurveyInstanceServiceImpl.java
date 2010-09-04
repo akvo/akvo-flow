@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.server.surveyinstance;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +15,11 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
+import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
@@ -94,8 +100,20 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		}
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		dao.save(domainList);
+		// now send a change message for each item
+		Queue queue = QueueFactory.getQueue("dataUpdate");
+		for (QuestionAnswerStoreDto item : dtoList) {
+			DataChangeRecord value = new DataChangeRecord(
+					QuestionAnswerStore.class.getName(), item.getQuestionID(),
+					item.getOldValue(), item.getValue());
+			queue.add(url("/app_worker/dataupdate").param(
+					DataSummarizationRequest.OBJECT_KEY, item.getQuestionID())
+					.param(DataSummarizationRequest.OBJECT_TYPE,
+							"QuestionDataChange").param(
+							DataSummarizationRequest.VALUE_KEY,
+							value.packString()));
+		}
 
 		return dtoList;
 	}
-
 }
