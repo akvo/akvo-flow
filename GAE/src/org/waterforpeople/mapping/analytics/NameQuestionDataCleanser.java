@@ -36,6 +36,11 @@ public class NameQuestionDataCleanser implements DataSummarizer {
 		List<QuestionAnswerStore> answers = dao
 				.listQuestionAnswerStoreForQuestion(key, cursor);
 		if (answers != null && answers.size() > 0) {
+			currentCursor = SurveyInstanceDAO.getCursor(answers);
+		} else {
+			currentCursor = null;
+		}
+		if (answers != null && answers.size() > 0) {
 			for (QuestionAnswerStore answer : answers) {
 				if (answer.getValue() != null) {
 					String newValue = StringUtil.capitalizeString(answer
@@ -51,11 +56,9 @@ public class NameQuestionDataCleanser implements DataSummarizer {
 			// now persist the changes
 			dao.save(answers);
 		}
-		if (answers != null && answers.size() == 20) {
-			currentCursor = SurveyInstanceDAO.getCursor(answers);
+		if (currentCursor != null) {
 			return false;
 		} else {
-			currentCursor = null;
 			return true;
 		}
 	}

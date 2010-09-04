@@ -73,9 +73,10 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 			}
 			if (idx < applicableSummarizers.size()) {
 				boolean isCompleted = false;
+				DataSummarizer summarizer = null;
 				try {
 					Class cls = Class.forName(applicableSummarizers.get(idx));
-					DataSummarizer summarizer = (DataSummarizer) cls
+					summarizer = (DataSummarizer) cls
 							.newInstance();
 					isCompleted = summarizer.performSummarization(
 							summarizationRequest.getObjectKey(),
@@ -89,7 +90,7 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 							e);
 					isCompleted = true;
 				}
-				if (!isCompleted) {
+				if (!isCompleted && summarizer != null) {
 					// if we're not done, increment offset and call the same
 					// summarizer
 					summarizationRequest.setAction(applicableSummarizers
@@ -97,6 +98,7 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 					summarizationRequest.setOffset(summarizationRequest
 							.getOffset()
 							+ DataSummarizer.BATCH_SIZE);
+					summarizationRequest.setCursor(summarizer.getCursor());
 					invokeSummarizer(summarizationRequest);
 				} else {
 					if (idx < applicableSummarizers.size() - 1) {
