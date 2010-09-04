@@ -46,12 +46,20 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 			summary.setCount(new Long(1));
 			summary.setQuestionId(answer.getQuestionID());
 			summary.setResponse(answer.getValue());
-		} else if(results != null && results.size()>0){
+		} else if (results != null && results.size() > 0) {
 			summary = (SurveyQuestionSummary) results.get(0);
 			summary.setCount(summary.getCount() + unit);
 		}
-		SurveyQuestionSummaryDao thisDao = new SurveyQuestionSummaryDao();
-		thisDao.save(summary);
+		if (summary != null) {
+			SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+			if (summary.getCount() > 0) {
+				summaryDao.save(summary);
+			} else if (summary.getKey() != null) {
+				// if count has been decremented to 0 and the object is already
+				// persisted, delete it
+				summaryDao.delete(summary);
+			}
+		}
 	}
 
 	/**
