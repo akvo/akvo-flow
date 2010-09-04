@@ -128,10 +128,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	 * @param questionId
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listQuestionAnswerStoreForQuestion(
-			String questionId) {
-		return listByProperty("questionID", questionId, "String",
-				QuestionAnswerStore.class);
+			String questionId, String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query q = pm.newQuery(QuestionAnswerStore.class);
+		q.setFilter("questionID == qidParam");
+		q.declareParameters("String qidParam");
+		prepareCursor(cursorString, q);
+		return (List<QuestionAnswerStore>) q.execute(questionId);
 	}
 
 	/**

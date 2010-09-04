@@ -16,10 +16,22 @@ public interface DataSummarizer {
 	 * 
 	 * @param key
 	 * @param type
+	 * @param value
+	 *            - payload
 	 * @param offset
-	 *            - integer offset used for batching processing
+	 *            - integer offset used for batching processing. This offset is
+	 *            used for batching at the input object level.
+	 * @param cursor
+	 *            - used for batching based on results from the data store
 	 * @return - true if summarization completed, false if not
 	 */
-	public boolean performSummarization(String key, String type, Integer offset);
+	public boolean performSummarization(String key, String type, String value,
+			Integer offset, String cursor);
 
+	/**
+	 * returns the current cursor string, if any
+	 * 
+	 * @return
+	 */
+	public String getCursor();
 }

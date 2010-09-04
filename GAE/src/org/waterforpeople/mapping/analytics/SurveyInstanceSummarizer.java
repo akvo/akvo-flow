@@ -42,7 +42,8 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 	 * increment the count for the summary record.
 	 */
 	@Override
-	public boolean performSummarization(String key, String type, Integer offset) {
+	public boolean performSummarization(String key, String type, String value,
+			Integer offset, String cursor) {
 		if (key != null) {
 
 			SurveyInstance instance = instanceDao.getByKey(new Long(key));
@@ -75,5 +76,10 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public String getCursor() {
+		return null;
 	}
 }

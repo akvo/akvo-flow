@@ -8,9 +8,6 @@ import com.google.appengine.api.datastore.Text;
 @PersistenceCapable
 public class QuestionOptionSummary extends BaseDomain {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4569158260741601484L;
 	private Key surveyKey = null;
 	private String surveyCode = null;

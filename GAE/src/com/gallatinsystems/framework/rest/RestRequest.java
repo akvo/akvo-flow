@@ -23,7 +23,9 @@ public abstract class RestRequest implements Serializable {
 	private static final String API_KEY_PARAM = "apiKey";
 	private static final String STARTROW_PARAM = "startRow";
 	private static final String ENDROW_PARAM = "endRow";
+	public static final String CURSOR_PARAM = "cursor";
 	private static final String DESIRED_RESULTS_PARAM = "maxResults";
+	private static final String NULL_STRING = "null";
 
 	private List<RestError> validationErrorList;
 
@@ -32,6 +34,7 @@ public abstract class RestRequest implements Serializable {
 	private int desiredResults;
 	private String action;
 	private String apiKey;
+	private String cursor;
 
 	/**
 	 * populates the common fields and then dispatches ot the populateFields
@@ -44,6 +47,13 @@ public abstract class RestRequest implements Serializable {
 			throws Exception {
 		setAction(servletRequest.getParameter(RestRequest.ACTION_PARAM));
 		setApiKey(servletRequest.getParameter(RestRequest.API_KEY_PARAM));
+		cursor = servletRequest.getParameter(CURSOR_PARAM);
+		if (cursor != null) {
+			if (NULL_STRING.equalsIgnoreCase(cursor.trim())
+					|| cursor.trim().length() == 0) {
+				cursor = null;
+			}
+		}
 		setStartRow(stringToInt(servletRequest
 				.getParameter(RestRequest.STARTROW_PARAM)));
 		setEndRow(stringToInt(servletRequest
@@ -51,6 +61,18 @@ public abstract class RestRequest implements Serializable {
 		setDesiredResults(stringToInt(servletRequest
 				.getParameter(RestRequest.DESIRED_RESULTS_PARAM)));
 		populateFields(servletRequest);
+	}
+
+	public String getCursor() {
+		return cursor;
+	}
+
+	public void setCursor(String cursor) {
+		this.cursor = cursor;
+	}
+
+	public List<RestError> getValidationErrorList() {
+		return validationErrorList;
 	}
 
 	public int getStartRow() {

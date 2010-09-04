@@ -77,13 +77,17 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 					Class cls = Class.forName(applicableSummarizers.get(idx));
 					DataSummarizer summarizer = (DataSummarizer) cls
 							.newInstance();
-
 					isCompleted = summarizer.performSummarization(
 							summarizationRequest.getObjectKey(),
 							summarizationRequest.getType(),
-							summarizationRequest.getOffset());
+							summarizationRequest.getValue(),
+							summarizationRequest.getOffset(),
+							summarizationRequest.getCursor());
 				} catch (Exception e) {
-					log("Could not invoke summarizer", e);
+					log(
+							"Could not invoke summarizer. Setting complete to true to continue with processing",
+							e);
+					isCompleted = true;
 				}
 				if (!isCompleted) {
 					// if we're not done, increment offset and call the same
@@ -113,6 +117,7 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 
 	/**
 	 * puts the summarization request into the queue
+	 * 
 	 * @param request
 	 */
 	private void invokeSummarizer(DataSummarizationRequest request) {
@@ -126,7 +131,10 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 						.param(DataSummarizationRequest.OBJECT_TYPE,
 								request.getType()).param(
 								DataSummarizationRequest.OFFSET_KEY,
-								request.getOffset().toString()));
+								request.getOffset().toString()).param(
+								DataSummarizationRequest.CURSOR_PARAM,
+								request.getCursor() != null ? request
+										.getCursor() : ""));
 	}
 
 	@Override

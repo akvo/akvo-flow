@@ -18,25 +18,26 @@ import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 public class SurveyQuestionSummarizer implements DataSummarizer {
 
 	@Override
-	public boolean performSummarization(String key, String type, Integer offset) {
+	public boolean performSummarization(String key, String type, String value,
+			Integer offset, String cursor) {
 		if (key != null) {
 			SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
 			List<QuestionAnswerStore> answers = instanceDao
-					.listQuestionAnswerStore(new Long(key),null);
+					.listQuestionAnswerStore(new Long(key), null);
 			if (answers != null) {
 				int i = 0;
-				if(offset != null){
+				if (offset != null) {
 					i = offset;
-				}else{
+				} else {
 					offset = 0;
 				}
-				//process BATCH_SIZE items
-				while(i < answers.size() && i< offset+BATCH_SIZE){
-					SurveyQuestionSummaryDao.incrementCount(answers.get(i));
+				// process BATCH_SIZE items
+				while (i < answers.size() && i < offset + BATCH_SIZE) {
+					SurveyQuestionSummaryDao.incrementCount(answers.get(i),1);
 					i++;
 				}
-				//if we still have more answers to process, return false
-				if(i < answers.size()){
+				// if we still have more answers to process, return false
+				if (i < answers.size()) {
 					return false;
 				}
 			}
@@ -44,4 +45,8 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
 		return true;
 	}
 
+	@Override
+	public String getCursor() {
+		return null;
+	}
 }

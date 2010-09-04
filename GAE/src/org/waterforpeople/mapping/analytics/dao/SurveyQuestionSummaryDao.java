@@ -31,7 +31,8 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 	 * @param answer
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized void incrementCount(QuestionAnswerStore answer) {
+	public static synchronized void incrementCount(QuestionAnswerStore answer,
+			int unit) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
 		query
@@ -40,24 +41,24 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 		List results = (List) query.execute(answer.getQuestionID(), answer
 				.getValue());
 		SurveyQuestionSummary summary = null;
-		if (results == null || results.size() == 0) {
+		if ((results == null || results.size() == 0) && unit > 0) {
 			summary = new SurveyQuestionSummary();
 			summary.setCount(new Long(1));
 			summary.setQuestionId(answer.getQuestionID());
 			summary.setResponse(answer.getValue());
-		} else {
+		} else if(results != null && results.size()>0){
 			summary = (SurveyQuestionSummary) results.get(0);
-			summary.setCount(summary.getCount() + 1);
+			summary.setCount(summary.getCount() + unit);
 		}
 		SurveyQuestionSummaryDao thisDao = new SurveyQuestionSummaryDao();
 		thisDao.save(summary);
 	}
-	
+
 	/**
-	* this method will list all the summary objects for a given question id
-	*/
-	public List<SurveyQuestionSummary> listByQuestion(String qId){
-		return listByProperty("questionId",qId,"String");
+	 * this method will list all the summary objects for a given question id
+	 */
+	public List<SurveyQuestionSummary> listByQuestion(String qId) {
+		return listByProperty("questionId", qId, "String");
 	}
 
 }

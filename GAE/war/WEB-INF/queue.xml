@@ -17,6 +17,10 @@
     <name>dataSummarization</name>
     <rate>5/s</rate>
   </queue>
+   <queue>
+    <name>dataUpdate</name>
+    <rate>5/s</rate>
+  </queue>
   <queue>
   <name>spreadsheetImport</name>
   <rate>5/s</rate>

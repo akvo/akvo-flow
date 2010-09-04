@@ -25,8 +25,7 @@ public class AccessPointRequest extends RestRequest {
 	private static final String CONST_DATE_TO_PARAM = "constructionDateTo";
 	private static final String COLL_DATE_FROM_PARAM = "collectionDateFrom";
 	private static final String COLL_DATE_TO_PARAM = "collectionDateTo";
-	private static final String TYPE_PARAM = "pointType";
-	public static final String CURSOR_PARAM = "cursor";
+	private static final String TYPE_PARAM = "pointType";	
 	public static final String NEARBY_ACTION = "getnearby";
 	public static final String SEARCH_ACTION = "search";
 
@@ -98,16 +97,6 @@ public class AccessPointRequest extends RestRequest {
 		this.country = country;
 	}
 
-	public String getCursor() {
-		return cursor;
-	}
-
-	public void setCursor(String cursor) {
-		this.cursor = cursor;
-	}
-
-	private String cursor;
-
 	public Double getLat() {
 		return lat;
 	}
@@ -144,8 +133,7 @@ public class AccessPointRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
-		country = req.getParameter(COUNTRY_PARAM);
-		cursor = req.getParameter(CURSOR_PARAM);
+		country = req.getParameter(COUNTRY_PARAM);		
 		community = req.getParameter(COMM_PARAM);
 		type = req.getParameter(TYPE_PARAM);
 		if (country != null) {

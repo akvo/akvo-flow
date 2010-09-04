@@ -48,7 +48,6 @@ import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
-import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -219,7 +218,7 @@ public class TestHarnessServlet extends HttpServlet {
 							.println("AP: " + ap.getLatitude() + "/"
 									+ ap.getLongitude() + "Date: "
 									+ calendar.getTime());
-					//ap.setCollectionDate(calendar.getTime());
+					// ap.setCollectionDate(calendar.getTime());
 					ap.setAltitude(0.0);
 					ap.setCommunityCode("test" + new Date());
 					ap.setCommunityName("test" + new Date());
@@ -918,25 +917,16 @@ public class TestHarnessServlet extends HttpServlet {
 					e1.printStackTrace();
 				}
 			} else {
-				fixNameQuestion(req.getParameter("questionId"));
+				fixNameQuestion(req.getParameter("questionId"));				
 			}
 		}
 	}
 
 	private void fixNameQuestion(String questionId) {
-		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		List<QuestionAnswerStore> answers = dao
-				.listQuestionAnswerStoreForQuestion(questionId);
-		if (answers != null) {
-			for (QuestionAnswerStore answer : answers) {
-				if (answer.getValue() != null) {
-					answer.setValue(StringUtil.capitalizeString(answer
-							.getValue()));
-				}
-			}
-			// now persist the changes
-			dao.save(answers);
-		}
+		Queue summQueue = QueueFactory.getQueue("dataUpdate");
+		summQueue.add(url("/app_worker/dataupdate").param(
+				"objectKey", questionId + "").param("type",
+				"NameQuestionFix"));
 	}
 
 	private boolean deleteSurveyResponses(Integer surveyId, Integer count) {
