@@ -10,12 +10,15 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface SurveyInstanceServiceAsync {
 
 	void listSurveyInstance(Date beginDate, String cursorString,
-			AsyncCallback< ResponseDto<ArrayList<SurveyInstanceDto>>> callback);
+			AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>> callback);
 
 	void saveSurveyInstance(SurveyInstanceDto item,
 			AsyncCallback<SurveyInstanceDto> callback);
 
 	void listQuestionsByInstance(Long instanceId,
+			AsyncCallback<List<QuestionAnswerStoreDto>> callback);
+
+	void updateQuestions(List<QuestionAnswerStoreDto> dtoList,
 			AsyncCallback<List<QuestionAnswerStoreDto>> callback);
 
 }

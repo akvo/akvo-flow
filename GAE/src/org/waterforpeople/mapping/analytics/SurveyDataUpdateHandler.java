@@ -32,6 +32,10 @@ public class SurveyDataUpdateHandler extends DataSummarizationHandler {
 		questionUpdateSummarizers.add("org.waterforpeople.mapping.analytics.SurveyQuestionSummaryUpdater");
 		summarizers.put("QuestionDataChange", questionUpdateSummarizers);
 		
+	/*	List<String> accessPointUpdaters = new ArrayList<String>();
+		
+		summarizers.put("AccessPointDataChange", accessPointUpdaters);*/
+		
 		
 	}
 }

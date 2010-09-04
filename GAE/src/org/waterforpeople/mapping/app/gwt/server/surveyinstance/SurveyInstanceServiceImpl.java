@@ -47,8 +47,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	public List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId) {
 		List<QuestionAnswerStoreDto> questionDtos = new ArrayList<QuestionAnswerStoreDto>();
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		List<QuestionAnswerStore> questions = dao
-				.listQuestionAnswerStore(instanceId,null);
+		List<QuestionAnswerStore> questions = dao.listQuestionAnswerStore(
+				instanceId, null);
 		if (questions != null) {
 			for (QuestionAnswerStore qas : questions) {
 				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
@@ -77,6 +77,25 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	public SurveyInstanceDto saveSurveyInstance(SurveyInstanceDto item) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * updates the list of QAS dto objects passed in and fires summarization
+	 * messages to the async queues
+	 */
+	@Override
+	public List<QuestionAnswerStoreDto> updateQuestions(
+			List<QuestionAnswerStoreDto> dtoList) {
+		List<QuestionAnswerStore> domainList = new ArrayList<QuestionAnswerStore>();
+		for (QuestionAnswerStoreDto dto : dtoList) {
+			QuestionAnswerStore answer = new QuestionAnswerStore();
+			DtoMarshaller.copyToCanonical(answer, dto);
+			domainList.add(answer);
+		}
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		dao.save(domainList);
+
+		return dtoList;
 	}
 
 }

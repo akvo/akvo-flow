@@ -84,7 +84,7 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 		Query q = pm.newQuery(SurveyAttributeMapping.class);
 		q
 				.setFilter("surveyId == surveyIdParam && attributeName == attrNameParam");
-		q.declareParameters("Long surveyIdParam, String attrNameParam");		
+		q.declareParameters("Long surveyIdParam, String attrNameParam");
 		List<SurveyAttributeMapping> mappingList = (List<SurveyAttributeMapping>) q
 				.execute(surveyId, attributeName);
 		if (mappingList != null && mappingList.size() > 0) {
@@ -92,7 +92,16 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 		} else {
 			return null;
 		}
+	}
 
+	/**
+	 * finds the mapping for the question id passed in
+	 * 
+	 * @param questionId
+	 * @return
+	 */
+	public SurveyAttributeMapping findMappingForQuestion(String questionId) {
+		return findByProperty("surveyQuestionId", questionId, "String");
 	}
 
 }

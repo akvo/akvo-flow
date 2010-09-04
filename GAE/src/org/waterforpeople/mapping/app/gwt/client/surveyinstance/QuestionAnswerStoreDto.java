@@ -16,8 +16,26 @@ public class QuestionAnswerStoreDto extends BaseDto{
 	private String type;
 	private String value;
 	private Date collectionDate;
+	private Long surveyId;
+	private Long surveyInstanceId;
 	
 	
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public Long getSurveyInstanceId() {
+		return surveyInstanceId;
+	}
+
+	public void setSurveyInstanceId(Long surveyInstanceId) {
+		this.surveyInstanceId = surveyInstanceId;
+	}
+
 	public Date getCollectionDate() {
 		return collectionDate;
 	}

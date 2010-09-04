@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
@@ -9,7 +11,10 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceSe
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -18,6 +23,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
@@ -28,6 +34,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	public static final String DESCRIPTION = "Allows the management of raw imported survey data";
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
+	private static final String EDITED_ROW_CSS = "gridCell-edited";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
 
@@ -46,6 +53,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private Button previousButton;
 	private HorizontalPanel contentPanel;
 	private List<String> cursorArray;
+	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 
 	public RawDataViewPortlet() {
 		super(NAME, true, false, width, height, null, false, null);
@@ -67,7 +75,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		surveyInstancePanel = new VerticalPanel();
 
 		contentPanel.add(surveyInstancePanel);
-		contentPanel.add(qasDetailGrid);
+		contentPanel.add(new ScrollPanel(qasDetailGrid));
 		statusLabel = new Label();
 		surveyInstancePanel.add(statusLabel);
 		surveyInstancePanel.add(instanceGrid);
@@ -148,17 +156,17 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 								setGridRowStyle(instanceGrid, count, false);
 								count++;
 							}
-							if(currentDtoList.size()>=20){
+							if (currentDtoList.size() >= 20) {
 								nextButton.setVisible(true);
-							}else{
+							} else {
 								nextButton.setVisible(false);
 							}
-							if(currentPage>0){
+							if (currentPage > 0) {
 								previousButton.setVisible(true);
-							}else{
+							} else {
 								previousButton.setVisible(false);
 							}
-						}else{
+						} else {
 							nextButton.setVisible(false);
 							previousButton.setVisible(false);
 						}
@@ -167,10 +175,11 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 				});
 	}
 
-	private void populateQuestions(List<QuestionAnswerStoreDto> questions) {
+	private void populateQuestions(final List<QuestionAnswerStoreDto> questions) {
 		statusLabel.setVisible(false);
+		changedAnswers = new HashMap<Long, QuestionAnswerStoreDto>();
 		if (questions != null) {
-			qasDetailGrid.resize(questions.size() + 1, 4);
+			qasDetailGrid.resize(questions.size() + 2, 4);
 			qasDetailGrid.setWidget(0, 0, new Label("Question Id"));
 			qasDetailGrid.setWidget(0, 1, new Label("Question Type"));
 			qasDetailGrid.setWidget(0, 2, new Label("Answer Value"));
@@ -179,15 +188,117 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			for (QuestionAnswerStoreDto qasDto : questions) {
 				bindQASRow(qasDto, ++iRow);
 			}
+			final Button saveButton = new Button("Save Changes");
+			saveButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					if (changedAnswers != null && changedAnswers.size() > 0) {
+						statusLabel.setText("Saving. Please wait...");
+						statusLabel.setVisible(true);
+						svc
+								.updateQuestions(
+										new ArrayList<QuestionAnswerStoreDto>(
+												changedAnswers.values()),
+										new AsyncCallback<List<QuestionAnswerStoreDto>>() {
+
+											@Override
+											public void onFailure(
+													Throwable caught) {
+												MessageDialog errDia = new MessageDialog(
+														"Application Error",
+														"Cannot update responses");
+												errDia
+														.showRelativeTo(saveButton);
+												statusLabel.setVisible(false);
+											}
+
+											@Override
+											public void onSuccess(
+													List<QuestionAnswerStoreDto> result) {
+												statusLabel.setVisible(false);
+												if (result != null) {
+													// update the value in the
+													// questionsList so we can
+													// keep the data consistent
+													// if the user presses clear
+													for (QuestionAnswerStoreDto dto : result) {
+														for (int i = 0; i < questions
+																.size(); i++) {
+															if (questions
+																	.get(i)
+																	.getKeyId()
+																	.equals(
+																			dto
+																					.getKeyId())) {
+																questions
+																		.get(i)
+																		.setValue(
+																				dto
+																						.getValue());
+															}
+														}
+													}
+												}												
+												populateQuestions(questions);
+											}
+										});
+					}
+				}
+			});
+			Button clearButton = new Button("Clear Changes");
+			clearButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					populateQuestions(questions);
+				}
+			});
+			qasDetailGrid.setWidget(iRow + 1, 0, saveButton);
+			qasDetailGrid.setWidget(iRow + 1, 1, clearButton);
 		}
 	}
 
-	private void bindQASRow(QuestionAnswerStoreDto qasDto, Integer iRow) {
+	private void bindQASRow(final QuestionAnswerStoreDto qasDto,
+			final Integer iRow) {
 		TextBox qId = new TextBox();
+		qId.setReadOnly(true);
+		qId.setTabIndex(-1);
 		TextBox qType = new TextBox();
+		qType.setReadOnly(true);
+		qType.setTabIndex(-1);
 		TextBox qValue = new TextBox();
-		TextBox qCollectionDate = new TextBox();
+		qValue.addChangeHandler(new ChangeHandler() {
 
+			@Override
+			public void onChange(ChangeEvent event) {
+				String oldVal = qasDto.getValue();
+				String newVal = ((TextBox) event.getSource()).getValue();
+				if (!newVal.trim().equals(oldVal)) {
+					qasDetailGrid.getCellFormatter().setStyleName(iRow, 2,
+							EDITED_ROW_CSS);
+					// create a new copy of the answer so we don't overwrite the
+					// old value
+					QuestionAnswerStoreDto newAnswer = new QuestionAnswerStoreDto();
+					newAnswer.setKeyId(qasDto.getKeyId());
+					newAnswer.setArbitratyNumber(qasDto.getArbitratyNumber());
+					newAnswer.setCollectionDate(qasDto.getCollectionDate());
+					newAnswer.setType(qasDto.getType());
+					newAnswer.setQuestionID(qasDto.getQuestionID());
+					newAnswer.setValue(newVal.trim());
+					newAnswer.setSurveyId(qasDto.getSurveyId());
+					newAnswer.setSurveyInstanceId(qasDto.getSurveyInstanceId());
+					changedAnswers.put(newAnswer.getKeyId(), newAnswer);
+
+				} else {
+					qasDetailGrid.getCellFormatter().setStyleName(iRow, 2, "");
+				}
+
+			}
+		});
+		TextBox qCollectionDate = new TextBox();
+		qCollectionDate.setReadOnly(true);
+		qCollectionDate.setTabIndex(-1);
 		if (qasDto != null) {
 			if (qasDto.getKeyId() != null)
 				qId.setText(qasDto.getQuestionID());
@@ -204,6 +315,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		qasDetailGrid.setWidget(iRow, 1, qType);
 		qasDetailGrid.setWidget(iRow, 2, qValue);
 		qasDetailGrid.setWidget(iRow, 3, qCollectionDate);
+		for (int j = 0; j < qasDetailGrid.getCellCount(iRow); j++) {
+			qasDetailGrid.getCellFormatter().setStyleName(iRow, j, "");
+		}
 	}
 
 	private String getCursor(int page) {

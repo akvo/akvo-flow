@@ -13,10 +13,8 @@ import com.gallatinsystems.framework.domain.DataChangeRecord;
  * 
  */
 public class SurveyQuestionSummaryUpdater implements DataSummarizer {
-	
 
 	public SurveyQuestionSummaryUpdater() {
-
 	}
 
 	@Override
@@ -33,6 +31,7 @@ public class SurveyQuestionSummaryUpdater implements DataSummarizer {
 				.getId(), changeRecord.getOldVal()), -1);
 		SurveyQuestionSummaryDao.incrementCount(constructQAS(changeRecord
 				.getId(), changeRecord.getNewVal()), 1);
+
 		return true;
 	}
 
