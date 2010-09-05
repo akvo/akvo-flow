@@ -3,7 +3,6 @@ package org.waterforpeople.mapping.helper;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +11,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -23,8 +23,10 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
-import com.gallatinsystems.common.util.DateUtil;
+import com.gallatinsystems.common.util.StringUtil;
+import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -212,16 +214,57 @@ public class AccessPointHelper {
 	 */
 	public AccessPoint saveAccessPoint(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
-		if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
-			if (ap.getLatitude() != null && ap.getLongitude() != null) {
-				ap.setGeocells(GeocellManager.generateGeoCell(new Point(ap
-						.getLatitude(), ap.getLongitude())));
+		if (ap != null) {
+			if (ap.getKey() != null) {
+				String oldValues = null;
+				if (ap != null && ap.getKey() != null) {
+					AccessPoint oldPoint = apDao.getByKey(ap.getKey());
+					oldValues = oldPoint.getCountryCode()
+							+ "|"
+							+ oldPoint.getCommunityCode()
+							+ "|"
+							+ oldPoint.getPointType().toString()
+							+ "|"
+							+ oldPoint.getPointStatus().toString()
+							+ "|"
+							+ StringUtil.getYearString(oldPoint
+									.getCollectionDate());
+				}
+				ap = apDao.save(ap);
+
+				String newValues = ap.getCountryCode() + "|"
+						+ ap.getCommunityCode() + "|"
+						+ ap.getPointType().toString() + "|"
+						+ ap.getPointStatus().toString() + "|"
+						+ StringUtil.getYearString(ap.getCollectionDate());
+				if (oldValues != null) {
+					DataChangeRecord change = new DataChangeRecord(
+							AccessPointStatusSummary.class.getName(), "n/a",
+							oldValues, newValues);
+					Queue queue = QueueFactory.getQueue("dataUpdate");
+					queue.add(url("/app_worker/dataupdate").param(
+							DataSummarizationRequest.OBJECT_KEY,
+							ap.getKeyString()).param(
+							DataSummarizationRequest.OBJECT_TYPE,
+							"AccessPointSummaryChange").param(
+							DataSummarizationRequest.VALUE_KEY,
+							change.packString()));
+				}
+			} else {
+				if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
+					if (ap.getLatitude() != null && ap.getLongitude() != null) {
+						ap.setGeocells(GeocellManager
+								.generateGeoCell(new Point(ap.getLatitude(), ap
+										.getLongitude())));
+					}
+				}
+				ap = apDao.save(ap);
+				Queue summQueue = QueueFactory.getQueue("dataSummarization");
+				summQueue.add(url("/app_worker/datasummarization").param(
+						"objectKey", ap.getKey().getId() + "").param("type",
+						"AccessPoint"));
 			}
 		}
-		ap = apDao.save(ap);
-		Queue summQueue = QueueFactory.getQueue("dataSummarization");
-		summQueue.add(url("/app_worker/datasummarization").param("objectKey",
-				ap.getKey().getId() + "").param("type", "AccessPoint"));
 		return ap;
 	}
 

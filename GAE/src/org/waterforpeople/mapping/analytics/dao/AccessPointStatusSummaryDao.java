@@ -38,7 +38,8 @@ public class AccessPointStatusSummaryDao extends
 	 * @param answer
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized void incrementCount(AccessPoint ap, Country c) {
+	public static synchronized void incrementCount(AccessPoint ap, Country c,
+			int unit) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
 		query
@@ -54,21 +55,31 @@ public class AccessPointStatusSummaryDao extends
 		List results = (List) query.executeWithArray(yearString, ap
 				.getPointStatus(), ap.getCommunityCode(), ap.getPointType());
 		AccessPointStatusSummary summary = null;
-		if (results == null || results.size() == 0) {
+		if ((results == null || results.size() == 0) && unit > 0) {
 			summary = new AccessPointStatusSummary();
 			summary.setCount(new Long(1));
 			summary.setYear(yearString);
 			summary.setStatus(ap.getPointStatus());
-			summary.setCountry(c.getIsoAlpha2Code());
+			if (ap.getCountryCode() != null) {
+				summary.setCountry(ap.getCountryCode());
+			} else {
+				summary.setCountry(c.getIsoAlpha2Code());
+			}
 			summary.setCommunity(ap.getCommunityCode());
 			summary.setType(ap.getPointType() != null ? ap.getPointType()
 					.toString() : "UNKNOWN");
-		} else {
+		} else if (unit > 0) {
 			summary = (AccessPointStatusSummary) results.get(0);
-			summary.setCount(summary.getCount() + 1);
+			summary.setCount(summary.getCount() + unit);
 		}
-		AccessPointStatusSummaryDao thisDao = new AccessPointStatusSummaryDao();
-		thisDao.save(summary);
+		if (summary != null) {
+			AccessPointStatusSummaryDao thisDao = new AccessPointStatusSummaryDao();
+			if (summary.getCount() == 0 && summary.getKey() != null) {
+				thisDao.delete(summary);
+			} else if (summary.getCount() > 0) {
+				thisDao.save(summary);
+			}
+		}
 	}
 
 	/**

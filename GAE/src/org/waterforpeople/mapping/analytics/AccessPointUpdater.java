@@ -85,19 +85,17 @@ public class AccessPointUpdater implements DataSummarizer {
 								null, null, "collectionDate", "desc", null);
 						if (pointList != null && pointList.size() > 0) {
 							AccessPoint point = pointList.get(0);
-							try {
+							try {								
 								AccessPointHelper.setAccessPointField(point,
 										changedAnswer, questionMapping);
-								apDao.save(point);
+								apDao.save(point);																
 							} catch (Exception e) {
 								logger.log(Level.SEVERE,
 										"Could not update AP field", e);
 							}
-
 						}
 					}
 				}
-
 			}
 		}
 		return true;

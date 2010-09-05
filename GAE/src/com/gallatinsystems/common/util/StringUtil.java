@@ -1,5 +1,9 @@
 package com.gallatinsystems.common.util;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 /**
  * string manipulation utility methods
  * 
@@ -25,10 +29,27 @@ public class StringUtil {
 			} else if (Character.isWhitespace(chars[i]) || chars[i] == '.'
 					|| chars[i] == '\'') {
 				isFirst = true;
-			}else{
+			} else {
 				chars[i] = Character.toLowerCase(chars[i]);
 			}
 		}
 		return String.valueOf(chars);
+	}
+
+	/**
+	 * returns the four digit year as a string or an empty string if the date is
+	 * null
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String getYearString(Date date) {
+		String yearString = "";
+		if (date != null) {
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTime(date);
+			yearString = cal.get(Calendar.YEAR) + "";
+		}
+		return yearString;
 	}
 }

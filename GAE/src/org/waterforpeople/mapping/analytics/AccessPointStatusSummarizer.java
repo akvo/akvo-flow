@@ -18,7 +18,8 @@ import com.gallatinsystems.gis.geography.domain.Country;
 public class AccessPointStatusSummarizer implements DataSummarizer {
 
 	@Override
-	public boolean performSummarization(String key, String type, String value, Integer offset, String cursor) {
+	public boolean performSummarization(String key, String type, String value,
+			Integer offset, String cursor) {
 		if (key != null) {
 			BaseDAO<AccessPoint> accessPointDao = new BaseDAO<AccessPoint>(
 					AccessPoint.class);
@@ -27,20 +28,20 @@ public class AccessPointStatusSummarizer implements DataSummarizer {
 				CommunityDao commDao = new CommunityDao();
 				Country c = commDao.findCountryByCommunity(ap
 						.getCommunityCode());
-				if(c == null){
-					//if we didn't find a country, use a placeholder for now
-					c= new Country();
+				if (c == null) {
+					// if we didn't find a country, use a placeholder for now
+					c = new Country();
 					c.setIsoAlpha2Code("??");
-					c.setName("Unknown");					
+					c.setName("Unknown");
 				}
-				AccessPointStatusSummaryDao.incrementCount(ap, c);
+				AccessPointStatusSummaryDao.incrementCount(ap, c, 1);
 			}
 		}
 		return true;
 	}
 
 	@Override
-	public String getCursor() {		
+	public String getCursor() {
 		return null;
 	}
 

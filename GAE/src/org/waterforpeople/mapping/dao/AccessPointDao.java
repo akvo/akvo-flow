@@ -158,6 +158,14 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return results;
 	}
 
+	/**
+	 * lists all access points by the technology type string
+	 * 
+	 * @param countryCode
+	 * @param technologyType
+	 * @param cursorString
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointsByTechnology(String countryCode,
 			String technologyType, String cursorString) {
@@ -171,9 +179,17 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode,
 				technologyType);
 		return result;
-
 	}
 
+	/**
+	 * lists all access points in order of decreasing date (either collection or
+	 * construction date depending on the dateColumn passed in)
+	 * 
+	 * @param dateColumn
+	 * @param orderDirection
+	 * @param cursorString
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointsByDateOrdered(String dateColumn,
 			String orderDirection, String cursorString) {
@@ -184,16 +200,22 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> result = (List<AccessPoint>) q.execute();
 		return result;
 	}
-	
-	public List<AccessPoint> listAccessPointsWithErrors(String cursorString){
+
+	/**
+	 * lists all access points that contain invalid data
+	 * 
+	 * @param cursorString
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<AccessPoint> listAccessPointsWithErrors(String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
 		q.setOrdering("createdDateTime desc");
-		//q.setFilter("latitude == 0.0 || longitude == 0.0 || pointStatus == null");
+		// q.setFilter("latitude == 0.0 || longitude == 0.0 || pointStatus == null");
 		q.setFilter("latitude == 0.0");
 		prepareCursor(cursorString, q);
 		List<AccessPoint> result = (List<AccessPoint>) q.execute();
 		return result;
 	}
-
 }
