@@ -223,7 +223,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
 		treeContainer.remove(detailContainer);
-		detailContainer = new VerticalPanel();
+		
+		detailContainer = new VerticalPanel();		
 		treeContainer.add(detailContainer);
 		TextBox questionId = new TextBox();
 		questionId.setVisible(false);
@@ -364,7 +365,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			}
 
 		});
-
+	
 		detailContainer.add(questionDetailPanel);
 		if (questionOptionDetail != null)
 			detailContainer.add(questionOptionDetail);

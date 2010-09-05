@@ -11,8 +11,10 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
@@ -99,6 +101,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			domainList.add(answer);
 		}
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		SurveyAttributeMappingDao mappingDao = new SurveyAttributeMappingDao();
 		dao.save(domainList);
 		// now send a change message for each item
 		Queue queue = QueueFactory.getQueue("dataUpdate");
@@ -112,6 +115,25 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 							"QuestionDataChange").param(
 							DataSummarizationRequest.VALUE_KEY,
 							value.packString()));
+			// see if the question is mapped. And if it is, send an Access Point
+			// change message
+			SurveyAttributeMapping mapping = mappingDao
+					.findMappingForQuestion(item.getQuestionID());
+			if (mapping != null) {
+				DataChangeRecord apValue = new DataChangeRecord(
+						"AcessPointUpdate", mapping.getSurveyId() + "|"
+								+ mapping.getSurveyQuestionId() + "|"
+								+ item.getSurveyInstanceId() + "|"
+								+ mapping.getKey().getId(), item.getOldValue(),
+						item.getValue());
+				queue.add(url("/app_worker/dataupdate").param(
+						DataSummarizationRequest.OBJECT_KEY,
+						item.getQuestionID()).param(
+						DataSummarizationRequest.OBJECT_TYPE,
+						"AccessPointChange").param(
+						DataSummarizationRequest.VALUE_KEY,
+						apValue.packString()));
+			}
 		}
 
 		return dtoList;

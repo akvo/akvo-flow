@@ -369,6 +369,12 @@ td.gridCell-selected {
   border: 1px solid #ffffff;
 }
 
+td.gridCell-edited {
+  padding: 5px;
+  background-color: #FF0000;
+  border: 1px solid #ffffff;
+}
+
 td.gridCell-even {
   padding: 5px;
   background-color: #D9ECF5;  

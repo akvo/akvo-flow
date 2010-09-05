@@ -75,7 +75,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		surveyInstancePanel = new VerticalPanel();
 
 		contentPanel.add(surveyInstancePanel);
-		contentPanel.add(new ScrollPanel(qasDetailGrid));
+		contentPanel.add(qasDetailGrid);
 		statusLabel = new Label();
 		surveyInstancePanel.add(statusLabel);
 		surveyInstancePanel.add(instanceGrid);
@@ -106,7 +106,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		surveyInstancePanel.add(buttonPanel);
 
 		loadSurveyInstance(true);
-		setWidget(contentPanel);
+		ScrollPanel sp = new ScrollPanel(contentPanel);
+		sp.setHeight(height.toString());
+		setWidget(sp);
 	}
 
 	@Override
