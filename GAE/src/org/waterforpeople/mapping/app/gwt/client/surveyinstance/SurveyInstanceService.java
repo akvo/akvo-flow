@@ -10,12 +10,14 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("surveyinstance")
 public interface SurveyInstanceService extends RemoteService {
-	ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
+	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
 			Date beginDate, String cursorString);
 
-	SurveyInstanceDto saveSurveyInstance(SurveyInstanceDto item);
+	public SurveyInstanceDto saveSurveyInstance(SurveyInstanceDto item);
 
 	public List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId);
 	
 	public List<QuestionAnswerStoreDto> updateQuestions(List<QuestionAnswerStoreDto> dtoList);
+	
+	public ResponseDto<ArrayList<QuestionAnswerStoreDto>> listResponsesByQuestion(Long questionId, String cursorString);
 }

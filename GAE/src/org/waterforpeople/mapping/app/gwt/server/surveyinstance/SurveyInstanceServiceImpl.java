@@ -73,12 +73,16 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		siDto.setQuestionAnswersStore(null);
 		if (si.getQuestionAnswersStore() != null) {
 			for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
-				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-				DtoMarshaller.copyToDto(qas, qasDto);
-				siDto.addQuestionAnswerStore(qasDto);
+				siDto.addQuestionAnswerStore(marshalToDto(qas));
 			}
 		}
 		return siDto;
+	}
+
+	private QuestionAnswerStoreDto marshalToDto(QuestionAnswerStore qas) {
+		QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
+		DtoMarshaller.copyToDto(qas, qasDto);
+		return qasDto;
 	}
 
 	@Override
@@ -138,4 +142,26 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 		return dtoList;
 	}
+
+	/**
+	 * lists all responses for a single question
+	 */
+	@Override
+	public ResponseDto<ArrayList<QuestionAnswerStoreDto>> listResponsesByQuestion(
+			Long questionId, String cursorString) {
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		List<QuestionAnswerStore> qasList = dao
+				.listQuestionAnswerStoreForQuestion(questionId.toString(),
+						cursorString);
+		String newCursor = SurveyInstanceDAO.getCursor(qasList);
+		ArrayList<QuestionAnswerStoreDto> qasDtoList = new ArrayList<QuestionAnswerStoreDto>();
+		for (QuestionAnswerStore item : qasList) {
+			qasDtoList.add(marshalToDto(item));
+		}
+		ResponseDto<ArrayList<QuestionAnswerStoreDto>> response = new ResponseDto<ArrayList<QuestionAnswerStoreDto>>();
+		response.setCursorString(newCursor);
+		response.setPayload(qasDtoList);
+		return response;
+	}
+
 }

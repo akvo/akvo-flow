@@ -295,6 +295,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 				} else {
 					qasDetailGrid.getCellFormatter().setStyleName(iRow, 2, "");
+					changedAnswers.remove(qasDto.getKeyId());
 				}
 
 			}

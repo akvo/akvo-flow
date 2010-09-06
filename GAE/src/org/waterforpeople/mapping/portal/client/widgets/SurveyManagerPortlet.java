@@ -223,8 +223,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
 		treeContainer.remove(detailContainer);
-		
-		detailContainer = new VerticalPanel();		
+
+		detailContainer = new VerticalPanel();
 		treeContainer.add(detailContainer);
 		TextBox questionId = new TextBox();
 		questionId.setVisible(false);
@@ -317,6 +317,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		Button saveQuestionButton = new Button("Save Question");
 		Button deleteQuestionButton = new Button("Delete Question");
+		Button viewResponsesButton = new Button("View Responses");
 		questionId.setVisible(false);
 
 		questionDetailPanel.setWidget(0, 0, questionId);
@@ -365,7 +366,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			}
 
 		});
-	
+
 		detailContainer.add(questionDetailPanel);
 		if (questionOptionDetail != null)
 			detailContainer.add(questionOptionDetail);
@@ -375,9 +376,18 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		buttonHPanel.add(saveQuestionButton);
 		buttonHPanel.add(deleteQuestionButton);
+		buttonHPanel.add(viewResponsesButton);
 
 		detailContainer.add(buttonHPanel);
-		// this.removeAllWidgetsLoadThisWidget(questionDetailPanel);
+
+		viewResponsesButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				QuestionResponseDialog dia = new QuestionResponseDialog(currentSelection.getKeyId());
+				dia.show();
+			}
+		});
 
 	}
 
@@ -439,7 +449,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					@Override
 					public void onChange(ChangeEvent event) {
 						ListBox questionLBox = (ListBox) event.getSource();
-						loadDepQA(questionLBox, questionGroup,null);
+						loadDepQA(questionLBox, questionGroup, null);
 
 					}
 				});
@@ -449,8 +459,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					// set existing value
 					qDepId.setText(qDto.getQuestionDependency().getQuestionId()
 							.toString());
-					loadDepQA(questionLB, questionGroup,qDto.getQuestionDependency().getAnswerValue());
-					
+					loadDepQA(questionLB, questionGroup, qDto
+							.getQuestionDependency().getAnswerValue());
+
 				}
 			}
 		} else {
@@ -458,7 +469,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
-	private void loadDepQA(ListBox questionLBox, QuestionGroupDto questionGroup, final String selectedAnswer) {
+	private void loadDepQA(ListBox questionLBox,
+			QuestionGroupDto questionGroup, final String selectedAnswer) {
 		Integer selectedIndex = questionLBox.getSelectedIndex();
 		String value = questionLBox.getValue(selectedIndex);
 		if (questionGroup != null) {
@@ -467,7 +479,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				if (qDto.getKeyId().toString().equals(value)) {
 					if (qDto.getOptionContainerDto() != null) {
 						updateDependencyAnswerSelection(qDto
-								.getOptionContainerDto().getOptionsList(), selectedAnswer);						
+								.getOptionContainerDto().getOptionsList(),
+								selectedAnswer);
 					} else {
 						// if the option container is null, we probably have not
 						// yet loaded the question details. so do it now
@@ -477,9 +490,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 									@Override
 									public void onSuccess(QuestionDto result) {
 										if (result.getOptionContainerDto() != null) {
-											updateDependencyAnswerSelection(result
-													.getOptionContainerDto()
-													.getOptionsList(), selectedAnswer);
+											updateDependencyAnswerSelection(
+													result
+															.getOptionContainerDto()
+															.getOptionsList(),
+													selectedAnswer);
 										}
 									}
 
@@ -496,23 +511,25 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
-	private void updateDependencyAnswerSelection(List<QuestionOptionDto> qoList, String selectedAnswer) {
+	private void updateDependencyAnswerSelection(
+			List<QuestionOptionDto> qoList, String selectedAnswer) {
 		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
 		answerLB.clear();
 		int answerIndex = -1;
 		if (qoList != null) {
-			int i =0;
+			int i = 0;
 			for (QuestionOptionDto qoDto : qoList) {
 				answerLB.addItem(qoDto.getText(), qoDto.getCode());
-				if(selectedAnswer != null && selectedAnswer.equals(qoDto.getCode())){
-					answerIndex =i; 
+				if (selectedAnswer != null
+						&& selectedAnswer.equals(qoDto.getCode())) {
+					answerIndex = i;
 				}
 				i++;
 			}
 		}
-		if(answerIndex>-1){
+		if (answerIndex > -1) {
 			answerLB.setSelectedIndex(answerIndex);
-		}		
+		}
 		answerLB.setVisible(true);
 	}
 
@@ -634,8 +651,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onSuccess(QuestionDto result) {
 				if (isNew) {
 					surveyTree.addChild(treeParent, result);
-				}else{
-					surveyTree.replaceUserObject(currentSelection,result);
+				} else {
+					surveyTree.replaceUserObject(currentSelection, result);
 					currentSelection = result;
 				}
 				if (result.getQuestionDependency() != null)
@@ -832,7 +849,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button publishSurveyButton = new Button("Publish");
 		Button exportSummaryButton = new Button("Export Summary");
 		Button exportRawDataButton = new Button("Export Raw Data");
-		
+
 		surveyDetail.setWidget(0, 0, surveyId);
 		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
 		surveyDetail.setWidget(1, 1, surveyname);
@@ -843,8 +860,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyDetail.setWidget(4, 0, saveSurveyButton);
 		surveyDetail.setWidget(4, 1, deleteSurveyButton);
 		surveyDetail.setWidget(4, 2, publishSurveyButton);
-		surveyDetail.setWidget(4,3,exportSummaryButton);
-		surveyDetail.setWidget(4,4,exportRawDataButton);
+		surveyDetail.setWidget(4, 3, exportSummaryButton);
+		surveyDetail.setWidget(4, 4, exportRawDataButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
 		saveSurveyButton.addClickHandler(new ClickHandler() {
@@ -883,38 +900,40 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 							Window.alert("Survey published");
 
 						}
-					});					
+					});
 				} else {
 					Window.alert("Please save survey before publishing");
 				}
 			}
 		});
-		
-		exportSummaryButton.addClickHandler(new ClickHandler() {			
+
+		exportSummaryButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
-				appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";								
-					appletString += "<PARAM name='criteria' value=surveyId="+item.getKeyId()+">";											
+				appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
+				appletString += "<PARAM name='criteria' value=surveyId="
+						+ item.getKeyId() + ">";
 				appletString += "</applet>";
 				HTML html = new HTML();
 				html.setHTML(appletString);
-				surveyDetail.setWidget(5, 0, html);				
+				surveyDetail.setWidget(5, 0, html);
 			}
 		});
-		
-		exportRawDataButton.addClickHandler(new ClickHandler() {			
+
+		exportRawDataButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
-				appletString += "<PARAM name='exportType' value='RAW_DATA'>";								
-					appletString += "<PARAM name='criteria' value=surveyId="+item.getKeyId()+">";											
+				appletString += "<PARAM name='exportType' value='RAW_DATA'>";
+				appletString += "<PARAM name='criteria' value=surveyId="
+						+ item.getKeyId() + ">";
 				appletString += "</applet>";
 				HTML html = new HTML();
 				html.setHTML(appletString);
-				surveyDetail.setWidget(5, 0, html);				
+				surveyDetail.setWidget(5, 0, html);
 			}
 		});
 
@@ -1126,6 +1145,5 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				loadQuestionDetails((QuestionDto) dto);
 			}
 		}
-
-	}
+	}	
 }

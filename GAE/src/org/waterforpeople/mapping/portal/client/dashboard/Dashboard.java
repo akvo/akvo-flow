@@ -34,6 +34,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -180,12 +181,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				launchFullscreen(RawDataViewPortlet.NAME);
 			}
 		});
-		mgrMenu.addItem("Import Access Point",new Command(){
-			public void execute(){
+		mgrMenu.addItem("Import Access Point", new Command() {
+			public void execute() {
 				launchFullscreen(MappingAttributeManager.NAME);
 			}
 		});
-		
+
 		menu.addItem("Data Managers", mgrMenu);
 
 		statusDock.add(menu, DockPanel.WEST);
@@ -414,6 +415,16 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						true);
 				updateLayout();
 			}
+		}
+
+		@Override
+		public boolean onKeyDownPreview(char key, int modifiers) {
+			switch (key) {
+			case KeyCodes.KEY_ESCAPE:
+				hide();
+				return true;
+			}
+			return false;
 		}
 	}
 }

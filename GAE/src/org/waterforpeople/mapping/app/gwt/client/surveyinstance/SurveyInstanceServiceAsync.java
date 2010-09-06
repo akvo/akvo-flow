@@ -21,4 +21,7 @@ public interface SurveyInstanceServiceAsync {
 	void updateQuestions(List<QuestionAnswerStoreDto> dtoList,
 			AsyncCallback<List<QuestionAnswerStoreDto>> callback);
 
+	void listResponsesByQuestion(Long questionId, String cursorString,
+			AsyncCallback<ResponseDto<ArrayList<QuestionAnswerStoreDto>>> callback);
+
 }
