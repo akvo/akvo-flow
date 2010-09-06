@@ -280,6 +280,8 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 				if (QuestionDto.QuestionType.OPTION == q.getType()
 						&& q.getOptionContainerDto() != null) {
 					notifyListeners(q);
+				}else if (QuestionDto.QuestionType.OPTION != q.getType()){
+					notifyListeners(q);
 				}
 			} else {
 				notifyListeners((BaseDto) event.getSelectedItem()
