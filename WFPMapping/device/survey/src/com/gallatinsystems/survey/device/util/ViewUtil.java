@@ -141,17 +141,49 @@ public class ViewUtil {
 	}
 
 	/**
-	 * displays a dialog box for selection of one or more survey languages TODO:
-	 * implement pre-selection of saved languages (right now it's hard-coded to
-	 * all false)
+	 * displays a dialog box for selection of one or more survey languages
 	 */
 	public static void displayLanguageSelector(final Context context,
 			final boolean[] selections,
 			final DialogInterface.OnClickListener listener) {
+		displaySelectionDialog(context, selections, listener,
+				R.string.surveylanglabel, R.array.languages, true,
+				R.string.langmandatorytitle, R.string.langmandatorytext);
+	}
+
+	/**
+	 * displays a dialog box for selection of one or more countries
+	 */
+	public static void displayCountrySelector(final Context context,
+			final boolean[] selections,
+			final DialogInterface.OnClickListener listener) {
+		displaySelectionDialog(context, selections, listener,
+				R.string.cacheptcountrylabel, R.array.countries, true, 0, 0);
+	}
+
+	/**
+	 * displays a dialog box for allowing selection of values from an array
+	 * resource
+	 * 
+	 * @param context
+	 * @param selections
+	 * @param listener
+	 * @param labelResourceId
+	 * @param valueArrayResourceId
+	 * @param selectionMandatory
+	 * @param mandatoryTitleResourceId
+	 * @param mandatoryTextResourceId
+	 */
+	private static void displaySelectionDialog(final Context context,
+			final boolean[] selections,
+			final DialogInterface.OnClickListener listener,
+			final int labelResourceId, final int valueArrayResourceId,
+			final boolean selectionMandatory,
+			final int mandatoryTitleResourceId,
+			final int mandatoryTextResourceId) {
 		AlertDialog dia = new AlertDialog.Builder(context).setTitle(
-				R.string.surveylanglabel).setMultiChoiceItems(
-				R.array.languages, selections,
-				new DialogInterface.OnMultiChoiceClickListener() {
+				labelResourceId).setMultiChoiceItems(valueArrayResourceId,
+				selections, new DialogInterface.OnMultiChoiceClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which,
 							boolean isChecked) {
@@ -166,30 +198,37 @@ public class ViewUtil {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						boolean isValid = false;
-						for (int i = 0; i < selections.length; i++) {
-							if (selections[i]) {
-								isValid = true;
-								break;
+						if (selectionMandatory) {
+							for (int i = 0; i < selections.length; i++) {
+								if (selections[i]) {
+									isValid = true;
+									break;
+								}
 							}
+						} else {
+							isValid = true;
 						}
 						if (isValid) {
 							listener.onClick(dialog, which);
 						} else {
-							showConfirmDialog(R.string.langmandatorytitle,
-									R.string.langmandatorytext, context, false,
+							showConfirmDialog(mandatoryTitleResourceId,
+									mandatoryTextResourceId, context, false,
 									new DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
 											dialog.dismiss();
-											displayLanguageSelector(context,
-													selections, listener);
+											displaySelectionDialog(context,
+													selections, listener,
+													labelResourceId,
+													valueArrayResourceId,
+													selectionMandatory,
+													mandatoryTitleResourceId,
+													mandatoryTextResourceId);
 										}
 									});
-
 						}
-
 					}
 				}).create();
 		dia.show();

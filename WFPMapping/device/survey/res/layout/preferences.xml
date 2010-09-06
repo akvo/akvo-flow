@@ -41,15 +41,28 @@
 		<RelativeLayout android:layout_width="fill_parent"
 			android:layout_height="wrap_content">
 			<ImageButton android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/suveylangbutton"
+				android:layout_height="wrap_content" android:id="@+id/surveylangbutton"
 				android:src="@android:drawable/arrow_down_float"
 				android:layout_alignParentRight="true" />
 			<TextView android:textSize="20dip" android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:id="@+id/uploadoptionlabel"
-				android:text="@string/surveylanglabel" android:layout_toLeftOf="@id/suveylangbutton" />
+				android:layout_height="wrap_content" android:id="@+id/surveylanglabel"
+				android:text="@string/surveylanglabel" android:layout_toLeftOf="@id/surveylangbutton" />
 			<TextView android:textSize="10dip" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@+id/surveylangvalue"
-				android:layout_below="@id/uploadoptionlabel" />
+				android:layout_below="@id/surveylanglabel" />
+		</RelativeLayout>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/precachepointbutton"
+				android:src="@android:drawable/arrow_down_float"
+				android:layout_alignParentRight="true" />
+			<TextView android:textSize="20dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/cacheptcountrylabel"
+				android:text="@string/cacheptcountrylabel" android:layout_toLeftOf="@id/precachepointbutton" />
+			<TextView android:textSize="10dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/cacheptcountryvalue"
+				android:layout_below="@id/cacheptcountrylabel" />
 		</RelativeLayout>
 		<RelativeLayout android:layout_width="fill_parent"
 			android:layout_height="wrap_content">

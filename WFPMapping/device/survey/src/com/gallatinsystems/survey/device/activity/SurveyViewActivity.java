@@ -32,10 +32,10 @@ import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
+import com.gallatinsystems.survey.device.util.ArrayPreferenceData;
+import com.gallatinsystems.survey.device.util.ArrayPreferenceUtil;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
-import com.gallatinsystems.survey.device.util.LanguageData;
-import com.gallatinsystems.survey.device.util.LanguageUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SubmitTabContentFactory;
@@ -107,11 +107,12 @@ public class SurveyViewActivity extends TabActivity implements
 
 		String langSelection = databaseAdapter
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-		LanguageData langData = LanguageUtil.loadLanguages(this, langSelection);
+		ArrayPreferenceData langData = ArrayPreferenceUtil.loadArray(this,
+				langSelection, R.array.languages);
 
-		selectedLanguages = langData.getSelectedLanguages();
-		selectedLanguageCodes = LanguageUtil.getSelectedLangageCodes(this,
-				selectedLanguages);
+		selectedLanguages = langData.getSelectedItems();
+		selectedLanguageCodes = ArrayPreferenceUtil.getSelectedCodes(this,
+				selectedLanguages, R.array.languagecodes);
 
 		Bundle extras = getIntent().getExtras();
 		userId = extras != null ? extras.getString(ConstantUtil.USER_ID_KEY)
@@ -693,15 +694,15 @@ public class SurveyViewActivity extends TabActivity implements
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
 							dialog.dismiss();
-							selectedLanguageCodes = LanguageUtil
-									.getSelectedLangageCodes(
-											SurveyViewActivity.this,
-											selectedLanguages);
+							selectedLanguageCodes = ArrayPreferenceUtil
+									.getSelectedCodes(SurveyViewActivity.this,
+											selectedLanguages,
+											R.array.languagecodes);
 							databaseAdapter
 									.savePreference(
 											ConstantUtil.SURVEY_LANG_SETTING_KEY,
-											LanguageUtil
-													.formLanguagePreferenceString(selectedLanguages));
+											ArrayPreferenceUtil
+													.formPreferenceString(selectedLanguages));
 							for (int i = 0; i < tabContentFactories.size(); i++) {
 								tabContentFactories.get(i)
 										.updateQuestionLanguages(

@@ -102,10 +102,10 @@ public class SurveyDbAdapter {
 			"insert into preferences values('plot.interval','60000')",
 			"insert into preferences values('user.lastuser.id','')",
 			"insert into preferences values('location.sendbeacon','true')",
-			"insert into preferences values('survey.precachehelp','0')",
+			"insert into preferences values('survey.precachehelp','1')",
 			"insert into preferences values('upload.server','0')",
 			"insert into preferences values('screen.keepon','true')",
-			"insert into preferences values('precache.points.countries','GT')",
+			"insert into preferences values('precache.points.countries','MW')",
 			"insert into preferences values('precache.points.limit','200')" };
 
 	private static final String DATABASE_NAME = "surveydata";
@@ -122,7 +122,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 51;
+	private static final int DATABASE_VERSION = 53;
 
 	private final Context context;
 
