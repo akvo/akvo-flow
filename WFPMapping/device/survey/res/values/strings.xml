@@ -29,7 +29,8 @@
 	<string name="mustselectuser">Please click the Manage Users icon and choose a user before continuing.</string>
 	<string name="syncinprogress">Synchronizing...</string>
 	<string name="exportcomplete">Data has been exported to SD card</string>
-	<string name="uploadcomplete">Data has been sent to the server</string>
+	<string name="uploadcomplete">All data has been sent to the server</string>
+	<string name="uploadprogress">Sending data to server</string>
 	<string name="nothingtoexport">There is no unsent data</string>
 	<string name="prefoptlabel">Preferences</string>
 	<string name="prefoptdesc">Set default survey language and other preference data</string>
@@ -158,5 +159,5 @@
 	<string name="pointtype">Point Type</string>
 	<string name="clearquestion">Clear Response</string>
 	<string name="clearquestiondesc">Do you want to clear the response to this question?</string>	
-	<string name="appversion">1.0.4</string>	
+	<string name="appversion">1.0.5</string>	
 </resources>

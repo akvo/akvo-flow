@@ -105,6 +105,11 @@ public class ConstantUtil {
 	public static final String FORCE_KEY = "FORCE";
 
 	/**
+	 * notification types
+	 */
+	public static final String PROGRESS = "PROGRESS";
+
+	/**
 	 * keys for saved state and bundle extras
 	 */
 	public static final String PLOT_ID_KEY = "plotid";
@@ -197,12 +202,12 @@ public class ConstantUtil {
 	 * "code" to prevent unauthorized use of administrative settings/preferences
 	 */
 	public static final String ADMIN_AUTH_CODE = "12345";
-	
+
 	/**
 	 * recognized help activities
 	 */
 	@SuppressWarnings("unchecked")
-	public static final HashMap<String, Class> HELP_ACTIVITIES = new HashMap<String, Class>() {	
+	public static final HashMap<String, Class> HELP_ACTIVITIES = new HashMap<String, Class>() {
 		private static final long serialVersionUID = -6196886832065440000L;
 		{
 			put("waterflowcalculator", WaterflowCalculatorActivity.class);

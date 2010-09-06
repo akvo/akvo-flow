@@ -230,17 +230,19 @@ public class DataSyncService extends Service {
 	 * 
 	 * @param type
 	 */
-	private void fireNotification(String type, String fileName) {
+	private void fireNotification(String type, String extraText) {
 		CharSequence tickerText = null;
 		if (ConstantUtil.SEND.equals(type)) {
 			tickerText = getResources().getText(R.string.uploadcomplete);
 		} else if (ConstantUtil.EXPORT.equals(type)) {
 			tickerText = getResources().getText(R.string.exportcomplete);
+		} else if (ConstantUtil.PROGRESS.equals(type)) {
+			tickerText = getResources().getText(R.string.uploadprogress);
 		} else {
 			tickerText = getResources().getText(R.string.nothingtoexport);
 		}
 		ViewUtil.fireNotification(tickerText.toString(),
-				fileName != null ? fileName : "", this, COMPLETE_ID,null);
+				extraText != null ? extraText : "", this, COMPLETE_ID, null);
 	}
 
 	/**
@@ -463,25 +465,25 @@ public class DataSyncService extends Service {
 			if (data != null && data.isFirst()) {
 				Log.i(TAG, "There is data to send. Forming contents");
 				do {
-				
+
 					String value = data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_COL));
 					if (value != null) {
 						value = value.trim();
 						value = value.replaceAll("\\n", " ");
 					}
-					
-					if(value == null || value.trim().length()==0){
+
+					if (value == null || value.trim().length() == 0) {
 						continue;
 					}
-					
+
 					buf
-					.append(
-							data
-									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
-					.append(",");
-					
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
+							.append(",");
+
 					String type = data
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL));
@@ -564,6 +566,13 @@ public class DataSyncService extends Service {
 			if (code != REDIRECT_CODE && code != OK_CODE) {
 				Log.e(TAG, "Server returned a bad code after upload: " + code);
 				return false;
+			} else {
+				String fileName = fileAbsolutePath;
+				if (fileName.contains(File.separator)) {
+					fileName = fileName.substring(fileName
+							.lastIndexOf(File.separator));
+				}
+				fireNotification(ConstantUtil.PROGRESS, fileName);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send upload" + e.getMessage(), e);
