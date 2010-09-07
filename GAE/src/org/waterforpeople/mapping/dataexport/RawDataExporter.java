@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,6 +30,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	private String surveyId;
 	public static final String SURVEY_ID = "surveyId";
 	private Map<String, String> questionMap;
+	private List<String> keyList;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -42,8 +42,8 @@ public class RawDataExporter extends AbstractDataExporter {
 		try {
 			questionMap = loadQuestions();
 			pw = new PrintWriter(fileName);
-			List<String> ids = writeHeader(pw, questionMap);
-			exportInstances(pw, ids);
+			writeHeader(pw, questionMap);
+			exportInstances(pw, keyList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -54,29 +54,29 @@ public class RawDataExporter extends AbstractDataExporter {
 
 	}
 
-	private List<String> writeHeader(PrintWriter pw,
-			Map<String, String> questions) {
-		List<String> idList = new ArrayList<String>();
+	private void writeHeader(PrintWriter pw, Map<String, String> questions) {
 		pw.print("Instance\tSubmission Date");
-		for (Entry<String, String> qEntry : questions.entrySet()) {
-			pw.print("\t");
-			pw.write(qEntry.getValue());
-			idList.add(qEntry.getKey());
+		if (keyList != null) {
+			for (String key : keyList) {
+				pw.print("\t");
+				pw.write(questions.get(key));
+			}
 		}
 		pw.print("\n");
-		return idList;
 	}
 
 	private Map<String, String> loadQuestions() throws Exception {
 		Map<String, String> questions = new HashMap<String, String>();
 		List<QuestionGroupDto> groups = fetchQuestionGroups(serverBase,
 				surveyId);
+		keyList = new ArrayList<String>();
 		if (groups != null) {
 			for (QuestionGroupDto group : groups) {
 				List<QuestionDto> questionDtos = fetchQuestions(serverBase,
 						group.getKeyId());
 				if (questionDtos != null) {
 					for (QuestionDto question : questionDtos) {
+						keyList.add(question.getKeyId().toString());
 						questions.put(question.getKeyId().toString(), question
 								.getText());
 					}
@@ -158,15 +158,18 @@ public class RawDataExporter extends AbstractDataExporter {
 			throws Exception {
 		String instanceString = fetchDataFromServer(serverBase
 				+ DATA_SERVLET_PATH + DataBackoutRequest.LIST_INSTANCE_ACTION
-				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId+"&"+DataBackoutRequest.INCLUDE_DATE_PARAM+"=true");
+				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId
+				+ "&" + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true");
 		if (instanceString != null) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
 				String instanceId = strTok.nextToken();
 				String dateString = "";
-				if(instanceId.contains("|")){
-					dateString = instanceId.substring(instanceId.indexOf("|")+1);
-					instanceId = instanceId.substring(0,instanceId.indexOf("|"));
+				if (instanceId.contains("|")) {
+					dateString = instanceId
+							.substring(instanceId.indexOf("|") + 1);
+					instanceId = instanceId.substring(0, instanceId
+							.indexOf("|"));
 				}
 				if (instanceId != null && instanceId.trim().length() > 0) {
 					String instanceValues = fetchDataFromServer(serverBase

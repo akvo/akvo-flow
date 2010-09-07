@@ -43,14 +43,17 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
 	private AccessPointHelper aph;
+	private SurveyInstanceDAO siDao;
 
 	public TaskServlet() {
 		aph = new AccessPointHelper();
+		siDao = new SurveyInstanceDAO();
 	}
 
 	private ArrayList<SurveyInstance> processFile(String fileName,
 			String phoneNumber, String checksum, Integer offset) {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
+
 		try {
 			URL url = new URL(
 					"http://waterforpeople.s3.amazonaws.com/devicezip/"
@@ -81,7 +84,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 							if (curId == null) {
 								curId = parts[1];
 							} else {
-								// if this isn't the first time through and we
+								// if this isn't the first time through and
+								// we
 								// are seeing a new id, break since we'll
 								// process that in another call
 								if (!curId.equals(parts[1])) {
@@ -93,16 +97,14 @@ public class TaskServlet extends AbstractRestApiServlet {
 					}
 
 					Long userID = 1L;
-
-					SurveyInstanceDAO siDAO = new SurveyInstanceDAO();
-					SurveyInstance inst = siDAO.save(collectionDate,
+					SurveyInstance inst = siDao.save(collectionDate,
 							deviceFile, userID, unparsedLines.subList(offset,
 									lineNum));
 					surveyInstances.add(inst);
 
 					if (lineNum < unparsedLines.size()) {
-						// if we haven't processed everything yet, invoke a new
-						// service
+						// if we haven't processed everything yet, invoke a
+						// new service
 						Queue queue = QueueFactory.getDefaultQueue();
 						queue.add(url("/app_worker/task").param("action",
 								"processFile").param("fileName", fileName)
@@ -114,6 +116,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
 		}
+
 		return surveyInstances;
 	}
 
