@@ -732,9 +732,7 @@ public class SurveyViewActivity extends TabActivity implements
 		case SAVE_SURVEY:
 			if (!readOnly) {
 				// make sure we don't lose anything that was already written
-				for (int i = 0; i < tabContentFactories.size(); i++) {
-					tabContentFactories.get(i).saveState(respondentId);
-				}
+				saveAllResponses();
 				databaseAdapter.updateSurveyStatus(respondentId.toString(),
 						ConstantUtil.SAVED_STATUS);
 				ViewUtil.showConfirmDialog(R.string.savecompletetitle,
@@ -752,6 +750,17 @@ public class SurveyViewActivity extends TabActivity implements
 			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
+	}
+
+	/**
+	 * saves all responses in all tabs
+	 */
+	public void saveAllResponses() {
+		if (tabContentFactories != null) {
+			for (int i = 0; i < tabContentFactories.size(); i++) {
+				tabContentFactories.get(i).saveState(respondentId);
+			}
+		}
 	}
 
 	/**
@@ -804,11 +813,7 @@ public class SurveyViewActivity extends TabActivity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (tabContentFactories != null) {
-			for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
-				tab.saveState(respondentId);
-			}
-		}
+		saveAllResponses();
 	}
 
 	@Override

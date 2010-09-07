@@ -105,7 +105,7 @@ public class SurveyDbAdapter {
 			"insert into preferences values('survey.precachehelp','1')",
 			"insert into preferences values('upload.server','0')",
 			"insert into preferences values('screen.keepon','true')",
-			"insert into preferences values('precache.points.countries','MW')",
+			"insert into preferences values('precache.points.countries','2')",
 			"insert into preferences values('precache.points.limit','200')" };
 
 	private static final String DATABASE_NAME = "surveydata";
@@ -122,7 +122,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 53;
+	private static final int DATABASE_VERSION = 54;
 
 	private final Context context;
 
@@ -404,18 +404,39 @@ public class SurveyDbAdapter {
 	 * @return
 	 */
 	public long createOrUpdateSurveyResponse(QuestionResponse response) {
-		long id = -1;
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(ANSWER_COL, response.getValue());
 		initialValues.put(ANSWER_TYPE_COL, response.getType());
 		initialValues.put(QUESTION_FK_COL, response.getQuestionId());
 		initialValues.put(SURVEY_RESPONDENT_ID_COL, response.getRespondentId());
-		if (response.getId() == null) {
+		Long id = findResponseId(response.getQuestionId(), response
+				.getRespondentId());
+		if (id == null) {
 			id = database.insert(RESPONSE_TABLE, null, initialValues);
 		} else {
-			if (database.update(RESPONSE_TABLE, initialValues, RESP_ID_COL
-					+ "=?", new String[] { response.getId().toString() }) > 0) {
-				id = response.getId();
+			database.update(RESPONSE_TABLE, initialValues, RESP_ID_COL + "=?",
+					new String[] { id.toString() });
+		}
+		return id;
+	}
+
+	/**
+	 * looks up the id of a quesitonResponse object using the respondent id and
+	 * question id (since that is unique)
+	 * 
+	 * @param questionId
+	 * @param respondentId
+	 * @return
+	 */
+	public Long findResponseId(String questionId, Long respondentId) {
+		Long id = null;
+		Cursor c = database.query(RESPONSE_TABLE, new String[] { RESP_ID_COL },
+				QUESTION_FK_COL + " = ? " + "and " + SURVEY_RESPONDENT_ID_COL
+						+ " = ? ", new String[] { questionId,
+						respondentId.toString() }, null, null, null);
+		if (c != null && c.isBeforeFirst()) {
+			if (c.moveToFirst() && c.getCount() > 0) {
+				id = c.getLong(0);
 			}
 		}
 		return id;

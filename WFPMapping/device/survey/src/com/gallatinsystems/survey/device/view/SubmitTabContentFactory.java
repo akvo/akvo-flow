@@ -53,6 +53,8 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 	 * @return
 	 */
 	public View refreshView() {
+		// first, re-save all questions to make sure we didn't miss anything
+		context.saveAllResponses();
 		submitButton = configureActionButton(R.string.submitbutton,
 				new OnClickListener() {
 					public void onClick(View v) {
