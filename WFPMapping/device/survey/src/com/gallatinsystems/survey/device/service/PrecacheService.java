@@ -72,6 +72,7 @@ public class PrecacheService extends Service {
 						String pointCountries = databaseAdapter
 								.findPreference(ConstantUtil.PRECACHE_POINT_COUNTRY_KEY);
 						if (pointCountries != null
+								&& pointCountries.trim().length() > 0
 								&& canDownload(precacheOption)) {
 							String limit = databaseAdapter
 									.findPreference(ConstantUtil.PRECACHE_POINT_LIMIT_KEY);

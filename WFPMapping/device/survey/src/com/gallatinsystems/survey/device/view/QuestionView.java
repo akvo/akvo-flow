@@ -78,11 +78,12 @@ public class QuestionView extends TableLayout implements
 				@Override
 				public boolean onLongClick(View v) {
 					ViewUtil.showConfirmDialog(R.string.clearquestion,
-							R.string.clearquestiondesc, context,
-							true, new DialogInterface.OnClickListener() {
-								
+							R.string.clearquestiondesc, context, true,
+							new DialogInterface.OnClickListener() {
+
 								@Override
-								public void onClick(DialogInterface dialog, int which) {
+								public void onClick(DialogInterface dialog,
+										int which) {
 									resetQuestion(true);
 								}
 							});
@@ -302,7 +303,7 @@ public class QuestionView extends TableLayout implements
 	 */
 	public void resetQuestion(boolean fireEvent) {
 		setResponse(null, false);
-		if(fireEvent){
+		if (fireEvent) {
 			notifyQuestionListeners(QuestionInteractionEvent.QUESTION_CLEAR_EVENT);
 		}
 	}
@@ -345,8 +346,14 @@ public class QuestionView extends TableLayout implements
 		if (dep.getAnswer() != null && resp != null
 				&& dep.getAnswer().equalsIgnoreCase(resp.getValue())) {
 			setVisibility(View.VISIBLE);
+			if (response != null) {
+				response.setIncludeFlag("true");
+			}
 			return true;
 		} else {
+			if (response != null) {
+				response.setIncludeFlag("false");
+			}
 			setVisibility(View.GONE);
 		}
 		return false;

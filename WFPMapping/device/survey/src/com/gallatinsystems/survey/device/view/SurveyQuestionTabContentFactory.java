@@ -241,6 +241,8 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 						resp.setType(responseCursor.getString(i));
 					} else if (cols[i].equals(SurveyDbAdapter.QUESTION_FK_COL)) {
 						resp.setQuestionId(responseCursor.getString(i));
+					}else if  (cols[i].equals(SurveyDbAdapter.INCLUDE_FLAG_COL)) {
+						resp.setIncludeFlag(responseCursor.getString(i));
 					}
 				}
 				if (questionMap != null) {

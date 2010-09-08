@@ -63,6 +63,7 @@ public class SurveyDbAdapter {
 	public static final String COUNTRY_COL = "country";
 	public static final String PROP_NAME_COL = "property_names";
 	public static final String PROP_VAL_COL = "property_values";
+	public static final String INCLUDE_FLAG_COL = "include_flag";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -78,7 +79,7 @@ public class SurveyDbAdapter {
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text, saved_date long);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
-			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null);";
+			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null, include_flag text not null);";
 
 	private static final String USER_TABLE_CREATE = "create table user (_id integer primary key autoincrement, display_name text not null, email text not null);";
 
@@ -122,7 +123,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 54;
+	private static final int DATABASE_VERSION = 55;
 
 	private final Context context;
 
@@ -229,8 +230,9 @@ public class SurveyDbAdapter {
 				ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL, EMAIL_COL,
 				DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
 				RESPONDENT_TABLE + "." + SURVEY_FK_COL, }, SUBMITTED_FLAG_COL
-				+ "= 'true' AND (" + DELIVERED_DATE_COL + " is null OR "
-				+ MEDIA_SENT_COL + " <> 'true')", null, null, null, null);
+				+ "= 'true' AND " + INCLUDE_FLAG_COL + "='true' AND" + "("
+				+ DELIVERED_DATE_COL + " is null OR " + MEDIA_SENT_COL
+				+ " <> 'true')", null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -361,8 +363,9 @@ public class SurveyDbAdapter {
 	public Cursor fetchResponsesByRespondent(String respondentID) {
 		return database.query(RESPONSE_TABLE, new String[] { RESP_ID_COL,
 				QUESTION_FK_COL, ANSWER_COL, ANSWER_TYPE_COL,
-				SURVEY_RESPONDENT_ID_COL }, SURVEY_RESPONDENT_ID_COL + "=?",
-				new String[] { respondentID }, null, null, null);
+				SURVEY_RESPONDENT_ID_COL, INCLUDE_FLAG_COL },
+				SURVEY_RESPONDENT_ID_COL + "=?", new String[] { respondentID },
+				null, null, null);
 	}
 
 	/**
@@ -377,9 +380,10 @@ public class SurveyDbAdapter {
 		QuestionResponse resp = null;
 		Cursor cursor = database.query(RESPONSE_TABLE, new String[] {
 				RESP_ID_COL, QUESTION_FK_COL, ANSWER_COL, ANSWER_TYPE_COL,
-				SURVEY_RESPONDENT_ID_COL }, SURVEY_RESPONDENT_ID_COL
-				+ "=? and " + QUESTION_FK_COL + "=?", new String[] {
-				respondentId.toString(), questionId }, null, null, null);
+				SURVEY_RESPONDENT_ID_COL, INCLUDE_FLAG_COL },
+				SURVEY_RESPONDENT_ID_COL + "=? and " + QUESTION_FK_COL + "=?",
+				new String[] { respondentId.toString(), questionId }, null,
+				null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -390,56 +394,14 @@ public class SurveyDbAdapter {
 						.getColumnIndexOrThrow(ANSWER_TYPE_COL)));
 				resp.setValue(cursor.getString(cursor
 						.getColumnIndexOrThrow(ANSWER_COL)));
+				resp.setId(cursor.getLong(cursor
+						.getColumnIndexOrThrow(RESP_ID_COL)));
+				resp.setIncludeFlag(cursor.getString(cursor
+						.getColumnIndexOrThrow(INCLUDE_FLAG_COL)));
 			}
 			cursor.close();
 		}
 		return resp;
-	}
-
-	/**
-	 * if the response has the ID populated, it will update the database row,
-	 * otherwise it will be inserted
-	 * 
-	 * @param response
-	 * @return
-	 */
-	public long createOrUpdateSurveyResponse(QuestionResponse response) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(ANSWER_COL, response.getValue());
-		initialValues.put(ANSWER_TYPE_COL, response.getType());
-		initialValues.put(QUESTION_FK_COL, response.getQuestionId());
-		initialValues.put(SURVEY_RESPONDENT_ID_COL, response.getRespondentId());
-		Long id = findResponseId(response.getQuestionId(), response
-				.getRespondentId());
-		if (id == null) {
-			id = database.insert(RESPONSE_TABLE, null, initialValues);
-		} else {
-			database.update(RESPONSE_TABLE, initialValues, RESP_ID_COL + "=?",
-					new String[] { id.toString() });
-		}
-		return id;
-	}
-
-	/**
-	 * looks up the id of a quesitonResponse object using the respondent id and
-	 * question id (since that is unique)
-	 * 
-	 * @param questionId
-	 * @param respondentId
-	 * @return
-	 */
-	public Long findResponseId(String questionId, Long respondentId) {
-		Long id = null;
-		Cursor c = database.query(RESPONSE_TABLE, new String[] { RESP_ID_COL },
-				QUESTION_FK_COL + " = ? " + "and " + SURVEY_RESPONDENT_ID_COL
-						+ " = ? ", new String[] { questionId,
-						respondentId.toString() }, null, null, null);
-		if (c != null && c.isBeforeFirst()) {
-			if (c.moveToFirst() && c.getCount() > 0) {
-				id = c.getLong(0);
-			}
-		}
-		return id;
 	}
 
 	/**
@@ -449,8 +411,7 @@ public class SurveyDbAdapter {
 	 * @param resp
 	 * @return
 	 */
-	public QuestionResponse createOrUpdateSurveyResponseForQuestion(
-			QuestionResponse resp) {
+	public QuestionResponse createOrUpdateSurveyResponse(QuestionResponse resp) {
 		QuestionResponse responseToSave = findSingleResponse(resp
 				.getRespondentId(), resp.getQuestionId());
 		if (responseToSave != null) {
@@ -465,6 +426,7 @@ public class SurveyDbAdapter {
 		initialValues.put(QUESTION_FK_COL, responseToSave.getQuestionId());
 		initialValues.put(SURVEY_RESPONDENT_ID_COL, responseToSave
 				.getRespondentId());
+		initialValues.put(INCLUDE_FLAG_COL, resp.getIncludeFlag());
 		if (responseToSave.getId() == null) {
 			id = database.insert(RESPONSE_TABLE, null, initialValues);
 		} else {
@@ -493,6 +455,8 @@ public class SurveyDbAdapter {
 		if (results != null && results.getCount() > 0) {
 			results.moveToFirst();
 			id = results.getLong(0);
+		}
+		if (results != null) {
 			results.close();
 		}
 		if (id <= 0) {
@@ -1091,5 +1055,4 @@ public class SurveyDbAdapter {
 		}
 		return points;
 	}
-
 }

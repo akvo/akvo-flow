@@ -158,7 +158,7 @@ public class ViewUtil {
 			final boolean[] selections,
 			final DialogInterface.OnClickListener listener) {
 		displaySelectionDialog(context, selections, listener,
-				R.string.cacheptcountrylabel, R.array.countries, true, 0, 0);
+				R.string.cacheptcountrylabel, R.array.countries, false, 0, 0);
 	}
 
 	/**

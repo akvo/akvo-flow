@@ -405,10 +405,10 @@ public class SurveyViewActivity extends TabActivity implements
 							respondentId, eventQuestionSource.getQuestion()
 									.getId(),
 							data.getStringExtra(ConstantUtil.CALC_RESULT_KEY),
-							ConstantUtil.VALUE_RESPONSE_TYPE);
+							ConstantUtil.VALUE_RESPONSE_TYPE,"true");
 
 					resp = databaseAdapter
-							.createOrUpdateSurveyResponseForQuestion(resp);
+							.createOrUpdateSurveyResponse(resp);
 					eventQuestionSource.setResponse(resp);
 				}
 			}

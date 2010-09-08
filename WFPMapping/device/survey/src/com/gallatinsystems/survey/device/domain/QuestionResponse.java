@@ -9,14 +9,16 @@ public class QuestionResponse {
 	private Long id;
 	private Long respondentId;
 	private String questionId;
+	private String includeFlag;
 
 	public QuestionResponse(Long id, Long respondentId, String qId, String val,
-			String t) {
+			String t, String includeFlag) {
 		this.id = id;
 		value = val;
 		type = t;
 		this.respondentId = respondentId;
 		questionId = qId;
+		this.includeFlag = includeFlag;
 	}
 
 	public QuestionResponse(String val, String t, String questionId) {
@@ -24,6 +26,15 @@ public class QuestionResponse {
 		type = t;
 		value = val;
 		this.questionId = questionId;
+		includeFlag = "true";
+	}
+
+	public String getIncludeFlag() {
+		return includeFlag;
+	}
+
+	public void setIncludeFlag(String includeFlag) {
+		this.includeFlag = includeFlag;
 	}
 
 	public QuestionResponse() {
@@ -32,6 +43,7 @@ public class QuestionResponse {
 		value = null;
 		respondentId = null;
 		questionId = null;
+		includeFlag = "true";
 	}
 
 	public boolean isValid() {
