@@ -887,6 +887,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointDetail.setVisible(true);
 		mainVPanel.add(accessPointDetail);
 	}
+	
+	private void addWidgetToPanel(int row, int col, String name, String type, Object value, String valuetType){
+		
+	}
 
 	private AccessPointDto buildAccessPointDto() {
 		AccessPointDto apDto = new AccessPointDto();
