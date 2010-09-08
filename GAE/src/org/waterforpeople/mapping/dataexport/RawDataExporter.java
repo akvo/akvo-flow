@@ -26,6 +26,9 @@ public class RawDataExporter extends AbstractDataExporter {
 	public static final String RESPONSE_KEY = "dtoList";
 	private static final String SURVEY_SERVLET_PATH = "/surveyrestapi?action=";
 
+	private static final String IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
+	private static final String SDCARD_PREFIX = "/sdcard/";
+
 	private String serverBase;
 	private String surveyId;
 	public static final String SURVEY_ID = "surveyId";
@@ -186,6 +189,12 @@ public class RawDataExporter extends AbstractDataExporter {
 							String val = responses.get(key);
 							pw.print("\t");
 							if (val != null) {
+								if (val.contains(SDCARD_PREFIX)) {
+									val = IMAGE_PREFIX
+											+ val.substring(val
+													.indexOf(SDCARD_PREFIX)
+													+ SDCARD_PREFIX.length());
+								}
 								pw.print(val.trim());
 							}
 						}
