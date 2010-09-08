@@ -1,11 +1,11 @@
-package com.gallatinsystems.framework.gwt.util.client;
+package com.gallatinsystems.common.ui.panel;
 
 import java.util.TreeMap;
 
 import com.gallatinsystems.common.util.ClassAttributeUtil;
-import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class DetailPanelConfiguration<T extends BaseDomain> {
+public class DetailPanelConfiguration<T extends BaseDto> {
 	private Class<T> concreteClass;
 	
 	public DetailPanelConfiguration(Class<T> e) {
