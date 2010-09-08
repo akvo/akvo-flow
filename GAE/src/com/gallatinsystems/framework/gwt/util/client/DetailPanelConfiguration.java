@@ -1,7 +1,6 @@
 package com.gallatinsystems.framework.gwt.util.client;
 
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import com.gallatinsystems.common.util.ClassAttributeUtil;
 import com.gallatinsystems.framework.domain.BaseDomain;
