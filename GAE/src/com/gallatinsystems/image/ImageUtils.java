@@ -9,23 +9,23 @@ public class ImageUtils {
 	 * Position 1 = middle path elements ends with / 
 	 * Position 2 = file name
 	 */
-	public static ArrayList<String> parseImageParts(String url) {
-		ArrayList<String> parts = new ArrayList<String>();
+	public static String[] parseImageParts(String url) {
+		String[] parts = new String[3];
 		url = url.toLowerCase().replace("http://", "");
 		String[] items = url.split("/");
 		if (items.length == 3) {
 			// no country in path
-			parts.add("http://:" + items[0] + "/");
-			parts.add(items[1] + "/");
-			parts.add(items[2]);
+			parts[0]=("http://:" + items[0] + "/");
+			parts[1]=(items[1] + "/");
+			parts[2]=(items[2]);
 		} else if (items.length > 3) {
-			parts.add("http://:" + items[0] + "/");
+			parts[0]=("http://:" + items[0] + "/");
 			String middlePath = "";
 			int i = 0;
 			for (i = 1; i < items.length - 1; i++)
 				middlePath += items[i] + "/";
-			parts.add(middlePath);
-			parts.add(items[i]);
+			parts[1]=(middlePath);
+			parts[2]=(items[i]);
 		}
 
 		return parts;
