@@ -26,7 +26,7 @@ public interface AccessPointManagerService extends RemoteService {
 
 	TechnologyTypeDto save(TechnologyTypeDto item);
 
-	Boolean rotateImage(String fileName);
+	byte[] rotateImage(String fileName);
 
 	AccessPointDto[] listAccessPointByLocation(String country,
 			String community, String type);

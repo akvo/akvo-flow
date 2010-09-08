@@ -25,6 +25,7 @@ import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.image.GAEImageAdapter;
+import com.gallatinsystems.image.ImageUtils;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AccessPointManagerServiceImpl extends RemoteServiceServlet
@@ -130,16 +131,16 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	}
 
 	@Override
-	public Boolean rotateImage(String fileName) {
-		String imageURL = fileName.substring(fileName
-				.indexOf("http://waterforpeople.s3.amazonaws.com/"));
+	public byte[] rotateImage(String fileName) {
+		String[] imageURLParts = ImageUtils.parseImageParts(fileName);
 		String bucket = "waterforpeople";
 		Random rand = new Random();
 		InputStream in;
 		ByteArrayOutputStream out = null;
 		URL url;
+		byte[] newImage=null;
 		try {
-			url = new URL(imageURL + "?random=" + rand.nextInt());
+			url = new URL(fileName + "?random=" + rand.nextInt());
 			in = url.openStream();
 			out = new ByteArrayOutputStream();
 			byte[] buffer = new byte[2048];
@@ -153,16 +154,19 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		}
 
 		GAEImageAdapter gaeImg = new GAEImageAdapter();
-		byte[] newImage = gaeImg.rotateImage(out.toByteArray(), 90);
+		newImage = gaeImg.rotateImage(out.toByteArray(), 90);
 		S3Driver s3 = new S3Driver();
-		try {
-			s3.uploadFile(bucket, imageURL, newImage);
-		} catch (Exception ex) {
-			// This is here for dev env where you can't make S3 puts
-			log.info(ex.getMessage());
+		if (this.getUploadS3Flag()) {
+			try {
 
+				s3.uploadFile(bucket, imageURLParts[2], newImage);
+			} catch (Exception ex) {
+				// This is here for dev env where you can't make S3 puts
+				log.info(ex.getMessage());
+
+			}
 		}
-		return null;
+		return newImage;
 
 		/*
 		 * resp.getWriter() .print( "<html><body><img src=\"" + totalURL +
@@ -207,12 +211,13 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	}
 
 	@Override
-	public ResponseDto<ArrayList<AccessPointDto>> listErrorAccessPoints(String cursorString) {
+	public ResponseDto<ArrayList<AccessPointDto>> listErrorAccessPoints(
+			String cursorString) {
 		AccessPointDao apDao = new AccessPointDao();
 		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
-		List<AccessPoint> pointList =   apDao
-		.listAccessPointsWithErrors(cursorString);
-		for (AccessPoint apItem :pointList) {
+		List<AccessPoint> pointList = apDao
+				.listAccessPointsWithErrors(cursorString);
+		for (AccessPoint apItem : pointList) {
 			AccessPointDto apDto = AccessPointServiceSupport
 					.copyCanonicalToDto(apItem);
 			apDtoList.add(apDto);
@@ -228,9 +233,21 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	public List<String> listCountryCodes() {
 		CountryDao countryDao = new CountryDao();
 		List<String> countryCodesList = new ArrayList<String>();
-		for(Country item:countryDao.list("isoAlpha2Code","asc","all")){
+		for (Country item : countryDao.list("isoAlpha2Code", "asc", "all")) {
 			countryCodesList.add(item.getIsoAlpha2Code());
 		}
 		return countryCodesList;
+	}
+
+	private Boolean uploadS3Flag = true;
+
+
+
+	public void setUploadS3Flag(Boolean uploadS3Flag) {
+		this.uploadS3Flag = uploadS3Flag;
+	}
+
+	public Boolean getUploadS3Flag() {
+		return uploadS3Flag;
 	}
 }

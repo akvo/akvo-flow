@@ -28,7 +28,7 @@ public interface AccessPointManagerServiceAsync {
 
 	void save(TechnologyTypeDto item, AsyncCallback<TechnologyTypeDto> callback);
 
-	void rotateImage(String fileName, AsyncCallback<Boolean> callback);
+	void rotateImage(String fileName, AsyncCallback<byte[]> callback);
 
 	void listAccessPointByLocation(String country, String community,
 			String type, AsyncCallback<AccessPointDto[]> callback);

@@ -722,7 +722,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 							"Please wait while image is rotated 90 Degrees"));
 					svc.rotateImage(((TextBox) accessPointDetail
 							.getWidget(10, 1)).getText(),
-							new AsyncCallback<Boolean>() {
+							new AsyncCallback<byte[]>() {
 								@Override
 								public void onFailure(Throwable caught) {
 									// TODO Auto-generated method stub
@@ -730,7 +730,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 								}
 
 								@Override
-								public void onSuccess(Boolean result) {
+								public void onSuccess(byte[] result) {
 									Integer random = Random.nextInt();
 									Image photo = ((Image) accessPointDetail
 											.getWidget(10, 2));

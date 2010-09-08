@@ -2,7 +2,12 @@ package org.waterforpeople.mapping.app.web;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -28,6 +33,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
@@ -91,6 +97,15 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
 
+		} else if ("rotateImage".equals(action)) {
+			AccessPointManagerServiceImpl apmI = new AccessPointManagerServiceImpl();
+			String test1 = "http://waterforpeople.s3.amazonaws.com/images/wfpPhoto10062903227521.jpg";
+			// String test2 =
+			// "http://waterforpeople.s3.amazonaws.com/images/hn/ch003[1].jpg";
+			writeImageToResponse(resp, test1);
+			apmI.setUploadS3Flag(false);
+			writeImageToResponse(resp, apmI.rotateImage(test1));
+			// apmI.rotateImage(test2);
 		} else if ("testBaseDomain".equals(action)) {
 
 			SurveyDAO surveyDAO = new SurveyDAO();
@@ -904,6 +919,7 @@ public class TestHarnessServlet extends HttpServlet {
 					e1.printStackTrace();
 				}
 			} else {
+
 				deleteSurveyResponses(Integer.parseInt(req
 						.getParameter("surveyId")), Integer.parseInt(req
 						.getParameter("count")));
@@ -917,16 +933,15 @@ public class TestHarnessServlet extends HttpServlet {
 					e1.printStackTrace();
 				}
 			} else {
-				fixNameQuestion(req.getParameter("questionId"));				
+				fixNameQuestion(req.getParameter("questionId"));
 			}
 		}
 	}
 
 	private void fixNameQuestion(String questionId) {
 		Queue summQueue = QueueFactory.getQueue("dataUpdate");
-		summQueue.add(url("/app_worker/dataupdate").param(
-				"objectKey", questionId + "").param("type",
-				"NameQuestionFix"));
+		summQueue.add(url("/app_worker/dataupdate").param("objectKey",
+				questionId + "").param("type", "NameQuestionFix"));
 	}
 
 	private boolean deleteSurveyResponses(Integer surveyId, Integer count) {
@@ -1034,4 +1049,39 @@ public class TestHarnessServlet extends HttpServlet {
 		System.out.println(sgd.getKeyId());
 	}
 
+	private void writeImageToResponse(HttpServletResponse resp, String urlString) {
+		resp.setContentType("image/jpeg");
+		try {
+			ServletOutputStream out = resp.getOutputStream();
+			URL url = new URL(urlString);
+			InputStream in = url.openStream();
+
+			byte[] buffer = new byte[2048];
+			int size;
+
+			while ((size = in.read(buffer, 0, buffer.length)) != -1) {
+				out.write(buffer, 0, size);
+			}
+			in.close();
+			out.flush();
+		} catch (Exception ex) {
+
+		}
+	}
+
+	private void writeImageToResponse(HttpServletResponse resp,
+			byte[] imageBytes) {
+		resp.setContentType("image/jpeg");
+		try {
+			ServletOutputStream out = resp.getOutputStream();
+
+			byte[] buffer = new byte[2048];
+			int size;
+
+			out.write(imageBytes, 0, imageBytes.length);
+			out.flush();
+		} catch (Exception ex) {
+
+		}
+	}
 }
