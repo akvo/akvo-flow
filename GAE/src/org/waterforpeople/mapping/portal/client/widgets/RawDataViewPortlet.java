@@ -49,6 +49,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private int currentSelection = -1;
 	private int currentPage;
 	private VerticalPanel surveyInstancePanel;
+	private HorizontalPanel finderPanel;
+	private TextBox instanceIdBox;
 	private Button nextButton;
 	private Button previousButton;
 	private HorizontalPanel contentPanel;
@@ -68,12 +70,29 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	}
 
 	private void loadContentPanel() {
+		finderPanel = new HorizontalPanel();
+		instanceIdBox = new TextBox();
+		finderPanel.add(new Label("Instance Id: "));
+		finderPanel.add(instanceIdBox);
+		Button findButton = new Button("Find");
+		finderPanel.add(findButton);
+		findButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (instanceIdBox.getText() != null
+						&& instanceIdBox.getText().trim().length() > 0) {
+					loadInstanceResponses(new Long(instanceIdBox.getText()
+							.trim()));
+				}
+			}
+		});
 		instanceGrid = new Grid();
 		instanceGrid.addClickHandler(this);
 		qasDetailGrid = new Grid();
 		contentPanel = new HorizontalPanel();
 		surveyInstancePanel = new VerticalPanel();
-
+		surveyInstancePanel.add(finderPanel);
 		contentPanel.add(surveyInstancePanel);
 		contentPanel.add(qasDetailGrid);
 		statusLabel = new Label();
@@ -416,28 +435,35 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 				if (currentSelection > 0
 						&& currentSelection <= currentDtoList.size()) {
 					setGridRowStyle(grid, currentSelection, true);
-					statusLabel.setText("Loading responses. Please wait...");
-					statusLabel.setVisible(true);
-					svc.listQuestionsByInstance(currentDtoList.get(
-							currentSelection - 1).getKeyId(),
-							new AsyncCallback<List<QuestionAnswerStoreDto>>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									// no-op
-								}
-
-								@Override
-								public void onSuccess(
-										List<QuestionAnswerStoreDto> result) {
-									populateQuestions(result);
-								}
-
-							});
+					loadInstanceResponses(currentDtoList.get(
+							currentSelection - 1).getKeyId());
 				} else {
 					currentSelection = -1;
 				}
 			}
 		}
+	}
+
+	/**
+	 * calls the server to get back instance response details
+	 * 
+	 * @param instanceId
+	 */
+	private void loadInstanceResponses(Long instanceId) {
+		statusLabel.setText("Loading responses. Please wait...");
+		statusLabel.setVisible(true);
+		svc.listQuestionsByInstance(instanceId,
+				new AsyncCallback<List<QuestionAnswerStoreDto>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// no-op
+					}
+
+					@Override
+					public void onSuccess(List<QuestionAnswerStoreDto> result) {
+						populateQuestions(result);
+					}
+				});
 	}
 }
