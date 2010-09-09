@@ -159,7 +159,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		if (this.getUploadS3Flag()) {
 			try {
 
-				s3.uploadFile(bucket, imageURLParts[2], newImage);
+				s3.uploadFile(bucket,imageURLParts[1]+ imageURLParts[2], newImage);
 			} catch (Exception ex) {
 				// This is here for dev env where you can't make S3 puts
 				log.info(ex.getMessage());
