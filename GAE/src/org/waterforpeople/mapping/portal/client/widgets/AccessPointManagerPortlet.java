@@ -709,8 +709,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		});
 
 		if (accessPointDto != null) {
+			
 			photoURLTB.setText(accessPointDto.getPhotoURL());
-			Image photo = new Image(accessPointDto.getPhotoURL());
+			Image photo = new Image(accessPointDto.getPhotoURL()+"?random="+Random.nextInt());
 			accessPointDetail.setWidget(10, 2, photo);
 			photo.addClickHandler(new ClickHandler() {
 
