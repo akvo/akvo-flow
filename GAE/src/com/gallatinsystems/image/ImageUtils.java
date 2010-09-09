@@ -11,6 +11,7 @@ public class ImageUtils {
 	public static String[] parseImageParts(String url) {
 		String[] parts = new String[3];
 		url = url.replace("http://", "");
+		url = url.substring(0, url.indexOf("?"));
 		String[] items = url.split("/");
 		if (items.length == 3) {
 			// no country in path
@@ -31,8 +32,8 @@ public class ImageUtils {
 	}
 
 	public static void main(String[] args) {
-		String test1 = "http://waterforpeople.s3.amazonaws.com/images/wfpPhoto10062903227521.jpg";
-		String test2 = "http://waterforpeople.s3.amazonaws.com/images/hn/ch003[1].jpg";
+		String test1 = "http://waterforpeople.s3.amazonaws.com/images/wfpPhoto10062903227521.jpg?random=123";
+		String test2 = "http://waterforpeople.s3.amazonaws.com/images/hn/ch003[1].jpg?test";
 		System.out.println(test1);
 		for (String item : parseImageParts(test1))
 			System.out.println("   " + item);
