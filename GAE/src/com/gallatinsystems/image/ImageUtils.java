@@ -1,6 +1,5 @@
 package com.gallatinsystems.image;
 
-import java.util.ArrayList;
 
 public class ImageUtils {
 	/*
@@ -11,7 +10,7 @@ public class ImageUtils {
 	 */
 	public static String[] parseImageParts(String url) {
 		String[] parts = new String[3];
-		url = url.toLowerCase().replace("http://", "");
+		url = url.replace("http://", "");
 		String[] items = url.split("/");
 		if (items.length == 3) {
 			// no country in path
