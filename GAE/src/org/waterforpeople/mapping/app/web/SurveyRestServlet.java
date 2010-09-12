@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
+import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestResponse;
@@ -140,6 +143,20 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			}
 		}
 		return dtoList;
+	}
+	
+	/**
+	 * loads all details (dependency, translation, options, etc) for a single question
+	 * @param questionId
+	 * @return
+	 */
+	private QuestionDto loadQuestionDetails(Long questionId){
+		Question q = qDao.getByKey(questionId,true);
+		QuestionDto result = null;
+		if(q != null){
+			result = SurveyServiceImpl.marshalQuestionDto(q);
+		}
+		return result;
 	}
 
 	private List<SurveySummaryDto> listSummaries(Long questionId) {

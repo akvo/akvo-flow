@@ -4,6 +4,7 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -17,6 +18,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
@@ -28,6 +30,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -35,6 +38,7 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Heading;
 import com.gallatinsystems.survey.domain.xml.Help;
@@ -221,7 +225,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return value;
 	}
 
-	private QuestionDto marshalQuestionDto(Question q) {
+	public static QuestionDto marshalQuestionDto(Question q) {
 		QuestionDto qDto = new QuestionDto();
 
 		qDto.setKeyId(q.getKey().getId());
@@ -272,7 +276,27 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			qdDto.setAnswerValue(q.getDependentQuestionAnswer());
 			qDto.setQuestionDependency(qdDto);
 		}
+
+		qDto.setTranslationMap(marshalTranslations(q.getTranslationMap()));
+		
 		return qDto;
+	}
+
+	private Map<String, TranslationDto> marshalTranslations(
+			Map<String, Translation> translationMap) {
+		Map<String, TranslationDto> transMap = null;
+		if (translationMap != null && translationMap > 0) {
+			transMap = new TreeMap<String, TranslationDto>();
+			for (Translation trans : translationMap.values()) {
+				TranslationDto tDto = new TranslationDto();
+				tDto.setKeyId(trans.getKey().getId());
+				tDto.setLangCode(trans.getLanguageCode());
+				tDto.setParentId(trans.getParentId());
+				tDto.setParentType(trans.getParentType().toString());
+				transMap.put(tDto.getLangCode(), tDto);
+			}
+		}
+		return transMap;
 	}
 
 	private Question marshalQuestion(QuestionDto qdto) {

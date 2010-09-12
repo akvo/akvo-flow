@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
@@ -20,6 +21,15 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
 	private Long questionGroupId;
+	private TreeMap<String, TranslationDto> translationMap;
+
+	public TreeMap<String, TranslationDto> getTranslationMap() {
+		return translationMap;
+	}
+
+	public void setTranslationMap(TreeMap<String, TranslationDto> translationMap) {
+		this.translationMap = translationMap;
+	}
 
 	public Long getSurveyId() {
 		return surveyId;
