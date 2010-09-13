@@ -307,6 +307,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-class>org.waterforpeople.mapping.app.web.DataBackoutServlet</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>RawDataRestApi</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.RawDataImportRequestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RawDataRestApi</servlet-name>
+		<url-pattern>/rawdatarestapi</url-pattern>
+	</servlet-mapping>	
+	<servlet>
 		<servlet-name>MapAssembly</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.MapAssemblyServlet</servlet-class>
 	</servlet>
