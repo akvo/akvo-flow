@@ -282,10 +282,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return qDto;
 	}
 
-	private Map<String, TranslationDto> marshalTranslations(
+	private static TreeMap<String, TranslationDto> marshalTranslations(
 			Map<String, Translation> translationMap) {
-		Map<String, TranslationDto> transMap = null;
-		if (translationMap != null && translationMap > 0) {
+		TreeMap<String, TranslationDto> transMap = null;
+		if (translationMap != null && translationMap.size() > 0) {
 			transMap = new TreeMap<String, TranslationDto>();
 			for (Translation trans : translationMap.values()) {
 				TranslationDto tDto = new TranslationDto();
