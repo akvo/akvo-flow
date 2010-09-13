@@ -1,7 +1,13 @@
 package org.waterforpeople.mapping.app.web;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
+import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -25,18 +31,28 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		RawDataImportRequest importReq = (RawDataImportRequest)req;
-		if(RawDataImportRequest.ACTION_PARAM.equals(importReq.getAction())){
-			
+		RawDataImportRequest importReq = (RawDataImportRequest) req;
+		if (RawDataImportRequest.ACTION_PARAM.equals(importReq.getAction())) {
+			SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
+			List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
+			for (Map.Entry<Long, String> item : importReq
+					.getQuestionAnswerMap().entrySet()) {
+				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
+				qasDto.setQuestionID(item.getKey().toString());
+				qasDto.setSurveyInstanceId(importReq.getSurveyInstanceId());
+				qasDto.setValue(item.getValue());
+				dtoList.add(qasDto);
+			}
+			sisi.updateQuestions(dtoList);
 		}
-		
+
 		return null;
 	}
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
