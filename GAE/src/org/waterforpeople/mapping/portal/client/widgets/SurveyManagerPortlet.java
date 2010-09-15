@@ -849,6 +849,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button publishSurveyButton = new Button("Publish");
 		Button exportSummaryButton = new Button("Export Summary");
 		Button exportRawDataButton = new Button("Export Raw Data");
+		Button exportFormButton = new Button("Export Survey Form");
 
 		surveyDetail.setWidget(0, 0, surveyId);
 		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
@@ -862,6 +863,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyDetail.setWidget(4, 2, publishSurveyButton);
 		surveyDetail.setWidget(4, 3, exportSummaryButton);
 		surveyDetail.setWidget(4, 4, exportRawDataButton);
+		surveyDetail.setWidget(4,5,exportFormButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
 		saveSurveyButton.addClickHandler(new ClickHandler() {
@@ -936,7 +938,21 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				surveyDetail.setWidget(5, 0, html);
 			}
 		});
-
+		
+		exportFormButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
+				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
+				appletString += "<PARAM name='criteria' value=surveyId="
+						+ item.getKeyId() + ">";
+				appletString += "</applet>";
+				HTML html = new HTML();
+				html.setHTML(appletString);
+				surveyDetail.setWidget(5, 0, html);
+			}
+		});
 	}
 
 	private void loadQuestionGroupDetail(QuestionGroupDto item) {

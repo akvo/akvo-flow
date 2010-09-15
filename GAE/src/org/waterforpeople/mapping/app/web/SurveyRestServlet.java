@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
@@ -23,6 +21,7 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestResponse;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -104,6 +103,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			response.setDtoList(listSummaries(new Long(importReq
 					.getQuestionId())));
+		}else if (SurveyRestRequest.GET_QUESTION_DETAILS_ACTION.equals(importReq.getAction())){
+			QuestionDto dto = loadQuestionDetails(new Long(importReq.getQuestionId()));
+			List<BaseDto> dtoList = new ArrayList<BaseDto>();
+			dtoList.add(dto);
+			response.setDtoList(dtoList);
 		}
 
 		return response;

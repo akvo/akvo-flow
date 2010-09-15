@@ -6,14 +6,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
@@ -109,6 +114,27 @@ public class BulkDataServiceClient {
 	}
 
 	/**
+	 * loads full details for a single question (options, translations, etc)
+	 * 
+	 * @param serverBase
+	 * @param questionId
+	 * @return
+	 */
+	public static QuestionDto loadQuestionDetails(String serverBase,
+			Long questionId) throws Exception {
+		List<QuestionDto> dtoList = parseQuestions(fetchDataFromServer(serverBase
+				+ SURVEY_SERVLET_PATH
+				+ SurveyRestRequest.GET_QUESTION_DETAILS_ACTION
+				+ "&"
+				+ SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId));
+		if (dtoList != null && dtoList.size() > 0) {
+			return dtoList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * returns an array containing 2 elements: the first is an ordered list of
 	 * questionIds (in the order they appear in the survey) and the second
 	 * element is a map of questions (keyed on id)
@@ -151,7 +177,7 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private static List<QuestionDto> fetchQuestions(String serverBase,
+	public static List<QuestionDto> fetchQuestions(String serverBase,
 			Long groupId) throws Exception {
 		return parseQuestions(fetchDataFromServer(serverBase
 				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_QUESTION_ACTION
@@ -167,8 +193,8 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private static List<QuestionGroupDto> fetchQuestionGroups(
-			String serverBase, String surveyId) throws Exception {
+	public static List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
+			String surveyId) throws Exception {
 		return parseQuestionGroups(fetchDataFromServer(serverBase
 				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_GROUP_ACTION
 				+ "&" + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId));
@@ -231,6 +257,40 @@ public class BulkDataServiceClient {
 						if (json.has("keyId")) {
 							dto.setKeyId(json.getLong("keyId"));
 						}
+						if (json.has("translationMap")
+								&& !JSONObject.NULL.equals(json
+										.get("translationMap"))) {
+							dto.setTranslationMap(parseTranslations(json
+									.getJSONObject("translationMap")));
+						}
+						if (json.has("optionContainerDto")
+								&& !JSONObject.NULL.equals(json
+										.get("optionContainerDto"))) {
+							OptionContainerDto container = new OptionContainerDto();
+							JSONObject contJson = json
+									.getJSONObject("optionContainerDto");
+							JSONArray optArray = contJson
+									.getJSONArray("optionsList");
+							if (optArray != null) {
+								for (int j = 0; j < optArray.length(); j++) {
+									JSONObject optJson = optArray
+											.getJSONObject(j);
+									QuestionOptionDto opt = new QuestionOptionDto();
+									opt.setKeyId(optJson.getLong("keyId"));
+									opt.setText(optJson.getString("text"));
+									if (optJson.has("translationMap")
+											&& !JSONObject.NULL.equals(json
+													.get("translationMap"))) {
+										opt
+												.setTranslationMap(parseTranslations(json
+														.getJSONObject("translationMap")));
+									}
+									container.addQuestionOption(opt);
+								}
+							}
+							dto.setOptionContainerDto(container);
+						}
+
 						dtoList.add(dto);
 					} catch (Exception e) {
 						System.out.println("Error in json parsing: " + e);
@@ -240,6 +300,25 @@ public class BulkDataServiceClient {
 			}
 		}
 		return dtoList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static TreeMap<String, TranslationDto> parseTranslations(
+			JSONObject translationMapJson) throws Exception {
+		Iterator<String> keyIter = translationMapJson.keys();
+		TreeMap<String, TranslationDto> translationMap = null;
+		if (keyIter != null) {
+			translationMap = new TreeMap<String, TranslationDto>();
+			String lang = keyIter.next();
+			JSONObject transObj = translationMapJson.getJSONObject(lang);
+			if (transObj != null) {
+				TranslationDto tDto = new TranslationDto();
+				tDto.setLangCode(lang);
+				tDto.setText(transObj.getString("langCode"));
+				translationMap.put(lang, tDto);
+			}
+		}
+		return translationMap;
 	}
 
 	/**
