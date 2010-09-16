@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -289,6 +290,18 @@ public class BulkDataServiceClient {
 								}
 							}
 							dto.setOptionContainerDto(container);
+						}
+						if (json.has("questionDependency")
+								&& !JSONObject.NULL.equals(json
+										.get("questionDependency"))) {
+							QuestionDependencyDto dep = new QuestionDependencyDto();
+							JSONObject depJson = json
+									.getJSONObject("questionDependency");
+							dep.setQuestionId(depJson.getLong("questionId"));
+							dep
+									.setAnswerValue(depJson
+											.getString("answerValue"));
+							dto.setQuestionDependency(dep);
 						}
 
 						dtoList.add(dto);
