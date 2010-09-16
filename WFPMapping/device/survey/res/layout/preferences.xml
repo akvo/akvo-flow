@@ -99,5 +99,18 @@
 				android:layout_height="wrap_content" android:id="@+id/servervalue"
 				android:layout_below="@id/serverlabel" />
 		</RelativeLayout>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/identbutton"
+				android:src="@android:drawable/arrow_down_float"
+				android:layout_alignParentRight="true" />
+			<TextView android:textSize="20dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/identlabel"
+				android:text="@string/identlabel" android:layout_toLeftOf="@id/identbutton" />
+			<TextView android:textSize="10dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/identvalue"
+				android:layout_below="@id/identlabel" />
+		</RelativeLayout>
 	</LinearLayout>
 </ScrollView>

@@ -159,6 +159,8 @@
 	<string name="searchpoints">Search Points</string>	
 	<string name="pointtype">Point Type</string>
 	<string name="clearquestion">Clear Response</string>
-	<string name="clearquestiondesc">Do you want to clear the response to this question?</string>	
-	<string name="appversion">1.0.8</string>	
+	<string name="clearquestiondesc">Do you want to clear the response to this question?</string>
+	<string name="identlabel">Device Identifier</string>
+	<string name="setidentlabel">Set device identifier</string>	
+	<string name="appversion">1.0.9</string>	
 </resources>

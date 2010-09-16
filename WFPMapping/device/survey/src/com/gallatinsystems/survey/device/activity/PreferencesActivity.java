@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -43,6 +44,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private TextView precacheHelpTextView;
 	private TextView precachePointsTextView;
 	private TextView serverTextView;
+	private TextView identTextView;
 	private SurveyDbAdapter database;
 	private String[] languageArray;
 	private boolean[] selectedLanguages;
@@ -66,6 +68,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		precachePointsTextView = (TextView) findViewById(R.id.cacheptcountryvalue);
 		precacheHelpTextView = (TextView) findViewById(R.id.precachehelpvalue);
 		serverTextView = (TextView) findViewById(R.id.servervalue);
+		identTextView = (TextView) findViewById(R.id.identvalue);
 
 		Resources res = getResources();
 
@@ -131,6 +134,11 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		if (val != null) {
 			serverTextView.setText(serverArray[Integer.parseInt(val)]);
 		}
+
+		val = settings.get(ConstantUtil.DEVICE_IDENT_KEY);
+		if (val != null) {
+			identTextView.setText(val);
+		}
 	}
 
 	/**
@@ -155,6 +163,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.serverbutton))
 				.setOnClickListener(this);
+		((ImageButton) findViewById(R.id.identbutton)).setOnClickListener(this);
 	}
 
 	public void onPause() {
@@ -224,6 +233,33 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 											precacheCountryArray,
 											selectedPrecacheCountries));
 							dialog.dismiss();
+						}
+					});
+		} else if (R.id.identbutton == v.getId()) {
+			ViewUtil.showAdminAuthDialog(this,
+					new ViewUtil.AdminAuthDialogListener() {
+						@Override
+						public void onAuthenticated() {
+							final EditText inputView = new EditText(
+									PreferencesActivity.this);
+							ViewUtil.ShowTextInputDialog(
+									PreferencesActivity.this,
+									R.string.identlabel,
+									R.string.setidentlabel, inputView,
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											identTextView.setText(inputView
+													.getText());
+											database
+													.savePreference(
+															ConstantUtil.DEVICE_IDENT_KEY,
+															inputView.getText()
+																	.toString());
+										}
+									});
 						}
 					});
 		}

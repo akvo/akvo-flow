@@ -894,8 +894,12 @@ public class SurveyDbAdapter {
 	public void savePreference(String key, String value) {
 		ContentValues updatedValues = new ContentValues();
 		updatedValues.put(VALUE_COL, value);
-		database.update(PREFERENCES_TABLE, updatedValues, KEY_COL + " = ?",
-				new String[] { key });
+		int updated = database.update(PREFERENCES_TABLE, updatedValues, KEY_COL
+				+ " = ?", new String[] { key });
+		if (updated <= 0) {
+			updatedValues.put(KEY_COL, key);
+			database.insert(PREFERENCES_TABLE, null, updatedValues);
+		}
 	}
 
 	/**

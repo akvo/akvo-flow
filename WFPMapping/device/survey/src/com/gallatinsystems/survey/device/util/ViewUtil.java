@@ -242,19 +242,9 @@ public class ViewUtil {
 	 */
 	public static void showAdminAuthDialog(final Context parentContext,
 			final AdminAuthDialogListener listener) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
-		LinearLayout main = new LinearLayout(parentContext);
-		main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.WRAP_CONTENT));
-		main.setOrientation(LinearLayout.VERTICAL);
-		TextView tipText = new TextView(parentContext);
-		builder.setTitle(R.string.authtitle);
-		tipText.setText(R.string.authtext);
-		main.addView(tipText);
 		final EditText input = new EditText(parentContext);
-		main.addView(input);
-		builder.setView(main);
-		builder.setPositiveButton(R.string.okbutton,
+		ShowTextInputDialog(parentContext, R.string.authtitle,
+				R.string.authtext, input,
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -269,6 +259,32 @@ public class ViewUtil {
 						}
 					}
 				});
+	}
+
+	/**
+	 * shows a dialog that prompts the user to enter a single text value as
+	 * input
+	 * 
+	 * @param parentContext
+	 * @param title
+	 * @param text
+	 * @param clickListener
+	 */
+	public static void ShowTextInputDialog(final Context parentContext,
+			int title, int text, EditText inputView,
+			DialogInterface.OnClickListener clickListener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
+		LinearLayout main = new LinearLayout(parentContext);
+		main.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.WRAP_CONTENT));
+		main.setOrientation(LinearLayout.VERTICAL);
+		TextView tipText = new TextView(parentContext);
+		builder.setTitle(title);
+		tipText.setText(text);
+		main.addView(tipText);
+		main.addView(inputView);
+		builder.setView(main);
+		builder.setPositiveButton(R.string.okbutton, clickListener);
 
 		builder.setNegativeButton(R.string.cancelbutton,
 				new DialogInterface.OnClickListener() {

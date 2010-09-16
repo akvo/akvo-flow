@@ -147,6 +147,7 @@ public class ConstantUtil {
 	public static final String SCREEN_ON_KEY = "screen.keepon";
 	public static final String PRECACHE_POINT_COUNTRY_KEY = "precache.points.countries";
 	public static final String PRECACHE_POINT_LIMIT_KEY = "precache.points.limit";
+	public static final String DEVICE_IDENT_KEY = "device.identifier";
 
 	/**
 	 * index values into string arrays
