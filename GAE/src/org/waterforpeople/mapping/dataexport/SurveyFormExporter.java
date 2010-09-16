@@ -200,7 +200,7 @@ public class SurveyFormExporter implements DataExporter {
 				if(count > 0){
 					buff.append(LANG_DELIM);
 				}
-				buff.append(trans.getValue());
+				buff.append(trans.getValue().getText());
 				count++;
 			}
 		}else{
