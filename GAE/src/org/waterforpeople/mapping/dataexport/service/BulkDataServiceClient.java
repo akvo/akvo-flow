@@ -327,7 +327,7 @@ public class BulkDataServiceClient {
 			if (transObj != null) {
 				TranslationDto tDto = new TranslationDto();
 				tDto.setLangCode(lang);
-				tDto.setText(transObj.getString("langCode"));
+				tDto.setText(transObj.getString("text"));
 				translationMap.put(lang, tDto);
 			}
 		}
