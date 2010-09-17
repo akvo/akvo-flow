@@ -36,14 +36,14 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  * will form a zip file containing the data and corresponding image files (if
  * any). It will upload the data to the server and then will delete the data on
  * the device.
- * 
+ *
  * this activity can either export the zip file or export and send the zip file
  * (if it is invoked with the SEND type set under the TYPE_KEY in the extras
  * bundle)
- * 
- * 
+ *
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class DataSyncService extends Service {
 
@@ -114,7 +114,7 @@ public class DataSyncService extends Service {
 
 	/**
 	 * executes the data export/sync operation (based on the type passed in).
-	 * 
+	 *
 	 * @param type
 	 *            - either SYNC or EXPORT
 	 */
@@ -138,6 +138,8 @@ public class DataSyncService extends Service {
 			if (uploadOption != null && uploadOption.trim().length() > 0) {
 				uploadIndex = Integer.parseInt(uploadOption);
 			}
+
+
 			counter++;
 			if (isAbleToRun(type, uploadIndex)) {
 				String fileName = createFileName();
@@ -206,7 +208,7 @@ public class DataSyncService extends Service {
 	/**
 	 * sends a message to the service with the file name that was just uploaded
 	 * so it can start processing the file
-	 * 
+	 *
 	 * @param fileName
 	 * @return
 	 */
@@ -227,7 +229,7 @@ public class DataSyncService extends Service {
 	/**
 	 * displays a notification in the system status bar indicating the
 	 * completion of the export/save operation
-	 * 
+	 *
 	 * @param type
 	 */
 	private void fireNotification(String type, String extraText) {
@@ -247,7 +249,7 @@ public class DataSyncService extends Service {
 
 	/**
 	 * create a zip file containing all the submitted data and images
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -276,9 +278,6 @@ public class DataSyncService extends Service {
 						fout, new Adler32());
 				ZipOutputStream zos = new ZipOutputStream(checkedOutStream);
 
-				// ZipOutputStream zos = new ZipOutputStream(new
-				// FileOutputStream(
-				// zipFile));
 				// write the survey data
 				if (idsToUpdate[0].size() > 0) {
 					writeTextToZip(zos, surveyBuf.toString(), SURVEY_DATA_FILE);
@@ -352,7 +351,7 @@ public class DataSyncService extends Service {
 	/**
 	 * writes the contents of text to a zip entry within the Zip file behind zos
 	 * named fileName
-	 * 
+	 *
 	 * @param zos
 	 * @param text
 	 * @param fileName
@@ -377,11 +376,11 @@ public class DataSyncService extends Service {
 	/**
 	 * iterate over the plot data returned from the database and populate the
 	 * string builder and collections passed in with the requisite information.
-	 * 
+	 *
 	 * @param buf
 	 *            - IN param. After execution this will contain the data to be
 	 *            sent
-	 * 
+	 *
 	 * @param plotIds
 	 *            - IN param. After execution this will contain the ids of the
 	 *            plots
@@ -446,7 +445,7 @@ public class DataSyncService extends Service {
 	/**
 	 * iterate over the survey data returned from the database and populate the
 	 * string builder and collections passed in with the requisite information.
-	 * 
+	 *
 	 * @param buf
 	 *            - IN param. After execution this will contain the data to be
 	 *            sent
@@ -464,6 +463,15 @@ public class DataSyncService extends Service {
 			data = databaseAdaptor.fetchUnsentData();
 			if (data != null && data.isFirst()) {
 				Log.i(TAG, "There is data to send. Forming contents");
+				String deviceIdentifier  = databaseAdaptor.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
+				if(deviceIdentifier == null){
+					deviceIdentifier = "unset";
+				}else{
+					if(deviceIdentifier.contains(",")){
+						//prevent commas from messing up the submission
+						deviceIdentifier = deviceIdentifier.replaceAll(","," ");
+					}
+				}
 				do {
 
 					String value = data.getString(data
@@ -515,12 +523,7 @@ public class DataSyncService extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
-					buf
-							.append(",")
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)));
+					buf.append(",").append(deviceIdentifier);
 					buf.append("\n");
 					if (ConstantUtil.IMAGE_RESPONSE_TYPE.equals(type)
 							|| ConstantUtil.VIDEO_RESPONSE_TYPE.equals(type)) {
@@ -542,7 +545,7 @@ public class DataSyncService extends Service {
 	/**
 	 * sends the zip file containing data/images to the server via an http
 	 * upload
-	 * 
+	 *
 	 * @param fileAbsolutePath
 	 */
 	private boolean sendFile(String fileAbsolutePath, String dir,
@@ -583,7 +586,7 @@ public class DataSyncService extends Service {
 
 	/**
 	 * constructs a filename for the data file
-	 * 
+	 *
 	 * @return
 	 */
 	private String createFileName() {
@@ -595,7 +598,7 @@ public class DataSyncService extends Service {
 	 * this method checks if the service can perform the requested operation. If
 	 * the operation type is SEND and there is no connectivity, this will return
 	 * false, otherwise it will return true
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
