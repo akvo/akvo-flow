@@ -30,7 +30,6 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -260,6 +259,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				ocDto.setAllowMultipleFlag(q.getAllowMultipleFlag());
 			for (QuestionOption qo : q.getQuestionOptionMap().values()) {
 				QuestionOptionDto ooDto = new QuestionOptionDto();
+				ooDto.setTranslationMap(marshalTranslations(qo
+						.getTranslationMap()));
 				ooDto.setKeyId(qo.getKey().getId());
 				if (qo.getCode() != null)
 					ooDto.setCode(qo.getCode());

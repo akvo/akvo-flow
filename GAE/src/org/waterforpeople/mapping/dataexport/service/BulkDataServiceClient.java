@@ -280,10 +280,10 @@ public class BulkDataServiceClient {
 									opt.setKeyId(optJson.getLong("keyId"));
 									opt.setText(optJson.getString("text"));
 									if (optJson.has("translationMap")
-											&& !JSONObject.NULL.equals(json
+											&& !JSONObject.NULL.equals(optJson
 													.get("translationMap"))) {
 										opt
-												.setTranslationMap(parseTranslations(json
+												.setTranslationMap(parseTranslations(optJson
 														.getJSONObject("translationMap")));
 									}
 									container.addQuestionOption(opt);
