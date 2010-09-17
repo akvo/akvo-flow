@@ -209,11 +209,16 @@ public class SurveyFormExporter implements DataExporter {
 			TreeMap<String, TranslationDto> translationMap) {
 		StringBuilder buff = new StringBuilder();
 		buff.append(text);
-		for (Entry<String, TranslationDto> trans : translationMap.entrySet()) {
-			if (trans.getValue() != null && trans.getValue().getText() != null) {
-				if (!trans.getValue().getText().trim().equalsIgnoreCase("null")) {
-					buff.append(LANG_DELIM);
-					buff.append(trans.getValue().getText());
+		if (translationMap != null) {
+			for (Entry<String, TranslationDto> trans : translationMap
+					.entrySet()) {
+				if (trans.getValue() != null
+						&& trans.getValue().getText() != null) {
+					if (!trans.getValue().getText().trim().equalsIgnoreCase(
+							"null")) {
+						buff.append(LANG_DELIM);
+						buff.append(trans.getValue().getText());
+					}
 				}
 			}
 		}
