@@ -423,21 +423,21 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			// the click may not have been in a cell
 			if (clickedCell != null) {
 				int newSelection = clickedCell.getRowIndex();
-				// if the clicked row is already selected, deselect it
-				if (currentSelection == newSelection) {
-					currentSelection = -1;
-					setGridRowStyle(grid, currentSelection, false);
-				} else {
+				if (currentSelection != newSelection) {
 					currentSelection = newSelection;
-				}
-				// if the clicked cell is the header (row 0), don't change the
-				// style
-				if (currentSelection > 0
-						&& currentSelection <= currentDtoList.size()) {
-					setGridRowStyle(grid, currentSelection, true);
-					loadInstanceResponses(currentDtoList.get(
-							currentSelection - 1).getKeyId());
-				} else {
+
+					// if the clicked cell is the header (row 0), don't change
+					// the
+					// style
+					if (currentSelection > 0
+							&& currentSelection <= currentDtoList.size()) {
+						setGridRowStyle(grid, currentSelection, true);
+						loadInstanceResponses(currentDtoList.get(
+								currentSelection - 1).getKeyId());
+					} else {
+						currentSelection = -1;
+					}
+				}else{
 					currentSelection = -1;
 				}
 			}

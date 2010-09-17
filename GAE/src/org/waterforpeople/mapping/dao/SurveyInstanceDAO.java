@@ -24,6 +24,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, List<String> unparsedLines) {
 		SurveyInstance si = new SurveyInstance();
+
 		si.setCollectionDate(collectionDate);
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
@@ -45,9 +46,23 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			qas.setArbitratyNumber(new Long(parts[1]));
 			qas.setQuestionID(parts[2]);
 			qas.setType(parts[3]);
+			//TODO: change this to be the submission date from parts[7]
+			//TODO: set collection date on SI too
 			qas.setCollectionDate(collectionDate);
+
+
 			if (parts.length > 4) {
 				qas.setValue(parts[4]);
+			}
+			if(parts.length >= 5){
+				if(si.getSubmitterName() == null){
+					si.setSubmitterName(parts[5]);
+				}
+			}
+			if(parts.length >=8){
+				if(si.getDeviceIdentifier() == null){
+					si.setDeviceIdentifier(parts[8]);
+				}
 			}
 			qasList.add(qas);
 		}
@@ -63,7 +78,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	@SuppressWarnings("unchecked")
 	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,
 			String cursorString) {
-		PersistenceManager pm = PersistenceFilter.getManager();		
+		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("collectionDate >= pBeginDate");
 		q.declareParameters("java.util.Date pBeginDate");
@@ -77,7 +92,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	/**
 	 * finds a questionAnswerStore object for the surveyInstance and questionId
 	 * passed in (if it exists)
-	 * 
+	 *
 	 * @param surveyInstanceId
 	 * @param questionId
 	 * @return
@@ -102,7 +117,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all questionAnswerStore objects for a survey instance
-	 * 
+	 *
 	 * @param instanceId
 	 * @return
 	 */
@@ -121,7 +136,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all questionAnswerStore objects for a specific question
-	 * 
+	 *
 	 * @param questionId
 	 * @return
 	 */
@@ -138,7 +153,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all surveyInstance records for a given survey
-	 * 
+	 *
 	 * @param surveyId
 	 * @return
 	 */

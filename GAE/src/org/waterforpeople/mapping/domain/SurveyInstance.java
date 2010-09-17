@@ -31,6 +31,9 @@ public class SurveyInstance extends BaseDomain {
 
 	private Long surveyId;
 
+	private String deviceIdentifier;
+	private String submitterName;
+
 	public Long getSurveyId() {
 		return surveyId;
 	}
@@ -70,6 +73,22 @@ public class SurveyInstance extends BaseDomain {
 	public void setQuestionAnswersStore(
 			ArrayList<QuestionAnswerStore> questionAnswersStore) {
 		this.questionAnswersStore = questionAnswersStore;
+	}
+
+	public void setSubmitterName(String name){
+		submitterName = name;
+	}
+
+	public String getSubmitterName(){
+		return submitterName;
+	}
+
+	public void setDeviceIdentifier(String id){
+		deviceIdentifier = id;
+	}
+
+	public String getDeviceIdentifier(){
+		return deviceIdentifier;
 	}
 
 	@Override

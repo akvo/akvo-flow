@@ -39,6 +39,8 @@ import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class TaskServlet extends AbstractRestApiServlet {
 
+	private static final String DEVICE_FILE_PATH = "http://waterforpeople.s3.amazonaws.com/devicezip/";
+	private static final String REGION_FLAG = "regionFlag=true";
 	private static final long serialVersionUID = -2607990749512391457L;
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
@@ -55,9 +57,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 
 		try {
-			URL url = new URL(
-					"http://waterforpeople.s3.amazonaws.com/devicezip/"
-							+ fileName);
+			URL url = new URL(DEVICE_FILE_PATH + fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
 			ArrayList<String> unparsedLines = extractDataFromZip(zis);
@@ -70,7 +70,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			Date collectionDate = new Date();
 
 			if (unparsedLines != null && unparsedLines.size() > 0) {
-				if (unparsedLines.get(0).equals("regionFlag=true")) {
+				if (REGION_FLAG.equals(unparsedLines.get(0))) {
 					unparsedLines.remove(0);
 					GeoRegionHelper grh = new GeoRegionHelper();
 					grh.processRegionsSurvey(unparsedLines);
@@ -85,8 +85,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 								curId = parts[1];
 							} else {
 								// if this isn't the first time through and
-								// we
-								// are seeing a new id, break since we'll
+								// we are seeing a new id, break since we'll
 								// process that in another call
 								if (!curId.equals(parts[1])) {
 									break;
@@ -230,7 +229,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 	 * available. This method will call processFile to retrieve the file and
 	 * persist the data to the data store it will then add access points for
 	 * each water point in the survey responses.
-	 * 
+	 *
 	 * @param req
 	 */
 	@SuppressWarnings("unchecked")

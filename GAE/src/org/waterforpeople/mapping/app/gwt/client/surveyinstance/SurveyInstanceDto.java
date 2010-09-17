@@ -4,27 +4,38 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jdo.annotations.Persistent;
-
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class SurveyInstanceDto extends BaseDto {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8484584703637564931L;
-	@Persistent
+
 	private Long userID;
 
-	@Persistent
 	private Date collectionDate;
 
-	
-	@Persistent(mappedBy = "surveyInstance")
 	private List<QuestionAnswerStoreDto> questionAnswersStore;
 
 	private Long surveyId;
+
+	private String submitterName;
+	private String deviceIdentifier;
+
+	public String getSubmitterName() {
+		return submitterName;
+	}
+
+	public void setSubmitterName(String submitterName) {
+		this.submitterName = submitterName;
+	}
+
+	public String getDeviceIdentifier() {
+		return deviceIdentifier;
+	}
+
+	public void setDeviceIdentifier(String deviceIdentifier) {
+		this.deviceIdentifier = deviceIdentifier;
+	}
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -50,7 +61,6 @@ public class SurveyInstanceDto extends BaseDto {
 		this.collectionDate = collectionDate;
 	}
 
-
 	public List<QuestionAnswerStoreDto> getQuestionAnswersStore() {
 		return questionAnswersStore;
 	}
@@ -59,8 +69,9 @@ public class SurveyInstanceDto extends BaseDto {
 			List<QuestionAnswerStoreDto> questionAnswersStore) {
 		this.questionAnswersStore = questionAnswersStore;
 	}
-	public void addQuestionAnswerStore(QuestionAnswerStoreDto item){
-		if(questionAnswersStore==null)
+
+	public void addQuestionAnswerStore(QuestionAnswerStoreDto item) {
+		if (questionAnswersStore == null)
 			questionAnswersStore = new ArrayList<QuestionAnswerStoreDto>();
 		questionAnswersStore.add(item);
 	}
