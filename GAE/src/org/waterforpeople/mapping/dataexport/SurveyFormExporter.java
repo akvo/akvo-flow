@@ -210,8 +210,12 @@ public class SurveyFormExporter implements DataExporter {
 		StringBuilder buff = new StringBuilder();
 		buff.append(text);
 		for (Entry<String, TranslationDto> trans : translationMap.entrySet()) {
-			buff.append(LANG_DELIM);
-			buff.append(trans.getValue().getText());
+			if (trans.getValue() != null && trans.getValue().getText() != null) {
+				if (!trans.getValue().getText().trim().equalsIgnoreCase("null")) {
+					buff.append(LANG_DELIM);
+					buff.append(trans.getValue().getText());
+				}
+			}
 		}
 		return buff.toString();
 	}

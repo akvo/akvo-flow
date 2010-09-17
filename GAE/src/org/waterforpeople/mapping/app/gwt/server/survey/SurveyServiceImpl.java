@@ -278,7 +278,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 
 		qDto.setTranslationMap(marshalTranslations(q.getTranslationMap()));
-		
+
 		return qDto;
 	}
 
@@ -291,6 +291,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				TranslationDto tDto = new TranslationDto();
 				tDto.setKeyId(trans.getKey().getId());
 				tDto.setLangCode(trans.getLanguageCode());
+				tDto.setText(trans.getText());
 				tDto.setParentId(trans.getParentId());
 				tDto.setParentType(trans.getParentType().toString());
 				transMap.put(tDto.getLangCode(), tDto);
