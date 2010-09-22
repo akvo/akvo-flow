@@ -153,7 +153,7 @@
 	<string name="uselocal">Use Downloaded Points</string>
 	<string name="useserver">Get Points From Server</string>
 	<string name="authtitle">Authorization Required</string>
-	<string name="authtext">Please enter the adminstrator passcode: </string>	
+	<string name="authtext">Please enter the administrator passcode: </string>	
 	<string name="authfailed">Authorization Failed</string>
 	<string name="invalidpassword">Invalid passcode</string>
 	<string name="searchpoints">Search Points</string>	
