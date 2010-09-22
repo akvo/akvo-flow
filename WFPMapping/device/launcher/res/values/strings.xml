@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>    
+    <string name="app_name">FlowLauncher</string>
+    <string name="launcherlabel">Flow Launcher</string>
+    <string name="settingsoption">Settings</string>
+    <string name="passcode">12345</string>
+    <string name="authtitle">Authorization Required</string>
+	<string name="authtext">Please enter the administrator passcode: </string>	
+	<string name="authfailed">Authorization Failed</string>
+	<string name="invalidpassword">Invalid passcode</string>
+	<string name="okbutton">Ok</string>
+	<string name="cancelbutton">Cancel</string>
+    <string name="version">1.0</string>
+</resources>
