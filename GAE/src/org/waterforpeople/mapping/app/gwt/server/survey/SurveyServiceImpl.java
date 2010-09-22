@@ -675,4 +675,37 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			return null;
 		}
 	}
+
+	@Override
+	public void deleteQuestionGroup(QuestionGroupDto value, Long surveyId) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteSurvey(SurveyDto value, Long surveyGroupId) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteSurveyGroup(SurveyGroupDto value) {
+		if (value != null) {
+			SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+
+			SurveyGroup sg = new SurveyGroup();
+			
+			surveyGroupDao.delete(marshallSurveyGroup(value));
+		}
+	}
+
+	public static SurveyGroup marshallSurveyGroup(SurveyGroupDto dto) {
+		SurveyGroup sg = new SurveyGroup();
+		if (dto.getKeyId() != null)
+			sg.setKey(KeyFactory.createKey(SurveyGroup.class.getSimpleName(),
+					dto.getKeyId()));
+		if(dto.getCode()!=null)
+			sg.setCode(dto.getCode());
+		return sg;
+	}
 }

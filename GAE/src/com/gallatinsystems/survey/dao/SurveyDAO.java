@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import org.waterforpeople.mapping.domain.SurveyQuestion;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -145,6 +147,13 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			}
 			s.setVersion(v);
 			save(s);
+		}
+	}
+	
+	public void delete(Survey item){
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+		for(Map.Entry<Integer, QuestionGroup> qgItem: qgDao.listQuestionGroupsBySurvey(item.getKey().getId()).entrySet()){
+			qgDao.delete(qgItem.getValue());
 		}
 	}
 }

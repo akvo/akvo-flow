@@ -1,12 +1,14 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 
 public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
@@ -57,6 +59,12 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 			return results.get(0);
 		} else {
 			return null;
+		}
+	}
+	public void delete(QuestionGroup item){
+		QuestionDao qDao = new QuestionDao();
+		for(Map.Entry<Integer,Question> qItem: qDao.listQuestionsByQuestionGroup(item.getKey().getId(), false).entrySet()){
+			qDao.delete(qItem.getValue());
 		}
 	}
 }

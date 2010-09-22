@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
@@ -63,6 +64,14 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	public void delete(Question question, Long questionGroupId) {
+		QuestionOptionDao qoDao = new QuestionOptionDao();
+		for(Map.Entry<Integer,QuestionOption> qoItem:qoDao.listOptionByQuestion(question.getKey().getId()).entrySet()){
+			qoDao.delete(qoItem.getValue());
+		}
+		TranslationDao tDao =new TranslationDao();
+		//TODO: Check this not sure that is correct
+		tDao.deleteTranslationsForParent(question.getKey().getId(), Translation.ParentType.QUESTION_TEXT);
+		//TODO:Implement help media delete
 		super.delete(question);
 
 	}

@@ -202,7 +202,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		if (event.getSource() == addSurveyGroupButton) {
 			loadSurveyGroupDetail(null);
 		} else if (event.getSource() == deleteSurveyGroupButton) {
-			Window.alert("Clicked Delete Survey Group");
+			deleteSurveyGroup(event);
 		} else if (event.getSource() == addSurveyButton) {
 			loadSurveyDetail(null);
 		} else if (event.getSource() == deleteSurveyButton) {
@@ -210,7 +210,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == addQuestionGroupButton) {
 			loadQuestionGroupDetail(null);
 		} else if (event.getSource() == deleteQuestionGroupButton) {
-
+			
 		} else if (event.getSource() == addQuestionButton) {
 			loadQuestionDetails(null);
 		} else if (event.getSource() == deleteQuestionButton) {
@@ -218,6 +218,29 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
+	private void deleteSurveyGroup(ClickEvent event){
+		svc.deleteSurveyGroup(getSurveyGroupDtoFromPanel(event), new AsyncCallback<Void>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Could not delete survey group.");
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				Window.alert("Deleted survey group");
+				//TODO: create remove from tree method
+				//removeSurveyGroupFromTree();
+			}
+			
+		});
+	}
+	
+	
+	private SurveyGroupDto getSurveyGroupDtoFromPanel(ClickEvent event){
+		return getSurveyGroupDto();
+	}
+	
 	private void loadQuestionDetails(QuestionDto item) {
 		setButtonState(ButtonState.NONE);
 		questionOptionDetail.removeAllRows();

@@ -64,4 +64,12 @@ public interface SurveyServiceAsync {
 
 	void publishSurveyAsync(Long surveyId, AsyncCallback<Void> callback);
 
+	void deleteSurveyGroup(SurveyGroupDto value, AsyncCallback<Void> callback);
+
+	void deleteQuestionGroup(QuestionGroupDto value, Long surveyId,
+			AsyncCallback<Void> callback);
+
+	void deleteSurvey(SurveyDto value, Long surveyGroupId,
+			AsyncCallback<Void> callback);
+
 }

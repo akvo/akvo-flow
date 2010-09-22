@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.appengine.api.datastore.Key;
@@ -64,6 +62,15 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 
 	public SurveyGroup findBySurveyGroupName(String name) {
 		return super.findByProperty("code", name, "String");
+	}
+	
+	public void delete(SurveyGroup item){
+		//This probably won't work on the server
+		SurveyDAO surveyDao = new SurveyDAO();
+	
+		for(Survey survey:surveyDao.listSurveysByGroup(item.getKey().getId())){
+			surveyDao.delete(survey);
+		}
 	}
 
 }
