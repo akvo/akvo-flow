@@ -52,6 +52,7 @@ public class OptionQuestionView extends QuestionView {
 	private Spinner spinner;
 	private Map<Integer, String> idToValueMap;
 	private volatile boolean suppressListeners = false;
+	private String latestOtherText;
 
 	public OptionQuestionView(Context context, Question q, String[] langCodes,
 			boolean readOnly) {
@@ -354,8 +355,9 @@ public class OptionQuestionView extends QuestionView {
 	 * @param isChecked
 	 */
 	private void handleSelection(int checkedId, boolean isChecked) {
-		if (OTHER_TEXT.equals(idToValueMap.get(checkedId))) {
-			if (!suppressListeners) {
+		if (!suppressListeners) {
+			if (OTHER_TEXT.equals(idToValueMap.get(checkedId))) {
+
 				// only display the dialog if OTHER isn't already populated as
 				// the response need this to suppress the OTHER dialog
 				if (isChecked
@@ -365,36 +367,58 @@ public class OptionQuestionView extends QuestionView {
 				} else if (!isChecked && getResponse() != null) {
 					getResponse().setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 				}
-			}
-		} else {
-			if (!question.isAllowMultiple()
-					|| (question.isAllowMultiple() && (getResponse() == null
-							|| getResponse().getValue() == null || getResponse()
-							.getValue().trim().length() == 0))) {
-				setResponse(new QuestionResponse(idToValueMap.get(checkedId),
-						ConstantUtil.VALUE_RESPONSE_TYPE, question.getId()));
+
 			} else {
-				// if there is already a response and we support multiple, we
-				// have to combine
-				QuestionResponse r = getResponse();
-				StringBuffer newResponse = new StringBuffer();
-				int count = 0;
-				if (checkBoxes != null) {
-					for (int i = 0; i < checkBoxes.size(); i++) {
-						if (checkBoxes.get(i).isChecked()) {
-							if (count > 0) {
-								newResponse.append("|");
-							}
-							newResponse.append(idToValueMap.get(checkBoxes.get(
-									i).getId()));
-							count++;
-						}
-					}
+				if (!question.isAllowMultiple()
+						|| (question.isAllowMultiple() && (getResponse() == null
+								|| getResponse().getValue() == null || getResponse()
+								.getValue().trim().length() == 0))) {
+					setResponse(new QuestionResponse(idToValueMap
+							.get(checkedId), ConstantUtil.VALUE_RESPONSE_TYPE,
+							question.getId()));
+				} else {
+					// if there is already a response and we support multiple,
+					// we
+					// have to combine
+					QuestionResponse r = getResponse();
+					String newResponse = getMultipleSelections(r);
+					r.setValue(newResponse);
+					r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 				}
-				r.setValue(newResponse.toString());
-				r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 			}
 		}
+	}
+
+	/**
+	 * forms a delimited string containing all selected options not including
+	 * OTHER
+	 * 
+	 * @param r
+	 * @return
+	 */
+	private String getMultipleSelections(QuestionResponse r) {
+		StringBuffer newResponse = new StringBuffer();
+		int count = 0;
+		if (checkBoxes != null) {
+			for (int i = 0; i < checkBoxes.size(); i++) {
+				if (checkBoxes.get(i).isChecked()) {
+					if (count > 0) {
+						newResponse.append("|");
+					}
+					if (!OTHER_TEXT.equals(idToValueMap.get(checkBoxes.get(i)
+							.getId()))) {
+						newResponse.append(idToValueMap.get(checkBoxes.get(i)
+								.getId()));
+					} else {
+						// if OTHER is selected
+						newResponse.append(latestOtherText);
+
+					}
+					count++;
+				}
+			}
+		}
+		return newResponse.toString();
 	}
 
 	/**
@@ -413,15 +437,35 @@ public class OptionQuestionView extends QuestionView {
 					public void onClick(DialogInterface dialog, int id) {
 						EditText val = (EditText) rootView
 								.findViewById(R.id.otherField);
-						String text = val.getText().toString();
-						if (text == null) {
-							text = "";
+						latestOtherText = val.getText().toString();
+						if (latestOtherText == null) {
+							latestOtherText = "";
 						} else {
-							text = text.trim();
+							latestOtherText = latestOtherText.trim();
 						}
-						setResponse(new QuestionResponse(text,
-								ConstantUtil.OTHER_RESPONSE_TYPE, question
-										.getId()));
+						if (getQuestion().isAllowMultiple()
+								&& getResponse() != null
+								&& getResponse().getValue() != null) {
+							// if we support multiple, we need to append the
+							// answer
+							QuestionResponse r = getResponse();
+							String responseText = getMultipleSelections(r);
+							if (responseText.trim().length() > 0) {
+								responseText = responseText + "|"
+										+ latestOtherText;
+							} else {
+								responseText = latestOtherText;
+							}
+							setResponse(new QuestionResponse(responseText,
+									ConstantUtil.OTHER_RESPONSE_TYPE, question
+											.getId()));
+						} else {
+							// if we aren't supporting multiple or we don't
+							// already have a value, just set it
+							setResponse(new QuestionResponse(latestOtherText,
+									ConstantUtil.OTHER_RESPONSE_TYPE, question
+											.getId()));
+						}
 						dialog.dismiss();
 					}
 				});
@@ -468,6 +512,12 @@ public class OptionQuestionView extends QuestionView {
 					for (Integer key : idToValueMap.keySet()) {
 						if (valList.contains(idToValueMap.get(key))) {
 							checkBoxes.get(key.intValue()).setChecked(true);
+						} else if (ConstantUtil.OTHER_RESPONSE_TYPE.equals(resp
+								.getType())
+								&& OTHER_TEXT.equals(idToValueMap.get(key))) {
+							checkBoxes.get(key.intValue()).setChecked(true);
+							//the last token is always the Other text (even if it's blank)
+							latestOtherText = valList.get(valList.size()-1);
 						}
 					}
 				}
@@ -511,6 +561,8 @@ public class OptionQuestionView extends QuestionView {
 			}
 		}
 		suppressListeners = false;
+		//this is just to trigger listeners now that the view is updated
+		setResponse(resp);
 	}
 
 	/**
@@ -526,8 +578,8 @@ public class OptionQuestionView extends QuestionView {
 		if (spinner != null) {
 			spinner.setSelection(0);
 		}
-		if(checkBoxes != null){
-			for(int i =0; i < checkBoxes.size(); i++){
+		if (checkBoxes != null) {
+			for (int i = 0; i < checkBoxes.size(); i++) {
 				checkBoxes.get(i).setChecked(false);
 			}
 		}
