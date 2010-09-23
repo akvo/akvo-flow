@@ -25,20 +25,29 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			Long userID, List<String> unparsedLines) {
 		SurveyInstance si = new SurveyInstance();
 
-		si.setCollectionDate(collectionDate);
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
 			String[] parts = line.split(",");
 			QuestionAnswerStore qas = new QuestionAnswerStore();
+
+			Date collDate = collectionDate;
+			try {
+				collDate = new Date(new Long(parts[7]));
+			} catch (Exception e) {
+				logger.log(Level.WARNING,
+						"Could not construct collection date", e);
+			}
+			
 			if (si.getSurveyId() == null) {
 				try {
+					si.setCollectionDate(collDate);
 					si.setSurveyId(Long.parseLong(parts[0]));
 					si = save(si);
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
-							+ parts[0]);
+							+ parts[0], e);
 				}
 			}
 			qas.setSurveyId(si.getSurveyId());
@@ -46,21 +55,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			qas.setArbitratyNumber(new Long(parts[1]));
 			qas.setQuestionID(parts[2]);
 			qas.setType(parts[3]);
-			//TODO: change this to be the submission date from parts[7]
-			//TODO: set collection date on SI too
-			qas.setCollectionDate(collectionDate);
-
+			qas.setCollectionDate(collDate);
 
 			if (parts.length > 4) {
 				qas.setValue(parts[4]);
 			}
-			if(parts.length >= 5){
-				if(si.getSubmitterName() == null){
+			if (parts.length >= 5) {
+				if (si.getSubmitterName() == null) {
 					si.setSubmitterName(parts[5]);
 				}
 			}
-			if(parts.length >=8){
-				if(si.getDeviceIdentifier() == null){
+			if (parts.length >= 8) {
+				if (si.getDeviceIdentifier() == null) {
 					si.setDeviceIdentifier(parts[8]);
 				}
 			}
@@ -92,7 +98,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	/**
 	 * finds a questionAnswerStore object for the surveyInstance and questionId
 	 * passed in (if it exists)
-	 *
+	 * 
 	 * @param surveyInstanceId
 	 * @param questionId
 	 * @return
@@ -117,7 +123,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all questionAnswerStore objects for a survey instance
-	 *
+	 * 
 	 * @param instanceId
 	 * @return
 	 */
@@ -136,7 +142,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all questionAnswerStore objects for a specific question
-	 *
+	 * 
 	 * @param questionId
 	 * @return
 	 */
@@ -153,7 +159,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all surveyInstance records for a given survey
-	 *
+	 * 
 	 * @param surveyId
 	 * @return
 	 */

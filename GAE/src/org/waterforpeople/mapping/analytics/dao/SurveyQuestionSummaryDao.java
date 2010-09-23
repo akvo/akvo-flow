@@ -34,30 +34,41 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 	public static synchronized void incrementCount(QuestionAnswerStore answer,
 			int unit) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
-		query
-				.setFilter("questionId == questionIdParam && response == answerParam");
-		query.declareParameters("String questionIdParam, String answerParam");
-		List results = (List) query.execute(answer.getQuestionID(), answer
-				.getValue());
-		SurveyQuestionSummary summary = null;
-		if ((results == null || results.size() == 0) && unit > 0) {
-			summary = new SurveyQuestionSummary();
-			summary.setCount(new Long(1));
-			summary.setQuestionId(answer.getQuestionID());
-			summary.setResponse(answer.getValue());
-		} else if (results != null && results.size() > 0) {
-			summary = (SurveyQuestionSummary) results.get(0);
-			summary.setCount(summary.getCount() + unit);
+		String answerText = answer.getValue();
+		String[] answers;
+		if (answerText != null && answerText.contains("|")) {
+			answers = answerText.split("\\|");
+		} else {
+			answers = new String[] { answerText };
 		}
-		if (summary != null) {
-			SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-			if (summary.getCount() > 0) {
-				summaryDao.save(summary);
-			} else if (summary.getKey() != null) {
-				// if count has been decremented to 0 and the object is already
-				// persisted, delete it
-				summaryDao.delete(summary);
+		for (int i = 0; i < answers.length; i++) {
+			javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
+			query
+					.setFilter("questionId == questionIdParam && response == answerParam");
+			query
+					.declareParameters("String questionIdParam, String answerParam");
+			List results = (List) query.execute(answer.getQuestionID(),
+					answers[i]);
+			SurveyQuestionSummary summary = null;
+			if ((results == null || results.size() == 0) && unit > 0) {
+				summary = new SurveyQuestionSummary();
+				summary.setCount(new Long(1));
+				summary.setQuestionId(answer.getQuestionID());
+				summary.setResponse(answers[i]);
+			} else if (results != null && results.size() > 0) {
+				summary = (SurveyQuestionSummary) results.get(0);
+				summary.setCount(summary.getCount() + unit);
+			}
+			if (summary != null) {
+				SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+				if (summary.getCount() > 0) {
+					summaryDao.save(summary);
+				} else if (summary.getKey() != null) {
+					// if count has been decremented to 0 and the object is
+					// already
+					// persisted, delete it
+					summaryDao.delete(summary);
+				}
 			}
 		}
 	}
