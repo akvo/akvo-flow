@@ -12,6 +12,7 @@ import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.QuestionHelp;
+import com.gallatinsystems.survey.device.domain.ScoringRule;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.domain.ValidationRule;
 
@@ -35,7 +36,7 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String OPTION = "option";
 	private static final String VALUE = "value";
 	private static final String OPTIONS = "options";
-	private static final String ALLOW_OTHER = "allowOther";	
+	private static final String ALLOW_OTHER = "allowOther";
 	private static final String VALIDATION_TYPE = "validationType";
 	private static final String VALIDATION_RULE = "validationRule";
 	private static final String MAX_LENGTH = "maxLength";
@@ -47,8 +48,12 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String MAX_VAL = "maxVal";
 	private static final String ALT_TEXT = "altText";
 	private static final String LANG = "language";
-	private static final String LOCKED = "locked";	
-	private static final String HELP= "help";
+	private static final String LOCKED = "locked";
+	private static final String HELP = "help";
+	private static final String SCORING = "scoring";
+	private static final String SCORE = "score";
+	private static final String RANGE_MIN = "rangeLow";
+	private static final String RANGE_MAX = "rangeHigh";
 
 	@SuppressWarnings("unused")
 	private static final String TRANSLATION = "translation";
@@ -62,6 +67,8 @@ public class SurveyHandler extends DefaultHandler {
 	private ValidationRule currentValidation;
 	private AltText currentAltText;
 	private QuestionHelp currentHelp;
+	private ScoringRule currentScoringRule;
+	private String currentScoringType;
 
 	private StringBuilder builder;
 
@@ -95,7 +102,8 @@ public class SurveyHandler extends DefaultHandler {
 		if (currentQuestion != null) {
 			// <text> can appear multiple places. We need to make sure we're not
 			// in the context of an option or help here
-			if (localName.equalsIgnoreCase(TEXT) && currentOption == null && currentHelp == null) {
+			if (localName.equalsIgnoreCase(TEXT) && currentOption == null
+					&& currentHelp == null) {
 				currentQuestion.setText(builder.toString().trim());
 			} else if (localName.equalsIgnoreCase(OPTIONS)) {
 				currentQuestion.setOptions(currentOptions);
@@ -103,10 +111,15 @@ public class SurveyHandler extends DefaultHandler {
 			} else if (localName.equalsIgnoreCase(VALIDATION_RULE)) {
 				currentQuestion.setValidationRule(currentValidation);
 				currentValidation = null;
-			}else if(localName.equalsIgnoreCase(HELP)){								
-				currentQuestion.addQuestionHelp(currentHelp);				
+			} else if (localName.equalsIgnoreCase(HELP)) {
+				currentQuestion.addQuestionHelp(currentHelp);
 				currentHelp = null;
-			}		
+			} else if (localName.equalsIgnoreCase(SCORE)) {
+				currentQuestion.addScoringRule(currentScoringRule);
+				currentScoringRule = null;
+			} else if (localName.equalsIgnoreCase(SCORING)) {
+				currentScoringType = null;
+			}
 		}
 		if (currentOption != null) {
 			// the null check here is to handle "old" style options that don't
@@ -144,12 +157,12 @@ public class SurveyHandler extends DefaultHandler {
 				currentAltText = null;
 			}
 		}
-		if(currentHelp != null){
-			if(localName.equalsIgnoreCase(TEXT)){
+		if (currentHelp != null) {
+			if (localName.equalsIgnoreCase(TEXT)) {
 				currentHelp.setText(builder.toString().trim());
 			}
-		}				
-		
+		}
+
 		builder.setLength(0);
 	}
 
@@ -258,6 +271,12 @@ public class SurveyHandler extends DefaultHandler {
 			currentHelp = new QuestionHelp();
 			currentHelp.setType(attributes.getValue(TYPE));
 			currentHelp.setValue(attributes.getValue(VALUE));
+		} else if (localName.equalsIgnoreCase(SCORING)) {
+			currentScoringType = attributes.getValue(TYPE);
+		} else if (localName.equalsIgnoreCase(SCORE)) {
+			currentScoringRule = new ScoringRule(currentScoringType, attributes
+					.getValue(RANGE_MIN), attributes.getValue(RANGE_MAX),
+					attributes.getValue(VALUE));
 		}
 	}
 }

@@ -162,5 +162,5 @@
 	<string name="clearquestiondesc">Do you want to clear the response to this question?</string>
 	<string name="identlabel">Device Identifier</string>
 	<string name="setidentlabel">Set device identifier</string>	
-	<string name="appversion">1.0.11</string>	
+	<string name="appversion">1.1.0</string>	
 </resources>

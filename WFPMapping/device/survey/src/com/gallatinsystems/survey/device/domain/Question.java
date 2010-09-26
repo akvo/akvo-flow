@@ -34,6 +34,7 @@ public class Question {
 	private boolean locked;
 	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
 	private ArrayList<Dependency> dependencies;
+	private ArrayList<ScoringRule> scoringRules;
 
 	public ArrayList<QuestionHelp> getQuestionHelp() {
 		return questionHelp;
@@ -66,8 +67,6 @@ public class Question {
 	public void setAllowMultiple(boolean allowMultiple) {
 		this.allowMultiple = allowMultiple;
 	}
-
-	
 
 	public String getRenderType() {
 		return renderType;
@@ -149,8 +148,8 @@ public class Question {
 	}
 
 	public ArrayList<QuestionHelp> getHelpByType(String type) {
-		ArrayList<QuestionHelp> help =  new ArrayList<QuestionHelp>();;
-		if (questionHelp != null && type != null) {			
+		ArrayList<QuestionHelp> help = new ArrayList<QuestionHelp>();
+		if (questionHelp != null && type != null) {
 			for (int i = 0; i < questionHelp.size(); i++) {
 				if (type.equalsIgnoreCase(questionHelp.get(i).getType())) {
 					help.add(questionHelp.get(i));
@@ -195,6 +194,32 @@ public class Question {
 			count++;
 		}
 		return count;
+	}
+
+	public void addScoringRule(ScoringRule rule) {
+		if (scoringRules == null) {
+			scoringRules = new ArrayList<ScoringRule>();
+		}
+		scoringRules.add(rule);
+	}
+
+	/**
+	 * scores a response accoring to the question's scoring rules. If there are
+	 * no rules or none of the rules match, this method will return null
+	 * otherwise it will return the scored value
+	 * 
+	 * @param response
+	 * @return
+	 */
+	public String getResponseScore(String response) {
+		String result = null;
+		if (scoringRules != null) {
+			int i = 0;
+			while (i < scoringRules.size() && result == null) {
+				result = scoringRules.get(i++).scoreResponse(response);
+			}
+		}
+		return result;
 	}
 
 	public String toString() {

@@ -10,6 +10,7 @@ public class QuestionResponse {
 	private Long respondentId;
 	private String questionId;
 	private String includeFlag;
+	private String scoredValue;
 
 	public QuestionResponse(Long id, Long respondentId, String qId, String val,
 			String t, String includeFlag) {
@@ -95,6 +96,14 @@ public class QuestionResponse {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getScoredValue() {
+		return scoredValue;
+	}
+
+	public void setScoredValue(String scoredValue) {
+		this.scoredValue = scoredValue;
 	}
 
 	public boolean hasValue() {

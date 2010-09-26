@@ -400,12 +400,15 @@ public class QuestionView extends TableLayout implements
 		return getResponse(false);
 	}
 
-	public void setResponse(QuestionResponse response) {
+	public void setResponse(QuestionResponse response) {		
 		setResponse(response, false);
 	}
 
 	public void setResponse(QuestionResponse response, boolean suppressListeners) {
 		if (response != null) {
+			if(question != null){
+				response.setScoredValue(question.getResponseScore(response.getValue()));				
+			}
 			if (this.response == null) {
 				this.response = response;
 			} else {

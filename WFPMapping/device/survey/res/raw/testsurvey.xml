@@ -12,6 +12,21 @@
 					calculadora</altText>
 			</help>
 		</question>
+		<question id="01q" order="1" mandatory="false" type="free">
+			<text>Test scoring?</text>
+			<scoring type="numeric">
+				<score rangeHigh="9" value="BAD"/>
+				<score rangeLow="10" rangeHigh="19" value="OK"/>
+				<score rangeLow="20" value="GOOD"/>
+			</scoring>					
+		</question>		
+	<!-- 	<question id="01q" order="1" mandatory="false" type="strength">
+			<text>How does this look?</text>
+			<options allowOther="true">
+				<option value="r">OK</option>
+				<option value="pu">Lame</option>				
+			</options>			
+		</question> -->
 		<question id="1q" order="0" mandatory="false" type="track">
 			<text>Record distance to water point</text>
 		</question>
@@ -121,7 +136,7 @@
 				<option value="dontknow">Don't Know</option>
 			</options>
 		</question>
-		<question id="q20" order="2" mandatory="false" type="option">
+		<question id="q20" order="2" mandatory="true" type="option">
 			<dependency question="q19" answer-value="no" />
 			<text>Are there any plans for the community to get improved
 				sanitation?</text>
