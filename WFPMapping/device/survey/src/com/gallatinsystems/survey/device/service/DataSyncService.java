@@ -429,11 +429,6 @@ public class DataSyncService extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.CREATED_DATE_COL)));
-					String scoredVal = data
-							.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.SCORED_VAL_COL));
-					buf.append(",").append(scoredVal != null ? scoredVal : "");
-					
 					buf.append("\n");
 				} while (data.moveToNext());
 			}
@@ -529,7 +524,11 @@ public class DataSyncService extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
-					buf.append(",").append(deviceIdentifier);
+					buf.append(",").append(deviceIdentifier).append(",");
+					String scoredVal = data
+							.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.SCORED_VAL_COL));
+					buf.append(",").append(scoredVal != null ? scoredVal : "");
 					buf.append("\n");
 					if (ConstantUtil.IMAGE_RESPONSE_TYPE.equals(type)
 							|| ConstantUtil.VIDEO_RESPONSE_TYPE.equals(type)) {
