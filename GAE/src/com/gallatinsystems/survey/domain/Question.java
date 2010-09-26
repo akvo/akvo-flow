@@ -1,6 +1,8 @@
 package com.gallatinsystems.survey.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.jdo.annotations.NotPersistent;
@@ -38,6 +40,8 @@ public class Question extends BaseDomain {
 	private Boolean mandatoryFlag = null;
 	private String path = null;
 	private String referenceId;
+	@NotPersistent
+	private List<ScoringRule> scoringRules = null;
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -206,4 +210,18 @@ public class Question extends BaseDomain {
 		translationMap.put(t.getLanguageCode(), t);
 	}
 
+	public List<ScoringRule> getScoringRules() {
+		return scoringRules;
+	}
+
+	public void addScoringRule(ScoringRule rule) {
+		if (scoringRules == null) {
+			scoringRules = new ArrayList<ScoringRule>();
+		}
+		scoringRules.add(rule);
+	}
+
+	public void setScoringRules(List<ScoringRule> scoringRules) {
+		this.scoringRules = scoringRules;
+	}
 }

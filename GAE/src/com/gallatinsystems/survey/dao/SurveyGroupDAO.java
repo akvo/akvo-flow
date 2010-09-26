@@ -14,15 +14,10 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 			.getName());
 
 	private SurveyDAO surveyDao;
-	private QuestionGroupDao qgDao;
-	private QuestionDao questionDAO;
 
 	public SurveyGroupDAO() {
 		super(SurveyGroup.class);
 		surveyDao = new SurveyDAO();
-		qgDao = new QuestionGroupDao();
-		questionDAO = new QuestionDao();
-
 	}
 
 	/**
@@ -63,12 +58,13 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 	public SurveyGroup findBySurveyGroupName(String name) {
 		return super.findByProperty("code", name, "String");
 	}
-	
-	public void delete(SurveyGroup item){
-		//This probably won't work on the server
+
+	public void delete(SurveyGroup item) {
+		// This probably won't work on the server
 		SurveyDAO surveyDao = new SurveyDAO();
-	
-		for(Survey survey:surveyDao.listSurveysByGroup(item.getKey().getId())){
+
+		for (Survey survey : surveyDao
+				.listSurveysByGroup(item.getKey().getId())) {
 			surveyDao.delete(survey);
 		}
 	}

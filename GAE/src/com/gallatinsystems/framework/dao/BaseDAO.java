@@ -333,7 +333,7 @@ public class BaseDAO<T extends BaseDomain> {
 	 * 
 	 * deletes a list of objects in a single datastore interaction
 	 */
-	public <E extends BaseDomain> void delete(List<E> obj) {
+	public <E extends BaseDomain> void delete(Collection<E> obj) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		pm.deletePersistentAll(obj);
 	}

@@ -6,9 +6,6 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyRestRequest extends RestRequest {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6876384283589440175L;
 
 	public static final String SAVE_SURVEY_GROUP_ACTION = "saveSurveyGroup";
@@ -34,6 +31,7 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String SURVEY_ID_PARAM = "surveyId";
 	public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
 	public static final String QUESTION_ID_PARAM = "questionID";
+	public static final String SCORING_PARAM = "scoring";
 
 	private String surveyGroupName = null;
 	private String surveyName = null;
@@ -49,6 +47,15 @@ public class SurveyRestRequest extends RestRequest {
 	private Integer questionGroupOrder = null;
 	private Integer surveyId;
 	private Integer questionGroupId;
+	private String scoring;
+
+	public String getScoring() {
+		return scoring;
+	}
+
+	public void setScoring(String scoring) {
+		this.scoring = scoring;
+	}
 
 	public Integer getSurveyId() {
 		return surveyId;
@@ -210,6 +217,12 @@ public class SurveyRestRequest extends RestRequest {
 		}
 		if (req.getParameter(DEPEND_QUESTION_PARAM) != null) {
 			dependQuestion = req.getParameter(DEPEND_QUESTION_PARAM).trim();
+		}
+		if (req.getParameter(SCORING_PARAM) != null) {
+			scoring = req.getParameter(SCORING_PARAM).trim();
+			if (scoring != null && scoring.length() == 0) {
+				scoring = null;
+			}
 		}
 	}
 

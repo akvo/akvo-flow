@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +46,19 @@ public class TranslationDao extends BaseDAO<Translation> {
 		return translations;
 	}
 
+	/**
+	 * deletes all items translations for a given parent
+	 * 
+	 * @param parentId
+	 * @param parentType
+	 */
 	public void deleteTranslationsForParent(Long parentId,
 			Translation.ParentType parentType) {
 		HashMap<String, Translation> trans = findTranslations(parentType,
 				parentId);
-		if (trans != null) {
-			PersistenceManager pm = PersistenceFilter.getManager();
-			for (Translation t : trans.values()) {
-				pm.deletePersistent(t);
-			}
+		Collection<Translation> values = trans.values();
+		if (values != null && values.size() > 0) {
+			delete(trans.values());
 		}
 	}
 }

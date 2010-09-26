@@ -21,12 +21,14 @@ public class QuestionDao extends BaseDAO<Question> {
 	private QuestionOptionDao optionDao;
 	private QuestionHelpMediaDao helpDao;
 	private TranslationDao translationDao;
+	private ScoringRuleDao scoringRuleDao;
 
 	public QuestionDao() {
 		super(Question.class);
 		optionDao = new QuestionOptionDao();
 		helpDao = new QuestionHelpMediaDao();
 		translationDao = new TranslationDao();
+		scoringRuleDao = new ScoringRuleDao();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -65,13 +67,15 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	public void delete(Question question, Long questionGroupId) {
 		QuestionOptionDao qoDao = new QuestionOptionDao();
-		for(Map.Entry<Integer,QuestionOption> qoItem:qoDao.listOptionByQuestion(question.getKey().getId()).entrySet()){
+		for (Map.Entry<Integer, QuestionOption> qoItem : qoDao
+				.listOptionByQuestion(question.getKey().getId()).entrySet()) {
 			qoDao.delete(qoItem.getValue());
 		}
-		TranslationDao tDao =new TranslationDao();
-		//TODO: Check this not sure that is correct
-		tDao.deleteTranslationsForParent(question.getKey().getId(), Translation.ParentType.QUESTION_TEXT);
-		//TODO:Implement help media delete
+		TranslationDao tDao = new TranslationDao();
+		// TODO: Check this not sure that is correct
+		tDao.deleteTranslationsForParent(question.getKey().getId(),
+				Translation.ParentType.QUESTION_TEXT);
+		// TODO:Implement help media delete
 		super.delete(question);
 
 	}
@@ -116,8 +120,14 @@ public class QuestionDao extends BaseDAO<Question> {
 						.getKey().getId()));
 			}
 			q.setTranslationMap(translationDao.findTranslations(
-						Translation.ParentType.QUESTION_TEXT, q.getKey()
-								.getId()));
+					Translation.ParentType.QUESTION_TEXT, q.getKey().getId()));
+			// only load scoring rules for types that support scoring
+			if (Question.Type.OPTION == q.getType()
+					|| Question.Type.FREE_TEXT == q.getType()
+					|| Question.Type.NUMBER == q.getType()) {
+				q.setScoringRules(scoringRuleDao.listRulesByQuestion(q.getKey()
+						.getId()));
+			}
 		}
 		return q;
 	}
@@ -145,6 +155,13 @@ public class QuestionDao extends BaseDAO<Question> {
 					}
 					q.setTranslationMap(translationDao.findTranslations(
 							ParentType.QUESTION_TEXT, q.getKey().getId()));
+					// only load scoring rules for types that support scoring
+					if (Question.Type.OPTION == q.getType()
+							|| Question.Type.FREE_TEXT == q.getType()
+							|| Question.Type.NUMBER == q.getType()) {
+						q.setScoringRules(scoringRuleDao.listRulesByQuestion(q
+								.getKey().getId()));
+					}
 				}
 			}
 		}

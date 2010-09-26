@@ -25,6 +25,7 @@ import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
@@ -35,6 +36,8 @@ import com.gallatinsystems.survey.domain.xml.Help;
 import com.gallatinsystems.survey.domain.xml.ObjectFactory;
 import com.gallatinsystems.survey.domain.xml.Option;
 import com.gallatinsystems.survey.domain.xml.Options;
+import com.gallatinsystems.survey.domain.xml.Score;
+import com.gallatinsystems.survey.domain.xml.Scoring;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.Text;
@@ -320,11 +323,26 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 					}
 				}
 				optionList.add(option);
-
 			}
 			options.setOption(optionList);
 
 			qXML.setOptions(options);
+
+			if (q.getScoringRules() != null && q.getScoringRules().size() > 0) {
+				Scoring scoring = new Scoring();
+
+				for (ScoringRule rule : q.getScoringRules()) {
+					Score score = new Score();
+					if (scoring.getType() == null) {
+						scoring.setType(rule.getType());
+					}
+					score.setRangeHigh(rule.getRangeMax());
+					score.setRangeLow(rule.getRangeMin());
+					score.setValue(rule.getValue());
+					scoring.addScore(score);
+				}
+				qXML.setScoring(scoring);
+			}
 		}
 
 		String questionDocument = null;

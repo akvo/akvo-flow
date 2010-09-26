@@ -11,6 +11,6 @@
 			value="true" />
 		<property name="javax.jdo.option.RetainValues" value="true" />
 		<property name="datanucleus.appengine.autoCreateDatastoreTxns"
-			value="true" />
+			value="false" />
 	</persistence-manager-factory>
 </jdoconfig>

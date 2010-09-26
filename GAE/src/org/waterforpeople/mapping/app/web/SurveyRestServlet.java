@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +29,14 @@ import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
+import com.gallatinsystems.survey.dao.ScoringRuleDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
@@ -48,6 +51,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	private SurveyDAO surveyDao;
 	private QuestionOptionDao optionDao;
 	private TranslationDao translationDao;
+	private ScoringRuleDao scoringRuleDao;
 	private QuestionGroupDao qgDao;
 	private QuestionDao qDao;
 	private SurveyQuestionSummaryDao summaryDao;
@@ -58,6 +62,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		surveyDao = new SurveyDAO();
 		optionDao = new QuestionOptionDao();
 		translationDao = new TranslationDao();
+		scoringRuleDao = new ScoringRuleDao();
 		qgDao = new QuestionGroupDao();
 		qDao = new QuestionDao();
 		summaryDao = new SurveyQuestionSummaryDao();
@@ -88,7 +93,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 					importReq.getAllowOtherFlag(), importReq
 							.getAllowMultipleFlag(), importReq
 							.getMandatoryFlag(), importReq.getQuestionId(),
-					importReq.getQuestionGroupOrder());
+					importReq.getQuestionGroupOrder(), importReq.getScoring());
 			response.setCode("200");
 			response.setMessage("Record Saved status: " + questionSaved);
 		} else if (SurveyRestRequest.LIST_GROUP_ACTION.equals(importReq
@@ -103,8 +108,10 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			response.setDtoList(listSummaries(new Long(importReq
 					.getQuestionId())));
-		}else if (SurveyRestRequest.GET_QUESTION_DETAILS_ACTION.equals(importReq.getAction())){
-			QuestionDto dto = loadQuestionDetails(new Long(importReq.getQuestionId()));
+		} else if (SurveyRestRequest.GET_QUESTION_DETAILS_ACTION
+				.equals(importReq.getAction())) {
+			QuestionDto dto = loadQuestionDetails(new Long(importReq
+					.getQuestionId()));
 			List<BaseDto> dtoList = new ArrayList<BaseDto>();
 			dtoList.add(dto);
 			response.setDtoList(dtoList);
@@ -148,16 +155,18 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		}
 		return dtoList;
 	}
-	
+
 	/**
-	 * loads all details (dependency, translation, options, etc) for a single question
+	 * loads all details (dependency, translation, options, etc) for a single
+	 * question
+	 * 
 	 * @param questionId
 	 * @return
 	 */
-	private QuestionDto loadQuestionDetails(Long questionId){
-		Question q = qDao.getByKey(questionId,true);
+	private QuestionDto loadQuestionDetails(Long questionId) {
+		Question q = qDao.getByKey(questionId, true);
 		QuestionDto result = null;
-		if(q != null){
+		if (q != null) {
 			result = SurveyServiceImpl.marshalQuestionDto(q);
 		}
 		return result;
@@ -182,7 +191,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			String questionGroupName, String questionType, String questionText,
 			String options, String dependentQuestion, Boolean allowOtherFlag,
 			Boolean allowMultipleFlag, Boolean mandatoryFlag,
-			Integer questionOrder, Integer questionGroupOrder)
+			Integer questionOrder, Integer questionGroupOrder, String scoring)
 			throws UnsupportedEncodingException {
 
 		// TODO: Change Impl Later if we support multiple langs
@@ -240,6 +249,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			}
 			translationDao.deleteTranslationsForParent(q.getKey().getId(),
 					ParentType.QUESTION_TEXT);
+			scoringRuleDao.deleteRulesForQuestion(q.getKey().getId());
 		}
 		q.setText(parseLangMap(questionText).get("en"));
 		q.setPath(questionPath);
@@ -259,13 +269,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			}
 		}
 
-		if (questionType.equals("GEO")){
+		if (questionType.equals("GEO")) {
 			q.setType(Question.Type.GEO);
-		}
-		else if (questionType.equals("FREE_TEXT")){
+		} else if (questionType.equals("FREE_TEXT")) {
 			q.setType(Question.Type.FREE_TEXT);
-		}
-		else if (questionType.equals("OPTION")) {
+		} else if (questionType.equals("OPTION")) {
 			q.setAllowMultipleFlag(allowMultipleFlag);
 			q.setAllowOtherFlag(allowOtherFlag);
 			q.setType(Type.OPTION);
@@ -290,11 +298,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(Question.Type.PHOTO);
 		} else if (questionType.equals("NUMBER")) {
 			q.setType(Question.Type.NUMBER);
-		}else if (questionType.equals("NAME")){
+		} else if (questionType.equals("NAME")) {
 			q.setType(Question.Type.NAME);
 		}
 
-		if (mandatoryFlag != null){
+		if (mandatoryFlag != null) {
 			q.setMandatoryFlag(mandatoryFlag);
 		}
 
@@ -337,6 +345,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				t.setParentType(ParentType.QUESTION_TEXT);
 				translationDao.save(t);
 			}
+		}
+		if(scoring != null && scoring.trim().length()>0 && !"null".equalsIgnoreCase(scoring)){
+			List<ScoringRule> rules = parseScoring(scoring, q.getKey().getId());
+			scoringRuleDao.save(rules);
+			q.setScoringRules(rules);			
 		}
 
 		qg.addQuestion(questionOrder, q);
@@ -393,6 +406,14 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		return container;
 	}
 
+	/**
+	 * constructs a translation map based on the contents of the lang param. The
+	 * parameters are tuples of <b>langCode|text</b> with multiple tuples
+	 * separated by a ;
+	 * 
+	 * @param scoringParam
+	 * @return
+	 */
 	private HashMap<String, String> parseLangMap(String unparsedLangParam) {
 		HashMap<String, String> langMap = new HashMap<String, String>();
 
@@ -407,6 +428,36 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			}
 		}
 		return langMap;
+	}
+
+	/**
+	 * constructs a list of ScoringRules based on the contents of the
+	 * scoringParam string. This string is a packed-value string consisting of
+	 * the following 3-tuples: <b>min|max|value</b> Multiple rules are delimited
+	 * by a ;
+	 * 
+	 * @param scoringParam
+	 * @return
+	 */
+	private List<ScoringRule> parseScoring(String scoringParam, Long questionId) {
+		List<ScoringRule> rules = new ArrayList<ScoringRule>();
+		String[] parts = scoringParam.split(";");
+		for (String item : parts) {
+			String[] ruleParts = item.split("\\|");
+			// right now, we only support NUMERIC type. Change this once we
+			// support other types of rules.
+			if (ruleParts.length == 3) {
+				rules.add(new ScoringRule(questionId, "NUMERIC", ruleParts[0],
+						ruleParts[1], ruleParts[2]));
+			} else if (ruleParts.length > 3) {
+				rules.add(new ScoringRule(questionId, ruleParts[0],
+						ruleParts[1], ruleParts[2], ruleParts[3]));
+			} else {
+				log.log(Level.WARNING, "Scoring rule cannot be parsed: "
+						+ scoringParam);
+			}
+		}
+		return rules;
 	}
 
 	/**

@@ -113,6 +113,10 @@ public class SurveySpreadsheetImporter implements DataImporter {
 						case 11:
 							sb.append("mandatory=" + cell.getBooleanCellValue()
 									+ "&");
+							break;
+						case 12:
+							sb.append("scoring="+cell.getStringCellValue());
+							break;
 						}
 					}
 

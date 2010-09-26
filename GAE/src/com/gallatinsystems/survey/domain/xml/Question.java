@@ -61,7 +61,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "altText", "dependency", "help", "options",
-		"text", "validationRule" })
+		"text", "validationRule", "scoring" })
 @XmlRootElement(name = "question")
 public class Question {
 
@@ -72,6 +72,8 @@ public class Question {
 	protected Options options;
 	protected Text text;
 	protected ValidationRule validationRule;
+	@XmlElement(required = false)
+	protected Scoring scoring;
 	@XmlAttribute(required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
@@ -91,6 +93,7 @@ public class Question {
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
 	protected String id;
+		
 
 	public List<AltText> getAltText() {
 		if (altText == null) {
@@ -311,6 +314,14 @@ public class Question {
 	 */
 	public void setId(String value) {
 		this.id = value;
+	}
+
+	public Scoring getScoring() {
+		return scoring;
+	}
+
+	public void setScoring(Scoring scoring) {
+		this.scoring = scoring;
 	}
 
 }
