@@ -524,7 +524,7 @@ public class DataSyncService extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
-					buf.append(",").append(deviceIdentifier).append(",");
+					buf.append(",").append(deviceIdentifier);
 					String scoredVal = data
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.SCORED_VAL_COL));
