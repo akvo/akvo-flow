@@ -70,6 +70,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					si.setDeviceIdentifier(parts[8]);
 				}
 			}
+			if(parts.length >= 9){
+				qas.setScoredValue(parts[9]);
+			}
 			qasList.add(qas);
 		}
 		save(qasList);
