@@ -24,6 +24,9 @@ public class ScoringRule {
 		this.min = min;
 		this.max = max;
 		this.value = val;
+		if (type == null) {
+			this.type = ConstantUtil.NUMERIC_SCORING;
+		}
 	}
 
 	public String getType() {
