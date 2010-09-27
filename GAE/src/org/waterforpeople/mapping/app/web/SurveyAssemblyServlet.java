@@ -327,20 +327,22 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			options.setOption(optionList);
 
 			qXML.setOptions(options);
+		}
 
-			if (q.getScoringRules() != null && q.getScoringRules().size() > 0) {
-				Scoring scoring = new Scoring();
+		if (q.getScoringRules() != null) {
+			Scoring scoring = new Scoring();
 
-				for (ScoringRule rule : q.getScoringRules()) {
-					Score score = new Score();
-					if (scoring.getType() == null) {
-						scoring.setType(rule.getType());
-					}
-					score.setRangeHigh(rule.getRangeMax());
-					score.setRangeLow(rule.getRangeMin());
-					score.setValue(rule.getValue());
-					scoring.addScore(score);
+			for (ScoringRule rule : q.getScoringRules()) {
+				Score score = new Score();
+				if (scoring.getType() == null) {
+					scoring.setType(rule.getType().toLowerCase());
 				}
+				score.setRangeHigh(rule.getRangeMax());
+				score.setRangeLow(rule.getRangeMin());
+				score.setValue(rule.getValue());
+				scoring.addScore(score);
+			}
+			if (scoring.getScore() != null && scoring.getScore().size() > 0) {
 				qXML.setScoring(scoring);
 			}
 		}
