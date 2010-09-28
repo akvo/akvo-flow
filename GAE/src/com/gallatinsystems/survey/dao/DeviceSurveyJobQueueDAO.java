@@ -6,7 +6,6 @@ import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.task.domain.Task;
 
 public class DeviceSurveyJobQueueDAO {
 
@@ -46,7 +45,7 @@ public class DeviceSurveyJobQueueDAO {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		if (phone != null && surveyId != null) {
 
-			javax.jdo.Query query = pm.newQuery(Task.class);
+			javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
 			String filterString = "devicePhoneNumber == devicePhoneParam && surveyId == surveyIdParam";
 			String paramString = "String devicePhoneParam, Long surveyIdParam";
 
