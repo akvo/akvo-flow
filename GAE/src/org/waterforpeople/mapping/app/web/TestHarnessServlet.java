@@ -2,9 +2,6 @@ package org.waterforpeople.mapping.app.web;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -28,12 +25,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
+import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
@@ -43,6 +43,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
@@ -935,6 +936,52 @@ public class TestHarnessServlet extends HttpServlet {
 			} else {
 				fixNameQuestion(req.getParameter("questionId"));
 			}
+		} else if ("createSurveyAssignment".equals(action)) {
+			Device device = new Device();
+			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+			device.setPhoneNumber("1111111111");
+			device.setInServiceDate(new Date());
+
+			BaseDAO<Device> deviceDao = new BaseDAO<Device>(Device.class);
+			deviceDao.save(device);			
+			SurveyAssignmentServiceImpl sasi = new SurveyAssignmentServiceImpl();
+			SurveyAssignmentDto dto = new SurveyAssignmentDto();
+			SurveyDAO surveyDao = new SurveyDAO();
+			List<Survey> surveyList = surveyDao.list("all");
+			SurveyAssignment sa = new SurveyAssignment();
+			BaseDAO<SurveyAssignment> surveyAssignmentDao = new BaseDAO<SurveyAssignment>(
+					SurveyAssignment.class);
+			sa.setCreatedDateTime(new Date());
+			sa.setCreateUserId(-1L);
+			ArrayList<Long> deviceList = new ArrayList<Long>();
+			deviceList.add(device.getKey().getId());
+			sa.setDeviceIds(deviceList);
+			ArrayList<SurveyDto> surveyDtoList =new ArrayList<SurveyDto>();
+			
+			for (Survey survey : surveyList) {
+				sa.addSurvey(survey.getKey().getId());
+				SurveyDto surveyDto =new SurveyDto();
+				surveyDto.setKeyId(survey.getKey().getId());
+				surveyDtoList.add(surveyDto);
+			}
+			sa.setStartDate(new Date());
+			sa.setEndDate(new Date());
+			sa.setName(new Date().toString());
+			
+			DeviceDto deviceDto =new DeviceDto();
+			deviceDto.setKeyId(device.getKey().getId());
+			deviceDto.setPhoneNumber(device.getPhoneNumber());
+			ArrayList<DeviceDto> deviceDtoList = new ArrayList<DeviceDto>();
+			deviceDtoList.add(deviceDto);
+			dto.setDevices(deviceDtoList);
+			dto.setSurveys(surveyDtoList);
+			dto.setEndDate(new Date());
+			dto.setLanguage("en");
+			dto.setName("Test Assignment: " + new Date().toString());
+			dto.setStartDate(new Date());
+			sasi.saveSurveyAssignment(dto);
+
+			//sasi.deleteSurveyAssignment(dto);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -71,6 +72,11 @@ public class SurveyAssignment extends BaseDomain {
 
 	public void setDeviceIds(List<Long> deviceIds) {
 		this.deviceIds = deviceIds;
+	}
+	public void addSurvey(Long surveyId){
+		if(surveyIds==null)
+			surveyIds = new ArrayList<Long>();
+		surveyIds.add(surveyId);
 	}
 
 }

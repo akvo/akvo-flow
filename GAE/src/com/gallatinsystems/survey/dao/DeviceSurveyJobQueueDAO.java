@@ -51,10 +51,11 @@ public class DeviceSurveyJobQueueDAO {
 
 			query.setFilter(filterString);
 			query.declareParameters(paramString);
-			Object results = query.execute(phone, surveyId);
+			List<DeviceSurveyJobQueue>results = (List<DeviceSurveyJobQueue>)query.execute(phone, surveyId);
 			if (results != null && results instanceof DeviceSurveyJobQueue) {
 				pm.deletePersistent(results);
 			} else if (results != null) {
+				//Couldn't delete streaming query returned from execute call so pull out each one put in container list and delete
 				pm.deletePersistentAll(results);
 			}
 		}
