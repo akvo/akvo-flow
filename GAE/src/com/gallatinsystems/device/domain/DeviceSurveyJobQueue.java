@@ -12,6 +12,21 @@ import javax.jdo.annotations.PrimaryKey;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceSurveyJobQueue {
 
+	private String devicePhoneNumber;
+	private Long surveyID;
+	private Date effectiveStartDate;
+	private Date effectiveEndDate;
+	private DistributionStatus surveyDistributionStatus;
+
+	private String language;
+	private String name;
+	
+
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
+
+	
 	public enum DistributionStatus {
 		UNSENT, SENT
 	}
@@ -21,9 +36,6 @@ public class DeviceSurveyJobQueue {
 		this.language = "english";
 	}
 
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
 
 	public Long getId() {
 		return id;
@@ -74,15 +86,7 @@ public class DeviceSurveyJobQueue {
 		this.surveyDistributionStatus = surveyDistributionStatus;
 	}
 
-	private String devicePhoneNumber;
-	private Long surveyID;
-	private Date effectiveStartDate;
-	private Date effectiveEndDate;
-	private DistributionStatus surveyDistributionStatus;
-
-	private String language;
-	private String name;
-
+	
 	public String getLanguage() {
 		return language;
 	}
