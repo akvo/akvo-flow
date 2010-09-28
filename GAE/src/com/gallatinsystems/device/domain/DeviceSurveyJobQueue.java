@@ -20,13 +20,12 @@ public class DeviceSurveyJobQueue {
 
 	private String language;
 	private String name;
-	
+	private Long assignmentId;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
 
-	
 	public enum DistributionStatus {
 		UNSENT, SENT
 	}
@@ -36,13 +35,20 @@ public class DeviceSurveyJobQueue {
 		this.language = "english";
 	}
 
-
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getAssignmentId() {
+		return assignmentId;
+	}
+
+	public void setAssignmentId(Long assignmentId) {
+		this.assignmentId = assignmentId;
 	}
 
 	public String getDevicePhoneNumber() {
@@ -86,7 +92,6 @@ public class DeviceSurveyJobQueue {
 		this.surveyDistributionStatus = surveyDistributionStatus;
 	}
 
-	
 	public String getLanguage() {
 		return language;
 	}

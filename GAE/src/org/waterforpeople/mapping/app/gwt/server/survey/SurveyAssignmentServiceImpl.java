@@ -99,6 +99,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 					queueItem.setSurveyID(sId);
 					queueItem.setName(survey.getName());
 					queueItem.setLanguage(assignment.getLanguage());
+					queueItem.setAssignmentId(assignment.getKey().getId());
 					queueItem
 							.setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
 					deviceSurveyJobQueueDAO.save(queueItem);
@@ -164,22 +165,9 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 			SurveyAssignment assignment = surveyAssignmentDao.getByKey(dto
 					.getKeyId());
 			if (assignment != null) {
-				if (assignment.getDeviceIds() != null
-						&& dto.getSurveys() != null) {
-					for (Long deviceId : assignment.getDeviceIds()) {
-						Device d = deviceDao.getByKey(deviceId);
-						if (d != null) {
-							for (SurveyDto survey : dto.getSurveys()) {
-								deviceSurveyJobQueueDAO.deleteJob(d
-										.getPhoneNumber(), survey.getKeyId());
-							}
-						}
-					}
-				}
+				deviceSurveyJobQueueDAO.deleteJob(assignment.getKey().getId());
 				surveyAssignmentDao.delete(assignment);
 			}
 		}
-
 	}
-
 }

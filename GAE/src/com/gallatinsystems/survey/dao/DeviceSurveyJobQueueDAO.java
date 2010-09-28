@@ -41,6 +41,7 @@ public class DeviceSurveyJobQueueDAO {
 	 * @param phoneNumbers
 	 * @param surveyId
 	 */
+	@SuppressWarnings("unchecked")
 	public void deleteJob(String phone, Long surveyId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		if (phone != null && surveyId != null) {
@@ -51,13 +52,63 @@ public class DeviceSurveyJobQueueDAO {
 
 			query.setFilter(filterString);
 			query.declareParameters(paramString);
-			List<DeviceSurveyJobQueue>results = (List<DeviceSurveyJobQueue>)query.execute(phone, surveyId);
-			if (results != null && results instanceof DeviceSurveyJobQueue) {
-				pm.deletePersistent(results);
-			} else if (results != null) {
-				//Couldn't delete streaming query returned from execute call so pull out each one put in container list and delete
+			List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query
+					.execute(phone, surveyId);
+			if (results != null) {
 				pm.deletePersistentAll(results);
 			}
+
+		}
+	}
+
+	/**
+	 * deletes all jobs for a given assignment
+	 * 
+	 * @param assignmentId
+	 */
+	@SuppressWarnings("unchecked")
+	public void deleteJob(Long assignmentId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		if (assignmentId != null) {
+
+			javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
+			String filterString = "assignmentId == assignmentIdParam";
+			String paramString = "Long assignmentIdParam";
+
+			query.setFilter(filterString);
+			query.declareParameters(paramString);
+			List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query
+					.execute(assignmentId);
+			if (results != null) {
+				pm.deletePersistentAll(results);
+			}
+		}
+	}
+
+	/**
+	 * populates the assignment id for all items with the survey id specified
+	 * THIS SHOULD NOT BE USED IN NORMAL OPERATION
+	 * 
+	 * @param surveyId
+	 * @param assignmentId
+	 */
+	@SuppressWarnings("unchecked")
+	public void updateAssignmentIdForSurvey(Long surveyId, Long assignmentId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+
+		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
+		String filterString = "surveyID == surveyIdParam";
+		String paramString = "Long surveyIdParam";
+
+		query.setFilter(filterString);
+		query.declareParameters(paramString);
+		List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query
+				.execute(surveyId);
+		if (results != null) {
+			for (DeviceSurveyJobQueue job : results) {
+				job.setAssignmentId(assignmentId);
+			}
+			pm.makePersistentAll(results);
 		}
 	}
 }

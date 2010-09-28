@@ -65,6 +65,7 @@ import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
+import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
@@ -943,7 +944,7 @@ public class TestHarnessServlet extends HttpServlet {
 			device.setInServiceDate(new Date());
 
 			BaseDAO<Device> deviceDao = new BaseDAO<Device>(Device.class);
-			deviceDao.save(device);			
+			deviceDao.save(device);
 			SurveyAssignmentServiceImpl sasi = new SurveyAssignmentServiceImpl();
 			SurveyAssignmentDto dto = new SurveyAssignmentDto();
 			SurveyDAO surveyDao = new SurveyDAO();
@@ -956,19 +957,19 @@ public class TestHarnessServlet extends HttpServlet {
 			ArrayList<Long> deviceList = new ArrayList<Long>();
 			deviceList.add(device.getKey().getId());
 			sa.setDeviceIds(deviceList);
-			ArrayList<SurveyDto> surveyDtoList =new ArrayList<SurveyDto>();
-			
+			ArrayList<SurveyDto> surveyDtoList = new ArrayList<SurveyDto>();
+
 			for (Survey survey : surveyList) {
 				sa.addSurvey(survey.getKey().getId());
-				SurveyDto surveyDto =new SurveyDto();
+				SurveyDto surveyDto = new SurveyDto();
 				surveyDto.setKeyId(survey.getKey().getId());
 				surveyDtoList.add(surveyDto);
 			}
 			sa.setStartDate(new Date());
 			sa.setEndDate(new Date());
 			sa.setName(new Date().toString());
-			
-			DeviceDto deviceDto =new DeviceDto();
+
+			DeviceDto deviceDto = new DeviceDto();
 			deviceDto.setKeyId(device.getKey().getId());
 			deviceDto.setPhoneNumber(device.getPhoneNumber());
 			ArrayList<DeviceDto> deviceDtoList = new ArrayList<DeviceDto>();
@@ -981,7 +982,22 @@ public class TestHarnessServlet extends HttpServlet {
 			dto.setStartDate(new Date());
 			sasi.saveSurveyAssignment(dto);
 
-			//sasi.deleteSurveyAssignment(dto);
+			// sasi.deleteSurveyAssignment(dto);
+		} else if ("populateAssignmentId".equalsIgnoreCase(action)) {
+			populateAssignmentId(Long.parseLong(req
+					.getParameter("assignmentId")));
+		}
+	}
+
+	private void populateAssignmentId(Long assignmentId) {
+		BaseDAO<SurveyAssignment> assignmentDao = new BaseDAO<SurveyAssignment>(
+				SurveyAssignment.class);
+		SurveyAssignment assignment = assignmentDao.getByKey(assignmentId);
+		DeviceSurveyJobQueueDAO jobDao = new DeviceSurveyJobQueueDAO();
+		if (assignment != null) {
+			for (Long sid : assignment.getSurveyIds()) {
+				jobDao.updateAssignmentIdForSurvey(sid, assignmentId);
+			}
 		}
 	}
 
