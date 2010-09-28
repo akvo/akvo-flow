@@ -51,10 +51,11 @@ public class DeviceSurveyJobQueueDAO {
 
 			query.setFilter(filterString);
 			query.declareParameters(paramString);
-			DeviceSurveyJobQueue job = (DeviceSurveyJobQueue) query.execute(
-					phone, surveyId);
-			if (job != null) {
-				pm.deletePersistent(job);
+			Object results = query.execute(phone, surveyId);
+			if (results != null && results instanceof DeviceSurveyJobQueue) {
+				pm.deletePersistent(results);
+			} else if (results != null) {
+				pm.deletePersistentAll(results);
 			}
 		}
 	}
