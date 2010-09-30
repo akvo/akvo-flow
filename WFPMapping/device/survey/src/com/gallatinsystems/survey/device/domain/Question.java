@@ -35,6 +35,33 @@ public class Question {
 	private HashMap<String, AltText> altTextMap = new HashMap<String, AltText>();
 	private ArrayList<Dependency> dependencies;
 	private ArrayList<ScoringRule> scoringRules;
+	private boolean useStrength;
+	private int strengthMin;
+	private int strengthMax;
+
+	public void setUseStrength(boolean val) {
+		useStrength = val;
+	}
+
+	public boolean useStrength() {
+		return useStrength;
+	}
+
+	public int getStrengthMin() {
+		return strengthMin;
+	}
+
+	public void setStrengthMin(int strengthMin) {
+		this.strengthMin = strengthMin;
+	}
+
+	public int getStrengthMax() {
+		return strengthMax;
+	}
+
+	public void setStrengthMax(int strengthMax) {
+		this.strengthMax = strengthMax;
+	}
 
 	public ArrayList<QuestionHelp> getQuestionHelp() {
 		return questionHelp;

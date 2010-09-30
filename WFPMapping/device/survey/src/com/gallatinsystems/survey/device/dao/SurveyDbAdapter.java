@@ -65,6 +65,7 @@ public class SurveyDbAdapter {
 	public static final String PROP_VAL_COL = "property_values";
 	public static final String INCLUDE_FLAG_COL = "include_flag";
 	public static final String SCORED_VAL_COL = "scored_val";
+	public static final String STRENGTH_COL = "strength";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -80,7 +81,7 @@ public class SurveyDbAdapter {
 			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text, saved_date long);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
-			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null, include_flag text not null, scored_val text);";
+			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null, include_flag text not null, scored_val text, strength text);";
 
 	private static final String USER_TABLE_CREATE = "create table user (_id integer primary key autoincrement, display_name text not null, email text not null);";
 
@@ -124,7 +125,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 56;
+	private static final int DATABASE_VERSION = 57;
 
 	private final Context context;
 
@@ -161,7 +162,7 @@ public class SurveyDbAdapter {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
+			/*db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
@@ -169,7 +170,8 @@ public class SurveyDbAdapter {
 			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
-			onCreate(db);
+			onCreate(db);*/
+			db.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
 		}
 	}
 
@@ -230,10 +232,11 @@ public class SurveyDbAdapter {
 				RESPONDENT_TABLE + "." + PK_ID_COL, RESP_ID_COL, ANSWER_COL,
 				ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL, EMAIL_COL,
 				DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
-				RESPONDENT_TABLE + "." + SURVEY_FK_COL, SCORED_VAL_COL}, SUBMITTED_FLAG_COL
-				+ "= 'true' AND " + INCLUDE_FLAG_COL + "='true' AND" + "("
-				+ DELIVERED_DATE_COL + " is null OR " + MEDIA_SENT_COL
-				+ " <> 'true')", null, null, null, null);
+				RESPONDENT_TABLE + "." + SURVEY_FK_COL, SCORED_VAL_COL,
+				STRENGTH_COL }, SUBMITTED_FLAG_COL + "= 'true' AND "
+				+ INCLUDE_FLAG_COL + "='true' AND" + "(" + DELIVERED_DATE_COL
+				+ " is null OR " + MEDIA_SENT_COL + " <> 'true')", null, null,
+				null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -364,9 +367,9 @@ public class SurveyDbAdapter {
 	public Cursor fetchResponsesByRespondent(String respondentID) {
 		return database.query(RESPONSE_TABLE, new String[] { RESP_ID_COL,
 				QUESTION_FK_COL, ANSWER_COL, ANSWER_TYPE_COL,
-				SURVEY_RESPONDENT_ID_COL, INCLUDE_FLAG_COL, SCORED_VAL_COL },
-				SURVEY_RESPONDENT_ID_COL + "=?", new String[] { respondentID },
-				null, null, null);
+				SURVEY_RESPONDENT_ID_COL, INCLUDE_FLAG_COL, SCORED_VAL_COL,
+				STRENGTH_COL }, SURVEY_RESPONDENT_ID_COL + "=?",
+				new String[] { respondentID }, null, null, null);
 	}
 
 	/**
@@ -381,10 +384,10 @@ public class SurveyDbAdapter {
 		QuestionResponse resp = null;
 		Cursor cursor = database.query(RESPONSE_TABLE, new String[] {
 				RESP_ID_COL, QUESTION_FK_COL, ANSWER_COL, ANSWER_TYPE_COL,
-				SURVEY_RESPONDENT_ID_COL, INCLUDE_FLAG_COL,SCORED_VAL_COL },
-				SURVEY_RESPONDENT_ID_COL + "=? and " + QUESTION_FK_COL + "=?",
-				new String[] { respondentId.toString(), questionId }, null,
-				null, null);
+				SURVEY_RESPONDENT_ID_COL, INCLUDE_FLAG_COL, SCORED_VAL_COL,
+				STRENGTH_COL }, SURVEY_RESPONDENT_ID_COL + "=? and "
+				+ QUESTION_FK_COL + "=?", new String[] {
+				respondentId.toString(), questionId }, null, null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -401,6 +404,8 @@ public class SurveyDbAdapter {
 						.getColumnIndexOrThrow(INCLUDE_FLAG_COL)));
 				resp.setScoredValue(cursor.getString(cursor
 						.getColumnIndexOrThrow(SCORED_VAL_COL)));
+				resp.setStrength(cursor.getString(cursor
+						.getColumnIndexOrThrow(STRENGTH_COL)));
 			}
 			cursor.close();
 		}
@@ -419,6 +424,8 @@ public class SurveyDbAdapter {
 				.getRespondentId(), resp.getQuestionId());
 		if (responseToSave != null) {
 			responseToSave.setValue(resp.getValue());
+			responseToSave.setStrength(resp.getStrength());
+			responseToSave.setScoredValue(resp.getScoredValue());
 		} else {
 			responseToSave = resp;
 		}
@@ -431,6 +438,7 @@ public class SurveyDbAdapter {
 				.getRespondentId());
 		initialValues.put(SCORED_VAL_COL, responseToSave.getScoredValue());
 		initialValues.put(INCLUDE_FLAG_COL, resp.getIncludeFlag());
+		initialValues.put(STRENGTH_COL, responseToSave.getStrength());
 		if (responseToSave.getId() == null) {
 			id = database.insert(RESPONSE_TABLE, null, initialValues);
 		} else {

@@ -110,6 +110,10 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					.getType())) {
 				questionView = new GeoTrackQuestionView(context, q,
 						languageCodes, readOnly);
+			} else if (ConstantUtil.STRENGTH_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
+				questionView = new StrengthQuestionView(context, q,
+						languageCodes, readOnly);
 			} else {
 				questionView = new QuestionView(context, q, languageCodes,
 						readOnly);
@@ -241,10 +245,12 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 						resp.setType(responseCursor.getString(i));
 					} else if (cols[i].equals(SurveyDbAdapter.QUESTION_FK_COL)) {
 						resp.setQuestionId(responseCursor.getString(i));
-					}else if  (cols[i].equals(SurveyDbAdapter.INCLUDE_FLAG_COL)) {
+					} else if (cols[i].equals(SurveyDbAdapter.INCLUDE_FLAG_COL)) {
 						resp.setIncludeFlag(responseCursor.getString(i));
-					}else if (cols[i].equals(SurveyDbAdapter.SCORED_VAL_COL)) {
+					} else if (cols[i].equals(SurveyDbAdapter.SCORED_VAL_COL)) {
 						resp.setScoredValue(responseCursor.getString(i));
+					} else if (cols[i].equals(SurveyDbAdapter.STRENGTH_COL)) {
+						resp.setStrength(responseCursor.getString(i));
 					}
 				}
 				if (questionMap != null) {
@@ -252,7 +258,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					if (questionMap.get(resp.getQuestionId()) != null) {
 						questionMap.get(resp.getQuestionId()).rehydrate(resp);
 
-					}					
+					}
 				}
 			}
 		}

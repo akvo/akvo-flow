@@ -423,7 +423,7 @@ public class QuestionView extends TableLayout implements
 		if (!suppressListeners) {
 			notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
 		}
-	}
+	}	
 
 	public Question getQuestion() {
 		return question;

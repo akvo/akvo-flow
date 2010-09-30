@@ -43,6 +43,7 @@ public class ConstantUtil {
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
 	public static final String TRACK_QUESTION_TYPE = "track";
+	public static final String STRENGTH_QUESTION_TYPE = "strength";
 
 	/**
 	 * help types
@@ -73,7 +74,7 @@ public class ConstantUtil {
 	 */
 	public static final String NUMERIC_VALIDATION_TYPE = "numeric";
 	public static final String NAME_VALIDATION_TYPE = "name";
-	
+
 	/**
 	 * scoring types
 	 */

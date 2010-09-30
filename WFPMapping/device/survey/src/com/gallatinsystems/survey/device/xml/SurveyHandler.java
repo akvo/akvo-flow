@@ -6,6 +6,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import android.util.Log;
+
 import com.gallatinsystems.survey.device.domain.AltText;
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Option;
@@ -15,6 +17,7 @@ import com.gallatinsystems.survey.device.domain.QuestionHelp;
 import com.gallatinsystems.survey.device.domain.ScoringRule;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.domain.ValidationRule;
+import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
  * Handler for sax-based xml parser for Survey files
@@ -54,6 +57,8 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String SCORE = "score";
 	private static final String RANGE_MIN = "rangeLow";
 	private static final String RANGE_MAX = "rangeHigh";
+	private static final String STRENGTH_MIN = "strengthMin";
+	private static final String STRENGTH_MAX = "strengthMax";
 
 	@SuppressWarnings("unused")
 	private static final String TRANSLATION = "translation";
@@ -227,6 +232,29 @@ public class SurveyHandler extends DefaultHandler {
 				currentQuestion
 						.setValidationRule(new ValidationRule(validation));
 			}
+			if (attributes.getValue(STRENGTH_MAX) != null
+					&& currentQuestion.getType().equalsIgnoreCase(
+							ConstantUtil.STRENGTH_QUESTION_TYPE)) {
+				currentQuestion.setUseStrength(true);
+				try {
+					currentQuestion.setStrengthMax(Integer.parseInt(attributes
+							.getValue(STRENGTH_MAX).trim()));
+					if (attributes.getValue(STRENGTH_MIN) != null) {
+						currentQuestion.setStrengthMin(Integer
+								.parseInt(attributes.getValue(STRENGTH_MIN)
+										.trim()));
+					} else {
+						currentQuestion.setStrengthMin(0);
+					}
+				} catch (NumberFormatException e) {
+					currentQuestion.setUseStrength(false);
+					currentQuestion.setType(ConstantUtil.OPTION_QUESTION_TYPE);
+					Log.e("XML ERROR", "Could not parse strength values", e);
+				}
+			} else {
+				currentQuestion.setUseStrength(false);
+			}
+
 		} else if (localName.equalsIgnoreCase(OPTIONS)) {
 			currentOptions = new ArrayList<Option>();
 			if (currentQuestion != null) {

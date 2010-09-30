@@ -529,6 +529,10 @@ public class DataSyncService extends Service {
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.SCORED_VAL_COL));
 					buf.append(",").append(scoredVal != null ? scoredVal : "");
+					String strength = data
+							.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL));
+					buf.append(",").append(scoredVal != null ? strength : "");
 					buf.append("\n");
 					if (ConstantUtil.IMAGE_RESPONSE_TYPE.equals(type)
 							|| ConstantUtil.VIDEO_RESPONSE_TYPE.equals(type)) {

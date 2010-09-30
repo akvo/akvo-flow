@@ -20,13 +20,13 @@
 				<score rangeLow="20" value="GOOD"/>
 			</scoring>					
 		</question>		
-	<!-- 	<question id="01q" order="1" mandatory="false" type="strength">
+	 	<question id="01q" order="1" mandatory="false" type="strength" strengthMin="1" strengthMax="5">
 			<text>How does this look?</text>
-			<options allowOther="true">
+			<options allowOther="false">
 				<option value="r">OK</option>
-				<option value="pu">Lame</option>				
+				<option value="pu">I don't like it</option>				
 			</options>			
-		</question> -->
+		</question>
 		<question id="1q" order="0" mandatory="false" type="track">
 			<text>Record distance to water point</text>
 		</question>
