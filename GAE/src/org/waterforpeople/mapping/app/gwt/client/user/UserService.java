@@ -1,5 +1,8 @@
 package org.waterforpeople.mapping.app.gwt.client.user;
 
+import java.util.ArrayList;
+
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -52,4 +55,24 @@ public interface UserService extends RemoteService {
 	 * @param emailAddress
 	 */
 	public void deletePortletConfig(UserConfigDto dto, String emailAddress);
+
+	/**
+	 * searches for users
+	 * 
+	 * @param userName
+	 * @param emailAddress
+	 * @param sortBy
+	 * @param sortDir
+	 * @param cursor
+	 * @return
+	 */
+	public ResponseDto<ArrayList<UserDto>> listUsers(String userName,
+			String emailAddress, String sortBy, String sortDir, String cursor);
+
+	/**
+	 * deletes the user with the given id
+	 * 
+	 * @param id
+	 */
+	public void deleteUser(Long id);
 }

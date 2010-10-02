@@ -66,6 +66,8 @@ public class PortletFactory {
 			return new MappingAttributeManager();
 		} else if (name.equals(RecentPointsPortlet.NAME)) {
 			return new RecentPointsPortlet();
+		} else if (name.equals(UserManagerPortlet.NAME)) {
+			return new UserManagerPortlet();
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

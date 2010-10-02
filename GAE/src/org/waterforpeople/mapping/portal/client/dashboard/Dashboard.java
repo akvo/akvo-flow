@@ -27,6 +27,7 @@ import org.waterforpeople.mapping.portal.client.widgets.SurveyLoaderPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.UserManagerPortlet;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortalContainer;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
@@ -184,6 +185,11 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.addItem("Import Access Point", new Command() {
 			public void execute() {
 				launchFullscreen(MappingAttributeManager.NAME);
+			}
+		});
+		mgrMenu.addItem("Manage Users", new Command() {
+			public void execute() {
+				launchFullscreen(UserManagerPortlet.NAME);
 			}
 		});
 

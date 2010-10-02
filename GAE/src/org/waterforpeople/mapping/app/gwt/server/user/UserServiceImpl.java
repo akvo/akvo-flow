@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserConfig;
@@ -33,6 +34,31 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 
 	public UserServiceImpl() {
 		userDao = new UserDao();
+	}
+
+	/**
+	 * searches for users from the datastore. The users returned contain just
+	 * the core user info (not their config objects).
+	 */
+	public ResponseDto<ArrayList<UserDto>> listUsers(String userName,
+			String emailAddress, String sortBy, String sortDir, String cursor) {
+		List<User> users = userDao.searchUser(userName, emailAddress, sortBy,
+				sortDir, cursor);
+		ArrayList<UserDto> dtoList = new ArrayList<UserDto>();
+		ResponseDto<ArrayList<UserDto>> response = new ResponseDto<ArrayList<UserDto>>();
+		if (users != null) {
+			for (User u : users) {
+				UserDto dto = new UserDto();
+				dto.setKeyId(u.getKey().getId());
+				dto.setUserName(u.getUserName());
+				dto.setEmailAddress(u.getEmailAddress());
+				dtoList.add(dto);
+			}
+			response.setCursorString(UserDao.getCursor(users));
+		}
+		response.setPayload(dtoList);
+		return response;
+
 	}
 
 	/**
@@ -230,6 +256,18 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 			return confItem;
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * deletes a user identified by the id passed in
+	 * 
+	 * @param userId
+	 */
+	public void deleteUser(Long userId) {
+		User u = userDao.getByKey(userId);
+		if (u != null) {
+			userDao.delete(u);
 		}
 	}
 

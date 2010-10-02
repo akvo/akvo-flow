@@ -1,10 +1,11 @@
 package org.waterforpeople.mapping.app.gwt.client.user;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-public class UserDto implements Serializable {
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+
+public class UserDto extends BaseDto {
 
 	private static final long serialVersionUID = -61713350825542379L;
 	
