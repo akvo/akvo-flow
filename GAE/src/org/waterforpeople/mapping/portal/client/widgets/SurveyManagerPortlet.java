@@ -1,8 +1,9 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
@@ -19,6 +20,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -75,6 +77,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private SurveyServiceAsync svc = null;
 	private BaseDto currentSelection;
+	private Map<Long, QuestionDto[]> surveyOptionQuestionMap;
 
 	private enum ButtonState {
 		SURVEYGROUP, SURVEY, QUESTIONGROUP, QUESTION, NONE
@@ -83,6 +86,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	public SurveyManagerPortlet() {
 		super(title, scrollable, configurable, WIDTH, HEIGHT);
 		svc = GWT.create(SurveyService.class);
+		surveyOptionQuestionMap = new HashMap<Long, QuestionDto[]>();
 		buildContentPanel();
 	}
 
@@ -418,119 +422,129 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	private HorizontalPanel buttonHPanel = new HorizontalPanel();
 
 	private void loadDependencyTable(Boolean dependentValue) {
-
 		if (dependentValue) {
-			QuestionDto qDto = null;
-			questionDetailPanel.setWidget(8, 0, new Label(
-					"Dependent on Quesiton"));
-			ListBox questionLB = new ListBox();
-			ListBox answerLB = new ListBox();
-			final QuestionGroupDto questionGroup = (QuestionGroupDto) surveyTree
-					.getParentUserObject(currentSelection);
+			final QuestionDto currentQuestion = (QuestionDto) currentSelection;
+			if (surveyOptionQuestionMap.get(currentQuestion.getSurveyId()) == null) {
+				// if we haven't loaded the Option questions for this survey, do
+				// it now
+				svc.listSurveyQuestionByType(currentQuestion.getSurveyId(),
+						QuestionType.OPTION,
+						new AsyncCallback<QuestionDto[]>() {
 
-			QuestionDependencyDto item = null;
-			if (currentSelection instanceof QuestionDto) {
-				qDto = (QuestionDto) currentSelection;
-				if (qDto != null && qDto.getQuestionDependency() != null)
-					item = qDto.getQuestionDependency();
+							@Override
+							public void onFailure(Throwable caught) {
+								MessageDialog errDia = new MessageDialog(
+										"Error loading questions",
+										"Could not load questions for dependency selection: "
+												+ caught.getMessage());
+								errDia.showRelativeTo(questionDetailPanel);
+							}
+
+							@Override
+							public void onSuccess(QuestionDto[] result) {
+								surveyOptionQuestionMap.put(currentQuestion
+										.getSurveyId(), result);
+								populateDependencySelection(currentQuestion,
+										result);
+							}
+						});
+			} else {
+				populateDependencySelection(currentQuestion,
+						surveyOptionQuestionMap.get(currentQuestion
+								.getSurveyId()));
 			}
-			int selectedIdx = -1;
-			if (questionGroup != null) {
-				int idx = 0;
-				for (Entry<Integer, QuestionDto> entry : questionGroup
-						.getQuestionMap().entrySet()) {
-					if (QuestionType.OPTION.equals(entry.getValue().getType())) {
-						String txt = entry.getValue().getText();
-						if (txt != null && txt.trim().length() > MAX_Q_LENGTH) {
-							txt = txt.substring(0, MAX_Q_LENGTH);
-						}
-						questionLB.addItem(txt, entry.getValue().getKeyId()
-								.toString());
-						if (item != null
-								&& item.getQuestionId() == entry.getValue()
-										.getKeyId()) {
-							selectedIdx = idx;
-						}
-						idx++;
-					}
-				}
-				if (selectedIdx >= 0) {
-					questionLB.setSelectedIndex(selectedIdx);
-				}
-				questionDetailPanel.setWidget(8, 1, questionLB);
-				TextBox dependentQId = new TextBox();
 
-				if (item != null && item.getKeyId() != null)
-					dependentQId.setText(item.getKeyId().toString());
-
-				dependentQId.setVisible(false);
-				questionDetailPanel.setWidget(8, 2, dependentQId);
-				answerLB.setVisible(false);
-				questionDetailPanel.setWidget(8, 3, answerLB);
-
-				questionLB.addChangeHandler(new ChangeHandler() {
-
-					@Override
-					public void onChange(ChangeEvent event) {
-						ListBox questionLBox = (ListBox) event.getSource();
-						loadDepQA(questionLBox, questionGroup, null);
-
-					}
-				});
-				TextBox qDepId = new TextBox();
-				questionDetailPanel.setWidget(8, 4, qDepId);
-				if (qDto != null && qDto.getQuestionDependency() != null) {
-					// set existing value
-					qDepId.setText(qDto.getQuestionDependency().getQuestionId()
-							.toString());
-					loadDepQA(questionLB, questionGroup, qDto
-							.getQuestionDependency().getAnswerValue());
-
-				}
-			}
 		} else {
 			questionDetailPanel.removeRow(8);
 		}
 	}
 
-	private void loadDepQA(ListBox questionLBox,
-			QuestionGroupDto questionGroup, final String selectedAnswer) {
-		Integer selectedIndex = questionLBox.getSelectedIndex();
-		String value = questionLBox.getValue(selectedIndex);
-		if (questionGroup != null) {
-			for (QuestionDto qDto : questionGroup.getQuestionMap().values()) {
+	private void populateDependencySelection(QuestionDto currentQuestion,
+			final QuestionDto[] optionQuestions) {
+		questionDetailPanel.setWidget(8, 0, new Label("Dependent on Quesiton"));
+		ListBox questionLB = new ListBox();
+		ListBox answerLB = new ListBox();
+		QuestionDependencyDto item = null;
 
-				if (qDto.getKeyId().toString().equals(value)) {
-					if (qDto.getOptionContainerDto() != null) {
-						updateDependencyAnswerSelection(qDto
-								.getOptionContainerDto().getOptionsList(),
-								selectedAnswer);
-					} else {
-						// if the option container is null, we probably have not
-						// yet loaded the question details. so do it now
-						svc.loadQuestionDetails(qDto.getKeyId(),
-								new AsyncCallback<QuestionDto>() {
+		if (currentQuestion != null) {
+			item = currentQuestion.getQuestionDependency();
 
-									@Override
-									public void onSuccess(QuestionDto result) {
-										if (result.getOptionContainerDto() != null) {
-											updateDependencyAnswerSelection(
-													result
-															.getOptionContainerDto()
-															.getOptionsList(),
-													selectedAnswer);
-										}
-									}
+			for (int i = 0; i < optionQuestions.length; i++) {
 
-									@Override
-									public void onFailure(Throwable caught) {
-										Window.alert("Could not load answers");
-
-									}
-								});
-					}
-					break;
+				String txt = optionQuestions[i].getText();
+				if (txt != null && txt.trim().length() > MAX_Q_LENGTH) {
+					txt = txt.substring(0, MAX_Q_LENGTH);
 				}
+				questionLB.addItem(txt, optionQuestions[i].getKeyId()
+						.toString());
+				if (item != null
+						&& item.getQuestionId().equals(optionQuestions[i]
+								.getKeyId())) {
+					questionLB.setSelectedIndex(i);
+				}
+
+			}
+			questionDetailPanel.setWidget(8, 1, questionLB);
+			TextBox dependentQId = new TextBox();
+
+			if (item != null && item.getKeyId() != null)
+				dependentQId.setText(item.getKeyId().toString());
+
+			dependentQId.setVisible(false);
+			questionDetailPanel.setWidget(8, 2, dependentQId);
+			answerLB.setVisible(false);
+			questionDetailPanel.setWidget(8, 3, answerLB);
+
+			questionLB.addChangeHandler(new ChangeHandler() {
+				@Override
+				public void onChange(ChangeEvent event) {
+					ListBox questionLBox = (ListBox) event.getSource();
+					loadDepQA(optionQuestions[questionLBox.getSelectedIndex()],
+							null);
+
+				}
+			});
+			TextBox qDepId = new TextBox();
+			questionDetailPanel.setWidget(8, 4, qDepId);
+			if (currentQuestion != null
+					&& currentQuestion.getQuestionDependency() != null) {
+				// set existing value
+				qDepId.setText(currentQuestion.getQuestionDependency()
+						.getQuestionId().toString());
+				loadDepQA(optionQuestions[questionLB.getSelectedIndex()],
+						currentQuestion.getQuestionDependency()
+								.getAnswerValue());
+
+			}
+		}
+	}
+
+	private void loadDepQA(QuestionDto qDto, final String selectedAnswer) {
+		if (qDto != null) {
+			if (qDto.getOptionContainerDto() != null) {
+				updateDependencyAnswerSelection(qDto.getOptionContainerDto()
+						.getOptionsList(), selectedAnswer);
+			} else {
+				// if the option container is null, we probably have not
+				// yet loaded the question details. so do it now
+				svc.loadQuestionDetails(qDto.getKeyId(),
+						new AsyncCallback<QuestionDto>() {
+
+							@Override
+							public void onSuccess(QuestionDto result) {
+								if (result.getOptionContainerDto() != null) {
+									updateDependencyAnswerSelection(result
+											.getOptionContainerDto()
+											.getOptionsList(), selectedAnswer);
+								}
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("Could not load answers");
+
+							}
+						});
 			}
 		}
 	}
@@ -694,7 +708,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	private QuestionDto getQuestionDto() {
 		QuestionDto value = new QuestionDto();
 		if (currentSelection instanceof QuestionDto) {
-			value = (QuestionDto)currentSelection;
+			value = (QuestionDto) currentSelection;
 		}
 
 		TextBox questionId = (TextBox) questionDetailPanel.getWidget(0, 0);
