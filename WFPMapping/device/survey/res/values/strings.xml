@@ -163,5 +163,5 @@
 	<string name="identlabel">Device Identifier</string>
 	<string name="setidentlabel">Set device identifier</string>
 	<string name="strengthtext">Strength of Preference</string>	
-	<string name="appversion">1.1.1</string>	
+	<string name="appversion">1.1.2</string>	
 </resources>
