@@ -31,6 +31,7 @@ import org.waterforpeople.mapping.portal.client.widgets.UserManagerPortlet;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortalContainer;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -39,6 +40,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -83,8 +85,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 		containerPanel = new VerticalPanel();
 
-		containerPanel.add(constructMenu(true));
+		final Widget menu = constructMenu(true);
 		RootPanel.get().add(containerPanel);
+		containerPanel.add(menu);
+		menu.setVisible(false);
 		// now add the portal container to the vertical panel
 		containerPanel.add(this);
 		// get the user config
@@ -96,15 +100,29 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			}
 
 			public void onSuccess(UserDto result) {
-				if (result != null) {
+				if (result != null && result.hasAccess()) {
+					menu.setVisible(true);
 					setCurrentUser(result);
 					initializeContent(result);
-				} else {
-					initializeContent(null);
+				} else if (result == null || !result.hasAccess()) {
+					containerPanel.clear();
+					containerPanel.add(new Image("images/wfp-logo.gif"));
+					if (result != null) {
+						Anchor logoutAnchor = new Anchor(
+								"Log in as different user", result
+										.getLogoutUrl());
+						containerPanel.add(logoutAnchor);
+					}
+					MessageDialog errDia = new MessageDialog(
+							"Unkown User",
+							"You do not have access to the FLOW server. Please contact an administrator for access");
+					errDia.show();
+					// initializeContent(null);
+
 				}
 			}
 		};
-		userService.getCurrentUserConfig(userCallback);
+		userService.getCurrentUserConfig(false, userCallback);
 	}
 
 	/**

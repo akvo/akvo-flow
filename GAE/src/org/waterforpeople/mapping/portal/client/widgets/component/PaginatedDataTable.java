@@ -3,8 +3,6 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.digester.SetRootRule;
-
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -17,7 +15,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
- * Widget that can handle the display of a sorted, paginated table of data
+ * Widget that can handle the display of a sorted, paginated table of data. This
+ * class can handle arrayLists of objects that descend from BaseDto
  * 
  * @author Christopher Fagiani
  * 
@@ -48,6 +47,15 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private Label statusLabel;
 	private VerticalPanel contentPanel;
 
+	/**
+	 * constructs a data table with rows that will be populated by a
+	 * DataTableBinder. The DataTableListener will be notified when the user
+	 * selects a specific item.
+	 * 
+	 * @param defaultSortField
+	 * @param l
+	 * @param b
+	 */
 	public PaginatedDataTable(String defaultSortField, DataTableListener<T> l,
 			DataTableBinder<T> b) {
 		contentPanel = new VerticalPanel();
@@ -82,23 +90,41 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		buttonPanel.add(previousButton);
 		buttonPanel.add(nextButton);
 		statusLabel = new Label();
+		statusLabel.setText("Loading...");
+		contentPanel.add(statusLabel);
 		contentPanel.add(instanceGrid);
 		contentPanel.add(buttonPanel);
 		initWidget(contentPanel);
 	}
 
+	/**
+	 * changes the currentPage and displays the "loading" message then invokes
+	 * the "requestData" method on the listener interface.
+	 * 
+	 * @param increment
+	 */
 	private void loadDataPage(int increment) {
 		currentPage += increment;
 		statusLabel.setText("Loading...");
 		statusLabel.setVisible(true);
-		listener.requestData(getCursor(currentPage));
+		listener.requestData(getCursor(currentPage - 1));
 	}
 
+	/**
+	 * resets current page to 0 and flushes the stored cursors
+	 */
 	private void resetCursorArray() {
 		currentPage = 0;
 		cursorArray.clear();
 	}
 
+	/**
+	 * gets the cursor that corresponds to the page passed in (if it has been
+	 * loaded).
+	 * 
+	 * @param page
+	 * @return
+	 */
 	private String getCursor(int page) {
 		if (page >= 0) {
 			if (page < cursorArray.size()) {
@@ -116,6 +142,11 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		}
 	}
 
+	/**
+	 * stores the cursor passed in for the currentPage
+	 * 
+	 * @param cursor
+	 */
 	private void setCursor(String cursor) {
 		if (currentPage < cursorArray.size()) {
 			cursorArray.set(currentPage, cursor);
@@ -124,6 +155,10 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		}
 	}
 
+	/**
+	 * gets the headers to use for the table from the data binder and then adds
+	 * them to the grid
+	 */
 	private void loadHeaderRow() {
 		String[] headings = binder.getHeaders();
 		for (int i = 0; i < headings.length; i++) {
@@ -132,6 +167,12 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		setGridRowStyle(instanceGrid, 0, false);
 	}
 
+	/**
+	 * installs the label widgets for the column headers
+	 * 
+	 * @param col
+	 * @param text
+	 */
 	private void addHeaderItem(int col, final String text) {
 		HorizontalPanel panel = new HorizontalPanel();
 		Label temp = new Label(text);
@@ -139,8 +180,18 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		instanceGrid.setWidget(0, col, panel);
 	}
 
+	/**
+	 * populates the data grid with the dtos passed in
+	 * 
+	 * @param dtoList
+	 * @param cursor
+	 * @param isNew
+	 */
 	public void bindData(ArrayList<T> dtoList, String cursor, boolean isNew) {
 		currentDtoList = dtoList;
+		if (isNew) {
+			resetCursorArray();
+		}
 		setCursor(cursor);
 		statusLabel.setVisible(false);
 		instanceGrid.clear();
@@ -151,11 +202,22 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 				binder.bindRow(instanceGrid, dtoList.get(i), i + 1);
 				setGridRowStyle(instanceGrid, i + 1, false);
 			}
+
 		} else {
+			instanceGrid.resize(0, 0);
 			statusLabel.setText("No matches");
 			statusLabel.setVisible(true);
 		}
-
+		if (currentDtoList != null && currentDtoList.size() >= 20) {
+			nextButton.setVisible(true);
+		} else {
+			nextButton.setVisible(false);
+		}
+		if (currentPage > 0) {
+			previousButton.setVisible(true);
+		} else {
+			previousButton.setVisible(false);
+		}
 	}
 
 	/**
@@ -186,6 +248,9 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		}
 	}
 
+	/**
+	 * handles the click of rows within the grid
+	 */
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() instanceof Grid) {

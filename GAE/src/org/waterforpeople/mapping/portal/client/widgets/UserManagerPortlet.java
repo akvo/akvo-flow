@@ -10,7 +10,6 @@ import org.waterforpeople.mapping.portal.client.widgets.component.DataTableListe
 import org.waterforpeople.mapping.portal.client.widgets.component.PaginatedDataTable;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,7 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Christopher Fagiani
  * 
  */
-public class UserManagerPortlet extends Portlet implements
+public class UserManagerPortlet extends UserAwarePortlet implements
 		DataTableListener<UserDto>, DataTableBinder<UserDto>, ClickHandler {
 
 	public static final String NAME = "User Management";
@@ -48,20 +47,31 @@ public class UserManagerPortlet extends Portlet implements
 	private Button addNewButton;
 	private UserServiceAsync userService;
 
-	public UserManagerPortlet() {
-		super(NAME, true, false, WIDTH, HEIGHT);
+	public UserManagerPortlet(UserDto user) {
+		super(NAME, true, false, WIDTH, HEIGHT, user);
 
 		contentPane = new VerticalPanel();
-		contentPane.add(buildSearchHeader());
-		dataTable = new PaginatedDataTable<UserDto>(DEFAULT_SORT_FIELD, this,
-				this);
-		contentPane.add(dataTable);
-		setContent(contentPane);
+		if (user.isAdmin()) {
+			contentPane.add(buildSearchHeader());
+			dataTable = new PaginatedDataTable<UserDto>(DEFAULT_SORT_FIELD,
+					this, this);
+			contentPane.add(dataTable);
+			setContent(contentPane);
 
-		userService = GWT.create(UserService.class);
-		requestData(null);
+			userService = GWT.create(UserService.class);
+			requestData(null);
+		} else {
+			MessageDialog errDia = new MessageDialog("Admin Only",
+					"You must be an administrator to access this feature.");
+			errDia.show();
+		}
 	}
 
+	/**
+	 * builds the controls at the top of the portlet used for searching
+	 * 
+	 * @return
+	 */
 	private Widget buildSearchHeader() {
 		HorizontalPanel hPanel = new HorizontalPanel();
 		Label l = new Label("Username: ");
@@ -69,6 +79,7 @@ public class UserManagerPortlet extends Portlet implements
 		usernameField = new TextBox();
 		hPanel.add(usernameField);
 		l = new Label("Email: ");
+		hPanel.add(l);
 		emailField = new TextBox();
 		hPanel.add(emailField);
 		searchButton = new Button("Search");
@@ -88,10 +99,13 @@ public class UserManagerPortlet extends Portlet implements
 
 	@Override
 	public void onItemSelected(UserDto item) {
-		// TODO Auto-generated method stub
+		// no-op
 
 	}
 
+	/**
+	 * call the server to get more data
+	 */
 	@Override
 	public void requestData(String cursor) {
 		final boolean isNew = (cursor == null);
@@ -106,18 +120,23 @@ public class UserManagerPortlet extends Portlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDia = new MessageDialog("Error",
+								"There was an error while attempting to search for users: "
+										+ caught.getMessage());
+						errDia.show();
 					}
 				});
 	}
 
 	@Override
 	public void resort(String field, String direction) {
-		// TODO Auto-generated method stub
+		// no-op
 
 	}
 
+	/**
+	 * installs the data into the row on the data grid
+	 */
 	@Override
 	public void bindRow(Grid grid, final UserDto item, int row) {
 		final TextBox uBox = new TextBox();
@@ -138,13 +157,17 @@ public class UserManagerPortlet extends Portlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDia = new MessageDialog("Error",
+								"There was an error while attempting to save the user: "
+										+ caught.getMessage());
+						errDia.show();
 					}
 
 					@Override
 					public void onSuccess(Void result) {
-						// TODO Auto-generated method stub
+						MessageDialog confDia = new MessageDialog("User Saved",
+								"The user has been updated");
+						confDia.show();
 
 					}
 				});
@@ -189,11 +212,14 @@ public class UserManagerPortlet extends Portlet implements
 		return GRID_HEADERS;
 	}
 
+	/**
+	 * handles the search and add new methods
+	 */
 	@Override
 	public void onClick(ClickEvent event) {
+		String userName = usernameField.getText().trim();
+		String email = emailField.getText().trim();
 		if (event.getSource() == addNewButton) {
-			String userName = usernameField.getText().trim();
-			String email = emailField.getText().trim();
 			if (userName.length() == 0 || email.length() == 0) {
 				MessageDialog errDia = new MessageDialog(
 						"Missing Mandatory Data",
@@ -227,9 +253,26 @@ public class UserManagerPortlet extends Portlet implements
 			}
 
 		} else if (event.getSource() == searchButton) {
+			userService.listUsers(userName.length() > 0 ? userName : null,
+					email.length() > 0 ? email : null, null, null, null,
+					new AsyncCallback<ResponseDto<ArrayList<UserDto>>>() {
 
+						@Override
+						public void onFailure(Throwable caught) {
+							MessageDialog errorDia = new MessageDialog(
+									"Could not search",
+									"There was an error while trying to search for usesr: "
+											+ caught.getMessage());
+							errorDia.showRelativeTo(searchButton);
+						}
+
+						@Override
+						public void onSuccess(
+								ResponseDto<ArrayList<UserDto>> result) {
+							dataTable.bindData(result.getPayload(), result
+									.getCursorString(), true);
+						}
+					});
 		}
-
 	}
-
 }

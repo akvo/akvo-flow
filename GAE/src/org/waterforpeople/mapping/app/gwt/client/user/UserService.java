@@ -17,7 +17,7 @@ public interface UserService extends RemoteService {
 	 * 
 	 * @return
 	 */
-	public UserDto getCurrentUserConfig();
+	public UserDto getCurrentUserConfig(boolean createIfNotFound);
 
 	/**
 	 * persists a user and it's dependent UserConfig items

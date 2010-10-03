@@ -87,7 +87,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 * this method returns null.
 	 */
 	@Override
-	public UserDto getCurrentUserConfig() {
+	public UserDto getCurrentUserConfig(boolean createIfNotFound) {
 		com.google.appengine.api.users.UserService userService = UserServiceFactory
 				.getUserService();
 		com.google.appengine.api.users.User currentUser = userService
@@ -95,15 +95,20 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 
 		UserDto userDto = new UserDto();
 		if (currentUser != null) {
-			User u = userDao.findUserByEmail(currentUser.getEmail());
-			if (u == null) {
+
+			User u = null;
+			if (currentUser.getEmail() != null
+					&& currentUser.getEmail().trim().length() > 0) {
+				u = userDao.findUserByEmail(currentUser.getEmail());
+			}
+			if (u == null && createIfNotFound) {
 				User newUser = new User();
 				newUser.setEmailAddress(currentUser.getEmail());
 				newUser.setUserName(currentUser.getNickname());
 				userDto.setEmailAddress(currentUser.getEmail());
 				userDto.setUserName(currentUser.getNickname());
 				userDao.save(newUser);
-			} else {
+			} else if (u != null) {
 				Map<String, Set<UserConfigDto>> configMap = new HashMap<String, Set<UserConfigDto>>();
 
 				if (u.getConfig() != null) {
@@ -123,7 +128,12 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 					userDto.setConfig(configMap);
 					userDto.setUserName(u.getUserName());
 					userDto.setEmailAddress(u.getEmailAddress());
+					userDto.setAdmin(userService.isUserAdmin());
 				}
+			} else {
+				userDto.setHasAccess(false);
+				userDto.setLogoutUrl(userService
+						.createLogoutURL("/logout.html"));
 			}
 		}
 		return userDto;

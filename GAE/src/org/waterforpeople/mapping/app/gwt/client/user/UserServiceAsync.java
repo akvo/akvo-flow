@@ -9,7 +9,7 @@ public interface UserServiceAsync {
 
 	void listUser(AsyncCallback<UserDto[]> callback);
 
-	void getCurrentUserConfig(AsyncCallback<UserDto> callback);
+	void getCurrentUserConfig(boolean createIfNotFound, AsyncCallback<UserDto> callback);
 
 	void saveUser(UserDto user, AsyncCallback<Void> callback);
 
