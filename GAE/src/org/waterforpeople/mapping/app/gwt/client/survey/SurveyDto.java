@@ -12,7 +12,16 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String description;
 	private String status;
 	private ArrayList<QuestionGroupDto> questionGroupList;
-	
+	private String path;
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	public void addQuestionGroup(QuestionGroupDto questionGroup) {
 		if (questionGroupList == null) {
 			questionGroupList = new ArrayList<QuestionGroupDto>();
@@ -24,7 +33,8 @@ public class SurveyDto extends BaseDto implements NamedObject {
 		return questionGroupList;
 	}
 
-	public void setQuestionGroupList(ArrayList<QuestionGroupDto> questionGroupList) {
+	public void setQuestionGroupList(
+			ArrayList<QuestionGroupDto> questionGroupList) {
 		this.questionGroupList = questionGroupList;
 	}
 
@@ -67,6 +77,6 @@ public class SurveyDto extends BaseDto implements NamedObject {
 			display = getKeyId().toString();
 		}
 		display = display + " - v." + getVersion();
-		return display;		
+		return display;
 	}
 }

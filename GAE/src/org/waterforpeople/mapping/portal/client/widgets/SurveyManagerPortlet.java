@@ -210,7 +210,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == addQuestionGroupButton) {
 			loadQuestionGroupDetail(null);
 		} else if (event.getSource() == deleteQuestionGroupButton) {
-			
+
 		} else if (event.getSource() == addQuestionButton) {
 			loadQuestionDetails(null);
 		} else if (event.getSource() == deleteQuestionButton) {
@@ -218,29 +218,29 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 	}
 
-	private void deleteSurveyGroup(ClickEvent event){
-		svc.deleteSurveyGroup(getSurveyGroupDtoFromPanel(event), new AsyncCallback<Void>(){
+	private void deleteSurveyGroup(ClickEvent event) {
+		svc.deleteSurveyGroup(getSurveyGroupDtoFromPanel(event),
+				new AsyncCallback<Void>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				Window.alert("Could not delete survey group.");
-			}
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Could not delete survey group.");
+					}
 
-			@Override
-			public void onSuccess(Void result) {
-				Window.alert("Deleted survey group");
-				//TODO: create remove from tree method
-				//removeSurveyGroupFromTree();
-			}
-			
-		});
+					@Override
+					public void onSuccess(Void result) {
+						Window.alert("Deleted survey group");
+						// TODO: create remove from tree method
+						// removeSurveyGroupFromTree();
+					}
+
+				});
 	}
-	
-	
-	private SurveyGroupDto getSurveyGroupDtoFromPanel(ClickEvent event){
+
+	private SurveyGroupDto getSurveyGroupDtoFromPanel(ClickEvent event) {
 		return getSurveyGroupDto();
 	}
-	
+
 	private void loadQuestionDetails(QuestionDto item) {
 		setButtonState(ButtonState.NONE);
 		questionOptionDetail.removeAllRows();
@@ -407,7 +407,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				QuestionResponseDialog dia = new QuestionResponseDialog(currentSelection.getKeyId());
+				QuestionResponseDialog dia = new QuestionResponseDialog(
+						currentSelection.getKeyId());
 				dia.show();
 			}
 		});
@@ -692,6 +693,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private QuestionDto getQuestionDto() {
 		QuestionDto value = new QuestionDto();
+		if (currentSelection instanceof QuestionDto) {
+			value = (QuestionDto)currentSelection;
+		}
 
 		TextBox questionId = (TextBox) questionDetailPanel.getWidget(0, 0);
 		// TextBox dependencyId = (TextBox) questionDetailPanel.getWidget(0, 0);
@@ -886,7 +890,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyDetail.setWidget(4, 2, publishSurveyButton);
 		surveyDetail.setWidget(4, 3, exportSummaryButton);
 		surveyDetail.setWidget(4, 4, exportRawDataButton);
-		surveyDetail.setWidget(4,5,exportFormButton);
+		surveyDetail.setWidget(4, 5, exportFormButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
 		saveSurveyButton.addClickHandler(new ClickHandler() {
@@ -961,7 +965,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				surveyDetail.setWidget(5, 0, html);
 			}
 		});
-		
+
 		exportFormButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -1184,5 +1188,5 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				loadQuestionDetails((QuestionDto) dto);
 			}
 		}
-	}	
+	}
 }

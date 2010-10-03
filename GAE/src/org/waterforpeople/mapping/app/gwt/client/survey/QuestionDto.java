@@ -22,6 +22,24 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Long surveyId;
 	private Long questionGroupId;
 	private TreeMap<String, TranslationDto> translationMap;
+	private String path;
+	private Integer order;
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
 
 	public TreeMap<String, TranslationDto> getTranslationMap() {
 		return translationMap;

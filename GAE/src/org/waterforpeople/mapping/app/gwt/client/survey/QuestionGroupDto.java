@@ -14,6 +14,24 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 	private String code;
 	private String description;
 	private Long surveyId;
+	private Integer order;
+	private String path;
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	public Long getSurveyId() {
 		return surveyId;

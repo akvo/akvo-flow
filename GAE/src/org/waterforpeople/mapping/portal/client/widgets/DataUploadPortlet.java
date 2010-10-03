@@ -33,12 +33,15 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
 
 	private static final String S3_ID = "1JZZVDSNFFQYF23ZYJ02";
-	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String DATA_S3_SIG = "7/fo9v4qamQJjnbga529k3iZMZE=";
+	// NOTE: the S3 policies expire on 10/2/2013
+	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTMtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
+	private static final String DATA_S3_SIG = "fJ585oyvef7e8t5NuHQDf1iioWw=";
+
 	private static final String S3_DATA_FILE_PATH = "devicezip";
 	private static final String DATA_CONTENT_TYPE = "application/zip";
-	private static final String IMAGE_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTAtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJpbWFnZXMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String IMAGE_S3_SIG = "FXBhybgyBjd+oG++KUlvq1onIDY=";
+	private static final String IMAGE_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTMtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJpbWFnZXMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
+	private static final String IMAGE_S3_SIG = "smmfHmVzQ+LS75ZdA0PxrUagj3s=";
+
 	private static final String S3_IMAGE_FILE_PATH = "images";
 	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
 
@@ -62,11 +65,11 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 		contentPane.add(instructions);
 		HorizontalPanel phPanel = new HorizontalPanel();
 		phPanel.add(new Label("Device Phone #: "));
-		phoneNumberBox = new TextBox();		
+		phoneNumberBox = new TextBox();
 		phoneNumberBox.setWidth("100px");
 		phPanel.add(phoneNumberBox);
 		contentPane.add(phPanel);
-		
+
 		VerticalPanel tempPanel = new VerticalPanel();
 		form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -89,7 +92,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 		form.setWidth("275px");
 
-		upload = new FileUpload();		
+		upload = new FileUpload();
 		upload.setName("file");
 		tempPanel.add(upload);
 		form.setWidget(tempPanel);
@@ -174,7 +177,8 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 					VerticalPanel vPanel = new VerticalPanel();
 					vPanel.add(new Hidden("action", "submit"));
 					vPanel.add(new Hidden("fileName", filename));
-					vPanel.add(new Hidden("phoneNumber",phoneNumberBox.getText()));
+					vPanel.add(new Hidden("phoneNumber", phoneNumberBox
+							.getText()));
 					tempForm.setWidget(vPanel);
 					tempForm.setVisible(false);
 					contentPane.add(tempForm);
@@ -189,7 +193,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 								}
 							});
 					tempForm.submit();
-				}				
+				}
 			}
 		} else {
 			statusLabel.setText("Upload error. Please try again.");

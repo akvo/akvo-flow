@@ -229,6 +229,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 		qDto.setKeyId(q.getKey().getId());
 		qDto.setQuestionGroupId(q.getQuestionGroupId());
+		qDto.setPath(q.getPath());
+		qDto.setOrder(q.getOrder());
 
 		if (q.getText() != null)
 			qDto.setText(q.getText());
@@ -266,7 +268,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					ooDto.setCode(qo.getCode());
 				if (qo.getText() != null)
 					ooDto.setText(qo.getText());
+				ooDto.setOrder(qo.getOrder());
 				ocDto.addQuestionOption(ooDto);
+
 			}
 			qDto.setOptionContainerDto(ocDto);
 		}
@@ -308,6 +312,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					.getKeyId())));
 
 		q.setQuestionGroupId(qdto.getQuestionGroupId());
+		q.setOrder(qdto.getOrder());
+		q.setPath(qdto.getPath());
 
 		if (qdto.getText() != null)
 			q.setText(qdto.getText());
@@ -694,7 +700,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
 			SurveyGroup sg = new SurveyGroup();
-			
+
 			surveyGroupDao.delete(marshallSurveyGroup(value));
 		}
 	}
@@ -704,7 +710,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (dto.getKeyId() != null)
 			sg.setKey(KeyFactory.createKey(SurveyGroup.class.getSimpleName(),
 					dto.getKeyId()));
-		if(dto.getCode()!=null)
+		if (dto.getCode() != null)
 			sg.setCode(dto.getCode());
 		return sg;
 	}
