@@ -4,6 +4,7 @@ package com.gallatinsystems.common.data.calendar;
 public class GoogleCalendarAdapter {
 	
 	    public static void main(String[] args) {
+	    	//testcomment
 //	        CalendarService myService = new CalendarService("exampleCo-exampleApp-1.0");
 //	        myService.setUserCredentials("root@gmail.com", "pa$$word");
 //	            
