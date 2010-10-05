@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
  * @author Christopher Fagiani
  * 
  */
+@SuppressWarnings("unused")
 public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		ClickHandler {
 
@@ -46,6 +47,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private Button previousButton;
 	private Label statusLabel;
 	private VerticalPanel contentPanel;
+	private boolean rowClickable;
 
 	/**
 	 * constructs a data table with rows that will be populated by a
@@ -55,11 +57,16 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 * @param defaultSortField
 	 * @param l
 	 * @param b
+	 * @param isRowClickable
 	 */
 	public PaginatedDataTable(String defaultSortField, DataTableListener<T> l,
-			DataTableBinder<T> b) {
+			DataTableBinder<T> b, boolean isRowClickable) {
 		contentPanel = new VerticalPanel();
 		instanceGrid = new Grid();
+		this.rowClickable = isRowClickable;
+		if (rowClickable) {
+			instanceGrid.addClickHandler(this);
+		}
 		currentSelection = -1;
 		currentSortDirection = DEFAULT_SORT_DIR;
 		currentSortField = defaultSortField;

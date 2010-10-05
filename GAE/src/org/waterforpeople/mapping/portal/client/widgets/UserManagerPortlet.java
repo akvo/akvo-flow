@@ -54,7 +54,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 		if (user.isAdmin()) {
 			contentPane.add(buildSearchHeader());
 			dataTable = new PaginatedDataTable<UserDto>(DEFAULT_SORT_FIELD,
-					this, this);
+					this, this,false);
 			contentPane.add(dataTable);
 			setContent(contentPane);
 

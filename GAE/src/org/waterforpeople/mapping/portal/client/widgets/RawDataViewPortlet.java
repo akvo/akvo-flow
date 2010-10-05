@@ -1,6 +1,8 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,9 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataTableBinder;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataTableListener;
+import org.waterforpeople.mapping.portal.client.widgets.component.PaginatedDataTable;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -26,41 +31,40 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
+/**
+ * Portlet that allows the user to browse and edit the last 90 days of survey
+ * submissions.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class RawDataViewPortlet extends LocationDrivenPortlet implements
-		ClickHandler {
+		DataTableBinder<SurveyInstanceDto>,
+		DataTableListener<SurveyInstanceDto> {
 	public static final String NAME = "Raw Data Manager";
 	public static final String DESCRIPTION = "Allows the management of raw imported survey data";
-	private static final String EVEN_ROW_CSS = "gridCell-even";
-	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String EDITED_ROW_CSS = "gridCell-edited";
-	private static final String SELECTED_ROW_CSS = "gridCell-selected";
-	private static final String GRID_HEADER_CSS = "gridCell-header";
 
 	private static Integer width = 1024;
 	private static Integer height = 768;
+	private static final String TABLE_HEADERS[] = { "Submission Id",
+			"Survey Id", "Collection Date" };
+
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
-	private Grid instanceGrid;
 	private Label statusLabel;
-	private ArrayList<SurveyInstanceDto> currentDtoList;
+	private Date dateForQuery;
 
-	private int currentSelection = -1;
-	private int currentPage;
 	private VerticalPanel surveyInstancePanel;
+	private PaginatedDataTable<SurveyInstanceDto> surveyInstanceTable;
 	private HorizontalPanel finderPanel;
 	private TextBox instanceIdBox;
-	private Button nextButton;
-	private Button previousButton;
 	private HorizontalPanel contentPanel;
-	private List<String> cursorArray;
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 
 	public RawDataViewPortlet() {
 		super(NAME, true, false, width, height, null, false, null);
-		currentPage = 0;
-		cursorArray = new ArrayList<String>();
 		svc = GWT.create(SurveyInstanceService.class);
 		loadContentPanel();
 	}
@@ -87,44 +91,20 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 				}
 			}
 		});
-		instanceGrid = new Grid();
-		instanceGrid.addClickHandler(this);
+		surveyInstanceTable = new PaginatedDataTable<SurveyInstanceDto>(
+				"Collection Date", this, this, true);
 		qasDetailGrid = new Grid();
 		contentPanel = new HorizontalPanel();
+
 		surveyInstancePanel = new VerticalPanel();
 		surveyInstancePanel.add(finderPanel);
 		contentPanel.add(surveyInstancePanel);
 		contentPanel.add(qasDetailGrid);
 		statusLabel = new Label();
 		surveyInstancePanel.add(statusLabel);
-		surveyInstancePanel.add(instanceGrid);
-		HorizontalPanel buttonPanel = new HorizontalPanel();
-		nextButton = new Button("Next");
-		nextButton.setVisible(false);
-		nextButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				currentPage++;
-				loadSurveyInstance(false);
+		surveyInstancePanel.add(surveyInstanceTable);
 
-			}
-		});
-
-		previousButton = new Button("Previous");
-		previousButton.setVisible(false);
-		previousButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				currentPage--;
-				loadSurveyInstance(false);
-
-			}
-		});
-		buttonPanel.add(previousButton);
-		buttonPanel.add(nextButton);
-		surveyInstancePanel.add(buttonPanel);
-
-		loadSurveyInstance(true);
+		requestData(null);
 		ScrollPanel sp = new ScrollPanel(contentPanel);
 		sp.setHeight(height.toString());
 		setWidget(sp);
@@ -135,67 +115,12 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		return NAME;
 	}
 
-	private void loadSurveyInstance(boolean isNew) {
-		statusLabel.setText("Loading survey submissions. Please wait...");
-		statusLabel.setVisible(true);
-		svc.listSurveyInstance(null, getCursor(currentPage - 1),
-				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void onSuccess(
-							ResponseDto<ArrayList<SurveyInstanceDto>> result) {
-						statusLabel.setVisible(false);
-						instanceGrid.clear();
-						if (result != null && result.getPayload() != null) {
-							instanceGrid.resize(result.getPayload().size() + 1,
-									3);
-							loadHeaderRow();
-							setCursor(result.getCursorString());
-							int count = 1;
-							currentDtoList = result.getPayload();
-							for (SurveyInstanceDto item : result.getPayload()) {
-								instanceGrid.setWidget(count, 0, new Label(item
-										.getKeyId().toString()));
-								instanceGrid.setWidget(count, 1, new Label(item
-										.getSurveyId().toString()));
-								instanceGrid
-										.setWidget(
-												count,
-												2,
-												new Label(
-														DateTimeFormat
-																.getMediumDateTimeFormat()
-																.format(
-																		item
-																				.getCollectionDate())));
-								setGridRowStyle(instanceGrid, count, false);
-								count++;
-							}
-							if (currentDtoList.size() >= 20) {
-								nextButton.setVisible(true);
-							} else {
-								nextButton.setVisible(false);
-							}
-							if (currentPage > 0) {
-								previousButton.setVisible(true);
-							} else {
-								previousButton.setVisible(false);
-							}
-						} else {
-							nextButton.setVisible(false);
-							previousButton.setVisible(false);
-						}
-					}
-
-				});
-	}
-
+	/**
+	 * loads the questions passed in into the view and sets them up with
+	 * listeners that will change the UI state on edit.
+	 * 
+	 * @param questions
+	 */
 	private void populateQuestions(final List<QuestionAnswerStoreDto> questions) {
 		statusLabel.setVisible(false);
 		changedAnswers = new HashMap<Long, QuestionAnswerStoreDto>();
@@ -280,6 +205,12 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		}
 	}
 
+	/**
+	 * binds a questionAnswerStoreDto object to the ui
+	 * 
+	 * @param qasDto
+	 * @param iRow
+	 */
 	private void bindQASRow(final QuestionAnswerStoreDto qasDto,
 			final Integer iRow) {
 		TextBox qId = new TextBox();
@@ -343,107 +274,6 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		}
 	}
 
-	private String getCursor(int page) {
-		if (page >= 0) {
-			if (page < cursorArray.size()) {
-				if (cursorArray.get(page) != null
-						&& cursorArray.get(page).trim().length() == 0) {
-					return null;
-				} else {
-					return cursorArray.get(page);
-				}
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	private void setCursor(String cursor) {
-		if (currentPage < cursorArray.size()) {
-			cursorArray.set(currentPage, cursor);
-		} else {
-			cursorArray.add(cursor);
-		}
-	}
-
-	private void loadHeaderRow() {
-		addHeaderItem(0, "Submission Id");
-		addHeaderItem(1, "Survey Id");
-		addHeaderItem(2, "Collection Date");
-		setGridRowStyle(instanceGrid, 0, false);
-	}
-
-	private void addHeaderItem(int col, final String text) {
-		HorizontalPanel panel = new HorizontalPanel();
-		Label temp = new Label(text);
-		panel.add(temp);
-		instanceGrid.setWidget(0, col, panel);
-	}
-
-	/**
-	 * sets the css for a row in a grid. the top row will get the header style
-	 * and other rows get either the even or odd style.
-	 * 
-	 * @param grid
-	 * @param row
-	 * @param selected
-	 */
-	private void setGridRowStyle(Grid grid, int row, boolean selected) {
-		String style = "";
-		if (row > 0) {
-			if (selected) {
-				style = SELECTED_ROW_CSS;
-			} else {
-				if (row % 2 == 0) {
-					style = EVEN_ROW_CSS;
-				} else {
-					style = ODD_ROW_CSS;
-				}
-			}
-		} else {
-			style = GRID_HEADER_CSS;
-		}
-		for (int i = 0; i < grid.getColumnCount(); i++) {
-			grid.getCellFormatter().setStyleName(row, i, style);
-		}
-	}
-
-	@Override
-	public void onClick(ClickEvent event) {
-		if (event.getSource() instanceof Grid) {
-			Grid grid = (Grid) event.getSource();
-
-			// if we already had a selection, deselect it
-			if (currentSelection > 0) {
-				setGridRowStyle(grid, currentSelection, false);
-			}
-			Cell clickedCell = grid.getCellForEvent(event);
-			// the click may not have been in a cell
-			if (clickedCell != null) {
-				int newSelection = clickedCell.getRowIndex();
-				if (currentSelection != newSelection) {
-					currentSelection = newSelection;
-
-					// if the clicked cell is the header (row 0), don't change
-					// the
-					// style
-					if (currentSelection > 0
-							&& currentSelection <= currentDtoList.size()) {
-						setGridRowStyle(grid, currentSelection, true);
-						loadInstanceResponses(currentDtoList.get(
-								currentSelection - 1).getKeyId());
-					} else {
-						currentSelection = -1;
-					}
-				}else{
-					currentSelection = -1;
-				}
-			}
-		}
-	}
-
 	/**
 	 * calls the server to get back instance response details
 	 * 
@@ -463,6 +293,63 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					@Override
 					public void onSuccess(List<QuestionAnswerStoreDto> result) {
 						populateQuestions(result);
+					}
+				});
+	}
+
+	/**
+	 * binds a SurveyInstanceDto to the grid at the row passed in.
+	 */
+	@Override
+	public void bindRow(Grid grid, SurveyInstanceDto item, int row) {
+		grid.setWidget(row, 0, new Label(item.getKeyId().toString()));
+		grid.setWidget(row, 1, new Label(item.getSurveyId().toString()));
+		grid.setWidget(row, 2, new Label(DateTimeFormat
+				.getMediumDateTimeFormat().format(item.getCollectionDate())));
+	}
+
+	@Override
+	public String[] getHeaders() {
+
+		return TABLE_HEADERS;
+	}
+
+	@Override
+	public void onItemSelected(SurveyInstanceDto item) {
+		loadInstanceResponses(item.getKeyId());
+	}
+
+	@Override
+	public void resort(String field, String direction) {
+		// no-op. We don't support sorting in this view
+	}
+
+	/**
+	 * call the server to get more data. We need to cache the date used in the
+	 * query or else it won't match the cursor on subsequent requests (since
+	 * sysdate is different)
+	 */
+	@Override
+	public void requestData(String cursor) {
+		final boolean isNew = (cursor == null);
+		if (isNew) {
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.DAY_OF_MONTH, -90);
+			dateForQuery = c.getTime();
+		}
+		svc.listSurveyInstance(dateForQuery, cursor,
+				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// no-op
+					}
+
+					@Override
+					public void onSuccess(
+							ResponseDto<ArrayList<SurveyInstanceDto>> result) {
+						surveyInstanceTable.bindData(result.getPayload(),
+								result.getCursorString(), isNew);
 					}
 				});
 	}
