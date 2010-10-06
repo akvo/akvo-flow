@@ -580,7 +580,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			longitudeTB.setText(accessPointDto.getLongitude().toString());
 		accessPointDetail.setWidget(3, 1, longitudeTB);
 
-		if (accessPointDto.getLatitude() != null
+		if (accessPointDto!= null && accessPointDto.getLatitude() != null
 				&& accessPointDto.getLongitude() != null) {
 			MapWidget map = new MapWidget();
 			map.setSize("180px", "180px");
