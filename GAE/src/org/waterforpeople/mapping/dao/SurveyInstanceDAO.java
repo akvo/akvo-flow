@@ -65,11 +65,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					si.setSubmitterName(parts[5]);
 				}
 			}
-			/*if (parts.length >= 8) {
-				if (si.getDeviceIdentifier() == null) {
-					si.setDeviceIdentifier(parts[8]);
-				}
-			}*/
 			if (parts.length >= 9) {
 				if (si.getDeviceIdentifier() == null) {
 					si.setDeviceIdentifier(parts[8]);
@@ -77,6 +72,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			}
 			if (parts.length >= 10) {
 				qas.setScoredValue(parts[9]);
+			}
+			if (parts.length >= 11) {
+				qas.setStrength(parts[10]);
 			}
 			qasList.add(qas);
 		}
@@ -116,8 +114,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			Long surveyInstanceId, String questionId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(QuestionAnswerStore.class);
-		q.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
-		q.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+		q
+				.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
+		q
+				.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
 		List<QuestionAnswerStore> result = (List<QuestionAnswerStore>) q
 				.execute(surveyInstanceId, questionId);
 		if (result != null && result.size() > 0) {

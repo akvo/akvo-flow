@@ -25,6 +25,15 @@ public class QuestionAnswerStore extends BaseDomain {
 	private Long surveyId;
 	private Long surveyInstanceId;
 	private String scoredValue;
+	private String strength;
+
+	public String getStrength() {
+		return strength;
+	}
+
+	public void setStrength(String strength) {
+		this.strength = strength;
+	}
 
 	public String getScoredValue() {
 		return scoredValue;
