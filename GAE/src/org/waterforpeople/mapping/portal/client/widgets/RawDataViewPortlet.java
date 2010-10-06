@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
-//import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -333,9 +332,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	public void requestData(String cursor) {
 		final boolean isNew = (cursor == null);
 		if (isNew) {
-			//Calendar c = Calendar.getInstance();
-			//c.add(Calendar.DAY_OF_MONTH, -90);
-			//dateForQuery = c.getTime();
+			// create a date object that is 90 days earlier than now.
+			// jumping through hoops to avoid depricated APIs
+			dateForQuery = new Date((new Date()).getTime() - (86400000L * 90L));
 		}
 		svc.listSurveyInstance(dateForQuery, cursor,
 				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
