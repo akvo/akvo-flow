@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -67,9 +68,10 @@ public class SurveyManagerRequest extends RestRequest {
 	}
 	public void setStartDate(String dateString) throws Exception{
 		try{
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
-			Date convertedDate = dateFormat.parse(dateString);
-			setStartDate(convertedDate);
+			DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+			java.util.Date date = new java.util.Date();
+			String dateTime = dateFormat.format(date);
+			setStartDate(dateTime);
 		}catch(Exception ex){
 			throw new Exception("Could not parse date param");
 		}
