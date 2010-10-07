@@ -12,6 +12,7 @@ import javax.jdo.Query;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -23,7 +24,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			.getLogger(SurveyInstanceDAO.class.getName());
 
 	private static final HashMap<String, String> TEMPORARY_SURVEY_FIX_MAP = new HashMap<String, String>() {
-		
+
 		private static final long serialVersionUID = 1L;
 		{
 			put("1086117", "1360012");
@@ -35,7 +36,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, List<String> unparsedLines) {
 		SurveyInstance si = new SurveyInstance();
-
+		boolean hasErrors = false;
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
@@ -49,13 +50,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			} catch (Exception e) {
 				logger.log(Level.WARNING,
 						"Could not construct collection date", e);
+				hasErrors = true;
 			}
 
 			if (si.getSurveyId() == null) {
 				try {
 					si.setCollectionDate(collDate);
 					si.setSurveyId(Long.parseLong(parts[0]));
-					// TODO: THIS IS A HACK AND SHOULD BE REMOVED AFTER 10/21/2010
+					// TODO: THIS IS A HACK AND SHOULD BE REMOVED AFTER
+					// 10/21/2010
 					String tempId = TEMPORARY_SURVEY_FIX_MAP.get(parts[0]);
 					if (tempId != null) {
 						si.setSurveyId(Long.parseLong(tempId));
@@ -67,6 +70,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
+					hasErrors = true;
 				}
 			}
 			qas.setSurveyId(si.getSurveyId());
@@ -98,6 +102,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			qasList.add(qas);
 		}
 		save(qasList);
+		if (!hasErrors) {
+			si.getDeviceFile().setProcessedStatus(
+					StatusCode.PROCESSED_NO_ERRORS);
+		} else {
+			si.getDeviceFile().setProcessedStatus(
+					StatusCode.PROCESSED_WITH_ERRORS);
+		}
 		si.setQuestionAnswersStore(qasList);
 		return si;
 	}

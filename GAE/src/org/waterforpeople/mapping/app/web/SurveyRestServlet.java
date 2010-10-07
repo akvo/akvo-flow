@@ -329,6 +329,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		if (q.getQuestionOptionMap() != null) {
 			for (QuestionOption opt : q.getQuestionOptionMap().values()) {
 				opt.setQuestionId(q.getKey().getId());
+				if (opt.getText() != null && opt.getText().contains(",")) {
+					opt.setText(opt.getText().replaceAll(",", "-"));
+					if (opt.getCode() != null) {
+						opt.setCode(opt.getCode().replaceAll(",", "-"));
+					}
+				}
 				optionDao.save(opt);
 				if (opt.getTranslationMap() != null) {
 					for (Translation t : opt.getTranslationMap().values()) {
@@ -346,10 +352,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				translationDao.save(t);
 			}
 		}
-		if(scoring != null && scoring.trim().length()>0 && !"null".equalsIgnoreCase(scoring)){
+		if (scoring != null && scoring.trim().length() > 0
+				&& !"null".equalsIgnoreCase(scoring)) {
 			List<ScoringRule> rules = parseScoring(scoring, q.getKey().getId());
 			scoringRuleDao.save(rules);
-			q.setScoringRules(rules);			
+			q.setScoringRules(rules);
 		}
 
 		qg.addQuestion(questionOrder, q);

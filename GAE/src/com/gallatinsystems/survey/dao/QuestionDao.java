@@ -66,10 +66,9 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	public void delete(Question question, Long questionGroupId) {
-		QuestionOptionDao qoDao = new QuestionOptionDao();
-		for (Map.Entry<Integer, QuestionOption> qoItem : qoDao
+		for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
 				.listOptionByQuestion(question.getKey().getId()).entrySet()) {
-			qoDao.delete(qoItem.getValue());
+			optionDao.delete(qoItem.getValue());
 		}
 		TranslationDao tDao = new TranslationDao();
 		// TODO: Check this not sure that is correct
@@ -92,6 +91,12 @@ public class QuestionDao extends BaseDAO<Question> {
 		if (question.getQuestionOptionMap() != null) {
 			for (QuestionOption opt : question.getQuestionOptionMap().values()) {
 				opt.setQuestionId(question.getKey().getId());
+				if (opt.getText() != null && opt.getText().contains(",")) {
+					opt.setText(opt.getText().replaceAll(",", "-"));
+					if (opt.getCode() != null) {
+						opt.setCode(opt.getCode().replaceAll(",", "-"));
+					}
+				}
 				save(opt);
 			}
 		}

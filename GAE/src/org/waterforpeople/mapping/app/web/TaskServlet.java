@@ -63,7 +63,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			ArrayList<String> unparsedLines = extractDataFromZip(zis);
 			DeviceFiles deviceFile = new DeviceFiles();
 			deviceFile.setProcessDate(getNowDateTimeFormatted());
-			deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
+			deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
 			deviceFile.setURI(url.toURI().toString());
 			deviceFile.setPhoneNumber(phoneNumber);
 			deviceFile.setChecksum(checksum);
