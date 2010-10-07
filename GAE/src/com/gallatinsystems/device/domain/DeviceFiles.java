@@ -11,13 +11,17 @@ import javax.jdo.annotations.PrimaryKey;
 import org.waterforpeople.mapping.domain.Status;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class DeviceFiles {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key = null;
+public class DeviceFiles  extends BaseDomain{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	@Persistent
 	private String URI = null;
 	@Persistent
@@ -62,14 +66,6 @@ public class DeviceFiles {
 
 	public void setURI(String uri) {
 		URI = uri;
-	}
-
-	public Key getKey() {
-		return key;
-	}
-
-	public void setKey(Key key) {
-		this.key = key;
 	}
 
 	public Date getUploadDateTime() {

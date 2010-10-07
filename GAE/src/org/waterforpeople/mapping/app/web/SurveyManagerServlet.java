@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,10 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyManagerRequest;
+import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -120,6 +124,16 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 											.getVersion() : "1");
 					resp.setMessage(sb.toString());
 				}
+			}
+		}else if(SurveyManagerRequest.GET_ZIP_FILE_URL_ACTION.equalsIgnoreCase(req.getAction())){
+			DeviceFilesDao dfDao = new DeviceFilesDao();
+			List<DeviceFiles> dfList =  dfDao.listDeviceFilesByDate(mgrReq.getStartDate(), "all");
+			if(dfList!=null){
+				StringBuilder sb = new StringBuilder();
+				for(DeviceFiles df:dfList){
+					sb.append(df.getURI()+"\n");
+				}
+				resp.setMessage(sb.toString());
 			}
 		}
 		return resp;

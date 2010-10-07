@@ -27,28 +27,29 @@ import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
+import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -59,6 +60,7 @@ import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
+import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -73,6 +75,7 @@ import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -81,7 +84,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -108,6 +110,32 @@ public class TestHarnessServlet extends HttpServlet {
 			apmI.setUploadS3Flag(false);
 			writeImageToResponse(resp, apmI.rotateImage(test1));
 			// apmI.rotateImage(test2);
+		} else if ("addDeviceFiles".equals(action)) {
+			DeviceFilesDao dfDao = new DeviceFilesDao();
+			for (int i = 0; i < 10; i++) {
+				DeviceFiles df = new DeviceFiles();
+				df.setURI("http://www.yahoo.com/" + i + ".zip");
+				df.setCreatedDateTime(new Date());
+				df.setPhoneNumber("2019561591");
+				df.setProcessDate("ERROR");
+				dfDao.save(df);
+			}
+			Date today, yesterday;
+			Calendar calendar;
+
+			today = new Date();
+			calendar = Calendar.getInstance();
+			calendar.setTime(today);
+			calendar.add(Calendar.DATE, -1);
+			yesterday = calendar.getTime();
+			for (DeviceFiles df : dfDao.listDeviceFilesByDate(yesterday, "all")) {
+				try {
+					resp.getWriter().print(
+							df.getUploadDateTime() + " " + df.getURI() + "\n");
+				} catch (IOException e) {
+					log.log(Level.SEVERE, "could not get device files", e);
+				}
+			}
 		} else if ("testBaseDomain".equals(action)) {
 
 			SurveyDAO surveyDAO = new SurveyDAO();
@@ -128,8 +156,8 @@ public class TestHarnessServlet extends HttpServlet {
 			ArrayList<String> regionLines = new ArrayList<String>();
 			for (int i = 0; i < 10; i++) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("1,").append("" + i).append(",test,").append(
-						20 + i + ",").append(30 + i + "\n");
+				builder.append("1,").append("" + i).append(",test,")
+						.append(20 + i + ",").append(30 + i + "\n");
 				regionLines.add(builder.toString());
 			}
 			geoHelp.processRegionsSurvey(regionLines);
@@ -246,14 +274,11 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setMeetGovtQuantityStandardFlag(false);
 					ap.setCountryCode("MW");
 					if (i % 2 == 0)
-						ap
-								.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 					else if (i % 3 == 0)
-						ap
-								.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
+						ap.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
 					else
-						ap
-								.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
+						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
 					if (i == 0)
 						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 					else if (i == 1)
@@ -323,9 +348,7 @@ public class TestHarnessServlet extends HttpServlet {
 				for (MapFragment mfItem : mfList) {
 					String contents = ZipUtil
 							.unZip(mfItem.getBlob().getBytes());
-					log
-							.log(Level.INFO, "Contents Length: "
-									+ contents.length());
+					log.log(Level.INFO, "Contents Length: " + contents.length());
 					resp.setContentType("application/vnd.google-earth.kmz+xml");
 					ServletOutputStream out = resp.getOutputStream();
 					resp.setHeader("Content-Disposition",
@@ -459,8 +482,7 @@ public class TestHarnessServlet extends HttpServlet {
 								Translation tqhm = new Translation();
 								tqhm.setLanguageCode("es");
 								tqhm.setText("es:" + n + ":" + new Date());
-								tqhm
-										.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
+								tqhm.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
 								tqhm.setParentId(qhm.getKey().getId());
 								tDao.save(tqhm);
 								qhm.addTranslation(tqhm);
@@ -784,11 +806,8 @@ public class TestHarnessServlet extends HttpServlet {
 							|| ap.getGeocells().size() == 0) {
 						if (ap.getLatitude() != null
 								&& ap.getLongitude() != null) {
-							ap
-									.setGeocells(GeocellManager
-											.generateGeoCell(new Point(ap
-													.getLatitude(), ap
-													.getLongitude())));
+							ap.setGeocells(GeocellManager.generateGeoCell(new Point(
+									ap.getLatitude(), ap.getLongitude())));
 							apDao.save(ap);
 						}
 					}
@@ -922,9 +941,9 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 			} else {
 
-				deleteSurveyResponses(Integer.parseInt(req
-						.getParameter("surveyId")), Integer.parseInt(req
-						.getParameter("count")));
+				deleteSurveyResponses(
+						Integer.parseInt(req.getParameter("surveyId")),
+						Integer.parseInt(req.getParameter("count")));
 			}
 		} else if ("fixNameQuestion".equals(action)) {
 			if (req.getParameter("questionId") == null) {
