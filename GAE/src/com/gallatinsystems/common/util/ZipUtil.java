@@ -15,22 +15,25 @@ public class ZipUtil {
 	}
 
 	public static ByteArrayOutputStream generateZip(String kmlContents) {
+		return generateZip(kmlContents, "waterforpeoplemapping.kml");
+	}
+
+	public static ByteArrayOutputStream generateZip(String content,
+			String filename) {
 		ZipOutputStream zipOut = null;
 		ByteArrayOutputStream bos = null;
 		try {
 			bos = new ByteArrayOutputStream();
 			zipOut = new ZipOutputStream(bos);
 			zipOut.setLevel(ZipOutputStream.DEFLATED);
-			ZipEntry entry = new ZipEntry("waterforpeoplemapping.kml");
+			ZipEntry entry = new ZipEntry(filename);
 			zipOut.putNextEntry(entry);
-			zipOut.write(kmlContents.getBytes());
+			zipOut.write(content.getBytes());
 			zipOut.closeEntry();
 			zipOut.close();
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return bos;

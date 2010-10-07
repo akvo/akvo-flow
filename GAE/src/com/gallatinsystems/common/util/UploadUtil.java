@@ -1,5 +1,6 @@
 package com.gallatinsystems.common.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,8 +16,7 @@ public class UploadUtil {
 	private static final int REDIRECT_CODE = 303;
 	private static final int OK_CODE = 200;
 	private static final String XML_MIME_TYPE = "text/xml";
-	private static Logger logger = Logger.getLogger(UploadUtil.class
-			.getName());
+	private static Logger logger = Logger.getLogger(UploadUtil.class.getName());
 
 	private DataOutputStream out;
 
@@ -40,6 +40,12 @@ public class UploadUtil {
 
 	public void writeFile(String key, String fileName, String fileContent,
 			String mimeType) throws IOException {
+		byte[] allBytes = fileContent.getBytes("UTF-8");
+		writeFile(key, fileName, allBytes, mimeType);
+	}
+
+	public void writeFile(String key, String fileName, byte[] bytes,
+			String mimeType) throws IOException {
 		out.writeBytes(PREFIX);
 		out.writeBytes(BOUNDRY);
 		out.writeBytes(ENDLINE);
@@ -59,9 +65,7 @@ public class UploadUtil {
 		}
 		out.writeBytes(ENDLINE);
 
-		byte[] allBytes = fileContent.getBytes("UTF-8");
-
-		out.write(allBytes);
+		out.write(bytes);
 
 		out.writeBytes(ENDLINE);
 		out.flush();
@@ -121,6 +125,45 @@ public class UploadUtil {
 			stream.writeFormField("signature", sig);
 			stream.writeFormField("Content-Type", contentType);
 			stream.writeFile("file", fileName, fileContents, XML_MIME_TYPE);
+			stream.close();
+			int code = conn.getResponseCode();
+			if (code != REDIRECT_CODE && code != OK_CODE) {
+				logger.log(Level.SEVERE,
+						"Server returned a bad code after upload: " + code);
+				return false;
+			}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Could not send upload" + e.getMessage(),
+					e);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * sends the zip file containing data/images to the server via an http
+	 * upload
+	 * 
+	 * @param fileAbsolutePath
+	 */
+	public static boolean upload(ByteArrayOutputStream outputStream,
+			String fileName, String dir, String uploadUrl, String s3ID,
+			String policy, String sig, String contentType) {
+
+		try {
+			HttpURLConnection conn = UploadUtil.createConnection(new URL(
+					uploadUrl));
+			UploadUtil stream = new UploadUtil(conn.getOutputStream());
+			stream.writeFormField("key", dir + "/${filename}");
+			stream.writeFormField("AWSAccessKeyId", s3ID);
+			stream.writeFormField("acl", "public-read");
+			stream.writeFormField("success_action_redirect",
+					"http://www.gallatinsystems.com/SuccessUpload.html");
+			stream.writeFormField("policy", policy);
+			stream.writeFormField("signature", sig);
+			stream.writeFormField("Content-Type", contentType);
+			stream.writeFile("file", fileName, outputStream.toByteArray(),
+					XML_MIME_TYPE);
 			stream.close();
 			int code = conn.getResponseCode();
 			if (code != REDIRECT_CODE && code != OK_CODE) {

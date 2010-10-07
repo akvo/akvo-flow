@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
 import com.gallatinsystems.common.util.UploadUtil;
+import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -106,13 +108,22 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyContainerDao scDao = new SurveyContainerDao();
 		SurveyContainer sc = scDao.findBySurveyId(surveyId);
 		Properties props = System.getProperties();
-
-		UploadUtil.sendStringAsFile(sc.getSurveyId() + ".xml", sc
-				.getSurveyDocument().getValue(), props
+		String document = sc.getSurveyDocument().getValue();
+		UploadUtil.sendStringAsFile(sc.getSurveyId() + ".xml", document, props
 				.getProperty(SURVEY_UPLOAD_DIR), props
 				.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
 				props.getProperty(SURVEY_UPLOAD_POLICY), props
 						.getProperty(SURVEY_UPLOAD_SIG), "text/xml");
+
+		ByteArrayOutputStream os = ZipUtil.generateZip(document, sc
+				.getSurveyId()
+				+ ".xml");
+
+		UploadUtil.upload(os, sc.getSurveyId() + ".zip", props
+				.getProperty(SURVEY_UPLOAD_DIR), props
+				.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
+				props.getProperty(SURVEY_UPLOAD_POLICY), props
+						.getProperty(SURVEY_UPLOAD_SIG), "application/zip");
 
 		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null);
 	}
