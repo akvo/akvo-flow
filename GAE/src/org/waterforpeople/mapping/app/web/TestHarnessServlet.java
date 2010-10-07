@@ -117,7 +117,7 @@ public class TestHarnessServlet extends HttpServlet {
 				df.setURI("http://www.yahoo.com/" + i + ".zip");
 				df.setCreatedDateTime(new Date());
 				df.setPhoneNumber("2019561591");
-				df.setProcessDate("ERROR");
+				df.setProcessDate(new Date().toString());
 				dfDao.save(df);
 			}
 			Date today, yesterday;
