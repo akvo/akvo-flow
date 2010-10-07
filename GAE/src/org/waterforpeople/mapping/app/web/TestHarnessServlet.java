@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -117,7 +118,10 @@ public class TestHarnessServlet extends HttpServlet {
 				df.setURI("http://www.yahoo.com/" + i + ".zip");
 				df.setCreatedDateTime(new Date());
 				df.setPhoneNumber("2019561591");
-				df.setProcessDate(new Date().toString());
+				DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+				java.util.Date date = new java.util.Date();
+				String dateTime = dateFormat.format(date);
+				df.setProcessDate(dateTime);
 				dfDao.save(df);
 			}
 			Date today, yesterday;

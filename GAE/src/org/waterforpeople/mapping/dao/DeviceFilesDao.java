@@ -36,8 +36,7 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		 * query.declareImports("import java.util.Date"); }
 		 */
 		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
-		java.util.Date date = new java.util.Date();
-		String dateTime = dateFormat.format(date);
+		String dateTime = dateFormat.format(startDate);
 		appendNonNullParam("processDate", filterString, paramString, "String",
 				dateTime, paramMap, GTE_OP);
 		//query.setOrdering("createdDateTime desc");
