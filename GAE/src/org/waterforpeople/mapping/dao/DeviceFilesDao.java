@@ -40,7 +40,7 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		String dateTime = dateFormat.format(date);
 		appendNonNullParam("processDate", filterString, paramString, "String",
 				dateTime, paramMap, GTE_OP);
-		query.setOrdering("createdDateTime desc");
+		//query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
