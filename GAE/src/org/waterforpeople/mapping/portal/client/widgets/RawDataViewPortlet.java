@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 import org.waterforpeople.mapping.portal.client.widgets.component.DataTableBinder;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataTableHeader;
 import org.waterforpeople.mapping.portal.client.widgets.component.DataTableListener;
 import org.waterforpeople.mapping.portal.client.widgets.component.PaginatedDataTable;
 
@@ -47,8 +48,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 	private static Integer width = 1024;
 	private static Integer height = 768;
-	private static final String TABLE_HEADERS[] = { "Submission Id",
-			"Survey Id", "Collection Date" };
+	private static final DataTableHeader TABLE_HEADERS[] = {
+			new DataTableHeader("Submission Id"),
+			new DataTableHeader("Survey Id"),
+			new DataTableHeader("Collection Date") };
 
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
@@ -103,7 +106,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		surveyInstancePanel.add(statusLabel);
 		surveyInstancePanel.add(surveyInstanceTable);
 
-		requestData(null);
+		requestData(null, false);
 		ScrollPanel sp = new ScrollPanel(contentPanel);
 		sp.setHeight(height.toString());
 		setWidget(sp);
@@ -308,7 +311,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	}
 
 	@Override
-	public String[] getHeaders() {
+	public DataTableHeader[] getHeaders() {
 
 		return TABLE_HEADERS;
 	}
@@ -318,18 +321,13 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		loadInstanceResponses(item.getKeyId());
 	}
 
-	@Override
-	public void resort(String field, String direction) {
-		// no-op. We don't support sorting in this view
-	}
-
 	/**
 	 * call the server to get more data. We need to cache the date used in the
 	 * query or else it won't match the cursor on subsequent requests (since
 	 * sysdate is different)
 	 */
 	@Override
-	public void requestData(String cursor) {
+	public void requestData(String cursor, final boolean isResort) {
 		final boolean isNew = (cursor == null);
 		if (isNew) {
 			// create a date object that is 90 days earlier than now.
@@ -348,7 +346,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					public void onSuccess(
 							ResponseDto<ArrayList<SurveyInstanceDto>> result) {
 						surveyInstanceTable.bindData(result.getPayload(),
-								result.getCursorString(), isNew);
+								result.getCursorString(), isNew, isResort);
 					}
 				});
 	}

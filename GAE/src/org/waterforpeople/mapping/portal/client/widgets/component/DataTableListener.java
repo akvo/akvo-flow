@@ -21,18 +21,10 @@ public interface DataTableListener<T extends BaseDto> {
 	public void onItemSelected(T item);
 
 	/**
-	 * called when the user clicks next/previous
+	 * called when the user clicks next/previous or when the data is sorted
 	 * 
 	 * @param cursor
 	 */
-	public void requestData(String cursor);
-
-	/**
-	 * called when the user clicks a heading (to re-sort results)
-	 * 
-	 * @param field
-	 * @param direction
-	 */
-	public void resort(String field, String direction);
+	public void requestData(String cursor, boolean isResort);
 
 }

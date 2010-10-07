@@ -6,6 +6,7 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 import org.waterforpeople.mapping.portal.client.widgets.component.DataTableBinder;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataTableHeader;
 import org.waterforpeople.mapping.portal.client.widgets.component.DataTableListener;
 import org.waterforpeople.mapping.portal.client.widgets.component.PaginatedDataTable;
 
@@ -34,8 +35,9 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 
 	public static final String NAME = "User Management";
 	private static final String DEFAULT_SORT_FIELD = "username";
-	private static final String[] GRID_HEADERS = { "User Name",
-			"Email Address", "" };
+	private static final DataTableHeader[] GRID_HEADERS = {
+			new DataTableHeader("User Name"),
+			new DataTableHeader("Email Address"), new DataTableHeader("") };
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 800;
 
@@ -54,12 +56,12 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 		if (user.isAdmin()) {
 			contentPane.add(buildSearchHeader());
 			dataTable = new PaginatedDataTable<UserDto>(DEFAULT_SORT_FIELD,
-					this, this,false);
+					this, this, false);
 			contentPane.add(dataTable);
 			setContent(contentPane);
 
 			userService = GWT.create(UserService.class);
-			requestData(null);
+			requestData(null, false);
 		} else {
 			MessageDialog errDia = new MessageDialog("Admin Only",
 					"You must be an administrator to access this feature.");
@@ -107,7 +109,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 	 * call the server to get more data
 	 */
 	@Override
-	public void requestData(String cursor) {
+	public void requestData(String cursor, final boolean isResort) {
 		final boolean isNew = (cursor == null);
 		userService.listUsers(null, null, null, null, cursor,
 				new AsyncCallback<ResponseDto<ArrayList<UserDto>>>() {
@@ -115,7 +117,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 					@Override
 					public void onSuccess(ResponseDto<ArrayList<UserDto>> result) {
 						dataTable.bindData(result.getPayload(), result
-								.getCursorString(), isNew);
+								.getCursorString(), isNew, isResort);
 					}
 
 					@Override
@@ -126,12 +128,6 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 						errDia.show();
 					}
 				});
-	}
-
-	@Override
-	public void resort(String field, String direction) {
-		// no-op
-
 	}
 
 	/**
@@ -198,7 +194,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 								MessageDialog confDia = new MessageDialog(
 										"User Deleted", "User has been deleted");
 								confDia.show();
-								requestData(null);
+								requestData(null, false);
 							}
 						});
 			}
@@ -208,7 +204,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 	}
 
 	@Override
-	public String[] getHeaders() {
+	public DataTableHeader[] getHeaders() {
 		return GRID_HEADERS;
 	}
 
@@ -247,7 +243,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 						confDia.showRelativeTo(addNewButton);
 						usernameField.setText("");
 						emailField.setText("");
-						requestData(null);
+						requestData(null, false);
 					}
 				});
 			}
@@ -270,7 +266,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 						public void onSuccess(
 								ResponseDto<ArrayList<UserDto>> result) {
 							dataTable.bindData(result.getPayload(), result
-									.getCursorString(), true);
+									.getCursorString(), true, false);
 						}
 					});
 		}

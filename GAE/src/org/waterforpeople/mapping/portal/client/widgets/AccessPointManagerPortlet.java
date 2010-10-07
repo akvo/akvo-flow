@@ -1,9 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
@@ -14,6 +11,10 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Acce
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataTableBinder;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataTableHeader;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataTableListener;
+import org.waterforpeople.mapping.portal.client.widgets.component.PaginatedDataTable;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -49,37 +50,28 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
-public class AccessPointManagerPortlet extends LocationDrivenPortlet {
+public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
+		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto> {
 	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
 	public static final String NAME = "Access Point Manager";
 
-	private static final String DOWN_IMG = "images/downarrow.gif";
-	private static final String UP_IMG = "images/uparrow.gif";
-	private static final String EVEN_ROW_CSS = "gridCell-even";
-	private static final String ODD_ROW_CSS = "gridCell-odd";
-	private static final String GRID_HEADER_CSS = "gridCell-header";
-	private static final String DEFAULT_SORT_FIELD = "Id";
-	private static final String ASC_SORT = "asc";
-	private static final String DSC_SORT = "desc";
-	private static final String DEFAULT_SORT_DIR = ASC_SORT;
-	
+	private static final String DEFAULT_SORT_FIELD = "key";
 
-	private static final Map<String, String> HEADING_MAP = new HashMap<String, String>() {
-		private static final long serialVersionUID = 7335900220247051642L;
-		{
-			put("Id", "key");
-			put("Community Code", "communityCode");
-			put("Latitude", "latitude");
-			put("Longitude", "longitude");
-			put("Point Type", "pointType");
-			put("Collection Date", "collectionDate");
-		}
-	};
+	private static final DataTableHeader HEADERS[] = {
+			new DataTableHeader("Id", "key", true),
+			new DataTableHeader("Community Code", "communityCode", true),
+			new DataTableHeader("Latitude", "latitude", true),
+			new DataTableHeader("Longitude", "longitude", true),
+			new DataTableHeader("Point Type", "pointType", true),
+			new DataTableHeader("Collection Date", "collectionDate", true),
+			new DataTableHeader("Edit/Delete") };
 
 	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
+
+	private boolean errorMode;
 
 	// Search UI Elements
 	private VerticalPanel mainVPanel = new VerticalPanel();
@@ -103,38 +95,35 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	private DateBox collectionDateDPUpper = new DateBox();
 	private DateBox constructionDateDPLower = new DateBox();
 	private DateBox constructionDateDPUpper = new DateBox();
+	private Button createNewAccessPoint = new Button("Create New Access Point");
 
 	private ListBox statusLB = new ListBox();
-	private List<String> cursorArray;
-	private int currentPage;
+
 	private DateTimeFormat dateFormat;
-	private String currentSortField;
-	private String currentSortDirection;
+
 	private FlexTable accessPointDetail = new FlexTable();
+
+	private PaginatedDataTable<AccessPointDto> apTable;
 
 	public AccessPointManagerPortlet(UserDto user) {
 		super(NAME, true, false, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
+		apTable = new PaginatedDataTable<AccessPointDto>(DEFAULT_SORT_FIELD,
+				this, this, true);
 		dateFormat = DateTimeFormat.getShortDateFormat();
 		contentPane.add(header);
 		setContent(contentPane);
-		currentSortDirection = DEFAULT_SORT_DIR;
-		currentSortField = DEFAULT_SORT_FIELD;
-		cursorArray = new ArrayList<String>();
-		resetCursorArray();
+		errorMode = false;
 		svc = GWT.create(AccessPointManagerService.class);
+		apTable.setVisible(false);
+		mainVPanel.add(apTable);
 	}
 
 	@Override
 	public String getName() {
 		return NAME;
-	}
-
-	private void resetCursorArray() {
-		currentPage = 0;
-		cursorArray.clear();
 	}
 
 	/**
@@ -152,9 +141,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				currentSortDirection = DEFAULT_SORT_DIR;
-				currentSortField = DEFAULT_SORT_FIELD;
-				processClickEvent(true);
+				errorMode = false;
+				requestData(null, false);
 			}
 		});
 
@@ -182,42 +170,14 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				currentSortDirection = DEFAULT_SORT_DIR;
-				currentSortField = DEFAULT_SORT_FIELD;
-				processErrorClickEvent(true);
+				errorMode = true;
+				requestData(null, false);
 			}
 
 		});
 
 		return grid;
 	}
-
-	private void setAccessPointCursor(String cursor) {
-		if (currentPage < cursorArray.size()) {
-			cursorArray.set(currentPage, cursor);
-		} else {
-			cursorArray.add(cursor);
-		}
-	}
-
-	private String getAccessPointCursor(int page) {
-		if (page >= 0) {
-			if (page < cursorArray.size()) {
-				if (cursorArray.get(page) != null
-						&& cursorArray.get(page).trim().length() == 0) {
-					return null;
-				} else {
-					return cursorArray.get(page);
-				}
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	private Button createNewAccessPoint = new Button("Create New Access Point");
 
 	private void configureSearchRibbon() {
 		configureDependantControls();
@@ -278,255 +238,13 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		dto.setConstructionDateFrom(constructionDateDPLower.getValue());
 		dto.setConstructionDateTo(constructionDateDPUpper.getValue());
 		dto.setPointType(getSelectedValue(accessPointTypeListBox));
-		dto.setOrderBy(HEADING_MAP.get(currentSortField));
-		dto.setOrderByDir(currentSortDirection);
+		dto.setOrderBy(apTable.getCurrentSortField());
+		dto.setOrderByDir(apTable.getCurrentSortDirection());
 		return dto;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void processClickEvent(boolean isNewSearch) {
-		if (accessPointFT != null) {
-			accessPointFT.removeAllRows();
-		}
-		statusLabel.setText("Please wait loading access points");
-		statusLabel.setVisible(true);
-		mainVPanel.add(statusLabel);
-		final AccessPointSearchCriteriaDto searchDto = formSearchCriteria();
-		boolean isOkay = true;
-		if (searchDto != null) {
-			if (searchDto.getCollectionDateFrom() != null
-					|| searchDto.getCollectionDateTo() != null) {
-				if (searchDto.getConstructionDateFrom() != null
-						|| searchDto.getConstructionDateTo() != null) {
-					MessageDialog errDia = new MessageDialog(
-							"Invalid search criteria",
-							"Sorry, only one date range can be selected for a search at a time. If you specify collection date, you cannot also specify a construction date. Please change the criteria and retry your search");
-					errDia.showRelativeTo(searchTable);
-					isOkay = false;
-				}
-			}
-		}
-		// reset cursor since we're doing a new search
-		if (isNewSearch) {
-			resetCursorArray();
-		}
-
-		if (isOkay) {
-			svc.listAccessPoints(searchDto,
-					getAccessPointCursor(currentPage - 1), new AsyncCallback() {
-						@Override
-						public void onFailure(Throwable caught) {
-							MessageDialog errDia = new MessageDialog(
-									"Application Error", "Cannot search");
-							errDia.showRelativeTo(searchTable);
-
-						}
-
-						@Override
-						public void onSuccess(Object result) {
-							ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>) result;
-							setAccessPointCursor(container.getCursorString());
-							loadAccessPoint((ArrayList<AccessPointDto>) container
-									.getPayload());
-						}
-
-					});
-		}
-	}
-
-	private void loadAccessPoint(ArrayList<AccessPointDto> apDtoList) {
-
-		int i = 1;
-		if (apDtoList == null || apDtoList.size() == 0) {
-			accessPointFT.clear();
-			statusLabel.setVisible(true);
-			statusLabel.setText("No matching access points");
-		} else {
-			accessPointFT.removeAllRows();
-			loadAccessPointHeaderRow();
-			for (AccessPointDto apDto : apDtoList) {
-				Label keyIdLabel = new Label(apDto.getKeyId().toString());
-				// keyIdLabel.setVisible(false);
-				accessPointFT.setWidget(i, 0, keyIdLabel);
-				if (apDto.getCommunityCode() != null) {
-					String communityCode = apDto.getCommunityCode();
-					if (communityCode.length() > 10)
-						communityCode = communityCode.substring(0, 10);
-					accessPointFT.setWidget(i, 1, new Label(communityCode));
-				}				
-
-				if (apDto.getLatitude() != null && apDto.getLongitude() != null) {
-					accessPointFT.setWidget(i, 2, new Label(apDto.getLatitude()
-							.toString()));
-					accessPointFT.setWidget(i, 3, new Label(apDto
-							.getLongitude().toString()));
-				}
-				if (apDto.getPointType() != null) {
-					accessPointFT.setWidget(i, 4, new Label(apDto
-							.getPointType().name()));
-				}
-				if (apDto.getCollectionDate() != null) {
-					accessPointFT.setWidget(i, 5, new Label(dateFormat
-							.format(apDto.getCollectionDate())));
-				}
-
-				Button editAccessPoint = new Button("edit");
-				editAccessPoint.setTitle(keyIdLabel.getText());
-				Button deleteAccessPoint = new Button("delete");
-				deleteAccessPoint.setTitle(keyIdLabel.getText());
-				HorizontalPanel buttonHPanel = new HorizontalPanel();
-				buttonHPanel.add(editAccessPoint);
-				buttonHPanel.add(deleteAccessPoint);
-
-				editAccessPoint.addClickHandler(new ClickHandler() {
-
-					@Override
-					public void onClick(ClickEvent event) {
-						Button pressedButton = (Button) event.getSource();
-						Long itemId = new Long(pressedButton.getTitle());
-						loadAccessPointDetailTable(itemId);
-					}
-
-				});
-
-				deleteAccessPoint.addClickHandler(new ClickHandler() {
-
-					@Override
-					public void onClick(ClickEvent event) {
-						Button pressedButton = (Button) event.getSource();
-						Window.alert("delete key id: "
-								+ pressedButton.getTitle());
-					}
-
-				});
-				accessPointFT.setWidget(i, 6, buttonHPanel);
-				setGridRowStyle(accessPointFT, i);
-				i++;
-				statusLabel.setText("loading row: " + i + " of "
-						+ apDtoList.size());
-
-			}
-
-			Button nextSet = new Button("Next 20");
-			nextSet.setVisible(true);
-			Button previousSet = new Button("Previous 20");
-			if (currentPage > 0) {
-				previousSet.setVisible(true);
-			} else {
-				previousSet.setVisible(false);
-			}
-
-			nextSet.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					currentPage++;
-					processClickEvent(false);
-
-				}
-			});
-
-			previousSet.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					currentPage--;
-					processClickEvent(false);
-
-				}
-			});
-
-			accessPointFT.setWidget(i + 1, 0, previousSet);
-			if (i == 21) {
-				accessPointFT.setWidget(i + 1, 1, nextSet);
-			} else if (i < 21) {
-				nextSet.setVisible(false);
-				for (int j = i - 1; j < accessPointFT.getRowCount(); j++)
-					accessPointFT.removeRow(j);
-
-			}
-			if (apDtoList != null && apDtoList.size() > 0) {
-				Button exportButton = new Button("Export to Excel");
-				accessPointFT.setWidget(i + 2, 0, exportButton);
-				final int size = apDtoList.size();
-				exportButton.addClickHandler(new ClickHandler() {
-					@Override
-					public void onClick(ClickEvent event) {
-						String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
-						appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
-						appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
-						AccessPointSearchCriteriaDto crit = formSearchCriteria();
-						if (crit != null) {
-							appletString += "<PARAM name='criteria' value='"
-									+ crit.toDelimitedString() + "'>";
-						}
-						appletString += "</applet>";
-						HTML html = new HTML();
-						html.setHTML(appletString);
-						accessPointFT.setWidget(size + 2, 1, html);
-					}
-				});
-
-			}
-			statusLabel.setText("Done loading access points");
-			statusLabel.setVisible(false);
-			mainVPanel.remove(statusLabel);
-
-			mainVPanel.add(accessPointFT);
-		}
-	}
-
-	private void loadAccessPointHeaderRow() {
-		addHeaderItem(0, "Id", true);
-		addHeaderItem(1, "Community Code", true);
-		addHeaderItem(2, "Latitude", true);
-		addHeaderItem(3, "Longitude", true);
-		addHeaderItem(4, "Point Type", true);
-		addHeaderItem(5, "Collection Date", true);
-		addHeaderItem(6, "Edit/Delete", false);
-		setGridRowStyle(accessPointFT, 0);
-	}
-
-	private void addHeaderItem(int col, final String text, boolean sortable) {
-		HorizontalPanel panel = new HorizontalPanel();
-		Label temp = new Label(text);
-		panel.add(temp);
-		if (sortable) {
-
-			ClickHandler handler = new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					if (currentSortField.equals(text)) {
-						if (ASC_SORT.equals(currentSortDirection)) {
-							currentSortDirection = DSC_SORT;
-						} else {
-							currentSortDirection = ASC_SORT;
-						}
-					} else {
-						currentSortField = text;
-						currentSortDirection = DEFAULT_SORT_DIR;
-					}
-					processClickEvent(true);
-				}
-			};
-			temp.addClickHandler(handler);
-
-			if (currentSortField.equals(text)) {
-				if (currentSortDirection != null
-						&& currentSortDirection.equals(ASC_SORT)) {
-					Image img = new Image(UP_IMG);
-					img.addClickHandler(handler);
-					panel.add(img);
-				} else {
-					Image img = new Image(DOWN_IMG);
-					img.addClickHandler(handler);
-					panel.add(img);
-				}
-			}
-		}
-		accessPointFT.setWidget(0, col, panel);
-	}
-
 	private void loadAccessPointDetailTable(Long id) {
-		accessPointFT.setVisible(false);
+		apTable.setVisible(false);
 		statusLabel.setText("Please wait loading access point for edit");
 		statusLabel.setVisible(true);
 		mainVPanel.add(statusLabel);
@@ -550,23 +268,22 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 	}
 
 	private void loadAccessPointDetailTable(AccessPointDto accessPointDto) {
-
+		apTable.setVisible(false);
 		accessPointDetail.setWidget(0, 0, new Label("Community Code: "));
 		TextBox communityCodeTB = new TextBox();
-		if (accessPointDto != null){
+		if (accessPointDto != null) {
 			communityCodeTB.setText(accessPointDto.getCommunityCode());
 		}
 
 		accessPointDetail.setWidget(0, 1, communityCodeTB);
-		
+
 		accessPointDetail.setWidget(1, 0, new Label("Country Code: "));
 		TextBox countryCodeTB = new TextBox();
-		if (accessPointDto != null){
+		if (accessPointDto != null) {
 			countryCodeTB.setText(accessPointDto.getCountryCode());
 		}
 
 		accessPointDetail.setWidget(1, 1, countryCodeTB);
-
 
 		accessPointDetail.setWidget(2, 0, new Label("Latititude: "));
 		TextBox latitudeTB = new TextBox();
@@ -580,7 +297,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 			longitudeTB.setText(accessPointDto.getLongitude().toString());
 		accessPointDetail.setWidget(3, 1, longitudeTB);
 
-		if (accessPointDto!= null && accessPointDto.getLatitude() != null
+		if (accessPointDto != null && accessPointDto.getLatitude() != null
 				&& accessPointDto.getLongitude() != null) {
 			MapWidget map = new MapWidget();
 			map.setSize("180px", "180px");
@@ -669,14 +386,16 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 				Window.alert("File uploaded");
 				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
 						.getWidget(10, 3)).getWidget()).getFilename();
-			
-				if(fileName.contains("/")){
-					fileName = fileName.substring(fileName.lastIndexOf("/")+1);
+
+				if (fileName.contains("/")) {
+					fileName = fileName
+							.substring(fileName.lastIndexOf("/") + 1);
 				}
-				if(fileName.contains("\\")){
-					fileName = fileName.substring(fileName.lastIndexOf("\\")+1);
+				if (fileName.contains("\\")) {
+					fileName = fileName
+							.substring(fileName.lastIndexOf("\\") + 1);
 				}
-				
+
 				((TextBox) accessPointDetail.getWidget(10, 1))
 						.setText("http://waterforpeople.s3.amazonaws.com/images/"
 								+ fileName);
@@ -709,9 +428,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		});
 
 		if (accessPointDto != null) {
-			
+
 			photoURLTB.setText(accessPointDto.getPhotoURL());
-			Image photo = new Image(accessPointDto.getPhotoURL()+"?random="+Random.nextInt());
+			Image photo = new Image(accessPointDto.getPhotoURL() + "?random="
+					+ Random.nextInt());
 			accessPointDetail.setWidget(10, 2, photo);
 			photo.addClickHandler(new ClickHandler() {
 
@@ -721,28 +441,27 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 							.setVisible(false);
 					accessPointDetail.setWidget(10, 4, new Label(
 							"Please wait while image is rotated 90 Degrees"));
-					svc.rotateImage(((TextBox) accessPointDetail
-							.getWidget(10, 1)).getText(),
-							new AsyncCallback<byte[]>() {
-								@Override
-								public void onFailure(Throwable caught) {
-									// TODO Auto-generated method stub
+					svc.rotateImage(((TextBox) accessPointDetail.getWidget(10,
+							1)).getText(), new AsyncCallback<byte[]>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
 
-								}
+						}
 
-								@Override
-								public void onSuccess(byte[] result) {
-									Integer random = Random.nextInt();
-									Image photo = ((Image) accessPointDetail
-											.getWidget(10, 2));
-									accessPointDetail.getWidget(10, 4)
-											.setVisible(false);
-									photo.setUrl(((TextBox) accessPointDetail
-											.getWidget(10, 1)).getText()
-											+ "?random=" + random);
-									photo.setVisible(true);
-								}
-							});
+						@Override
+						public void onSuccess(byte[] result) {
+							Integer random = Random.nextInt();
+							Image photo = ((Image) accessPointDetail.getWidget(
+									10, 2));
+							accessPointDetail.getWidget(10, 4)
+									.setVisible(false);
+							photo.setUrl(((TextBox) accessPointDetail
+									.getWidget(10, 1)).getText()
+									+ "?random=" + random);
+							photo.setVisible(true);
+						}
+					});
 				}
 			});
 		}
@@ -888,10 +607,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		accessPointDetail.setVisible(true);
 		mainVPanel.add(accessPointDetail);
 	}
-	
-	private void addWidgetToPanel(int row, int col, String name, String type, Object value, String valuetType){
-		
-	}
 
 	private AccessPointDto buildAccessPointDto() {
 		AccessPointDto apDto = new AccessPointDto();
@@ -910,7 +625,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		TextBox countryCodeTB = (TextBox) accessPointDetail.getWidget(1, 1);
 		String countryCode = countryCodeTB.getText();
 		apDto.setCountryCode(countryCode);
-		
+
 		TextBox latitudeTB = (TextBox) accessPointDetail.getWidget(2, 1);
 		Double latitude = new Double(latitudeTB.getText());
 		apDto.setLatitude(latitude);
@@ -1050,65 +765,176 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet {
 		}
 	}
 
-	/**
-	 * sets the css for a row in a grid. the top row will get the header style
-	 * and other rows get either the even or odd style.
-	 * 
-	 * @param grid
-	 * @param row
-	 * @param selected
-	 */
-	private void setGridRowStyle(FlexTable grid, int row) {
-		String style = "";
-		if (row > 0) {
-			if (row % 2 == 0) {
-				style = EVEN_ROW_CSS;
-			} else {
-				style = ODD_ROW_CSS;
-			}
-		} else {
-			style = GRID_HEADER_CSS;
+	@Override
+	public void bindRow(Grid grid, AccessPointDto apDto, int row) {
+		Label keyIdLabel = new Label(apDto.getKeyId().toString());
+		grid.setWidget(row, 0, keyIdLabel);
+		if (apDto.getCommunityCode() != null) {
+			String communityCode = apDto.getCommunityCode();
+			if (communityCode.length() > 10)
+				communityCode = communityCode.substring(0, 10);
+			grid.setWidget(row, 1, new Label(communityCode));
 		}
 
-		for (int i = 0; i < grid.getCellCount(row); i++) {
-			grid.getCellFormatter().setStyleName(row, i, style);
+		if (apDto.getLatitude() != null && apDto.getLongitude() != null) {
+			grid.setWidget(row, 2, new Label(apDto.getLatitude().toString()));
+			grid.setWidget(row, 3, new Label(apDto.getLongitude().toString()));
 		}
+		if (apDto.getPointType() != null) {
+			grid.setWidget(row, 4, new Label(apDto.getPointType().name()));
+		}
+		if (apDto.getCollectionDate() != null) {
+			grid.setWidget(row, 5, new Label(dateFormat.format(apDto
+					.getCollectionDate())));
+		}
+
+		Button editAccessPoint = new Button("edit");
+		editAccessPoint.setTitle(keyIdLabel.getText());
+		Button deleteAccessPoint = new Button("delete");
+		deleteAccessPoint.setTitle(keyIdLabel.getText());
+		HorizontalPanel buttonHPanel = new HorizontalPanel();
+		buttonHPanel.add(editAccessPoint);
+		buttonHPanel.add(deleteAccessPoint);
+
+		editAccessPoint.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Button pressedButton = (Button) event.getSource();
+				Long itemId = new Long(pressedButton.getTitle());
+				loadAccessPointDetailTable(itemId);
+			}
+
+		});
+
+		deleteAccessPoint.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Button pressedButton = (Button) event.getSource();
+				Window.alert("delete key id: " + pressedButton.getTitle());
+			}
+
+		});
+		grid.setWidget(row, 6, buttonHPanel);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void processErrorClickEvent(boolean isNewSearch) {
-		if (accessPointFT != null) {
-			accessPointFT.removeAllRows();
-		}
-		statusLabel.setText("Please wait loading access points");
-		statusLabel.setVisible(true);
-		mainVPanel.add(statusLabel);
+	@Override
+	public DataTableHeader[] getHeaders() {
+		return HEADERS;
+	}
+
+	@Override
+	public void onItemSelected(AccessPointDto item) {
+		// no-op
+
+	}
+
+	@Override
+	public void requestData(String cursor, final boolean isResort) {
+		accessPointDetail.setVisible(false);
+		final boolean isNew = (cursor == null);
+		final AccessPointSearchCriteriaDto searchDto = formSearchCriteria();
 		boolean isOkay = true;
-		// reset cursor since we're doing a new search
-		if (isNewSearch) {
-			resetCursorArray();
-		}
+		AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>> dataCallback = new AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				MessageDialog errDia = new MessageDialog("Application Error",
+						"Cannot search");
+				errDia.showRelativeTo(searchTable);
 
-		if (isOkay) {
-			svc.listErrorAccessPoints(getAccessPointCursor(currentPage - 1),
-					new AsyncCallback() {
-						@Override
-						public void onFailure(Throwable caught) {
-							MessageDialog errDia = new MessageDialog(
-									"Application Error", "Cannot search");
-							errDia.showRelativeTo(searchTable);
+			}
+
+			@Override
+			public void onSuccess(ResponseDto<ArrayList<AccessPointDto>> result) {
+				apTable.bindData(result.getPayload(), result.getCursorString(),
+						isNew, isResort);
+
+				if (result.getPayload() != null
+						&& result.getPayload().size() > 0) {
+					apTable.setVisible(true);
+					if (!errorMode) {
+
+						Button exportButton = new Button("Export to Excel");
+						apTable.appendRow(exportButton);
+						exportButton.addClickHandler(new ClickHandler() {
+							@Override
+							public void onClick(ClickEvent event) {
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
+								appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
+								AccessPointSearchCriteriaDto crit = formSearchCriteria();
+								if (crit != null) {
+									appletString += "<PARAM name='criteria' value='"
+											+ crit.toDelimitedString() + "'>";
+								}
+								appletString += "</applet>";
+								HTML html = new HTML();
+								html.setHTML(appletString);
+								apTable.appendRow(html);
+							}
+						});
+					}
+				}
+			}
+		};
+		if (!errorMode) {
+			if (searchDto != null) {
+				if (searchDto.getCollectionDateFrom() != null
+						|| searchDto.getCollectionDateTo() != null) {
+					if (searchDto.getConstructionDateFrom() != null
+							|| searchDto.getConstructionDateTo() != null) {
+						MessageDialog errDia = new MessageDialog(
+								"Invalid search criteria",
+								"Sorry, only one date range can be selected for a search at a time. If you specify collection date, you cannot also specify a construction date. Please change the criteria and retry your search");
+						errDia.showRelativeTo(searchTable);
+						isOkay = false;
+					}
+					if (isOkay) {
+						if (searchDto.getCollectionDateFrom() != null
+								|| searchDto.getCollectionDateTo() != null) {
+							if (isResort) {
+								if (!"collectionDate".equals(apTable
+										.getCurrentSortField())) {
+									MessageDialog errDia = new MessageDialog(
+											"Invalid sort criteria",
+											"Sorry, when searching using Collection Date, you cannot sort by any column except Collection Date.");
+									errDia.showRelativeTo(searchTable);
+									isOkay = false;
+								}
+							} else {
+								apTable.overrideSort("collectionDate",
+										PaginatedDataTable.DSC_SORT);
+							}
 
 						}
-
-						@Override
-						public void onSuccess(Object result) {
-							ResponseDto<ArrayList<AccessPointDto>> container = (ResponseDto<ArrayList<AccessPointDto>>) result;
-							setAccessPointCursor(container.getCursorString());
-							loadAccessPoint((ArrayList<AccessPointDto>) container
-									.getPayload());
+						if (searchDto.getConstructionDateFrom() != null
+								|| searchDto.getConstructionDateTo() != null) {
+							if (isResort) {
+								if (!"constructionDate".equals(apTable
+										.getCurrentSortField())) {
+									MessageDialog errDia = new MessageDialog(
+											"Invalid sort criteria",
+											"Sorry, when searching using Collection Date, you cannot sort by any column except Collection Date.");
+									errDia.showRelativeTo(searchTable);
+									isOkay = false;
+								}
+							} else {
+								apTable.overrideSort("constructionDate",
+										PaginatedDataTable.DSC_SORT);
+							}
 						}
-
-					});
+						searchDto.setOrderBy(apTable.getCurrentSortField());
+						searchDto.setOrderByDir(apTable
+								.getCurrentSortDirection());
+					}
+				}
+			}
+			if (isOkay) {
+				svc.listAccessPoints(searchDto, cursor, dataCallback);
+			}
+		} else {
+			svc.listErrorAccessPoints(cursor, dataCallback);
 		}
 	}
 }

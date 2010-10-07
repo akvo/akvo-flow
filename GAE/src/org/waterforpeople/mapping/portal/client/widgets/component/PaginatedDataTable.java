@@ -10,8 +10,10 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
@@ -21,17 +23,19 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
  * @author Christopher Fagiani
  * 
  */
-@SuppressWarnings("unused")
 public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		ClickHandler {
 
+	public static final String ASC_SORT = "asc";
+	public static final String DSC_SORT = "desc";
 	private static final String DOWN_IMG = "images/downarrow.gif";
 	private static final String UP_IMG = "images/uparrow.gif";
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
-	private static final String DEFAULT_SORT_DIR = "asc";
+
+	private static final String DEFAULT_SORT_DIR = ASC_SORT;
 
 	private String currentSortDirection;
 	private String currentSortField;
@@ -48,6 +52,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private Label statusLabel;
 	private VerticalPanel contentPanel;
 	private boolean rowClickable;
+	private boolean sortOverriden;
 
 	/**
 	 * constructs a data table with rows that will be populated by a
@@ -73,6 +78,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		this.defaultSortField = defaultSortField;
 		cursorArray = new ArrayList<String>();
 		currentDtoList = new ArrayList<T>();
+		sortOverriden = false;
 		listener = l;
 		binder = b;
 		resetCursorArray();
@@ -101,6 +107,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		contentPanel.add(statusLabel);
 		contentPanel.add(instanceGrid);
 		contentPanel.add(buttonPanel);
+
 		initWidget(contentPanel);
 	}
 
@@ -114,7 +121,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		currentPage += increment;
 		statusLabel.setText("Loading...");
 		statusLabel.setVisible(true);
-		listener.requestData(getCursor(currentPage - 1));
+		listener.requestData(getCursor(currentPage - 1), false);
 	}
 
 	/**
@@ -167,7 +174,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 * them to the grid
 	 */
 	private void loadHeaderRow() {
-		String[] headings = binder.getHeaders();
+		DataTableHeader[] headings = binder.getHeaders();
 		for (int i = 0; i < headings.length; i++) {
 			addHeaderItem(i, headings[i]);
 		}
@@ -180,11 +187,57 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 * @param col
 	 * @param text
 	 */
-	private void addHeaderItem(int col, final String text) {
+	private void addHeaderItem(int col, final DataTableHeader header) {
 		HorizontalPanel panel = new HorizontalPanel();
-		Label temp = new Label(text);
+		Label temp = new Label(header.getDisplayName());
 		panel.add(temp);
 		instanceGrid.setWidget(0, col, panel);
+		if (header.isSortable()) {
+
+			ClickHandler handler = new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					if (currentSortField.equals(header.getFieldName())) {
+						if (ASC_SORT.equals(currentSortDirection)) {
+							currentSortDirection = DSC_SORT;
+						} else {
+							currentSortDirection = ASC_SORT;
+						}
+					} else {
+						currentSortField = header.getFieldName();
+						currentSortDirection = DEFAULT_SORT_DIR;
+					}
+					resort();
+				}
+			};
+			temp.addClickHandler(handler);
+
+			// render the appropriate image for the sort direction
+			if (currentSortField.equals(header.getFieldName())) {
+				if (currentSortDirection != null
+						&& currentSortDirection.equals(ASC_SORT)) {
+					Image img = new Image(UP_IMG);
+					img.addClickHandler(handler);
+					panel.add(img);
+				} else {
+					Image img = new Image(DOWN_IMG);
+					img.addClickHandler(handler);
+					panel.add(img);
+				}
+			}
+		}
+	}
+
+	/**
+	 * resets the cursor array and then calls the resort method on the listener.
+	 * 
+	 * @param field
+	 * @param dir
+	 */
+	private void resort() {
+		statusLabel.setText("Please wait...");
+		statusLabel.setVisible(true);
+		listener.requestData(null, true);
 	}
 
 	/**
@@ -194,11 +247,17 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 * @param cursor
 	 * @param isNew
 	 */
-	public void bindData(ArrayList<T> dtoList, String cursor, boolean isNew) {
+	public void bindData(ArrayList<T> dtoList, String cursor, boolean isNew,
+			boolean isResort) {
 		currentDtoList = dtoList;
 		if (isNew) {
 			resetCursorArray();
+			if (!isResort && !sortOverriden) {
+				currentSortDirection = ASC_SORT;
+				currentSortField = defaultSortField;
+			}
 		}
+
 		setCursor(cursor);
 		statusLabel.setVisible(false);
 		instanceGrid.clear();
@@ -225,6 +284,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		} else {
 			previousButton.setVisible(false);
 		}
+		sortOverriden = false;
 	}
 
 	/**
@@ -295,8 +355,26 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		return currentSortDirection;
 	}
 
+	public void overrideSort(String field, String dir) {
+		currentSortDirection = dir;
+		currentSortField = field;
+		sortOverriden = true;
+
+	}
+
 	public String getCurrentSortField() {
 		return currentSortField;
 	}
 
+	/**
+	 * adds the widget passed in to the bottom of the grid
+	 * 
+	 * @param w
+	 */
+	public void appendRow(Widget w) {
+		int rowCount = instanceGrid.getRowCount();
+		instanceGrid.resizeRows(rowCount + 1);
+		instanceGrid.setWidget(rowCount, 0, w);
+
+	}
 }

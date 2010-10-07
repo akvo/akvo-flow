@@ -13,11 +13,11 @@ import com.google.gwt.user.client.ui.Grid;
 public interface DataTableBinder<T extends BaseDto> {
 
 	/**
-	 * returns a list of header strings
+	 * returns a list of headers to use in the table
 	 * 
 	 * @return
 	 */
-	public String[] getHeaders();
+	public DataTableHeader[] getHeaders();
 
 	/**
 	 * binds an item to the grid by populating the widgets

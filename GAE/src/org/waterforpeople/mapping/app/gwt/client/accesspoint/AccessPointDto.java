@@ -1,21 +1,13 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class AccessPointDto implements Serializable {
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+
+public class AccessPointDto extends BaseDto{
 
 	private static final long serialVersionUID = -9059171394832476797L;
-	private Long keyId = null;
-
-	public Long getKeyId() {
-		return keyId;
-	}
-
-	public void setKeyId(Long keyId) {
-		this.keyId = keyId;
-	}
-
+	
 	private String countryCode;
 
 	private Long year;
