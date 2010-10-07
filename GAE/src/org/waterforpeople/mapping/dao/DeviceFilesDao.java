@@ -28,12 +28,12 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
-		appendNonNullParam("lastUpdateDateTime", filterString, paramString,
+		appendNonNullParam("createdDateTime", filterString, paramString,
 				"Date", startDate, paramMap, GTE_OP);
 		if (startDate != null) {
 			query.declareImports("import java.util.Date");
 		}
-		query.setOrdering("lastUpdateDateTime desc");
+		query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
