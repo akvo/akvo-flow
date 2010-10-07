@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.dao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +30,16 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
-		/*appendNonNullParam("createdDateTime", filterString, paramString,
-				"Date", startDate, paramMap, GTE_OP);
-		if (startDate != null) {
-			query.declareImports("import java.util.Date");
-		}*/
-		appendNonNullParam("processDate", filterString,paramString,"String",startDate.toString(),paramMap,GTE_OP);
+		/*
+		 * appendNonNullParam("createdDateTime", filterString, paramString,
+		 * "Date", startDate, paramMap, GTE_OP); if (startDate != null) {
+		 * query.declareImports("import java.util.Date"); }
+		 */
+		DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+		java.util.Date date = new java.util.Date();
+		String dateTime = dateFormat.format(date);
+		appendNonNullParam("processDate", filterString, paramString, "String",
+				dateTime, paramMap, GTE_OP);
 		query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
