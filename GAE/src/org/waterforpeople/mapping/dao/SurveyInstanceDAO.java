@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	private static final Logger logger = Logger
 			.getLogger(SurveyInstanceDAO.class.getName());
+
+	private static final HashMap<String, String> TEMPORARY_SURVEY_FIX_MAP = new HashMap<String, String>() {
+		
+		private static final long serialVersionUID = 1L;
+		{
+			put("1086117", "1360012");
+			put("1062135", "1305017");
+			put("1039101", "1362011");
+		}
+	};
 
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, List<String> unparsedLines) {
@@ -44,6 +55,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				try {
 					si.setCollectionDate(collDate);
 					si.setSurveyId(Long.parseLong(parts[0]));
+					// TODO: THIS IS A HACK AND SHOULD BE REMOVED AFTER 10/21/2010
+					String tempId = TEMPORARY_SURVEY_FIX_MAP.get(parts[0]);
+					if (tempId != null) {
+						si.setSurveyId(Long.parseLong(tempId));
+						logger.log(Level.WARNING, "Substituted " + tempId
+								+ " for " + parts[0]);
+						parts[0] = tempId;
+					}
 					si = save(si);
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
