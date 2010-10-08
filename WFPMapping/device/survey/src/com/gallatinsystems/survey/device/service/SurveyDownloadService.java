@@ -1,10 +1,10 @@
 package com.gallatinsystems.survey.device.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.StringTokenizer;
@@ -12,6 +12,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.http.HttpException;
 
@@ -43,6 +45,7 @@ public class SurveyDownloadService extends Service {
 	private static final String TAG = "SURVEY_DOWNLOAD_SERVICE";
 
 	private static final String SURVEY_FILE_SUFFIX = ".xml";
+	private static final String SURVEY_ARCHIVE_SUFFIX = ".zip";
 	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
 
@@ -108,9 +111,8 @@ public class SurveyDownloadService extends Service {
 				lock.acquire();
 				databaseAdaptor = new SurveyDbAdapter(this);
 				databaseAdaptor.open();
-				int precacheOption = Integer
-						.parseInt(databaseAdaptor
-								.findPreference(ConstantUtil.PRECACHE_SETTING_KEY));
+				int precacheOption = Integer.parseInt(databaseAdaptor
+						.findPreference(ConstantUtil.PRECACHE_SETTING_KEY));
 				String serverBase = databaseAdaptor
 						.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 				if (serverBase != null && serverBase.trim().length() > 0) {
@@ -196,26 +198,47 @@ public class SurveyDownloadService extends Service {
 	private boolean downloadSurvey(String serverBase, Survey survey) {
 		boolean success = false;
 		try {
-			String response = HttpUtil.httpGet(SURVEY_S3_URL + survey.getId()
-					+ ".xml");
-			if (response != null
-					&& !response.trim().equalsIgnoreCase(NO_SURVEY)) {
-				survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
-				survey.setType(DEFAULT_TYPE);
-				survey.setLocation(SD_LOC);
-				File file = new File(ConstantUtil.DATA_DIR, survey
-						.getFileName());
-				PrintStream writer = new PrintStream(new FileOutputStream(file));
-				writer.print(response);
-				writer.close();
-				success = true;
-			}
+			HttpUtil.httpDownload(SURVEY_S3_URL + survey.getId()
+					+ SURVEY_ARCHIVE_SUFFIX, ConstantUtil.DATA_DIR
+					+ File.separator + survey.getId() + SURVEY_ARCHIVE_SUFFIX);
+			extractAndSave(new File(ConstantUtil.DATA_DIR + File.separator
+					+ survey.getId() + SURVEY_ARCHIVE_SUFFIX));
+
+			survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
+			survey.setType(DEFAULT_TYPE);
+			survey.setLocation(SD_LOC);
+			success = true;
 		} catch (IOException e) {
 			Log.e(TAG, "Could write survey file " + survey.getFileName(), e);
 		} catch (Exception e) {
 			Log.e(TAG, "Could not download survey " + survey.getId(), e);
 		}
 		return success;
+	}
+
+	/**
+	 * reads the byte array passed in using a zip input stream and extracts the
+	 * entry to the file specified. This assumes ONE entry per zip
+	 * 
+	 * @param bytes
+	 * @param f
+	 * @throws IOException
+	 */
+	private void extractAndSave(File zipFile) throws IOException {
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			FileOutputStream fout = new FileOutputStream(new File(
+					ConstantUtil.DATA_DIR, entry.getName()));
+			byte[] buffer = new byte[2048];
+			int size;
+			while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+				fout.write(buffer, 0, size);
+			}
+			fout.close();
+			zis.closeEntry();
+		}
+		zis.close();
 	}
 
 	/**
