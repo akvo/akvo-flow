@@ -1,10 +1,11 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,23 +117,30 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				Survey survey = surveyDao.getById(mgrReq.getSurveyId());
 				if (survey != null) {
 					StringBuilder sb = new StringBuilder();
-					sb.append(survey.getKey().getId() + ",").append(
-							survey.getName() != null ? survey.getName()
+					sb.append(survey.getKey().getId() + ",")
+							.append(survey.getName() != null ? survey.getName()
 									: "Survey " + survey.getKey().getId())
-							.append(",EN,").append(
-									survey.getVersion() != null ? survey
-											.getVersion() : "1");
+							.append(",EN,")
+							.append(survey.getVersion() != null ? survey
+									.getVersion() : "1");
 					resp.setMessage(sb.toString());
 				}
 			}
-		}else if(SurveyManagerRequest.GET_ZIP_FILE_URL_ACTION.equalsIgnoreCase(req.getAction())){
+		} else if (SurveyManagerRequest.GET_ZIP_FILE_URL_ACTION
+				.equalsIgnoreCase(req.getAction())) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
-			List<DeviceFiles> dfList =  dfDao.listDeviceFilesByDate(mgrReq.getStartDate(), "all");
-			if(dfList!=null){
-				StringBuilder sb = new StringBuilder();
-				for(DeviceFiles df:dfList){
-					sb.append(df.getURI()+"\n");
+			List<DeviceFiles> dfList = dfDao.listDeviceFilesByDate(
+					mgrReq.getStartDate(), "all");
+			if (dfList != null) {
+				Set<String> uxUrlList = new HashSet<String>();
+				for (DeviceFiles df : dfList) {
+
+					uxUrlList.add(df.getURI());
+
 				}
+				StringBuilder sb = new StringBuilder();
+				for (String item : uxUrlList)
+					sb.append(item + "\n");
 				resp.setMessage(sb.toString());
 			}
 		}
@@ -145,11 +153,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			HttpServletResponse resp = getResponse();
 			resp.getWriter().print(response.getMessage());
 		} catch (IOException e) {
-			log
-					.log(
-							Level.SEVERE,
-							"Could not write survey manager response to http output stream",
-							e);
+			log.log(Level.SEVERE,
+					"Could not write survey manager response to http output stream",
+					e);
 		}
 	}
 }

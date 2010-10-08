@@ -113,9 +113,9 @@ public class TestHarnessServlet extends HttpServlet {
 			// apmI.rotateImage(test2);
 		} else if ("addDeviceFiles".equals(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 100; i++) {
 				DeviceFiles df = new DeviceFiles();
-				df.setURI("http://www.yahoo.com/" + i + ".zip");
+				df.setURI("http://www.yahoo.com/x.zip");
 				df.setCreatedDateTime(new Date());
 				df.setPhoneNumber("2019561591");
 				DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
