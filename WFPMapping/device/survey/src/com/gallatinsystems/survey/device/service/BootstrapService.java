@@ -37,6 +37,9 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  * If there are multiple zip files in the directory, this utility will process
  * them in lexicographical order by file name;
  * 
+ * Any files with a name starting with . will be skipped (to prevent inadvertent
+ * processing of MAC OSX metadata files).
+ * 
  * @author Christopher Fagiani
  * 
  */
@@ -130,49 +133,54 @@ public class BootstrapService extends Service {
 		ZipEntry entry = null;
 		HashSet<String> surveysWithImages = new HashSet<String>();
 		while ((entry = zis.getNextEntry()) != null) {
-			if (entry.getName().toLowerCase().endsWith(
-					ConstantUtil.BOOTSTRAP_DB_FILE.toLowerCase())) {
-				processDbInstructions(FileUtil.readTextFromZip(zis));
-			} else if (!entry.isDirectory()) {
-				String parts[] = entry.getName().split("/");
-				String fileName = parts[parts.length - 1];
-				String id = parts[parts.length - 2];
+			String parts[] = entry.getName().split("/");
+			String fileName = parts[parts.length - 1];
+			// make sure we're not processing a hidden file
+			if (!fileName.startsWith(".")) {
 				if (entry.getName().toLowerCase().endsWith(
-						ConstantUtil.XML_SUFFIX.toLowerCase())) {
-					String surveyName = fileName;
-					if (surveyName.contains(".")) {
-						surveyName = surveyName.substring(0, surveyName
-								.indexOf("."));
-					}
-					Survey survey = databaseAdapter.findSurvey(id);
-					if (survey == null) {
-						survey = new Survey();
-						survey.setId(id);
-						survey.setVersion(1d);
-						survey.setName(surveyName);
-						survey.setHelpDownloaded(false);
-						survey.setLanguage(ConstantUtil.SURVEY_DEFAULT_LANG);
-						survey.setType(ConstantUtil.SURVEY_TYPE);
+						ConstantUtil.BOOTSTRAP_DB_FILE.toLowerCase())) {
+					processDbInstructions(FileUtil.readTextFromZip(zis));
+
+				} else if (!entry.isDirectory()) {
+					String id = parts[parts.length - 2];
+					if (entry.getName().toLowerCase().endsWith(
+							ConstantUtil.XML_SUFFIX.toLowerCase())) {
+						String surveyName = fileName;
+						if (surveyName.contains(".")) {
+							surveyName = surveyName.substring(0, surveyName
+									.indexOf("."));
+						}
+						Survey survey = databaseAdapter.findSurvey(id);
+						if (survey == null) {
+							survey = new Survey();
+							survey.setId(id);
+							survey.setVersion(1d);
+							survey.setName(surveyName);
+							survey.setHelpDownloaded(false);
+							survey
+									.setLanguage(ConstantUtil.SURVEY_DEFAULT_LANG);
+							survey.setType(ConstantUtil.SURVEY_TYPE);
+						} else {
+							survey.setVersion(survey.getVersion() + 1d);
+						}
+						survey.setLocation(ConstantUtil.FILE_LOCATION);
+						survey.setFileName(fileName);
+
+						// in both cases (new survey and existing), we need to
+						// update the xml
+						FileUtil.extractAndSaveFile(zis, ConstantUtil.DATA_DIR
+								+ fileName);
+						// now save the survey
+						databaseAdapter.saveSurvey(survey);
 					} else {
-						survey.setVersion(survey.getVersion() + 1d);
+						// if it's not a sql file and its not a survey, it must
+						// be help media
+						FileUtil.extractAndSaveFile(zis, ConstantUtil.DATA_DIR
+								+ id + File.separator + fileName);
+
+						// record the fact that this survey had media
+						surveysWithImages.add(id);
 					}
-					survey.setLocation(ConstantUtil.FILE_LOCATION);
-					survey.setFileName(fileName);
-
-					// in both cases (new survey and existing), we need to
-					// update the xml
-					FileUtil.extractAndSaveFile(zis, ConstantUtil.DATA_DIR
-							+ fileName);
-					// now save the survey
-					databaseAdapter.saveSurvey(survey);
-				} else {
-					// if it's not a sql file and its not a survey, it must be
-					// help media
-					FileUtil.extractAndSaveFile(zis, ConstantUtil.DATA_DIR + id
-							+ File.separator + fileName);
-
-					// record the fact that this survey had media
-					surveysWithImages.add(id);
 				}
 			}
 		}
