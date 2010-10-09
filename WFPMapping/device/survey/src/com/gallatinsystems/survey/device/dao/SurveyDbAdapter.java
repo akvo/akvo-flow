@@ -144,7 +144,7 @@ public class SurveyDbAdapter {
 		}
 
 		@Override
-		public void onCreate(SQLiteDatabase db) {
+		public void onCreate(SQLiteDatabase db) {			
 			db.execSQL(USER_TABLE_CREATE);
 			db.execSQL(SURVEY_TABLE_CREATE);
 			db.execSQL(SURVEY_RESPONDENT_CREATE);
@@ -161,8 +161,9 @@ public class SurveyDbAdapter {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-					+ newVersion + ", which will destroy all old data");
+					+ newVersion);
 			
+			if(oldVersion < 56){
 			  db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
 			  db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
 			  db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
@@ -171,6 +172,9 @@ public class SurveyDbAdapter {
 			  db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 			  db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 			  db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
+			}else{
+				db.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
+			}
 			  onCreate(db);
 			
 		}
