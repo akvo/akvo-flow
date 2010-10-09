@@ -16,9 +16,22 @@ public class ConstantUtil {
 	 * filesystem constants
 	 */
 	public static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
-
 	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
+	public static final String ARCHIVE_SUFFIX = ".zip";
+	public static final String XML_SUFFIX = ".xml";
+	public static final String BOOTSTRAP_DIR = "/sdcard/fieldsurvey/bootstrap";
+	public static final String BOOTSTRAP_DB_FILE = "dbinstructions.sql";
+	public static final String PROCESSED_OK_SUFFIX = ".processed";
+	public static final String PROCESSED_ERROR_SUFFIX = ".error";
 
+
+	/**
+	 * survey file locations
+	 */
+	public static final String RESOURCE_LOCATION = "res";
+	public static final String FILE_LOCATION = "sdcard";
+	public static final String SURVEY_DEFAULT_LANG = "english";
+	
 	/**
 	 * status related constants
 	 */

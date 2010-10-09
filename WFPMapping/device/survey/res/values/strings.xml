@@ -162,6 +162,9 @@
 	<string name="clearquestiondesc">Do you want to clear the response to this question?</string>
 	<string name="identlabel">Device Identifier</string>
 	<string name="setidentlabel">Set device identifier</string>
-	<string name="strengthtext">Strength of Preference</string>	
-	<string name="appversion">1.1.4</string>	
+	<string name="strengthtext">Strength of Preference</string>
+	<string name="bootstrapstart">Loading survey data from SD card</string>
+	<string name="bootstrapcomplete">Done loading data from SD card</string>	
+	<string name="bootstraperror">Error processing bootstrap zip file</string>
+	<string name="appversion">1.2</string>	
 </resources>

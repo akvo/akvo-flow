@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.service.BootstrapService;
 import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.service.PrecacheService;
@@ -89,6 +90,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		startService(SurveyDownloadService.class);
 		startService(LocationService.class);
 		startService(PrecacheService.class);
+		startService(BootstrapService.class);
 
 	}
 

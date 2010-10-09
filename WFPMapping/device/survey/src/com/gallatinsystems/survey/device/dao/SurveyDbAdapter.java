@@ -162,15 +162,17 @@ public class SurveyDbAdapter {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
-			/*db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
-			onCreate(db);*/
+			/*
+			 * db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
+			 * db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
+			 * db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
+			 * db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
+			 * db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
+			 * db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+			 * db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
+			 * db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
+			 * onCreate(db);
+			 */
 			db.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
 		}
 	}
@@ -1070,5 +1072,15 @@ public class SurveyDbAdapter {
 			cursor.close();
 		}
 		return points;
+	}
+
+	/**
+	 * executes a single insert/update/delete DML or any DDL statement without
+	 * any bind arguments.
+	 * 
+	 * @param sql
+	 */
+	public void executeSql(String sql) {
+		database.execSQL(sql);
 	}
 }

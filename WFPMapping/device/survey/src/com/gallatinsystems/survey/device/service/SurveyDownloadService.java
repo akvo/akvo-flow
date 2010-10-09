@@ -44,11 +44,10 @@ public class SurveyDownloadService extends Service {
 
 	private static final String TAG = "SURVEY_DOWNLOAD_SERVICE";
 
-	private static final String SURVEY_FILE_SUFFIX = ".xml";
-	private static final String SURVEY_ARCHIVE_SUFFIX = ".zip";
 	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
 
+	@SuppressWarnings("unused")
 	private static final String NO_SURVEY = "No Survey Found";
 
 	private static final String SERVER_BASE = "http://watermapmonitordev.appspot.com";
@@ -199,12 +198,13 @@ public class SurveyDownloadService extends Service {
 		boolean success = false;
 		try {
 			HttpUtil.httpDownload(SURVEY_S3_URL + survey.getId()
-					+ SURVEY_ARCHIVE_SUFFIX, ConstantUtil.DATA_DIR
-					+ File.separator + survey.getId() + SURVEY_ARCHIVE_SUFFIX);
+					+ ConstantUtil.ARCHIVE_SUFFIX, ConstantUtil.DATA_DIR
+					+ File.separator + survey.getId()
+					+ ConstantUtil.ARCHIVE_SUFFIX);
 			extractAndSave(new File(ConstantUtil.DATA_DIR + File.separator
-					+ survey.getId() + SURVEY_ARCHIVE_SUFFIX));
+					+ survey.getId() + ConstantUtil.ARCHIVE_SUFFIX));
 
-			survey.setFileName(survey.getId() + SURVEY_FILE_SUFFIX);
+			survey.setFileName(survey.getId() + ConstantUtil.XML_SUFFIX);
 			survey.setType(DEFAULT_TYPE);
 			survey.setLocation(SD_LOC);
 			success = true;
