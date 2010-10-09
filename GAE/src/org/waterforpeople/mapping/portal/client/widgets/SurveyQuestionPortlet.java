@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.portal.client.widgets.component.WidgetDialog;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.google.gwt.core.client.GWT;
@@ -21,9 +22,11 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.ImagePieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart.Options;
 
@@ -47,9 +50,10 @@ public class SurveyQuestionPortlet extends Portlet {
 	private ListBox questionListbox;
 	private ListBox surveyGroupListbox;
 	private ListBox surveyListbox;
+	private AbstractDataTable currentTable;	
 
 	public SurveyQuestionPortlet() {
-		super(NAME, false, false, WIDTH, HEIGHT);
+		super(NAME, false, false, true, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
 		questionListbox = new ListBox();
 		surveyGroupListbox = new ListBox();
@@ -160,8 +164,8 @@ public class SurveyQuestionPortlet extends Portlet {
 						if (text != null && text.length() > MAX_LEN) {
 							text = text.substring(0, MAX_LEN) + "...";
 						}
-						questionListbox.addItem(text, result[i]
-								.getKeyId().toString());					
+						questionListbox.addItem(text, result[i].getKeyId()
+								.toString());
 
 					}
 					questionListbox.setVisibleItemCount(1);
@@ -226,6 +230,7 @@ public class SurveyQuestionPortlet extends Portlet {
 							}
 							pieChart = new PieChart(dataTable, createOptions());
 							contentPane.add(pieChart);
+							currentTable = dataTable;
 
 						}
 					};
@@ -239,6 +244,24 @@ public class SurveyQuestionPortlet extends Portlet {
 
 	public String getName() {
 		return NAME;
+	}
+	
+	@Override
+	public void handleExportClick() {
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				ImagePieChart.Options options = ImagePieChart.Options.create();
+				options.setHeight(HEIGHT - 60);
+				options.setWidth(WIDTH);
+				ImagePieChart ipc = new ImagePieChart(currentTable, options);
+				WidgetDialog dia = new WidgetDialog(NAME, ipc);
+				dia.showRelativeTo(getHeaderWidget());
+			}
+		};
+		if (currentTable != null) {
+			VisualizationUtils.loadVisualizationApi(onLoadCallback,
+					ImagePieChart.PACKAGE);
+		}
 	}
 
 }

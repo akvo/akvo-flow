@@ -38,20 +38,18 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 	FlexTable dspEntryTable = new FlexTable();
 
 	public DisplayContentManager() {
-		super(title, scrollable, configurable, WIDTH, HEIGHT, null, false, "");
-
+		super(title, scrollable, configurable, false, WIDTH, HEIGHT, null, false, "");
 	}
 
 	public DisplayContentManager(String title, boolean scrollable,
 			boolean configurable, int width, int height, UserDto user,
 			boolean useCommunity, String specialOption) {
-		super(title, scrollable, configurable, width, height, user,
-				useCommunity, specialOption);
-		// TODO Auto-generated constructor stub
+		super(title, scrollable, configurable, false, width, height, user,
+				useCommunity, specialOption);		
 	}
 
 	public DisplayContentManager(UserDto user) {
-		super(NAME, true, false, WIDTH, HEIGHT, user, true,
+		super(NAME, true, false, false,WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
 		loadAttributes();
 		contentPane = new VerticalPanel();

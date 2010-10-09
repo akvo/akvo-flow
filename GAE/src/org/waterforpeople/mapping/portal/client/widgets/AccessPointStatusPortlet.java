@@ -4,6 +4,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryD
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.portal.client.widgets.component.WidgetDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -18,9 +19,11 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.ImagePieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart.Options;
 
@@ -44,13 +47,14 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 	private VerticalPanel contentPane;
 	private PieChart pieChart;
 
+	private AbstractDataTable currentTable;
 	private ListBox yearListbox;
 
 	private RadioButton wpTypeButton;
 	private RadioButton spTypeButton;
 
 	public AccessPointStatusPortlet(UserDto user) {
-		super(NAME, false, true, WIDTH, HEIGHT, user, true,
+		super(NAME, false, true, true, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ALL_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
@@ -234,6 +238,7 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 								pieChart.removeFromParent();
 							}
 							pieChart = new PieChart(dataTable, createOptions());
+							currentTable = dataTable;
 							contentPane.add(pieChart);
 						}
 					}
@@ -258,5 +263,23 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 	@Override
 	protected String getConfigItemName() {
 		return CONFIG_ITEM_NAME;
+	}
+
+	@Override
+	public void handleExportClick() {
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				ImagePieChart.Options options = ImagePieChart.Options.create();
+				options.setHeight(HEIGHT - 60);
+				options.setWidth(WIDTH);
+				ImagePieChart ipc = new ImagePieChart(currentTable, options);
+				WidgetDialog dia = new WidgetDialog(NAME, ipc);
+				dia.showRelativeTo(getHeaderWidget());
+			}
+		};
+		if (currentTable != null) {
+			VisualizationUtils.loadVisualizationApi(onLoadCallback,
+					ImagePieChart.PACKAGE);
+		}
 	}
 }

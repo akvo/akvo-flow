@@ -55,7 +55,7 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 	private RadioButton spTypeButton;
 
 	public ActivityMapPortlet(UserDto user) {
-		super(NAME, false, true, WIDTH, HEIGHT, user);
+		super(NAME, false, true, true, WIDTH, HEIGHT, user);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);

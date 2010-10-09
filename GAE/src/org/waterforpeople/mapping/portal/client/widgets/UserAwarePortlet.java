@@ -41,8 +41,9 @@ public abstract class UserAwarePortlet extends Portlet {
 	 * @param user
 	 */
 	public UserAwarePortlet(String title, boolean scrollable,
-			boolean configurable, int width, int height, UserDto user) {
-		super(title, scrollable, configurable, width, height);
+			boolean configurable, boolean snapable, int width, int height,
+			UserDto user) {
+		super(title, scrollable, configurable, snapable, width, height);
 		if (user != null) {
 			currentUser = user;
 			if (user.getConfig() != null) {

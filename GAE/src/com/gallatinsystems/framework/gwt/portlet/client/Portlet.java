@@ -31,6 +31,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 
 	private static final String CLOSE_IMAGE = "images/close.png";
 	private static final String CONF_IMAGE = "images/configure-32.png";
+	private static final String SNAP_IMAGE = "images/camera_icon.png";
 	private static final String CSS_PANEL = "portlet-panel";
 	private static final String CSS_HEADER = "portlet-header";
 	private static final int HEADER_HEIGHT = 20;
@@ -40,6 +41,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	private static final int FULLSCREEN_HEIGHT = 1000;
 	private static final String CONF_TOOLTIP = "Save current portlet configuration";
 	private static final String CLOSE_TOOLTIP = "Remove portlet";
+	private static final String SNAP_TOOLTIP = "Export Snapshot Image";
 
 	private int width = DEFAULT_WIDTH;
 	private int height = DEFAULT_HEIGHT;
@@ -52,14 +54,30 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	private int contentWidth;
 	private boolean scrollable;
 	private boolean configurable;
+	private boolean snapable;
 	private Widget internalContent;
 	private Widget headerWidget;
 	private Image closeImg;
 	private Image confImg;
+	private Image snapshotImg;
 	private FocusPanel headerContainer;
 	private String config;
 
 	private boolean isLoaded = false;
+
+	/**
+	 * constructs a portlet that cannot take snapshots
+	 * 
+	 * @param title
+	 * @param scrollable
+	 * @param configurable
+	 * @param width
+	 * @param height
+	 */
+	public Portlet(String title, boolean scrollable, boolean configurable,
+			int width, int height) {
+		this(title, scrollable, configurable, false, width, height);
+	}
 
 	/**
 	 * constructs a portlet with the given title. If scrollable is true, the
@@ -69,6 +87,9 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	 * @param title
 	 * @param scrollable
 	 * @param configurable
+	 *            - whether or not to display the configuration icon
+	 * @param snapable
+	 *            - whether or not to display the snapshot icon
 	 * @param width
 	 *            - desired max width of the widget content panel
 	 * @param height
@@ -76,7 +97,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	 *            not include the header)
 	 */
 	public Portlet(String title, boolean scrollable, boolean configurable,
-			int width, int height) {
+			boolean snapable, int width, int height) {
 		addStyleName(CSS_PANEL);
 		if (width > 0) {
 			this.width = width;
@@ -86,6 +107,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		}
 		this.configurable = configurable;
 		this.scrollable = scrollable;
+		this.snapable = snapable;
 		active = true;
 		constructHeader(title);
 	}
@@ -136,6 +158,19 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 				}
 			});
 			headerPanel.add(confImg, DockPanel.EAST);
+		}
+		if (snapable) {
+			snapshotImg = new Image(SNAP_IMAGE);
+			snapshotImg.setTitle(SNAP_TOOLTIP);
+			snapshotImg.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					handleExportClick();
+
+				}
+			});
+			headerPanel.add(snapshotImg, DockPanel.EAST);
+
 		}
 
 		headerWidget.setHeight(HEADER_HEIGHT + "");
@@ -351,6 +386,19 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	protected void handleConfigClick() {
 	}
 
+	/**
+	 * handles the response to the click of the "export snapshot" button.
+	 * Subclasses should override this method if they are going to support
+	 * snapshots as this default implementation does nothing.
+	 */
+	protected void handleExportClick() {
+
+	}
+
 	public abstract String getName();
+
+	public Widget getHeaderWidget() {
+		return headerWidget;
+	}
 
 }

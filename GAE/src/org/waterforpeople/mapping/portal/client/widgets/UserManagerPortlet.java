@@ -50,7 +50,7 @@ public class UserManagerPortlet extends UserAwarePortlet implements
 	private UserServiceAsync userService;
 
 	public UserManagerPortlet(UserDto user) {
-		super(NAME, true, false, WIDTH, HEIGHT, user);
+		super(NAME, true, false, false, WIDTH, HEIGHT, user);
 
 		contentPane = new VerticalPanel();
 		if (user.isAdmin()) {

@@ -66,7 +66,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 
 	public RawDataViewPortlet() {
-		super(NAME, true, false, width, height, null, false, null);
+		super(NAME, true, false, false,width, height, null, false, null);
 		svc = GWT.create(SurveyInstanceService.class);
 		loadContentPanel();
 	}

@@ -67,7 +67,7 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 	private Map<String, Map<Long, AccessPointDto>> spSummaryMap;
 
 	public AccessPointPerformancePortlet(UserDto user) {
-		super(NAME, false, false, WIDTH, HEIGHT, user, true, null);
+		super(NAME, false, false,true, WIDTH, HEIGHT, user, true, null);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);

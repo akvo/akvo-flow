@@ -40,7 +40,7 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 	private VerticalPanel contentPane;
 
 	public ActivityChartPortlet(UserDto u) {
-		super(NAME, false, true, WIDTH, HEIGHT, u, true,
+		super(NAME, false, true, true, WIDTH, HEIGHT, u, true,
 				LocationDrivenPortlet.ALL_OPT);
 		contentPane = new VerticalPanel();
 		contentPane.add(buildHeader());
@@ -104,7 +104,8 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 							dataTable.addColumn(ColumnType.DATE, "Date");
 							dataTable.addColumn(ColumnType.NUMBER, "Count");
 							for (int i = 0; i < result.length; i++) {
-								if (result[i] != null && result[i].getDate() != null) {
+								if (result[i] != null
+										&& result[i].getDate() != null) {
 									dataTable.addRow();
 									dataTable.setValue(i, 0, result[i]
 											.getDate());

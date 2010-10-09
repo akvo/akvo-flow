@@ -106,7 +106,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 	private PaginatedDataTable<AccessPointDto> apTable;
 
 	public AccessPointManagerPortlet(UserDto user) {
-		super(NAME, true, false, WIDTH, HEIGHT, user, true,
+		super(NAME, true, false, false, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();

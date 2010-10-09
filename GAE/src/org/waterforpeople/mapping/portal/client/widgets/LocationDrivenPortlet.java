@@ -56,9 +56,9 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 	 *            will return null.
 	 */
 	public LocationDrivenPortlet(String title, boolean scrollable,
-			boolean configurable, int width, int height, UserDto user,
+			boolean configurable, boolean snapable, int width, int height, UserDto user,
 			boolean useCommunity, String specialOption) {
-		super(title, scrollable, configurable, width, height, user);
+		super(title, scrollable, configurable, snapable, width, height, user);
 		communityListbox = new ListBox();
 		countryListbox = new ListBox();
 		this.specialOption = specialOption;
