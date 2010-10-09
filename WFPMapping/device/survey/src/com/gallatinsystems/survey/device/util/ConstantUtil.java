@@ -23,6 +23,7 @@ public class ConstantUtil {
 	public static final String BOOTSTRAP_DB_FILE = "dbinstructions.sql";
 	public static final String PROCESSED_OK_SUFFIX = ".processed";
 	public static final String PROCESSED_ERROR_SUFFIX = ".error";
+	public static final String BOOTSTRAP_ROLLBACK_FILE = "rollback.sql";
 
 
 	/**

@@ -166,5 +166,5 @@
 	<string name="bootstrapstart">Loading survey data from SD card</string>
 	<string name="bootstrapcomplete">Done loading data from SD card</string>	
 	<string name="bootstraperror">Error processing bootstrap zip file</string>
-	<string name="appversion">1.2.1</string>	
+	<string name="appversion">1.2.2</string>	
 </resources>

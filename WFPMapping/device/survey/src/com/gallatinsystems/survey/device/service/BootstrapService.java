@@ -91,15 +91,18 @@ public class BootstrapService extends Service {
 					for (int i = 0; i < zipFiles.size(); i++) {
 						try {
 							processFile(zipFiles.get(i));
-						} catch (Exception e) {
+						} catch (Exception e) {											
+							// try to roll back any database changes (if the zip
+							// has a rollback file)
+							rollback(zipFiles.get(i));
 							String newFilename = zipFiles.get(i)
-									.getAbsolutePath();
+							.getAbsolutePath();		
 							zipFiles
-									.get(i)
-									.renameTo(
-											new File(
-													newFilename
-															+ ConstantUtil.PROCESSED_ERROR_SUFFIX));
+							.get(i)
+							.renameTo(
+									new File(
+											newFilename
+													+ ConstantUtil.PROCESSED_ERROR_SUFFIX));
 							throw (e);
 						}
 					}
@@ -123,6 +126,29 @@ public class BootstrapService extends Service {
 	}
 
 	/**
+	 * looks for the rollback file in the zip and, if it exists, attempts to
+	 * execute the statements contained therein
+	 * 
+	 * @param zipFile
+	 * @throws Exception
+	 */
+	private void rollback(File zipFile) throws Exception {
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+		ZipEntry entry = null;
+		while ((entry = zis.getNextEntry()) != null) {
+			String parts[] = entry.getName().split("/");
+			String fileName = parts[parts.length - 1];
+			// make sure we're not processing a hidden file
+			if (!fileName.startsWith(".")) {
+				if (entry.getName().toLowerCase().endsWith(
+						ConstantUtil.BOOTSTRAP_ROLLBACK_FILE.toLowerCase())) {
+					processDbInstructions(FileUtil.readTextFromZip(zis), false);
+				}
+			}
+		}
+	}
+
+	/**
 	 * processes a bootstrap zip file
 	 * 
 	 * @param zipFile
@@ -139,7 +165,7 @@ public class BootstrapService extends Service {
 			if (!fileName.startsWith(".")) {
 				if (entry.getName().toLowerCase().endsWith(
 						ConstantUtil.BOOTSTRAP_DB_FILE.toLowerCase())) {
-					processDbInstructions(FileUtil.readTextFromZip(zis));
+					processDbInstructions(FileUtil.readTextFromZip(zis), true);
 
 				} else if (!entry.isDirectory()) {
 					String id = parts[parts.length - 2];
@@ -202,7 +228,8 @@ public class BootstrapService extends Service {
 	 * 
 	 * @param instructions
 	 */
-	private void processDbInstructions(String instructions) {
+	private void processDbInstructions(String instructions, boolean failOnError)
+			throws Exception {
 		if (instructions != null && instructions.trim().length() > 0) {
 			String[] instructionList = instructions.split("\n");
 			for (int i = 0; i < instructionList.length; i++) {
@@ -210,7 +237,13 @@ public class BootstrapService extends Service {
 				if (!command.endsWith(";")) {
 					command = command + ";";
 				}
-				databaseAdapter.executeSql(command);
+				try {
+					databaseAdapter.executeSql(command);
+				} catch (Exception e) {
+					if (failOnError) {
+						throw e;
+					}
+				}
 			}
 		}
 	}
