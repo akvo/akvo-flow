@@ -45,10 +45,11 @@
 		<property name="pointType" direction="asc" />
 		<property name="collectionDate" direction="desc" />
 	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="countryCode" direction="asc"/>
-        <property name="collectionDate" direction="asc"/>
-    </datastore-index>	
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="collectionDate" direction="asc" />
+	</datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
@@ -114,28 +115,42 @@
 		<property name="latitude" direction="asc" />
 		<property name="createdDateTime" direction="desc" />
 	</datastore-index>
-	 <datastore-index kind="AccessPointStatusSummary" ancestor="false" source="manual">
-        <property name="country" direction="asc"/>
-        <property name="createdDateTime" direction="asc"/>
-    </datastore-index>
-	 <datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
-        <property name="type" direction="asc"/>
-        <property name="createdDateTime" direction="desc"/>
-    </datastore-index>
-     <datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="pointStatus" direction="asc"/>
-        <property name="CollectionDate" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="communityCode" direction="asc"/>
-        <property name="collectionDate" direction="desc"/>
-    </datastore-index>    
-   
-   <datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="countryCode" direction="asc"/>
-        <property name="pointType" direction="asc"/>
-        <property name="lastUpdateDateTime" direction="desc"/>
-    </datastore-index>
-   
-   
+	<datastore-index kind="AccessPointStatusSummary"
+		ancestor="false" source="manual">
+		<property name="country" direction="asc" />
+		<property name="createdDateTime" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="QuestionAnswerStore" ancestor="false"
+		source="manual">
+		<property name="type" direction="asc" />
+		<property name="createdDateTime" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="pointStatus" direction="asc" />
+		<property name="CollectionDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="communityCode" direction="asc" />
+		<property name="collectionDate" direction="desc" />
+	</datastore-index>
+
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="pointType" direction="asc" />
+		<property name="lastUpdateDateTime" direction="desc" />
+	</datastore-index>
+
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="communityCode" direction="asc" />
+		<property name="countryCode" direction="asc" />
+		<property name="pointType" direction="asc" />
+		<property name="lastUpdateDateTime" direction="desc" />
+	</datastore-index>
+
+
+
 </datastore-indexes>
