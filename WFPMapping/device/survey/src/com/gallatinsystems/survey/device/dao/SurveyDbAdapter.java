@@ -172,10 +172,11 @@ public class SurveyDbAdapter {
 			  db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 			  db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 			  db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
+			  onCreate(db);
 			}else{
 				db.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
 			}
-			  onCreate(db);
+			 
 			
 		}
 	}
