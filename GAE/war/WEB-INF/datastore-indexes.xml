@@ -131,4 +131,11 @@
         <property name="collectionDate" direction="desc"/>
     </datastore-index>    
    
+   <datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="pointType" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
+   
+   
 </datastore-indexes>
