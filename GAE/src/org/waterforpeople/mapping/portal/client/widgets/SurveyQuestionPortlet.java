@@ -50,7 +50,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	private ListBox questionListbox;
 	private ListBox surveyGroupListbox;
 	private ListBox surveyListbox;
-	private AbstractDataTable currentTable;	
+	private AbstractDataTable currentTable;
 
 	public SurveyQuestionPortlet() {
 		super(NAME, false, false, true, WIDTH, HEIGHT);
@@ -235,7 +235,7 @@ public class SurveyQuestionPortlet extends Portlet {
 						}
 					};
 					VisualizationUtils.loadVisualizationApi(onLoadCallback,
-							"corecharts");
+							"corechart");
 				}
 			}
 		};
@@ -245,7 +245,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	public String getName() {
 		return NAME;
 	}
-	
+
 	@Override
 	public void handleExportClick() {
 		Runnable onLoadCallback = new Runnable() {

@@ -244,8 +244,7 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 					}
 				};
 				VisualizationUtils.loadVisualizationApi(onLoadCallback,
-						"corechart");
-				// PieChart.PACKAGE);
+						"corechart");				
 			}
 		};
 		apService.listAccessPointStatusSummary(countryCode, communityCode,
