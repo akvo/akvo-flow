@@ -4,6 +4,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryD
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.portal.client.widgets.component.WidgetDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -13,6 +14,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -44,6 +46,7 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 	private static final String CONFIG_NAME = "ActivityMap";
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
+	private static final String URL_START = "url(";
 
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 300;
@@ -275,5 +278,27 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 	@Override
 	protected String getConfigItemName() {
 		return CONFIG_NAME;
+	}
+
+	@Override
+	protected void handleExportClick() {
+		if (map != null) {
+			// this is less than ideal, but it's the only way to get the image
+			// URL used to produce the chart
+			String htmlString = map.toString();
+			if (htmlString != null && htmlString.contains(URL_START)) {
+				htmlString = htmlString.substring(htmlString.indexOf(URL_START)
+						+ URL_START.length());
+				// strip off the closing paren
+				htmlString = htmlString.substring(0, htmlString.indexOf(")"));
+				// undo the HTML encoding of the content
+				htmlString = htmlString.replaceAll("&amp;", "&");
+				htmlString = htmlString.replaceAll("&quot;", "\"");
+				// the url is surrounded by quotes, so strip those too
+				htmlString = htmlString.substring(1, htmlString.length() - 1);
+			}
+			WidgetDialog dia = new WidgetDialog(NAME, new Image(htmlString));
+			dia.showRelativeTo(getHeaderWidget());
+		}
 	}
 }

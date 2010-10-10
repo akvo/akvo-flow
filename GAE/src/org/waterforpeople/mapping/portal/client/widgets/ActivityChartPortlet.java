@@ -4,6 +4,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.portal.client.widgets.component.WidgetDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -12,10 +13,12 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
+import com.google.gwt.visualization.client.visualizations.ImageLineChart;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Options;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.WindowMode;
 
@@ -38,6 +41,7 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 	private static final int HEIGHT = 300;
 	private AnnotatedTimeLine timeLine;
 	private VerticalPanel contentPane;
+	private AbstractDataTable currentTable;
 
 	public ActivityChartPortlet(UserDto u) {
 		super(NAME, false, true, true, WIDTH, HEIGHT, u, true,
@@ -121,6 +125,7 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 							timeLine = new AnnotatedTimeLine(dataTable,
 									createOptions(), WIDTH + "px",
 									(HEIGHT - 60) + "px");
+							currentTable = dataTable;
 							contentPane.add(timeLine);
 						}
 					}
@@ -181,6 +186,25 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 	@Override
 	protected String getConfigItemName() {
 		return CONFIG_NAME;
+	}
+
+	@Override
+	protected void handleExportClick() {
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				ImageLineChart.Options options = ImageLineChart.Options
+						.create();
+				options.setHeight(HEIGHT - 60);
+				options.setWidth(WIDTH);
+				ImageLineChart ilc = new ImageLineChart(currentTable, options);
+				WidgetDialog dia = new WidgetDialog(NAME, ilc);
+				dia.showRelativeTo(getHeaderWidget());
+			}
+		};
+		if (currentTable != null) {
+			VisualizationUtils.loadVisualizationApi(onLoadCallback,
+					ImageLineChart.PACKAGE);
+		}
 	}
 
 }
