@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.portal.client.widgets.component.WidgetDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -26,9 +27,11 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.ImageLineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart;
 import com.google.gwt.visualization.client.visualizations.LineChart.Options;
 
@@ -66,8 +69,10 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 	private Map<String, Map<Long, AccessPointDto>> wpSummaryMap;
 	private Map<String, Map<Long, AccessPointDto>> spSummaryMap;
 
+	private AbstractDataTable currentTable;
+
 	public AccessPointPerformancePortlet(UserDto user) {
-		super(NAME, false, false,true, WIDTH, HEIGHT, user, true, null);
+		super(NAME, false, false, true, WIDTH, HEIGHT, user, true, null);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
@@ -299,7 +304,7 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 				}
 				i++;
 			}
-
+			currentTable = dataTable;
 			if (lineChart != null) {
 				// remove the old chart
 				lineChart.removeFromParent();
@@ -334,6 +339,25 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 	@Override
 	public void onChange(ChangeEvent event) {
 		updateChart();
+	}
+
+	@Override
+	protected void handleExportClick() {
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				ImageLineChart.Options options = ImageLineChart.Options
+						.create();
+				options.setHeight(HEIGHT - 60);
+				options.setWidth(WIDTH);
+				ImageLineChart ilc = new ImageLineChart(currentTable, options);
+				WidgetDialog dia = new WidgetDialog(NAME, ilc);
+				dia.showRelativeTo(getHeaderWidget());
+			}
+		};
+		if (currentTable != null) {
+			VisualizationUtils.loadVisualizationApi(onLoadCallback,
+					ImageLineChart.PACKAGE);
+		}
 	}
 
 	/**
