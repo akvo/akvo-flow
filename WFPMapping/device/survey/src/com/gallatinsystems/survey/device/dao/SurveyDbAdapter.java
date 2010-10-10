@@ -174,7 +174,11 @@ public class SurveyDbAdapter {
 			  db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
 			  onCreate(db);
 			}else{
+				try{
 				db.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
+				}catch(Exception e){
+					Log.e(TAG, "Could not execute alter table statement. Does the column already exist?",e);
+				}
 			}
 			 
 			
