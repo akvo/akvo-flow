@@ -29,6 +29,7 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String QUESTION_GROUP = "questionGroup";
 	private static final String HEADING = "heading";
 	private static final String QUESTION = "question";
+	private static final String SURVEY = "survey";
 	private static final String ORDER = "order";
 	private static final String MANDATORY = "mandatory";
 	private static final String TYPE = "type";
@@ -59,6 +60,7 @@ public class SurveyHandler extends DefaultHandler {
 	private static final String RANGE_MAX = "rangeHigh";
 	private static final String STRENGTH_MIN = "strengthMin";
 	private static final String STRENGTH_MAX = "strengthMax";
+	private static final String VERSION = "version";
 
 	@SuppressWarnings("unused")
 	private static final String TRANSLATION = "translation";
@@ -187,7 +189,12 @@ public class SurveyHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String name,
 			Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
-		if (localName.equalsIgnoreCase(QUESTION_GROUP)) {
+		if (localName.equalsIgnoreCase(SURVEY)) {
+			if (attributes.getValue(VERSION) != null) {
+				survey.setVersion(Double.parseDouble(attributes
+						.getValue(VERSION)));
+			}
+		} else if (localName.equalsIgnoreCase(QUESTION_GROUP)) {
 			currentQuestionGroup = new QuestionGroup();
 			if (attributes.getValue(ORDER) != null) {
 				currentQuestionGroup.setOrder(Integer.parseInt(attributes

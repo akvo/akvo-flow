@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.dao.SurveyDao;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
@@ -91,18 +92,18 @@ public class BootstrapService extends Service {
 					for (int i = 0; i < zipFiles.size(); i++) {
 						try {
 							processFile(zipFiles.get(i));
-						} catch (Exception e) {											
+						} catch (Exception e) {
 							// try to roll back any database changes (if the zip
 							// has a rollback file)
 							rollback(zipFiles.get(i));
 							String newFilename = zipFiles.get(i)
-							.getAbsolutePath();		
+									.getAbsolutePath();
 							zipFiles
-							.get(i)
-							.renameTo(
-									new File(
-											newFilename
-													+ ConstantUtil.PROCESSED_ERROR_SUFFIX));
+									.get(i)
+									.renameTo(
+											new File(
+													newFilename
+															+ ConstantUtil.PROCESSED_ERROR_SUFFIX));
 							throw (e);
 						}
 					}
@@ -167,7 +168,7 @@ public class BootstrapService extends Service {
 						ConstantUtil.BOOTSTRAP_DB_FILE.toLowerCase())) {
 					processDbInstructions(FileUtil.readTextFromZip(zis), true);
 
-				} else if (!entry.isDirectory()) {
+				} else if (!entry.isDirectory() && !ConstantUtil.BOOTSTRAP_ROLLBACK_FILE.equalsIgnoreCase(fileName)) {
 					String id = parts[parts.length - 2];
 					if (entry.getName().toLowerCase().endsWith(
 							ConstantUtil.XML_SUFFIX.toLowerCase())) {
@@ -180,14 +181,11 @@ public class BootstrapService extends Service {
 						if (survey == null) {
 							survey = new Survey();
 							survey.setId(id);
-							survey.setVersion(1d);
 							survey.setName(surveyName);
 							survey.setHelpDownloaded(false);
 							survey
 									.setLanguage(ConstantUtil.SURVEY_DEFAULT_LANG);
 							survey.setType(ConstantUtil.SURVEY_TYPE);
-						} else {
-							survey.setVersion(survey.getVersion() + 1d);
 						}
 						survey.setLocation(ConstantUtil.FILE_LOCATION);
 						survey.setFileName(fileName);
@@ -196,6 +194,16 @@ public class BootstrapService extends Service {
 						// update the xml
 						FileUtil.extractAndSaveFile(zis, ConstantUtil.DATA_DIR
 								+ fileName);
+						// now read the survey XML back into memory to see if
+						// there is a version
+						Survey loadedSurvey = SurveyDao.loadSurvey(survey,
+								getResources());
+						if (loadedSurvey != null
+								&& loadedSurvey.getVersion() > 0) {
+							survey.setVersion(loadedSurvey.getVersion());
+						} else if (survey.getVersion() <= 0) {
+							survey.setVersion(1d);
+						}
 						// now save the survey
 						databaseAdapter.saveSurvey(survey);
 					} else {
