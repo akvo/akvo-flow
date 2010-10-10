@@ -61,6 +61,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public static final String VIDEO_QUESTION_TYPE = "video";
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
+	public static final String STRENGTH_QUESTION_TYPE = "strength";
 
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger
@@ -592,9 +593,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							vrule.setValidationType("numeric");
 							vrule.setSigned("false");
 							qXML.setValidationRule(vrule);
-						} else if (q.getType().equals(QuestionType.OPTION))
+						} else if (q.getType().equals(QuestionType.OPTION)) {
 							qXML.setType(OPTION_QUESTION_TYPE);
-						else if (q.getType().equals(QuestionType.PHOTO))
+						} else if (q.getType().equals(QuestionType.STRENGTH)) {
+							qXML.setType(STRENGTH_QUESTION_TYPE);
+						} else if (q.getType().equals(QuestionType.PHOTO))
 							qXML.setType(PHOTO_QUESTION_TYPE);
 						else if (q.getType().equals(QuestionType.VIDEO))
 							qXML.setType(VIDEO_QUESTION_TYPE);

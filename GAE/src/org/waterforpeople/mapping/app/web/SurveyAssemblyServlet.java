@@ -59,6 +59,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	public static final String VIDEO_QUESTION_TYPE = "video";
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
+	public static final String STRENGTH_QUESTION_TYPE ="strength";
 
 	private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
 	private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -295,6 +296,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			ValidationRule vrule = new ValidationRule();
 			vrule.setValidationType("name");
 			qXML.setValidationRule(vrule);
+		}else if (q.getType().equals(Question.Type.STRENGTH)){
+			qXML.setType(STRENGTH_QUESTION_TYPE);
 		}
 
 		if (q.getOrder() != null) {

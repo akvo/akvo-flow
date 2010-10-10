@@ -137,7 +137,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	}
 
 	public enum QuestionType {
-		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME
+		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH
 	}
 
 	@Override

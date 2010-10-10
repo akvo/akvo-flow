@@ -277,10 +277,11 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			if (event.getSelectedItem().getUserObject() instanceof QuestionDto) {
 				QuestionDto q = (QuestionDto) event.getSelectedItem()
 						.getUserObject();
-				if (QuestionDto.QuestionType.OPTION == q.getType()
+				if ((QuestionDto.QuestionType.OPTION == q.getType() || QuestionDto.QuestionType.STRENGTH == q
+						.getType())
 						&& q.getOptionContainerDto() != null) {
 					notifyListeners(q);
-				}else if (QuestionDto.QuestionType.OPTION != q.getType()){
+				} else if (QuestionDto.QuestionType.OPTION != q.getType()) {
 					notifyListeners(q);
 				}
 			} else {
@@ -395,7 +396,8 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 		} else if (item != null && item.getUserObject() != null
 				&& item.getUserObject() instanceof QuestionDto) {
 			QuestionDto dto = (QuestionDto) item.getUserObject();
-			if (QuestionDto.QuestionType.OPTION == dto.getType()
+			if ((QuestionDto.QuestionType.OPTION == dto.getType() || QuestionDto.QuestionType.STRENGTH == dto
+					.getType())
 					&& dto.getOptionContainerDto() == null) {
 				surveyService.loadQuestionDetails(dto.getKeyId(),
 						new AsyncCallback<QuestionDto>() {

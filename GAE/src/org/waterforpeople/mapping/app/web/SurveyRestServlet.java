@@ -244,7 +244,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		} else {
 			// if the question already exists, delete it's children so we don't
 			// get duplicates
-			if (Question.Type.OPTION == q.getType()) {
+			if (Question.Type.OPTION == q.getType()
+					|| Question.Type.STRENGTH == q.getType()) {
 				optionDao.deleteOptionsForQuestion(q.getKey().getId());
 			}
 			translationDao.deleteTranslationsForParent(q.getKey().getId(),
@@ -273,10 +274,15 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(Question.Type.GEO);
 		} else if (questionType.equals("FREE_TEXT")) {
 			q.setType(Question.Type.FREE_TEXT);
-		} else if (questionType.equals("OPTION")) {
+		} else if (questionType.equals("OPTION")
+				|| questionType.equals("STRENGTH")) {
 			q.setAllowMultipleFlag(allowMultipleFlag);
 			q.setAllowOtherFlag(allowOtherFlag);
-			q.setType(Type.OPTION);
+			if (questionType.equals("OPTION")) {
+				q.setType(Type.OPTION);
+			} else {
+				q.setType(Type.STRENGTH);
+			}
 			int i = 1;
 			for (QuestionOptionContainer qoc : parseQuestionOption(options)) {
 				QuestionOption qo = new QuestionOption();

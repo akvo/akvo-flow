@@ -115,7 +115,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 									+ "&");
 							break;
 						case 12:
-							sb.append("scoring="+cell.getStringCellValue());
+							sb.append("scoring=" + cell.getStringCellValue());
 							break;
 						}
 					}
@@ -242,14 +242,19 @@ public class SurveySpreadsheetImporter implements DataImporter {
 													.equals(QuestionDto.QuestionType.NUMBER
 															.toString()) || type
 											.equals(QuestionDto.QuestionType.OPTION
-													.toString()))) {
+													.toString()))
+											|| type
+													.equals(QuestionDto.QuestionType.STRENGTH
+															.toString())) {
 										rowError
-												.append("Invalid question type. Must be either: FREE_TEXT, PHOTO, VIDEO, GEO, NUMBER, OPTION, SCAN, TRACK, NAME\n");
+												.append("Invalid question type. Must be either: FREE_TEXT, PHOTO, VIDEO, GEO, NUMBER, OPTION, SCAN, TRACK, NAME, STRENGTH\n");
 									}
 								}
 								break;
 							case 7:
-								if (QuestionType.OPTION.toString().equals(type)) {
+								if (QuestionType.OPTION.toString().equals(type)
+										|| QuestionType.STRENGTH.toString()
+												.equals(type)) {
 									if (cell.getStringCellValue().trim()
 											.length() == 0) {
 										rowError

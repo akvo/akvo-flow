@@ -245,7 +245,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		return getSurveyGroupDto();
 	}
 
-	private void loadQuestionDetails(QuestionDto item) {
+	private void loadQuestionDetails(final QuestionDto item) {
 		setButtonState(ButtonState.NONE);
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
@@ -279,13 +279,14 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					mandatoryQuestion.setValue(item.getMandatoryFlag());
 		}
 		ListBox questionTypeLB = new ListBox();
-		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO
+		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO, STRENGTH
 		questionTypeLB.addItem("Free Text");
 		questionTypeLB.addItem("Option");
 		questionTypeLB.addItem("Number");
 		questionTypeLB.addItem("Geo");
 		questionTypeLB.addItem("Photo");
 		questionTypeLB.addItem("Video");
+		questionTypeLB.addItem("Strength");
 		if (item != null) {
 			QuestionDto.QuestionType qType = item.getType();
 			if (qType.equals(QuestionType.FREE_TEXT)) {
@@ -301,6 +302,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				questionTypeLB.setSelectedIndex(4);
 			} else if (qType.equals(QuestionType.VIDEO)) {
 				questionTypeLB.setSelectedIndex(5);
+			}else if (qType.equals(QuestionType.STRENGTH)) {
+				questionTypeLB.setSelectedIndex(6);
+				loadQuestionOptionDetail(item);
 			}
 		}
 
@@ -308,8 +312,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				if (((ListBox) event.getSource()).getSelectedIndex() == 1) {
-					loadQuestionOptionDetail(null);
+				int idx = ((ListBox) event.getSource()).getSelectedIndex();
+				if (idx  == 1 || idx == 6) {
+					questionOptionDetail.clear(true);
+					loadQuestionOptionDetail(item);
 					if (detailContainer.getWidget(1) instanceof FlexTable)
 						questionOptionDetail.setVisible(true);
 					if (questionOptionDetail != null
@@ -478,8 +484,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				questionLB.addItem(txt, optionQuestions[i].getKeyId()
 						.toString());
 				if (item != null
-						&& item.getQuestionId().equals(optionQuestions[i]
-								.getKeyId())) {
+						&& item.getQuestionId().equals(
+								optionQuestions[i].getKeyId())) {
 					questionLB.setSelectedIndex(i);
 				}
 
@@ -738,38 +744,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			value.setType(QuestionType.FREE_TEXT);
 		} else if (questionTypeLB.getSelectedIndex() == 1) {
 			value.setType(QuestionType.OPTION);
-			FlexTable questionOptionTable = (FlexTable) detailContainer
-					.getWidget(1);
-
-			CheckBox allowOther = (CheckBox) questionOptionDetail.getWidget(0,
-					1);
-			CheckBox allowMultiple = (CheckBox) questionOptionDetail.getWidget(
-					0, 3);
-
-			TextBox ocId = (TextBox) questionOptionDetail.getWidget(0, 4);
-
-			OptionContainerDto ocDto = new OptionContainerDto();
-			if (ocId.getText().length() > 0)
-				ocDto.setKeyId(new Long(ocId.getText()));
-			ocDto.setAllowMultipleFlag(allowMultiple.getValue());
-			ocDto.setAllowOtherFlag(allowOther.getValue());
-
-			for (int row = 1; row < questionOptionTable.getRowCount() - 1; row++) {
-				QuestionOptionDto qoDto = new QuestionOptionDto();
-				TextBox optionValue = (TextBox) questionOptionDetail.getWidget(
-						row, 1);
-				TextBox optionText = (TextBox) questionOptionDetail.getWidget(
-						row, 3);
-				TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
-				qoDto.setCode(optionValue.getText());
-				qoDto.setText(optionText.getText());
-				if (qoId.getText().length() > 0)
-					qoDto.setKeyId(new Long(qoId.getText()));
-				qoDto.setOrder(row);
-				ocDto.addQuestionOption(qoDto);
-			}
-			value.setOptionContainerDto(ocDto);
-
+			configureOptionPanel(value);
 		} else if (questionTypeLB.getSelectedIndex() == 2) {
 			value.setType(QuestionType.NUMBER);
 		} else if (questionTypeLB.getSelectedIndex() == 3) {
@@ -778,6 +753,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			value.setType(QuestionType.PHOTO);
 		} else if (questionTypeLB.getSelectedIndex() == 5) {
 			value.setType(QuestionType.VIDEO);
+		}else if (questionTypeLB.getSelectedIndex() == 6){
+			value.setType(QuestionType.STRENGTH);
+			configureOptionPanel(value);
 		}
 
 		CheckBox dependentQuestionFlag = (CheckBox) questionDetailPanel
@@ -803,6 +781,39 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 
 		return value;
+	}
+
+	private void configureOptionPanel(QuestionDto value) {
+		FlexTable questionOptionTable = (FlexTable) detailContainer
+				.getWidget(1);
+
+		CheckBox allowOther = (CheckBox) questionOptionDetail.getWidget(0, 1);
+		CheckBox allowMultiple = (CheckBox) questionOptionDetail
+				.getWidget(0, 3);
+
+		TextBox ocId = (TextBox) questionOptionDetail.getWidget(0, 4);
+
+		OptionContainerDto ocDto = new OptionContainerDto();
+		if (ocId.getText().length() > 0)
+			ocDto.setKeyId(new Long(ocId.getText()));
+		ocDto.setAllowMultipleFlag(allowMultiple.getValue());
+		ocDto.setAllowOtherFlag(allowOther.getValue());
+
+		for (int row = 1; row < questionOptionTable.getRowCount() - 1; row++) {
+			QuestionOptionDto qoDto = new QuestionOptionDto();
+			TextBox optionValue = (TextBox) questionOptionDetail.getWidget(row,
+					1);
+			TextBox optionText = (TextBox) questionOptionDetail.getWidget(row,
+					3);
+			TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
+			qoDto.setCode(optionValue.getText());
+			qoDto.setText(optionText.getText());
+			if (qoId.getText().length() > 0)
+				qoDto.setKeyId(new Long(qoId.getText()));
+			qoDto.setOrder(row);
+			ocDto.addQuestionOption(qoDto);
+		}
+		value.setOptionContainerDto(ocDto);
 	}
 
 	private void deleteQuestion(QuestionDto value, Long questionGroupId) {
