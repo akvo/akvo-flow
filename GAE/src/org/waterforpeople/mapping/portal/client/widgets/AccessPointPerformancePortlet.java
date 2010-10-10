@@ -236,7 +236,7 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 					}
 				};
 				VisualizationUtils.loadVisualizationApi(onLoadCallback,
-						LineChart.PACKAGE);
+						"corecharts");
 			}
 		};
 		apService.listAccessPointByLocation(countryCode, communityCode, type,

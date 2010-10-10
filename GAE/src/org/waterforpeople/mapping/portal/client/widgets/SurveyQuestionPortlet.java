@@ -235,7 +235,7 @@ public class SurveyQuestionPortlet extends Portlet {
 						}
 					};
 					VisualizationUtils.loadVisualizationApi(onLoadCallback,
-							PieChart.PACKAGE);
+							"corecharts");
 				}
 			}
 		};
