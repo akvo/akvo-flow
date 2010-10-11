@@ -67,8 +67,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
 			for (AccessPoint ap : apList) {
 				PlacemarkDto pdto = new PlacemarkDto();
-				ap.setLatitude(ap.getLatitude());
-				ap.setLongitude(ap.getLongitude());
+				pdto.setLatitude(ap.getLatitude());
+				pdto.setLongitude(ap.getLongitude());
 				pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus()));
 				String placemarkString = null;
 				try {
