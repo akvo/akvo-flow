@@ -55,7 +55,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> results = apDao.searchAccessPoints(
 				piReq.getCountry(), null, null, null, null, null, null, null,
-				null, null, "all");
+				null, null, piReq.getCursor());
 		return convertToResponse(results, AccessPointDao.getCursor(results));
 	}
 
@@ -98,12 +98,9 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		getResponse().setStatus(200);
 		PlacemarkRestResponse piResp = (PlacemarkRestResponse) resp;
 		JSONObject result = new JSONObject(piResp);
-		JSONArray arr = result.getJSONArray("placemark");
+		JSONArray arr = result.getJSONArray("placemarks");
 		if (arr != null) {
 			for (int i = 0; i < arr.length(); i++) {
-				// ((JSONObject) arr.get(i)).put("latitude", piResp.);
-				// ((JSONObject) arr.get(i)).put("longitude", piResp);
-
 				// ((JSONObject) arr.get(i)).put("propertyNames", piResp
 				// .getPointsOfInterest().get(i).getPropertyNames());
 			}
