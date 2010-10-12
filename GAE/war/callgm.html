@@ -27,9 +27,9 @@
   
    function addPlacemark(latitude, longitude, iconUrl,placemarkContents){
    //Problem setting the placemarkContets to be fixed
+  // alert(placemarkContents);
 	    var infowindow = new google.maps.InfoWindow({
-	        content: placemarkContents
-	    });
+	        content:placemarkContents});
 		var myLatlng = new google.maps.LatLng(latitude,longitude);
 	    var marker = new google.maps.Marker({
 	        position: myLatlng,
@@ -45,7 +45,7 @@
   function getPlacemarkInfo() {
      $.getJSON('/placemarkrestapi?country=MW', function(jd) {
           $.each(jd.placemarks, function(i,item){
-         	addPlacemark(item.latitude,item.longitude, item.iconUrl, item.placemarksContents);
+         	addPlacemark(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
           });  
       });
    };
