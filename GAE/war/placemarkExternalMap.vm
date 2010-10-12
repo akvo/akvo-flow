@@ -140,9 +140,6 @@ label.projectLabel{
 	clear:both;
 }
 </style>
-</head>
-
-<body>
 <div class="wrap">
 	<div class="content">
     	<div class="contentTop"></div>
