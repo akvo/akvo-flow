@@ -1381,20 +1381,49 @@ h2 {
     src="http://maps.google.com/maps/api/js?sensor=false">
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script src="/js/jqURL.js"></script>
 <script type="text/javascript">
 	var map;
-	var qs;
 	var country;
-	
+	var countryLatLon;
 	function getCountry(){
-		country='MW';
+		 if($.jqURL.get('country')){
+		 	country = $.jqURL.get('country').toUpperCase();
+		 }else{
+			country='MW';
+		 }
+		 setCountryLatLon();
 	}
 	
+	 function setCountryLatLon(){
+	 	if(country=='MW'){
+	 	 countryLatLon= new google.maps.LatLng(-15,35);
+	    }else if(country == 'RW'){
+	    	countryLatLon= new google.maps.LatLng(-1.7,30);
+	    }else if(country == 'HN'){
+	    	countryLatLon= new google.maps.LatLng(15,-88);
+	    }else if(country == 'PE'){
+	    	countryLatLon= new google.maps.LatLng(-7, -78);
+	    }else if(country == 'GT'){
+	    	countryLatLon= new google.maps.LatLng(15,-90);
+	    }else if(country =='IN'){
+	    	countryLatLon= new google.maps.LatLng(14,-89);
+	    }else if(country =='SV'){
+	    	countryLatLon= new google.maps.LatLng(14,-89);
+	    }else if(country =='NI'){
+	    	countryLatLon= new google.maps.LatLng(12,-85);
+	    }else{
+	        countryLatLon= new google.maps.LatLng(-15,35);
+	    	alert('Water For People does not have projects in that country yet. So we will show you our work in Malawi.');
+	    }
+	    
+	  }	
+   
    function initialize() {
-    var myLatlng = new google.maps.LatLng(-15,35);
+    getCountry();
     var myOptions = {
       zoom: 7,
-      center: myLatlng,
+      center: countryLatLon,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -1420,7 +1449,7 @@ h2 {
     };
     
   function getPlacemarkInfo() {
-  	getCountry();
+  	
      $.getJSON('/placemarkrestapi?country=' + country+'&cursor=all', function(jd) {
           $.each(jd.placemarks, function(i,item){
          	addPlacemark(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
