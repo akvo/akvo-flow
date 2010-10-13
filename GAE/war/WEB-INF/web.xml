@@ -307,6 +307,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/placemarkrestapi</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>GeoRestApi</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.GeoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GeoRestApi</servlet-name>
+		<url-pattern>/georestapi</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>DataBackoutApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.DataBackoutServlet</servlet-class>
 	</servlet>
