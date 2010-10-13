@@ -41,7 +41,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		PlacemarkRestRequest piReq = (PlacemarkRestRequest) req;
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> results = apDao.searchAccessPoints(
-				piReq.getCountry(), null, null, null, null, null, null, null,
+				piReq.getCountry(), null, null, null, "WATER_POINT", null, null, null,
 				null, null, piReq.getCursor());
 		return convertToResponse(results, AccessPointDao.getCursor(results));
 	}
