@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.app.web.dto.PlacemarkRestRequest;
 import org.waterforpeople.mapping.app.web.dto.PlacemarkRestResponse;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -41,8 +42,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		PlacemarkRestRequest piReq = (PlacemarkRestRequest) req;
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> results = apDao.searchAccessPoints(
-				piReq.getCountry(), null, null, null, "WATER_POINT", null, null, null,
-				null, null, piReq.getCursor());
+				piReq.getCountry(), null, null, null, "WATER_POINT", null,
+				null, null, null, null, piReq.getCursor());
 		return convertToResponse(results, AccessPointDao.getCursor(results));
 	}
 
@@ -51,12 +52,12 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		PlacemarkRestResponse resp = new PlacemarkRestResponse();
 		if (apList != null) {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
-			KMLGenerator kmlGen =new KMLGenerator();
+			KMLGenerator kmlGen = new KMLGenerator();
 			for (AccessPoint ap : apList) {
 				PlacemarkDto pdto = new PlacemarkDto();
 				pdto.setLatitude(ap.getLatitude());
 				pdto.setLongitude(ap.getLongitude());
-				pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus()));
+				pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
 				String placemarkString = null;
 				try {
 					placemarkString = kmlGen.bindPlacemark(ap,
@@ -75,9 +76,56 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		return resp;
 	}
 
-	private String getUrlFromStatus(Status pointStatus) {
-		// TODO Auto-generated method stub
-		return "http://watermapmonitordev.appspot.com/images/map/water-green-1.png";
+	private String getUrlFromStatus(Status status,
+			AccessPoint.AccessPointType pointType) {
+		if (status == null) {
+			return "Unknown";
+		}
+		if (AccessPointType.WATER_POINT.equals(pointType)) {
+			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+				return KMLGenerator.WATER_POINT_FUNCTIONING_GREEN_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
+					|| status
+							.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+				return KMLGenerator.WATER_POINT_FUNCTIONING_YELLOW_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
+				return KMLGenerator.WATER_POINT_FUNCTIONING_RED_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+				return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
+			} else {
+				return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
+			}
+		}else if(AccessPointType.PUBLIC_INSTITUTION.equals(pointType)){
+			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
+					|| status
+							.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
+				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+			} else {
+				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+			}
+		}else if(AccessPointType.SCHOOL.equals(pointType)){
+			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
+					|| status
+							.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
+				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL;
+			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+			} else {
+				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+			}
+		}
+		return null;
+
 	}
 
 	@Override
