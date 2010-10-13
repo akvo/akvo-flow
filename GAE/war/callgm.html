@@ -14,9 +14,9 @@
 <script type="text/javascript">
 	var map;
    function initialize() {
-    var myLatlng = new google.maps.LatLng(15,-89);
+    var myLatlng = new google.maps.LatLng(-15,35);
     var myOptions = {
-      zoom: 10,
+      zoom: 7,
       center: myLatlng,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
@@ -34,7 +34,7 @@
 	    var marker = new google.maps.Marker({
 	        position: myLatlng,
 	        map: map,
-	        title: 'Uluru (Ayers Rock)',
+	        title: 'Water For People',
 	        icon:iconUrl
 	    });
 	    google.maps.event.addListener(marker, 'click', function() {
@@ -43,7 +43,7 @@
     };
     
   function getPlacemarkInfo() {
-     $.getJSON('/placemarkrestapi?country=MW', function(jd) {
+     $.getJSON('/placemarkrestapi?country=MW&cursor=all', function(jd) {
           $.each(jd.placemarks, function(i,item){
          	addPlacemark(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
           });  

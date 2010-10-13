@@ -7,7 +7,7 @@
   body { height: 100%; margin: 0px; padding: 0px }
   #map_canvas { height: 100% }
 </style>
-<script src="http://www.google.com/jsapi?key=ABQIAAAANoVxy-jK1d1kPFy8Z2DymRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRNRpDnKsvt_2Upxd7vP789uXa7Rg"> </script>
+<script src="http://www.google.com/jsapi?key=ABQIAAAANoVxy-jK1d1kPFy8Z2DymRS0UZPIjzZbuTBw3-WySZIOaQj8ZxTaNqC0bKpAQN88IQSjavwT3XJ0pQ"> </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
 	
 <script language="javascript" type="text/javascript">  
@@ -23,7 +23,7 @@
          ge = instance; 
          ge.getWindow().setVisibility(true);
 		 var la = ge.createLookAt('');
-		 la.set(15.7498, -89.07623,
+		 la.set(-15, 35,
 		    0, // altitude
 		    ge.ALTITUDE_RELATIVE_TO_GROUND,
 		    0, // heading
@@ -59,7 +59,7 @@
       }
 
   function getPlacemarkInfo() {
-     $.getJSON('/placemarkrestapi?country=MW', function(jd) {
+     $.getJSON('/placemarkrestapi?country=MW&cursor=all', function(jd) {
           $.each(jd.placemarks, function(i,item){
          	addPlacemark(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
           });  
