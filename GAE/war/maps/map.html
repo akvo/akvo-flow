@@ -6,7 +6,8 @@
 <style type="text/css">
   html { height: 100% }
   body { height: 100%; margin: 0px; padding: 0px }
-  #map_canvas { height: 80% }
+
+ #map_canvas{ height:80%}
   /* main start */
 body{
 	margin:0;
@@ -1427,8 +1428,15 @@ h2 {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-    
+      google.maps.event.addListener(map, 'dragend', function() {
+    alert(map.getBounds());
+  });
+  
+      google.maps.event.addListener(map, 'bounds_changed', function() {
+    alert(map.getBounds());
+  });
     getPlacemarkInfo();	
+   
   };
   
    function addPlacemark(latitude, longitude, iconUrl,placemarkContents){
@@ -1456,7 +1464,7 @@ h2 {
           });  
       });
    };
-    
+  
 </script>
 
 </head>
@@ -1632,7 +1640,9 @@ h2 {
 </LI></UL></DIV></DIV>
 <LI class="last-child ${storehover}"><A href="http://www.waterforpeople.org/store/">STORE</A> 
 </LI></UL></DIV><!-- navigation end --></div>
-<div id="map_canvas"></div>
+
+	<div id="map_canvas"></div>
+
 <div id="footer">
 <ul class="menu">
 <li>
