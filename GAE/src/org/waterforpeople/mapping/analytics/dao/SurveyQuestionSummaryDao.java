@@ -52,7 +52,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 			SurveyQuestionSummary summary = null;
 			if ((results == null || results.size() == 0) && unit > 0) {
 				summary = new SurveyQuestionSummary();
-				summary.setCount(new Long(1));
+				summary.setCount(new Long(unit));
 				summary.setQuestionId(answer.getQuestionID());
 				summary.setResponse(answers[i]);
 			} else if (results != null && results.size() > 0) {
