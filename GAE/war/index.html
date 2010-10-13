@@ -1428,13 +1428,8 @@ h2 {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-      google.maps.event.addListener(map, 'dragend', function() {
-    alert(map.getBounds());
-  });
+     
   
-      google.maps.event.addListener(map, 'bounds_changed', function() {
-    alert(map.getBounds());
-  });
     getPlacemarkInfo();	
    
   };
