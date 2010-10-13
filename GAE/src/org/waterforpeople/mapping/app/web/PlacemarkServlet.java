@@ -77,7 +77,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 
 	private String getUrlFromStatus(Status pointStatus) {
 		// TODO Auto-generated method stub
-		return null;
+		return "http://watermapmonitordev.appspot.com/images/map/water-green-1.png";
 	}
 
 	@Override
