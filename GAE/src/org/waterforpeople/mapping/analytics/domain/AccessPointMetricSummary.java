@@ -17,8 +17,7 @@ public class AccessPointMetricSummary extends BaseDomain {
 	private static final long serialVersionUID = 5145606518665763854L;
 	private String organization;
 	private String country;
-	private String district;
-	private String community;
+	private String district;	
 	private String subgroup1;
 	private String subgroup2;
 	private String subgroup3;
@@ -91,15 +90,7 @@ public class AccessPointMetricSummary extends BaseDomain {
 	public void setDistrict(String district) {
 		this.district = district;
 	}
-
-	public String getCommunity() {
-		return community;
-	}
-
-	public void setCommunity(String community) {
-		this.community = community;
-	}
-
+	
 	public String getSubgroup1() {
 		return subgroup1;
 	}
