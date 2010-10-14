@@ -226,7 +226,7 @@ public class SpreadsheetAccessPointAdapter {
 													"functioning but with problems")) {
 								// Yellow
 								ap
-										.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
+										.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
 							} else if (col.getColContents().toLowerCase()
 									.trim().equals("broken down system")
 									|| col.getColContents().toLowerCase()
@@ -240,7 +240,7 @@ public class SpreadsheetAccessPointAdapter {
 											.equals("broken down")) {
 								// Red
 								ap
-										.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
+										.setPointStatus(Status.BROKEN_DOWN);
 							} else if (col.getColContents().toLowerCase()
 									.equals("no improved system")
 									|| (col.getColContents().trim()
