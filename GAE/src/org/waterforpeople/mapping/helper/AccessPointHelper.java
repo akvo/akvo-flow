@@ -194,6 +194,31 @@ public class AccessPointHelper {
 		}
 	}
 
+	/**
+	 * reads value of field from AccessPoint via reflection
+	 * 
+	 * @param ap
+	 * @param field
+	 * @return
+	 */
+	public static String getAccessPointFieldAsString(AccessPoint ap,
+			String field) {
+		try {
+			Field f = ap.getClass().getDeclaredField(field);
+			if (!f.isAccessible()) {
+				f.setAccessible(true);
+			}
+			Object val = f.get(ap);
+			if (val != null) {
+				return val.toString();
+			}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Could not extract field value: " + field,
+					e);
+		}
+		return null;
+	}
+
 	private SurveyAttributeMapping getMappingForQuestion(
 			List<SurveyAttributeMapping> mappings, String questionId) {
 		if (mappings != null) {

@@ -71,6 +71,26 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private Long estimatedHouseholds;
 	@MappableField(displayName = "Estimated People Per Household")
 	private Long estimatedPeoplePerHouse;
+	@MappableField(displayName = "District")
+	private String district;
+	@MappableField(displayName = "Organization")
+	private String organization;
+
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
 
 	public Long getExtimatedPopulation() {
 		return extimatedPopulation;
