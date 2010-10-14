@@ -1395,29 +1395,73 @@ h2 {
 		 }
 		 setCountryLatLon();
 	}
+	var loadedMW=new Boolean(false);
+	var loadedHN=new Boolean(false);
+	var loadedPE=new Boolean(false);
+	var loadedRW=new Boolean(false);
+	var loadedGT=new Boolean(false);
+	var loadedIN=new Boolean(false);
+	var loadedSV=new Boolean(false);
+	var loadedNI=new Boolean(false);
+	var latlngRW = new google.maps.LatLng(-1.7,30);
+	var latlngMW = new google.maps.LatLng(-15,35);
+	var latlngHN=new google.maps.LatLng(15,-88);;
+	var latlngPE=new google.maps.LatLng(-7, -78);;
+	var latlngGT=new google.maps.LatLng(15,-90);;
+	var latlngIN=new google.maps.LatLng(21,88);;
+	var latlngSV=new google.maps.LatLng(14,-89);
+	var latlngNI= new google.maps.LatLng(12,-85);
 	
 	 function setCountryLatLon(){
 	 	if(country=='MW'){
-	 	 countryLatLon= new google.maps.LatLng(-15,35);
-	    }else if(country == 'RW'){
-	    	countryLatLon= new google.maps.LatLng(-1.7,30);
+	 	 countryLatLon= latlngMW;
+	 	}else if(country == 'RW'){
+	    	countryLatLon= latlngRW;
 	    }else if(country == 'HN'){
-	    	countryLatLon= new google.maps.LatLng(15,-88);
+	    	countryLatLon= latlngHN;
 	    }else if(country == 'PE'){
-	    	countryLatLon= new google.maps.LatLng(-7, -78);
+	    	countryLatLon= latlngPE;
 	    }else if(country == 'GT'){
-	    	countryLatLon= new google.maps.LatLng(15,-90);
+	    	countryLatLon= latlngGT;
 	    }else if(country =='IN'){
-	    	countryLatLon= new google.maps.LatLng(21,88);
+	    	countryLatLon= latlngIN;
 	    }else if(country =='SV'){
-	    	countryLatLon= new google.maps.LatLng(14,-89);
+	    	countryLatLon= latlngSV;
 	    }else if(country =='NI'){
-	    	countryLatLon= new google.maps.LatLng(12,-85);
+	    	countryLatLon=latlngNI;
 	    }else{
 	        countryLatLon= new google.maps.LatLng(-15,35);
 	    	alert('Water For People does not have projects in that country yet. So we will show you our work in Malawi.');
 	    }
 	    
+	  }	
+	  
+	  function loadCountryData(){
+	  	if(country=='MW' && loadedMW==false){
+	 	 getPlacemarkInfo('MW');
+	 	 loadedMW=true;
+	 	}else if(country == 'RW' && loadedRW==false){
+	    	getPlacemarkInfo('RW');
+	    	loadedRW=true;
+	    }else if(country == 'HN' && loadedHN==false){
+	    	getPlacemarkInfo('HN');
+	    	loadedHN=true;
+	    }else if(country == 'PE' && loadedPE==false){
+	    	getPlacemarkInfo('PE');
+	    	loadedPE=true;
+	    }else if(country == 'GT'&& loadedGT==false){
+	    	getPlacemarkInfo('GT');
+	    	loadedGT=true;
+	    }else if(country =='IN'&& loadedIN==false){
+	    	getPlacemarkInfo('IN');
+	    	loadedIN=true;
+	    }else if(country =='SV' && loadedSV==false){
+	    	getPlacemarkInfo('SV');
+	    	loadedSV=true;
+	    }else if(country =='NI' && loadedNI==false){
+	    	getPlacemarkInfo('NI');
+	    	loadedNI=true;
+	    }
 	  }	
    
    function initialize() {
@@ -1428,16 +1472,61 @@ h2 {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    
+    google.maps.event.addListener(map, 'bounds_changed', function() {
      
-  
-    getPlacemarkInfo();	
+     var curBounds = map.getBounds();
+     var containsRW = curBounds.contains(latlngRW);
+     var containsMW = curBounds.contains(latlngMW);
+     var containsHN = curBounds.contains(latlngHN);
+     var containsIN = curBounds.contains(latlngIN);
+     var containsGT = curBounds.contains(latlngGT);
+     var containsSV = curBounds.contains(latlngSV);
+     var containsPE = curBounds.contains(latlngPE);
+     var containsNI = curBounds.contains(latlngNI);
+     
+     if(containsRW){
+      country= 'RW';
+      loadCountryData();
+     }
+     
+     if(containsMW){
+     country = 'MW';
+     loadCountryData();
+     }
+     
+     if(containsHN){
+     country ='HN';
+     loadCountryData();
+     }
+     if(containsIN){
+     country='IN';
+     loadCountryData();
+     }
+     if(containsGT){
+     country='GT';
+     loadCountryData();
+     }
+     if(containsSV){
+     country = 'SV';
+     loadCountryData();
+     }
+     if(containsPE){
+     country = 'PE';
+     loadCountryData();
+     }
+     if(containsNI){
+     country = 'NI';
+     loadCountryData();
+     }
+  }); 
+  loadCountryData();
+    
    
   };
   
    function addPlacemark(latitude, longitude, iconUrl,placemarkContents){
-   //Problem setting the placemarkContets to be fixed
-  // alert(placemarkContents);
-	    var infowindow = new google.maps.InfoWindow({
+ 	    var infowindow = new google.maps.InfoWindow({
 	        content:placemarkContents});
 		var myLatlng = new google.maps.LatLng(latitude,longitude);
 	    var marker = new google.maps.Marker({
@@ -1451,9 +1540,8 @@ h2 {
 	    });
     };
     
-  function getPlacemarkInfo() {
-  	
-     $.getJSON('/placemarkrestapi?country=' + country+'&cursor=all', function(jd) {
+  function getPlacemarkInfo(countryCode) {
+     $.getJSON('/placemarkrestapi?country=' + countryCode+'&cursor=all', function(jd) {
           $.each(jd.placemarks, function(i,item){
          	addPlacemark(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
           });  
