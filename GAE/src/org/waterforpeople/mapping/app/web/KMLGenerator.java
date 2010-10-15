@@ -98,7 +98,7 @@ public class KMLGenerator {
 		try {
 			VelocityContext context = new VelocityContext();
 			context.put("folderContents", generatePlacemarks(
-					"PlacemarksNewLook.vm", countryCode));
+					placemarksVMName, countryCode));
 			context
 					.put("regionPlacemark",
 							generateRegionOutlines("Regions.vm"));
@@ -333,7 +333,11 @@ public class KMLGenerator {
 		// loop through accessPoints and bind to variables
 		for (AccessPoint ap : entries) {
 			try {
-				sb.append(bindPlacemark(ap, vmName));
+				VelocityContext context = new VelocityContext();
+				String pmContents = bindPlacemark(ap, "placemarkExternalMap.vm");
+				context.put("balloon", pmContents);
+				String placemarkStr = mergeContext(context, vmName);
+				sb.append(placemarkStr);
 			} catch (Exception e) {
 				log.log(Level.INFO, "Error generating placemarks: "
 						+ ap.getCommunityCode(), e);
