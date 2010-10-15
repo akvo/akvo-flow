@@ -253,8 +253,8 @@ public class TestHarnessServlet extends HttpServlet {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			AccessPointDao apDao = new AccessPointDao();
 			for (int j = 0; j < 1; j++) {
-				double lat = 15 + (new Random().nextDouble() / 10);
-				double lon = -90 + (new Random().nextDouble() / 10);
+				double lat = -15 + (new Random().nextDouble() / 10);
+				double lon = 35 + (new Random().nextDouble() / 10);
 				for (int i = 0; i < 15; i++) {
 					AccessPoint ap = new AccessPoint();
 					ap.setLatitude(lat);
@@ -271,12 +271,24 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setAltitude(0.0);
 					ap.setCommunityCode("test" + new Date());
 					ap.setCommunityName("test" + new Date());
-					ap.setPhotoURL("http://test.com");
+					ap.setPhotoURL("http://waterforpeople.s3.amazonaws.com/images/peru/pc28water.jpg");
 					ap.setProvideAdequateQuantity(true);
 					ap.setHasSystemBeenDown1DayFlag(false);
 					ap.setMeetGovtQualityStandardFlag(true);
 					ap.setMeetGovtQuantityStandardFlag(false);
+					ap.setCurrentManagementStructurePoint("Community Board");
+					ap.setDescription("Waterpoint");
+					ap.setDistrict("test district");
+					ap.setEstimatedHouseholds(100L);
+					ap.setEstimatedPeoplePerHouse(11L);
+					ap.setFarthestHouseholdfromPoint("1 KM");
+					ap.setNumberOfHouseholdsUsingPoint(100L);
+					ap.setConstructionDateYear("2001");
+					ap.setCostPer(1.0);
 					ap.setCountryCode("MW");
+					ap.setConstructionDate(new Date());
+					ap.setCollectionDate(new Date());
+					ap.setPhotoName("Water point");
 					if (i % 2 == 0)
 						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 					else if (i % 3 == 0)
