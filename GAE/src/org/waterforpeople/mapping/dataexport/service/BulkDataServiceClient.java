@@ -20,6 +20,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
@@ -187,6 +188,21 @@ public class BulkDataServiceClient {
 	}
 
 	/**
+	 * gets a surveyInstance from the server for a specific id
+	 * 
+	 * @param id
+	 * @param serverBase
+	 * @return
+	 * @throws Exception
+	 */
+	public static SurveyInstanceDto findSurveyInstance(Long id, String serverBase) throws Exception {
+		return parseSurveyInstance(fetchDataFromServer(serverBase
+				+ SURVEY_SERVLET_PATH
+				+ SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
+				+ SurveyRestRequest.INSTANCE_PARAM + "=" + id));
+	}
+
+	/**
 	 * gets question groups from the server for a specific survey
 	 * 
 	 * @param serverBase
@@ -199,6 +215,44 @@ public class BulkDataServiceClient {
 		return parseQuestionGroups(fetchDataFromServer(serverBase
 				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_GROUP_ACTION
 				+ "&" + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId));
+	}
+
+	/**
+	 * parses a single SurveyInstanceDto from a json response string
+	 * 
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private static SurveyInstanceDto parseSurveyInstance(String response)
+			throws Exception {
+		SurveyInstanceDto dto = null;
+		if (response != null) {
+			JSONArray arr = getJsonArray(response);
+			if (arr != null && arr.length() > 0) {
+				JSONObject json = arr.getJSONObject(0);
+				if (json != null) {
+					dto = new SurveyInstanceDto();
+					if (json.has("keyId")) {
+						dto.setKeyId(json.getLong("keyId"));
+					}
+					if (json.has("surveyId")) {
+						dto.setSurveyId(json.getLong("surveyId"));
+					}
+					if (json.has("userID")) {
+						dto.setUserID(json.getLong("userID"));
+					}
+					if (json.has("submitterName")) {
+						dto.setSubmitterName(json.getString("submitterName"));
+					}
+					if (json.has("deviceIdentifier")) {
+						dto.setDeviceIdentifier(json
+								.getString("deviceIdentifier"));
+					}
+				}
+			}
+		}
+		return dto;
 	}
 
 	/**

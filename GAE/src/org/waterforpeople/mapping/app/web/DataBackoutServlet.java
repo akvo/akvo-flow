@@ -95,6 +95,13 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 		return response;
 	}
 
+	
+	/**
+	 * lists all questionAnswerStore records for a given instance
+	 * 
+	 * @param surveyInstanceId
+	 * @return
+	 */
 	private String listResponses(Long surveyInstanceId) {
 		StringBuilder result = new StringBuilder();
 		List<QuestionAnswerStore> qasList = instanceDao

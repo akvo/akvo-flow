@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 /**
@@ -54,7 +55,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	}
 
 	private void writeHeader(PrintWriter pw, Map<String, String> questions) {
-		pw.print("Instance\tSubmission Date");
+		pw.print("Instance\tSubmission Date\tSubmitter");
 		if (keyList != null) {
 			for (String key : keyList) {
 				pw.print("\t");
@@ -79,6 +80,13 @@ public class RawDataExporter extends AbstractDataExporter {
 						pw.print(instanceId);
 						pw.print("\t");
 						pw.print(dateString);
+						pw.print("\t");
+						SurveyInstanceDto dto = BulkDataServiceClient
+								.findSurveyInstance(Long.parseLong(instanceId
+										.trim()), serverBase);
+						if (dto != null) {
+							pw.print(dto.getSubmitterName());
+						}
 						for (String key : idList) {
 							String val = responses.get(key);
 							pw.print("\t");
@@ -92,6 +100,7 @@ public class RawDataExporter extends AbstractDataExporter {
 								pw.print(val.trim());
 							}
 						}
+
 						pw.print("\n");
 					}
 				}

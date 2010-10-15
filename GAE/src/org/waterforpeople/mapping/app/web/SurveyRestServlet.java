@@ -17,10 +17,13 @@ import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestResponse;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -55,11 +58,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	private QuestionGroupDao qgDao;
 	private QuestionDao qDao;
 	private SurveyQuestionSummaryDao summaryDao;
+	private SurveyInstanceDAO instanceDao;
 
 	public SurveyRestServlet() {
 		setMode(JSON_MODE);
 		sgDao = new SurveyGroupDAO();
 		surveyDao = new SurveyDAO();
+		instanceDao = new SurveyInstanceDAO();
 		optionDao = new QuestionOptionDao();
 		translationDao = new TranslationDao();
 		scoringRuleDao = new ScoringRuleDao();
@@ -115,11 +120,22 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			List<BaseDto> dtoList = new ArrayList<BaseDto>();
 			dtoList.add(dto);
 			response.setDtoList(dtoList);
+		} else if (SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION.equals(importReq
+				.getAction())) {
+			SurveyInstanceDto dto = findSurveyInstance(importReq
+					.getInstanceId());
+			List<BaseDto> dtoList = new ArrayList<BaseDto>();
+			dtoList.add(dto);
+			response.setDtoList(dtoList);
 		}
 
 		return response;
 	}
 
+	/**
+	 * sets the http code to success and writes the RestResponse as a new JSON
+	 * object to the response output stream
+	 */
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
@@ -127,6 +143,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		getResponse().getWriter().println(obj.toString());
 	}
 
+	/**
+	 * gets all questionGroups for a given survey
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
 	private List<QuestionGroupDto> listQuestionGroups(Long surveyId) {
 		TreeMap<Integer, QuestionGroup> groups = qgDao
 				.listQuestionGroupsBySurvey(surveyId);
@@ -141,6 +163,28 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		return dtoList;
 	}
 
+	/**
+	 * gets the full details of the base surveyInstance object (no answers)
+	 * 
+	 * @param surveyInstanceId
+	 * @return
+	 */
+	private SurveyInstanceDto findSurveyInstance(Long surveyInstanceId) {
+		SurveyInstance instance = instanceDao.getByKey(surveyInstanceId);
+		SurveyInstanceDto dto = null;
+		if (instance != null) {
+			dto = new SurveyInstanceDto();
+			DtoMarshaller.copyToDto(instance, dto);
+		}
+		return dto;
+	}
+
+	/**
+	 * lists all questions for a given questionGroup
+	 * 
+	 * @param groupId
+	 * @return
+	 */
 	private List<QuestionDto> listQuestions(Long groupId) {
 		TreeMap<Integer, Question> questions = qDao
 				.listQuestionsByQuestionGroup(groupId, false);
@@ -172,6 +216,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		return result;
 	}
 
+	/**
+	 * lsits all the SurveyQuestionSummary objects associated with a given questionDI
+	 * 
+	 * @param questionId
+	 * @return
+	 */
 	private List<SurveySummaryDto> listSummaries(Long questionId) {
 		List<SurveyQuestionSummary> summaries = summaryDao
 				.listByQuestion(questionId.toString());

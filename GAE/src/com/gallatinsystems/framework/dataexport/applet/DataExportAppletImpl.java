@@ -26,7 +26,7 @@ public class DataExportAppletImpl extends JApplet {
 		getContentPane().add(statusLabel);
 		String type = getParameter("exportType");
 		Map<String, String> criteria = parseCriteria(getParameter("criteria"));
-		doExport(type, criteria, getCodeBase().toString());
+		doExport(type, criteria, getCodeBase().toString());		
 	}
 
 	private Map<String, String> parseCriteria(String source) {

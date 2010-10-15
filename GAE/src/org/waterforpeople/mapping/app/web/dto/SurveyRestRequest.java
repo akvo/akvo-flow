@@ -16,6 +16,7 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String LIST_QUESTION_ACTION = "listQuestions";
 	public static final String GET_SUMMARY_ACTION = "getSummary";
 	public static final String GET_QUESTION_DETAILS_ACTION = "getQuestionDetails";
+	public static final String GET_SURVEY_INSTANCE_ACTION = "getSurveyInstance";
 
 	private static final String SURVEY_GROUP_NAME_PARAM = "surveyGroupName";
 	private static final String SURVEY_NAME_PARAM = "surveyName";
@@ -32,6 +33,7 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
 	public static final String QUESTION_ID_PARAM = "questionID";
 	public static final String SCORING_PARAM = "scoring";
+	public static final String INSTANCE_PARAM = "instanceId";
 
 	private String surveyGroupName = null;
 	private String surveyName = null;
@@ -48,6 +50,15 @@ public class SurveyRestRequest extends RestRequest {
 	private Integer surveyId;
 	private Integer questionGroupId;
 	private String scoring;
+	private Long instanceId;
+
+	public Long getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(Long instanceId) {
+		this.instanceId = instanceId;
+	}
 
 	public String getScoring() {
 		return scoring;
@@ -223,6 +234,10 @@ public class SurveyRestRequest extends RestRequest {
 			if (scoring != null && scoring.length() == 0) {
 				scoring = null;
 			}
+		}
+		if (req.getParameter(INSTANCE_PARAM) != null) {
+			instanceId = Long
+					.parseLong(req.getParameter(INSTANCE_PARAM).trim());
 		}
 	}
 
