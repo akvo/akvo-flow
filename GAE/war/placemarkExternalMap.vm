@@ -174,9 +174,7 @@ h3 {
 		<div class="leftcontent">
 			<div class="questionContainer">
 			 #if($type=="water")
-		    				<div class="questionrow"><div class="question">Type of Point</div><div class="answer"> $typeOfPoint</div> <div style="clear:both;"></div> </div>
 	    					<div class="questionrow"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology</div> <div style="clear:both;"></div> </div>
-		    				<div class="questionrow"><div class="question">Date Data was Collected</div><div class="answer"> $collectionDate</div> <div style="clear:both;"></div> </div>
 							<div class="questionrow"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div> <div style="clear:both;"></div> </div>
 							<div class="questionrow"><div class="question">Estimated Number of Users</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div> <div style="clear:both;"></div> </div>
 							<div class="questionrow"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #else<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> no#end<br></div> <div style="clear:both;"></div> </div>
@@ -190,11 +188,8 @@ h3 {
 							<div class="questionrow"><div class="question">Water Technology</div><div class="answer"> $primaryTypeTechnology<br></div> <div style="clear:both;"></div> </div>
 							<div class="questionrow"><div class="question">Water System Status</div><div class="answer"> $waterSystemStatus<br></div> <div style="clear:both;"></div> </div>
 						#else				
-		    				<div class="questionrow"><div class="question">Community Name</div><div class="answer"> $communityName<br></div> <div style="clear:both;"></div> </div>
-		    				<div class="questionrow"><div class="question">Type of Public Institution</div><div class="answer"> $typeOfPoint<br></div> <div style="clear:both;"></div> <div>
 		    				<div class="questionrow"><div class="question">Public Institution Name</div><div class="answer"> $institutionName<br></div> <div style="clear:both;"></div> </div>
 	    					<div class="questionrow"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology<br></div> <div style="clear:both;"></div> </div>
-		    				<div class="questionrow"><div class="question">Date Data was Collected</div><div class="answer"> $collectionDate<br></div> <div style="clear:both;"></div> </div>
 							<div class="questionrow"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div> <div style="clear:both;"></div> </div>
 							<div class="questionrow"><div class="question">Estimated Number of Users</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div> <div style="clear:both;"></div> </div>
 							<div class="questionrow"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #else<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> no#end<br></div> <div style="clear:both;"></div> </div>
