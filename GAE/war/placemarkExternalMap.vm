@@ -52,7 +52,7 @@ body{
 	margin:5px;
 }
 .questioncontainer{
-	background: #F2F2F2;
+	background: #e6e6e6;;
 	position:relative;
 }
 .questionrow{
