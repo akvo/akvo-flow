@@ -138,13 +138,13 @@ h3 {
 		</div>
 		<div id="mapicon">
 				    #if($type=="water" && $waterSystemStatus=="System Functioning and Meets Government Standards")
-	                    <img src="http://watermapmonitordev.appspot.com/images/map/iconGreen.png" width="29" height="65" border="0" />
+	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen.png" width="29" height="65" border="0" />
 					#elseif($type=="water" && $waterSystemStatus=="Functioning but with Problems")
-						<img src="http://watermapmonitordev.appspot.com/images/map/iconYellow.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconYellow.png" width="29" height="65" border="0" />
 					#elseif($type=="water" && ($waterSystemStatus=="Broken-down system"))
-						<img src="http://watermapmonitordev.appspot.com/images/map/iconRed.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconRed.png" width="29" height="65" border="0" />
 					#elseif($type=="water" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/map/iconBlack.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconBlack.png" width="29" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="System Functioning and Meets Government Standards")	
 						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen.jpg" width="29" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Functioning but with Problems")	
