@@ -46,7 +46,9 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 									.setMetricName(mapping.getMetricName());
 							metricSummary.setOrganization(ap.getOrganization());
 							metricSummary.setCountry(ap.getCountryCode());
-							metricSummary.setDistrict(ap.getDistrict());							
+							metricSummary.setDistrict(ap.getDistrict());
+							metricSummary.setValueBucket(bucketizeValue(
+									mapping, fieldValue));
 							AccessPointMetricSummaryDao.incrementCount(
 									metricSummary, 1);
 						}
@@ -55,6 +57,28 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * converts a raw value to a "bucketized" value (i.e. "Positive", "Neutral",
+	 * "Negative", "Unknown"
+	 * 
+	 * @param mapping
+	 * @param value
+	 * @return
+	 */
+	private String bucketizeValue(AccessPointMetricMapping mapping, String value) {
+		String bucket = AccessPointMetricMapping.UNKOWN_BUCKET;
+		if (mapping.getPositiveValues() != null) {
+			if (mapping.getPositiveValues().contains(value)) {
+				bucket = AccessPointMetricMapping.POSITIVE_BUCKET;
+			} else if (mapping.getNeutralValues().contains(value)) {
+				bucket = AccessPointMetricMapping.NEUTRAL_BUCKET;
+			} else if (mapping.getNegativeValues().contains(value)) {
+				bucket = AccessPointMetricMapping.NEGATIVE_BUCKET;
+			}
+		}
+		return bucket;
 	}
 
 	@Override
