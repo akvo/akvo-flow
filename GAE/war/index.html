@@ -1383,6 +1383,7 @@ h2 {
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
 <script src="/js/jqURL.js"></script>
+<script src="/js/smartinfowindow.js"></script>
 <script type="text/javascript">
 	var map;
 	var country;
@@ -1524,10 +1525,9 @@ h2 {
     
    
   };
-  
+  var markers = [];
    function addPlacemark(latitude, longitude, iconUrl,placemarkContents){
- 	    var infowindow = new google.maps.InfoWindow({
-	        content:placemarkContents});
+  	    var infowindow = new google.maps.InfoWindow({content:placemarkContents,maxWidth: 1000});
 		var myLatlng = new google.maps.LatLng(latitude,longitude);
 	    var marker = new google.maps.Marker({
 	        position: myLatlng,
@@ -1536,15 +1536,36 @@ h2 {
 	        icon:iconUrl
 	    });
 	    google.maps.event.addListener(marker, 'click', function() {
+	     var infoOptions = {maxWidth:1000};
+	     infowindow.setOptions(infoOptions);
 	      infowindow.open(map,marker);
 	    });
     };
     
-  function getPlacemarkInfo(countryCode) {
-     $.getJSON('/placemarkrestapi?country=' + countryCode+'&cursor=all', function(jd) {
+    function makeMarker(latitude, longitude, iconUrl,placemarkContents) {
+ 	 var markerOptions = {map: map, position: new google.maps.LatLng(latitude, longitude),icon:iconUrl,height:800,width:800};
+  	var marker = new google.maps.Marker(markerOptions);
+  	markers.push(marker);
+  	
+  	google.maps.event.addListener(marker, 'click', function(e) {
+	    var infobox = new SmartInfoWindow({position: marker.getPosition(), map: map, content: placemarkContents});	    
+  	});
+}
+    
+  function getPlacemarkInfo(countryCode, cursor) {  
+  	var url = '/placemarkrestapi?country='+country;
+  	if(cursor != null){
+  		url += '&cursor='+cursor;
+  	}
+    $.getJSON(url, function(jd) {
+    	var count = 0;
           $.each(jd.placemarks, function(i,item){
-         	addPlacemark(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
-          });  
+         	makeMarker(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
+         	count++;
+          }); 
+          if(count >0 && jd.cursor != null){
+          	getPlacemarkInfo(countryCode, jd.cursor);
+          }
       });
    };
   
