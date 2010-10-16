@@ -32,18 +32,18 @@ public class KMLGenerator {
 
 	private VelocityEngine engine;
 
-	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconGreen.png";
-	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconYellow.png";
-	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconRed.png";
-	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack.png";
-	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen.png";
-	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow.png";
-	public static final String PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseRed.png";
-	public static final String PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseBlack.png";
-	public static final String SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilGreen.png";
-	public static final String SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilYellow.png";
-	public static final String SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilRed.png";
-	public static final String SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilBlack.png";
+	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconGreen36.png";
+	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconYellow36.png";
+	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconRed36.png";
+	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
+	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
+	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
+	public static final String PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseRed36.png";
+	public static final String PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseBlack36.png";
+	public static final String SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilGreen36.png";
+	public static final String SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilYellow36.png";
+	public static final String SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilRed36.png";
+	public static final String SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilBlack36.png";
 
 	public KMLGenerator() {
 		engine = new VelocityEngine();
