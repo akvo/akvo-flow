@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
