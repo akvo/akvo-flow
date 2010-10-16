@@ -33,8 +33,7 @@ body{
 }
 .mapicon{
 	float: right;
-	heigth:36px;
-	width:36px;
+	
 	positon: 5px;
 }
 .maincontent{
@@ -145,29 +144,29 @@ h3 {
 		</div>
 		<div class="mapicon">
 				    #if($type=="water" && $waterSystemStatus=="Meets Government Standards")
-	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen80.png" width="29" height="65" border="0" />
+	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen80.png" width="65" height="65" border="0" />
 					#elseif($type=="water" && $waterSystemStatus=="Functioning but with Problems")
-						<img src="http://watermapmonitordev.appspot.com/images/iconYellow80.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconYellow80.png" width="65" height="65" border="0" />
 					#elseif($type=="water" && ($waterSystemStatus=="Broken-down system"))
-						<img src="http://watermapmonitordev.appspot.com/images/iconRed80.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconRed80.png" width="65" height="65" border="0" />
 					#elseif($type=="water" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/iconBlack80.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconBlack80.png" width="65" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Meets Government Standards")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen80.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen80.jpg" width="65" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow80.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow80.jpg" width="65" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilRed80.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilRed80.jpg" width="65" height="65" border="0" />
 					#elseif($type=="school" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack80.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack80.jpg" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Meets Government Standards")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseGreen80.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseGreen80.jpg" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseYellow80.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseYellow80.jpg" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.jpg" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="65" height="65" border="0" />
 					#end
 		</div>
 	</div>
