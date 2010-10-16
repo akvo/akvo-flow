@@ -699,7 +699,7 @@ public class KMLGenerator {
 		if (status != null) {
 			if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
 				context.put("waterSystemStatus",
-						"System Functioning and Meets Government Standards");
+						"Meets Government Standards");
 				return "System Functioning and Meets Government Standards";
 			} else if (AccessPoint.Status.FUNCTIONING_OK == status
 					|| AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
