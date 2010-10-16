@@ -1548,15 +1548,24 @@ h2 {
   	markers.push(marker);
   	
   	google.maps.event.addListener(marker, 'click', function(e) {
-	    var infobox = new SmartInfoWindow({position: marker.getPosition(), map: map, content: placemarkContents});
+	    var infobox = new SmartInfoWindow({position: marker.getPosition(), map: map, content: placemarkContents});	    
   	});
 }
     
-  function getPlacemarkInfo(countryCode) {
-     $.getJSON('/placemarkrestapi?country='+country+'&cursor=all', function(jd) {
+  function getPlacemarkInfo(countryCode, cursor) {  
+  	var url = '/placemarkrestapi?country='+country;
+  	if(cursor != null){
+  		url += '&cursor='+cursor;
+  	}
+    $.getJSON(url, function(jd) {
+    	var count = 0;
           $.each(jd.placemarks, function(i,item){
          	makeMarker(item.latitude,item.longitude, item.iconUrl, item.placemarkContents);
-          });  
+         	count++;
+          }); 
+          if(count >0 && jd.cursor != null){
+          	getPlacemarkInfo(countryCode, jd.cursor);
+          }
       });
    };
   
