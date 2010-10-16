@@ -130,7 +130,7 @@ h3 {
 }
 </style>
 <div id="wrap">
-	<div id="header"><div id="logo"><img src="/images/flowballoon.jpg" ></div><div id="headerCaption"><label>This data is provided by Water For People </label></div></div>
+	<div id="header"><div id="logo"><img src="http://watermapmonitordev.appspot.com/images/flowballoon.jpg" ></div><div id="headerCaption"><label>This data is provided by Water For People </label></div></div>
 	<div id="communitydef">
 		<div id="communitydesc">
 			<h2>Community | $communityName</h2><p>
