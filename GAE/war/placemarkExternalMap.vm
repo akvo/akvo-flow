@@ -138,29 +138,29 @@ h3 {
 		</div>
 		<div id="mapicon">
 				    #if($type=="water" && $waterSystemStatus=="System Functioning and Meets Government Standards")
-	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen.png" width="29" height="65" border="0" />
+	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen80.png" width="29" height="65" border="0" />
 					#elseif($type=="water" && $waterSystemStatus=="Functioning but with Problems")
-						<img src="http://watermapmonitordev.appspot.com/images/iconYellow.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconYellow80.png" width="29" height="65" border="0" />
 					#elseif($type=="water" && ($waterSystemStatus=="Broken-down system"))
-						<img src="http://watermapmonitordev.appspot.com/images/iconRed.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconRed80.png" width="29" height="65" border="0" />
 					#elseif($type=="water" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/iconBlack.png" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/iconBlack80.png" width="29" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="System Functioning and Meets Government Standards")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen80.jpg" width="29" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow80.jpg" width="29" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilRed.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilRed80.jpg" width="29" height="65" border="0" />
 					#elseif($type=="school" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack80.jpg" width="29" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="System Functioning and Meets Government Standards")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseGreen.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseGreen80.jpg" width="29" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseYellow.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseYellow80.jpg" width="29" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseRed.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.jpg" width="29" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/houseBlack.jpg" width="29" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.jpg" width="29" height="65" border="0" />
 					#end
 		</div>
 	</div>
