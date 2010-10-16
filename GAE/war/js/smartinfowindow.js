@@ -19,9 +19,9 @@ function SmartInfoWindow(opts) {
   // absolute position every time the map moves.
   // This is only needed because we append to body instead of map panes.
   var me = this;
-  google.maps.event.addListener(this.map_, 'bounds_changed', function() {
-    me.draw();
-  });
+ // google.maps.event.addListener(this.map_, 'bounds_changed', function() {
+ //   me.draw();
+ // });
 }
 
 /**
@@ -73,14 +73,14 @@ SmartInfoWindow.prototype.draw = function() {
   switch (alignment) {
     case SmartInfoWindow.Align.ABOVE:
       this.width_ = 800;
-      this.height_ = 850;
+      this.height_ = 800;
       image = 'infobox_above.gif';
       this.offsetX_ = -(this.width_ / 2 - 17);
       this.offsetY_ = -(this.height_ + 12);
       break;
     case SmartInfoWindow.Align.BELOW:
       this.width_ = 800;
-      this.height_ = 850;
+      this.height_ = 800;
       image = 'infobox_below.gif';
       this.offsetX_ = -(this.width_ / 2 - 17);
       this.offsetY_ = -15;
@@ -88,7 +88,7 @@ SmartInfoWindow.prototype.draw = function() {
       break;
     case SmartInfoWindow.Align.LEFT:
       this.width_ = 800;
-      this.height_ = 850;
+      this.height_ = 800;
       image = 'infobox_left.gif';
       this.offsetX_ = -(this.width_) + 10;
       this.offsetY_ = -(this.height_ / 2 + 33);
@@ -97,7 +97,7 @@ SmartInfoWindow.prototype.draw = function() {
     case SmartInfoWindow.Align.RIGHT:
       image = 'infobox_right.gif';
       this.width_ = 800;
-      this.height_ = 850;
+      this.height_ = 800;
       this.offsetX_ = 6;
       this.offsetY_ = -(this.height_ / 2 + 33);
       paddingLeft = 20;
@@ -106,9 +106,9 @@ SmartInfoWindow.prototype.draw = function() {
    }
   // Now position our DIV based on the DIV coordinates of our bounds
   this.div_.style.width = this.width_ + 'px';
-  this.div_.style.left = (pixPosition.x + this.offsetX_) + centerOffsetX + 'px';
+  this.div_.style.left = (pixPosition.x + this.offsetX_)+'px';//(pixPosition.x + this.offsetX_) + centerOffsetX + 'px';
   this.div_.style.height = this.height_ + 'px';
-  this.div_.style.top = (pixPosition.y + this.offsetY_) + centerOffsetY + 'px';
+  this.div_.style.top = (pixPosition.y-(this.height_/2))+'px';//(pixPosition.y + this.offsetY_) + centerOffsetY + 'px';
   //this.div_.style.paddingTop = paddingTop + 'px';
   //this.div_.style.paddingLeft = paddingLeft + 'px';
   //this.div_.style.background = 'url("images/' + image + '")';
@@ -176,7 +176,8 @@ SmartInfoWindow.prototype.createElement = function() {
     // Append to body, to avoid bug with Webkit browsers
     // attempting CSS transforms on IFRAME or SWF objects
     // and rendering badly.
-    document.body.appendChild(div);
+    //document.body.appendChild(div);
+    panes.floatPane.appendChild(div);
   } else if (div.parentNode != panes.floatPane) {
     // The panes have changed.  Move the div.
     div.parentNode.removeChild(div);
