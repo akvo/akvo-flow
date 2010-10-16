@@ -42,8 +42,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		PlacemarkRestRequest piReq = (PlacemarkRestRequest) req;
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> results = apDao.searchAccessPoints(
-				piReq.getCountry(), null, null, null, "WATER_POINT", null,
-				null, null, null, null, piReq.getCursor());
+				piReq.getCountry(), null, null, null, null, null, null, null,
+				null, null, piReq.getCursor());
 		return convertToResponse(results, AccessPointDao.getCursor(results));
 	}
 
@@ -54,23 +54,26 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
 			KMLGenerator kmlGen = new KMLGenerator();
 			for (AccessPoint ap : apList) {
-				PlacemarkDto pdto = new PlacemarkDto();
-				pdto.setLatitude(ap.getLatitude());
-				pdto.setLongitude(ap.getLongitude());
-				pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
-				String placemarkString = null;
-				try {
-					placemarkString = kmlGen.bindPlacemark(ap,
-							"placemarkExternalMap.vm");
-					pdto.setPlacemarkContents(placemarkString);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (!ap.getPointType().equals(AccessPointType.SANITATION_POINT)) {
+					PlacemarkDto pdto = new PlacemarkDto();
+					pdto.setLatitude(ap.getLatitude());
+					pdto.setLongitude(ap.getLongitude());
+					pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(),
+							ap.getPointType()));
+					String placemarkString = null;
+					try {
+						placemarkString = kmlGen.bindPlacemark(ap,
+								"placemarkExternalMap.vm");
+						pdto.setPlacemarkContents(placemarkString);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (placemarkString != null)
+						dtoList.add(pdto);
 				}
-				if (placemarkString != null)
-					dtoList.add(pdto);
+				resp.setPlacemarks(dtoList);
 			}
-			resp.setPlacemarks(dtoList);
 		}
 		resp.setCursor(cursor);
 		return resp;
@@ -95,7 +98,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			} else {
 				return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
 			}
-		}else if(AccessPointType.PUBLIC_INSTITUTION.equals(pointType)){
+		} else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointType)) {
 			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
 				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
 			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
@@ -109,7 +112,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			} else {
 				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
 			}
-		}else if(AccessPointType.SCHOOL.equals(pointType)){
+		} else if (AccessPointType.SCHOOL.equals(pointType)) {
 			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
 				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
 			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
