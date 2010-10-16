@@ -8,7 +8,7 @@
     </BalloonStyle> 
      <IconStyle id="watergreenwpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/water-green-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/iconGreen.png</href>
       </Icon>
     </IconStyle>
   </Style>
@@ -18,7 +18,7 @@
     </BalloonStyle> 
      <IconStyle id="wateryellowpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/water-yellow-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/iconYellow.png</href>
       </Icon>
     </IconStyle>
   </Style>
@@ -28,7 +28,7 @@
     </BalloonStyle> 
      <IconStyle id="waterredpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/water-red-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/iconRed.png</href>
       </Icon>
     </IconStyle>
   </Style>  
@@ -38,7 +38,7 @@
     </BalloonStyle> 
      <IconStyle id="waterblackpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/water-black-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/iconBlack.png</href>
       </Icon>
     </IconStyle>
   </Style>	
@@ -92,7 +92,7 @@
     </BalloonStyle> 
      <IconStyle id="schwatergreenwpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/school-water-green-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/pencilGreen.png</href>
       </Icon>
     </IconStyle>
   </Style>
@@ -102,7 +102,7 @@
     </BalloonStyle> 
      <IconStyle id="schwateryellowpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/school-water-yellow-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/pencilYellow.png</href>
       </Icon>
     </IconStyle>
   </Style>
@@ -112,7 +112,7 @@
     </BalloonStyle> 
      <IconStyle id="schwaterredpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/school-water-red-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/pencilRed.png</href>
       </Icon>
     </IconStyle>
   </Style>  
@@ -122,7 +122,7 @@
     </BalloonStyle> 
      <IconStyle id="schwaterblackpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/school-water-black-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/pencilBlack.png</href>
       </Icon>
     </IconStyle>
   </Style>	
@@ -134,7 +134,7 @@
     </BalloonStyle> 
      <IconStyle id="pubwatergreenwpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/other-water-green-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/houseGreen.png</href>
       </Icon>
     </IconStyle>
   </Style>
@@ -144,7 +144,7 @@
     </BalloonStyle> 
      <IconStyle id="pubwateryellowpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/other-water-yellow-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/houseYellow.png</href>
       </Icon>
     </IconStyle>
   </Style>
@@ -154,7 +154,7 @@
     </BalloonStyle> 
      <IconStyle id="pubwaterredpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/other-water-red-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/houseRed.png</href>
       </Icon>
     </IconStyle>
   </Style>  
@@ -164,7 +164,7 @@
     </BalloonStyle> 
      <IconStyle id="pubwaterblackpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/images/map/other-water-black-1.png</href>
+        <href>http://watermapmonitordev.appspot.com/houseBlack.png</href>
       </Icon>
     </IconStyle>
   </Style>	
