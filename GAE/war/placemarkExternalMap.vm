@@ -16,7 +16,7 @@ body {
 	  float:left;
 	  position:5px,relative;
 	  background: #333333;
-	  width: 790px;
+	  width: 800px;
 	  height: auto;
 	  color:#404040;
 }
@@ -82,7 +82,7 @@ body {
 #photoframe {
 	  position: relative;
 	  background: #808080;
-	  margin-right:10px;margin-left:10px;margin-top:20;height:360px;width:385px;
+	  margin-right:10px;margin-left:10px;margin-top:20;height:360px;width:380px;
 	  
 }
 #photo{	  
@@ -130,7 +130,7 @@ h3 {
 }
 </style>
 <div id="wrap">
-	<div id="header"><div id="logo"><img src="/images/flowballoon.jpg" ></div><div id="headerCaption"><label>This data is provided by Water For People</label></div></div>
+	<div id="header"><div id="logo"><img src="/images/flowballoon.jpg" ></div><div id="headerCaption"><label>This data is provided by Water For People </label></div></div>
 	<div id="communitydef">
 		<div id="communitydesc">
 			<h2>Community | $communityName</h2><p>
