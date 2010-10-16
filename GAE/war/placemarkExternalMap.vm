@@ -1,17 +1,14 @@
 <style>
 @charset "UTF-8";
 /* CSS Document */
-body {
-	background: #e6e6e6;
-	font: 12px "Trebuchet MS";
-}
-#wrap {
+
+.wrap {
 	  background: #e6e6e6;
 	  positon: relative;
 	  width: 800px;
 	  height: auto;
 }
-#header {
+.headerballoon {
 	display:table;
 	  float:left;
 	  position:5px,relative;
@@ -20,28 +17,30 @@ body {
 	  height: auto;
 	  color:#404040;
 }
-#communitydef {
+.communitydef {
       float:left;
 	  background: #F2F2F2;
 	  padding:10px;
 	  width: 780px;
 	  height: auto;
 }
-#communitydesc{
+.communitydesc{
 	float: left;
 	width:85%;
 	positon: 5px;
 }
-#mapicon{
+.mapicon{
 	float: right;
-	width:8%;
+	heigth:36px;
+	width:36px;
 	positon: 5px;
 }
-#maincontent{
+.maincontent{
 	position:5px,relative;
 	height:auto;
 }
-#leftcontent {
+.leftcontent {
+	background: #e6e6e6;
 	float: left;
 	position: relative;
 	left:5px; 
@@ -49,14 +48,14 @@ body {
 	height: auto;
 	margin:5px;
 }
-#questioncontainer{
+.questioncontainer{
 	background: #F2F2F2;
 	position:relative;
 }
-#questionrow{
+.questionrow{
 	width:400px;
 }
-#question{
+.question{
 	float:left;
 	background:#808080;
 	color:#f2f2f2;
@@ -65,7 +64,7 @@ body {
 	text-align:right;
 	overflow:auto;
 }
-#answer{
+.answer{
 	float:left;
 	color:#404040;
 	width:50%
@@ -73,19 +72,20 @@ body {
 	text-align:left;
 	
 }
-#rightcontent {
+.rightcontent {
+	background:#e6e6e6;
 	  float: right;
 	  position: 5px,relative;
 	  width: 390px;
 	  height: auto;
 }
-#photoframe {
+.photoframe {
 	  position: relative;
 	  background: #808080;
 	  margin-right:10px;margin-left:10px;margin-top:20;height:360px;width:380px;
 	  
 }
-#photo{	  
+.photo{	  
 	float:left;
 	   margin-top:15px;margin-right:18px;margin-left:17px;
 }
@@ -98,14 +98,14 @@ p.photoCaption {
 	line-height:1.0em;
 }
 
-#logo{
+.logo{
 	display:table-cell;
 	float:left;
 	position:5px;
 	width:300px;
 }
 
-#headerCaption {
+.headerCaption {
 	display:table-cell;
 	width:400px;
 	font-style:italic;
@@ -129,14 +129,14 @@ h3 {
 	padding:5px 0 0 0;
 }
 </style>
-<div id="wrap">
-	<div id="header"><div id="logo"><img src="http://watermapmonitordev.appspot.com/images/flowballoon.jpg" ></div><div id="headerCaption"><label>This data is provided by Water For People </label></div></div>
-	<div id="communitydef">
-		<div id="communitydesc">
+<div class="wrap">
+	<div class="headerballoon"><div class="logo"><img src="http://watermapmonitordev.appspot.com/images/flowballoon.jpg" ></div><div class="headerCaption"><label>This data is provided by Water For People </label></div></div>
+	<div class="communitydef">
+		<div class="communitydesc">
 			<h2>Community | $communityName</h2><p>
 			<h3>data collection date: $collectionDate</h3>
 		</div>
-		<div id="mapicon">
+		<div class="mapicon">
 				    #if($type=="water" && $waterSystemStatus=="System Functioning and Meets Government Standards")
 	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen80.png" width="29" height="65" border="0" />
 					#elseif($type=="water" && $waterSystemStatus=="Functioning but with Problems")
@@ -164,53 +164,53 @@ h3 {
 					#end
 		</div>
 	</div>
-	<div id="maincontent">
-		<div id="leftcontent">
-			<div id="questionContainer">
+	<div class="maincontent">
+		<div class="leftcontent">
+			<div class="questionContainer">
 			 #if($type=="water")
-					    	<div id="questionrow"><div id="question">Community Name</div><div id="answer">$communityName</div></div>
-		    				<div id="questionrow"><div id="question">Type of Point</div><div id="answer"> $typeOfPoint</div></div>
-	    					<div id="questionrow"><div id="question">Type of Technology</div><div id="answer"> $primaryTypeTechnology</div></div>
-		    				<div id="questionrow"><div id="question">Date Data was Collected</div><div id="answer"> $collectionDate</div></div>
-							<div id="questionrow"><div id="question">Construction Date</div><div id="answer"> $constructionDateOfWaterPoint<br></div></div>
-							<div id="questionrow"><div id="question">Estimated Number of Users</div><div id="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
-							<div id="questionrow"><div id="question">Water Point Provides Enough Water Every Day</div><div id="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end<br></div></div>
-							<div id="questionrow"><div id="question">Has System Been Down More Than 1 Day</div><div id="answer"> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> no #end<br></div></div>
-							<div id="questionrow"><div id="question">Farthest Household from the Water Point is Within 500 Meters</div><div id="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com</images/icon-check.gif" /> no#end<br></div></div>
-							<div id="questionrow"><div id="question">Water Quality of Water Meets Government Standards</div><div id="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
-							<div id="questionrow"><div id="question">Quantity of Water Meets Government Standards</div><div id="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
-							<div id="questionrow"><div id="question">Tariff/User Fee</div><div id="answer"> $costPer<br></div></div>
-							<div id="questionrow"><div id="question">Who Manages the Water Point?</div><div id="answer"> $currMgmtStructure<br></div></div>
-							<div id="questionrow"><div id="question">Who Repairs the Water Point</div><div id="answer"> $whoRepairsPoint<br></div></div>
-							<div id="questionrow"><div id="question">Water Technology</div><div id="answer"> $primaryTypeTechnology<br></div></div>
-							<div id="questionrow"><div id="question">Water System Status</div><div id="answer"> $waterSystemStatus<br></div></div>
+					    	<div class="questionrow"><div class="question">Community Name</div><div class="answer">$communityName</div></div>
+		    				<div class="questionrow"><div class="question">Type of Point</div><div class="answer"> $typeOfPoint</div></div>
+	    					<div class="questionrow"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology</div></div>
+		    				<div class="questionrow"><div class="question">Date Data was Collected</div><div class="answer"> $collectionDate</div></div>
+							<div class="questionrow"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div></div>
+							<div class="questionrow"><div class="question">Estimated Number of Users</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
+							<div class="questionrow"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end<br></div></div>
+							<div class="questionrow"><div class="question">Has System Been Down More Than 1 Day</div><div class="answer"> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> no #end<br></div></div>
+							<div class="questionrow"><div class="question">Farthest Household from the Water Point is Within 500 Meters</div><div class="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com</images/icon-check.gif" /> no#end<br></div></div>
+							<div class="questionrow"><div class="question">Water Quality of Water Meets Government Standards</div><div class="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
+							<div class="questionrow"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
+							<div class="questionrow"><div class="question">Tariff/User Fee</div><div class="answer"> $costPer<br></div></div>
+							<div class="questionrow"><div class="question">Who Manages the Water Point?</div><div class="answer"> $currMgmtStructure<br></div></div>
+							<div class="questionrow"><div class="question">Who Repairs the Water Point</div><div class="answer"> $whoRepairsPoint<br></div></div>
+							<div class="questionrow"><div class="question">Water Technology</div><div class="answer"> $primaryTypeTechnology<br></div></div>
+							<div class="questionrow"><div class="question">Water System Status</div><div class="answer"> $waterSystemStatus<br></div></div>
 						#else				
-		    				<div id="questionrow"><div id="question">Community Name</div><div id="answer"> $communityName<br></div></div>
-		    				<div id="questionrow"><div id="question">Type of Public Institution</div><div id="answer"> $typeOfPoint<br></div><div>
-		    				<div id="questionrow"><div id="question">Public Institution Name</div><div id="answer"> $institutionName<br></div></div>
-	    					<div id="questionrow"><div id="question">Type of Technology</div><div id="answer"> $primaryTypeTechnology<br></div></div>
-		    				<div id="questionrow"><div id="question">Date Data was Collected</div><div id="answer"> $collectionDate<br></div></div>
-							<div id="questionrow"><div id="question">Construction Date</div><div id="answer"> $constructionDateOfWaterPoint<br></div></div>
-							<div id="questionrow"><div id="question">Estimated Number of Users</div><div id="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
-							<div id="questionrow"><div id="question">Water Point Provides Enough Water Every Day</div><div id="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end<br></div></div>
-							<div id="questionrow"><div id="question">Has System Been Down More Than 1 Day</div><div id="answer"> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> no #end<br></div></div>
-							<div id="questionrow"><div id="question">Farthest Household from the Water Point is Within 500 Meters</div><div id="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end<br></div></div>
-							<div id="questionrow"><div id="question">Water Quality of Water Meets Government Standards</div><div id="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
-							<div id="questionrow"><div id="question">Quantity of Water Meets Government Standards</div><div id="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
-							<div id="questionrow"><div id="question">Tariff/User Fee</div><div id="answer"> $costPer<br></div></div>
-							<div id="questionrow"><div id="question">Who Manages the Water Point?</div><div id="answer"> $currMgmtStructure<br></div></div>
-							<div id="questionrow"><div id="question">Who Repairs the Water Point</div><div id="answer"> $whoRepairsPoint<br></div></div>
-							<div id="questionrow"><div id="question">Primary Sanitation Technology</div><div id="answer"> $primaryTypeTechnology<br></div></div>
+		    				<div class="questionrow"><div class="question">Community Name</div><div class="answer"> $communityName<br></div></div>
+		    				<div class="questionrow"><div class="question">Type of Public Institution</div><div class="answer"> $typeOfPoint<br></div><div>
+		    				<div class="questionrow"><div class="question">Public Institution Name</div><div class="answer"> $institutionName<br></div></div>
+	    					<div class="questionrow"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology<br></div></div>
+		    				<div class="questionrow"><div class="question">Date Data was Collected</div><div class="answer"> $collectionDate<br></div></div>
+							<div class="questionrow"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div></div>
+							<div class="questionrow"><div class="question">Estimated Number of Users</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
+							<div class="questionrow"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end<br></div></div>
+							<div class="questionrow"><div class="question">Has System Been Down More Than 1 Day</div><div class="answer"> #if($down1DayFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> yes #else <img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> no #end<br></div></div>
+							<div class="questionrow"><div class="question">Farthest Household from the Water Point is Within 500 Meters</div><div class="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no#end<br></div></div>
+							<div class="questionrow"><div class="question">Water Quality of Water Meets Government Standards</div><div class="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
+							<div class="questionrow"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/icon-check.gif" /> yes #else<img src="http://watermapmonitordev.appspot.com/images/icon-x.gif" /> no #end<br></div></div>
+							<div class="questionrow"><div class="question">Tariff/User Fee</div><div class="answer"> $costPer<br></div></div>
+							<div class="questionrow"><div class="question">Who Manages the Water Point?</div><div class="answer"> $currMgmtStructure<br></div></div>
+							<div class="questionrow"><div class="question">Who Repairs the Water Point</div><div class="answer"> $whoRepairsPoint<br></div></div>
+							<div class="questionrow"><div class="question">Primary Sanitation Technology</div><div class="answer"> $primaryTypeTechnology<br></div></div>
 						#if($secondaryTechnology!="null")
-		    					<div id="questionrow"><div id="question">Secondary Sanitation Technology</div><div id="answer"> $secondaryTypeTechnology<br></div></div>
+		    					<div class="questionrow"><div class="question">Secondary Sanitation Technology</div><div class="answer"> $secondaryTypeTechnology<br></div></div>
 	    				#end
-							<div id="questionrow"><div id="question">Water System Status</div><div id="answer">$waterSystemStatus<br></div></div>
+							<div class="questionrow"><div class="question">Water System Status</div><div class="answer">$waterSystemStatus<br></div></div>
 					#end 
 			</div>
 		</div>
-		<div id="rightcontent">
-			<div id="photoframe">
-				<div id="photo">
+		<div class="rightcontent">
+			<div class="photoframe">
+				<div class="photo">
 				<img src="$photoUrl" height="300px" width="350px" align="center">
 				<p class="photoCaption"><label>$waterPointPhotoCaption</label>
 				</div>
