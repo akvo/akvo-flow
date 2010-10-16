@@ -152,19 +152,19 @@ h3 {
 					#elseif($type=="water" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
 						<img src="http://watermapmonitordev.appspot.com/images/iconBlack80.png" width="65" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Meets Government Standards")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen80.jpg" width="65" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen80.png" width="65" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow80.jpg" width="65" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow80.png" width="65" height="65" border="0" />
 					#elseif($type=="school" && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilRed80.jpg" width="65" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilRed80.png" width="65" height="65" border="0" />
 					#elseif($type=="school" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack80.jpg" width="65" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack80.png" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Meets Government Standards")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseGreen80.jpg" width="65" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseGreen80.png" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseYellow80.jpg" width="65" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseYellow80.png" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.jpg" width="65" height="65" border="0" />
+						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.png" width="65" height="65" border="0" />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
 						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="65" height="65" border="0" />
 					#end

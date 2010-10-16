@@ -164,7 +164,7 @@
     </BalloonStyle> 
      <IconStyle id="pubwaterblackpin">
       <Icon>
-        <href>http://watermapmonitordev.appspot.com/houseBlack.png</href>
+        <href>http://watermapmonitordev.appspot.com/images/houseBlack.png</href>
       </Icon>
     </IconStyle>
   </Style>	
