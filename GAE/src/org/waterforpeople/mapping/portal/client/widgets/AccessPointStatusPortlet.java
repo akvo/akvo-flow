@@ -4,8 +4,8 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryD
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
-import org.waterforpeople.mapping.portal.client.widgets.component.WidgetDialog;
 
+import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -46,6 +46,7 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 	private static final int HEIGHT = 400;
 	private VerticalPanel contentPane;
 	private PieChart pieChart;
+	private Label noDataLabel;
 
 	private AbstractDataTable currentTable;
 	private ListBox yearListbox;
@@ -237,14 +238,23 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 								// remove the old chart
 								pieChart.removeFromParent();
 							}
-							pieChart = new PieChart(dataTable, createOptions());
-							currentTable = dataTable;
-							contentPane.add(pieChart);
+							if (noDataLabel != null) {
+								noDataLabel.removeFromParent();
+							}
+							if (result.length > 0) {
+								pieChart = new PieChart(dataTable,
+										createOptions());
+								currentTable = dataTable;
+								contentPane.add(pieChart);
+							} else {
+								noDataLabel = new Label("No Data");
+								contentPane.add(noDataLabel);
+							}
 						}
 					}
 				};
 				VisualizationUtils.loadVisualizationApi(onLoadCallback,
-						"corechart");				
+						"corechart");
 			}
 		};
 		apService.listAccessPointStatusSummary(countryCode, communityCode,

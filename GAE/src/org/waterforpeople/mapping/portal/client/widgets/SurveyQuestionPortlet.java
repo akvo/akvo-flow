@@ -11,9 +11,9 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.portal.client.widgets.component.WidgetDialog;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -51,6 +51,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	private ListBox surveyGroupListbox;
 	private ListBox surveyListbox;
 	private AbstractDataTable currentTable;
+	private Label noDataLabel;
 
 	public SurveyQuestionPortlet() {
 		super(NAME, false, false, true, WIDTH, HEIGHT);
@@ -58,7 +59,7 @@ public class SurveyQuestionPortlet extends Portlet {
 		questionListbox = new ListBox();
 		surveyGroupListbox = new ListBox();
 		surveyListbox = new ListBox();
-
+		
 		VerticalPanel header = new VerticalPanel();
 		HorizontalPanel line = new HorizontalPanel();
 		line.add(new Label("Survey Group: "));
@@ -219,6 +220,9 @@ public class SurveyQuestionPortlet extends Portlet {
 								// remove the old chart
 								pieChart.removeFromParent();
 							}
+							if(noDataLabel != null){
+								noDataLabel.removeFromParent();
+							}
 							DataTable dataTable = DataTable.create();
 							dataTable.addColumn(ColumnType.STRING, "Response");
 							dataTable.addColumn(ColumnType.NUMBER, "Count");
@@ -228,9 +232,15 @@ public class SurveyQuestionPortlet extends Portlet {
 										.getResponseText());
 								dataTable.setValue(i, 1, result[i].getCount());
 							}
-							pieChart = new PieChart(dataTable, createOptions());
-							contentPane.add(pieChart);
-							currentTable = dataTable;
+							if (result.length > 0) {
+								pieChart = new PieChart(dataTable,
+										createOptions());
+								contentPane.add(pieChart);
+								currentTable = dataTable;
+							}else{
+								noDataLabel = new Label("No Data");
+								contentPane.add(noDataLabel);
+							}
 
 						}
 					};
