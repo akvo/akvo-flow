@@ -32,6 +32,7 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 			+ HEIGHT + "x" + WIDTH;
 	private static final String AMP = "&amp;";
 	private static final String COMMA = "%2C";
+	private static final String PIPE= "%7C";
 
 	private static final String PIE_CHART = "cht=p";
 	private static final String CHART_TITLE = "chtt=";
@@ -95,7 +96,7 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 			StringBuilder data = new StringBuilder(CHART_DATA);
 			for (int i = 0; i < summaries.length; i++) {
 				if (i > 0) {
-					labels.append(COMMA);
+					labels.append(PIPE);
 					data.append(COMMA);
 				}
 				try {
