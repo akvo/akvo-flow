@@ -139,7 +139,7 @@ h3 {
 	<div class="headerballoon"><div class="logo"><img src="http://watermapmonitordev.appspot.com/images/flowballoon.jpg" ></div><div class="headerCaption"><label>This data is provided by Water For People &nbsp&nbsp</label></div></div>
 	<div class="communitydef">
 		<div class="communitydesc">
-			<h2>Community | $communityName </h2><p>
+			<h2>Community | $communityName - $communityCode </h2><p>
 			<h3>data collection date: $collectionDate</h3>
 		</div>
 		<div class="mapicon">
