@@ -556,12 +556,17 @@ public class KMLGenerator {
 				context.put("photoName", ap.getPhotoName());
 			}
 
-			if (ap.getMeetGovtQualityStandardFlag() == null) {
-				context.put("meetGovtQualityStandardFlag", "N/A");
-			} else {
-				context.put("meetGovtQualityStandardFlag",
-						encodeBooleanDisplay(ap
-								.getMeetGovtQualityStandardFlag()));
+			if (ap.getCountryCode() == "RW") {
+
+				if (ap.getMeetGovtQualityStandardFlag() == null) {
+					context.put("meetGovtQualityStandardFlag", "N/A");
+				} else {
+					context.put("meetGovtQualityStandardFlag",
+							encodeBooleanDisplay(ap
+									.getMeetGovtQualityStandardFlag()));
+				}
+			}else{
+				context.put("meetGovtQualityStandardFlag", "unknown");
 			}
 			if (ap.getMeetGovtQuantityStandardFlag() == null) {
 				context.put("meetGovtQuantityStandardFlag", "N/A");
