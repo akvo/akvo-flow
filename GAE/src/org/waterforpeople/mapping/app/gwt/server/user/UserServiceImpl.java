@@ -101,7 +101,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 					&& currentUser.getEmail().trim().length() > 0) {
 				u = userDao.findUserByEmail(currentUser.getEmail());
 			}
-			if (u == null && createIfNotFound) {
+			if (u == null && (createIfNotFound || userService.isUserAdmin())) {
 				User newUser = new User();
 				newUser.setEmailAddress(currentUser.getEmail());
 				newUser.setUserName(currentUser.getNickname());
