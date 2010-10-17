@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.util.client.StyleUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -30,10 +31,6 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	public static final String DSC_SORT = "desc";
 	private static final String DOWN_IMG = "images/downarrow.gif";
 	private static final String UP_IMG = "images/uparrow.gif";
-	private static final String EVEN_ROW_CSS = "gridCell-even";
-	private static final String ODD_ROW_CSS = "gridCell-odd";
-	private static final String GRID_HEADER_CSS = "gridCell-header";
-	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 
 	private static final String DEFAULT_SORT_DIR = ASC_SORT;
 
@@ -178,7 +175,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		for (int i = 0; i < headings.length; i++) {
 			addHeaderItem(i, headings[i]);
 		}
-		setGridRowStyle(instanceGrid, 0, false);
+		StyleUtil.setGridRowStyle(instanceGrid, 0, false);
 	}
 
 	/**
@@ -266,7 +263,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 			loadHeaderRow();
 			for (int i = 0; i < dtoList.size(); i++) {
 				binder.bindRow(instanceGrid, dtoList.get(i), i + 1);
-				setGridRowStyle(instanceGrid, i + 1, false);
+				StyleUtil.setGridRowStyle(instanceGrid, i + 1, false);
 			}
 
 		} else {
@@ -288,34 +285,6 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	}
 
 	/**
-	 * sets the css for a row in a grid. the top row will get the header style
-	 * and other rows get either the even or odd style.
-	 * 
-	 * @param grid
-	 * @param row
-	 * @param selected
-	 */
-	private void setGridRowStyle(Grid grid, int row, boolean selected) {
-		String style = "";
-		if (row > 0) {
-			if (selected) {
-				style = SELECTED_ROW_CSS;
-			} else {
-				if (row % 2 == 0) {
-					style = EVEN_ROW_CSS;
-				} else {
-					style = ODD_ROW_CSS;
-				}
-			}
-		} else {
-			style = GRID_HEADER_CSS;
-		}
-		for (int i = 0; i < grid.getColumnCount(); i++) {
-			grid.getCellFormatter().setStyleName(row, i, style);
-		}
-	}
-
-	/**
 	 * handles the click of rows within the grid
 	 */
 	@Override
@@ -325,7 +294,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 
 			// if we already had a selection, de-select it
 			if (currentSelection > 0) {
-				setGridRowStyle(grid, currentSelection, false);
+				StyleUtil.setGridRowStyle(grid, currentSelection, false);
 			}
 			Cell clickedCell = grid.getCellForEvent(event);
 			// the click may not have been in a cell
@@ -338,7 +307,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 					// the style
 					if (currentSelection > 0
 							&& currentSelection <= currentDtoList.size()) {
-						setGridRowStyle(grid, currentSelection, true);
+						StyleUtil.setGridRowStyle(grid, currentSelection, true);
 						listener.onItemSelected(currentDtoList
 								.get(currentSelection - 1));
 					} else {
