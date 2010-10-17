@@ -1474,6 +1474,7 @@ h2 {
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
     createCountryControl();
+    createChartControl();
     createLegend();
     
     google.maps.event.addListener(map, 'bounds_changed', function() {
@@ -1597,7 +1598,7 @@ controlText.style.fontFamily = 'Arial,sans-serif';
 controlText.style.fontSize = '12px';
 controlText.style.paddingLeft = '4px';
 controlText.style.paddingRight = '4px';
-controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+controlText.innerHTML = 'Jump to: <select id=countrySel name=countrySel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
 controlUI.appendChild(controlText);
 map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
  google.maps.event.addDomListener(controlUI, 'change', function() {
@@ -1621,6 +1622,71 @@ map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
   });
 
   }
+  
+  
+ function createChartControl(){
+   // Create a div to hold the control.
+	var controlDiv = document.createElement('DIV');
+
+	// Set CSS styles for the DIV containing the control
+	// Setting padding to 5 px will offset the control
+	// from the edge of the map
+	controlDiv.style.padding = '5px';
+
+	// Set CSS for the control border
+	var controlUI = document.createElement('DIV');
+	controlUI.style.backgroundColor = 'white';
+	controlUI.style.borderStyle = 'solid';
+	controlUI.style.borderWidth = '2px';
+	controlUI.style.cursor = 'pointer';
+	controlUI.style.textAlign = 'center';
+	controlUI.title = 'Jumps to a specific country';
+	controlDiv.appendChild(controlUI);
+
+	// Set CSS for the control interior
+	var controlText = document.createElement('DIV');
+	controlText.style.fontFamily = 'Arial,sans-serif';
+	controlText.style.fontSize = '12px';
+	controlText.style.paddingLeft = '4px';
+	controlText.style.paddingRight = '4px';
+	controlText.innerHTML = 'See summary for: <select id=chartSel name=chartSel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+	controlUI.appendChild(controlText);
+	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+	google.maps.event.addDomListener(controlUI, 'change', function() {
+	
+	if(document.getElementById("chartSel").selectedIndex == 1){ 
+ 		displayChart("SV");	   
+	}else if(document.getElementById("chartSel").selectedIndex == 2){
+    	displayChart("GT");
+    }else if(document.getElementById("chartSel").selectedIndex == 3){
+    	displayChart("HN");
+   	}else if(document.getElementById("chartSel").selectedIndex == 4){
+    	displayChart("IN");
+   	}else if(document.getElementById("chartSel").selectedIndex == 5){
+    	displayChart("MW");
+   	}else if(document.getElementById("chartSel").selectedIndex == 6){
+    	displayChart("NI");
+   	}else if(document.getElementById("chartSel").selectedIndex == 7){
+		displayChart("PE");
+    }else if(document.getElementById("chartSel").selectedIndex == 8){
+    	displayChart("RW");
+    }    
+  });
+}
+
+  
+function displayChart(countryCode) {  
+  	var url = '/charturlrestapi?action=getAPStatus&country='+countryCode;  	  	
+    $.getJSON(url, function(jd) {
+    	if(jd != null){    	   
+    		var resultUrl = jd.message;
+    		if(resultUrl != null && resultUrl.substr(0,4) == 'http'){	  	
+        		var infobox = new google.maps.InfoWindow({position: map.getCenter(), content:'<div><img src="'+jd.message+'"></div>'});
+				infobox.open(map);
+			}
+        }
+      });      
+} 
   
  function createLegend(){
   var controlDiv = document.createElement('DIV');
@@ -1649,7 +1715,9 @@ controlText.style.paddingRight = '4px';
 controlText.innerHTML = '<img height=200 width=200 src=/images/WFPKey.jpg>';
 controlUI.appendChild(controlText);
 map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(controlDiv);
-  }
+  };
+  
+  
 </script>
 
 </head>
