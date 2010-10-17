@@ -1473,6 +1473,7 @@ h2 {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    createCountryControl();
     
     google.maps.event.addListener(map, 'bounds_changed', function() {
      
@@ -1568,7 +1569,57 @@ h2 {
           }
       });
    };
+   
   
+  function createCountryControl(){
+   // Create a div to hold the control.
+var controlDiv = document.createElement('DIV');
+
+// Set CSS styles for the DIV containing the control
+// Setting padding to 5 px will offset the control
+// from the edge of the map
+controlDiv.style.padding = '5px';
+
+// Set CSS for the control border
+var controlUI = document.createElement('DIV');
+controlUI.style.backgroundColor = 'white';
+controlUI.style.borderStyle = 'solid';
+controlUI.style.borderWidth = '2px';
+controlUI.style.cursor = 'pointer';
+controlUI.style.textAlign = 'center';
+controlUI.title = 'Click to set the map to Home';
+controlDiv.appendChild(controlUI);
+
+// Set CSS for the control interior
+var controlText = document.createElement('DIV');
+controlText.style.fontFamily = 'Arial,sans-serif';
+controlText.style.fontSize = '12px';
+controlText.style.paddingLeft = '4px';
+controlText.style.paddingRight = '4px';
+controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+controlUI.appendChild(controlText);
+map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+ google.maps.event.addDomListener(controlUI, 'change', function() {
+ if(document.getElementById("countrySel").selectedIndex == 1){
+    	map.setCenter(latlngSV);
+	}else if(document.getElementById("countrySel").selectedIndex == 2){
+    	map.setCenter(latlngGT);
+    }else if(document.getElementById("countrySel").selectedIndex == 3){
+    	map.setCenter(latlngHN);
+   	}else if(document.getElementById("countrySel").selectedIndex == 4){
+    	map.setCenter(latlngIN);
+   	}else if(document.getElementById("countrySel").selectedIndex == 5){
+    	map.setCenter(latlngMW);
+   	}else if(document.getElementById("countrySel").selectedIndex == 6){
+    	map.setCenter(latlngNI);
+   	}else if(document.getElementById("countrySel").selectedIndex == 7){
+    	map.setCenter(latlngPE);    	
+    }else if(document.getElementById("countrySel").selectedIndex == 8){
+    	map.setCenter(latlngRW);
+    }
+  });
+
+  }
 </script>
 
 </head>
