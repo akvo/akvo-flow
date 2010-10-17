@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
-import org.waterforpeople.mapping.portal.client.widgets.component.DataTableBinder;
-import org.waterforpeople.mapping.portal.client.widgets.component.DataTableHeader;
-import org.waterforpeople.mapping.portal.client.widgets.component.DataTableListener;
-import org.waterforpeople.mapping.portal.client.widgets.component.PaginatedDataTable;
 
+import com.gallatinsystems.framework.gwt.component.DataTableBinder;
+import com.gallatinsystems.framework.gwt.component.DataTableHeader;
+import com.gallatinsystems.framework.gwt.component.DataTableListener;
+import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;

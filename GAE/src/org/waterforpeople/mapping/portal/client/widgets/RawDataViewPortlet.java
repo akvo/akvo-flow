@@ -10,11 +10,11 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
-import org.waterforpeople.mapping.portal.client.widgets.component.DataTableBinder;
-import org.waterforpeople.mapping.portal.client.widgets.component.DataTableHeader;
-import org.waterforpeople.mapping.portal.client.widgets.component.DataTableListener;
-import org.waterforpeople.mapping.portal.client.widgets.component.PaginatedDataTable;
 
+import com.gallatinsystems.framework.gwt.component.DataTableBinder;
+import com.gallatinsystems.framework.gwt.component.DataTableHeader;
+import com.gallatinsystems.framework.gwt.component.DataTableListener;
+import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
