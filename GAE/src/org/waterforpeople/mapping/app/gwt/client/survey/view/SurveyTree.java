@@ -396,9 +396,9 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 		} else if (item != null && item.getUserObject() != null
 				&& item.getUserObject() instanceof QuestionDto) {
 			QuestionDto dto = (QuestionDto) item.getUserObject();
-			if ((QuestionDto.QuestionType.OPTION == dto.getType() || QuestionDto.QuestionType.STRENGTH == dto
-					.getType())
-					&& dto.getOptionContainerDto() == null) {
+			if (dto.getTranslationMap() == null
+					|| (QuestionDto.QuestionType.OPTION == dto.getType() || QuestionDto.QuestionType.STRENGTH == dto
+							.getType()) && dto.getOptionContainerDto() == null) {
 				surveyService.loadQuestionDetails(dto.getKeyId(),
 						new AsyncCallback<QuestionDto>() {
 							@Override
