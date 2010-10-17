@@ -38,7 +38,7 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 	private static final String CHART_TITLE = "chtt=";
 	private static final String CHART_LEGEND = "chdl=";
 	private static final String CHART_LEGEND_OPTS = "chdlp=r";
-	private static final String CHART_COLORS = "chco=3399CC%2C80C65A%2CFF0000%2CFFCC33%2CBBCCED%2C3399CC";
+	private static final String CHART_COLORS = "chco=3399CC%2C80C65A%2CFF0000%2CFFCC33%2CBBCCED%2C800080";
 	private static final String CHART_DATA = "chd=t%3A";
 
 	private AccessPointSummaryService apStatusSummaryService;
