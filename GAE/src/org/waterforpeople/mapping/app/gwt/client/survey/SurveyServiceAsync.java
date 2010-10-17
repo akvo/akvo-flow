@@ -72,4 +72,7 @@ public interface SurveyServiceAsync {
 	void deleteSurvey(SurveyDto value, Long surveyGroupId,
 			AsyncCallback<Void> callback);
 
+	void saveTranslations(List<TranslationDto> translations,
+			AsyncCallback<List<TranslationDto>> callback);
+
 }

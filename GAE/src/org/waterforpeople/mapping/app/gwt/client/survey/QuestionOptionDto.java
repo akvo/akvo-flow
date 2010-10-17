@@ -22,6 +22,19 @@ public class QuestionOptionDto extends BaseDto implements Serializable {
 		this.translationMap = translationMap;
 	}
 
+	/**
+	 * adds the translation to the translation map. If a translation already
+	 * exists (based on language code), it will be replaced
+	 * 
+	 * @param trans
+	 */
+	public void addTranslation(TranslationDto trans) {
+		if (translationMap == null) {
+			translationMap = new TreeMap<String, TranslationDto>();
+		}
+		translationMap.put(trans.getLangCode(), trans);
+	}
+
 	public Integer getOrder() {
 		return order;
 	}

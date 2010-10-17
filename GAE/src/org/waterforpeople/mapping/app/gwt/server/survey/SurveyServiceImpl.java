@@ -30,6 +30,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -38,6 +39,7 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Heading;
 import com.gallatinsystems.survey.domain.xml.Help;
@@ -167,8 +169,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
 
 	/**
 	 * lists all surveys for a group
@@ -520,6 +520,44 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return dto;
 	}
 
+	/**
+	 * saves or updates a list of translation objects and returns the saved
+	 * value. If the text is null or blank and the ID is populated, that
+	 * translation will be deleted since we shouldn't allow blank translations.
+	 */
+	@Override
+	public List<TranslationDto> saveTranslations(
+			List<TranslationDto> translations) {
+		TranslationDao translationDao = new TranslationDao();
+		List<TranslationDto> deletedItems = new ArrayList<TranslationDto>();
+		for (TranslationDto t : translations) {
+			Translation transDomain = new Translation();
+			// need to work around marshaller's inability to translate string to
+			// enumeration values. We need to set it back after the copy call
+			String parentType = t.getParentType();
+			t.setParentType(null);
+			DtoMarshaller.copyToCanonical(transDomain, t);
+			t.setParentType(parentType);
+			transDomain.setParentType(ParentType.valueOf(parentType));
+			transDomain.setLanguageCode(t.getLangCode());
+			if (transDomain.getKey() != null
+					&& (transDomain.getText() == null || transDomain.getText()
+							.trim().length() == 0)) {
+				Translation itemToDelete = translationDao.getByKey(transDomain
+						.getKey());
+				if (itemToDelete != null) {
+					translationDao.delete(itemToDelete);
+					deletedItems.add(t);
+				}
+			} else {
+				transDomain = translationDao.save(transDomain);
+			}
+			t.setKeyId(transDomain.getKey().getId());
+		}
+		translations.removeAll(deletedItems);
+		return translations;
+	}
+
 	@Override
 	public void publishSurveyAsync(Long surveyId) {
 		surveyDao.incrementVersion(surveyId);
@@ -703,9 +741,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public void deleteSurveyGroup(SurveyGroupDto value) {
 		if (value != null) {
 			SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-
-			SurveyGroup sg = new SurveyGroup();
-
 			surveyGroupDao.delete(marshallSurveyGroup(value));
 		}
 	}

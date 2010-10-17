@@ -14,9 +14,12 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyQuestionTranslationDialog;
+import org.waterforpeople.mapping.portal.client.widgets.component.TranslationChangeListener;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
@@ -42,7 +45,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SurveyManagerPortlet extends Portlet implements ClickHandler,
-		SurveyTreeListener {
+		SurveyTreeListener, TranslationChangeListener {
 
 	public static final String NAME = "Survey Manager Portlet";
 	public static final String DESCRIPTION = "Manages Create/Edit/Delete of Surveys";
@@ -302,7 +305,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				questionTypeLB.setSelectedIndex(4);
 			} else if (qType.equals(QuestionType.VIDEO)) {
 				questionTypeLB.setSelectedIndex(5);
-			}else if (qType.equals(QuestionType.STRENGTH)) {
+			} else if (qType.equals(QuestionType.STRENGTH)) {
 				questionTypeLB.setSelectedIndex(6);
 				loadQuestionOptionDetail(item);
 			}
@@ -313,7 +316,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onChange(ChangeEvent event) {
 				int idx = ((ListBox) event.getSource()).getSelectedIndex();
-				if (idx  == 1 || idx == 6) {
+				if (idx == 1 || idx == 6) {
 					questionOptionDetail.clear(true);
 					loadQuestionOptionDetail(item);
 					if (detailContainer.getWidget(1) instanceof FlexTable)
@@ -351,6 +354,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button saveQuestionButton = new Button("Save Question");
 		Button deleteQuestionButton = new Button("Delete Question");
 		Button viewResponsesButton = new Button("View Responses");
+		Button editTranslationButton = new Button("Edit Translations");
 		questionId.setVisible(false);
 
 		questionDetailPanel.setWidget(0, 0, questionId);
@@ -409,6 +413,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		buttonHPanel.add(saveQuestionButton);
 		buttonHPanel.add(deleteQuestionButton);
+		buttonHPanel.add(editTranslationButton);
 		buttonHPanel.add(viewResponsesButton);
 
 		detailContainer.add(buttonHPanel);
@@ -419,6 +424,16 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onClick(ClickEvent event) {
 				QuestionResponseDialog dia = new QuestionResponseDialog(
 						currentSelection.getKeyId());
+				dia.show();
+			}
+		});
+
+		editTranslationButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				SurveyQuestionTranslationDialog dia = new SurveyQuestionTranslationDialog(
+						(QuestionDto) currentSelection,
+						SurveyManagerPortlet.this);
 				dia.show();
 			}
 		});
@@ -753,7 +768,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			value.setType(QuestionType.PHOTO);
 		} else if (questionTypeLB.getSelectedIndex() == 5) {
 			value.setType(QuestionType.VIDEO);
-		}else if (questionTypeLB.getSelectedIndex() == 6){
+		} else if (questionTypeLB.getSelectedIndex() == 6) {
 			value.setType(QuestionType.STRENGTH);
 			configureOptionPanel(value);
 		}
@@ -1211,6 +1226,36 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				loadQuestionGroupDetail((QuestionGroupDto) dto);
 			} else if (dto instanceof QuestionDto) {
 				loadQuestionDetails((QuestionDto) dto);
+			}
+		}
+	}
+
+	/**
+	 * updates the translationMap in currentSelection to the new translation set
+	 * so if the user clicks the edit button again without reloading the
+	 * portlet, the updates actually show up
+	 */
+	@Override
+	public void translationsUpdated(List<TranslationDto> translationList) {
+		if (currentSelection instanceof QuestionDto) {
+			QuestionDto question = (QuestionDto) currentSelection;
+			if (translationList != null) {
+				for (TranslationDto trans : translationList) {
+					if ("QUESTION_TYPE".equals(trans.getParentType())) {
+						question.addTranslation(trans);
+					} else if ("QUESTION_OPTION".equals(trans.getParentType())) {
+						// need to find the right option
+						if (question.getOptionContainerDto() != null) {
+							for (QuestionOptionDto opt : question
+									.getOptionContainerDto().getOptionsList()) {
+								if (opt.getKeyId().equals(trans.getParentId())) {
+									opt.addTranslation(trans);
+									break;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
