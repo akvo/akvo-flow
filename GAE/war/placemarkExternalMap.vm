@@ -13,11 +13,11 @@ body{
 .headerballoon {
 	display:table;
 	  float:left;
-	  position:5px,relative;
-	  background: #333333;
+	  position:5px,relative;	
+	  background: #58585a;
 	  width: 800px;
 	  height: auto;
-	  color:#404040;
+	  color:#58585a;
 }
 .communitydef {
       float:left;
@@ -59,7 +59,7 @@ body{
 }
 .question{
 	float:left;
-	background:#808080;
+	background:#58585a;
 	color:#f2f2f2;
 	width:50%;	
 	text-align:right;
