@@ -55,6 +55,14 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	private SurveyServiceAsync surveyService;
 	private TranslationChangeListener listener;
 
+	/**
+	 * instantiates and displays the dialog box using the translations present
+	 * in the questionDto. If the question has options, the translations for the
+	 * options will be shown as well.
+	 * 
+	 * @param dto
+	 * @param listener
+	 */
 	public SurveyQuestionTranslationDialog(QuestionDto dto,
 			TranslationChangeListener listener) {
 		setText(TITLE);
@@ -90,6 +98,15 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		setWidget(contentPane);
 	}
 
+	/**
+	 * figures out which items need to be saved and calls the service to persist
+	 * them. Any pre-existing translations are saved no matter what (i.e. if
+	 * they have a keyId, they're updated). New translations (i.e. no key) are
+	 * only created if the translation isn't blank.
+	 * 
+	 * After save, notify the listeners (if any) so they can update their saved
+	 * list of translations if needed.
+	 */
 	private void saveTranslations() {
 		List<TranslationDto> dtosToSave = new ArrayList<TranslationDto>();
 		for (Entry<TextBox, TranslationDto> entry : inputToTranslationMap
@@ -129,6 +146,13 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 				});
 	}
 
+	/**
+	 * builds the UI. Right now, all translations (for all supported languages)
+	 * are shown in a grid. This may need to be refactored if we support a lot
+	 * of languages (unless all languages are to be used for a survey).
+	 * 
+	 * @return
+	 */
 	private Widget buildContent() {
 		VerticalPanel vPanel = new VerticalPanel();
 		int rowCount = 2;
@@ -166,6 +190,18 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		return vPanel;
 	}
 
+	/**
+	 * constructs a text box for each supported lanaguge and, if there is
+	 * already a translation present for the question dto, populates the current
+	 * text in the control.
+	 * 
+	 * @param translationMap
+	 * @param parentId
+	 * @param parentType
+	 * @param grid
+	 * @param row
+	 * @param startCol
+	 */
 	private void populateTranslationControl(
 			TreeMap<String, TranslationDto> translationMap, Long parentId,
 			String parentType, Grid grid, int row, int startCol) {
@@ -188,6 +224,9 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		}
 	}
 
+	/**
+	 * allow the user to press escape to close
+	 */
 	@Override
 	public boolean onKeyDownPreview(char key, int modifiers) {
 		switch (key) {
