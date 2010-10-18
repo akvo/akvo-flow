@@ -13,6 +13,8 @@ public class PlacemarkDto implements Serializable {
 	private Long altitude = null;
 	private String placemarkContents = null;
 	private String iconUrl = null;
+	private String communityCode = null;
+	private String markType = null;
 	
 	public Double getLatitude() {
 		return latitude;
@@ -43,6 +45,18 @@ public class PlacemarkDto implements Serializable {
 	}
 	public void setIconUrl(String iconUrl) {
 		this.iconUrl = iconUrl;
+	}
+	public void setCommunityCode(String communityCode) {
+		this.communityCode = communityCode;
+	}
+	public String getCommunityCode() {
+		return communityCode;
+	}
+	public void setMarkType(String markType) {
+		this.markType = markType;
+	}
+	public String getMarkType() {
+		return markType;
 	}
 	
 

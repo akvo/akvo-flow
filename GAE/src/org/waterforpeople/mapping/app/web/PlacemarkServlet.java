@@ -64,6 +64,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					pdto.setLongitude(ap.getLongitude());
 					pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(),
 							ap.getPointType()));
+					pdto.setCommunityCode(ap.getCommunityCode());
+					pdto.setMarkType(ap.getPointType().toString());
 					if (needDetailsFlag) {
 						String placemarkString = null;
 						try {
