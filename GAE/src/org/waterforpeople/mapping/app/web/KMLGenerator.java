@@ -351,7 +351,6 @@ public class KMLGenerator {
 		int i = 0;
 		try {
 			for (AccessPoint ap : entries) {
-				i++;
 				if (!ap.getPointType().equals(
 						AccessPoint.AccessPointType.SANITATION_POINT)) {
 					try {
@@ -404,6 +403,7 @@ public class KMLGenerator {
 						context.put("balloon", pmContents);
 						String placemarkStr = mergeContext(context, vmName);
 						sb.append(placemarkStr);
+						i++;
 					} catch (Exception e) {
 						log.log(Level.INFO, "Error generating placemarks: "
 								+ ap.getCommunityCode(), e);
@@ -411,7 +411,7 @@ public class KMLGenerator {
 				}
 			}
 		} catch (Exception ex) {
-			log.log(Level.SEVERE, "Bad item: " + entries.get(i).toString());
+			log.log(Level.SEVERE, "Bad item: " + entries.get(i+1).toString());
 		}
 		return sb.toString();
 	}
