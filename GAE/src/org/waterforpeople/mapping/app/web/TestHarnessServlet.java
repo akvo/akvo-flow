@@ -281,7 +281,7 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setDistrict("test district");
 					ap.setEstimatedHouseholds(100L);
 					ap.setEstimatedPeoplePerHouse(11L);
-					ap.setFarthestHouseholdfromPoint("1 KM");
+					ap.setFarthestHouseholdfromPoint("Yes");
 					ap.setNumberOfHouseholdsUsingPoint(100L);
 					ap.setConstructionDateYear("2001");
 					ap.setCostPer(1.0);
