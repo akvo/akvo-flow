@@ -348,64 +348,70 @@ public class KMLGenerator {
 					null, null, null, null, null, null, Constants.ALL_RESULTS);
 
 		// loop through accessPoints and bind to variables
-		for (AccessPoint ap : entries) {
-			if (!ap.getPointType().equals(
-					AccessPoint.AccessPointType.SANITATION_POINT)) {
-				try {
-					VelocityContext context = new VelocityContext();
-					String pmContents = bindPlacemark(ap,
-							"placemarkExternalMap.vm");
-					if (ap.getCollectionDate() != null) {
-						String timestamp = DateFormatUtils.formatUTC(
-								ap.getCollectionDate(),
-								DateFormatUtils.ISO_DATE_FORMAT.getPattern());
-						String formattedDate = DateFormat.getDateInstance(
-								DateFormat.SHORT)
-								.format(ap.getCollectionDate());
-						context.put("collectionDate", formattedDate);
-						context.put("timestamp", timestamp);
-						String collectionYear = new SimpleDateFormat("yyyy")
-								.format(ap.getCollectionDate());
-						context.put("collectionYear", collectionYear);
-					} else {
-						String timestamp = DateFormatUtils.formatUTC(
-								new Date(),
-								DateFormatUtils.ISO_DATE_FORMAT.getPattern());
-						String formattedDate = DateFormat.getDateInstance(
-								DateFormat.SHORT).format(new Date());
-						context.put("collectionDate", formattedDate);
-						context.put("timestamp", timestamp);
-					}
-					if (ap.getCommunityCode() != null)
-						context.put("communityCode", ap.getCommunityCode());
-					else
-						context.put("communityCode", "Unknown" + new Date());
-					// Need to check this
-					if (ap.getPointType() != null) {
-						context.put(
-								"pinStyle",
-								encodePinStyle(ap.getPointType(),
-										ap.getPointStatus()));
-						encodeStatusString(ap.getPointStatus(), context);
-					} else {
-						context.put("pinStyle", "waterpushpinblk");
-					}
-					context.put("latitude", ap.getLatitude());
-					context.put("longitude", ap.getLongitude());
-					if (ap.getAltitude() == null)
-						context.put("altitude", 0.0);
-					else
-						context.put("altitude", ap.getAltitude());
+		int i = 0;
+		try {
+			for (AccessPoint ap : entries) {
+				i++;
+				if (!ap.getPointType().equals(
+						AccessPoint.AccessPointType.SANITATION_POINT)) {
+					try {
+						VelocityContext context = new VelocityContext();
+						String pmContents = bindPlacemark(ap,
+								"placemarkExternalMap.vm");
+						if (ap.getCollectionDate() != null) {
+							String timestamp = DateFormatUtils.formatUTC(ap
+									.getCollectionDate(),
+									DateFormatUtils.ISO_DATE_FORMAT
+											.getPattern());
+							String formattedDate = DateFormat.getDateInstance(
+									DateFormat.SHORT).format(
+									ap.getCollectionDate());
+							context.put("collectionDate", formattedDate);
+							context.put("timestamp", timestamp);
+							String collectionYear = new SimpleDateFormat("yyyy")
+									.format(ap.getCollectionDate());
+							context.put("collectionYear", collectionYear);
+						} else {
+							String timestamp = DateFormatUtils.formatUTC(
+									new Date(), DateFormatUtils.ISO_DATE_FORMAT
+											.getPattern());
+							String formattedDate = DateFormat.getDateInstance(
+									DateFormat.SHORT).format(new Date());
+							context.put("collectionDate", formattedDate);
+							context.put("timestamp", timestamp);
+						}
+						if (ap.getCommunityCode() != null)
+							context.put("communityCode", ap.getCommunityCode());
+						else
+							context.put("communityCode", "Unknown" + new Date());
+						// Need to check this
+						if (ap.getPointType() != null) {
+							context.put(
+									"pinStyle",
+									encodePinStyle(ap.getPointType(),
+											ap.getPointStatus()));
+							encodeStatusString(ap.getPointStatus(), context);
+						} else {
+							context.put("pinStyle", "waterpushpinblk");
+						}
+						context.put("latitude", ap.getLatitude());
+						context.put("longitude", ap.getLongitude());
+						if (ap.getAltitude() == null)
+							context.put("altitude", 0.0);
+						else
+							context.put("altitude", ap.getAltitude());
 
-					context.put("balloon", pmContents);
-					String placemarkStr = mergeContext(context, vmName);
-					sb.append(placemarkStr);
-				} catch (Exception e) {
-					log.log(Level.INFO,
-							"Error generating placemarks: "
-									+ ap.getCommunityCode(), e);
+						context.put("balloon", pmContents);
+						String placemarkStr = mergeContext(context, vmName);
+						sb.append(placemarkStr);
+					} catch (Exception e) {
+						log.log(Level.INFO, "Error generating placemarks: "
+								+ ap.getCommunityCode(), e);
+					}
 				}
 			}
+		} catch (Exception ex) {
+			log.log(Level.SEVERE, "Bad item: " + entries.get(i).toString());
 		}
 		return sb.toString();
 	}
@@ -565,7 +571,7 @@ public class KMLGenerator {
 							encodeBooleanDisplay(ap
 									.getMeetGovtQualityStandardFlag()));
 				}
-			}else{
+			} else {
 				context.put("meetGovtQualityStandardFlag", "unknown");
 			}
 			if (ap.getMeetGovtQuantityStandardFlag() == null) {
