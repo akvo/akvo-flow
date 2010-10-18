@@ -2,6 +2,9 @@ package org.waterforpeople.mapping.app.web.dto;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
@@ -9,7 +12,11 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String COUNTRY_PARAM = "country";
 	private String country;
 	private static final String NEED_DETAILS_PARM = "needDetailsFlag";
-	private Boolean needDetailsFlag=null;
+	private Boolean needDetailsFlag = null;
+	private static final String COMMUNITY_CODE_PARAM = "communityCode";
+	private static final String POINT_TYPE_PARAM = "pointType";
+	private String communityCode = null;
+	private AccessPoint.AccessPointType pointType = null;
 	/**
 	 * 
 	 */
@@ -31,6 +38,24 @@ public class PlacemarkRestRequest extends RestRequest {
 			if (country.length() == 0) {
 				country = null;
 			}
+		}
+		if (req.getParameter(COMMUNITY_CODE_PARAM) != null) {
+			setCommunityCode(req.getParameter(COMMUNITY_CODE_PARAM));
+		}
+		if (req.getParameter(POINT_TYPE_PARAM) != null) {
+			String value = AccessPointType.WATER_POINT.toString();
+			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
+			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeValue))
+				setPointType(AccessPointType.HEALTH_POSTS);
+			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeValue))
+				setPointType(AccessPointType.PUBLIC_INSTITUTION);
+			else if (AccessPointType.SCHOOL.equals(pointTypeValue))
+				setPointType(AccessPointType.SCHOOL);
+			else if (pointTypeValue.equals(AccessPointType.WATER_POINT.toString()))
+				setPointType(AccessPointType.WATER_POINT);
+			else
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, POINT_TYPE_PARAM));
 		}
 		try {
 			if (req.getParameter(NEED_DETAILS_PARM) != null) {
@@ -57,6 +82,22 @@ public class PlacemarkRestRequest extends RestRequest {
 
 	public Boolean getNeedDetailsFlag() {
 		return needDetailsFlag;
+	}
+
+	public void setPointType(AccessPoint.AccessPointType pointType) {
+		this.pointType = pointType;
+	}
+
+	public AccessPoint.AccessPointType getPointType() {
+		return pointType;
+	}
+
+	public void setCommunityCode(String communityCode) {
+		this.communityCode = communityCode;
+	}
+
+	public String getCommunityCode() {
+		return communityCode;
 	}
 
 }
