@@ -1474,7 +1474,7 @@ h2 {
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
     createCountryControl();
-    createChartControl();
+    //createChartControl();
     createLegend();
     
     google.maps.event.addListener(map, 'bounds_changed', function() {
@@ -1572,7 +1572,6 @@ h2 {
       });
    };
    
-  
   function createCountryControl(){
    // Create a div to hold the control.
 var controlDiv = document.createElement('DIV');
@@ -1589,7 +1588,7 @@ controlUI.style.borderStyle = 'solid';
 controlUI.style.borderWidth = '2px';
 controlUI.style.cursor = 'pointer';
 controlUI.style.textAlign = 'center';
-controlUI.title = 'Jump to a specific country';
+controlUI.title = 'Jumps to a specific country';
 controlDiv.appendChild(controlUI);
 
 // Set CSS for the control interior
@@ -1598,33 +1597,41 @@ controlText.style.fontFamily = 'Arial,sans-serif';
 controlText.style.fontSize = '12px';
 controlText.style.paddingLeft = '4px';
 controlText.style.paddingRight = '4px';
-controlText.innerHTML = 'Jump to: <select id=countrySel name=countrySel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
 controlUI.appendChild(controlText);
 map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
  google.maps.event.addDomListener(controlUI, 'change', function() {
  if(document.getElementById("countrySel").selectedIndex == 1){
     	map.setCenter(latlngSV);
+    	map.setZoom(10);
 	}else if(document.getElementById("countrySel").selectedIndex == 2){
     	map.setCenter(latlngGT);
+    	map.setZoom(10);
     }else if(document.getElementById("countrySel").selectedIndex == 3){
     	map.setCenter(latlngHN);
+    	map.setZoom(10);
    	}else if(document.getElementById("countrySel").selectedIndex == 4){
     	map.setCenter(latlngIN);
+    	map.setZoom(10);
    	}else if(document.getElementById("countrySel").selectedIndex == 5){
     	map.setCenter(latlngMW);
+    	map.setZoom(10);
    	}else if(document.getElementById("countrySel").selectedIndex == 6){
     	map.setCenter(latlngNI);
+    	map.setZoom(10);
    	}else if(document.getElementById("countrySel").selectedIndex == 7){
-    	map.setCenter(latlngPE);    	
+    	map.setCenter(latlngPE);
+    	map.setZoom(10);    	
     }else if(document.getElementById("countrySel").selectedIndex == 8){
     	map.setCenter(latlngRW);
+    	map.setZoom(10);
     }
   });
 
   }
   
   
- function createChartControl(){
+function createChartControl(){
    // Create a div to hold the control.
 	var controlDiv = document.createElement('DIV');
 
@@ -1653,40 +1660,41 @@ map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 	controlUI.appendChild(controlText);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 	google.maps.event.addDomListener(controlUI, 'change', function() {
-	
-	if(document.getElementById("chartSel").selectedIndex == 1){ 
- 		displayChart("SV");	   
+	var center;
+	if(document.getElementById("chartSel").selectedIndex == 1){  		
+ 		displayChart("SV",latlngSV); 		
 	}else if(document.getElementById("chartSel").selectedIndex == 2){
-    	displayChart("GT");
+    	displayChart("GT",latlngGT);    	
     }else if(document.getElementById("chartSel").selectedIndex == 3){
-    	displayChart("HN");
+    	displayChart("HN",latlngHN);
    	}else if(document.getElementById("chartSel").selectedIndex == 4){
-    	displayChart("IN");
+    	displayChart("IN",latlngIN);
    	}else if(document.getElementById("chartSel").selectedIndex == 5){
-    	displayChart("MW");
+    	displayChart("MW",latlngMW);    	
    	}else if(document.getElementById("chartSel").selectedIndex == 6){
-    	displayChart("NI");
+    	displayChart("NI",laglngNI);    	
    	}else if(document.getElementById("chartSel").selectedIndex == 7){
-		displayChart("PE");
+		displayChart("PE", latlngPE);		
     }else if(document.getElementById("chartSel").selectedIndex == 8){
-    	displayChart("RW");
+    	displayChart("RW",latlngRW);    	
     }    
   });
 }
 
   
-function displayChart(countryCode) {  
+function displayChart(countryCode, center) {  
   	var url = '/charturlrestapi?action=getAPStatus&country='+countryCode;  	  	
     $.getJSON(url, function(jd) {
     	if(jd != null){    	   
     		var resultUrl = jd.message;
     		if(resultUrl != null && resultUrl.substr(0,4) == 'http'){	  	
-        		var infobox = new google.maps.InfoWindow({position: map.getCenter(), content:'<div><img src="'+jd.message+'"></div>'});
+        		var infobox = new google.maps.InfoWindow({position: center, content:'<div><img src="'+jd.message+'"></div>'});
+        		map.setZoom(10);
 				infobox.open(map);
 			}
         }
       });      
-} 
+}
   
  function createLegend(){
   var controlDiv = document.createElement('DIV');
