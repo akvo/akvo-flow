@@ -8,6 +8,8 @@ import com.gallatinsystems.framework.rest.RestRequest;
 public class PlacemarkRestRequest extends RestRequest {
 	private static final String COUNTRY_PARAM = "country";
 	private String country;
+	private static final String NEED_DETAILS_PARM = "needDetailsFlag";
+	private Boolean needDetailsFlag=null;
 	/**
 	 * 
 	 */
@@ -30,6 +32,15 @@ public class PlacemarkRestRequest extends RestRequest {
 				country = null;
 			}
 		}
+		try {
+			if (req.getParameter(NEED_DETAILS_PARM) != null) {
+				setNeedDetailsFlag(new Boolean(req.getParameter(
+						NEED_DETAILS_PARM).toLowerCase()));
+			}
+		} catch (Exception ex) {
+			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+					RestError.MISSING_PARAM_ERROR_MESSAGE, NEED_DETAILS_PARM));
+		}
 	}
 
 	@Override
@@ -38,6 +49,14 @@ public class PlacemarkRestRequest extends RestRequest {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, COUNTRY_PARAM));
 		}
+	}
+
+	public void setNeedDetailsFlag(Boolean needDetailsFlag) {
+		this.needDetailsFlag = needDetailsFlag;
+	}
+
+	public Boolean getNeedDetailsFlag() {
+		return needDetailsFlag;
 	}
 
 }

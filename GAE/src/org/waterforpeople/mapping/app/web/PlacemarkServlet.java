@@ -44,12 +44,16 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		List<AccessPoint> results = apDao.searchAccessPoints(
 				piReq.getCountry(), null, null, null, null, null, null, null,
 				null, null, piReq.getCursor());
-		return convertToResponse(results, AccessPointDao.getCursor(results));
+
+		return convertToResponse(results, piReq.getNeedDetailsFlag(),
+				AccessPointDao.getCursor(results));
 	}
 
 	private RestResponse convertToResponse(List<AccessPoint> apList,
-			String cursor) {
+			Boolean needDetailsFlag, String cursor) {
 		PlacemarkRestResponse resp = new PlacemarkRestResponse();
+		if (needDetailsFlag == null)
+			needDetailsFlag = true;
 		if (apList != null) {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
 			KMLGenerator kmlGen = new KMLGenerator();
@@ -60,16 +64,19 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					pdto.setLongitude(ap.getLongitude());
 					pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(),
 							ap.getPointType()));
-					String placemarkString = null;
-					try {
-						placemarkString = kmlGen.bindPlacemark(ap,
-								"placemarkExternalMap.vm");
-						pdto.setPlacemarkContents(placemarkString);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (needDetailsFlag) {
+						String placemarkString = null;
+						try {
+							placemarkString = kmlGen.bindPlacemark(ap,
+									"placemarkExternalMap.vm");
+							pdto.setPlacemarkContents(placemarkString);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-					if (placemarkString != null)
+					if (!needDetailsFlag
+							|| (needDetailsFlag && pdto.getPlacemarkContents() != null))
 						dtoList.add(pdto);
 				}
 				resp.setPlacemarks(dtoList);
