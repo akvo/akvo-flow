@@ -411,7 +411,7 @@ public class KMLGenerator {
 				}
 			}
 		} catch (Exception ex) {
-			log.log(Level.SEVERE, "Bad item: " + entries.get(i+1).toString());
+			log.log(Level.SEVERE, "Bad access point: " + entries.get(i+1).toString());
 		}
 		return sb.toString();
 	}
