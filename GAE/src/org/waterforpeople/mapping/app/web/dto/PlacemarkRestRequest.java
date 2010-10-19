@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web.dto;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.waterforpeople.mapping.app.web.KMLGenerator;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
@@ -43,15 +44,39 @@ public class PlacemarkRestRequest extends RestRequest {
 			setCommunityCode(req.getParameter(COMMUNITY_CODE_PARAM));
 		}
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
-			String value = AccessPointType.WATER_POINT.toString();
 			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
 			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeValue))
 				setPointType(AccessPointType.HEALTH_POSTS);
-			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeValue))
+			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeValue)
+					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL
+							.equals(pointTypeValue))
 				setPointType(AccessPointType.PUBLIC_INSTITUTION);
-			else if (AccessPointType.SCHOOL.equals(pointTypeValue))
+			else if (AccessPointType.SCHOOL.equals(pointTypeValue)
+					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL
+							.equals(pointTypeValue))
 				setPointType(AccessPointType.SCHOOL);
-			else if (pointTypeValue.equals(AccessPointType.WATER_POINT.toString()))
+			else if (pointTypeValue.equals(AccessPointType.WATER_POINT
+					.toString())
+					|| KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.WATER_POINT_FUNCTIONING_GREEN_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.WATER_POINT_FUNCTIONING_RED_ICON_URL
+							.equals(pointTypeValue)
+					|| KMLGenerator.WATER_POINT_FUNCTIONING_YELLOW_ICON_URL
+							.equals(pointTypeValue))
 				setPointType(AccessPointType.WATER_POINT);
 			else
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
