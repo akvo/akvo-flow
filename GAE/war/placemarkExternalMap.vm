@@ -21,7 +21,7 @@ a:hover, a:active {
 }
 #headerBalloon {
 	height: 60px;
-	background: #58585a url(http://watermapmonitordev.appspot.com/images/brandGreySmall.png) no-repeat left;
+	background: #58585a  no-repeat left;
 	margin-right: auto;
 	margin-left: auto;
 	width: 530px;
@@ -114,7 +114,7 @@ a:hover, a:active {
 
 </style>
 <div id="wrap">
-    <div id="headerBalloon">
+    <div id="headerBalloon"><img src="http://watermapmonitordev.appspot.com/images/brandGreySmall.png">
       <div id="WFPcredit">This [Data Mapping Project] data is provided by <a href="#">Water For People</a></div>
     </div>
     <div id="communityDesc">
