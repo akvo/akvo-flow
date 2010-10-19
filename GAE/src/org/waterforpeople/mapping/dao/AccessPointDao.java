@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.GeocellQuery;
@@ -171,10 +172,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			String technologyType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
-		q
-				.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
-		q
-				.declareParameters("String countryCodeParam, String typeTechnologyParam");
+		q.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
+		q.declareParameters("String countryCodeParam, String typeTechnologyParam");
 		prepareCursor(cursorString, q);
 		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode,
 				technologyType);
@@ -218,4 +217,29 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> result = (List<AccessPoint>) q.execute();
 		return result;
 	}
+
+	@SuppressWarnings("unchecked")
+	public AccessPoint findAccessPoint(String communityCode,
+			AccessPointType pointType) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("communityCode", filterString, paramString,
+				"String", communityCode, paramMap);
+		appendNonNullParam("pointType", filterString, paramString, "String",
+				pointType.toString(), paramMap);
+		query.setOrdering("collectionDate desc");
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		List<AccessPoint> results = (List<AccessPoint>) query
+				.executeWithMap(paramMap);
+
+		return results.get(0);
+	}
+
 }
