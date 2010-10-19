@@ -1,6 +1,4 @@
 <style>
-@charset "UTF-8";
-/* CSS Document */
 @charset "utf-8";
 body {
 	font-family: Trebuchet MS, Arial, Helvetica, sans-serif;
@@ -23,7 +21,7 @@ a:hover, a:active {
 }
 #headerBalloon {
 	height: 60px;
-	background: #58585a url(http://watermapmonitordev.appspot.com/images/brandGreySmall.png) no-repeat left;
+	background: #58585a url(/images/brandGreySmall.png) no-repeat left;
 	margin-right: auto;
 	margin-left: auto;
 	width: 530px;
@@ -124,8 +122,7 @@ a:hover, a:active {
         <div id="communityName">Community | $communityName - $communityCode </div>
         <div id="collectionDate">data collection date: $collectionDate</div>
       </div>
-      <div class="mapIcon">
- 				    #if($type=="water" && $waterSystemStatus=="Meets Government Standards")
+      <div class="mapIcon">				    #if($type=="water" && $waterSystemStatus=="Meets Government Standards")
 	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen80.png" width="50" height="50"  />
 					#elseif($type=="water" && $waterSystemStatus=="Functioning but with Problems")
 						<img src="http://watermapmonitordev.appspot.com/images/iconYellow80.png" width="50" height="50"  />
@@ -150,10 +147,10 @@ a:hover, a:active {
 					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
 						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="50" height="50"  />
 					#end
-		</div>
-	</div>
-	<div id="maincontent">
-		<div id="leftcontent">
+</div>
+  </div>
+  <div id="mainContent">
+      <div id="leftContent">
 			 #if($type=="water")
 	    					<div class="QandA"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology</div></div>
 							<div class="QandA"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div></div>
@@ -186,13 +183,11 @@ a:hover, a:active {
 	    				#end
 							<div class="QandA"><div class="question">Water System Status</div><div class="answer">$waterSystemStatus<br></div></div>
 					#end 
-		</div>
-		<div class="rightcontent">
-			<div class="photoframe">
-				  <div class="photo">
-				<img width="175" height="150" src="$photoUrl">
-				 <div id="photoCaption">$waterPointPhotoCaption</div>
-				</div>
-			</div>
-		</div>
-	</div>
+      </div>
+    <div id="rightContent">
+        <div class="photo"><img width="175" height="150" src= "$photoUrl">
+          <div id="photoCaption">$photoCaption</div>
+      </div>
+    </div>
+    </div>
+</div>

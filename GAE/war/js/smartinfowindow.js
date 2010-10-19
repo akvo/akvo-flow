@@ -7,7 +7,7 @@ function SmartInfoWindow(opts) {
   this.latlng_ = opts.position;
   this.content_ = opts.content;
   this.map_ = opts.map;
-  this.height_ = 800;
+  this.height_ = 600;
   this.width_ = 800;
   this.size_ = new google.maps.Size(this.height_, this.width_);
   this.offsetVertical_ = -this.height_;
@@ -72,23 +72,23 @@ SmartInfoWindow.prototype.draw = function() {
   var widthLess = 0;
   switch (alignment) {
     case SmartInfoWindow.Align.ABOVE:
-      this.width_ = 800;
-      this.height_ = 800;
+      this.width_ = 600;
+      this.height_ = 600;
       image = 'infobox_above.gif';
       this.offsetX_ = -(this.width_ / 2 - 17);
       this.offsetY_ = -(this.height_ + 12);
       break;
     case SmartInfoWindow.Align.BELOW:
-      this.width_ = 800;
-      this.height_ = 800;
+      this.width_ = 600;
+      this.height_ = 600;
       image = 'infobox_below.gif';
       this.offsetX_ = -(this.width_ / 2 - 17);
       this.offsetY_ = -15;
       paddingTop = 20;
       break;
     case SmartInfoWindow.Align.LEFT:
-      this.width_ = 800;
-      this.height_ = 800;
+      this.width_ = 600;
+      this.height_ = 600;
       image = 'infobox_left.gif';
       this.offsetX_ = -(this.width_) + 10;
       this.offsetY_ = -(this.height_ / 2 + 33);
@@ -96,8 +96,8 @@ SmartInfoWindow.prototype.draw = function() {
       break;
     case SmartInfoWindow.Align.RIGHT:
       image = 'infobox_right.gif';
-      this.width_ = 800;
-      this.height_ = 800;
+      this.width_ = 600;
+      this.height_ = 600;
       this.offsetX_ = 6;
       this.offsetY_ = -(this.height_ / 2 + 33);
       paddingLeft = 20;
