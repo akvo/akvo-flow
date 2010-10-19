@@ -27,12 +27,13 @@ a:hover, a:active {
 	width: 530px;
 }
 #WFPcredit {
-	font-size: 0.6em;
-	color: #f3f3f3;
-	top: 25px;
-	position: absolute;
-	font-weight: normal;
-	left: 240px;
+    font-size: 0.6em;
+    color: #f3f3f3;
+    position: relative;
+    font-weight: normal;
+    text-align: right;
+    width: 380px;
+    left: 140px;
 }
 #communityDesc {
 	background: #f3f3f3;
