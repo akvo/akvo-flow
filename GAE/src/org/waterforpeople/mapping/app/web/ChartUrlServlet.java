@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
-import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,6 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryD
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointSummaryServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.ChartUrlRequest;
+import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -32,13 +34,14 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 			+ HEIGHT + "x" + WIDTH;
 	private static final String AMP = "&amp;";
 	private static final String COMMA = "%2C";
-	private static final String PIPE= "%7C";
+	private static final String PIPE = "%7C";
 
 	private static final String PIE_CHART = "cht=p";
 	private static final String CHART_TITLE = "chtt=";
 	private static final String CHART_LEGEND = "chdl=";
 	private static final String CHART_LEGEND_OPTS = "chdlp=r";
-	private static final String CHART_COLORS = "chco=3399CC%2C80C65A%2CFF0000%2CFFCC33%2CBBCCED%2C800080";
+	// color key: functioning, func with problems, broken, no system
+	private static final String CHART_COLORS = "chco=bed73d%2Cfcba63%2Ce54046%2C231f20";
 	private static final String CHART_DATA = "chd=t%3A";
 
 	private AccessPointSummaryService apStatusSummaryService;
@@ -94,22 +97,46 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 					.append(AMP);
 			StringBuilder labels = new StringBuilder(CHART_LEGEND);
 			StringBuilder data = new StringBuilder(CHART_DATA);
+			// we need to add the data in a specific order (and collapse some
+			// outdated status values) so the chart colors match the legend
+			Map<String, Long> countMap = new HashMap<String, Long>();
 			for (int i = 0; i < summaries.length; i++) {
-				if (i > 0) {
-					labels.append(PIPE);
-					data.append(COMMA);
-				}
-				try {
-					labels.append(URLEncoder.encode(summaries[i].getStatus(),
-							"UTF-8"));
-					data.append(summaries[i].getCount());
-				} catch (Exception e) {
-					log("Could not encode data", e);
-				}
+				countMap.put(summaries[i].getStatus(), summaries[i].getCount());
 			}
+
+			labels.append("Functioning").append(PIPE);
+			labels.append("Functioning with problems").append(PIPE);
+			labels.append("Broken").append(PIPE);
+			labels.append("No improved system");
+
+			data.append(
+					nullSafeAdd(
+							countMap.get(AccessPoint.Status.FUNCTIONING_HIGH
+									.toString()), 0L)).append(COMMA);
+			data.append(
+					nullSafeAdd(countMap.get(AccessPoint.Status.FUNCTIONING_OK
+							.toString()), countMap
+							.get(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS
+									.toString()))).append(COMMA);
+			data.append(
+					nullSafeAdd(countMap.get(AccessPoint.Status.BROKEN_DOWN
+							.toString()), 0L)).append(COMMA);
+			data.append(nullSafeAdd(countMap
+					.get(AccessPoint.Status.NO_IMPROVED_SYSTEM.toString()),
+					countMap.get(AccessPoint.Status.OTHER.toString())));
+
 			chartUrl.append(labels).append(AMP).append(data);
 		}
 		return chartUrl.toString();
 	}
 
+	private Long nullSafeAdd(Long val1, Long val2) {
+		if (val1 == null) {
+			val1 = new Long(0);
+		}
+		if (val2 == null) {
+			val2 = new Long(0);
+		}
+		return val1 + val2;
+	}
 }
