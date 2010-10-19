@@ -21,7 +21,7 @@ a:hover, a:active {
 }
 #headerBalloon {
 	height: 60px;
-	background: #58585a url(/images/brandGreySmall.png) no-repeat left;
+	background: #58585a url(http://watermapmonitordev.appspot.com/images/brandGreySmall.png) no-repeat left;
 	margin-right: auto;
 	margin-left: auto;
 	width: 530px;
@@ -186,7 +186,7 @@ a:hover, a:active {
       </div>
     <div id="rightContent">
         <div class="photo"><img width="175" height="150" src= "$photoUrl">
-          <div id="photoCaption">$photoCaption</div>
+          <div id="photoCaption">$waterPointPhotoCaption</div>
       </div>
     </div>
     </div>
