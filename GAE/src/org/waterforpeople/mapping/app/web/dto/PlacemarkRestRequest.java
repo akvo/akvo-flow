@@ -95,7 +95,7 @@ public class PlacemarkRestRequest extends RestRequest {
 
 	@Override
 	protected void populateErrors() {
-		if (country == null) {
+		if (country == null && super.getAction() == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, COUNTRY_PARAM));
 		}
