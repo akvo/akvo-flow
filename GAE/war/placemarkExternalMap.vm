@@ -129,7 +129,7 @@ a:hover, a:active {
 </style>
 <div id="wrap">
     <div id="headerBalloon"><img src="http://watermapmonitordev.appspot.com/images/brandGreySmall.png">
-      <div id="WFPcredit">This [Data Mapping Project] data is provided by <a href="#">Water For People</a></div>
+      <div id="WFPcredit">This FLOW data is provided by <a href="#">Water For People</a></div>
     </div>
     <div id="communityDesc">
       <div id="communityDef">
