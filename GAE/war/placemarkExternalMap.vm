@@ -21,19 +21,20 @@ a:hover, a:active {
 }
 #headerBalloon {
 	height: 60px;
-	background: #58585a  no-repeat left;
+	background: #58585a;
 	margin-right: auto;
 	margin-left: auto;
 	width: 530px;
 }
 #WFPcredit {
-    font-size: 0.6em;
-    color: #f3f3f3;
-    position: relative;
-    font-weight: normal;
-    text-align: right;
-    width: 380px;
-    left: 140px;
+	font-size: 10px;
+	color: #f3f3f3;
+	position: relative;
+	font-weight: normal;
+	text-align: right;
+	width: 380px;
+	left: 140px;
+	top: -60px;
 }
 #communityDesc {
 	background: #f3f3f3;
@@ -45,9 +46,9 @@ a:hover, a:active {
 }
 #communityDef {
 	float: left;
-	font-size: 0.9em;
+	font-size: 15px;
 	position: relative;
-	top: 7px;
+	top: 5px;
 	left: 5px;
 }
 #communityName {
@@ -68,7 +69,7 @@ a:hover, a:active {
 }
 #leftContent {
 	width: 325px;
-	font-size: 0.6em;
+	font-size: 10px;
 	position: relative;
 	float: left;
 	top: 10px;
@@ -76,6 +77,7 @@ a:hover, a:active {
 .QandA {
 	position: relative;
 	overflow: hidden;
+	height: 35px;
 }
 .question  {
 	background: #58585a;
@@ -87,15 +89,26 @@ a:hover, a:active {
 	width: 155px;
 	padding-right: 5px;
 	padding-left: 5px;
+	height: 35px;
 }
+.question span {
+	position: relative;
+	width: 100%;
+}
+
 .answer  {
 	float: right;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	width: 150px;
 	padding-left: 10px;
-	display: inline-block;
+	height: 35px;
 }
+.answer img {
+	top: 2px;
+	position: relative;
+}
+
 #rightContent {
 	position: relative;
 	float: right;
@@ -108,7 +121,7 @@ a:hover, a:active {
 }
 #photoCaption {
 	color: #f3f3f3;
-	font-size: .6em;
+	font-size: 10px;
 	text-align: center;
 	margin-top: 5px;
 }
@@ -156,13 +169,13 @@ a:hover, a:active {
 	    					<div class="QandA"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology</div></div>
 							<div class="QandA"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div></div>
 							<div class="QandA"><div class="question">Estimated Number of Users</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
-							<div class="QandA"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #elseif($provideAdequateQuantity=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div></div>
+							<div class="QandA"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($provideAdequateQuantity=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div></div>
 							#if(!($waterSystemStatus=="No Improved System"))
-								<div class="QandA"><div class="question">Has the Improved system been down for less than 1 day in the last month?</div><div class="answer"> #if(($down1DayFlag=="Yes") || ($waterSystemStatus=="Broken-down system"))<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #elseif ($down1DayFlag=="No") <img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div>  </div>
+								<div class="QandA"><div class="question">Has the Improved system been down for less than 1 day in the last month?</div><div class="answer"> #if(($down1DayFlag=="Yes") || ($waterSystemStatus=="Broken-down system"))<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #elseif ($down1DayFlag=="No") <img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div>  </div>
 							#end
-							<div class="QandA"><div class="question">Farthest Household from the Water Point is Within 500 Meters</div><div class="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" />#elseif($farthestHouseholdfromWaterPoint=="No") <img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div> </div>
-							<div class="QandA"><div class="question">Water Quality of Water Meets Government Standards</div><div class="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #elseif($meetGovtQualityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div> </div>
-							<div class="QandA"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #elseif($meetGovtQuantityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div>  </div>
+							<div class="QandA"><div class="question">Farthest Household from the Water Point is Within 500 Meters</div><div class="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" />#elseif($farthestHouseholdfromWaterPoint=="No") <img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div> </div>
+							<div class="QandA"><div class="question">Water Quality of Water Meets Government Standards</div><div class="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQualityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div> </div>
+							<div class="QandA"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQuantityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div>  </div>
 							<div class="QandA"><div class="question">Tariff/User Fee</div><div class="answer"> $costPer<br></div> </div>
 							<div class="QandA"><div class="question">Water System Status</div><div class="answer"> $waterSystemStatus<br></div> </div>
 						#else				
@@ -170,13 +183,13 @@ a:hover, a:active {
 	    					<div class="QandA"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology<br></div></div>
 							<div class="QandA"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div></div>
 							<div class="QandA"><div class="question">Estimated Number of Users</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
-							<div class="QandA"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #elseif($provideAdequateQuantity=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div></div>
+							<div class="QandA"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($provideAdequateQuantity=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div></div>
 							#if(!($waterSystemStatus=="No Improved System"))
-								<div class="QandA"><div class="question">Has the Improved system been down for less than 1 day in the last month?</div><div class="answer"> #if(($down1DayFlag=="Yes") || ($waterSystemStatus=="Broken-down system"))<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #elseif ($down1DayFlag=="No") <img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div>  </div>
+								<div class="QandA"><div class="question">Has the Improved system been down for less than 1 day in the last month?</div><div class="answer"> #if(($down1DayFlag=="Yes") || ($waterSystemStatus=="Broken-down system"))<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #elseif ($down1DayFlag=="No") <img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div>  </div>
 							#end
-							<div class="QandA"><div class="question">Farthest Household from the Water Point is Within 500 Meters</div><div class="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" />#elseif($farthestHouseholdfromWaterPoint=="No") <img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div> </div>
-							<div class="QandA"><div class="question">Water Quality of Water Meets Government Standards</div><div class="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #elseif($meetGovtQualityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div> </div>
-							<div class="QandA"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck36.png" /> #elseif($meetGovtQuantityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX36.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark36.png" /> #end<br></div>  </div>
+							<div class="QandA"><div class="question">Farthest Household from the Water Point is Within 500 Meters</div><div class="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" />#elseif($farthestHouseholdfromWaterPoint=="No") <img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div> </div>
+							<div class="QandA"><div class="question">Water Quality of Water Meets Government Standards</div><div class="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQualityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div> </div>
+							<div class="QandA"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQuantityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div>  </div>
 							<div class="QandA"><div class="question">Tariff/User Fee</div><div class="answer"> $costPer<br></div></div>
 							<div class="QandA"><div class="question">Primary Sanitation Technology</div><div class="answer"> $primaryTypeTechnology<br></div></div>
 						#if($secondaryTechnology!="null")
