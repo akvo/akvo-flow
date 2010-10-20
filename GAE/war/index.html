@@ -212,6 +212,7 @@ a {
 	var map;
 	var country;
 	var countryLatLon;
+	var openWindow = null;
 	function getCountry(){
 		 if($.jqURL.get('country')){
 		 	country = $.jqURL.get('country').toUpperCase();
@@ -381,7 +382,11 @@ a {
   	  	$.getJSON(url, function(jd) {
 	      	var count = 0;
 	            $.each(jd.placemarks, function(i,item){
+	            	if(openWindow != null){
+	            		openWindow.onRemove();
+	            	}
 	            	var infobox = new SmartInfoWindow({position: marker.getPosition(), map: map, content: item.placemarkContents});
+	            	openWindow = infobox;
 	           	count++;
 	            });
 	            if(count >0 && jd.cursor != null){
