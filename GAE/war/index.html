@@ -379,7 +379,7 @@ a {
   	google.maps.event.addListener(marker, 'click', function(e) {
   	  	var communityCode = marker.title;
   	  	var iconString = marker.icon;
-  	  	var url = '/placemarkrestapi?action=getAPDetails&communityCode='+communityCode+'&pointType='+iconString;
+  	  	var url = '/placemarkrestapi?action=getAPDetails&display=external&communityCode='+communityCode+'&pointType='+iconString;
   	  	$.getJSON(url, function(jd) {
 	      	var count = 0;
 	            $.each(jd.placemarks, function(i,item){

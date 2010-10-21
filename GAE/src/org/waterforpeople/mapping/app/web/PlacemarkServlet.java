@@ -91,7 +91,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<AccessPoint> apList = new ArrayList<AccessPoint>();
 			apList.add(ap);
 			response = (PlacemarkRestResponse) convertToResponse(apList, true,
-					null, null);
+					null, null, piReq.getDisplay());
 		} else {
 
 			List<AccessPoint> results = apDao.searchAccessPoints(piReq
@@ -99,7 +99,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					null, null, piReq.getCursor());
 
 			response = (PlacemarkRestResponse) convertToResponse(results, piReq
-					.getNeedDetailsFlag(), AccessPointDao.getCursor(results), piReq.getCursor());
+					.getNeedDetailsFlag(), AccessPointDao.getCursor(results),
+					piReq.getCursor(), null);
 		}
 		if (response != null && cache != null) {
 			try {
@@ -112,7 +113,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	}
 
 	private RestResponse convertToResponse(List<AccessPoint> apList,
-			Boolean needDetailsFlag, String cursor, String oldCursor) {
+			Boolean needDetailsFlag, String cursor, String oldCursor,
+			String display) {
 		PlacemarkRestResponse resp = new PlacemarkRestResponse();
 		if (needDetailsFlag == null)
 			needDetailsFlag = true;
@@ -121,7 +123,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 
 			for (AccessPoint ap : apList) {
 				if (!ap.getPointType().equals(AccessPointType.SANITATION_POINT)) {
-					dtoList.add(marshallDomainToDto(ap, needDetailsFlag));
+					dtoList.add(marshallDomainToDto(ap, needDetailsFlag,
+							display));
 				}
 				resp.setPlacemarks(dtoList);
 			}
@@ -137,7 +140,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	}
 
 	private PlacemarkDto marshallDomainToDto(AccessPoint ap,
-			Boolean needDetailsFlag) {
+			Boolean needDetailsFlag, String display) {
 		PlacemarkDto pdto = new PlacemarkDto();
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
@@ -150,7 +153,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			String placemarkString = null;
 			try {
 				placemarkString = kmlGen.bindPlacemark(ap,
-						"placemarkExternalMap.vm");
+						"placemarkExternalMap.vm", display);
 				pdto.setPlacemarkContents(placemarkString);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

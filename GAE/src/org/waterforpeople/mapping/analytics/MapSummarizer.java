@@ -31,8 +31,7 @@ public class MapSummarizer implements DataSummarizer {
 				 */
 				KMLGenerator kmlGen = new KMLGenerator();
 				try {
-					String placemark = kmlGen.bindPlacemark(ap,
-							"PlacemarkTabs.vm");
+					String placemark = kmlGen.bindPlacemark(ap,"PlacemarkTabs.vm", KMLGenerator.GOOGLE_EARTH_DISPLAY);
 					if (placemark != null) {
 						MapFragment mf = new MapFragment();
 						mf.setFragmentValue(new Text(placemark));

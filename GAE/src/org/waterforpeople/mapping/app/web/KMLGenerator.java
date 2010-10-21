@@ -32,6 +32,7 @@ public class KMLGenerator {
 
 	private VelocityEngine engine;
 
+	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
 	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconGreen36.png";
 	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconYellow36.png";
 	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconRed36.png";
@@ -336,8 +337,12 @@ public class KMLGenerator {
 		}
 		return null;
 	}
+	
+	public String generatePlacemarks(String vmName, String countryCode){
+		return generatePlacemarks(vmName, countryCode, GOOGLE_EARTH_DISPLAY);
+	}
 
-	public String generatePlacemarks(String vmName, String countryCode) {
+	public String generatePlacemarks(String vmName, String countryCode, String display) {
 		StringBuilder sb = new StringBuilder();
 		AccessPointDao apDAO = new AccessPointDao();
 		List<AccessPoint> entries = null;
@@ -356,7 +361,7 @@ public class KMLGenerator {
 					try {
 						VelocityContext context = new VelocityContext();
 						String pmContents = bindPlacemark(ap,
-								"placemarkExternalMap.vm");
+								"placemarkExternalMap.vm", display);
 						if (ap.getCollectionDate() != null) {
 							String timestamp = DateFormatUtils.formatUTC(ap
 									.getCollectionDate(),
@@ -416,7 +421,7 @@ public class KMLGenerator {
 		return sb.toString();
 	}
 
-	public String bindPlacemark(AccessPoint ap, String vmName) throws Exception {
+	public String bindPlacemark(AccessPoint ap, String vmName, String display) throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
 		if (ap.getCountryCode() == null)
@@ -424,6 +429,9 @@ public class KMLGenerator {
 		if (ap.getCountryCode() != null) {
 
 			VelocityContext context = new VelocityContext();
+			if(display!= null){
+				context.put("display", display);
+			}
 			context.put("countryCode", ap.getCountryCode());
 			if (ap.getCollectionDate() != null) {
 				String timestamp = DateFormatUtils.formatUTC(

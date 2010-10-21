@@ -13,12 +13,15 @@ public class PlacemarkRestRequest extends RestRequest {
 	public static final String GET_AP_DETAILS_ACTION = "getAPDetails";
 	public static final String LIST_PLACEMARK = "listPlacemarks";
 	private static final String COUNTRY_PARAM = "country";
-	private String country;
 	private static final String NEED_DETAILS_PARM = "needDetailsFlag";
-	private Boolean needDetailsFlag = null;
 	private static final String COMMUNITY_CODE_PARAM = "communityCode";
 	private static final String POINT_TYPE_PARAM = "pointType";
+	private static final String DISPLAY_TYPE_PARAM = "display";
+
+	private String country;
+	private Boolean needDetailsFlag = null;
 	private String communityCode = null;
+	private String display;
 	private AccessPoint.AccessPointType pointType = null;
 
 	private static final long serialVersionUID = -3977305417999591917L;
@@ -43,6 +46,7 @@ public class PlacemarkRestRequest extends RestRequest {
 		if (req.getParameter(COMMUNITY_CODE_PARAM) != null) {
 			setCommunityCode(req.getParameter(COMMUNITY_CODE_PARAM));
 		}
+		display = req.getParameter(DISPLAY_TYPE_PARAM);
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
 			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
 			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeValue))
@@ -125,13 +129,23 @@ public class PlacemarkRestRequest extends RestRequest {
 		return communityCode;
 	}
 
+	public String getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(String display) {
+		this.display = display;
+	}
+
 	public String getCacheKey() {
 		String key = getAction();
 		if (key == null) {
 			key = LIST_PLACEMARK;
-			key += country + (getCursor() != null ? getCursor() : "");
+			key += country + (display != null ? display : "")
+					+ (getCursor() != null ? getCursor() : "");
 		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
-			key += "-" + communityCode + (pointType != null ? pointType : "");
+			key += "-" + communityCode + (display != null ? display : "")
+					+ (pointType != null ? pointType : "");
 		}
 		return key;
 	}
