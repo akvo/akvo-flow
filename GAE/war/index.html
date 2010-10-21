@@ -66,7 +66,7 @@ a {
 
 #footer ul.menu li {
 	float: left;
-	background: url(/assets/images/separator-02-inner.gif) no-repeat 0 3px;
+	background: url(http://www.waterforpeople.org/assets/images/separator-02-inner.gif) no-repeat 0 3px;
 	letter-spacing: 1px;
 	margin: 0 13px 0 0;
 	padding: 0 0 0 13px;
@@ -210,6 +210,7 @@ a {
 <script src="/js/jqURL.js"></script>
 <script src="/js/smartinfowindow.js"></script>
 <script type="text/javascript">
+
 	var map;
 	var country;
 	var countryLatLon;
@@ -298,10 +299,22 @@ a {
       center: countryLatLon,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
+    var isSmartphone = false;	
+	if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/android/i)) {
+		isSmartphone = true;
+	} 
+
+	if(isSmartphone){
+    	document.getElementById("map_canvas").style.width = '90%';
+
+    }
+    
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
     createCountryControl();
     //createChartControl();
+if(!isSmartphone){
     createLegend();
+    }
 
     google.maps.event.addListener(map, 'bounds_changed', function() {
 
@@ -585,7 +598,7 @@ map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(controlDiv);
 </head>
 <body onload="initialize()">
 <div id="header" style="width: 100%"><a href="http://www.waterforpeople.org"><img
-	src="/images/wfp_flow.jpg"></a></div>
+	src="/images/wfp_flow_header.jpg"></a></div>
 
 <div id="map_canvas"></div>
 
@@ -610,6 +623,7 @@ map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(controlDiv);
 	FOR PEOPLE&ndash;CANADA</a></li>
 	<li><a href="http://www.waterforpeople.org/site-map.html">SITE
 	MAP</a></li>
+	<li>Developed By <a href="http://www.gallatinsystems.com">Gallatin Systems</a></li>
 </ul>
 </div>
 <div></div>
