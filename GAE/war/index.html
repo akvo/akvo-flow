@@ -390,7 +390,7 @@ a {
 	            	openWindow = infobox;
 	           	count++;
 	            });
-	            if(count == 20 && jd.cursor != null){
+	            if(count >0 && jd.cursor != null){
 	            	getPlacemarkInfo(countryCode, jd.cursor);
 	            }
 	        });
@@ -408,7 +408,7 @@ a {
          	makeMarker(item.latitude,item.longitude, item.iconUrl, item.communityCode, item.markType, item.placemarkContents);
          	count++;
           });
-          if(count == 20 && jd.cursor != null){
+          if(count >0 && jd.cursor != null){
           	getPlacemarkInfo(countryCode, jd.cursor);
           }
       });
