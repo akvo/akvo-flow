@@ -1,10 +1,19 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
 
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
@@ -18,15 +27,34 @@ import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
 public class PlacemarkServlet extends AbstractRestApiServlet {
+	private static final long serialVersionUID = -9031594440737716966L;
 	private static final Logger log = Logger.getLogger(PlacemarkServlet.class
 			.getName());
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -9031594440737716966L;
+	private KMLGenerator kmlGen = new KMLGenerator();
+	private Cache cache;
+	private AccessPointDao apDao;
+
+	@SuppressWarnings("unchecked")
+	public PlacemarkServlet() {
+		super();
+		apDao = new AccessPointDao();
+		CacheFactory cacheFactory;
+		try {
+			cacheFactory = CacheManager.getInstance().getCacheFactory();
+			Map configMap = new HashMap();
+			configMap.put(GCacheFactory.EXPIRATION_DELTA, 3600);
+			configMap.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+			cache = cacheFactory.createCache(Collections.emptyMap());
+		} catch (CacheException e) {
+			log.log(Level.SEVERE, "Could not initialize cache", e);
+
+		}
+	}
 
 	@Override
 	protected RestRequest convertRequest() throws Exception {
@@ -40,25 +68,48 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		PlacemarkRestRequest piReq = (PlacemarkRestRequest) req;
-		AccessPointDao apDao = new AccessPointDao();
-		 
+		if (cache != null) {
+			PlacemarkRestResponse cachedResponse = null;
+			try {
+				cachedResponse = (PlacemarkRestResponse) cache.get(piReq
+						.getCacheKey());
+			} catch (Throwable t) {
+				log.log(Level.WARNING, "Could not look up data in cache", t);
+			}
+			if (cachedResponse != null) {
+				return cachedResponse;
+			}
+		}
+		PlacemarkRestResponse response = null;
+		// if we had a cache miss (or the cache is not available), then hit the
+		// datastore and cachethe resupt
 		if (piReq.getAction() != null
-				&& piReq.getAction().equals("getAPDetails")) {
-			AccessPoint ap = (AccessPoint)apDao.findAccessPoint(piReq.getCommunityCode(),piReq.getPointType());
+				&& PlacemarkRestRequest.GET_AP_DETAILS_ACTION.equals(piReq
+						.getAction())) {
+			AccessPoint ap = (AccessPoint) apDao.findAccessPoint(piReq
+					.getCommunityCode(), piReq.getPointType());
 			List<AccessPoint> apList = new ArrayList<AccessPoint>();
 			apList.add(ap);
-			return convertToResponse(apList,true,null);
+			response = (PlacemarkRestResponse) convertToResponse(apList, true,
+					null);
 		} else {
-			List<AccessPoint> results = apDao.searchAccessPoints(
-					piReq.getCountry(), null, null, null, null, null, null,
-					null, null, null, piReq.getCursor());
 
-			return convertToResponse(results, piReq.getNeedDetailsFlag(),
-					AccessPointDao.getCursor(results));
+			List<AccessPoint> results = apDao.searchAccessPoints(piReq
+					.getCountry(), null, null, null, null, null, null, null,
+					null, null, piReq.getCursor());
+
+			response = (PlacemarkRestResponse) convertToResponse(results, piReq
+					.getNeedDetailsFlag(), AccessPointDao.getCursor(results));
 		}
+		if (response != null && cache != null) {
+			try {
+				cache.put(piReq.getCacheKey(), response);
+			} catch (Throwable t) {
+				log.log(Level.WARNING, "Could not cache results", t);
+			}
+		}
+		return response;
 	}
-
-	KMLGenerator kmlGen = new KMLGenerator();
 
 	private RestResponse convertToResponse(List<AccessPoint> apList,
 			Boolean needDetailsFlag, String cursor) {
@@ -78,15 +129,15 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		resp.setCursor(cursor);
 		return resp;
 	}
-	
-	
 
-	private PlacemarkDto marshallDomainToDto(AccessPoint ap, Boolean needDetailsFlag){
+	private PlacemarkDto marshallDomainToDto(AccessPoint ap,
+			Boolean needDetailsFlag) {
 		PlacemarkDto pdto = new PlacemarkDto();
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
-		pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(),
-				ap.getPointType()));
+		pdto
+				.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap
+						.getPointType()));
 		pdto.setCommunityCode(ap.getCommunityCode());
 		pdto.setMarkType(ap.getPointType().toString());
 		if (needDetailsFlag) {

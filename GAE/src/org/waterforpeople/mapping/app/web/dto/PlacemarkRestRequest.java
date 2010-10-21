@@ -10,6 +10,8 @@ import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class PlacemarkRestRequest extends RestRequest {
+	public static final String GET_AP_DETAILS_ACTION = "getAPDetails";
+	public static final String LIST_PLACEMARK = "listPlacemarks";
 	private static final String COUNTRY_PARAM = "country";
 	private String country;
 	private static final String NEED_DETAILS_PARM = "needDetailsFlag";
@@ -18,9 +20,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String POINT_TYPE_PARAM = "pointType";
 	private String communityCode = null;
 	private AccessPoint.AccessPointType pointType = null;
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -3977305417999591917L;
 
 	public String getCountry() {
@@ -125,4 +125,14 @@ public class PlacemarkRestRequest extends RestRequest {
 		return communityCode;
 	}
 
+	public String getCacheKey() {
+		String key = getAction();
+		if (key == null) {
+			key = LIST_PLACEMARK;
+			key += "-" + communityCode + (pointType != null ? pointType : "");
+		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
+			key += country + (getCursor() != null ? getCursor() : "");
+		}
+		return key;
+	}
 }
