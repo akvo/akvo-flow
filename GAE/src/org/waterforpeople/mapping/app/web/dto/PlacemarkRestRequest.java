@@ -129,9 +129,9 @@ public class PlacemarkRestRequest extends RestRequest {
 		String key = getAction();
 		if (key == null) {
 			key = LIST_PLACEMARK;
-			key += "-" + communityCode + (pointType != null ? pointType : "");
-		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
 			key += country + (getCursor() != null ? getCursor() : "");
+		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
+			key += "-" + communityCode + (pointType != null ? pointType : "");
 		}
 		return key;
 	}

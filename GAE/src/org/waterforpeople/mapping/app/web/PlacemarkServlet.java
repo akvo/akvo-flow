@@ -91,7 +91,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<AccessPoint> apList = new ArrayList<AccessPoint>();
 			apList.add(ap);
 			response = (PlacemarkRestResponse) convertToResponse(apList, true,
-					null);
+					null, null);
 		} else {
 
 			List<AccessPoint> results = apDao.searchAccessPoints(piReq
@@ -99,7 +99,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					null, null, piReq.getCursor());
 
 			response = (PlacemarkRestResponse) convertToResponse(results, piReq
-					.getNeedDetailsFlag(), AccessPointDao.getCursor(results));
+					.getNeedDetailsFlag(), AccessPointDao.getCursor(results), piReq.getCursor());
 		}
 		if (response != null && cache != null) {
 			try {
@@ -112,7 +112,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	}
 
 	private RestResponse convertToResponse(List<AccessPoint> apList,
-			Boolean needDetailsFlag, String cursor) {
+			Boolean needDetailsFlag, String cursor, String oldCursor) {
 		PlacemarkRestResponse resp = new PlacemarkRestResponse();
 		if (needDetailsFlag == null)
 			needDetailsFlag = true;
@@ -126,7 +126,13 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 				resp.setPlacemarks(dtoList);
 			}
 		}
-		resp.setCursor(cursor);
+		if (cursor != null) {
+			if (oldCursor == null || !cursor.equals(oldCursor)) {
+				resp.setCursor(cursor);
+			}
+		} else {
+			resp.setCursor(null);
+		}
 		return resp;
 	}
 
