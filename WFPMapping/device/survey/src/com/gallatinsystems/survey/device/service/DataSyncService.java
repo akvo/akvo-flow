@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.concurrent.Semaphore;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
@@ -28,6 +29,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.MultipartStream;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
@@ -54,19 +56,11 @@ public class DataSyncService extends Service {
 
 	private static final boolean INCLUDE_IMAGES_IN_ZIP = false;
 
-	private static final String NOTIFICATION_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
 	private static final String NOTIFICATION_PN_PARAM = "&phoneNumber=";
 	private static final String CHECKSUM_PARAM = "&checksum=";
-	private static final String DATA_UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
-	private static final String S3_ID = "1JZZVDSNFFQYF23ZYJ02";	
-	//NOTE: the S3 policies expire on 10/2/2013
-	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTMtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String DATA_S3_SIG = "fJ585oyvef7e8t5NuHQDf1iioWw=";
 	private static final String DATA_CONTENT_TYPE = "application/zip";
 	private static final String S3_DATA_FILE_PATH = "devicezip";
-	private static final String IMAGE_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTMtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJpbWFnZXMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String IMAGE_S3_SIG = "smmfHmVzQ+LS75ZdA0PxrUagj3s=";
 	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
 	private static final String S3_IMAGE_FILE_PATH = "images";
 
@@ -82,6 +76,7 @@ public class DataSyncService extends Service {
 	private static final int OK_CODE = 200;
 	private static Semaphore lock = new Semaphore(1);
 	private static int counter = 0;
+	private Properties props;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -111,6 +106,7 @@ public class DataSyncService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		props = PropertyUtil.loadProperties(getResources());
 	}
 
 	/**
@@ -133,7 +129,7 @@ public class DataSyncService extends Service {
 				serverBase = getResources().getStringArray(R.array.servers)[Integer
 						.parseInt(serverBase)];
 			} else {
-				serverBase = NOTIFICATION_BASE;
+				serverBase = props.getProperty(ConstantUtil.SERVER_BASE);
 			}
 			int uploadIndex = -1;
 			if (uploadOption != null && uploadOption.trim().length() > 0) {
@@ -160,8 +156,10 @@ public class DataSyncService extends Service {
 						checksum = idList[2].iterator().next();
 					}
 					if (ConstantUtil.SEND.equals(type)) {
-						sendFile(fileName, S3_DATA_FILE_PATH, DATA_S3_POLICY,
-								DATA_S3_SIG, DATA_CONTENT_TYPE);
+						sendFile(fileName, S3_DATA_FILE_PATH, props
+								.getProperty(ConstantUtil.DATA_S3_POLICY),
+								props.getProperty(ConstantUtil.DATA_S3_SIG),
+								DATA_CONTENT_TYPE);
 						if (sendProcessingNotification(serverBase, destName,
 								checksum)) {
 							if (idList[0].size() > 0) {
@@ -323,8 +321,13 @@ public class DataSyncService extends Service {
 							}
 						} else {
 							try {
-								sendFile(imagePaths.get(i), S3_IMAGE_FILE_PATH,
-										IMAGE_S3_POLICY, IMAGE_S3_SIG,
+								sendFile(
+										imagePaths.get(i),
+										S3_IMAGE_FILE_PATH,
+										props
+												.getProperty(ConstantUtil.IMAGE_S3_POLICY),
+										props
+												.getProperty(ConstantUtil.IMAGE_S3_SIG),
 										IMAGE_CONTENT_TYPE);
 							} catch (Exception e) {
 								Log.e(TAG, "Could not add image "
@@ -563,10 +566,11 @@ public class DataSyncService extends Service {
 
 		try {
 			HttpURLConnection conn = MultipartStream.createConnection(new URL(
-					DATA_UPLOAD_URL));
+					props.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
 			MultipartStream stream = new MultipartStream(conn.getOutputStream());
 			stream.writeFormField("key", dir + "/${filename}");
-			stream.writeFormField("AWSAccessKeyId", S3_ID);
+			stream.writeFormField("AWSAccessKeyId", props
+					.getProperty(ConstantUtil.S3_ID));
 			stream.writeFormField("acl", "public-read");
 			stream.writeFormField("success_action_redirect",
 					"http://www.gallatinsystems.com/SuccessUpload.html");

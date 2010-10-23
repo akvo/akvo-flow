@@ -25,14 +25,13 @@ public class ConstantUtil {
 	public static final String PROCESSED_ERROR_SUFFIX = ".error";
 	public static final String BOOTSTRAP_ROLLBACK_FILE = "rollback.sql";
 
-
 	/**
 	 * survey file locations
 	 */
 	public static final String RESOURCE_LOCATION = "res";
 	public static final String FILE_LOCATION = "sdcard";
 	public static final String SURVEY_DEFAULT_LANG = "english";
-	
+
 	/**
 	 * status related constants
 	 */
@@ -223,6 +222,18 @@ public class ConstantUtil {
 	 * "code" to prevent unauthorized use of administrative settings/preferences
 	 */
 	public static final String ADMIN_AUTH_CODE = "12345";
+
+	/**
+	 * property file keys
+	 */
+	public static final String S3_ID = "s3Id";
+	public static final String DATA_S3_POLICY = "dataS3Policy";
+	public static final String DATA_S3_SIG = "dataS3Sig";
+	public static final String IMAGE_S3_POLICY = "imageS3Policy";
+	public static final String IMAGE_S3_SIG = "imageS3Sig";
+	public static final String DATA_UPLOAD_URL = "dataUploadUrl";
+	public static final String SERVER_BASE = "serverBase";
+	public static final String SURVEY_S3_URL = "surveyS3Url";
 
 	/**
 	 * recognized help activities

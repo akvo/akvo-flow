@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -31,6 +32,7 @@ import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
@@ -49,22 +51,16 @@ public class SurveyDownloadService extends Service {
 
 	@SuppressWarnings("unused")
 	private static final String NO_SURVEY = "No Survey Found";
-
-	private static final String SERVER_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String SURVEY_LIST_SERVICE_PATH = "/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_HEADER_SERVICE_PATH = "/surveymanager?action=getSurveyHeader&surveyId=";
 	@SuppressWarnings("unused")
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
-	private static final String SURVEY_S3_URL = "http://waterforpeople.s3.amazonaws.com/surveys/";
-
-	private SurveyDbAdapter databaseAdaptor;
-
 	private static final String SD_LOC = "sdcard";
-
+	
+	private SurveyDbAdapter databaseAdaptor;
+	private Properties props;
 	private Thread thread;
-
 	private ThreadPoolExecutor downloadExecutor;
-
 	private static Semaphore lock = new Semaphore(1);
 
 	public IBinder onBind(Intent intent) {
@@ -94,6 +90,7 @@ public class SurveyDownloadService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		props = PropertyUtil.loadProperties(getResources());
 		downloadExecutor = new ThreadPoolExecutor(1, 3, 5000,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	}
@@ -118,7 +115,7 @@ public class SurveyDownloadService extends Service {
 					serverBase = getResources().getStringArray(R.array.servers)[Integer
 							.parseInt(serverBase)];
 				} else {
-					serverBase = SERVER_BASE;
+					serverBase = props.getProperty(ConstantUtil.SERVER_BASE);
 				}
 				ArrayList<Survey> surveys = null;
 
@@ -197,10 +194,10 @@ public class SurveyDownloadService extends Service {
 	private boolean downloadSurvey(String serverBase, Survey survey) {
 		boolean success = false;
 		try {
-			HttpUtil.httpDownload(SURVEY_S3_URL + survey.getId()
-					+ ConstantUtil.ARCHIVE_SUFFIX, ConstantUtil.DATA_DIR
-					+ File.separator + survey.getId()
-					+ ConstantUtil.ARCHIVE_SUFFIX);
+			HttpUtil.httpDownload(props.getProperty(ConstantUtil.SURVEY_S3_URL)
+					+ survey.getId() + ConstantUtil.ARCHIVE_SUFFIX,
+					ConstantUtil.DATA_DIR + File.separator + survey.getId()
+							+ ConstantUtil.ARCHIVE_SUFFIX);
 			extractAndSave(new File(ConstantUtil.DATA_DIR + File.separator
 					+ survey.getId() + ConstantUtil.ARCHIVE_SUFFIX));
 

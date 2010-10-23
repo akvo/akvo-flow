@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.device.service;
 
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,6 +17,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 
 /**
@@ -33,13 +35,13 @@ public class LocationService extends Service {
 	private static final long INTERVAL = 300000;
 	private static boolean sendBeacon = true;
 	private static final String BEACON_SERVICE_PATH = "/locationBeacon?action=beacon&phoneNumber=";
-	private static final String BEACON_SERVICE_BASE = "http://watermapmonitordev.appspot.com";
 	private static final String VER = "&ver=";
 	private static final String LAT = "&lat=";
 	private static final String LON = "&lon=";
 	private static final String ACC = "&acc=";
 	private static final String TAG = "LocationService";
 	private String version;
+	private Properties props;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -70,7 +72,7 @@ public class LocationService extends Service {
 			serverBase = resources.getStringArray(R.array.servers)[Integer
 					.parseInt(serverBase)];
 		} else {
-			serverBase = BEACON_SERVICE_BASE;
+			serverBase = props.getProperty(ConstantUtil.SERVER_BASE);
 		}
 		final String server = serverBase;
 
@@ -100,6 +102,7 @@ public class LocationService extends Service {
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
+		props = PropertyUtil.loadProperties(getResources());
 	}
 
 	/**

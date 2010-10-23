@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.service;
 
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.concurrent.Semaphore;
 
 import android.app.Service;
@@ -13,6 +14,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.remote.PointOfInterestService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 
 /**
@@ -29,7 +31,6 @@ import com.gallatinsystems.survey.device.util.StatusUtil;
 public class PrecacheService extends Service {
 
 	private static final String TAG = "PRECACHE_SERVICE";
-	private static final String SERVER_BASE = "http://watermapmonitordev.appspot.com";
 	private static final int DEFAULT_LIMIT = 200;
 
 	private SurveyDbAdapter databaseAdapter;
@@ -38,6 +39,7 @@ public class PrecacheService extends Service {
 
 	private Thread thread;
 	private static Semaphore lock = new Semaphore(1);
+	private Properties props;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -67,7 +69,8 @@ public class PrecacheService extends Service {
 									R.array.servers)[Integer
 									.parseInt(serverBase)];
 						} else {
-							serverBase = SERVER_BASE;
+							serverBase = props
+									.getProperty(ConstantUtil.SERVER_BASE);
 						}
 						String pointCountries = databaseAdapter
 								.findPreference(ConstantUtil.PRECACHE_POINT_COUNTRY_KEY);
@@ -132,6 +135,7 @@ public class PrecacheService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		props = PropertyUtil.loadProperties(getResources());
 	}
 
 	/**
