@@ -7,6 +7,7 @@ import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplate
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateMappingDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,7 +24,6 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 	public static final String DESCRIPTION = "Create/Edit/Delete Display Mapping";
 	public static final String NAME = "Display Mapping Manager";
 
-	
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
@@ -38,18 +38,19 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 	FlexTable dspEntryTable = new FlexTable();
 
 	public DisplayContentManager() {
-		super(title, scrollable, configurable, false, WIDTH, HEIGHT, null, false, "");
+		super(title, scrollable, configurable, false, WIDTH, HEIGHT, null,
+				false, "");
 	}
 
 	public DisplayContentManager(String title, boolean scrollable,
 			boolean configurable, int width, int height, UserDto user,
 			boolean useCommunity, String specialOption) {
 		super(title, scrollable, configurable, false, width, height, user,
-				useCommunity, specialOption);		
+				useCommunity, specialOption);
 	}
 
 	public DisplayContentManager(UserDto user) {
-		super(NAME, true, false, false,WIDTH, HEIGHT, user, true,
+		super(NAME, true, false, false, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
 		loadAttributes();
 		contentPane = new VerticalPanel();
@@ -80,8 +81,10 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-
+				MessageDialog errDialog = new MessageDialog(
+						"Error while fetching data",
+						"Could not list labels. Please try again. If the problem persists, contact an administrator");
+				errDialog.showRelativeTo(mainVPanel);
 			}
 
 			@Override
@@ -102,8 +105,10 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-
+				MessageDialog errDialog = new MessageDialog(
+						"Error while fetching data",
+						"Could not list rows. Please try again. If the problem persists, contact an administrator");
+				errDialog.showRelativeTo(mainVPanel);
 			}
 
 			@Override
@@ -163,8 +168,10 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDialog = new MessageDialog(
+								"Error while saving",
+								"Could not save. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(mainVPanel);
 					}
 
 					@Override
@@ -192,8 +199,10 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDialog = new MessageDialog(
+								"Error while deleting",
+								"Could not delete. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(mainVPanel);
 					}
 
 					@Override
@@ -218,7 +227,10 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						MessageDialog errDialog = new MessageDialog(
+								"Error while fetching data",
+								"Could not list access point annotations. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(mainVPanel);
 
 					}
 

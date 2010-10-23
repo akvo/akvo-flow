@@ -126,7 +126,7 @@ public class SummaryPortlet extends Portlet {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				// no-op
 				
 			}
 

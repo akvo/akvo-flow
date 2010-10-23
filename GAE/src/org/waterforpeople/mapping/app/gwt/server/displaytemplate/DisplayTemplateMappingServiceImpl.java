@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.server.displaytemplate;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerService;
@@ -33,7 +32,7 @@ public class DisplayTemplateMappingServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public void delete(Long keyId) {
-		//TODO: delete
+		// TODO: delete
 	}
 
 	@Override
@@ -43,12 +42,8 @@ public class DisplayTemplateMappingServiceImpl extends RemoteServiceServlet
 			DisplayTemplateMappingDto itemTo = new DisplayTemplateMappingDto();
 			try {
 				DisplayTemplateMappingUtil.copyCanonicalToDto(itemFrom, itemTo);
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				log("Cannot get template rows", e);
 			}
 			list.add(itemTo);
 		}
@@ -67,14 +62,9 @@ public class DisplayTemplateMappingServiceImpl extends RemoteServiceServlet
 			DisplayTemplateMappingUtil.copyDtoToCanonical(item, itemTo);
 			DisplayTemplateMappingUtil.copyCanonicalToDto(dao.save(itemTo),
 					item);
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			log("Could not save mapping", e);
 		}
-
 		return item;
 	}
 

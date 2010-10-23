@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,12 +16,10 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 
 	private static final long serialVersionUID = -2270875281089527752L;
-	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(SpreadsheetProcessorServlet.class.getName());
 
@@ -39,8 +38,7 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 				try {
 					resp.getWriter().println("Deleting: " + item.toString());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE, "Could not write to response", e);
 				}
 				baseDAO.delete(item);
 			}
@@ -49,8 +47,7 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 				resp.getWriter().println(
 						"FINISHED ACCESSPOINT TABLE SHOULD BE EMPTY");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Could not process spreadsheet", e);
 			}
 		} else if (!spreadsheetName.trim().isEmpty()) {
 			if (listColumns != null && listColumns.equals("true")) {
@@ -61,28 +58,19 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 						sb.append("column: " + item + "\n");
 					}
 					resp.getWriter().print(sb.toString());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ServiceException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} catch (Exception e) {
+					log.log(Level.SEVERE, "Could not process sheet", e);
 				}
 			} else {
 				try {
 					sapa.processSpreadsheetOfAccessPoints(spreadsheetName);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ServiceException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (Exception e1) {
+					log.log(Level.SEVERE, "Could not process ap sheet", e1);
 				}
 				try {
 					resp.getWriter().print("AccessPoints have been loaded");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE, "Could not write to response", e);
 				}
 			}
 		}
@@ -94,19 +82,19 @@ public class SpreadsheetProcessorServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected RestRequest convertRequest() throws Exception {
-		// TODO Auto-generated method stub
+		// no-op
 		return null;
 	}
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		// TODO Auto-generated method stub
+		// no-op
 		return null;
 	}
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// TODO Auto-generated method stub
+		// no-op
 
 	}
 

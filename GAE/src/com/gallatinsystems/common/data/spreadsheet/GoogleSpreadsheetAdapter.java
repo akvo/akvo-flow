@@ -6,6 +6,7 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.gallatinsystems.common.data.spreadsheet.domain.ColumnContainer;
@@ -54,8 +55,8 @@ public class GoogleSpreadsheetAdapter {
 				try {
 					wait(1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE, "Interrupted while waiting for feed",
+							e);
 				}
 				feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
 			}
@@ -90,10 +91,10 @@ public class GoogleSpreadsheetAdapter {
 			SpreadsheetEntry entry = spreadsheets.get(i);
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
 				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				//for (int j = 0; j < worksheets.size(); j++) {
-					WorksheetEntry worksheet = worksheets.get(0);				
-					return listColumns(worksheet);
-				//}
+				// for (int j = 0; j < worksheets.size(); j++) {
+				WorksheetEntry worksheet = worksheets.get(0);
+				return listColumns(worksheet);
+				// }
 			}
 		}
 		return null;
@@ -122,7 +123,7 @@ public class GoogleSpreadsheetAdapter {
 		URL listFeedUrl = worksheetEntry.getListFeedUrl();
 		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
 		ArrayList<String> columns = new ArrayList<String>();
-		
+
 		for (ListEntry entry : feed.getEntries()) {
 			// row
 			for (String tag : entry.getCustomElements().getTags()) {
@@ -139,16 +140,16 @@ public class GoogleSpreadsheetAdapter {
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 
 		for (int i = 0; i < spreadsheets.size(); i++) {
-			SpreadsheetEntry entry = spreadsheets.get(i);			
+			SpreadsheetEntry entry = spreadsheets.get(i);
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
 				log.info("Found spreadsheet");
 				List<WorksheetEntry> worksheets = entry.getWorksheets();
 				log.info("Got worksheet");
-				//for (int j = 0; j < worksheets.size(); j++) {
-					WorksheetEntry worksheet = worksheets.get(0);
-					log.info("got 0 worksheet contents.");
-					return getListFeed(worksheet);
-				//}
+				// for (int j = 0; j < worksheets.size(); j++) {
+				WorksheetEntry worksheet = worksheets.get(0);
+				log.info("got 0 worksheet contents.");
+				return getListFeed(worksheet);
+				// }
 			}
 		}
 		return null;
@@ -159,9 +160,9 @@ public class GoogleSpreadsheetAdapter {
 		URL listFeedUrl = worksheetEntry.getListFeedUrl();
 		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
 		SpreadsheetContainer sbc = new SpreadsheetContainer();
-	
+
 		for (ListEntry entry : feed.getEntries()) {
-			// row			
+			// row
 			RowContainer row = new RowContainer();
 			ArrayList<ColumnContainer> colList = new ArrayList<ColumnContainer>();
 			for (String tag : entry.getCustomElements().getTags()) {
@@ -170,7 +171,7 @@ public class GoogleSpreadsheetAdapter {
 
 				col.setColName(tag);
 				String val = entry.getCustomElements().getValue(tag);
-				if(val != null && val.length()>500){
+				if (val != null && val.length() > 500) {
 					val = val.substring(0, 500);
 				}
 				col.setColContents(val);
@@ -211,6 +212,6 @@ public class GoogleSpreadsheetAdapter {
 	private void getTableFeed(SpreadsheetEntry spreadsheetEntry)
 			throws IOException, ServiceException {
 		TableEntry tableEntry = createTableFeed(spreadsheetEntry);
-	
+
 	}
 }

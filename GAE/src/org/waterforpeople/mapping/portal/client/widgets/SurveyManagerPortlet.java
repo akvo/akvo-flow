@@ -384,7 +384,6 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestion();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					Window
 							.alert("Could not save question no Question Group was selected");
 				}
@@ -884,7 +883,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
+				// TODO: implement delete
 
 			}
 

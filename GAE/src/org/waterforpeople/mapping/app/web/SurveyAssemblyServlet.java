@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +49,6 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
-	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(SurveyAssemblyServlet.class.getName());
 
@@ -59,7 +59,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	public static final String VIDEO_QUESTION_TYPE = "video";
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
-	public static final String STRENGTH_QUESTION_TYPE ="strength";
+	public static final String STRENGTH_QUESTION_TYPE = "strength";
 
 	private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
 	private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -141,7 +141,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// TODO Auto-generated method stub
+		// no-op
 
 	}
 
@@ -296,7 +296,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			ValidationRule vrule = new ValidationRule();
 			vrule.setValidationType("name");
 			qXML.setValidationRule(vrule);
-		}else if (q.getType().equals(Question.Type.STRENGTH)){
+		} else if (q.getType().equals(Question.Type.STRENGTH)) {
 			qXML.setType(STRENGTH_QUESTION_TYPE);
 		}
 
@@ -365,8 +365,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		try {
 			questionDocument = sax.marshal(qXML);
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not marshal question: " + qXML, e);
 		}
 
 		questionDocument = questionDocument

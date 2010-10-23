@@ -7,6 +7,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeServi
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -179,8 +180,10 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDialog = new MessageDialog(
+								"Error while saving",
+								"Could not save. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(mainVPanel);
 					}
 
 					@Override
@@ -208,8 +211,10 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDialog = new MessageDialog(
+								"Error while deleting",
+								"Could not delete. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(mainVPanel);
 					}
 
 					@Override

@@ -69,11 +69,6 @@ public class SpreadsheetMappingAttributeHelper {
 		return null;
 	}
 
-	public ArrayList<String> listSpreadsheets() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public MappingSpreadsheetDefinition saveSpreadsheetMapping(
 			MappingSpreadsheetDefinition mapDef) {
 		MappingSpreadsheetDefintionDAO mappingDao = new MappingSpreadsheetDefintionDAO();

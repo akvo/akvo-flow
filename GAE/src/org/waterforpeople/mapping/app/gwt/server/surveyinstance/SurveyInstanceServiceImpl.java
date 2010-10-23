@@ -85,12 +85,6 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		return qasDto;
 	}
 
-	@Override
-	public SurveyInstanceDto saveSurveyInstance(SurveyInstanceDto item) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/**
 	 * updates the list of QAS dto objects passed in and fires summarization
 	 * messages to the async queues

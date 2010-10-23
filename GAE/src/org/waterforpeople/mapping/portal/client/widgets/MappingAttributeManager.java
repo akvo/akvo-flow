@@ -197,8 +197,10 @@ public class MappingAttributeManager extends Portlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDialog = new MessageDialog(
+								"Error while processing sheet",
+								"Could not process shpreadsheet. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(spreadSheetTextBox);
 					}
 
 					@Override
@@ -256,7 +258,10 @@ public class MappingAttributeManager extends Portlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						MessageDialog errDialog = new MessageDialog(
+								"Error while loading data",
+								"Could not load columns. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(spreadSheetTextBox);
 
 					}
 				});
@@ -268,8 +273,10 @@ public class MappingAttributeManager extends Portlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
+						MessageDialog errDialog = new MessageDialog(
+								"Error while fetching data",
+								"Could not get spreadsheet mapping. Please try again. If the problem persists, contact an administrator");
+						errDialog.showRelativeTo(mainHPanel);
 					}
 
 					@Override
@@ -361,7 +368,10 @@ public class MappingAttributeManager extends Portlet {
 		svc.listObjectAttributes(null, new AsyncCallback<ArrayList<String>>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				MessageDialog errDialog = new MessageDialog(
+						"Error while fetching data",
+						"Could not list annotations. Please try again. If the problem persists, contact an administrator");
+				errDialog.showRelativeTo(mainHPanel);
 			}
 
 			@Override
@@ -402,8 +412,10 @@ public class MappingAttributeManager extends Portlet {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-
+				MessageDialog errDialog = new MessageDialog(
+						"Error while saving",
+						"Could not save. Please try again. If the problem persists, contact an administrator");
+				errDialog.showRelativeTo(mainHPanel);
 			}
 
 			@Override

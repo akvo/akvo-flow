@@ -376,7 +376,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		form.addSubmitHandler(new SubmitHandler() {
 			@Override
 			public void onSubmit(SubmitEvent event) {
-				// TODO Auto-generated method stub
+				// no-op
 			}
 		});
 
@@ -445,8 +445,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 							1)).getText(), new AsyncCallback<byte[]>() {
 						@Override
 						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-
+							// no-op
 						}
 
 						@Override
@@ -568,7 +567,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 							new AsyncCallback<AccessPointDto>() {
 								@Override
 								public void onFailure(Throwable caught) {
-									// TODO Auto-generated method stub
+									MessageDialog errDialog = new MessageDialog(
+											"Error while saving",
+											"Could not save. Please try again. If the problem persists, contact an administrator");
+									errDialog.showRelativeTo(mainVPanel);
 
 								}
 

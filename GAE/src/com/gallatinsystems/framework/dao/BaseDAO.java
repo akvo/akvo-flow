@@ -170,8 +170,8 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	/**
-	 * lists all of the concreteClass instances in the datastore. TODO: if we
-	 * think we'll use this on large tables, we should use Extents
+	 * lists all of the concreteClass instances in the datastore. 
+	 * if we think we'll use this on large tables, we should use Extents
 	 * 
 	 * @return
 	 */
@@ -182,7 +182,7 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * lists all of the type passed in.
 	 * 
-	 * TODO: if we think we'll use this on large tables, we should use Extents
+	 *  if we think we'll use this on large tables, we should use Extents
 	 * 
 	 * @return
 	 */

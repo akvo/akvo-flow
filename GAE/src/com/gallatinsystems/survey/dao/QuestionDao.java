@@ -71,7 +71,6 @@ public class QuestionDao extends BaseDAO<Question> {
 			optionDao.delete(qoItem.getValue());
 		}
 		TranslationDao tDao = new TranslationDao();
-		// TODO: Check this not sure that is correct
 		tDao.deleteTranslationsForParent(question.getKey().getId(),
 				Translation.ParentType.QUESTION_TEXT);
 		// TODO:Implement help media delete

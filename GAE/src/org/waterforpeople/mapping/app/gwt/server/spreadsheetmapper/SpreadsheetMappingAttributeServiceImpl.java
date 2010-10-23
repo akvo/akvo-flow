@@ -2,8 +2,6 @@ package org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +35,6 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.gdata.util.ServiceException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SpreadsheetMappingAttributeServiceImpl extends
@@ -86,12 +83,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			SpreadsheetMappingAttributeHelper helper = new SpreadsheetMappingAttributeHelper(
 					getSessionTokenFromSession(), getPrivateKeyFromSession());
 			return helper.listSpreadsheetColumns(spreadsheetName);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
 			// need to reauth
 			e.printStackTrace();
@@ -115,8 +106,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					getSessionTokenFromSession(), getPrivateKeyFromSession());
 			helper.saveSpreadsheetMapping(copyToCanonicalObject(mapDef));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not save spreadsheet mapping");
 		}
 		// convert to domain object from dto
 
@@ -130,20 +120,12 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 					.processSpreadsheetOfAccessPoints(mapDef
 							.getSpreadsheetURL());
 			return new String("Processed Successfully");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not save spreadsheet", e);
 			String message = new String("Could not save spreadsheet : ");
 			message.concat(e.getMessage());
 			return message;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return null;
 	}
 
 	private org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition copyToCanonicalObject(
@@ -192,29 +174,9 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			throws Exception {
 
 		if (feedURL == null) {
-			try {
-				try {
-
-					return new SpreadsheetMappingAttributeHelper(
-							getSessionTokenFromSession(),
-							getPrivateKeyFromSession())
-							.listSpreadsheets("http://spreadsheets.google.com/feeds/spreadsheets/private/full");
-
-				} catch (GeneralSecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw e;
-			}
-
+			return new SpreadsheetMappingAttributeHelper(
+					getSessionTokenFromSession(), getPrivateKeyFromSession())
+					.listSpreadsheets("http://spreadsheets.google.com/feeds/spreadsheets/private/full");
 		}
 		return null;
 	}
@@ -222,7 +184,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	@Override
 	public MappingDefinitionColumnContainer getMappingSpreadsheetDefinition(
 			String spreadsheetName) {
-		// TODO Auto-generated method stub
 		MappingDefinitionColumnContainer mapdefCC = new MappingDefinitionColumnContainer();
 		org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition mapDef;
 		try {
@@ -237,8 +198,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not list mapping definitions", e);
 		}
 
 		return null;
@@ -307,8 +267,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								if (group == null) {
 									group = new QuestionGroup();
 									group.setCode(colContents.trim());
-									// TODO: Check with Chris to make sure the
-									// order param is correct
+									group.setOrder(i);
 									survey.addQuestionGroup(i, group);
 									groupMap.put(colContents.trim(), group);
 								}
@@ -471,8 +430,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not process spreadsheet", e);
 		}
 	}
 

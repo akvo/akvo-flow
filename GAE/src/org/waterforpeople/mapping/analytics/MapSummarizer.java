@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.analytics;
 
 import java.util.Date;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.web.KMLGenerator;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -31,7 +32,9 @@ public class MapSummarizer implements DataSummarizer {
 				 */
 				KMLGenerator kmlGen = new KMLGenerator();
 				try {
-					String placemark = kmlGen.bindPlacemark(ap,"PlacemarkTabs.vm", KMLGenerator.GOOGLE_EARTH_DISPLAY);
+					String placemark = kmlGen.bindPlacemark(ap,
+							"PlacemarkTabs.vm",
+							KMLGenerator.GOOGLE_EARTH_DISPLAY);
 					if (placemark != null) {
 						MapFragment mf = new MapFragment();
 						mf.setFragmentValue(new Text(placemark));
@@ -49,8 +52,8 @@ public class MapSummarizer implements DataSummarizer {
 								+ ap.toString());
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,
+							"Could not perform placemark summarizatoin", e);
 				}
 			}
 		}

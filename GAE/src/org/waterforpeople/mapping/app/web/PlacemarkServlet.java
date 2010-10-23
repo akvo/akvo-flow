@@ -156,8 +156,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						"placemarkExternalMap.vm", display);
 				pdto.setPlacemarkContents(placemarkString);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Could not bind placemarks", e);
 			}
 		}
 		return pdto;

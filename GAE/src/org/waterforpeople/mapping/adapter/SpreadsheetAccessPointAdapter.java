@@ -1,13 +1,13 @@
 package org.waterforpeople.mapping.adapter;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -46,20 +46,10 @@ public class SpreadsheetAccessPointAdapter {
 		loadTechnologyTypes();
 		GoogleSpreadsheetAdapter gsa = new GoogleSpreadsheetAdapter(
 				sessionToken, privateKey);
-		try {
-			SpreadsheetContainer sc = gsa
-					.getSpreadsheetContents(spreadsheetName);
-			for (RowContainer row : sc.getRowContainerList()) {
-				AccessPoint ap = processRow(row, spreadsheetName);
-				ap = apHelper.saveAccessPoint(ap);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw (e);
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw (e);
+		SpreadsheetContainer sc = gsa.getSpreadsheetContents(spreadsheetName);
+		for (RowContainer row : sc.getRowContainerList()) {
+			AccessPoint ap = processRow(row, spreadsheetName);
+			ap = apHelper.saveAccessPoint(ap);
 		}
 	}
 
@@ -129,8 +119,7 @@ public class SpreadsheetAccessPointAdapter {
 			}
 
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.log(Level.SEVERE, "Class not found", e1);
 		}
 
 		HashMap<String, String> colsToAttributesMap = getColsToAttributeMap(spreadsheetName);
@@ -239,8 +228,7 @@ public class SpreadsheetAccessPointAdapter {
 											.toLowerCase()
 											.equals("broken down")) {
 								// Red
-								ap
-										.setPointStatus(Status.BROKEN_DOWN);
+								ap.setPointStatus(Status.BROKEN_DOWN);
 							} else if (col.getColContents().toLowerCase()
 									.equals("no improved system")
 									|| (col.getColContents().trim()
@@ -288,24 +276,9 @@ public class SpreadsheetAccessPointAdapter {
 							arglist[0] = parseBoolean(col.getColContents());
 							meth.invoke(ap, arglist);
 						}
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SecurityException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NoSuchMethodException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} catch (Exception e) {
+						log.log(Level.SEVERE,
+								"Could not process Access Point row", e);
 					}
 				}
 

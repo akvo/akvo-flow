@@ -23,8 +23,6 @@ public interface SurveyService extends RemoteService {
 			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
 			Boolean loadQuestionFlag);
 
-	public ArrayList<SurveyDto> getSurveyGroup(String surveyGroupCode);
-
 	/**
 	 * lists all surveys for a group
 	 */
@@ -46,15 +44,11 @@ public interface SurveyService extends RemoteService {
 	 */
 	public SurveyDto loadFullSurvey(Long surveyId);
 
-	public SurveyDto loadFullSurvey(String surveyName);
-
 	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
 	
 	public QuestionDto loadQuestionDetails(Long questionId);
 
 	
-	public List<QuestionDto> listQuestionForQuestionGroup(
-			String questionGroupCode);
 	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId);
 	public void deleteSurveyGroup(SurveyGroupDto value);
 	public void deleteSurvey(SurveyDto value, Long surveyGroupId);

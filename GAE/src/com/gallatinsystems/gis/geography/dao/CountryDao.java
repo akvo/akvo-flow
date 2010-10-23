@@ -12,7 +12,6 @@ public class CountryDao extends BaseDAO<Country> {
 
 	public CountryDao() {
 		super(Country.class);
-		// TODO Auto-generated constructor stub
 	}
 
 	@SuppressWarnings("unchecked")

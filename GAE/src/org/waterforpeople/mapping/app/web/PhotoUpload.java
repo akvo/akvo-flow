@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import services.S3Driver;
@@ -36,12 +35,12 @@ public class PhotoUpload extends HttpServlet {
 		try {
 			FileItemIterator iterator = upload.getItemIterator(req);
 			while (iterator.hasNext()) {
-				FileItemStream item = iterator.next();			
+				FileItemStream item = iterator.next();
 				InputStream in = item.openStream();
-				ByteArrayOutputStream out = null;				
+				ByteArrayOutputStream out = null;
 				try {
 
-					in =  item.openStream();
+					in = item.openStream();
 					out = new ByteArrayOutputStream();
 					byte[] buffer = new byte[8096];
 					int size;
@@ -53,14 +52,11 @@ public class PhotoUpload extends HttpServlet {
 					log.log(Level.SEVERE, "Could not rotate image", e);
 				}
 				S3Driver s3 = new S3Driver();
-				s3.uploadFile(bucket, "images/"+item.getName(), out.toByteArray());
+				s3.uploadFile(bucket, "images/" + item.getName(), out
+						.toByteArray());
 			}
-		} catch (FileUploadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not save image", e);
 		}
 
 	}

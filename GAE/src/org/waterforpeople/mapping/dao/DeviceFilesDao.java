@@ -17,7 +17,6 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 
 	public DeviceFilesDao() {
 		super(DeviceFiles.class);
-		// TODO Auto-generated constructor stub
 	}
 
 	@SuppressWarnings("unchecked")

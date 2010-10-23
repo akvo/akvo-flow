@@ -1,10 +1,8 @@
 package org.waterforpeople.mapping.app.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 
@@ -19,7 +17,8 @@ public class DtoMarshaller {
 		try {
 			String pattern = "MM/dd/yy";
 			Locale locale = Locale.getDefault();
-			DateLocaleConverter converter = new DateLocaleConverter(locale,pattern);
+			DateLocaleConverter converter = new DateLocaleConverter(locale,
+					pattern);
 			converter.setLenient(true);
 			ConvertUtils.register(converter, java.util.Date.class);
 			BeanUtils.copyProperties(canonical, dto);
@@ -29,13 +28,7 @@ public class DtoMarshaller {
 						.getSimpleName(), dto.getKeyId()));
 			}
 
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}catch(ConversionException e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -45,18 +38,15 @@ public class DtoMarshaller {
 		try {
 			String pattern = "MM/dd/yy";
 			Locale locale = Locale.getDefault();
-			DateLocaleConverter converter = new DateLocaleConverter(locale,pattern);
+			DateLocaleConverter converter = new DateLocaleConverter(locale,
+					pattern);
 			converter.setLenient(true);
 			ConvertUtils.register(converter, java.util.Date.class);
-			BeanUtils.copyProperties(dto, canonical);			
+			BeanUtils.copyProperties(dto, canonical);
 			if (canonical.getKey() != null) {
 				dto.setKeyId(canonical.getKey().getId());
 			}
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

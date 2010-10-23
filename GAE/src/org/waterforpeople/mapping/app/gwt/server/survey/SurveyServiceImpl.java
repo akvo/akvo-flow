@@ -164,12 +164,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		return dtoList;
 	}
-
-	public ArrayList<SurveyDto> getSurveyGroup(String surveyGroupCode) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	/**
 	 * lists all surveys for a group
 	 */
@@ -413,11 +408,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return dto;
 	}
 
-	@Override
-	public SurveyDto loadFullSurvey(String surveyName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupId) {
@@ -432,12 +422,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return surveyDtoList;
 	}
 
-	@Override
-	public List<QuestionDto> listQuestionForQuestionGroup(
-			String questionGroupCode) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public ArrayList<QuestionGroupDto> listQuestionGroupsBySurvey(
@@ -727,13 +711,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void deleteQuestionGroup(QuestionGroupDto value, Long surveyId) {
-		// TODO Auto-generated method stub
+		// TODO implement delete questoin group
 
 	}
 
 	@Override
 	public void deleteSurvey(SurveyDto value, Long surveyGroupId) {
-		// TODO Auto-generated method stub
+		// TODO implement delete survey
 
 	}
 

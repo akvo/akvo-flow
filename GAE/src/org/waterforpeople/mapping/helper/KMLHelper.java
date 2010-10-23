@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.helper;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.Date;
@@ -470,12 +469,9 @@ public class KMLHelper {
 			try {
 				sbAllCountryPlacemark.append(ZipUtil.unZip(mfItem.getBlob()
 						.getBytes()));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.SEVERE,
+						"Could not assemble country tech type fragments", e);
 			}
 		}
 		VelocityContext context = new VelocityContext();
@@ -485,8 +481,7 @@ public class KMLHelper {
 		try {
 			kml.append(mergeContext(context, "Folders.vm"));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not generate folders", e);
 		}
 
 	}
@@ -506,8 +501,7 @@ public class KMLHelper {
 			// mc.setStatus(MapControl.Status.SUCCESS);
 			// mcDao.save(mc);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Could not assemble map", e);
 			// mc.setEndDate(new Date());
 			// mc.setStatus(MapControl.Status.FAILURE);
 			// mcDao.save(mc);

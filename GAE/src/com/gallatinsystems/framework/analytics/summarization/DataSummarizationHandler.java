@@ -141,7 +141,7 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// TODO Auto-generated method stub
+		// no-op
 
 	}
 }

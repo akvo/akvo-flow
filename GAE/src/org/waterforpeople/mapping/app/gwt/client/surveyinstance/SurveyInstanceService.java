@@ -13,8 +13,6 @@ public interface SurveyInstanceService extends RemoteService {
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
 			Date beginDate, String cursorString);
 
-	public SurveyInstanceDto saveSurveyInstance(SurveyInstanceDto item);
-
 	public List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId);
 	
 	public List<QuestionAnswerStoreDto> updateQuestions(List<QuestionAnswerStoreDto> dtoList);

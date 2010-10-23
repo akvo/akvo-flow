@@ -86,7 +86,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public Integer deleteAccessPoint(Long id) {
-		// TODO Auto-generated method stub
+		// TODO: implement delete
 		return null;
 	}
 
@@ -108,25 +108,24 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public void delete(TechnologyTypeDto item) {
-		// TODO Auto-generated method stub
-
+		// TODO implement delete tech type
 	}
 
 	@Override
 	public TechnologyTypeDto getTechnologyType(Long id) {
-		// TODO Auto-generated method stub
+		// TODO implement find by id
 		return null;
 	}
 
 	@Override
 	public List<TechnologyTypeDto> list() {
-		// TODO Auto-generated method stub
+		// TODO implement list tech type
 		return null;
 	}
 
 	@Override
 	public TechnologyTypeDto save(TechnologyTypeDto item) {
-		// TODO Auto-generated method stub
+		// TODO implement save tech type
 		return null;
 	}
 
@@ -138,7 +137,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		InputStream in;
 		ByteArrayOutputStream out = null;
 		URL url;
-		byte[] newImage=null;
+		byte[] newImage = null;
 		try {
 			url = new URL(fileName + "?random=" + rand.nextInt());
 			in = url.openStream();
@@ -159,7 +158,8 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		if (this.getUploadS3Flag()) {
 			try {
 
-				s3.uploadFile(bucket,imageURLParts[1]+ imageURLParts[2], newImage);
+				s3.uploadFile(bucket, imageURLParts[1] + imageURLParts[2],
+						newImage);
 			} catch (Exception ex) {
 				// This is here for dev env where you can't make S3 puts
 				log.info(ex.getMessage());
@@ -240,8 +240,6 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	}
 
 	private Boolean uploadS3Flag = true;
-
-
 
 	public void setUploadS3Flag(Boolean uploadS3Flag) {
 		this.uploadS3Flag = uploadS3Flag;
