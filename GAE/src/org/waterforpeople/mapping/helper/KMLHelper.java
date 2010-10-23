@@ -4,9 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +17,6 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -30,10 +27,6 @@ import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 public class KMLHelper {
 	private static final Logger log = Logger.getLogger(KMLHelper.class
@@ -58,11 +51,12 @@ public class KMLHelper {
 			// return all countries
 			MapFragmentDao mfDao = new MapFragmentDao();
 			VelocityContext context = new VelocityContext();
-			StringBuilder sbCountries = new StringBuilder();
-			List<MapFragment> mfList = null; //mfDao.getAllCountriesMapFragments
+			List<MapFragment> mfList = null; // mfDao.getAllCountriesMapFragments
 			// ();
-			for (MapFragment item : mfList) {
-				context.put("countryPlacemarks", item);
+			if (mfList != null) {
+				for (MapFragment item : mfList) {
+					context.put("countryPlacemarks", item);
+				}
 			}
 			mergeContext(context, vmName);
 		} else {
@@ -88,32 +82,15 @@ public class KMLHelper {
 		return writer.toString();
 	}
 
-	private String buildAccessPointPlacemark(AccessPoint ap) {
-		return null;
-	}
-
-	private String buildFolderPlacemark(String[] folderMetaData,
-			String placemarks) {
-		return null;
-	}
-
-	private String buildCountryPlacemarks(String countryCode) {
-		return null;
-	}
-
 	private String buildCountryTechnologyPlacemark(String countryCode,
 			String technologyType) {
 		String vmName = null;
 
-		HashMap<String, ArrayList<AccessPoint>> techMap = new HashMap<String, ArrayList<AccessPoint>>();
 		BaseDAO<TechnologyType> techDAO = new BaseDAO<TechnologyType>(
 				TechnologyType.class);
-		List<TechnologyType> techTypeList = (List<TechnologyType>) techDAO
-				.list("all");
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> apList = apDao.listAccessPointsByTechnology(
 				countryCode, technologyType, "all");
-		ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
 		StringBuilder sbPlacemarks = new StringBuilder();
 		for (AccessPoint item : apList) {
 			try {
@@ -449,13 +426,13 @@ public class KMLHelper {
 			for (Country country : countryList) {
 				if (country != null) {
 
-	/*				Queue mapAssemblyQueue = QueueFactory
-							.getQueue("mapAssembly");
-					TaskOptions task = url("/app_worker/mapassembly").param(
-							"action", Constants.BUILD_COUNTRY_FRAGMENTS).param(
-							"countryCode", country.getIsoAlpha2Code());
-					mapAssemblyQueue.add(task);
-					*/
+					/*
+					 * Queue mapAssemblyQueue = QueueFactory
+					 * .getQueue("mapAssembly"); TaskOptions task =
+					 * url("/app_worker/mapassembly").param( "action",
+					 * Constants.BUILD_COUNTRY_FRAGMENTS).param( "countryCode",
+					 * country.getIsoAlpha2Code()); mapAssemblyQueue.add(task);
+					 */
 				}
 			}
 	}
@@ -467,14 +444,14 @@ public class KMLHelper {
 		if (countryCode != null)
 			for (TechnologyType tt : techTypeList) {
 				if (tt != null) {
-			/*		Queue mapAssemblyQueue = QueueFactory
-							.getQueue("mapAssembly");
-					TaskOptions task = url("/app_worker/mapassembly").param(
-							"action", Constants.BUILD_COUNTRY_FRAGMENTS).param(
-							"countryCode", countryCode).param("techType",
-							tt.getCode());
-					mapAssemblyQueue.add(task);
-				*/
+					/*
+					 * Queue mapAssemblyQueue = QueueFactory
+					 * .getQueue("mapAssembly"); TaskOptions task =
+					 * url("/app_worker/mapassembly").param( "action",
+					 * Constants.BUILD_COUNTRY_FRAGMENTS).param( "countryCode",
+					 * countryCode).param("techType", tt.getCode());
+					 * mapAssemblyQueue.add(task);
+					 */
 				}
 			}
 

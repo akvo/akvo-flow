@@ -1173,9 +1173,6 @@ public class TestHarnessServlet extends HttpServlet {
 		try {
 			ServletOutputStream out = resp.getOutputStream();
 
-			byte[] buffer = new byte[2048];
-			int size;
-
 			out.write(imageBytes, 0, imageBytes.length);
 			out.flush();
 		} catch (Exception ex) {

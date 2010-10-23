@@ -475,7 +475,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	 * @param userObject
 	 */
 	protected void notifyListeners(BaseDto userObject) {
-		if (userObject != null) {
+		if (userObject != null && listeners != null) {
 			for (SurveyTreeListener l : listeners) {
 				l.onSurveyTreeSelection(userObject);
 			}

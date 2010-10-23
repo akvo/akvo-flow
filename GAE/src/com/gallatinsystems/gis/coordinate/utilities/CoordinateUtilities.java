@@ -1,10 +1,16 @@
 package com.gallatinsystems.gis.coordinate.utilities;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
 
 public class CoordinateUtilities {
 
+	static final Double polarAxis = 6356752.314;
+	static final Integer equRad = 6378137;
+	static final Double ecc = 0.081819191;
+	static final Double e2 = 0.006739497;
+	static final Double k0 = 0.9996;
+	static final Double pi = 3.14159265358979323846264338327950288;
+
+	
 	/**
 	 * computes the APPROXIMATE distance between 2 points (lat/lon in DEGREES,
 	 * not radians) forumula described here:
@@ -40,90 +46,6 @@ public class CoordinateUtilities {
 
 		return degrees;
 	}
-
-	public static void main(String[] args) {
-		CoordinateUtilities cu = new CoordinateUtilities();
-		cu.test();
-
-	}
-
-	private void test() {
-
-		HashMap<String, Coordinate> coors = new HashMap<String, Coordinate>();
-		coors.put("PC8", new Coordinate(757751, 9170463));
-		coors.put("PC45", new Coordinate(745161, 9180125));
-		coors.put("PC44", new Coordinate(743720, 9178676));
-		coors.put("PC29", new Coordinate(739237, 9162141));
-		coors.put("PC15", new Coordinate(736746, 9171754));
-		coors.put("PC12", new Coordinate(738684, 9175113));
-		coors.put("PC42", new Coordinate(750890, 9177962));
-		coors.put("PC43", new Coordinate(753027, 9178879));
-		coors.put("PT3", new Coordinate(757067, 9232085));
-		coors.put("PT14", new Coordinate(745474, 9222255));
-		coors.put("PT1", new Coordinate(762357, 9236163));
-		coors.put("PC14", new Coordinate(737981, 9173005));
-		coors.put("PT15", new Coordinate(751220, 9219068));
-		coors.put("PC16", new Coordinate(736744, 9171747));
-		coors.put("PC9", new Coordinate(759539, 9173748));
-		coors.put("PC1", new Coordinate(751381, 9164942));
-		coors.put("PC21", new Coordinate(740637, 9169838));
-		coors.put("PC30", new Coordinate(737014, 9160806));
-		coors.put("PC13", new Coordinate(738660, 9172710));
-		coors.put("PC11", new Coordinate(740287, 9173168));
-		coors.put("PT12", new Coordinate(749475, 9221649));
-		coors.put("PT10", new Coordinate(753464, 9220705));
-		coors.put("PC37", new Coordinate(743043, 9176716));
-		coors.put("PT13", new Coordinate(748213, 9222428));
-		coors.put("PC31", new Coordinate(735706, 9160401));
-		coors.put("PC34", new Coordinate(730908, 9159975));
-		coors.put("PC32", new Coordinate(732831, 9159993));
-		coors.put("PC33", new Coordinate(732427, 9160324));
-		coors.put("PC19", new Coordinate(743268, 9167379));
-		coors.put("PC3", new Coordinate(754048, 9161662));
-		coors.put("PC7", new Coordinate(756671, 9164999));
-		coors.put("PC2", new Coordinate(755802, 9162895));
-		coors.put("PC23", new Coordinate(740910, 9168287));
-		coors.put("PT2", new Coordinate(757778, 9233144));
-		coors.put("PT4", new Coordinate(754735, 9230676));
-		coors.put("PC41", new Coordinate(747582, 9178263));
-		coors.put("PC36", new Coordinate(741974, 9174864));
-		coors.put("PC39", new Coordinate(742516, 9181039));
-		coors.put("PT7", new Coordinate(756537, 9229557));
-		coors.put("PT18", new Coordinate(748328, 9225052));
-		coors.put("PT6", new Coordinate(756405, 9227727));
-		coors.put("PC40", new Coordinate(745044, 9177367));
-		coors.put("PT9", new Coordinate(754165, 9228243));
-		coors.put("PC4", new Coordinate(757921, 9162965));
-		coors.put("PC22", new Coordinate(739962, 9169708));
-		coors.put("PC28", new Coordinate(741333, 9162304));
-		coors.put("PT11", new Coordinate(752351, 9221486));
-		coors.put("PC25", new Coordinate(739947, 9172180));
-		coors.put("PC5", new Coordinate(757996, 9163834));
-		coors.put("PT8", new Coordinate(754514, 9225569));
-		coors.put("PC26", new Coordinate(741623, 9165318));
-		coors.put("PC20", new Coordinate(739753, 9171625));
-		coors.put("PT17", new Coordinate(751334, 9223826));
-		coors.put("PC18", new Coordinate(744912, 9169130));
-		coors.put("PC27", new Coordinate(741959, 9163551));
-		coors.put("PC24", new Coordinate(741771, 9167453));
-		coors.put("PC35", new Coordinate(741610, 174143));
-		coors.put("PC17", new Coordinate(743262, 9168760));
-		for (Entry<String, Coordinate> entry : coors.entrySet()) {
-			String key = entry.getKey();
-			Coordinate value = entry.getValue();
-			System.out.println(key
-					+ ", "
-					+ convertUTMtoLatLon(value.getLatitude(), value.longitude,
-							NSLatitude.SOUTH, 17));
-		}
-	}
-
-	static final Double polarAxis = 6356752.314;
-	static final Integer equRad = 6378137;
-	static final Double ecc = 0.081819191;
-	static final Double e2 = 0.006739497;
-	static final Double k0 = 0.9996;
-	static final Double pi = 3.14159265358979323846264338327950288;
 
 	public String convertUTMtoLatLon(Integer eastingCoor, Integer northingCoor,
 			NSLatitude lat, Integer zone) {
@@ -221,12 +143,14 @@ public class CoordinateUtilities {
 	};
 
 	public class Coordinate {
+		
+		private Integer longitude = 0;
+		private Integer latitude = 0;
+
 		public Coordinate(Integer latitude, Integer longitude) {
 			this.latitude = latitude;
 			this.longitude = longitude;
 		}
-
-		private Integer latitude = 0;
 
 		public Integer getLatitude() {
 			return latitude;
@@ -236,6 +160,5 @@ public class CoordinateUtilities {
 			return longitude;
 		}
 
-		private Integer longitude = 0;
 	}
 }

@@ -7,7 +7,6 @@ import javax.jdo.PersistenceManager;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.map.domain.MapControl;
-import com.gallatinsystems.gis.map.domain.MapFragment;
 
 public class MapControlDao extends BaseDAO<MapControl> {
 
