@@ -981,6 +981,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
+				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 				appletString += "<PARAM name='criteria' value=surveyId="
 						+ item.getKeyId() + ">";
 				appletString += "</applet>";
@@ -996,6 +997,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 				appletString += "<PARAM name='exportType' value='RAW_DATA'>";
+				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 				appletString += "<PARAM name='criteria' value=surveyId="
 						+ item.getKeyId() + ">";
 				appletString += "</applet>";
@@ -1011,6 +1013,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
+				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 				appletString += "<PARAM name='criteria' value=surveyId="
 						+ item.getKeyId() + ">";
 				appletString += "</applet>";

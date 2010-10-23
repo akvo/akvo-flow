@@ -25,6 +25,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
+import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
+
 /**
  * 
  * This exporter will write the survey "descriptive statistics" report to a

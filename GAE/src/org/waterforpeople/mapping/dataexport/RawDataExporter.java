@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
+import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
+
 /**
  * exports raw data based on a date
  * 

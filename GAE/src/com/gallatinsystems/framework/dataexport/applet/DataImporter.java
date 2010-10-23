@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.dataexport;
+package com.gallatinsystems.framework.dataexport.applet;
 
 import java.io.File;
 import java.util.Map;

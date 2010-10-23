@@ -17,6 +17,8 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.web.dto.AccessPointRequest;
 import org.waterforpeople.mapping.app.web.dto.AccessPointResponse;
 
+import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
+
 /**
  * 
  * This class can export access point search results to a tab delimited file. It

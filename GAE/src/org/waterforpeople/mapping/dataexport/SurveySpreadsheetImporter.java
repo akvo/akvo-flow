@@ -20,6 +20,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
+import com.gallatinsystems.framework.dataexport.applet.DataImporter;
+
 /**
  * this data importer will read a local excel spreadsheet file using the POI
  * library and will then

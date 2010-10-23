@@ -8,8 +8,6 @@ import javax.swing.JApplet;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 
-import org.waterforpeople.mapping.dataexport.DataExporterFactory;
-
 /**
  * simple applet to allow us to export data from google app engine
  * 
@@ -19,14 +17,29 @@ import org.waterforpeople.mapping.dataexport.DataExporterFactory;
 public class DataExportAppletImpl extends JApplet {
 
 	private static final long serialVersionUID = 944163825066341210L;
+	private static final String EXPORT_TYPE_PARAM = "exportType";
+	private static final String CRITERIA_PARAM = "criteria";
+	private static final String FACTORY_PARAM = "factoryClass";
 	private JLabel statusLabel;
+	private DataImportExportFactory dataExporterFactory;
 
 	public void init() {
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
-		String type = getParameter("exportType");
-		Map<String, String> criteria = parseCriteria(getParameter("criteria"));
-		doExport(type, criteria, getCodeBase().toString());		
+		String type = getParameter(EXPORT_TYPE_PARAM);
+		Map<String, String> criteria = parseCriteria(getParameter(CRITERIA_PARAM));
+		String factoryClass = getParameter(FACTORY_PARAM);
+		if (factoryClass != null) {
+			try {
+				dataExporterFactory = (DataImportExportFactory) Class.forName(
+						factoryClass).newInstance();
+			} catch (Exception e) {
+				System.err.println("Could not instantiate factory: "
+						+ factoryClass);
+				e.printStackTrace(System.err);
+			}
+		}
+		doExport(type, criteria, getCodeBase().toString());
 	}
 
 	private Map<String, String> parseCriteria(String source) {
@@ -49,7 +62,7 @@ public class DataExportAppletImpl extends JApplet {
 
 		chooser.showSaveDialog(this);
 		if (chooser.getSelectedFile() != null) {
-			DataExporter exporter = DataExporterFactory.getExporter(type);
+			DataExporter exporter = dataExporterFactory.getExporter(type);
 			statusLabel.setText("Exporting...");
 			if (serverBase.trim().endsWith("/")) {
 				serverBase = serverBase.trim().substring(0,

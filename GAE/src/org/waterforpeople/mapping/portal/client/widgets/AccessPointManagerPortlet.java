@@ -865,6 +865,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 								appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
+								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 								AccessPointSearchCriteriaDto crit = formSearchCriteria();
 								if (crit != null) {
 									appletString += "<PARAM name='criteria' value='"

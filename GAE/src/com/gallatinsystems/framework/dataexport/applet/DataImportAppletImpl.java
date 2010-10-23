@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.dataexport;
+package com.gallatinsystems.framework.dataexport.applet;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
+
 /**
  * applet wrapper for data import utilities
  * 
@@ -23,13 +24,27 @@ import javax.swing.JTextPane;
 public class DataImportAppletImpl extends JApplet {
 
 	private static final long serialVersionUID = -545153291195490725L;
+	private static final String IMPORT_TYPE_PARAM = "importType";	
+	private static final String FACTORY_PARAM = "factoryClass";
+	private DataImportExportFactory dataImporterFactory;
 	private JLabel statusLabel;
 
 	public void init() {
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
-		String type = getParameter("importType");
+		String type = getParameter(IMPORT_TYPE_PARAM);
 		doImport(type, getCodeBase().toString());
+		String factoryClass = getParameter(FACTORY_PARAM);
+		if (factoryClass != null) {
+			try {
+				dataImporterFactory = (DataImportExportFactory) Class.forName(
+						factoryClass).newInstance();
+			} catch (Exception e) {
+				System.err.println("Could not instantiate factory: "
+						+ factoryClass);
+				e.printStackTrace(System.err);
+			}
+		}
 	}
 
 	public void doImport(String type, String serverBase) {
@@ -37,7 +52,7 @@ public class DataImportAppletImpl extends JApplet {
 
 		chooser.showOpenDialog(this);
 		if (chooser.getSelectedFile() != null) {
-			DataImporter importer = DataImporterFactory.getImporter(type);
+			DataImporter importer = dataImporterFactory.getImporter(type);
 			statusLabel.setText("Validating...");
 			Map<Integer, String> errorMap = importer.validate(chooser
 					.getSelectedFile());
