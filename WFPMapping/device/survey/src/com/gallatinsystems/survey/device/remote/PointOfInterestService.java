@@ -19,7 +19,6 @@ import com.gallatinsystems.survey.device.util.HttpUtil;
  */
 public class PointOfInterestService {
 	private static final String TAG = "PointOfInterestService";
-	private static final String DEFAULT_SERVICE_URL = "http://watermapmonitordev.appspot.com";
 	private static final String ACTION_PARAM = "/pointofinterest?action=getnearby";
 	private static final String LAT_PARAM = "&lat=";
 	private static final String LON_PARAM = "&lon=";
@@ -29,7 +28,12 @@ public class PointOfInterestService {
 	private static final String POINTS_OF_INTEREST_JSON_KEY = "pointsOfInterest";
 	private static final String NULL = "null";
 	private String currentCursor;
+	private String serverBase;
 
+	public PointOfInterestService(String serverBase){
+		this.serverBase = serverBase;
+	}
+	
 	/**
 	 * 
 	 * calls a service to get all the access points near the position passed in.
@@ -45,7 +49,7 @@ public class PointOfInterestService {
 			if (serviceBase != null) {
 				url = serviceBase + ACTION_PARAM;
 			} else {
-				url = DEFAULT_SERVICE_URL + ACTION_PARAM;
+				url = serverBase + ACTION_PARAM;
 			}
 			if (country == null || country.trim().length() == 0) {
 				url = url + LAT_PARAM + lat + LON_PARAM + lon;

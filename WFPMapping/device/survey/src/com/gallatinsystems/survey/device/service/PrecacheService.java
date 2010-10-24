@@ -115,7 +115,7 @@ public class PrecacheService extends Service {
 	private void cachePoints(String countries, int limit) {
 		String[] countryList = countries.split(",");
 		for (int i = 0; i < countryList.length; i++) {
-			pointOfInterestService = new PointOfInterestService();
+			pointOfInterestService = new PointOfInterestService(serverBase);
 			int count = 0;
 			do {
 				ArrayList<PointOfInterest> points = pointOfInterestService

@@ -30,6 +30,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.remote.PointOfInterestService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 
 /**
  * Activity to list all "nearby" access points
@@ -68,7 +69,6 @@ public class NearbyItemActivity extends ListActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		pointOfInterestService = new PointOfInterestService();
 		useServer = true;
 		loadMorePlaceholder = new PointOfInterest();
 		loadMorePlaceholder.setName(getString(R.string.loadmore));
@@ -81,8 +81,11 @@ public class NearbyItemActivity extends ListActivity implements
 			serverBase = getResources().getStringArray(R.array.servers)[Integer
 					.parseInt(serverBase)];
 		} else {
-			serverBase = null;
+			serverBase = PropertyUtil.loadProperties(getResources())
+					.getProperty(ConstantUtil.SERVER_BASE);
 		}
+		pointOfInterestService = new PointOfInterestService(serverBase);
+
 		setContentView(R.layout.nearbyitem);
 		Resources resources = getResources();
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -183,8 +186,8 @@ public class NearbyItemActivity extends ListActivity implements
 						pointsOfInterest.add(loadMorePlaceholder);
 					}
 				} else {
-					pointsOfInterest = databaseAdapter
-							.listPointsOfInterest(country, prefix);
+					pointsOfInterest = databaseAdapter.listPointsOfInterest(
+							country, prefix);
 				}
 				dataHandler.post(resultsUpdater);
 				additive = false;
