@@ -184,11 +184,39 @@ public class AccessPointHelper {
 				String newURL = photo_url_root + photoParts[2];
 				f.set(ap, newURL);
 			} else {
-				if (f.getType() == String.class) {
-					f.set(ap, qas.getValue());
-				} else if (f.getType() == AccessPoint.Status.class) {
-					String val = qas.getValue();
-					f.set(ap, encodeStatus(val, ap.getPointType()));
+				String stringVal = qas.getValue();
+				if (stringVal != null && stringVal.trim().length() > 0) {
+					if (f.getType() == String.class) {
+						f.set(ap, qas.getValue());
+					} else if (f.getType() == AccessPoint.Status.class) {
+						String val = qas.getValue();
+						f.set(ap, encodeStatus(val, ap.getPointType()));
+					} else if (f.getType() == Double.class) {
+						try {
+							Double val = Double.parseDouble(stringVal.trim());
+							f.set(ap, val);
+						} catch (Exception e) {
+							logger.log(Level.SEVERE, "Could not parse "
+									+ stringVal + " as double", e);
+						}
+					} else if (f.getType() == Long.class) {
+						try {
+							Long val = Long.parseLong(stringVal.trim());
+							f.set(ap, val);
+						} catch (Exception e) {
+							logger.log(Level.SEVERE, "Could not parse "
+									+ stringVal + " as long", e);
+						}
+					} else if (f.getType() == Boolean.class) {
+						try {
+							Boolean val = Boolean
+									.parseBoolean(stringVal.trim());
+							f.set(ap, val);
+						} catch (Exception e) {
+							logger.log(Level.SEVERE, "Could not parse "
+									+ stringVal + " as boolean", e);
+						}
+					}
 				}
 			}
 		}
