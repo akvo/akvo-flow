@@ -25,13 +25,17 @@ public class DataChangeRecord {
 
 	public DataChangeRecord(String packedString) {
 		String[] parts = packedString.split(DELIMITER);
-		if (parts.length != 4) {
+		if (parts.length < 3) {
 			throw new RuntimeException("Packed string in invalid format");
 		} else {
 			type = parts[0];
 			id = parts[1];
 			oldVal = parts[2];
-			newVal = parts[3];
+			if (parts.length > 3) {
+				newVal = parts[3];
+			} else {
+				newVal = "";
+			}
 		}
 	}
 

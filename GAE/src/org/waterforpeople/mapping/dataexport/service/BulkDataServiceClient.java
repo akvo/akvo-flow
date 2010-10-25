@@ -96,19 +96,32 @@ public class BulkDataServiceClient {
 	private static Map<String, String> parseInstanceValues(String data) {
 		Map<String, String> responseMap = new HashMap<String, String>();
 		if (data != null) {
-			StringTokenizer strTok = new StringTokenizer(data, ",\n");
-			while (strTok.hasMoreTokens()) {
-				String key = strTok.nextToken();
-				String val = strTok.nextToken();
-				String oldVal = responseMap.get(key);
-				if (oldVal != null) {
-					if (val != null) {
-						if (oldVal.trim().length() < val.trim().length()) {
+			StringTokenizer lines = new StringTokenizer(data, "\n");
+			if (lines != null) {
+				while (lines.hasMoreTokens()) {
+					StringTokenizer strTok = new StringTokenizer(lines
+							.nextToken(), ",");
+					String key = null;
+					String val = "";
+					if (strTok.hasMoreTokens()) {
+						key = strTok.nextToken();
+					}
+					if (strTok.hasMoreTokens()) {
+						val = strTok.nextToken();
+					}
+					if (key != null && key.trim().length() > 0) {
+						String oldVal = responseMap.get(key);
+						if (oldVal != null) {
+							if (val != null) {
+								if (oldVal.trim().length() < val.trim()
+										.length()) {
+									responseMap.put(key, val);
+								}
+							}
+						} else {
 							responseMap.put(key, val);
 						}
 					}
-				} else {
-					responseMap.put(key, val);
 				}
 			}
 		}
@@ -195,7 +208,8 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public static SurveyInstanceDto findSurveyInstance(Long id, String serverBase) throws Exception {
+	public static SurveyInstanceDto findSurveyInstance(Long id,
+			String serverBase) throws Exception {
 		return parseSurveyInstance(fetchDataFromServer(serverBase
 				+ SURVEY_SERVLET_PATH
 				+ SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
