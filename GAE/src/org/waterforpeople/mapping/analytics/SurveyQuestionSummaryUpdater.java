@@ -29,8 +29,11 @@ public class SurveyQuestionSummaryUpdater implements DataSummarizer {
 		DataChangeRecord changeRecord = new DataChangeRecord(value);
 		SurveyQuestionSummaryDao.incrementCount(constructQAS(changeRecord
 				.getId(), changeRecord.getOldVal()), -1);
-		SurveyQuestionSummaryDao.incrementCount(constructQAS(changeRecord
-				.getId(), changeRecord.getNewVal()), 1);
+		if (changeRecord.getNewVal() != null
+				&& changeRecord.getNewVal().trim().length() > 0) {
+			SurveyQuestionSummaryDao.incrementCount(constructQAS(changeRecord
+					.getId(), changeRecord.getNewVal()), 1);
+		}
 
 		return true;
 	}

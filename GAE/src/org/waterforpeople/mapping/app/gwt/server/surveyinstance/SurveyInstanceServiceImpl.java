@@ -159,7 +159,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * deletes a survey instance
+	 * deletes a survey instance. This will only back out Question summaries. To
+	 * back out the access point, the AP needs to be deleted manually since it
+	 * may have come from multiple instances.
 	 */
 	@Override
 	public void deleteSurveyInstance(Long instanceId) {
@@ -168,7 +170,20 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			List<QuestionAnswerStore> answers = dao.listQuestionAnswerStore(
 					instanceId, null);
 			if (answers != null) {
-				// TODO: back out summaries
+				// back out summaries
+				Queue queue = QueueFactory.getQueue("dataUpdate");
+				for (QuestionAnswerStore ans : answers) {
+					DataChangeRecord value = new DataChangeRecord(
+							QuestionAnswerStore.class.getName(), ans
+									.getQuestionID(), ans.getValue(), "");
+					queue.add(url("/app_worker/dataupdate").param(
+							DataSummarizationRequest.OBJECT_KEY,
+							ans.getQuestionID()).param(
+							DataSummarizationRequest.OBJECT_TYPE,
+							"QuestionDataChange").param(
+							DataSummarizationRequest.VALUE_KEY,
+							value.packString()));
+				}
 				dao.delete(answers);
 			}
 			SurveyInstance instance = dao.getByKey(instanceId);
