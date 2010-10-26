@@ -247,6 +247,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	public void bindData(ArrayList<T> dtoList, String cursor, boolean isNew,
 			boolean isResort) {
 		currentDtoList = dtoList;
+		currentSelection = -1;
 		if (isNew) {
 			resetCursorArray();
 			if (!isResort && !sortOverriden) {

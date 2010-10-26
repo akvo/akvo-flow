@@ -64,9 +64,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private TextBox instanceIdBox;
 	private HorizontalPanel contentPanel;
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
+	private Long selectedInstance;
 
 	public RawDataViewPortlet() {
-		super(NAME, true, false, false,width, height, null, false, null);
+		super(NAME, true, false, false, width, height, null, false, null);
 		svc = GWT.create(SurveyInstanceService.class);
 		loadContentPanel();
 	}
@@ -202,8 +203,39 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					populateQuestions(questions);
 				}
 			});
+
+			Button deleteInstanceButton = new Button("Delete Instance");
+			deleteInstanceButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					svc.deleteSurveyInstance(selectedInstance,
+							new AsyncCallback<Void>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									MessageDialog errDia = new MessageDialog(
+											"Could not delete instance",
+											"There was an error while deleting the survey instance. Please try again. If the problem persists, please contact an administrator");
+									errDia.showRelativeTo(qasDetailGrid);
+
+								}
+
+								@Override
+								public void onSuccess(Void result) {
+									statusLabel.setText("Instance Deleted");
+									statusLabel.setVisible(true);
+									qasDetailGrid.clear(true);			
+									requestData(null, false);
+								}
+							});
+
+				}
+			});
+
 			qasDetailGrid.setWidget(iRow + 1, 0, saveButton);
 			qasDetailGrid.setWidget(iRow + 1, 1, clearButton);
+			qasDetailGrid.setWidget(iRow + 1, 2, deleteInstanceButton);
 		}
 	}
 
@@ -281,9 +313,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	 * 
 	 * @param instanceId
 	 */
-	private void loadInstanceResponses(Long instanceId) {
+	private void loadInstanceResponses(final Long instanceId) {
 		statusLabel.setText("Loading responses. Please wait...");
 		statusLabel.setVisible(true);
+		selectedInstance = null;
 		svc.listQuestionsByInstance(instanceId,
 				new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
@@ -294,6 +327,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 					@Override
 					public void onSuccess(List<QuestionAnswerStoreDto> result) {
+						selectedInstance = instanceId;
 						populateQuestions(result);
 					}
 				});

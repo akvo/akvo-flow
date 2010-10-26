@@ -158,4 +158,23 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		return response;
 	}
 
+	/**
+	 * deletes a survey instance
+	 */
+	@Override
+	public void deleteSurveyInstance(Long instanceId) {
+		if (instanceId != null) {
+			SurveyInstanceDAO dao = new SurveyInstanceDAO();
+			List<QuestionAnswerStore> answers = dao.listQuestionAnswerStore(
+					instanceId, null);
+			if (answers != null) {
+				// TODO: back out summaries
+				dao.delete(answers);
+			}
+			SurveyInstance instance = dao.getByKey(instanceId);
+			if (instance != null) {
+				dao.delete(instance);
+			}
+		}
+	}
 }

@@ -21,4 +21,6 @@ public interface SurveyInstanceServiceAsync {
 	void listResponsesByQuestion(Long questionId, String cursorString,
 			AsyncCallback<ResponseDto<ArrayList<QuestionAnswerStoreDto>>> callback);
 
+	void deleteSurveyInstance(Long instanceId, AsyncCallback<Void> callback);
+
 }

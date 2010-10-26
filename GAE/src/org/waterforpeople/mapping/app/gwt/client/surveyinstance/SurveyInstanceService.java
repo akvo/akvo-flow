@@ -18,4 +18,6 @@ public interface SurveyInstanceService extends RemoteService {
 	public List<QuestionAnswerStoreDto> updateQuestions(List<QuestionAnswerStoreDto> dtoList);
 	
 	public ResponseDto<ArrayList<QuestionAnswerStoreDto>> listResponsesByQuestion(Long questionId, String cursorString);
+	
+	public void deleteSurveyInstance(Long instanceId);
 }
