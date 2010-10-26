@@ -28,29 +28,30 @@ import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -60,8 +61,8 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.Device.DeviceType;
+import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -75,7 +76,9 @@ import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -84,7 +87,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -112,12 +114,35 @@ public class TestHarnessServlet extends HttpServlet {
 			writeImageToResponse(resp, apmI.rotateImage(test1));
 			// apmI.rotateImage(test2);
 		} else if ("deleteQuestion".equals(action)) {
-			createSurveyGroupGraph(resp);
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			sgDao.delete(sgDao.list("all"));
+			QuestionGroupDao qgDao = new QuestionGroupDao();
+			qgDao.delete(qgDao.list("all"));
+			QuestionDao qDao = new QuestionDao();
+			qDao.delete(qDao.list("all"));
+			QuestionHelpMediaDao qhDao = new QuestionHelpMediaDao();
+			qhDao.delete(qhDao.list("all"));
+			QuestionOptionDao qoDao = new QuestionOptionDao();
+			qoDao.delete(qoDao.list("all"));
+			TranslationDao tDao = new TranslationDao();
+			tDao.delete(tDao.list("all"));
+			
+			
+			createSurveyGroupGraph(resp);
+			//SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			List<SurveyGroup> sgList = sgDao.list("all");
+			Survey survey = sgList.get(0).getSurveyList().get(0);
+			QuestionAnswerStore qas = new QuestionAnswerStore();
+			qas.setArbitratyNumber(1L);
+			qas.setSurveyId(survey.getKey().getId());
+			qas.setQuestionID("1");
+			qas.setValue("test");
+			QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+			qasDao.save(qas);
+			
+			
 			for(SurveyGroup sg: sgList)
 				sgDao.delete(sg);
-			
 		} else if ("addDeviceFiles".equals(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 			for (int i = 0; i < 100; i++) {

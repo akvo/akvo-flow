@@ -77,6 +77,19 @@ public class QuestionDao extends BaseDAO<Question> {
 		super.delete(question);
 
 	}
+	
+	public void delete(Question question) {
+		for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
+				.listOptionByQuestion(question.getKey().getId()).entrySet()) {
+			SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions",qoItem.getValue().getKey().getId());
+		}
+		TranslationDao tDao = new TranslationDao();
+		tDao.deleteTranslationsForParent(question.getKey().getId(),
+				Translation.ParentType.QUESTION_TEXT);
+		// TODO:Implement help media delete
+		super.delete(question);
+
+	}
 
 	public Question save(Question question, Long questionGroupId) {
 		if (questionGroupId != null) {

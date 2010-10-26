@@ -1,7 +1,5 @@
 package com.gallatinsystems.survey.dao;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -10,6 +8,7 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
 
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
@@ -21,8 +20,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class SurveyDAO extends BaseDAO<Survey> {
 	private static final Logger log = Logger
@@ -155,13 +152,18 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	public void delete(Survey item) {
-		QuestionGroupDao qgDao = new QuestionGroupDao();
-		for (Map.Entry<Integer, QuestionGroup> qgItem : qgDao
-				.listQuestionGroupsBySurvey(item.getKey().getId()).entrySet()) {
-			SurveyTaskUtil.spawnDeleteTask("deleteQuestionGroup",qgItem.getValue().getKey().getId());
+		// Check to see if there are any surveys for this first
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		if (qasDao.listBySurvey(new Long(item.getKey().getId())).size()==0) {
+			QuestionGroupDao qgDao = new QuestionGroupDao();
+			for (Map.Entry<Integer, QuestionGroup> qgItem : qgDao
+					.listQuestionGroupsBySurvey(item.getKey().getId())
+					.entrySet()) {
+				SurveyTaskUtil.spawnDeleteTask("deleteQuestionGroup", qgItem
+						.getValue().getKey().getId());
+			}
+			super.delete(item);
 		}
-		super.delete(item);
 	}
 
-	
 }

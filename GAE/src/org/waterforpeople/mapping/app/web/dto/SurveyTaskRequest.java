@@ -12,7 +12,7 @@ public class SurveyTaskRequest extends RestRequest {
 	public static final String DELETE_QUESTION_ACTION = "deleteQuestion";
 	public static final String DELETE_QUESTION_HELP_ACTION = "deleteQuestionHelp";
 	public static final String DELETE_QUESTION_TRANSLATION_ACTION = "deleteQuestionTranslation";
-	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOption";
+	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptions";
 
 	private Long id = null;
 	/**
