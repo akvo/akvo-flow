@@ -13,9 +13,8 @@ public class SurveyTaskRequest extends RestRequest {
 	public static final String DELETE_QUESTION_HELP_ACTION = "deleteQuestionHelpAction";
 	public static final String DELETE_QUESTION_TRANSLATION_ACTION = "deleteQuestionTranslationAction";
 	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptionAction";
-	
-	
-	private Long id=null;
+
+	private Long id = null;
 	/**
 	 * 
 	 */
@@ -27,11 +26,17 @@ public class SurveyTaskRequest extends RestRequest {
 			String errorMsg = ACTION_PARAM + " is mandatory";
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
-		}	}
+		}
+		if (getId() == null) {
+			String errorMsg = "Id is mandatory";
+			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+					RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
+		}
+	}
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
-		if(req.getParameter(ID_PARAM)!=null)
+		if (req.getParameter(ID_PARAM) != null)
 			setId(new Long(req.getParameter(ID_PARAM)));
 	}
 
