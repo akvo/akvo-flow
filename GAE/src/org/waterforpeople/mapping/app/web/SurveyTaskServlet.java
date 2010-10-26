@@ -1,5 +1,8 @@
 package org.waterforpeople.mapping.app.web;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
@@ -15,6 +18,9 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
 
 public class SurveyTaskServlet extends AbstractRestApiServlet {
+	private static final Logger log = Logger.getLogger(SurveyTaskServlet.class
+			.getName());
+	
 
 	/**
 	 * 
@@ -33,6 +39,7 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		SurveyTaskRequest stReq = (SurveyTaskRequest) req;
 		Long id = stReq.getId();
+		log.log(Level.INFO, "action: " + stReq.getAction() + " id: " + id);
 		if (stReq.getAction().equals(SurveyTaskRequest.DELETE_SURVEY_ACTION)) {
 			SurveyDAO surveyDao = new SurveyDAO();
 			surveyDao.delete(surveyDao.getByKey(id));

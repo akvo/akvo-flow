@@ -111,6 +111,13 @@ public class TestHarnessServlet extends HttpServlet {
 			apmI.setUploadS3Flag(false);
 			writeImageToResponse(resp, apmI.rotateImage(test1));
 			// apmI.rotateImage(test2);
+		} else if ("deleteQuestion".equals(action)) {
+			createSurveyGroupGraph(resp);
+			SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			List<SurveyGroup> sgList = sgDao.list("all");
+			for(SurveyGroup sg: sgList)
+				sgDao.delete(sg);
+			
 		} else if ("addDeviceFiles".equals(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 			for (int i = 0; i < 100; i++) {
@@ -160,8 +167,8 @@ public class TestHarnessServlet extends HttpServlet {
 			ArrayList<String> regionLines = new ArrayList<String>();
 			for (int i = 0; i < 10; i++) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("1,").append("" + i).append(",test,")
-						.append(20 + i + ",").append(30 + i + "\n");
+				builder.append("1,").append("" + i).append(",test,").append(
+						20 + i + ",").append(30 + i + "\n");
 				regionLines.add(builder.toString());
 			}
 			geoHelp.processRegionsSurvey(regionLines);
@@ -271,7 +278,8 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setAltitude(0.0);
 					ap.setCommunityCode("test" + new Date());
 					ap.setCommunityName("test" + new Date());
-					ap.setPhotoURL("http://waterforpeople.s3.amazonaws.com/images/peru/pc28water.jpg");
+					ap
+							.setPhotoURL("http://waterforpeople.s3.amazonaws.com/images/peru/pc28water.jpg");
 					ap.setProvideAdequateQuantity(true);
 					ap.setHasSystemBeenDown1DayFlag(false);
 					ap.setMeetGovtQualityStandardFlag(true);
@@ -290,11 +298,14 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setCollectionDate(new Date());
 					ap.setPhotoName("Water point");
 					if (i % 2 == 0)
-						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+						ap
+								.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 					else if (i % 3 == 0)
-						ap.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
+						ap
+								.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
 					else
-						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
+						ap
+								.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
 					if (i == 0)
 						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 					else if (i == 1)
@@ -364,7 +375,9 @@ public class TestHarnessServlet extends HttpServlet {
 				for (MapFragment mfItem : mfList) {
 					String contents = ZipUtil
 							.unZip(mfItem.getBlob().getBytes());
-					log.log(Level.INFO, "Contents Length: " + contents.length());
+					log
+							.log(Level.INFO, "Contents Length: "
+									+ contents.length());
 					resp.setContentType("application/vnd.google-earth.kmz+xml");
 					ServletOutputStream out = resp.getOutputStream();
 					resp.setHeader("Content-Disposition",
@@ -392,127 +405,8 @@ public class TestHarnessServlet extends HttpServlet {
 		}
 
 		else if ("saveSurveyGroupRefactor".equals(action)) {
-
-			com.gallatinsystems.survey.dao.SurveyGroupDAO sgDao = new com.gallatinsystems.survey.dao.SurveyGroupDAO();
-			BaseDAO<Translation> tDao = new BaseDAO<Translation>(
-					Translation.class);
-
-			for (Translation t : tDao.list("all"))
-				tDao.delete(t);
-			// clear out old surveys
-			List<SurveyGroup> sgList = sgDao.list("all");
-			for (SurveyGroup item : sgList)
-				sgDao.delete(item);
-
-			try {
-				resp.getWriter().println("Finished clearing surveyGroup table");
-			} catch (IOException e1) {
-
-				e1.printStackTrace();
-			}
-			SurveyDAO surveyDao = new SurveyDAO();
-			QuestionGroupDao questionGroupDao = new QuestionGroupDao();
-			QuestionDao questionDao = new QuestionDao();
-			QuestionOptionDao questionOptionDao = new QuestionOptionDao();
-			QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
-			for (int i = 0; i < 2; i++) {
-				com.gallatinsystems.survey.domain.SurveyGroup sg = new com.gallatinsystems.survey.domain.SurveyGroup();
-				sg.setCode(i + ":" + new Date());
-				sg.setName(i + ":" + new Date());
-				sg = sgDao.save(sg);
-				for (int j = 0; j < 10; j++) {
-					com.gallatinsystems.survey.domain.Survey survey = new com.gallatinsystems.survey.domain.Survey();
-					survey.setName(j + ":" + new Date());
-					survey.setSurveyGroupId(sg.getKey().getId());
-					survey = surveyDao.save(survey);
-					Translation t = new Translation();
-					t.setLanguageCode("es");
-					t.setText(j + ":" + new Date());
-					t.setParentType(ParentType.SURVEY_NAME);
-					t.setParentId(survey.getKey().getId());
-					tDao.save(t);
-					survey.addTranslation(t);
-					for (int k = 0; k < 10; k++) {
-						com.gallatinsystems.survey.domain.QuestionGroup qg = new com.gallatinsystems.survey.domain.QuestionGroup();
-						qg.setName("en:" + j + new Date());
-						qg.setDesc("en:desc: " + j + new Date());
-						qg.setCode("en:" + j + new Date());
-						qg.setSurveyId(survey.getKey().getId());
-						qg.setOrder(k);
-						qg = questionGroupDao.save(qg);
-
-						Translation t2 = new Translation();
-						t2.setLanguageCode("es");
-						t2.setParentType(ParentType.QUESTION_GROUP_NAME);
-						t2.setText("es:" + k + new Date());
-						t2.setParentId(qg.getKey().getId());
-						tDao.save(t2);
-						qg.addTranslation(t2);
-
-						for (int l = 0; l < 2; l++) {
-							com.gallatinsystems.survey.domain.Question q = new com.gallatinsystems.survey.domain.Question();
-							q.setType(Type.OPTION);
-							q.setAllowMultipleFlag(false);
-							q.setAllowOtherFlag(false);
-							q.setDependentFlag(false);
-							q.setMandatoryFlag(true);
-							q.setQuestionGroupId(qg.getKey().getId());
-							q.setOrder(l);
-							q.setText("en:" + l + ":" + new Date());
-							q.setTip("en:" + l + ":" + new Date());
-
-							q = questionDao.save(q);
-
-							Translation tq = new Translation();
-							tq.setLanguageCode("es");
-							tq.setText("es" + l + ":" + new Date());
-							tq.setParentType(ParentType.QUESTION_TEXT);
-							tq.setParentId(q.getKey().getId());
-							tDao.save(tq);
-							q.addTranslation(tq);
-							for (int m = 0; m < 10; m++) {
-								com.gallatinsystems.survey.domain.QuestionOption qo = new com.gallatinsystems.survey.domain.QuestionOption();
-								qo.setOrder(m);
-								qo.setText(m + ":" + new Date());
-								qo.setCode(m + ":" + new Date());
-								qo.setQuestionId(q.getKey().getId());
-								qo = questionOptionDao.save(qo);
-
-								Translation tqo = new Translation();
-								tqo.setLanguageCode("es");
-								tqo.setText("es:" + m + ":" + new Date());
-								tqo.setParentType(ParentType.QUESTION_OPTION);
-								tqo.setParentId(qo.getKey().getId());
-								tDao.save(tqo);
-								qo.addTranslation(tqo);
-								q.addQuestionOption(qo);
-							}
-							for (int n = 0; n < 10; n++) {
-								com.gallatinsystems.survey.domain.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.QuestionHelpMedia();
-								qhm.setText("en:" + n + ":" + new Date());
-								qhm.setType(QuestionHelpMedia.Type.PHOTO);
-								qhm.setUrl("http://test.com/" + n + ".jpg");
-								qhm.setQuestionId(q.getKey().getId());
-								qhm = helpDao.save(qhm);
-
-								Translation tqhm = new Translation();
-								tqhm.setLanguageCode("es");
-								tqhm.setText("es:" + n + ":" + new Date());
-								tqhm.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
-								tqhm.setParentId(qhm.getKey().getId());
-								tDao.save(tqhm);
-								qhm.addTranslation(tqhm);
-								q.addHelpMedia(n, qhm);
-							}
-							qg.addQuestion(l, q);
-						}
-						survey.addQuestionGroup(k, qg);
-					}
-					sg.addSurvey(survey);
-				}
-				log.log(Level.INFO, "Finished Saving sg: "
-						+ sg.getKey().toString());
-			}
+			SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			createSurveyGroupGraph(resp);
 			try {
 				List<SurveyGroup> savedSurveyGroups = sgDao.list("all");
 				for (SurveyGroup sgItem : savedSurveyGroups) {
@@ -822,8 +716,11 @@ public class TestHarnessServlet extends HttpServlet {
 							|| ap.getGeocells().size() == 0) {
 						if (ap.getLatitude() != null
 								&& ap.getLongitude() != null) {
-							ap.setGeocells(GeocellManager.generateGeoCell(new Point(
-									ap.getLatitude(), ap.getLongitude())));
+							ap
+									.setGeocells(GeocellManager
+											.generateGeoCell(new Point(ap
+													.getLatitude(), ap
+													.getLongitude())));
 							apDao.save(ap);
 						}
 					}
@@ -957,9 +854,9 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 			} else {
 
-				deleteSurveyResponses(
-						Integer.parseInt(req.getParameter("surveyId")),
-						Integer.parseInt(req.getParameter("count")));
+				deleteSurveyResponses(Integer.parseInt(req
+						.getParameter("surveyId")), Integer.parseInt(req
+						.getParameter("count")));
 			}
 		} else if ("fixNameQuestion".equals(action)) {
 			if (req.getParameter("questionId") == null) {
@@ -1177,6 +1074,130 @@ public class TestHarnessServlet extends HttpServlet {
 			out.flush();
 		} catch (Exception ex) {
 
+		}
+	}
+	
+	private void createSurveyGroupGraph(HttpServletResponse resp){
+		com.gallatinsystems.survey.dao.SurveyGroupDAO sgDao = new com.gallatinsystems.survey.dao.SurveyGroupDAO();
+		BaseDAO<Translation> tDao = new BaseDAO<Translation>(
+				Translation.class);
+
+		for (Translation t : tDao.list("all"))
+			tDao.delete(t);
+		// clear out old surveys
+		List<SurveyGroup> sgList = sgDao.list("all");
+		for (SurveyGroup item : sgList)
+			sgDao.delete(item);
+
+		try {
+			resp.getWriter().println("Finished clearing surveyGroup table");
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
+		SurveyDAO surveyDao = new SurveyDAO();
+		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
+		QuestionDao questionDao = new QuestionDao();
+		QuestionOptionDao questionOptionDao = new QuestionOptionDao();
+		QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
+		for (int i = 0; i < 2; i++) {
+			com.gallatinsystems.survey.domain.SurveyGroup sg = new com.gallatinsystems.survey.domain.SurveyGroup();
+			sg.setCode(i + ":" + new Date());
+			sg.setName(i + ":" + new Date());
+			sg = sgDao.save(sg);
+			for (int j = 0; j < 10; j++) {
+				com.gallatinsystems.survey.domain.Survey survey = new com.gallatinsystems.survey.domain.Survey();
+				survey.setName(j + ":" + new Date());
+				survey.setSurveyGroupId(sg.getKey().getId());
+				survey = surveyDao.save(survey);
+				Translation t = new Translation();
+				t.setLanguageCode("es");
+				t.setText(j + ":" + new Date());
+				t.setParentType(ParentType.SURVEY_NAME);
+				t.setParentId(survey.getKey().getId());
+				tDao.save(t);
+				survey.addTranslation(t);
+				for (int k = 0; k < 10; k++) {
+					com.gallatinsystems.survey.domain.QuestionGroup qg = new com.gallatinsystems.survey.domain.QuestionGroup();
+					qg.setName("en:" + j + new Date());
+					qg.setDesc("en:desc: " + j + new Date());
+					qg.setCode("en:" + j + new Date());
+					qg.setSurveyId(survey.getKey().getId());
+					qg.setOrder(k);
+					qg = questionGroupDao.save(qg);
+
+					Translation t2 = new Translation();
+					t2.setLanguageCode("es");
+					t2.setParentType(ParentType.QUESTION_GROUP_NAME);
+					t2.setText("es:" + k + new Date());
+					t2.setParentId(qg.getKey().getId());
+					tDao.save(t2);
+					qg.addTranslation(t2);
+
+					for (int l = 0; l < 2; l++) {
+						com.gallatinsystems.survey.domain.Question q = new com.gallatinsystems.survey.domain.Question();
+						q.setType(Type.OPTION);
+						q.setAllowMultipleFlag(false);
+						q.setAllowOtherFlag(false);
+						q.setDependentFlag(false);
+						q.setMandatoryFlag(true);
+						q.setQuestionGroupId(qg.getKey().getId());
+						q.setOrder(l);
+						q.setText("en:" + l + ":" + new Date());
+						q.setTip("en:" + l + ":" + new Date());
+
+						q = questionDao.save(q);
+
+						Translation tq = new Translation();
+						tq.setLanguageCode("es");
+						tq.setText("es" + l + ":" + new Date());
+						tq.setParentType(ParentType.QUESTION_TEXT);
+						tq.setParentId(q.getKey().getId());
+						tDao.save(tq);
+						q.addTranslation(tq);
+						for (int m = 0; m < 10; m++) {
+							com.gallatinsystems.survey.domain.QuestionOption qo = new com.gallatinsystems.survey.domain.QuestionOption();
+							qo.setOrder(m);
+							qo.setText(m + ":" + new Date());
+							qo.setCode(m + ":" + new Date());
+							qo.setQuestionId(q.getKey().getId());
+							qo = questionOptionDao.save(qo);
+
+							Translation tqo = new Translation();
+							tqo.setLanguageCode("es");
+							tqo.setText("es:" + m + ":" + new Date());
+							tqo.setParentType(ParentType.QUESTION_OPTION);
+							tqo.setParentId(qo.getKey().getId());
+							tDao.save(tqo);
+							qo.addTranslation(tqo);
+							q.addQuestionOption(qo);
+						}
+						for (int n = 0; n < 10; n++) {
+							com.gallatinsystems.survey.domain.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.QuestionHelpMedia();
+							qhm.setText("en:" + n + ":" + new Date());
+							qhm.setType(QuestionHelpMedia.Type.PHOTO);
+							qhm.setUrl("http://test.com/" + n + ".jpg");
+							qhm.setQuestionId(q.getKey().getId());
+							qhm = helpDao.save(qhm);
+
+							Translation tqhm = new Translation();
+							tqhm.setLanguageCode("es");
+							tqhm.setText("es:" + n + ":" + new Date());
+							tqhm
+									.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
+							tqhm.setParentId(qhm.getKey().getId());
+							tDao.save(tqhm);
+							qhm.addTranslation(tqhm);
+							q.addHelpMedia(n, qhm);
+						}
+						qg.addQuestion(l, q);
+					}
+					survey.addQuestionGroup(k, qg);
+				}
+				sg.addSurvey(survey);
+			}
+			log.log(Level.INFO, "Finished Saving sg: "
+					+ sg.getKey().toString());
 		}
 	}
 }

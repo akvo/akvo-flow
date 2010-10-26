@@ -7,12 +7,12 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyTaskRequest extends RestRequest {
 	public static final String ID_PARAM = "id";
-	public static final String DELETE_SURVEY_ACTION = "deleteSurveyAction";
-	public static final String DELETE_QUESTION_GROUP_ACTION = "deleteQuestionGroupAction";
+	public static final String DELETE_SURVEY_ACTION = "deleteSurvey";
+	public static final String DELETE_QUESTION_GROUP_ACTION = "deleteQuestionGroup";
 	public static final String DELETE_QUESTION_ACTION = "deleteQuestion";
-	public static final String DELETE_QUESTION_HELP_ACTION = "deleteQuestionHelpAction";
-	public static final String DELETE_QUESTION_TRANSLATION_ACTION = "deleteQuestionTranslationAction";
-	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptionAction";
+	public static final String DELETE_QUESTION_HELP_ACTION = "deleteQuestionHelp";
+	public static final String DELETE_QUESTION_TRANSLATION_ACTION = "deleteQuestionTranslation";
+	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOption";
 
 	private Long id = null;
 	/**
