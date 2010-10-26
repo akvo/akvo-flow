@@ -116,6 +116,8 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("deleteQuestion".equals(action)) {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			sgDao.delete(sgDao.list("all"));
+			SurveyDAO surveyDao = new SurveyDAO();
+			surveyDao.delete(surveyDao.list("all"));
 			QuestionGroupDao qgDao = new QuestionGroupDao();
 			qgDao.delete(qgDao.list("all"));
 			QuestionDao qDao = new QuestionDao();
@@ -1130,10 +1132,11 @@ public class TestHarnessServlet extends HttpServlet {
 			sg.setCode(i + ":" + new Date());
 			sg.setName(i + ":" + new Date());
 			sg = sgDao.save(sg);
-			for (int j = 0; j < 10; j++) {
+			for (int j = 0; j < 2; j++) {
 				com.gallatinsystems.survey.domain.Survey survey = new com.gallatinsystems.survey.domain.Survey();
 				survey.setName(j + ":" + new Date());
 				survey.setSurveyGroupId(sg.getKey().getId());
+				survey.setPath(sg.getCode());
 				survey = surveyDao.save(survey);
 				Translation t = new Translation();
 				t.setLanguageCode("es");
@@ -1142,13 +1145,14 @@ public class TestHarnessServlet extends HttpServlet {
 				t.setParentId(survey.getKey().getId());
 				tDao.save(t);
 				survey.addTranslation(t);
-				for (int k = 0; k < 10; k++) {
+				for (int k = 0; k < 3; k++) {
 					com.gallatinsystems.survey.domain.QuestionGroup qg = new com.gallatinsystems.survey.domain.QuestionGroup();
 					qg.setName("en:" + j + new Date());
 					qg.setDesc("en:desc: " + j + new Date());
 					qg.setCode("en:" + j + new Date());
 					qg.setSurveyId(survey.getKey().getId());
 					qg.setOrder(k);
+					qg.setPath(sg.getCode()+"/"+survey.getCode());
 					qg = questionGroupDao.save(qg);
 
 					Translation t2 = new Translation();
@@ -1170,7 +1174,7 @@ public class TestHarnessServlet extends HttpServlet {
 						q.setOrder(l);
 						q.setText("en:" + l + ":" + new Date());
 						q.setTip("en:" + l + ":" + new Date());
-
+						q.setPath(sg.getCode()+"/"+survey.getCode()+"/"+qg.getCode());
 						q = questionDao.save(q);
 
 						Translation tq = new Translation();

@@ -18,6 +18,6 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		
 	}
 	public List<QuestionAnswerStore> listByQuestion(Long questionId){
-		return super.listByProperty("questionId", questionId.toString(), "String");
+		return super.listByProperty("questionID", questionId.toString(), "String");
 	}
 }
