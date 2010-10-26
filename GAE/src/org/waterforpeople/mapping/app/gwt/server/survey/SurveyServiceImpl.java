@@ -164,7 +164,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		return dtoList;
 	}
-	
+
 	/**
 	 * lists all surveys for a group
 	 */
@@ -408,7 +408,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return dto;
 	}
 
-
 	@Override
 	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupId) {
 		List<Survey> surveyList = surveyDao.listSurveysByGroup(Long
@@ -421,7 +420,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		return surveyDtoList;
 	}
-
 
 	@Override
 	public ArrayList<QuestionGroupDto> listQuestionGroupsBySurvey(
@@ -711,14 +709,20 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void deleteQuestionGroup(QuestionGroupDto value, Long surveyId) {
-		// TODO implement delete questoin group
-
+		if (value != null) {
+			QuestionGroupDao qgDao = new QuestionGroupDao();
+			qgDao.delete(qgDao.getByKey(value.getKeyId()));
+		}
 	}
+	
+
 
 	@Override
 	public void deleteSurvey(SurveyDto value, Long surveyGroupId) {
-		// TODO implement delete survey
-
+		if (value != null) {
+			SurveyDAO surveyDao = new SurveyDAO();
+			surveyDao.delete(surveyDao.getById(value.getKeyId()));
+		}
 	}
 
 	@Override
