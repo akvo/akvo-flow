@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
 
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
@@ -68,7 +70,8 @@ public class QuestionDao extends BaseDAO<Question> {
 	public void delete(Question question, Long questionGroupId) {
 		for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
 				.listOptionByQuestion(question.getKey().getId()).entrySet()) {
-			SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions",qoItem.getValue().getKey().getId());
+			SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions", qoItem
+					.getValue().getKey().getId());
 		}
 		TranslationDao tDao = new TranslationDao();
 		tDao.deleteTranslationsForParent(question.getKey().getId(),
@@ -77,17 +80,21 @@ public class QuestionDao extends BaseDAO<Question> {
 		super.delete(question);
 
 	}
-	
+
 	public void delete(Question question) {
-		for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
-				.listOptionByQuestion(question.getKey().getId()).entrySet()) {
-			SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions",qoItem.getValue().getKey().getId());
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
+			for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
+					.listOptionByQuestion(question.getKey().getId()).entrySet()) {
+				SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions", qoItem
+						.getValue().getKey().getId());
+			}
+			TranslationDao tDao = new TranslationDao();
+			tDao.deleteTranslationsForParent(question.getKey().getId(),
+					Translation.ParentType.QUESTION_TEXT);
+			// TODO:Implement help media delete
+			super.delete(question);
 		}
-		TranslationDao tDao = new TranslationDao();
-		tDao.deleteTranslationsForParent(question.getKey().getId(),
-				Translation.ParentType.QUESTION_TEXT);
-		// TODO:Implement help media delete
-		super.delete(question);
 
 	}
 
@@ -166,7 +173,8 @@ public class QuestionDao extends BaseDAO<Question> {
 				if (needDetails) {
 					q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q
 							.getKey().getId()));
-					if (Question.Type.OPTION == q.getType() || Question.Type.STRENGTH == q.getType()) {
+					if (Question.Type.OPTION == q.getType()
+							|| Question.Type.STRENGTH == q.getType()) {
 						q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
 								.getKey().getId()));
 					}
