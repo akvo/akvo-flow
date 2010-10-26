@@ -1,5 +1,7 @@
 package com.gallatinsystems.survey.dao;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -19,6 +21,8 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class SurveyDAO extends BaseDAO<Survey> {
 	private static final Logger log = Logger
@@ -149,11 +153,15 @@ public class SurveyDAO extends BaseDAO<Survey> {
 			save(s);
 		}
 	}
-	
-	public void delete(Survey item){
+
+	public void delete(Survey item) {
 		QuestionGroupDao qgDao = new QuestionGroupDao();
-		for(Map.Entry<Integer, QuestionGroup> qgItem: qgDao.listQuestionGroupsBySurvey(item.getKey().getId()).entrySet()){
-			qgDao.delete(qgItem.getValue());
+		for (Map.Entry<Integer, QuestionGroup> qgItem : qgDao
+				.listQuestionGroupsBySurvey(item.getKey().getId()).entrySet()) {
+			SurveyTaskUtil.spawnDeleteTask("deleteQuestionGroup",qgItem.getValue().getKey().getId());
 		}
+		super.delete(item);
 	}
+
+	
 }

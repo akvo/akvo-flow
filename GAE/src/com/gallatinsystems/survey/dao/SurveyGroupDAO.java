@@ -65,7 +65,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 
 		for (Survey survey : surveyDao
 				.listSurveysByGroup(item.getKey().getId())) {
-			surveyDao.delete(survey);
+			SurveyTaskUtil.spawnDeleteTask("deleteSurvey", survey.getKey().getId());
 		}
 	}
 

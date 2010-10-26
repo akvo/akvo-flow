@@ -68,7 +68,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	public void delete(Question question, Long questionGroupId) {
 		for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
 				.listOptionByQuestion(question.getKey().getId()).entrySet()) {
-			optionDao.delete(qoItem.getValue());
+			SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions",qoItem.getValue().getKey().getId());
 		}
 		TranslationDao tDao = new TranslationDao();
 		tDao.deleteTranslationsForParent(question.getKey().getId(),

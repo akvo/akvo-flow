@@ -1,5 +1,7 @@
 package com.gallatinsystems.survey.dao;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,6 +12,8 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
@@ -64,7 +68,10 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 	public void delete(QuestionGroup item){
 		QuestionDao qDao = new QuestionDao();
 		for(Map.Entry<Integer,Question> qItem: qDao.listQuestionsByQuestionGroup(item.getKey().getId(), false).entrySet()){
-			qDao.delete(qItem.getValue());
+			SurveyTaskUtil.spawnDeleteTask("deleteQuestion",qItem.getValue().getKey().getId());
 		}
+		super.delete(item);
 	}
+	
+	
 }
