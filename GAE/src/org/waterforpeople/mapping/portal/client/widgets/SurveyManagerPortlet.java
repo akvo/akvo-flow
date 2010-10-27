@@ -213,7 +213,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == addSurveyButton) {
 			loadSurveyDetail(null);
 		} else if (event.getSource() == deleteSurveyButton) {
-
+			deleteSurvey(event);
 		} else if (event.getSource() == addQuestionGroupButton) {
 			loadQuestionGroupDetail(null);
 		} else if (event.getSource() == deleteQuestionGroupButton) {
@@ -223,6 +223,26 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == deleteQuestionButton) {
 
 		}
+	}
+
+	private void deleteSurvey(ClickEvent event) {
+		svc.deleteSurvey(getSurveyDtoFromPanel(event), 1L,
+				new AsyncCallback<String>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onSuccess(String result) {
+						// TODO Auto-generated method stub
+
+					}
+
+				});
+
 	}
 
 	private void deleteSurveyGroup(ClickEvent event) {
@@ -249,6 +269,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private SurveyGroupDto getSurveyGroupDtoFromPanel(ClickEvent event) {
 		return getSurveyGroupDto();
+	}
+
+	private SurveyDto getSurveyDtoFromPanel(ClickEvent event) {
+		return getSurveyDto();
 	}
 
 	private void loadQuestionDetails(final QuestionDto item) {
@@ -387,7 +411,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestion();
 				} catch (Exception e) {
-					Window.alert("Could not save question no Question Group was selected");
+					Window
+							.alert("Could not save question no Question Group was selected");
 				}
 			}
 
@@ -464,8 +489,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(
-										currentQuestion.getSurveyId(), result);
+								surveyOptionQuestionMap.put(currentQuestion
+										.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 							}
@@ -648,8 +673,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null,
-						questionOptionDetail.getRowCount());
+				loadQuestionOptionRowDetail(null, questionOptionDetail
+						.getRowCount());
 			}
 
 		});
@@ -946,7 +971,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveSurvey();
 				} catch (Exception e) {
-					Window.alert("Could not save survey no survey group selected");
+					Window
+							.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -1060,7 +1086,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestionGroup();
 				} catch (Exception ex) {
-					Window.alert("Cannot Save Question Group Because no parent survey is selected");
+					Window
+							.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
 			}
 
@@ -1070,7 +1097,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.confirm("This will remove all question associatons with this Question Group, but will not delete the questions. Not yet implemented");
+				Window
+						.confirm("This will remove all question associatons with this Question Group, but will not delete the questions. Not yet implemented");
 
 			}
 
