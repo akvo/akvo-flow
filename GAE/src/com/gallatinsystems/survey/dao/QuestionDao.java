@@ -9,6 +9,7 @@ import javax.jdo.PersistenceManager;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
@@ -67,21 +68,9 @@ public class QuestionDao extends BaseDAO<Question> {
 		return listByProperty("surveyId", surveyId, "Long");
 	}
 
-	public void delete(Question question, Long questionGroupId) {
-		for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
-				.listOptionByQuestion(question.getKey().getId()).entrySet()) {
-			SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions", qoItem
-					.getValue().getKey().getId());
-		}
-		TranslationDao tDao = new TranslationDao();
-		tDao.deleteTranslationsForParent(question.getKey().getId(),
-				Translation.ParentType.QUESTION_TEXT);
-		// TODO:Implement help media delete
-		super.delete(question);
+	
 
-	}
-
-	public void delete(Question question) {
+	public void delete(Question question) throws IllegalDeletionException {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
 			for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
@@ -94,6 +83,13 @@ public class QuestionDao extends BaseDAO<Question> {
 					Translation.ParentType.QUESTION_TEXT);
 			// TODO:Implement help media delete
 			super.delete(question);
+		} else {
+			throw new IllegalDeletionException(
+					"Cannot delete questionId: "
+							+ question.getKey().getId()
+							+ " surveyCode:"
+							+ question.getText()
+							+ " because there is a QuestionAnswerStore value for this question. Please delete all survey response first");
 		}
 
 	}

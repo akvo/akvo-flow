@@ -35,7 +35,7 @@ public interface SurveyServiceAsync {
 			boolean needDetails, AsyncCallback<ArrayList<QuestionDto>> callback);
 
 	void deleteQuestion(QuestionDto value, Long questionGroupId,
-			AsyncCallback<Void> callback);
+			AsyncCallback<String> callback);
 
 	void saveSurvey(SurveyDto surveyDto, Long surveyGroupId,
 			AsyncCallback<SurveyDto> callback);
@@ -56,13 +56,13 @@ public interface SurveyServiceAsync {
 
 	void publishSurveyAsync(Long surveyId, AsyncCallback<Void> callback);
 
-	void deleteSurveyGroup(SurveyGroupDto value, AsyncCallback<Void> callback);
+	void deleteSurveyGroup(SurveyGroupDto value, AsyncCallback<String> callback);
 
 	void deleteQuestionGroup(QuestionGroupDto value, Long surveyId,
-			AsyncCallback<Void> callback);
+			AsyncCallback<String> callback);
 
 	void deleteSurvey(SurveyDto value, Long surveyGroupId,
-			AsyncCallback<Void> callback);
+			AsyncCallback<String> callback);
 
 	void saveTranslations(List<TranslationDto> translations,
 			AsyncCallback<List<TranslationDto>> callback);

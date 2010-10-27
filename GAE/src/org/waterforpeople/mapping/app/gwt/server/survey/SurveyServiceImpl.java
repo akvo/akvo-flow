@@ -26,6 +26,7 @@ import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
+import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -453,11 +454,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void deleteQuestion(QuestionDto value, Long questionGroupId) {
+	public String deleteQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
 		Question canonical = new Question();
 		DtoMarshaller.copyToCanonical(canonical, value);
-		questionDao.delete(canonical, questionGroupId);
+		try {
+			questionDao.delete(canonical);
+		} catch (IllegalDeletionException e) {
+			
+			return e.getError();
+		}
+		return null;
 
 	}
 
@@ -708,29 +715,37 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void deleteQuestionGroup(QuestionGroupDto value, Long surveyId) {
+	public String deleteQuestionGroup(QuestionGroupDto value, Long surveyId) {
 		if (value != null) {
 			QuestionGroupDao qgDao = new QuestionGroupDao();
 			qgDao.delete(qgDao.getByKey(value.getKeyId()));
 		}
+		return null;
 	}
 	
 
 
 	@Override
-	public void deleteSurvey(SurveyDto value, Long surveyGroupId) {
+	public String deleteSurvey(SurveyDto value, Long surveyGroupId) {
 		if (value != null) {
 			SurveyDAO surveyDao = new SurveyDAO();
-			surveyDao.delete(surveyDao.getById(value.getKeyId()));
+			try {
+				surveyDao.delete(surveyDao.getById(value.getKeyId()));
+			} catch (IllegalDeletionException e) {
+				// TODO Auto-generated catch block
+				return e.getError();
+			}
 		}
+		return null;
 	}
 
 	@Override
-	public void deleteSurveyGroup(SurveyGroupDto value) {
+	public String deleteSurveyGroup(SurveyGroupDto value) {
 		if (value != null) {
 			SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 			surveyGroupDao.delete(marshallSurveyGroup(value));
 		}
+		return null;
 	}
 
 	public static SurveyGroup marshallSurveyGroup(SurveyGroupDto dto) {

@@ -65,6 +65,7 @@ import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.domain.MapFragment;
@@ -780,7 +781,12 @@ public class TestHarnessServlet extends HttpServlet {
 				SurveyDAO surveyDao = new SurveyDAO();
 				List<Survey> surveyList = surveyDao.list("all");
 				for (Survey survey : surveyList) {
-					surveyDao.delete(survey);
+					try {
+						surveyDao.delete(survey);
+					} catch (IllegalDeletionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				resp.getWriter().println("Deleted all surveys");
 
@@ -795,7 +801,12 @@ public class TestHarnessServlet extends HttpServlet {
 				QuestionDao qDao = new QuestionDao();
 				List<Question> qList = qDao.list("all");
 				for (Question q : qList) {
-					qDao.delete(q);
+					try {
+						qDao.delete(q);
+					} catch (IllegalDeletionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				resp.getWriter().println("Deleted all Questions");
 
@@ -1134,6 +1145,7 @@ public class TestHarnessServlet extends HttpServlet {
 			sg = sgDao.save(sg);
 			for (int j = 0; j < 2; j++) {
 				com.gallatinsystems.survey.domain.Survey survey = new com.gallatinsystems.survey.domain.Survey();
+				survey.setCode(j + ":" + new Date());
 				survey.setName(j + ":" + new Date());
 				survey.setSurveyGroupId(sg.getKey().getId());
 				survey.setPath(sg.getCode());

@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
@@ -151,7 +152,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		}
 	}
 
-	public void delete(Survey item) {
+	public void delete(Survey item) throws IllegalDeletionException {
 		// Check to see if there are any surveys for this first
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		if (qasDao.listBySurvey(new Long(item.getKey().getId())).size()==0) {
@@ -163,6 +164,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 						.getValue().getKey().getId());
 			}
 			super.delete(item);
+		}else{
+			throw new IllegalDeletionException("Cannot delete surveyId: " + item.getKey().getId() + " surveyCode:" + item.getCode() + " because there is a QuestionAnswerStore value for this survey. Please delete all survey response first");
 		}
 	}
 
