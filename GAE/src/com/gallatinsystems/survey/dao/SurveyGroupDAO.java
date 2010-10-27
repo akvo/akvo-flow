@@ -62,7 +62,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 	public void delete(SurveyGroup item) {
 		// This probably won't work on the server
 		SurveyDAO surveyDao = new SurveyDAO();
-
+		item = super.getByKey(item.getKey().getId());
 		for (Survey survey : surveyDao
 				.listSurveysByGroup(item.getKey().getId())) {
 			SurveyTaskUtil.spawnDeleteTask("deleteSurvey", survey.getKey().getId());

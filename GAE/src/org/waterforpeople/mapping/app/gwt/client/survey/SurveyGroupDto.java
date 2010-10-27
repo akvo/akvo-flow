@@ -11,6 +11,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 	private static final long serialVersionUID = -2235565143615667202L;
 
 	private String description;
+	private String name;
 	private String code;
 	private Date createdDateTime;
 	private Date lastUpdateDateTime;
@@ -67,6 +68,14 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 	@Override
 	public String getDisplayName() {
 		return getCode();
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

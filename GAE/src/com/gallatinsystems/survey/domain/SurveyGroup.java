@@ -15,6 +15,7 @@ public class SurveyGroup extends BaseDomain {
 	private static final long serialVersionUID = 8941584684617286776L;
 	private String name = null;
 	private String code = null;
+	private String description = null;
 	@NotPersistent
 	private HashMap<String, Translation> altTextMap;
 	@NotPersistent
@@ -56,6 +57,14 @@ public class SurveyGroup extends BaseDomain {
 		if (surveyList == null)
 			surveyList = new ArrayList<Survey>();
 		surveyList.add(survey);
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 }

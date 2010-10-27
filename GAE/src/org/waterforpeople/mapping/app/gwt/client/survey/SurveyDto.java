@@ -13,6 +13,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String status;
 	private ArrayList<QuestionGroupDto> questionGroupList;
 	private String path;
+	private Long surveyGroupId = null;
 
 	public String getPath() {
 		return path;
@@ -78,5 +79,13 @@ public class SurveyDto extends BaseDto implements NamedObject {
 		}
 		display = display + " - v." + getVersion();
 		return display;
+	}
+
+	public void setSurveyGroupId(Long surveyGroupId) {
+		this.surveyGroupId = surveyGroupId;
+	}
+
+	public Long getSurveyGroupId() {
+		return surveyGroupId;
 	}
 }

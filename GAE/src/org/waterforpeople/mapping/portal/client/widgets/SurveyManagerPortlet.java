@@ -8,6 +8,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -15,7 +16,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyQuestionTranslationDialog;
@@ -29,6 +29,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -41,6 +42,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -200,6 +202,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		buttonPanel.add(b);
 		return b;
 	}
+	private TreeItem selectedTreeItem = null;
 
 	/**
 	 * handles all button clicks for the portlet
@@ -211,6 +214,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == deleteSurveyGroupButton) {
 			deleteSurveyGroup(event);
 		} else if (event.getSource() == addSurveyButton) {
+			
 			loadSurveyDetail(null);
 		} else if (event.getSource() == deleteSurveyButton) {
 			deleteSurvey(event);
@@ -221,7 +225,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == addQuestionButton) {
 			loadQuestionDetails(null);
 		} else if (event.getSource() == deleteQuestionButton) {
-
+			deleteQuestion(getQuestionDto(),1L);
 		}
 	}
 
@@ -261,7 +265,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 						else
 							Window.alert(result);
 						// TODO: create remove from tree method
-						// removeSurveyGroupFromTree();
+						removeSurveyGroupFromTree();
+					}
+
+					private void removeSurveyGroupFromTree() {
+						TreeItem sgItem = surveyTree.getCurrentlySelectedItem();
+						
 					}
 
 				});
@@ -411,8 +420,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestion();
 				} catch (Exception e) {
-					Window
-							.alert("Could not save question no Question Group was selected");
+					Window.alert("Could not save question no Question Group was selected");
 				}
 			}
 
@@ -421,11 +429,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				QuestionDto value = new QuestionDto();
-				TextBox questionId = (TextBox) questionDetailPanel.getWidget(0,
-						0);
-				value.setKeyId(new Long(questionId.getText()));
-				deleteQuestion(value, 1L);
+				
+				deleteQuestion(getQuestionDto(), 1L);
 			}
 
 		});
@@ -489,8 +494,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(currentQuestion
-										.getSurveyId(), result);
+								surveyOptionQuestionMap.put(
+										currentQuestion.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 							}
@@ -673,8 +678,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null, questionOptionDetail
-						.getRowCount());
+				loadQuestionOptionRowDetail(null,
+						questionOptionDetail.getRowCount());
 			}
 
 		});
@@ -723,6 +728,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			isNew = false;
 		} else {
 			isNew = true;
+			QuestionGroupDto parentQGDto = (QuestionGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject();
+			dto.setPath(parentQGDto.getPath()+"/"+parentQGDto.getCode());
+			dto.setQuestionGroupId(parentQGDto.getKeyId());
 		}
 
 		svc.saveQuestion(dto, parentId, new AsyncCallback<QuestionDto>() {
@@ -914,8 +922,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO: implement delete
-
+				deleteSurveyGroup(event);
 			}
 
 		});
@@ -971,8 +978,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveSurvey();
 				} catch (Exception e) {
-					Window
-							.alert("Could not save survey no survey group selected");
+					Window.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -1086,8 +1092,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestionGroup();
 				} catch (Exception ex) {
-					Window
-							.alert("Cannot Save Question Group Because no parent survey is selected");
+					Window.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
 			}
 
@@ -1097,8 +1102,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window
-						.confirm("This will remove all question associatons with this Question Group, but will not delete the questions. Not yet implemented");
+				Window.confirm("This will remove all question associatons with this Question Group, but will not delete the questions. Not yet implemented");
 
 			}
 
@@ -1114,6 +1118,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		if (questionGroupId.getText().length() > 0)
 			qDto.setKeyId(new Long(questionGroupId.getText()));
+		else{
+			SurveyDto parentSDto = (SurveyDto)surveyTree.getCurrentlySelectedItem().getUserObject();
+			qDto.setPath(parentSDto.getName()+"/"+parentSDto.getName());
+			qDto.setSurveyId(parentSDto.getKeyId());
+		}
 		if (name.getText().length() > 0)
 			qDto.setCode(name.getText());
 		if (desc.getText().length() > 0)
@@ -1210,6 +1219,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox version = (TextBox) surveyDetail.getWidget(3, 1);
 		if (surveyId.getText().length() > 0)
 			surveyDto.setKeyId(new Long(surveyId.getText()));
+		else{
+			SurveyGroupDto parentSGDto = (SurveyGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject();
+			surveyDto.setPath(parentSGDto.getCode());
+			surveyDto.setSurveyGroupId(parentSGDto.getKeyId());
+		}
 		if (surveyname.getText().length() > 0)
 			surveyDto.setName(surveyname.getText());
 		if (surveyDesc.getText().length() > 0)
@@ -1240,6 +1254,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onSuccess(SurveyGroupDto result) {
 				if (isNew) {
+					((TextBox) surveyGroupDetail.getWidget(0, 1))
+							.setText(result.getKeyId().toString());
 					surveyTree.addChild(treeParent, result);
 				}
 				Window.alert("Survey Group Saved");

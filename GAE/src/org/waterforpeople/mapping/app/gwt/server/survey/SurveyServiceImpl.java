@@ -495,6 +495,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		DtoMarshaller.copyToCanonical(canonical, surveyDto);
 		canonical = new SurveyDAO().save(canonical);
 		DtoMarshaller.copyToDto(canonical, surveyDto);
+	
 		return surveyDto;
 
 	}

@@ -263,12 +263,13 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 		}
 		parent.addItem(surveyItem);
 	}
-
+	private TreeItem currentlySelectedItem;
 	/**
 	 * reacts to clicks of tree items and loads the children.
 	 */
 	@Override
 	public void onSelection(SelectionEvent<TreeItem> event) {
+		setCurrentlySelectedItem(event.getSelectedItem());
 		loadChild(event.getSelectedItem());
 		if (event.getSelectedItem().getUserObject() != null
 				&& event.getSelectedItem().getUserObject() instanceof BaseDto) {
@@ -497,6 +498,10 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 				childItem.setUserObject(child);
 				parentItem.addItem(childItem);
 			}
+		}else{
+			TreeItem rootItem = new TreeItem(child.getDisplayName());
+			rootItem.setUserObject(child);
+			surveyRootTree.addItem(rootItem);
 		}
 	}
 
@@ -581,5 +586,13 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			}
 		}
 		return result;
+	}
+
+	public void setCurrentlySelectedItem(TreeItem currentlySelectedItem) {
+		this.currentlySelectedItem = currentlySelectedItem;
+	}
+
+	public TreeItem getCurrentlySelectedItem() {
+		return currentlySelectedItem;
 	}
 }
