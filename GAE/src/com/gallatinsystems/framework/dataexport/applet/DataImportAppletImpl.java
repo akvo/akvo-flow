@@ -32,8 +32,7 @@ public class DataImportAppletImpl extends JApplet {
 	public void init() {
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
-		String type = getParameter(IMPORT_TYPE_PARAM);
-		doImport(type, getCodeBase().toString());
+		String type = getParameter(IMPORT_TYPE_PARAM);	
 		String factoryClass = getParameter(FACTORY_PARAM);
 		if (factoryClass != null) {
 			try {
@@ -44,7 +43,10 @@ public class DataImportAppletImpl extends JApplet {
 						+ factoryClass);
 				e.printStackTrace(System.err);
 			}
+		}else{
+			System.err.println("Factory must be specified");
 		}
+		doImport(type, getCodeBase().toString());
 	}
 
 	public void doImport(String type, String serverBase) {
