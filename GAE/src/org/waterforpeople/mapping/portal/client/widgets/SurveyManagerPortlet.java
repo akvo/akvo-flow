@@ -121,6 +121,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		detailContainer = new VerticalPanel();
 		treeContainer.add(detailContainer);
 		detailContainer.add(w);
+		w.setVisible(true);
 	}
 
 	/**
@@ -201,6 +202,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		buttonPanel.add(b);
 		return b;
 	}
+
 	private TreeItem selectedTreeItem = null;
 
 	/**
@@ -213,7 +215,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == deleteSurveyGroupButton) {
 			deleteSurveyGroup(event);
 		} else if (event.getSource() == addSurveyButton) {
-			
+
 			loadSurveyDetail(null);
 		} else if (event.getSource() == deleteSurveyButton) {
 			deleteSurvey(event);
@@ -224,7 +226,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == addQuestionButton) {
 			loadQuestionDetails(null);
 		} else if (event.getSource() == deleteQuestionButton) {
-			deleteQuestion(getQuestionDto(),1L);
+			deleteQuestion(getQuestionDto(), 1L);
 		}
 	}
 
@@ -269,7 +271,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 					private void removeSurveyGroupFromTree() {
 						TreeItem sgItem = surveyTree.getCurrentlySelectedItem();
-						
+
 					}
 
 				});
@@ -420,7 +422,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestion();
 				} catch (Exception e) {
-					Window.alert("Could not save question no Question Group was selected");
+					Window
+							.alert("Could not save question no Question Group was selected");
 				}
 			}
 
@@ -429,7 +432,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				
+
 				deleteQuestion(getQuestionDto(), 1L);
 			}
 
@@ -494,8 +497,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(
-										currentQuestion.getSurveyId(), result);
+								surveyOptionQuestionMap.put(currentQuestion
+										.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 							}
@@ -678,8 +681,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null,
-						questionOptionDetail.getRowCount());
+				loadQuestionOptionRowDetail(null, questionOptionDetail
+						.getRowCount());
 			}
 
 		});
@@ -728,8 +731,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			isNew = false;
 		} else {
 			isNew = true;
-			QuestionGroupDto parentQGDto = (QuestionGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject();
-			dto.setPath(parentQGDto.getPath()+"/"+parentQGDto.getCode());
+			QuestionGroupDto parentQGDto = (QuestionGroupDto) surveyTree
+					.getCurrentlySelectedItem().getUserObject();
+			dto.setPath(parentQGDto.getPath() + "/" + parentQGDto.getCode());
 			dto.setQuestionGroupId(parentQGDto.getKeyId());
 		}
 
@@ -884,7 +888,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				} else {
 					Window.alert(result);
 				}
-				
+
 			}
 		});
 	}
@@ -980,7 +984,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveSurvey();
 				} catch (Exception e) {
-					Window.alert("Could not save survey no survey group selected");
+					Window
+							.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -1094,7 +1099,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestionGroup();
 				} catch (Exception ex) {
-					Window.alert("Cannot Save Question Group Because no parent survey is selected");
+					Window
+							.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
 			}
 
@@ -1104,7 +1110,31 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.confirm("This will remove all question associatons with this Question Group, but will not delete the questions. Not yet implemented");
+				if (Window
+						.confirm("This will remove all question associatons with this Question Group, but will not delete the questions. Are you sure you want to delete?")) {
+					final TreeItem selectedItem = surveyTree
+							.getCurrentlySelectedItem();
+					QuestionGroupDto dto = getQuestionGroupDto();
+					if (dto != null && dto.getKeyId() != null) {
+						svc.deleteQuestionGroup(dto, dto.getSurveyId(),
+								new AsyncCallback<String>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										MessageDialog errDia = new MessageDialog(
+												"Could not delete question group",
+												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
+										errDia.showRelativeTo(questionGroupDetail);
+									}
+
+									@Override
+									public void onSuccess(String result) {
+										surveyTree.removeItem(selectedItem);
+										questionGroupDetail.setVisible(false);
+									}
+								});
+					}
+				}
 
 			}
 
@@ -1120,9 +1150,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		if (questionGroupId.getText().length() > 0)
 			qDto.setKeyId(new Long(questionGroupId.getText()));
-		else{
-			SurveyDto parentSDto = (SurveyDto)surveyTree.getCurrentlySelectedItem().getUserObject();
-			qDto.setPath(parentSDto.getName()+"/"+parentSDto.getName());
+		else {
+			SurveyDto parentSDto = (SurveyDto) surveyTree
+					.getCurrentlySelectedItem().getUserObject();
+			qDto.setPath(parentSDto.getName() + "/" + parentSDto.getName());
 			qDto.setSurveyId(parentSDto.getKeyId());
 		}
 		if (name.getText().length() > 0)
@@ -1221,8 +1252,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox version = (TextBox) surveyDetail.getWidget(3, 1);
 		if (surveyId.getText().length() > 0)
 			surveyDto.setKeyId(new Long(surveyId.getText()));
-		else{
-			SurveyGroupDto parentSGDto = (SurveyGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject();
+		else {
+			SurveyGroupDto parentSGDto = (SurveyGroupDto) surveyTree
+					.getCurrentlySelectedItem().getUserObject();
 			surveyDto.setPath(parentSGDto.getCode());
 			surveyDto.setSurveyGroupId(parentSGDto.getKeyId());
 		}
