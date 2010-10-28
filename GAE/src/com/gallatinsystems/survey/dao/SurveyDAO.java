@@ -154,6 +154,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
 	public void delete(Survey item) throws IllegalDeletionException {
 		// Check to see if there are any surveys for this first
+		item = super.getByKey(item.getKey().getId());
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		if (qasDao.listBySurvey(new Long(item.getKey().getId())).size()==0) {
 			QuestionGroupDao qgDao = new QuestionGroupDao();
