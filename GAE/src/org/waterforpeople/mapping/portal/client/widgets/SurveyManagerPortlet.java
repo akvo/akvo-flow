@@ -175,7 +175,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				"Delete Survey Group", false);
 
 		addSurveyButton = constructAndInstallButton("Add Survey", true);
-		deleteSurveyButton = constructAndInstallButton("Delete Survey", false);
+		deleteSurveyButton = constructAndInstallButton("Delete Survey", false);	
 
 		addQuestionGroupButton = constructAndInstallButton(
 				"Add Question Group", true);
@@ -201,7 +201,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		b.addClickHandler(this);
 		buttonPanel.add(b);
 		return b;
-	}	
+	}
 
 	/**
 	 * handles all button clicks for the portlet
@@ -228,19 +228,23 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	}
 
 	private void deleteSurvey(ClickEvent event) {
+		final TreeItem item = surveyTree.getCurrentlySelectedItem();
 		svc.deleteSurvey(getSurveyDtoFromPanel(event), 1L,
 				new AsyncCallback<String>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+						MessageDialog errDia = new MessageDialog(
+								"Could not delete survey",
+								"There was an error while attempting to delete the survey. Please try again. If the problem persists, please contact an administrator");
+						errDia.showRelativeTo(surveyDetail);
 
 					}
 
 					@Override
 					public void onSuccess(String result) {
-						// TODO Auto-generated method stub
-
+						surveyDetail.setVisible(false);
+						surveyTree.removeItem(item);
 					}
 
 				});
@@ -249,32 +253,27 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private void deleteSurveyGroup(ClickEvent event) {
 		final TreeItem item = surveyTree.getCurrentlySelectedItem();
-		svc.deleteSurveyGroup(getSurveyGroupDtoFromPanel(event),
-				new AsyncCallback<String>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						Window.alert("Could not delete survey group.");
-					}
+		svc.deleteSurveyGroup(getSurveyGroupDto(), new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Could not delete survey group.");
+			}
 
-					@Override
-					public void onSuccess(String result) {
-						if (result == null) {
-							Window.alert("Deleted survey group");
-							surveyTree.removeItem(item);
-							surveyGroupDetail.setVisible(false);
+			@Override
+			public void onSuccess(String result) {
+				if (result == null) {
+					Window.alert("Deleted survey group");
+					surveyTree.removeItem(item);
+					surveyGroupDetail.setVisible(false);
 
-						} else {
-							MessageDialog errDia = new MessageDialog(
-									"Error while deleting",
-									"Could not delete survey group. Please try again. If the problem persits, please contact an administrator");
-							errDia.showRelativeTo(surveyGroupDetail);
-						}
-					}
-				});
-	}
-
-	private SurveyGroupDto getSurveyGroupDtoFromPanel(ClickEvent event) {
-		return getSurveyGroupDto();
+				} else {
+					MessageDialog errDia = new MessageDialog(
+							"Error while deleting",
+							"Could not delete survey group. Please try again. If the problem persits, please contact an administrator");
+					errDia.showRelativeTo(surveyGroupDetail);
+				}
+			}
+		});
 	}
 
 	private SurveyDto getSurveyDtoFromPanel(ClickEvent event) {
@@ -972,6 +971,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyDetail.setWidget(4, 5, exportFormButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
+		deleteSurveyButton.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				deleteSurvey(event);				
+			}});
+		
 		saveSurveyButton.addClickHandler(new ClickHandler() {
 
 			@Override

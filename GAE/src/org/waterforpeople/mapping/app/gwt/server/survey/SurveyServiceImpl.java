@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
@@ -66,7 +67,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public static final String SCAN_QUESTION_TYPE = "scan";
 	public static final String STRENGTH_QUESTION_TYPE = "strength";
 
-	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
@@ -731,10 +731,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (value != null) {
 			SurveyDAO surveyDao = new SurveyDAO();
 			try {
-				surveyDao.delete(surveyDao.getById(value.getKeyId()));
+				Survey s = new Survey();
+				DtoMarshaller.copyToCanonical(s, value);
+				surveyDao.delete(s);
 			} catch (IllegalDeletionException e) {
-				// TODO Auto-generated catch block
-				return e.getError();
+				log.log(Level.SEVERE, "Could not delete survey", e);
 			}
 		}
 		return null;
