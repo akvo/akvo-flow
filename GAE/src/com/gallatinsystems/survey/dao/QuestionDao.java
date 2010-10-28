@@ -54,7 +54,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	 * @return
 	 */
 	public Question getQuestionHeader(Long id) {
-		return super.getByKey(id);
+		return getByKey(id);
 
 	}
 
@@ -70,8 +70,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
 	
 
-	public void delete(Question question) throws IllegalDeletionException {
-		question = super.getByKey(question.getKey().getId());
+	public void delete(Question question) throws IllegalDeletionException {		
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
 			for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
