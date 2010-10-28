@@ -201,9 +201,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		b.addClickHandler(this);
 		buttonPanel.add(b);
 		return b;
-	}
-
-	private TreeItem selectedTreeItem = null;
+	}	
 
 	/**
 	 * handles all button clicks for the portlet
@@ -215,7 +213,6 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == deleteSurveyGroupButton) {
 			deleteSurveyGroup(event);
 		} else if (event.getSource() == addSurveyButton) {
-
 			loadSurveyDetail(null);
 		} else if (event.getSource() == deleteSurveyButton) {
 			deleteSurvey(event);
@@ -251,9 +248,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	}
 
 	private void deleteSurveyGroup(ClickEvent event) {
+		final TreeItem item = surveyTree.getCurrentlySelectedItem();
 		svc.deleteSurveyGroup(getSurveyGroupDtoFromPanel(event),
 				new AsyncCallback<String>() {
-
 					@Override
 					public void onFailure(Throwable caught) {
 						Window.alert("Could not delete survey group.");
@@ -261,19 +258,18 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 					@Override
 					public void onSuccess(String result) {
-						if (result == null)
+						if (result == null) {
 							Window.alert("Deleted survey group");
-						else
-							Window.alert(result);
-						// TODO: create remove from tree method
-						removeSurveyGroupFromTree();
+							surveyTree.removeItem(item);
+							surveyGroupDetail.setVisible(false);
+
+						} else {
+							MessageDialog errDia = new MessageDialog(
+									"Error while deleting",
+									"Could not delete survey group. Please try again. If the problem persits, please contact an administrator");
+							errDia.showRelativeTo(surveyGroupDetail);
+						}
 					}
-
-					private void removeSurveyGroupFromTree() {
-						TreeItem sgItem = surveyTree.getCurrentlySelectedItem();
-
-					}
-
 				});
 	}
 
@@ -1124,7 +1120,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 										MessageDialog errDia = new MessageDialog(
 												"Could not delete question group",
 												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
-										errDia.showRelativeTo(questionGroupDetail);
+										errDia
+												.showRelativeTo(questionGroupDetail);
 									}
 
 									@Override
