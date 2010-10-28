@@ -66,6 +66,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		}
 	}
 	public void delete(QuestionGroup item){
+		item= super.getByKey(item.getKey().getId());
 		QuestionDao qDao = new QuestionDao();
 		for(Map.Entry<Integer,Question> qItem: qDao.listQuestionsByQuestionGroup(item.getKey().getId(), false).entrySet()){
 			SurveyTaskUtil.spawnDeleteTask("deleteQuestion",qItem.getValue().getKey().getId());
