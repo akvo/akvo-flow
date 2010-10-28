@@ -71,6 +71,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	
 
 	public void delete(Question question) throws IllegalDeletionException {
+		question = super.getByKey(question.getKey().getId());
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
 			for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
