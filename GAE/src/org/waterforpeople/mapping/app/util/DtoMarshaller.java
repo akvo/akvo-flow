@@ -5,9 +5,11 @@ import java.util.Locale;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class DtoMarshaller {
@@ -21,6 +23,9 @@ public class DtoMarshaller {
 					pattern);
 			converter.setLenient(true);
 			ConvertUtils.register(converter, java.util.Date.class);
+			TypeEnumConverter enumConverter = new TypeEnumConverter();
+			ConvertUtils.register(enumConverter, Question.Type.class);
+			ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);
 			BeanUtils.copyProperties(canonical, dto);
 			if (dto.getKeyId() != null) {
 				// by default, the JDO key kind uses the Simple name

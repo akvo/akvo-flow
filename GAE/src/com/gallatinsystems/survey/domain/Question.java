@@ -23,7 +23,7 @@ public class Question extends BaseDomain {
 	private String tip = null;
 	private String text = null;
 	@NotPersistent
-	private HashMap<String, Translation> translationMap;
+	private TreeMap<String, Translation> translationMap;
 	private Boolean dependentFlag = null;
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
@@ -83,12 +83,18 @@ public class Question extends BaseDomain {
 		this.questionGroupId = questionGroupId;
 	}
 
-	public HashMap<String, Translation> getTranslationMap() {
+	public TreeMap<String, Translation> getTranslationMap() {
 		return translationMap;
 	}
 
-	public void setTranslationMap(HashMap<String, Translation> translationMap) {
+	public void setTranslationMap(TreeMap<String, Translation> translationMap) {
 		this.translationMap = translationMap;
+	}
+	
+	public void setTranslationMap(HashMap<String,Translation> transMap){
+		if(transMap != null){
+			translationMap = new TreeMap<String,Translation>(transMap);
+		}
 	}
 
 	public void addQuestionOption(QuestionOption questionOption) {
@@ -205,7 +211,7 @@ public class Question extends BaseDomain {
 
 	public void addTranslation(Translation t) {
 		if (translationMap == null) {
-			translationMap = new HashMap<String, Translation>();
+			translationMap = new TreeMap<String, Translation>();
 		}
 		translationMap.put(t.getLanguageCode(), t);
 	}

@@ -205,13 +205,20 @@ public class SurveyFormExporter implements DataExporter {
 	 * the LANG_DELIM
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	private String formText(String text,
-			TreeMap<String, TranslationDto> translationMap) {
+			Map<String, TranslationDto> translationMap) {
+
 		StringBuilder buff = new StringBuilder();
 		buff.append(text);
 		if (translationMap != null) {
-			for (Entry<String, TranslationDto> trans : translationMap
-					.entrySet()) {
+			TreeMap<String, TranslationDto> sortedMap = null;
+			if (translationMap instanceof TreeMap) {
+				sortedMap = (TreeMap<String, TranslationDto>) translationMap;
+			} else {
+				sortedMap = new TreeMap<String, TranslationDto>(translationMap);
+			}
+			for (Entry<String, TranslationDto> trans : sortedMap.entrySet()) {
 				if (trans.getValue() != null
 						&& trans.getValue().getText() != null) {
 					if (!trans.getValue().getText().trim().equalsIgnoreCase(

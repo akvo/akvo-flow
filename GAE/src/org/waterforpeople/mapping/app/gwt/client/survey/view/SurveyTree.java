@@ -48,6 +48,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	private HashMap<SurveyGroupDto, ArrayList<SurveyDto>> surveys;
 	private HashMap<Long, SurveyDto> unreleasedSurveys;
 	private ArrayList<SurveyTreeListener> listeners;
+	private TreeItem currentlySelectedItem;
 
 	/**
 	 * constructs a survey tree rooted at the tree level (survey groups have no
@@ -151,6 +152,12 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 					}
 				}
 			}
+		}
+	}
+	
+	public void removeItem(TreeItem item){
+		if(item != null){
+			item.remove();
 		}
 	}
 
@@ -263,7 +270,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 		}
 		parent.addItem(surveyItem);
 	}
-	private TreeItem currentlySelectedItem;
+
 	/**
 	 * reacts to clicks of tree items and loads the children.
 	 */

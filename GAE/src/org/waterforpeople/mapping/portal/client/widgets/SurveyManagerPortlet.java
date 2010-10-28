@@ -8,7 +8,6 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -16,6 +15,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyQuestionTranslationDialog;
@@ -29,7 +29,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -289,6 +288,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
 		treeContainer.remove(detailContainer);
+		questionDetailPanel.setVisible(true);
 
 		detailContainer = new VerticalPanel();
 		treeContainer.add(detailContainer);
@@ -866,6 +866,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	}
 
 	private void deleteQuestion(QuestionDto value, Long questionGroupId) {
+		final TreeItem item = surveyTree.getCurrentlySelectedItem();
 		svc.deleteQuestion(value, questionGroupId, new AsyncCallback<String>() {
 
 			@Override
@@ -879,10 +880,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				if (result == null) {
 					Window.alert("Question Deleted");
 					questionDetailPanel.setVisible(false);
+					surveyTree.removeItem(item);
 				} else {
 					Window.alert(result);
 				}
-				// TODO implement remove from tree
+				
 			}
 		});
 	}

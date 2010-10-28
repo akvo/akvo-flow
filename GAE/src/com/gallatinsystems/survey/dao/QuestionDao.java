@@ -82,7 +82,10 @@ public class QuestionDao extends BaseDAO<Question> {
 			tDao.deleteTranslationsForParent(question.getKey().getId(),
 					Translation.ParentType.QUESTION_TEXT);
 			// TODO:Implement help media delete
-			super.delete(question);
+			Question q = getByKey(question.getKey());
+			if(q != null){
+				super.delete(q);
+			}
 		} else {
 			throw new IllegalDeletionException(
 					"Cannot delete questionId: "

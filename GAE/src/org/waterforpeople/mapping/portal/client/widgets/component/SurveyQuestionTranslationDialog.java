@@ -202,11 +202,14 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	 * @param row
 	 * @param startCol
 	 */
+	@SuppressWarnings("unchecked")
 	private void populateTranslationControl(
-			TreeMap<String, TranslationDto> translationMap, Long parentId,
+			Map<String, TranslationDto> translationMap, Long parentId,
 			String parentType, Grid grid, int row, int startCol) {
 		if (translationMap == null) {
 			translationMap = new TreeMap<String, TranslationDto>();
+		} else if (!(translationMap instanceof TreeMap)) {
+			translationMap = new TreeMap<String, TranslationDto>(translationMap);
 		}
 		for (String lang : LANGUAGES.values()) {
 			TextBox inputBox = new TextBox();
