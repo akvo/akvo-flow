@@ -62,8 +62,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		}
 	}
 
-	public void delete(QuestionGroup item) {
-		item= super.getByKey(item.getKey().getId());
+	public void delete(QuestionGroup item) {		
 		QuestionDao qDao = new QuestionDao();
 		for (Map.Entry<Integer, Question> qItem : qDao
 				.listQuestionsByQuestionGroup(item.getKey().getId(), false)
