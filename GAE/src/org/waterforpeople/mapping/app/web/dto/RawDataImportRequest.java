@@ -69,10 +69,15 @@ public class RawDataImportRequest extends RestRequest {
 			setCollectionDate(new Date(req.getParameter(COLLECTION_DATE_PARAM)));
 		else if (req.getParameter(QUESTION_ID_PARAM) != null) {
 			// is a questionanswer pair
-			String[] parts = req.getParameterValues(QUESTION_ID_PARAM)
-					.toString().split("\\|");
-			this.putQuestionAnswer(new Long(parts[0]), parts[1]);
-
+			String[] answers = req.getParameterValues(QUESTION_ID_PARAM);
+			if (answers != null) {
+				for (int i = 0; i < answers.length; i++) {
+					String[] parts = answers[i].split("\\|");
+					if (parts.length > 1) {
+						putQuestionAnswer(new Long(parts[0]), parts[1]);
+					}
+				}
+			}
 		}
 
 	}
