@@ -490,9 +490,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId) {
-		Survey canonical = new Survey();
-		canonical.setStatus(Survey.Status.NOT_PUBLISHED);
+		Survey canonical = new Survey();		
 		DtoMarshaller.copyToCanonical(canonical, surveyDto);
+		canonical.setStatus(Survey.Status.NOT_PUBLISHED);
 		canonical = new SurveyDAO().save(canonical);
 		DtoMarshaller.copyToDto(canonical, surveyDto);
 	

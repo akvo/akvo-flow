@@ -406,18 +406,18 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			QuestionDto dto = (QuestionDto) item.getUserObject();
 			if (dto.getTranslationMap() == null
 					|| (QuestionDto.QuestionType.OPTION == dto.getType() || QuestionDto.QuestionType.STRENGTH == dto
-							.getType()) && dto.getOptionContainerDto() == null) {
+							.getType()) && dto.getOptionContainerDto() == null) {					
 				surveyService.loadQuestionDetails(dto.getKeyId(),
 						new AsyncCallback<QuestionDto>() {
 							@Override
 							public void onFailure(Throwable caught) {
-								// no-op
+								//no-op	
 							}
 
 							@Override
-							public void onSuccess(QuestionDto result) {
+							public void onSuccess(QuestionDto result) {								
 								item.setUserObject(result);
-								notifyListeners(result);
+								notifyListeners(result);								
 							}
 						});
 

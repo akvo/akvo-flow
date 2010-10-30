@@ -16,22 +16,26 @@ import com.google.gwt.user.client.ui.HTML;
  */
 public class MessageDialog extends DialogBox {
 
-	public MessageDialog(String title, String bodyHtml) {
+	public MessageDialog(String title, String bodyHtml, boolean suppressButton) {
 		setText(title);
 		DockPanel dock = new DockPanel();
-
 		HTML content = new HTML(bodyHtml);
 
 		dock.add(content, DockPanel.CENTER);
+		if (!suppressButton) {
+			Button ok = new Button("OK");
 
-		Button ok = new Button("OK");
-
-		ok.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				MessageDialog.this.hide();
-			}
-		});
-		dock.add(ok, DockPanel.SOUTH);
+			ok.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					MessageDialog.this.hide();
+				}
+			});
+			dock.add(ok, DockPanel.SOUTH);
+		}
 		setWidget(dock);
+	}
+
+	public MessageDialog(String title, String bodyHtml) {
+		this(title, bodyHtml, false);
 	}
 }

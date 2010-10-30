@@ -471,18 +471,21 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private HorizontalPanel buttonHPanel = new HorizontalPanel();
 
-	private void loadDependencyTable(Boolean dependentValue) {
+	private void loadDependencyTable(Boolean dependentValue) {		
 		if (dependentValue) {
 			final QuestionDto currentQuestion = (QuestionDto) currentSelection;
+			final MessageDialog dia = new MessageDialog("Please wait","Loading question details...");
+			dia.showRelativeTo(questionDetailPanel.getWidget(7, 1));
 			if (surveyOptionQuestionMap.get(currentQuestion.getSurveyId()) == null) {
 				// if we haven't loaded the Option questions for this survey, do
-				// it now
+				// it now				
 				svc.listSurveyQuestionByType(currentQuestion.getSurveyId(),
 						QuestionType.OPTION,
 						new AsyncCallback<QuestionDto[]>() {
 
 							@Override
 							public void onFailure(Throwable caught) {
+								dia.hide();
 								MessageDialog errDia = new MessageDialog(
 										"Error loading questions",
 										"Could not load questions for dependency selection: "
@@ -496,14 +499,15 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 										.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
+								dia.hide();
 							}
 						});
 			} else {
 				populateDependencySelection(currentQuestion,
 						surveyOptionQuestionMap.get(currentQuestion
 								.getSurveyId()));
-			}
-
+				dia.hide();
+			}			
 		} else {
 			questionDetailPanel.removeRow(8);
 		}
