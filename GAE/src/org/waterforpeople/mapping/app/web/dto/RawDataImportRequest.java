@@ -15,12 +15,13 @@ public class RawDataImportRequest extends RestRequest {
 	private static final DateFormat IN_FMT = new SimpleDateFormat(
 			"dd-MM-yyyy HH:mm:ss z");
 	private static final String VALUE = "value=";
-
+	private static final String TYPE = "type=";
+	
 	public static final String SURVEY_INSTANCE_ID_PARAM = "surveyInstanceId";
 	public static final String COLLECTION_DATE_PARAM = "collectionDate";
 	public static final String QUESTION_ID_PARAM = "questionId";
 	public static final String SURVEY_ID_PARAM = "surveyId";
-	public static final String TYPE_PARAM = "type";
+	
 
 	public static final String SAVE_SURVEY_INSTANCE_ACTION = "saveSurveyInstance";
 	public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
@@ -128,10 +129,7 @@ public class RawDataImportRequest extends RestRequest {
 		if (req.getParameter(COLLECTION_DATE_PARAM) != null) {
 			collectionDate = IN_FMT.parse(req.getParameter(
 					COLLECTION_DATE_PARAM).trim());
-		}
-		if (req.getParameter(TYPE_PARAM) != null) {
-			type = req.getParameter(TYPE_PARAM).trim();
-		}
+		}		
 	}
 
 }

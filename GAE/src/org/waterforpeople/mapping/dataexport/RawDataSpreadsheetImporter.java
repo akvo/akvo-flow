@@ -39,7 +39,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			for (Row row : sheet1) {
 				String instanceId = null;
-				String dateString = null;
+				String dateString = null;				
 				StringBuilder sb = new StringBuilder();
 				sb.append("?action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
