@@ -17,11 +17,13 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
+	private Long surveyId;
 
 	@Override
 	public void executeImport(File file, String serverBase) {
@@ -36,9 +38,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			sheet1 = wb.getSheetAt(0);
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			for (Row row : sheet1) {
-
+				String instanceId = null;
+				String dateString = null;
 				StringBuilder sb = new StringBuilder();
-				sb.append("?action=saveSurveyInstance&");
+				sb.append("?action="
+						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
+						+ "&"+RawDataImportRequest.SURVEY_ID_PARAM+"="+surveyId+"&");
 				for (Cell cell : row) {
 					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
 						// load questionIds
@@ -46,12 +51,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
 					}
 					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
-						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC)
+						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+							instanceId = new Double(cell.getNumericCellValue())
+									.intValue()
+									+ "";
 							sb.append("surveyInstance="
-									+ URLEncoder.encode(new Double(cell
-											.getNumericCellValue()).toString(),
-											"UTF-8") + "&");
+									+ URLEncoder.encode(instanceId, "UTF-8")
+									+ "&");
+						}
 					}
+					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
+						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+							dateString = cell.getStringCellValue();
+						}
+					}
+
 					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 1) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING)
 							sb.append("questionId="
@@ -84,24 +98,27 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 
 				}
-				// For debugging
 				if (row.getRowNum() > 0) {
-					System.out.println(sb.toString());
-					if (callUrlFlag) {
-						URL url = new URL(serverBase + SERVLET_URL
-								+ sb.toString());
-						System.out.println(i++ + " : " + serverBase
-								+ SERVLET_URL + sb.toString());
-						HttpURLConnection conn = (HttpURLConnection) url
-								.openConnection();
-						conn.setRequestMethod("GET");
-						conn.setDoOutput(true);
-						String line;
-						BufferedReader reader = new BufferedReader(
-								new InputStreamReader(conn.getInputStream()));
-						while ((line = reader.readLine()) != null) {
-							System.out.println(line);
-						}
+					if (instanceId != null) {
+						invokeUrl(
+								serverBase,
+								"?action="
+										+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
+										+ "&"
+										+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
+										+ "="
+										+ instanceId
+										+ "&"
+										+ RawDataImportRequest.SURVEY_ID_PARAM
+										+ "="
+										+ surveyId
+										+ "&"
+										+ RawDataImportRequest.COLLECTION_DATE_PARAM
+										+ "="
+										+ URLEncoder
+												.encode(dateString, "UTF-8"));
+						System.out.print(i++ + " : ");
+						invokeUrl(serverBase, sb.toString());
 					}
 				}
 			}
@@ -118,19 +135,37 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		}
 	}
 
+	private void invokeUrl(String serverBase, String urlString)
+			throws Exception {
+		URL url = new URL(serverBase + SERVLET_URL + urlString);
+		System.out.println(serverBase + SERVLET_URL + urlString);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setDoOutput(true);
+		String line;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(conn
+				.getInputStream()));
+		while ((line = reader.readLine()) != null) {
+			System.out.println(line);
+		}
+	}
+
 	@Override
 	public Map<Integer, String> validate(File file) {
 		// TODO implement validation
 		return null;
 	}
 
-	private Boolean callUrlFlag = true;
-
 	public static void main(String[] args) {
+		if (args.length != 3) {
+			System.out
+					.println("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
+			System.exit(1);
+		}
 		File file = new File(args[0].trim());
 		String serverBaseArg = args[1].trim();
 		RawDataSpreadsheetImporter r = new RawDataSpreadsheetImporter();
-		r.callUrlFlag = false;
+		r.surveyId = Long.parseLong(args[2].trim());
 		r.executeImport(file, serverBaseArg);
 	}
 }
