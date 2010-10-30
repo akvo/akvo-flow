@@ -16,12 +16,11 @@ public class RawDataImportRequest extends RestRequest {
 			"dd-MM-yyyy HH:mm:ss z");
 	private static final String VALUE = "value=";
 	private static final String TYPE = "type=";
-	
+
 	public static final String SURVEY_INSTANCE_ID_PARAM = "surveyInstanceId";
 	public static final String COLLECTION_DATE_PARAM = "collectionDate";
 	public static final String QUESTION_ID_PARAM = "questionId";
 	public static final String SURVEY_ID_PARAM = "surveyId";
-	
 
 	public static final String SAVE_SURVEY_INSTANCE_ACTION = "saveSurveyInstance";
 	public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
@@ -29,7 +28,7 @@ public class RawDataImportRequest extends RestRequest {
 	private Long surveyId;
 	private Long surveyInstanceId = null;
 	private Date collectionDate = null;
-	private HashMap<Long, String> questionAnswerMap = null;
+	private HashMap<Long, String[]> questionAnswerMap = null;
 	private String type;
 
 	public String getType() {
@@ -64,19 +63,20 @@ public class RawDataImportRequest extends RestRequest {
 		this.collectionDate = collectionDate;
 	}
 
-	public HashMap<Long, String> getQuestionAnswerMap() {
+	public HashMap<Long, String[]> getQuestionAnswerMap() {
 		return questionAnswerMap;
 	}
 
-	public void setQuestionAnswerMap(HashMap<Long, String> questionAnswerMap) {
+	public void setQuestionAnswerMap(HashMap<Long, String[]> questionAnswerMap) {
 
 		this.questionAnswerMap = questionAnswerMap;
 	}
 
-	public void putQuestionAnswer(Long questionId, String value) {
+	public void putQuestionAnswer(Long questionId, String value, String type) {
 		if (questionAnswerMap == null)
-			questionAnswerMap = new HashMap<Long, String>();
-		questionAnswerMap.put(questionId, value);
+			questionAnswerMap = new HashMap<Long, String[]>();
+		questionAnswerMap.put(questionId, new String[] { value,
+				(type != null ? type : "VALUE") });
 	}
 
 	@Override
@@ -97,26 +97,32 @@ public class RawDataImportRequest extends RestRequest {
 					String[] parts = answers[i].split("\\|");
 					String qId = null;
 					String val = null;
+					String type = null;
 					if (parts.length > 1) {
 						qId = parts[0];
 
-						if (parts.length == 2) {
+						if (parts.length == 3) {
 							val = parts[1];
+							type = parts[2];
 						} else {
 							StringBuffer buf = new StringBuffer();
-							for (int idx = 1; idx < parts.length; idx++) {
+							for (int idx = 1; idx < parts.length - 1; idx++) {
 								if (idx > 1) {
 									buf.append("|");
 								}
 								buf.append(parts[idx]);
 							}
 							val = buf.toString();
+							type = parts[parts.length - 1];
 						}
 						if (val != null) {
 							if (val.startsWith(VALUE)) {
 								val = val.substring(VALUE.length());
 							}
-							putQuestionAnswer(new Long(qId), val);
+							if (type.startsWith(TYPE)) {
+								type = type.substring(TYPE.length());
+							}
+							putQuestionAnswer(new Long(qId), val, type);
 						}
 					}
 
@@ -129,7 +135,7 @@ public class RawDataImportRequest extends RestRequest {
 		if (req.getParameter(COLLECTION_DATE_PARAM) != null) {
 			collectionDate = IN_FMT.parse(req.getParameter(
 					COLLECTION_DATE_PARAM).trim());
-		}		
+		}
 	}
 
 }

@@ -43,14 +43,14 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
 			List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
-			for (Map.Entry<Long, String> item : importReq
+			for (Map.Entry<Long, String[]> item : importReq
 					.getQuestionAnswerMap().entrySet()) {
 				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
 				qasDto.setQuestionID(item.getKey().toString());
 				qasDto.setSurveyInstanceId(importReq.getSurveyInstanceId());
-				qasDto.setValue(item.getValue());
-				qasDto.setSurveyId(importReq.getSurveyId());
-				qasDto.setType(importReq.getType());
+				qasDto.setValue(item.getValue()[0]);
+				qasDto.setType(item.getValue()[1]);
+				qasDto.setSurveyId(importReq.getSurveyId());				
 				dtoList.add(qasDto);
 			}
 			sisi.updateQuestions(dtoList);

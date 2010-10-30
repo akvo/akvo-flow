@@ -37,25 +37,33 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			int i = 0;
 			sheet1 = wb.getSheetAt(0);
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
+			Map<String, String> typeMap = new HashMap<String, String>();
 			for (Row row : sheet1) {
 				String instanceId = null;
-				String dateString = null;				
+				String dateString = null;
 				StringBuilder sb = new StringBuilder();
 				sb.append("?action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
-						+ "&"+RawDataImportRequest.SURVEY_ID_PARAM+"="+surveyId+"&");
+						+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
+						+ surveyId + "&");				
 				for (Cell cell : row) {
+					String type = null;
 					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
 						// load questionIds
 						String[] parts = cell.getStringCellValue().split("\\|");
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
+						if (parts.length > 1) {
+							if ("lat/lon".equalsIgnoreCase(parts[1].trim())) {
+								typeMap.put(parts[0], "GEO");
+							}
+						}
 					}
 					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
 									.intValue()
 									+ "";
-							sb.append("surveyInstance="
+							sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM+"="
 									+ URLEncoder.encode(instanceId, "UTF-8")
 									+ "&");
 						}
@@ -65,36 +73,52 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							dateString = cell.getStringCellValue();
 						}
 					}
-
+					String value = null;
+					boolean hasValue = false;
 					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 1) {
-						if (cell.getCellType() == Cell.CELL_TYPE_STRING)
+						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							sb.append("questionId="
 									+ questionIDColMap.get(cell
-											.getColumnIndex())
-									+ "|value="
-									+ URLEncoder.encode(cell
-											.getStringCellValue().trim(),
-											"UTF-8") + "&");
-						else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC)
+											.getColumnIndex()) + "|value=");
+
+							value = cell.getStringCellValue().trim();
+							if (value.endsWith(".jpg")) {
+								type = "PHOTO";
+								value = value.substring(value.lastIndexOf("/"));
+								value = "/sdcard" + value;
+							}
+							sb.append(URLEncoder.encode(value, "UTF-8"));
+							hasValue = true;
+
+						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							sb.append("questionId="
 									+ questionIDColMap.get(cell
 											.getColumnIndex())
 									+ "|value="
 									+ URLEncoder.encode(new Double(cell
 											.getNumericCellValue()).toString()
-											.trim(), "UTF-8") + "&");
-						else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN)
+											.trim(), "UTF-8"));
+							hasValue = true;
+						} else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
 							sb.append("questionId="
 									+ questionIDColMap.get(cell
 											.getColumnIndex())
 									+ "|value="
 									+ URLEncoder.encode(new Boolean(cell
 											.getBooleanCellValue()).toString()
-											.trim(), "UTF-8") + "&");
-						else if (cell.getCellType() == Cell.CELL_TYPE_BLANK)
-							sb.append("questionId="
-									+ questionIDColMap.get(cell
-											.getColumnIndex()) + "|value=&");
+											.trim(), "UTF-8"));
+							hasValue = true;
+						}
+						if (type == null && value != null) {
+							type = typeMap.get(questionIDColMap.get(cell
+									.getColumnIndex()));
+						}
+						if (type == null) {
+							type = "VALUE";
+						}
+						if(hasValue){
+							sb.append("|type=").append(type).append("&");
+						}
 					}
 
 				}
