@@ -1,11 +1,10 @@
 package org.waterforpeople.mapping.dataexport;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -42,10 +41,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				String instanceId = null;
 				String dateString = null;
 				StringBuilder sb = new StringBuilder();
-				sb.append("?action="
+				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
 						+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
-						+ surveyId + "&");				
+						+ surveyId + "&");
 				for (Cell cell : row) {
 					String type = null;
 					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
@@ -63,9 +62,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							instanceId = new Double(cell.getNumericCellValue())
 									.intValue()
 									+ "";
-							sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM+"="
-									+ URLEncoder.encode(instanceId, "UTF-8")
-									+ "&");
+							sb
+									.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
+											+ "="
+											+ instanceId + "&");
 						}
 					}
 					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
@@ -87,7 +87,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								value = value.substring(value.lastIndexOf("/"));
 								value = "/sdcard" + value;
 							}
-							sb.append(URLEncoder.encode(value, "UTF-8"));
+							sb.append(URLEncoder.encode(value,"UTF-8"));
 							hasValue = true;
 
 						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -95,18 +95,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ questionIDColMap.get(cell
 											.getColumnIndex())
 									+ "|value="
-									+ URLEncoder.encode(new Double(cell
+									+ new Double(cell
 											.getNumericCellValue()).toString()
-											.trim(), "UTF-8"));
+											.trim());
 							hasValue = true;
 						} else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
 							sb.append("questionId="
 									+ questionIDColMap.get(cell
 											.getColumnIndex())
 									+ "|value="
-									+ URLEncoder.encode(new Boolean(cell
+									+ new Boolean(cell
 											.getBooleanCellValue()).toString()
-											.trim(), "UTF-8"));
+											.trim());
 							hasValue = true;
 						}
 						if (type == null && value != null) {
@@ -116,7 +116,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						if (type == null) {
 							type = "VALUE";
 						}
-						if(hasValue){
+						if (hasValue) {
 							sb.append("|type=").append(type).append("&");
 						}
 					}
@@ -126,7 +126,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (instanceId != null) {
 						invokeUrl(
 								serverBase,
-								"?action="
+								"action="
 										+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 										+ "&"
 										+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
@@ -139,8 +139,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 										+ "&"
 										+ RawDataImportRequest.COLLECTION_DATE_PARAM
 										+ "="
-										+ URLEncoder
-												.encode(dateString, "UTF-8"));
+										+ URLEncoder.encode(dateString,"UTF-8"));
 						System.out.print(i++ + " : ");
 						invokeUrl(serverBase, sb.toString());
 					}
@@ -161,16 +160,23 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 	private void invokeUrl(String serverBase, String urlString)
 			throws Exception {
-		URL url = new URL(serverBase + SERVLET_URL + urlString);
+		URL url = new URL(serverBase + SERVLET_URL);
 		System.out.println(serverBase + SERVLET_URL + urlString);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
+		conn.setRequestMethod("POST");
 		conn.setDoOutput(true);
-		String line;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(conn
-				.getInputStream()));
-		while ((line = reader.readLine()) != null) {
-			System.out.println(line);
+		conn.setRequestProperty("Content-Type",
+				"application/x-www-form-urlencoded");
+		conn.setRequestProperty("Content-Length", urlString.getBytes().length + "");
+		try {
+			OutputStream os = conn.getOutputStream();
+			os.write(urlString.getBytes("UTF-8"));
+			os.flush();
+			os.close();
+			conn.getResponseCode();
+		} catch (Exception e) {
+			System.err.println("ERROR invoking service");
+			e.printStackTrace(System.err);
 		}
 	}
 
