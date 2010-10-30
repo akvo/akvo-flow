@@ -114,7 +114,7 @@ public class TestHarnessServlet extends HttpServlet {
 			apmI.setUploadS3Flag(false);
 			writeImageToResponse(resp, apmI.rotateImage(test1));
 			// apmI.rotateImage(test2);
-		} else if ("deleteQuestion".equals(action)) {
+		} else if ("clearSurveyGroupGraph".equals(action)) {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			sgDao.delete(sgDao.list("all"));
 			SurveyDAO surveyDao = new SurveyDAO();
@@ -131,7 +131,7 @@ public class TestHarnessServlet extends HttpServlet {
 			tDao.delete(tDao.list("all"));
 			
 			
-			createSurveyGroupGraph(resp);
+			/*createSurveyGroupGraph(resp);
 			//SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			List<SurveyGroup> sgList = sgDao.list("all");
 			Survey survey = sgList.get(0).getSurveyList().get(0);
@@ -146,6 +146,7 @@ public class TestHarnessServlet extends HttpServlet {
 			
 			for(SurveyGroup sg: sgList)
 				sgDao.delete(sg);
+				*/
 		} else if ("addDeviceFiles".equals(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 			for (int i = 0; i < 100; i++) {

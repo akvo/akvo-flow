@@ -46,7 +46,9 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 				"Long");
 		if (oList != null) {
 			PersistenceManager pm = PersistenceFilter.getManager();
+			TranslationDao tDao = new TranslationDao();
 			for (QuestionOption opt : oList) {
+				tDao.deleteTranslationsForParent(opt.getKey().getId(), Translation.ParentType.QUESTION_OPTION);
 				pm.deletePersistent(opt);
 			}
 		}

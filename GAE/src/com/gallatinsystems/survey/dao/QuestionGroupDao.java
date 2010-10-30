@@ -46,6 +46,21 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		}
 		return map;
 	}
+	
+	public QuestionGroup getByParentIdandCode(String code, Long surveyId){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(QuestionGroup.class);
+		query.setFilter(" code==codeParam && surveyId == surveyIdParam");
+		query.declareParameters("String codeParam, Long surveyIdParam");
+		List<QuestionGroup> results = (List<QuestionGroup>) query.execute(code,
+				surveyId);
+		if (results != null && results.size() > 0) {
+			return results.get(0);
+		} else {
+			return null;
+		}
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	public QuestionGroup getByPath(String code, String path) {

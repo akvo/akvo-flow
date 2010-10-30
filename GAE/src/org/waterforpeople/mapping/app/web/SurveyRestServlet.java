@@ -261,7 +261,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		Survey survey = null;
 		String surveyPath = surveyGroupName;
-		survey = surveyDao.getByPath(surveyName, surveyPath);
+		//survey = surveyDao.getByPath(surveyName, surveyPath);
+		survey = surveyDao.getByParentIdAndCode(surveyName, sg.getKey().getId());
 
 		if (survey == null) {
 			survey = new Survey();
@@ -274,7 +275,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		QuestionGroup qg = null;
 		String qgPath = surveyGroupName + "/" + surveyName;
-		qg = qgDao.getByPath(questionGroupName, qgPath);
+		//qg = qgDao.getByPath(questionGroupName, qgPath);
+		qg = qgDao.getByParentIdandCode(questionGroupName, survey.getKey().getId());
 
 		if (qg == null) {
 			qg = new QuestionGroup();
@@ -288,7 +290,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		}
 
 		String questionPath = qgPath + "/" + questionGroupName;
-		Question q = qDao.getByPath(questionOrder, questionPath);
+		//Question q = qDao.getByPath(questionOrder, questionPath);
+		Question q = qDao.getByQuestionGroupId(qg.getKey().getId(), questionText);
 		if (q == null) {
 			q = new Question();
 		} else {

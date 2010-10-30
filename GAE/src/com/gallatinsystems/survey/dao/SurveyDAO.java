@@ -118,6 +118,19 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	public List<Survey> listSurveysByGroup(Long surveyGroupId) {
 		return listByProperty("surveyGroupId", surveyGroupId, "Long");
 	}
+	
+	public Survey getByParentIdAndCode(String code, Long surveyGroupId){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Survey.class);
+		query.setFilter(" code == codeParam && surveyGroupId == idParam");
+		query.declareParameters("String codeParam, Long idParam");
+		List<Survey> results = (List<Survey>) query.execute(code, surveyGroupId);
+		if (results != null && results.size() > 0) {
+			return results.get(0);
+		} else {
+			return null;
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public Survey getByPath(String code, String path) {

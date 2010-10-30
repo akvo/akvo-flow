@@ -205,5 +205,19 @@ public class QuestionDao extends BaseDAO<Question> {
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Question getByQuestionGroupId(Long questionGroupId, String questionText) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Question.class);
+		query.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
+		query.declareParameters("Long questionGroupIdParam, String questionTextParam");
+		List<Question> results = (List<Question>) query.execute(questionGroupId,questionText);
+		if (results != null && results.size() > 0) {
+			return results.get(0);
+		} else {
+			return null;
+		}
+	}
 
 }
