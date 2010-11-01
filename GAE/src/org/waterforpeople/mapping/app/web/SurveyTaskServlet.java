@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
@@ -63,6 +64,9 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
 				SurveyTaskRequest.DELETE_QUESTION_TRANSLATION_ACTION)) {
 			TranslationDao tDao = new TranslationDao();
 			tDao.delete(tDao.getByKey(id));
+		}else if(stReq.getAction().equals("deleteDeviceSurveyJobQueue")){
+			DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
+			dsjqDao.deleteJob(id);
 		}
 		return null;
 	}

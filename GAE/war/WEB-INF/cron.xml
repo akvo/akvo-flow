@@ -7,7 +7,7 @@
 	</cron>
 	<cron>
 		<url>/cron/croncommander?action=purgeExpiredSurveys</url>
-		<description>Build Map</description>
+		<description>Purge Expired Surveys from Device Survey Job Queue</description>
 		<schedule>every 4 hours</schedule>
 	</cron>
 </cronentries>

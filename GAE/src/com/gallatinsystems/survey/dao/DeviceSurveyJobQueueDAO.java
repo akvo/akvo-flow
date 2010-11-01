@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -110,5 +111,18 @@ public class DeviceSurveyJobQueueDAO {
 			}
 			pm.makePersistentAll(results);
 		}
+	}
+
+	public List<DeviceSurveyJobQueue> listAssignmentsWithEarlierExpirationDate(
+			Date expirationDate) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+
+		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
+		String filterString = "effectiveEndDate < expirationDateParam";
+		String paramString = "java.util.Date expirationDateParam";
+		query.declareImports("import java.util.Date");
+		query.setFilter(filterString);
+		query.declareParameters(paramString);
+		return (List<DeviceSurveyJobQueue>) query.execute(expirationDate);
 	}
 }
