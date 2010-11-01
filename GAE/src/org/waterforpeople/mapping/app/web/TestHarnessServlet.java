@@ -958,6 +958,14 @@ public class TestHarnessServlet extends HttpServlet {
 			Random rand = new Random();
 			dsjq.setAssignmentId(rand.nextLong());
 			dsjDAO.save(dsjq);
+			
+			DeviceSurveyJobQueue dsjq2 = new DeviceSurveyJobQueue();
+			dsjq2.setDevicePhoneNumber("2019561591");
+			cal.add(Calendar.DAY_OF_MONTH, 20);
+			dsjq2.setEffectiveEndDate(cal.getTime());
+			dsjq2.setAssignmentId(rand.nextLong());
+			dsjDAO.save(dsjq2);
+			
 			DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
 			List<DeviceSurveyJobQueue> dsjqList = dsjqDao
 					.listAssignmentsWithEarlierExpirationDate(new Date());
