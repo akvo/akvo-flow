@@ -5,4 +5,9 @@
 		<description>Build Map</description>
 		<schedule>every 4 hours</schedule>
 	</cron>
+	<cron>
+		<url>/cron/croncommander?action=purgeExpiredSurveys</url>
+		<description>Build Map</description>
+		<schedule>every 4 hours</schedule>
+	</cron>
 </cronentries>
