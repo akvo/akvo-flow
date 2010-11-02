@@ -20,6 +20,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	private static final long serialVersionUID = -7708214468114860788L;
 
+	private String smsCode;
+
 	@MappableField(displayName = "Collection Date")
 	private Date collectionDate = null;
 
@@ -493,6 +495,14 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public Boolean getHasSystemBeenDown1DayFlag() {
 		return hasSystemBeenDown1DayFlag;
+	}
+
+	public String getSmsCode() {
+		return smsCode;
+	}
+
+	public void setSmsCode(String smsCode) {
+		this.smsCode = smsCode;
 	}
 
 }

@@ -172,8 +172,10 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			String technologyType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
-		q.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
-		q.declareParameters("String countryCodeParam, String typeTechnologyParam");
+		q
+				.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
+		q
+				.declareParameters("String countryCodeParam, String typeTechnologyParam");
 		prepareCursor(cursorString, q);
 		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode,
 				technologyType);
@@ -242,4 +244,33 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return results.get(0);
 	}
 
+	/**
+	 * finds a single access point by its sms code. If there is more than one,
+	 * it will return the one with the latest collectionDate
+	 * 
+	 * @param code
+	 * @return
+	 */
+	public AccessPoint findAccessPointBySMSCode(String code) {
+		List<AccessPoint> apList = listByProperty("smsCode", code, "String");
+		AccessPoint latest = null;
+		if (apList != null) {
+			for (AccessPoint point : apList) {
+				if (latest == null) {
+					latest = point;
+				} else {
+					if (latest.getCollectionDate() != null
+							&& point.getCollectionDate() != null) {
+						if (latest.getCollectionDate().before(
+								point.getCollectionDate())) {
+							latest = point;
+						}
+					} else {
+						latest = point;
+					}
+				}
+			}
+		}
+		return latest;
+	}
 }
