@@ -539,6 +539,14 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		}
 		apId.setVisible(false);
 		accessPointDetail.setWidget(15, 1, apId);
+		
+		accessPointDetail.setWidget(16, 0, new Label("SMS Code"));
+		TextBox smsCode = new TextBox();
+		if (accessPointDto != null)
+			smsCode.setText(accessPointDto
+					.getSmsCode());
+		accessPointDetail.setWidget(16, 1, smsCode);
+		
 
 		// if(accessPointDto.getPointType().toString()!=null){
 		// type = accessPointDto.getPointType().toString();
@@ -604,8 +612,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			}
 
 		});
-		accessPointDetail.setWidget(16, 0, saveButton);
-		accessPointDetail.setWidget(16, 1, cancelButton);
+		accessPointDetail.setWidget(17, 0, saveButton);
+		accessPointDetail.setWidget(17, 1, cancelButton);
 		accessPointDetail.setVisible(true);
 		mainVPanel.add(accessPointDetail);
 	}
@@ -739,6 +747,11 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		String farthestPointFrom = farthestPointFromTB.getText();
 		apDto.setFarthestHouseholdfromPoint(farthestPointFrom);
 
+		TextBox smsCodeTB = (TextBox) accessPointDetail.getWidget(16,
+				1);
+		String smsCode = smsCodeTB.getText();
+		apDto.setSmsCode(smsCode);		
+		
 		return apDto;
 	}
 

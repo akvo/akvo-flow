@@ -38,6 +38,7 @@ public class AccessPointServiceSupport {
 				.getNumberOfHouseholdsUsingPoint());
 		apDto.setPhotoURL(apCanonical.getPhotoURL());
 		apDto.setPointPhotoCaption(apCanonical.getPointPhotoCaption());
+		apDto.setSmsCode(apCanonical.getSmsCode());
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
 		}
@@ -101,6 +102,7 @@ public class AccessPointServiceSupport {
 				.getNumberOfHouseholdsUsingPoint());
 		accessPoint.setPhotoURL(apDto.getPhotoURL());
 		accessPoint.setPointPhotoCaption(apDto.getPointPhotoCaption());
+		accessPoint.setSmsCode(apDto.getSmsCode());
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else if (AccessPointDto.Status.FUNCTIONING_OK == apDto

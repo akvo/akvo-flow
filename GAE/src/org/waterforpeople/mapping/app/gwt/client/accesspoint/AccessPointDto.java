@@ -4,10 +4,10 @@ import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class AccessPointDto extends BaseDto{
+public class AccessPointDto extends BaseDto {
 
 	private static final long serialVersionUID = -9059171394832476797L;
-	
+
 	private String countryCode;
 
 	private Long year;
@@ -39,6 +39,15 @@ public class AccessPointDto extends BaseDto{
 	private String secondaryTechnologyString = null;
 	private Boolean provideAdequateQuantity = null;
 	private Boolean hasSystemBeenDown1DayFlag = null;
+	private String smsCode;
+
+	public String getSmsCode() {
+		return smsCode;
+	}
+
+	public void setSmsCode(String smsCode) {
+		this.smsCode = smsCode;
+	}
 
 	public String getInstitutionName() {
 		return institutionName;
