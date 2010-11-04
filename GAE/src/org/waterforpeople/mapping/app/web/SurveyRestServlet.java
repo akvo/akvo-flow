@@ -359,6 +359,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(Question.Type.NUMBER);
 		} else if (questionType.equals("NAME")) {
 			q.setType(Question.Type.NAME);
+		}else if (questionType.equals("VIDEO")){
+			q.setType(Question.Type.VIDEO);
 		}
 
 		if (mandatoryFlag != null) {
