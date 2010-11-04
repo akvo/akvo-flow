@@ -19,12 +19,22 @@ public class LocationBeaconRequest extends RestRequest {
 	private static final String LON_PARAM = "lon";
 	private static final String ACC_PARAM = "acc";
 	private static final String VER_PARAM = "ver";
+	private static final String DEV_ID_PARAM = "devId";
 	private static final long serialVersionUID = 4549010911554976717L;
 	private String phoneNumber;
 	private Double lat;
 	private Double lon;
 	private Double accuracy;
 	private String appVersion;
+	private String deviceIdentifier;
+
+	public String getDeviceIdentifier() {
+		return deviceIdentifier;
+	}
+
+	public void setDeviceIdentifier(String deviceIdentifier) {
+		this.deviceIdentifier = deviceIdentifier;
+	}
 
 	public String getAppVersion() {
 		return appVersion;
@@ -89,6 +99,7 @@ public class LocationBeaconRequest extends RestRequest {
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		phoneNumber = req.getParameter(PHONE_PARAM);
 		appVersion = req.getParameter(VER_PARAM);
+		deviceIdentifier = req.getParameter(DEV_ID_PARAM);
 		try {
 			if (req.getParameter(LAT_PARAM) != null) {
 				lat = Double.parseDouble(req.getParameter(LAT_PARAM));

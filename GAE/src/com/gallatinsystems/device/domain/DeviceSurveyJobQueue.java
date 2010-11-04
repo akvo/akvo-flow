@@ -16,7 +16,7 @@ public class DeviceSurveyJobQueue {
 	private Long surveyID;
 	private Date effectiveStartDate;
 	private Date effectiveEndDate;
-	private DistributionStatus surveyDistributionStatus;
+	private DistributionStatus surveyDistributionStatus;	
 
 	private String language;
 	private String name;

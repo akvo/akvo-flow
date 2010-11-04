@@ -27,9 +27,11 @@ public class DeviceDAO extends BaseDAO<Device> {
 	 * @param lat
 	 * @param lon
 	 * @param accuracy
+	 * @param version
+	 * @param deviceIdentifier
 	 */
 	public void updateDeviceLocation(String phoneNumber, Double lat,
-			Double lon, Double accuracy, String version) {
+			Double lon, Double accuracy, String version, String deviceIdentifier) {
 		Device d = get(phoneNumber);
 		if (d == null) {
 			// if device is null, we have to create it
@@ -43,9 +45,9 @@ public class DeviceDAO extends BaseDAO<Device> {
 			d.setLastKnownLon(lon);
 			d.setLastKnownAccuracy(accuracy);
 		}
+		d.setDeviceIdentifier(deviceIdentifier);
 		d.setLastLocationBeaconTime(new Date());
 		d.setGallatinSoftwareManifest(version);
 		save(d);
 	}
-
 }

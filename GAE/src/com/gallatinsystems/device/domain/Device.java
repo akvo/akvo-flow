@@ -14,6 +14,7 @@ public class Device extends BaseDomain {
 	private DeviceType deviceType;
 	private String phoneNumber;
 	private String esn;
+	private String deviceIdentifier;
 	private Date inServiceDate;
 	private Date outServiceDate;
 	private Date lastUpdate;
@@ -24,6 +25,14 @@ public class Device extends BaseDomain {
 	private Double lastKnownAccuracy;
 	private Date lastLocationBeaconTime;
 	private String deviceGroup;
+
+	public String getDeviceIdentifier() {
+		return deviceIdentifier;
+	}
+
+	public void setDeviceIdentifier(String deviceIdentifier) {
+		this.deviceIdentifier = deviceIdentifier;
+	}
 
 	public String getDeviceGroup() {
 		return deviceGroup;
