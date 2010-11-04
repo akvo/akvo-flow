@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,6 +28,8 @@ import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -74,7 +78,6 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private DateBox effectiveStartDate;
 	private DateBox effectiveEndDate;
 	private DockPanel contentPanel;
-	private TreeDragController deviceDragController;
 	private TreeDragController surveyDragController;
 	private SurveyAssignmentServiceAsync surveyAssignmentService;
 	private Button saveButton;
@@ -88,11 +91,12 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private SurveyAssignmentDto[] currentDtoList;
 	private int currentSelection = -1;
 	private SurveyTree surveyTree;
+	private TextBox deviceFilter;
+	private ListBox deviceSourceBox;
 
-	private HashMap<String, ArrayList<DeviceDto>> devices;
-
-	private Map<Widget, BaseDto> deviceMap;
 	private Map<Widget, BaseDto> surveyMap;
+	private List<DeviceDto> currentDeviceList;
+	private Map<Long, DeviceDto> allDevices;
 
 	public SurveyAssignmentPortlet() {
 		super(NAME, true, false, WIDTH, HEIGHT);
@@ -104,19 +108,21 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		inputPanel.add(statusLabel, DockPanel.NORTH);
 		inputPanel.add(createInputControls(), DockPanel.NORTH);
 
-		deviceMap = new HashMap<Widget, BaseDto>();
 		surveyMap = new HashMap<Widget, BaseDto>();
 
 		deviceRoot = new Tree();
+		deviceFilter = new TextBox();
+		deviceSourceBox = new ListBox();
 		selectedDevices = new ListBox();
 		HorizontalPanel treeHost = new HorizontalPanel();
-		deviceDragController = installTreeSelector("Devices", deviceRoot,
-				selectedDevices, treeHost, deviceMap);
+
+		installDeviceControl("Devices", selectedDevices, treeHost);
 
 		surveyRoot = new Tree();
+		allDevices = new HashMap<Long, DeviceDto>();
 
 		selectedSurveys = new ListBox();
-		surveyDragController = installTreeSelector("Surveys", surveyRoot,
+		surveyDragController = installSurveySelector("Surveys", surveyRoot,
 				selectedSurveys, treeHost, surveyMap);
 		surveyTree = new SurveyTree(surveyRoot, surveyDragController, false);
 		inputPanel.add(treeHost, DockPanel.CENTER);
@@ -150,6 +156,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		gridPanel = new VerticalPanel();
 		contentPanel.add(gridPanel, DockPanel.CENTER);
 		contentPanel.add(masterButtonPanel, DockPanel.SOUTH);
+
 		setContent(contentPanel);
 
 		getDevices();
@@ -244,7 +251,8 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		deviceRoot.clear();
 		surveyTree.reset();
 
-		populateDeviceTree();
+		currentDeviceList = new ArrayList<DeviceDto>(allDevices.values());
+		populateDeviceControl(null);
 
 		language.setSelectedIndex(0);
 		eventName.setText("");
@@ -262,30 +270,38 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 
 			public void onSuccess(HashMap<String, ArrayList<DeviceDto>> result) {
 				if (result != null) {
-					devices = result;
-					populateDeviceTree();
+					currentDeviceList = new ArrayList<DeviceDto>();
+					for (Entry<String, ArrayList<DeviceDto>> entry : result
+							.entrySet()) {
+						if (entry.getValue() != null) {
+							for (DeviceDto dto : entry.getValue()) {
+
+								currentDeviceList.add(dto);
+								allDevices.put(dto.getKeyId(), dto);
+							}
+						}
+					}
+					populateDeviceControl(null);
 				}
 			}
 		};
 		deviceService.listDeviceByGroup(deviceCallback);
 	}
 
-	private void populateDeviceTree() {
-		if (devices != null) {
-			for (Entry<String, ArrayList<DeviceDto>> entry : devices.entrySet()) {
-				TreeItem group = new TreeItem(new Label(entry.getKey()));
-				deviceDragController.makeDraggable(group.getWidget());
-				if (entry.getValue() != null) {
-					for (DeviceDto dto : entry.getValue()) {
-						TreeItem phoneItem = new TreeItem(new Label(dto
-								.getPhoneNumber()));
-						deviceMap.put(phoneItem.getWidget(), dto);
-						deviceDragController.makeDraggable(phoneItem
-								.getWidget());
-						group.addItem(phoneItem);
-					}
-				}
-				deviceRoot.addItem(group);
+	private void populateDeviceControl(List<DeviceDto> deviceList) {
+		if (deviceList == null && currentDeviceList != null) {
+			for (DeviceDto dto : currentDeviceList) {
+				deviceSourceBox.clear();
+				deviceSourceBox.addItem(dto.getPhoneNumber()
+						+ (dto.getDeviceIdentifier() != null ? " ("
+								+ dto.getDeviceIdentifier() + ")" : ""));
+			}
+		} else if (deviceList != null) {
+			deviceSourceBox.clear();
+			for (DeviceDto dto : deviceList) {
+				deviceSourceBox.addItem(dto.getPhoneNumber()
+						+ (dto.getDeviceIdentifier() != null ? " ("
+								+ dto.getDeviceIdentifier() + ")" : ""));
 			}
 		}
 	}
@@ -326,14 +342,13 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	 * 
 	 * @return
 	 */
-	private TreeDragController installTreeSelector(String typeDisplayName,
+	private TreeDragController installSurveySelector(String typeDisplayName,
 			final Tree sourceTree, final ListBox targetBox,
 			InsertPanel hostPanel, final Map<Widget, BaseDto> dtoMap) {
 		HorizontalPanel widgetPanel = new HorizontalPanel();
 
 		VerticalPanel availPanel = new VerticalPanel();
 		availPanel.add(new Label("Available " + typeDisplayName));
-
 		ScrollPanel scrollPanel = new ScrollPanel();
 
 		scrollPanel.setWidth("200px");
@@ -347,6 +362,27 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		targetBox.setVisibleItemCount(5);
 		targetBox.setWidth("250px");
 		selectedPanel.add(targetBox);
+		Button removeButton = new Button("Remove Selected");
+		removeButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				List<Integer> removedIndicies = new ArrayList<Integer>();
+				for (int i = 0; i < selectedSurveys.getItemCount(); i++) {
+					if (selectedSurveys.isItemSelected(i)) {
+						removedIndicies.add(i);
+					}
+				}
+				// remove the items in reverse order so we don't get index out
+				// of bounds errors
+				Collections.sort(removedIndicies);
+				for (int i = removedIndicies.size() - 1; i >= 0; i--) {
+					selectedSurveys.removeItem(removedIndicies.get(i));
+				}
+			}
+		});
+
+		selectedPanel.add(removeButton);
 
 		widgetPanel.add(availPanel);
 		widgetPanel.add(selectedPanel);
@@ -387,6 +423,109 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		deviceDragController.addDragHandler(handler);
 		hostPanel.add(widgetPanel);
 		return deviceDragController;
+	}
+
+	private void installDeviceControl(String typeDisplayName,
+			final ListBox targetBox, InsertPanel hostPanel) {
+		HorizontalPanel widgetPanel = new HorizontalPanel();
+
+		VerticalPanel availPanel = new VerticalPanel();
+		availPanel.add(new Label("Available " + typeDisplayName));
+		availPanel.add(deviceFilter);
+		deviceFilter.addKeyUpHandler(new KeyUpHandler() {
+
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
+				String text = deviceFilter.getText();
+				if (text != null) {
+					List<DeviceDto> filteredDevices = new ArrayList<DeviceDto>();
+					// for (List<DeviceDto> dtoList : devices.values()) {
+					// for (DeviceDto dto : dtoList) {
+					for (DeviceDto dto : currentDeviceList) {
+						if (dto.getPhoneNumber().startsWith(text)) {
+							filteredDevices.add(dto);
+						} else if (dto.getDeviceIdentifier() != null
+								&& dto.getDeviceIdentifier().startsWith(text)) {
+							filteredDevices.add(dto);
+						}
+						// }
+					}
+					populateDeviceControl(filteredDevices);
+				}
+
+			}
+		});
+
+		ScrollPanel scrollPanel = new ScrollPanel();
+
+		scrollPanel.setWidth("200px");
+		scrollPanel.setHeight("200px");
+		scrollPanel.add(deviceSourceBox);
+		deviceSourceBox.setVisibleItemCount(10);
+		deviceSourceBox.setWidth("150px");
+		availPanel.add(scrollPanel);
+
+		VerticalPanel buttonPanel = new VerticalPanel();
+		Button addButton = new Button(">");
+		addButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				List<DeviceDto> addedDevices = new ArrayList<DeviceDto>();
+				for (int i = 0; i < deviceSourceBox.getItemCount(); i++) {
+					if (deviceSourceBox.isItemSelected(i)) {
+						selectedDevices.addItem(currentDeviceList.get(i)
+								.getPhoneNumber(), currentDeviceList.get(i)
+								.getKeyId().toString());
+						addedDevices.add(currentDeviceList.get(i));
+					}
+				}
+				currentDeviceList.removeAll(addedDevices);
+				populateDeviceControl(currentDeviceList);
+			}
+		});
+		Button removeButton = new Button("<");
+
+		removeButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				List<Integer> removedIndicies = new ArrayList<Integer>();
+				for (int i = 0; i < selectedDevices.getItemCount(); i++) {
+					if (selectedDevices.isItemSelected(i)) {
+						removedIndicies.add(i);
+						currentDeviceList.add(allDevices.get(new Long(
+								selectedDevices.getValue(i))));
+					}
+				}
+				// remove the items in reverse order so we don't get index out
+				// of bounds errors
+				Collections.sort(removedIndicies);
+				for (int i = removedIndicies.size() - 1; i >= 0; i--) {
+					selectedDevices.removeItem(removedIndicies.get(i));
+				}
+
+				populateDeviceControl(currentDeviceList);
+
+			}
+
+		});
+
+		buttonPanel.add(addButton);
+		buttonPanel.add(removeButton);
+
+		VerticalPanel selectedPanel = new VerticalPanel();
+		selectedPanel.add(new Label("Assigned " + typeDisplayName));
+
+		targetBox.setVisibleItemCount(5);
+		targetBox.setWidth("150px");
+		selectedPanel.add(targetBox);
+
+		widgetPanel.add(availPanel);
+		widgetPanel.add(buttonPanel);
+		widgetPanel.add(selectedPanel);
+
+		hostPanel.add(widgetPanel);
 	}
 
 	/**
@@ -547,11 +686,14 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 					}
 				}
 				if (currentDto.getDevices() != null) {
+
 					for (DeviceDto dev : currentDto.getDevices()) {
 						selectedDevices.addItem(dev.getPhoneNumber(), dev
 								.getKeyId().toString());
-						removeFromTree(dev.getKeyId(), deviceRoot, deviceMap);
+						currentDeviceList
+								.remove(allDevices.get(dev.getKeyId()));
 					}
+					populateDeviceControl(currentDeviceList);
 				}
 				if (currentDto.getSurveys() != null) {
 					for (SurveyDto s : currentDto.getSurveys()) {
