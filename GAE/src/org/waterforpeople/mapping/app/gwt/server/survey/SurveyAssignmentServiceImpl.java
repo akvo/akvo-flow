@@ -132,6 +132,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 							DeviceDto devDto = new DeviceDto();
 							devDto.setPhoneNumber(dev.getPhoneNumber());
 							devDto.setKeyId(dev.getKey().getId());
+							devDto.setDeviceIdentifier(dev.getDeviceIdentifier());
 							devices.add(devDto);
 						}
 					}

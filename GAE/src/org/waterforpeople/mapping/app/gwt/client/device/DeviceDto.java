@@ -14,6 +14,15 @@ public class DeviceDto extends BaseDto {
 	private Double lastKnownAccuracy;
 	private Date lastPositionDate;
 	private String deviceGroup;
+	private String deviceIdentifier;
+
+	public String getDeviceIdentifier() {
+		return deviceIdentifier;
+	}
+
+	public void setDeviceIdentifier(String deviceIdentifier) {
+		this.deviceIdentifier = deviceIdentifier;
+	}
 
 	public String getDeviceGroup() {
 		return deviceGroup;
