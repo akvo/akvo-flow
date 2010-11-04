@@ -39,8 +39,10 @@ public class LocationService extends Service {
 	private static final String LAT = "&lat=";
 	private static final String LON = "&lon=";
 	private static final String ACC = "&acc=";
+	private static final String DEV_ID = "&devId=";
 	private static final String TAG = "LocationService";
 	private String version;
+	private String deviceId;
 	private Properties props;
 
 	public IBinder onBind(Intent intent) {
@@ -61,6 +63,7 @@ public class LocationService extends Service {
 		database.open();
 		String val = database
 				.findPreference(ConstantUtil.LOCATION_BEACON_SETTING_KEY);
+		deviceId = database.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
 		if (val != null) {
 			sendBeacon = Boolean.parseBoolean(val);
 		}
@@ -113,11 +116,14 @@ public class LocationService extends Service {
 	private void sendLocation(String serverBase, Location loc) {
 		try {
 			if (loc != null) {
-
-				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
+				String url = serverBase + BEACON_SERVICE_PATH
 						+ StatusUtil.getPhoneNumber(this) + LAT
 						+ loc.getLatitude() + LON + loc.getLongitude() + ACC
-						+ loc.getAccuracy() + VER + version);
+						+ loc.getAccuracy() + VER + version;
+				if (deviceId != null) {
+					url += DEV_ID + deviceId;
+				}
+				HttpUtil.httpGet(url);
 			} else {
 				// if location is null, send an update anyway, just without
 				// lat/lon
