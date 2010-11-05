@@ -402,7 +402,7 @@ public class SurveyDownloadService extends Service {
 		} catch (HttpException e) {
 			Log.e(TAG, "Server returned an unexpected response", e);
 		} catch (Exception e) {
-			Log.e(TAG, "Could not send processing call", e);
+			Log.e(TAG, "Could not download survey", e);
 		}
 		return surveys;
 	}
