@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-	<cron>
-		<url>/cron/croncommander?action=buildMap</url>
-		<description>Build Map</description>
-		<schedule>every 4 hours</schedule>
-	</cron>
+	
 	<cron>
 		<url>/cron/croncommander?action=purgeExpiredSurveys</url>
 		<description>Purge Expired Surveys from Device Survey Job Queue</description>
