@@ -5,7 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface SurveyAssignmentServiceAsync {
 
 	void saveSurveyAssignment(SurveyAssignmentDto dto,
-			AsyncCallback<Void> callback);
+			AsyncCallback<SurveyAssignmentDto> callback);
 
 	void listSurveyAssignments(AsyncCallback<SurveyAssignmentDto[]> callback);
 

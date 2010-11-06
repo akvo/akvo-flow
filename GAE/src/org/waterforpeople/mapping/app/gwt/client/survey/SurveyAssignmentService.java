@@ -11,7 +11,7 @@ public interface SurveyAssignmentService extends RemoteService {
 	 * 
 	 * @param dto
 	 */
-	public void saveSurveyAssignment(SurveyAssignmentDto dto);
+	public SurveyAssignmentDto saveSurveyAssignment(SurveyAssignmentDto dto);
 	
 	/**
 	 * lists all survey assignments

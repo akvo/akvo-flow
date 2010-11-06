@@ -51,7 +51,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	 * saves a surveyAssignment to the datastore
 	 */
 	@Override
-	public void saveSurveyAssignment(SurveyAssignmentDto dto) {
+	public SurveyAssignmentDto saveSurveyAssignment(SurveyAssignmentDto dto) {
 		SurveyAssignment assignment = new SurveyAssignment();
 		DtoMarshaller.copyToCanonical(assignment, dto);
 		if (dto.getDevices() != null) {
@@ -68,9 +68,15 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 			}
 			assignment.setSurveyIds(surveyIds);
 		}
+		SurveyAssignment oldAssignment = null;
+		if (assignment.getKey() != null) {
+			oldAssignment = surveyAssignmentDao.getByKey(assignment.getKey());
+		}
 		assignment = surveyAssignmentDao.save(assignment);
+		dto.setKeyId(assignment.getKey().getId());
 
-		generateDeviceJobQueueItems(assignment);
+		generateDeviceJobQueueItems(assignment, oldAssignment);
+		return dto;
 	}
 
 	/**
@@ -80,32 +86,93 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	 * 
 	 * @param assignment
 	 */
-	private void generateDeviceJobQueueItems(SurveyAssignment assignment) {
-		if (assignment.getDeviceIds() != null
-				&& assignment.getSurveyIds() != null) {
-			Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
-			for (Long id : assignment.getDeviceIds()) {
-				Device d = deviceDao.getByKey(id);
+	private void generateDeviceJobQueueItems(SurveyAssignment assignment,
+			SurveyAssignment oldAssignment) {
+		List<Long> surveyIdsToSave = new ArrayList<Long>(assignment
+				.getSurveyIds());
+		List<Long> deviceIdsToSave = new ArrayList<Long>(assignment
+				.getDeviceIds());
+		List<Long> surveyIdsToDelete = new ArrayList<Long>();
+		List<Long> deviceIdsToDelete = new ArrayList<Long>();
+
+		if (oldAssignment != null) {
+			if (oldAssignment.getSurveyIds() != null) {
+				surveyIdsToSave.removeAll(oldAssignment.getSurveyIds());
+				surveyIdsToDelete = new ArrayList<Long>(oldAssignment
+						.getSurveyIds());
+				surveyIdsToDelete.removeAll(assignment.getSurveyIds());
+			}
+			if (oldAssignment.getDeviceIds() != null) {
+				deviceIdsToSave.removeAll(oldAssignment.getDeviceIds());
+				deviceIdsToDelete = new ArrayList<Long>(oldAssignment
+						.getDeviceIds());
+				deviceIdsToDelete.removeAll(assignment.getDeviceIds());
+			}
+		}
+		List<DeviceSurveyJobQueue> queueList = new ArrayList<DeviceSurveyJobQueue>();
+		Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
+		Map<Long, Device> deviceMap = new HashMap<Long, Device>();
+		if (deviceIdsToSave != null) {
+			// for each new device, we need to save a record for ALL survey IDs
+			// in the assignment
+			for (Long id : deviceIdsToSave) {
+				Device d = deviceMap.get(id);
+				if (d == null) {
+					d = deviceDao.getByKey(id);
+					deviceMap.put(d.getKey().getId(), d);
+				}
 				for (Long sId : assignment.getSurveyIds()) {
 					Survey survey = surveyMap.get(sId);
 					if (survey == null) {
 						survey = surveyDao.getByKey(sId);
 						surveyMap.put(sId, survey);
 					}
-					DeviceSurveyJobQueue queueItem = new DeviceSurveyJobQueue();
-					queueItem.setDevicePhoneNumber(d.getPhoneNumber());
-					queueItem.setEffectiveStartDate(assignment.getStartDate());
-					queueItem.setEffectiveEndDate(assignment.getEndDate());
-					queueItem.setSurveyID(sId);
-					queueItem.setName(survey.getName());
-					queueItem.setLanguage(assignment.getLanguage());
-					queueItem.setAssignmentId(assignment.getKey().getId());
-					queueItem
-							.setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
-					deviceSurveyJobQueueDAO.save(queueItem);
+					queueList.add(constructQueueObject(d, survey, assignment));
 				}
 			}
 		}
+		// if we added any surveys, we need to save a record for ALL the devices
+		// BUT we don't need to process the items that we already saved above
+		if (surveyIdsToSave != null) {
+			for (Long sId : surveyIdsToSave) {
+				Survey survey = surveyMap.get(sId);
+				if (survey == null) {
+					survey = surveyDao.getByKey(sId);
+					surveyMap.put(sId, survey);
+				}
+				for (Long id : assignment.getDeviceIds()) {
+					// only proceed if we haven't already saved the record above
+					if (!deviceIdsToSave.contains(id)) {
+						Device d = deviceMap.get(id);
+						if (d == null) {
+							d = deviceDao.getByKey(id);
+							deviceMap.put(d.getKey().getId(), d);
+						}
+						queueList.add(constructQueueObject(d, survey,
+								assignment));
+					}
+				}
+			}
+		}
+
+		if (queueList.size() > 0) {
+			deviceSurveyJobQueueDAO.save(queueList);
+		}
+	}
+
+	private DeviceSurveyJobQueue constructQueueObject(Device d, Survey survey,
+			SurveyAssignment assignment) {
+		DeviceSurveyJobQueue queueItem = new DeviceSurveyJobQueue();
+		queueItem.setDevicePhoneNumber(d.getPhoneNumber());
+		queueItem.setEffectiveStartDate(assignment.getStartDate());
+		queueItem.setEffectiveEndDate(assignment.getEndDate());
+		queueItem.setSurveyID(survey.getKey().getId());
+		queueItem.setName(survey.getName());
+		queueItem.setLanguage(assignment.getLanguage());
+		queueItem.setAssignmentId(assignment.getKey().getId());
+		queueItem
+				.setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
+		return queueItem;
 	}
 
 	/**
@@ -132,7 +199,8 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 							DeviceDto devDto = new DeviceDto();
 							devDto.setPhoneNumber(dev.getPhoneNumber());
 							devDto.setKeyId(dev.getKey().getId());
-							devDto.setDeviceIdentifier(dev.getDeviceIdentifier());
+							devDto.setDeviceIdentifier(dev
+									.getDeviceIdentifier());
 							devices.add(devDto);
 						}
 					}

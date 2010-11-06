@@ -26,6 +26,11 @@ public class DeviceSurveyJobQueueDAO {
 		pm.makePersistent(deviceSurveyJobQueue);
 		return deviceSurveyJobQueue.getId();
 	}
+	
+	public void save(List<DeviceSurveyJobQueue> itemList){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		pm.makePersistentAll(itemList);		
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<DeviceSurveyJobQueue> listAllJobsInQueue() {
@@ -113,6 +118,7 @@ public class DeviceSurveyJobQueueDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<DeviceSurveyJobQueue> listAssignmentsWithEarlierExpirationDate(
 			Date expirationDate) {
 		PersistenceManager pm = PersistenceFilter.getManager();

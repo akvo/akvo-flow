@@ -93,6 +93,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private SurveyTree surveyTree;
 	private TextBox deviceFilter;
 	private ListBox deviceSourceBox;
+	private SurveyAssignmentDto currentDto;
 
 	private Map<Widget, BaseDto> surveyMap;
 	private List<DeviceDto> currentDeviceList;
@@ -610,6 +611,8 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		}
 		if (currentSelection > 0) {
 			dto.setKeyId(currentDtoList[currentSelection - 1].getKeyId());
+		}else if (currentDto != null){
+			dto.setKeyId(currentDto.getKeyId());
 		}
 		dto.setDevices(dtoList);
 		dto.setSurveys(surveyDtos);
@@ -641,12 +644,13 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 				warnDialog.showRelativeTo(saveButton);
 			}
 			surveyAssignmentService.saveSurveyAssignment(dto,
-					new AsyncCallback<Void>() {
+					new AsyncCallback<SurveyAssignmentDto>() {
 
 						@Override
-						public void onSuccess(Void result) {
+						public void onSuccess(SurveyAssignmentDto result) {
 							statusLabel.setText("Assignment Saved");
 							statusLabel.setVisible(true);
+							currentDto = result;
 						}
 
 						@Override
@@ -674,7 +678,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private void populateInputPanelFromSelection() {
 		if (currentSelection > 0) {
 			reset();
-			SurveyAssignmentDto currentDto = currentDtoList[currentSelection - 1];
+			currentDto = currentDtoList[currentSelection - 1];
 			if (currentDto != null) {
 				eventName.setText(currentDto.getName());
 				effectiveStartDate.setValue(currentDto.getStartDate());
