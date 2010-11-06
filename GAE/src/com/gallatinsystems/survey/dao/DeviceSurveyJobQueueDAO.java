@@ -72,12 +72,11 @@ public class DeviceSurveyJobQueueDAO {
 	 * 
 	 * @param assignmentId
 	 */
-	public void deleteJob(Long assignmentId) {
-		PersistenceManager pm = PersistenceFilter.getManager();
+	public void deleteJob(Long assignmentId) {		
 		if (assignmentId != null) {
 			List<DeviceSurveyJobQueue> results = listJobByAssignment(assignmentId);
 			if (results != null) {
-				pm.deletePersistentAll(results);
+				delete(results);
 			}
 		}
 	}
