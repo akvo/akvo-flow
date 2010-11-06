@@ -26,10 +26,10 @@ public class DeviceSurveyJobQueueDAO {
 		pm.makePersistent(deviceSurveyJobQueue);
 		return deviceSurveyJobQueue.getId();
 	}
-	
-	public void save(List<DeviceSurveyJobQueue> itemList){
+
+	public void save(List<DeviceSurveyJobQueue> itemList) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		pm.makePersistentAll(itemList);		
+		pm.makePersistentAll(itemList);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -72,23 +72,42 @@ public class DeviceSurveyJobQueueDAO {
 	 * 
 	 * @param assignmentId
 	 */
-	@SuppressWarnings("unchecked")
 	public void deleteJob(Long assignmentId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		if (assignmentId != null) {
-
-			javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
-			String filterString = "assignmentId == assignmentIdParam";
-			String paramString = "Long assignmentIdParam";
-
-			query.setFilter(filterString);
-			query.declareParameters(paramString);
-			List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query
-					.execute(assignmentId);
+			List<DeviceSurveyJobQueue> results = listJobByAssignment(assignmentId);
 			if (results != null) {
 				pm.deletePersistentAll(results);
 			}
 		}
+	}
+
+	/**
+	 * deletes all items in the list
+	 * 
+	 * @param items
+	 */
+	public void delete(List<DeviceSurveyJobQueue> items) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		pm.deletePersistentAll(items);
+	}
+
+	/**
+	 * lists all device job queue objects by assignment id
+	 * 
+	 * @param assignmentId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<DeviceSurveyJobQueue> listJobByAssignment(Long assignmentId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
+		String filterString = "assignmentId == assignmentIdParam";
+		String paramString = "Long assignmentIdParam";
+
+		query.setFilter(filterString);
+		query.declareParameters(paramString);
+		return (List<DeviceSurveyJobQueue>) query.execute(assignmentId);
 	}
 
 	/**

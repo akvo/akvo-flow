@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,10 +18,14 @@ import org.waterforpeople.mapping.domain.SurveyAssignment;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
+import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -157,6 +163,39 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 
 		if (queueList.size() > 0) {
 			deviceSurveyJobQueueDAO.save(queueList);
+		}
+		if (deviceIdsToDelete.size() > 0 || surveyIdsToDelete.size() > 0) {
+			StringBuilder builder = new StringBuilder("d");
+			for (int i = 0; i < deviceIdsToDelete.size(); i++) {
+				if (i > 0) {
+					builder.append("xx");
+				}
+				Device d = deviceMap.get(deviceIdsToDelete.get(i));
+				if (d == null) {
+					d = deviceDao.getByKey(deviceIdsToDelete.get(i));
+					deviceMap.put(d.getKey().getId(), d);
+				}
+				builder.append(d.getPhoneNumber());
+			}
+			builder.append("s");
+			for (int i = 0; i < surveyIdsToDelete.size(); i++) {
+				if (i > 0) {
+					builder.append("xx");
+				}
+				builder.append(surveyIdsToDelete.get(i).toString());
+			}
+
+			DataChangeRecord change = new DataChangeRecord(
+					SurveyAssignment.class.getName(), assignment.getKey()
+							.getId()
+							+ "", builder.toString(), "n/");
+			Queue queue = QueueFactory.getQueue("dataUpdate");
+			queue.add(url("/app_worker/dataupdate").param(
+					DataSummarizationRequest.OBJECT_KEY,
+					assignment.getKey().getId() + "").param(
+					DataSummarizationRequest.OBJECT_TYPE,
+					"DeviceSurveyJobQueueChange").param(
+					DataSummarizationRequest.VALUE_KEY, change.packString()));
 		}
 	}
 
