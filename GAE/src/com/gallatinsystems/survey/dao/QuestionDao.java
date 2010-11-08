@@ -219,5 +219,18 @@ public class QuestionDao extends BaseDAO<Question> {
 			return null;
 		}
 	}
-
+	
+	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Question.class);
+		query.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
+		query.declareParameters("Long questionGroupIdParam, Integer orderParam");
+		List<Question> results = (List<Question>) query.execute(questionGroupId,order);
+		if (results != null && results.size() > 0) {
+			return results.get(0);
+		} else {
+			return null;
+		}
+	}
 }
+	
