@@ -373,8 +373,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			String[] parts = dependentQuestion.split("\\|");
 			Integer quesitonOrderId = new Integer(parts[0]);
 			String answer = parts[1];
-			Question dependsOnQuestion = qDao.getByPath(quesitonOrderId,
-					questionPath);
+			Question dependsOnQuestion = qDao.getByQuestionGroupId(qg.getKey().getId(), questionText);
 			if (dependsOnQuestion != null) {
 				q.setDependentFlag(true);
 				q.setDependentQuestionId(dependsOnQuestion.getKey().getId());
