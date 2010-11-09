@@ -91,6 +91,7 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -958,19 +959,83 @@ public class TestHarnessServlet extends HttpServlet {
 			Random rand = new Random();
 			dsjq.setAssignmentId(rand.nextLong());
 			dsjDAO.save(dsjq);
-			
+
 			DeviceSurveyJobQueue dsjq2 = new DeviceSurveyJobQueue();
 			dsjq2.setDevicePhoneNumber("2019561591");
 			cal.add(Calendar.DAY_OF_MONTH, 20);
 			dsjq2.setEffectiveEndDate(cal.getTime());
 			dsjq2.setAssignmentId(rand.nextLong());
 			dsjDAO.save(dsjq2);
-			
+
 			DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
 			List<DeviceSurveyJobQueue> dsjqList = dsjqDao
 					.listAssignmentsWithEarlierExpirationDate(new Date());
 			for (DeviceSurveyJobQueue item : dsjqList) {
-				SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue", item.getAssignmentId());
+				SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue",
+						item.getAssignmentId());
+			}
+		} else if ("loadDSJ".equals(action)) {
+			SurveyDAO surveyDao = new SurveyDAO();
+			List<Survey> surveyList = surveyDao.list("all");
+			for (Survey item : surveyList) {
+				DeviceSurveyJobQueueDAO dsjDAO = new DeviceSurveyJobQueueDAO();
+				Calendar cal = Calendar.getInstance();
+				Date now = cal.getTime();
+				cal.add(Calendar.DAY_OF_MONTH, -10);
+				Date then = cal.getTime();
+				DeviceSurveyJobQueue dsjq = new DeviceSurveyJobQueue();
+				dsjq.setDevicePhoneNumber("2019561591");
+				dsjq.setEffectiveEndDate(then);
+				Random rand = new Random();
+				dsjq.setAssignmentId(rand.nextLong());
+				dsjq.setSurveyID(item.getKey().getId());
+				dsjDAO.save(dsjq);
+			}
+
+			for (int i = 0; i < 20; i++) {
+				DeviceSurveyJobQueueDAO dsjDAO = new DeviceSurveyJobQueueDAO();
+				Calendar cal = Calendar.getInstance();
+				Date now = cal.getTime();
+				cal.add(Calendar.DAY_OF_MONTH, -10);
+				Date then = cal.getTime();
+				DeviceSurveyJobQueue dsjq = new DeviceSurveyJobQueue();
+				dsjq.setDevicePhoneNumber("2019561591");
+				dsjq.setEffectiveEndDate(then);
+				Random rand = new Random();
+				dsjq.setAssignmentId(rand.nextLong());
+				dsjq.setSurveyID(rand.nextLong());
+				dsjDAO.save(dsjq);
+
+			}
+			try {
+				resp.getWriter().println("finished");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		} else if ("deleteUnusedDSJQueue".equals(action)) {
+			try {
+				SurveyDAO surveyDao = new SurveyDAO();
+				List<Key> surveyIdList = surveyDao.listSurveyIds();
+				List<Long> ids = new ArrayList<Long>();
+
+				for (Key key : surveyIdList)
+					ids.add(key.getId());
+
+				DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
+				List<DeviceSurveyJobQueue> deleteList = new ArrayList<DeviceSurveyJobQueue>();
+				for (DeviceSurveyJobQueue item : dsjqDao.listAllJobsInQueue()) {
+					Long dsjqSurveyId = item.getSurveyID();
+					Boolean found = ids.contains(dsjqSurveyId);
+					if (!found){
+						deleteList.add(item);
+						resp.getWriter().println("Marking " + item.getId() + " survey: " + item.getSurveyID() + " for deletion");
+					}
+				}
+				dsjqDao.delete(deleteList);
+
+				resp.getWriter().println("finished");
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		}
 	}

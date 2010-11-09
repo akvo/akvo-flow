@@ -183,4 +183,11 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		}
 	}
 
+	
+	public List<Key> listSurveyIds(){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery("select key from " + Survey.class.getName());
+		List<Key> results = (List<Key>) query.execute();
+		return results;
+	}
 }
