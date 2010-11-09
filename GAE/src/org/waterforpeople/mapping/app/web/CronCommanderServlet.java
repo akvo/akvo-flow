@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
 import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
