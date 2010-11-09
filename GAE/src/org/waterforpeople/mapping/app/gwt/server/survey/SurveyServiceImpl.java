@@ -493,7 +493,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		Survey canonical = new Survey();		
 		DtoMarshaller.copyToCanonical(canonical, surveyDto);
 		canonical.setStatus(Survey.Status.NOT_PUBLISHED);
-		canonical = new SurveyDAO().save(canonical);
+		SurveyDAO surveyDao  = new SurveyDAO();
+		if(canonical.getKey()!=null && canonical.getSurveyGroupId()==0){
+			//fetch record from db so we don't loose assoc
+			Survey sTemp = surveyDao.getByKey(canonical.getKey());
+			canonical.setSurveyGroupId(sTemp.getSurveyGroupId());
+			canonical.setPath(sTemp.getPath());
+		}
+		canonical = surveyDao.save(canonical);
 		DtoMarshaller.copyToDto(canonical, surveyDto);
 	
 		return surveyDto;

@@ -8,6 +8,7 @@ import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 public class SurveyDto extends BaseDto implements NamedObject {
 	private static final long serialVersionUID = 6593732844403807030L;
 	private String name;
+	private String code;
 	private String version;
 	private String description;
 	private String status;
@@ -87,5 +88,13 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
 	public Long getSurveyGroupId() {
 		return surveyGroupId;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getCode() {
+		return code;
 	}
 }
