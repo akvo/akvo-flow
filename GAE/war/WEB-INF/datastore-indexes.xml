@@ -155,6 +155,9 @@
 		<property name="devicePhoneNumber" direction="asc" />
 		<property name="surveyID" direction="asc" />
 	</datastore-index>
-
-
+	<datastore-index kind="DeviceSurveyJobQueue" ancestor="false"
+		source="manual">
+		<property name="surveyID" direction="asc" />
+		<property name="devicePhoneNumber" direction="asc" />
+	</datastore-index>
 </datastore-indexes>
