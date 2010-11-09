@@ -243,6 +243,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			Boolean allowMultipleFlag, Boolean mandatoryFlag,
 			Integer questionOrder, Integer questionGroupOrder, String scoring)
 			throws UnsupportedEncodingException {
+		//temp fix until we put a validation rule in
+		if(questionText.length()>499){
+			questionText = questionText.substring(0, 499);
+		}
+		if(questionOrder==32){
+			log.info("found");
+		}
 
 		// TODO: Change Impl Later if we support multiple langs
 		surveyName = parseLangMap(surveyName).get("en");
