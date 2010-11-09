@@ -150,7 +150,11 @@
 		<property name="pointType" direction="asc" />
 		<property name="lastUpdateDateTime" direction="desc" />
 	</datastore-index>
-
+	<datastore-index kind="DeviceSurveyJobQueue" ancestor="false"
+		source="manual">
+		<property name="devicePhoneNumber" direction="asc" />
+		<property name="surveyID" direction="asc" />
+	</datastore-index>
 
 
 </datastore-indexes>
