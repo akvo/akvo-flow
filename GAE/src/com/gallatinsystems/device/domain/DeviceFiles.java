@@ -29,7 +29,8 @@ public class DeviceFiles  extends BaseDomain{
 	private Status status = null;
 	@Persistent
 	private String processDate = null;
-
+	private String processingMessage = null;
+	
 	private String phoneNumber;
 	private String checksum;
 
@@ -98,5 +99,15 @@ public class DeviceFiles  extends BaseDomain{
 		sb.append("\n   Status: " + status);
 		sb.append("\n   ProcessedStatus: " + this.processedStatus);
 		return sb.toString();
+	}
+
+	public void setProcessingMessage(String processingMessage) {
+		if(processingMessage.length()>499)
+			processingMessage = processingMessage.substring(0, 499);
+		this.processingMessage = processingMessage;
+	}
+
+	public String getProcessingMessage() {
+		return processingMessage;
 	}
 }

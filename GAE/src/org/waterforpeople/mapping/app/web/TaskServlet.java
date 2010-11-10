@@ -19,6 +19,7 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
+import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
@@ -29,7 +30,6 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import services.S3Driver;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -58,7 +58,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 
 		try {
-			BaseDAO<DeviceFiles> dfDao = new BaseDAO<DeviceFiles>(DeviceFiles.class);
+			DeviceFilesDao dfDao = new DeviceFilesDao();
 			URL url = new URL(DEVICE_FILE_PATH + fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
@@ -69,6 +69,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			deviceFile.setURI(url.toURI().toString());
 			deviceFile.setPhoneNumber(phoneNumber);
 			deviceFile.setChecksum(checksum);
+			deviceFile.setUploadDateTime(new Date());
 			Date collectionDate = new Date();
 
 			ArrayList<String> unparsedLines = null;
@@ -77,6 +78,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 			} catch (IOException iex) {
 				// Error unzipping the response file
 				deviceFile.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
+				String message = "Error inflating device zip: "
+					+ deviceFile.getURI() + " : " + iex.getMessage();
+				log.log(Level.SEVERE, message);
+				deviceFile.setProcessingMessage(message);
 			}
 
 			if (unparsedLines != null && unparsedLines.size() > 0) {
@@ -124,8 +129,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			}
 			dfDao.save(deviceFile);
 			zis.close();
-			
-			
+
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
 		}

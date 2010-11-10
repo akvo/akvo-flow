@@ -31,7 +31,7 @@ public class ProcessorServlet extends HttpServlet {
 					// Submit the fileName for processing
 					Queue queue = QueueFactory.getDefaultQueue();
 					
-					queue.add(url("/app_worker/task").param("action", "processFile").param("fileName", fileName));
+					queue.add(url("/app_worker/task").param("action", "processFile").param("fileName", fileName).param("phoneNumber", req.getParameter("phoneNumber")).param("checksum", req.getParameter("checksum")));
 					log.info("submiting task for fileName: " + fileName);
 				}
 			}
