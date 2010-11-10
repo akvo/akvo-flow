@@ -36,7 +36,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
-import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
@@ -531,6 +530,26 @@ public class TestHarnessServlet extends HttpServlet {
 			dao.save(c);
 			dao.save(comm);
 
+		} else if ("addPhone".equals(action)) {
+			String phoneNumber = req.getParameter("phoneNumber");
+			Device d = new Device();
+			d.setPhoneNumber(phoneNumber);
+			d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+
+			if (req.getParameter("esn") != null)
+				d.setEsn(req.getParameter("esn"));
+			if (req.getParameter("gallatinSoftwareManifest") != null)
+				d.setGallatinSoftwareManifest(req
+						.getParameter("gallatinSoftwareManifest"));
+
+			d.setInServiceDate(new Date());
+			DeviceDAO deviceDao = new DeviceDAO();
+			deviceDao.save(d);
+			try {
+				resp.getWriter().println("finished adding " + phoneNumber);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else if ("createAPSummary".equals(action)) {
 			AccessPointStatusSummary sum = new AccessPointStatusSummary();
 			sum.setCommunity("ON");
@@ -1026,9 +1045,11 @@ public class TestHarnessServlet extends HttpServlet {
 				for (DeviceSurveyJobQueue item : dsjqDao.listAllJobsInQueue()) {
 					Long dsjqSurveyId = item.getSurveyID();
 					Boolean found = ids.contains(dsjqSurveyId);
-					if (!found){
+					if (!found) {
 						deleteList.add(item);
-						resp.getWriter().println("Marking " + item.getId() + " survey: " + item.getSurveyID() + " for deletion");
+						resp.getWriter().println(
+								"Marking " + item.getId() + " survey: "
+										+ item.getSurveyID() + " for deletion");
 					}
 				}
 				dsjqDao.delete(deleteList);

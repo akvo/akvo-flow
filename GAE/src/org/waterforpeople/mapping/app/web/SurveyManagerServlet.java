@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,6 +58,10 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 						ver = new Double(1.0);
 					}
 
+				} else {
+					// for testing so I can mock a version for local survey
+					Random rand = new Random();
+					ver = rand.nextDouble();
 				}
 			}
 			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","

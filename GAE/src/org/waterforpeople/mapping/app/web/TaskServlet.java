@@ -21,14 +21,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import services.S3Driver;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -57,10 +58,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 
 		try {
+			BaseDAO<DeviceFiles> dfDao = new BaseDAO<DeviceFiles>(DeviceFiles.class);
 			URL url = new URL(DEVICE_FILE_PATH + fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
-			ArrayList<String> unparsedLines = extractDataFromZip(zis);
+
 			DeviceFiles deviceFile = new DeviceFiles();
 			deviceFile.setProcessDate(getNowDateTimeFormatted());
 			deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
@@ -68,6 +70,14 @@ public class TaskServlet extends AbstractRestApiServlet {
 			deviceFile.setPhoneNumber(phoneNumber);
 			deviceFile.setChecksum(checksum);
 			Date collectionDate = new Date();
+
+			ArrayList<String> unparsedLines = null;
+			try {
+				unparsedLines = extractDataFromZip(zis);
+			} catch (IOException iex) {
+				// Error unzipping the response file
+				deviceFile.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
+			}
 
 			if (unparsedLines != null && unparsedLines.size() > 0) {
 				if (REGION_FLAG.equals(unparsedLines.get(0))) {
@@ -97,21 +107,25 @@ public class TaskServlet extends AbstractRestApiServlet {
 
 					Long userID = 1L;
 					SurveyInstance inst = siDao.save(collectionDate,
-							deviceFile, userID, unparsedLines.subList(offset,
-									lineNum));
+							deviceFile, userID,
+							unparsedLines.subList(offset, lineNum));
 					surveyInstances.add(inst);
 
 					if (lineNum < unparsedLines.size()) {
 						// if we haven't processed everything yet, invoke a
 						// new service
 						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task").param("action",
-								"processFile").param("fileName", fileName)
+						queue.add(url("/app_worker/task")
+								.param("action", "processFile")
+								.param("fileName", fileName)
 								.param("offset", lineNum + ""));
 					}
 				}
 			}
+			dfDao.save(deviceFile);
 			zis.close();
+			
+			
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
 		}
@@ -229,15 +243,15 @@ public class TaskServlet extends AbstractRestApiServlet {
 	 * available. This method will call processFile to retrieve the file and
 	 * persist the data to the data store it will then add access points for
 	 * each water point in the survey responses.
-	 *
+	 * 
 	 * @param req
 	 */
 	@SuppressWarnings("unchecked")
 	private void ingestFile(TaskRequest req) {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
-			ArrayList<SurveyInstance> surveyInstances = processFile(req
-					.getFileName(), req.getPhoneNumber(), req.getChecksum(),
+			ArrayList<SurveyInstance> surveyInstances = processFile(
+					req.getFileName(), req.getPhoneNumber(), req.getChecksum(),
 					req.getOffset());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			for (SurveyInstance instance : surveyInstances) {
