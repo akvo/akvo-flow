@@ -58,7 +58,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 
 		try {
-			
+			DeviceFilesDao dfDao = new DeviceFilesDao();
 			URL url = new URL(DEVICE_FILE_PATH + fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
@@ -77,13 +77,13 @@ public class TaskServlet extends AbstractRestApiServlet {
 				unparsedLines = extractDataFromZip(zis);
 			} catch (IOException iex) {
 				// Error unzipping the response file
-				DeviceFilesDao dfDao = new DeviceFilesDao();
+				
 				deviceFile.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
 				String message = "Error inflating device zip: "
 					+ deviceFile.getURI() + " : " + iex.getMessage();
 				log.log(Level.SEVERE, message);
 				deviceFile.setProcessingMessage(message);
-				dfDao.save(deviceFile);
+				
 			}
 
 			if (unparsedLines != null && unparsedLines.size() > 0) {
@@ -129,7 +129,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 					}
 				}
 			}
-			
+			dfDao.save(deviceFile);
 			zis.close();
 
 		} catch (Exception e) {
