@@ -1,8 +1,10 @@
 package com.gallatinsystems.survey.device.util;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
@@ -15,6 +17,28 @@ import java.util.zip.ZipInputStream;
 public class FileUtil {
 
 	private static final int BUFFER_SIZE = 2048;
+
+	/**
+	 * writes the contents string to the file indicated by filePath
+	 * 
+	 * @param contents
+	 * @param filePath
+	 * @throws IOException
+	 */
+	public static void writeStringToFile(String contents, String filePath)
+			throws IOException {
+		if (filePath.contains(File.separator)) {
+			String dir = filePath.substring(0, filePath
+					.lastIndexOf(File.separator));
+			if (dir != null && dir.trim().length() > 0) {
+				findOrCreateDir(dir);
+			}
+			BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
+			bw.write(contents);
+			bw.flush();
+			bw.close();
+		}
+	}
 
 	/**
 	 * creates the data directory if it does not exist. If the directory already

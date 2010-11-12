@@ -12,6 +12,7 @@ import android.util.Log;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.PointOfInterest;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.remote.PointOfInterestService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
@@ -135,6 +136,7 @@ public class PrecacheService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 		props = PropertyUtil.loadProperties(getResources());
 	}
 

@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.service.BootstrapService;
 import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.service.LocationService;
@@ -62,6 +63,9 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Thread
+				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.home);
 

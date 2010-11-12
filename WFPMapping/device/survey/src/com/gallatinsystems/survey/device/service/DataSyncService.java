@@ -26,6 +26,7 @@ import android.util.Log;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.MultipartStream;
@@ -106,6 +107,7 @@ public class DataSyncService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 		props = PropertyUtil.loadProperties(getResources());
 	}
 

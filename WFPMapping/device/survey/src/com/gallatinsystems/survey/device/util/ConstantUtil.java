@@ -24,6 +24,9 @@ public class ConstantUtil {
 	public static final String PROCESSED_OK_SUFFIX = ".processed";
 	public static final String PROCESSED_ERROR_SUFFIX = ".error";
 	public static final String BOOTSTRAP_ROLLBACK_FILE = "rollback.sql";
+	public static final String STACKTRACE_DIR = "/sdcard/fieldsurvey/stacktrace/";
+	public static final String STACKTRACE_FILENAME = "err-";
+	public static final String STACKTRACE_SUFFIX = ".stacktrace";
 
 	/**
 	 * survey file locations

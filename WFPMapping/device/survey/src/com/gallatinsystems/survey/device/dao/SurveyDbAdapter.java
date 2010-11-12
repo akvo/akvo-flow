@@ -98,7 +98,7 @@ public class SurveyDbAdapter {
 			// "insert into survey values(1039101,'Houshold Interview', 1.0,'Survey','res','hh1039101','english','N','N')",
 			// "insert into survey values(1062135,'Public Institution', 1.0,'Survey','res','pi1062135','english','N','N')",
 			// "insert into survey values(1086117,'CommunityWaterPoint', 1.0,'Survey','res','cwp1086117','english','N','N')",
-		
+
 			"insert into survey values(943186,'Community Water Point', 1.0,'Survey','res','cw943186','english','N','N')",
 			"insert into survey values(1007024,'Household Interview', 1.0,'Survey','res','hh1007024','english','N','N')",
 			"insert into survey values(971189,'Public Institution', 1.0,'Survey','res','pi971189','english','N','N')",
@@ -149,7 +149,7 @@ public class SurveyDbAdapter {
 		}
 
 		@Override
-		public void onCreate(SQLiteDatabase db) {			
+		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(USER_TABLE_CREATE);
 			db.execSQL(SURVEY_TABLE_CREATE);
 			db.execSQL(SURVEY_RESPONDENT_CREATE);
@@ -167,26 +167,26 @@ public class SurveyDbAdapter {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion);
-			
-			if(oldVersion < 56){
-			  db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
-			  db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
-			  db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
-			  db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
-			  db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
-			  db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
-			  db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
-			  db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
-			  onCreate(db);
-			}else{
-				try{
-				db.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
-				}catch(Exception e){
-					Log.e(TAG, "Could not execute alter table statement. Does the column already exist?",e);
+
+			if (oldVersion < 56) {
+				db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + PLOT_POINT_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + PLOT_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
+				onCreate(db);
+			} else {
+				try {
+					db
+							.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
+				} catch (Exception e) {
+					// swallow since this fails if the update is already applied
 				}
 			}
-			 
-			
+
 		}
 	}
 

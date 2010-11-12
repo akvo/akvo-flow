@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
@@ -120,6 +121,12 @@ public class RegionPlotService extends Service implements LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// no op
 
+	}
+	
+	@Override
+	public void onCreate(){
+		super.onCreate();
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 	}
 
 }

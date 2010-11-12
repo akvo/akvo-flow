@@ -18,6 +18,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDao;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -60,7 +61,7 @@ public class BootstrapService extends Service {
 	 * life cycle method for the service. This is called by the system when the
 	 * service is started
 	 */
-	public int onStartCommand(final Intent intent, int flags, int startid) {
+	public int onStartCommand(final Intent intent, int flags, int startid) {		
 		workerThread = new Thread(new Runnable() {
 			public void run() {
 				checkAndInstall();
@@ -283,6 +284,7 @@ public class BootstrapService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 	}
 
 }

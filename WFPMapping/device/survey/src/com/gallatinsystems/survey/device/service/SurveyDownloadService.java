@@ -29,6 +29,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionHelp;
 import com.gallatinsystems.survey.device.domain.Survey;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
@@ -90,6 +91,7 @@ public class SurveyDownloadService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 		props = PropertyUtil.loadProperties(getResources());
 		downloadExecutor = new ThreadPoolExecutor(1, 3, 5000,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());

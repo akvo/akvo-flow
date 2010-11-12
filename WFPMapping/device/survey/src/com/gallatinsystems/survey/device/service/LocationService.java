@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
@@ -102,6 +103,7 @@ public class LocationService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);

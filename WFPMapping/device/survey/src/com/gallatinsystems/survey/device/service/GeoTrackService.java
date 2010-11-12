@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import com.gallatinsystems.survey.device.R;
+import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -36,6 +37,7 @@ public class GeoTrackService extends Service implements LocationListener {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 	}
 
 	private void startRecording() {
