@@ -28,7 +28,7 @@ public class ZipUtil {
 			zipOut.setLevel(ZipOutputStream.DEFLATED);
 			ZipEntry entry = new ZipEntry(filename);
 			zipOut.putNextEntry(entry);
-			zipOut.write(content.getBytes());
+			zipOut.write(content.getBytes("UTF-8"));
 			zipOut.closeEntry();
 			zipOut.close();
 		} catch (UnsupportedEncodingException e) {
