@@ -28,6 +28,7 @@ import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.service.BootstrapService;
 import com.gallatinsystems.survey.device.service.DataSyncService;
+import com.gallatinsystems.survey.device.service.ExceptionReportingService;
 import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.service.PrecacheService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
@@ -95,7 +96,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		startService(LocationService.class);
 		startService(PrecacheService.class);
 		startService(BootstrapService.class);
-
+		startService(ExceptionReportingService.class);
 	}
 
 	/**

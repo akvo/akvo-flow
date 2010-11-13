@@ -6,14 +6,23 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,6 +58,40 @@ public class HttpUtil {
 		} else {
 			responseString = parseResponse(response);
 
+		}
+		return responseString;
+	}
+
+	/**
+	 * does an HTTP Post to the url specified using the params passed in
+	 * 
+	 * @param url
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	public static String httpPost(String url, Map<String, String> params)
+			throws Exception {
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+		HttpPost httpPost = new HttpPost(url);
+		HttpResponse response = null;
+		String responseString = null;
+
+		if (params != null) {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			for (Entry<String, String> pair : params.entrySet()) {
+				nameValuePairs.add(new BasicNameValuePair(pair.getKey(), pair
+						.getValue()));
+			}
+			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,
+					HTTP.UTF_8));
+		}
+		response = httpClient.execute(httpPost);
+		if (response.getStatusLine().getStatusCode() != 200) {
+			throw new HttpException("Server error: "
+					+ response.getStatusLine().getStatusCode());
+		} else {
+			responseString = parseResponse(response);
 		}
 		return responseString;
 	}
@@ -141,7 +184,6 @@ public class HttpUtil {
 			}
 		}
 	}
-
 
 	/**
 	 * parses the response from the HttpResponse

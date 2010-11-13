@@ -1,9 +1,11 @@
 package com.gallatinsystems.survey.device.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.zip.ZipInputStream;
@@ -82,6 +84,25 @@ public class FileUtil {
 		}
 		FileUtil.findOrCreateDir(localDir);
 		return localDir + remoteFile.substring(remoteFile.lastIndexOf("/") + 1);
+	}
+
+	/**
+	 * reads the contents of a file into a string.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static String readFileAsString(String file) throws IOException {
+		StringBuilder contents = new StringBuilder();
+		BufferedReader input = new BufferedReader(new FileReader(file));
+		String line = null;
+		while ((line = input.readLine()) != null) {
+			contents.append(line);
+			contents.append(System.getProperty("line.separator"));
+		}
+		input.close();
+		return contents.toString();
 	}
 
 	/**
