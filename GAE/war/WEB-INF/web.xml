@@ -134,7 +134,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>PointOfInterestServlet</servlet-name>
 		<url-pattern>/pointofinterest</url-pattern>
 	</servlet-mapping>
-	
+	<servlet>
+		<servlet-name>RemoteExceptionServlet</servlet-name>
+		<servlet-class>com.gallatinsystems.diagnostics.app.web.RemoteExceptionRestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RemoteExceptionServlet</servlet-name>
+		<url-pattern>/remoteexception</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>greetServlet</servlet-name>
 		<servlet-class>com.gallatinsystems.device.app.service.GreetingServiceImpl</servlet-class>
