@@ -2,7 +2,6 @@ package com.gallatinsystems.diagnostics.app.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import com.gallatinsystems.diagnostics.app.web.dto.RemoteExceptionRequest;
 import com.gallatinsystems.diagnostics.dao.RemoteStacktraceDao;
 import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
@@ -11,6 +10,7 @@ import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.framework.rest.exception.RestException;
+import com.google.appengine.api.datastore.Text;
 
 /**
  * servlet for saving stack traces posted by the devices
@@ -45,7 +45,7 @@ public class RemoteExceptionRestServlet extends AbstractRestApiServlet {
 			trace.setSoftwareVersion(exReq.getVersion());
 			trace.setDeviceIdentifier(exReq.getDeviceIdent());
 			trace.setPhoneNumber(exReq.getPhoneNumber());
-			trace.setStackTrace(exReq.getStackTrace());
+			trace.setStackTrace(new Text(exReq.getStackTrace()));
 			stacktraceDao.save(trace);
 		} else {
 			throw new RestException(new RestError(RestError.BAD_DATATYPE_CODE,

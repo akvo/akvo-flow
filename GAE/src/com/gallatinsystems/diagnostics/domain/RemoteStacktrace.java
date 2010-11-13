@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 /**
  * Data structure for storing remote stack traces
@@ -18,7 +19,7 @@ public class RemoteStacktrace extends BaseDomain {
 	private static final long serialVersionUID = -1300539770565100348L;
 	private String deviceIdentifier;
 	private String phoneNumber;
-	private String stackTrace;
+	private Text stackTrace;
 	private String softwareVersion;
 	private Boolean acknowleged = new Boolean(false);	
 	private Date errorDate;
@@ -56,11 +57,11 @@ public class RemoteStacktrace extends BaseDomain {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public String getStackTrace() {
+	public Text getStackTrace() {
 		return stackTrace;
 	}
 
-	public void setStackTrace(String stackTrace) {
+	public void setStackTrace(Text stackTrace) {
 		this.stackTrace = stackTrace;
 	}
 
