@@ -41,8 +41,8 @@ public class ExceptionReportingService extends Service {
 	private static final String ACTION_PARAM = "action";
 	private static final String ACTION_VALUE = "saveTrace";
 	private static final String PHONE_PARAM = "phoneNumber";
-	private static final String VER_PARAM = "&version=";
-	private static final String DEV_ID_PARAM = "&deviceIdentifier=";
+	private static final String VER_PARAM = "version";
+	private static final String DEV_ID_PARAM = "deviceIdentifier";
 	private static final String DATE_PARAM = "date";
 	private static final String TRACE_PARAM = "trace";
 	private static final long INITIAL_DELAY = 60000;	
