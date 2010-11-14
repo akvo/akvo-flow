@@ -160,4 +160,51 @@
 		<property name="surveyID" direction="asc" />
 		<property name="devicePhoneNumber" direction="asc" />
 	</datastore-index>
+	
+	 <!-- Used 2 times in query history -->
+    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+        <property name="acknowleged" direction="asc"/>
+        <property name="errorDate" direction="desc"/>
+    </datastore-index>
+
+    
+    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+        <property name="acknowleged" direction="asc"/>
+        <property name="phoneNumber" direction="asc"/>
+        <property name="errorDate" direction="desc"/>
+    </datastore-index>
+
+    
+    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+        <property name="acknowleged" direction="asc"/>
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="phoneNumber" direction="asc"/>
+        <property name="errorDate" direction="desc"/>
+    </datastore-index>
+
+    
+    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+        <property name="acknowleged" direction="asc"/>
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="errorDate" direction="desc"/>
+    </datastore-index>
+
+    
+    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+        <property name="phoneNumber" direction="asc"/>
+        <property name="errorDate" direction="desc"/>
+    </datastore-index>
+
+    
+    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="phoneNumber" direction="asc"/>
+        <property name="errorDate" direction="desc"/>
+    </datastore-index>
+
+    
+    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="errorDate" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>

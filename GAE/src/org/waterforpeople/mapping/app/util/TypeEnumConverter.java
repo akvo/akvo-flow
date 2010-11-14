@@ -6,6 +6,13 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 
 import com.gallatinsystems.survey.domain.Question;
 
+/**
+ * converts enumerated types 
+ * 
+ * @author Christopher Fagiani
+ *
+ */
+@SuppressWarnings("unchecked")
 public class TypeEnumConverter extends AbstractConverter{
 	
 	@Override

@@ -1073,15 +1073,45 @@ public class TestHarnessServlet extends HttpServlet {
 			listStacktrace();
 		}
 	}
-
+	
+	
 	private void listStacktrace() {
 		RemoteStacktraceDao traceDao = new RemoteStacktraceDao();
+		
 		List<RemoteStacktrace> result = null;
-		result = traceDao.listStacktrace(false, null);
+		result = traceDao.listStacktrace(null,null,false, null);
+		if (result != null){
+			System.out.println(result.size() + "");		
+		}
+		result = traceDao.listStacktrace(null,null,true, null);
 		if (result != null){
 			System.out.println(result.size() + "");
 		}
-		result = traceDao.listStacktrace(true, null);
+		
+		result = traceDao.listStacktrace("12345",null,true, null);
+		if (result != null){
+			System.out.println(result.size() + "");
+		}
+		result = traceDao.listStacktrace("12345","12345",true, null);
+		if (result != null){
+			System.out.println(result.size() + "");
+		}
+		
+		result = traceDao.listStacktrace(null,"12345",true, null);
+		if (result != null){
+			System.out.println(result.size() + "");
+		}
+		
+		result = traceDao.listStacktrace("12345",null,false, null);
+		if (result != null){
+			System.out.println(result.size() + "");
+		}
+		result = traceDao.listStacktrace("12345","12345",false, null);
+		if (result != null){
+			System.out.println(result.size() + "");
+		}
+		
+		result = traceDao.listStacktrace(null,"12345",false, null);
 		if (result != null){
 			System.out.println(result.size() + "");
 		}

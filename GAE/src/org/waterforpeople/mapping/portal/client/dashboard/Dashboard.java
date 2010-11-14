@@ -20,6 +20,7 @@ import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
 import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.RawDataViewPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.RemoteExceptionPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
@@ -208,6 +209,11 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.addItem("Manage Users", new Command() {
 			public void execute() {
 				launchFullscreen(UserManagerPortlet.NAME);
+			}
+		});
+		mgrMenu.addItem("View Remote Exceptions", new Command() {
+			public void execute() {
+				launchFullscreen(RemoteExceptionPortlet.NAME);
 			}
 		});
 

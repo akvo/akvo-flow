@@ -68,7 +68,9 @@ public class PortletFactory {
 			return new RecentPointsPortlet();
 		} else if (name.equals(UserManagerPortlet.NAME)) {
 			return new UserManagerPortlet(user);
-		} else {
+		} else if (name.equals(RemoteExceptionPortlet.NAME)) {
+			return new RemoteExceptionPortlet();
+		}else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
 	}

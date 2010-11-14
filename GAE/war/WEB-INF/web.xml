@@ -246,6 +246,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>UserRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/userrpcservice</url-pattern>
 	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>RemoteExceptionRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/remoteexceptionrpcservice</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>RemoteExceptionRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.diagnostics.RemoteExceptionServiceImpl</servlet-class>
+	</servlet>
 	<servlet>
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper.SpreadsheetMappingAttributeServiceImpl</servlet-class>

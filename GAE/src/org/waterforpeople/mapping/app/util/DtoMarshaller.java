@@ -17,15 +17,7 @@ public class DtoMarshaller {
 	public static <T extends BaseDomain, U extends BaseDto> void copyToCanonical(
 			T canonical, U dto) {
 		try {
-			String pattern = "MM/dd/yy";
-			Locale locale = Locale.getDefault();
-			DateLocaleConverter converter = new DateLocaleConverter(locale,
-					pattern);
-			converter.setLenient(true);
-			ConvertUtils.register(converter, java.util.Date.class);
-			TypeEnumConverter enumConverter = new TypeEnumConverter();
-			ConvertUtils.register(enumConverter, Question.Type.class);
-			ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);
+			configureConverters();
 			BeanUtils.copyProperties(canonical, dto);
 			if (dto.getKeyId() != null) {
 				// by default, the JDO key kind uses the Simple name
@@ -41,12 +33,7 @@ public class DtoMarshaller {
 	public static <T extends BaseDomain, U extends BaseDto> void copyToDto(
 			T canonical, U dto) {
 		try {
-			String pattern = "MM/dd/yy";
-			Locale locale = Locale.getDefault();
-			DateLocaleConverter converter = new DateLocaleConverter(locale,
-					pattern);
-			converter.setLenient(true);
-			ConvertUtils.register(converter, java.util.Date.class);
+			configureConverters();
 			BeanUtils.copyProperties(dto, canonical);
 			if (canonical.getKey() != null) {
 				dto.setKeyId(canonical.getKey().getId());
@@ -55,4 +42,21 @@ public class DtoMarshaller {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * sets up the converters that this marshaller should use
+	 */
+	private static void configureConverters() {
+		String pattern = "MM/dd/yy";
+		Locale locale = Locale.getDefault();
+		DateLocaleConverter converter = new DateLocaleConverter(locale, pattern);
+		converter.setLenient(true);
+		ConvertUtils.register(converter, java.util.Date.class);
+
+		TypeEnumConverter enumConverter = new TypeEnumConverter();
+		ConvertUtils.register(enumConverter, Question.Type.class);
+		ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);		
+
+	}
+
 }
