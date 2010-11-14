@@ -297,10 +297,18 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextArea tip = new TextArea();
 		tip.setSize("35em", "5em");
 		TextBox validationRule = new TextBox();
+		ListBox lbOrder = new ListBox();
+		for(Integer i=0;i<100;i++){
+			lbOrder.addItem(i.toString());
+		}
+		
 		CheckBox mandatoryQuestion = new CheckBox();
 		CheckBox dependentQuestion = new CheckBox();
 
 		if (item != null) {
+			if(item.getOrder()!=null){
+				lbOrder.setItemSelected(item.getOrder(),true);
+			}
 			questionId.setText(item.getKeyId().toString());
 			if (item.getText() != null)
 				questionText.setText(item.getText());
@@ -401,6 +409,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionDetailPanel.setWidget(4, 1, validationRule);
 		questionDetailPanel.setWidget(5, 0, new Label("Mandatory Question"));
 		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
+		questionDetailPanel.setWidget(6, 0, new Label("Question Display Order"));
+		questionDetailPanel.setWidget(6, 1, lbOrder);
 		questionDetailPanel.setWidget(7, 0, new Label(
 				"Question Dependant On Other Question"));
 		questionDetailPanel.setWidget(7, 1, dependentQuestion);
@@ -779,12 +789,17 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		CheckBox mandatoryQuestion = (CheckBox) questionDetailPanel.getWidget(
 				5, 1);
 
+		ListBox lbOrder = (ListBox)questionDetailPanel.getWidget(6, 1);
+		
 		if (questionId.getText().length() > 0)
 			value.setKeyId(new Long(questionId.getText()));
 
 		if (questionText.getText().length() > 0)
 			value.setText(questionText.getText().trim());
-
+		
+		if(lbOrder.getSelectedIndex()>0)
+			value.setOrder(lbOrder.getSelectedIndex());
+		
 		if (tip.getText().length() > 0)
 			value.setTip(tip.getText());
 		if (validationRule.getText().length() > 0)
