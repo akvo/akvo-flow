@@ -207,4 +207,8 @@
         <property name="deviceIdentifier" direction="asc"/>
         <property name="errorDate" direction="desc"/>
     </datastore-index>
+    <datastore-index kind="QuestionOption" ancestor="false" source="manual">
+        <property name="questionId" direction="asc"/>
+        <property name="order" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>
