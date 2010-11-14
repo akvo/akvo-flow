@@ -701,6 +701,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		TextBox optionValue = new TextBox();
 		optionValue.setWidth("3em");
+		ListBox lbOptOrder = new ListBox();
+		for(Integer i=0;i<15;i++){
+			lbOptOrder.addItem(i.toString());
+		}
 		TextBox optionText = new TextBox();
 		optionText.setWidth("30em");
 		TextBox optionId = new TextBox();
@@ -712,14 +716,16 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				optionValue.setText(item.getCode());
 			if (item.getText() != null)
 				optionText.setText(item.getText());
+			if(item.getOrder()!=null)
+				lbOptOrder.setSelectedIndex(item.getOrder());
 		}
 		if (row >= 2)
 			row = row - 1;
 
 		questionOptionDetail.insertRow(row);
 
-		questionOptionDetail.setWidget(row, 0, new Label("Option Value"));
-		questionOptionDetail.setWidget(row, 1, optionValue);
+		questionOptionDetail.setWidget(row, 0, new Label("Order"));
+		questionOptionDetail.setWidget(row, 1, lbOptOrder);
 		questionOptionDetail.setWidget(row, 2, new Label("Option Text"));
 		questionOptionDetail.setWidget(row, 3, optionText);
 		questionOptionDetail.setWidget(row, 4, optionId);
@@ -868,16 +874,19 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		for (int row = 1; row < questionOptionTable.getRowCount() - 1; row++) {
 			QuestionOptionDto qoDto = new QuestionOptionDto();
-			TextBox optionValue = (TextBox) questionOptionDetail.getWidget(row,
-					1);
+			//TextBox optionValue = (TextBox) questionOptionDetail.getWidget(row,
+			//		1);
+			ListBox lbOptOrder = (ListBox)questionOptionDetail.getWidget(row, 1);
+			if(lbOptOrder.getSelectedIndex()>0)
+				qoDto.setOrder(lbOptOrder.getSelectedIndex());
 			TextBox optionText = (TextBox) questionOptionDetail.getWidget(row,
 					3);
 			TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
-			qoDto.setCode(optionValue.getText());
+			//qoDto.setCode(optionValue.getText());
 			qoDto.setText(optionText.getText());
 			if (qoId.getText().length() > 0)
 				qoDto.setKeyId(new Long(qoId.getText()));
-			qoDto.setOrder(row);
+			qoDto.setOrder(lbOptOrder.getSelectedIndex());
 			ocDto.addQuestionOption(qoDto);
 		}
 		value.setOptionContainerDto(ocDto);
