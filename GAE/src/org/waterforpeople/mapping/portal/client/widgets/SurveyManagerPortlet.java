@@ -298,16 +298,16 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		tip.setSize("35em", "5em");
 		TextBox validationRule = new TextBox();
 		ListBox lbOrder = new ListBox();
-		for(Integer i=0;i<100;i++){
+		for (Integer i = 0; i < 100; i++) {
 			lbOrder.addItem(i.toString());
 		}
-		
+
 		CheckBox mandatoryQuestion = new CheckBox();
 		CheckBox dependentQuestion = new CheckBox();
 
 		if (item != null) {
-			if(item.getOrder()!=null){
-				lbOrder.setItemSelected(item.getOrder(),true);
+			if (item.getOrder() != null) {
+				lbOrder.setItemSelected(item.getOrder(), true);
 			}
 			questionId.setText(item.getKeyId().toString());
 			if (item.getText() != null)
@@ -409,7 +409,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionDetailPanel.setWidget(4, 1, validationRule);
 		questionDetailPanel.setWidget(5, 0, new Label("Mandatory Question"));
 		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
-		questionDetailPanel.setWidget(6, 0, new Label("Question Display Order"));
+		questionDetailPanel
+				.setWidget(6, 0, new Label("Question Display Order"));
 		questionDetailPanel.setWidget(6, 1, lbOrder);
 		questionDetailPanel.setWidget(7, 0, new Label(
 				"Question Dependant On Other Question"));
@@ -651,8 +652,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				if (ocDto.getAllowMultipleFlag() != null) {
 					allowMultiple.setValue(ocDto.getAllowMultipleFlag());
 				}
-				if (ocDto.getKeyId() != null)
+				if (ocDto.getKeyId() != null) {
 					ocId.setText(ocDto.getKeyId().toString());
+					ocId.setVisible(false);
+				}
 				if (ocDto.getAllowOtherFlag() != null)
 					allowOther.setValue(ocDto.getAllowOtherFlag());
 				if (ocDto.getOptionsList() != null)
@@ -677,6 +680,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		if (questionOptionList != null) {
 			for (QuestionOptionDto qoDto : questionOptionList) {
+				if (qoDto.getOrder() != null)
+					row = qoDto.getOrder();
 				loadQuestionOptionRowDetail(qoDto, row++);
 			}
 		}
@@ -691,7 +696,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onClick(ClickEvent event) {
 
 				loadQuestionOptionRowDetail(null,
-						questionOptionDetail.getRowCount());
+						questionOptionDetail.getRowCount() - 1);
 			}
 
 		});
@@ -702,7 +707,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionValue = new TextBox();
 		optionValue.setWidth("3em");
 		ListBox lbOptOrder = new ListBox();
-		for(Integer i=0;i<15;i++){
+		for (Integer i = 0; i < 15; i++) {
 			lbOptOrder.addItem(i.toString());
 		}
 		TextBox optionText = new TextBox();
@@ -710,17 +715,23 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionId = new TextBox();
 		// optionId.setVisible(true);
 		if (item != null) {
-			if (item.getKeyId() != null)
+			if (item.getKeyId() != null) {
 				optionId.setText(item.getKeyId().toString());
+				optionId.setVisible(false);
+			}
 			if (item.getCode() != null)
 				optionValue.setText(item.getCode());
 			if (item.getText() != null)
 				optionText.setText(item.getText());
-			if(item.getOrder()!=null)
+			if (item.getOrder() != null)
 				lbOptOrder.setSelectedIndex(item.getOrder());
+			else
+				lbOptOrder.setSelectedIndex(questionOptionDetail.getRowCount());
+		} else {
+			lbOptOrder.setSelectedIndex(row);
 		}
-		if (row >= 2)
-			row = row - 1;
+		// if (row >= 2)
+		// row = row - 1;
 
 		questionOptionDetail.insertRow(row);
 
@@ -795,17 +806,17 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		CheckBox mandatoryQuestion = (CheckBox) questionDetailPanel.getWidget(
 				5, 1);
 
-		ListBox lbOrder = (ListBox)questionDetailPanel.getWidget(6, 1);
-		
+		ListBox lbOrder = (ListBox) questionDetailPanel.getWidget(6, 1);
+
 		if (questionId.getText().length() > 0)
 			value.setKeyId(new Long(questionId.getText()));
 
 		if (questionText.getText().length() > 0)
 			value.setText(questionText.getText().trim());
-		
-		if(lbOrder.getSelectedIndex()>0)
+
+		if (lbOrder.getSelectedIndex() > 0)
 			value.setOrder(lbOrder.getSelectedIndex());
-		
+
 		if (tip.getText().length() > 0)
 			value.setTip(tip.getText());
 		if (validationRule.getText().length() > 0)
@@ -874,15 +885,17 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		for (int row = 1; row < questionOptionTable.getRowCount() - 1; row++) {
 			QuestionOptionDto qoDto = new QuestionOptionDto();
-			//TextBox optionValue = (TextBox) questionOptionDetail.getWidget(row,
-			//		1);
-			ListBox lbOptOrder = (ListBox)questionOptionDetail.getWidget(row, 1);
-			if(lbOptOrder.getSelectedIndex()>0)
+			// TextBox optionValue = (TextBox)
+			// questionOptionDetail.getWidget(row,
+			// 1);
+			ListBox lbOptOrder = (ListBox) questionOptionDetail.getWidget(row,
+					1);
+			if (lbOptOrder.getSelectedIndex() > 0)
 				qoDto.setOrder(lbOptOrder.getSelectedIndex());
 			TextBox optionText = (TextBox) questionOptionDetail.getWidget(row,
 					3);
 			TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
-			//qoDto.setCode(optionValue.getText());
+			// qoDto.setCode(optionValue.getText());
 			qoDto.setText(optionText.getText());
 			if (qoId.getText().length() > 0)
 				qoDto.setKeyId(new Long(qoId.getText()));
@@ -1285,7 +1298,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			surveyDto.setKeyId(sKeyId);
 			Long sgKeyId = originalSurveyDto.getSurveyGroupId();
 			surveyDto.setSurveyGroupId(sgKeyId);
-			
+
 			surveyDto.setSurveyGroupId(originalSurveyDto.getSurveyGroupId());
 		} else {
 			SurveyGroupDto parentSGDto = (SurveyGroupDto) surveyTree

@@ -244,6 +244,12 @@ public class BaseDAO<T extends BaseDomain> {
 		return listByProperty(propertyName, propertyValue, propertyType,
 				concreteClass);
 	}
+	
+	protected List<T> listByProperty(String propertyName, Object propertyValue,
+			String propertyType, String orderByCol, String orderByDir) {
+		return listByProperty(propertyName, propertyValue, propertyType, orderByCol, orderByDir,
+				concreteClass);
+	}
 
 	protected List<T> listByProperty(String propertyName, Object propertyValue,
 			String propertyType, String orderByCol) {
@@ -283,7 +289,25 @@ public class BaseDAO<T extends BaseDomain> {
 
 		return results;
 	}
+	protected <E extends BaseDomain> List<E> listByProperty(
+			String propertyName, Object propertyValue, String propertyType, String orderByField, String orderByDir,
+			Class<E> clazz) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		List<E> results = null;
 
+		String paramName = propertyName + "Param";
+		if (paramName.contains(".")) {
+			paramName = paramName.substring(paramName.indexOf(".") + 1);
+		}
+		javax.jdo.Query query = pm.newQuery(clazz);
+		query.setFilter(propertyName + " == " + paramName);
+		
+		query.setOrdering(orderByField + " " + orderByDir);
+		query.declareParameters(propertyType + " " + paramName);
+		results = (List<E>) query.execute(propertyValue);
+
+		return results;
+	}
 	/**
 	 * convenience method to list all instances of the type passed in that match
 	 * the property

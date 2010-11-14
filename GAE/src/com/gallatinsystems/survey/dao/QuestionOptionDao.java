@@ -21,7 +21,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 
 	public TreeMap<Integer, QuestionOption> listOptionByQuestion(Long questionId) {
 		List<QuestionOption> oList = listByProperty("questionId", questionId,
-				"Long");
+				"Long","order", "asc");
 		TreeMap<Integer, QuestionOption> map = new TreeMap<Integer, QuestionOption>();
 		if (oList != null) {
 			int i = 1;
