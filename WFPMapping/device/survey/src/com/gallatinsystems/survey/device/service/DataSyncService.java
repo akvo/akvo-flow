@@ -337,14 +337,14 @@ public class DataSyncService extends Service {
 										+ e.getMessage());
 							}
 						}
-					}
-					zos.close();
+					}			
 					Log.i(TAG, "Closed zip output stream for file: " + fileName
 							+ ". Checksum: "
 							+ checkedOutStream.getChecksum().getValue());
 					idsToUpdate[2].add(""
 							+ checkedOutStream.getChecksum().getValue());
 				}
+				zos.close();
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not save zip: " + e.getMessage(), e);
