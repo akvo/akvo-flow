@@ -135,6 +135,7 @@ public class LocationService extends Service {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send location beacon", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		}
 	}
 

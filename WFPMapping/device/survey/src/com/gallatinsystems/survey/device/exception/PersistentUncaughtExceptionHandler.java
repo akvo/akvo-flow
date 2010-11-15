@@ -54,6 +54,22 @@ public class PersistentUncaughtExceptionHandler implements
 	 */
 	@Override
 	public void uncaughtException(Thread sourceThread, Throwable exception) {
+
+		recordException(exception);
+		// Still process the exception with the default handler so we don't
+		// change system behavior
+		if (oldHandler != null) {
+			oldHandler.uncaughtException(sourceThread, exception);
+		}
+	}
+
+	/**
+	 * saves the exception to the filesystem. this can be used to save otherwise
+	 * handled exceptions so they can be reported to the server.
+	 * 
+	 * @param exception
+	 */
+	public static void recordException(Throwable exception) {
 		// save the error
 		final Writer result = new StringWriter();
 		final PrintWriter printWriter = new PrintWriter(result);
@@ -75,12 +91,6 @@ public class PersistentUncaughtExceptionHandler implements
 					Log.w(TAG, "Can't close print writer object", e);
 				}
 			}
-		}
-
-		// Still process the exception with the default handler so we don't
-		// change system behavior
-		if (oldHandler != null) {
-			oldHandler.uncaughtException(sourceThread, exception);
 		}
 	}
 

@@ -148,6 +148,7 @@ public class SurveyDownloadService extends Service {
 								}
 							} catch (Exception e) {
 								Log.e(TAG, "Could not download survey", e);
+								PersistentUncaughtExceptionHandler.recordException(e);
 							}
 						}
 						if (updateCount > 0) {
@@ -171,6 +172,7 @@ public class SurveyDownloadService extends Service {
 				databaseAdaptor.close();
 			} catch (Exception e) {
 				Log.e(TAG, "Could not update surveys", e);
+				PersistentUncaughtExceptionHandler.recordException(e);
 			} finally {
 				lock.release();
 			}
@@ -209,8 +211,10 @@ public class SurveyDownloadService extends Service {
 			success = true;
 		} catch (IOException e) {
 			Log.e(TAG, "Could write survey file " + survey.getFileName(), e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		} catch (Exception e) {
 			Log.e(TAG, "Could not download survey " + survey.getId(), e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		}
 		return success;
 	}
@@ -299,6 +303,7 @@ public class SurveyDownloadService extends Service {
 				}
 			} catch (FileNotFoundException e) {
 				Log.e(TAG, "Could not parse survey survey file", e);
+				PersistentUncaughtExceptionHandler.recordException(e);
 			}
 		}
 	}
@@ -361,8 +366,10 @@ public class SurveyDownloadService extends Service {
 			}
 		} catch (HttpException e) {
 			Log.e(TAG, "Server returned an unexpected response", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		} catch (Exception e) {
 			Log.e(TAG, "Could not get survey headers", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		}
 		return surveys;
 	}
@@ -403,8 +410,10 @@ public class SurveyDownloadService extends Service {
 			}
 		} catch (HttpException e) {
 			Log.e(TAG, "Server returned an unexpected response", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		} catch (Exception e) {
 			Log.e(TAG, "Could not download survey", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		}
 		return surveys;
 	}

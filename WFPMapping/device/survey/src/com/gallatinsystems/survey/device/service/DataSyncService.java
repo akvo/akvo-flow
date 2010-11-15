@@ -195,6 +195,7 @@ public class DataSyncService extends Service {
 			}
 		} catch (InterruptedException e) {
 			Log.e(TAG, "Data sync interrupted", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		} finally {
 			databaseAdaptor.close();
 			lock.release();
@@ -348,6 +349,7 @@ public class DataSyncService extends Service {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not save zip: " + e.getMessage(), e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 			fileName = null;
 		}
 		return idsToUpdate;
@@ -440,6 +442,7 @@ public class DataSyncService extends Service {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not extract survey data from db", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		} finally {
 			if (data != null) {
 				data.close();
@@ -550,6 +553,7 @@ public class DataSyncService extends Service {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not extract survey data from db", e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 		} finally {
 			if (data != null) {
 				data.close();
@@ -595,6 +599,7 @@ public class DataSyncService extends Service {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send upload" + e.getMessage(), e);
+			PersistentUncaughtExceptionHandler.recordException(e);
 			return false;
 		}
 		return true;

@@ -94,6 +94,7 @@ public class PrecacheService extends Service {
 						}
 					} catch (Exception e) {
 						Log.e(TAG, "Could not precache data", e);
+						PersistentUncaughtExceptionHandler.recordException(e);
 					} finally {
 						lock.release();
 						if (databaseAdapter != null) {
