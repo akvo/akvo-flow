@@ -87,7 +87,10 @@ public class RawDataExporter extends AbstractDataExporter {
 								.findSurveyInstance(Long.parseLong(instanceId
 										.trim()), serverBase);
 						if (dto != null) {
-							pw.print(dto.getSubmitterName());
+							String name = dto.getSubmitterName();
+							if(name != null){
+								pw.print(dto.getSubmitterName().replaceAll("\n", " ").trim());
+							}
 						}
 						for (String key : idList) {
 							String val = responses.get(key);
@@ -99,7 +102,7 @@ public class RawDataExporter extends AbstractDataExporter {
 													.indexOf(SDCARD_PREFIX)
 													+ SDCARD_PREFIX.length());
 								}
-								pw.print(val.trim());
+								pw.print(val.replaceAll("\n"," ").trim());
 							}
 						}
 
