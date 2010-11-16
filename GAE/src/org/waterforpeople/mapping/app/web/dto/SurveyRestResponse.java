@@ -17,6 +17,8 @@ import com.gallatinsystems.framework.rest.RestResponse;
 public class SurveyRestResponse extends RestResponse {
 
 	private static final long serialVersionUID = -3851323551471422767L;
+	private String cursor = null;
+	
 	private List<? extends BaseDto> dtoList;
 
 	public List<? extends BaseDto> getDtoList() {
@@ -25,5 +27,13 @@ public class SurveyRestResponse extends RestResponse {
 
 	public void setDtoList(List<? extends BaseDto> dtoList) {
 		this.dtoList = dtoList;
+	}
+
+	public void setCursor(String cursor) {
+		this.cursor = cursor;
+	}
+
+	public String getCursor() {
+		return cursor;
 	}
 }

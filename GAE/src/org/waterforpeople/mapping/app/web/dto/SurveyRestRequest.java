@@ -12,6 +12,10 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String SAVE_SURVEY_ACTION = "saveSurvey";
 	public static final String SAVE_QUESTION_GROUP_ACTION = "saveQuestionGroup";
 	public static final String SAVE_QUESTION_ACTION = "saveQuestion";
+	public static final String LIST_SURVEY_GROUPS_ACTION = "listSurveyGroups";
+	public static final String GET_SURVEY_GROUP_ACTION = "getSurveyGroup";
+	public static final String LIST_SURVEYS_ACTION = "listSurveys";
+	public static final String GET_SURVEY_ACTION = "getSurvey";
 	public static final String LIST_GROUP_ACTION = "listGroups";
 	public static final String LIST_QUESTION_ACTION = "listQuestions";
 	public static final String GET_SUMMARY_ACTION = "getSummary";
@@ -29,6 +33,7 @@ public class SurveyRestRequest extends RestRequest {
 	private static final String ALLOW_MULTIPLE_PARAM = "allowMultiple";
 	private static final String MANDATORY_PARAM = "mandatory";
 	private static final String QUESTION_GROUP_ORDER_PARAM = "questionGroupOrder";
+	public static final String SURVEY_GROUP_ID_PARAM = "surveyGroupId";
 	public static final String SURVEY_ID_PARAM = "surveyId";
 	public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
 	public static final String QUESTION_ID_PARAM = "questionID";
@@ -37,6 +42,7 @@ public class SurveyRestRequest extends RestRequest {
 
 	private String surveyGroupName = null;
 	private String surveyName = null;
+	private Long surveyGroupId = null;
 	private String questionGroupName = null;
 	private Integer questionId = null;
 	private String questionText = null;
@@ -174,6 +180,9 @@ public class SurveyRestRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
+		if(req.getParameter(SURVEY_GROUP_ID_PARAM)!=null){
+			setSurveyGroupId(Long.parseLong(req.getParameter(SURVEY_GROUP_ID_PARAM)));
+		}
 		if (req.getParameter(SURVEY_GROUP_NAME_PARAM) != null) {
 			surveyGroupName = req.getParameter(SURVEY_GROUP_NAME_PARAM).trim();
 		}
@@ -253,5 +262,15 @@ public class SurveyRestRequest extends RestRequest {
 	public Integer getQuestionGroupOrder() {
 		return questionGroupOrder;
 	}
+
+	public void setSurveyGroupId(Long surveyGroupId) {
+		this.surveyGroupId = surveyGroupId;
+	}
+
+	public Long getSurveyGroupId() {
+		return surveyGroupId;
+	}
+
+	
 
 }

@@ -16,6 +16,8 @@ import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
@@ -37,13 +39,13 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 
 public class SurveyRestServlet extends AbstractRestApiServlet {
@@ -92,15 +94,31 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				.equals(importReq.getAction())) {
 			questionSaved = saveQuestion(importReq.getSurveyGroupName(),
 					importReq.getSurveyName(),
-					importReq.getQuestionGroupName(), importReq
-							.getQuestionType(), importReq.getQuestionText(),
+					importReq.getQuestionGroupName(),
+					importReq.getQuestionType(), importReq.getQuestionText(),
 					importReq.getOptions(), importReq.getDependQuestion(),
-					importReq.getAllowOtherFlag(), importReq
-							.getAllowMultipleFlag(), importReq
-							.getMandatoryFlag(), importReq.getQuestionId(),
+					importReq.getAllowOtherFlag(),
+					importReq.getAllowMultipleFlag(),
+					importReq.getMandatoryFlag(), importReq.getQuestionId(),
 					importReq.getQuestionGroupOrder(), importReq.getScoring());
 			response.setCode("200");
 			response.setMessage("Record Saved status: " + questionSaved);
+		} else if (SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION.equals(importReq
+				.getAction())) {
+			response = listSurveyGroups(importReq.getCursor(), response);
+		} else if (SurveyRestRequest.GET_SURVEY_GROUP_ACTION.equals(importReq
+				.getAction())) {
+			List<SurveyGroupDto> sgList = new ArrayList<SurveyGroupDto>();
+			sgList.add(getSurveyGroup(importReq.getSurveyGroupId()));
+			response.setDtoList(sgList);
+		} else if (SurveyRestRequest.LIST_SURVEYS_ACTION.equals(importReq
+				.getAction())) {
+			response = listSurveys(importReq.getSurveyGroupId(),importReq.getCursor(), response);
+		}else if (SurveyRestRequest.GET_SURVEY_ACTION.equals(importReq
+				.getAction())) {
+			List<SurveyDto> sDtoList = new ArrayList<SurveyDto>();
+			sDtoList.add(getSurvey(new Long(importReq.getSurveyId())));
+			response.setDtoList(sDtoList);
 		} else if (SurveyRestRequest.LIST_GROUP_ACTION.equals(importReq
 				.getAction())) {
 			response.setDtoList(listQuestionGroups(new Long(importReq
@@ -115,13 +133,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 					.getQuestionId())));
 		} else if (SurveyRestRequest.GET_QUESTION_DETAILS_ACTION
 				.equals(importReq.getAction())) {
-			QuestionDto dto = loadQuestionDetails(new Long(importReq
-					.getQuestionId()));
+			QuestionDto dto = loadQuestionDetails(new Long(
+					importReq.getQuestionId()));
 			List<BaseDto> dtoList = new ArrayList<BaseDto>();
 			dtoList.add(dto);
 			response.setDtoList(dtoList);
-		} else if (SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION.equals(importReq
-				.getAction())) {
+		} else if (SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION
+				.equals(importReq.getAction())) {
 			SurveyInstanceDto dto = findSurveyInstance(importReq
 					.getInstanceId());
 			List<BaseDto> dtoList = new ArrayList<BaseDto>();
@@ -130,6 +148,38 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		}
 
 		return response;
+	}
+
+	private SurveyRestResponse listSurveys(Long surveyGroupId, String cursorString,
+			SurveyRestResponse response) {
+		SurveyDAO sgDao = new SurveyDAO();
+		List<Survey> groups = sgDao.list(cursorString);
+		List<SurveyDto> dtoList = new ArrayList<SurveyDto>();
+		cursorString = SurveyGroupDAO.getCursor(groups);
+		if (groups != null) {
+			for (Survey s : groups) {
+				SurveyDto dto = new SurveyDto();
+				DtoMarshaller.copyToDto(s, dto);
+				dtoList.add(dto);
+			}
+		}
+		response.setDtoList(dtoList);
+		response.setCursor(cursorString);
+		return response;
+	}
+
+	private SurveyGroupDto getSurveyGroup(Long surveyGroupId) {
+		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+		SurveyGroupDto dto = new SurveyGroupDto();
+		DtoMarshaller.copyToDto(surveyGroupDao.getByKey(surveyGroupId), dto);
+		return dto;
+	}
+
+	private SurveyDto getSurvey(Long surveyId) {
+		SurveyDAO surveyDao = new SurveyDAO();
+		SurveyDto dto = new SurveyDto();
+		DtoMarshaller.copyToDto(surveyDao.getById(surveyId), dto);
+		return dto;
 	}
 
 	/**
@@ -161,6 +211,30 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			}
 		}
 		return dtoList;
+	}
+
+	/**
+	 * gets all surveyGroups for a given survey
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
+	private SurveyRestResponse listSurveyGroups(String cursorString,
+			SurveyRestResponse response) {
+		SurveyGroupDAO sgDao = new SurveyGroupDAO();
+		List<SurveyGroup> groups = sgDao.list(cursorString);
+		List<SurveyGroupDto> dtoList = new ArrayList<SurveyGroupDto>();
+		cursorString = SurveyGroupDAO.getCursor(groups);
+		if (groups != null) {
+			for (SurveyGroup sg : groups) {
+				SurveyGroupDto dto = new SurveyGroupDto();
+				DtoMarshaller.copyToDto(sg, dto);
+				dtoList.add(dto);
+			}
+		}
+		response.setDtoList(dtoList);
+		response.setCursor(cursorString);
+		return response;
 	}
 
 	/**
@@ -217,7 +291,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	}
 
 	/**
-	 * lsits all the SurveyQuestionSummary objects associated with a given questionDI
+	 * lsits all the SurveyQuestionSummary objects associated with a given
+	 * questionDI
 	 * 
 	 * @param questionId
 	 * @return
@@ -243,11 +318,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			Boolean allowMultipleFlag, Boolean mandatoryFlag,
 			Integer questionOrder, Integer questionGroupOrder, String scoring)
 			throws UnsupportedEncodingException {
-		//temp fix until we put a validation rule in
-		if(questionText.length()>499){
+		// temp fix until we put a validation rule in
+		if (questionText.length() > 499) {
 			questionText = questionText.substring(0, 499);
 		}
-		if(questionOrder==32){
+		if (questionOrder == 32) {
 			log.info("found");
 		}
 
@@ -268,8 +343,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		Survey survey = null;
 		String surveyPath = surveyGroupName;
-		//survey = surveyDao.getByPath(surveyName, surveyPath);
-		survey = surveyDao.getByParentIdAndCode(surveyName, sg.getKey().getId());
+		// survey = surveyDao.getByPath(surveyName, surveyPath);
+		survey = surveyDao
+				.getByParentIdAndCode(surveyName, sg.getKey().getId());
 
 		if (survey == null) {
 			survey = new Survey();
@@ -282,8 +358,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		QuestionGroup qg = null;
 		String qgPath = surveyGroupName + "/" + surveyName;
-		//qg = qgDao.getByPath(questionGroupName, qgPath);
-		qg = qgDao.getByParentIdandCode(questionGroupName, survey.getKey().getId());
+		// qg = qgDao.getByPath(questionGroupName, qgPath);
+		qg = qgDao.getByParentIdandCode(questionGroupName, survey.getKey()
+				.getId());
 
 		if (qg == null) {
 			qg = new QuestionGroup();
@@ -297,8 +374,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		}
 
 		String questionPath = qgPath + "/" + questionGroupName;
-		//Question q = qDao.getByPath(questionOrder, questionPath);
-		Question q = qDao.getByQuestionGroupId(qg.getKey().getId(), questionText);
+		// Question q = qDao.getByPath(questionOrder, questionPath);
+		Question q = qDao.getByQuestionGroupId(qg.getKey().getId(),
+				questionText);
 		if (q == null) {
 			q = new Question();
 		} else {
@@ -366,7 +444,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(Question.Type.NUMBER);
 		} else if (questionType.equals("NAME")) {
 			q.setType(Question.Type.NAME);
-		}else if (questionType.equals("VIDEO")){
+		} else if (questionType.equals("VIDEO")) {
 			q.setType(Question.Type.VIDEO);
 		}
 
@@ -380,7 +458,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			String[] parts = dependentQuestion.split("\\|");
 			Integer quesitonOrderId = new Integer(parts[0]);
 			String answer = parts[1];
-			Question dependsOnQuestion = qDao.getByGroupIdAndOrder(qg.getKey().getId(),quesitonOrderId);
+			Question dependsOnQuestion = qDao.getByGroupIdAndOrder(qg.getKey()
+					.getId(), quesitonOrderId);
 			if (dependsOnQuestion != null) {
 				q.setDependentFlag(true);
 				q.setDependentQuestionId(dependsOnQuestion.getKey().getId());
