@@ -18,7 +18,7 @@ body {
 	padding: 0px;
 	height: 100%;
 	background: #fff;
-	font: 11px/ 14px Verdana, Helvetica, sans-serif;
+	font: 11px/14px Verdana, Helvetica, sans-serif;
 	color: #333;
 }
 
@@ -30,14 +30,17 @@ a {
 	color: #416482;
 	outline: none;
 }
-a:link, a:visited {
+
+a:link,a:visited {
 	text-decoration: none;
 	color: #f3f3f3;
 }
-a:hover, a:active {
+
+a:hover,a:active {
 	text-decoration: none;
 	color: #bdd73c;
 }
+
 a:hover {
 	text-decoration: none;
 }
@@ -45,7 +48,6 @@ a:hover {
 a {
 	outline: none;
 }
-
 
 /*content end*/
 #footer {
@@ -59,14 +61,16 @@ a {
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	font: 11px/ 14px Verdana, Helvetica, sans-serif;
+	font: 11px/14px Verdana, Helvetica, sans-serif;
 	overflow: hidden;
 	width: 100%;
 }
 
 #footer ul.menu li {
 	float: left;
-	background: url(http://www.waterforpeople.org/assets/images/separator-02-inner.gif) no-repeat 0 3px;
+	background:
+		url(http://www.waterforpeople.org/assets/images/separator-02-inner.gif)
+		no-repeat 0 3px;
 	letter-spacing: 1px;
 	margin: 0 13px 0 0;
 	padding: 0 0 0 13px;
@@ -86,13 +90,13 @@ a {
 	text-decoration: underline;
 }
 
-
 #wrap {
 	background: #e7e7e7;
 	width: 550px;
 	height: 550px;
 	padding-top: 10px;
 }
+
 #headerBalloon {
 	height: 60px;
 	background: #58585a;
@@ -100,6 +104,7 @@ a {
 	margin-left: auto;
 	width: 530px;
 }
+
 #WFPcredit {
 	font-size: 10px;
 	color: #f3f3f3;
@@ -110,6 +115,7 @@ a {
 	left: 140px;
 	top: -60px;
 }
+
 #communityDesc {
 	background: #f3f3f3;
 	height: 60px;
@@ -118,6 +124,7 @@ a {
 	margin-left: auto;
 	margin-top: 10px;
 }
+
 #communityDef {
 	float: left;
 	font-size: 15px;
@@ -125,22 +132,25 @@ a {
 	top: 5px;
 	left: 5px;
 }
+
 #communityName {
 	margin-bottom: 10px;
-
 }
+
 .mapIcon {
 	float: right;
 	position: relative;
 	right: 5px;
 	top: 5px;
 }
+
 #mainContent {
 	width: 530px;
 	margin-top: 0px;
 	margin-right: auto;
 	margin-left: auto;
 }
+
 #leftContent {
 	width: 325px;
 	font-size: 10px;
@@ -148,11 +158,13 @@ a {
 	float: left;
 	top: 10px;
 }
+
 .QandA {
-	position: relative;	
+	position: relative;
 	min-height: 30px;
 }
-.question  {
+
+.question {
 	background: #58585a;
 	text-align: right;
 	color: #f3f3f3;
@@ -161,23 +173,24 @@ a {
 	float: left;
 	width: 155px;
 	padding-right: 5px;
-	padding-left: 5px;	
+	padding-left: 5px;
 	min-height: 30px;
 }
+
 .question span {
 	position: relative;
 	width: 100%;
 }
 
-.answer  {
+.answer {
 	float: right;
 	margin-top: 3px;
 	margin-bottom: 3px;
 	width: 150px;
 	padding-left: 10px;
 	min-height: 30px;
-	
 }
+
 .answer img {
 	top: 2px;
 	position: relative;
@@ -189,415 +202,468 @@ a {
 	width: 195px;
 	top: 10px;
 }
+
 #rightContent .photo {
 	background: #58585a;
 	padding: 10px;
 }
+
 #photoCaption {
 	color: #f3f3f3;
 	font-size: 10px;
 	text-align: center;
 	margin-top: 5px;
 }
-
-
 </style>
 <script type="text/javascript"
 	src="http://maps.google.com/maps/api/js?sensor=false">
+	
 </script>
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
 <script src="/js/jqURL.js"></script>
 <script src="/js/smartinfowindow.js"></script>
 <script type="text/javascript">
-
 	var map;
 	var country;
 	var countryLatLon;
 	var openWindow = null;
-	function getCountry(){
-		 if($.jqURL.get('country')){
-		 	country = $.jqURL.get('country').toUpperCase();
-		 }else{
-			country='MW';
-		 }
-		 setCountryLatLon();
+	function getCountry() {
+		if ($.jqURL.get('country')) {
+			country = $.jqURL.get('country').toUpperCase();
+		} else {
+			country = 'MW';
+		}
+		setCountryLatLon();
 	}
-	var loadedMW=new Boolean(false);
-	var loadedHN=new Boolean(false);
-	var loadedPE=new Boolean(false);
-	var loadedRW=new Boolean(false);
-	var loadedGT=new Boolean(false);
-	var loadedIN=new Boolean(false);
-	var loadedSV=new Boolean(false);
-	var loadedNI=new Boolean(false);
-	var latlngRW = new google.maps.LatLng(-1.7,30);
-	var latlngMW = new google.maps.LatLng(-15.79,35);
-	var latlngHN=new google.maps.LatLng(15,-88);;
-	var latlngPE=new google.maps.LatLng(-7.5, -79);;
-	var latlngGT=new google.maps.LatLng(15,-90);;
-	var latlngIN=new google.maps.LatLng(21.7,88.1);;
-	var latlngSV=new google.maps.LatLng(14,-89);
-	var latlngNI= new google.maps.LatLng(12.7,-85.7);
+	var loadedMW = new Boolean(false);
+	var loadedHN = new Boolean(false);
+	var loadedPE = new Boolean(false);
+	var loadedRW = new Boolean(false);
+	var loadedGT = new Boolean(false);
+	var loadedIN = new Boolean(false);
+	var loadedSV = new Boolean(false);
+	var loadedNI = new Boolean(false);
+	var loadedBO = new Boolean(false);
+	var latlngRW = new google.maps.LatLng(-1.7, 30);
+	var latlngMW = new google.maps.LatLng(-15.79, 35);
+	var latlngHN = new google.maps.LatLng(15, -88);;
+	var latlngPE = new google.maps.LatLng(-7.5, -79);;
+	var latlngGT = new google.maps.LatLng(15, -90);;
+	var latlngIN = new google.maps.LatLng(21.7, 88.1);;
+	var latlngSV = new google.maps.LatLng(14, -89);
+	var latlngNI = new google.maps.LatLng(12.7, -85.7);
+	var latlngBO = new google.maps.LatLng(-16.8, -63.33);
 
-	 function setCountryLatLon(){
-	 	if(country=='MW'){
-	 	 countryLatLon= latlngMW;
-	 	}else if(country == 'RW'){
-	    	countryLatLon= latlngRW;
-	    }else if(country == 'HN'){
-	    	countryLatLon= latlngHN;
-	    }else if(country == 'PE'){
-	    	countryLatLon= latlngPE;
-	    }else if(country == 'GT'){
-	    	countryLatLon= latlngGT;
-	    }else if(country =='IN'){
-	    	countryLatLon= latlngIN;
-	    }else if(country =='SV'){
-	    	countryLatLon= latlngSV;
-	    }else if(country =='NI'){
-	    	countryLatLon=latlngNI;
-	    }else{
-	        countryLatLon= new google.maps.LatLng(-15,35);
-	    	alert('Water For People does not have projects in that country yet. So we will show you our work in Malawi.');
-	    }
+	function setCountryLatLon() {
+		if (country == 'MW') {
+			countryLatLon = latlngMW;
+		} else if (country == 'RW') {
+			countryLatLon = latlngRW;
+		} else if (country == 'HN') {
+			countryLatLon = latlngHN;
+		} else if (country == 'PE') {
+			countryLatLon = latlngPE;
+		} else if (country == 'GT') {
+			countryLatLon = latlngGT;
+		} else if (country == 'IN') {
+			countryLatLon = latlngIN;
+		} else if (country == 'SV') {
+			countryLatLon = latlngSV;
+		} else if (country == 'NI') {
+			countryLatLon = latlngNI;
+		} else if (country == 'BO') {
+			countryLatLon = latlngBO;
+		} else {
+			countryLatLon = new google.maps.LatLng(-15, 35);
+			alert('Water For People does not have projects in that country yet. So we will show you our work in Malawi.');
+		}
 
-	  }
+	}
 
-	  function loadCountryData(){
-	  	if(country=='MW' && loadedMW==false){
-	 	 getPlacemarkInfo('MW');
-	 	 loadedMW=true;
-	 	}else if(country == 'RW' && loadedRW==false){
-	    	getPlacemarkInfo('RW');
-	    	loadedRW=true;
-	    }else if(country == 'HN' && loadedHN==false){
-	    	getPlacemarkInfo('HN');
-	    	loadedHN=true;
-	    }else if(country == 'PE' && loadedPE==false){
-	    	getPlacemarkInfo('PE');
-	    	loadedPE=true;
-	    }else if(country == 'GT'&& loadedGT==false){
-	    	getPlacemarkInfo('GT');
-	    	loadedGT=true;
-	    }else if(country =='IN'&& loadedIN==false){
-	    	getPlacemarkInfo('IN');
-	    	loadedIN=true;
-	    }else if(country =='SV' && loadedSV==false){
-	    	getPlacemarkInfo('SV');
-	    	loadedSV=true;
-	    }else if(country =='NI' && loadedNI==false){
-	    	getPlacemarkInfo('NI');
-	    	loadedNI=true;
-	    }
-	  }
+	function loadCountryData() {
+		if (country == 'MW' && loadedMW == false) {
+			getPlacemarkInfo('MW');
+			loadedMW = true;
+		} else if (country == 'RW' && loadedRW == false) {
+			getPlacemarkInfo('RW');
+			loadedRW = true;
+		} else if (country == 'HN' && loadedHN == false) {
+			getPlacemarkInfo('HN');
+			loadedHN = true;
+		} else if (country == 'PE' && loadedPE == false) {
+			getPlacemarkInfo('PE');
+			loadedPE = true;
+		} else if (country == 'GT' && loadedGT == false) {
+			getPlacemarkInfo('GT');
+			loadedGT = true;
+		} else if (country == 'IN' && loadedIN == false) {
+			getPlacemarkInfo('IN');
+			loadedIN = true;
+		} else if (country == 'SV' && loadedSV == false) {
+			getPlacemarkInfo('SV');
+			loadedSV = true;
+		} else if (country == 'NI' && loadedNI == false) {
+			getPlacemarkInfo('NI');
+			loadedNI = true;
+		} else if (country == 'BO' && loadedBO == false) {
+			getPlacemarkInfo('BO');
+			loadedBO = true;
+		}
+	}
 
-   function initialize() {
-    getCountry();
-    var myOptions = {
-      zoom: 7,
-      center: countryLatLon,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    }
-    var isSmartphone = false;	
-	if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/android/i)) {
-		isSmartphone = true;
-	} 
+	function initialize() {
+		getCountry();
+		var myOptions = {
+			zoom : 7,
+			center : countryLatLon,
+			mapTypeId : google.maps.MapTypeId.ROADMAP
+		}
+		var isSmartphone = false;
+		if (navigator.userAgent.match(/iPhone/i)
+				|| navigator.userAgent.match(/iPod/i)
+				|| navigator.userAgent.match(/android/i)) {
+			isSmartphone = true;
+		}
 
-	if(isSmartphone){
-    	document.getElementById("map_canvas").style.width = '90%';
+		if (isSmartphone) {
+			document.getElementById("map_canvas").style.width = '90%';
 
-    }
-    
-    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-    createCountryControl();
-    //createChartControl();
-if(!isSmartphone){
-    createLegend();
-    }
+		}
 
-    google.maps.event.addListener(map, 'bounds_changed', function() {
+		map = new google.maps.Map(document.getElementById("map_canvas"),
+				myOptions);
+		createCountryControl();
+		//createChartControl();
+		if (!isSmartphone) {
+			createLegend();
+		}
 
-     var curBounds = map.getBounds();
-     var containsRW = curBounds.contains(latlngRW);
-     var containsMW = curBounds.contains(latlngMW);
-     var containsHN = curBounds.contains(latlngHN);
-     var containsIN = curBounds.contains(latlngIN);
-     var containsGT = curBounds.contains(latlngGT);
-     var containsSV = curBounds.contains(latlngSV);
-     var containsPE = curBounds.contains(latlngPE);
-     var containsNI = curBounds.contains(latlngNI);
+		google.maps.event.addListener(map, 'bounds_changed', function() {
 
-     if(containsRW){
-      country= 'RW';
-      loadCountryData();
-     }
+			var curBounds = map.getBounds();
+			var containsRW = curBounds.contains(latlngRW);
+			var containsMW = curBounds.contains(latlngMW);
+			var containsHN = curBounds.contains(latlngHN);
+			var containsIN = curBounds.contains(latlngIN);
+			var containsGT = curBounds.contains(latlngGT);
+			var containsSV = curBounds.contains(latlngSV);
+			var containsPE = curBounds.contains(latlngPE);
+			var containsNI = curBounds.contains(latlngNI);
+			var containsBO = curBounds.contains(latlngBO);
 
-     if(containsMW){
-     country = 'MW';
-     loadCountryData();
-     }
-
-     if(containsHN){
-     country ='HN';
-     loadCountryData();
-     }
-     if(containsIN){
-     country='IN';
-     loadCountryData();
-     }
-     if(containsGT){
-     country='GT';
-     loadCountryData();
-     }
-     if(containsSV){
-     country = 'SV';
-     loadCountryData();
-     }
-     if(containsPE){
-     country = 'PE';
-     loadCountryData();
-     }
-     if(containsNI){
-     country = 'NI';
-     loadCountryData();
-     }
-  });
-  loadCountryData();
-
-
-  };
-  var markers = [];
-   function addPlacemark(latitude, longitude, iconUrl,placemarkContents){
-  	    var infowindow = new google.maps.InfoWindow({content:placemarkContents,maxWidth: 1000});
-		var myLatlng = new google.maps.LatLng(latitude,longitude);
-	    var marker = new google.maps.Marker({
-	        position: myLatlng,
-	        map: map,
-	        title: 'Water For People',
-	        icon:iconUrl
-	    });
-	    google.maps.event.addListener(marker, 'click', function() {
-	     var infoOptions = {maxWidth:1000};
-	     infowindow.setOptions(infoOptions);
-	      infowindow.open(map,marker);
-	    });
-    };
-
-    function makeMarker(latitude, longitude, iconUrl, communityCode, pointType, placemarkContents) {
- 	 var markerOptions = {map: map, position: new google.maps.LatLng(latitude, longitude),icon:iconUrl,height:600,width:600,title:communityCode};
-  	var marker = new google.maps.Marker(markerOptions);
-  	markers.push(marker);
-
-  	google.maps.event.addListener(marker, 'click', function(e) {
-  	  	var communityCode = marker.title;
-  	  	var iconString = marker.icon;
-  	  	var url = '/placemarkrestapi?action=getAPDetails&display=external&communityCode='+communityCode+'&pointType='+iconString;
-  	  	$.getJSON(url, function(jd) {
-	      	var count = 0;
-	            $.each(jd.placemarks, function(i,item){
-	            	if(openWindow != null){
-	            		openWindow.onRemove();
-	            	}
-	            	var infobox = new SmartInfoWindow({position: marker.getPosition(), map: map, content: item.placemarkContents});
-	            	openWindow = infobox;
-	           	count++;
-	            });
-	            if(count >0 && jd.cursor != null){
-	            	getPlacemarkInfo(countryCode, jd.cursor);
-	            }
-	        });
-	  	});
-}
-
-  function getPlacemarkInfo(countryCode, cursor) {
-  	var url = '/placemarkrestapi?country='+country+'&needDetailsFlag=false';
-  	if(cursor != null){
-  		url += '&cursor='+cursor;
-  	}
-    $.getJSON(url, function(jd) {
-    	var count = 0;
-          $.each(jd.placemarks, function(i,item){
-         	makeMarker(item.latitude,item.longitude, item.iconUrl, item.communityCode, item.markType, item.placemarkContents);
-         	count++;
-          });
-          if(count >0 && jd.cursor != null){
-          	getPlacemarkInfo(countryCode, jd.cursor);
-          }
-      });
-   };
-
-  function createCountryControl(){
-   // Create a div to hold the control.
-var controlDiv = document.createElement('DIV');
-
-// Set CSS styles for the DIV containing the control
-// Setting padding to 5 px will offset the control
-// from the edge of the map
-controlDiv.style.padding = '5px';
-
-// Set CSS for the control border
-var controlUI = document.createElement('DIV');
-controlUI.style.backgroundColor = 'white';
-controlUI.style.borderStyle = 'solid';
-controlUI.style.borderWidth = '2px';
-controlUI.style.cursor = 'pointer';
-controlUI.style.textAlign = 'center';
-controlUI.title = 'Jumps to a specific country';
-controlDiv.appendChild(controlUI);
-
-// Set CSS for the control interior
-var controlText = document.createElement('DIV');
-controlText.style.fontFamily = 'Arial,sans-serif';
-controlText.style.fontSize = '12px';
-controlText.style.paddingLeft = '4px';
-controlText.style.paddingRight = '4px';
-controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
-controlUI.appendChild(controlText);
-map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
- google.maps.event.addDomListener(controlUI, 'click', function() {
- if(document.getElementById("countrySel").selectedIndex == 1){
-    	map.setCenter(latlngSV);
-    	map.setZoom(10);
-	}else if(document.getElementById("countrySel").selectedIndex == 2){
-    	map.setCenter(latlngGT);
-    	map.setZoom(10);
-    }else if(document.getElementById("countrySel").selectedIndex == 3){
-    	map.setCenter(latlngHN);
-    	map.setZoom(10);
-   	}else if(document.getElementById("countrySel").selectedIndex == 4){
-    	map.setCenter(latlngIN);
-    	map.setZoom(10);
-   	}else if(document.getElementById("countrySel").selectedIndex == 5){
-    	map.setCenter(latlngMW);
-    	map.setZoom(10);
-   	}else if(document.getElementById("countrySel").selectedIndex == 6){
-    	map.setCenter(latlngNI);
-    	map.setZoom(10);
-   	}else if(document.getElementById("countrySel").selectedIndex == 7){
-    	map.setCenter(latlngPE);
-    	map.setZoom(10);
-    }else if(document.getElementById("countrySel").selectedIndex == 8){
-    	map.setCenter(latlngRW);
-    	map.setZoom(10);
-    }
-  });
-
-  }
-
-
-function createChartControl(){
-   // Create a div to hold the control.
-	var controlDiv = document.createElement('DIV');
-
-	// Set CSS styles for the DIV containing the control
-	// Setting padding to 5 px will offset the control
-	// from the edge of the map
-	controlDiv.style.padding = '5px';
-
-	// Set CSS for the control border
-	var controlUI = document.createElement('DIV');
-	controlUI.style.backgroundColor = 'white';
-	controlUI.style.borderStyle = 'solid';
-	controlUI.style.borderWidth = '2px';
-	controlUI.style.cursor = 'pointer';
-	controlUI.style.textAlign = 'center';
-	controlUI.title = 'Jumps to a specific country';
-	controlDiv.appendChild(controlUI);
-
-	// Set CSS for the control interior
-	var controlText = document.createElement('DIV');
-	controlText.style.fontFamily = 'Arial,sans-serif';
-	controlText.style.fontSize = '12px';
-	controlText.style.paddingLeft = '4px';
-	controlText.style.paddingRight = '4px';
-	controlText.innerHTML = 'See summary for: <select id=chartSel name=chartSel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
-	controlUI.appendChild(controlText);
-	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-	google.maps.event.addDomListener(controlUI, 'click', function() {
-	var center;
-	if(document.getElementById("chartSel").selectedIndex == 1){
- 		displayChart("SV",latlngSV);
-	}else if(document.getElementById("chartSel").selectedIndex == 2){
-    	displayChart("GT",latlngGT);
-    }else if(document.getElementById("chartSel").selectedIndex == 3){
-    	displayChart("HN",latlngHN);
-   	}else if(document.getElementById("chartSel").selectedIndex == 4){
-    	displayChart("IN",latlngIN);
-   	}else if(document.getElementById("chartSel").selectedIndex == 5){
-    	displayChart("MW",latlngMW);
-   	}else if(document.getElementById("chartSel").selectedIndex == 6){
-    	displayChart("NI",laglngNI);
-   	}else if(document.getElementById("chartSel").selectedIndex == 7){
-		displayChart("PE", latlngPE);
-    }else if(document.getElementById("chartSel").selectedIndex == 8){
-    	displayChart("RW",latlngRW);
-    }
-  });
-}
-
-
-function displayChart(countryCode, center) {
-  	var url = '/charturlrestapi?action=getAPStatus&country='+countryCode;
-    $.getJSON(url, function(jd) {
-    	if(jd != null){
-    		var resultUrl = jd.message;
-    		if(resultUrl != null && resultUrl.substr(0,4) == 'http'){
-        		var infobox = new google.maps.InfoWindow({position: center, content:'<div><img src="'+jd.message+'"></div>'});
-        		map.setZoom(10);
-				infobox.open(map);
+			if (containsRW) {
+				country = 'RW';
+				loadCountryData();
 			}
-        }
-      });
-}
 
- function createLegend(){
-  var controlDiv = document.createElement('DIV');
+			if (containsMW) {
+				country = 'MW';
+				loadCountryData();
+			}
 
-// Set CSS styles for the DIV containing the control
-// Setting padding to 5 px will offset the control
-// from the edge of the map
-controlDiv.style.padding = '5px';
+			if (containsHN) {
+				country = 'HN';
+				loadCountryData();
+			}
+			if (containsIN) {
+				country = 'IN';
+				loadCountryData();
+			}
+			if (containsGT) {
+				country = 'GT';
+				loadCountryData();
+			}
+			if (containsSV) {
+				country = 'SV';
+				loadCountryData();
+			}
+			if (containsPE) {
+				country = 'PE';
+				loadCountryData();
+			}
+			if (containsNI) {
+				country = 'NI';
+				loadCountryData();
+			}
+			if (containsBO) {
+				country = 'BO';
+				loadCountryData();
+			}
+		});
+		loadCountryData();
 
-// Set CSS for the control border
-var controlUI = document.createElement('DIV');
-controlUI.style.backgroundColor = 'white';
-controlUI.style.borderStyle = 'solid';
-controlUI.style.borderWidth = '2px';
-controlUI.style.cursor = 'pointer';
-controlUI.style.textAlign = 'center';
-controlUI.title = 'Legend';
-controlDiv.appendChild(controlUI);
+	};
+	var markers = [];
+	function addPlacemark(latitude, longitude, iconUrl, placemarkContents) {
+		var infowindow = new google.maps.InfoWindow({
+			content : placemarkContents,
+			maxWidth : 1000
+		});
+		var myLatlng = new google.maps.LatLng(latitude, longitude);
+		var marker = new google.maps.Marker({
+			position : myLatlng,
+			map : map,
+			title : 'Water For People',
+			icon : iconUrl
+		});
+		google.maps.event.addListener(marker, 'click', function() {
+			var infoOptions = {
+				maxWidth : 1000
+			};
+			infowindow.setOptions(infoOptions);
+			infowindow.open(map, marker);
+		});
+	};
 
-// Set CSS for the control interior
-var controlText = document.createElement('DIV');
-controlText.style.fontFamily = 'Arial,sans-serif';
-controlText.style.fontSize = '12px';
-controlText.style.paddingLeft = '4px';
-controlText.style.paddingRight = '4px';
-controlText.innerHTML = '<img height=200 width=200 src=/images/WFPkey.jpg>';
-controlUI.appendChild(controlText);
-map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(controlDiv);
-  };
+	function makeMarker(latitude, longitude, iconUrl, communityCode, pointType,
+			placemarkContents) {
+		var markerOptions = {
+			map : map,
+			position : new google.maps.LatLng(latitude, longitude),
+			icon : iconUrl,
+			height : 600,
+			width : 600,
+			title : communityCode
+		};
+		var marker = new google.maps.Marker(markerOptions);
+		markers.push(marker);
 
+		google.maps.event
+				.addListener(
+						marker,
+						'click',
+						function(e) {
+							var communityCode = marker.title;
+							var iconString = marker.icon;
+							var url = '/placemarkrestapi?action=getAPDetails&display=external&communityCode='
+									+ communityCode
+									+ '&pointType='
+									+ iconString;
+							$.getJSON(url, function(jd) {
+								var count = 0;
+								$.each(jd.placemarks, function(i, item) {
+									if (openWindow != null) {
+										openWindow.onRemove();
+									}
+									var infobox = new SmartInfoWindow({
+										position : marker.getPosition(),
+										map : map,
+										content : item.placemarkContents
+									});
+									openWindow = infobox;
+									count++;
+								});
+								if (count > 0 && jd.cursor != null) {
+									getPlacemarkInfo(countryCode, jd.cursor);
+								}
+							});
+						});
+	}
 
+	function getPlacemarkInfo(countryCode, cursor) {
+		var url = '/placemarkrestapi?country=' + country
+				+ '&needDetailsFlag=false';
+		if (cursor != null) {
+			url += '&cursor=' + cursor;
+		}
+		$.getJSON(url, function(jd) {
+			var count = 0;
+			$.each(jd.placemarks, function(i, item) {
+				makeMarker(item.latitude, item.longitude, item.iconUrl,
+						item.communityCode, item.markType,
+						item.placemarkContents);
+				count++;
+			});
+			if (count > 0 && jd.cursor != null) {
+				getPlacemarkInfo(countryCode, jd.cursor);
+			}
+		});
+	};
+
+	function createCountryControl() {
+		// Create a div to hold the control.
+		var controlDiv = document.createElement('DIV');
+
+		// Set CSS styles for the DIV containing the control
+		// Setting padding to 5 px will offset the control
+		// from the edge of the map
+		controlDiv.style.padding = '5px';
+
+		// Set CSS for the control border
+		var controlUI = document.createElement('DIV');
+		controlUI.style.backgroundColor = 'white';
+		controlUI.style.borderStyle = 'solid';
+		controlUI.style.borderWidth = '2px';
+		controlUI.style.cursor = 'pointer';
+		controlUI.style.textAlign = 'center';
+		controlUI.title = 'Jumps to a specific country';
+		controlDiv.appendChild(controlUI);
+
+		// Set CSS for the control interior
+		var controlText = document.createElement('DIV');
+		controlText.style.fontFamily = 'Arial,sans-serif';
+		controlText.style.fontSize = '12px';
+		controlText.style.paddingLeft = '4px';
+		controlText.style.paddingRight = '4px';
+		controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="BO">Bolivia</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+		controlUI.appendChild(controlText);
+		map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+		google.maps.event
+				.addDomListener(
+						controlUI,
+						'click',
+						function() {
+							if (document.getElementById("countrySel").selectedIndex == 1) {
+								map.setCenter(latlngBO);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 2) {
+								map.setCenter(latlngSV);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 3) {
+								map.setCenter(latlngGT);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 4) {
+								map.setCenter(latlngHN);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 5) {
+								map.setCenter(latlngIN);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 6) {
+								map.setCenter(latlngMW);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 7) {
+								map.setCenter(latlngNI);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 8) {
+								map.setCenter(latlngPE);
+								map.setZoom(10);
+							} else if (document.getElementById("countrySel").selectedIndex == 9) {
+								map.setCenter(latlngRW);
+								map.setZoom(10);
+							}
+						});
+
+	}
+
+	function createChartControl() {
+		// Create a div to hold the control.
+		var controlDiv = document.createElement('DIV');
+
+		// Set CSS styles for the DIV containing the control
+		// Setting padding to 5 px will offset the control
+		// from the edge of the map
+		controlDiv.style.padding = '5px';
+
+		// Set CSS for the control border
+		var controlUI = document.createElement('DIV');
+		controlUI.style.backgroundColor = 'white';
+		controlUI.style.borderStyle = 'solid';
+		controlUI.style.borderWidth = '2px';
+		controlUI.style.cursor = 'pointer';
+		controlUI.style.textAlign = 'center';
+		controlUI.title = 'Jumps to a specific country';
+		controlDiv.appendChild(controlUI);
+
+		// Set CSS for the control interior
+		var controlText = document.createElement('DIV');
+		controlText.style.fontFamily = 'Arial,sans-serif';
+		controlText.style.fontSize = '12px';
+		controlText.style.paddingLeft = '4px';
+		controlText.style.paddingRight = '4px';
+		controlText.innerHTML = 'See summary for: <select id=chartSel name=chartSel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+		controlUI.appendChild(controlText);
+		map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+		google.maps.event.addDomListener(controlUI, 'click', function() {
+			var center;
+			if (document.getElementById("chartSel").selectedIndex == 1) {
+				displayChart("BO", latlngBO);
+			}else if (document.getElementById("chartSel").selectedIndex == 2) {
+				displayChart("SV", latlngSV);
+			} else if (document.getElementById("chartSel").selectedIndex == 3) {
+				displayChart("GT", latlngGT);
+			} else if (document.getElementById("chartSel").selectedIndex == 4) {
+				displayChart("HN", latlngHN);
+			} else if (document.getElementById("chartSel").selectedIndex == 5) {
+				displayChart("IN", latlngIN);
+			} else if (document.getElementById("chartSel").selectedIndex == 6) {
+				displayChart("MW", latlngMW);
+			} else if (document.getElementById("chartSel").selectedIndex == 7) {
+				displayChart("NI", laglngNI);
+			} else if (document.getElementById("chartSel").selectedIndex == 8) {
+				displayChart("PE", latlngPE);
+			} else if (document.getElementById("chartSel").selectedIndex == 9) {
+				displayChart("RW", latlngRW);
+			}
+		});
+	}
+
+	function displayChart(countryCode, center) {
+		var url = '/charturlrestapi?action=getAPStatus&country=' + countryCode;
+		$.getJSON(url, function(jd) {
+			if (jd != null) {
+				var resultUrl = jd.message;
+				if (resultUrl != null && resultUrl.substr(0, 4) == 'http') {
+					var infobox = new google.maps.InfoWindow({
+						position : center,
+						content : '<div><img src="'+jd.message+'"></div>'
+					});
+					map.setZoom(10);
+					infobox.open(map);
+				}
+			}
+		});
+	}
+
+	function createLegend() {
+		var controlDiv = document.createElement('DIV');
+
+		// Set CSS styles for the DIV containing the control
+		// Setting padding to 5 px will offset the control
+		// from the edge of the map
+		controlDiv.style.padding = '5px';
+
+		// Set CSS for the control border
+		var controlUI = document.createElement('DIV');
+		controlUI.style.backgroundColor = 'white';
+		controlUI.style.borderStyle = 'solid';
+		controlUI.style.borderWidth = '2px';
+		controlUI.style.cursor = 'pointer';
+		controlUI.style.textAlign = 'center';
+		controlUI.title = 'Legend';
+		controlDiv.appendChild(controlUI);
+
+		// Set CSS for the control interior
+		var controlText = document.createElement('DIV');
+		controlText.style.fontFamily = 'Arial,sans-serif';
+		controlText.style.fontSize = '12px';
+		controlText.style.paddingLeft = '4px';
+		controlText.style.paddingRight = '4px';
+		controlText.innerHTML = '<img height=200 width=200 src=/images/WFPkey.jpg>';
+		controlUI.appendChild(controlText);
+		map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(controlDiv);
+	};
 </script>
 <script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push([ '_setAccount', 'UA-19227890-1' ]);
+	_gaq.push([ '_trackPageview' ]);
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-19227890-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
+	(function() {
+		var ga = document.createElement('script');
+		ga.type = 'text/javascript';
+		ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl'
+				: 'http://www')
+				+ '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(ga, s);
+	})();
 </script>
 </head>
 <body onload="initialize()">
-<div id="header" style="width: 100%"><a href="http://www.waterforpeople.org"><img
+<div id="header" style="width: 100%"><a
+	href="http://www.waterforpeople.org"><img
 	src="/images/wfp_flow_header.jpg"></a></div>
 
 <div id="map_canvas"></div>
@@ -623,7 +689,8 @@ map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(controlDiv);
 	FOR PEOPLE&ndash;CANADA</a></li>
 	<li><a href="http://www.waterforpeople.org/site-map.html">SITE
 	MAP</a></li>
-	<li>Developed By <a href="http://www.gallatinsystems.com">Gallatin Systems</a></li>
+	<li>Developed By <a href="http://www.gallatinsystems.com">Gallatin
+	Systems</a></li>
 </ul>
 </div>
 <div></div>
