@@ -456,88 +456,95 @@ public class BulkDataServiceClient {
 	 */
 	private static List<QuestionDto> parseQuestions(String response)
 			throws Exception {
-		List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
-		JSONArray arr = getJsonArray(response);
-		if (arr != null) {
-			for (int i = 0; i < arr.length(); i++) {
-				JSONObject json = arr.getJSONObject(i);
-				if (json != null) {
-					QuestionDto dto = new QuestionDto();
-					try {
-						if (json.has("surveyId")) {
-							if (json.getString("surveyId") != null) {
-								String numberC = json.getString("surveyId");
-								try {
-									dto.setSurveyId(Long.parseLong(numberC));
-								} catch (NumberFormatException nex) {
-									dto.setSurveyId(null);
-								}
-							}
-						}
-						if (json.has("path")) {
-							dto.setPath(json.getString("path"));
-						}
-						if (json.has("text")) {
-							dto.setText(json.getString("text"));
-						}
-						if (json.has("keyId")) {
-							dto.setKeyId(json.getLong("keyId"));
-						}
-						if (json.has("translationMap")
-								&& !JSONObject.NULL.equals(json
-										.get("translationMap"))) {
-							dto.setTranslationMap(parseTranslations(json
-									.getJSONObject("translationMap")));
-						}
-						if(json.has("questionTypeString") && json.getString("questionTypeString")!=null){
-							dto.setType(QuestionDto.QuestionType.valueOf(json.getString("type")));
-						}
-						if (json.has("optionContainerDto")
-								&& !JSONObject.NULL.equals(json
-										.get("optionContainerDto"))) {
-							OptionContainerDto container = new OptionContainerDto();
-							JSONObject contJson = json
-									.getJSONObject("optionContainerDto");
-							JSONArray optArray = contJson
-									.getJSONArray("optionsList");
-							if (optArray != null) {
-								for (int j = 0; j < optArray.length(); j++) {
-									JSONObject optJson = optArray
-											.getJSONObject(j);
-									QuestionOptionDto opt = new QuestionOptionDto();
-									opt.setKeyId(optJson.getLong("keyId"));
-									opt.setText(optJson.getString("text"));
-									if (optJson.has("translationMap")
-											&& !JSONObject.NULL.equals(optJson
-													.get("translationMap"))) {
-										opt.setTranslationMap(parseTranslations(optJson
-												.getJSONObject("translationMap")));
+		if (response.startsWith("{")) {
+			List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
+			JSONArray arr = getJsonArray(response);
+			if (arr != null) {
+				for (int i = 0; i < arr.length(); i++) {
+					JSONObject json = arr.getJSONObject(i);
+					if (json != null) {
+						QuestionDto dto = new QuestionDto();
+						try {
+							if (json.has("surveyId")) {
+								if (json.getString("surveyId") != null) {
+									String numberC = json.getString("surveyId");
+									try {
+										dto.setSurveyId(Long.parseLong(numberC));
+									} catch (NumberFormatException nex) {
+										dto.setSurveyId(null);
 									}
-									container.addQuestionOption(opt);
 								}
 							}
-							dto.setOptionContainerDto(container);
-						}
-						if (json.has("questionDependency")
-								&& !JSONObject.NULL.equals(json
-										.get("questionDependency"))) {
-							QuestionDependencyDto dep = new QuestionDependencyDto();
-							JSONObject depJson = json
-									.getJSONObject("questionDependency");
-							dep.setQuestionId(depJson.getLong("questionId"));
-							dep.setAnswerValue(depJson.getString("answerValue"));
-							dto.setQuestionDependency(dep);
-						}
+							if (json.has("path")) {
+								dto.setPath(json.getString("path"));
+							}
+							if (json.has("text")) {
+								dto.setText(json.getString("text"));
+							}
+							if (json.has("keyId")) {
+								dto.setKeyId(json.getLong("keyId"));
+							}
+							if (json.has("translationMap")
+									&& !JSONObject.NULL.equals(json
+											.get("translationMap"))) {
+								dto.setTranslationMap(parseTranslations(json
+										.getJSONObject("translationMap")));
+							}
+							if (json.has("questionTypeString")
+									&& json.getString("questionTypeString") != null) {
+								dto.setType(QuestionDto.QuestionType.valueOf(json
+										.getString("questionTypeString")));
+							}
+							if (json.has("optionContainerDto")
+									&& !JSONObject.NULL.equals(json
+											.get("optionContainerDto"))) {
+								OptionContainerDto container = new OptionContainerDto();
+								JSONObject contJson = json
+										.getJSONObject("optionContainerDto");
+								JSONArray optArray = contJson
+										.getJSONArray("optionsList");
+								if (optArray != null) {
+									for (int j = 0; j < optArray.length(); j++) {
+										JSONObject optJson = optArray
+												.getJSONObject(j);
+										QuestionOptionDto opt = new QuestionOptionDto();
+										opt.setKeyId(optJson.getLong("keyId"));
+										opt.setText(optJson.getString("text"));
+										if (optJson.has("translationMap")
+												&& !JSONObject.NULL
+														.equals(optJson
+																.get("translationMap"))) {
+											opt.setTranslationMap(parseTranslations(optJson
+													.getJSONObject("translationMap")));
+										}
+										container.addQuestionOption(opt);
+									}
+								}
+								dto.setOptionContainerDto(container);
+							}
+							if (json.has("questionDependency")
+									&& !JSONObject.NULL.equals(json
+											.get("questionDependency"))) {
+								QuestionDependencyDto dep = new QuestionDependencyDto();
+								JSONObject depJson = json
+										.getJSONObject("questionDependency");
+								dep.setQuestionId(depJson.getLong("questionId"));
+								dep.setAnswerValue(depJson
+										.getString("answerValue"));
+								dto.setQuestionDependency(dep);
+							}
 
-						dtoList.add(dto);
-					} catch (Exception e) {
-						System.out.println("Error in json parsing: " + e);
-						e.printStackTrace();
+							dtoList.add(dto);
+						} catch (Exception e) {
+							System.out.println("Error in json parsing: " + e);
+							e.printStackTrace();
+						}
 					}
 				}
 			}
-		}
-		return dtoList;
+			return dtoList;
+		} else
+			return null;
 	}
 
 	@SuppressWarnings("unchecked")
