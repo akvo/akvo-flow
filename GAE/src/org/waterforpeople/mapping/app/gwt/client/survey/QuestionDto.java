@@ -28,6 +28,10 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	public String getPath() {
 		return path;
 	}
+	
+	public String getQuestionTypeString(){
+		return type.toString();
+	}
 
 	public void setPath(String path) {
 		this.path = path;

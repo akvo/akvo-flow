@@ -3,7 +3,6 @@ package org.waterforpeople.mapping.app.util;
 import org.apache.commons.beanutils.converters.AbstractConverter;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 import com.gallatinsystems.survey.domain.Question;
 

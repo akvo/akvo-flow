@@ -489,7 +489,7 @@ public class BulkDataServiceClient {
 							dto.setTranslationMap(parseTranslations(json
 									.getJSONObject("translationMap")));
 						}
-						if(json.has("type") && json.getString("type")!=null){
+						if(json.has("questionTypeString") && json.getString("questionTypeString")!=null){
 							dto.setType(QuestionDto.QuestionType.valueOf(json.getString("type")));
 						}
 						if (json.has("optionContainerDto")

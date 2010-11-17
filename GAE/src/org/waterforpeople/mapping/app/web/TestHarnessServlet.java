@@ -1382,6 +1382,7 @@ public class TestHarnessServlet extends HttpServlet {
 						q.setTip("en:" + l + ":" + new Date());
 						q.setPath(sg.getCode() + "/" + survey.getCode() + "/"
 								+ qg.getCode());
+						q.setSurveyId(survey.getKey().getId());
 						q = questionDao.save(q);
 
 						Translation tq = new Translation();
