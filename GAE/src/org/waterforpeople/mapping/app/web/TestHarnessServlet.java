@@ -28,11 +28,11 @@ import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
@@ -42,15 +42,16 @@ import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -60,9 +61,9 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.diagnostics.dao.RemoteStacktraceDao;
 import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -82,6 +83,7 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -90,7 +92,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -912,7 +913,14 @@ public class TestHarnessServlet extends HttpServlet {
 					e1.printStackTrace();
 				}
 			}
-		} else if ("deleteSurveyResponses".equals(action)) {
+		}else if ("importallsurveys".equals(action)){
+			//Only run in dev hence hardcoding
+			SurveyReplicationImporter sri = new SurveyReplicationImporter();
+			//sri.executeImport("http://watermapmonitordev.appspot.com", "http://localhost:8888");
+			sri.executeImport("http://localhost:8888", "http://localhost:8888");
+			
+		}
+		else if ("deleteSurveyResponses".equals(action)) {
 			if (req.getParameter("surveyId") == null) {
 				try {
 					resp.getWriter()

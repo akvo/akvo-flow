@@ -198,4 +198,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		r.surveyId = Long.parseLong(args[2].trim());
 		r.executeImport(file, serverBaseArg);
 	}
+
+	@Override
+	public void executeImport(String sourceBase, String serverBase) {
+		// TODO Auto-generated method stub
+		
+	}
 }

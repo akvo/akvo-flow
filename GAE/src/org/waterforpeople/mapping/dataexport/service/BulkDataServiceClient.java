@@ -19,6 +19,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
@@ -78,8 +80,8 @@ public class BulkDataServiceClient {
 				if (instanceId.contains("|")) {
 					dateString = instanceId
 							.substring(instanceId.indexOf("|") + 1);
-					instanceId = instanceId.substring(0, instanceId
-							.indexOf("|"));
+					instanceId = instanceId.substring(0,
+							instanceId.indexOf("|"));
 				}
 				values.put(instanceId, dateString);
 			}
@@ -99,8 +101,8 @@ public class BulkDataServiceClient {
 			StringTokenizer lines = new StringTokenizer(data, "\n");
 			if (lines != null) {
 				while (lines.hasMoreTokens()) {
-					StringTokenizer strTok = new StringTokenizer(lines
-							.nextToken(), ",");
+					StringTokenizer strTok = new StringTokenizer(
+							lines.nextToken(), ",");
 					String key = null;
 					String val = "";
 					if (strTok.hasMoreTokens()) {
@@ -173,8 +175,8 @@ public class BulkDataServiceClient {
 				if (questionDtos != null) {
 					for (QuestionDto question : questionDtos) {
 						keyList.add(question.getKeyId().toString());
-						questions.put(question.getKeyId().toString(), question
-								.getText());
+						questions.put(question.getKeyId().toString(),
+								question.getText());
 					}
 				}
 			}
@@ -229,6 +231,36 @@ public class BulkDataServiceClient {
 		return parseQuestionGroups(fetchDataFromServer(serverBase
 				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_GROUP_ACTION
 				+ "&" + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId));
+	}
+
+	/**
+	 * gets question groups from the server for a specific survey
+	 * 
+	 * @param serverBase
+	 * @param surveyId
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<SurveyGroupDto> fetchSurveyGroups(String serverBase)
+			throws Exception {
+		return parseSurveyGroups(fetchDataFromServer(serverBase
+				+ SURVEY_SERVLET_PATH
+				+ SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION));
+	}
+
+	/**
+	 * gets survey list from the server for a specific survey
+	 * 
+	 * @param serverBase
+	 * @param surveyId
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<SurveyDto> fetchSurveys(Long surveyGroupId,String serverBase)
+			throws Exception {
+		return parseSurveys(fetchDataFromServer(serverBase
+				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_SURVEYS_ACTION
+				+ "&" + SurveyRestRequest.SURVEY_GROUP_ID_PARAM+"="+surveyGroupId));
 	}
 
 	/**
@@ -304,6 +336,74 @@ public class BulkDataServiceClient {
 	}
 
 	/**
+	 * parses the survey group response and forms DTOs
+	 * 
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private static List<SurveyGroupDto> parseSurveyGroups(String response)
+			throws Exception {
+		List<SurveyGroupDto> dtoList = new ArrayList<SurveyGroupDto>();
+		JSONArray arr = getJsonArray(response);
+		if (arr != null) {
+			for (int i = 0; i < arr.length(); i++) {
+				JSONObject json = arr.getJSONObject(i);
+				if (json != null) {
+					SurveyGroupDto dto = new SurveyGroupDto();
+					try {
+						if (json.has("code")) {
+							dto.setCode(json.getString("code"));
+						}
+						if (json.has("keyId")) {
+							dto.setKeyId(json.getLong("keyId"));
+						}
+						dtoList.add(dto);
+					} catch (Exception e) {
+						System.out.println("Error in json parsing: " + e);
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return dtoList;
+	}
+
+	/**
+	 * parses the survey group response and forms DTOs
+	 * 
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private static List<SurveyDto> parseSurveys(String response)
+			throws Exception {
+		List<SurveyDto> dtoList = new ArrayList<SurveyDto>();
+		JSONArray arr = getJsonArray(response);
+		if (arr != null) {
+			for (int i = 0; i < arr.length(); i++) {
+				JSONObject json = arr.getJSONObject(i);
+				if (json != null) {
+					SurveyDto dto = new SurveyDto();
+					try {
+						if (json.has("code")) {
+							dto.setCode(json.getString("code"));
+						}
+						if (json.has("keyId")) {
+							dto.setKeyId(json.getLong("keyId"));
+						}
+						dtoList.add(dto);
+					} catch (Exception e) {
+						System.out.println("Error in json parsing: " + e);
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return dtoList;
+	}
+
+	/**
 	 * parses question responses into QuesitonDto objects
 	 * 
 	 * @param response
@@ -350,9 +450,8 @@ public class BulkDataServiceClient {
 									if (optJson.has("translationMap")
 											&& !JSONObject.NULL.equals(optJson
 													.get("translationMap"))) {
-										opt
-												.setTranslationMap(parseTranslations(optJson
-														.getJSONObject("translationMap")));
+										opt.setTranslationMap(parseTranslations(optJson
+												.getJSONObject("translationMap")));
 									}
 									container.addQuestionOption(opt);
 								}
@@ -366,9 +465,7 @@ public class BulkDataServiceClient {
 							JSONObject depJson = json
 									.getJSONObject("questionDependency");
 							dep.setQuestionId(depJson.getLong("questionId"));
-							dep
-									.setAnswerValue(depJson
-											.getString("answerValue"));
+							dep.setAnswerValue(depJson.getString("answerValue"));
 							dto.setQuestionDependency(dep);
 						}
 
@@ -420,8 +517,8 @@ public class BulkDataServiceClient {
 			conn.setRequestMethod("GET");
 			conn.setDoOutput(true);
 
-			reader = new BufferedReader(new InputStreamReader(conn
-					.getInputStream()));
+			reader = new BufferedReader(new InputStreamReader(
+					conn.getInputStream()));
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 
