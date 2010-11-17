@@ -152,10 +152,10 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 	private SurveyRestResponse listSurveys(Long surveyGroupId, String cursorString,
 			SurveyRestResponse response) {
-		SurveyDAO sgDao = new SurveyDAO();
-		List<Survey> groups = sgDao.list(cursorString);
+		SurveyDAO sDao = new SurveyDAO();
+		List<Survey> groups = sDao.listSurveysByGroup(surveyGroupId);
 		List<SurveyDto> dtoList = new ArrayList<SurveyDto>();
-		cursorString = SurveyGroupDAO.getCursor(groups);
+		cursorString = SurveyDAO.getCursor(groups);
 		if (groups != null) {
 			for (Survey s : groups) {
 				SurveyDto dto = new SurveyDto();
