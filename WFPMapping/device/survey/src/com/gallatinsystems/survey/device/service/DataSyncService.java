@@ -107,7 +107,9 @@ public class DataSyncService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
-		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
+		Thread
+				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+						.getInstance());
 		props = PropertyUtil.loadProperties(getResources());
 	}
 
@@ -241,6 +243,8 @@ public class DataSyncService extends Service {
 			tickerText = getResources().getText(R.string.exportcomplete);
 		} else if (ConstantUtil.PROGRESS.equals(type)) {
 			tickerText = getResources().getText(R.string.uploadprogress);
+		} else if (ConstantUtil.FILE_COMPLETE.equals(type)) {
+			tickerText = getResources().getText(R.string.filecomplete);
 		} else {
 			tickerText = getResources().getText(R.string.nothingtoexport);
 		}
@@ -338,7 +342,7 @@ public class DataSyncService extends Service {
 										+ e.getMessage());
 							}
 						}
-					}			
+					}
 					Log.i(TAG, "Closed zip output stream for file: " + fileName
 							+ ". Checksum: "
 							+ checkedOutStream.getChecksum().getValue());
@@ -571,6 +575,13 @@ public class DataSyncService extends Service {
 			String policy, String sig, String contentType) {
 
 		try {
+			String fileName = fileAbsolutePath;
+			if (fileName.contains(File.separator)) {
+				fileName = fileName.substring(fileName
+						.lastIndexOf(File.separator));
+			}
+			fireNotification(ConstantUtil.PROGRESS, fileName);
+
 			HttpURLConnection conn = MultipartStream.createConnection(new URL(
 					props.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
 			MultipartStream stream = new MultipartStream(conn.getOutputStream());
@@ -590,12 +601,7 @@ public class DataSyncService extends Service {
 				Log.e(TAG, "Server returned a bad code after upload: " + code);
 				return false;
 			} else {
-				String fileName = fileAbsolutePath;
-				if (fileName.contains(File.separator)) {
-					fileName = fileName.substring(fileName
-							.lastIndexOf(File.separator));
-				}
-				fireNotification(ConstantUtil.PROGRESS, fileName);
+				fireNotification(ConstantUtil.FILE_COMPLETE, fileName);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send upload" + e.getMessage(), e);

@@ -31,6 +31,7 @@
 	<string name="exportcomplete">Data has been exported to SD card</string>
 	<string name="uploadcomplete">All data has been sent to the server</string>
 	<string name="uploadprogress">Sending data to server</string>
+	<string name="filecomplete">File uploaded successfully</string>
 	<string name="nothingtoexport">There is no unsent data</string>
 	<string name="prefoptlabel">Preferences</string>
 	<string name="prefoptdesc">Set default survey language and other preference data</string>
@@ -166,5 +167,5 @@
 	<string name="bootstrapstart">Loading survey data from SD card</string>
 	<string name="bootstrapcomplete">Done loading data from SD card</string>	
 	<string name="bootstraperror">Error processing bootstrap zip file</string>
-	<string name="appversion">1.3.3</string>	
+	<string name="appversion">1.3.4</string>	
 </resources>

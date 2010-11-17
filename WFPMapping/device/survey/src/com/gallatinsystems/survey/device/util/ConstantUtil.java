@@ -130,6 +130,7 @@ public class ConstantUtil {
 	 * notification types
 	 */
 	public static final String PROGRESS = "PROGRESS";
+	public static final String FILE_COMPLETE= "FILE_COMPLETE";
 
 	/**
 	 * keys for saved state and bundle extras
