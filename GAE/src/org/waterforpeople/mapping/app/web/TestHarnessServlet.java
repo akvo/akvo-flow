@@ -773,14 +773,13 @@ public class TestHarnessServlet extends HttpServlet {
 
 			sg.setKey(KeyFactory.createKey(SurveyGroup.class.getSimpleName(),
 					2L));
-			sg.setName("test"+new Date());
-			sg.setCode("test"+new Date());
+			sg.setName("test" + new Date());
+			sg.setCode("test" + new Date());
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			sgDao.save(sg);
 			Survey s = new Survey();
-			s.setKey(KeyFactory.createKey(Survey.class.getSimpleName(),
-					2L));
-			s.setName("test"+new Date());
+			s.setKey(KeyFactory.createKey(Survey.class.getSimpleName(), 2L));
+			s.setName("test" + new Date());
 			s.setSurveyGroupId(sg.getKey().getId());
 			SurveyDAO surveyDao = new SurveyDAO();
 			surveyDao.save(s);
@@ -913,14 +912,36 @@ public class TestHarnessServlet extends HttpServlet {
 					e1.printStackTrace();
 				}
 			}
-		}else if ("importallsurveys".equals(action)){
-			//Only run in dev hence hardcoding
-			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			//sri.executeImport("http://watermapmonitordev.appspot.com", "http://localhost:8888");
-			sri.executeImport("http://localhost:8888", "http://localhost:8888");
+		} else if ("importallsurveys".equals(action)) {
+			QuestionDao qDao = new QuestionDao();
+			QuestionOptionDao qoDao = new QuestionOptionDao();
+			QuestionHelpMediaDao qhDao = new QuestionHelpMediaDao();
+			TranslationDao tDao = new TranslationDao();
+			for(Translation t:tDao.list("all"))
+				tDao.delete(t);
 			
-		}
-		else if ("deleteSurveyResponses".equals(action)) {
+			for(QuestionHelpMedia qh:qhDao.list("all"))
+				qhDao.delete(qh);
+			
+			for (QuestionOption qo : qoDao.list("all"))
+				qoDao.delete(qo);
+
+			for (Question q : qDao.list("all")) {
+				try {
+					qDao.delete(q);
+				} catch (IllegalDeletionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			// Only run in dev hence hardcoding
+			SurveyReplicationImporter sri = new SurveyReplicationImporter();
+			sri.executeImport("http://watermapmonitordev.appspot.com",
+					"http://localhost:8888");
+			// sri.executeImport("http://localhost:8888",
+			// "http://localhost:8888");
+
+		} else if ("deleteSurveyResponses".equals(action)) {
 			if (req.getParameter("surveyId") == null) {
 				try {
 					resp.getWriter()

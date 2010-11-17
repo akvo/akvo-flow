@@ -266,8 +266,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		if (questions != null) {
 			for (Question q : questions.values()) {
 				QuestionDto dto = new QuestionDto();
-				dto.setText(q.getText());
-				dto.setKeyId(q.getKey().getId());
+				DtoMarshaller.copyToDto(q, dto);
 				dtoList.add(dto);
 			}
 		}

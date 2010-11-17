@@ -16,7 +16,8 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 	private Long surveyId;
 	private Integer order;
 	private String path;
-
+	private String name;
+	
 	public Integer getOrder() {
 		return order;
 	}
@@ -79,5 +80,13 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 	@Override
 	public String getDisplayName() {
 		return getCode();
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

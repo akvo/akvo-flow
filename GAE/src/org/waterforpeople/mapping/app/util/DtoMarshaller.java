@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -55,8 +56,8 @@ public class DtoMarshaller {
 
 		TypeEnumConverter enumConverter = new TypeEnumConverter();
 		ConvertUtils.register(enumConverter, Question.Type.class);
-		ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);		
-
+		ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);	
+		
 	}
 
 }

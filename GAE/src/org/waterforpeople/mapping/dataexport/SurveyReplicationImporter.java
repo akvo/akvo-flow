@@ -25,7 +25,7 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyReplicationImporter implements DataImporter {
-	
+
 	@Override
 	public Map<Integer, String> validate(File file) {
 		// TODO Auto-generated method stub
@@ -43,8 +43,6 @@ public class SurveyReplicationImporter implements DataImporter {
 	 */
 	public static void main(String[] args) {
 		SurveyReplicationImporter sri = new SurveyReplicationImporter();
-		sri.executeImport("localhost:8888", "watermapmonitordev.appspot.com");
-
 	}
 
 	@Override
@@ -53,15 +51,17 @@ public class SurveyReplicationImporter implements DataImporter {
 		SurveyDAO sDao = new SurveyDAO();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		QuestionDao qDao = new QuestionDao();
-		
+
 		try {
-			for(SurveyGroup sg:fetchSurveyGroups(sourceBase)){
+			for (SurveyGroup sg : fetchSurveyGroups(sourceBase)) {
 				sgDao.save(sg);
-				for(Survey s:fetchSurveys(sg.getKey().getId(),sourceBase)){
+				for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase)) {
 					sDao.save(s);
-					for(QuestionGroup qg:fetchQuestionGroups(s.getKey().getId(),sourceBase)){
+					for (QuestionGroup qg : fetchQuestionGroups(s.getKey()
+							.getId(), sourceBase)) {
 						qgDao.save(qg);
-						for(Question q:fetchQuestions(qg.getKey().getId(),sourceBase)){
+						for (Question q : fetchQuestions(qg.getKey().getId(),
+								sourceBase)) {
 							qDao.save(q);
 						}
 					}
@@ -102,13 +102,34 @@ public class SurveyReplicationImporter implements DataImporter {
 		List<QuestionDto> qgDtoList = BulkDataServiceClient.fetchQuestions(
 				serverBase, questionGroupId);
 		List<Question> qgList = new ArrayList<Question>();
-		return copyAndCreateList(qgList, qgDtoList, new Question());
+		for(QuestionDto dto:qgDtoList){
+			QuestionDto dtoDetail = (QuestionDto) BulkDataServiceClient.fetchQuestions(serverBase, dto.getQuestionGroupId());
+			Object type = dtoDetail.getType();
+		}
+		//return copyAndCreateList(qgList, qgDtoList, new Question());
+		return null;
 	}
 
 	public static <T extends BaseDomain, U extends BaseDto> List<T> copyAndCreateList(
 			List<T> canonicalList, List<U> dtoList, T canonical) {
+		String surveyDtoStatus = null;
 		for (U dto : dtoList) {
+			if (dto instanceof SurveyDto) {
+				surveyDtoStatus = ((SurveyDto) dto).getStatus();
+				((SurveyDto)dto).setStatus(null);
+			}
 			DtoMarshaller.copyToCanonical(canonical, dto);
+			if (canonical instanceof Survey) {
+				if (surveyDtoStatus.equals(Survey.Status.IMPORTED)) {
+					((Survey) canonical).setStatus(Survey.Status.IMPORTED);
+				}else if(surveyDtoStatus.equals(Survey.Status.NOT_PUBLISHED)){
+					((Survey) canonical).setStatus(Survey.Status.NOT_PUBLISHED);
+				}else if(surveyDtoStatus.equals(Survey.Status.PUBLISHED)){
+					((Survey) canonical).setStatus(Survey.Status.PUBLISHED);
+				}else if(surveyDtoStatus.equals(Survey.Status.VERIFIED)){
+					((Survey) canonical).setStatus(Survey.Status.VERIFIED);
+				}
+			}
 			canonicalList.add(canonical);
 		}
 		return canonicalList;

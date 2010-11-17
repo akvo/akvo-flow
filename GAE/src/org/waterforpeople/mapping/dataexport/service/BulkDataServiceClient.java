@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
+
+import com.gallatinsystems.survey.domain.Survey;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -256,11 +259,12 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<SurveyDto> fetchSurveys(Long surveyGroupId,String serverBase)
-			throws Exception {
+	public static List<SurveyDto> fetchSurveys(Long surveyGroupId,
+			String serverBase) throws Exception {
 		return parseSurveys(fetchDataFromServer(serverBase
 				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_SURVEYS_ACTION
-				+ "&" + SurveyRestRequest.SURVEY_GROUP_ID_PARAM+"="+surveyGroupId));
+				+ "&" + SurveyRestRequest.SURVEY_GROUP_ID_PARAM + "="
+				+ surveyGroupId));
 	}
 
 	/**
@@ -324,6 +328,22 @@ public class BulkDataServiceClient {
 						if (json.has("keyId")) {
 							dto.setKeyId(json.getLong("keyId"));
 						}
+						if (json.has("displayName")) {
+							dto.setName(json.getString("displayName"));
+						}
+						if (json.has("description")) {
+							dto.setDescription(json.getString("description"));
+						}
+						if (json.has("order")) {
+							dto.setOrder(json.getInt("order"));
+						}
+						if (json.has("path")) {
+							dto.setPath(json.getString("path"));
+						}
+						if (json.has("surveyId")) {
+							dto.setSurveyId(json.getLong("surveyId"));
+						}
+
 						dtoList.add(dto);
 					} catch (Exception e) {
 						System.out.println("Error in json parsing: " + e);
@@ -357,6 +377,12 @@ public class BulkDataServiceClient {
 						}
 						if (json.has("keyId")) {
 							dto.setKeyId(json.getLong("keyId"));
+						}
+						if (json.has("displayName")) {
+							dto.setName(json.getString("displayName"));
+						}
+						if (json.has("description")) {
+							dto.setDescription(json.getString("description"));
 						}
 						dtoList.add(dto);
 					} catch (Exception e) {
@@ -392,6 +418,24 @@ public class BulkDataServiceClient {
 						if (json.has("keyId")) {
 							dto.setKeyId(json.getLong("keyId"));
 						}
+						if (json.has("name")) {
+							dto.setName(json.getString("name"));
+						}
+						if (json.has("description")) {
+							dto.setDescription(json.getString("description"));
+						}
+						if (json.has("status")) {
+							dto.setStatus(json.getString("status"));
+						}
+						if (json.has("path")) {
+							dto.setPath(json.getString("path"));
+						}
+						if (json.has("surveyGroupId")) {
+							dto.setSurveyGroupId(json.getLong("surveyGroupId"));
+						}
+						if (json.has("version")) {
+							dto.setVersion(json.getString("version"));
+						}
 						dtoList.add(dto);
 					} catch (Exception e) {
 						System.out.println("Error in json parsing: " + e);
@@ -420,6 +464,19 @@ public class BulkDataServiceClient {
 				if (json != null) {
 					QuestionDto dto = new QuestionDto();
 					try {
+						if (json.has("surveyId")) {
+							if (json.getString("surveyId") != null) {
+								String numberC = json.getString("surveyId");
+								try {
+									dto.setSurveyId(Long.parseLong(numberC));
+								} catch (NumberFormatException nex) {
+									dto.setSurveyId(null);
+								}
+							}
+						}
+						if (json.has("path")) {
+							dto.setPath(json.getString("path"));
+						}
 						if (json.has("text")) {
 							dto.setText(json.getString("text"));
 						}
@@ -431,6 +488,9 @@ public class BulkDataServiceClient {
 										.get("translationMap"))) {
 							dto.setTranslationMap(parseTranslations(json
 									.getJSONObject("translationMap")));
+						}
+						if(json.has("type") && json.getString("type")!=null){
+							dto.setType(QuestionDto.QuestionType.valueOf(json.getString("type")));
 						}
 						if (json.has("optionContainerDto")
 								&& !JSONObject.NULL.equals(json
