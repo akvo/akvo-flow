@@ -475,6 +475,15 @@ public class BulkDataServiceClient {
 									}
 								}
 							}
+							if(json.has("order")){
+								dto.setOrder(json.getInt("order"));
+							}
+							if(json.has("questionGroupId")){
+								dto.setQuestionGroupId(json.getLong("questionGroupId"));
+							}
+							if(json.has("tip")){
+								dto.setTip(json.getString("tip"));
+							}
 							if (json.has("path")) {
 								dto.setPath(json.getString("path"));
 							}
@@ -483,6 +492,12 @@ public class BulkDataServiceClient {
 							}
 							if (json.has("keyId")) {
 								dto.setKeyId(json.getLong("keyId"));
+							}
+							if(json.has("mandatoryFlag")){
+								dto.setMandatoryFlag(json.getBoolean("mandatoryFlag"));
+							}
+							if(json.has("validationRule")){
+								dto.setValidationRule(json.getString("validationRule"));
 							}
 							if (json.has("translationMap")
 									&& !JSONObject.NULL.equals(json
@@ -495,6 +510,7 @@ public class BulkDataServiceClient {
 								dto.setType(QuestionDto.QuestionType.valueOf(json
 										.getString("questionTypeString")));
 							}
+							
 							if (json.has("optionContainerDto")
 									&& !JSONObject.NULL.equals(json
 											.get("optionContainerDto"))) {

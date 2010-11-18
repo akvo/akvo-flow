@@ -54,14 +54,18 @@ public class SurveyReplicationImporter implements DataImporter {
 
 		try {
 			for (SurveyGroup sg : fetchSurveyGroups(sourceBase)) {
+				System.out.println("surveygroup: " + sg.getName()+":"+sg.getCode());
 				sgDao.save(sg);
 				for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase)) {
+					System.out.println("  survey:" + s.getCode());
 					sDao.save(s);
 					for (QuestionGroup qg : fetchQuestionGroups(s.getKey()
 							.getId(), sourceBase)) {
+						System.out.println("     qg:" + qg.getCode());
 						qgDao.save(qg);
 						for (Question q : fetchQuestions(qg.getKey().getId(),
 								sourceBase)) {
+							System.out.println("       q"+q.getText());
 							qDao.save(q);
 						}
 					}
@@ -78,7 +82,7 @@ public class SurveyReplicationImporter implements DataImporter {
 		List<SurveyGroupDto> sgDtoList = BulkDataServiceClient
 				.fetchSurveyGroups(serverBase);
 		List<SurveyGroup> sgList = new ArrayList<SurveyGroup>();
-		return copyAndCreateList(sgList, sgDtoList, new SurveyGroup());
+		return copyAndCreateList(sgList, sgDtoList,SurveyGroup.class);
 	}
 
 	public List<Survey> fetchSurveys(Long surveyGroupId, String serverBase)
@@ -86,7 +90,7 @@ public class SurveyReplicationImporter implements DataImporter {
 		List<SurveyDto> surveyDtoList = BulkDataServiceClient.fetchSurveys(
 				surveyGroupId, serverBase);
 		List<Survey> surveyList = new ArrayList<Survey>();
-		return copyAndCreateList(surveyList, surveyDtoList, new Survey());
+		return copyAndCreateList(surveyList, surveyDtoList, Survey.class);
 	}
 
 	public List<QuestionGroup> fetchQuestionGroups(Long surveyId,
@@ -94,7 +98,7 @@ public class SurveyReplicationImporter implements DataImporter {
 		List<QuestionGroupDto> qgDtoList = BulkDataServiceClient
 				.fetchQuestionGroups(serverBase, surveyId.toString());
 		List<QuestionGroup> qgList = new ArrayList<QuestionGroup>();
-		return copyAndCreateList(qgList, qgDtoList, new QuestionGroup());
+		return copyAndCreateList(qgList, qgDtoList, QuestionGroup.class);
 	}
 
 	public List<Question> fetchQuestions(Long questionGroupId, String serverBase)
@@ -107,13 +111,24 @@ public class SurveyReplicationImporter implements DataImporter {
 			QuestionDto dtoDetail = (QuestionDto) BulkDataServiceClient.fetchQuestions(serverBase, dto.getQuestionGroupId());
 			qgDtoDetailList.add(dtoDetail);
 		}**/
-		return copyAndCreateList(qgList, qgDtoList, new Question());
+		return copyAndCreateList(qgList, qgDtoList, Question.class);
 	}
 
 	public static <T extends BaseDomain, U extends BaseDto> List<T> copyAndCreateList(
-			List<T> canonicalList, List<U> dtoList, T canonical) {
+			List<T> canonicalList, List<U> dtoList, Class<T> clazz) {
 		String surveyDtoStatus = null;
+		
 		for (U dto : dtoList) {
+			T canonical=null;
+			try {
+				canonical = clazz.newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if (dto instanceof SurveyDto) {
 				surveyDtoStatus = ((SurveyDto) dto).getStatus();
 				((SurveyDto)dto).setStatus(null);
