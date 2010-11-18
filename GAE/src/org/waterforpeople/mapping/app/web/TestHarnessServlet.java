@@ -913,27 +913,6 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 			}
 		} else if ("importallsurveys".equals(action)) {
-			QuestionDao qDao = new QuestionDao();
-			QuestionOptionDao qoDao = new QuestionOptionDao();
-			QuestionHelpMediaDao qhDao = new QuestionHelpMediaDao();
-			TranslationDao tDao = new TranslationDao();
-			for(Translation t:tDao.list("all"))
-				tDao.delete(t);
-			
-			for(QuestionHelpMedia qh:qhDao.list("all"))
-				qhDao.delete(qh);
-			
-			for (QuestionOption qo : qoDao.list("all"))
-				qoDao.delete(qo);
-
-			for (Question q : qDao.list("all")) {
-				try {
-					qDao.delete(q);
-				} catch (IllegalDeletionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 			// Only run in dev hence hardcoding
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
 			sri.executeImport("http://watermapmonitordev.appspot.com",

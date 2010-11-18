@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.dataexport;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,8 @@ public class SurveyReplicationImporter implements DataImporter {
 
 		try {
 			for (SurveyGroup sg : fetchSurveyGroups(sourceBase)) {
-				System.out.println("surveygroup: " + sg.getName()+":"+sg.getCode());
+				System.out.println("surveygroup: " + sg.getName() + ":"
+						+ sg.getCode());
 				sgDao.save(sg);
 				for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase)) {
 					System.out.println("  survey:" + s.getCode());
@@ -66,7 +68,7 @@ public class SurveyReplicationImporter implements DataImporter {
 						qgDao.save(qg);
 						for (Question q : fetchQuestions(qg.getKey().getId(),
 								sourceBase)) {
-							System.out.println("       q"+q.getText());
+							System.out.println("       q" + q.getText());
 							qDao.save(q, qg.getKey().getId());
 						}
 					}
@@ -83,7 +85,7 @@ public class SurveyReplicationImporter implements DataImporter {
 		List<SurveyGroupDto> sgDtoList = BulkDataServiceClient
 				.fetchSurveyGroups(serverBase);
 		List<SurveyGroup> sgList = new ArrayList<SurveyGroup>();
-		return copyAndCreateList(sgList, sgDtoList,SurveyGroup.class);
+		return copyAndCreateList(sgList, sgDtoList, SurveyGroup.class);
 	}
 
 	public List<Survey> fetchSurveys(Long surveyGroupId, String serverBase)
@@ -109,9 +111,17 @@ public class SurveyReplicationImporter implements DataImporter {
 		List<Question> qList = new ArrayList<Question>();
 		List<QuestionDto> qDtoDetailList = new ArrayList<QuestionDto>();
 		SurveyServiceImpl ssi = new SurveyServiceImpl();
-		for(QuestionDto dto:qgDtoList){
-			QuestionDto dtoDetail = (QuestionDto) BulkDataServiceClient.loadQuestionDetails(serverBase, dto.getKeyId());
-			//qgDtoDetailList.add(dtoDetail);
+		for (QuestionDto dto : qgDtoList) {
+			QuestionDto dtoDetail = null;
+			for (int i = 0; i < 3; i++) {
+				try {
+					dtoDetail = (QuestionDto) BulkDataServiceClient
+							.loadQuestionDetails(serverBase, dto.getKeyId());
+					break;
+				} catch (IOException iex) {
+					System.out.print("Retrying because of timeout.");
+				}
+			}
 			Question q = ssi.marshalQuestion(dtoDetail);
 			qList.add(q);
 		}
@@ -121,9 +131,9 @@ public class SurveyReplicationImporter implements DataImporter {
 	public static <T extends BaseDomain, U extends BaseDto> List<T> copyAndCreateList(
 			List<T> canonicalList, List<U> dtoList, Class<T> clazz) {
 		String surveyDtoStatus = null;
-		
+
 		for (U dto : dtoList) {
-			T canonical=null;
+			T canonical = null;
 			try {
 				canonical = clazz.newInstance();
 			} catch (InstantiationException e) {
@@ -135,17 +145,17 @@ public class SurveyReplicationImporter implements DataImporter {
 			}
 			if (dto instanceof SurveyDto) {
 				surveyDtoStatus = ((SurveyDto) dto).getStatus();
-				((SurveyDto)dto).setStatus(null);
+				((SurveyDto) dto).setStatus(null);
 			}
 			DtoMarshaller.copyToCanonical(canonical, dto);
 			if (canonical instanceof Survey) {
 				if (surveyDtoStatus.equals(Survey.Status.IMPORTED)) {
 					((Survey) canonical).setStatus(Survey.Status.IMPORTED);
-				}else if(surveyDtoStatus.equals(Survey.Status.NOT_PUBLISHED)){
+				} else if (surveyDtoStatus.equals(Survey.Status.NOT_PUBLISHED)) {
 					((Survey) canonical).setStatus(Survey.Status.NOT_PUBLISHED);
-				}else if(surveyDtoStatus.equals(Survey.Status.PUBLISHED)){
+				} else if (surveyDtoStatus.equals(Survey.Status.PUBLISHED)) {
 					((Survey) canonical).setStatus(Survey.Status.PUBLISHED);
-				}else if(surveyDtoStatus.equals(Survey.Status.VERIFIED)){
+				} else if (surveyDtoStatus.equals(Survey.Status.VERIFIED)) {
 					((Survey) canonical).setStatus(Survey.Status.VERIFIED);
 				}
 			}

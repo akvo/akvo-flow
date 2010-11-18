@@ -1,11 +1,11 @@
 package org.waterforpeople.mapping.dataexport.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +26,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
-
-import com.gallatinsystems.survey.domain.Survey;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -142,16 +140,20 @@ public class BulkDataServiceClient {
 	 */
 	public static QuestionDto loadQuestionDetails(String serverBase,
 			Long questionId) throws Exception {
-		List<QuestionDto> dtoList = parseQuestions(fetchDataFromServer(serverBase
+
+		List<QuestionDto> dtoList = null;
+
+		dtoList = parseQuestions(fetchDataFromServer(serverBase
 				+ SURVEY_SERVLET_PATH
-				+ SurveyRestRequest.GET_QUESTION_DETAILS_ACTION
-				+ "&"
+				+ SurveyRestRequest.GET_QUESTION_DETAILS_ACTION + "&"
 				+ SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId));
+
 		if (dtoList != null && dtoList.size() > 0) {
 			return dtoList.get(0);
 		} else {
 			return null;
 		}
+
 	}
 
 	/**
@@ -475,12 +477,20 @@ public class BulkDataServiceClient {
 									}
 								}
 							}
+
+							if (json.has("mandatoryFlag")) {
+								if (json.getString("mandatoryFlag") != null)
+									dto.setMandatoryFlag(Boolean.parseBoolean(json
+											.getString("mandatoryFlag")));
+								else
+									dto.setMandatoryFlag(false);
+							}
 							if (json.has("allowMultipleFlag")) {
 								if (json.getString("allowMultipleFlag") != null)
 									dto.setAllowMultipleFlag(Boolean.parseBoolean(json
 											.getString("allowMultipleFlag")));
 								else
-									dto.setAllowMultipleFlag(null);
+									dto.setAllowMultipleFlag(false);
 							}
 							if (json.has("allowOtherFlag")) {
 								if (json.getString("allowOtherFlag") != null)
@@ -548,7 +558,8 @@ public class BulkDataServiceClient {
 													.getLong("keyId"));
 											opt.setText(optJson
 													.getString("text"));
-											opt.setOrder(optJson.getInt("order"));
+											opt.setOrder(optJson
+													.getInt("order"));
 											if (optJson.has("translationMap")
 													&& !JSONObject.NULL
 															.equals(optJson
