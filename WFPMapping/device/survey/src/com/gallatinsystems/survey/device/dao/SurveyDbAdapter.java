@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -12,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.gallatinsystems.survey.device.domain.FileTransmission;
 import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
@@ -66,6 +68,7 @@ public class SurveyDbAdapter {
 	public static final String INCLUDE_FLAG_COL = "include_flag";
 	public static final String SCORED_VAL_COL = "scored_val";
 	public static final String STRENGTH_COL = "strength";
+	public static final String TRANS_START_COL = "trans_start_date";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -92,6 +95,8 @@ public class SurveyDbAdapter {
 	private static final String PREFERENCES_TABLE_CREATE = "create table preferences (key text primary key, value text);";
 
 	private static final String POINT_OF_INTEREST_TABLE_CREATE = "create table point_of_interest (_id integer primary key, country text, display_name text, lat real, lon real, property_names text, property_values text, type text, updated_date integer);";
+
+	private static final String TRANSMISSION_HISTORY_TABLE_CREATE = "create table transmission_history (_id integer primary key, survey_respondent_id integer not null, status text, filename text, trans_start_date long, delivered_date long);";
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
 			"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
@@ -125,12 +130,13 @@ public class SurveyDbAdapter {
 	private static final String PLOT_POINT_TABLE = "plot_point";
 	private static final String PREFERENCES_TABLE = "preferences";
 	private static final String POINT_OF_INTEREST_TABLE = "point_of_interest";
+	private static final String TRANSMISSION_HISTORY_TABLE = "transmission_history";
 
 	private static final String RESPONSE_JOIN = "survey_respondent LEFT OUTER JOIN survey_response ON (survey_respondent._id = survey_response.survey_respondent_id) LEFT OUTER JOIN user ON (user._id = survey_respondent.user_id)";
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 57;
+	private static final int DATABASE_VERSION = 58;
 
 	private final Context context;
 
@@ -143,6 +149,9 @@ public class SurveyDbAdapter {
 	 * 
 	 */
 	static class DatabaseHelper extends SQLiteOpenHelper {
+
+		private static SQLiteDatabase database;
+		private volatile static int instanceCount = 0;
 
 		DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -168,7 +177,7 @@ public class SurveyDbAdapter {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion);
 
-			if (oldVersion < 56) {
+			if (oldVersion < 57) {
 				db.execSQL("DROP TABLE IF EXISTS " + RESPONSE_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + RESPONDENT_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
@@ -180,13 +189,31 @@ public class SurveyDbAdapter {
 				onCreate(db);
 			} else {
 				try {
-					db
-							.execSQL("ALTER TABLE survey_response ADD COLUMN strength text");
+					// just add the changes made in version 58
+					db.execSQL(TRANSMISSION_HISTORY_TABLE_CREATE);
 				} catch (Exception e) {
 					// swallow since this fails if the update is already applied
 				}
 			}
 
+		}
+
+		@Override
+		public synchronized SQLiteDatabase getWritableDatabase() {
+			if (database == null) {
+				database = super.getWritableDatabase();
+			}
+			instanceCount++;
+			return database;
+		}
+
+		@Override
+		public synchronized void close() {
+			instanceCount--;
+			if (instanceCount <= 0) {
+				super.close();
+				database = null;
+			}
 		}
 	}
 
@@ -960,6 +987,17 @@ public class SurveyDbAdapter {
 	}
 
 	/**
+	 * deletes the respondent record and any responses it contains
+	 * 
+	 * @param respondentId
+	 */
+	public void deleteRespondent(String respondentId) {
+		deleteResponses(respondentId);
+		database.delete(RESPONDENT_TABLE, PK_ID_COL + "=?",
+				new String[] { respondentId });
+	}
+
+	/**
 	 * deletes a single response
 	 * 
 	 * @param respondentId
@@ -1085,6 +1123,135 @@ public class SurveyDbAdapter {
 			cursor.close();
 		}
 		return points;
+	}
+
+	/**
+	 * inserts a transmissionHistory row into the db
+	 * 
+	 * @param respId
+	 * @param fileName
+	 * @return
+	 */
+	public Long createTransmissionHistory(Long respId, String fileName,
+			String status) {
+		ContentValues initialValues = new ContentValues();
+		Long idVal = null;
+		initialValues.put(SURVEY_RESPONDENT_ID_COL, respId);
+		initialValues.put(FILENAME_COL, fileName);
+
+		if (status != null) {
+			initialValues.put(STATUS_COL, status);
+			if (ConstantUtil.IN_PROGRESS_STATUS.equals(status)) {
+				initialValues.put(TRANS_START_COL, System.currentTimeMillis());
+			}
+		} else {
+			initialValues.put(TRANS_START_COL, (Long) null);
+			initialValues.put(STATUS_COL, ConstantUtil.QUEUED_STATUS);
+		}
+		idVal = database
+				.insert(TRANSMISSION_HISTORY_TABLE, null, initialValues);
+		return idVal;
+	}
+
+	/**
+	 * updates the transmisson history record with the status passed in. If the
+	 * status == Completed, the completion date is updated.
+	 * 
+	 * @param respondId
+	 * @param fileName
+	 * @param status
+	 */
+	public void updateTransmissionHistory(Long respondId, String fileName,
+			String status) {
+		ArrayList<FileTransmission> transList = listFileTransmission(respondId,
+				fileName, true);
+		Long idVal = null;
+		if (transList != null && transList.size() > 0) {
+			idVal = transList.get(0).getId();
+			if (idVal != null) {
+				ContentValues vals = new ContentValues();
+				vals.put(STATUS_COL, status);
+				if (ConstantUtil.COMPLETE_STATUS.equals(status)) {
+					vals.put(DELIVERED_DATE_COL, System.currentTimeMillis()
+							+ "");
+				} else if (ConstantUtil.IN_PROGRESS_STATUS.equals(status)) {
+					vals.put(TRANS_START_COL, System.currentTimeMillis() + "");
+				}
+				database.update(TRANSMISSION_HISTORY_TABLE, vals, PK_ID_COL
+						+ " = ?", new String[] { idVal.toString() });
+			}
+		}
+	}
+
+	/**
+	 * lists all the file transmissions for the values passed in.
+	 * 
+	 * @param respondentId
+	 *            - MANDATORY id of the survey respondent
+	 * @param fileName
+	 *            - OPTIONAL file name
+	 * @param incompleteOnly
+	 *            - if true, only rows without a complete status will be
+	 *            returned
+	 * @return
+	 */
+	public ArrayList<FileTransmission> listFileTransmission(Long respondentId,
+			String fileName, boolean incompleteOnly) {
+		ArrayList<FileTransmission> transList = null;
+
+		String whereClause = SURVEY_RESPONDENT_ID_COL + "=?";
+		if (incompleteOnly) {
+			whereClause = whereClause + " AND " + STATUS_COL + " <> '"
+					+ ConstantUtil.COMPLETE_STATUS + "'";
+		}
+		String[] whereValues = null;
+
+		if (fileName != null && fileName.trim().length() > 0) {
+			whereClause = whereClause + " AND " + FILENAME_COL + " = ?";
+			whereValues = new String[2];
+			whereValues[0] = respondentId.toString();
+			whereValues[1] = fileName;
+
+		} else {
+			whereValues = new String[] { respondentId.toString()};
+		}
+		
+		Cursor cursor = database.query(TRANSMISSION_HISTORY_TABLE,
+				new String[] { PK_ID_COL, FILENAME_COL, STATUS_COL,
+						TRANS_START_COL, DELIVERED_DATE_COL, SURVEY_RESPONDENT_ID_COL
+						 }, whereClause, whereValues,
+				null, null, TRANS_START_COL + " desc");
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+
+				cursor.moveToFirst();
+				transList = new ArrayList<FileTransmission>();
+				do {
+					FileTransmission trans = new FileTransmission();
+					trans.setId(cursor.getLong(cursor
+							.getColumnIndexOrThrow(PK_ID_COL)));
+					trans.setRespondentId(respondentId);
+					trans.setFileName(cursor.getString(cursor
+							.getColumnIndexOrThrow(FILENAME_COL)));
+					Long startDateMillis = cursor.getLong(cursor
+							.getColumnIndexOrThrow(TRANS_START_COL));
+					if (startDateMillis != null && startDateMillis > 0) {
+						trans.setStartDate(new Date(startDateMillis));
+					}
+					Long delivDateMillis = cursor.getLong(cursor
+							.getColumnIndexOrThrow(DELIVERED_DATE_COL));
+					if (delivDateMillis != null && delivDateMillis > 0) {
+						trans.setEndDate(new Date(delivDateMillis));
+					}
+					trans.setStatus(cursor.getString(cursor
+							.getColumnIndexOrThrow(STATUS_COL)));
+					transList.add(trans);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return transList;
 	}
 
 	/**

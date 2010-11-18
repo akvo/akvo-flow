@@ -42,6 +42,8 @@ public class ConstantUtil {
 	public static final String SENT_STATUS = "Sent";
 	public static final String RUNNING_STATUS = "Running";
 	public static final String IN_PROGRESS_STATUS = "In Progress";
+	public static final String QUEUED_STATUS = "Queued";
+	public static final String FAILED_STATUS= "Failed";
 
 	/**
 	 * deletion indicators

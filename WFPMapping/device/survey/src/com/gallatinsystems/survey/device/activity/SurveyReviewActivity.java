@@ -6,10 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,8 +35,11 @@ public class SurveyReviewActivity extends ListActivity {
 	private static final int SAVED_SURVEYS = 1;
 	private static final int SUBMITTED_SURVEYS = 2;
 	private static final int DELETE_ALL = 3;
+	private static final int DELETE_ONE = 4;
+	private static final int VIEW_HISTORY = 5;
 	private String currentStatusMode = ConstantUtil.SAVED_STATUS;
 	private TextView viewTypeLabel;
+	private Long selectedSurvey;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,7 @@ public class SurveyReviewActivity extends ListActivity {
 		viewTypeLabel = (TextView) findViewById(R.id.viewtypelabel);
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
+		registerForContextMenu(getListView());
 		getData();
 	}
 
@@ -76,6 +83,52 @@ public class SurveyReviewActivity extends ListActivity {
 		}
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View view,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, view, menuInfo);
+		selectedSurvey = getListAdapter().getItemId(
+				((AdapterView.AdapterContextMenuInfo) menuInfo).position);
+		menu.add(0, DELETE_ONE, 0, R.string.deletesurvey);
+		if (!ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
+			menu.add(0, VIEW_HISTORY, 1, R.string.transmissionhist);
+		}
+
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case DELETE_ONE:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.deleteonewarning).setCancelable(true)
+					.setPositiveButton(R.string.okbutton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									databaseAdapter
+											.deleteRespondent(selectedSurvey
+													.toString());
+									getData();
+								}
+							}).setNegativeButton(R.string.cancelbutton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			builder.show();
+			break;
+		case VIEW_HISTORY:
+			Intent i = new Intent(this, TransmissionHistoryActivity.class);
+			i.putExtra(ConstantUtil.RESPONDENT_ID_KEY, selectedSurvey);
+			startActivity(i);
+			break;
+		}
+		return true;
+	}
+
 	/**
 	 * presents the survey options menu when the user presses the menu key
 	 */
@@ -89,10 +142,12 @@ public class SurveyReviewActivity extends ListActivity {
 	}
 
 	/**
-	 * handles the menu actions
+	 * handles the menu actions. Use OptionsItemSelected instead of
+	 * onMenuItemSelected or else we'll intercept the calls to the context menu.
 	 */
 	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) {
+
 		switch (item.getItemId()) {
 		case SAVED_SURVEYS:
 			if (!ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {

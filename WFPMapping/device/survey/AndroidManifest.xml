@@ -25,6 +25,7 @@
 		<activity android:name=".activity.SurveyReviewActivity"/>
 		<activity android:name=".activity.WaterflowCalculatorActivity"/>
 		<activity android:name=".activity.PointOfInterestMapActivity"/>
+		<activity android:name=".activity.TransmissionHistoryActivity"/>
 
 		<service android:name=".service.DataSyncService" />
 		<service android:name=".service.SurveyDownloadService" />
@@ -33,6 +34,7 @@
 		<service android:name=".service.GeoTrackService" />
 		<service android:name=".service.PrecacheService" />
 		<service android:name=".service.BootstrapService" />
+		<service android:name=".service.ExceptionReportingService" />
 
 		<receiver android:name=".broadcast.BroadcastDispatcher" >
 			<intent-filter>

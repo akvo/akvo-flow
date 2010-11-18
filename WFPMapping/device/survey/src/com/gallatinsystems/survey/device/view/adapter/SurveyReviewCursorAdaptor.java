@@ -37,7 +37,7 @@ public class SurveyReviewCursorAdaptor extends CursorAdapter {
 		String status = "Sent: ";
 		long millis = cursor.getLong(cursor
 				.getColumnIndex(SurveyDbAdapter.DELIVERED_DATE_COL));
-		// if millis is long, that's because we haven't yet sent it
+		// if millis is 0, that's because we haven't yet sent it
 		if (millis == 0) {
 			status = "Submitted: ";
 			millis = cursor.getLong(cursor

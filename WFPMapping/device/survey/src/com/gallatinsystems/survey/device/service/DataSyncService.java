@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
@@ -160,32 +162,51 @@ public class DataSyncService extends Service {
 						checksum = idList[2].iterator().next();
 					}
 					if (ConstantUtil.SEND.equals(type)) {
-						sendFile(fileName, S3_DATA_FILE_PATH, props
-								.getProperty(ConstantUtil.DATA_S3_POLICY),
+						if (idList[0] != null) {
+							for (String id : idList[0]) {
+								databaseAdaptor.updateTransmissionHistory(
+										new Long(id), fileName,
+										ConstantUtil.IN_PROGRESS_STATUS);
+							}
+						}
+						boolean isOk = sendFile(fileName, S3_DATA_FILE_PATH,
+								props.getProperty(ConstantUtil.DATA_S3_POLICY),
 								props.getProperty(ConstantUtil.DATA_S3_SIG),
 								DATA_CONTENT_TYPE);
-						if (sendProcessingNotification(serverBase, destName,
-								checksum)) {
-							if (idList[0].size() > 0) {
-								databaseAdaptor
-										.markDataAsSent(
-												idList[0],
-												""
-														+ StatusUtil
-																.hasDataConnection(
-																		this,
-																		(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex)));
+						if (isOk) {
+							if (sendProcessingNotification(serverBase,
+									destName, checksum)) {
+								if (idList[0].size() > 0) {
+									databaseAdaptor
+											.markDataAsSent(
+													idList[0],
+													""
+															+ StatusUtil
+																	.hasDataConnection(
+																			this,
+																			(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex)));
+									// update the transmission history records
+									// too
+									for (String id : idList[0]) {
+										databaseAdaptor
+												.updateTransmissionHistory(
+														new Long(id),
+														fileName,
+														ConstantUtil.COMPLETE_STATUS);
+									}
+
+								}
+								if (idList[1].size() > 0) {
+									databaseAdaptor.updatePlotStatus(idList[1],
+											ConstantUtil.SENT_STATUS);
+								}
+								fireNotification(ConstantUtil.SEND, destName);
+							} else {
+								Log
+										.e(
+												TAG,
+												"Could not update send status of data in the database. It will be resent on next execution of the service");
 							}
-							if (idList[1].size() > 0) {
-								databaseAdaptor.updatePlotStatus(idList[1],
-										ConstantUtil.SENT_STATUS);
-							}
-							fireNotification(ConstantUtil.SEND, destName);
-						} else {
-							Log
-									.e(
-											TAG,
-											"Could not update send status of data in the database. It will be resent on next execution of the service");
 						}
 					} else {
 						fireNotification(ConstantUtil.EXPORT, destName);
@@ -264,7 +285,7 @@ public class DataSyncService extends Service {
 		idsToUpdate[1] = new HashSet<String>();
 		idsToUpdate[2] = new HashSet<String>();
 		StringBuilder surveyBuf = new StringBuilder();
-		ArrayList<String> imagePaths = new ArrayList<String>();
+		HashMap<String, ArrayList<String>> imagePaths = new HashMap<String, ArrayList<String>>();
 		StringBuilder regionBuf = new StringBuilder();
 		try {
 			// extract survey data
@@ -286,6 +307,10 @@ public class DataSyncService extends Service {
 				// write the survey data
 				if (idsToUpdate[0].size() > 0) {
 					writeTextToZip(zos, surveyBuf.toString(), SURVEY_DATA_FILE);
+					for (String id : idsToUpdate[0]) {
+						databaseAdaptor.createTransmissionHistory(new Long(id),
+								fileName, null);
+					}
 				}
 				if (idsToUpdate[1].size() > 0) {
 					writeTextToZip(zos, regionBuf.toString(), REGION_DATA_FILE);
@@ -294,52 +319,69 @@ public class DataSyncService extends Service {
 				// write images if enabled
 				if (!dataOnly) {
 					byte[] buffer = new byte[BUF_SIZE];
+					for (Entry<String, ArrayList<String>> paths : imagePaths
+							.entrySet()) {
 
-					for (int i = 0; i < imagePaths.size(); i++) {
-						if (INCLUDE_IMAGES_IN_ZIP) {
-							try {
-								BufferedInputStream bin = new BufferedInputStream(
-										new FileInputStream(imagePaths.get(i)));
-								String name = ZIP_IMAGE_DIR;
-								if (imagePaths.get(i).contains("/")) {
-									name = name
-											+ imagePaths
-													.get(i)
-													.substring(
-															imagePaths
-																	.get(i)
-																	.lastIndexOf(
-																			"/") + 1);
-								} else {
-									name = name + imagePaths.get(i);
+						for (int i = 0; i < paths.getValue().size(); i++) {
+							if (INCLUDE_IMAGES_IN_ZIP) {
+								try {
+									BufferedInputStream bin = new BufferedInputStream(
+											new FileInputStream(paths
+													.getValue().get(i)));
+									String name = ZIP_IMAGE_DIR;
+									if (imagePaths.get(i).contains("/")) {
+										name = name
+												+ paths
+														.getValue()
+														.get(i)
+														.substring(
+																paths
+																		.getValue()
+																		.get(i)
+																		.lastIndexOf(
+																				"/") + 1);
+									} else {
+										name = name + imagePaths.get(i);
+									}
+									zos.putNextEntry(new ZipEntry(name));
+									int bytesRead = bin.read(buffer);
+									while (bytesRead > 0) {
+										zos.write(buffer, 0, bytesRead);
+										bytesRead = bin.read(buffer);
+									}
+									bin.close();
+									zos.closeEntry();
+								} catch (Exception e) {
+									Log.e(TAG, "Could not add image "
+											+ imagePaths.get(i) + " to zip: "
+											+ e.getMessage());
 								}
-								zos.putNextEntry(new ZipEntry(name));
-								int bytesRead = bin.read(buffer);
-								while (bytesRead > 0) {
-									zos.write(buffer, 0, bytesRead);
-									bytesRead = bin.read(buffer);
+							} else {
+								try {
+									databaseAdaptor.createTransmissionHistory(
+											new Long(paths.getKey()), paths
+													.getValue().get(i),
+											ConstantUtil.IN_PROGRESS_STATUS);
+									boolean isOk = sendFile(
+											paths.getValue().get(i),
+											S3_IMAGE_FILE_PATH,
+											props
+													.getProperty(ConstantUtil.IMAGE_S3_POLICY),
+											props
+													.getProperty(ConstantUtil.IMAGE_S3_SIG),
+											IMAGE_CONTENT_TYPE);
+									if(isOk){
+										databaseAdaptor.updateTransmissionHistory(new Long(paths.getKey()), paths
+													.getValue().get(i), ConstantUtil.COMPLETE_STATUS);
+									}else{
+										databaseAdaptor.updateTransmissionHistory(new Long(paths.getKey()), paths
+												.getValue().get(i), ConstantUtil.FAILED_STATUS);
+									}
+								} catch (Exception e) {
+									Log.e(TAG, "Could not add image "
+											+ imagePaths.get(i) + " to zip: "
+											+ e.getMessage());
 								}
-								bin.close();
-								zos.closeEntry();
-							} catch (Exception e) {
-								Log.e(TAG, "Could not add image "
-										+ imagePaths.get(i) + " to zip: "
-										+ e.getMessage());
-							}
-						} else {
-							try {
-								sendFile(
-										imagePaths.get(i),
-										S3_IMAGE_FILE_PATH,
-										props
-												.getProperty(ConstantUtil.IMAGE_S3_POLICY),
-										props
-												.getProperty(ConstantUtil.IMAGE_S3_SIG),
-										IMAGE_CONTENT_TYPE);
-							} catch (Exception e) {
-								Log.e(TAG, "Could not add image "
-										+ imagePaths.get(i) + " to zip: "
-										+ e.getMessage());
 							}
 						}
 					}
@@ -377,7 +419,7 @@ public class DataSyncService extends Service {
 			int size = i + BUF_SIZE < text.getBytes().length ? BUF_SIZE : text
 					.getBytes().length
 					- i;
-			text.getBytes(i, i + size, buffer, 0);
+			text.getBytes(i, i + size - 1, buffer, 0);
 			zos.write(buffer, 0, size);
 		}
 		zos.closeEntry();
@@ -469,7 +511,8 @@ public class DataSyncService extends Service {
 	 *            respondents
 	 */
 	private void processSurveyData(StringBuilder buf,
-			ArrayList<String> imagePaths, HashSet<String> respondentIds) {
+			HashMap<String, ArrayList<String>> imagePaths,
+			HashSet<String> respondentIds) {
 		Cursor data = null;
 		try {
 			data = databaseAdaptor.fetchUnsentData();
@@ -547,12 +590,19 @@ public class DataSyncService extends Service {
 									.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL));
 					buf.append(",").append(strength != null ? strength : "");
 					buf.append("\n");
+
+					String respId = data.getString(data
+							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL));
 					if (ConstantUtil.IMAGE_RESPONSE_TYPE.equals(type)
 							|| ConstantUtil.VIDEO_RESPONSE_TYPE.equals(type)) {
-						imagePaths.add(value);
+						ArrayList<String> paths = imagePaths.get(respId);
+						if (paths == null) {
+							paths = new ArrayList<String>();
+							imagePaths.put(respId, paths);
+						}
+						paths.add(value);
 					}
-					respondentIds.add(data.getString(data
-							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
+					respondentIds.add(respId);
 				} while (data.moveToNext());
 			}
 		} catch (Exception e) {
@@ -575,6 +625,7 @@ public class DataSyncService extends Service {
 			String policy, String sig, String contentType) {
 
 		try {
+
 			String fileName = fileAbsolutePath;
 			if (fileName.contains(File.separator)) {
 				fileName = fileName.substring(fileName
@@ -605,6 +656,7 @@ public class DataSyncService extends Service {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send upload" + e.getMessage(), e);
+
 			PersistentUncaughtExceptionHandler.recordException(e);
 			return false;
 		}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" android:layout_height="wrap_content"
+	android:textSize="30dip">
+	<ImageView android:id="@+id/statusicon" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_alignParentLeft="true"
+		android:layout_marginLeft="5px" />
+	<TextView android:id="@+id/statustext" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@id/statusicon" />
+	<TextView android:id="@+id/filename" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_below="@id/statusicon"
+		android:layout_alignParentLeft="true" />
+	<TextView android:id="@+id/startdatelabel"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_below="@id/filename" android:layout_alignParentLeft="true"
+		android:text="@string/transstartdate" />
+	<TextView android:id="@+id/startdate" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@id/startdatelabel" android:layout_below="@id/filename"/>
+	<TextView android:id="@+id/enddatelabel" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_below="@id/startdatelabel"
+		android:layout_alignParentLeft="true" android:text="@string/transenddate" />
+	<TextView android:id="@+id/enddate" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@id/enddatelabel" android:layout_below="@id/startdate"/>
+</RelativeLayout>

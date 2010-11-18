@@ -128,7 +128,8 @@
 	<string name="downloadsurveyinstr">Enter the survey id you wish to download.</string>
 	<string name="deleteall">Delete all</string>
 	<string name="submittedsurveysmenu">Submitted Surveys</string>
-	<string name="deleteallwarning">This will delete all survey responses (saved AND submitted) on the device. Click OK to proceed or cancel to abort.</string>
+	<string name="deleteallwarning">This will permanently delete all survey responses (saved AND submitted) on the device. Click OK to proceed or cancel to abort.</string>
+	<string name="deleteonewarning">This will permanently delete this survey response. Click OK to proceed or cancel to abort.</string>
 	<string name="waterflowcalclabel">Waterflow Calculator</string>
 	<string name="calctext">Fill in any two values and click solve to calculate the third.</string>
 	<string name="dialabel">Diameter</string>
@@ -167,5 +168,8 @@
 	<string name="bootstrapstart">Loading survey data from SD card</string>
 	<string name="bootstrapcomplete">Done loading data from SD card</string>	
 	<string name="bootstraperror">Error processing bootstrap zip file</string>
-	<string name="appversion">1.3.4</string>	
+	<string name="transmissionhist">Transmission History</string>
+	<string name="transstartdate">Transmission Started:</string>
+	<string name="transenddate">Transmission Finished:</string>	
+	<string name="appversion">1.4.0</string>	
 </resources>
