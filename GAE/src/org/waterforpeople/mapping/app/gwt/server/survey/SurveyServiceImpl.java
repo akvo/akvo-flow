@@ -230,7 +230,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		qDto.setQuestionGroupId(q.getQuestionGroupId());
 		qDto.setPath(q.getPath());
 		qDto.setOrder(q.getOrder());
-
+		qDto.setSurveyId(q.getSurveyId());
 		if (q.getText() != null)
 			qDto.setText(q.getText());
 		if (q.getTip() != null)

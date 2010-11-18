@@ -24,6 +24,8 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private TreeMap<String, TranslationDto> translationMap;
 	private String path;
 	private Integer order;
+	private Boolean allowMultipleFlag = null;
+	private Boolean allowOtherFlag = null;
 
 	public String getPath() {
 		return path;
@@ -160,5 +162,21 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	@Override
 	public String getDisplayName() {
 		return getText();
+	}
+
+	public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
+		this.allowMultipleFlag = allowMultipleFlag;
+	}
+
+	public Boolean getAllowMultipleFlag() {
+		return allowMultipleFlag;
+	}
+
+	public void setAllowOtherFlag(Boolean allowOtherFlag) {
+		this.allowOtherFlag = allowOtherFlag;
+	}
+
+	public Boolean getAllowOtherFlag() {
+		return allowOtherFlag;
 	}
 }

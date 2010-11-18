@@ -475,13 +475,28 @@ public class BulkDataServiceClient {
 									}
 								}
 							}
-							if(json.has("order")){
+							if (json.has("allowMultipleFlag")) {
+								if (json.getString("allowMultipleFlag") != null)
+									dto.setAllowMultipleFlag(Boolean.parseBoolean(json
+											.getString("allowMultipleFlag")));
+								else
+									dto.setAllowMultipleFlag(null);
+							}
+							if (json.has("allowOtherFlag")) {
+								if (json.getString("allowOtherFlag") != null)
+									dto.setAllowOtherFlag(Boolean.parseBoolean(json
+											.getString("allowOtherFlag")));
+								else
+									dto.setAllowOtherFlag(null);
+							}
+							if (json.has("order")) {
 								dto.setOrder(json.getInt("order"));
 							}
-							if(json.has("questionGroupId")){
-								dto.setQuestionGroupId(json.getLong("questionGroupId"));
+							if (json.has("questionGroupId")) {
+								dto.setQuestionGroupId(json
+										.getLong("questionGroupId"));
 							}
-							if(json.has("tip")){
+							if (json.has("tip")) {
 								dto.setTip(json.getString("tip"));
 							}
 							if (json.has("path")) {
@@ -493,11 +508,13 @@ public class BulkDataServiceClient {
 							if (json.has("keyId")) {
 								dto.setKeyId(json.getLong("keyId"));
 							}
-							if(json.has("mandatoryFlag")){
-								dto.setMandatoryFlag(json.getBoolean("mandatoryFlag"));
+							if (json.has("mandatoryFlag")) {
+								dto.setMandatoryFlag(Boolean.parseBoolean(json
+										.getString("mandatoryFlag")));
 							}
-							if(json.has("validationRule")){
-								dto.setValidationRule(json.getString("validationRule"));
+							if (json.has("validationRule")) {
+								dto.setValidationRule(json
+										.getString("validationRule"));
 							}
 							if (json.has("translationMap")
 									&& !JSONObject.NULL.equals(json
@@ -510,46 +527,52 @@ public class BulkDataServiceClient {
 								dto.setType(QuestionDto.QuestionType.valueOf(json
 										.getString("questionTypeString")));
 							}
-							
+
 							if (json.has("optionContainerDto")
 									&& !JSONObject.NULL.equals(json
 											.get("optionContainerDto"))) {
 								OptionContainerDto container = new OptionContainerDto();
 								JSONObject contJson = json
 										.getJSONObject("optionContainerDto");
-								JSONArray optArray = contJson
-										.getJSONArray("optionsList");
-								if (optArray != null) {
-									for (int j = 0; j < optArray.length(); j++) {
-										JSONObject optJson = optArray
-												.getJSONObject(j);
-										QuestionOptionDto opt = new QuestionOptionDto();
-										opt.setKeyId(optJson.getLong("keyId"));
-										opt.setText(optJson.getString("text"));
-										if (optJson.has("translationMap")
-												&& !JSONObject.NULL
-														.equals(optJson
-																.get("translationMap"))) {
-											opt.setTranslationMap(parseTranslations(optJson
-													.getJSONObject("translationMap")));
+								if (contJson.has("optionsList")
+										&& !JSONObject.NULL.equals(contJson
+												.get("optionsList"))) {
+									JSONArray optArray = contJson
+											.getJSONArray("optionsList");
+									if (optArray != null) {
+										for (int j = 0; j < optArray.length(); j++) {
+											JSONObject optJson = optArray
+													.getJSONObject(j);
+											QuestionOptionDto opt = new QuestionOptionDto();
+											opt.setKeyId(optJson
+													.getLong("keyId"));
+											opt.setText(optJson
+													.getString("text"));
+											if (optJson.has("translationMap")
+													&& !JSONObject.NULL
+															.equals(optJson
+																	.get("translationMap"))) {
+												opt.setTranslationMap(parseTranslations(optJson
+														.getJSONObject("translationMap")));
+											}
+											container.addQuestionOption(opt);
 										}
-										container.addQuestionOption(opt);
 									}
+									dto.setOptionContainerDto(container);
 								}
-								dto.setOptionContainerDto(container);
+								if (json.has("questionDependency")
+										&& !JSONObject.NULL.equals(json
+												.get("questionDependency"))) {
+									QuestionDependencyDto dep = new QuestionDependencyDto();
+									JSONObject depJson = json
+											.getJSONObject("questionDependency");
+									dep.setQuestionId(depJson
+											.getLong("questionId"));
+									dep.setAnswerValue(depJson
+											.getString("answerValue"));
+									dto.setQuestionDependency(dep);
+								}
 							}
-							if (json.has("questionDependency")
-									&& !JSONObject.NULL.equals(json
-											.get("questionDependency"))) {
-								QuestionDependencyDto dep = new QuestionDependencyDto();
-								JSONObject depJson = json
-										.getJSONObject("questionDependency");
-								dep.setQuestionId(depJson.getLong("questionId"));
-								dep.setAnswerValue(depJson
-										.getString("answerValue"));
-								dto.setQuestionDependency(dep);
-							}
-
 							dtoList.add(dto);
 						} catch (Exception e) {
 							System.out.println("Error in json parsing: " + e);

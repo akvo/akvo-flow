@@ -107,10 +107,10 @@ public class SurveyReplicationImporter implements DataImporter {
 				serverBase, questionGroupId);
 		List<Question> qgList = new ArrayList<Question>();
 		List<QuestionDto> qgDtoDetailList = new ArrayList<QuestionDto>();
-		/**for(QuestionDto dto:qgDtoList){
-			QuestionDto dtoDetail = (QuestionDto) BulkDataServiceClient.fetchQuestions(serverBase, dto.getQuestionGroupId());
+		for(QuestionDto dto:qgDtoList){
+			QuestionDto dtoDetail = (QuestionDto) BulkDataServiceClient.loadQuestionDetails(serverBase, dto.getKeyId());
 			qgDtoDetailList.add(dtoDetail);
-		}**/
+		}
 		return copyAndCreateList(qgList, qgDtoList, Question.class);
 	}
 
