@@ -167,6 +167,7 @@ public class SurveyDbAdapter {
 			db.execSQL(PLOT_POINT_TABLE_CREATE);
 			db.execSQL(PREFERENCES_TABLE_CREATE);
 			db.execSQL(POINT_OF_INTEREST_TABLE_CREATE);
+			db.execSQL(TRANSMISSION_HISTORY_TABLE_CREATE);
 			for (int i = 0; i < DEFAULT_INSERTS.length; i++) {
 				db.execSQL(DEFAULT_INSERTS[i]);
 			}
@@ -186,6 +187,7 @@ public class SurveyDbAdapter {
 				db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
 			} else {
 				try {
