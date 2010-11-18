@@ -116,8 +116,19 @@ public class QuestionDao extends BaseDAO<Question> {
 					}
 				}
 				save(opt);
+				if(opt.getTranslationMap()!=null){
+					for(Translation t: opt.getTranslationMap().values())
+						save(t);
+				}
 			}
 		}
+		if(question.getTranslationMap()!=null){
+			for(Translation t: question.getTranslationMap().values()){
+				save(t);
+			}
+			
+		}
+		
 		if (question.getQuestionHelpMediaMap() != null) {
 			for (QuestionHelpMedia help : question.getQuestionHelpMediaMap()
 					.values()) {

@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -66,7 +67,7 @@ public class SurveyReplicationImporter implements DataImporter {
 						for (Question q : fetchQuestions(qg.getKey().getId(),
 								sourceBase)) {
 							System.out.println("       q"+q.getText());
-							qDao.save(q);
+							qDao.save(q, qg.getKey().getId());
 						}
 					}
 				}
@@ -105,13 +106,16 @@ public class SurveyReplicationImporter implements DataImporter {
 			throws Exception {
 		List<QuestionDto> qgDtoList = BulkDataServiceClient.fetchQuestions(
 				serverBase, questionGroupId);
-		List<Question> qgList = new ArrayList<Question>();
-		List<QuestionDto> qgDtoDetailList = new ArrayList<QuestionDto>();
+		List<Question> qList = new ArrayList<Question>();
+		List<QuestionDto> qDtoDetailList = new ArrayList<QuestionDto>();
+		SurveyServiceImpl ssi = new SurveyServiceImpl();
 		for(QuestionDto dto:qgDtoList){
 			QuestionDto dtoDetail = (QuestionDto) BulkDataServiceClient.loadQuestionDetails(serverBase, dto.getKeyId());
-			qgDtoDetailList.add(dtoDetail);
+			//qgDtoDetailList.add(dtoDetail);
+			Question q = ssi.marshalQuestion(dtoDetail);
+			qList.add(q);
 		}
-		return copyAndCreateList(qgList, qgDtoList, Question.class);
+		return qList;
 	}
 
 	public static <T extends BaseDomain, U extends BaseDto> List<T> copyAndCreateList(

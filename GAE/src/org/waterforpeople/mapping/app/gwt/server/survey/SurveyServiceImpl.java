@@ -3,16 +3,18 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -20,7 +22,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
@@ -304,18 +305,45 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return transMap;
 	}
 
-	private Question marshalQuestion(QuestionDto qdto) {
+	private static TreeMap<String, Translation> marshalFromDtoTranslations(
+			Map<String, TranslationDto> translationMap) {
+		TreeMap<String, Translation> transMap = null;
+		if (translationMap != null && translationMap.size() > 0) {
+			transMap = new TreeMap<String, Translation>();
+			for (TranslationDto trans : translationMap.values()) {
+				Translation t = new Translation();
+				if (trans.getKeyId() != null)
+					t.setKey((KeyFactory.createKey(
+							Translation.class.getSimpleName(), trans.getKeyId())));
+				t.setLanguageCode(trans.getLangCode());
+				t.setText(trans.getText());
+				t.setParentId(trans.getParentId());
+				if (trans.getParentType().equals(
+						Translation.ParentType.QUESTION_TEXT.toString()))
+					t.setParentType(ParentType.QUESTION_TEXT);
+				else if (trans.getParentType().equals(
+						Translation.ParentType.QUESTION_OPTION.toString()))
+					t.setParentType(ParentType.QUESTION_OPTION);
+
+				transMap.put(t.getLanguageCode(), t);
+			}
+		}
+		return transMap;
+	}
+
+	public Question marshalQuestion(QuestionDto qdto) {
 		Question q = new Question();
 		if (qdto.getKeyId() != null)
-			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(), qdto
-					.getKeyId())));
+			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(),
+					qdto.getKeyId())));
 
 		q.setQuestionGroupId(qdto.getQuestionGroupId());
 		q.setOrder(qdto.getOrder());
 		q.setPath(qdto.getPath());
 
-		if (qdto.getText() != null)
+		if (qdto.getText() != null) {
 			q.setText(qdto.getText());
+		}
 		if (qdto.getTip() != null)
 			q.setTip(qdto.getTip());
 		if (qdto.getType() != null)
@@ -352,13 +380,27 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (QuestionOptionDto qoDto : optionDtoList) {
 					QuestionOption oo = new QuestionOption();
 					if (qoDto.getKeyId() != null)
-						oo.setKey((KeyFactory.createKey(QuestionOption.class
-								.getSimpleName(), qoDto.getKeyId())));
+						oo.setKey((KeyFactory.createKey(
+								QuestionOption.class.getSimpleName(),
+								qoDto.getKeyId())));
 					if (qoDto.getCode() != null)
 						oo.setCode(qoDto.getCode());
 					if (qoDto.getText() != null)
 						oo.setText(qoDto.getText());
 					oo.setOrder(qoDto.getOrder());
+					// Hack
+					if (qoDto.getTranslationMap() != null) {
+						TreeMap<String, Translation> transTreeMap = SurveyServiceImpl
+								.marshalFromDtoTranslations(qoDto
+										.getTranslationMap());
+
+						HashMap<String, Translation> transMap = new HashMap<String, Translation>();
+						for (Map.Entry<String, Translation> entry : transTreeMap
+								.entrySet()) {
+							transMap.put(entry.getKey(), entry.getValue());
+						}
+						oo.setTranslationMap(transMap);
+					}
 					q.addQuestionOption(oo);
 				}
 			}
@@ -369,6 +411,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			q.setDependentQuestionAnswer(qdto.getQuestionDependency()
 					.getAnswerValue());
 			q.setDependentFlag(true);
+		}
+
+		if (qdto.getTranslationMap() != null) {
+			TreeMap<String, Translation> transMap = SurveyServiceImpl
+					.marshalFromDtoTranslations(qdto.getTranslationMap());
+			q.setTranslationMap(transMap);
 		}
 
 		return q;
@@ -461,7 +509,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		try {
 			questionDao.delete(canonical);
 		} catch (IllegalDeletionException e) {
-			
+
 			return e.getError();
 		}
 		return null;
@@ -490,19 +538,19 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId) {
-		Survey canonical = new Survey();		
+		Survey canonical = new Survey();
 		DtoMarshaller.copyToCanonical(canonical, surveyDto);
 		canonical.setStatus(Survey.Status.NOT_PUBLISHED);
-		SurveyDAO surveyDao  = new SurveyDAO();
-		if(canonical.getKey()!=null && canonical.getSurveyGroupId()==0){
-			//fetch record from db so we don't loose assoc
+		SurveyDAO surveyDao = new SurveyDAO();
+		if (canonical.getKey() != null && canonical.getSurveyGroupId() == 0) {
+			// fetch record from db so we don't loose assoc
 			Survey sTemp = surveyDao.getByKey(canonical.getKey());
 			canonical.setSurveyGroupId(sTemp.getSurveyGroupId());
 			canonical.setPath(sTemp.getPath());
 		}
 		canonical = surveyDao.save(canonical);
 		DtoMarshaller.copyToDto(canonical, surveyDto);
-	
+
 		return surveyDto;
 
 	}
@@ -730,8 +778,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		return null;
 	}
-	
-
 
 	@Override
 	public String deleteSurvey(SurveyDto value, Long surveyGroupId) {

@@ -548,6 +548,7 @@ public class BulkDataServiceClient {
 													.getLong("keyId"));
 											opt.setText(optJson
 													.getString("text"));
+											opt.setOrder(optJson.getInt("order"));
 											if (optJson.has("translationMap")
 													&& !JSONObject.NULL
 															.equals(optJson
@@ -597,6 +598,9 @@ public class BulkDataServiceClient {
 			JSONObject transObj = translationMapJson.getJSONObject(lang);
 			if (transObj != null) {
 				TranslationDto tDto = new TranslationDto();
+				tDto.setKeyId(transObj.getLong("keyId"));
+				tDto.setParentId(transObj.getLong(("parentId")));
+				tDto.setParentType(transObj.getString("parentType"));
 				tDto.setLangCode(lang);
 				tDto.setText(transObj.getString("text"));
 				translationMap.put(lang, tDto);
