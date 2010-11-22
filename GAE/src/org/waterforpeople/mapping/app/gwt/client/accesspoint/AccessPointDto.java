@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
 import java.util.Date;
 
+import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class AccessPointDto extends BaseDto {
@@ -40,6 +41,90 @@ public class AccessPointDto extends BaseDto {
 	private Boolean provideAdequateQuantity = null;
 	private Boolean hasSystemBeenDown1DayFlag = null;
 	private String smsCode;
+	private Boolean waterForPeopleProjectFlag = null;
+	private String accessPointCode = null;
+	private String locationTypeString = null;
+	private String waterForPeopleRole = null;
+	private String currentProblem = null;
+	private String currentTreatment = null;
+	private Boolean waterAvailableDayVisitFlag = null;
+	private Double ppmFecalColiform = null;
+	private String reasonForInadequateWaterSupply=null;
+	private String frequencyOfTariff=null;
+	private Double percentageOfUsersPaying = null;
+	
+	public String getLocationTypeString() {
+		return locationTypeString;
+	}
+
+	public void setLocationTypeString(String locationTypeString) {
+		this.locationTypeString = locationTypeString;
+	}
+
+	public String getWaterForPeopleRole() {
+		return waterForPeopleRole;
+	}
+
+	public void setWaterForPeopleRole(String waterForPeopleRole) {
+		this.waterForPeopleRole = waterForPeopleRole;
+	}
+
+	public String getCurrentProblem() {
+		return currentProblem;
+	}
+
+	public void setCurrentProblem(String currentProblem) {
+		this.currentProblem = currentProblem;
+	}
+
+	public String getCurrentTreatment() {
+		return currentTreatment;
+	}
+
+	public void setCurrentTreatment(String currentTreatment) {
+		this.currentTreatment = currentTreatment;
+	}
+
+	public Boolean getWaterAvailableDayVisitFlag() {
+		return waterAvailableDayVisitFlag;
+	}
+
+	public void setWaterAvailableDayVisitFlag(Boolean waterAvailableDayVisitFlag) {
+		this.waterAvailableDayVisitFlag = waterAvailableDayVisitFlag;
+	}
+
+	public Double getPpmFecalColiform() {
+		return ppmFecalColiform;
+	}
+
+	public void setPpmFecalColiform(Double ppmFecalColiform) {
+		this.ppmFecalColiform = ppmFecalColiform;
+	}
+
+	public String getReasonForInadequateWaterSupply() {
+		return reasonForInadequateWaterSupply;
+	}
+
+	public void setReasonForInadequateWaterSupply(
+			String reasonForInadequateWaterSupply) {
+		this.reasonForInadequateWaterSupply = reasonForInadequateWaterSupply;
+	}
+
+	public String getFrequencyOfTariff() {
+		return frequencyOfTariff;
+	}
+
+	public void setFrequencyOfTariff(String frequencyOfTariff) {
+		this.frequencyOfTariff = frequencyOfTariff;
+	}
+
+	public Double getPercentageOfUsersPaying() {
+		return percentageOfUsersPaying;
+	}
+
+	public void setPercentageOfUsersPaying(Double percentageOfUsersPaying) {
+		this.percentageOfUsersPaying = percentageOfUsersPaying;
+	}
 
 	public String getSmsCode() {
 		return smsCode;
@@ -368,5 +453,21 @@ public class AccessPointDto extends BaseDto {
 
 	public String getCommunityName() {
 		return communityName;
+	}
+
+	public void setWaterForPeopleProjectFlag(Boolean waterForPeopleProjectFlag) {
+		this.waterForPeopleProjectFlag = waterForPeopleProjectFlag;
+	}
+
+	public Boolean getWaterForPeopleProjectFlag() {
+		return waterForPeopleProjectFlag;
+	}
+
+	public void setAccessPointCode(String accessPointCode) {
+		this.accessPointCode = accessPointCode;
+	}
+
+	public String getAccessPointCode() {
+		return accessPointCode;
 	}
 }

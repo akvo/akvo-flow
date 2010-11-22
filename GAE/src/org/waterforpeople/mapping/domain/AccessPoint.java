@@ -19,12 +19,14 @@ import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	private static final long serialVersionUID = -7708214468114860788L;
-
+	
+	@MappableField(displayName = "SMS Identifier Code")
 	private String smsCode;
 
 	@MappableField(displayName = "Collection Date")
 	private Date collectionDate = null;
-
+	@MappableField(displayName = "Access Point Code")
+	private String accessPointCode = null;
 	@MappableField(displayName = "Latitude")
 	private Double latitude = 0.0;
 	@MappableField(displayName = "Longitude")
@@ -41,30 +43,45 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String balloonTitle = null;
 	@MappableField(displayName = "Region")
 	private String region;
+	@MappableField(displayName="URL of Photo")
 	private String photoURL = null;
+	@MappableField(displayName="Do Not Use = Type Technology")
 	@Persistent
 	private TechnologyType typeTechnology = null;
-
+	@MappableField(displayName="Do Not Use = Type Technology2")
 	private String technologyTypeOther = null;
-
+	@MappableField(displayName="Type of Technology")
 	private String typeTechnologyString = null;
+	@MappableField(displayName="Do Not Use = Construction Date")
 	private Date constructionDate = null;
 	@MappableField(displayName = "Year of Construction")
 	private String constructionDateYear = null;
 	@MappableField(displayName = "Number of households using point")
 	private Long numberOfHouseholdsUsingPoint = null;
+	@MappableField(displayName="Tarrif")
 	private Double costPer = null;
+	@MappableField(displayName="Do Not Use = costPerUnitOfMeasure")
 	private UnitOfMeasure costPerUnitOfMeasure = null;
+	@MappableField(displayName="Do Not Use = Cost Per Currency")
 	private Currency costPerCurrency = null;
+	@MappableField(displayName="Farthest Household From Point")
 	private String farthestHouseholdfromPoint = null;
+	@MappableField(displayName="Current Management Structure")
 	private String currentManagementStructurePoint = null;
+	@MappableField(displayName="Point Status")
 	@Persistent
 	private AccessPoint.Status pointStatus = null;
+	@MappableField(displayName="Do Not Use = Other Status")
 	private String otherStatus = null;
+	@MappableField(displayName="Photo Caption")
 	private String pointPhotoCaption = null;
+	@MappableField(displayName="Point Description")
 	private String description = null;
+	
+	@MappableField(displayName="Point Type")
 	@Persistent
 	private AccessPointType pointType;
+	@MappableField(displayName="Country Code")
 	private String countryCode;
 	private List<String> geocells;
 	@MappableField(displayName = "Estimated Population")
@@ -77,6 +94,106 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String district;
 	@MappableField(displayName = "Organization")
 	private String organization;
+	@MappableField(displayName="Water For People Supported Project")
+	private Boolean waterForPeopleProjectFlag = null;
+	@MappableField(displayName="Balloon Header")
+	private String header = null;
+	@MappableField(displayName="Balloon Footer")
+	private String footer = null;
+	@MappableField(displayName="Photo Name")
+	private String photoName = null;
+	@MappableField(displayName="Meet Quality Standard")
+	private Boolean meetGovtQualityStandardFlag = null;
+	@MappableField(displayName="Meet Quantity Standard Flag")
+	private Boolean meetGovtQuantityStandardFlag = null;
+	@MappableField(displayName="Who Repairs Point")
+	private String whoRepairsPoint = null;
+	@MappableField(displayName="Secondary TechnologyType")
+	private String secondaryTechnologyString = null;
+	@MappableField(displayName="Provide Adequate Quantity")
+	private Boolean provideAdequateQuantity = null;
+	@MappableField(displayName="System Been Down 1 Day/30")
+	private Boolean hasSystemBeenDown1DayFlag = null;
+	@MappableField(displayName="Location Type")
+	private String locationTypeString = null;
+	@MappableField(displayName="Water For People Role")
+	private String waterForPeopleRole = null;
+	@MappableField(displayName="Current Problem")
+	private String currentProblem = null;
+	@MappableField(displayName="Current Treatment")
+	private String currentTreatment = null;
+	@MappableField(displayName="Water Available Day of Visit")
+	private Boolean waterAvailableDayVisitFlag = null;
+	@MappableField(displayName="PPM Fecal Coliform")
+	private Double ppmFecalColiform = null;
+	@MappableField(displayName="Reason For Inadequate Water Supply")
+	private String reasonForInadequateWaterSupply=null;
+	@MappableField(displayName="Frequency of Tariff")
+	private String frequencyOfTariff=null;
+	@MappableField(displayName="Percentage Of Users Paying Tariff")
+	private Double percentageOfUsersPaying = null;
+	
+	
+	
+	
+	
+
+	public String getCurrentProblem() {
+		return currentProblem;
+	}
+
+	public void setCurrentProblem(String currentProblem) {
+		this.currentProblem = currentProblem;
+	}
+
+	public String getCurrentTreatment() {
+		return currentTreatment;
+	}
+
+	public void setCurrentTreatment(String currentTreatment) {
+		this.currentTreatment = currentTreatment;
+	}
+
+	public Boolean getWaterAvailableDayVisitFlag() {
+		return waterAvailableDayVisitFlag;
+	}
+
+	public void setWaterAvailableDayVisitFlag(Boolean waterAvailableDayVisitFlag) {
+		this.waterAvailableDayVisitFlag = waterAvailableDayVisitFlag;
+	}
+
+	public Double getPpmFecalColiform() {
+		return ppmFecalColiform;
+	}
+
+	public void setPpmFecalColiform(Double ppmFecalColiform) {
+		this.ppmFecalColiform = ppmFecalColiform;
+	}
+
+	public String getReasonForInadequateWaterSupply() {
+		return reasonForInadequateWaterSupply;
+	}
+
+	public void setReasonForInadequateWaterSupply(
+			String reasonForInadequateWaterSupply) {
+		this.reasonForInadequateWaterSupply = reasonForInadequateWaterSupply;
+	}
+
+	public String getFrequencyOfTariff() {
+		return frequencyOfTariff;
+	}
+
+	public void setFrequencyOfTariff(String frequencyOfTariff) {
+		this.frequencyOfTariff = frequencyOfTariff;
+	}
+
+	public Double getPercentageOfUsersPaying() {
+		return percentageOfUsersPaying;
+	}
+
+	public void setPercentageOfUsersPaying(Double percentageOfUsersPaying) {
+		this.percentageOfUsersPaying = percentageOfUsersPaying;
+	}
 
 	public String getOrganization() {
 		return organization;
@@ -199,17 +316,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	public void setProvideAdequateQuantity(Boolean provideAdequateQuantity) {
 		this.provideAdequateQuantity = provideAdequateQuantity;
 	}
-
-	private String header = null;
-	private String footer = null;
-	private String photoName = null;
-	private Boolean meetGovtQualityStandardFlag = null;
-	private Boolean meetGovtQuantityStandardFlag = null;
-	private String whoRepairsPoint = null;
-	private String secondaryTechnologyString = null;
-	private Boolean provideAdequateQuantity = null;
-	private Boolean hasSystemBeenDown1DayFlag = null;
-
+	
 	public String getCommunityName() {
 		return communityName;
 	}
@@ -503,6 +610,38 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public void setSmsCode(String smsCode) {
 		this.smsCode = smsCode;
+	}
+
+	public void setWaterForPeopleProjectFlag(Boolean waterForPeopleProjectFlag) {
+		this.waterForPeopleProjectFlag = waterForPeopleProjectFlag;
+	}
+
+	public Boolean getWaterForPeopleProjectFlag() {
+		return waterForPeopleProjectFlag;
+	}
+
+	public void setAccessPointCode(String accessPointCode) {
+		this.accessPointCode = accessPointCode;
+	}
+
+	public String getAccessPointCode() {
+		return accessPointCode;
+	}
+
+	public void setLocationTypeString(String locationTypeString) {
+		this.locationTypeString = locationTypeString;
+	}
+
+	public String getLocationTypeString() {
+		return locationTypeString;
+	}
+
+	public void setWaterForPeopleRole(String waterForPeopleRole) {
+		this.waterForPeopleRole = waterForPeopleRole;
+	}
+
+	public String getWaterForPeopleRole() {
+		return waterForPeopleRole;
 	}
 
 }

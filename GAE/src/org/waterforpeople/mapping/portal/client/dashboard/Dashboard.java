@@ -173,7 +173,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			}
 		});
-		mgrMenu.addItem("Survey Question Atrribute Mapper", new Command() {
+		mgrMenu.addItem("Survey Question Attribute Mapper", new Command() {
 			public void execute() {
 				launchFullscreen(SurveyAttributeMappingPortlet.NAME);
 
