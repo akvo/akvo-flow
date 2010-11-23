@@ -50,7 +50,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private SurveyInstanceDAO siDao;
 
 	public TaskServlet() {
-		DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil().getProperty("deviceZipPath");
+		DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil()
+				.getProperty("deviceZipPath");
 		aph = new AccessPointHelper();
 		siDao = new SurveyInstanceDAO();
 	}
@@ -70,7 +71,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 			deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
 			deviceFile.setURI(url.toURI().toString());
 			deviceFile.setPhoneNumber(phoneNumber);
-			deviceFile.setChecksum(checksum);
+			if (checksum.equals("null") || checksum == null)
+				deviceFile.setChecksum(null);
+			else
+				deviceFile.setChecksum(checksum);
 			deviceFile.setUploadDateTime(new Date());
 			Date collectionDate = new Date();
 
@@ -79,13 +83,13 @@ public class TaskServlet extends AbstractRestApiServlet {
 				unparsedLines = extractDataFromZip(zis);
 			} catch (IOException iex) {
 				// Error unzipping the response file
-				
+
 				deviceFile.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
 				String message = "Error inflating device zip: "
-					+ deviceFile.getURI() + " : " + iex.getMessage();
+						+ deviceFile.getURI() + " : " + iex.getMessage();
 				log.log(Level.SEVERE, message);
 				deviceFile.setProcessingMessage(message);
-				
+
 			}
 
 			if (unparsedLines != null && unparsedLines.size() > 0) {
