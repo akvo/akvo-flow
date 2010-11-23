@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -381,6 +380,8 @@ public class DataSyncService extends Service {
 									Log.e(TAG, "Could not add image "
 											+ imagePaths.get(i) + " to zip: "
 											+ e.getMessage());
+									databaseAdaptor.updateTransmissionHistory(new Long(paths.getKey()), paths
+											.getValue().get(i), ConstantUtil.FAILED_STATUS);
 								}
 							}
 						}
@@ -631,23 +632,23 @@ public class DataSyncService extends Service {
 				fileName = fileName.substring(fileName
 						.lastIndexOf(File.separator));
 			}
-			fireNotification(ConstantUtil.PROGRESS, fileName);
-
-			HttpURLConnection conn = MultipartStream.createConnection(new URL(
+			fireNotification(ConstantUtil.PROGRESS, fileName);	
+					
+			MultipartStream stream = new MultipartStream(new URL(
 					props.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
-			MultipartStream stream = new MultipartStream(conn.getOutputStream());
-			stream.writeFormField("key", dir + "/${filename}");
-			stream.writeFormField("AWSAccessKeyId", props
+			
+			stream.addFormField("key", dir + "/${filename}");
+			stream.addFormField("AWSAccessKeyId", props
 					.getProperty(ConstantUtil.S3_ID));
-			stream.writeFormField("acl", "public-read");
-			stream.writeFormField("success_action_redirect",
+			stream.addFormField("acl", "public-read");
+			stream.addFormField("success_action_redirect",
 					"http://www.gallatinsystems.com/SuccessUpload.html");
-			stream.writeFormField("policy", policy);
-			stream.writeFormField("signature", sig);
-			stream.writeFormField("Content-Type", contentType);
-			stream.writeFile("file", fileAbsolutePath, null);
-			stream.close();
-			int code = conn.getResponseCode();
+			stream.addFormField("policy", policy);
+			stream.addFormField("signature", sig);
+			stream.addFormField("Content-Type", contentType);
+			stream.addFile("file", fileAbsolutePath, null);
+			int code= stream.execute();
+			
 			if (code != REDIRECT_CODE && code != OK_CODE) {
 				Log.e(TAG, "Server returned a bad code after upload: " + code);
 				return false;
@@ -655,7 +656,7 @@ public class DataSyncService extends Service {
 				fireNotification(ConstantUtil.FILE_COMPLETE, fileName);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Could not send upload" + e.getMessage(), e);
+			Log.e(TAG, "Could not send upload " + e.getMessage(), e);
 
 			PersistentUncaughtExceptionHandler.recordException(e);
 			return false;
