@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,14 +41,14 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  * will form a zip file containing the data and corresponding image files (if
  * any). It will upload the data to the server and then will delete the data on
  * the device.
- * 
+ *
  * this activity can either export the zip file or export and send the zip file
  * (if it is invoked with the SEND type set under the TYPE_KEY in the extras
  * bundle)
- * 
- * 
+ *
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class DataSyncService extends Service {
 
@@ -68,6 +69,9 @@ public class DataSyncService extends Service {
 
 	private static final int BUF_SIZE = 2048;
 
+	private static final NumberFormat PCT_FORMAT = NumberFormat.getPercentInstance();  
+	
+	
 	private SurveyDbAdapter databaseAdaptor;
 	private static final String TEMP_FILE_NAME = "/wfp";
 	private static final String ZIP_IMAGE_DIR = "images/";
@@ -116,7 +120,7 @@ public class DataSyncService extends Service {
 
 	/**
 	 * executes the data export/sync operation (based on the type passed in).
-	 * 
+	 *
 	 * @param type
 	 *            - either SYNC or EXPORT
 	 */
@@ -231,7 +235,7 @@ public class DataSyncService extends Service {
 	/**
 	 * sends a message to the service with the file name that was just uploaded
 	 * so it can start processing the file
-	 * 
+	 *
 	 * @param fileName
 	 * @return
 	 */
@@ -252,7 +256,7 @@ public class DataSyncService extends Service {
 	/**
 	 * displays a notification in the system status bar indicating the
 	 * completion of the export/save operation
-	 * 
+	 *
 	 * @param type
 	 */
 	private void fireNotification(String type, String extraText) {
@@ -274,7 +278,7 @@ public class DataSyncService extends Service {
 
 	/**
 	 * create a zip file containing all the submitted data and images
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -405,7 +409,7 @@ public class DataSyncService extends Service {
 	/**
 	 * writes the contents of text to a zip entry within the Zip file behind zos
 	 * named fileName
-	 * 
+	 *
 	 * @param zos
 	 * @param text
 	 * @param fileName
@@ -430,11 +434,11 @@ public class DataSyncService extends Service {
 	/**
 	 * iterate over the plot data returned from the database and populate the
 	 * string builder and collections passed in with the requisite information.
-	 * 
+	 *
 	 * @param buf
 	 *            - IN param. After execution this will contain the data to be
 	 *            sent
-	 * 
+	 *
 	 * @param plotIds
 	 *            - IN param. After execution this will contain the ids of the
 	 *            plots
@@ -500,7 +504,7 @@ public class DataSyncService extends Service {
 	/**
 	 * iterate over the survey data returned from the database and populate the
 	 * string builder and collections passed in with the requisite information.
-	 * 
+	 *
 	 * @param buf
 	 *            - IN param. After execution this will contain the data to be
 	 *            sent
@@ -619,7 +623,7 @@ public class DataSyncService extends Service {
 	/**
 	 * sends the zip file containing data/images to the server via an http
 	 * upload
-	 * 
+	 *
 	 * @param fileAbsolutePath
 	 */
 	private boolean sendFile(String fileAbsolutePath, String dir,
@@ -632,11 +636,12 @@ public class DataSyncService extends Service {
 				fileName = fileName.substring(fileName
 						.lastIndexOf(File.separator));
 			}
-			fireNotification(ConstantUtil.PROGRESS, fileName);	
-					
+			final String fileNameForNotification = fileName;
+			fireNotification(ConstantUtil.PROGRESS, fileName);
+
 			MultipartStream stream = new MultipartStream(new URL(
 					props.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
-			
+
 			stream.addFormField("key", dir + "/${filename}");
 			stream.addFormField("AWSAccessKeyId", props
 					.getProperty(ConstantUtil.S3_ID));
@@ -647,13 +652,23 @@ public class DataSyncService extends Service {
 			stream.addFormField("signature", sig);
 			stream.addFormField("Content-Type", contentType);
 			stream.addFile("file", fileAbsolutePath, null);
-			int code= stream.execute();
-			
+			int code= stream.execute(new  MultipartStream.MultipartStreamStatusListner() {				
+				@Override
+				public void uploadProgress(long bytesSent, long totalBytes) {
+					double percentComplete = 0;
+					if(bytesSent >0 && totalBytes >0){
+						percentComplete = ((double)bytesSent)/((double)totalBytes);
+					}
+					fireNotification(ConstantUtil.PROGRESS,PCT_FORMAT.format(percentComplete)+" - "+fileNameForNotification);
+					
+				}
+			});
+
 			if (code != REDIRECT_CODE && code != OK_CODE) {
 				Log.e(TAG, "Server returned a bad code after upload: " + code);
 				return false;
 			} else {
-				fireNotification(ConstantUtil.FILE_COMPLETE, fileName);
+				fireNotification(ConstantUtil.FILE_COMPLETE, fileNameForNotification);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send upload " + e.getMessage(), e);
@@ -666,7 +681,7 @@ public class DataSyncService extends Service {
 
 	/**
 	 * constructs a filename for the data file
-	 * 
+	 *
 	 * @return
 	 */
 	private String createFileName() {
@@ -678,7 +693,7 @@ public class DataSyncService extends Service {
 	 * this method checks if the service can perform the requested operation. If
 	 * the operation type is SEND and there is no connectivity, this will return
 	 * false, otherwise it will return true
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */

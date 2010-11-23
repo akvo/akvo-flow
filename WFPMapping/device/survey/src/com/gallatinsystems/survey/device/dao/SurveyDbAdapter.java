@@ -1255,6 +1255,13 @@ public class SurveyDbAdapter {
 		}
 		return transList;
 	}
+	
+	/**
+	* marks all submitted data as unsent
+	*/
+	public void markAllUnsent(){
+		executeSql("update survey_respondent set media_sent_flag = 'false', delivered_date = null;");
+	}
 
 	/**
 	 * executes a single insert/update/delete DML or any DDL statement without

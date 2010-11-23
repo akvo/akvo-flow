@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
 
 /**
@@ -32,10 +33,10 @@ import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
 public class SurveyReviewActivity extends ListActivity {
 
 	private SurveyDbAdapter databaseAdapter;
-	private static final int SAVED_SURVEYS = 1;
-	private static final int SUBMITTED_SURVEYS = 2;
+	private static final int MODE_SELECTOR = 1;	
 	private static final int DELETE_ALL = 3;
 	private static final int DELETE_ONE = 4;
+	private static final int RESEND_ALL = 5;
 	private static final int VIEW_HISTORY = 5;
 	private String currentStatusMode = ConstantUtil.SAVED_STATUS;
 	private TextView viewTypeLabel;
@@ -135,10 +136,25 @@ public class SurveyReviewActivity extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, SAVED_SURVEYS, 0, R.string.savedsurveyslabel);
-		menu.add(0, SUBMITTED_SURVEYS, 1, R.string.submittedsurveysmenu);
-		menu.add(0, DELETE_ALL, 2, R.string.deleteall);
+		menu.add(0, MODE_SELECTOR, 0, R.string.submittedsurveysmenu);
+		menu.add(0, DELETE_ALL, 1, R.string.deleteall);
+		menu.add(0, RESEND_ALL, 2, R.string.resendall);
+		menu.getItem(2).setVisible(false);
 		return true;
+	}
+
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		super.onMenuOpened(featureId, menu);
+		if (ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
+			menu.getItem(0).setTitle(R.string.submittedsurveysmenu);
+			menu.getItem(2).setVisible(false);
+		} else {
+			menu.getItem(0).setTitle(R.string.savedsurveyslabel);
+			menu.getItem(2).setVisible(true);
+		}
+		return true;
+
 	}
 
 	/**
@@ -149,14 +165,11 @@ public class SurveyReviewActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case SAVED_SURVEYS:
+		case MODE_SELECTOR:
 			if (!ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
 				currentStatusMode = ConstantUtil.SAVED_STATUS;
 				getData();
-			}
-			return true;
-		case SUBMITTED_SURVEYS:
-			if (!ConstantUtil.SUBMITTED_STATUS.equals(currentStatusMode)) {
+			} else {
 				currentStatusMode = ConstantUtil.SUBMITTED_STATUS;
 				getData();
 			}
@@ -179,6 +192,24 @@ public class SurveyReviewActivity extends ListActivity {
 								}
 							});
 			builder.show();
+			return true;
+		case RESEND_ALL:
+			ViewUtil.showAdminAuthDialog(this,
+					new ViewUtil.AdminAuthDialogListener() {
+						@Override
+						public void onAuthenticated() {
+							databaseAdapter.markAllUnsent();
+							Intent i = new Intent(
+									ConstantUtil.DATA_AVAILABLE_INTENT);
+							SurveyReviewActivity.this.sendBroadcast(i);
+							ViewUtil.showConfirmDialog(
+									R.string.submitcompletetitle,
+									R.string.submitcompletetext,
+									SurveyReviewActivity.this);
+
+						}
+					});
+
 			return true;
 		}
 		return false;

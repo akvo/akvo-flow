@@ -170,6 +170,7 @@
 	<string name="bootstraperror">Error processing bootstrap zip file</string>
 	<string name="transmissionhist">Transmission History</string>
 	<string name="transstartdate">Transmission Started:</string>
-	<string name="transenddate">Transmission Finished:</string>	
-	<string name="appversion">1.4.1</string>	
+	<string name="transenddate">Transmission Finished:</string>
+	<string name="resendall">Resend all Surveys</string>	
+	<string name="appversion">1.4.2</string>	
 </resources>

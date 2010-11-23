@@ -24,7 +24,8 @@ public class MultipartStream {
 	private ArrayList<String> fileParamTextList;
 	private int totalBytes;
 	private ArrayList<String> mimeTypeTextList;
-	private URL url;
+	private URL url;	
+	private ArrayList<Long> fileBytes;
 
 	private DataOutputStream out;
 
@@ -35,6 +36,7 @@ public class MultipartStream {
 		formParamTextList = new ArrayList<String>();
 		fileParamTextList = new ArrayList<String>();
 		mimeTypeTextList = new ArrayList<String>();
+		fileBytes = new ArrayList<Long>();
 		this.url = url;
 		totalBytes = DELIMITER_BYTES + PREFIX.getBytes().length;
 	}
@@ -70,6 +72,7 @@ public class MultipartStream {
 		File file = new File(filePath);
 		files.add(file);
 		totalBytes += DELIMITER_BYTES;
+		fileBytes.add(file.length());
 
 		String destName = filePath;
 		if (destName.contains("/")) {
@@ -95,8 +98,10 @@ public class MultipartStream {
 		totalBytes += 3 * ENDLINE.getBytes().length;
 	}
 
-	private void writeFiles() throws IOException {
+	private void writeFiles(MultipartStreamStatusListner listener) throws IOException {
+
 		for (int i = 0; i < files.size(); i++) {
+			long fileBytesWritten = 0;
 			out.writeBytes(PREFIX);
 			out.writeBytes(BOUNDRY);
 			out.writeBytes(ENDLINE);
@@ -115,7 +120,11 @@ public class MultipartStream {
 			FileInputStream fis = new FileInputStream(files.get(i));
 
 			while ((bytesRead = fis.read(buffer)) != -1) {
-				out.write(buffer, 0, bytesRead);				
+				out.write(buffer, 0, bytesRead);
+				fileBytesWritten+= bytesRead;
+				if(listener!= null){
+					listener.uploadProgress(fileBytesWritten,fileBytes.get(i));
+				}
 			}
 			try {
 				fis.close();
@@ -135,7 +144,7 @@ public class MultipartStream {
 		out.close();
 	}
 
-	public int execute() throws java.io.IOException {
+	public int execute(MultipartStreamStatusListner listener) throws java.io.IOException {
 		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
 		if (urlConn instanceof HttpURLConnection) {
 			HttpURLConnection httpConn = (HttpURLConnection) urlConn;
@@ -146,7 +155,7 @@ public class MultipartStream {
 		urlConn.setDoInput(true);
 		urlConn.setDoOutput(true);
 		urlConn.setUseCaches(false);
-
+		
 		urlConn.setDefaultUseCaches(false);
 		urlConn.setFixedLengthStreamingMode(totalBytes);
 
@@ -162,10 +171,17 @@ public class MultipartStream {
 			writeFormField(names.get(i), values.get(i), formParamTextList
 					.get(i));
 		}
-		writeFiles();
+		writeFiles(listener);
 		close();
 
 		int code = urlConn.getResponseCode();
 		return code;
+	}
+
+	/**
+	* Interface that can be used to be notified of upload progress
+	*/
+	public interface MultipartStreamStatusListner{
+		public void uploadProgress(long bytesUploaded, long totalBytes);
 	}
 }
