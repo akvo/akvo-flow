@@ -54,7 +54,7 @@ public class FileTransmissionArrayAdapter extends
 			startDate.setText(dateFormat.format(trans.getStartDate()));
 		}
 		TextView endDate = (TextView) view.findViewById(R.id.enddate);
-		if (trans.getStartDate() != null) {
+		if (trans.getEndDate() != null) {
 			endDate.setText(dateFormat.format(trans.getEndDate()));
 		}
 
