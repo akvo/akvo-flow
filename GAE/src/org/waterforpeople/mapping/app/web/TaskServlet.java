@@ -37,10 +37,11 @@ import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.sun.media.jai.codecimpl.util.PropertyUtil;
 
 public class TaskServlet extends AbstractRestApiServlet {
 
-	private static final String DEVICE_FILE_PATH = "http://waterforpeople.s3.amazonaws.com/devicezip/";
+	private static String DEVICE_FILE_PATH;
 	private static final String REGION_FLAG = "regionFlag=true";
 	private static final long serialVersionUID = -2607990749512391457L;
 	private static final Logger log = Logger.getLogger(TaskServlet.class
@@ -49,6 +50,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private SurveyInstanceDAO siDao;
 
 	public TaskServlet() {
+		DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil().getProperty("deviceZipPath");
 		aph = new AccessPointHelper();
 		siDao = new SurveyInstanceDAO();
 	}
