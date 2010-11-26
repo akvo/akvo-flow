@@ -33,11 +33,12 @@ import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
 public class SurveyReviewActivity extends ListActivity {
 
 	private SurveyDbAdapter databaseAdapter;
-	private static final int MODE_SELECTOR = 1;	
+	private static final int MODE_SELECTOR = 1;
 	private static final int DELETE_ALL = 3;
 	private static final int DELETE_ONE = 4;
 	private static final int RESEND_ALL = 5;
 	private static final int VIEW_HISTORY = 5;
+	private static final int RESEND_ONE = 6;
 	private String currentStatusMode = ConstantUtil.SAVED_STATUS;
 	private TextView viewTypeLabel;
 	private Long selectedSurvey;
@@ -93,6 +94,7 @@ public class SurveyReviewActivity extends ListActivity {
 		menu.add(0, DELETE_ONE, 0, R.string.deletesurvey);
 		if (!ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
 			menu.add(0, VIEW_HISTORY, 1, R.string.transmissionhist);
+			menu.add(0, RESEND_ONE, 1, R.string.resendone);
 		}
 
 	}
@@ -125,6 +127,22 @@ public class SurveyReviewActivity extends ListActivity {
 			Intent i = new Intent(this, TransmissionHistoryActivity.class);
 			i.putExtra(ConstantUtil.RESPONDENT_ID_KEY, selectedSurvey);
 			startActivity(i);
+			break;
+		case RESEND_ONE:
+			ViewUtil.showAdminAuthDialog(this,
+					new ViewUtil.AdminAuthDialogListener() {
+						@Override
+						public void onAuthenticated() {
+							databaseAdapter.markDataUnsent(selectedSurvey);
+							Intent dataIntent = new Intent(
+									ConstantUtil.DATA_AVAILABLE_INTENT);
+							SurveyReviewActivity.this.sendBroadcast(dataIntent);
+							ViewUtil.showConfirmDialog(
+									R.string.submitcompletetitle,
+									R.string.submitcompletetext,
+									SurveyReviewActivity.this);
+						}
+					});
 			break;
 		}
 		return true;
@@ -198,7 +216,7 @@ public class SurveyReviewActivity extends ListActivity {
 					new ViewUtil.AdminAuthDialogListener() {
 						@Override
 						public void onAuthenticated() {
-							databaseAdapter.markAllUnsent();
+							databaseAdapter.markDataUnsent(null);
 							Intent i = new Intent(
 									ConstantUtil.DATA_AVAILABLE_INTENT);
 							SurveyReviewActivity.this.sendBroadcast(i);

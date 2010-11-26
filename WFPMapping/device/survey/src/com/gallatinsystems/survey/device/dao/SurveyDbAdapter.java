@@ -187,7 +187,9 @@ public class SurveyDbAdapter {
 				db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
-				db.execSQL("DROP TABLE IF EXISTS " + TRANSMISSION_HISTORY_TABLE);
+				db
+						.execSQL("DROP TABLE IF EXISTS "
+								+ TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
 			} else {
 				try {
@@ -1215,13 +1217,13 @@ public class SurveyDbAdapter {
 			whereValues[1] = fileName;
 
 		} else {
-			whereValues = new String[] { respondentId.toString()};
+			whereValues = new String[] { respondentId.toString() };
 		}
-		
+
 		Cursor cursor = database.query(TRANSMISSION_HISTORY_TABLE,
 				new String[] { PK_ID_COL, FILENAME_COL, STATUS_COL,
-						TRANS_START_COL, DELIVERED_DATE_COL, SURVEY_RESPONDENT_ID_COL
-						 }, whereClause, whereValues,
+						TRANS_START_COL, DELIVERED_DATE_COL,
+						SURVEY_RESPONDENT_ID_COL }, whereClause, whereValues,
 				null, null, TRANS_START_COL + " desc");
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
@@ -1255,12 +1257,19 @@ public class SurveyDbAdapter {
 		}
 		return transList;
 	}
-	
+
 	/**
-	* marks all submitted data as unsent
-	*/
-	public void markAllUnsent(){
-		executeSql("update survey_respondent set media_sent_flag = 'false', delivered_date = null;");
+	 * marks submitted data as unsent. If an ID is passed in, only that
+	 * submission will be updated. If id is null, ALL data will be marked as
+	 * unsent.
+	 */
+	public void markDataUnsent(Long id) {
+		if (id == null) {
+			executeSql("update survey_respondent set media_sent_flag = 'false', delivered_date = null;");
+		} else {
+			executeSql("update survey_respondent set media_sent_flag = 'false', delivered_date = null where _id = "
+					+ id);
+		}
 	}
 
 	/**
