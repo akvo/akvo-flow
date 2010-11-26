@@ -81,7 +81,7 @@ public class NearbyItemActivity extends ListActivity implements
 			serverBase = getResources().getStringArray(R.array.servers)[Integer
 					.parseInt(serverBase)];
 		} else {
-			serverBase = PropertyUtil.loadProperties(getResources())
+			serverBase = new PropertyUtil(getResources())
 					.getProperty(ConstantUtil.SERVER_BASE);
 		}
 		pointOfInterestService = new PointOfInterestService(serverBase);

@@ -10,7 +10,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 import java.util.zip.Adler32;
@@ -82,7 +81,7 @@ public class DataSyncService extends Service {
 	private static final int OK_CODE = 200;
 	private static Semaphore lock = new Semaphore(1);
 	private static int counter = 0;
-	private Properties props;
+	private PropertyUtil props;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -115,7 +114,7 @@ public class DataSyncService extends Service {
 		Thread
 				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
 						.getInstance());
-		props = PropertyUtil.loadProperties(getResources());
+		props = new PropertyUtil(getResources());
 	}
 
 	/**

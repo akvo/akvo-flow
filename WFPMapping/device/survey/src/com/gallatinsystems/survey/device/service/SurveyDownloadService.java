@@ -5,9 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -20,6 +20,7 @@ import org.apache.http.HttpException;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -57,9 +58,9 @@ public class SurveyDownloadService extends Service {
 	@SuppressWarnings("unused")
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
 	private static final String SD_LOC = "sdcard";
-	
+
 	private SurveyDbAdapter databaseAdaptor;
-	private Properties props;
+	private PropertyUtil props;
 	private Thread thread;
 	private ThreadPoolExecutor downloadExecutor;
 	private static Semaphore lock = new Semaphore(1);
@@ -91,8 +92,10 @@ public class SurveyDownloadService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
-		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
-		props = PropertyUtil.loadProperties(getResources());
+		Thread
+				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+						.getInstance());
+		props = new PropertyUtil(getResources());
 		downloadExecutor = new ThreadPoolExecutor(1, 3, 5000,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	}
@@ -131,10 +134,7 @@ public class SurveyDownloadService extends Service {
 					surveys = checkForSurveys(serverBase);
 				}
 				if (surveys != null && surveys.size() > 0) {
-					// create directory if not there
-					FileUtil.findOrCreateDir(ConstantUtil.DATA_DIR);
 					// if there are surveys for this device, see if we need them
-
 					surveys = databaseAdaptor.checkSurveyVersions(surveys);
 					int updateCount = 0;
 					if (surveys != null && surveys.size() > 0) {
@@ -148,7 +148,8 @@ public class SurveyDownloadService extends Service {
 								}
 							} catch (Exception e) {
 								Log.e(TAG, "Could not download survey", e);
-								PersistentUncaughtExceptionHandler.recordException(e);
+								PersistentUncaughtExceptionHandler
+										.recordException(e);
 							}
 						}
 						if (updateCount > 0) {
@@ -198,12 +199,22 @@ public class SurveyDownloadService extends Service {
 	private boolean downloadSurvey(String serverBase, Survey survey) {
 		boolean success = false;
 		try {
-			HttpUtil.httpDownload(props.getProperty(ConstantUtil.SURVEY_S3_URL)
-					+ survey.getId() + ConstantUtil.ARCHIVE_SUFFIX,
-					ConstantUtil.DATA_DIR + File.separator + survey.getId()
-							+ ConstantUtil.ARCHIVE_SUFFIX);
-			extractAndSave(new File(ConstantUtil.DATA_DIR + File.separator
-					+ survey.getId() + ConstantUtil.ARCHIVE_SUFFIX));
+			HttpUtil
+					.httpDownload(
+							props.getProperty(ConstantUtil.SURVEY_S3_URL)
+									+ survey.getId()
+									+ ConstantUtil.ARCHIVE_SUFFIX,
+							FileUtil
+									.getFileOutputStream(
+											survey.getId()
+													+ ConstantUtil.ARCHIVE_SUFFIX,
+											ConstantUtil.DATA_DIR,
+											props
+													.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+											this));
+			extractAndSave(FileUtil.getFileInputStream(survey.getId()
+					+ ConstantUtil.ARCHIVE_SUFFIX, ConstantUtil.DATA_DIR, props
+					.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this));
 
 			survey.setFileName(survey.getId() + ConstantUtil.XML_SUFFIX);
 			survey.setType(DEFAULT_TYPE);
@@ -227,12 +238,13 @@ public class SurveyDownloadService extends Service {
 	 * @param f
 	 * @throws IOException
 	 */
-	private void extractAndSave(File zipFile) throws IOException {
-		ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+	private void extractAndSave(FileInputStream zipFile) throws IOException {
+		ZipInputStream zis = new ZipInputStream(zipFile);
 		ZipEntry entry;
 		while ((entry = zis.getNextEntry()) != null) {
-			FileOutputStream fout = new FileOutputStream(new File(
-					ConstantUtil.DATA_DIR, entry.getName()));
+			FileOutputStream fout = FileUtil.getFileOutputStream(entry
+					.getName(), ConstantUtil.DATA_DIR, props
+					.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this);
 			byte[] buffer = new byte[2048];
 			int size;
 			while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
@@ -254,8 +266,25 @@ public class SurveyDownloadService extends Service {
 		// first, see if we should even bother trying to download
 		if (canDownload(precacheOption)) {
 			try {
-				Survey hydratedSurvey = SurveyDao.loadSurvey(survey,
-						getResources());
+				InputStream in = null;
+				if (ConstantUtil.RESOURCE_LOCATION.equalsIgnoreCase(survey
+						.getLocation())) {
+					// load from resource
+					Resources res = getResources();
+					in = res.openRawResource(res.getIdentifier(survey
+							.getFileName(), ConstantUtil.RAW_RESOURCE,
+							ConstantUtil.RESOURCE_PACKAGE));
+				} else {
+					// load from file
+					in = FileUtil
+							.getFileInputStream(
+									survey.getFileName(),
+									ConstantUtil.DATA_DIR,
+									props
+											.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+									this);
+				}
+				Survey hydratedSurvey = SurveyDao.loadSurvey(survey, in);
 				if (hydratedSurvey != null) {
 					// collect files in a set just in case the same binary is
 					// used in multiple questions
@@ -316,19 +345,26 @@ public class SurveyDownloadService extends Service {
 	 * @param surveyId
 	 */
 	private void downloadBinary(final String remoteFile, final String surveyId) {
-
-		final String localFile = FileUtil.convertRemoteToLocalFile(remoteFile,
-				surveyId);
-		downloadExecutor.execute(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					HttpUtil.httpDownload(remoteFile, localFile);
-				} catch (Exception e) {
-					Log.e(TAG, "Could not download help media file", e);
+		try {
+			final FileOutputStream out = FileUtil.getFileOutputStream(
+					remoteFile.substring(remoteFile.lastIndexOf("/") + 1),
+					ConstantUtil.DATA_DIR + surveyId + "/", props
+							.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+					this);
+			downloadExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						HttpUtil.httpDownload(remoteFile, out);
+					} catch (Exception e) {
+						Log.e(TAG, "Could not download help media file", e);
+					}
 				}
-			}
-		});
+			});
+		} catch (FileNotFoundException e1) {
+			Log.e(TAG, "Could not download binary file", e1);
+			PersistentUncaughtExceptionHandler.recordException(e1);
+		}
 	}
 
 	/**

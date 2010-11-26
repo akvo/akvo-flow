@@ -1,6 +1,5 @@
 package com.gallatinsystems.survey.device.service;
 
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,7 +43,7 @@ public class LocationService extends Service {
 	private static final String TAG = "LocationService";
 	private String version;
 	private String deviceId;
-	private Properties props;
+	private PropertyUtil props;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -107,7 +106,7 @@ public class LocationService extends Service {
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
-		props = PropertyUtil.loadProperties(getResources());
+		props = new PropertyUtil(getResources());
 	}
 
 	/**

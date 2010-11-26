@@ -1,14 +1,17 @@
 package com.gallatinsystems.survey.device.util;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.zip.ZipInputStream;
+
+import android.content.Context;
 
 /**
  * utility for manipulating files
@@ -27,16 +30,11 @@ public class FileUtil {
 	 * @param filePath
 	 * @throws IOException
 	 */
-	public static void writeStringToFile(String contents, String filePath)
-			throws IOException {
-		if (filePath.contains(File.separator)) {
-			String dir = filePath.substring(0, filePath
-					.lastIndexOf(File.separator));
-			if (dir != null && dir.trim().length() > 0) {
-				findOrCreateDir(dir);
-			}
-			BufferedWriter bw = new BufferedWriter(new FileWriter(filePath));
-			bw.write(contents);
+	public static void writeStringToFile(String contents,
+			FileOutputStream filePath) throws IOException {
+		if (contents != null) {
+			BufferedOutputStream bw = new BufferedOutputStream(filePath);
+			bw.write(contents.getBytes("UTF-8"));
 			bw.flush();
 			bw.close();
 		}
@@ -62,29 +60,24 @@ public class FileUtil {
 	 * @param file
 	 * @return
 	 */
-	public static boolean doesFileExist(String file) {
-		File f = new File(file);
-		return f.exists();
+	public static boolean doesFileExist(String file, String subDir,
+			String useInternal, Context c) {
+		boolean exists = false;
+		if (file != null) {
+			FileInputStream in = null;
+			try {
+				in = getFileInputStream(file, subDir, useInternal, c);
+				exists = true;
+				in.close();
+			} catch (FileNotFoundException e) {
+				exists = false;
+			} catch (IOException e) {
+				// no-op
+			}
+		}
+		return exists;
 	}
 
-	/**
-	 * parses out everything except the file name (no path) from the remoteFile
-	 * and returns a fully qualified path to where this file is stored in the
-	 * data directory.
-	 * 
-	 * @param remoteFile
-	 * @param surveyId
-	 * @return
-	 */
-	public static String convertRemoteToLocalFile(String remoteFile,
-			String surveyId) {
-		String localDir = ConstantUtil.DATA_DIR;
-		if (surveyId != null) {
-			localDir += surveyId + "/";
-		}
-		FileUtil.findOrCreateDir(localDir);
-		return localDir + remoteFile.substring(remoteFile.lastIndexOf("/") + 1);
-	}
 
 	/**
 	 * reads the contents of a file into a string.
@@ -131,20 +124,11 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static void extractAndSaveFile(ZipInputStream zip,
-			String destinationFile) throws IOException {
-		if (destinationFile.contains(File.separator)) {
-			String dirOnly = destinationFile.substring(0, destinationFile
-					.lastIndexOf(File.separator));
-			if (dirOnly != null && dirOnly.trim().length() > 0) {
-				findOrCreateDir(dirOnly);
-			}
-		}
-
-		FileOutputStream fis = new FileOutputStream(destinationFile);
+			FileOutputStream destinationFile) throws IOException {		
 		ByteArrayOutputStream out = readZipEntry(zip);
-		fis.write(out.toByteArray());
+		destinationFile.write(out.toByteArray());
 		out.close();
-		fis.close();
+		destinationFile.close();
 	}
 
 	/**
@@ -166,4 +150,46 @@ public class FileUtil {
 		}
 		return out;
 	}
+
+	public static FileOutputStream getFileOutputStream(String file,
+			String subDir, String useInternal, Context c)
+			throws FileNotFoundException {
+		FileOutputStream out = null;
+		if (useInternal != null && "true".equalsIgnoreCase(useInternal)
+				&& c != null) {
+			out = c.openFileOutput(file, Context.MODE_WORLD_WRITEABLE);
+		} else {
+			String dir = getStorageDirectory(subDir, useInternal);
+			findOrCreateDir(dir);
+			out = new FileOutputStream(dir + file);
+		}
+		return out;
+	}
+
+	public static FileInputStream getFileInputStream(String file,
+			String subDir, String useInternal, Context c)
+			throws FileNotFoundException {
+		FileInputStream in = null;
+		if (useInternal != null && "true".equalsIgnoreCase(useInternal)) {
+			in = c.openFileInput(file);
+		} else {
+			String dir = getStorageDirectory(subDir, useInternal);
+			in = new FileInputStream(dir + file);
+		}
+		return in;
+	}
+
+	public static String getStorageDirectory(String subDir,
+			String useInternalStorage) {
+		String dir = "";
+		if (useInternalStorage == null
+				|| "false".equalsIgnoreCase(useInternalStorage)) {
+			dir = ConstantUtil.SD_CARD_ROOT;
+			if (subDir != null) {
+				dir += subDir;
+			}
+		}
+		return dir;
+	}
+
 }

@@ -7,13 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -55,7 +55,7 @@ public class ExceptionReportingService extends Service {
 
 	private String version;
 	private String deviceId;
-	private Properties props;
+	private PropertyUtil props;
 	private String phoneNumber;
 
 	@Override
@@ -108,7 +108,7 @@ public class ExceptionReportingService extends Service {
 		Thread
 				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
 						.getInstance());
-		props = PropertyUtil.loadProperties(getResources());
+		props = new PropertyUtil(getResources());
 	}
 
 	/**
@@ -117,7 +117,13 @@ public class ExceptionReportingService extends Service {
 	 * @return
 	 */
 	private String[] getTraceFiles() {
-		File dir = FileUtil.findOrCreateDir(ConstantUtil.STACKTRACE_DIR);
+		String dirString = null;
+		if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+			dirString  = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "false");
+		}else{
+			dirString = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "true");
+		}
+		File dir = FileUtil.findOrCreateDir(dirString);
 		FilenameFilter traceFilter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(ConstantUtil.STACKTRACE_SUFFIX);
@@ -132,13 +138,19 @@ public class ExceptionReportingService extends Service {
 	 */
 	public void submitStackTraces(String server) {
 		try {
+			String dirString = null;
+			if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+				dirString  = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "false");
+			}else{
+				dirString = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "true");
+			}
 			String[] list = getTraceFiles();
 			if (list != null && list.length > 0) {
 				for (int i = 0; i < list.length; i++) {
 					String trace = FileUtil
-							.readFileAsString(ConstantUtil.STACKTRACE_DIR
+							.readFileAsString(dirString
 									+ list[i]);
-					File f = new File(ConstantUtil.STACKTRACE_DIR + list[i]);
+					File f = new File(dirString + list[i]);
 
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(ACTION_PARAM, ACTION_VALUE);

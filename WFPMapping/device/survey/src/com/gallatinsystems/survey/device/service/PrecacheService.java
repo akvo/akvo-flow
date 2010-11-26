@@ -40,7 +40,7 @@ public class PrecacheService extends Service {
 
 	private Thread thread;
 	private static Semaphore lock = new Semaphore(1);
-	private Properties props;
+	private PropertyUtil props;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -138,7 +138,7 @@ public class PrecacheService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
-		props = PropertyUtil.loadProperties(getResources());
+		props = new PropertyUtil(getResources());
 	}
 
 	/**

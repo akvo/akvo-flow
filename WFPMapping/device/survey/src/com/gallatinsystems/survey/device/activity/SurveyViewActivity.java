@@ -2,6 +2,7 @@ package com.gallatinsystems.survey.device.activity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -11,6 +12,7 @@ import android.app.TabActivity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +38,7 @@ import com.gallatinsystems.survey.device.util.ArrayPreferenceData;
 import com.gallatinsystems.survey.device.util.ArrayPreferenceUtil;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SubmitTabContentFactory;
@@ -52,6 +55,8 @@ public class SurveyViewActivity extends TabActivity implements
 		QuestionInteractionListener {
 
 	private static final String TAG = "Survey View Activity";
+
+	
 
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
@@ -90,6 +95,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private TabHost tabHost;
 	private int tabCount;
 	private String eventSourceQuestionId;
+	private PropertyUtil props;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -104,6 +110,7 @@ public class SurveyViewActivity extends TabActivity implements
 		isTrackRecording = false;
 		setContentView(R.layout.main);
 		tabCount = 0;
+		props = new PropertyUtil(getResources());
 
 		String langSelection = databaseAdapter
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
@@ -150,8 +157,23 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 
 		try {
-			survey = SurveyDao.loadSurvey(databaseAdapter.findSurvey(surveyId),
-					getResources());
+			Survey surveyFromDb = databaseAdapter.findSurvey(surveyId);
+			InputStream in = null;
+			if (ConstantUtil.RESOURCE_LOCATION.equalsIgnoreCase(surveyFromDb
+					.getLocation())) {
+				// load from resource
+				Resources res = getResources();
+				in = res.openRawResource(res.getIdentifier(
+						surveyFromDb.getFileName(), ConstantUtil.RAW_RESOURCE, ConstantUtil.RESOURCE_PACKAGE));
+			} else {
+				// load from file
+				in = FileUtil.getFileInputStream(surveyFromDb.getFileName(),
+						ConstantUtil.DATA_DIR,
+						props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+						this);
+			}
+
+			survey = SurveyDao.loadSurvey(surveyFromDb, in);
 
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "Could not load survey xml file");
@@ -405,10 +427,9 @@ public class SurveyViewActivity extends TabActivity implements
 							respondentId, eventQuestionSource.getQuestion()
 									.getId(),
 							data.getStringExtra(ConstantUtil.CALC_RESULT_KEY),
-							ConstantUtil.VALUE_RESPONSE_TYPE,"true");
+							ConstantUtil.VALUE_RESPONSE_TYPE, "true");
 
-					resp = databaseAdapter
-							.createOrUpdateSurveyResponse(resp);
+					resp = databaseAdapter.createOrUpdateSurveyResponse(resp);
 					eventQuestionSource.setResponse(resp);
 				}
 			}
@@ -485,11 +506,11 @@ public class SurveyViewActivity extends TabActivity implements
 			String src = event.getSource().getQuestion().getHelpByType(
 					ConstantUtil.VIDEO_HELP_TYPE).get(0).getValue().trim();
 			if (src.toLowerCase().startsWith(HTTP_PREFIX)) {
-				// first see if we have a precached copy of the file
-				String localFile = FileUtil.convertRemoteToLocalFile(src,
-						surveyId);
-				if (FileUtil.doesFileExist(localFile)) {
-					uri = Uri.parse(VIDEO_PREFIX + localFile);
+				String fileName = src.substring(src.lastIndexOf("/") + 1);
+				if (FileUtil.doesFileExist(fileName, ConstantUtil.DATA_DIR+surveyId+File.separator,props
+						.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),this)) {					
+					uri = Uri.parse(VIDEO_PREFIX + FileUtil.getStorageDirectory(ConstantUtil.DATA_DIR+surveyId+File.separator, props
+							.getProperty(ConstantUtil.USE_INTERNAL_STORAGE))+fileName);
 				} else {
 					uri = Uri.parse(src);
 				}

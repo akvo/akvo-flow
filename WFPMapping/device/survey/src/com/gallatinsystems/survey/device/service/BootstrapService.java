@@ -2,6 +2,8 @@ package com.gallatinsystems.survey.device.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,6 +13,7 @@ import java.util.zip.ZipInputStream;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -21,6 +24,7 @@ import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -51,6 +55,7 @@ public class BootstrapService extends Service {
 	private Thread workerThread;
 	private SurveyDbAdapter databaseAdapter;
 	private static final Integer NOTIFICATION_ID = new Integer(123);
+	private PropertyUtil props;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -61,7 +66,7 @@ public class BootstrapService extends Service {
 	 * life cycle method for the service. This is called by the system when the
 	 * service is started
 	 */
-	public int onStartCommand(final Intent intent, int flags, int startid) {		
+	public int onStartCommand(final Intent intent, int flags, int startid) {
 		workerThread = new Thread(new Runnable() {
 			public void run() {
 				checkAndInstall();
@@ -169,7 +174,9 @@ public class BootstrapService extends Service {
 						ConstantUtil.BOOTSTRAP_DB_FILE.toLowerCase())) {
 					processDbInstructions(FileUtil.readTextFromZip(zis), true);
 
-				} else if (!entry.isDirectory() && !ConstantUtil.BOOTSTRAP_ROLLBACK_FILE.equalsIgnoreCase(fileName)) {
+				} else if (!entry.isDirectory()
+						&& !ConstantUtil.BOOTSTRAP_ROLLBACK_FILE
+								.equalsIgnoreCase(fileName)) {
 					String id = parts[parts.length - 2];
 					if (entry.getName().toLowerCase().endsWith(
 							ConstantUtil.XML_SUFFIX.toLowerCase())) {
@@ -193,12 +200,32 @@ public class BootstrapService extends Service {
 
 						// in both cases (new survey and existing), we need to
 						// update the xml
-						FileUtil.extractAndSaveFile(zis, ConstantUtil.DATA_DIR
-								+ fileName);
+						FileUtil
+								.extractAndSaveFile(
+										zis,
+										FileUtil
+												.getFileOutputStream(
+														fileName,
+														ConstantUtil.DATA_DIR,
+														props
+																.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+														this));
 						// now read the survey XML back into memory to see if
 						// there is a version
-						Survey loadedSurvey = SurveyDao.loadSurvey(survey,
-								getResources());
+						Survey loadedSurvey = null;
+						try {
+							InputStream in = FileUtil
+									.getFileInputStream(
+											survey.getFileName(),
+											ConstantUtil.DATA_DIR,
+											props
+													.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+											this);
+							loadedSurvey = SurveyDao.loadSurvey(survey, in);
+
+						} catch (FileNotFoundException e) {
+							Log.e(TAG, "Could not load survey xml file");
+						}
 						if (loadedSurvey != null
 								&& loadedSurvey.getVersion() > 0) {
 							survey.setVersion(loadedSurvey.getVersion());
@@ -210,8 +237,18 @@ public class BootstrapService extends Service {
 					} else {
 						// if it's not a sql file and its not a survey, it must
 						// be help media
-						FileUtil.extractAndSaveFile(zis, ConstantUtil.DATA_DIR
-								+ id + File.separator + fileName);
+						FileUtil
+								.extractAndSaveFile(
+										zis,
+										FileUtil
+												.getFileOutputStream(
+														fileName,
+														ConstantUtil.DATA_DIR
+																+ id
+																+ File.separator,
+														props
+																.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+														this));
 
 						// record the fact that this survey had media
 						surveysWithImages.add(id);
@@ -265,26 +302,37 @@ public class BootstrapService extends Service {
 	 */
 	private ArrayList<File> getZipFiles() {
 		ArrayList<File> zipFiles = new ArrayList<File>();
-		File dir = FileUtil.findOrCreateDir(ConstantUtil.BOOTSTRAP_DIR);
-		if (dir != null) {
-			File[] fileList = dir.listFiles();
-			if (fileList != null) {
-				for (int i = 0; i < fileList.length; i++) {
-					if (fileList[i].isFile()
-							&& fileList[i].getName().toLowerCase().endsWith(
-									ConstantUtil.ARCHIVE_SUFFIX.toLowerCase())) {
-						zipFiles.add(fileList[i]);
+		// zip files can only be loaded on the SD card (not internal storage) so
+		// we only need to look there
+		if (Environment.MEDIA_MOUNTED.equals(Environment
+				.getExternalStorageState())) {
+			File dir = FileUtil.findOrCreateDir(FileUtil.getStorageDirectory(
+					ConstantUtil.BOOTSTRAP_DIR, "false"));
+			if (dir != null) {
+				File[] fileList = dir.listFiles();
+				if (fileList != null) {
+					for (int i = 0; i < fileList.length; i++) {
+						if (fileList[i].isFile()
+								&& fileList[i].getName().toLowerCase()
+										.endsWith(
+												ConstantUtil.ARCHIVE_SUFFIX
+														.toLowerCase())) {
+							zipFiles.add(fileList[i]);
+						}
 					}
 				}
+				Collections.sort(zipFiles);
 			}
-			Collections.sort(zipFiles);
 		}
 		return zipFiles;
 	}
 
 	public void onCreate() {
 		super.onCreate();
-		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
+		props = new PropertyUtil(getResources());
+		Thread
+				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+						.getInstance());
 	}
 
 }

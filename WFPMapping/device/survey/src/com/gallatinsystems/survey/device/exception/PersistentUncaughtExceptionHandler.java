@@ -1,11 +1,13 @@
 package com.gallatinsystems.survey.device.exception;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import android.os.Environment;
 import android.util.Log;
 
 import com.gallatinsystems.survey.device.util.ConstantUtil;
@@ -76,11 +78,23 @@ public class PersistentUncaughtExceptionHandler implements
 		exception.printStackTrace(printWriter);
 
 		try {
-			String filename = ConstantUtil.STACKTRACE_DIR
-					+ ConstantUtil.STACKTRACE_FILENAME
-					+ Long.toString(System.currentTimeMillis())
-					+ ConstantUtil.STACKTRACE_SUFFIX;
-			FileUtil.writeStringToFile(result.toString(), filename);
+			FileOutputStream out = null;
+			if (Environment.getExternalStorageState().equals(
+					Environment.MEDIA_MOUNTED)) {
+				out = FileUtil.getFileOutputStream(
+						ConstantUtil.STACKTRACE_FILENAME
+								+ Long.toString(System.currentTimeMillis())
+								+ ConstantUtil.STACKTRACE_SUFFIX,
+						ConstantUtil.STACKTRACE_DIR, "false", null);
+			} else {
+				out = FileUtil.getFileOutputStream(
+						ConstantUtil.STACKTRACE_FILENAME
+								+ Long.toString(System.currentTimeMillis())
+								+ ConstantUtil.STACKTRACE_SUFFIX,
+						ConstantUtil.STACKTRACE_DIR, "false", null);
+			}
+
+			FileUtil.writeStringToFile(result.toString(), out);
 		} catch (IOException e) {
 			Log.e(TAG, "Couldn't save trace file", e);
 		} finally {

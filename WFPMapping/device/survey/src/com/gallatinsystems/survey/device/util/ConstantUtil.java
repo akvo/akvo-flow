@@ -15,16 +15,18 @@ public class ConstantUtil {
 	/**
 	 * filesystem constants
 	 */
-	public static final String DATA_DIR = "/sdcard/fieldsurvey/data/";
+	public static final String SD_CARD_ROOT = "/sdcard/";
+	public static final String INTERNAL_ROOT = "/data/data/";
+	public static final String DATA_DIR = "fieldsurvey/data/";
 	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
 	public static final String ARCHIVE_SUFFIX = ".zip";
 	public static final String XML_SUFFIX = ".xml";
-	public static final String BOOTSTRAP_DIR = "/sdcard/fieldsurvey/bootstrap";
+	public static final String BOOTSTRAP_DIR = "fieldsurvey/bootstrap";
 	public static final String BOOTSTRAP_DB_FILE = "dbinstructions.sql";
 	public static final String PROCESSED_OK_SUFFIX = ".processed";
 	public static final String PROCESSED_ERROR_SUFFIX = ".error";
 	public static final String BOOTSTRAP_ROLLBACK_FILE = "rollback.sql";
-	public static final String STACKTRACE_DIR = "/sdcard/fieldsurvey/stacktrace/";
+	public static final String STACKTRACE_DIR = "fieldsurvey/stacktrace/";
 	public static final String STACKTRACE_FILENAME = "err-";
 	public static final String STACKTRACE_SUFFIX = ".stacktrace";
 
@@ -219,7 +221,7 @@ public class ConstantUtil {
 	public static final String BLACK_COLOR = "black";
 
 	/**
-	 * sub-activty options
+	 * sub-activity options
 	 */
 	public static final String STANDALONE_MODE = "standalone";
 	public static final String SURVEY_RESULT_MODE = "surveyresult";
@@ -240,7 +242,14 @@ public class ConstantUtil {
 	public static final String DATA_UPLOAD_URL = "dataUploadUrl";
 	public static final String SERVER_BASE = "serverBase";
 	public static final String SURVEY_S3_URL = "surveyS3Url";
+	public static final String USE_INTERNAL_STORAGE = "useInternalStorage";
 
+	/**
+	 * resource related constants
+	 */
+	public static final String RESOURCE_PACKAGE = "com.gallatinsystems.survey.device";
+	public static final String RAW_RESOURCE = "raw";
+	
 	/**
 	 * recognized help activities
 	 */

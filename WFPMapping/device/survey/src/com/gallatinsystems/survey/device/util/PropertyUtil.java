@@ -17,6 +17,7 @@ import com.gallatinsystems.survey.device.R;
  */
 public class PropertyUtil {
 	private static final String TAG = "PROPERTY_UTIL";
+	private static Properties properties = null;
 
 	/**
 	 * reads the property file from the apk and returns the contents in a
@@ -25,14 +26,25 @@ public class PropertyUtil {
 	 * @param resources
 	 * @return
 	 */
-	public static Properties loadProperties(Resources resources) {
-		Properties properties = new Properties();
-		try {
-			InputStream rawResource = resources.openRawResource(R.raw.survey);
-			properties.load(rawResource);
-		} catch (Exception e) {
-			Log.e(TAG, "Coult not load properties", e);
+	private static void loadProperties(Resources resources) {
+		if (properties == null) {
+			properties = new Properties();
+			try {				
+				InputStream rawResource = resources
+						.openRawResource(R.raw.survey);
+				properties.load(rawResource);
+			} catch (Exception e) {
+				Log.e(TAG, "Coult not load properties", e);
+			}
 		}
-		return properties;
 	}
+
+	public PropertyUtil(Resources resources) {
+		loadProperties(resources);
+	}
+
+	public String getProperty(String propertyName) {
+		return properties.getProperty(propertyName);
+	}
+
 }

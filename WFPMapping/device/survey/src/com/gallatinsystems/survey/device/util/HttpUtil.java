@@ -109,13 +109,13 @@ public class HttpUtil {
 		BufferedInputStream reader = null;
 		Bitmap bitMap = null;
 		String fileName = url;
-		// extract just the filname portion of the url
+		// extract just the filename portion of the url
 		if (fileName.contains("/")
 				&& fileName.lastIndexOf("/") < fileName.length() + 1) {
 			fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 		}
 		// now check the cache
-		if (cacheDir != null) {
+		if (cacheDir != null && cacheDir.trim().length()>0) {
 			File f = new File(cacheDir + "/" + fileName);
 			if (f.exists()) {
 				// if the file exists, return the local version
@@ -125,7 +125,7 @@ public class HttpUtil {
 		}
 		// if we get here, then we had a cache miss (or aren't using the cache)
 		try {
-			if (cacheDir == null) {
+			if (cacheDir == null || cacheDir.trim().length()==0) {
 				// if we aren't using the cache, download directly into the
 				// bitmap
 				DefaultHttpClient client = new DefaultHttpClient();
@@ -159,13 +159,46 @@ public class HttpUtil {
 	 * @param file
 	 * @throws Exception
 	 */
-	public static void httpDownload(String url, String file) throws Exception {
+	public static void httpDownload(String url, FileOutputStream file) throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(new HttpGet(url));
 		BufferedOutputStream writer = null;
 		BufferedInputStream reader = null;
 		try {
-			writer = new BufferedOutputStream(new FileOutputStream(file));
+			writer = new BufferedOutputStream(file);
+			reader = new BufferedInputStream(response.getEntity().getContent());
+
+			byte[] buffer = new byte[BUF_SIZE];
+			int bytesRead = reader.read(buffer);
+
+			while (bytesRead > 0) {
+				writer.write(buffer, 0, bytesRead);
+				bytesRead = reader.read(buffer);
+			}
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+			if (reader != null) {
+				reader.close();
+			}
+		}
+	}
+	
+	/**
+	 * downloads the resource at url and saves the contents to file
+	 * 
+	 * @param url
+	 * @param file
+	 * @throws Exception
+	 */
+	public static void httpDownload(String url, String destFile) throws Exception {
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpResponse response = client.execute(new HttpGet(url));
+		BufferedOutputStream writer = null;
+		BufferedInputStream reader = null;
+		try {
+			writer = new BufferedOutputStream(new FileOutputStream(destFile));
 			reader = new BufferedInputStream(response.getEntity().getContent());
 
 			byte[] buffer = new byte[BUF_SIZE];
