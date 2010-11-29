@@ -128,14 +128,12 @@ public class AccessPointHelper {
 							setAccessPointField(ap, qas, mapping);
 
 						} catch (NoSuchFieldException e) {
-							logger
-									.log(
-											Level.SEVERE,
-											"Could not map field to access point: "
-													+ mapping
-															.getAttributeName()
-													+ ". Check the surveyAttribueMapping for surveyId "
-													+ surveyId);
+							logger.log(
+									Level.SEVERE,
+									"Could not map field to access point: "
+											+ mapping.getAttributeName()
+											+ ". Check the surveyAttribueMapping for surveyId "
+											+ surveyId);
 						} catch (IllegalAccessException e) {
 							logger.log(Level.SEVERE,
 									"Could not set field to access point: "
@@ -268,10 +266,14 @@ public class AccessPointHelper {
 	public AccessPoint saveAccessPoint(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
 		if (ap != null) {
-			AccessPoint apCurrent = apDao.findAccessPoint(ap.getPointType(), ap.getLatitude(), ap.getLongitude());
-			if(apCurrent !=null){
-				if(!apCurrent.getKey().equals(ap.getKey())){
-					ap.setKey(apCurrent.getKey());
+			if (ap.getPointType() != null && ap.getLatitude() != null
+					&& ap.getLongitude() != null) {
+				AccessPoint apCurrent = apDao.findAccessPoint(
+						ap.getPointType(), ap.getLatitude(), ap.getLongitude());
+				if (apCurrent != null) {
+					if (!apCurrent.getKey().equals(ap.getKey())) {
+						ap.setKey(apCurrent.getKey());
+					}
 				}
 			}
 			if (ap.getKey() != null) {
@@ -301,13 +303,13 @@ public class AccessPointHelper {
 							AccessPointStatusSummary.class.getName(), "n/a",
 							oldValues, newValues);
 					Queue queue = QueueFactory.getQueue("dataUpdate");
-					queue.add(url("/app_worker/dataupdate").param(
-							DataSummarizationRequest.OBJECT_KEY,
-							ap.getKeyString()).param(
-							DataSummarizationRequest.OBJECT_TYPE,
-							"AccessPointSummaryChange").param(
-							DataSummarizationRequest.VALUE_KEY,
-							change.packString()));
+					queue.add(url("/app_worker/dataupdate")
+							.param(DataSummarizationRequest.OBJECT_KEY,
+									ap.getKeyString())
+							.param(DataSummarizationRequest.OBJECT_TYPE,
+									"AccessPointSummaryChange")
+							.param(DataSummarizationRequest.VALUE_KEY,
+									change.packString()));
 				}
 			} else {
 				if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
