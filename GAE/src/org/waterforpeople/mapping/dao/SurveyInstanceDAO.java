@@ -45,7 +45,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			if (si.getSurveyId() == null) {
 				try {
 					si.setCollectionDate(collDate);
-					si.setSurveyId(Long.parseLong(parts[0]));					
+					si.setSurveyId(Long.parseLong(parts[0]));
 					si = save(si);
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
@@ -124,10 +124,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			Long surveyInstanceId, String questionId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(QuestionAnswerStore.class);
-		q
-				.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
-		q
-				.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+		q.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
+		q.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
 		List<QuestionAnswerStore> result = (List<QuestionAnswerStore>) q
 				.execute(surveyInstanceId, questionId);
 		if (result != null && result.size() > 0) {
@@ -154,6 +152,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			q.setRange(0, count);
 		}
 		return (List<QuestionAnswerStore>) q.execute(instanceId);
+	}
+
+	public List<QuestionAnswerStore> listQuestionAnswerStoreGeoQuestions(
+			Long instanceId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		Query q = pm.newQuery(QuestionAnswerStore.class);
+		q.setFilter("surveyInstanceId == surveyInstanceIdParam");
+		q.declareParameters("Long surveyInstanceIdParam");
+		q.setFilter("type=typeParam");
+		q.setFilter("String typeParam");
+
+		return (List<QuestionAnswerStore>) q.execute(instanceId, "GEO");
 	}
 
 	/**
@@ -190,6 +200,22 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			q.setRange(0, count);
 		}
 		return (List<SurveyInstance>) q.execute(surveyId);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstance> listSurveyInstanceBySurveyId(Long surveyId,
+			String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		Query q = pm.newQuery(SurveyInstance.class);
+		q.setFilter("surveyId == surveyIdParam");
+		q.declareParameters("Long surveyIdParam");
+		if (cursorString == null || !cursorString.equals("all")) {
+			prepareCursor(cursorString, q);
+		}
+		List<SurveyInstance> siList = (List<SurveyInstance>) q
+				.execute(surveyId);
+
+		return siList;
 	}
 
 }

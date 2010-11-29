@@ -159,6 +159,34 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return results;
 	}
 
+	@SuppressWarnings("unchecked")
+	public AccessPoint findAccessPoint(AccessPoint.AccessPointType type,
+			Double lat, Double lon) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("pointType", filterString, paramString, "String",
+				type, paramMap);
+		appendNonNullParam("latitude", filterString, paramString, "Double",
+				lat, paramMap);
+		appendNonNullParam("longitude", filterString, paramString, "Double",
+				lon, paramMap);
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		List<AccessPoint> results = (List<AccessPoint>) query
+				.executeWithMap(paramMap);
+		if (results != null && results.size() >= 1)
+			return results.get(0);
+		else
+			return null;
+	}
+
 	/**
 	 * lists all access points by the technology type string
 	 * 
@@ -172,10 +200,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			String technologyType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
-		q
-				.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
-		q
-				.declareParameters("String countryCodeParam, String typeTechnologyParam");
+		q.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
+		q.declareParameters("String countryCodeParam, String typeTechnologyParam");
 		prepareCursor(cursorString, q);
 		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode,
 				technologyType);

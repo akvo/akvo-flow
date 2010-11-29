@@ -268,6 +268,12 @@ public class AccessPointHelper {
 	public AccessPoint saveAccessPoint(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
 		if (ap != null) {
+			AccessPoint apCurrent = apDao.findAccessPoint(ap.getPointType(), ap.getLatitude(), ap.getLongitude());
+			if(apCurrent !=null){
+				if(!apCurrent.getKey().equals(ap.getKey())){
+					ap.setKey(apCurrent.getKey());
+				}
+			}
 			if (ap.getKey() != null) {
 				String oldValues = null;
 				if (ap != null && ap.getKey() != null) {

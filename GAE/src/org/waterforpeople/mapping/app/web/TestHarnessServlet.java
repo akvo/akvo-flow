@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
@@ -93,6 +94,7 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
@@ -111,7 +113,29 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
 
+		} else if ("SurveyInstance".equals(action)) {
+			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+			List<SurveyInstance> siList = siDao.listSurveyInstanceBySurveyId(
+					1362011L, null);
+
+			Cursor cursor = JDOCursorHelper.getCursor(siList);
+			int i = 0;
+			while (siList.size() > 0) {
+				for (SurveyInstance si : siList) {
+					System.out.println(i++ + " " + si.toString());
+					AccessPointHelper aph = new AccessPointHelper();
+					String surveyInstanceId = new Long(si.getKey().getId())
+							.toString();
+					aph.processSurveyInstance(surveyInstanceId);
+				}
+				siList = siDao.listSurveyInstanceBySurveyId(1362011L,
+						cursor.toWebSafeString());
+				cursor = JDOCursorHelper.getCursor(siList);
+			}
+			System.out.println("finished");
+
 		} else if ("rotateImage".equals(action)) {
+
 			AccessPointManagerServiceImpl apmI = new AccessPointManagerServiceImpl();
 			String test1 = "http://waterforpeople.s3.amazonaws.com/images/wfpPhoto10062903227521.jpg";
 			// String test2 =
