@@ -71,7 +71,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
 			deviceFile.setURI(url.toURI().toString());
 			deviceFile.setPhoneNumber(phoneNumber);
-			if (checksum.equals("null") || checksum == null)
+			if (checksum == null||checksum.equals("null"))
 				deviceFile.setChecksum(null);
 			else
 				deviceFile.setChecksum(checksum);
@@ -166,6 +166,9 @@ public class TaskServlet extends AbstractRestApiServlet {
 				}
 				String[] linesSplit = line.split("\n");
 				for (String s : linesSplit) {
+					if (s.contains("\u0000")) {
+						s = s.replaceAll("\u0000", "");
+					}
 					lines.add(s);
 				}
 			} else {
