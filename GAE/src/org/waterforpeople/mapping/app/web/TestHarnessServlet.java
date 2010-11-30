@@ -49,6 +49,7 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -175,33 +176,19 @@ public class TestHarnessServlet extends HttpServlet {
 			 */
 		} else if ("addDeviceFiles".equals(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
-			for (int i = 0; i < 100; i++) {
-				DeviceFiles df = new DeviceFiles();
-				df.setURI("http://www.yahoo.com/x.zip");
-				df.setCreatedDateTime(new Date());
-				df.setPhoneNumber("2019561591");
-				DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
-				java.util.Date date = new java.util.Date();
-				String dateTime = dateFormat.format(date);
-				df.setProcessDate(dateTime);
-				dfDao.save(df);
-			}
-			Date today, yesterday;
-			Calendar calendar;
 
-			today = new Date();
-			calendar = Calendar.getInstance();
-			calendar.setTime(today);
-			calendar.add(Calendar.DATE, -1);
-			yesterday = calendar.getTime();
-			for (DeviceFiles df : dfDao.listDeviceFilesByDate(yesterday, "all")) {
-				try {
-					resp.getWriter().print(
-							df.getUploadDateTime() + " " + df.getURI() + "\n");
-				} catch (IOException e) {
-					log.log(Level.SEVERE, "could not get device files", e);
-				}
-			}
+			DeviceFiles df = new DeviceFiles();
+			df.setURI("http://waterforpeople.s3.amazonaws.com/devicezip/wfp1737657928520.zip");
+			df.setCreatedDateTime(new Date());
+			df.setPhoneNumber("a4:ed:4e:54:ef:6d");
+			df.setChecksum("1149406886");
+			df.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
+			DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+			java.util.Date date = new java.util.Date();
+			String dateTime = dateFormat.format(date);
+			df.setProcessDate(dateTime);
+			dfDao.save(df);
+
 		} else if ("testBaseDomain".equals(action)) {
 
 			SurveyDAO surveyDAO = new SurveyDAO();

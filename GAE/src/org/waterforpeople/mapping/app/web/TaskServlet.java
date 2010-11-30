@@ -22,6 +22,7 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
+import org.waterforpeople.mapping.domain.Status;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
@@ -64,13 +65,16 @@ public class TaskServlet extends AbstractRestApiServlet {
 			URL url = new URL(DEVICE_FILE_PATH + fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
-
-			DeviceFiles deviceFile = new DeviceFiles();
+			DeviceFiles deviceFile = null;
+			deviceFile = dfDao.findByUri(url.toString());
+			if (deviceFile == null) {
+				deviceFile = new DeviceFiles();
+			}
 			deviceFile.setProcessDate(getNowDateTimeFormatted());
 			deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
 			deviceFile.setURI(url.toURI().toString());
 			deviceFile.setPhoneNumber(phoneNumber);
-			if (checksum == null||checksum.equals("null"))
+			if (checksum == null || checksum.equals("null"))
 				deviceFile.setChecksum(null);
 			else
 				deviceFile.setChecksum(checksum);
@@ -87,7 +91,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 				String message = "Error inflating device zip: "
 						+ deviceFile.getURI() + " : " + iex.getMessage();
 				log.log(Level.SEVERE, message);
-				deviceFile.setProcessingMessage(message);
+				deviceFile.addProcessingMessage(message);
 
 			}
 
@@ -118,12 +122,21 @@ public class TaskServlet extends AbstractRestApiServlet {
 					}
 
 					Long userID = 1L;
+					dfDao.save(deviceFile);
 					SurveyInstance inst = siDao.save(collectionDate,
 							deviceFile, userID,
 							unparsedLines.subList(offset, lineNum));
 					surveyInstances.add(inst);
-
 					if (lineNum < unparsedLines.size()) {
+						StatusCode processingStatus = inst.getDeviceFile().getProcessedStatus();
+						if(processingStatus.equals(StatusCode.PROCESSED_WITH_ERRORS)){
+							String message = "Error in file during first processing step. Continuing to next part";
+							deviceFile.addProcessingMessage(message);
+							deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
+						}else{
+							deviceFile.addProcessingMessage("Processed " + lineNum + " lines spawning queue call");
+							deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
+						}
 						// if we haven't processed everything yet, invoke a
 						// new service
 						Queue queue = QueueFactory.getDefaultQueue();

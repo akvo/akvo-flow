@@ -10,15 +10,15 @@ import org.waterforpeople.mapping.domain.Status;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class DeviceFiles  extends BaseDomain{
+public class DeviceFiles extends BaseDomain {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	@Persistent
 	private String URI = null;
 	@Persistent
@@ -29,8 +29,9 @@ public class DeviceFiles  extends BaseDomain{
 	private Status status = null;
 	@Persistent
 	private String processDate = null;
-	private String processingMessage = null;
-	
+	private Text processingMessage = null;
+	private Long surveyInstanceId = null;
+
 	private String phoneNumber;
 	private String checksum;
 
@@ -101,13 +102,31 @@ public class DeviceFiles  extends BaseDomain{
 		return sb.toString();
 	}
 
-	public void setProcessingMessage(String processingMessage) {
-		if(processingMessage.length()>499)
-			processingMessage = processingMessage.substring(0, 499);
+	public void addProcessingMessage(String message) {
+		if (processingMessage != null)
+			processingMessage = new Text(processingMessage.getValue() + "\n"
+					+ message);
+		else
+			processingMessage = new Text(message);
+	}
+
+	public void setProcessingMessage(Text processingMessage) {
 		this.processingMessage = processingMessage;
 	}
 
-	public String getProcessingMessage() {
+	public Text getProcessingMessage() {
 		return processingMessage;
+	}
+
+	public String getProcessingStringMessage() {
+		return processingMessage.getValue();
+	}
+
+	public void setSurveyInstanceId(Long surveyInstanceId) {
+		this.surveyInstanceId = surveyInstanceId;
+	}
+
+	public Long getSurveyInstanceId() {
+		return surveyInstanceId;
 	}
 }

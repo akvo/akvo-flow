@@ -54,7 +54,7 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 	public ResponseDto<ArrayList<DeviceFilesDto>> listDeviceFiles(
 			String processingStatus, String cursor) {
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		List<DeviceFiles> dfList = (List<DeviceFiles>) dfDao.listDeviceFilesByStatus(StatusCode.PROCESSED_WITH_ERRORS, cursor);
+		List<DeviceFiles> dfList = (List<DeviceFiles>) dfDao.listDeviceFilesByStatus(StatusCode.valueOf(processingStatus), cursor);
 		ArrayList<DeviceFilesDto> dfDtoList = new ArrayList<DeviceFilesDto>();
 		for (DeviceFiles canonical : dfList) {
 			DeviceFilesDto dto = new DeviceFilesDto();

@@ -22,8 +22,9 @@ public class SurveyInstance extends BaseDomain {
 
 	@Persistent
 	private Date collectionDate;
+	private Long deviceFileId;
 
-	@Persistent
+	@NotPersistent
 	private DeviceFiles deviceFile;
 
 	@NotPersistent
@@ -64,6 +65,8 @@ public class SurveyInstance extends BaseDomain {
 
 	public void setDeviceFile(DeviceFiles deviceFile) {
 		this.deviceFile = deviceFile;
+		if (deviceFile.getKey() != null)
+			deviceFileId = deviceFile.getKey().getId();
 	}
 
 	public ArrayList<QuestionAnswerStore> getQuestionAnswersStore() {
@@ -75,19 +78,19 @@ public class SurveyInstance extends BaseDomain {
 		this.questionAnswersStore = questionAnswersStore;
 	}
 
-	public void setSubmitterName(String name){
+	public void setSubmitterName(String name) {
 		submitterName = name;
 	}
 
-	public String getSubmitterName(){
+	public String getSubmitterName() {
 		return submitterName;
 	}
 
-	public void setDeviceIdentifier(String id){
+	public void setDeviceIdentifier(String id) {
 		deviceIdentifier = id;
 	}
 
-	public String getDeviceIdentifier(){
+	public String getDeviceIdentifier() {
 		return deviceIdentifier;
 	}
 
@@ -120,5 +123,13 @@ public class SurveyInstance extends BaseDomain {
 		result.append("}");
 
 		return result.toString();
+	}
+
+	public void setDeviceFileId(Long deviceFileId) {
+		this.deviceFileId = deviceFileId;
+	}
+
+	public Long getDeviceFileId() {
+		return deviceFileId;
 	}
 }

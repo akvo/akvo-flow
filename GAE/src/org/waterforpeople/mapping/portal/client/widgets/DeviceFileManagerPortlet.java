@@ -14,12 +14,15 @@ import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -36,13 +39,15 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 			new DataTableHeader("Uri", "uri", true),
 			new DataTableHeader("Status", "processedStatus", true),
 			new DataTableHeader("Created Date Time", "createDateTime", true),
-			new DataTableHeader("Processing Message", "processingMessage", true),
 			new DataTableHeader("Action") };
 
 	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
+	VerticalPanel mainVPanel = new VerticalPanel();
+	DeviceFilesServiceAsync svc;
+	ListBox processStatus = new ListBox();
 
 	public DeviceFileManagerPortlet(String title, boolean scrollable,
 			boolean configurable, boolean snapable, int width, int height,
@@ -51,10 +56,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 				useCommunity, specialOption);
 		// TODO Auto-generated constructor stub
 	}
-
-	VerticalPanel mainVPanel = new VerticalPanel();
-	DeviceFilesServiceAsync svc;
-
+	
 	public DeviceFileManagerPortlet(UserDto user) {
 		super(NAME, true, false, false, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
@@ -65,10 +67,29 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		contentPane.add(header);
 		setContent(contentPane);
 		svc = GWT.create(DeviceFilesService.class);
+		prepareProcessStatusLB();
+		mainVPanel.add(processStatus);
 		dfTable.setVisible(false);
 		requestData(null, false);
 		mainVPanel.add(dfTable);
 
+	}
+	
+	private void prepareProcessStatusLB(){
+		processStatus.addItem("Error Inflating Zip", "ERROR_INFLATING_ZIP");
+		processStatus.addItem("In Progress","IN_PROGRESS");
+		processStatus.addItem("Processed No Errors","PROCESSED_NO_ERRORS");
+		processStatus.addItem("Processed With Errors","PROCESSED_WITH_ERRORS");
+		processStatus.addItem("Reprocessing","REPROCESSING");
+		processStatus.setSelectedIndex(3);
+		processStatus.addChangeHandler(new ChangeHandler(){
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				requestData(null, false);
+			}
+			
+		});
 	}
 
 	@Override
@@ -94,6 +115,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 	public void requestData(String cursor, final boolean isResort) {
 		final boolean isNew = (cursor == null);
 		boolean isOkay = true;
+		final String statusCode = processStatus.getValue(processStatus.getSelectedIndex()); 
 		AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>> dataCallback = new AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>>() {
 
 			@Override
@@ -116,7 +138,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 			}
 
 		};
-		svc.listDeviceFiles("PROCESSED_WITH_ERRORS", cursor, dataCallback);
+		svc.listDeviceFiles(statusCode, cursor, dataCallback);
 	}
 
 	@Override
@@ -134,7 +156,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 				formattedFileNameParts[formattedFileNameParts.length - 1]));
 		grid.setWidget(row, 3, new Label(item.getProcessedStatus()));
 		grid.setWidget(row, 4, new Label(item.getProcessDate()));
-		String abbrvProcessingMessage = "";
+		/*String abbrvProcessingMessage = "";
 		if (item.getProcessingMessage() != null) {
 			if (item.getProcessingMessage().length() > 25) {
 				abbrvProcessingMessage = item.getProcessingMessage().substring(
@@ -143,7 +165,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 				abbrvProcessingMessage = item.getProcessingMessage();
 			}
 		}
-		grid.setWidget(row, 5, new Label(abbrvProcessingMessage));
+		grid.setWidget(row, 5, new Label(abbrvProcessingMessage));*/
 		Button reprocessButton = new Button("Reprocess");
 		
 		reprocessButton.addClickHandler(new ClickHandler() {
@@ -171,7 +193,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 			}
 
 		});
-		grid.setWidget(row, 6, reprocessButton);
+		grid.setWidget(row, 5, reprocessButton);
 	};
 
 }

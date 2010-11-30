@@ -40,7 +40,7 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		String dateTime = dateFormat.format(startDate);
 		appendNonNullParam("processDate", filterString, paramString, "String",
 				dateTime, paramMap, GTE_OP);
-		//query.setOrdering("createdDateTime desc");
+		// query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
@@ -51,12 +51,19 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 
 		return results;
 	}
-	
-	public DeviceFiles findByUri(String uri){
-		return listByProperty("URI",uri,"String").get(0);
+
+	@SuppressWarnings("unchecked")
+	public DeviceFiles findByUri(String uri) {
+		List<DeviceFiles> dfList = (List<DeviceFiles>) listByProperty("URI",
+				uri, "String");
+		if (dfList.size()>0)
+			return dfList.get(0);
+		else
+			return null;
 	}
 
-	public List<DeviceFiles> listDeviceFilesByStatus(Status.StatusCode status, String cursorString){
+	public List<DeviceFiles> listDeviceFilesByStatus(Status.StatusCode status,
+			String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(DeviceFiles.class);
 		Map<String, Object> paramMap = null;
@@ -64,8 +71,8 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
-		appendNonNullParam("processedStatus", filterString, paramString, "String",
-				status, paramMap, EQ_OP);
+		appendNonNullParam("processedStatus", filterString, paramString,
+				"String", status, paramMap, EQ_OP);
 		query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());

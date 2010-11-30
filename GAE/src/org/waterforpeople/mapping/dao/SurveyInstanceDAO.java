@@ -28,6 +28,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		boolean hasErrors = false;
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
+
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
 			String[] parts = line.split(",");
@@ -39,6 +40,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			} catch (Exception e) {
 				logger.log(Level.WARNING,
 						"Could not construct collection date", e);
+				deviceFile
+						.addProcessingMessage("Could not construct collection date from: "
+								+ parts[7]);
 				hasErrors = true;
 			}
 
@@ -50,6 +54,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
+					deviceFile
+							.addProcessingMessage("Could not parse survey id: "
+									+ parts[0] + e.getMessage());
 					hasErrors = true;
 				}
 			}
@@ -82,6 +89,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			qasList.add(qas);
 		}
 		save(qasList);
+		deviceFile.setSurveyInstanceId(si.getKey().getId());
 		if (!hasErrors) {
 			si.getDeviceFile().setProcessedStatus(
 					StatusCode.PROCESSED_NO_ERRORS);
