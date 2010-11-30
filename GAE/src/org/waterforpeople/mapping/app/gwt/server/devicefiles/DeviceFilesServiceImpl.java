@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.domain.Status;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
@@ -51,7 +52,7 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 	public ResponseDto<ArrayList<DeviceFilesDto>> listDeviceFiles(
 			String processingStatus, String cursor) {
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		List<DeviceFiles> dfList = (List<DeviceFiles>) dfDao.list(cursor);
+		List<DeviceFiles> dfList = (List<DeviceFiles>) dfDao.listDeviceFilesByStatus(StatusCode.PROCESSED_WITH_ERRORS, cursor);
 		ArrayList<DeviceFilesDto> dfDtoList = new ArrayList<DeviceFilesDto>();
 		for (DeviceFiles canonical : dfList) {
 			DeviceFilesDto dto = new DeviceFilesDto();
