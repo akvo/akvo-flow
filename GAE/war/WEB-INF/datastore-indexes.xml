@@ -211,8 +211,8 @@
         <property name="questionId" direction="asc"/>
         <property name="order" direction="asc"/>
     </datastore-index>
-    <datastore-index kind="DeviceFiles" ancestor="false" source="manual">
-        <property name="status" direction="asc"/>
+     <datastore-index kind="DeviceFiles" ancestor="false" source="manual">
+        <property name="processedStatus" direction="asc"/>
         <property name="createdDateTime" direction="desc"/>
     </datastore-index>
 </datastore-indexes>
