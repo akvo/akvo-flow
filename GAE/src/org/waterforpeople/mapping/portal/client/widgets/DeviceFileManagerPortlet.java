@@ -32,12 +32,12 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader("Id", "key", true),
-			new DataTableHeader("URI", "uri", true),
-			new DataTableHeader("Checksum", "CheckSum", true),
-			new DataTableHeader("Created Date Time", "createDateTime", true),
+			new DataTableHeader("Device Identifier", "devicePhoneNumber", true),
+			new DataTableHeader("Uri", "uri", true),
 			new DataTableHeader("Status", "processedStatus", true),
+			new DataTableHeader("Created Date Time", "createDateTime", true),
 			new DataTableHeader("Processing Message", "processingMessage", true),
-			new DataTableHeader("Reprocess") };
+			new DataTableHeader("Action") };
 
 	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 1600;
@@ -68,7 +68,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		dfTable.setVisible(false);
 		requestData(null, false);
 		mainVPanel.add(dfTable);
-		
+
 	}
 
 	@Override
@@ -95,7 +95,6 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		final boolean isNew = (cursor == null);
 		boolean isOkay = true;
 		AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>> dataCallback = new AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>>() {
-			
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -113,23 +112,9 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 				if (result.getPayload() != null
 						&& result.getPayload().size() > 0) {
 					dfTable.setVisible(true);
-					Button reprocessButton = new Button("Reprocess");
-						dfTable.appendRow(reprocessButton);
-						reprocessButton.addClickHandler(new ClickHandler() {
-
-							@Override
-							public void onClick(ClickEvent event) {
-								// TODO Auto-generated method stub
-								
-							}
-							
-						});
-						
-					
 				}
 			}
 
-			
 		};
 		svc.listDeviceFiles("PROCESSED_WITH_ERRORS", cursor, dataCallback);
 	}
@@ -141,11 +126,52 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 	}
 
 	@Override
-	public void bindRow(Grid grid, DeviceFilesDto item, int row) {
+	public void bindRow(final Grid grid, DeviceFilesDto item, final int row) {
 		grid.setWidget(row, 0, new Label(item.getKeyId().toString()));
-		grid.setWidget(row,1, new Label(item.getPhoneNumber()));
-		grid.setWidget(row, 2, new Label(item.getURI()));
+		grid.setWidget(row, 1, new Label(item.getPhoneNumber()));
+		String[] formattedFileNameParts = item.getURI().split("/");
+		grid.setWidget(row, 2, new Label(
+				formattedFileNameParts[formattedFileNameParts.length - 1]));
 		grid.setWidget(row, 3, new Label(item.getProcessedStatus()));
+		grid.setWidget(row, 4, new Label(item.getProcessDate()));
+		String abbrvProcessingMessage = "";
+		if (item.getProcessingMessage() != null) {
+			if (item.getProcessingMessage().length() > 25) {
+				abbrvProcessingMessage = item.getProcessingMessage().substring(
+						0, 25);
+			}else{
+				abbrvProcessingMessage = item.getProcessingMessage();
+			}
+		}
+		grid.setWidget(row, 5, new Label(abbrvProcessingMessage));
+		Button reprocessButton = new Button("Reprocess");
+		
+		reprocessButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Label id = (Label)grid.getWidget(row, 0);
+				svc.reprocessDeviceFile(new Long(id.getText()), new AsyncCallback<String>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(String result) {
+						Label status = (Label)grid.getWidget(row, 3);
+						status.setText("REPROCESSING");
+						
+					}
+					
+				});
+
+			}
+
+		});
+		grid.setWidget(row, 6, reprocessButton);
 	};
 
 }

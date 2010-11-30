@@ -37,7 +37,6 @@ import com.gallatinsystems.image.GAEImageAdapter;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
-import com.sun.media.jai.codecimpl.util.PropertyUtil;
 
 public class TaskServlet extends AbstractRestApiServlet {
 
