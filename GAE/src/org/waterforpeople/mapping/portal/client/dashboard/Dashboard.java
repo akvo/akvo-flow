@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortle
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.DeviceFileManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
 import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
@@ -214,6 +215,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.addItem("View Remote Exceptions", new Command() {
 			public void execute() {
 				launchFullscreen(RemoteExceptionPortlet.NAME);
+			}
+		});
+		mgrMenu.addItem("Device Files", new Command() {
+			public void execute() {
+				launchFullscreen(DeviceFileManagerPortlet.NAME);
+
 			}
 		});
 

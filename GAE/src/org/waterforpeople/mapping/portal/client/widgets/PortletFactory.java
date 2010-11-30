@@ -70,7 +70,10 @@ public class PortletFactory {
 			return new UserManagerPortlet(user);
 		} else if (name.equals(RemoteExceptionPortlet.NAME)) {
 			return new RemoteExceptionPortlet();
-		}else {
+		}else if(name.equals(DeviceFileManagerPortlet.NAME)){
+			return new DeviceFileManagerPortlet(user);
+		}	else {
+		
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
 	}
