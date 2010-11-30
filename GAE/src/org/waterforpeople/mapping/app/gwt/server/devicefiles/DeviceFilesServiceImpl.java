@@ -26,13 +26,15 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 	 * 
 	 */
 	private static final long serialVersionUID = 5012633874057293188L;
-
+	
 	@Override
-	public String reprocessDeviceFile(Long id) {
+	public String reprocessDeviceFile(String uri) {
+		final String DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil()
+		.getProperty("deviceZipPath");
 		String reprocessingMessage = null;
 		Queue queue = QueueFactory.getDefaultQueue();
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		DeviceFiles df = dfDao.getByKey(id);
+		DeviceFiles df = dfDao.findByUri(DEVICE_FILE_PATH+uri);
 		if (df != null) {
 			reprocessingMessage = "kicked off reprocessing";
 			df.setProcessedStatus(Status.StatusCode.REPROCESSING);

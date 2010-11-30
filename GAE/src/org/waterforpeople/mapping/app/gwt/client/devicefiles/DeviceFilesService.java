@@ -8,6 +8,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("devicefilerpc")
 public interface DeviceFilesService extends RemoteService {
 	ResponseDto<ArrayList<DeviceFilesDto>> listDeviceFiles(String processingStatus, String cursor);
-	String reprocessDeviceFile(Long id);
+	String reprocessDeviceFile(String uri);
 
 }

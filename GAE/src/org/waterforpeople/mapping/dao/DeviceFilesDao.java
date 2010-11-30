@@ -51,6 +51,10 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 
 		return results;
 	}
+	
+	public DeviceFiles findByUri(String uri){
+		return listByProperty("URI",uri,"String").get(0);
+	}
 
 	public List<DeviceFiles> listDeviceFilesByStatus(Status.StatusCode status, String cursorString){
 		PersistenceManager pm = PersistenceFilter.getManager();

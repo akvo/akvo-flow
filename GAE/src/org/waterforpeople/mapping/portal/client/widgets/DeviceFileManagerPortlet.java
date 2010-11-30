@@ -150,8 +150,8 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Label id = (Label)grid.getWidget(row, 0);
-				svc.reprocessDeviceFile(new Long(id.getText()), new AsyncCallback<String>(){
+				Label uri = (Label)grid.getWidget(row, 2);
+				svc.reprocessDeviceFile(uri.getText(), new AsyncCallback<String>(){
 
 					@Override
 					public void onFailure(Throwable caught) {

@@ -10,6 +10,6 @@ public interface DeviceFilesServiceAsync {
 	void listDeviceFiles(String processingStatus, String cursor,
 			AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>> callback);
 
-	void reprocessDeviceFile(Long id, AsyncCallback<String> callback);
+	void reprocessDeviceFile(String uri, AsyncCallback<String> callback);
 
 }
