@@ -60,7 +60,7 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
-		appendNonNullParam("status", filterString, paramString, "String",
+		appendNonNullParam("processedStatus", filterString, paramString, "String",
 				status, paramMap, EQ_OP);
 		query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
