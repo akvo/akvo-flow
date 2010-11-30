@@ -143,12 +143,12 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/remoteexception</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>greetServlet</servlet-name>
-		<servlet-class>com.gallatinsystems.device.app.service.GreetingServiceImpl</servlet-class>
+		<servlet-name>DeviceFileRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>greetServlet</servlet-name>
-		<url-pattern>/webapp/greet</url-pattern>
+		<servlet-name>DeviceFileRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicefilerpc</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>MapingSummarization</servlet-name>
