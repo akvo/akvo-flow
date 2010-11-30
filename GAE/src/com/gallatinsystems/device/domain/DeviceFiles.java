@@ -29,7 +29,7 @@ public class DeviceFiles extends BaseDomain {
 	private Status status = null;
 	@Persistent
 	private String processDate = null;
-	private Text processingMessage = null;
+	private Text processingMessageText = null;
 	private Long surveyInstanceId = null;
 
 	private String phoneNumber;
@@ -103,23 +103,21 @@ public class DeviceFiles extends BaseDomain {
 	}
 
 	public void addProcessingMessage(String message) {
-		if (processingMessage != null)
-			processingMessage = new Text(processingMessage.getValue() + "\n"
-					+ message);
+		if (processingMessageText != null)
+			processingMessageText = new Text(processingMessageText.getValue()
+					+ "\n" + message);
 		else
-			processingMessage = new Text(message);
+			processingMessageText = new Text(message);
 	}
 
-	public void setProcessingMessage(Text processingMessage) {
-		this.processingMessage = processingMessage;
+	public void setProcessingMessageText(Text processingMessage) {
+		this.processingMessageText = processingMessage;
 	}
 
-	public Text getProcessingMessage() {
-		return processingMessage;
-	}
+	
 
 	public String getProcessingStringMessage() {
-		return processingMessage.getValue();
+		return processingMessageText.getValue();
 	}
 
 	public void setSurveyInstanceId(Long surveyInstanceId) {
@@ -128,5 +126,10 @@ public class DeviceFiles extends BaseDomain {
 
 	public Long getSurveyInstanceId() {
 		return surveyInstanceId;
+	}
+
+	public Text getProcessingMessageText() {
+		// TODO Auto-generated method stub
+		return processingMessageText;
 	}
 }

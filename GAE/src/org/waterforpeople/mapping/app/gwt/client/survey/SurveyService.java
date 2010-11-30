@@ -60,5 +60,6 @@ public interface SurveyService extends RemoteService {
 	public String publishSurvey(Long surveyId);
 	public void publishSurveyAsync(Long surveyId);
 	public List<TranslationDto> saveTranslations(List<TranslationDto> translations);
+	public void rerunAPMappings(Long surveyId);
 	
 }

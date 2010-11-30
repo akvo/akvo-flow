@@ -13,6 +13,7 @@ public class SurveyTaskRequest extends RestRequest {
 	public static final String DELETE_QUESTION_HELP_ACTION = "deleteQuestionHelp";
 	public static final String DELETE_QUESTION_TRANSLATION_ACTION = "deleteQuestionTranslation";
 	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptions";
+	public static final String REMAP_SURVEY_INSTANCE ="reprocessMapSurveyInstance";
 
 	private Long id = null;
 	/**

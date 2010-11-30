@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -152,8 +153,9 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		grid.setWidget(row, 0, new Label(item.getKeyId().toString()));
 		grid.setWidget(row, 1, new Label(item.getPhoneNumber()));
 		String[] formattedFileNameParts = item.getURI().split("/");
-		grid.setWidget(row, 2, new Label(
-				formattedFileNameParts[formattedFileNameParts.length - 1]));
+		grid.setWidget(row, 2, new Hyperlink(
+				formattedFileNameParts[formattedFileNameParts.length - 1],item.getURI()));
+		
 		grid.setWidget(row, 3, new Label(item.getProcessedStatus()));
 		grid.setWidget(row, 4, new Label(item.getProcessDate()));
 		/*String abbrvProcessingMessage = "";

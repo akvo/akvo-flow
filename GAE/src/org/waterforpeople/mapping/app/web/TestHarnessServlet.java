@@ -100,6 +100,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.TaskHandle;
 
 public class TestHarnessServlet extends HttpServlet {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
@@ -124,10 +125,13 @@ public class TestHarnessServlet extends HttpServlet {
 			while (siList.size() > 0) {
 				for (SurveyInstance si : siList) {
 					System.out.println(i++ + " " + si.toString());
-					AccessPointHelper aph = new AccessPointHelper();
+
 					String surveyInstanceId = new Long(si.getKey().getId())
 							.toString();
-					aph.processSurveyInstance(surveyInstanceId);
+					Queue queue = QueueFactory.getDefaultQueue();
+
+					queue.add(url("/app_worker/surveytask").param("action", "reprocessMapSurveyInstance").param("id",surveyInstanceId));
+					log.info("submiting task for SurveyInstanceId: " + surveyInstanceId);
 				}
 				siList = siDao.listSurveyInstanceBySurveyId(1362011L,
 						cursor.toWebSafeString());
@@ -182,7 +186,7 @@ public class TestHarnessServlet extends HttpServlet {
 			df.setCreatedDateTime(new Date());
 			df.setPhoneNumber("a4:ed:4e:54:ef:6d");
 			df.setChecksum("1149406886");
-			df.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
+			df.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
 			DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
 			java.util.Date date = new java.util.Date();
 			String dateTime = dateFormat.format(date);

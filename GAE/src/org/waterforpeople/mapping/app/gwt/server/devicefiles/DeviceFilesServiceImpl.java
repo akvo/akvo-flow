@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -26,15 +27,15 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 	 * 
 	 */
 	private static final long serialVersionUID = 5012633874057293188L;
-	
+
 	@Override
 	public String reprocessDeviceFile(String uri) {
 		final String DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil()
-		.getProperty("deviceZipPath");
+				.getProperty("deviceZipPath");
 		String reprocessingMessage = null;
 		Queue queue = QueueFactory.getDefaultQueue();
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		DeviceFiles df = dfDao.findByUri(DEVICE_FILE_PATH+uri);
+		DeviceFiles df = dfDao.findByUri(DEVICE_FILE_PATH + uri);
 		if (df != null) {
 			reprocessingMessage = "kicked off reprocessing";
 			df.setProcessedStatus(Status.StatusCode.REPROCESSING);
@@ -54,11 +55,20 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 	public ResponseDto<ArrayList<DeviceFilesDto>> listDeviceFiles(
 			String processingStatus, String cursor) {
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		List<DeviceFiles> dfList = (List<DeviceFiles>) dfDao.listDeviceFilesByStatus(StatusCode.valueOf(processingStatus), cursor);
+		List<DeviceFiles> dfList = (List<DeviceFiles>) dfDao
+				.listDeviceFilesByStatus(StatusCode.valueOf(processingStatus),
+						cursor);
 		ArrayList<DeviceFilesDto> dfDtoList = new ArrayList<DeviceFilesDto>();
 		for (DeviceFiles canonical : dfList) {
 			DeviceFilesDto dto = new DeviceFilesDto();
+			Text message = null;
+			if (canonical.getProcessingMessageText() != null) {
+				message = canonical.getProcessingMessageText();
+				canonical.setProcessingMessageText(null);
+			}
 			DtoMarshaller.copyToDto(canonical, dto);
+			if (message != null)
+				dto.setProcessingMessage(message.getValue());
 			dfDtoList.add(dto);
 		}
 		ResponseDto<ArrayList<DeviceFilesDto>> responseDto = new ResponseDto<ArrayList<DeviceFilesDto>>();

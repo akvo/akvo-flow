@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
+import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -67,6 +68,9 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
 		}else if(stReq.getAction().equals("deleteDeviceSurveyJobQueue")){
 			DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
 			dsjqDao.deleteJob(id);
+		}else if(stReq.getAction().equals(SurveyTaskRequest.REMAP_SURVEY_INSTANCE)){
+			AccessPointHelper aph = new AccessPointHelper();
+			aph.processSurveyInstance(stReq.getId().toString());
 		}
 		return null;
 	}

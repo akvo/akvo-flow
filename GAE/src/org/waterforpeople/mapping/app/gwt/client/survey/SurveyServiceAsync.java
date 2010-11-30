@@ -67,4 +67,6 @@ public interface SurveyServiceAsync {
 	void saveTranslations(List<TranslationDto> translations,
 			AsyncCallback<List<TranslationDto>> callback);
 
+	void rerunAPMappings(Long surveyId, AsyncCallback<Void> callback);
+
 }

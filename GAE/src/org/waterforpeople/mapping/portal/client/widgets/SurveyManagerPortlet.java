@@ -996,6 +996,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button exportSummaryButton = new Button("Export Summary");
 		Button exportRawDataButton = new Button("Export Raw Data");
 		Button exportFormButton = new Button("Export Survey Form");
+		Button remapSurveyFormButton = new Button("Remap to Access Point");
 
 		surveyDetail.setWidget(0, 0, surveyId);
 		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
@@ -1010,7 +1011,32 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyDetail.setWidget(4, 3, exportSummaryButton);
 		surveyDetail.setWidget(4, 4, exportRawDataButton);
 		surveyDetail.setWidget(4, 5, exportFormButton);
+		surveyDetail.setWidget(5,0, remapSurveyFormButton);
 		removeAllWidgetsLoadThisWidget(surveyDetail);
+
+		remapSurveyFormButton.addClickHandler(new ClickHandler() {
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onClick(ClickEvent event) {
+				Long surveyId = new Long(((TextBox) surveyDetail.getWidget(0, 0))
+						.getText());
+				svc.rerunAPMappings(surveyId, new AsyncCallback() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Could not process remapping request.");
+					}
+
+					@Override
+					public void onSuccess(Object result) {
+						Window.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
+					}
+
+				});
+			}
+
+		});
 
 		deleteSurveyButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -1108,6 +1134,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				surveyDetail.setWidget(5, 0, html);
 			}
 		});
+
 	}
 
 	private void loadQuestionGroupDetail(QuestionGroupDto item) {
@@ -1180,6 +1207,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			}
 
 		});
+
 	}
 
 	private QuestionGroupDto getQuestionGroupDto() {
