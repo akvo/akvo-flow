@@ -6,16 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -23,8 +21,10 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -55,7 +55,6 @@ import com.gallatinsystems.survey.domain.xml.Options;
 import com.gallatinsystems.survey.domain.xml.Text;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
-import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -823,24 +822,26 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public void rerunAPMappings(Long surveyId) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		List<SurveyInstance> siList = siDao.listSurveyInstanceBySurveyId(
-				surveyId, null);
-
-		Cursor cursor = JDOCursorHelper.getCursor(siList);
-		int i = 0;
+				surveyId, null);				
 		while (siList.size() > 0) {
-			for (SurveyInstance si : siList) {
-				System.out.println(i++ + " " + si.toString());
-
-				String surveyInstanceId = new Long(si.getKey().getId())
-						.toString();
-				Queue queue = QueueFactory.getDefaultQueue();
-
-				queue.add(url("/app_worker/surveytask").param("action", "reprocessMapSurveyInstance").param("id",surveyInstanceId));
-				log.info("submiting task for SurveyInstanceId: " + surveyInstanceId);
-			}
-			siList = siDao.listSurveyInstanceBySurveyId(surveyId,
-					cursor.toWebSafeString());
-			cursor = JDOCursorHelper.getCursor(siList);
+			Queue queue = QueueFactory.getDefaultQueue();
+			if (siList != null && siList.size() > 0) {
+				StringBuffer buffer = new StringBuffer();
+				for (int i = 0; i < siList.size(); i++) {
+					if (i > 0) {
+						buffer.append(",");
+					}
+					buffer.append(siList.get(i).getKey().getId());
+				}				
+				queue.add(url("/app_worker/surveytask").param("action",
+						"reprocessMapSurveyInstance").param(
+						SurveyTaskRequest.ID_PARAM,
+						surveyId.toString()).param(
+						SurveyTaskRequest.ID_LIST_PARAM,
+						buffer.toString()).param(
+						SurveyTaskRequest.CURSOR_PARAM,
+						SurveyInstanceDAO.getCursor(siList)));
+			}					
 		}
 	}
 }

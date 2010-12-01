@@ -289,6 +289,8 @@ public class BaseDAO<T extends BaseDomain> {
 
 		return results;
 	}
+	
+	@SuppressWarnings("unchecked")
 	protected <E extends BaseDomain> List<E> listByProperty(
 			String propertyName, Object propertyValue, String propertyType, String orderByField, String orderByDir,
 			Class<E> clazz) {

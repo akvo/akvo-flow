@@ -162,6 +162,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		return (List<QuestionAnswerStore>) q.execute(instanceId);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listQuestionAnswerStoreGeoQuestions(
 			Long instanceId) {
 		PersistenceManager pm = PersistenceFilter.getManager();

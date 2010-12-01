@@ -7,6 +7,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyTaskRequest extends RestRequest {
 	public static final String ID_PARAM = "id";
+	public static final String ID_LIST_PARAM = "idList";
 	public static final String DELETE_SURVEY_ACTION = "deleteSurvey";
 	public static final String DELETE_QUESTION_GROUP_ACTION = "deleteQuestionGroup";
 	public static final String DELETE_QUESTION_ACTION = "deleteQuestion";
@@ -15,11 +16,11 @@ public class SurveyTaskRequest extends RestRequest {
 	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptions";
 	public static final String REMAP_SURVEY_INSTANCE ="reprocessMapSurveyInstance";
 
-	private Long id = null;
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8374278438245797012L;
+	
+	private Long id;
+	private String idList;	
+	
 
 	@Override
 	protected void populateErrors() {
@@ -37,8 +38,10 @@ public class SurveyTaskRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
-		if (req.getParameter(ID_PARAM) != null)
+		if (req.getParameter(ID_PARAM) != null){
 			setId(new Long(req.getParameter(ID_PARAM)));
+		}
+		idList = req.getParameter(ID_LIST_PARAM);
 	}
 
 	public void setId(Long id) {
@@ -47,6 +50,14 @@ public class SurveyTaskRequest extends RestRequest {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getIdList() {
+		return idList;
+	}
+
+	public void setIdList(String idList) {
+		this.idList = idList;
 	}
 
 }
