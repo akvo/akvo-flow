@@ -316,8 +316,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			for (TranslationDto trans : translationMap.values()) {
 				Translation t = new Translation();
 				if (trans.getKeyId() != null)
-					t.setKey((KeyFactory.createKey(
-							Translation.class.getSimpleName(), trans.getKeyId())));
+					t.setKey((KeyFactory.createKey(Translation.class
+							.getSimpleName(), trans.getKeyId())));
 				t.setLanguageCode(trans.getLangCode());
 				t.setText(trans.getText());
 				t.setParentId(trans.getParentId());
@@ -337,8 +337,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public Question marshalQuestion(QuestionDto qdto) {
 		Question q = new Question();
 		if (qdto.getKeyId() != null)
-			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(),
-					qdto.getKeyId())));
+			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(), qdto
+					.getKeyId())));
 
 		q.setQuestionGroupId(qdto.getQuestionGroupId());
 		q.setOrder(qdto.getOrder());
@@ -385,9 +385,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (QuestionOptionDto qoDto : optionDtoList) {
 					QuestionOption oo = new QuestionOption();
 					if (qoDto.getKeyId() != null)
-						oo.setKey((KeyFactory.createKey(
-								QuestionOption.class.getSimpleName(),
-								qoDto.getKeyId())));
+						oo.setKey((KeyFactory.createKey(QuestionOption.class
+								.getSimpleName(), qoDto.getKeyId())));
 					if (qoDto.getCode() != null)
 						oo.setCode(qoDto.getCode());
 					if (qoDto.getText() != null)
@@ -822,26 +821,23 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public void rerunAPMappings(Long surveyId) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		List<SurveyInstance> siList = siDao.listSurveyInstanceBySurveyId(
-				surveyId, null);				
-		if (siList.size() > 0) {
+				surveyId, null);
+		if (siList != null && siList.size() > 0) {
 			Queue queue = QueueFactory.getDefaultQueue();
-			if (siList != null && siList.size() > 0) {
-				StringBuffer buffer = new StringBuffer();
-				for (int i = 0; i < siList.size(); i++) {
-					if (i > 0) {
-						buffer.append(",");
-					}
-					buffer.append(siList.get(i).getKey().getId());
-				}				
-				queue.add(url("/app_worker/surveytask").param("action",
-						"reprocessMapSurveyInstance").param(
-						SurveyTaskRequest.ID_PARAM,
-						surveyId.toString()).param(
-						SurveyTaskRequest.ID_LIST_PARAM,
-						buffer.toString()).param(
-						SurveyTaskRequest.CURSOR_PARAM,
-						SurveyInstanceDAO.getCursor(siList)));
-			}					
+			StringBuffer buffer = new StringBuffer();
+			for (int i = 0; i < siList.size(); i++) {
+				if (i > 0) {
+					buffer.append(",");
+				}
+				buffer.append(siList.get(i).getKey().getId());
+			}
+			queue.add(url("/app_worker/surveytask").param("action",
+					"reprocessMapSurveyInstance").param(
+					SurveyTaskRequest.ID_PARAM, surveyId.toString()).param(
+					SurveyTaskRequest.ID_LIST_PARAM, buffer.toString()).param(
+					SurveyTaskRequest.CURSOR_PARAM,
+					SurveyInstanceDAO.getCursor(siList)));
 		}
 	}
+
 }
