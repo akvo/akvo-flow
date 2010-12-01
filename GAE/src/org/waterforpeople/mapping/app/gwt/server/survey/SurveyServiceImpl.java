@@ -823,7 +823,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		List<SurveyInstance> siList = siDao.listSurveyInstanceBySurveyId(
 				surveyId, null);				
-		while (siList.size() > 0) {
+		if (siList.size() > 0) {
 			Queue queue = QueueFactory.getDefaultQueue();
 			if (siList != null && siList.size() > 0) {
 				StringBuffer buffer = new StringBuffer();
