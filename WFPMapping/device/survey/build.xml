@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="FieldSurvey">
+	<property file="local.properties" />
+	<property file="build.properties" />
+	<property file="default.properties" />
+
+	<!-- Custom Android task to deal with the project target, and import the
+         proper rules.
+         This requires ant 1.6.0 or above. -->
+	<path id="android.antlibs">
+		<pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
+		<pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
+		<pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
+		<pathelement path="${sdk.dir}/tools/lib/apkbuilder.jar" />
+		<pathelement path="${sdk.dir}/tools/lib/jarutils.jar" />
+		<pathelement path="${native.libs.dir}/android.jar" />
+		<pathelement path="${native.libs.dir}/maps.jar" />
+	</path>
+
+	<taskdef name="setup" classname="com.android.ant.SetupTask" classpathref="android.antlibs" />
+	<setup import="false" />
+
+	<taskdef name="aaptexec" classname="com.android.ant.AaptExecLoopTask" classpathref="android.antlibs" />
+
+	<taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
+
+	<taskdef name="xpath" classname="com.android.ant.XPathTask" classpathref="android.antlibs" />
+
+
+
+	<setup />
+	<target name="dist-android">
+		<ant antfile="${sdk.dir}/platforms/android-2.0.1/templates/android_rules.xml" target="debug" inheritall="true" inheritrefs="true" />
+	</target>
+</project>
