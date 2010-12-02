@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -11,11 +12,10 @@ import java.util.TreeMap;
 
 import javax.swing.JApplet;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable {
 	/**
@@ -24,40 +24,47 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 	private static final long serialVersionUID = 1555395969037695230L;
 	private static final String SERVER_PATH = "/rawdataimport?action=";
 	private JLabel statusLabel;
-	
+
 	private String date;
 	private String country;
 	private String serverBase;
 
 	String surveyId = null;
-	public void init(){
-		
+
+	public void init() {
+
 		System.out.println("About to create Panel got surveyId: " + surveyId);
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
-		surveyId = getParameter("exportType");
-		serverBase = getCodeBase().toString();
-		if (serverBase.trim().endsWith("/")) {
-			serverBase = serverBase.trim().substring(0,
-					serverBase.lastIndexOf("/"));
-		}
-		System.out.println("ServerBase: " + serverBase);
-		InputDialog dia = new InputDialog();
-		if (!dia.isCancelled()) {
-			if (country != null && surveyId != null && date != null) {
-				Thread worker = new Thread(this);
-				worker.start();
-			} else {
-				statusLabel.setText("Applet misconfigured");
+		//TODO: hack for testing only
+		if (getParameter("surveyId") != null){
+			surveyId = getParameter("surveyId");
+			serverBase = getCodeBase().toString();
+			if (serverBase.trim().endsWith("/")) {
+				serverBase = serverBase.trim().substring(0,
+						serverBase.lastIndexOf("/"));
 			}
-		} else {
-			statusLabel.setText("Cancelled");
+			System.out.println("ServerBase: " + serverBase);
+			InputDialog dia = new InputDialog();
+			if (!dia.isCancelled()) {
+				if ( surveyId != null ) {
+					Thread worker = new Thread(this);
+					worker.start();
+				} else {
+					statusLabel.setText("Applet misconfigured");
+				}
+			} else {
+				statusLabel.setText("Cancelled");
+			}
+		}else{
+			statusLabel.setText("Problem getting surveyId from page.  Cannot continue");
 		}
-
+		
 	}
+
 	@Override
 	public void run() {
-	
+
 	}
 
 	private String invokeRemoteMethod(String queryString) throws Exception {
@@ -95,33 +102,33 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 	private class InputDialog extends JDialog implements ActionListener {
 
 		private static final long serialVersionUID = -2875321125734363515L;
-		private JComboBox surveyGroupCB;
-		private JComboBox surveyNameCB;
-		private JTextField surveyField;
+		private JButton selectFileButton;
 		private JButton okButton;
+		private final JFileChooser fc = new JFileChooser();
 		private JButton cancelButton;
 		private JLabel status;
 		private boolean cancelled;
 		private TreeMap<String, Long> surveyMap = null;
+		private File file;
 
 		public InputDialog() {
 			super();
 			System.out.println("Inside InputDialog");
+			selectFileButton = new JButton("Select XLS file");
 			okButton = new JButton("Ok");
 			cancelButton = new JButton("Cancel");
 			status = new JLabel();
 
 			JPanel contentPane = new JPanel(new GridLayout(5, 2, 10, 10));
-			contentPane.add(new JLabel("Survey Group: "));
-			contentPane.add(surveyGroupCB);
-			contentPane.add(new JLabel("Survey: "));
-			contentPane.add(surveyNameCB);
+			contentPane.add(selectFileButton);
+			contentPane.add(fc);
 			contentPane.add(okButton);
 			contentPane.add(cancelButton);
 			contentPane.add(status);
 			setContentPane(contentPane);
 			cancelButton.addActionListener(this);
 			okButton.addActionListener(this);
+			selectFileButton.addActionListener(this);
 			setSize(300, 200);
 			setTitle("Enter Backout Parameters");
 			setModal(true);
@@ -131,21 +138,29 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 		private TreeMap<String, Long> surveyGroupMap = new TreeMap<String, Long>();
 		private SurveyReplicationImporter sri = null;
 
-		
-		private void enableFileBrowse() {
-
+		private void processFile() {
+			RawDataSpreadsheetImporter rdsi = new RawDataSpreadsheetImporter();
+			rdsi.setSurveyId(new Long(surveyId));
+			rdsi.executeImport(file, serverBase);
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			boolean isValid = true;
 			if (e.getSource() == cancelButton) {
 				cancelled = true;
-			} else {
-			
+			} else if (e.getSource() == selectFileButton) {
+				int returnVal = fc.showOpenDialog(InputDialog.this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					file = fc.getSelectedFile();
+				} else {
 
+				}
+
+			} else if (e.getSource() == okButton) {
+				processFile();
 			}
 			if (isValid) {
-				setVisible(false);
+				//setVisible(false);
 			}
 		}
 

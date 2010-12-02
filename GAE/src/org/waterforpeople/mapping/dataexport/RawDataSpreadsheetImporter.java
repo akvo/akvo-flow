@@ -44,7 +44,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
 						+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
-						+ surveyId + "&");
+						+ getSurveyId() + "&");
 				for (Cell cell : row) {
 					String type = null;
 					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
@@ -135,7 +135,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 										+ "&"
 										+ RawDataImportRequest.SURVEY_ID_PARAM
 										+ "="
-										+ surveyId
+										+ getSurveyId()
 										+ "&"
 										+ RawDataImportRequest.COLLECTION_DATE_PARAM
 										+ "="
@@ -196,7 +196,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		File file = new File(args[0].trim());
 		String serverBaseArg = args[1].trim();
 		RawDataSpreadsheetImporter r = new RawDataSpreadsheetImporter();
-		r.surveyId = Long.parseLong(args[2].trim());
+		r.setSurveyId(Long.parseLong(args[2].trim()));
 		r.executeImport(file, serverBaseArg);
 	}
 
@@ -204,5 +204,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	public void executeImport(String sourceBase, String serverBase) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public Long getSurveyId() {
+		return surveyId;
 	}
 }
