@@ -1143,8 +1143,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onClick(ClickEvent event) {
 				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImportApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
-				appletString += "<PARAM name='criteria' value=surveyId="
-						+ item.getKeyId() + ">";
+				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
+				appletString += "<PARAM name='surveyId' value='x="+ item.getKeyId() + "'>";
 				appletString += "</applet>";
 				HTML html = new HTML();
 				html.setHTML(appletString);

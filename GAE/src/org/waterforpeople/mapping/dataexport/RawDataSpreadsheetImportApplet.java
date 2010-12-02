@@ -7,9 +7,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.TreeMap;
 
 import javax.swing.JApplet;
@@ -20,9 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
-
 public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable {
 	/**
 	 * 
@@ -30,16 +24,18 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 	private static final long serialVersionUID = 1555395969037695230L;
 	private static final String SERVER_PATH = "/rawdataimport?action=";
 	private JLabel statusLabel;
-	private String surveyId;
+	
 	private String date;
 	private String country;
 	private String serverBase;
 
-	
+	String surveyId = null;
 	public void init(){
-		System.out.println("About to create Panel");
+		
+		System.out.println("About to create Panel got surveyId: " + surveyId);
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
+		surveyId = getParameter("exportType");
 		serverBase = getCodeBase().toString();
 		if (serverBase.trim().endsWith("/")) {
 			serverBase = serverBase.trim().substring(0,
@@ -111,10 +107,6 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 		public InputDialog() {
 			super();
 			System.out.println("Inside InputDialog");
-			//sri = new SurveyReplicationImporter();
-			surveyGroupCB = new JComboBox();
-			//setupSurveyGroupCB();
-			surveyNameCB = new JComboBox();
 			okButton = new JButton("Ok");
 			cancelButton = new JButton("Cancel");
 			status = new JLabel();
@@ -139,60 +131,7 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 		private TreeMap<String, Long> surveyGroupMap = new TreeMap<String, Long>();
 		private SurveyReplicationImporter sri = null;
 
-		private void setupSurveyGroupCB() {
-			try {
-				List<SurveyGroup> sgList = sri.fetchSurveyGroups(serverBase);
-				for (SurveyGroup sgItem : sgList) {
-					surveyGroupCB.addItem(sgItem.getCode());
-					surveyGroupMap.put(sgItem.getCode(), sgItem.getKey()
-							.getId());
-				}
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			surveyGroupCB.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent ev) {
-					if (ev.getActionCommand().equals("")) {
-						Long surveyGroupId = surveyGroupMap.get(((JComboBox) ev
-								.getSource()).getSelectedItem());
-						setupSurveyCB(surveyGroupId);
-					}
-				}
-
-			});
-		}
-
-		private void setupSurveyCB(Long surveyGroupId) {
-			try {
-				List<Survey> surveyList = sri.fetchSurveys(surveyGroupId,
-						serverBase);
-				surveyMap = new TreeMap<String, Long>();
-				for (Survey surveyItem : surveyList) {
-					surveyNameCB.addItem(surveyItem.getCode());
-					surveyMap.put(surveyItem.getCode(), surveyItem.getKey()
-							.getId());
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			surveyNameCB.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent ev) {
-					Long surveyId = surveyMap.get(((JComboBox) ev.getSource())
-							.getSelectedItem());
-					enableFileBrowse();
-
-				}
-
-			});
-		}
-
+		
 		private void enableFileBrowse() {
 
 		}
@@ -202,12 +141,7 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 			if (e.getSource() == cancelButton) {
 				cancelled = true;
 			} else {
-				surveyId = surveyField.getText().trim();
-
-				if (surveyId == null || surveyId.length() == 0) {
-					status.setText("SurveyId is missing");
-					isValid = false;
-				}
+			
 
 			}
 			if (isValid) {
