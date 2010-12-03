@@ -428,7 +428,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestion();
 				} catch (Exception e) {
-					Window.alert("Could not save question no Question Group was selected");
+					Window
+							.alert("Could not save question no Question Group was selected");
 				}
 			}
 
@@ -484,14 +485,15 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	private void loadDependencyTable(Boolean dependentValue) {
 		if (dependentValue) {
 			QuestionDto tempQuestion = null;
-			if(currentSelection instanceof QuestionDto){
+			if (currentSelection instanceof QuestionDto) {
 				tempQuestion = (QuestionDto) currentSelection;
-			}else{
+			} else {
 				tempQuestion = new QuestionDto();
-				tempQuestion.setSurveyId(((QuestionGroupDto)currentSelection).getSurveyId());
+				tempQuestion.setSurveyId(((QuestionGroupDto) currentSelection)
+						.getSurveyId());
 			}
-			final QuestionDto currentQuestion = tempQuestion; 
-			
+			final QuestionDto currentQuestion = tempQuestion;
+
 			final MessageDialog dia = new MessageDialog("Please wait",
 					"Loading question details...");
 			dia.showRelativeTo(questionDetailPanel.getWidget(7, 1));
@@ -514,8 +516,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(
-										currentQuestion.getSurveyId(), result);
+								surveyOptionQuestionMap.put(currentQuestion
+										.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 								dia.hide();
@@ -568,6 +570,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			answerLB.setVisible(false);
 			questionDetailPanel.setWidget(8, 3, answerLB);
 
+			if (questionLB.getItemCount() == 1 && optionQuestions != null
+					&& optionQuestions.length > 0) {
+				loadDepQA(optionQuestions[0], null);
+			}
 			questionLB.addChangeHandler(new ChangeHandler() {
 				@Override
 				public void onChange(ChangeEvent event) {
@@ -703,8 +709,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null,
-						questionOptionDetail.getRowCount() - 1);
+				loadQuestionOptionRowDetail(null, questionOptionDetail
+						.getRowCount() - 1);
 			}
 
 		});
@@ -956,7 +962,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		surveyGroupDetail.setWidget(0, 1, surveyGroupId);
 		surveyGroupDetail.setWidget(1, 0, new Label("Survey Group Code"));
 		surveyGroupDetail.setWidget(1, 1, surveyGroupCode);
-		surveyGroupDetail.setWidget(2, 0, new Label("Survey Group Description"));
+		surveyGroupDetail
+				.setWidget(2, 0, new Label("Survey Group Description"));
 		surveyGroupDetail.setWidget(2, 1, surveyGroupDesc);
 		surveyGroupDetail.setWidget(3, 0, saveSurveyGroupButton);
 		surveyGroupDetail.setWidget(3, 1, deleteSurveyGroupButton);
@@ -1041,7 +1048,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 					@Override
 					public void onSuccess(Object result) {
-						Window.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
+						Window
+								.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
 					}
 
 				});
@@ -1064,7 +1072,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveSurvey();
 				} catch (Exception e) {
-					Window.alert("Could not save survey no survey group selected");
+					Window
+							.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -1152,7 +1161,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImportApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
-				appletString += "<PARAM name='surveyId' value='"+ item.getKeyId() + "'>";
+				appletString += "<PARAM name='surveyId' value='"
+						+ item.getKeyId() + "'>";
 				appletString += "</applet>";
 				HTML html = new HTML();
 				html.setHTML(appletString);
@@ -1195,7 +1205,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestionGroup();
 				} catch (Exception ex) {
-					Window.alert("Cannot Save Question Group Because no parent survey is selected");
+					Window
+							.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
 			}
 
@@ -1219,7 +1230,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 										MessageDialog errDia = new MessageDialog(
 												"Could not delete question group",
 												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
-										errDia.showRelativeTo(questionGroupDetail);
+										errDia
+												.showRelativeTo(questionGroupDetail);
 									}
 
 									@Override
