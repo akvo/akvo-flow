@@ -729,7 +729,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionId = new TextBox();
 		// optionId.setVisible(true);
 		if (item != null) {
-			if (item.getKeyId() != null) {
+			if (item.getKeyId() == null) {
 				optionId.setText(item.getKeyId().toString());
 				optionId.setVisible(false);
 			}
@@ -1297,7 +1297,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 								.getWidget(0, 0);
 						questionGroupId.setText(result.getKeyId().toString());
 						if (isNew) {
-							surveyTree.addChild(treeParent, result);
+							TreeItem item = surveyTree.addChild(treeParent, result);
+							if(item != null){
+								surveyTree.setCurrentlySelectedItem(item);
+								currentSelection = (BaseDto)item.getUserObject();
+							}
 						}
 						Window.alert("Saved Question Group");
 					}
@@ -1327,7 +1331,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				TextBox surveyId = (TextBox) surveyDetail.getWidget(0, 0);
 				surveyId.setText(result.getKeyId().toString());
 				if (isNew) {
-					surveyTree.addChild(treeParent, result);
+					TreeItem item = surveyTree.addChild(treeParent, result);
+					currentSelection = result;
+					if(item != null){
+						surveyTree.setCurrentlySelectedItem(item);
+						currentSelection = (BaseDto)item.getUserObject();
+					}
 				}
 				Window.alert("Saved Survey");
 			}
@@ -1408,7 +1417,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				if (isNew) {
 					((TextBox) surveyGroupDetail.getWidget(0, 1))
 							.setText(result.getKeyId().toString());
-					surveyTree.addChild(treeParent, result);
+					TreeItem item = surveyTree.addChild(treeParent, result);
+					if(item != null){
+						surveyTree.setCurrentlySelectedItem(item);
+						currentSelection = (BaseDto)item.getUserObject();
+					}
 				}
 				Window.alert("Survey Group Saved");
 			}

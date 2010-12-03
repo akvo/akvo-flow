@@ -154,9 +154,9 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			}
 		}
 	}
-	
-	public void removeItem(TreeItem item){
-		if(item != null){
+
+	public void removeItem(TreeItem item) {
+		if (item != null) {
 			item.remove();
 		}
 	}
@@ -406,18 +406,18 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			QuestionDto dto = (QuestionDto) item.getUserObject();
 			if (dto.getTranslationMap() == null
 					|| (QuestionDto.QuestionType.OPTION == dto.getType() || QuestionDto.QuestionType.STRENGTH == dto
-							.getType()) && dto.getOptionContainerDto() == null) {					
+							.getType()) && dto.getOptionContainerDto() == null) {
 				surveyService.loadQuestionDetails(dto.getKeyId(),
 						new AsyncCallback<QuestionDto>() {
 							@Override
 							public void onFailure(Throwable caught) {
-								//no-op	
+								// no-op
 							}
 
 							@Override
-							public void onSuccess(QuestionDto result) {								
+							public void onSuccess(QuestionDto result) {
 								item.setUserObject(result);
-								notifyListeners(result);								
+								notifyListeners(result);
 							}
 						});
 
@@ -497,19 +497,21 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	 * @param parentUserObject
 	 * @param child
 	 */
-	public void addChild(BaseDto parentUserObject, NamedObject child) {
+	public TreeItem addChild(BaseDto parentUserObject, NamedObject child) {
+		TreeItem addedItem = null;
 		if (parentUserObject != null) {
 			TreeItem parentItem = findItemByUserObject(parentUserObject);
 			if (parentItem != null) {
-				TreeItem childItem = new TreeItem(child.getDisplayName());
-				childItem.setUserObject(child);
-				parentItem.addItem(childItem);
+				addedItem = new TreeItem(child.getDisplayName());
+				addedItem.setUserObject(child);
+				parentItem.addItem(addedItem);
 			}
-		}else{
-			TreeItem rootItem = new TreeItem(child.getDisplayName());
-			rootItem.setUserObject(child);
-			surveyRootTree.addItem(rootItem);
+		} else {
+			addedItem = new TreeItem(child.getDisplayName());
+			addedItem.setUserObject(child);
+			surveyRootTree.addItem(addedItem);
 		}
+		return addedItem;
 	}
 
 	/**
