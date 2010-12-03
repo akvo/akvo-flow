@@ -483,7 +483,15 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private void loadDependencyTable(Boolean dependentValue) {
 		if (dependentValue) {
-			final QuestionDto currentQuestion = (QuestionDto) currentSelection;
+			QuestionDto tempQuestion = null;
+			if(currentSelection instanceof QuestionDto){
+				tempQuestion = (QuestionDto) currentSelection;
+			}else{
+				tempQuestion = new QuestionDto();
+				tempQuestion.setSurveyId(((QuestionGroupDto)currentSelection).getSurveyId());
+			}
+			final QuestionDto currentQuestion = tempQuestion; 
+			
 			final MessageDialog dia = new MessageDialog("Please wait",
 					"Loading question details...");
 			dia.showRelativeTo(questionDetailPanel.getWidget(7, 1));
