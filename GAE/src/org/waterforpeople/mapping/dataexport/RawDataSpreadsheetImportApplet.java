@@ -18,9 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1555395969037695230L;
 	private static final String SERVER_PATH = "/rawdataimport?action=";
 	private JLabel statusLabel;
@@ -120,8 +118,7 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 			status = new JLabel();
 
 			JPanel contentPane = new JPanel(new GridLayout(5, 2, 10, 10));
-			contentPane.add(selectFileButton);
-			contentPane.add(fc);
+			contentPane.add(selectFileButton);			
 			contentPane.add(okButton);
 			contentPane.add(cancelButton);
 			contentPane.add(status);
