@@ -954,9 +954,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button deleteSurveyGroupButton = new Button("Delete Survey Group");
 
 		surveyGroupDetail.setWidget(0, 1, surveyGroupId);
-		surveyGroupDetail.setWidget(1, 0, new Label("Survey Code"));
+		surveyGroupDetail.setWidget(1, 0, new Label("Survey Group Code"));
 		surveyGroupDetail.setWidget(1, 1, surveyGroupCode);
-		surveyGroupDetail.setWidget(2, 0, new Label("Survey Description"));
+		surveyGroupDetail.setWidget(2, 0, new Label("Survey Group Description"));
 		surveyGroupDetail.setWidget(2, 1, surveyGroupDesc);
 		surveyGroupDetail.setWidget(3, 0, saveSurveyGroupButton);
 		surveyGroupDetail.setWidget(3, 1, deleteSurveyGroupButton);
