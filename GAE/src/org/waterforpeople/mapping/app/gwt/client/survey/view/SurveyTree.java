@@ -356,7 +356,14 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 										surveyItem.addQuestionGroup(result
 												.get(i));
 										TreeItem qGroup = new TreeItem();
-										qGroup.setText(result.get(i).getCode());
+										String text = result.get(i).getCode();
+										if (text != null
+												&& text.trim().length() > MAX_Q_LENGTH) {
+											text = text.substring(0,
+													MAX_Q_LENGTH);
+										}
+										
+										qGroup.setText(text);
 										qGroup.setUserObject(result.get(i));
 										item.addItem(qGroup);
 										addDummy(qGroup);
@@ -502,12 +509,24 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 		if (parentUserObject != null) {
 			TreeItem parentItem = findItemByUserObject(parentUserObject);
 			if (parentItem != null) {
-				addedItem = new TreeItem(child.getDisplayName());
+				String text = child.getDisplayName();
+				if (text != null
+						&& text.trim().length() > MAX_Q_LENGTH) {
+					text = text.substring(0,
+							MAX_Q_LENGTH);
+				}
+				addedItem = new TreeItem(text);
 				addedItem.setUserObject(child);
 				parentItem.addItem(addedItem);
 			}
 		} else {
-			addedItem = new TreeItem(child.getDisplayName());
+			String text = child.getDisplayName();
+			if (text != null
+					&& text.trim().length() > MAX_Q_LENGTH) {
+				text = text.substring(0,
+						MAX_Q_LENGTH);
+			}
+			addedItem = new TreeItem(text);
 			addedItem.setUserObject(child);
 			surveyRootTree.addItem(addedItem);
 		}
