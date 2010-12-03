@@ -584,7 +584,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				}
 			});
 			TextBox qDepId = new TextBox();
+			qDepId.setVisible(false);
 			questionDetailPanel.setWidget(8, 4, qDepId);
+			
 			if (currentQuestion != null
 					&& currentQuestion.getQuestionDependency() != null) {
 				// set existing value
@@ -630,7 +632,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private void updateDependencyAnswerSelection(
 			List<QuestionOptionDto> qoList, String selectedAnswer) {
-		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
+		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3); 
 		answerLB.clear();
 		int answerIndex = -1;
 		if (qoList != null) {
