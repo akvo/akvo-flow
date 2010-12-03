@@ -1261,7 +1261,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		else {
 			SurveyDto parentSDto = (SurveyDto) surveyTree
 					.getCurrentlySelectedItem().getUserObject();
-			qDto.setPath(parentSDto.getName() + "/" + parentSDto.getName());
+			SurveyGroupDto sGroup = (SurveyGroupDto)surveyTree.getParentUserObject(parentSDto);
+			qDto.setPath( sGroup.getCode()+ "/" + parentSDto.getName());
 			qDto.setSurveyId(parentSDto.getKeyId());
 		}
 		if (name.getText().length() > 0)
