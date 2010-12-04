@@ -22,6 +22,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.StringUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -43,16 +44,21 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private TextView latLabel;
 	private EditText latField;
 	private TextView lonLabel;
+	private EditText generatedCodeField;
+	private TextView generatedCodeLabel;
 	private EditText lonField;
 	private TextView elevationLabel;
 	private EditText elevationField;
 	private ImageView statusIndicator;
 	private float lastAccuracy;
 	private boolean needUpdate = false;
+	private boolean generateCode;
 
 	public GeoQuestionView(Context context, Question q, String[] langCodes,
 			boolean readOnly) {
 		super(context, q, langCodes, readOnly);
+		// TODO: parameterize (add to Question ?)
+		this.generateCode = true;
 		init();
 	}
 
@@ -121,16 +127,35 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		tr.addView(statusIndicator);
 		addView(tr);
 
+		if (generateCode) {
+			generatedCodeLabel = new TextView(context);
+			generatedCodeLabel.setText(R.string.generatedcode);
+			generatedCodeField = new EditText(context);
+			generatedCodeField.setWidth(DEFAULT_WIDTH);
+			tr = new TableRow(context);
+			tr.addView(generatedCodeLabel);
+			addView(tr);
+			tr = new TableRow(context);
+			tr.addView(generatedCodeField);
+			addView(tr);
+		}
+
 		if (readOnly) {
 			latField.setFocusable(false);
 			lonField.setFocusable(false);
 			elevationField.setFocusable(false);
+			if (generatedCodeField != null) {
+				generatedCodeField.setFocusable(false);
+			}
 			geoButton.setEnabled(false);
 		}
 		if (question.isLocked()) {
 			latField.setFocusable(false);
 			lonField.setFocusable(false);
 			elevationField.setFocusable(false);
+			if (generatedCodeField != null) {
+				generatedCodeField.setFocusable(false);
+			}
 		}
 	}
 
@@ -178,9 +203,26 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
 		elevationField.setText(loc.getAltitude() + "");
-		setResponse(new QuestionResponse(loc.getLatitude() + DELIM
-				+ loc.getLongitude() + DELIM + loc.getAltitude(),
-				ConstantUtil.GEO_RESPONSE_TYPE, getQuestion().getId()));
+		if (generateCode) {
+			generatedCodeField.setText(generateCode(loc.getLatitude(), loc
+					.getLongitude()));
+		}
+		setResponse();
+	}
+
+	/**
+	 * generates a unique code based on the lat/lon passed in. Current algorithm
+	 * returns the concatenation of the integer portion of 1000 times absolute
+	 * value of lat and lon in base 36
+	 * 
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
+	private String generateCode(double lat, double lon) {
+		Long code = Long.parseLong((int) ((Math.abs(lat) * 1000d)) + ""
+				+ (int) ((Math.abs(lon) * 1000d)));
+		return Long.toString(code, 36);
 	}
 
 	/**
@@ -192,6 +234,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		latField.setText("");
 		lonField.setText("");
 		elevationField.setText("");
+		if (generatedCodeField != null) {
+			generatedCodeField.setText("");
+		}
 	}
 
 	/**
@@ -205,14 +250,15 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 			if (resp.getValue() != null) {
 				StringTokenizer strTok = new StringTokenizer(resp.getValue(),
 						DELIM);
-				if (strTok.countTokens() == 3) {
+				if (strTok.countTokens() >= 3) {
 					latField.setText(strTok.nextToken());
 					lonField.setText(strTok.nextToken());
 					elevationField.setText(strTok.nextToken());
+					if (generatedCodeField != null && strTok.hasMoreTokens()) {
+						generatedCodeField.setText(strTok.nextToken());
+					}
 				}
-
 			}
-
 		}
 	}
 
@@ -271,8 +317,27 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	@Override
 	public void onFocusChange(View v, boolean hasFocus) {
 		if (!hasFocus) {
+			if (generatedCodeField != null
+					&& (!StringUtil
+							.isNullOrEmpty(latField.getText().toString()) && !StringUtil
+							.isNullOrEmpty(lonField.getText().toString()))) {
+				generatedCodeField.setText(generateCode(Double
+						.parseDouble(latField.getText().toString()), Double
+						.parseDouble(lonField.getText().toString())));
+			}
+			setResponse();
+		}
+	}
+
+	private void setResponse() {
+		if (!generateCode) {
 			setResponse(new QuestionResponse(latField.getText() + DELIM
 					+ lonField.getText() + DELIM + elevationField.getText(),
+					ConstantUtil.GEO_RESPONSE_TYPE, getQuestion().getId()));
+		} else {
+			setResponse(new QuestionResponse(latField.getText() + DELIM
+					+ lonField.getText() + DELIM + elevationField.getText()
+					+ DELIM + generatedCodeField.getText(),
 					ConstantUtil.GEO_RESPONSE_TYPE, getQuestion().getId()));
 		}
 	}

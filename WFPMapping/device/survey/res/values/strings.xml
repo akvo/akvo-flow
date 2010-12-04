@@ -172,6 +172,7 @@
 	<string name="transstartdate">Transmission Started:</string>
 	<string name="transenddate">Transmission Finished:</string>
 	<string name="resendall">Resend all Surveys</string>
-	<string name="resendone">Resend Survey</string>	
-	<string name="appversion">1.5.0</string>	
+	<string name="resendone">Resend Survey</string>
+	<string name="generatedcode">Unique Code</string>	
+	<string name="appversion">1.6.0</string>	
 </resources>
