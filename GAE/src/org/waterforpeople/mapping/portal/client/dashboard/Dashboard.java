@@ -284,9 +284,6 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			addPortlet(new SurveyQuestionPortlet(), 2, true);
 			posMap.put(SummaryPortlet.NAME, "2,0");
 
-			addPortlet(new AccessPointManagerPortlet(getCurrentUser()), 1, true);
-			posMap.put(AccessPointManagerPortlet.NAME, "2,1");
-
 			// if this is the first time the user logged in, create a config for
 			// him with the default portlet set
 			updateUserConfig(posMap);
