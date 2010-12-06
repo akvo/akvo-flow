@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -22,7 +23,6 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
-import org.waterforpeople.mapping.domain.Status;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
@@ -30,6 +30,7 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -42,18 +43,25 @@ import com.google.appengine.api.labs.taskqueue.TaskOptions;
 public class TaskServlet extends AbstractRestApiServlet {
 
 	private static String DEVICE_FILE_PATH;
+	private static String FROM_ADDRESS;
 	private static final String REGION_FLAG = "regionFlag=true";
 	private static final long serialVersionUID = -2607990749512391457L;
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
 	private AccessPointHelper aph;
 	private SurveyInstanceDAO siDao;
+	private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
+	private TreeMap<String, String> recepientList = null;
 
 	public TaskServlet() {
 		DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil()
 				.getProperty("deviceZipPath");
+		FROM_ADDRESS = new com.gallatinsystems.common.util.PropertyUtil()
+				.getProperty(EMAIL_FROM_ADDRESS_KEY);
 		aph = new AccessPointHelper();
 		siDao = new SurveyInstanceDAO();
+		recepientList = MailUtil.loadRecipientList();
+		
 	}
 
 	private ArrayList<SurveyInstance> processFile(String fileName,
@@ -92,6 +100,9 @@ public class TaskServlet extends AbstractRestApiServlet {
 						+ deviceFile.getURI() + " : " + iex.getMessage();
 				log.log(Level.SEVERE, message);
 				deviceFile.addProcessingMessage(message);
+				MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
+						"Device File Processing Error: " + fileName,
+						message);
 
 			}
 
@@ -128,14 +139,19 @@ public class TaskServlet extends AbstractRestApiServlet {
 							unparsedLines.subList(offset, lineNum));
 					surveyInstances.add(inst);
 					if (lineNum < unparsedLines.size()) {
-						StatusCode processingStatus = inst.getDeviceFile().getProcessedStatus();
-						if(processingStatus.equals(StatusCode.PROCESSED_WITH_ERRORS)){
+						StatusCode processingStatus = inst.getDeviceFile()
+								.getProcessedStatus();
+						if (processingStatus
+								.equals(StatusCode.PROCESSED_WITH_ERRORS)) {
 							String message = "Error in file during first processing step. Continuing to next part";
 							deviceFile.addProcessingMessage(message);
-							deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
-						}else{
-							deviceFile.addProcessingMessage("Processed " + lineNum + " lines spawning queue call");
-							deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
+							deviceFile
+									.setProcessedStatus(StatusCode.IN_PROGRESS);
+						} else {
+							deviceFile.addProcessingMessage("Processed "
+									+ lineNum + " lines spawning queue call");
+							deviceFile
+									.setProcessedStatus(StatusCode.IN_PROGRESS);
 						}
 						// if we haven't processed everything yet, invoke a
 						// new service
@@ -149,9 +165,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 			}
 			dfDao.save(deviceFile);
 			zis.close();
-
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
+			MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
+					"Device File Processing Error: " + fileName,
+					e.getMessage());
 		}
 
 		return surveyInstances;

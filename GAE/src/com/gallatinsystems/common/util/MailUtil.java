@@ -3,6 +3,7 @@ package com.gallatinsystems.common.util;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +17,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class MailUtil {
+	private static final String RECIPIENT_LIST_STRING = "recipientListString";
 	private static final Logger log = Logger
 			.getLogger(MailUtil.class.getName());
 
@@ -53,4 +55,15 @@ public class MailUtil {
 		}
 	}
 
+	public static TreeMap<String, String> loadRecipientList() {
+		TreeMap<String, String> recipientList = new TreeMap<String, String>();
+		String recipientListString = new com.gallatinsystems.common.util.PropertyUtil()
+				.getProperty(RECIPIENT_LIST_STRING);
+		StringTokenizer st = new StringTokenizer(recipientListString, "|");
+		while (st.hasMoreTokens()) {
+			String[] emailParts = st.nextToken().split(";");
+			recipientList.put(emailParts[0], emailParts[1]);
+		}
+		return recipientList;
+	}
 }
