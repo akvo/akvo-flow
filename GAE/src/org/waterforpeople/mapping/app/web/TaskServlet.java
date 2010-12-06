@@ -61,7 +61,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		aph = new AccessPointHelper();
 		siDao = new SurveyInstanceDAO();
 		recepientList = MailUtil.loadRecipientList();
-		
+
 	}
 
 	private ArrayList<SurveyInstance> processFile(String fileName,
@@ -81,7 +81,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 			deviceFile.setProcessDate(getNowDateTimeFormatted());
 			deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
 			deviceFile.setURI(url.toURI().toString());
-			deviceFile.setPhoneNumber(phoneNumber);
+			if (phoneNumber == null || phoneNumber.equals("null"))
+				deviceFile.setPhoneNumber(null);
+			else
+				deviceFile.setPhoneNumber(phoneNumber);
 			if (checksum == null || checksum.equals("null"))
 				deviceFile.setChecksum(null);
 			else
@@ -101,8 +104,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 				log.log(Level.SEVERE, message);
 				deviceFile.addProcessingMessage(message);
 				MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-						"Device File Processing Error: " + fileName,
-						message);
+						"Device File Processing Error: " + fileName, message);
 
 			}
 
@@ -178,8 +180,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
 			MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-					"Device File Processing Error: " + fileName,
-					e.getMessage());
+					"Device File Processing Error: " + fileName, e.getMessage());
 		}
 
 		return surveyInstances;

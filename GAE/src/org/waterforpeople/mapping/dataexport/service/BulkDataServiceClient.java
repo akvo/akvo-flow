@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.dataexport.service;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,6 +14,7 @@ import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -25,7 +25,10 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
+import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
+
+import com.google.appengine.api.datastore.Text;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -37,6 +40,7 @@ public class BulkDataServiceClient {
 	private static final String DATA_SERVLET_PATH = "/databackout?action=";
 	public static final String RESPONSE_KEY = "dtoList";
 	private static final String SURVEY_SERVLET_PATH = "/surveyrestapi?action=";
+	private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
 
 	/**
 	 * lists all responses from the server for a surveyInstance submission as a
@@ -55,6 +59,22 @@ public class BulkDataServiceClient {
 				+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
 				+ instanceId);
 		return parseInstanceValues(instanceValues);
+	}
+
+	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
+			String serverBase) throws Exception {
+		List<DeviceFilesDto> dfDto = new ArrayList<DeviceFilesDto>();
+		String queryString = serverBase + DEVICE_FILES_SERVLET_PATH
+				+ DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&"
+				+ DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "="
+				+ statusCode;
+		for(DeviceFilesDto dto :parseDeviceFiles(fetchDataFromServer(queryString))){
+			dfDto.add(dto);
+		}
+
+		String cursor = null;
+
+		return dfDto;
 	}
 
 	/**
@@ -447,6 +467,51 @@ public class BulkDataServiceClient {
 			}
 		}
 		return dtoList;
+	}
+
+	private static List<DeviceFilesDto> parseDeviceFiles(String response)
+			throws Exception {
+		if (response.startsWith("{")) {
+			List<DeviceFilesDto> dtoList = new ArrayList<DeviceFilesDto>();
+			JSONArray arr = getJsonArray(response);
+			if (arr != null) {
+				
+				for (int i = 0; i < arr.length(); i++) {
+					DeviceFilesDto dto = new DeviceFilesDto();
+					JSONObject json = arr.getJSONObject(i);
+					if (json != null) {
+						if(json.has("processingMessage")){
+							String x = json.getString("processingMessage");
+							dto.setProcessingMessage(x);
+						}
+						if(json.has("phoneNumber")){
+							String x = json.getString("phoneNumber");
+							dto.setPhoneNumber(x);
+						}
+						if(json.has("processedStatus")){
+							String x = json.getString("processedStatus");
+							dto.setProcessedStatus(x);
+						}
+						if(json.has("checksum")){
+							String x = json.getString("checksum");
+							dto.setChecksum(x);
+						}
+						if(json.has("processDate")){
+							String x = json.getString("processDate");
+							dto.setProcessDate(x);
+						}
+						if(json.has("URI")){
+							String x = json.getString("URI");
+							dto.setURI(x);
+						}
+					}
+					dtoList.add(dto);
+				}
+				return dtoList;
+			}
+			return null;
+		}
+		return null;
 	}
 
 	/**

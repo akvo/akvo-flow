@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,14 +37,17 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
+import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.dataexport.DeviceFilesReplicationImporter;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
@@ -100,7 +105,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskHandle;
 
 public class TestHarnessServlet extends HttpServlet {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
@@ -130,8 +134,11 @@ public class TestHarnessServlet extends HttpServlet {
 							.toString();
 					Queue queue = QueueFactory.getDefaultQueue();
 
-					queue.add(url("/app_worker/surveytask").param("action", "reprocessMapSurveyInstance").param("id",surveyInstanceId));
-					log.info("submiting task for SurveyInstanceId: " + surveyInstanceId);
+					queue.add(url("/app_worker/surveytask").param("action",
+							"reprocessMapSurveyInstance").param("id",
+							surveyInstanceId));
+					log.info("submiting task for SurveyInstanceId: "
+							+ surveyInstanceId);
 				}
 				siList = siDao.listSurveyInstanceBySurveyId(1362011L,
 						cursor.toWebSafeString());
@@ -178,6 +185,40 @@ public class TestHarnessServlet extends HttpServlet {
 			 * 
 			 * for(SurveyGroup sg: sgList) sgDao.delete(sg);
 			 */
+		} else if ("replicateDeviceFiles".equals(action)) {
+			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+			for(SurveyInstance si :siDao.list("all")){
+				siDao.delete(si);
+			}
+			
+			QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+			for(QuestionAnswerStore qas:qasDao.list("all")){
+				qasDao.delete(qas);
+			}
+			
+			DeviceFilesDao dfDao = new DeviceFilesDao();
+			for (DeviceFiles df : dfDao.list("all")) {
+				dfDao.delete(df);
+			}
+			DeviceFilesReplicationImporter dfri = new DeviceFilesReplicationImporter();
+			dfri.executeImport("http://watermapmonitordev.appspot.com",
+					"http://localhost:8888");
+			Set<String> dfSet = new HashSet<String>();
+			for (DeviceFiles df : dfDao.list("all")) {
+				dfSet.add(df.getURI());
+			}
+			DeviceFilesServiceImpl dfsi = new DeviceFilesServiceImpl();
+
+			for (String s : dfSet) {
+				dfsi.reprocessDeviceFile(s);
+				try {
+					resp.getWriter().println(
+							"submitted " + s + " for reprocessing");
+				} catch (IOException e) {
+					log.log(Level.SEVERE, "Could not execute test", e);
+				}
+			}
+
 		} else if ("addDeviceFiles".equals(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 

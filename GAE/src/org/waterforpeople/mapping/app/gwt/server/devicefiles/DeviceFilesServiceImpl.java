@@ -35,16 +35,22 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 		String reprocessingMessage = null;
 		Queue queue = QueueFactory.getDefaultQueue();
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		DeviceFiles df = dfDao.findByUri(DEVICE_FILE_PATH + uri);
+		DeviceFiles df = dfDao.findByUri(uri);
 		if (df != null) {
 			reprocessingMessage = "kicked off reprocessing";
 			df.setProcessedStatus(Status.StatusCode.REPROCESSING);
 			String[] fileNameParts = df.getURI().split("/");
 			String fileName = fileNameParts[fileNameParts.length - 1];
+			String phoneNumber =  df.getPhoneNumber();
+			String checksum =  df.getChecksum();
+			if(phoneNumber==null)
+				phoneNumber="null";
+			if(checksum==null)
+				checksum="null";
 			queue.add(url("/app_worker/task").param("action", "processFile")
 					.param("fileName", fileName)
-					.param("phoneNumber", df.getPhoneNumber())
-					.param("checksum", df.getChecksum()));
+					.param("phoneNumber",phoneNumber)
+					.param("checksum",checksum));
 			dfDao.save(df);
 		}
 		// log.info("submiting task for fileName: " + fileName);

@@ -11,8 +11,8 @@ public class DeviceFileRestRequest extends RestRequest {
 	 */
 	private static final long serialVersionUID = -1363635676106322333L;
 	public static final String LIST_DEVICE_FILES_ACTION = "listDeviceFiles";
-	private static final String CURSOR_PARAM = "cursor";
-	private static final String PROCESSED_STATUS_PARAM = "processedStatus";
+	public static final String CURSOR_PARAM = "cursor";
+	public static final String PROCESSED_STATUS_PARAM = "processedStatus";
 
 	public String getCursor() {
 		return cursor;
