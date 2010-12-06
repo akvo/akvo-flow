@@ -162,6 +162,16 @@ public class TaskServlet extends AbstractRestApiServlet {
 								.param("offset", lineNum + ""));
 					}
 				}
+			}else{
+				deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
+				String message = "Error empty file: "
+						+ deviceFile.getURI() ;
+				log.log(Level.SEVERE, message);
+				deviceFile.addProcessingMessage(message);
+				MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
+						"Device File Processing Error: " + fileName,
+						message);
+
 			}
 			dfDao.save(deviceFile);
 			zis.close();
