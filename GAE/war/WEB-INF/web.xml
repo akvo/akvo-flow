@@ -323,13 +323,21 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>PhotoUpload</servlet-name>
 		<url-pattern>/webapp/photoupload</url-pattern>
 	</servlet-mapping>
-		<servlet>
+	<servlet>
 		<servlet-name>SurveyRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SurveyRestServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyRestApi</servlet-name>
 		<url-pattern>/surveyrestapi</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DeviceFilesRestApi</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DeviceFileRestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceFilesRestApi</servlet-name>
+		<url-pattern>/devicefilesrestapi</url-pattern>
 	</servlet-mapping>
 		<servlet>
 		<servlet-name>PlacemarkRestApi</servlet-name>
