@@ -237,6 +237,9 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		if (generatedCodeField != null) {
 			generatedCodeField.setText("");
 		}
+		if(statusIndicator != null){
+			statusIndicator.setVisibility(View.GONE);
+		}
 	}
 
 	/**
