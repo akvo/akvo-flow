@@ -68,15 +68,20 @@ public class BulkDataServiceClient {
 				+ DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&"
 				+ DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "="
 				+ statusCode;
-		for(DeviceFilesDto dto :parseDeviceFiles(fetchDataFromServer(queryString))){
+		String response = fetchDataFromServer(queryString);
+		JSONObject jsonOuter = new JSONObject(response);
+		String cursor = null;
+		if(jsonOuter.has("cursor")){
+			cursor = jsonOuter.getString("cursor");
+		}
+		for(DeviceFilesDto dto :parseDeviceFiles(response)){
 			dfDto.add(dto);
 		}
-
-		String cursor = null;
-
 		return dfDto;
 	}
 
+	
+	
 	/**
 	 * survey instance ids and their submission dates. Map keys are the
 	 * instances and values are the dates.
@@ -474,6 +479,7 @@ public class BulkDataServiceClient {
 		if (response.startsWith("{")) {
 			List<DeviceFilesDto> dtoList = new ArrayList<DeviceFilesDto>();
 			JSONArray arr = getJsonArray(response);
+			
 			if (arr != null) {
 				
 				for (int i = 0; i < arr.length(); i++) {
