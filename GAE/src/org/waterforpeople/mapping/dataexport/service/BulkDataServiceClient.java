@@ -63,25 +63,71 @@ public class BulkDataServiceClient {
 
 	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
 			String serverBase) throws Exception {
-		List<DeviceFilesDto> dfDto = new ArrayList<DeviceFilesDto>();
-		String queryString = serverBase + DEVICE_FILES_SERVLET_PATH
+		/*
+		 * String cursor = null; List<DeviceFilesDto> dfDto = new
+		 * ArrayList<DeviceFilesDto>(); String queryString = serverBase +
+		 * DEVICE_FILES_SERVLET_PATH +
+		 * DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&" +
+		 * DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "=" + statusCode;
+		 * String response = fetchDataFromServer(queryString); JSONObject
+		 * jsonOuter = new JSONObject(response);
+		 * 
+		 * if (jsonOuter.has("cursor")) { cursor =
+		 * jsonOuter.getString("cursor"); } for (DeviceFilesDto dto :
+		 * parseDeviceFiles(response)) { dfDto.add(dto); }
+		 * 
+		 * if (cursor != null) { queryString = serverBase +
+		 * DEVICE_FILES_SERVLET_PATH +
+		 * DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&" +
+		 * DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "=" + statusCode;
+		 * response = fetchDataFromServer(queryString); jsonOuter = new
+		 * JSONObject(response);
+		 * 
+		 * if (jsonOuter.has("cursor")) { cursor =
+		 * jsonOuter.getString("cursor"); } for (DeviceFilesDto dto :
+		 * parseDeviceFiles(response)) { dfDto.add(dto); } }
+		 * 
+		 * return dfDto;
+		 */
+		return fetchData(null, serverBase, statusCode);
+	}
+
+	private static List<DeviceFilesDto> fetchData(String cursor,
+			String serverBase, String statusCode) throws Exception {
+
+		String queryString = null;
+		String response = null;
+		ArrayList<DeviceFilesDto> dfDto = new ArrayList<DeviceFilesDto>();
+		queryString = serverBase + DEVICE_FILES_SERVLET_PATH
 				+ DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&"
 				+ DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "="
 				+ statusCode;
-		String response = fetchDataFromServer(queryString);
-		JSONObject jsonOuter = new JSONObject(response);
-		String cursor = null;
-		if(jsonOuter.has("cursor")){
-			cursor = jsonOuter.getString("cursor");
+		if (cursor != null) {
+			queryString = queryString + "&cursor=" + cursor;
 		}
-		for(DeviceFilesDto dto :parseDeviceFiles(response)){
+		response = fetchDataFromServer(queryString);
+		List<DeviceFilesDto> list = parseDeviceFiles(response);
+		if (list == null || list.size() == 0) {
+			return null;
+		}
+		for (DeviceFilesDto dto : list) {
 			dfDto.add(dto);
 		}
+
+		JSONObject jsonOuter = new JSONObject(response);
+		if (jsonOuter.has("cursor")) {
+			cursor = jsonOuter.getString("cursor");
+			List<DeviceFilesDto> dfDtoTemp = fetchData(cursor, serverBase,
+					statusCode);
+			if (dfDtoTemp != null)
+				for (DeviceFilesDto item : dfDtoTemp) {
+					dfDto.add(item);
+				}
+		}
+
 		return dfDto;
 	}
 
-	
-	
 	/**
 	 * survey instance ids and their submission dates. Map keys are the
 	 * instances and values are the dates.
@@ -479,34 +525,34 @@ public class BulkDataServiceClient {
 		if (response.startsWith("{")) {
 			List<DeviceFilesDto> dtoList = new ArrayList<DeviceFilesDto>();
 			JSONArray arr = getJsonArray(response);
-			
+
 			if (arr != null) {
-				
+
 				for (int i = 0; i < arr.length(); i++) {
 					DeviceFilesDto dto = new DeviceFilesDto();
 					JSONObject json = arr.getJSONObject(i);
 					if (json != null) {
-						if(json.has("processingMessage")){
+						if (json.has("processingMessage")) {
 							String x = json.getString("processingMessage");
 							dto.setProcessingMessage(x);
 						}
-						if(json.has("phoneNumber")){
+						if (json.has("phoneNumber")) {
 							String x = json.getString("phoneNumber");
 							dto.setPhoneNumber(x);
 						}
-						if(json.has("processedStatus")){
+						if (json.has("processedStatus")) {
 							String x = json.getString("processedStatus");
 							dto.setProcessedStatus(x);
 						}
-						if(json.has("checksum")){
+						if (json.has("checksum")) {
 							String x = json.getString("checksum");
 							dto.setChecksum(x);
 						}
-						if(json.has("processDate")){
+						if (json.has("processDate")) {
 							String x = json.getString("processDate");
 							dto.setProcessDate(x);
 						}
-						if(json.has("URI")){
+						if (json.has("URI")) {
 							String x = json.getString("URI");
 							dto.setURI(x);
 						}
