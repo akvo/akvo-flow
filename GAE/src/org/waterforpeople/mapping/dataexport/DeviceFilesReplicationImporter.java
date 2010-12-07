@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
@@ -16,7 +18,8 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.google.appengine.api.datastore.Text;
 
 public class DeviceFilesReplicationImporter implements DataImporter {
-
+	private final static Logger log = Logger.getLogger(DeviceFilesReplicationImporter.class.getName());
+	
 	@Override
 	public Map<Integer, String> validate(File file) {
 		// TODO Auto-generated method stub
@@ -31,8 +34,11 @@ public class DeviceFilesReplicationImporter implements DataImporter {
 	@Override
 	public void executeImport(String sourceBase, String serverBase) {
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		for (DeviceFiles df : fetchDeviceFiles(
-				StatusCode.PROCESSED_WITH_ERRORS, sourceBase)) {
+		int i =0;
+		List<DeviceFiles> dflist = fetchDeviceFiles(
+				StatusCode.PROCESSED_WITH_ERRORS, sourceBase);
+		log.log(Level.INFO,"fetched " + dflist.size() + " devicefiles");
+		for (DeviceFiles df : dflist) {
 			DeviceFiles dfLocal = new DeviceFiles();
 			dfLocal.setURI(df.getURI());
 			dfLocal.setPhoneNumber(df.getPhoneNumber());
@@ -40,6 +46,9 @@ public class DeviceFilesReplicationImporter implements DataImporter {
 			dfLocal.setProcessingMessageText(df.getProcessingMessageText());
 			dfLocal.setProcessDate(df.getProcessDate());
 			dfDao.save(dfLocal);
+			i++;
+			log.log(Level.INFO, "Saved devicefiles record: " + i);
+			
 		}
 
 	}
