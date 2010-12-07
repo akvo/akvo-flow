@@ -187,15 +187,15 @@ public class TestHarnessServlet extends HttpServlet {
 			 */
 		} else if ("replicateDeviceFiles".equals(action)) {
 			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-			for(SurveyInstance si :siDao.list("all")){
+			for (SurveyInstance si : siDao.list("all")) {
 				siDao.delete(si);
 			}
-			
+
 			QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-			for(QuestionAnswerStore qas:qasDao.list("all")){
+			for (QuestionAnswerStore qas : qasDao.list("all")) {
 				qasDao.delete(qas);
 			}
-			
+
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 			for (DeviceFiles df : dfDao.list("all")) {
 				dfDao.delete(df);
@@ -208,15 +208,21 @@ public class TestHarnessServlet extends HttpServlet {
 				dfSet.add(df.getURI());
 			}
 			DeviceFilesServiceImpl dfsi = new DeviceFilesServiceImpl();
+			int i = 0;
+			try {
+				resp.getWriter().println("Found " + dfSet.size() + " distinct files to process");
+				for (String s : dfSet) {
+					dfsi.reprocessDeviceFile(s);
 
-			for (String s : dfSet) {
-				dfsi.reprocessDeviceFile(s);
-				try {
 					resp.getWriter().println(
 							"submitted " + s + " for reprocessing");
-				} catch (IOException e) {
-					log.log(Level.SEVERE, "Could not execute test", e);
+
+					i++;
+					if (i > 10)
+						break;
 				}
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Could not execute test", e);
 			}
 
 		} else if ("addDeviceFiles".equals(action)) {
