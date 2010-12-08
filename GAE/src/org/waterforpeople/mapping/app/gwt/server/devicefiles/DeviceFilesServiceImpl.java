@@ -35,7 +35,7 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 		String reprocessingMessage = null;
 		Queue queue = QueueFactory.getDefaultQueue();
 		DeviceFilesDao dfDao = new DeviceFilesDao();
-		DeviceFiles df = dfDao.findByUri(uri);
+		DeviceFiles df = dfDao.findByUri(DEVICE_FILE_PATH + uri);
 		if (df != null) {
 			reprocessingMessage = "kicked off reprocessing";
 			df.setProcessedStatus(Status.StatusCode.REPROCESSING);
