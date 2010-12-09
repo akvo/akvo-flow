@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,8 +74,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 			URL url = new URL(DEVICE_FILE_PATH + fileName);
 			BufferedInputStream bis = new BufferedInputStream(url.openStream());
 			ZipInputStream zis = new ZipInputStream(bis);
+			List<DeviceFiles> dfList = null;
 			DeviceFiles deviceFile = null;
-			deviceFile = dfDao.findByUri(url.toString());
+			dfList = dfDao.listByUri(url.toString());
+			deviceFile = dfList.get(0);
 			if (deviceFile == null) {
 				deviceFile = new DeviceFiles();
 			}
@@ -140,6 +143,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 							deviceFile, userID,
 							unparsedLines.subList(offset, lineNum));
 					surveyInstances.add(inst);
+					//TODO: HACK because we were saving so many duplicate device files this way they all get the same status 
+					for (DeviceFiles dfitem : dfList) {
+						dfitem.setProcessedStatus(inst.getDeviceFile()
+								.getProcessedStatus());
+					}
 					if (lineNum < unparsedLines.size()) {
 						StatusCode processingStatus = inst.getDeviceFile()
 								.getProcessedStatus();
@@ -164,18 +172,17 @@ public class TaskServlet extends AbstractRestApiServlet {
 								.param("offset", lineNum + ""));
 					}
 				}
-			}else{
+			} else {
 				deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
-				String message = "Error empty file: "
-						+ deviceFile.getURI() ;
+				String message = "Error empty file: " + deviceFile.getURI();
 				log.log(Level.SEVERE, message);
 				deviceFile.addProcessingMessage(message);
 				MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-						"Device File Processing Error: " + fileName,
-						message);
+						"Device File Processing Error: " + fileName, message);
 
 			}
-			dfDao.save(deviceFile);
+
+			dfDao.save(dfList);
 			zis.close();
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);

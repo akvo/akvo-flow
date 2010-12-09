@@ -31,12 +31,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
+			//Check for problem string Gravity Fed, Public Taps
+			line = line.replace("Gravity Fed, Public Taps", "Gravity Fed - Public Taps");
 			String[] parts = line.split(",");
 			QuestionAnswerStore qas = new QuestionAnswerStore();
 
 			Date collDate = collectionDate;
 			try {
-				collDate = new Date(new Long(parts[7]));
+				collDate = new Date(new Long(parts[7].trim()));
 			} catch (Exception e) {
 				logger.log(Level.WARNING,
 						"Could not construct collection date", e);
@@ -49,7 +51,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			if (si.getSurveyId() == null) {
 				try {
 					si.setCollectionDate(collDate);
-					si.setSurveyId(Long.parseLong(parts[0]));
+					si.setSurveyId(Long.parseLong(parts[0].trim()));
 					si = save(si);
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
@@ -62,29 +64,29 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			}
 			qas.setSurveyId(si.getSurveyId());
 			qas.setSurveyInstanceId(si.getKey().getId());
-			qas.setArbitratyNumber(new Long(parts[1]));
-			qas.setQuestionID(parts[2]);
-			qas.setType(parts[3]);
+			qas.setArbitratyNumber(new Long(parts[1].trim()));
+			qas.setQuestionID(parts[2].trim());
+			qas.setType(parts[3].trim());
 			qas.setCollectionDate(collDate);
 
 			if (parts.length > 4) {
-				qas.setValue(parts[4]);
+				qas.setValue(parts[4].trim());
 			}
 			if (parts.length >= 5) {
 				if (si.getSubmitterName() == null) {
-					si.setSubmitterName(parts[5]);
+					si.setSubmitterName(parts[5].trim());
 				}
 			}
 			if (parts.length >= 9) {
 				if (si.getDeviceIdentifier() == null) {
-					si.setDeviceIdentifier(parts[8]);
+					si.setDeviceIdentifier(parts[8].trim());
 				}
 			}
 			if (parts.length >= 10) {
-				qas.setScoredValue(parts[9]);
+				qas.setScoredValue(parts[9].trim());
 			}
 			if (parts.length >= 11) {
-				qas.setStrength(parts[10]);
+				qas.setStrength(parts[10].trim());
 			}
 			qasList.add(qas);
 		}

@@ -61,6 +61,14 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		else
 			return null;
 	}
+	public List<DeviceFiles> listByUri(String uri) {
+		List<DeviceFiles> dfList = (List<DeviceFiles>) listByProperty("URI",
+				uri, "String");
+		if (dfList.size()>0)
+			return dfList;
+		else
+			return null;
+	} 
 
 	public List<DeviceFiles> listDeviceFilesByStatus(Status.StatusCode status,
 			String cursorString) {
