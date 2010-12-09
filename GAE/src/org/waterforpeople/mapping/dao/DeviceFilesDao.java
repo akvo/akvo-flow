@@ -81,7 +81,7 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		paramMap = new HashMap<String, Object>();
 		appendNonNullParam("processedStatus", filterString, paramString,
 				"String", status, paramMap, EQ_OP);
-		query.setOrdering("createdDateTime desc");
+		query.setOrdering("createdDateTime desc URI asc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 

@@ -2,7 +2,9 @@ package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,14 +12,25 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
+
+	private static HashMap<String, String> replaceList = new HashMap<String, String>();
+
+	private void loadReplaceList() {
+		replaceList
+				.put("Gravity Fed, Public Taps", "Gravity Fed - Public Taps");
+		replaceList.put(
+				"Gravity Fed, Combination of Household and Public Taps",
+				"Gravity Fed Combination of Household and Public Taps");
+		replaceList.put("Cyinzuzi, Budakiranya", "Cyinzuzi, Budakiranya");
+	}
 
 	private static final Logger logger = Logger
 			.getLogger(SurveyInstanceDAO.class.getName());
@@ -31,9 +44,30 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
-			//Check for problem string Gravity Fed, Public Taps
-			line = line.replace("Gravity Fed, Public Taps", "Gravity Fed - Public Taps");
+
+			// Check for problem string Gravity Fed, Public Taps
+//			for (Map.Entry<String, String> item : replaceList.entrySet()) {
+//				if (line.contains(item.getKey()))
+//					line = line.replace(item.getKey(), item.getValue());
+//			}
 			String[] parts = line.split(",");
+			//TODO: this will have to be removed when we use Strength and ScoredValue Questions
+			while (parts.length > 9) {
+				log.log(Level.SEVERE, "Has too many commas: " + line);
+				int startIndex = 0;
+				int iCount = 0;
+				
+				while((startIndex=line.indexOf(",", startIndex+1))!=-1){
+					if(iCount==4){
+						String firstPart = line.substring(0, startIndex);
+						String secondPart = line.substring(startIndex+1, line.length());
+						line = firstPart + secondPart;
+						break;
+					}
+					iCount++;
+				}
+				parts = line.split(",");
+			}
 			QuestionAnswerStore qas = new QuestionAnswerStore();
 
 			Date collDate = collectionDate;
@@ -105,6 +139,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	public SurveyInstanceDAO() {
 		super(SurveyInstance.class);
+		//loadReplaceList();
 	}
 
 	@SuppressWarnings("unchecked")

@@ -41,17 +41,27 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 			df.setProcessedStatus(Status.StatusCode.REPROCESSING);
 			String[] fileNameParts = df.getURI().split("/");
 			String fileName = fileNameParts[fileNameParts.length - 1];
-			String phoneNumber =  df.getPhoneNumber();
-			String checksum =  df.getChecksum();
-			if(phoneNumber==null)
-				phoneNumber="null";
-			if(checksum==null)
-				checksum="null";
+			String phoneNumber = df.getPhoneNumber();
+			String checksum = df.getChecksum();
+			if (phoneNumber == null)
+				phoneNumber = "null";
+			if (checksum == null)
+				checksum = "null";
 			queue.add(url("/app_worker/task").param("action", "processFile")
 					.param("fileName", fileName)
-					.param("phoneNumber",phoneNumber)
-					.param("checksum",checksum));
+					.param("phoneNumber", phoneNumber)
+					.param("checksum", checksum));
 			dfDao.save(df);
+		}
+		List<DeviceFiles> altList = dfDao
+				.listByUri("http://waterforpeople.s3.amazonaws.com/devices/"
+						+ uri);
+		// TODO: Hack because we inserted some DF's with wrong file path so to
+		// clean them up as they get processed
+		if (altList != null) {
+			for (DeviceFiles dfAlt : altList) {
+				dfDao.delete(dfAlt);
+			}
 		}
 		// log.info("submiting task for fileName: " + fileName);
 		return reprocessingMessage;
