@@ -77,7 +77,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 			List<DeviceFiles> dfList = null;
 			DeviceFiles deviceFile = null;
 			dfList = dfDao.listByUri(url.toString());
-			deviceFile = dfList.get(0);
+			if (dfList != null)
+				deviceFile = dfList.get(0);
 			if (deviceFile == null) {
 				deviceFile = new DeviceFiles();
 			}
@@ -143,10 +144,13 @@ public class TaskServlet extends AbstractRestApiServlet {
 							deviceFile, userID,
 							unparsedLines.subList(offset, lineNum));
 					surveyInstances.add(inst);
-					//TODO: HACK because we were saving so many duplicate device files this way they all get the same status 
-					for (DeviceFiles dfitem : dfList) {
-						dfitem.setProcessedStatus(inst.getDeviceFile()
-								.getProcessedStatus());
+					// TODO: HACK because we were saving so many duplicate
+					// device files this way they all get the same status
+					if (dfList != null) {
+						for (DeviceFiles dfitem : dfList) {
+							dfitem.setProcessedStatus(inst.getDeviceFile()
+									.getProcessedStatus());
+						}
 					}
 					if (lineNum < unparsedLines.size()) {
 						StatusCode processingStatus = inst.getDeviceFile()
