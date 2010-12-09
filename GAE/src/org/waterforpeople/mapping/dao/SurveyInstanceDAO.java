@@ -53,6 +53,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			String[] parts = line.split(",");
 			//TODO: this will have to be removed when we use Strength and ScoredValue Questions
 			while (parts.length > 9) {
+				try {
+					Date testDate = new Date(new Long(parts[7].trim()));
+					break;
+				} catch (Exception e) {
+					logger.log(Level.WARNING,
+							"Removing comma because 7th pos doesn't pass", e);
+				}
 				log.log(Level.SEVERE, "Has too many commas: " + line);
 				int startIndex = 0;
 				int iCount = 0;
