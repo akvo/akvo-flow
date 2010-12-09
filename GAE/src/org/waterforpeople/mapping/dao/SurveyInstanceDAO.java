@@ -57,8 +57,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					Date testDate = new Date(new Long(parts[7].trim()));
 					break;
 				} catch (Exception e) {
-					logger.log(Level.WARNING,
-							"Removing comma because 7th pos doesn't pass", e);
+					logger.log(Level.INFO,
+							"Removing comma because 7th pos doesn't pass got string: " + parts[7]+"instead of date");
 				}
 				log.log(Level.SEVERE, "Has too many commas: " + line);
 				int startIndex = 0;
