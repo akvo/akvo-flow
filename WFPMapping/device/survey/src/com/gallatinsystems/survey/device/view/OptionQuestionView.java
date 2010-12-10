@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -343,8 +344,8 @@ public class OptionQuestionView extends QuestionView {
 					text.append("'>").append(txt.getText()).append("</font>");
 				}
 			}
-		}
-		return Html.fromHtml(text.toString());
+		}		
+		return Html.fromHtml(TextUtils.htmlEncode(text.toString()));
 	}
 
 	/**
