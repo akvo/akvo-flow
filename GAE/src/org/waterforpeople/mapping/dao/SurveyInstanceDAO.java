@@ -1,8 +1,5 @@
 package org.waterforpeople.mapping.dao;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
