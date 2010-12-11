@@ -32,11 +32,14 @@ public class ProcessorServlet extends HttpServlet {
 					if(checksum == null){
 						checksum="null";
 					}
+					if(phoneNumber == null){
+						phoneNumber = "null";
+					}
 					log.info("about to submit task for fileName: " + fileName);
 					// Submit the fileName for processing
 					Queue queue = QueueFactory.getDefaultQueue();
 					
-					queue.add(url("/app_worker/task").param("action", "processFile").param("fileName", fileName).param("phoneNumber", req.getParameter("phoneNumber")).param("checksum", checksum));
+					queue.add(url("/app_worker/task").param("action", "processFile").param("fileName", fileName).param("phoneNumber", phoneNumber).param("checksum", checksum));
 					log.info("submiting task for fileName: " + fileName);
 				}
 			}

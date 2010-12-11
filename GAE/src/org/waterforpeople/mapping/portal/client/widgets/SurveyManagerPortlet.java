@@ -574,15 +574,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					&& optionQuestions.length > 0) {
 				loadDepQA(optionQuestions[0], null);
 			}
-			questionLB.addChangeHandler(new ChangeHandler() {
-				@Override
-				public void onChange(ChangeEvent event) {
-					ListBox questionLBox = (ListBox) event.getSource();
-					loadDepQA(optionQuestions[questionLBox.getSelectedIndex()],
-							null);
-
-				}
-			});
+		
 			TextBox qDepId = new TextBox();
 			qDepId.setVisible(false);
 			questionDetailPanel.setWidget(8, 4, qDepId);
@@ -597,6 +589,16 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 								.getAnswerValue());
 
 			}
+			//don't install the change handler until the end so adding values to the list box doesn't trigger the handler
+			questionLB.addChangeHandler(new ChangeHandler() {
+				@Override
+				public void onChange(ChangeEvent event) {
+					ListBox questionLBox = (ListBox) event.getSource();
+					loadDepQA(optionQuestions[questionLBox.getSelectedIndex()],
+							null);
+
+				}
+			});
 		}
 	}
 
@@ -638,9 +640,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		if (qoList != null) {
 			int i = 0;
 			for (QuestionOptionDto qoDto : qoList) {
-				answerLB.addItem(qoDto.getText(), qoDto.getCode());
+				answerLB.addItem(qoDto.getText(), qoDto.getText());
 				if (selectedAnswer != null
-						&& selectedAnswer.equals(qoDto.getCode())) {
+						&& selectedAnswer.equals(qoDto.getText())) {
 					answerIndex = i;
 				}
 				i++;
