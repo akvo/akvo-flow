@@ -128,12 +128,14 @@ public class AccessPointHelper {
 							setAccessPointField(ap, qas, mapping);
 
 						} catch (NoSuchFieldException e) {
-							logger.log(
-									Level.SEVERE,
-									"Could not map field to access point: "
-											+ mapping.getAttributeName()
-											+ ". Check the surveyAttribueMapping for surveyId "
-											+ surveyId);
+							logger
+									.log(
+											Level.SEVERE,
+											"Could not map field to access point: "
+													+ mapping
+															.getAttributeName()
+													+ ". Check the surveyAttribueMapping for surveyId "
+													+ surveyId);
 						} catch (IllegalAccessException e) {
 							logger.log(Level.SEVERE,
 									"Could not set field to access point: "
@@ -280,36 +282,24 @@ public class AccessPointHelper {
 				String oldValues = null;
 				if (ap != null && ap.getKey() != null) {
 					AccessPoint oldPoint = apDao.getByKey(ap.getKey());
-					oldValues = oldPoint.getCountryCode()
-							+ "|"
-							+ oldPoint.getCommunityCode()
-							+ "|"
-							+ oldPoint.getPointType().toString()
-							+ "|"
-							+ oldPoint.getPointStatus().toString()
-							+ "|"
-							+ StringUtil.getYearString(oldPoint
-									.getCollectionDate());
+					oldValues = formChangeRecordString(oldPoint);
 				}
 				ap = apDao.save(ap);
 
-				String newValues = ap.getCountryCode() + "|"
-						+ ap.getCommunityCode() + "|"
-						+ ap.getPointType().toString() + "|"
-						+ ap.getPointStatus().toString() + "|"
-						+ StringUtil.getYearString(ap.getCollectionDate());
+				String newValues = formChangeRecordString(ap);
+
 				if (oldValues != null) {
 					DataChangeRecord change = new DataChangeRecord(
 							AccessPointStatusSummary.class.getName(), "n/a",
 							oldValues, newValues);
 					Queue queue = QueueFactory.getQueue("dataUpdate");
-					queue.add(url("/app_worker/dataupdate")
-							.param(DataSummarizationRequest.OBJECT_KEY,
-									ap.getKeyString())
-							.param(DataSummarizationRequest.OBJECT_TYPE,
-									"AccessPointSummaryChange")
-							.param(DataSummarizationRequest.VALUE_KEY,
-									change.packString()));
+					queue.add(url("/app_worker/dataupdate").param(
+							DataSummarizationRequest.OBJECT_KEY,
+							ap.getKeyString()).param(
+							DataSummarizationRequest.OBJECT_TYPE,
+							"AccessPointSummaryChange").param(
+							DataSummarizationRequest.VALUE_KEY,
+							change.packString()));
 				}
 			} else {
 				if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
@@ -327,6 +317,26 @@ public class AccessPointHelper {
 			}
 		}
 		return ap;
+	}
+
+	private String formChangeRecordString(AccessPoint ap) {
+		String changeString = null;
+		if (ap != null) {
+			changeString = (ap.getCountryCode() != null ? ap.getCountryCode()
+					: "")
+					+ "|"
+					+ (ap.getCommunityCode() != null ? ap.getCommunityCode()
+							: "")
+					+ "|"
+					+ (ap.getPointType() != null ? ap.getPointType().toString()
+							: "")
+					+ "|"
+					+ (ap.getPointStatus() != null ? ap.getPointStatus()
+							.toString() : "")
+					+ "|"
+					+ StringUtil.getYearString(ap.getCollectionDate());
+		}
+		return changeString;
 	}
 
 	public List<AccessPoint> listAccessPoint(String cursorString) {
