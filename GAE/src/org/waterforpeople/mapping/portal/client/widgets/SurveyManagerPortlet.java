@@ -737,12 +737,15 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				optionId.setText(item.getKeyId().toString());
 				optionId.setVisible(false);
 			}
-			if (item.getCode() != null)
+			if (item.getCode() != null){
 				optionValue.setText(item.getCode());
-			if (item.getText() != null)
+			}
+			if (item.getText() != null){
 				optionText.setText(item.getText());
-			if (item.getOrder() != null)
+			}
+			if (item.getOrder() != null){
 				lbOptOrder.setSelectedIndex(item.getOrder());
+			}
 			else
 				lbOptOrder.setSelectedIndex(questionOptionDetail.getRowCount());
 		} else {
@@ -826,20 +829,24 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		ListBox lbOrder = (ListBox) questionDetailPanel.getWidget(6, 1);
 
-		if (questionId.getText().length() > 0)
+		if (questionId.getText().length() > 0){
 			value.setKeyId(new Long(questionId.getText()));
+		}
 
-		if (questionText.getText().length() > 0)
+		if (questionText.getText().length() > 0){
 			value.setText(questionText.getText().trim());
+		}
 
-		if (lbOrder.getSelectedIndex() > 0)
+		if (lbOrder.getSelectedIndex() > 0){
 			value.setOrder(lbOrder.getSelectedIndex());
+		}
 
-		if (tip.getText().length() > 0)
+		if (tip.getText().length() > 0){
 			value.setTip(tip.getText());
-		if (validationRule.getText().length() > 0)
+		}
+		if (validationRule.getText().length() > 0){
 			value.setValidationRule(validationRule.getText());
-
+		}
 		value.setMandatoryFlag(mandatoryQuestion.getValue());
 
 		if (questionTypeLB.getSelectedIndex() == 0) {
@@ -908,13 +915,18 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			// 1);
 			ListBox lbOptOrder = (ListBox) questionOptionDetail.getWidget(row,
 					1);
-			if (lbOptOrder.getSelectedIndex() > 0)
+			if (lbOptOrder.getSelectedIndex() > 0){
 				qoDto.setOrder(lbOptOrder.getSelectedIndex());
+			}
 			TextBox optionText = (TextBox) questionOptionDetail.getWidget(row,
 					3);
 			TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
 			// qoDto.setCode(optionValue.getText());
-			qoDto.setText(optionText.getText());
+			if(optionText.getText()!= null){
+				String sanitizedOption = optionText.getText().replaceAll(",", " ");
+				qoDto.setText(sanitizedOption);
+				optionText.setText(sanitizedOption);
+			}
 			if (qoId.getText().length() > 0)
 				qoDto.setKeyId(new Long(qoId.getText()));
 			qoDto.setOrder(lbOptOrder.getSelectedIndex());
