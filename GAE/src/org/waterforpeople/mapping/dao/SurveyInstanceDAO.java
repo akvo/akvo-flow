@@ -2,7 +2,6 @@ package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,25 +10,14 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
-
-	private static HashMap<String, String> replaceList = new HashMap<String, String>();
-
-	private void loadReplaceList() {
-		replaceList
-				.put("Gravity Fed, Public Taps", "Gravity Fed - Public Taps");
-		replaceList.put(
-				"Gravity Fed, Combination of Household and Public Taps",
-				"Gravity Fed Combination of Household and Public Taps");
-		replaceList.put("Cyinzuzi, Budakiranya", "Cyinzuzi, Budakiranya");
-	}
 
 	private static final Logger logger = Logger
 			.getLogger(SurveyInstanceDAO.class.getName());
@@ -43,16 +31,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
-
-			// Check for problem string Gravity Fed, Public Taps
-//			for (Map.Entry<String, String> item : replaceList.entrySet()) {
-//				if (line.contains(item.getKey()))
-//					line = line.replace(item.getKey(), item.getValue());
-//			}
+			
 			String[] parts = line.split(",");
 			//TODO: this will have to be removed when we use Strength and ScoredValue Questions
 			while (parts.length > 9) {
 				try {
+					@SuppressWarnings("unused")
 					Date testDate = new Date(new Long(parts[7].trim()));
 					break;
 				} catch (Exception e) {
