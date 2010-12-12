@@ -40,6 +40,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
+import com.gallatinsystems.survey.device.view.OptionQuestionView;
 import com.gallatinsystems.survey.device.view.QuestionView;
 import com.gallatinsystems.survey.device.view.SubmitTabContentFactory;
 import com.gallatinsystems.survey.device.view.SurveyQuestionTabContentFactory;
@@ -109,7 +110,20 @@ public class SurveyViewActivity extends TabActivity implements
 		setContentView(R.layout.main);
 		tabCount = 0;
 		props = new PropertyUtil(getResources());
-		QuestionView.screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+		boolean promptOnChange = false;
+		String promptOnChangeString = props
+				.getProperty(ConstantUtil.PROMPT_ON_OPT_CHANGE);
+		if (promptOnChangeString != null && promptOnChangeString.length() > 0) {
+			try {
+				promptOnChange = Boolean.parseBoolean(promptOnChangeString);
+			} catch (Exception e) {
+				Log.e(TAG, "Prompt on change property is not a boolean: "
+						+ promptOnChangeString);
+			}
+		}
+		OptionQuestionView.promptOnChange = promptOnChange;
+		QuestionView.screenWidth = getWindowManager().getDefaultDisplay()
+				.getWidth();
 
 		String langSelection = databaseAdapter
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);

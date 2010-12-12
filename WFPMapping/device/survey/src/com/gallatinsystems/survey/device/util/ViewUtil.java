@@ -80,21 +80,41 @@ public class ViewUtil {
 	public static void showConfirmDialog(int titleId, int textId,
 			Context parentContext, boolean includeNegative,
 			DialogInterface.OnClickListener listener) {
+		showConfirmDialog(titleId, textId, parentContext, includeNegative,
+				listener, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+	}
+
+	/**
+	 * displays a simple dialog box with a single positive button and an
+	 * optional (based on a flag) cancel button using the resource ids of the
+	 * strings passed in for the title and text. users can install listeners for
+	 * both the positive and negative buttons
+	 * 
+	 * @param titleId
+	 * @param textId
+	 * @param parentContext
+	 * @param includeNegative
+	 * @param positiveListener
+	 * @param negativeListener
+	 *            - only used if includeNegative is true
+	 */
+	public static void showConfirmDialog(int titleId, int textId,
+			Context parentContext, boolean includeNegative,
+			DialogInterface.OnClickListener positiveListener,
+			DialogInterface.OnClickListener negativeListener) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
 		TextView tipText = new TextView(parentContext);
 		builder.setTitle(titleId);
 		tipText.setText(textId);
 		builder.setView(tipText);
-		builder.setPositiveButton(R.string.okbutton, listener);
+		builder.setPositiveButton(R.string.okbutton, positiveListener);
 		if (includeNegative) {
-			builder.setNegativeButton(R.string.cancelbutton,
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-
-						}
-					});
+			builder.setNegativeButton(R.string.cancelbutton, negativeListener);
 		}
 		builder.show();
 	}

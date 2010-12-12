@@ -36,6 +36,7 @@ import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * Question type that supports the selection of a single option from a list of
@@ -54,6 +55,7 @@ public class OptionQuestionView extends QuestionView {
 	private Map<Integer, String> idToValueMap;
 	private volatile boolean suppressListeners = false;
 	private String latestOtherText;
+	public static boolean promptOnChange;
 
 	public OptionQuestionView(Context context, Question q, String[] langCodes,
 			boolean readOnly) {
@@ -343,11 +345,47 @@ public class OptionQuestionView extends QuestionView {
 					} else {
 						text.append(colors[i]);
 					}
-					text.append("'>").append(TextUtils.htmlEncode(txt.getText())).append("</font>");
+					text.append("'>").append(
+							TextUtils.htmlEncode(txt.getText())).append(
+							"</font>");
 				}
 			}
 		}
 		return Html.fromHtml(text.toString());
+	}
+
+	/**
+	 * prompts the user to confirm they want to change the value and, if so,
+	 * populates the QuestionResponse.
+	 * 
+	 * @param checkedId
+	 * @param isChecked
+	 */
+	private void handleSelection(final int checkedId, final boolean isChecked) {
+		if (!suppressListeners) {
+			QuestionResponse r = getResponse(true);
+			if (r != null && r.getValue() != null
+					&& r.getValue().trim().length() > 0 && promptOnChange) {
+				ViewUtil.showConfirmDialog(R.string.confirmchangetitle,
+						R.string.confirmchangetext, getContext(), true,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								handleSelectionInternal(checkedId, isChecked);
+							}
+						}, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// if they select "Cancel", then undo the change
+								rehydrate(getResponse(true));
+							}
+						});
+			} else {
+				handleSelectionInternal(checkedId, isChecked);
+			}
+		}
 	}
 
 	/**
@@ -357,37 +395,34 @@ public class OptionQuestionView extends QuestionView {
 	 * @param checkedId
 	 * @param isChecked
 	 */
-	private void handleSelection(int checkedId, boolean isChecked) {
-		if (!suppressListeners) {
-			if (OTHER_TEXT.equals(idToValueMap.get(checkedId))) {
+	private void handleSelectionInternal(int checkedId, boolean isChecked) {
+		if (OTHER_TEXT.equals(idToValueMap.get(checkedId))) {
 
-				// only display the dialog if OTHER isn't already populated as
-				// the response need this to suppress the OTHER dialog
-				if (isChecked
-						&& (getResponse() == null || !getResponse().getType()
-								.equals(ConstantUtil.OTHER_RESPONSE_TYPE))) {
-					displayOtherDialog();
-				} else if (!isChecked && getResponse() != null) {
-					getResponse().setType(ConstantUtil.VALUE_RESPONSE_TYPE);
-				}
+			// only display the dialog if OTHER isn't already populated as
+			// the response need this to suppress the OTHER dialog
+			if (isChecked
+					&& (getResponse() == null || !getResponse().getType()
+							.equals(ConstantUtil.OTHER_RESPONSE_TYPE))) {
+				displayOtherDialog();
+			} else if (!isChecked && getResponse() != null) {
+				getResponse().setType(ConstantUtil.VALUE_RESPONSE_TYPE);
+			}
 
+		} else {
+			if (!question.isAllowMultiple()
+					|| (question.isAllowMultiple() && (getResponse() == null
+							|| getResponse().getValue() == null || getResponse()
+							.getValue().trim().length() == 0))) {
+				setResponse(new QuestionResponse(idToValueMap.get(checkedId),
+						ConstantUtil.VALUE_RESPONSE_TYPE, question.getId()));
 			} else {
-				if (!question.isAllowMultiple()
-						|| (question.isAllowMultiple() && (getResponse() == null
-								|| getResponse().getValue() == null || getResponse()
-								.getValue().trim().length() == 0))) {
-					setResponse(new QuestionResponse(idToValueMap
-							.get(checkedId), ConstantUtil.VALUE_RESPONSE_TYPE,
-							question.getId()));
-				} else {
-					// if there is already a response and we support multiple,
-					// we
-					// have to combine
-					QuestionResponse r = getResponse();
-					String newResponse = getMultipleSelections(r);
-					r.setValue(newResponse);
-					r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
-				}
+				// if there is already a response and we support multiple,
+				// we
+				// have to combine
+				QuestionResponse r = getResponse();
+				String newResponse = getMultipleSelections(r);
+				r.setValue(newResponse);
+				r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 			}
 		}
 	}

@@ -250,6 +250,7 @@ public class ConstantUtil {
 	public static final String SURVEY_S3_URL = "surveyS3Url";
 	public static final String USE_INTERNAL_STORAGE = "useInternalStorage";
 	public static final String INCLUDE_OPTIONAL_ICONS = "includeOptionalIcons";
+	public static final String PROMPT_ON_OPT_CHANGE ="promptOnOptionChange";
 
 	/**
 	 * resource related constants
