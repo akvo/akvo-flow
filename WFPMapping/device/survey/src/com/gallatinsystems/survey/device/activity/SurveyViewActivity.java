@@ -56,8 +56,6 @@ public class SurveyViewActivity extends TabActivity implements
 
 	private static final String TAG = "Survey View Activity";
 
-	
-
 	private static final String ACTIVITY_NAME = "SurveyViewActivity";
 	private static final int PHOTO_ACTIVITY_REQUEST = 1;
 	private static final int VIDEO_ACTIVITY_REQUEST = 2;
@@ -117,6 +115,12 @@ public class SurveyViewActivity extends TabActivity implements
 		ArrayPreferenceData langData = ArrayPreferenceUtil.loadArray(this,
 				langSelection, R.array.languages);
 
+		String textSize = databaseAdapter
+				.findPreference(ConstantUtil.SURVEY_TEXT_SIZE_KEY);
+		if (ConstantUtil.LARGE_TXT.equalsIgnoreCase(textSize)) {
+			currentTextSize = LARGE_TXT_SIZE;
+		}
+
 		selectedLanguages = langData.getSelectedItems();
 		selectedLanguageCodes = ArrayPreferenceUtil.getSelectedCodes(this,
 				selectedLanguages, R.array.languagecodes);
@@ -163,8 +167,9 @@ public class SurveyViewActivity extends TabActivity implements
 					.getLocation())) {
 				// load from resource
 				Resources res = getResources();
-				in = res.openRawResource(res.getIdentifier(
-						surveyFromDb.getFileName(), ConstantUtil.RAW_RESOURCE, ConstantUtil.RESOURCE_PACKAGE));
+				in = res.openRawResource(res.getIdentifier(surveyFromDb
+						.getFileName(), ConstantUtil.RAW_RESOURCE,
+						ConstantUtil.RESOURCE_PACKAGE));
 			} else {
 				// load from file
 				in = FileUtil.getFileInputStream(surveyFromDb.getFileName(),
@@ -507,10 +512,19 @@ public class SurveyViewActivity extends TabActivity implements
 					ConstantUtil.VIDEO_HELP_TYPE).get(0).getValue().trim();
 			if (src.toLowerCase().startsWith(HTTP_PREFIX)) {
 				String fileName = src.substring(src.lastIndexOf("/") + 1);
-				if (FileUtil.doesFileExist(fileName, ConstantUtil.DATA_DIR+surveyId+File.separator,props
-						.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),this)) {					
-					uri = Uri.parse(VIDEO_PREFIX + FileUtil.getStorageDirectory(ConstantUtil.DATA_DIR+surveyId+File.separator, props
-							.getProperty(ConstantUtil.USE_INTERNAL_STORAGE))+fileName);
+				if (FileUtil.doesFileExist(fileName, ConstantUtil.DATA_DIR
+						+ surveyId + File.separator, props
+						.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this)) {
+					uri = Uri
+							.parse(VIDEO_PREFIX
+									+ FileUtil
+											.getStorageDirectory(
+													ConstantUtil.DATA_DIR
+															+ surveyId
+															+ File.separator,
+													props
+															.getProperty(ConstantUtil.USE_INTERNAL_STORAGE))
+									+ fileName);
 				} else {
 					uri = Uri.parse(src);
 				}
@@ -809,6 +823,9 @@ public class SurveyViewActivity extends TabActivity implements
 			}
 		}
 		currentTextSize = size;
+		databaseAdapter.savePreference(ConstantUtil.SURVEY_TEXT_SIZE_KEY,
+				currentTextSize == LARGE_TXT_SIZE ? ConstantUtil.LARGE_TXT
+						: ConstantUtil.NORMAL_TXT);
 	}
 
 	@Override

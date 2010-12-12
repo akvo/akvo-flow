@@ -45,7 +45,7 @@ public class ConstantUtil {
 	public static final String RUNNING_STATUS = "Running";
 	public static final String IN_PROGRESS_STATUS = "In Progress";
 	public static final String QUEUED_STATUS = "Queued";
-	public static final String FAILED_STATUS= "Failed";
+	public static final String FAILED_STATUS = "Failed";
 
 	/**
 	 * deletion indicators
@@ -134,7 +134,7 @@ public class ConstantUtil {
 	 * notification types
 	 */
 	public static final String PROGRESS = "PROGRESS";
-	public static final String FILE_COMPLETE= "FILE_COMPLETE";
+	public static final String FILE_COMPLETE = "FILE_COMPLETE";
 
 	/**
 	 * keys for saved state and bundle extras
@@ -175,7 +175,13 @@ public class ConstantUtil {
 	public static final String PRECACHE_POINT_COUNTRY_KEY = "precache.points.countries";
 	public static final String PRECACHE_POINT_LIMIT_KEY = "precache.points.limit";
 	public static final String DEVICE_IDENT_KEY = "device.identifier";
+	public static final String SURVEY_TEXT_SIZE_KEY = "survey.textsize";
 
+	/**
+	 * settings values
+	 */
+	public static final String LARGE_TXT = "LARGE";
+	public static final String NORMAL_TXT = "NORMAL";
 	/**
 	 * index values into string arrays
 	 */
@@ -243,13 +249,14 @@ public class ConstantUtil {
 	public static final String SERVER_BASE = "serverBase";
 	public static final String SURVEY_S3_URL = "surveyS3Url";
 	public static final String USE_INTERNAL_STORAGE = "useInternalStorage";
+	public static final String INCLUDE_OPTIONAL_ICONS = "includeOptionalIcons";
 
 	/**
 	 * resource related constants
 	 */
 	public static final String RESOURCE_PACKAGE = "com.gallatinsystems.survey.device";
 	public static final String RAW_RESOURCE = "raw";
-	
+
 	/**
 	 * recognized help activities
 	 */

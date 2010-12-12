@@ -344,7 +344,7 @@ public class OptionQuestionView extends QuestionView {
 					text.append("'>").append(txt.getText()).append("</font>");
 				}
 			}
-		}		
+		}
 		return Html.fromHtml(TextUtils.htmlEncode(text.toString()));
 	}
 
@@ -517,8 +517,9 @@ public class OptionQuestionView extends QuestionView {
 								.getType())
 								&& OTHER_TEXT.equals(idToValueMap.get(key))) {
 							checkBoxes.get(key.intValue()).setChecked(true);
-							//the last token is always the Other text (even if it's blank)
-							latestOtherText = valList.get(valList.size()-1);
+							// the last token is always the Other text (even if
+							// it's blank)
+							latestOtherText = valList.get(valList.size() - 1);
 						}
 					}
 				}
@@ -562,7 +563,7 @@ public class OptionQuestionView extends QuestionView {
 			}
 		}
 		suppressListeners = false;
-		//this is just to trigger listeners now that the view is updated
+		// this is just to trigger listeners now that the view is updated
 		setResponse(resp);
 	}
 
@@ -585,5 +586,19 @@ public class OptionQuestionView extends QuestionView {
 			}
 		}
 		suppressListeners = false;
+	}
+
+	@Override
+	public void setTextSize(float size) {
+		super.setTextSize(size);
+		if (optionGroup != null && optionGroup.getChildCount() > 0) {
+			for (int i = 0; i < optionGroup.getChildCount(); i++) {
+				((RadioButton) (optionGroup.getChildAt(i))).setTextSize(size);
+			}
+		} else if (checkBoxes != null && checkBoxes.size() > 0) {
+			for (int i = 0; i < checkBoxes.size(); i++) {
+				checkBoxes.get(i).setTextSize(size);
+			}
+		}
 	}
 }

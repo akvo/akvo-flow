@@ -33,6 +33,7 @@ import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.service.PrecacheService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.adapter.HomeMenuViewAdapter;
 
@@ -59,18 +60,29 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	private String currentName;
 	private TextView userField;
 	private HomeMenuViewAdapter menuViewAdapter;
+	private PropertyUtil props;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		props = new PropertyUtil(getResources());
 		Thread
 				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.home);
 
-		menuViewAdapter = new HomeMenuViewAdapter(this);
+		boolean includeOptional = true;
+		String useOpt = props.getProperty(ConstantUtil.INCLUDE_OPTIONAL_ICONS);
+		if(useOpt != null){
+			try{
+				includeOptional = Boolean.parseBoolean(useOpt.trim());
+			}catch(Exception e){
+				Log.e(TAG, "include optional property is not a boolean: "+useOpt);
+			}
+		}
+		menuViewAdapter = new HomeMenuViewAdapter(this,includeOptional);
 		userField = (TextView) findViewById(R.id.currentUserField);
 
 		GridView grid = (GridView) findViewById(R.id.gridview);

@@ -35,12 +35,16 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 */
 	private static final Integer[] preSurveyButtons = { R.drawable.users };
 	private static final Integer[] preSurveyLabels = { R.string.userlabel };
-	private static final Integer[] postSurveyButtons = { R.drawable.disk,
-			R.drawable.plotting, R.drawable.infoactivity, R.drawable.calc,
-			R.drawable.settings };
+	private static final Integer[] postSurveyButtons = { R.drawable.disk,R.drawable.settings };
 	private static final Integer[] postSurveyLabels = { R.string.reviewlabel,
-			R.string.plottinglabel, R.string.nearbylabel,
-			R.string.waterflowcalclabel, R.string.settingslabel };
+			R.string.settingslabel };
+	
+	private static final Integer[] optionalButtons = { R.drawable.plotting,
+			R.drawable.infoactivity, R.drawable.calc };
+	private static final Integer[] optionalLabels = { R.string.plottinglabel,
+			R.string.nearbylabel, R.string.waterflowcalclabel };
+	
+	private static final String[] optionalOperations = {ConstantUtil.PLOT_OP,ConstantUtil.NEARBY_OP,ConstantUtil.WATERFLOW_CALC_OP};
 
 	// references to our buttons
 	private Integer[] buttonImages = new Integer[0];
@@ -49,13 +53,15 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private ArrayList<Survey> surveys;
 	private ArrayList<String> operations;
 	private LayoutInflater inflater;
+	private boolean includeOptional;
 
 	/**
 	 * initializes the view inflater
 	 * 
 	 * @param c
 	 */
-	public HomeMenuViewAdapter(Context c) {
+	public HomeMenuViewAdapter(Context c, boolean includeOptional) {
+		this.includeOptional = includeOptional;
 		inflater = (LayoutInflater) c
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -77,13 +83,18 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 */
 	private void initializeValues() {
 		operations = new ArrayList<String>();
-
-		buttonImages = new Integer[surveys.size() + preSurveyButtons.length
-				+ postSurveyButtons.length];
-		buttonLabels = new Object[surveys.size() + preSurveyLabels.length
-				+ postSurveyLabels.length];
-		ArrayUtil.combineArrays(buttonImages, preSurveyButtons, 0);
-		ArrayUtil.combineArrays(buttonLabels, preSurveyLabels, 0);
+		
+		int arraySize = surveys.size() + preSurveyButtons.length
+		+ postSurveyButtons.length;
+		if(includeOptional){
+			arraySize += optionalButtons.length;
+		}
+		
+		buttonImages = new Integer[arraySize];
+		
+		buttonLabels = new Object[arraySize];
+		ArrayUtil.combineArrays(buttonImages, preSurveyButtons, 0);		
+		ArrayUtil.combineArrays(buttonLabels, preSurveyLabels, 0);		
 
 		operations.add(ConstantUtil.USER_OP);
 
@@ -105,12 +116,22 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 				preSurveyButtons.length + surveys.size());
 		ArrayUtil.combineArrays(buttonLabels, postSurveyLabels,
 				preSurveyButtons.length + surveys.size());
+		
+		if(includeOptional){
+			ArrayUtil.combineArrays(buttonImages, optionalButtons,
+					preSurveyButtons.length + surveys.size()+postSurveyButtons.length);
+			ArrayUtil.combineArrays(buttonLabels, optionalLabels,
+					preSurveyButtons.length + surveys.size()+postSurveyLabels.length);
+			
+		}
 
 		operations.add(ConstantUtil.REVIEW_OP);
-		operations.add(ConstantUtil.PLOT_OP);
-		operations.add(ConstantUtil.NEARBY_OP);
-		operations.add(ConstantUtil.WATERFLOW_CALC_OP);
 		operations.add(ConstantUtil.CONF_OP);
+		if(includeOptional){
+			for(int i =0; i < optionalOperations.length;i++){
+				operations.add(optionalOperations[i]);
+			}
+		}				
 
 		notifyDataSetChanged();
 	}
