@@ -202,7 +202,8 @@ public class FlowLauncher extends Activity {
 		appGrid.setSelection(0);
 		appGrid.setOnItemClickListener(new ApplicationLauncher());
 	}
-
+ 
+	
 	/**
 	 * checks to see if the application name is in the array of approved apps
 	 */
