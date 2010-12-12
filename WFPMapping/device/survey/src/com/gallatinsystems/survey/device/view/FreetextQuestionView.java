@@ -63,6 +63,7 @@ public class FreetextQuestionView extends QuestionView implements
 			}
 		}
 		freetextEdit.setOnFocusChangeListener(this);
+		freetextEdit.setWidth(screenWidth-50);
 
 		tr.addView(freetextEdit);
 		addView(tr);

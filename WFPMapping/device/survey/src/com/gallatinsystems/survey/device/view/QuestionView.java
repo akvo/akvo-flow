@@ -51,6 +51,7 @@ public class QuestionView extends TableLayout implements
 	protected String[] langs = null;
 	protected static String[] colors = null;
 	protected boolean readOnly;
+	public static int screenWidth;
 
 	/**
 	 * install a single tableRow containing a textView with the question text
@@ -69,7 +70,7 @@ public class QuestionView extends TableLayout implements
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
 
-		questionText.setWidth(DEFAULT_WIDTH);
+		questionText.setWidth(screenWidth);
 		this.readOnly = readOnly;
 		if (!readOnly) {
 			questionText.setLongClickable(true);

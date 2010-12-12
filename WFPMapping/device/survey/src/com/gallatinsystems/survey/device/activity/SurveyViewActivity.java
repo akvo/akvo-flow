@@ -109,6 +109,7 @@ public class SurveyViewActivity extends TabActivity implements
 		setContentView(R.layout.main);
 		tabCount = 0;
 		props = new PropertyUtil(getResources());
+		QuestionView.screenWidth = getWindowManager().getDefaultDisplay().getWidth();
 
 		String langSelection = databaseAdapter
 				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);

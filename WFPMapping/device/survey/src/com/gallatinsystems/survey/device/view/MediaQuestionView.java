@@ -50,6 +50,7 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 		if (readOnly) {
 			mediaButton.setEnabled(false);
 		}
+		mediaButton.setWidth(screenWidth-50);
 		completeIcon = new ImageView(context);
 		completeIcon.setImageResource(R.drawable.checkmark);
 		completeIcon.setClickable(true);

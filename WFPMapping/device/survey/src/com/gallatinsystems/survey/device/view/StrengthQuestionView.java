@@ -53,7 +53,7 @@ public class StrengthQuestionView extends OptionQuestionView {
 				getContext(), android.R.layout.simple_spinner_item, optionArray);
 		optionAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		strengthSpinner.setAdapter(optionAdapter);
+		strengthSpinner.setAdapter(optionAdapter);		
 
 		strengthSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 

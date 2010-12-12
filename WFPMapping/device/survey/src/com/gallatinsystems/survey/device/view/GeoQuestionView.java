@@ -77,7 +77,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		statusIndicator.setVisibility(View.GONE);
 
 		latField = new EditText(context);
-		latField.setWidth(DEFAULT_WIDTH);
+		latField.setWidth(screenWidth/2);
 		latField.setOnFocusChangeListener(this);
 		latField.setKeyListener(numericListener);
 
@@ -91,7 +91,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		innerRow = new TableRow(context);
 
 		lonField = new EditText(context);
-		lonField.setWidth(DEFAULT_WIDTH);
+		lonField.setWidth(screenWidth/2);
 		lonField.setKeyListener(numericListener);
 		lonField.setOnFocusChangeListener(this);
 
@@ -105,7 +105,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		innerRow = new TableRow(context);
 
 		elevationField = new EditText(context);
-		elevationField.setWidth(DEFAULT_WIDTH);
+		elevationField.setWidth(screenWidth/2);
 		elevationField.setKeyListener(numericListener);
 		elevationField.setOnFocusChangeListener(this);
 		elevationLabel = new TextView(context);
@@ -113,6 +113,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 		innerRow.addView(elevationLabel);
 		innerRow.addView(elevationField);
+		innerRow.addView(statusIndicator);
 
 		innerTable.addView(innerRow);
 
@@ -122,9 +123,10 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 		geoButton = new Button(context);
 		geoButton.setText(R.string.getgeo);
-		geoButton.setOnClickListener(this);
+		geoButton.setOnClickListener(this);		
+		geoButton.setWidth(screenWidth-50);
 		tr.addView(geoButton);
-		tr.addView(statusIndicator);
+
 		addView(tr);
 
 		if (generateCode) {

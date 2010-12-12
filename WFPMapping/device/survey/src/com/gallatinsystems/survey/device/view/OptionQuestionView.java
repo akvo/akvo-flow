@@ -166,6 +166,7 @@ public class OptionQuestionView extends QuestionView {
 						}
 					});
 					rb.setText(formOptionText(o), BufferType.SPANNABLE);
+					rb.setWidth(screenWidth);
 					optionGroup.addView(rb, i++,
 							new LayoutParams(LayoutParams.FILL_PARENT,
 									LayoutParams.WRAP_CONTENT));
@@ -191,6 +192,7 @@ public class OptionQuestionView extends QuestionView {
 					TableRow boxRow = new TableRow(context);
 					CheckBox box = new CheckBox(context);
 					box.setId(i);
+					box.setWidth(screenWidth);
 					checkBoxes.add(box);
 					box.setText(formOptionText(options.get(i)),
 							BufferType.SPANNABLE);
@@ -321,7 +323,7 @@ public class OptionQuestionView extends QuestionView {
 				} else {
 					isFirst = false;
 				}
-				text.append(opt.getText());
+				text.append(TextUtils.htmlEncode(opt.getText()));
 
 			} else {
 				AltText txt = opt.getAltText(langs[i]);
@@ -341,11 +343,11 @@ public class OptionQuestionView extends QuestionView {
 					} else {
 						text.append(colors[i]);
 					}
-					text.append("'>").append(txt.getText()).append("</font>");
+					text.append("'>").append(TextUtils.htmlEncode(txt.getText())).append("</font>");
 				}
 			}
 		}
-		return Html.fromHtml(TextUtils.htmlEncode(text.toString()));
+		return Html.fromHtml(text.toString());
 	}
 
 	/**
