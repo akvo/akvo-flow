@@ -31,7 +31,7 @@ public class GeoCoordinates {
 
 	public GeoCoordinates extractGeoCoordinate(String line) {
 		if (line != null && line.trim().length() > 0
-				&& !line.trim().equals("||")) {
+				&& !line.trim().equals("||") && !line.startsWith("||")) {
 			String[] coordinates = line.split("\\|");
 			if (coordinates.length > 1) {
 				setLatitude(new Double(coordinates[0]));
