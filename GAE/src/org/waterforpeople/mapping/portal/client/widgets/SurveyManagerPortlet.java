@@ -428,8 +428,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestion();
 				} catch (Exception e) {
-					Window
-							.alert("Could not save question no Question Group was selected");
+					Window.alert("Could not save question no Question Group was selected");
 				}
 			}
 
@@ -516,8 +515,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(currentQuestion
-										.getSurveyId(), result);
+								surveyOptionQuestionMap.put(
+										currentQuestion.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 								dia.hide();
@@ -574,11 +573,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					&& optionQuestions.length > 0) {
 				loadDepQA(optionQuestions[0], null);
 			}
-		
+
 			TextBox qDepId = new TextBox();
 			qDepId.setVisible(false);
 			questionDetailPanel.setWidget(8, 4, qDepId);
-			
+
 			if (currentQuestion != null
 					&& currentQuestion.getQuestionDependency() != null) {
 				// set existing value
@@ -589,7 +588,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 								.getAnswerValue());
 
 			}
-			//don't install the change handler until the end so adding values to the list box doesn't trigger the handler
+			// don't install the change handler until the end so adding values
+			// to the list box doesn't trigger the handler
 			questionLB.addChangeHandler(new ChangeHandler() {
 				@Override
 				public void onChange(ChangeEvent event) {
@@ -634,7 +634,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private void updateDependencyAnswerSelection(
 			List<QuestionOptionDto> qoList, String selectedAnswer) {
-		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3); 
+		ListBox answerLB = (ListBox) questionDetailPanel.getWidget(8, 3);
 		answerLB.clear();
 		int answerIndex = -1;
 		if (qoList != null) {
@@ -713,8 +713,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null, questionOptionDetail
-						.getRowCount() - 1);
+				loadQuestionOptionRowDetail(null,
+						questionOptionDetail.getRowCount() - 1);
 			}
 
 		});
@@ -737,16 +737,15 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				optionId.setText(item.getKeyId().toString());
 				optionId.setVisible(false);
 			}
-			if (item.getCode() != null){
+			if (item.getCode() != null) {
 				optionValue.setText(item.getCode());
 			}
-			if (item.getText() != null){
+			if (item.getText() != null) {
 				optionText.setText(item.getText());
 			}
-			if (item.getOrder() != null){
+			if (item.getOrder() != null) {
 				lbOptOrder.setSelectedIndex(item.getOrder());
-			}
-			else
+			} else
 				lbOptOrder.setSelectedIndex(questionOptionDetail.getRowCount());
 		} else {
 			lbOptOrder.setSelectedIndex(row);
@@ -829,22 +828,22 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		ListBox lbOrder = (ListBox) questionDetailPanel.getWidget(6, 1);
 
-		if (questionId.getText().length() > 0){
+		if (questionId.getText().length() > 0) {
 			value.setKeyId(new Long(questionId.getText()));
 		}
 
-		if (questionText.getText().length() > 0){
+		if (questionText.getText().length() > 0) {
 			value.setText(questionText.getText().trim());
 		}
 
-		if (lbOrder.getSelectedIndex() > 0){
+		if (lbOrder.getSelectedIndex() > 0) {
 			value.setOrder(lbOrder.getSelectedIndex());
 		}
 
-		if (tip.getText().length() > 0){
+		if (tip.getText().length() > 0) {
 			value.setTip(tip.getText());
 		}
-		if (validationRule.getText().length() > 0){
+		if (validationRule.getText().length() > 0) {
 			value.setValidationRule(validationRule.getText());
 		}
 		value.setMandatoryFlag(mandatoryQuestion.getValue());
@@ -915,15 +914,16 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			// 1);
 			ListBox lbOptOrder = (ListBox) questionOptionDetail.getWidget(row,
 					1);
-			if (lbOptOrder.getSelectedIndex() > 0){
+			if (lbOptOrder.getSelectedIndex() > 0) {
 				qoDto.setOrder(lbOptOrder.getSelectedIndex());
 			}
 			TextBox optionText = (TextBox) questionOptionDetail.getWidget(row,
 					3);
 			TextBox qoId = (TextBox) questionOptionDetail.getWidget(row, 4);
 			// qoDto.setCode(optionValue.getText());
-			if(optionText.getText()!= null){
-				String sanitizedOption = optionText.getText().replaceAll(",", " ");
+			if (optionText.getText() != null) {
+				String sanitizedOption = optionText.getText().replaceAll(",",
+						" ");
 				qoDto.setText(sanitizedOption);
 				optionText.setText(sanitizedOption);
 			}
@@ -1064,8 +1064,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 					@Override
 					public void onSuccess(Object result) {
-						Window
-								.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
+						Window.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
 					}
 
 				});
@@ -1088,8 +1087,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveSurvey();
 				} catch (Exception e) {
-					Window
-							.alert("Could not save survey no survey group selected");
+					Window.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -1221,8 +1219,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				try {
 					saveQuestionGroup();
 				} catch (Exception ex) {
-					Window
-							.alert("Cannot Save Question Group Because no parent survey is selected");
+					Window.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
 			}
 
@@ -1246,8 +1243,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 										MessageDialog errDia = new MessageDialog(
 												"Could not delete question group",
 												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
-										errDia
-												.showRelativeTo(questionGroupDetail);
+										errDia.showRelativeTo(questionGroupDetail);
 									}
 
 									@Override
@@ -1272,13 +1268,16 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox name = (TextBox) questionGroupDetail.getWidget(1, 1);
 		TextBox desc = (TextBox) questionGroupDetail.getWidget(2, 1);
 
-		if (questionGroupId.getText().length() > 0)
+		if (questionGroupId.getText().length() > 0) {
 			qDto.setKeyId(new Long(questionGroupId.getText()));
-		else {
+			String path = ((QuestionGroupDto) currentSelection).getPath();
+			qDto.setPath(path);
+		} else {
 			SurveyDto parentSDto = (SurveyDto) surveyTree
 					.getCurrentlySelectedItem().getUserObject();
-			SurveyGroupDto sGroup = (SurveyGroupDto)surveyTree.getParentUserObject(parentSDto);
-			qDto.setPath( sGroup.getCode()+ "/" + parentSDto.getName());
+			SurveyGroupDto sGroup = (SurveyGroupDto) surveyTree
+					.getParentUserObject(parentSDto);
+			qDto.setPath(sGroup.getCode() + "/" + parentSDto.getName());
 			qDto.setSurveyId(parentSDto.getKeyId());
 		}
 		if (name.getText().length() > 0)
@@ -1290,7 +1289,20 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 	private void saveQuestionGroup() throws Exception {
 		QuestionGroupDto dto = getQuestionGroupDto();
-		Long parentId = currentSelection.getKeyId();
+		Long parentId = null;
+		if (currentSelection instanceof QuestionGroupDto) {
+			// Get Survey Id
+			parentId = ((QuestionGroupDto) currentSelection).getSurveyId();
+			if(parentId==0)
+			{
+				//TODO: HACK Not sure why this is 0 clearly there is a bug elsewhere in the creation
+				parentId = ((SurveyDto)surveyTree.getParentUserObject((QuestionGroupDto)currentSelection)).getKeyId();
+			}
+		} else {
+			parentId = currentSelection.getKeyId();
+		}
+		// = currentSelection.getKeyId();
+
 		final BaseDto treeParent = currentSelection;
 		final boolean isNew;
 		if (dto.getKeyId() != null) {
@@ -1313,11 +1325,20 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 								.getWidget(0, 0);
 						questionGroupId.setText(result.getKeyId().toString());
 						if (isNew) {
-							TreeItem item = surveyTree.addChild(treeParent, result);
-							if(item != null){
+							TreeItem item = surveyTree.addChild(treeParent,
+									result);
+							if (item != null) {
 								surveyTree.setCurrentlySelectedItem(item);
-								currentSelection = (BaseDto)item.getUserObject();
+								currentSelection = (BaseDto) item
+										.getUserObject();
 							}
+						} else {
+							//TODO: Problem the result is different from the user object in the tree so I think we need to find userobject by id and type?
+							surveyTree.replaceUserObject(currentSelection,
+									result);
+							currentSelection = result;
+							TreeItem item = surveyTree.getCurrentlySelectedItem();
+							item.setText(result.getCode());
 						}
 						Window.alert("Saved Question Group");
 					}
@@ -1349,9 +1370,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				if (isNew) {
 					TreeItem item = surveyTree.addChild(treeParent, result);
 					currentSelection = result;
-					if(item != null){
+					if (item != null) {
 						surveyTree.setCurrentlySelectedItem(item);
-						currentSelection = (BaseDto)item.getUserObject();
+						currentSelection = (BaseDto) item.getUserObject();
 					}
 				}
 				Window.alert("Saved Survey");
@@ -1434,9 +1455,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					((TextBox) surveyGroupDetail.getWidget(0, 1))
 							.setText(result.getKeyId().toString());
 					TreeItem item = surveyTree.addChild(treeParent, result);
-					if(item != null){
+					if (item != null) {
 						surveyTree.setCurrentlySelectedItem(item);
-						currentSelection = (BaseDto)item.getUserObject();
+						currentSelection = (BaseDto) item.getUserObject();
 					}
 				}
 				Window.alert("Survey Group Saved");
