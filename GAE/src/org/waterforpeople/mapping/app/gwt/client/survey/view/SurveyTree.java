@@ -547,6 +547,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			}
 		}
 	}
+	
 
 	/**
 	 * returns the parent user object (if any). If not found, returns null
