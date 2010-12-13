@@ -18,7 +18,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 	}
 
 	public QuestionGroup save(QuestionGroup item, Long surveyId, Integer order) {
-		if(item.getSurveyId()==null||item.getSurveyId()==0){
+		if (item.getSurveyId() == null || item.getSurveyId() == 0) {
 			item.setSurveyId(surveyId);
 		}
 		item = save(item);
@@ -42,15 +42,21 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		if (groups != null) {
 			int i = 1;
 			for (QuestionGroup group : groups) {
-				map.put(group.getOrder() != null ? group.getOrder() : i, group);
+				//TODO: Hack because we seem to have quesitongroups with same order key so put an arbitraty value there for now since it isn't used.
+				if (map.containsKey(group.getOrder())) {
+					map.put(i, group);
+				} else {
+					map.put(group.getOrder() != null ? group.getOrder() : i,
+							group);
+				}
 				i++;
 			}
 
 		}
 		return map;
 	}
-	
-	public QuestionGroup getByParentIdandCode(String code, Long surveyId){
+
+	public QuestionGroup getByParentIdandCode(String code, Long surveyId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionGroup.class);
 		query.setFilter(" code==codeParam && surveyId == surveyIdParam");
@@ -62,7 +68,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		} else {
 			return null;
 		}
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,7 +86,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		}
 	}
 
-	public void delete(QuestionGroup item) {		
+	public void delete(QuestionGroup item) {
 		QuestionDao qDao = new QuestionDao();
 		for (Map.Entry<Integer, Question> qItem : qDao
 				.listQuestionsByQuestionGroup(item.getKey().getId(), false)
