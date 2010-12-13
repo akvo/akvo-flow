@@ -1209,7 +1209,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					order.setSelectedIndex(i - 1);
 				}
 			}
-			//TODO: Put logic to get number of items in branch + 1
+		}
+		if(item==null){
+			
+				int countOfQG =surveyTree.getCurrentlySelectedItem().getChildCount();
+				order.setSelectedIndex(countOfQG);
 		}
 
 		Button saveQuestionGroupButton = new Button("Save Question Group");
