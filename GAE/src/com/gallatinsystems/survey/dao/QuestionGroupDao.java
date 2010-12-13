@@ -18,6 +18,9 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 	}
 
 	public QuestionGroup save(QuestionGroup item, Long surveyId, Integer order) {
+		if(item.getSurveyId()==null||item.getSurveyId()==0){
+			item.setSurveyId(surveyId);
+		}
 		item = save(item);
 		return item;
 	}
