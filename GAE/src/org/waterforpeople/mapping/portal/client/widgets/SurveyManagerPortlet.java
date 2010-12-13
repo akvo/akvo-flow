@@ -725,7 +725,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionValue = new TextBox();
 		optionValue.setWidth("3em");
 		ListBox lbOptOrder = new ListBox();
-		for (Integer i = 0; i < 15; i++) {
+		for (Integer i = 0; i < 25; i++) {
 			lbOptOrder.addItem(i.toString());
 		}
 		TextBox optionText = new TextBox();
@@ -733,7 +733,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionId = new TextBox();
 		// optionId.setVisible(true);
 		if (item != null) {
-			if (item.getKeyId() == null) {
+			if (item.getKeyId() != null) {
 				optionId.setText(item.getKeyId().toString());
 				optionId.setVisible(false);
 			}
