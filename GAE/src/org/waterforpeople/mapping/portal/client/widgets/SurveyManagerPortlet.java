@@ -1201,14 +1201,27 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			name.setText(item.getCode());
 			description.setText(item.getDescription());
 		}
+		ListBox order = new ListBox();
+		for (Integer i = 1; i < 25; i++) {
+			order.addItem(i.toString());
+			if (item != null){
+				if (item.getOrder().equals(i)) {
+					order.setSelectedIndex(i - 1);
+				}
+			}
+			//TODO: Put logic to get number of items in branch + 1
+		}
 
 		Button saveQuestionGroupButton = new Button("Save Question Group");
 		Button deleteQuestionGroupButton = new Button("Delete Question Group");
 		questionGroupDetail.setWidget(0, 0, questionGroupId);
+
 		questionGroupDetail.setWidget(1, 0, new Label("Name"));
 		questionGroupDetail.setWidget(1, 1, name);
 		questionGroupDetail.setWidget(2, 0, new Label("Description"));
 		questionGroupDetail.setWidget(2, 1, description);
+		questionGroupDetail.setWidget(3, 0, new Label("Order"));
+		questionGroupDetail.setWidget(3, 1, order);
 		questionGroupDetail.setWidget(4, 0, saveQuestionGroupButton);
 		questionGroupDetail.setWidget(4, 1, deleteQuestionGroupButton);
 
@@ -1267,6 +1280,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox questionGroupId = (TextBox) questionGroupDetail.getWidget(0, 0);
 		TextBox name = (TextBox) questionGroupDetail.getWidget(1, 1);
 		TextBox desc = (TextBox) questionGroupDetail.getWidget(2, 1);
+		ListBox order = (ListBox) questionGroupDetail.getWidget(3, 1);
 
 		if (questionGroupId.getText().length() > 0) {
 			qDto.setKeyId(new Long(questionGroupId.getText()));
@@ -1284,6 +1298,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			qDto.setCode(name.getText());
 		if (desc.getText().length() > 0)
 			qDto.setDescription(desc.getText());
+		if (order.getSelectedIndex() != -1)
+			qDto.setOrder(new Integer(order.getItemText(order
+					.getSelectedIndex())));
+
 		return qDto;
 	}
 
@@ -1293,10 +1311,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		if (currentSelection instanceof QuestionGroupDto) {
 			// Get Survey Id
 			parentId = ((QuestionGroupDto) currentSelection).getSurveyId();
-			if(parentId==0)
-			{
-				//TODO: HACK Not sure why this is 0 clearly there is a bug elsewhere in the creation
-				parentId = ((SurveyDto)surveyTree.getParentUserObject((QuestionGroupDto)currentSelection)).getKeyId();
+			if (parentId == 0) {
+				// TODO: HACK Not sure why this is 0 clearly there is a bug
+				// elsewhere in the creation
+				parentId = ((SurveyDto) surveyTree
+						.getParentUserObject((QuestionGroupDto) currentSelection))
+						.getKeyId();
 			}
 		} else {
 			parentId = currentSelection.getKeyId();
@@ -1333,11 +1353,14 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 										.getUserObject();
 							}
 						} else {
-							//TODO: Problem the result is different from the user object in the tree so I think we need to find userobject by id and type?
+							// TODO: Problem the result is different from the
+							// user object in the tree so I think we need to
+							// find userobject by id and type?
 							surveyTree.replaceUserObject(currentSelection,
 									result);
 							currentSelection = result;
-							TreeItem item = surveyTree.getCurrentlySelectedItem();
+							TreeItem item = surveyTree
+									.getCurrentlySelectedItem();
 							item.setText(result.getCode());
 						}
 						Window.alert("Saved Question Group");
