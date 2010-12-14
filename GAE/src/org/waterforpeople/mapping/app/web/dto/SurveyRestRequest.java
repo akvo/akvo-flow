@@ -21,6 +21,7 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String GET_SUMMARY_ACTION = "getSummary";
 	public static final String GET_QUESTION_DETAILS_ACTION = "getQuestionDetails";
 	public static final String GET_SURVEY_INSTANCE_ACTION = "getSurveyInstance";
+	public static final String DELETE_SURVEY_INSTANCE= "deleteSurveyInstance";
 	
 	
 
