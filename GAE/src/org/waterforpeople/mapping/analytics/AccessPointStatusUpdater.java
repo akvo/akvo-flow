@@ -18,7 +18,7 @@ import com.gallatinsystems.framework.domain.DataChangeRecord;
  * 
  */
 public class AccessPointStatusUpdater implements DataSummarizer {
-	@SuppressWarnings("unused")
+	
 	private static Logger logger = Logger.getLogger(AccessPointUpdater.class
 			.getName());
 
@@ -53,9 +53,21 @@ public class AccessPointStatusUpdater implements DataSummarizer {
 			point = new AccessPoint();
 			point.setCountryCode(vals[0]);
 			point.setCommunityCode(vals[1]);
-			point.setPointType(AccessPointType.valueOf(vals[2]));
-			point.setPointStatus(Status.valueOf(vals[3]));
+			try{
+				point.setPointType(AccessPointType.valueOf(vals[2]));
+			}catch(Throwable e){
+				logger.warning("unknown type value: "+vals[2]);
+			}
+			try{
+				point.setPointStatus(Status.valueOf(vals[3]));
+			}catch(Throwable e){
+				logger.warning("unknown status value: "+vals[3]);
+			}
+			try{
 			point.setCollectionDate(DateUtil.getYearOnlyDate(vals[4]));
+			}catch(Throwable e){
+				logger.warning("bad date value: "+vals[4]);
+			}
 		}
 		return point;
 	}
