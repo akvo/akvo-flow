@@ -477,7 +477,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					dia.show();
 				}else{
 					//Likely have the QG selected because this is a new question need to figure out how to get QuestionDto
-					
+					Window.alert("Please save question first then select question before pressing edit translations buttons");
 				}
 			}
 		});
