@@ -388,3 +388,8 @@ td.gridCell-header{
  font-weight: bold;
  background-color: #95C4D8;
 }
+
+.gwt-Tree { font:11px/14px Verdana, Helvetica, sans-serif; }
+/*.gwt-Tree .gwt-TreeItem {  }*/
+.gwt-Tree .gwt-TreeItem-selected { background: #D9ECF5; }
+
