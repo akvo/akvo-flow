@@ -345,7 +345,7 @@ public class AccessPointHelper {
 		return apDao.list(cursorString);
 	}
 
-	private static AccessPoint.Status encodeStatus(String statusVal,
+	public static AccessPoint.Status encodeStatus(String statusVal,
 			AccessPoint.AccessPointType pointType) {
 		AccessPoint.Status status = null;
 		statusVal = statusVal.toLowerCase().trim();

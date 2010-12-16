@@ -112,8 +112,8 @@ public class SpreadsheetAccessPointAdapter {
 				if (methodName.contains("set")) {
 					Class[] paramTypes = method.getParameterTypes();
 					if (paramTypes.length > 0) {
-						attributeTypeMap.put(methodName, paramTypes[0]
-								.getName());
+						attributeTypeMap.put(methodName,
+								paramTypes[0].getName());
 					}
 				}
 			}
@@ -126,18 +126,18 @@ public class SpreadsheetAccessPointAdapter {
 		for (ColumnContainer col : row.getColumnContainersList()) {
 			String colName = col.getColName();
 			String attributeName = colsToAttributesMap.get(colName);
-			// log.info("attributeName: " + attributeName);
+			 log.info("attributeName: " + attributeName);
 			if (attributeName != null && !attributeName.trim().isEmpty()) {
-				if (attributeName.trim().toLowerCase().equals(
-						"typetechnologystring")
-						|| attributeName.trim().toLowerCase().equals(
-								"typetechnology")
-						|| attributeName.trim().toLowerCase().equals(
-								"pointtype")
-						|| attributeName.trim().toLowerCase().equals(
-								"pointstatus")) {
-					if (attributeName.trim().toLowerCase().equals(
-							"typetechnology")) {
+				if (attributeName.trim().toLowerCase()
+						.equals("typetechnologystring")
+						|| attributeName.trim().toLowerCase()
+								.equals("typetechnology")
+						|| attributeName.trim().toLowerCase()
+								.equals("pointtype")
+						|| attributeName.trim().toLowerCase()
+								.equals("pointstatus")) {
+					if (attributeName.trim().toLowerCase()
+							.equals("typetechnology")) {
 						TechnologyType tt = techTypeMap.get(col
 								.getColContents());
 						if (tt != null) {
@@ -158,10 +158,10 @@ public class SpreadsheetAccessPointAdapter {
 						} else {
 							ap.setTypeTechnologyString(col.getColContents());
 						}
-					} else if (attributeName.trim().toLowerCase().equals(
-							"pointtype")) {
-						if (col.getColContents().trim().toLowerCase().equals(
-								"sanitation")) {
+					} else if (attributeName.trim().toLowerCase()
+							.equals("pointtype")) {
+						if (col.getColContents().trim().toLowerCase()
+								.equals("sanitation")) {
 							ap.setPointType(AccessPointType.SANITATION_POINT);
 						} else if (col.getColContents().trim().toLowerCase()
 								.equals("water")) {
@@ -176,74 +176,10 @@ public class SpreadsheetAccessPointAdapter {
 								.equals("health post")) {
 							ap.setPointType(AccessPointType.HEALTH_POSTS);
 						}
-					} else if (attributeName.trim().toLowerCase().equals(
-							"pointstatus")) {
+					} else if (attributeName.trim().toLowerCase()
+							.equals("pointstatus")) {
 						if (col.getColContents() != null) {
-							if (col.getColContents().toLowerCase().equals(
-									"functioning")
-									|| col
-											.getColContents()
-											.toLowerCase()
-											.equals(
-													"meets government standards")
-									|| col
-											.getColContents()
-											.trim()
-											.toLowerCase()
-											.equals(
-													"system functioning and meets government standards")
-									|| col.getColContents().toLowerCase()
-											.trim().equals("Functional")) {
-								// Green
-								ap.setPointStatus(Status.FUNCTIONING_HIGH);
-							} else if (col
-									.getColContents()
-									.trim()
-									.toLowerCase()
-									.equals(
-											"system needs repair but is functioning")
-									|| col
-											.getColContents()
-											.toLowerCase()
-											.equals(
-													"functional but with problems")
-									|| col
-											.getColContents()
-											.toLowerCase()
-											.trim()
-											.equals(
-													"functioning but with problems")) {
-								// Yellow
-								ap
-										.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
-							} else if (col.getColContents().toLowerCase()
-									.trim().equals("broken down system")
-									|| col.getColContents().toLowerCase()
-											.trim()
-											.equals("borken-down system")
-									|| col.getColContents().toLowerCase()
-											.trim()
-											.equals("broken-down system")
-									|| col.getColContents().trim()
-											.toLowerCase()
-											.equals("broken down")) {
-								// Red
-								ap.setPointStatus(Status.BROKEN_DOWN);
-							} else if (col.getColContents().toLowerCase()
-									.equals("no improved system")
-									|| (col.getColContents().trim()
-											.toLowerCase()
-											.equals("no improved system"))) {
-								// No improved system Black
-								ap
-										.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
-							} else {
-								ap.setPointStatus(AccessPoint.Status.OTHER);
-								ap.setOtherStatus(col.getColContents());
-							}
-						} else {
-							ap.setPointStatus(Status.OTHER);
-							ap.setOtherStatus("Unknown");
+							ap.setPointStatus(AccessPointHelper.encodeStatus(col.getColContents(),ap.getPointType()));
 						}
 					}
 				} else {

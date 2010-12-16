@@ -337,12 +337,13 @@ public class KMLGenerator {
 		}
 		return null;
 	}
-	
-	public String generatePlacemarks(String vmName, String countryCode){
+
+	public String generatePlacemarks(String vmName, String countryCode) {
 		return generatePlacemarks(vmName, countryCode, GOOGLE_EARTH_DISPLAY);
 	}
 
-	public String generatePlacemarks(String vmName, String countryCode, String display) {
+	public String generatePlacemarks(String vmName, String countryCode,
+			String display) {
 		StringBuilder sb = new StringBuilder();
 		AccessPointDao apDAO = new AccessPointDao();
 		List<AccessPoint> entries = null;
@@ -416,12 +417,14 @@ public class KMLGenerator {
 				}
 			}
 		} catch (Exception ex) {
-			log.log(Level.SEVERE, "Bad access point: " + entries.get(i+1).toString());
+			log.log(Level.SEVERE, "Bad access point: "
+					+ entries.get(i + 1).toString());
 		}
 		return sb.toString();
 	}
 
-	public String bindPlacemark(AccessPoint ap, String vmName, String display) throws Exception {
+	public String bindPlacemark(AccessPoint ap, String vmName, String display)
+			throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
 		if (ap.getCountryCode() == null)
@@ -429,7 +432,7 @@ public class KMLGenerator {
 		if (ap.getCountryCode() != null) {
 
 			VelocityContext context = new VelocityContext();
-			if(display!= null){
+			if (display != null) {
 				context.put("display", display);
 			}
 			context.put("countryCode", ap.getCountryCode());
@@ -570,18 +573,18 @@ public class KMLGenerator {
 				context.put("photoName", ap.getPhotoName());
 			}
 
-			if (ap.getCountryCode() == "RW") {
+			// if (ap.getCountryCode() == "RW") {
 
-				if (ap.getMeetGovtQualityStandardFlag() == null) {
-					context.put("meetGovtQualityStandardFlag", "N/A");
-				} else {
-					context.put("meetGovtQualityStandardFlag",
-							encodeBooleanDisplay(ap
-									.getMeetGovtQualityStandardFlag()));
-				}
+			if (ap.getMeetGovtQualityStandardFlag() == null) {
+				context.put("meetGovtQualityStandardFlag", "N/A");
 			} else {
-				context.put("meetGovtQualityStandardFlag", "unknown");
+				context.put("meetGovtQualityStandardFlag",
+						encodeBooleanDisplay(ap
+								.getMeetGovtQualityStandardFlag()));
 			}
+			// } else {
+			// context.put("meetGovtQualityStandardFlag", "unknown");
+			// }
 			if (ap.getMeetGovtQuantityStandardFlag() == null) {
 				context.put("meetGovtQuantityStandardFlag", "N/A");
 			} else {
