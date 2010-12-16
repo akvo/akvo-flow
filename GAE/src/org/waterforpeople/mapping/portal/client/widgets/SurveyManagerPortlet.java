@@ -292,10 +292,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox questionId = new TextBox();
 		questionId.setVisible(false);
 		TextArea questionText = new TextArea();
-		questionText.setSize("35em", "5em");
+		questionText.setSize("30em", "5em");
 		// questionText.setWidth("40em");
 		TextArea tip = new TextArea();
-		tip.setSize("35em", "5em");
+		tip.setSize("30em", "5em");
 		TextBox validationRule = new TextBox();
 		ListBox lbOrder = new ListBox();
 		for (Integer i = 0; i < 100; i++) {
@@ -470,10 +470,15 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		editTranslationButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				SurveyQuestionTranslationDialog dia = new SurveyQuestionTranslationDialog(
-						(QuestionDto) currentSelection,
-						SurveyManagerPortlet.this);
-				dia.show();
+				if (currentSelection instanceof QuestionDto) {
+					SurveyQuestionTranslationDialog dia = new SurveyQuestionTranslationDialog(
+							(QuestionDto) currentSelection,
+							SurveyManagerPortlet.this);
+					dia.show();
+				}else{
+					//Likely have the QG selected because this is a new question need to figure out how to get QuestionDto
+					
+				}
 			}
 		});
 
@@ -731,7 +736,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		TextBox optionText = new TextBox();
 		optionText.setWidth("30em");
 		TextBox optionId = new TextBox();
-		// optionId.setVisible(true);
+		optionId.setVisible(false);
 		if (item != null) {
 			if (item.getKeyId() != null) {
 				optionId.setText(item.getKeyId().toString());
@@ -1204,16 +1209,17 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		ListBox order = new ListBox();
 		for (Integer i = 1; i < 25; i++) {
 			order.addItem(i.toString());
-			if (item != null){
+			if (item != null) {
 				if (item.getOrder().equals(i)) {
 					order.setSelectedIndex(i - 1);
 				}
 			}
 		}
-		if(item==null){
-			
-				int countOfQG =surveyTree.getCurrentlySelectedItem().getChildCount();
-				order.setSelectedIndex(countOfQG);
+		if (item == null) {
+
+			int countOfQG = surveyTree.getCurrentlySelectedItem()
+					.getChildCount();
+			order.setSelectedIndex(countOfQG);
 		}
 
 		Button saveQuestionGroupButton = new Button("Save Question Group");
