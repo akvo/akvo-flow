@@ -1,4 +1,4 @@
-body{
+body {
 	font:11px/14px Verdana, Helvetica, sans-serif;	
 }
 
@@ -7,12 +7,17 @@ body{
 	padding-top:2px;
 	padding-bottom:2px;
 	padding-right:2px;
-	padding-left:2px;
+	padding-left:2px;	
 }
 
 .portlet-header {
-	background: #e3e8f3 url(/images/hborder.png) repeat-x 0px -1468px;
+	background: #e3e8f3 url(/images/hborder.png) repeat-x 0px -1468px;	
   	overflow: hidden;
+ }
+ 
+ .portlet-title {
+ 	font:14px/17px Verdana, Helvetica, sans-serif;
+ 	font-weight: bold;
  }
 
 .portal-column-active{
@@ -35,6 +40,7 @@ body{
   border-top: 5px solid #d0e4f6;
 }
 .gwt-DialogBox .dialogContent {
+	font:11px/14px Verdana, Helvetica, sans-serif;
 }
 .gwt-DialogBox .dialogMiddleCenter {
   padding: 3px;
@@ -201,6 +207,7 @@ td.datePickerMonth {
 
 .gwt-MenuBar .gwt-MenuItem {
   cursor: default;
+  font:12px/15px Verdana, Helvetica, sans-serif;
 }
 
 .gwt-MenuBar .gwt-MenuItem-selected {
@@ -390,6 +397,6 @@ td.gridCell-header{
 }
 
 .gwt-Tree { font:11px/14px Verdana, Helvetica, sans-serif; }
-/*.gwt-Tree .gwt-TreeItem {  }*/
+.gwt-Tree .gwt-TreeItem { font:11px/14px Verdana, Helvetica, sans-serif; }
 .gwt-Tree .gwt-TreeItem-selected { background: #D9ECF5; }
 

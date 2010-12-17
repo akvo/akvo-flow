@@ -276,7 +276,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 	 */
 	@Override
 	public void onSelection(SelectionEvent<TreeItem> event) {
-		setCurrentlySelectedItem(event.getSelectedItem());
+		event.getSelectedItem().setSelected(true);		
 		loadChild(event.getSelectedItem());
 		if (event.getSelectedItem().getUserObject() != null
 				&& event.getSelectedItem().getUserObject() instanceof BaseDto) {

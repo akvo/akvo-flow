@@ -392,6 +392,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private class ConfigurationDialog extends DialogBox implements ClickHandler {
 
 		private static final String HEADER_CSS = "tableheader";
+		private static final String DIALOG_CONTENT_CSS = "dialogContent";
 
 		public ConfigurationDialog() {
 			// Set the dialog box's caption.
@@ -406,6 +407,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			setPopupPosition(Window.getClientWidth() / 4, Window
 					.getClientHeight() / 4);
 			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);
+			g.setStyleName(DIALOG_CONTENT_CSS);
 
 			Label header = new Label("Portlets");
 			header.setStyleName(HEADER_CSS);

@@ -33,7 +33,8 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	private static final String CONF_IMAGE = "images/configure-32.png";
 	private static final String SNAP_IMAGE = "images/camera_icon.png";
 	private static final String CSS_PANEL = "portlet-panel";
-	private static final String CSS_HEADER = "portlet-header";
+	private static final String CSS_HEADER = "portlet-header";	
+	private static final String PORTLET_TITLE_CSS ="portlet-title";
 	private static final int HEADER_HEIGHT = 20;
 	private static final int DEFAULT_WIDTH = 100;
 	private static final int DEFAULT_HEIGHT = 100;
@@ -129,6 +130,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 		} else {
 			headerWidget = new Label("");
 		}
+		headerWidget.setStyleName(PORTLET_TITLE_CSS);
 		headerPanel.add(headerWidget, DockPanel.WEST);
 		headerPanel.add(new SimplePanel(), DockPanel.CENTER);
 		closeImg = new Image(CLOSE_IMAGE);
