@@ -41,6 +41,7 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String SURVEY_ID_PARAM = "surveyId";
 	public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
 	public static final String QUESTION_ID_PARAM = "questionID";
+	public static final String QUESTION_ID_PARAM_ALT = "questionId";
 	public static final String SCORING_PARAM = "scoring";
 	public static final String INSTANCE_PARAM = "instanceId";
 
@@ -200,6 +201,9 @@ public class SurveyRestRequest extends RestRequest {
 		if (req.getParameter(QUESTION_ID_PARAM) != null) {
 			questionId = Integer.parseInt(req.getParameter(QUESTION_ID_PARAM)
 					.trim());
+		}
+		if(req.getParameter(QUESTION_ID_PARAM_ALT)!=null){
+			questionId = Integer.parseInt(req.getParameter(QUESTION_ID_PARAM_ALT).trim());
 		}
 		if (req.getParameter(QUESTION_TEXT_PARAM) != null) {
 			questionText = req.getParameter(QUESTION_TEXT_PARAM).trim();
