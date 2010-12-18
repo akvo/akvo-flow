@@ -21,7 +21,7 @@
 			</scoring>					
 		</question>		
 	 	<question id="01q" order="1" mandatory="false" type="strength" strengthMin="1" strengthMax="5">
-			<text>How does this look?</text>
+			<text>How does this look (strength)?</text>
 			<options allowOther="false">
 				<option value="r">OK</option>
 				<option value="pu">I don't like it</option>				
