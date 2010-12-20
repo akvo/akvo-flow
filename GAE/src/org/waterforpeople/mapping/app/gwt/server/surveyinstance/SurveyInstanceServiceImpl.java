@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
@@ -28,6 +30,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceService {
 
 	private static final long serialVersionUID = -9175237700587455358L;
+	private static final Logger log = Logger
+			.getLogger(SurveyInstanceServiceImpl.class);
 
 	@Override
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
@@ -107,11 +111,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			DataChangeRecord value = new DataChangeRecord(
 					QuestionAnswerStore.class.getName(), item.getQuestionID(),
 					item.getOldValue(), item.getValue());
-			queue.add(url("/app_worker/dataupdate").param(
-					DataSummarizationRequest.OBJECT_KEY, item.getQuestionID())
+			queue.add(url("/app_worker/dataupdate")
+					.param(DataSummarizationRequest.OBJECT_KEY,
+							item.getQuestionID())
 					.param(DataSummarizationRequest.OBJECT_TYPE,
-							"QuestionDataChange").param(
-							DataSummarizationRequest.VALUE_KEY,
+							"QuestionDataChange")
+					.param(DataSummarizationRequest.VALUE_KEY,
 							value.packString()));
 			// see if the question is mapped. And if it is, send an Access Point
 			// change message
@@ -124,13 +129,13 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 								+ item.getSurveyInstanceId() + "|"
 								+ mapping.getKey().getId(), item.getOldValue(),
 						item.getValue());
-				queue.add(url("/app_worker/dataupdate").param(
-						DataSummarizationRequest.OBJECT_KEY,
-						item.getQuestionID()).param(
-						DataSummarizationRequest.OBJECT_TYPE,
-						"AccessPointChange").param(
-						DataSummarizationRequest.VALUE_KEY,
-						apValue.packString()));
+				queue.add(url("/app_worker/dataupdate")
+						.param(DataSummarizationRequest.OBJECT_KEY,
+								item.getQuestionID())
+						.param(DataSummarizationRequest.OBJECT_TYPE,
+								"AccessPointChange")
+						.param(DataSummarizationRequest.VALUE_KEY,
+								apValue.packString()));
 			}
 		}
 
@@ -174,21 +179,22 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				Queue queue = QueueFactory.getQueue("dataUpdate");
 				for (QuestionAnswerStore ans : answers) {
 					DataChangeRecord value = new DataChangeRecord(
-							QuestionAnswerStore.class.getName(), ans
-									.getQuestionID(), ans.getValue(), "");
-					queue.add(url("/app_worker/dataupdate").param(
-							DataSummarizationRequest.OBJECT_KEY,
-							ans.getQuestionID()).param(
-							DataSummarizationRequest.OBJECT_TYPE,
-							"QuestionDataChange").param(
-							DataSummarizationRequest.VALUE_KEY,
-							value.packString()));
+							QuestionAnswerStore.class.getName(),
+							ans.getQuestionID(), ans.getValue(), "");
+					queue.add(url("/app_worker/dataupdate")
+							.param(DataSummarizationRequest.OBJECT_KEY,
+									ans.getQuestionID())
+							.param(DataSummarizationRequest.OBJECT_TYPE,
+									"QuestionDataChange")
+							.param(DataSummarizationRequest.VALUE_KEY,
+									value.packString()));
 				}
 				dao.delete(answers);
 			}
 			SurveyInstance instance = dao.getByKey(instanceId);
 			if (instance != null) {
 				dao.delete(instance);
+				log.log(Level.INFO, "Deleted: " + instanceId);
 			}
 		}
 	}
