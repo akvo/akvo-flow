@@ -125,6 +125,39 @@ body {
     border-left  : 1px solid #898989;
 }
 
+.gwt-TabPanel {
+  margin-top: 4px;
+}
+
+.gwt-TabPanelBottom {
+  background-color: #E8E8E8;
+}
+
+.gwt-TabBar {
+  padding-top: 2px;
+  border-bottom: 4px solid #878787;
+  background-color: #fff;
+}
+
+.gwt-TabBarItem {
+  padding: 4px;
+  cursor: pointer;
+  background-color: #e8e8e8;
+  border-bottom: 2px solid white;
+  margin-right: 2px;
+}
+
+.gwt-TabBarItem-selected {
+  padding: 4px;
+  font-weight: bold;
+  cursor: default;
+
+  background-color: #878787;
+  border-bottom: 2px solid #87ffff;
+  margin-right: 2px;
+}
+           
+
 .gwt-DatePicker {
   border: 1px solid #A2BBDD;
   cursor: default;

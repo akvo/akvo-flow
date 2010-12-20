@@ -1,14 +1,15 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
@@ -35,19 +36,20 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
@@ -219,8 +221,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				AccessPointType.SANITATION_POINT.toString());
 		accessPointTypeListBox.addItem("Public Institution",
 				AccessPointType.PUBLIC_INSTITUTION.toString());
-		accessPointTypeListBox.addItem("School", AccessPointType.SCHOOL
-				.toString());
+		accessPointTypeListBox.addItem("School",
+				AccessPointType.SCHOOL.toString());
 
 	}
 
@@ -267,8 +269,141 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		});
 	}
 
-	private void loadAccessPointDetailTable(AccessPointDto accessPointDto) {
-		apTable.setVisible(false);
+	private HashMap<String, String> fieldsMap = new HashMap<String, String>();
+
+	private TabPanel loadTabs(AccessPointDto accessPointDto) {
+		TabPanel tp = new TabPanel();
+		tp.add(loadGeneralTab(accessPointDto), "General");
+		tp.add(loadMediaTab(accessPointDto), "Media");
+		tp.add(loadAttributeTab(accessPointDto), "Attributes");
+		tp.selectTab(0);
+		return tp;
+	}
+
+	private FlexTable loadMediaTab(AccessPointDto accessPointDto) {
+		final FlexTable accessPointDetail = new FlexTable();
+		accessPointDetail.setWidget(10, 0, new Label("Photo Url: "));
+		TextBox photoURLTB = new TextBox();
+		FormPanel form = new FormPanel();
+		form.setMethod(FormPanel.METHOD_POST);
+		form.setEncoding(FormPanel.ENCODING_MULTIPART);
+		form.setAction("/webapp/photoupload");
+		FileUpload upload = new FileUpload();
+		form.setWidget(upload);
+		accessPointDetail.setWidget(10, 3, form);
+		Button submitUpload = new Button("Upload");
+		upload.setName("uploadFormElement");
+		accessPointDetail.setWidget(10, 4, submitUpload);
+
+		form.addSubmitHandler(new SubmitHandler() {
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				// no-op
+			}
+		});
+
+		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+			@Override
+			public void onSubmitComplete(SubmitCompleteEvent event) {
+				Window.alert("File uploaded");
+				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
+						.getWidget(10, 3)).getWidget()).getFilename();
+
+				if (fileName.contains("/")) {
+					fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+				}
+				if (fileName.contains("\\")) {
+					fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+				}
+
+				((TextBox) accessPointDetail.getWidget(10, 1))
+						.setText("http://waterforpeople.s3.amazonaws.com/images/"
+								+ fileName);
+
+				Image i = ((Image) accessPointDetail.getWidget(11, 1));
+				i.setHeight("200px");
+
+				if (i == null) {
+					Image photo = new Image();
+					photo.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
+							+ fileName);
+					photo.setHeight("200px");
+					accessPointDetail.setWidget(11, 1, photo);
+				} else {
+					i.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
+							+ fileName);
+				}
+			}
+		});
+
+		submitUpload.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				((FormPanel) accessPointDetail.getWidget(10, 3)).submit();
+
+			}
+
+		});
+
+		if (accessPointDto != null) {
+
+			photoURLTB.setText(accessPointDto.getPhotoURL());
+			Image photo = new Image(accessPointDto.getPhotoURL() + "?random="
+					+ Random.nextInt());
+			accessPointDetail.setWidget(11, 1, photo);
+			photo.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					((Image) accessPointDetail.getWidget(11, 1))
+							.setVisible(false);
+					accessPointDetail.setWidget(10, 4, new Label(
+							"Please wait while image is rotated 90 Degrees"));
+					svc.rotateImage(((TextBox) accessPointDetail.getWidget(10,
+							1)).getText(), new AsyncCallback<byte[]>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							// no-op
+						}
+
+						@Override
+						public void onSuccess(byte[] result) {
+							Integer random = Random.nextInt();
+							Image photo = ((Image) accessPointDetail.getWidget(
+									11, 1));
+							accessPointDetail.getWidget(10, 4)
+									.setVisible(false);
+							photo.setUrl(((TextBox) accessPointDetail
+									.getWidget(11, 1)).getText()
+									+ "?random="
+									+ random);
+							photo.setVisible(true);
+						}
+					});
+				}
+			});
+		}
+		accessPointDetail.setWidget(10, 1, photoURLTB);
+
+		accessPointDetail.setWidget(12, 0, new Label("Photo Caption: "));
+		TextBox captionTB = new TextBox();
+		if (accessPointDto != null)
+			captionTB.setText(accessPointDto.getPointPhotoCaption());
+		accessPointDetail.setWidget(12, 1, captionTB);
+		Label apId;
+		if (accessPointDto != null) {
+			apId = new Label(accessPointDto.getKeyId().toString());
+		} else {
+			apId = new Label("-1");
+		}
+		apId.setVisible(false);
+		accessPointDetail.setWidget(15, 1, apId);
+		return accessPointDetail;
+	}
+
+	private FlexTable loadGeneralTab(AccessPointDto accessPointDto) {
+		FlexTable accessPointDetail = new FlexTable();
 		accessPointDetail.setWidget(0, 0, new Label("Community Code: "));
 		TextBox communityCodeTB = new TextBox();
 		if (accessPointDto != null) {
@@ -323,7 +458,19 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			pickerConstructionDate.setValue(accessPointDto
 					.getConstructionDate());
 		accessPointDetail.setWidget(5, 1, pickerConstructionDate);
+		Label apId;
+		if (accessPointDto != null) {
+			apId = new Label(accessPointDto.getKeyId().toString());
+		} else {
+			apId = new Label("-1");
+		}
+		apId.setVisible(false);
+		accessPointDetail.setWidget(15, 1, apId);
+		return accessPointDetail;
+	}
 
+	private FlexTable loadAttributeTab(AccessPointDto accessPointDto) {
+		FlexTable accessPointDetail = new FlexTable();
 		accessPointDetail.setWidget(6, 0, new Label("Cost Per: "));
 		TextBox costPerTB = new TextBox();
 		if (accessPointDto != null && accessPointDto.getCostPer() != null)
@@ -359,119 +506,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			numHouseholdsTB.setText(accessPointDto
 					.getNumberOfHouseholdsUsingPoint().toString());
 		accessPointDetail.setWidget(9, 1, numHouseholdsTB);
-
-		accessPointDetail.setWidget(10, 0, new Label("Photo Url: "));
-		TextBox photoURLTB = new TextBox();
-		FormPanel form = new FormPanel();
-		form.setMethod(FormPanel.METHOD_POST);
-		form.setEncoding(FormPanel.ENCODING_MULTIPART);
-		form.setAction("/webapp/photoupload");
-		FileUpload upload = new FileUpload();
-		form.setWidget(upload);
-		accessPointDetail.setWidget(10, 3, form);
-		Button submitUpload = new Button("Upload");
-		upload.setName("uploadFormElement");
-		accessPointDetail.setWidget(10, 4, submitUpload);
-
-		form.addSubmitHandler(new SubmitHandler() {
-			@Override
-			public void onSubmit(SubmitEvent event) {
-				// no-op
-			}
-		});
-
-		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
-			@Override
-			public void onSubmitComplete(SubmitCompleteEvent event) {
-				Window.alert("File uploaded");
-				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
-						.getWidget(10, 3)).getWidget()).getFilename();
-
-				if (fileName.contains("/")) {
-					fileName = fileName
-							.substring(fileName.lastIndexOf("/") + 1);
-				}
-				if (fileName.contains("\\")) {
-					fileName = fileName
-							.substring(fileName.lastIndexOf("\\") + 1);
-				}
-
-				((TextBox) accessPointDetail.getWidget(10, 1))
-						.setText("http://waterforpeople.s3.amazonaws.com/images/"
-								+ fileName);
-
-				Image i = ((Image) accessPointDetail.getWidget(10, 2));
-				i.setHeight("200px");
-
-				if (i == null) {
-					Image photo = new Image();
-					photo
-							.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
-									+ fileName);
-					photo.setHeight("200px");
-					accessPointDetail.setWidget(10, 2, photo);
-				} else {
-					i.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
-							+ fileName);
-				}
-			}
-		});
-
-		submitUpload.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				((FormPanel) accessPointDetail.getWidget(10, 3)).submit();
-
-			}
-
-		});
-
-		if (accessPointDto != null) {
-
-			photoURLTB.setText(accessPointDto.getPhotoURL());
-			Image photo = new Image(accessPointDto.getPhotoURL() + "?random="
-					+ Random.nextInt());
-			accessPointDetail.setWidget(10, 2, photo);
-			photo.addClickHandler(new ClickHandler() {
-
-				@Override
-				public void onClick(ClickEvent event) {
-					((Image) accessPointDetail.getWidget(10, 2))
-							.setVisible(false);
-					accessPointDetail.setWidget(10, 4, new Label(
-							"Please wait while image is rotated 90 Degrees"));
-					svc.rotateImage(((TextBox) accessPointDetail.getWidget(10,
-							1)).getText(), new AsyncCallback<byte[]>() {
-						@Override
-						public void onFailure(Throwable caught) {
-							// no-op
-						}
-
-						@Override
-						public void onSuccess(byte[] result) {
-							Integer random = Random.nextInt();
-							Image photo = ((Image) accessPointDetail.getWidget(
-									10, 2));
-							accessPointDetail.getWidget(10, 4)
-									.setVisible(false);
-							photo.setUrl(((TextBox) accessPointDetail
-									.getWidget(10, 1)).getText()
-									+ "?random=" + random);
-							photo.setVisible(true);
-						}
-					});
-				}
-			});
-		}
-		accessPointDetail.setWidget(10, 1, photoURLTB);
-
-		accessPointDetail.setWidget(11, 0, new Label("Photo Caption: "));
-		TextBox captionTB = new TextBox();
-		if (accessPointDto != null)
-			captionTB.setText(accessPointDto.getPointPhotoCaption());
-		accessPointDetail.setWidget(11, 1, captionTB);
-
 		accessPointDetail.setWidget(12, 0, new Label("Point Status: "));
 		statusLB = new ListBox();
 		statusLB.addItem("Functioning High");
@@ -503,8 +537,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		ListBox pointType = new ListBox();
 		pointType
 				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
-		pointType.addItem("Sanitation Point", AccessPointType.SANITATION_POINT
-				.toString());
+		pointType.addItem("Sanitation Point",
+				AccessPointType.SANITATION_POINT.toString());
 		pointType.addItem("Public Institution",
 				AccessPointType.PUBLIC_INSTITUTION.toString());
 		pointType.addItem("School", AccessPointType.SCHOOL.toString());
@@ -539,14 +573,19 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		}
 		apId.setVisible(false);
 		accessPointDetail.setWidget(15, 1, apId);
-		
+
 		accessPointDetail.setWidget(16, 0, new Label("SMS Code"));
 		TextBox smsCode = new TextBox();
 		if (accessPointDto != null)
-			smsCode.setText(accessPointDto
-					.getSmsCode());
+			smsCode.setText(accessPointDto.getSmsCode());
 		accessPointDetail.setWidget(16, 1, smsCode);
-		
+
+		return accessPointDetail;
+	}
+
+	private void loadAccessPointDetailTable(AccessPointDto accessPointDto) {
+
+		apTable.setVisible(false);
 
 		// if(accessPointDto.getPointType().toString()!=null){
 		// type = accessPointDto.getPointType().toString();
@@ -584,8 +623,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 								@Override
 								public void onSuccess(AccessPointDto result) {
-									Window
-											.alert("Access Point successfully updated");
+									Window.alert("Access Point successfully updated");
 								}
 
 							});
@@ -612,15 +650,36 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			}
 
 		});
-		accessPointDetail.setWidget(17, 0, saveButton);
-		accessPointDetail.setWidget(17, 1, cancelButton);
+		accessPointDetail.setWidget(1, 0, loadTabs(accessPointDto));
+		HorizontalPanel hButtonPanel = new HorizontalPanel();
+		hButtonPanel.add(saveButton);
+		hButtonPanel.add(cancelButton);
+		accessPointDetail.setWidget(17, 0, hButtonPanel);
+		// accessPointDetail.setWidget(17, 0, saveButton);
+		// accessPointDetail.setWidget(17, 1, cancelButton);
 		accessPointDetail.setVisible(true);
 		mainVPanel.add(accessPointDetail);
+		// mainVPanel.add(this.loadTabs(accessPointDto));
 	}
 
 	private AccessPointDto buildAccessPointDto() {
 		AccessPointDto apDto = new AccessPointDto();
 
+		TabPanel tp = (TabPanel) accessPointDetail.getWidget(1, 0);
+		FlexTable accessPointDetail = (FlexTable) tp.getWidget(0);
+		apDto = getGeneralAP(apDto, accessPointDetail);
+		
+		accessPointDetail =(FlexTable)tp.getWidget(1);
+		apDto = getMediaAP(apDto,accessPointDetail);
+		
+		accessPointDetail = (FlexTable)tp.getWidget(2);
+		apDto = getAttributeAP(apDto,accessPointDetail);
+		
+		return apDto;
+	}
+	
+	
+	private AccessPointDto getGeneralAP(AccessPointDto apDto, FlexTable accessPointDetail){
 		Label apId = (Label) accessPointDetail.getWidget(15, 1);
 		Long id = new Long(apId.getText());
 		if (id > -1) {
@@ -652,6 +711,22 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				.getWidget(5, 1);
 		apDto.setConstructionDate(constructionDateTB.getValue());
 
+		return apDto;
+	}
+	
+	private AccessPointDto getMediaAP(AccessPointDto apDto,FlexTable accessPointDetail){
+		TextBox photoURLTB = (TextBox) accessPointDetail.getWidget(10, 1);
+		String photoUrl = photoURLTB.getText();
+		apDto.setPhotoURL(photoUrl);
+
+		TextBox captionTB = (TextBox) accessPointDetail.getWidget(12, 1);
+		String caption = captionTB.getText();
+		apDto.setPointPhotoCaption(caption);
+
+		return apDto;
+	}
+	
+	private AccessPointDto getAttributeAP(AccessPointDto apDto,FlexTable accessPointDetail){
 		TextBox costPerTB = (TextBox) accessPointDetail.getWidget(6, 1);
 		String costPerTemp = costPerTB.getText();
 
@@ -708,13 +783,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			}
 		}
 
-		TextBox photoURLTB = (TextBox) accessPointDetail.getWidget(10, 1);
-		String photoUrl = photoURLTB.getText();
-		apDto.setPhotoURL(photoUrl);
-
-		TextBox captionTB = (TextBox) accessPointDetail.getWidget(11, 1);
-		String caption = captionTB.getText();
-		apDto.setPointPhotoCaption(caption);
 
 		ListBox statusLB = (ListBox) accessPointDetail.getWidget(12, 1);
 		if (statusLB.getSelectedIndex() == 0) {
@@ -747,11 +815,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		String farthestPointFrom = farthestPointFromTB.getText();
 		apDto.setFarthestHouseholdfromPoint(farthestPointFrom);
 
-		TextBox smsCodeTB = (TextBox) accessPointDetail.getWidget(16,
-				1);
+		TextBox smsCodeTB = (TextBox) accessPointDetail.getWidget(16, 1);
 		String smsCode = smsCodeTB.getText();
-		apDto.setSmsCode(smsCode);		
-		
+		apDto.setSmsCode(smsCode);
+
 		return apDto;
 	}
 
@@ -799,8 +866,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			grid.setWidget(row, 4, new Label(apDto.getPointType().name()));
 		}
 		if (apDto.getCollectionDate() != null) {
-			grid.setWidget(row, 5, new Label(dateFormat.format(apDto
-					.getCollectionDate())));
+			grid.setWidget(row, 5,
+					new Label(dateFormat.format(apDto.getCollectionDate())));
 		}
 
 		Button editAccessPoint = new Button("edit");
