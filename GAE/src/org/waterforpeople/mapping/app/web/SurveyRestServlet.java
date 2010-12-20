@@ -122,7 +122,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			sDtoList.add(getSurvey(new Long(importReq.getSurveyId())));
 			response.setDtoList(sDtoList);
 		} else if (SurveyRestRequest.LIST_GROUP_ACTION.equals(importReq
-				.getAction())|| SurveyRestRequest.LIST_QUESTION_ACTION.equals(importReq.getAction())) {
+				.getAction())|| SurveyRestRequest.LIST_QUESTION_GROUP_ACTION.equals(importReq.getAction())) {
 			response.setDtoList(listQuestionGroups(new Long(importReq
 					.getSurveyId())));
 		} else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(importReq
