@@ -26,7 +26,7 @@ public class DataChangeRecord {
 	public DataChangeRecord(String packedString) {
 		String[] parts = packedString.split(DELIMITER);
 		if (parts.length < 3) {
-			throw new RuntimeException("Packed string in invalid format");
+			throw new RuntimeException("Packed string in invalid format: "+packedString);
 		} else {
 			type = parts[0];
 			id = parts[1];
