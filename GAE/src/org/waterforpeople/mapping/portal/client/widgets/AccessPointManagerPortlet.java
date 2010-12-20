@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -284,6 +285,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		final FlexTable accessPointDetail = new FlexTable();
 		accessPointDetail.setWidget(10, 0, new Label("Photo Url: "));
 		TextBox photoURLTB = new TextBox();
+		photoURLTB.setWidth("500px");
 		FormPanel form = new FormPanel();
 		form.setMethod(FormPanel.METHOD_POST);
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -387,7 +389,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		accessPointDetail.setWidget(10, 1, photoURLTB);
 
 		accessPointDetail.setWidget(12, 0, new Label("Photo Caption: "));
-		TextBox captionTB = new TextBox();
+		TextArea captionTB = new TextArea();
+		captionTB.setWidth("500px");
+		captionTB.setHeight("200px");
 		if (accessPointDto != null)
 			captionTB.setText(accessPointDto.getPointPhotoCaption());
 		accessPointDetail.setWidget(12, 1, captionTB);
@@ -719,7 +723,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		String photoUrl = photoURLTB.getText();
 		apDto.setPhotoURL(photoUrl);
 
-		TextBox captionTB = (TextBox) accessPointDetail.getWidget(12, 1);
+		TextArea captionTB = (TextArea) accessPointDetail.getWidget(12, 1);
 		String caption = captionTB.getText();
 		apDto.setPointPhotoCaption(caption);
 
