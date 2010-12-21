@@ -19,7 +19,9 @@ import com.google.appengine.api.datastore.KeyFactory;
 public class AccessPointServiceSupport {
 
 	public static AccessPointDto copyCanonicalToDto(AccessPoint apCanonical) {
+
 		AccessPointDto apDto = new AccessPointDto();
+		DtoMarshaller.copyToDto(apCanonical, apDto);
 		apDto.setKeyId(apCanonical.getKey().getId());
 		apDto.setAltitude(apCanonical.getAltitude());
 		apDto.setLatitude(apCanonical.getLatitude());
@@ -39,6 +41,30 @@ public class AccessPointServiceSupport {
 		apDto.setPhotoURL(apCanonical.getPhotoURL());
 		apDto.setPointPhotoCaption(apCanonical.getPointPhotoCaption());
 		apDto.setSmsCode(apCanonical.getSmsCode());
+
+		apDto.setNumberOfHouseholdsUsingPoint(apCanonical
+				.getNumberOfHouseholdsUsingPoint());
+		apDto.setEstimatedPeoplePerHouse(apCanonical
+				.getEstimatedPeoplePerHouse());
+		apDto.setEstimatedPopulation(apCanonical.getExtimatedPopulation());
+		apDto.setMeetGovtQualityStandards(apCanonical
+				.getMeetGovtQualityStandardFlag());
+		apDto.setMeetGovtQunatityStandardsFlag(apCanonical
+				.getMeetGovtQuantityStandardFlag());
+		apDto.setFarthestHouseholdfromPoint(apCanonical
+				.getFarthestHouseholdfromPoint());
+		apDto.setHasSystemBeenDown1DayFlag(apCanonical
+				.getHasSystemBeenDown1DayFlag());
+		apDto.setProvideAdequateQuantity(apCanonical
+				.getProvideAdequateQuantity());
+		apDto.setTypeTechnologyString(apCanonical.getTypeTechnologyString());
+		apDto.setSecondaryTechnologyString(apCanonical
+				.getSecondaryTechnologyString());
+		apDto.setWaterForPeopleProjectFlag(apCanonical
+				.getWaterForPeopleProjectFlag());
+		apDto.setWaterForPeopleRole(apCanonical.getWaterForPeopleRole());
+		apDto.setWhoRepairsPoint(apCanonical.getWhoRepairsPoint());
+		apDto.setInstitutionName(apCanonical.getInstitutionName());
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
 		}
@@ -49,8 +75,7 @@ public class AccessPointServiceSupport {
 			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_OK);
 		} else if (AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == apCanonical
 				.getPointStatus()) {
-			apDto
-					.setPointStatus(AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS);
+			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_WITH_PROBLEMS);
 		} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == apCanonical
 				.getPointStatus()) {
 			apDto.setPointStatus(AccessPointDto.Status.NO_IMPROVED_SYSTEM);
@@ -68,8 +93,7 @@ public class AccessPointServiceSupport {
 			apDto.setPointType(AccessPointDto.AccessPointType.SCHOOL);
 		} else if (AccessPointType.PUBLIC_INSTITUTION == apCanonical
 				.getPointType()) {
-			apDto
-					.setPointType(AccessPointDto.AccessPointType.PUBLIC_INSTITUTION);
+			apDto.setPointType(AccessPointDto.AccessPointType.PUBLIC_INSTITUTION);
 		} else {
 			apDto.setPointType(AccessPointDto.AccessPointType.WATER_POINT);
 		}
@@ -79,7 +103,9 @@ public class AccessPointServiceSupport {
 
 	public static AccessPoint copyDtoToCanonical(AccessPointDto apDto) {
 		AccessPoint accessPoint = new AccessPoint();
+
 		// Check to see if it is an update or insert
+		DtoMarshaller.copyToCanonical(accessPoint, apDto);
 		if (apDto.getKeyId() != null) {
 			Key key = KeyFactory.createKey(AccessPoint.class.getSimpleName(),
 					apDto.getKeyId());
@@ -103,6 +129,30 @@ public class AccessPointServiceSupport {
 		accessPoint.setPhotoURL(apDto.getPhotoURL());
 		accessPoint.setPointPhotoCaption(apDto.getPointPhotoCaption());
 		accessPoint.setSmsCode(apDto.getSmsCode());
+		accessPoint.setEstimatedHouseholds(apDto
+				.getNumberOfHouseholdsUsingPoint());
+		accessPoint.setEstimatedPeoplePerHouse(apDto
+				.getEstimatedPeoplePerHouse());
+		accessPoint.setExtimatedPopulation(apDto.getEstimatedPopulation());
+		accessPoint.setMeetGovtQualityStandardFlag(apDto
+				.getMeetGovtQualityStandards());
+		accessPoint.setMeetGovtQuantityStandardFlag(apDto
+				.getMeetGovtQunatityStandardsFlag());
+		accessPoint.setFarthestHouseholdfromPoint(apDto
+				.getFarthestHouseholdfromPoint());
+		accessPoint.setHasSystemBeenDown1DayFlag(apDto
+				.getHasSystemBeenDown1DayFlag());
+		accessPoint.setProvideAdequateQuantity(apDto
+				.getProvideAdequateQuantity());
+		accessPoint.setTypeTechnologyString(apDto.getTypeTechnologyString());
+		accessPoint.setSecondaryTechnologyString(apDto
+				.getSecondaryTechnologyString());
+		accessPoint.setWaterForPeopleProjectFlag(apDto
+				.getWaterForPeopleProjectFlag());
+		accessPoint.setWaterForPeopleRole(apDto.getWaterForPeopleRole());
+		accessPoint.setWhoRepairsPoint(apDto.getWhoRepairsPoint());
+		accessPoint.setInstitutionName(apDto.getInstitutionName());
+
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else if (AccessPointDto.Status.FUNCTIONING_OK == apDto

@@ -698,6 +698,22 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 								.getHasSystemBeenDown1DayFlag().toString()
 								: null));
 
+		accessPointDetail.setWidget(30, 0, new Label(
+				"Water For People Supported Project:"));
+		accessPointDetail
+				.setWidget(
+						30,
+						1,
+						addListBox(accessPointDto
+								.getWaterForPeopleProjectFlag() != null ? accessPointDto
+								.getWaterForPeopleProjectFlag().toString()
+								: null));
+		accessPointDetail.setWidget(31, 0, new Label("Water For People Role:"));
+		TextBox roleTextBox = new TextBox();
+		if (accessPointDto.getWaterForPeopleRole() != null)
+			roleTextBox.setText(accessPointDto.getWaterForPeopleRole());
+		accessPointDetail.setWidget(31, 1, roleTextBox);
+
 		return accessPointDetail;
 	}
 
@@ -937,70 +953,29 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		apDto.setFarthestHouseholdfromPoint(getValueFromWidget(
 				accessPointDetail, 17, 1));
-		// footer
-		// header
-		// meetGovtQualtiyStandardFlag
-		/*
-		 * apDto.setMeetGovtQualityStandards((getValueFromWidget(accessPointDetail
-		 * ,
-		 * 18,1).equals("true")||getValueFromWidget(accessPointDetail,18,1)==yes
-		 * )?);
-		 * 
-		 * // meetGovtQuantityStandardFlag accessPointDetail.setWidget(19, 0,
-		 * new Label( "Meet Government Quantity Standard: ")); accessPointDetail
-		 * .setWidget( 19, 1, addListBox(accessPointDto
-		 * .getMeetGovtQunatityStandardsFlag() != null ? accessPointDto
-		 * .getMeetGovtQunatityStandardsFlag().toString() : null)); //
-		 * numberOfHouseholdsUsingPoint // provideAdequateQuantity
-		 * accessPointDetail.setWidget(21, 0, new Label(
-		 * "Provide adequate quantity: ")); accessPointDetail.setWidget(21, 1,
-		 * addListBox(accessPointDto .getProvideAdequateQuantity() != null ?
-		 * accessPointDto .getProvideAdequateQuantity().toString() : null)); //
-		 * SecondaryTechnologyString // typeTechnologyString TextBox
-		 * techTypeString = (TextBox) accessPointDetail.getWidget(22, 1);
-		 * TextBox secondaryTechTypeString = new TextBox();
-		 * accessPointDetail.setWidget(23, 0, new Label(
-		 * "Secondary Technology String: ")); if
-		 * (accessPointDto.getSecondaryTechnologyString() != null)
-		 * secondaryTechTypeString.setText(accessPointDto
-		 * .getSecondaryTechnologyString()); accessPointDetail.setWidget(23, 1,
-		 * secondaryTechTypeString); // whoRepairsPoint TextBox whoRepairsPoint
-		 * = new TextBox(); accessPointDetail.setWidget(24, 0, new
-		 * Label("Who Repairs Point")); if (accessPointDto.getWhoRepairsPoint()
-		 * != null)
-		 * whoRepairsPoint.setText(accessPointDto.getWhoRepairsPoint());
-		 * accessPointDetail.setWidget(24, 1, whoRepairsPoint);
-		 * 
-		 * // estimatedHouseholds TextBox estHouseholds = new TextBox();
-		 * accessPointDetail.setWidget(25, 0, new Label(
-		 * "Estimated number of households using point:")); if
-		 * (accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
-		 * estHouseholds.setText(accessPointDto
-		 * .getNumberOfHouseholdsUsingPoint().toString());
-		 * accessPointDetail.setWidget(25, 1, estHouseholds);
-		 * 
-		 * // estimatedPeoplePerHouse TextBox estPeoplePerHouse = new TextBox();
-		 * accessPointDetail.setWidget(26,0,new
-		 * Label("Estimated people per household:"));
-		 * if(accessPointDto.getEstimatedPeoplePerHouse()!=null)
-		 * estPeoplePerHouse
-		 * .setText(accessPointDto.getEstimatedPeoplePerHouse().toString());
-		 * accessPointDetail.setWidget(26,1,estPeoplePerHouse);
-		 * 
-		 * // extimatedPopulation TextBox estimatedPopulation = new TextBox();
-		 * accessPointDetail.setWidget(27,0,new
-		 * Label("Estimated Population: "));
-		 * if(accessPointDto.getEstimatedPopulation()!=null)
-		 * estimatedPopulation.
-		 * setText(accessPointDto.getEstimatedPopulation().toString());
-		 * accessPointDetail.setWidget(27,1,estimatedPopulation);
-		 * 
-		 * // hasSystemBeenDown1DayFlag accessPointDetail.setWidget(29, 0, new
-		 * Label( "Has system been down 1 day: ")); accessPointDetail
-		 * .setWidget( 29, 1, addListBox(accessPointDto
-		 * .getHasSystemBeenDown1DayFlag() != null ? accessPointDto
-		 * .getHasSystemBeenDown1DayFlag().toString() : null));
-		 */
+
+		apDto.setMeetGovtQualityStandards(getValueFromWidget(accessPointDetail,
+				18, 1).equals("yes") ? true : false);
+		apDto.setMeetGovtQunatityStandardsFlag(getValueFromWidget(
+				accessPointDetail, 19, 1).equals("yes") ? true : false);
+		apDto.setProvideAdequateQuantity(getValueFromWidget(accessPointDetail,
+				21, 1).equals("yes") ? true : false);
+		apDto.setTypeTechnologyString(getValueFromWidget(accessPointDetail, 22,
+				1));
+		apDto.setSecondaryTechnologyString(getValueFromWidget(
+				accessPointDetail, 23, 1));
+		apDto.setWhoRepairsPoint(getValueFromWidget(accessPointDetail, 24, 1));
+		apDto.setNumberOfHouseholdsUsingPoint(new Long(getValueFromWidget(
+				accessPointDetail, 25, 1)));
+		apDto.setEstimatedPeoplePerHouse(new Long(getValueFromWidget(
+				accessPointDetail, 26, 1)));
+		apDto.setEstimatedPopulation(new Long(getValueFromWidget(
+				accessPointDetail, 27, 1)));
+		apDto.setHasSystemBeenDown1DayFlag(getValueFromWidget(
+				accessPointDetail, 29, 1).equals("yes") ? true : false);
+		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
+				accessPointDetail, 30, 1).equals("yes") ? true : false);
+		apDto.setWaterForPeopleRole(getValueFromWidget(accessPointDetail, 31, 1));
 		return apDto;
 	}
 
@@ -1205,19 +1180,32 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 	private ListBox addListBox(String value) {
 		ListBox xLB = new ListBox();
+		xLB.addItem("unknown");
 		xLB.addItem("yes");
 		xLB.addItem("no");
-		xLB.addItem("NA or Unknown");
-		if (value != null) {
-			if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"))
-				xLB.setSelectedIndex(0);
-			else if (value.equalsIgnoreCase("false")
-					|| value.equalsIgnoreCase("no"))
-				xLB.setSelectedIndex(1);
-			else
-				xLB.setSelectedIndex(2);
-		}
+		xLB.addItem("N/A");
+		if (value == null)
+			xLB.setSelectedIndex(0);
+		else if (value.equalsIgnoreCase("true")
+				|| value.equalsIgnoreCase("yes"))
+			xLB.setSelectedIndex(1);
+		else if (value.equalsIgnoreCase("false")
+				|| value.equalsIgnoreCase("no"))
+			xLB.setSelectedIndex(2);
+		else
+			xLB.setSelectedIndex(3);
+
 		return xLB;
+	}
+
+	private Integer encodeString(String value) {
+		if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true"))
+			return 1;
+		else if (value.equalsIgnoreCase("no")
+				|| value.equalsIgnoreCase("false"))
+			return 0;
+		else
+			return -1;
 	}
 
 	private String getValueFromWidget(FlexTable ft, Integer row, Integer column) {
