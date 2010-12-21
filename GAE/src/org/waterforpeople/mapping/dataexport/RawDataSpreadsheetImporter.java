@@ -75,7 +75,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							submitter = cell.getStringCellValue();
-							sb.append("submitter=" + URLEncoder.encode(submitter,"UTF-8") + "&");
+							//sb.append("submitter=" + URLEncoder.encode(submitter,"UTF-8") + "&");
 						}
 					}
 					String value = null;
