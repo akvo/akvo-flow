@@ -40,7 +40,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			for (Row row : sheet1) {
 				String instanceId = null;
 				String dateString = null;
+				String submitter = null;
 				StringBuilder sb = new StringBuilder();
+
 				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
 						+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
@@ -60,12 +62,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
-									.intValue()
-									+ "";
-							sb
-									.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-											+ "="
-											+ instanceId + "&");
+									.intValue() + "";
+							sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
+									+ "=" + instanceId + "&");
 						}
 					}
 					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
@@ -73,9 +72,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							dateString = cell.getStringCellValue();
 						}
 					}
+					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
+						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+							submitter = cell.getStringCellValue();
+							sb.append("submitter=" + URLEncoder.encode(submitter,"UTF-8") + "&");
+						}
+					}
 					String value = null;
 					boolean hasValue = false;
-					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 1) {
+					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 2) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							sb.append("questionId="
 									+ questionIDColMap.get(cell
@@ -87,7 +92,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								value = value.substring(value.lastIndexOf("/"));
 								value = "/sdcard" + value;
 							}
-							sb.append(URLEncoder.encode(value,"UTF-8"));
+							sb.append(URLEncoder.encode(value, "UTF-8"));
 							hasValue = true;
 
 						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -95,18 +100,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ questionIDColMap.get(cell
 											.getColumnIndex())
 									+ "|value="
-									+ new Double(cell
-											.getNumericCellValue()).toString()
-											.trim());
+									+ new Double(cell.getNumericCellValue())
+											.toString().trim());
 							hasValue = true;
 						} else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
 							sb.append("questionId="
 									+ questionIDColMap.get(cell
 											.getColumnIndex())
 									+ "|value="
-									+ new Boolean(cell
-											.getBooleanCellValue()).toString()
-											.trim());
+									+ new Boolean(cell.getBooleanCellValue())
+											.toString().trim());
 							hasValue = true;
 						}
 						if (type == null && value != null) {
@@ -139,12 +142,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 										+ "&"
 										+ RawDataImportRequest.COLLECTION_DATE_PARAM
 										+ "="
-										+ URLEncoder.encode(dateString,"UTF-8"));
+										+ URLEncoder
+												.encode(dateString, "UTF-8"));
 						System.out.print(i++ + " : ");
 						invokeUrl(serverBase, sb.toString());
 					}
 				}
-				
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -168,7 +172,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		conn.setDoOutput(true);
 		conn.setRequestProperty("Content-Type",
 				"application/x-www-form-urlencoded");
-		conn.setRequestProperty("Content-Length", urlString.getBytes().length + "");
+		conn.setRequestProperty("Content-Length", urlString.getBytes().length
+				+ "");
 		try {
 			OutputStream os = conn.getOutputStream();
 			os.write(urlString.getBytes("UTF-8"));
@@ -203,7 +208,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	@Override
 	public void executeImport(String sourceBase, String serverBase) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void setSurveyId(Long surveyId) {
