@@ -462,6 +462,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			pickerConstructionDate.setValue(accessPointDto
 					.getConstructionDate());
 		accessPointDetail.setWidget(5, 1, pickerConstructionDate);
+		// Missing
+		// InstitutionName
 		Label apId;
 		if (accessPointDto != null) {
 			apId = new Label(accessPointDto.getKeyId().toString());
@@ -584,6 +586,118 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			smsCode.setText(accessPointDto.getSmsCode());
 		accessPointDetail.setWidget(16, 1, smsCode);
 
+		// In Screen
+		// CostPer
+		// CurrentMgmtStructure
+		// Desc
+		// Number of Households Using Point
+		// POint Status
+		// PointType
+		// Farthest Point From
+		// SMS Code
+
+		// Missing
+		// balloonTitle
+		// FarthestHouseholdFromPoint
+
+		accessPointDetail.setWidget(17, 0, new Label(
+				"Farthest household with acceptable distance: "));
+		accessPointDetail
+				.setWidget(
+						17,
+						1,
+						addListBox(accessPointDto
+								.getFarthestHouseholdfromPoint() != null ? accessPointDto
+								.getFarthestHouseholdfromPoint() : null));
+
+		// footer
+		// header
+		// meetGovtQualtiyStandardFlag
+		accessPointDetail.setWidget(18, 0, new Label(
+				"Meet Government Quality Standard: "));
+		accessPointDetail.setWidget(18, 1, addListBox(accessPointDto
+				.getMeetGovtQualityStandards() != null ? accessPointDto
+				.getMeetGovtQualityStandards().toString() : null));
+
+		// meetGovtQuantityStandardFlag
+		accessPointDetail.setWidget(19, 0, new Label(
+				"Meet Government Quantity Standard: "));
+		accessPointDetail
+				.setWidget(
+						19,
+						1,
+						addListBox(accessPointDto
+								.getMeetGovtQunatityStandardsFlag() != null ? accessPointDto
+								.getMeetGovtQunatityStandardsFlag().toString()
+								: null));
+		// numberOfHouseholdsUsingPoint
+		// provideAdequateQuantity
+		accessPointDetail.setWidget(21, 0, new Label(
+				"Provide adequate quantity: "));
+		accessPointDetail.setWidget(21, 1, addListBox(accessPointDto
+				.getProvideAdequateQuantity() != null ? accessPointDto
+				.getProvideAdequateQuantity().toString() : null));
+		// SecondaryTechnologyString
+		// typeTechnologyString
+		TextBox techTypeString = new TextBox();
+		if (accessPointDto.getTypeTechnologyString() != null)
+			techTypeString.setText(accessPointDto.getTypeTechnologyString());
+		accessPointDetail.setWidget(22, 0,
+				new Label("Technology Type String: "));
+		accessPointDetail.setWidget(22, 1, techTypeString);
+
+		TextBox secondaryTechTypeString = new TextBox();
+		accessPointDetail.setWidget(23, 0, new Label(
+				"Secondary Technology String: "));
+		if (accessPointDto.getSecondaryTechnologyString() != null)
+			secondaryTechTypeString.setText(accessPointDto
+					.getSecondaryTechnologyString());
+		accessPointDetail.setWidget(23, 1, secondaryTechTypeString);
+		// whoRepairsPoint
+		TextBox whoRepairsPoint = new TextBox();
+		accessPointDetail.setWidget(24, 0, new Label("Who Repairs Point"));
+		if (accessPointDto.getWhoRepairsPoint() != null)
+			whoRepairsPoint.setText(accessPointDto.getWhoRepairsPoint());
+		accessPointDetail.setWidget(24, 1, whoRepairsPoint);
+
+		// estimatedHouseholds
+		TextBox estHouseholds = new TextBox();
+		accessPointDetail.setWidget(25, 0, new Label(
+				"Estimated number of households using point:"));
+		if (accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
+			estHouseholds.setText(accessPointDto
+					.getNumberOfHouseholdsUsingPoint().toString());
+		accessPointDetail.setWidget(25, 1, estHouseholds);
+
+		// estimatedPeoplePerHouse
+		TextBox estPeoplePerHouse = new TextBox();
+		accessPointDetail.setWidget(26, 0, new Label(
+				"Estimated people per household:"));
+		if (accessPointDto.getEstimatedPeoplePerHouse() != null)
+			estPeoplePerHouse.setText(accessPointDto
+					.getEstimatedPeoplePerHouse().toString());
+		accessPointDetail.setWidget(26, 1, estPeoplePerHouse);
+
+		// extimatedPopulation
+		TextBox estimatedPopulation = new TextBox();
+		accessPointDetail.setWidget(27, 0, new Label("Estimated Population: "));
+		if (accessPointDto.getEstimatedPopulation() != null)
+			estimatedPopulation.setText(accessPointDto.getEstimatedPopulation()
+					.toString());
+		accessPointDetail.setWidget(27, 1, estimatedPopulation);
+
+		// hasSystemBeenDown1DayFlag
+		accessPointDetail.setWidget(29, 0, new Label(
+				"Has system been down 1 day: "));
+		accessPointDetail
+				.setWidget(
+						29,
+						1,
+						addListBox(accessPointDto
+								.getHasSystemBeenDown1DayFlag() != null ? accessPointDto
+								.getHasSystemBeenDown1DayFlag().toString()
+								: null));
+
 		return accessPointDetail;
 	}
 
@@ -659,11 +773,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		hButtonPanel.add(saveButton);
 		hButtonPanel.add(cancelButton);
 		accessPointDetail.setWidget(17, 0, hButtonPanel);
-		// accessPointDetail.setWidget(17, 0, saveButton);
-		// accessPointDetail.setWidget(17, 1, cancelButton);
 		accessPointDetail.setVisible(true);
 		mainVPanel.add(accessPointDetail);
-		// mainVPanel.add(this.loadTabs(accessPointDto));
 	}
 
 	private AccessPointDto buildAccessPointDto() {
@@ -672,18 +783,18 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TabPanel tp = (TabPanel) accessPointDetail.getWidget(1, 0);
 		FlexTable accessPointDetail = (FlexTable) tp.getWidget(0);
 		apDto = getGeneralAP(apDto, accessPointDetail);
-		
-		accessPointDetail =(FlexTable)tp.getWidget(1);
-		apDto = getMediaAP(apDto,accessPointDetail);
-		
-		accessPointDetail = (FlexTable)tp.getWidget(2);
-		apDto = getAttributeAP(apDto,accessPointDetail);
-		
+
+		accessPointDetail = (FlexTable) tp.getWidget(1);
+		apDto = getMediaAP(apDto, accessPointDetail);
+
+		accessPointDetail = (FlexTable) tp.getWidget(2);
+		apDto = getAttributeAP(apDto, accessPointDetail);
+
 		return apDto;
 	}
-	
-	
-	private AccessPointDto getGeneralAP(AccessPointDto apDto, FlexTable accessPointDetail){
+
+	private AccessPointDto getGeneralAP(AccessPointDto apDto,
+			FlexTable accessPointDetail) {
 		Label apId = (Label) accessPointDetail.getWidget(15, 1);
 		Long id = new Long(apId.getText());
 		if (id > -1) {
@@ -717,8 +828,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		return apDto;
 	}
-	
-	private AccessPointDto getMediaAP(AccessPointDto apDto,FlexTable accessPointDetail){
+
+	private AccessPointDto getMediaAP(AccessPointDto apDto,
+			FlexTable accessPointDetail) {
 		TextBox photoURLTB = (TextBox) accessPointDetail.getWidget(10, 1);
 		String photoUrl = photoURLTB.getText();
 		apDto.setPhotoURL(photoUrl);
@@ -729,8 +841,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		return apDto;
 	}
-	
-	private AccessPointDto getAttributeAP(AccessPointDto apDto,FlexTable accessPointDetail){
+
+	private AccessPointDto getAttributeAP(AccessPointDto apDto,
+			FlexTable accessPointDetail) {
 		TextBox costPerTB = (TextBox) accessPointDetail.getWidget(6, 1);
 		String costPerTemp = costPerTB.getText();
 
@@ -787,7 +900,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			}
 		}
 
-
 		ListBox statusLB = (ListBox) accessPointDetail.getWidget(12, 1);
 		if (statusLB.getSelectedIndex() == 0) {
 			apDto.setPointStatus(AccessPointDto.Status.FUNCTIONING_HIGH);
@@ -823,6 +935,72 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		String smsCode = smsCodeTB.getText();
 		apDto.setSmsCode(smsCode);
 
+		apDto.setFarthestHouseholdfromPoint(getValueFromWidget(
+				accessPointDetail, 17, 1));
+		// footer
+		// header
+		// meetGovtQualtiyStandardFlag
+		/*
+		 * apDto.setMeetGovtQualityStandards((getValueFromWidget(accessPointDetail
+		 * ,
+		 * 18,1).equals("true")||getValueFromWidget(accessPointDetail,18,1)==yes
+		 * )?);
+		 * 
+		 * // meetGovtQuantityStandardFlag accessPointDetail.setWidget(19, 0,
+		 * new Label( "Meet Government Quantity Standard: ")); accessPointDetail
+		 * .setWidget( 19, 1, addListBox(accessPointDto
+		 * .getMeetGovtQunatityStandardsFlag() != null ? accessPointDto
+		 * .getMeetGovtQunatityStandardsFlag().toString() : null)); //
+		 * numberOfHouseholdsUsingPoint // provideAdequateQuantity
+		 * accessPointDetail.setWidget(21, 0, new Label(
+		 * "Provide adequate quantity: ")); accessPointDetail.setWidget(21, 1,
+		 * addListBox(accessPointDto .getProvideAdequateQuantity() != null ?
+		 * accessPointDto .getProvideAdequateQuantity().toString() : null)); //
+		 * SecondaryTechnologyString // typeTechnologyString TextBox
+		 * techTypeString = (TextBox) accessPointDetail.getWidget(22, 1);
+		 * TextBox secondaryTechTypeString = new TextBox();
+		 * accessPointDetail.setWidget(23, 0, new Label(
+		 * "Secondary Technology String: ")); if
+		 * (accessPointDto.getSecondaryTechnologyString() != null)
+		 * secondaryTechTypeString.setText(accessPointDto
+		 * .getSecondaryTechnologyString()); accessPointDetail.setWidget(23, 1,
+		 * secondaryTechTypeString); // whoRepairsPoint TextBox whoRepairsPoint
+		 * = new TextBox(); accessPointDetail.setWidget(24, 0, new
+		 * Label("Who Repairs Point")); if (accessPointDto.getWhoRepairsPoint()
+		 * != null)
+		 * whoRepairsPoint.setText(accessPointDto.getWhoRepairsPoint());
+		 * accessPointDetail.setWidget(24, 1, whoRepairsPoint);
+		 * 
+		 * // estimatedHouseholds TextBox estHouseholds = new TextBox();
+		 * accessPointDetail.setWidget(25, 0, new Label(
+		 * "Estimated number of households using point:")); if
+		 * (accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
+		 * estHouseholds.setText(accessPointDto
+		 * .getNumberOfHouseholdsUsingPoint().toString());
+		 * accessPointDetail.setWidget(25, 1, estHouseholds);
+		 * 
+		 * // estimatedPeoplePerHouse TextBox estPeoplePerHouse = new TextBox();
+		 * accessPointDetail.setWidget(26,0,new
+		 * Label("Estimated people per household:"));
+		 * if(accessPointDto.getEstimatedPeoplePerHouse()!=null)
+		 * estPeoplePerHouse
+		 * .setText(accessPointDto.getEstimatedPeoplePerHouse().toString());
+		 * accessPointDetail.setWidget(26,1,estPeoplePerHouse);
+		 * 
+		 * // extimatedPopulation TextBox estimatedPopulation = new TextBox();
+		 * accessPointDetail.setWidget(27,0,new
+		 * Label("Estimated Population: "));
+		 * if(accessPointDto.getEstimatedPopulation()!=null)
+		 * estimatedPopulation.
+		 * setText(accessPointDto.getEstimatedPopulation().toString());
+		 * accessPointDetail.setWidget(27,1,estimatedPopulation);
+		 * 
+		 * // hasSystemBeenDown1DayFlag accessPointDetail.setWidget(29, 0, new
+		 * Label( "Has system been down 1 day: ")); accessPointDetail
+		 * .setWidget( 29, 1, addListBox(accessPointDto
+		 * .getHasSystemBeenDown1DayFlag() != null ? accessPointDto
+		 * .getHasSystemBeenDown1DayFlag().toString() : null));
+		 */
 		return apDto;
 	}
 
@@ -1023,5 +1201,35 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		} else {
 			svc.listErrorAccessPoints(cursor, dataCallback);
 		}
+	}
+
+	private ListBox addListBox(String value) {
+		ListBox xLB = new ListBox();
+		xLB.addItem("yes");
+		xLB.addItem("no");
+		xLB.addItem("NA or Unknown");
+		if (value != null) {
+			if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"))
+				xLB.setSelectedIndex(0);
+			else if (value.equalsIgnoreCase("false")
+					|| value.equalsIgnoreCase("no"))
+				xLB.setSelectedIndex(1);
+			else
+				xLB.setSelectedIndex(2);
+		}
+		return xLB;
+	}
+
+	private String getValueFromWidget(FlexTable ft, Integer row, Integer column) {
+		if (ft.getWidget(row, column) instanceof ListBox) {
+			return ((ListBox) ft.getWidget(row, column))
+					.getItemText(((ListBox) ft.getWidget(row, column))
+							.getSelectedIndex());
+		} else if (ft.getWidget(row, column) instanceof TextBox
+				|| ft.getWidget(row, column) instanceof TextArea) {
+			return ((TextBox) ft.getWidget(row, column)).getText();
+		}
+
+		return null;
 	}
 }
