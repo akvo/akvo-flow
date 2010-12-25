@@ -72,6 +72,8 @@ public class PortletFactory {
 			return new RemoteExceptionPortlet();
 		}else if(name.equals(DeviceFileManagerPortlet.NAME)){
 			return new DeviceFileManagerPortlet(user);
+		}else if (name.equals(AdminWizardPortlet.NAME)){
+			return new AdminWizardPortlet();
 		}	else {
 		
 			throw new IllegalArgumentException("Unrecognized portlet name");

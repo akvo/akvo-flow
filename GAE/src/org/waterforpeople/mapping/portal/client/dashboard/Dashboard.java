@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.AdminWizardPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DeviceFileManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
@@ -220,6 +221,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.addItem("Device Files", new Command() {
 			public void execute() {
 				launchFullscreen(DeviceFileManagerPortlet.NAME);
+
+			}
+		});
+		mgrMenu.addItem("Admin Wizard", new Command() {
+			public void execute() {
+				launchFullscreen(AdminWizardPortlet.NAME);
 
 			}
 		});

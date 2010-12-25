@@ -6,5 +6,6 @@
 	<source path="portlet/client"/>
 	<source path="dto/client"/>
 	<source path="util/client"/>
+	<source path="wizard/client"/>
 	<source path="component"/>
 </module>

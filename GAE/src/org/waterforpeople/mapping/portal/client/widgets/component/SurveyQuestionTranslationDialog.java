@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -173,15 +173,15 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		}
 		StyleUtil.setGridRowStyle(grid, 0, false);
 		grid.setWidget(1, 0, new Label(questionDto.getText()));
-		populateTranslationControl(questionDto.getTranslationMap(), questionDto
-				.getKeyId(), QUESTION_PARENT_TYPE, grid, 1, 1);
+		populateTranslationControl(questionDto.getTranslationMap(),
+				questionDto.getKeyId(), QUESTION_PARENT_TYPE, grid, 1, 1);
 		StyleUtil.setGridRowStyle(grid, 1, false);
 		int curRow = 2;
 		if (options != null) {
 			for (QuestionOptionDto opt : options) {
 				grid.setWidget(curRow, 0, new Label(opt.getText()));
-				populateTranslationControl(opt.getTranslationMap(), opt
-						.getKeyId(), OPTION_PARENT_TYPE, grid, curRow, 1);
+				populateTranslationControl(opt.getTranslationMap(),
+						opt.getKeyId(), OPTION_PARENT_TYPE, grid, curRow, 1);
 				StyleUtil.setGridRowStyle(grid, curRow++, false);
 			}
 		}
