@@ -201,7 +201,11 @@ public class AccessPointHelper {
 						}
 					} else if (f.getType() == Long.class) {
 						try {
-							Long val = Long.parseLong(stringVal.trim());
+							String temp = stringVal.trim();
+							if(temp.contains(".")){
+								temp = temp.substring(0,temp.indexOf("."));
+							}
+							Long val = Long.parseLong(temp);
 							f.set(ap, val);
 						} catch (Exception e) {
 							logger.log(Level.SEVERE, "Could not parse "
