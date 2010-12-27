@@ -18,6 +18,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		ClickHandler {
 
 	private static final String NAV_BUTTON_STYLE = "wizard-navbutton";
+	private static final String BACK_NAV_BUTTON_STYLE = "wizard-back-navbutton";
+	private static final String FWD_NAV_BUTTON_STYLE = "wizard-fwd-navbutton";
 
 	private VerticalPanel contentPane;
 
@@ -31,6 +33,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private Map<String, Widget> breadcrumbWidgets;
 
 	private WizardWorkflow workflow;
+	private WizardNode currentNode;
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
 		super(name, true, false, false, width, height);
@@ -58,16 +61,21 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		buttonPanel.clear();
 		forwardNavButtons.clear();
 		backwardNavButtons.clear();
-		installButtons(backwardNavButtons, node.getPrevNodes());
-		installButtons(forwardNavButtons, node.getNextNodes());
+		installButtons(backwardNavButtons, node.getPrevNodes(), BACK_NAV_BUTTON_STYLE);
+		installButtons(forwardNavButtons, node.getNextNodes(), FWD_NAV_BUTTON_STYLE);
 
 	}
 
-	private void installButtons(List<Button> buttonList, String[] buttonNames) {
+	private void installButtons(List<Button> buttonList, String[] buttonNames,
+			String style) {
 		if (buttonNames != null) {
 			for (int i = 0; i < buttonNames.length; i++) {
 				Button button = new Button();
-				button.setStyleName(NAV_BUTTON_STYLE);
+				if (style == null) {
+					button.setStylePrimaryName(NAV_BUTTON_STYLE);
+				} else {
+					button.setStylePrimaryName(style);
+				}
 				button.setText(buttonNames[i]);
 				button.addClickHandler(this);
 				buttonList.add(button);
@@ -79,14 +87,14 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	protected void renderWizardPage(WizardNode page, boolean isForward) {
 		if (isForward && page.getBreadcrumb() != null) {
 			addBreadcrumb(page);
-		} else if (!isForward && page.getBreadcrumb() != null) {
+		} else if (!isForward && page != null && page.getBreadcrumb() != null) {
 			removeBreadcrumb(page);
 		}
 		prePageUnload(page);
 		widgetPanel.clear();
 
+		currentNode = page;
 		Widget w = initializeNode(page);
-		// widgetPanel.add(initializeNode(page));
 		widgetPanel.add(w);
 		resetNav(page);
 		onLoadComplete(page);
@@ -94,18 +102,28 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 	protected void addBreadcrumb(WizardNode node) {
 		Breadcrumb bc = new Breadcrumb(node.getBreadcrumb(), node.getName());
-		bc.addClickHandler(this);
-		breadcrumbList.add(node.getBreadcrumb());
-		breadcrumbWidgets.put(node.getBreadcrumb(), bc);
-		breadcrumbPanel.add(bc);
+		if (!breadcrumbList.contains(bc)) {
+			bc.addClickHandler(this);
+			breadcrumbList.add(node.getBreadcrumb());
+			breadcrumbWidgets.put(node.getBreadcrumb(), bc);
+			breadcrumbPanel.add(bc);
+		}
 	}
 
 	protected void removeBreadcrumb(WizardNode node) {
-		breadcrumbList.remove(node.getBreadcrumb());
-		Widget w = breadcrumbWidgets.remove(node.getBreadcrumb());
-		if (w != null) {
-			breadcrumbPanel.remove(w);
+		int index = breadcrumbList.indexOf(node.getBreadcrumb());
+		if(index >= 0){
+			List<String> crumbsToNix = new ArrayList<String>();
+			for(int i = index+1; i < breadcrumbList.size(); i++){
+				crumbsToNix.add(breadcrumbList.get(i));
+				Widget w = breadcrumbWidgets.remove(breadcrumbList.get(i));
+				if (w != null) {
+					breadcrumbPanel.remove(w);
+				}
+			}
+			breadcrumbList.removeAll(crumbsToNix);
 		}
+		
 	}
 
 	public void onClick(ClickEvent event) {

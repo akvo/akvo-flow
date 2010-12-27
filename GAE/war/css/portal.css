@@ -453,6 +453,15 @@ button{
     padding:5px 10px 6px 7px; /* Links */
 }
 
+.wizard-back-navbutton{
+	background-color:#FFFFCC;	
+}
+
+.wizard-fwd-navbutton{
+	background-color:#99CC66;	
+}
+
+
 .admin-button{
 	width: 100%;	
 }
