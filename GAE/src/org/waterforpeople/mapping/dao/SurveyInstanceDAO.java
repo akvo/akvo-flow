@@ -31,9 +31,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
-			
+
 			String[] parts = line.split(",");
-			//TODO: this will have to be removed when we use Strength and ScoredValue Questions
+			// TODO: this will have to be removed when we use Strength and
+			// ScoredValue Questions
 			while (parts.length > 9) {
 				try {
 					@SuppressWarnings("unused")
@@ -41,16 +42,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					break;
 				} catch (Exception e) {
 					logger.log(Level.INFO,
-							"Removing comma because 7th pos doesn't pass got string: " + parts[7]+"instead of date");
+							"Removing comma because 7th pos doesn't pass got string: "
+									+ parts[7] + "instead of date");
 				}
 				log.log(Level.SEVERE, "Has too many commas: " + line);
 				int startIndex = 0;
 				int iCount = 0;
-				
-				while((startIndex=line.indexOf(",", startIndex+1))!=-1){
-					if(iCount==4){
+
+				while ((startIndex = line.indexOf(",", startIndex + 1)) != -1) {
+					if (iCount == 4) {
 						String firstPart = line.substring(0, startIndex);
-						String secondPart = line.substring(startIndex+1, line.length());
+						String secondPart = line.substring(startIndex + 1,
+								line.length());
 						line = firstPart + secondPart;
 						break;
 					}
@@ -127,12 +130,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		return si;
 	}
 
-	
-	
-	
 	public SurveyInstanceDAO() {
 		super(SurveyInstance.class);
-		//loadReplaceList();
+		// loadReplaceList();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -248,9 +248,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("surveyId == surveyIdParam");
 		q.declareParameters("Long surveyIdParam");
-		if (cursorString == null || !cursorString.equals("all")) {
-			prepareCursor(cursorString, q);
-		}
+		prepareCursor(cursorString, q);
 		List<SurveyInstance> siList = (List<SurveyInstance>) q
 				.execute(surveyId);
 
