@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import com.gallatinsystems.framework.gwt.component.PageController;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -16,9 +17,11 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button surveyMgmtButton;
 	private Button assignmentButton;
 	private Button mappingButton;
-
-	public AdminHomeWidget() {
+private PageController controller;
+	
+	public AdminHomeWidget(PageController controller) {
 		Grid widget = new Grid(4, 2);
+		this.controller = controller;
 		userMgmtButton = initButton("Manage Users");
 
 		widget.setWidget(0, 0, userMgmtButton);
@@ -60,7 +63,8 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 
 	@Override
 	public void onClick(ClickEvent event) {
-		// TODO Auto-generated method stub
-
+		if(event.getSource() == surveyMgmtButton){
+			controller.openPage(SurveyGroupListWidget.class);
+		}
 	}
 }

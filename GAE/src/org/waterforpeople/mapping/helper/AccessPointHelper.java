@@ -13,13 +13,14 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.dao.AccessPointDao;
+import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
@@ -128,14 +129,12 @@ public class AccessPointHelper {
 							setAccessPointField(ap, qas, mapping);
 
 						} catch (NoSuchFieldException e) {
-							logger
-									.log(
-											Level.SEVERE,
-											"Could not map field to access point: "
-													+ mapping
-															.getAttributeName()
-													+ ". Check the surveyAttribueMapping for surveyId "
-													+ surveyId);
+							logger.log(
+									Level.SEVERE,
+									"Could not map field to access point: "
+											+ mapping.getAttributeName()
+											+ ". Check the surveyAttribueMapping for surveyId "
+											+ surveyId);
 						} catch (IllegalAccessException e) {
 							logger.log(Level.SEVERE,
 									"Could not set field to access point: "
@@ -202,8 +201,8 @@ public class AccessPointHelper {
 					} else if (f.getType() == Long.class) {
 						try {
 							String temp = stringVal.trim();
-							if(temp.contains(".")){
-								temp = temp.substring(0,temp.indexOf("."));
+							if (temp.contains(".")) {
+								temp = temp.substring(0, temp.indexOf("."));
 							}
 							Long val = Long.parseLong(temp);
 							f.set(ap, val);
@@ -271,11 +270,12 @@ public class AccessPointHelper {
 	 */
 	public AccessPoint saveAccessPoint(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
+		AccessPoint apCurrent = null;
 		if (ap != null) {
 			if (ap.getPointType() != null && ap.getLatitude() != null
 					&& ap.getLongitude() != null) {
-				AccessPoint apCurrent = apDao.findAccessPoint(
-						ap.getPointType(), ap.getLatitude(), ap.getLongitude());
+				apCurrent = apDao.findAccessPoint(ap.getPointType(),
+						ap.getLatitude(), ap.getLongitude());
 				if (apCurrent != null) {
 					if (!apCurrent.getKey().equals(ap.getKey())) {
 						ap.setKey(apCurrent.getKey());
@@ -284,26 +284,35 @@ public class AccessPointHelper {
 			}
 			if (ap.getKey() != null) {
 				String oldValues = null;
-				if (ap != null && ap.getKey() != null) {
-					AccessPoint oldPoint = apDao.getByKey(ap.getKey());
-					oldValues = formChangeRecordString(oldPoint);
+				if (ap != null && ap.getKey() != null && apCurrent == null) {
+					apCurrent = apDao.getByKey(ap.getKey());
 				}
-				ap = apDao.save(ap);
+				if (apCurrent != null) {
+					oldValues = formChangeRecordString(apCurrent);
+					// now copy the new values into the ap. since it's a
+					// persistent object, we can't just copy the key over to
+					// another
+					// object and save
+					copyNonKeyValues(ap, apCurrent);
+				
+					ap = apDao.save(apCurrent);
 
-				String newValues = formChangeRecordString(ap);
+					String newValues = formChangeRecordString(ap);
 
-				if (oldValues != null) {
-					DataChangeRecord change = new DataChangeRecord(
-							AccessPointStatusSummary.class.getName(), "n/a",
-							oldValues, newValues);
-					Queue queue = QueueFactory.getQueue("dataUpdate");
-					queue.add(url("/app_worker/dataupdate").param(
-							DataSummarizationRequest.OBJECT_KEY,
-							ap.getKeyString()).param(
-							DataSummarizationRequest.OBJECT_TYPE,
-							"AccessPointSummaryChange").param(
-							DataSummarizationRequest.VALUE_KEY,
-							change.packString()));
+					if (oldValues != null) {
+						DataChangeRecord change = new DataChangeRecord(
+								AccessPointStatusSummary.class.getName(),
+								"n/a", oldValues, newValues);
+						Queue queue = QueueFactory.getQueue("dataUpdate");
+						queue.add(url("/app_worker/dataupdate")
+								.param(DataSummarizationRequest.OBJECT_KEY,
+										ap.getKey().getId()+"")
+								.param(DataSummarizationRequest.OBJECT_TYPE,
+										"AccessPointSummaryChange")
+								.param(DataSummarizationRequest.VALUE_KEY,
+										change.packString()));
+						
+					}
 				}
 			} else {
 				if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
@@ -314,6 +323,7 @@ public class AccessPointHelper {
 					}
 				}
 				ap = apDao.save(ap);
+
 				Queue summQueue = QueueFactory.getQueue("dataSummarization");
 				summQueue.add(url("/app_worker/datasummarization").param(
 						"objectKey", ap.getKey().getId() + "").param("type",
@@ -403,5 +413,41 @@ public class AccessPointHelper {
 			}
 		}
 		return status;
+	}
+
+	private void copyNonKeyValues(AccessPoint source, AccessPoint target) {
+		if (source != null && target != null) {
+			Field[] fields = AccessPoint.class.getDeclaredFields();
+			for (int i = 0; i < fields.length; i++) {
+				try {
+					if (isCopyable(fields[i].getName())) {
+						fields[i].setAccessible(true);
+						fields[i].set(target, fields[i].get(source));
+					}
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, "Can't set the field: "
+							+ fields[i].getName());
+				}
+			}
+		}
+	}
+
+	private boolean isCopyable(String name) {
+		if ("key".equals(name)) {
+			return false;
+		} else if ("serialVersionUID".equals(name)) {
+			return false;
+		} else if ("jdoFieldFlags".equals(name)) {
+			return false;
+		} else if ("jdoPersistenceCapableSuperclass".equals(name)) {
+			return false;
+		} else if ("jdoFieldTypes".equals(name)) {
+			return false;
+		} else if ("jdoFieldNames".equals(name)) {
+			return false;
+		} else if ("jdoInheritedFieldCount".equals(name)) {
+			return false;
+		}
+		return true;
 	}
 }

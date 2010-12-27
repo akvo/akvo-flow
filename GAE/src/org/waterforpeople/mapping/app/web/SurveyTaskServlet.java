@@ -84,6 +84,7 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
 			String idList = stReq.getIdList();
 			if (idList != null && idList.trim().length() > 0) {
 				String[] ids = idList.split(",");
+				log.log(Level.INFO, "action: " + stReq.getAction() + " idList: " + idList);
 				for (int i = 0; i < ids.length; i++) {
 					aph.processSurveyInstance(ids[i]);
 				}

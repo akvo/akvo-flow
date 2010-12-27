@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.gallatinsystems.framework.gwt.component.Breadcrumb;
+import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -15,7 +16,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AbstractWizardPortlet extends Portlet implements
-		ClickHandler {
+		ClickHandler, PageController {
 
 	private static final String NAV_BUTTON_STYLE = "wizard-navbutton";
 	private static final String BACK_NAV_BUTTON_STYLE = "wizard-back-navbutton";
@@ -33,7 +34,6 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private Map<String, Widget> breadcrumbWidgets;
 
 	private WizardWorkflow workflow;
-	private WizardNode currentNode;
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
 		super(name, true, false, false, width, height);
@@ -93,7 +93,6 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		prePageUnload(page);
 		widgetPanel.clear();
 
-		currentNode = page;
 		Widget w = initializeNode(page);
 		widgetPanel.add(w);
 		resetNav(page);
@@ -139,6 +138,16 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 					.getSource()).getTargetNode()), false);
 		}
 	}
+	
+	public void openPage(Class clazz){
+		if(clazz != null){
+			WizardNode node = workflow.findNode(clazz);
+			if(node != null){
+				renderWizardPage(node, true);
+			}
+		}
+	}
+
 
 	protected abstract WizardWorkflow getWizardWorkflow();
 
@@ -171,6 +180,17 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 		public WizardNode getWorkflowNode(String name) {
 			return allNodes.get(name);
+		}
+		
+		public WizardNode findNode(Class className){
+			if(allNodes != null){
+				for(WizardNode n: allNodes.values()){
+					if(n.getWidgetClass().equals(className)){
+						return n;
+					}
+				}
+			}
+			return null;
 		}
 	}
 

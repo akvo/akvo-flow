@@ -27,7 +27,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	protected WizardWorkflow getWizardWorkflow() {
 		WizardWorkflow wf = new WizardWorkflow();
 		wf.setStartNode(new WizardNode("Administration", "Administration Home",
-				AdminHomeWidget.class, "SurveyGroupList", null));
+				AdminHomeWidget.class, (String)null, (String)null));
 		wf.addInternalNode(new WizardNode("SurveyGroupList", "Survey Groups",
 				SurveyGroupListWidget.class, "SurveyGroupCreate",
 				"Administration"));
@@ -62,7 +62,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	@Override
 	protected Widget initializeNode(WizardNode node) {
 		if(node.getWidgetClass().equals(AdminHomeWidget.class)){
-			return new AdminHomeWidget();
+			return new AdminHomeWidget(this);
 		}else if (node.getWidgetClass().equals(PublicationWidget.class)){
 			return new PublicationWidget();
 	}else if (node.getWidgetClass().equals(QuestionEditWidget.class)){
