@@ -24,6 +24,7 @@ import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -294,6 +295,16 @@ public class AccessPointHelper {
 					// another
 					// object and save
 					copyNonKeyValues(ap, apCurrent);
+					
+					//TODO: Hack since the fileUrl keeps getting set to incorrect value
+					if(apCurrent.getPhotoURL()!=null)
+						if(apCurrent.getPhotoURL().startsWith("/sdcard/"))
+						{
+							String path = apCurrent.getPhotoURL();
+							path = path.replace("/sdcard/",photo_url_root);
+							apCurrent.setPhotoURL(path);
+						}
+							
 				
 					ap = apDao.save(apCurrent);
 
