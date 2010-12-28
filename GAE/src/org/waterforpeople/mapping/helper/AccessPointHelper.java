@@ -213,8 +213,14 @@ public class AccessPointHelper {
 						}
 					} else if (f.getType() == Boolean.class) {
 						try {
-							Boolean val = Boolean
-									.parseBoolean(stringVal.trim());
+							Boolean val = null;
+							if (stringVal.toLowerCase().contains("yes")) {
+								val = true;
+							} else if (stringVal.toLowerCase().contains("no")) {
+								val = false;
+							} else {
+								val = Boolean.parseBoolean(stringVal.trim());
+							}
 							f.set(ap, val);
 						} catch (Exception e) {
 							logger.log(Level.SEVERE, "Could not parse "
@@ -295,17 +301,16 @@ public class AccessPointHelper {
 					// another
 					// object and save
 					copyNonKeyValues(ap, apCurrent);
-					
-					//TODO: Hack since the fileUrl keeps getting set to incorrect value
-					if(apCurrent.getPhotoURL()!=null)
-						if(apCurrent.getPhotoURL().startsWith("/sdcard/"))
-						{
+
+					// TODO: Hack since the fileUrl keeps getting set to
+					// incorrect value
+					if (apCurrent.getPhotoURL() != null)
+						if (apCurrent.getPhotoURL().startsWith("/sdcard/")) {
 							String path = apCurrent.getPhotoURL();
-							path = path.replace("/sdcard/",photo_url_root);
+							path = path.replace("/sdcard/", photo_url_root);
 							apCurrent.setPhotoURL(path);
 						}
-							
-				
+
 					ap = apDao.save(apCurrent);
 
 					String newValues = formChangeRecordString(ap);
@@ -317,12 +322,12 @@ public class AccessPointHelper {
 						Queue queue = QueueFactory.getQueue("dataUpdate");
 						queue.add(url("/app_worker/dataupdate")
 								.param(DataSummarizationRequest.OBJECT_KEY,
-										ap.getKey().getId()+"")
+										ap.getKey().getId() + "")
 								.param(DataSummarizationRequest.OBJECT_TYPE,
 										"AccessPointSummaryChange")
 								.param(DataSummarizationRequest.VALUE_KEY,
 										change.packString()));
-						
+
 					}
 				}
 			} else {
