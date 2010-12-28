@@ -21,7 +21,7 @@ public class AccessPointServiceSupport {
 	public static AccessPointDto copyCanonicalToDto(AccessPoint apCanonical) {
 
 		AccessPointDto apDto = new AccessPointDto();
-		DtoMarshaller.copyToDto(apCanonical, apDto);
+		//DtoMarshaller.copyToDto(apCanonical, apDto);
 		apDto.setKeyId(apCanonical.getKey().getId());
 		apDto.setAltitude(apCanonical.getAltitude());
 		apDto.setLatitude(apCanonical.getLatitude());
