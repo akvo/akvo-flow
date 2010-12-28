@@ -14,6 +14,7 @@ import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
@@ -28,8 +29,6 @@ import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
-import com.google.appengine.api.datastore.Text;
-
 /**
  * client code for calling the apis for data processing on the server
  * 
@@ -41,6 +40,7 @@ public class BulkDataServiceClient {
 	public static final String RESPONSE_KEY = "dtoList";
 	private static final String SURVEY_SERVLET_PATH = "/surveyrestapi?action=";
 	private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
+	private static final String ACCESS_POINT_SERVLET_PATH = "/accesspoint?action=search";
 
 	/**
 	 * lists all responses from the server for a surveyInstance submission as a
@@ -59,6 +59,22 @@ public class BulkDataServiceClient {
 				+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
 				+ instanceId);
 		return parseInstanceValues(instanceValues);
+	}
+	
+	public static List<AccessPointDto> fetchAccessPoints(String cursor,String serverBase) throws Exception{
+		String action = ACCESS_POINT_SERVLET_PATH + (cursor!=null?"&cursor="+cursor:"");
+		String url = serverBase + action; 
+		
+			String response = fetchDataFromServer(url);
+			JSONObject jsonOuter = new JSONObject(response);
+			if (jsonOuter.has("cursor")) {
+				cursor = jsonOuter.getString("cursor");
+			}
+			List<AccessPointDto> apDtoList = parseAccessPoints(response);
+			return apDtoList;
+	}
+	private static List<AccessPointDto> parseAccessPoints(String response){
+		return null;
 	}
 
 	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
