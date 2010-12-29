@@ -232,10 +232,10 @@ a {
 	    					<div class="QandA"><div class="question">Water System Status</div><div class="answer"> $waterSystemStatus<br></div> </div>
 	    					<div class="QandA"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology</div></div>
 							<div class="QandA"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div></div>
-							#if($numberOfHouseholdsUsingWaterPoint!=null)
+							#if($numberOfHouseholdsUsingWaterPoint!="null")
 								<div class="QandA"><div class="question">Estimated Number of Households</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
 							#end
-							#if($estimatedPopulation!=null)
+							#if($estimatedPopulation!="null")
 								<div class="QandA"><div class="question">Estimated Number of Users</div><div class="answer"> $estimatedPopulation<br></div></div>
 							#end
 							<div class="QandA"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($provideAdequateQuantity=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div></div>
@@ -250,7 +250,12 @@ a {
 		    				<div class="QandA"><div class="question">Public Institution Name</div><div class="answer"> $institutionName<br></div></div>
 	    					<div class="QandA"><div class="question">Type of Technology</div><div class="answer"> $primaryTypeTechnology<br></div></div>
 							<div class="QandA"><div class="question">Construction Date</div><div class="answer"> $constructionDateOfWaterPoint<br></div></div>
-							<div class="QandA"><div class="question">Estimated Number of Users</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
+							#if($numberOfHouseholdsUsingWaterPoint!="null")
+								<div class="QandA"><div class="question">Estimated Number of Households</div><div class="answer"> $numberOfHouseholdsUsingWaterPoint<br></div></div>
+							#end
+							#if($estimatedPopulation!="null")
+								<div class="QandA"><div class="question">Estimated Number of Users</div><div class="answer"> $estimatedPopulation<br></div></div>
+							#end
 							<div class="QandA"><div class="question">Water Point Provides Enough Water Every Day</div><div class="answer"> #if($provideAdequateQuantity=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($provideAdequateQuantity=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div></div>
 							#if(!($waterSystemStatus=="No Improved System"))
 								<div class="QandA"><div class="question">Has the Improved system been down for less than 1 day in the last month?</div><div class="answer"> #if(($down1DayFlag=="Yes") || ($waterSystemStatus=="Broken-down system"))<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #elseif ($down1DayFlag=="No") <img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div>  </div>
