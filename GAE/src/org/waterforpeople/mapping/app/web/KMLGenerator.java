@@ -514,17 +514,27 @@ public class KMLGenerator {
 
 			if (ap.getExtimatedPopulation() != null) {
 				context.put("estimatedPopulation", ap.getExtimatedPopulation());
+			} else {
+				context.put("estimatedPopulation", "null");
 			}
+
 			if (ap.getConstructionDateYear() == null
 					|| ap.getConstructionDateYear().trim().equals("")) {
 				context.put("constructionDateOfWaterPoint", "Unknown");
 			} else {
+				String constructionDateYear = ap.getConstructionDateYear();
+				if (constructionDateYear.contains(".0")) {
+					constructionDateYear = constructionDateYear.replace(".0",
+							"");
+				}
 				context.put("constructionDateOfWaterPoint",
-						ap.getConstructionDateYear());
+						constructionDateYear);
 			}
 			if (ap.getNumberOfHouseholdsUsingPoint() != null) {
 				context.put("numberOfHouseholdsUsingWaterPoint",
 						ap.getNumberOfHouseholdsUsingPoint());
+			} else {
+				context.put("numberOfHouseholdsUsingWaterPoint", "null");
 			}
 			if (ap.getCostPer() == null) {
 				context.put("costPer", "N/A");
