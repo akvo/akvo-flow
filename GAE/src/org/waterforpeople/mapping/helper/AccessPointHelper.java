@@ -204,6 +204,7 @@ public class AccessPointHelper {
 					+ geoC.getLongitude() + "|" + geoC.getAltitude());
 			apmh.setQuestionAnswerType("GEO");
 			apmh.setAccessPointValue(ap.getLatitude() + "|" + ap.getLongitude() + "|"+ ap.getAltitude());
+			apmh.setAccessPointField("Latitude,Longitude,Altitude");
 		} else {
 			apmh.setSurveyResponse(qas.getValue());
 			// if it's a value or OTHER type
@@ -212,6 +213,7 @@ public class AccessPointHelper {
 			if (!f.isAccessible()) {
 				f.setAccessible(true);
 			}
+			apmh.setAccessPointField(f.getName());
 			//TODO: Hack.  In the QAS the type is PHOTO, but we were looking for image this is why we were getting /sdcard I think.  
 			if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())|| qas.getType().equals("PHOTO")) {
 				String[] photoParts = qas.getValue().split("/");

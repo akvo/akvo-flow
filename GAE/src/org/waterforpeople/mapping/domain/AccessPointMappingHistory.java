@@ -24,6 +24,7 @@ public class AccessPointMappingHistory extends BaseDomain {
 	private String mappingMessage = null;
 	private String accessPointValue = null;
 	private String source = null;
+	private String accessPointField = null;
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -118,5 +119,13 @@ public class AccessPointMappingHistory extends BaseDomain {
 
 	public String getAccessPointValue() {
 		return accessPointValue;
+	}
+
+	public void setAccessPointField(String accessPointField) {
+		this.accessPointField = accessPointField;
+	}
+
+	public String getAccessPointField() {
+		return accessPointField;
 	}
 }
