@@ -5,6 +5,7 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -23,7 +24,9 @@ import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRe
 import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -39,6 +42,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
 			Date beginDate, String cursorString) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		SurveyDAO surveyDao = new SurveyDAO();
+		List<Survey> surveyList = surveyDao.list("all");
+		HashMap<Long, String> surveyMap = new HashMap<Long, String>();
+		for (Survey s : surveyList) {
+			surveyMap.put(s.getKey().getId(),s.getPath()+ "/"+ s.getCode());
+		}
 		List<SurveyInstance> siList = null;
 		if (beginDate == null) {
 			Calendar c = Calendar.getInstance();
@@ -50,7 +59,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
 		for (SurveyInstance siItem : siList) {
-			siDtoList.add(marshalToDto(siItem));
+			String code = surveyMap.get(siItem.getSurveyId());
+			SurveyInstanceDto siDto = marshalToDto(siItem);
+			if (code != null)
+				siDto.setSurveyCode(code);
+			siDtoList.add(siDto);
+
 		}
 		ResponseDto<ArrayList<SurveyInstanceDto>> response = new ResponseDto<ArrayList<SurveyInstanceDto>>();
 		response.setCursorString(newCursor);
@@ -64,15 +78,16 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		List<QuestionAnswerStore> questions = dao.listQuestionAnswerStore(
 				instanceId, null);
 		QuestionDao qDao = new QuestionDao();
-		
-		
+
 		if (questions != null) {
-			List<Question> qList = qDao.listQuestionsBySurvey(questions.get(0).getSurveyId());
+			List<Question> qList = qDao.listQuestionsBySurvey(questions.get(0)
+					.getSurveyId());
 			for (QuestionAnswerStore qas : questions) {
 				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
 				DtoMarshaller.copyToDto(qas, qasDto);
-				for(Question q:qList){
-					if(Long.parseLong(qas.getQuestionID())==q.getKey().getId()){
+				for (Question q : qList) {
+					if (Long.parseLong(qas.getQuestionID()) == q.getKey()
+							.getId()) {
 						qasDto.setQuestionText(q.getText());
 						break;
 					}

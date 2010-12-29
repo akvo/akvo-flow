@@ -51,6 +51,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private static final DataTableHeader TABLE_HEADERS[] = {
 			new DataTableHeader("Submission Id"),
 			new DataTableHeader("Survey Id"),
+			new DataTableHeader("Survey Code"),
 			new DataTableHeader("Collection Date") };
 
 	private SurveyInstanceServiceAsync svc;
@@ -339,7 +340,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	public void bindRow(Grid grid, SurveyInstanceDto item, int row) {
 		grid.setWidget(row, 0, new Label(item.getKeyId().toString()));
 		grid.setWidget(row, 1, new Label(item.getSurveyId().toString()));
-		grid.setWidget(row, 2, new Label(DateTimeFormat
+		grid.setWidget(row, 2, new Label(item.getSurveyCode()));
+		grid.setWidget(row, 3, new Label(DateTimeFormat
 				.getMediumDateTimeFormat().format(item.getCollectionDate())));
 	}
 

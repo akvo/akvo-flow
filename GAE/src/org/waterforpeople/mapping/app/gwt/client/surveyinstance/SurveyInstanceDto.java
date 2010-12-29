@@ -21,6 +21,7 @@ public class SurveyInstanceDto extends BaseDto {
 
 	private String submitterName;
 	private String deviceIdentifier;
+	private String surveyCode;
 
 	public String getSubmitterName() {
 		return submitterName;
@@ -75,5 +76,13 @@ public class SurveyInstanceDto extends BaseDto {
 		if (questionAnswersStore == null)
 			questionAnswersStore = new ArrayList<QuestionAnswerStoreDto>();
 		questionAnswersStore.add(item);
+	}
+
+	public void setSurveyCode(String surveyCode) {
+		this.surveyCode = surveyCode;
+	}
+
+	public String getSurveyCode() {
+		return surveyCode;
 	}
 }
