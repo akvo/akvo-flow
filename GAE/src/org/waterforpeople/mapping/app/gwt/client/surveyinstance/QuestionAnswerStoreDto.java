@@ -19,6 +19,7 @@ public class QuestionAnswerStoreDto extends BaseDto {
 	private Long surveyId;
 	private Long surveyInstanceId;
 	private String oldValue;
+	private String questionText;
 
 	public String getOldValue() {
 		return oldValue;
@@ -82,6 +83,14 @@ public class QuestionAnswerStoreDto extends BaseDto {
 
 	public void setQuestionID(String questionID) {
 		this.questionID = questionID;
+	}
+
+	public void setQuestionText(String questionText) {
+		this.questionText = questionText;
+	}
+
+	public String getQuestionText() {
+		return questionText;
 	}
 
 }

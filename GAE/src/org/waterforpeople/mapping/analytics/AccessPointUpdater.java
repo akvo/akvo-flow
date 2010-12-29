@@ -8,11 +8,13 @@ import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPointMappingHistory;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
 
 /**
@@ -52,6 +54,13 @@ public class AccessPointUpdater implements DataSummarizer {
 			Long questionId = new Long(ids[1]);
 			Long instanceId = new Long(ids[2]);
 			Long mappingId = new Long(ids[3]);
+			AccessPointMappingHistory apmh = new AccessPointMappingHistory();
+			apmh.setSurveyId(surveyId);
+			apmh.setQuestionId(questionId);
+			apmh.setSurveyInstanceId(instanceId);
+			apmh.setSource(this.getClass().getName());
+			apmh.setSurveyResponse(value);
+			
 			SurveyAttributeMapping identifierMapping = mappingDao
 					.findMappingForAttribute(surveyId, IDENTIFIER_ATTR);
 			SurveyAttributeMapping questionMapping = mappingDao
@@ -87,7 +96,7 @@ public class AccessPointUpdater implements DataSummarizer {
 							AccessPoint point = pointList.get(0);
 							try {								
 								AccessPointHelper.setAccessPointField(point,
-										changedAnswer, questionMapping);
+										changedAnswer, questionMapping,apmh);
 								apDao.save(point);																
 							} catch (Exception e) {
 								logger.log(Level.SEVERE,
@@ -97,6 +106,8 @@ public class AccessPointUpdater implements DataSummarizer {
 					}
 				}
 			}
+			BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(AccessPointMappingHistory.class);
+			apmhDao.save(apmh);
 		}
 		return true;
 	}

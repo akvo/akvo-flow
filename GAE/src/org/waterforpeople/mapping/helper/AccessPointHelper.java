@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.helper;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,22 +14,23 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.dao.AccessPointDao;
-import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPointMappingHistory;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
-import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -107,11 +109,15 @@ public class AccessPointHelper {
 			List<QuestionAnswerStore> questionAnswerList,
 			List<SurveyAttributeMapping> mappings) {
 		HashMap<String, AccessPoint> apMap = new HashMap<String, AccessPoint>();
+		List<AccessPointMappingHistory> apmhList = new ArrayList<AccessPointMappingHistory>();
+		List<Question> questionList = new QuestionDao()
+				.listQuestionsBySurvey(surveyId);
 		if (questionAnswerList != null) {
 			for (QuestionAnswerStore qas : questionAnswerList) {
 				SurveyAttributeMapping mapping = getMappingForQuestion(
 						mappings, qas.getQuestionID());
 				if (mapping != null) {
+
 					List<String> types = mapping.getApTypes();
 					if (types == null || types.size() == 0) {
 						// default the list to be access point if nothing is
@@ -119,6 +125,12 @@ public class AccessPointHelper {
 						types.add(AccessPointType.WATER_POINT.toString());
 					}
 					for (String type : types) {
+						AccessPointMappingHistory apmh = new AccessPointMappingHistory();
+						apmh.setSource(this.getClass().getName());
+						apmh.setSurveyId(surveyId);
+						apmh.setSurveyInstanceId(qas.getSurveyInstanceId());
+						apmh.setQuestionId(Long.parseLong(qas.getQuestionID()));
+						apmh.addAccessPointType(type);
 						try {
 							AccessPoint ap = apMap.get(type);
 							if (ap == null) {
@@ -127,7 +139,7 @@ public class AccessPointHelper {
 								ap.setCollectionDate(new Date());
 								apMap.put(type, ap);
 							}
-							setAccessPointField(ap, qas, mapping);
+							setAccessPointField(ap, qas, mapping, apmh);
 
 						} catch (NoSuchFieldException e) {
 							logger.log(
@@ -142,10 +154,23 @@ public class AccessPointHelper {
 											+ mapping.getAttributeName()
 											+ ". Illegal access.");
 						}
+
+						for (Question q : questionList) {
+							if (q.getKey().getId() == Long.parseLong(qas
+									.getQuestionID())){
+								apmh.setQuestionText(q.getText());
+								break;
+							}
+						}
+						apmhList.add(apmh);
 					}
 				}
+				if (apmhList.size() > 0) {
+					BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(
+							AccessPointMappingHistory.class);
+					apmhDao.save(apmhList);
+				}
 			}
-
 		}
 		return apMap.values();
 	}
@@ -163,41 +188,60 @@ public class AccessPointHelper {
 	 * @throws IllegalAccessException
 	 */
 	public static void setAccessPointField(AccessPoint ap,
-			QuestionAnswerStore qas, SurveyAttributeMapping mapping)
-			throws SecurityException, NoSuchFieldException,
-			IllegalArgumentException, IllegalAccessException {
+			QuestionAnswerStore qas, SurveyAttributeMapping mapping,
+			AccessPointMappingHistory apmh) throws SecurityException,
+			NoSuchFieldException, IllegalArgumentException,
+			IllegalAccessException {
+		apmh.setResponseAnswerType(qas.getType());
+
 		if (GEO_TYPE.equalsIgnoreCase(qas.getType())) {
 			GeoCoordinates geoC = new GeoCoordinates().extractGeoCoordinate(qas
 					.getValue());
 			ap.setLatitude(geoC.getLatitude());
 			ap.setLongitude(geoC.getLongitude());
 			ap.setAltitude(geoC.getAltitude());
+			apmh.setSurveyResponse(geoC.getLatitude() + "|"
+					+ geoC.getLongitude() + "|" + geoC.getAltitude());
+			apmh.setQuestionAnswerType("GEO");
+			apmh.setAccessPointValue(ap.getLatitude() + "|" + ap.getLongitude() + "|"+ ap.getAltitude());
 		} else {
+			apmh.setSurveyResponse(qas.getValue());
 			// if it's a value or OTHER type
 			Field f = ap.getClass()
 					.getDeclaredField(mapping.getAttributeName());
 			if (!f.isAccessible()) {
 				f.setAccessible(true);
 			}
-			if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())) {
+			//TODO: Hack.  In the QAS the type is PHOTO, but we were looking for image this is why we were getting /sdcard I think.  
+			if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())|| qas.getType().equals("PHOTO")) {
 				String[] photoParts = qas.getValue().split("/");
 				String newURL = photo_url_root + photoParts[2];
 				f.set(ap, newURL);
+				apmh.setQuestionAnswerType("PHOTO");
+				apmh.setAccessPointValue(ap.getPhotoURL());
 			} else {
 				String stringVal = qas.getValue();
 				if (stringVal != null && stringVal.trim().length() > 0) {
 					if (f.getType() == String.class) {
 						f.set(ap, qas.getValue());
+						apmh.setQuestionAnswerType("String");
+						apmh.setAccessPointValue(f.get(ap).toString());
 					} else if (f.getType() == AccessPoint.Status.class) {
 						String val = qas.getValue();
 						f.set(ap, encodeStatus(val, ap.getPointType()));
+						apmh.setQuestionAnswerType("STATUS");
+						apmh.setAccessPointValue(f.get(ap).toString());
 					} else if (f.getType() == Double.class) {
 						try {
 							Double val = Double.parseDouble(stringVal.trim());
 							f.set(ap, val);
+							apmh.setQuestionAnswerType("DOUBLE");
+							apmh.setAccessPointValue(f.get(ap).toString());
 						} catch (Exception e) {
 							logger.log(Level.SEVERE, "Could not parse "
 									+ stringVal + " as double", e);
+							apmh.setMappingMessage("Could not parse "
+									+ stringVal + " as double");
 						}
 					} else if (f.getType() == Long.class) {
 						try {
@@ -207,9 +251,13 @@ public class AccessPointHelper {
 							}
 							Long val = Long.parseLong(temp);
 							f.set(ap, val);
+							apmh.setQuestionAnswerType("LONG");
+							apmh.setAccessPointValue(f.get(ap).toString());
 						} catch (Exception e) {
 							logger.log(Level.SEVERE, "Could not parse "
 									+ stringVal + " as long", e);
+							apmh.setMappingMessage("Could not parse "
+									+ stringVal + " as long");
 						}
 					} else if (f.getType() == Boolean.class) {
 						try {
@@ -222,9 +270,13 @@ public class AccessPointHelper {
 								val = Boolean.parseBoolean(stringVal.trim());
 							}
 							f.set(ap, val);
+							apmh.setQuestionAnswerType("BOOLEAN");
+							apmh.setAccessPointValue(f.get(ap).toString());
 						} catch (Exception e) {
 							logger.log(Level.SEVERE, "Could not parse "
 									+ stringVal + " as boolean", e);
+							apmh.setMappingMessage("Could not parse "
+									+ stringVal + " as boolean");
 						}
 					}
 				}
@@ -304,12 +356,7 @@ public class AccessPointHelper {
 
 					// TODO: Hack since the fileUrl keeps getting set to
 					// incorrect value
-					if (apCurrent.getPhotoURL() != null)
-						if (apCurrent.getPhotoURL().startsWith("/sdcard/")) {
-							String path = apCurrent.getPhotoURL();
-							path = path.replace("/sdcard/", photo_url_root);
-							apCurrent.setPhotoURL(path);
-						}
+					
 
 					ap = apDao.save(apCurrent);
 

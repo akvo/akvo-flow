@@ -22,6 +22,8 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -61,10 +63,20 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		List<QuestionAnswerStore> questions = dao.listQuestionAnswerStore(
 				instanceId, null);
+		QuestionDao qDao = new QuestionDao();
+		
+		
 		if (questions != null) {
+			List<Question> qList = qDao.listQuestionsBySurvey(questions.get(0).getSurveyId());
 			for (QuestionAnswerStore qas : questions) {
 				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
 				DtoMarshaller.copyToDto(qas, qasDto);
+				for(Question q:qList){
+					if(Long.parseLong(qas.getQuestionID())==q.getKey().getId()){
+						qasDto.setQuestionText(q.getText());
+						break;
+					}
+				}
 				questionDtos.add(qasDto);
 			}
 		}

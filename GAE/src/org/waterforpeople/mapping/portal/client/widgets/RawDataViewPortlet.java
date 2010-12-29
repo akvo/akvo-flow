@@ -128,11 +128,12 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		statusLabel.setVisible(false);
 		changedAnswers = new HashMap<Long, QuestionAnswerStoreDto>();
 		if (questions != null) {
-			qasDetailGrid.resize(questions.size() + 2, 4);
+			qasDetailGrid.resize(questions.size() + 2, 5);
 			qasDetailGrid.setWidget(0, 0, new Label("Question Id"));
 			qasDetailGrid.setWidget(0, 1, new Label("Question Type"));
 			qasDetailGrid.setWidget(0, 2, new Label("Answer Value"));
 			qasDetailGrid.setWidget(0, 3, new Label("Collection Date"));
+			qasDetailGrid.setWidget(0, 4, new Label("Question Text"));
 			Integer iRow = 0;
 			for (QuestionAnswerStoreDto qasDto : questions) {
 				bindQASRow(qasDto, ++iRow);
@@ -145,53 +146,48 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					if (changedAnswers != null && changedAnswers.size() > 0) {
 						statusLabel.setText("Saving. Please wait...");
 						statusLabel.setVisible(true);
-						svc
-								.updateQuestions(
-										new ArrayList<QuestionAnswerStoreDto>(
-												changedAnswers.values()),
-										new AsyncCallback<List<QuestionAnswerStoreDto>>() {
+						svc.updateQuestions(
+								new ArrayList<QuestionAnswerStoreDto>(
+										changedAnswers.values()),
+								new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
-											@Override
-											public void onFailure(
-													Throwable caught) {
-												MessageDialog errDia = new MessageDialog(
-														"Application Error",
-														"Cannot update responses");
-												errDia
-														.showRelativeTo(saveButton);
-												statusLabel.setVisible(false);
-											}
+									@Override
+									public void onFailure(Throwable caught) {
+										MessageDialog errDia = new MessageDialog(
+												"Application Error",
+												"Cannot update responses");
+										errDia.showRelativeTo(saveButton);
+										statusLabel.setVisible(false);
+									}
 
-											@Override
-											public void onSuccess(
-													List<QuestionAnswerStoreDto> result) {
-												statusLabel.setVisible(false);
-												if (result != null) {
-													// update the value in the
-													// questionsList so we can
-													// keep the data consistent
-													// if the user presses clear
-													for (QuestionAnswerStoreDto dto : result) {
-														for (int i = 0; i < questions
-																.size(); i++) {
-															if (questions
-																	.get(i)
-																	.getKeyId()
-																	.equals(
-																			dto
-																					.getKeyId())) {
-																questions
-																		.get(i)
-																		.setValue(
-																				dto
-																						.getValue());
-															}
-														}
+									@Override
+									public void onSuccess(
+											List<QuestionAnswerStoreDto> result) {
+										statusLabel.setVisible(false);
+										if (result != null) {
+											// update the value in the
+											// questionsList so we can
+											// keep the data consistent
+											// if the user presses clear
+											for (QuestionAnswerStoreDto dto : result) {
+												for (int i = 0; i < questions
+														.size(); i++) {
+													if (questions
+															.get(i)
+															.getKeyId()
+															.equals(dto
+																	.getKeyId())) {
+														questions
+																.get(i)
+																.setValue(
+																		dto.getValue());
 													}
 												}
-												populateQuestions(questions);
 											}
-										});
+										}
+										populateQuestions(questions);
+									}
+								});
 					}
 				}
 			});
@@ -225,7 +221,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 								public void onSuccess(Void result) {
 									statusLabel.setText("Instance Deleted");
 									statusLabel.setVisible(true);
-									qasDetailGrid.clear(true);			
+									qasDetailGrid.clear(true);
 									requestData(null, false);
 								}
 							});
@@ -254,6 +250,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		qType.setReadOnly(true);
 		qType.setTabIndex(-1);
 		TextBox qValue = new TextBox();
+		TextBox qText = new TextBox();
 		qValue.addChangeHandler(new ChangeHandler() {
 
 			@Override
@@ -297,12 +294,14 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			if (qasDto.getCollectionDate() != null)
 				qCollectionDate.setText(DateTimeFormat.getMediumDateFormat()
 						.format(qasDto.getCollectionDate()));
-
+			if(qasDto.getQuestionText()!=null)
+				qText.setText(qasDto.getQuestionText());
 		}
 		qasDetailGrid.setWidget(iRow, 0, qId);
 		qasDetailGrid.setWidget(iRow, 1, qType);
 		qasDetailGrid.setWidget(iRow, 2, qValue);
 		qasDetailGrid.setWidget(iRow, 3, qCollectionDate);
+		qasDetailGrid.setWidget(iRow, 4, qText);
 		for (int j = 0; j < qasDetailGrid.getCellCount(iRow); j++) {
 			qasDetailGrid.getCellFormatter().setStyleName(iRow, j, "");
 		}
