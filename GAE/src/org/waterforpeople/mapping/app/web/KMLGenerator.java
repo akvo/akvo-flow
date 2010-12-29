@@ -512,6 +512,9 @@ public class KMLGenerator {
 				context.put("institutionName", "Unknown");
 			}
 
+			if (ap.getExtimatedPopulation() != null) {
+				context.put("estimatedPopulation", ap.getExtimatedPopulation());
+			}
 			if (ap.getConstructionDateYear() == null
 					|| ap.getConstructionDateYear().trim().equals("")) {
 				context.put("constructionDateOfWaterPoint", "Unknown");
@@ -519,9 +522,7 @@ public class KMLGenerator {
 				context.put("constructionDateOfWaterPoint",
 						ap.getConstructionDateYear());
 			}
-			if (ap.getNumberOfHouseholdsUsingPoint() == null) {
-				context.put("numberOfHouseholdsUsingWaterPoint", "Unknown");
-			} else {
+			if (ap.getNumberOfHouseholdsUsingPoint() != null) {
 				context.put("numberOfHouseholdsUsingWaterPoint",
 						ap.getNumberOfHouseholdsUsingPoint());
 			}
