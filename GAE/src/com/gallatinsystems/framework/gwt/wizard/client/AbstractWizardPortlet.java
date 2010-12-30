@@ -84,7 +84,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
-	protected void renderWizardPage(WizardNode page, boolean isForward) {
+	protected Widget renderWizardPage(WizardNode page, boolean isForward) {
 		if (isForward && page.getBreadcrumb() != null) {
 			addBreadcrumb(page);
 		} else if (!isForward && page != null && page.getBreadcrumb() != null) {
@@ -97,6 +97,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		widgetPanel.add(w);
 		resetNav(page);
 		onLoadComplete(page);
+		return w;
 	}
 
 	protected void addBreadcrumb(WizardNode node) {
@@ -139,11 +140,14 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 	
-	public void openPage(Class clazz){
+	public void openPage(Class clazz, Map<String,Object> bundle){
 		if(clazz != null){
 			WizardNode node = workflow.findNode(clazz);
 			if(node != null){
-				renderWizardPage(node, true);
+				Widget w = renderWizardPage(node, true);
+				if(w != null && bundle != null && w instanceof WorkflowParticipant){
+					((WorkflowParticipant)w).setBundle(bundle);
+				}
 			}
 		}
 	}

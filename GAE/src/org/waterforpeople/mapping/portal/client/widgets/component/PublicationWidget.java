@@ -1,5 +1,8 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import java.util.Map;
+
+import com.gallatinsystems.framework.gwt.wizard.client.WorkflowParticipant;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 

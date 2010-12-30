@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.Map;
+
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.PublicationWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWidget;
@@ -70,15 +72,17 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	}else if (node.getWidgetClass().equals(QuestionGroupEditWidget.class)){
 			return new QuestionGroupEditWidget();
 	}else if (node.getWidgetClass().equals(QuestionGroupListWidget.class)){
-			return new QuestionGroupListWidget();
+			return new QuestionGroupListWidget(this);
 	}else if (node.getWidgetClass().equals(SurveyEditWidget.class)){
 			return new SurveyEditWidget();
 	}else if (node.getWidgetClass().equals(SurveyGroupEditWidget.class)){
 			return new SurveyGroupEditWidget();
 	}else if (node.getWidgetClass().equals(SurveyGroupListWidget.class)){
-			return new SurveyGroupListWidget();
+			return new SurveyGroupListWidget(this);
 	}else if (node.getWidgetClass().equals(SurveyListWidget.class)){
-			return new SurveyListWidget();
+			return new SurveyListWidget(this);
+	}else if (node.getWidgetClass().equals(QuestionListWidget.class)){
+		return new QuestionListWidget(this);
 	}
 		return null;
 

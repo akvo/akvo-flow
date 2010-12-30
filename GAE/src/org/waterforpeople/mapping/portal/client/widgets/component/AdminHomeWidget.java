@@ -17,7 +17,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button surveyMgmtButton;
 	private Button assignmentButton;
 	private Button mappingButton;
-private PageController controller;
+	private PageController controller;
 	
 	public AdminHomeWidget(PageController controller) {
 		Grid widget = new Grid(4, 2);
@@ -64,7 +64,8 @@ private PageController controller;
 	@Override
 	public void onClick(ClickEvent event) {
 		if(event.getSource() == surveyMgmtButton){
-			controller.openPage(SurveyGroupListWidget.class);
+			controller.openPage(SurveyGroupListWidget.class,null);
 		}
 	}
+
 }
