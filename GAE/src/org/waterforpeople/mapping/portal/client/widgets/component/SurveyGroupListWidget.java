@@ -10,19 +10,23 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.framework.gwt.wizard.client.WorkflowParticipant;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SurveyGroupListWidget extends ListBasedWidget{
+public class SurveyGroupListWidget extends ListBasedWidget implements
+		WorkflowParticipant {
 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyGroupDto> groupMap;
+	Map<String, Object> bundle;
 
 	public SurveyGroupListWidget(PageController controller) {
 		super(controller);
+		bundle = new HashMap<String, Object>();
 		surveyService = GWT.create(SurveyService.class);
 		groupMap = new HashMap<Widget, SurveyGroupDto>();
 		loadData();
@@ -54,12 +58,21 @@ public class SurveyGroupListWidget extends ListBasedWidget{
 				});
 	}
 
-
 	@Override
 	protected void handleItemClick(Object source) {
-		Map<String,Object> bundle = new HashMap<String,Object>();
-		bundle.put(SurveyListWidget.SURVEY_GROUP_KEY, groupMap.get(source).getKeyId());
+		bundle.put(BundleConstants.SURVEY_GROUP_KEY, groupMap.get(source)
+				.getKeyId());
 		openPage(SurveyListWidget.class, bundle);
+	}
+
+	@Override
+	public void setBundle(Map<String, Object> bundle) {
+		this.bundle = bundle;
+	}
+
+	@Override
+	public Map<String, Object> getBundle() {
+		return bundle;
 	}
 
 }

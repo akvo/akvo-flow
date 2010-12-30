@@ -22,10 +22,12 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, QuestionGroupDto> questionGroupMap;
-	public static final String SURVEY_KEY = "SURVEY_ID";
+	Map<String, Object> bundle;
+	
 
 	public QuestionGroupListWidget(PageController controller) {
 		super(controller);
+		bundle = new HashMap<String, Object>();
 		surveyService = GWT.create(SurveyService.class);
 		questionGroupMap = new HashMap<Widget, QuestionGroupDto>();
 	}
@@ -58,14 +60,19 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 
 	@Override
 	public void setBundle(Map<String, Object> bundle) {
-		loadData((String) bundle.get(SURVEY_KEY).toString());
+		this.bundle = bundle;
+		loadData((String) bundle.get(BundleConstants.SURVEY_KEY).toString());
 	}
 
 	@Override
 	protected void handleItemClick(Object source) {
-		Map<String, Object> bundle = new HashMap<String, Object>();
-		bundle.put(QuestionListWidget.QUESTION_GROUP_KEY,
+		bundle.put(BundleConstants.QUESTION_GROUP_KEY,
 				questionGroupMap.get(source).getKeyId());
 		openPage(QuestionListWidget.class, bundle);
+	}
+
+	@Override
+	public Map<String, Object> getBundle() {
+		return bundle;
 	}
 }

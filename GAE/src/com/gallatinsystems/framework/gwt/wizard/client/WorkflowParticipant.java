@@ -4,4 +4,5 @@ import java.util.Map;
 
 public interface WorkflowParticipant {
 	public void setBundle(Map<String,Object> bundle);
+	public Map<String,Object> getBundle();
 }

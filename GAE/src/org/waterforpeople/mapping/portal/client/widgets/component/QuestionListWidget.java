@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
@@ -18,20 +17,24 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class QuestionListWidget extends ListBasedWidget implements WorkflowParticipant  {
+public class QuestionListWidget extends ListBasedWidget implements
+		WorkflowParticipant {
 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, QuestionDto> questionMap;
-	public static final String QUESTION_GROUP_KEY = "QUESTION_GROUP_ID";
+	private QuestionDto selectedQuestion;
+	private Map<String,Object> bundle;
 
 	public QuestionListWidget(PageController controller) {
 		super(controller);
+		bundle = new HashMap<String,Object>();
 		surveyService = GWT.create(SurveyService.class);
 		questionMap = new HashMap<Widget, QuestionDto>();
+		selectedQuestion = null;
 	}
 
 	public void loadData(String groupId) {
-		surveyService.listQuestionsByQuestionGroup(groupId, false, 
+		surveyService.listQuestionsByQuestionGroup(groupId, false,
 				new AsyncCallback<ArrayList<QuestionDto>>() {
 
 					@Override
@@ -58,12 +61,25 @@ public class QuestionListWidget extends ListBasedWidget implements WorkflowParti
 
 	@Override
 	public void setBundle(Map<String, Object> bundle) {
-		loadData((String) bundle.get(QUESTION_GROUP_KEY).toString());		
+		this.bundle = bundle;
+		loadData((String) bundle.get(BundleConstants.QUESTION_GROUP_KEY)
+				.toString());
 	}
 
 	@Override
 	protected void handleItemClick(Object source) {
-	//TODO: implement
+		QuestionDto q = questionMap.get((Widget) source);
+		if (q != null) {
+			selectedQuestion = q;
+		}
 	}
 
+	@Override
+	public Map<String, Object> getBundle() {
+		if (selectedQuestion != null) {
+			bundle.put(BundleConstants.QUESTION_KEY, selectedQuestion
+					.getKeyId().toString());
+		}
+		return bundle;
+	}
 }

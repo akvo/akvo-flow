@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-import java.util.Map;
-
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.PublicationWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWidget;

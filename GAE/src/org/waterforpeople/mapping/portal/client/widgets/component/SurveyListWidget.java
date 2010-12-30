@@ -17,14 +17,17 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SurveyListWidget extends ListBasedWidget implements WorkflowParticipant  {
+public class SurveyListWidget extends ListBasedWidget implements
+		WorkflowParticipant {
 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyDto> surveyMap;
-	public static final String SURVEY_GROUP_KEY = "SURVEY_GROUP_ID";
+	private Map<String, Object> bundle;
 
 	public SurveyListWidget(PageController controller) {
 		super(controller);
+		bundle = new HashMap<String, Object>();
+
 		surveyService = GWT.create(SurveyService.class);
 		surveyMap = new HashMap<Widget, SurveyDto>();
 	}
@@ -57,14 +60,20 @@ public class SurveyListWidget extends ListBasedWidget implements WorkflowPartici
 
 	@Override
 	public void setBundle(Map<String, Object> bundle) {
-		loadData((String) bundle.get(SURVEY_GROUP_KEY).toString());		
+		this.bundle = bundle;
+		loadData((String) bundle.get(BundleConstants.SURVEY_GROUP_KEY)
+				.toString());
 	}
 
 	@Override
 	protected void handleItemClick(Object source) {
-		Map<String,Object> bundle = new HashMap<String,Object>();
-		bundle.put(QuestionGroupListWidget.SURVEY_KEY, surveyMap.get(source).getKeyId());
+		bundle.put(BundleConstants.SURVEY_KEY, surveyMap.get(source).getKeyId());
 		openPage(QuestionGroupListWidget.class, bundle);
+	}
+
+	@Override
+	public Map<String, Object> getBundle() {
+		return bundle;
 	}
 
 }
