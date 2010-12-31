@@ -1,11 +1,13 @@
 package org.waterforpeople.mapping.app.util;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
 
 import com.gallatinsystems.common.util.DateUtil;
+import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -105,7 +107,15 @@ public class AccessPointServiceSupport {
 		AccessPoint accessPoint = new AccessPoint();
 
 		// Check to see if it is an update or insert
+		UnitOfMeasureDto measDto = apDto.getCostPerUnitOfMeasure();
+		apDto.setCostPerUnitOfMeasure(null);
 		DtoMarshaller.copyToCanonical(accessPoint, apDto);
+		if(measDto != null){
+			UnitOfMeasure measDomain = new UnitOfMeasure();
+			DtoMarshaller.copyToCanonical(measDomain, measDto);
+			accessPoint.setCostPerUnitOfMeasure(measDomain);
+			
+		}
 		if (apDto.getKeyId() != null) {
 			Key key = KeyFactory.createKey(AccessPoint.class.getSimpleName(),
 					apDto.getKeyId());
