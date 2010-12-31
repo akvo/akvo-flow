@@ -97,7 +97,9 @@ public class AccessPointUpdater implements DataSummarizer {
 							try {								
 								AccessPointHelper.setAccessPointField(point,
 										changedAnswer, questionMapping,apmh);
-								apDao.save(point);																
+								logger.info("Extimated pop is: "+point.getExtimatedPopulation());
+								apDao.save(point);
+								logger.info("Post Save Extimated pop is: "+point.getExtimatedPopulation());
 							} catch (Exception e) {
 								logger.log(Level.SEVERE,
 										"Could not update AP field", e);

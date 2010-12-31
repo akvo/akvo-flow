@@ -253,6 +253,7 @@ public class AccessPointHelper {
 							}
 							Long val = Long.parseLong(temp);
 							f.set(ap, val);
+							logger.info("Setting "+f.getName()+" to "+val+" for ap: "+(ap.getKey()!= null?ap.getKey().getId():"UNSET"));
 							apmh.setQuestionAnswerType("LONG");
 							apmh.setAccessPointValue(f.get(ap).toString());
 						} catch (Exception e) {
@@ -350,11 +351,10 @@ public class AccessPointHelper {
 				}
 				if (apCurrent != null) {
 					oldValues = formChangeRecordString(apCurrent);
-					// now copy the new values into the ap. since it's a
-					// persistent object, we can't just copy the key over to
-					// another
-					// object and save
-					copyNonKeyValues(ap, apCurrent);
+					if(apCurrent != null){
+						ap.setKey(apCurrent.getKey());
+						apCurrent = ap;
+					}
 
 					// TODO: Hack since the fileUrl keeps getting set to
 					// incorrect value
