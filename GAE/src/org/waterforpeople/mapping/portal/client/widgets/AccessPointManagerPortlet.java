@@ -965,12 +965,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		apDto.setSecondaryTechnologyString(getValueFromWidget(
 				accessPointDetail, 23, 1));
 		apDto.setWhoRepairsPoint(getValueFromWidget(accessPointDetail, 24, 1));
-		apDto.setNumberOfHouseholdsUsingPoint(new Long(getValueFromWidget(
-				accessPointDetail, 25, 1)));
-		apDto.setEstimatedPeoplePerHouse(new Long(getValueFromWidget(
-				accessPointDetail, 26, 1)));
-		apDto.setEstimatedPopulation(new Long(getValueFromWidget(
-				accessPointDetail, 27, 1)));
+		apDto.setNumberOfHouseholdsUsingPoint(getLongValueFromWidget(
+				accessPointDetail, 25, 1));
+		apDto.setEstimatedPeoplePerHouse(getLongValueFromWidget(
+				accessPointDetail, 26, 1));
+		apDto.setEstimatedPopulation(getLongValueFromWidget(
+				accessPointDetail, 27, 1));
 		apDto.setHasSystemBeenDown1DayFlag(getValueFromWidget(
 				accessPointDetail, 29, 1).equals("yes") ? true : false);
 		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
@@ -1206,6 +1206,15 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			return 0;
 		else
 			return -1;
+	}
+	
+	private Long getLongValueFromWidget(FlexTable ft, Integer row, Integer column) {
+		String val = getValueFromWidget(ft, row, column);
+		if(val != null && val.trim().length()>0){
+			return new Long(val);
+		}else{
+			return null;
+		}
 	}
 
 	private String getValueFromWidget(FlexTable ft, Integer row, Integer column) {
