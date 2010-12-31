@@ -5,12 +5,15 @@ import java.util.Locale;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class DtoMarshaller {
@@ -57,6 +60,14 @@ public class DtoMarshaller {
 		TypeEnumConverter enumConverter = new TypeEnumConverter();
 		ConvertUtils.register(enumConverter, Question.Type.class);
 		ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);	
+		ConvertUtils.register(enumConverter,AccessPoint.Status.class);
+		ConvertUtils.register(enumConverter,AccessPointDto.Status.class);
+		ConvertUtils.register(enumConverter,AccessPoint.AccessPointType.class);
+		ConvertUtils.register(enumConverter,AccessPointDto.AccessPointType.class);
+		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureSystem.class);
+		ConvertUtils.register(enumConverter,UnitOfMeasureDto.UnitOfMeasureSystem.class);
+		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureType.class);
+		ConvertUtils.register(enumConverter,UnitOfMeasureDto.UnitOfMeasureType.class);
 		
 	}
 

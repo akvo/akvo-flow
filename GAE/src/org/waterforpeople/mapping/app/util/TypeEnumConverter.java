@@ -1,10 +1,14 @@
 package org.waterforpeople.mapping.app.util;
 
 import org.apache.commons.beanutils.converters.AbstractConverter;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 
 /**
  * converts enumerated types
@@ -12,22 +16,45 @@ import com.gallatinsystems.survey.domain.Question;
  * @author Christopher Fagiani
  * 
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class TypeEnumConverter extends AbstractConverter {
 
 	@Override
 	protected Object convertToType(Class type, Object value) throws Throwable {
 		if (value != null) {
 			if (type == Question.Type.class) {
+
 				return Question.Type.valueOf(value.toString());
+
 			} else if (type == QuestionDto.QuestionType.class) {
-				if (value != null)
-					return QuestionDto.QuestionType.valueOf(value.toString());
-				else{
-					//return QuestionDto.QuestionType.valueOf(arg0)
-				}
+
+				return QuestionDto.QuestionType.valueOf(value.toString());
+
+			} else if (type == AccessPoint.Status.class) {
+
+				return AccessPoint.Status.valueOf(value.toString());
+
+			} else if (type == AccessPointDto.Status.class) {
+				return AccessPointDto.Status.valueOf(value.toString());
+			} else if (type == AccessPoint.AccessPointType.class) {
+				return AccessPoint.AccessPointType.valueOf(value.toString());
+			} else if (type == AccessPointDto.AccessPointType.class) {
+				return AccessPointDto.AccessPointType.valueOf(value.toString());
+			}else if (type == UnitOfMeasure.UnitOfMeasureSystem.class){
+				return UnitOfMeasure.UnitOfMeasureSystem.valueOf(value.toString());
+			}else if (type == UnitOfMeasureDto.UnitOfMeasureSystem.class){
+				return UnitOfMeasureDto.UnitOfMeasureSystem.valueOf(value.toString());
+			}else if (type == UnitOfMeasure.UnitOfMeasureType.class){
+				return UnitOfMeasure.UnitOfMeasureType.valueOf(value.toString());
+			}else if (type == UnitOfMeasureDto.UnitOfMeasureType.class){
+				return UnitOfMeasureDto.UnitOfMeasureType.valueOf(value.toString());
 			}
 		}
+		return null;
+	}
+	
+	@Override
+	public Object handleMissing(Class type){
 		return null;
 	}
 
