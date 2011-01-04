@@ -10,7 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
-import com.gallatinsystems.framework.gwt.wizard.client.WorkflowParticipant;
+import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class QuestionGroupListWidget extends ListBasedWidget implements
-		WorkflowParticipant {
+		ContextAware {
 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, QuestionGroupDto> questionGroupMap;
@@ -59,7 +59,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	public void setBundle(Map<String, Object> bundle) {
+	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
 		loadData((String) bundle.get(BundleConstants.SURVEY_KEY).toString());
 	}
@@ -72,7 +72,13 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	public Map<String, Object> getBundle() {
+	public Map<String, Object> getContextBundle() {
 		return bundle;
+	}
+
+	@Override
+	public void persistContext() {
+		// TODO Auto-generated method stub
+		
 	}
 }

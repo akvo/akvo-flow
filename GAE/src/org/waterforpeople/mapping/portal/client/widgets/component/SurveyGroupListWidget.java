@@ -10,7 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
-import com.gallatinsystems.framework.gwt.wizard.client.WorkflowParticipant;
+import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SurveyGroupListWidget extends ListBasedWidget implements
-		WorkflowParticipant {
+		ContextAware {
 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyGroupDto> groupMap;
@@ -60,19 +60,24 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 
 	@Override
 	protected void handleItemClick(Object source) {
-		bundle.put(BundleConstants.SURVEY_GROUP_KEY, groupMap.get(source)
-				.getKeyId());
+		bundle.put(BundleConstants.SURVEY_GROUP_KEY, groupMap.get(source));
 		openPage(SurveyListWidget.class, bundle);
 	}
 
 	@Override
-	public void setBundle(Map<String, Object> bundle) {
+	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
 	}
 
 	@Override
-	public Map<String, Object> getBundle() {
+	public Map<String, Object> getContextBundle() {
 		return bundle;
+	}
+
+	@Override
+	public void persistContext() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
