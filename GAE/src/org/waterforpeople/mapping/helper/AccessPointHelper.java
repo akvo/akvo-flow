@@ -136,9 +136,9 @@ public class AccessPointHelper {
 							if (ap == null) {
 								ap = new AccessPoint();
 								ap.setPointType(AccessPointType.valueOf(type));
-								ap.setCollectionDate(new Date());
 								apMap.put(type, ap);
 							}
+							ap.setCollectionDate(qas.getCollectionDate());
 							setAccessPointField(ap, qas, mapping, apmh);
 
 						} catch (NoSuchFieldException e) {
