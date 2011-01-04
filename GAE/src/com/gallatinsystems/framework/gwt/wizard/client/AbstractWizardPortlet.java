@@ -10,13 +10,14 @@ import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AbstractWizardPortlet extends Portlet implements
-		ClickHandler, PageController {
+		ClickHandler, PageController, CompletionListener {
 
 	private static final String NAV_BUTTON_STYLE = "wizard-navbutton";
 	private static final String BACK_NAV_BUTTON_STYLE = "wizard-back-navbutton";
@@ -36,6 +37,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private WizardWorkflow workflow;
 	private Widget currentPage;
 	private Breadcrumb currentBreadcrumb;
+	private ContextAware pendingPage;
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
 		super(name, true, false, false, width, height);
@@ -56,7 +58,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		breadcrumbWidgets = new HashMap<String, Widget>();
 		workflow = getWizardWorkflow();
 
-		renderWizardPage(workflow.getStartNode(), true,null);
+		renderWizardPage(workflow.getStartNode(), true, null);
 		setContent(contentPane);
 
 	}
@@ -90,24 +92,25 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
-	protected Widget renderWizardPage(WizardNode page, boolean isForward, Map<String,Object> bundle) {
-
+	protected void renderWizardPage(WizardNode page, boolean isForward,
+			Map<String, Object> bundle) {
+		boolean calledSave = false;
 		prePageUnload(page);
 		widgetPanel.clear();
-		if(isForward && currentPage instanceof ContextAware){
-			ContextAware oldPage = (ContextAware)currentPage;
-			oldPage.persistContext();
-			if(currentBreadcrumb != null ){
-				currentBreadcrumb.setBundle(oldPage.getContextBundle());
-			}
+		if (isForward && currentPage instanceof ContextAware) {
+			pendingPage = (ContextAware) currentPage;
+			currentPage = initializeNode(page);
+			pendingPage.persistContext(this);
+			calledSave = true;
 		}
-		currentPage = initializeNode(page);
-		if(bundle != null && currentPage instanceof ContextAware){
-			((ContextAware) currentPage).setContextBundle(bundle);
+		if (!calledSave) {
+			currentPage = initializeNode(page);
+			populateBundle(bundle);
 		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {
-				currentBreadcrumb = addBreadcrumb(page, ((ContextAware) currentPage).getContextBundle());
+				currentBreadcrumb = addBreadcrumb(page,
+						((ContextAware) currentPage).getContextBundle());
 			} else {
 				currentBreadcrumb = addBreadcrumb(page, null);
 			}
@@ -117,10 +120,24 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		widgetPanel.add(currentPage);
 		resetNav(page);
 		onLoadComplete(page);
-		return currentPage;
 	}
 
-	protected Breadcrumb addBreadcrumb(WizardNode node, Map<String, Object> bundle) {
+	private void populateBundle(Map<String, Object> bundle) {
+		if (bundle != null && currentPage instanceof ContextAware) {
+			((ContextAware) currentPage).setContextBundle(bundle);
+		}
+	}
+
+	public void operationComplete(boolean isSuccessful,
+			Map<String, Object> bundle) {
+		if (isSuccessful) {
+			populateBundle(bundle);
+		}
+
+	}
+
+	protected Breadcrumb addBreadcrumb(WizardNode node,
+			Map<String, Object> bundle) {
 		Breadcrumb bc = new Breadcrumb(node.getBreadcrumb(), node.getName(),
 				bundle);
 		if (!breadcrumbList.contains(node.getBreadcrumb())) {
@@ -153,15 +170,15 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	public void onClick(ClickEvent event) {
 		if (forwardNavButtons.contains(event.getSource())) {
 			renderWizardPage(workflow.getWorkflowNode(((Button) event
-					.getSource()).getText()), true,null);
+					.getSource()).getText()), true, null);
 		} else if (backwardNavButtons.contains(event.getSource())) {
 			renderWizardPage(workflow.getWorkflowNode(((Button) event
-					.getSource()).getText()), false,null);
+					.getSource()).getText()), false, null);
 		} else if (event.getSource() instanceof Breadcrumb) {
 			// if it is a breadcrumb
 			renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
-					.getSource()).getTargetNode()), false,((Breadcrumb) event
-							.getSource()).getBundle());
+					.getSource()).getTargetNode()), false,
+					((Breadcrumb) event.getSource()).getBundle());
 		}
 	}
 
@@ -169,7 +186,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		if (clazz != null) {
 			WizardNode node = workflow.findNode(clazz);
 			if (node != null) {
-				Widget w = renderWizardPage(node, true,bundle);
+				renderWizardPage(node, true, bundle);
 			}
 		}
 	}

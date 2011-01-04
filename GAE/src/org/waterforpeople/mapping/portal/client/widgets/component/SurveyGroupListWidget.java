@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -75,9 +76,10 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	public void persistContext() {
-		// TODO Auto-generated method stub
-		
+	public void persistContext(CompletionListener listener) {
+		if (listener != null) {
+			listener.operationComplete(true, getContextBundle());
+		}
 	}
 
 }

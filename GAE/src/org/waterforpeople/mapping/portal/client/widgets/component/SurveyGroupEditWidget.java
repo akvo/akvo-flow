@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -70,7 +71,7 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 	}
 
 
-	public void saveSurveyGroup() {
+	public void saveSurveyGroup(final CompletionListener listener) {
 		if (validateInput()) {
 			if (currentDto == null) {
 				currentDto = new SurveyGroupDto();
@@ -92,13 +93,20 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 									"Could not save survey group",
 									"There was an error while attempting to save the survey group. Please try again. If the problem persists, please contact an administrator");
 							errDia.showRelativeTo(panel);
+							if(listener != null){
+								listener.operationComplete(false,getContextBundle());
+							}
 
 						}
 
 						@Override
 						public void onSuccess(SurveyGroupDto result) {
-							savingDialog.hide();
 							currentDto = result;
+							savingDialog.hide();
+							if(listener != null){
+								listener.operationComplete(true,getContextBundle());
+							}
+
 						}
 					});
 		} else {
@@ -110,9 +118,9 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 	}
 
 	@Override
-	public void persistContext() {
+	public void persistContext(CompletionListener listener) {
 		if (isChanged) {
-			saveSurveyGroup();
+			saveSurveyGroup(listener);
 		}
 	}
 

@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -33,8 +34,9 @@ public class SurveyListWidget extends ListBasedWidget implements
 		surveyMap = new HashMap<Widget, SurveyDto>();
 	}
 
-	public void loadData(String groupId) {
-		surveyService.listSurveysByGroup(groupId,
+	public void loadData(SurveyGroupDto groupDto) {
+		if(groupDto != null){
+		surveyService.listSurveysByGroup(groupDto.getKeyId().toString(),
 				new AsyncCallback<ArrayList<SurveyDto>>() {
 
 					@Override
@@ -57,18 +59,18 @@ public class SurveyListWidget extends ListBasedWidget implements
 						}
 					}
 				});
+		}
 	}
 
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
-		loadData(((SurveyGroupDto) bundle.get(BundleConstants.SURVEY_GROUP_KEY))
-				.getKeyId().toString());
+		loadData((SurveyGroupDto) bundle.get(BundleConstants.SURVEY_GROUP_KEY));
 	}
 
 	@Override
 	protected void handleItemClick(Object source) {
-		bundle.put(BundleConstants.SURVEY_KEY, surveyMap.get(source).getKeyId());
+		bundle.put(BundleConstants.SURVEY_KEY, surveyMap.get(source));
 		openPage(QuestionGroupListWidget.class, bundle);
 	}
 
@@ -78,9 +80,10 @@ public class SurveyListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	public void persistContext() {
-		// TODO Auto-generated method stub
-		
+	public void persistContext(CompletionListener listener) {
+		if (listener != null) {
+			listener.operationComplete(true, getContextBundle());
+		}		
 	}
 
 }
