@@ -509,7 +509,7 @@ public class KMLGenerator {
 			if (ap.getInstitutionName() == null) {
 				context.put("institutionName", "Unknown");
 			} else {
-				context.put("institutionName", "Unknown");
+				context.put("institutionName", ap.getInstitutionName());
 			}
 
 			if (ap.getExtimatedPopulation() != null) {
