@@ -337,7 +337,7 @@ public class AccessPointHelper {
 			if (ap.getPointType() != null && ap.getLatitude() != null
 					&& ap.getLongitude() != null) {
 				apCurrent = apDao.findAccessPoint(ap.getPointType(),
-						ap.getLatitude(), ap.getLongitude());
+						ap.getLatitude(), ap.getLongitude(), ap.getCollectionDate());
 				if (apCurrent != null) {
 					if (!apCurrent.getKey().equals(ap.getKey())) {
 						ap.setKey(apCurrent.getKey());

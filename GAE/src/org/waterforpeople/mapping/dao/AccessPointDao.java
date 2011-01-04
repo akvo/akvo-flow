@@ -161,7 +161,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 
 	@SuppressWarnings("unchecked")
 	public AccessPoint findAccessPoint(AccessPoint.AccessPointType type,
-			Double lat, Double lon) {
+			Double lat, Double lon, Date collectionDate) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		StringBuilder filterString = new StringBuilder();
@@ -175,6 +175,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				lat, paramMap);
 		appendNonNullParam("longitude", filterString, paramString, "Double",
 				lon, paramMap);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				collectionDate, paramMap, EQ_OP);
+		query.declareImports("import java.util.Date");
 
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
