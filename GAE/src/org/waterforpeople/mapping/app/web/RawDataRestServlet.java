@@ -68,6 +68,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				if (instance != null) {
 					instance.setLastUpdateDateTime(new Date());
 					instance.setSubmitterName(importReq.getSubmitter());
+					instance.setSurveyId(importReq.getSurveyId());
 					instanceDao.save(instance);
 				}
 			} else {
@@ -83,6 +84,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				} else {
 					instance.setLastUpdateDateTime(new Date());
 					instance.setSubmitterName(importReq.getSubmitter());
+					instance.setSurveyId(importReq.getSurveyId());
 					instanceDao.save(instance);
 				}
 			}
