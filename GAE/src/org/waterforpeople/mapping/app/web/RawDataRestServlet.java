@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,26 +51,38 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				qasDto.setSurveyInstanceId(importReq.getSurveyInstanceId());
 				qasDto.setValue(item.getValue()[0]);
 				qasDto.setType(item.getValue()[1]);
-				qasDto.setSurveyId(importReq.getSurveyId());				
+				qasDto.setSurveyId(importReq.getSurveyId());
+				qasDto.setCollectionDate(importReq.getCollectionDate());
 				dtoList.add(qasDto);
 			}
 			sisi.updateQuestions(dtoList);
 		} else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				.equals(importReq.getAction())) {
+			SurveyInstance instance = instanceDao.getByKey(importReq
+					.getSurveyInstanceId());
 			List<QuestionAnswerStore> oldAnswers = instanceDao
 					.listQuestionAnswerStore(importReq.getSurveyInstanceId(),
 							null);
 			if (oldAnswers != null && oldAnswers.size() > 0) {
 				instanceDao.delete(oldAnswers);
+				if (instance != null) {
+					instance.setLastUpdateDateTime(new Date());
+					instance.setSubmitterName(importReq.getSubmitter());
+					instanceDao.save(instance);
+				}
 			} else {
-				SurveyInstance instance = instanceDao.getByKey(importReq
-						.getSurveyId());
 				if (instance == null) {
 					instance = new SurveyInstance();
-					instance.setKey(KeyFactory.createKey(SurveyInstance.class
-							.getSimpleName(), importReq.getSurveyInstanceId()));
+					instance.setKey(KeyFactory.createKey(
+							SurveyInstance.class.getSimpleName(),
+							importReq.getSurveyInstanceId()));
 					instance.setSurveyId(importReq.getSurveyId());
 					instance.setCollectionDate(importReq.getCollectionDate());
+					instance.setSubmitterName(importReq.getSubmitter());
+					instanceDao.save(instance);
+				} else {
+					instance.setLastUpdateDateTime(new Date());
+					instance.setSubmitterName(importReq.getSubmitter());
 					instanceDao.save(instance);
 				}
 			}

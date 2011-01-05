@@ -21,6 +21,7 @@ public class RawDataImportRequest extends RestRequest {
 	public static final String COLLECTION_DATE_PARAM = "collectionDate";
 	public static final String QUESTION_ID_PARAM = "questionId";
 	public static final String SURVEY_ID_PARAM = "surveyId";
+	public static final String SUBMITTER_PARAM = "submitter";
 
 	public static final String SAVE_SURVEY_INSTANCE_ACTION = "saveSurveyInstance";
 	public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
@@ -28,6 +29,7 @@ public class RawDataImportRequest extends RestRequest {
 	private Long surveyId;
 	private Long surveyInstanceId = null;
 	private Date collectionDate = null;
+	private String submitter = null;
 	private HashMap<Long, String[]> questionAnswerMap = null;
 	private String type;
 
@@ -136,6 +138,16 @@ public class RawDataImportRequest extends RestRequest {
 			collectionDate = IN_FMT.parse(req.getParameter(
 					COLLECTION_DATE_PARAM).trim());
 		}
+		if(req.getParameter(SUBMITTER_PARAM)!=null){
+			setSubmitter(req.getParameter(SUBMITTER_PARAM));
+		}
+	}
+	public void setSubmitter(String submitter) {
+		this.submitter = submitter;
+	}
+
+	public String getSubmitter() {
+		return submitter;
 	}
 
 }

@@ -127,7 +127,7 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 			okButton.addActionListener(this);
 			selectFileButton.addActionListener(this);
 			setSize(300, 200);
-			setTitle("Enter Backout Parameters");
+			setTitle("Choose Raw Data File");
 			setModal(true);
 			setVisible(true);
 		}
@@ -136,9 +136,12 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 		private SurveyReplicationImporter sri = null;
 
 		private void processFile() {
+			okButton.setEnabled(false);
 			RawDataSpreadsheetImporter rdsi = new RawDataSpreadsheetImporter();
 			rdsi.setSurveyId(new Long(surveyId));
 			rdsi.executeImport(file, serverBase);
+			status.setText("Completed Import of Raw Data.");
+			okButton.setEnabled(true);
 		}
 
 		public void actionPerformed(ActionEvent e) {

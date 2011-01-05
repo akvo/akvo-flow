@@ -70,12 +70,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							dateString = cell.getStringCellValue();
+							sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
+										+ "="
+										+ URLEncoder
+												.encode(dateString, "UTF-8")+"&");
 						}
 					}
 					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							submitter = cell.getStringCellValue();
-							//sb.append("submitter=" + URLEncoder.encode(submitter,"UTF-8") + "&");
+							sb.append("submitter="
+									+ URLEncoder.encode(submitter, "UTF-8")
+									+ "&");
 						}
 					}
 					String value = null;
@@ -143,7 +149,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 										+ RawDataImportRequest.COLLECTION_DATE_PARAM
 										+ "="
 										+ URLEncoder
-												.encode(dateString, "UTF-8"));
+												.encode(dateString, "UTF-8")
+										+ "&"
+										+ RawDataImportRequest.SUBMITTER_PARAM
+										+ "="
+										+ URLEncoder.encode(submitter, "UTF-8"));
 						System.out.print(i++ + " : ");
 						invokeUrl(serverBase, sb.toString());
 					}
