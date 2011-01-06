@@ -21,42 +21,42 @@ public class MapSummarizer implements DataSummarizer {
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {
-		if (key != null) {
-			BaseDAO<AccessPoint> accessPointDao = new BaseDAO<AccessPoint>(
-					AccessPoint.class);
-			AccessPoint ap = accessPointDao.getByKey(Long.parseLong(key));
-			if (ap != null) {
-				/******
-				 * 1. Load Placemark VM 2. Generate placemark text 3. Save to
-				 * Map Fragment Table
-				 */
-				KMLGenerator kmlGen = new KMLGenerator();
-				try {
-					String placemark = kmlGen.bindPlacemark(ap,
-							"PlacemarkTabs.vm",
-							KMLGenerator.GOOGLE_EARTH_DISPLAY);
-					if (placemark != null) {
-						MapFragment mf = new MapFragment();
-						mf.setFragmentValue(new Text(placemark));
-						mf
-								.setFragmentType(FRAGMENTTYPE.COUNTRY_INDIVIDUAL_PLACEMARK);
-						mf.setCreatedDateTime(new Date());
-						mf.setCountryCode(ap.getCountryCode());
-						mf.setTechnologyType(ap.getTypeTechnologyString());
-						mf.setPointType(ap.getPointType());
-						BaseDAO<MapFragment> mapFragmentDao = new BaseDAO<MapFragment>(
-								MapFragment.class);
-						mapFragmentDao.save(mf);
-					} else {
-						log.info("Could not save MapFragment for placemark: "
-								+ ap.toString());
-					}
-				} catch (Exception e) {
-					log.log(Level.SEVERE,
-							"Could not perform placemark summarizatoin", e);
-				}
-			}
-		}
+//		if (key != null) {
+//			BaseDAO<AccessPoint> accessPointDao = new BaseDAO<AccessPoint>(
+//					AccessPoint.class);
+//			AccessPoint ap = accessPointDao.getByKey(Long.parseLong(key));
+//			if (ap != null) {
+//				/******
+//				 * 1. Load Placemark VM 2. Generate placemark text 3. Save to
+//				 * Map Fragment Table
+//				 */
+//				KMLGenerator kmlGen = new KMLGenerator();
+//				try {
+//					String placemark = kmlGen.bindPlacemark(ap,
+//							"PlacemarkTabs.vm",
+//							KMLGenerator.GOOGLE_EARTH_DISPLAY);
+//					if (placemark != null) {
+//						MapFragment mf = new MapFragment();
+//						mf.setFragmentValue(new Text(placemark));
+//						mf
+//								.setFragmentType(FRAGMENTTYPE.COUNTRY_INDIVIDUAL_PLACEMARK);
+//						mf.setCreatedDateTime(new Date());
+//						mf.setCountryCode(ap.getCountryCode());
+//						mf.setTechnologyType(ap.getTypeTechnologyString());
+//						mf.setPointType(ap.getPointType());
+//						BaseDAO<MapFragment> mapFragmentDao = new BaseDAO<MapFragment>(
+//								MapFragment.class);
+//						mapFragmentDao.save(mf);
+//					} else {
+//						log.info("Could not save MapFragment for placemark: "
+//								+ ap.toString());
+//					}
+//				} catch (Exception e) {
+//					log.log(Level.SEVERE,
+//							"Could not perform placemark summarizatoin", e);
+//				}
+//			}
+//		}
 		return true;
 	}
 

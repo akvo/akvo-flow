@@ -123,6 +123,16 @@ public class AccessPointHelper {
 						// default the list to be access point if nothing is
 						// specified (for backward compatibility)
 						types.add(AccessPointType.WATER_POINT.toString());
+					} else {
+						if (types.contains(AccessPointType.PUBLIC_INSTITUTION
+								.toString())
+								&& (types.contains(AccessPointType.HEALTH_POSTS
+										.toString()) || types
+										.contains(AccessPointType.SCHOOL
+												.toString()))) {
+							types.remove(AccessPointType.PUBLIC_INSTITUTION
+									.toString());
+						}
 					}
 					for (String type : types) {
 						AccessPointMappingHistory apmh = new AccessPointMappingHistory();
@@ -136,6 +146,11 @@ public class AccessPointHelper {
 							if (ap == null) {
 								ap = new AccessPoint();
 								ap.setPointType(AccessPointType.valueOf(type));
+								// if(AccessPointType.PUBLIC_INSTITUTION.toString().equals(type)){
+								// //get the pointType value from the survey to
+								// properly set it
+								//
+								// }
 								apMap.put(type, ap);
 							}
 							ap.setCollectionDate(qas.getCollectionDate());
@@ -157,7 +172,7 @@ public class AccessPointHelper {
 
 						for (Question q : questionList) {
 							if (q.getKey().getId() == Long.parseLong(qas
-									.getQuestionID())){
+									.getQuestionID())) {
 								apmh.setQuestionText(q.getText());
 								break;
 							}
@@ -203,7 +218,8 @@ public class AccessPointHelper {
 			apmh.setSurveyResponse(geoC.getLatitude() + "|"
 					+ geoC.getLongitude() + "|" + geoC.getAltitude());
 			apmh.setQuestionAnswerType("GEO");
-			apmh.setAccessPointValue(ap.getLatitude() + "|" + ap.getLongitude() + "|"+ ap.getAltitude());
+			apmh.setAccessPointValue(ap.getLatitude() + "|" + ap.getLongitude()
+					+ "|" + ap.getAltitude());
 			apmh.setAccessPointField("Latitude,Longitude,Altitude");
 		} else {
 			apmh.setSurveyResponse(qas.getValue());
@@ -214,13 +230,23 @@ public class AccessPointHelper {
 				f.setAccessible(true);
 			}
 			apmh.setAccessPointField(f.getName());
-			//TODO: Hack.  In the QAS the type is PHOTO, but we were looking for image this is why we were getting /sdcard I think.  
-			if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())|| qas.getType().equals("PHOTO")) {
+			// TODO: Hack. In the QAS the type is PHOTO, but we were looking for
+			// image this is why we were getting /sdcard I think.
+			if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())
+					|| qas.getType().equals("PHOTO")) {
 				String[] photoParts = qas.getValue().split("/");
 				String newURL = photo_url_root + photoParts[2];
 				f.set(ap, newURL);
 				apmh.setQuestionAnswerType("PHOTO");
 				apmh.setAccessPointValue(ap.getPhotoURL());
+			} else if (mapping.getAttributeName().equals("pointType")) {
+				if(qas.getValue().contains("Health")){
+					f.set(ap, AccessPointType.HEALTH_POSTS);
+				}else{
+				qas.setValue(qas.getValue().replace(" ", "_"));
+
+				f.set(ap, AccessPointType.valueOf(qas.getValue().toUpperCase()));
+				}
 			} else {
 				String stringVal = qas.getValue();
 				if (stringVal != null && stringVal.trim().length() > 0) {
@@ -253,7 +279,13 @@ public class AccessPointHelper {
 							}
 							Long val = Long.parseLong(temp);
 							f.set(ap, val);
-							logger.info("Setting "+f.getName()+" to "+val+" for ap: "+(ap.getKey()!= null?ap.getKey().getId():"UNSET"));
+							logger.info("Setting "
+									+ f.getName()
+									+ " to "
+									+ val
+									+ " for ap: "
+									+ (ap.getKey() != null ? ap.getKey()
+											.getId() : "UNSET"));
 							apmh.setQuestionAnswerType("LONG");
 							apmh.setAccessPointValue(f.get(ap).toString());
 						} catch (Exception e) {
@@ -337,7 +369,8 @@ public class AccessPointHelper {
 			if (ap.getPointType() != null && ap.getLatitude() != null
 					&& ap.getLongitude() != null) {
 				apCurrent = apDao.findAccessPoint(ap.getPointType(),
-						ap.getLatitude(), ap.getLongitude(), ap.getCollectionDate());
+						ap.getLatitude(), ap.getLongitude(),
+						ap.getCollectionDate());
 				if (apCurrent != null) {
 					if (!apCurrent.getKey().equals(ap.getKey())) {
 						ap.setKey(apCurrent.getKey());
@@ -351,14 +384,13 @@ public class AccessPointHelper {
 				}
 				if (apCurrent != null) {
 					oldValues = formChangeRecordString(apCurrent);
-					if(apCurrent != null){
+					if (apCurrent != null) {
 						ap.setKey(apCurrent.getKey());
 						apCurrent = ap;
 					}
 
 					// TODO: Hack since the fileUrl keeps getting set to
 					// incorrect value
-					
 
 					ap = apDao.save(apCurrent);
 

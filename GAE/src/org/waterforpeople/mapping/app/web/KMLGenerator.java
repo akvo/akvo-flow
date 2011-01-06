@@ -462,9 +462,9 @@ public class KMLGenerator {
 				context.put("communityCode", "Unknown" + new Date());
 
 			if(ap.getWaterForPeopleProjectFlag()!=null){
-				context.put("waterFoePeopleProject", ap.getWaterForPeopleProjectFlag());
+				context.put("waterForPeopleProject", encodeBooleanDisplay(ap.getWaterForPeopleProjectFlag()));
 			}else{
-				context.put("waterFoePeopleProject", "null");
+				context.put("waterForPeopleProject", "null");
 			}
 			
 			if(ap.getCurrentProblem()!=null){
@@ -474,9 +474,9 @@ public class KMLGenerator {
 			}
 			
 			if(ap.getWaterForPeopleRole()!=null){
-				context.put("waterFoePeopleRole", ap.getWaterForPeopleRole());
+				context.put("waterForPeopleRole", ap.getWaterForPeopleRole());
 			}else{
-				context.put("waterFoePeopleRole", "null");
+				context.put("waterForPeopleRole", "null");
 			}
 			
 			if (ap.getPhotoURL() != null && ap.getPhotoURL().trim() != "")

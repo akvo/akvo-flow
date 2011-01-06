@@ -219,7 +219,6 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		} else if (event.getSource() == addQuestionGroupButton) {
 			loadQuestionGroupDetail(null);
 		} else if (event.getSource() == deleteQuestionGroupButton) {
-
 		} else if (event.getSource() == addQuestionButton) {
 			loadQuestionDetails(null);
 		} else if (event.getSource() == deleteQuestionButton) {
@@ -298,7 +297,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		tip.setSize("30em", "5em");
 		TextBox validationRule = new TextBox();
 		ListBox lbOrder = new ListBox();
-		for (Integer i = 0; i < 100; i++) {
+		for (Integer i = 1; i < 100; i++) {
 			lbOrder.addItem(i.toString());
 		}
 
@@ -308,6 +307,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		if (item != null) {
 			if (item.getOrder() != null) {
 				lbOrder.setItemSelected(item.getOrder(), true);
+			}else{
+				Integer order = surveyTree.getCurrentlySelectedItem().getChildCount();
+				lbOrder.setSelectedIndex(order+1);
 			}
 			questionId.setText(item.getKeyId().toString());
 			if (item.getText() != null)
@@ -321,6 +323,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					mandatoryQuestion.setValue(item.getMandatoryFlag());
 				else
 					mandatoryQuestion.setValue(item.getMandatoryFlag());
+		}else{
+			Integer order = surveyTree.getCurrentlySelectedItem().getChildCount();
+			lbOrder.setSelectedIndex(order);
 		}
 		ListBox questionTypeLB = new ListBox();
 		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO, STRENGTH
@@ -475,8 +480,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 							(QuestionDto) currentSelection,
 							SurveyManagerPortlet.this);
 					dia.show();
-				}else{
-					//Likely have the QG selected because this is a new question need to figure out how to get QuestionDto
+				} else {
+					// Likely have the QG selected because this is a new
+					// question need to figure out how to get QuestionDto
 					Window.alert("Please save question first then select question before pressing edit translations buttons");
 				}
 			}
@@ -1216,10 +1222,14 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			}
 		}
 		if (item == null) {
-
-			int countOfQG = surveyTree.getCurrentlySelectedItem()
-					.getChildCount();
-			order.setSelectedIndex(countOfQG);
+			if (surveyTree.getCurrentlySelectedItem() != null) {
+				int countOfQG = surveyTree.getCurrentlySelectedItem()
+						.getChildCount();
+				order.setSelectedIndex(countOfQG);
+			}else{
+				//find currently selected item
+				
+			}
 		}
 
 		Button saveQuestionGroupButton = new Button("Save Question Group");
