@@ -54,7 +54,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						String[] parts = cell.getStringCellValue().split("\\|");
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
 						if (parts.length > 1) {
-							if ("lat/lon".equalsIgnoreCase(parts[1].trim())) {
+							if ("lat/lon".equalsIgnoreCase(parts[1].trim())
+									|| "location".equalsIgnoreCase(parts[1]
+											.trim())) {
 								typeMap.put(parts[0], "GEO");
 							}
 						}
@@ -71,9 +73,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							dateString = cell.getStringCellValue();
 							sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
-										+ "="
-										+ URLEncoder
-												.encode(dateString, "UTF-8")+"&");
+									+ "="
+									+ URLEncoder.encode(dateString, "UTF-8")
+									+ "&");
 						}
 					}
 					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
