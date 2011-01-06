@@ -68,9 +68,7 @@ public class QuestionDao extends BaseDAO<Question> {
 		return listByProperty("surveyId", surveyId, "Long");
 	}
 
-	
-
-	public void delete(Question question) throws IllegalDeletionException {		
+	public void delete(Question question) throws IllegalDeletionException {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
 			for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
@@ -83,7 +81,7 @@ public class QuestionDao extends BaseDAO<Question> {
 					Translation.ParentType.QUESTION_TEXT);
 			// TODO:Implement help media delete
 			Question q = getByKey(question.getKey());
-			if(q != null){
+			if (q != null) {
 				super.delete(q);
 			}
 		} else {
@@ -116,19 +114,19 @@ public class QuestionDao extends BaseDAO<Question> {
 					}
 				}
 				save(opt);
-				if(opt.getTranslationMap()!=null){
-					for(Translation t: opt.getTranslationMap().values())
+				if (opt.getTranslationMap() != null) {
+					for (Translation t : opt.getTranslationMap().values())
 						save(t);
 				}
 			}
 		}
-		if(question.getTranslationMap()!=null){
-			for(Translation t: question.getTranslationMap().values()){
+		if (question.getTranslationMap() != null) {
+			for (Translation t : question.getTranslationMap().values()) {
 				save(t);
 			}
-			
+
 		}
-		
+
 		if (question.getQuestionHelpMediaMap() != null) {
 			for (QuestionHelpMedia help : question.getQuestionHelpMediaMap()
 					.values()) {
@@ -178,7 +176,9 @@ public class QuestionDao extends BaseDAO<Question> {
 		if (qList != null) {
 			int i = 1;
 			for (Question q : qList) {
-				map.put(q.getOrder() != null ? q.getOrder() : i, q);
+				if (q.getOrder() == null)
+					q.setOrder(qList.size() + 1);
+				map.put(q.getOrder(), q);
 				i++;
 				if (needDetails) {
 					q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q
@@ -216,27 +216,30 @@ public class QuestionDao extends BaseDAO<Question> {
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public Question getByQuestionGroupId(Long questionGroupId, String questionText) {
+	public Question getByQuestionGroupId(Long questionGroupId,
+			String questionText) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
 		query.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
 		query.declareParameters("Long questionGroupIdParam, String questionTextParam");
-		List<Question> results = (List<Question>) query.execute(questionGroupId,questionText);
+		List<Question> results = (List<Question>) query.execute(
+				questionGroupId, questionText);
 		if (results != null && results.size() > 0) {
 			return results.get(0);
 		} else {
 			return null;
 		}
 	}
-	
-	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order){
+
+	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
 		query.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
 		query.declareParameters("Long questionGroupIdParam, Integer orderParam");
-		List<Question> results = (List<Question>) query.execute(questionGroupId,order);
+		List<Question> results = (List<Question>) query.execute(
+				questionGroupId, order);
 		if (results != null && results.size() > 0) {
 			return results.get(0);
 		} else {
@@ -244,4 +247,3 @@ public class QuestionDao extends BaseDAO<Question> {
 		}
 	}
 }
-	

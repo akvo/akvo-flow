@@ -306,10 +306,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		if (item != null) {
 			if (item.getOrder() != null) {
-				lbOrder.setItemSelected(item.getOrder(), true);
+				lbOrder.setItemSelected(item.getOrder()-1, true);
 			}else{
 				Integer order = surveyTree.getCurrentlySelectedItem().getChildCount();
-				lbOrder.setSelectedIndex(order+1);
+				lbOrder.setSelectedIndex(order);
 			}
 			questionId.setText(item.getKeyId().toString());
 			if (item.getText() != null)
@@ -847,8 +847,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			value.setText(questionText.getText().trim());
 		}
 
-		if (lbOrder.getSelectedIndex() > 0) {
-			value.setOrder(lbOrder.getSelectedIndex());
+		if (lbOrder.getSelectedIndex() > -1) {
+			value.setOrder(Integer.parseInt(lbOrder.getItemText(lbOrder.getSelectedIndex())));
 		}
 
 		if (tip.getText().length() > 0) {
