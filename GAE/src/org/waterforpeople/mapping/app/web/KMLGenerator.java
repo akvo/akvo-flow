@@ -461,6 +461,24 @@ public class KMLGenerator {
 			else
 				context.put("communityCode", "Unknown" + new Date());
 
+			if(ap.getWaterForPeopleProjectFlag()!=null){
+				context.put("waterFoePeopleProject", ap.getWaterForPeopleProjectFlag());
+			}else{
+				context.put("waterFoePeopleProject", "null");
+			}
+			
+			if(ap.getCurrentProblem()!=null){
+				context.put("currentProblem", ap.getCurrentProblem());
+			}else{
+				context.put("currentProblem", ap.getCurrentProblem());
+			}
+			
+			if(ap.getWaterForPeopleRole()!=null){
+				context.put("waterFoePeopleRole", ap.getWaterForPeopleRole());
+			}else{
+				context.put("waterFoePeopleRole", "null");
+			}
+			
 			if (ap.getPhotoURL() != null && ap.getPhotoURL().trim() != "")
 				context.put("photoUrl", ap.getPhotoURL());
 			else

@@ -245,7 +245,9 @@ a {
 							<div class="QandA"><div class="question">Water Quality Meets Government Standards</div><div class="answer">  #if($meetGovtQualityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQualityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div> </div>
 							<div class="QandA"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQuantityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div>  </div>
 							<div class="QandA"><div class="question">Tariff/User Fee</div><div class="answer"> $costPer<br></div> </div>
-							<div class="QandA"><div class="question">Farthest Household from the Water Point is Within 500 Meters</div><div class="answer"> #if($farthestHouseholdfromWaterPoint=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" />#elseif($farthestHouseholdfromWaterPoint=="No") <img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div> </div>					
+							#if($currentProblem!="null")
+								<div class="QandA"><div class="question">Current Problem</div><div class="answer"> $waterForPeopleProject<br></div></div>
+							#end					
 						#else
 							<div class="QandA"><div class="question">Water System Status</div><div class="answer">$waterSystemStatus<br></div></div>				
 		    				<div class="QandA"><div class="question">Public Institution Name</div><div class="answer"> $institutionName<br></div></div>
@@ -262,6 +264,9 @@ a {
 							<div class="QandA"><div class="question">Quantity of Water Meets Government Standards</div><div class="answer"> #if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQuantityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end<br></div>  </div>
 							<div class="QandA"><div class="question">Primary Sanitation Technology</div><div class="answer"> $secondaryTypeTechnology<br></div></div>
 					#end 
+					#if($waterFoePeopleProject!="null")
+						<div class="QandA"><div class="question">Water For People Supported Project</div><div class="answer"> $waterForPeopleProject<br></div></div>
+					#end
       </div>
     <div id="rightContent">
         <div class="photo"><img width="175" height="150" src= "$photoUrl">
