@@ -119,6 +119,18 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
 
+		} else if ("clearSurveyInstanceQAS".equals(action)) {
+			QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+			for (QuestionAnswerStore qas : qasDao.list("all")) {
+				qasDao.delete(qas);
+			}
+			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+			for (SurveyInstance si : siDao.list("all")) {
+				siDao.delete(si);
+			}
+			AccessPointDao apDao = new AccessPointDao();
+			for (AccessPoint ap : apDao.list("all"))
+				apDao.delete(ap);
 		} else if ("SurveyInstance".equals(action)) {
 			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 			List<SurveyInstance> siList = siDao.listSurveyInstanceBySurveyId(
@@ -210,7 +222,8 @@ public class TestHarnessServlet extends HttpServlet {
 			DeviceFilesServiceImpl dfsi = new DeviceFilesServiceImpl();
 			int i = 0;
 			try {
-				resp.getWriter().println("Found " + dfSet.size() + " distinct files to process");
+				resp.getWriter().println(
+						"Found " + dfSet.size() + " distinct files to process");
 				for (String s : dfSet) {
 					dfsi.reprocessDeviceFile(s);
 
