@@ -306,9 +306,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		if (item != null) {
 			if (item.getOrder() != null) {
-				lbOrder.setItemSelected(item.getOrder()-1, true);
-			}else{
-				Integer order = surveyTree.getCurrentlySelectedItem().getChildCount();
+				lbOrder.setItemSelected(item.getOrder() - 1, true);
+			} else {
+				Integer order = surveyTree.getCurrentlySelectedItem()
+						.getChildCount();
 				lbOrder.setSelectedIndex(order);
 			}
 			questionId.setText(item.getKeyId().toString());
@@ -323,8 +324,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					mandatoryQuestion.setValue(item.getMandatoryFlag());
 				else
 					mandatoryQuestion.setValue(item.getMandatoryFlag());
-		}else{
-			Integer order = surveyTree.getCurrentlySelectedItem().getChildCount();
+		} else {
+			Integer order = surveyTree.getCurrentlySelectedItem()
+					.getChildCount();
 			lbOrder.setSelectedIndex(order);
 		}
 		ListBox questionTypeLB = new ListBox();
@@ -431,10 +433,38 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onClick(ClickEvent event) {
 
 				try {
-					saveQuestion();
+					String message = validateQuestion();
+					if (message == null) {
+						saveQuestion();
+					} else {
+						Window.alert("Cannot save question. Issues: " + message);
+					}
 				} catch (Exception e) {
 					Window.alert("Could not save question no Question Group was selected");
 				}
+			}
+
+			private String validateQuestion() {
+				String message = null;
+				QuestionDto qDto = getQuestionDto();
+				if (qDto.getText() == null)
+					message = "Must provide question text.\n";
+				if (qDto.getType().equals(QuestionType.OPTION)) {
+					ArrayList<QuestionOptionDto> qoList = qDto
+							.getOptionContainerDto().getOptionsList();
+					if (qoList == null) {
+						message = message
+								+ " You must specify question options for this type of question.\n";
+					}else
+					{
+						for(QuestionOptionDto qoDto : qoList){
+							if(qoDto.getText()==null|| qoDto.getText().trim().equals("")){
+								message = message + "You must specify a text value for the question option.\n";
+							}
+						}
+					}
+				}
+				return message;
 			}
 
 		});
@@ -848,7 +878,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 
 		if (lbOrder.getSelectedIndex() > -1) {
-			value.setOrder(Integer.parseInt(lbOrder.getItemText(lbOrder.getSelectedIndex())));
+			value.setOrder(Integer.parseInt(lbOrder.getItemText(lbOrder
+					.getSelectedIndex())));
 		}
 
 		if (tip.getText().length() > 0) {
@@ -998,7 +1029,10 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				saveSurveyGroup();
+				if (validateSurveyGroup())
+					saveSurveyGroup();
+				else
+					Window.alert("Cannot Save Survey Group. You must fill provide a Survey Code");
 			}
 
 		});
@@ -1011,6 +1045,14 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		});
 		removeAllWidgetsLoadThisWidget(surveyGroupDetail);
+	}
+
+	private Boolean validateSurveyGroup() {
+		SurveyGroupDto surveyGroupDto = getSurveyGroupDto();
+		if (surveyGroupDto.getCode() == null) {
+			return false;
+		}
+		return true;
 	}
 
 	private void loadSurveyDetail(final SurveyDto item) {
@@ -1096,11 +1138,23 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			public void onClick(ClickEvent event) {
 
 				try {
-					saveSurvey();
+					if (validateSurvey()) {
+						saveSurvey();
+					} else {
+						Window.alert("Cannot Save Survey.  You must provide a survey name");
+					}
 				} catch (Exception e) {
 					Window.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
+			}
+
+			private boolean validateSurvey() {
+				SurveyDto surveyDto = getSurveyDto();
+				if (surveyDto.getCode() == null) {
+					return false;
+				}
+				return true;
 			}
 
 		});
@@ -1226,9 +1280,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				int countOfQG = surveyTree.getCurrentlySelectedItem()
 						.getChildCount();
 				order.setSelectedIndex(countOfQG);
-			}else{
-				//find currently selected item
-				
+			} else {
+				// find currently selected item
+
 			}
 		}
 
@@ -1250,10 +1304,20 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onClick(ClickEvent event) {
 				try {
-					saveQuestionGroup();
+					if (validateQuestionGroup())
+						saveQuestionGroup();
+					else
+						Window.alert("Cannot save Question Group.  You must provide a name.");
 				} catch (Exception ex) {
 					Window.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
+			}
+
+			private boolean validateQuestionGroup() {
+				QuestionGroupDto qgDto = getQuestionGroupDto();
+				if (qgDto.getCode() == null)
+					return false;
+				return true;
 			}
 
 		});
