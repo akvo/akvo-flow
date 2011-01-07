@@ -37,7 +37,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	@SuppressWarnings("unchecked")
 	public List<Question> listQuestionByType(Long surveyId, Question.Type type) {
 		if (surveyId == null) {
-			return listByProperty("type", type.toString(), "String");
+			return listByProperty("type", type.toString(), "String", "order", "asc");
 		} else {
 			PersistenceManager pm = PersistenceFilter.getManager();
 			javax.jdo.Query query = pm.newQuery(Question.class);
@@ -66,7 +66,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	 * @return
 	 */
 	public List<Question> listQuestionsBySurvey(Long surveyId) {
-		return listByProperty("surveyId", surveyId, "Long");
+		return listByProperty("surveyId", surveyId, "Long","order","asc");
 	}
 
 	public void delete(Question question) throws IllegalDeletionException {
