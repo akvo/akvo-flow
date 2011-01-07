@@ -104,6 +104,15 @@ public class QuestionDao extends BaseDAO<Question> {
 			}
 		}
 		question = save(question);
+		//delete existing options
+		
+		QuestionOptionDao qoDao = new QuestionOptionDao();
+		TreeMap<Integer,QuestionOption> qoMap = qoDao.listOptionByQuestion(question.getKey().getId());
+		if(qoMap!=null){
+			for(Map.Entry<Integer, QuestionOption> entry:qoMap.entrySet()){
+				qoDao.delete(entry.getValue());
+			}
+		}
 		if (question.getQuestionOptionMap() != null) {
 			for (QuestionOption opt : question.getQuestionOptionMap().values()) {
 				opt.setQuestionId(question.getKey().getId());

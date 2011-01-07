@@ -455,11 +455,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					if (qoList == null) {
 						message = message
 								+ " You must specify question options for this type of question.\n";
-					}else
-					{
-						for(QuestionOptionDto qoDto : qoList){
-							if(qoDto.getText()==null|| qoDto.getText().trim().equals("")){
-								message = message + "You must specify a text value for the question option.\n";
+					} else {
+						for (QuestionOptionDto qoDto : qoList) {
+							if (qoDto.getText() == null
+									|| qoDto.getText().trim().equals("")) {
+								message = message
+										+ "You must specify a text value for the question option.\n";
 							}
 						}
 					}
@@ -771,7 +772,7 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 		TextBox optionText = new TextBox();
 		optionText.setWidth("30em");
-		TextBox optionId = new TextBox();
+		final TextBox optionId = new TextBox();
 		optionId.setVisible(false);
 		if (item != null) {
 			if (item.getKeyId() != null) {
@@ -793,6 +794,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 		// if (row >= 2)
 		// row = row - 1;
+		Button deleteOptionButton = new Button("Delete Option");
+		deleteOptionButton.setTitle(row.toString());
 
 		questionOptionDetail.insertRow(row);
 
@@ -801,6 +804,31 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		questionOptionDetail.setWidget(row, 2, new Label("Option Text"));
 		questionOptionDetail.setWidget(row, 3, optionText);
 		questionOptionDetail.setWidget(row, 4, optionId);
+		questionOptionDetail.setWidget(row, 5, deleteOptionButton);
+
+		deleteOptionButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Button b = (Button) event.getSource();
+				Integer row = Integer.parseInt(b.getTitle());
+				// ft.get
+				Long qoId = null;
+				if (optionId.getText() != null
+						&& !optionId.getText().trim().equals("")) {
+					qoId = Long.parseLong(optionId.getText());
+				}
+				questionOptionDetail.removeRow(row);
+				
+				for (Integer i = row; i < questionOptionDetail.getRowCount()-1; i++) {
+					ListBox lbOptOrder = (ListBox) questionOptionDetail.getWidget(i, 1);
+					lbOptOrder.setSelectedIndex(i);
+					Button bDelete = (Button)questionOptionDetail.getWidget(i,5);
+					bDelete.setTitle(i.toString());
+				}
+			}
+
+		});
 
 	}
 
