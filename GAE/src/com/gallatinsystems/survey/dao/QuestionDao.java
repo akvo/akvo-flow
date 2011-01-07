@@ -43,6 +43,7 @@ public class QuestionDao extends BaseDAO<Question> {
 			javax.jdo.Query query = pm.newQuery(Question.class);
 			query.setFilter("surveyId == surveyIdParam && type == typeParam");
 			query.declareParameters("Long surveyIdParam, String typeParam");
+			query.setOrdering("order asc");
 			return (List<Question>) query.execute(surveyId, type);
 		}
 	}
@@ -180,7 +181,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
 			Long questionGroupId, boolean needDetails) {
 		List<Question> qList = listByProperty("questionGroupId",
-				questionGroupId, "Long");
+				questionGroupId, "Long","order","asc");
 		TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
 		if (qList != null) {
 			int i = 1;
