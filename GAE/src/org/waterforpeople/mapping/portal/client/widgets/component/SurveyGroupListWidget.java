@@ -14,6 +14,7 @@ import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,6 +53,9 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 										.getDisplayName());
 								dataGrid.setWidget(i, 0, l);
 								groupMap.put(l, result.get(i));
+								Button b = createButton(ClickMode.EDIT, "Edit");
+								groupMap.put(b, result.get(i));
+								dataGrid.setWidget(i, 1, b);
 							}
 							addWidget(dataGrid);
 						}
@@ -60,9 +64,13 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	protected void handleItemClick(Object source) {
+	protected void handleItemClick(Object source, ClickMode mode) {
 		bundle.put(BundleConstants.SURVEY_GROUP_KEY, groupMap.get(source));
-		openPage(SurveyListWidget.class, bundle);
+		if (ClickMode.OPEN == mode) {
+			openPage(SurveyListWidget.class, bundle);
+		} else if (ClickMode.EDIT == mode) {
+			openPage(SurveyGroupEditWidget.class, bundle);
+		}
 	}
 
 	@Override

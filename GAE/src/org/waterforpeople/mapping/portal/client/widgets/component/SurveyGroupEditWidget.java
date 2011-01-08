@@ -117,6 +117,8 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 	public void persistContext(CompletionListener listener) {
 		if (isChanged) {
 			saveSurveyGroup(listener);
+		}else{
+			listener.operationComplete(true, getContextBundle());
 		}
 	}
 

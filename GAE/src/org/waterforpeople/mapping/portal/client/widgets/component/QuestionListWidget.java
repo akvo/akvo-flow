@@ -15,6 +15,7 @@ import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -55,6 +56,10 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 											.getText());
 									dataGrid.setWidget(i, 0, l);
 									questionMap.put(l, result.get(i));
+									Button b = createButton(ClickMode.EDIT,
+											"Edit");
+									dataGrid.setWidget(i, 1, b);
+									questionMap.put(b, result.get(i));
 								}
 								addWidget(dataGrid);
 							}
@@ -71,10 +76,14 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	}
 
 	@Override
-	protected void handleItemClick(Object source) {
+	protected void handleItemClick(Object source, ClickMode mode) {
+
 		QuestionDto q = questionMap.get((Widget) source);
 		if (q != null) {
 			selectedQuestion = q;
+		}
+		if (ClickMode.DELETE != mode) {
+			openPage(QuestionEditWidget.class, getContextBundle());
 		}
 	}
 

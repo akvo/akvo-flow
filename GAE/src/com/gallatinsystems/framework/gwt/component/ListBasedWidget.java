@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -18,13 +19,18 @@ public abstract class ListBasedWidget extends Composite implements
 
 	private static final String LOADING_CSS = "loading-label";
 	private static final String LOADING_TEXT = "Loading. Please wait...";
-	public static final String LIST_ITEM_CSS = "clickable-list-item";
+	private static final String LIST_ITEM_CSS = "clickable-list-item";
 	private static final String LIST_ITEM_HOVER_CSS = "red-hover";
+	private static final String EDIT_BUTTON_CSS = "edit-listitem-button";
+	private static final String DEL_BUTTON_CSS = "delete-listitem-button";
+
+	protected static enum ClickMode {
+		OPEN, EDIT, DELETE
+	};
 
 	private Label loadingLabel;
 	private VerticalPanel panel;
 	private PageController controller;
-
 
 	protected ListBasedWidget(PageController controller) {
 		this.controller = controller;
@@ -46,6 +52,25 @@ public abstract class ListBasedWidget extends Composite implements
 		return l;
 	}
 
+	public Button createButton(final ClickMode mode, String label) {
+		Button button = new Button();
+		if (label != null) {
+			button.setText(label);
+		}
+		if (mode == ClickMode.EDIT) {
+			button.setStylePrimaryName(EDIT_BUTTON_CSS);
+		} else if (mode == ClickMode.EDIT) {
+			button.setStylePrimaryName(DEL_BUTTON_CSS);
+		}
+		button.addClickHandler(new ClickHandler() {			
+			@Override
+			public void onClick(ClickEvent event) {
+				handleItemClick(event.getSource(), mode);				
+			}
+		});
+		return button;
+	}
+
 	@Override
 	public void onMouseOut(MouseOutEvent event) {
 		((Label) event.getSource()).removeStyleName(LIST_ITEM_HOVER_CSS);
@@ -58,7 +83,7 @@ public abstract class ListBasedWidget extends Composite implements
 
 	@Override
 	public void onClick(ClickEvent event) {
-		handleItemClick(event.getSource());
+		handleItemClick(event.getSource(), ClickMode.OPEN);
 	}
 
 	protected void toggleLoading(boolean show) {
@@ -68,10 +93,10 @@ public abstract class ListBasedWidget extends Composite implements
 	protected void addWidget(Widget w) {
 		panel.add(w);
 	}
-	
-	protected void openPage(Class clazz, Map<String, Object> bundle){
-		controller.openPage(clazz,bundle);
+
+	protected void openPage(Class clazz, Map<String, Object> bundle) {
+		controller.openPage(clazz, bundle);
 	}
 
-	protected abstract void handleItemClick(Object source);
+	protected abstract void handleItemClick(Object source, ClickMode mode);
 }

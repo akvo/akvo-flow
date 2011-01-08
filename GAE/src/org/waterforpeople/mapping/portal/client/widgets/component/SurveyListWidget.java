@@ -15,12 +15,12 @@ import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SurveyListWidget extends ListBasedWidget implements
-		ContextAware {
+public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyDto> surveyMap;
@@ -35,30 +35,34 @@ public class SurveyListWidget extends ListBasedWidget implements
 	}
 
 	public void loadData(SurveyGroupDto groupDto) {
-		if(groupDto != null){
-		surveyService.listSurveysByGroup(groupDto.getKeyId().toString(),
-				new AsyncCallback<ArrayList<SurveyDto>>() {
+		if (groupDto != null) {
+			surveyService.listSurveysByGroup(groupDto.getKeyId().toString(),
+					new AsyncCallback<ArrayList<SurveyDto>>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						toggleLoading(false);
-					}
-
-					@Override
-					public void onSuccess(ArrayList<SurveyDto> result) {
-						toggleLoading(false);
-						if (result != null && result.size() > 0) {
-							Grid dataGrid = new Grid(result.size(), 2);
-							for (int i = 0; i < result.size(); i++) {
-								Label l = createListEntry(result.get(i)
-										.getName());
-								dataGrid.setWidget(i, 0, l);
-								surveyMap.put(l, result.get(i));
-							}
-							addWidget(dataGrid);
+						@Override
+						public void onFailure(Throwable caught) {
+							toggleLoading(false);
 						}
-					}
-				});
+
+						@Override
+						public void onSuccess(ArrayList<SurveyDto> result) {
+							toggleLoading(false);
+							if (result != null && result.size() > 0) {
+								Grid dataGrid = new Grid(result.size(), 2);
+								for (int i = 0; i < result.size(); i++) {
+									Label l = createListEntry(result.get(i)
+											.getName());
+									dataGrid.setWidget(i, 0, l);
+									surveyMap.put(l, result.get(i));
+									Button b = createButton(ClickMode.EDIT,
+											"Edit");
+									dataGrid.setWidget(i, 1, b);
+									surveyMap.put(b, result.get(i));
+								}
+								addWidget(dataGrid);
+							}
+						}
+					});
 		}
 	}
 
@@ -69,9 +73,13 @@ public class SurveyListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	protected void handleItemClick(Object source) {
+	protected void handleItemClick(Object source, ClickMode mode) {
 		bundle.put(BundleConstants.SURVEY_KEY, surveyMap.get(source));
-		openPage(QuestionGroupListWidget.class, bundle);
+		if (ClickMode.OPEN == mode) {
+			openPage(QuestionGroupListWidget.class, bundle);
+		} else if (ClickMode.EDIT == mode) {
+			openPage(SurveyEditWidget.class, bundle);
+		}
 	}
 
 	@Override
@@ -83,7 +91,7 @@ public class SurveyListWidget extends ListBasedWidget implements
 	public void persistContext(CompletionListener listener) {
 		if (listener != null) {
 			listener.operationComplete(true, getContextBundle());
-		}		
+		}
 	}
 
 }

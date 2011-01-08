@@ -15,6 +15,7 @@ import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -25,7 +26,6 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, QuestionGroupDto> questionGroupMap;
 	Map<String, Object> bundle;
-	
 
 	public QuestionGroupListWidget(PageController controller) {
 		super(controller);
@@ -35,30 +35,35 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	}
 
 	public void loadData(SurveyDto surveyDto) {
-		if(surveyDto!= null){
-		surveyService.listQuestionGroupsBySurvey(surveyDto.getKeyId().toString(),
-				new AsyncCallback<ArrayList<QuestionGroupDto>>() {
+		if (surveyDto != null) {
+			surveyService.listQuestionGroupsBySurvey(surveyDto.getKeyId()
+					.toString(),
+					new AsyncCallback<ArrayList<QuestionGroupDto>>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						toggleLoading(false);
-					}
-
-					@Override
-					public void onSuccess(ArrayList<QuestionGroupDto> result) {
-						toggleLoading(false);
-						if (result != null && result.size() > 0) {
-							Grid dataGrid = new Grid(result.size(), 2);
-							for (int i = 0; i < result.size(); i++) {
-								Label l = createListEntry(result.get(i)
-										.getCode());
-								dataGrid.setWidget(i, 0, l);
-								questionGroupMap.put(l, result.get(i));
-							}
-							addWidget(dataGrid);
+						@Override
+						public void onFailure(Throwable caught) {
+							toggleLoading(false);
 						}
-					}
-				});
+
+						@Override
+						public void onSuccess(ArrayList<QuestionGroupDto> result) {
+							toggleLoading(false);
+							if (result != null && result.size() > 0) {
+								Grid dataGrid = new Grid(result.size(), 2);
+								for (int i = 0; i < result.size(); i++) {
+									Label l = createListEntry(result.get(i)
+											.getCode());
+									dataGrid.setWidget(i, 0, l);
+									questionGroupMap.put(l, result.get(i));
+									Button b = createButton(ClickMode.EDIT,
+											"Edit");
+									dataGrid.setWidget(i, 1, b);
+									questionGroupMap.put(b, result.get(i));
+								}
+								addWidget(dataGrid);
+							}
+						}
+					});
 		}
 	}
 
@@ -69,10 +74,14 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	protected void handleItemClick(Object source) {
-		bundle.put(BundleConstants.QUESTION_GROUP_KEY,
-				questionGroupMap.get(source));
-		openPage(QuestionListWidget.class, bundle);
+	protected void handleItemClick(Object source, ClickMode mode) {
+		bundle.put(BundleConstants.QUESTION_GROUP_KEY, questionGroupMap
+				.get(source));
+		if (ClickMode.OPEN == mode) {
+			openPage(QuestionListWidget.class, bundle);
+		} else if (ClickMode.EDIT == mode) {
+			openPage(QuestionGroupEditWidget.class, bundle);
+		}
 	}
 
 	@Override
@@ -85,6 +94,6 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		if (listener != null) {
 			listener.operationComplete(true, getContextBundle());
 		}
-		
+
 	}
 }
