@@ -8,14 +8,37 @@ import java.util.Map;
 import com.gallatinsystems.framework.gwt.component.Breadcrumb;
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Widget that can act as a flow controller for a wizard-like interface. It
+ * handles rendering a main portlet, breadcrumbs and navigational buttons.
+ * 
+ * 
+ * The wizard is configured by subclassing this class and creating a
+ * WizardWorkflow object in the getWizardWorkflow method. The wizardWorkflow is
+ * a DSL that defines the series of steps available from each node in the
+ * wizard.
+ * 
+ * As the user clicks buttons in the wizard, this class will call a method to
+ * flush the state of the loaded wizard node (if it implements ContextualAware)
+ * and then will load the next node. State context will also be associated with
+ * breadcrumbs so the correct page can be loaded on click.
+ * 
+ * 
+ * 
+ * This component uses the following CSS styles: wizard-back-navbutton - for
+ * "backwards" flow control buttons wizard-fwd-navbutton - for "forward" flow
+ * control buttons wizard-navbutton - default button look and feel
+ * 
+ * @author Christopher Fagiani
+ */
 public abstract class AbstractWizardPortlet extends Portlet implements
 		ClickHandler, PageController, CompletionListener {
 
@@ -38,6 +61,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private Widget currentPage;
 	private Breadcrumb currentBreadcrumb;
 	private ContextAware pendingPage;
+	private MessageDialog waitDialog;
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
 		super(name, true, false, false, width, height);
@@ -60,9 +84,15 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 		renderWizardPage(workflow.getStartNode(), true, null);
 		setContent(contentPane);
+		waitDialog = new MessageDialog("Saving...", "Please wait", true);
 
 	}
 
+	/**
+	 * Clears current buttons and replaces them with the buttons dictated by the
+	 * WizardNode passed in
+	 * 
+	 */
 	protected void resetNav(WizardNode node) {
 		buttonPanel.clear();
 		forwardNavButtons.clear();
@@ -74,6 +104,11 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 	}
 
+	/**
+	 * Adds the buttons passed in to the button panel and attaches their
+	 * listeners
+	 * 
+	 */
 	private void installButtons(List<Button> buttonList, String[] buttonNames,
 			String style) {
 		if (buttonNames != null) {
@@ -92,6 +127,18 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
+	/*
+	 * This method handles the majority of the page loading logic. It will do
+	 * the following: Calls the prePageUnload method Clear the current widget If
+	 * the page is "forward" (i.e. not a click of a breadcrumb or a back button)
+	 * and the old page is ContextAware: calls persistContext on the old page.
+	 * Since the save is async, the remainder of initialization is performed in
+	 * the operationComplete callback Initializes the widget for the new page If
+	 * the page is "forward" (i.e. not a click of a breadcrumb or a back button)
+	 * install the new breadcrumb for the new page (if its WizardNode object
+	 * contains a breadcrumb name) Add the new page to the display Call the
+	 * onLoadComplete hook
+	 */
 	protected void renderWizardPage(WizardNode page, boolean isForward,
 			Map<String, Object> bundle) {
 		boolean calledSave = false;
@@ -99,12 +146,19 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		widgetPanel.clear();
 		if (isForward && currentPage instanceof ContextAware) {
 			pendingPage = (ContextAware) currentPage;
+			// need to update current page first since we don't know when the
+			// callback to operationComplete will occur and currentPage needs to
+			// point to the new page at that point
 			currentPage = initializeNode(page);
+			waitDialog.showRelativeTo(widgetPanel);
 			pendingPage.persistContext(this);
 			calledSave = true;
 		}
 		if (!calledSave) {
 			currentPage = initializeNode(page);
+			// since there is nothing being saved, we can populate the bundle
+			// immediately (in the case of save being called, this happens in
+			// the callback)
 			populateBundle(bundle);
 		}
 		if (isForward && page.getBreadcrumb() != null) {
@@ -122,20 +176,33 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		onLoadComplete(page);
 	}
 
+	/**
+	 *Populates the bundle in the current page
+	 * 
+	 */
 	private void populateBundle(Map<String, Object> bundle) {
 		if (bundle != null && currentPage instanceof ContextAware) {
 			((ContextAware) currentPage).setContextBundle(bundle);
 		}
 	}
 
+	/**
+	 * Callback received when persistContext is completed
+	 * 
+	 */
 	public void operationComplete(boolean isSuccessful,
 			Map<String, Object> bundle) {
+		waitDialog.hide();
 		if (isSuccessful) {
 			populateBundle(bundle);
 		}
 
 	}
 
+	/**
+	 * Adds a breadcrumb to the UI and installs click listeners
+	 * 
+	 */
 	protected Breadcrumb addBreadcrumb(WizardNode node,
 			Map<String, Object> bundle) {
 		Breadcrumb bc = new Breadcrumb(node.getBreadcrumb(), node.getName(),
@@ -151,6 +218,10 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 	}
 
+	/**
+	 * removes breadcrumb from the UI
+	 * 
+	 */
 	protected void removeBreadcrumb(WizardNode node) {
 		int index = breadcrumbList.indexOf(node.getBreadcrumb());
 		if (index >= 0) {
@@ -167,6 +238,10 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 	}
 
+	/**
+	 * Handles clicks of navigational buttons and breadcrumbs
+	 * 
+	 */
 	public void onClick(ClickEvent event) {
 		if (forwardNavButtons.contains(event.getSource())) {
 			renderWizardPage(workflow.getWorkflowNode(((Button) event
@@ -177,11 +252,16 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		} else if (event.getSource() instanceof Breadcrumb) {
 			// if it is a breadcrumb
 			renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
-					.getSource()).getTargetNode()), false,
-					((Breadcrumb) event.getSource()).getBundle());
+					.getSource()).getTargetNode()), false, ((Breadcrumb) event
+					.getSource()).getBundle());
 		}
 	}
 
+	/**
+	 * Opens a page. This can be called from wizard nodes to open a new page
+	 * that doesn't directly correspond to a back/forward/breadcrumb click
+	 * 
+	 */
 	public void openPage(Class clazz, Map<String, Object> bundle) {
 		if (clazz != null) {
 			WizardNode node = workflow.findNode(clazz);
@@ -191,14 +271,33 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
+	/**
+	 * This method will return a populated WizardWorkflow object defining the
+	 * workflow for a wizard
+	 */
 	protected abstract WizardWorkflow getWizardWorkflow();
 
+	/**
+	 * 
+	 * called to instantiate a widget that corresponds to the wizardNode that is
+	 * passed in
+	 */
 	protected abstract Widget initializeNode(WizardNode node);
 
+	/**
+	 * called when all loading is complete and the widget has been added to the
+	 * display
+	 */
 	protected abstract void onLoadComplete(WizardNode node);
 
+	/**
+	 * called before a page is removed from the UI
+	 */
 	protected abstract void prePageUnload(WizardNode nextNode);
 
+	/**
+	 * Defines a workflow for a wizard. It must contain a start node
+	 */
 	public class WizardWorkflow {
 		private WizardNode startNode;
 		private Map<String, WizardNode> allNodes;
@@ -236,6 +335,14 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
+	/**
+	 * Defines a node (page) within a wizard. Each object defines the node name,
+	 * the class to be used for the widget, the breadcrumb name (null if no
+	 * breadcrumb) and 2 arrays of node names corresponding to the "forard" and
+	 * "backward" buttons.
+	 * 
+	 * 
+	 */
 	public class WizardNode {
 		private Class widgetClass;
 		private String name;

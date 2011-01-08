@@ -79,16 +79,13 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 			currentDto.setCode(codeBox.getText().trim());
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
-							.getText().trim() : null);
-			final MessageDialog savingDialog = new MessageDialog("Saving...",
-					"Please wait.", true);
-			savingDialog.showRelativeTo(panel);
+							.getText().trim() : null);			
 			surveyService.saveSurveyGroup(currentDto,
 					new AsyncCallback<SurveyGroupDto>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							savingDialog.hide();
+							
 							MessageDialog errDia = new MessageDialog(
 									"Could not save survey group",
 									"There was an error while attempting to save the survey group. Please try again. If the problem persists, please contact an administrator");
@@ -101,8 +98,7 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 
 						@Override
 						public void onSuccess(SurveyGroupDto result) {
-							currentDto = result;
-							savingDialog.hide();
+							currentDto = result;							
 							if(listener != null){
 								listener.operationComplete(true,getContextBundle());
 							}

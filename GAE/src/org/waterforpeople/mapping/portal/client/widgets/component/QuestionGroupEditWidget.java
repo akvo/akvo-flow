@@ -91,16 +91,15 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 			currentDto.setCode(nameBox.getText().trim());
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
-							.getText().trim() : null);
-			final MessageDialog savingDialog = new MessageDialog("Saving...",
-					"Please wait.", true);
-			savingDialog.showRelativeTo(panel);
+							.getText().trim()
+							: null);
+
 			surveyService.saveQuestionGroup(currentDto, surveyDto.getKeyId(),
 					new AsyncCallback<QuestionGroupDto>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							savingDialog.hide();
+
 							MessageDialog errDia = new MessageDialog(
 									"Could not save question group",
 									"There was an error while attempting to save the question group. Please try again. If the problem persists, please contact an administrator");
@@ -112,10 +111,11 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 
 						@Override
 						public void onSuccess(QuestionGroupDto result) {
-							savingDialog.hide();
+
 							currentDto = result;
 							if (listener != null) {
-								listener.operationComplete(true, getContextBundle());
+								listener.operationComplete(true,
+										getContextBundle());
 							}
 						}
 					});
