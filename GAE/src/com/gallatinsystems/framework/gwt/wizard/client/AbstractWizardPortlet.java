@@ -45,6 +45,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private static final String NAV_BUTTON_STYLE = "wizard-navbutton";
 	private static final String BACK_NAV_BUTTON_STYLE = "wizard-back-navbutton";
 	private static final String FWD_NAV_BUTTON_STYLE = "wizard-fwd-navbutton";
+	private static final String BREADCRUMB_PANEL_STYLE = "wizard-breadcrumb-panel";
 
 	private VerticalPanel contentPane;
 
@@ -67,11 +68,11 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		super(name, true, false, false, width, height);
 		contentPane = new VerticalPanel();
 		breadcrumbPanel = new HorizontalPanel();
+		breadcrumbPanel.setStylePrimaryName(BREADCRUMB_PANEL_STYLE);
 		buttonPanel = new HorizontalPanel();
 		widgetPanel = new VerticalPanel();
 
-		contentPane.add(breadcrumbPanel);
-		widgetPanel.setBorderWidth(1);
+		contentPane.add(breadcrumbPanel);				
 		contentPane.add(widgetPanel);
 		contentPane.add(buttonPanel);
 

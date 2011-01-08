@@ -505,6 +505,7 @@ button {
 	font: 11px/14px Verdana, Helvetica, sans-serif;
 	font-style: italic;
 	font-variant: small-caps;
+	padding-right: 10px;
 	cursor: pointer;
 }
 
@@ -520,7 +521,7 @@ button {
 }
 
 .clickable-list-item {
-	font: 14px/17px Verdana, Helvetica, sans-serif;
+	font: 12px/15px Verdana, Helvetica, sans-serif;
 	cursor: pointer;
 }
 
@@ -529,4 +530,7 @@ button {
 	color:red;
 }
 
-
+.wizard-breadcrumb-panel{	 
+	border-bottom: 2px solid;
+	border-bottom-style: ridge;	 
+}
