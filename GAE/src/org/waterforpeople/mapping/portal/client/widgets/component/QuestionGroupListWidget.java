@@ -71,7 +71,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	@Override
 	protected void handleItemClick(Object source) {
 		bundle.put(BundleConstants.QUESTION_GROUP_KEY,
-				questionGroupMap.get(source).getKeyId());
+				questionGroupMap.get(source));
 		openPage(QuestionListWidget.class, bundle);
 	}
 
