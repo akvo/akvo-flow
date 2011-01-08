@@ -94,6 +94,7 @@ public abstract class ListBasedWidget extends Composite implements
 		panel.add(w);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void openPage(Class clazz, Map<String, Object> bundle) {
 		controller.openPage(clazz, bundle);
 	}
