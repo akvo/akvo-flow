@@ -234,18 +234,24 @@ public class AccessPointHelper {
 			// image this is why we were getting /sdcard I think.
 			if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())
 					|| qas.getType().equals("PHOTO")) {
+				String newURL = null;
 				String[] photoParts = qas.getValue().split("/");
-				String newURL = photo_url_root + photoParts[2];
+				if (qas.getValue().startsWith("/sdcard")) {
+					newURL = photo_url_root + photoParts[2];
+				} else if (qas.getValue().startsWith("/mnt")) {
+					newURL = photo_url_root + photoParts[3];
+				}
 				f.set(ap, newURL);
 				apmh.setQuestionAnswerType("PHOTO");
 				apmh.setAccessPointValue(ap.getPhotoURL());
 			} else if (mapping.getAttributeName().equals("pointType")) {
-				if(qas.getValue().contains("Health")){
+				if (qas.getValue().contains("Health")) {
 					f.set(ap, AccessPointType.HEALTH_POSTS);
-				}else{
-				qas.setValue(qas.getValue().replace(" ", "_"));
+				} else {
+					qas.setValue(qas.getValue().replace(" ", "_"));
 
-				f.set(ap, AccessPointType.valueOf(qas.getValue().toUpperCase()));
+					f.set(ap, AccessPointType.valueOf(qas.getValue()
+							.toUpperCase()));
 				}
 			} else {
 				String stringVal = qas.getValue();
