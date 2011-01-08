@@ -51,7 +51,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 							Grid dataGrid = new Grid(result.size(), 2);
 							for (int i = 0; i < result.size(); i++) {
 								Label l = createListEntry(result.get(i)
-										.getName());
+										.getCode());
 								dataGrid.setWidget(i, 0, l);
 								questionGroupMap.put(l, result.get(i));
 							}

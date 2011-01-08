@@ -89,6 +89,7 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 				currentDto.setSurveyId(surveyDto.getKeyId());
 			}
 			currentDto.setCode(nameBox.getText().trim());
+			currentDto.setName(nameBox.getText().trim());
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
 							.getText().trim()
