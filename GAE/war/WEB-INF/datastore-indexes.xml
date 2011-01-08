@@ -74,7 +74,6 @@
 		<property name="pointType" direction="asc" />
 		<property name="latitude" direction="asc" />
 	</datastore-index>
-
 	<!-- Used 1 time in query history -->
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
@@ -135,14 +134,12 @@
 		<property name="communityCode" direction="asc" />
 		<property name="collectionDate" direction="desc" />
 	</datastore-index>
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
 		<property name="pointType" direction="asc" />
 		<property name="lastUpdateDateTime" direction="desc" />
 	</datastore-index>
-
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="communityCode" direction="asc" />
@@ -160,49 +157,36 @@
 		<property name="surveyID" direction="asc" />
 		<property name="devicePhoneNumber" direction="asc" />
 	</datastore-index>
-	
 	 <!-- Used 2 times in query history -->
     <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
         <property name="acknowleged" direction="asc"/>
         <property name="errorDate" direction="desc"/>
     </datastore-index>
-
-    
     <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
         <property name="acknowleged" direction="asc"/>
         <property name="phoneNumber" direction="asc"/>
         <property name="errorDate" direction="desc"/>
     </datastore-index>
-
-    
     <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
         <property name="acknowleged" direction="asc"/>
         <property name="deviceIdentifier" direction="asc"/>
         <property name="phoneNumber" direction="asc"/>
         <property name="errorDate" direction="desc"/>
     </datastore-index>
-
-    
-    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
+   <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
         <property name="acknowleged" direction="asc"/>
         <property name="deviceIdentifier" direction="asc"/>
         <property name="errorDate" direction="desc"/>
     </datastore-index>
-
-    
     <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
         <property name="phoneNumber" direction="asc"/>
         <property name="errorDate" direction="desc"/>
     </datastore-index>
-
-    
     <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
         <property name="deviceIdentifier" direction="asc"/>
         <property name="phoneNumber" direction="asc"/>
         <property name="errorDate" direction="desc"/>
-    </datastore-index>
-
-    
+    </datastore-index> 
     <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
         <property name="deviceIdentifier" direction="asc"/>
         <property name="errorDate" direction="desc"/>
