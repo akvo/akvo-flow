@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -19,7 +21,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button mappingButton;
 	private PageController controller;
 	
-	public AdminHomeWidget(PageController controller) {
+	public AdminHomeWidget(PageController controller, UserDto currentUser) {
 		Grid widget = new Grid(4, 2);
 		this.controller = controller;
 		userMgmtButton = initButton("Manage Users");
@@ -28,7 +30,11 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 		widget.setWidget(
 				0,
 				1,
-				createDescription("Create, edit and delete user accounts for the dashboard."));
+				createDescription("Create, edit and delete user accounts for the dashboard (Appengine Admins Only)."));
+		if(!currentUser.isAdmin()){
+			userMgmtButton.setEnabled(false);
+		}
+		userMgmtButton.addClickHandler(this);
 		surveyMgmtButton = initButton("Manage Surveys");
 		widget.setWidget(1, 0, surveyMgmtButton);
 		widget.setWidget(1, 1, createDescription("Create and publish surveys."));
@@ -65,6 +71,8 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	public void onClick(ClickEvent event) {
 		if(event.getSource() == surveyMgmtButton){
 			controller.openPage(SurveyGroupListWidget.class,null);
+		}else if (event.getSource() == userMgmtButton){
+			controller.openPage(UserManagerWidget.class,null);
 		}
 	}
 

@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
+import org.waterforpeople.mapping.portal.client.widgets.UserAwarePortlet;
 import org.waterforpeople.mapping.portal.client.widgets.component.BundleConstants;
 
 import com.gallatinsystems.framework.gwt.component.Breadcrumb;
 import com.gallatinsystems.framework.gwt.component.PageController;
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -41,7 +42,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Christopher Fagiani
  */
-public abstract class AbstractWizardPortlet extends Portlet implements
+public abstract class AbstractWizardPortlet extends UserAwarePortlet implements
 		ClickHandler, PageController, CompletionListener {
 
 	private static final String NAV_BUTTON_STYLE = "wizard-navbutton";
@@ -67,8 +68,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private WizardNode pageToLoad;
 	private MessageDialog waitDialog;
 
-	protected AbstractWizardPortlet(String name, int width, int height) {
-		super(name, true, false, false, width, height);
+	protected AbstractWizardPortlet(String name, int width, int height, UserDto user) {
+		super(name, true, false, false, width, height,user);
 		contentPane = new VerticalPanel();
 		breadcrumbPanel = new HorizontalPanel();
 		breadcrumbPanel.setStylePrimaryName(BREADCRUMB_PANEL_STYLE);

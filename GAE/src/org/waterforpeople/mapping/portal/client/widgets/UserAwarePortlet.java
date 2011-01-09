@@ -135,4 +135,8 @@ public abstract class UserAwarePortlet extends Portlet {
 			saveConfig();
 		}
 	}
+	
+	protected UserDto getCurrentUser(){
+		return currentUser;
+	}
 }
