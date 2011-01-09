@@ -534,3 +534,9 @@ button {
 	border-bottom: 2px solid;
 	border-bottom-style: ridge;	 
 }
+
+.reorder-button{
+	padding-right: 3px;
+	padding-left: 3px;
+	cursor: pointer;	
+}

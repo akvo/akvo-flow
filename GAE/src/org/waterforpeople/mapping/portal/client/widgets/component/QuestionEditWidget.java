@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
@@ -40,6 +43,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		ChangeHandler, ClickHandler {
 
 	private static final String INPUT_LABEL_CSS = "input-label";
+	private static final String REORDER_BUTTON_CSS = "reorder-button";
 	private static final String DEFAULT_BOX_WIDTH = "300px";
 	private static final String SELECT_TXT = "Select...";
 	private VerticalPanel panel;
@@ -191,26 +195,24 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 
 	}
-	
-	
 
 	private void loadOptions() {
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()
 				&& (currentQuestion.getOptionContainerDto() == null || currentQuestion
 						.getOptionContainerDto().getOptionsList() == null)) {
 			optionPanel.setVisible(true);
-			showLoading(optionPanel, "Loading options...");			
+			showLoading(optionPanel, "Loading options...");
 			surveyService.loadQuestionDetails(currentQuestion.getKeyId(),
 					new AsyncCallback<QuestionDto>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							showContent(optionPanel,new Label("Error"));
+							showContent(optionPanel, new Label("Error"));
 						}
 
 						@Override
 						public void onSuccess(QuestionDto result) {
-							showContent(optionPanel,optionContent);
+							showContent(optionPanel, optionContent);
 							currentQuestion = result;
 							populateOptions(currentQuestion
 									.getOptionContainerDto());
@@ -233,35 +235,89 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	}
 
 	private void installOptionRow(QuestionOptionDto opt) {
-		int row = optionTable.getRowCount();
+		final int row = optionTable.getRowCount();
 		optionTable.insertRow(row);
 		TextBox optText = new TextBox();
 		optionTable.setWidget(row, 0, optText);
+		HorizontalPanel bp = new HorizontalPanel();
+		final Image moveUp = new Image("/images/greenuparrow.png");
+		final Image moveDown = new Image("/images/greendownarrow.png");
+
+		ClickHandler reorderClickHandler = new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				int increment = 0;
+				ArrayList<QuestionOptionDto> optList = currentQuestion
+						.getOptionContainerDto().getOptionsList();
+				if (event.getSource() == moveUp && row > 0) {
+					increment = -1;
+				} else if (event.getSource() == moveDown
+						&& row < optList.size() - 1) {
+					increment = 1;
+				}
+				if (increment != 0) {
+					QuestionOptionDto targetOpt = optList.get(row + increment);
+					QuestionOptionDto movingOpt = optList.get(row);
+					optList.set(row + increment, movingOpt);
+					optList.set(row,targetOpt);
+					targetOpt.setOrder(targetOpt.getOrder()-increment);
+					movingOpt.setOrder(movingOpt.getOrder()+increment);
+					//now update the UI
+					((TextBox)(optionTable.getWidget(row, 0))).setText(targetOpt.getText());
+					((TextBox)(optionTable.getWidget(row+increment, 0))).setText(movingOpt.getText());
+				}
+			}
+		};
+
+		moveUp.setStylePrimaryName(REORDER_BUTTON_CSS);
+		moveUp.addClickHandler(reorderClickHandler);
+
+		moveDown.setStylePrimaryName(REORDER_BUTTON_CSS);
+		moveDown.addClickHandler(reorderClickHandler);
+		bp.add(moveUp);
+		bp.add(moveDown);
+		optionTable.setWidget(row, 1, bp);
 		Button deleteButton = new Button("Remove");
-		optionTable.setWidget(row, 1, deleteButton);
+		optionTable.setWidget(row, 2, deleteButton);
 		if (opt != null) {
 			optText.setText(opt.getText());
+			if(opt.getOrder() == null){
+				opt.setOrder(row);
+			}
+		} else {
+			if (currentQuestion.getOptionContainerDto() == null) {
+				currentQuestion.setOptionContainerDto(new OptionContainerDto());
+			}
+			if (currentQuestion.getOptionContainerDto().getOptionsList() == null) {
+				currentQuestion.getOptionContainerDto().setOptionsList(
+						new ArrayList<QuestionOptionDto>());
+			}
+			QuestionOptionDto dto = new QuestionOptionDto();
+			dto.setOrder(row);
+			currentQuestion.getOptionContainerDto().getOptionsList().add(dto);
+
 		}
 	}
 
-	private void showLoading(HasWidgets container, String labelText){
+	private void showLoading(HasWidgets container, String labelText) {
 		Label l = new Label(labelText);
 		container.clear();
-		container.add(l);				
+		container.add(l);
 	}
-	
-	private void showContent(HasWidgets container, Widget content){
+
+	private void showContent(HasWidgets container, Widget content) {
 		container.clear();
 		container.add(content);
 	}
-	
+
 	private void loadDependencyList() {
 		dependencyPanel.setVisible(true);
 		if (optionQuestions != null
 				&& optionQuestions.get(currentQuestion.getSurveyId()) != null) {
 			populateDependencySelection(currentQuestion, optionQuestions
 					.get(currentQuestion.getSurveyId()));
-		} else {			
+		} else {
 			showLoading(dependencyPanel, "Loading...");
 			surveyService.listSurveyQuestionByType(currentQuestion
 					.getSurveyId(), QuestionType.OPTION,
@@ -269,7 +325,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 						@Override
 						public void onFailure(Throwable caught) {
-							showContent(dependencyPanel,new Label("Error loading questions"));
+							showContent(dependencyPanel, new Label(
+									"Error loading questions"));
 						}
 
 						@Override
@@ -340,7 +397,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						new AsyncCallback<QuestionDto>() {
 							@Override
 							public void onSuccess(QuestionDto result) {
-							
+
 								if (questionList != null) {
 									// update the option container of the cached
 									// result so we have it for next time
@@ -383,9 +440,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						options.get(i).getKeyId().toString());
 				if (currentQuestion != null
 						&& currentQuestion.getQuestionDependency() != null
-						&&options.get(i).getText().equals(currentQuestion.getQuestionDependency()
-								.getAnswerValue())) {
-						dependentAnswerSelector.setSelectedIndex(i+1);
+						&& options.get(i).getText().equals(
+								currentQuestion.getQuestionDependency()
+										.getAnswerValue())) {
+					dependentAnswerSelector.setSelectedIndex(i + 1);
 				}
 			}
 		}
