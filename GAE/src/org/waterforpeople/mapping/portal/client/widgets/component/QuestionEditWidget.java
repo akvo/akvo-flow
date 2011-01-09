@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -14,6 +15,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
@@ -48,6 +51,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private static final String DEFAULT_BOX_WIDTH = "300px";
 	private static final String SELECT_TXT = "Select...";
 	private VerticalPanel panel;
+	private CaptionPanel basePanel;
 	private TextArea questionTextArea;
 	private ListBox questionTypeSelector;
 	private TextArea tooltipArea;
@@ -55,7 +59,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private CheckBox mandatoryBox;
 	private CheckBox dependentBox;
 	private ListBox dependentQuestionSelector;
-	private ListBox dependentAnswerSelector;
+	private ListBox dependentAnswerSelector;	
 	private CaptionPanel dependencyPanel;
 	private Grid dependencyGrid;
 
@@ -103,7 +107,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		questionTypeSelector.addItem("Strength",
 				QuestionDto.QuestionType.STRENGTH.toString());
 		questionTypeSelector.addChangeHandler(this);
-		CaptionPanel basePanel = new CaptionPanel("Question Basics:");
+		basePanel = new CaptionPanel("Question Basics:");
 
 		Grid grid = new Grid(7, 2);
 		basePanel.add(grid);
@@ -250,12 +254,13 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			@Override
 			public void onClick(ClickEvent event) {
 				ArrayList<QuestionOptionDto> optList = currentQuestion
-				.getOptionContainerDto().getOptionsList();
-				Cell cell = optionTable.getCellForEvent(event);				
-				if (event.getSource() == deleteButton) {				
-					optionTable.removeRow(cell.getRowIndex());										
+						.getOptionContainerDto().getOptionsList();
+				Cell cell = optionTable.getCellForEvent(event);
+				if (event.getSource() == deleteButton) {
+					optionTable.removeRow(cell.getRowIndex());
+					optList.remove(cell.getRowIndex());
 				} else {
-					int increment = 0;					
+					int increment = 0;
 					if (event.getSource() == moveUp && cell.getRowIndex() > 0) {
 						increment = -1;
 					} else if (event.getSource() == moveDown
@@ -263,18 +268,21 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						increment = 1;
 					}
 					if (increment != 0) {
-						QuestionOptionDto targetOpt = optList.get(cell.getRowIndex()
+						QuestionOptionDto targetOpt = optList.get(cell
+								.getRowIndex()
 								+ increment);
-						QuestionOptionDto movingOpt = optList.get(cell.getRowIndex());
+						QuestionOptionDto movingOpt = optList.get(cell
+								.getRowIndex());
 						optList.set(cell.getRowIndex() + increment, movingOpt);
 						optList.set(cell.getRowIndex(), targetOpt);
 						targetOpt.setOrder(targetOpt.getOrder() - increment);
 						movingOpt.setOrder(movingOpt.getOrder() + increment);
 						// now update the UI
-						((TextBox) (optionTable.getWidget(cell.getRowIndex(), 0)))
+						((TextBox) (optionTable
+								.getWidget(cell.getRowIndex(), 0)))
 								.setText(targetOpt.getText());
-						((TextBox) (optionTable.getWidget(cell.getRowIndex() + increment, 0)))
-								.setText(movingOpt.getText());
+						((TextBox) (optionTable.getWidget(cell.getRowIndex()
+								+ increment, 0))).setText(movingOpt.getText());
 					}
 				}
 			}
@@ -448,7 +456,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (options != null) {
 			for (int i = 0; i < options.size(); i++) {
 				dependentAnswerSelector.addItem(options.get(i).getText(),
-						options.get(i).getKeyId().toString());
+						options.get(i).getText());
 				if (currentQuestion != null
 						&& currentQuestion.getQuestionDependency() != null
 						&& options.get(i).getText().equals(
@@ -471,25 +479,109 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	@Override
 	public void persistContext(final CompletionListener listener) {
-		surveyService.saveQuestion(currentQuestion, currentQuestion
-				.getQuestionGroupId(), new AsyncCallback<QuestionDto>() {
+		List<String> validationErrors = updateCurrentQuestion();
+		if (validationErrors == null || validationErrors.size() == 0) {
+			surveyService.saveQuestion(currentQuestion, currentQuestion
+					.getQuestionGroupId(), new AsyncCallback<QuestionDto>() {
 
-			@Override
-			public void onSuccess(QuestionDto result) {
-				currentQuestion = result;
-				if (listener != null) {
-					listener.operationComplete(true, getContextBundle());
+				@Override
+				public void onSuccess(QuestionDto result) {
+					currentQuestion = result;
+					if (listener != null) {
+						listener.operationComplete(true, getContextBundle());
+					}
+				}
+
+				@Override
+				public void onFailure(Throwable caught) {
+					if (listener != null) {
+						listener.operationComplete(false, getContextBundle());
+					}
+				}
+			});
+		}else{
+			StringBuilder builder = new StringBuilder("<ul>");
+			for(String err: validationErrors){
+				builder.append("<li>").append(err).append("</li>");				
+			}
+			builder.append("</ul>");
+			MessageDialog errorDialog = new MessageDialog("Cannot save survey list", builder.toString());
+			errorDialog.showCentered();
+			listener.operationComplete(false, getContextBundle());
+		}
+	}
+
+	private List<String> updateCurrentQuestion() {
+		List<String> validationMessages = new ArrayList<String>();
+		if (ViewUtil.isTextPopulated(questionTextArea)) {
+			currentQuestion.setText(questionTextArea.getText());
+		} else {
+			validationMessages.add("Question text cannot be blank");
+		}
+		currentQuestion.setTip(tooltipArea.getText());
+		if (mandatoryBox.getValue()) {
+			currentQuestion.setMandatoryFlag(true);
+		} else {
+			currentQuestion.setMandatoryFlag(false);
+		}
+		currentQuestion.setType(QuestionDto.QuestionType
+				.valueOf(questionTypeSelector.getValue(questionTypeSelector
+						.getSelectedIndex())));
+		currentQuestion.setValidationRule(validationRuleBox.getText());
+		if (dependentBox.getValue()) {
+			QuestionDependencyDto depDto = currentQuestion
+					.getQuestionDependency();
+			if (depDto == null) {
+				depDto = new QuestionDependencyDto();
+				currentQuestion.setQuestionDependency(depDto);
+			}
+			if (dependentQuestionSelector.getSelectedIndex() == 0) {
+				validationMessages
+						.add("If 'Dependent' is true, you must select a dependent question");
+			} else {
+				depDto.setQuestionId(Long
+						.parseLong(dependentQuestionSelector
+								.getValue(dependentQuestionSelector
+										.getSelectedIndex())));
+				if (dependentAnswerSelector.getSelectedIndex() == 0) {
+					validationMessages
+							.add("You must select a response for the dependent question");
+				} else {
+					depDto.setAnswerValue(dependentAnswerSelector
+							.getValue(dependentAnswerSelector
+									.getSelectedIndex()));
 				}
 			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				if (listener != null) {
-					listener.operationComplete(false, getContextBundle());
+		}
+		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
+			currentQuestion.setAllowMultipleFlag(allowMultipleBox.getValue());
+			currentQuestion.setAllowOtherFlag(allowOtherBox.getValue());
+			OptionContainerDto container = currentQuestion
+					.getOptionContainerDto();
+			if (container == null) {
+				container = new OptionContainerDto();
+				currentQuestion.setOptionContainerDto(container);
+			}
+			container.setAllowMultipleFlag(allowMultipleBox.getValue());
+			container.setAllowOtherFlag(allowOtherBox.getValue());
+			if (container.getOptionsList() == null
+					|| container.getOptionsList().size() == 0) {
+				validationMessages.add("You must supply at least 1 option");
+			} else {
+				for (int i = 0; i < container.getOptionsList().size(); i++) {
+					TextBox box = (TextBox) optionTable.getWidget(i, 0);
+					if (ViewUtil.isTextPopulated(box)) {
+						container.getOptionsList().get(i)
+								.setText(box.getText());
+					} else {
+						validationMessages
+								.add("Options cannot be blank. Please correct option at position "
+										+ i);
+					}
 				}
 			}
-		});
-
+		}
+		return validationMessages;
 	}
 
 	@Override

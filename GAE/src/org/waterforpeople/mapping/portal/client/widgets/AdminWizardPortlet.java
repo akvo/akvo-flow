@@ -39,15 +39,15 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				SurveyEditWidget.class, "QuestionGroupList", "SurveyList"));
 		wf.addInternalNode(new WizardNode("QuestionGroupList",
 				"Question Groups", QuestionGroupListWidget.class,
-				"QuestionGroupCreate", "SurveyList"));
+				new String[]{"QuestionGroupCreate","Publish"}, new String[]{"SurveyList"}));
 		wf.addInternalNode(new WizardNode("QuestionGroupCreate", null,
 				QuestionGroupEditWidget.class, "QuestionList",
 				"QuestionGroupList"));
 		wf.addInternalNode(new WizardNode("QuestionList", "Questions",
-				QuestionListWidget.class, "QuestionCreate", "QuestionGroupList"));
+				QuestionListWidget.class, new String[] {"QuestionCreate","Publish"}, new String[]{"QuestionGroupList"}));
 		wf.addInternalNode(new WizardNode("QuestionCreate", null,
-				QuestionEditWidget.class, new String[] { "Question List" },
-				new String[] { "QuestionList", "Publish" }));
+				QuestionEditWidget.class, new String[] { "QuestionList" },
+				null));
 		wf.addInternalNode(new WizardNode("Publish", null,
 				PublicationWidget.class, new String[] { "Attribute Assignment",
 						"Device Assignment" }, new String[] { "QuestionList" }));

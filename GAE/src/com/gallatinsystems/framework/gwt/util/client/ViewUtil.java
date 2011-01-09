@@ -1,6 +1,6 @@
 package com.gallatinsystems.framework.gwt.util.client;
 
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 
 /**
  * simple utility for use client-side via GWT
@@ -15,9 +15,9 @@ public class ViewUtil {
 	 * @param box
 	 * @return
 	 */
-	public static boolean isTextPopulated(TextBox box){
+	public static boolean isTextPopulated(TextBoxBase box){
 		boolean populated = true;
-		if(box == null || box.getText() == null || box.getText().trim().length()<0){
+		if(box == null || box.getText() == null || box.getText().trim().length()<=0){
 			populated = false;
 		}
 		return populated;

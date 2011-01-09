@@ -1,8 +1,10 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -25,6 +27,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, QuestionDto> questionMap;
 	private QuestionDto selectedQuestion;
+	private QuestionGroupDto questionGroup;
 	private Map<String, Object> bundle;
 
 	public QuestionListWidget(PageController controller) {
@@ -37,42 +40,67 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 
 	public void loadData(QuestionGroupDto questionGroupDto) {
 		if (questionGroupDto != null) {
-			surveyService.listQuestionsByQuestionGroup(questionGroupDto
-					.getKeyId().toString(), false,
-					new AsyncCallback<ArrayList<QuestionDto>>() {
+			if (questionGroupDto.getQuestionMap() != null
+					&& questionGroupDto.getQuestionMap().size() > 0) {
+				populateQuestionList(questionGroupDto.getQuestionMap().values());
+			} else {
+				surveyService.listQuestionsByQuestionGroup(questionGroupDto
+						.getKeyId().toString(), false,
+						new AsyncCallback<ArrayList<QuestionDto>>() {
 
-						@Override
-						public void onFailure(Throwable caught) {
-							toggleLoading(false);
-						}
-
-						@Override
-						public void onSuccess(ArrayList<QuestionDto> result) {
-							toggleLoading(false);
-							if (result != null && result.size() > 0) {
-								Grid dataGrid = new Grid(result.size(), 2);
-								for (int i = 0; i < result.size(); i++) {
-									Label l = createListEntry(result.get(i)
-											.getText());
-									dataGrid.setWidget(i, 0, l);
-									questionMap.put(l, result.get(i));
-									Button b = createButton(ClickMode.EDIT,
-											"Edit");
-									dataGrid.setWidget(i, 1, b);
-									questionMap.put(b, result.get(i));
-								}
-								addWidget(dataGrid);
+							@Override
+							public void onFailure(Throwable caught) {
+								toggleLoading(false);
 							}
-						}
-					});
+
+							@Override
+							public void onSuccess(ArrayList<QuestionDto> result) {								
+								if (result != null && result.size() > 0) {
+									TreeMap<Integer, QuestionDto> questionTree = new TreeMap<Integer, QuestionDto>();
+
+									for (int i = 0; i < result.size(); i++) {
+										questionTree.put(result.get(i)
+												.getOrder(), result.get(i));
+									}
+									populateQuestionList(result);
+									questionGroup.setQuestionMap(questionTree);
+									bundle.put(
+											BundleConstants.QUESTION_GROUP_KEY,
+											questionGroup);
+
+								}
+							}
+						});
+			}
 		}
+	}
+
+	private void populateQuestionList(Collection<QuestionDto> questionList) {
+		toggleLoading(false);
+		Grid dataGrid = new Grid(questionList.size(), 2);
+		int i = 0;
+		if (questionList != null) {
+			for (QuestionDto q : questionList) {
+				Label l = createListEntry(q.getText());
+				questionMap.put(l, q);
+				Button b = createButton(ClickMode.EDIT, "Edit");
+				dataGrid.setWidget(i, 1, b);
+				questionMap.put(b, q);
+				dataGrid.setWidget(i, 0, l);
+				i++;
+			}
+		}
+		addWidget(dataGrid);
 	}
 
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
-		loadData((QuestionGroupDto) bundle
-				.get(BundleConstants.QUESTION_GROUP_KEY));
+		// remove the bundle item that this widget populates
+		bundle.remove(BundleConstants.QUESTION_KEY);
+		questionGroup = (QuestionGroupDto) bundle
+				.get(BundleConstants.QUESTION_GROUP_KEY);
+		loadData(questionGroup);
 	}
 
 	@Override
@@ -100,6 +128,5 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		if (listener != null) {
 			listener.operationComplete(true, getContextBundle());
 		}
-
 	}
 }

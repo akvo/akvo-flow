@@ -69,6 +69,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
+		bundle.remove(BundleConstants.SURVEY_KEY);
 		loadData((SurveyGroupDto) bundle.get(BundleConstants.SURVEY_GROUP_KEY));
 	}
 

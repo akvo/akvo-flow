@@ -70,6 +70,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
+		bundle.remove(BundleConstants.QUESTION_GROUP_KEY);
 		loadData((SurveyDto) bundle.get(BundleConstants.SURVEY_KEY));
 	}
 

@@ -62,6 +62,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private Widget currentPage;
 	private Breadcrumb currentBreadcrumb;
 	private ContextAware pendingPage;
+	private WizardNode pageToLoad;
 	private MessageDialog waitDialog;
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
@@ -83,7 +84,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		breadcrumbWidgets = new HashMap<String, Widget>();
 		workflow = getWizardWorkflow();
 
-		renderWizardPage(workflow.getStartNode(), true, null);
+		pageToLoad = workflow.getStartNode();
+		renderWizardPage(pageToLoad, true, null);
 		setContent(contentPane);
 		waitDialog = new MessageDialog("Saving...", "Please wait", true);
 
@@ -145,8 +147,9 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		boolean calledSave = false;
 		prePageUnload(page);
 		widgetPanel.clear();
+		pageToLoad = page;
 		if (isForward && currentPage instanceof ContextAware) {
-			pendingPage = (ContextAware) currentPage;
+			pendingPage = (ContextAware) currentPage;			
 			// need to update current page first since we don't know when the
 			// callback to operationComplete will occur and currentPage needs to
 			// point to the new page at that point
@@ -155,12 +158,15 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			pendingPage.persistContext(this);
 			calledSave = true;
 		}
-		if (!calledSave) {
+		if (!calledSave) {			
 			currentPage = initializeNode(page);
 			// since there is nothing being saved, we can populate the bundle
 			// immediately (in the case of save being called, this happens in
 			// the callback)
-			populateBundle(bundle);
+			populateBundle(bundle);		
+			widgetPanel.add(currentPage);
+			resetNav(page);
+			onLoadComplete(page);
 		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {
@@ -172,9 +178,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		} else if (!isForward && page != null && page.getBreadcrumb() != null) {
 			removeBreadcrumb(page);
 		}
-		widgetPanel.add(currentPage);
-		resetNav(page);
-		onLoadComplete(page);
+		
 	}
 
 	/**
@@ -195,7 +199,14 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			Map<String, Object> bundle) {
 		waitDialog.hide();
 		if (isSuccessful) {
-			populateBundle(bundle);
+			widgetPanel.add(currentPage);
+			resetNav(pageToLoad);
+			onLoadComplete(pageToLoad);
+			populateBundle(bundle);			
+		}else{			
+			widgetPanel.clear();
+			currentPage = (Widget)pendingPage;
+			widgetPanel.add(currentPage);				
 		}
 
 	}
