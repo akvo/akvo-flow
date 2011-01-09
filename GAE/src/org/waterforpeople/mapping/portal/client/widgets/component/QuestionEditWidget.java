@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -26,6 +27,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -55,6 +57,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private CheckBox allowMultipleBox;
 	private Button addOptionButton;
 	private CaptionPanel optionPanel;
+	private FlexTable optionTable;
 	private SurveyServiceAsync surveyService;
 	private Map<String, Object> bundle;
 	private QuestionDto currentQuestion;
@@ -62,6 +65,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	public QuestionEditWidget() {
 		surveyService = GWT.create(SurveyService.class);
+		optionQuestions = new HashMap<Long, List<QuestionDto>>();
 		installWidgets();
 		initWidget(panel);
 	}
@@ -124,14 +128,18 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		allowMultipleBox = new CheckBox();
 		allowOtherBox = new CheckBox();
 		addOptionButton = new Button("Add Option");
-
+		addOptionButton.addClickHandler(this);
 		optionPanel = new CaptionPanel("Option Details:");
+		VerticalPanel vp = new VerticalPanel();
+		optionPanel.add(vp);
+		optionTable = new FlexTable();
 		Grid optGrid = new Grid(2, 4);
 		installRow("Allow Multiple", allowMultipleBox, optGrid, 0, 0);
 		installRow("Allow 'Other'", allowOtherBox, optGrid, 0, 2);
-		installRow(null, addOptionButton, optGrid, 1);
 
-		optionPanel.add(optGrid);
+		vp.add(optGrid);
+		vp.add(optionTable);
+		vp.add(addOptionButton);		
 		optionPanel.setVisible(false);
 		panel.add(optionPanel);
 	}
@@ -156,15 +164,79 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	}
 
 	private void populateFields() {
+		questionTextArea.setText(currentQuestion.getText());
+		tooltipArea.setText(currentQuestion.getTip());
+		if (currentQuestion.getType() != null) {
+			for (int i = 0; i < questionTypeSelector.getItemCount(); i++) {
+				if (currentQuestion.getType().toString().equals(
+						questionTypeSelector.getValue(i))) {
+					questionTypeSelector.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+		if (currentQuestion.getMandatoryFlag() != null) {
+			mandatoryBox.setValue(currentQuestion.getMandatoryFlag());
+		}
+		if (currentQuestion.getQuestionDependency() != null) {
+			dependentBox.setValue(true);
+			loadDependentQuestionAnswers(currentQuestion
+					.getQuestionDependency().getQuestionId().toString());
+		}
+		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
+			loadOptions();
+		}
 
 	}
 
 	private void loadOptions() {
+		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()
+				&& (currentQuestion.getOptionContainerDto() == null || currentQuestion
+						.getOptionContainerDto().getOptionsList() == null)) {
+			surveyService.loadQuestionDetails(currentQuestion.getKeyId(),
+					new AsyncCallback<QuestionDto>() {
 
+						@Override
+						public void onFailure(Throwable caught) {
+
+						}
+
+						@Override
+						public void onSuccess(QuestionDto result) {
+							currentQuestion = result;
+							populateOptions(currentQuestion
+									.getOptionContainerDto());
+						}
+					});
+		} else {
+			populateOptions(currentQuestion.getOptionContainerDto());
+		}
+	}
+
+	private void populateOptions(OptionContainerDto optionContainer) {
+		optionPanel.setVisible(true);
+		// wipe out any old values
+		optionTable.clear(true);
+		if (optionContainer != null && optionContainer.getOptionsList() != null) {
+			for (QuestionOptionDto opt : optionContainer.getOptionsList()) {			
+				installOptionRow(opt);				
+			}
+		}
+	}
+	
+	private void installOptionRow(QuestionOptionDto opt){
+		int row = optionTable.getRowCount();
+		optionTable.insertRow(row);
+		TextBox optText = new TextBox();		
+		optionTable.setWidget(row,0, optText);
+		Button deleteButton = new Button("Remove");
+		optionTable.setWidget(row,1,deleteButton);
+		if(opt != null){
+			optText.setText(opt.getText());			
+		}
 	}
 
 	private void loadDependencyList() {
-
 		if (optionQuestions != null
 				&& optionQuestions.get(currentQuestion.getSurveyId()) != null) {
 			populateDependencySelection(currentQuestion, optionQuestions
@@ -189,9 +261,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 						@Override
 						public void onSuccess(QuestionDto[] result) {
-							if (optionQuestions == null) {
-								optionQuestions = new HashMap<Long, List<QuestionDto>>();
-							}
+												
+							
 							List<QuestionDto> questionList = Arrays
 									.asList(result);
 							optionQuestions.put(currentQuestion.getSurveyId(),
@@ -210,8 +281,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	private void populateDependencySelection(QuestionDto currentQuestion,
 			List<QuestionDto> questionList) {
+		dependencyPanel.setVisible(true);
 		if (questionList != null) {
-			// for(QuestionDto q: questionList){
 			for (int i = 0; i < questionList.size(); i++) {
 				QuestionDto q = questionList.get(i);
 				dependentQuestionSelector.addItem(q.getText(), q.getKeyId()
@@ -227,8 +298,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	}
 
 	private void loadDependentQuestionAnswers(String questionId) {
-		List<QuestionDto> questionList = optionQuestions.get(currentQuestion
-				.getSurveyId());
+		final List<QuestionDto> questionList = optionQuestions
+				.get(currentQuestion.getSurveyId());
 		QuestionDto question = null;
 		if (questionList != null) {
 			for (QuestionDto q : questionList) {
@@ -238,7 +309,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			}
 		}
 		if (question != null) {
-			if (question.getOptionContainerDto() != null) {
+			if (question.getOptionContainerDto() != null
+					&& question.getOptionContainerDto().getOptionsList() != null) {
 				populateDependencyAnswers(currentQuestion, question
 						.getOptionContainerDto().getOptionsList());
 			} else {
@@ -251,6 +323,14 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						new AsyncCallback<QuestionDto>() {
 							@Override
 							public void onSuccess(QuestionDto result) {
+								if (questionList != null) {
+									// remove & re-add the result to replace it
+									// in the list
+									// this works since we overrode
+									// equals/hashCode
+									questionList.remove(result);
+									questionList.add(result);
+								}
 								if (result.getOptionContainerDto() != null) {
 									populateDependencyAnswers(currentQuestion,
 											result.getOptionContainerDto()
@@ -288,12 +368,30 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
+		bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);
 		return bundle;
 	}
 
 	@Override
-	public void persistContext(CompletionListener listener) {
-		// TODO Auto-generated method stub
+	public void persistContext(final CompletionListener listener) {
+		surveyService.saveQuestion(currentQuestion, currentQuestion
+				.getQuestionGroupId(), new AsyncCallback<QuestionDto>() {
+
+			@Override
+			public void onSuccess(QuestionDto result) {
+				currentQuestion = result;
+				if (listener != null) {
+					listener.operationComplete(true, getContextBundle());
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				if (listener != null) {
+					listener.operationComplete(false, getContextBundle());
+				}
+			}
+		});
 
 	}
 
@@ -348,6 +446,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			} else {
 				dependencyPanel.setVisible(false);
 			}
+		}else if(event.getSource() == addOptionButton){
+			installOptionRow(null);
 		}
 	}
 }
