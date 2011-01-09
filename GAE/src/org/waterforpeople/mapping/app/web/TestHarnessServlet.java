@@ -124,8 +124,9 @@ public class TestHarnessServlet extends HttpServlet {
 
 				AccessPointDao apDao = new AccessPointDao();
 				for (AccessPoint ap : apDao.list("all")) {
-					if (ap.getCountryCode() == null
-							|| ap.getCountryCode().equals("US")) {
+					if ((ap.getCountryCode() == null || ap.getCountryCode()
+							.equals("US"))
+							&& (ap.getLatitude() != null && ap.getLongitude() != null)) {
 						if (ap.getLatitude() > 5.9 && ap.getLatitude() < 8) {
 							if (ap.getLongitude() < -9
 									&& ap.getLongitude() > -11) {
