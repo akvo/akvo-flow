@@ -38,6 +38,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class QuestionEditWidget extends Composite implements ContextAware,
 		ChangeHandler, ClickHandler {
@@ -235,54 +236,64 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	}
 
 	private void installOptionRow(QuestionOptionDto opt) {
-		final int row = optionTable.getRowCount();
+		int row = optionTable.getRowCount();
 		optionTable.insertRow(row);
 		TextBox optText = new TextBox();
 		optionTable.setWidget(row, 0, optText);
 		HorizontalPanel bp = new HorizontalPanel();
 		final Image moveUp = new Image("/images/greenuparrow.png");
 		final Image moveDown = new Image("/images/greendownarrow.png");
+		final Button deleteButton = new Button("Remove");
 
-		ClickHandler reorderClickHandler = new ClickHandler() {
+		ClickHandler optionClickHandler = new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				int increment = 0;
 				ArrayList<QuestionOptionDto> optList = currentQuestion
-						.getOptionContainerDto().getOptionsList();
-				if (event.getSource() == moveUp && row > 0) {
-					increment = -1;
-				} else if (event.getSource() == moveDown
-						&& row < optList.size() - 1) {
-					increment = 1;
-				}
-				if (increment != 0) {
-					QuestionOptionDto targetOpt = optList.get(row + increment);
-					QuestionOptionDto movingOpt = optList.get(row);
-					optList.set(row + increment, movingOpt);
-					optList.set(row,targetOpt);
-					targetOpt.setOrder(targetOpt.getOrder()-increment);
-					movingOpt.setOrder(movingOpt.getOrder()+increment);
-					//now update the UI
-					((TextBox)(optionTable.getWidget(row, 0))).setText(targetOpt.getText());
-					((TextBox)(optionTable.getWidget(row+increment, 0))).setText(movingOpt.getText());
+				.getOptionContainerDto().getOptionsList();
+				Cell cell = optionTable.getCellForEvent(event);				
+				if (event.getSource() == deleteButton) {				
+					optionTable.removeRow(cell.getRowIndex());										
+				} else {
+					int increment = 0;					
+					if (event.getSource() == moveUp && cell.getRowIndex() > 0) {
+						increment = -1;
+					} else if (event.getSource() == moveDown
+							&& cell.getRowIndex() < optList.size() - 1) {
+						increment = 1;
+					}
+					if (increment != 0) {
+						QuestionOptionDto targetOpt = optList.get(cell.getRowIndex()
+								+ increment);
+						QuestionOptionDto movingOpt = optList.get(cell.getRowIndex());
+						optList.set(cell.getRowIndex() + increment, movingOpt);
+						optList.set(cell.getRowIndex(), targetOpt);
+						targetOpt.setOrder(targetOpt.getOrder() - increment);
+						movingOpt.setOrder(movingOpt.getOrder() + increment);
+						// now update the UI
+						((TextBox) (optionTable.getWidget(cell.getRowIndex(), 0)))
+								.setText(targetOpt.getText());
+						((TextBox) (optionTable.getWidget(cell.getRowIndex() + increment, 0)))
+								.setText(movingOpt.getText());
+					}
 				}
 			}
 		};
 
 		moveUp.setStylePrimaryName(REORDER_BUTTON_CSS);
-		moveUp.addClickHandler(reorderClickHandler);
+		moveUp.addClickHandler(optionClickHandler);
 
 		moveDown.setStylePrimaryName(REORDER_BUTTON_CSS);
-		moveDown.addClickHandler(reorderClickHandler);
+		moveDown.addClickHandler(optionClickHandler);
 		bp.add(moveUp);
 		bp.add(moveDown);
 		optionTable.setWidget(row, 1, bp);
-		Button deleteButton = new Button("Remove");
+
+		deleteButton.addClickHandler(optionClickHandler);
 		optionTable.setWidget(row, 2, deleteButton);
 		if (opt != null) {
 			optText.setText(opt.getText());
-			if(opt.getOrder() == null){
+			if (opt.getOrder() == null) {
 				opt.setOrder(row);
 			}
 		} else {
