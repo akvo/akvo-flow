@@ -140,6 +140,8 @@ public class TestHarnessServlet extends HttpServlet {
 
 							}
 						}
+					} else if (ap.getCommunityCode() == null) {
+						ap.setCommunityCode(new Random().toString());
 					}
 				}
 
