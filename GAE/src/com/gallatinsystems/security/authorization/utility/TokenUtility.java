@@ -4,17 +4,25 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.waterforpeople.mapping.app.web.ProcessorServlet;
 
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.google.gdata.client.http.AuthSubUtil;
 import com.google.gdata.util.AuthenticationException;
 
 public class TokenUtility {
-
+	private static final Logger log = Logger.getLogger(TokenUtility.class
+			.getName());
 	public String generateSessionTokenFromSingleUse(String singleUseToken) throws AuthenticationException, IOException, GeneralSecurityException {
-
+		PrivateKey pk = getPrivateKey();
+		if(pk!=null){
+			log.log(Level.INFO, "Got PK");
+		}
 		return AuthSubUtil.exchangeForSessionToken(
-				singleUseToken, getPrivateKey());
+				singleUseToken, pk);
 
 	}
 

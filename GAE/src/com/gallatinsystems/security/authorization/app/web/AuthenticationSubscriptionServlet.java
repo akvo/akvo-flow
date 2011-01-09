@@ -80,13 +80,18 @@ public class AuthenticationSubscriptionServlet extends HttpServlet {
 			TokenUtility tk = new TokenUtility();
 			try {
 				if (session.getAttribute("sessionToken") == null) {
+					log.log(Level.INFO, "About to generateSessionToken");
 					String sessionToken = tk
 							.generateSessionTokenFromSingleUse(singleUseToken);
+					log.log(Level.INFO, "Generated Session Token");
 					session.setAttribute("sessionToken", sessionToken);
 				}
 				if (session.getAttribute("privateKey") == null) {
+					log.log(Level.INFO, "About to get PK");
 					PrivateKey privateKey = tk.getPrivateKey();
+					log.log(Level.INFO, "Got PK");
 					session.setAttribute("privateKey", privateKey);
+					log.log(Level.INFO, "Set PK");
 				}
 			} catch (Exception e1) {
 				log.log(Level.SEVERE, "Could not authenticate", e1);
