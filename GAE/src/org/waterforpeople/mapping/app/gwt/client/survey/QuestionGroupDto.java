@@ -74,7 +74,6 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 			questionMap.put(position, item);
 
 		}
-
 	}
 
 	@Override

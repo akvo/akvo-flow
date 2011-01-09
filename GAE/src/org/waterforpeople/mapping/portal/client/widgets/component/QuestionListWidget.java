@@ -68,6 +68,8 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 											BundleConstants.QUESTION_GROUP_KEY,
 											questionGroup);
 
+								}else{
+									toggleLoading(false);
 								}
 							}
 						});

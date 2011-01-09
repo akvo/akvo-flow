@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.waterforpeople.mapping.portal.client.widgets.component.BundleConstants;
+
 import com.gallatinsystems.framework.gwt.component.Breadcrumb;
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
@@ -73,7 +75,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		buttonPanel = new HorizontalPanel();
 		widgetPanel = new VerticalPanel();
 
-		contentPane.add(breadcrumbPanel);				
+		contentPane.add(breadcrumbPanel);
 		contentPane.add(widgetPanel);
 		contentPane.add(buttonPanel);
 
@@ -149,7 +151,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		widgetPanel.clear();
 		pageToLoad = page;
 		if (isForward && currentPage instanceof ContextAware) {
-			pendingPage = (ContextAware) currentPage;			
+			pendingPage = (ContextAware) currentPage;
 			// need to update current page first since we don't know when the
 			// callback to operationComplete will occur and currentPage needs to
 			// point to the new page at that point
@@ -157,16 +159,6 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			waitDialog.showRelativeTo(widgetPanel);
 			pendingPage.persistContext(this);
 			calledSave = true;
-		}
-		if (!calledSave) {			
-			currentPage = initializeNode(page);
-			// since there is nothing being saved, we can populate the bundle
-			// immediately (in the case of save being called, this happens in
-			// the callback)
-			populateBundle(bundle);		
-			widgetPanel.add(currentPage);
-			resetNav(page);
-			onLoadComplete(page);
 		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {
@@ -178,7 +170,20 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		} else if (!isForward && page != null && page.getBreadcrumb() != null) {
 			removeBreadcrumb(page);
 		}
-		
+		if (!calledSave) {
+			currentPage = initializeNode(page);
+			// since there is nothing being saved, we can populate the bundle
+			// immediately (in the case of save being called, this happens in
+			// the callback)
+			populateBundle(bundle);
+			widgetPanel.add(currentPage);
+			resetNav(page);
+			onLoadComplete(page);
+			if (currentPage instanceof AutoAdvancing) {
+				((AutoAdvancing) currentPage).advance(this);
+			}
+		}
+
 	}
 
 	/**
@@ -200,13 +205,22 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		waitDialog.hide();
 		if (isSuccessful) {
 			widgetPanel.add(currentPage);
-			resetNav(pageToLoad);
-			onLoadComplete(pageToLoad);
-			populateBundle(bundle);			
-		}else{			
+			populateBundle(bundle);
+			if (bundle.get(BundleConstants.AUTO_ADVANCE_FLAG) != null) {
+				bundle.remove(BundleConstants.AUTO_ADVANCE_FLAG);
+				renderWizardPage(workflow.getWorkflowNode(pageToLoad.getNextNodes()[0]), true, bundle);
+			} else {
+				if (currentPage instanceof AutoAdvancing) {
+					((AutoAdvancing) currentPage).advance(this);
+				} else {
+					resetNav(pageToLoad);
+				}
+			}
+			onLoadComplete(pageToLoad);			
+		} else {
 			widgetPanel.clear();
-			currentPage = (Widget)pendingPage;
-			widgetPanel.add(currentPage);				
+			currentPage = (Widget) pendingPage;
+			widgetPanel.add(currentPage);
 		}
 
 	}

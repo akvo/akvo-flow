@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.PublicationWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupEditWidget;
@@ -27,7 +28,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	protected WizardWorkflow getWizardWorkflow() {
 		WizardWorkflow wf = new WizardWorkflow();
 		wf.setStartNode(new WizardNode("Administration", "Administration Home",
-				AdminHomeWidget.class, (String)null, (String)null));
+				AdminHomeWidget.class, (String) null, (String) null));
 		wf.addInternalNode(new WizardNode("SurveyGroupList", "Survey Groups",
 				SurveyGroupListWidget.class, "SurveyGroupCreate",
 				"Administration"));
@@ -38,19 +39,26 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("SurveyCreate", null,
 				SurveyEditWidget.class, "QuestionGroupList", "SurveyList"));
 		wf.addInternalNode(new WizardNode("QuestionGroupList",
-				"Question Groups", QuestionGroupListWidget.class,
-				new String[]{"QuestionGroupCreate","Publish"}, new String[]{"SurveyList"}));
+				"Question Groups", QuestionGroupListWidget.class, new String[] {
+						"QuestionGroupCreate", "Publish" },
+				new String[] { "SurveyList" }));
 		wf.addInternalNode(new WizardNode("QuestionGroupCreate", null,
 				QuestionGroupEditWidget.class, "QuestionList",
 				"QuestionGroupList"));
 		wf.addInternalNode(new WizardNode("QuestionList", "Questions",
-				QuestionListWidget.class, new String[] {"QuestionCreate","Publish"}, new String[]{"QuestionGroupList"}));
-		wf.addInternalNode(new WizardNode("QuestionCreate", null,
-				QuestionEditWidget.class, new String[] { "QuestionList" },
-				null));
+				QuestionListWidget.class, new String[] { "QuestionCreate",
+						"Publish" }, new String[] { "QuestionGroupList" }));
+		wf
+				.addInternalNode(new WizardNode("QuestionCreate", null,
+						QuestionEditWidget.class,
+						new String[] { "QuestionList" }, null));
 		wf.addInternalNode(new WizardNode("Publish", null,
-				PublicationWidget.class, new String[] { "Attribute Assignment",
-						"Device Assignment" }, new String[] { "QuestionList" }));
+				PublicationWidget.class,
+				new String[] { "Attribute Assignment" },
+				new String[] { "QuestionList" }));
+		wf.addInternalNode(new WizardNode("Attribute Assignment",
+				"Attribute Assignment", AttributeAssignmentWidget.class,
+				"Device Assignment", "Administration"));
 		return wf;
 
 	}
@@ -61,27 +69,27 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 
 	@Override
 	protected Widget initializeNode(WizardNode node) {
-		if(node.getWidgetClass().equals(AdminHomeWidget.class)){
+		if (node.getWidgetClass().equals(AdminHomeWidget.class)) {
 			return new AdminHomeWidget(this);
-		}else if (node.getWidgetClass().equals(PublicationWidget.class)){
+		} else if (node.getWidgetClass().equals(PublicationWidget.class)) {
 			return new PublicationWidget();
-	}else if (node.getWidgetClass().equals(QuestionEditWidget.class)){
+		} else if (node.getWidgetClass().equals(QuestionEditWidget.class)) {
 			return new QuestionEditWidget();
-	}else if (node.getWidgetClass().equals(QuestionGroupEditWidget.class)){
+		} else if (node.getWidgetClass().equals(QuestionGroupEditWidget.class)) {
 			return new QuestionGroupEditWidget();
-	}else if (node.getWidgetClass().equals(QuestionGroupListWidget.class)){
+		} else if (node.getWidgetClass().equals(QuestionGroupListWidget.class)) {
 			return new QuestionGroupListWidget(this);
-	}else if (node.getWidgetClass().equals(SurveyEditWidget.class)){
+		} else if (node.getWidgetClass().equals(SurveyEditWidget.class)) {
 			return new SurveyEditWidget();
-	}else if (node.getWidgetClass().equals(SurveyGroupEditWidget.class)){
+		} else if (node.getWidgetClass().equals(SurveyGroupEditWidget.class)) {
 			return new SurveyGroupEditWidget();
-	}else if (node.getWidgetClass().equals(SurveyGroupListWidget.class)){
+		} else if (node.getWidgetClass().equals(SurveyGroupListWidget.class)) {
 			return new SurveyGroupListWidget(this);
-	}else if (node.getWidgetClass().equals(SurveyListWidget.class)){
+		} else if (node.getWidgetClass().equals(SurveyListWidget.class)) {
 			return new SurveyListWidget(this);
-	}else if (node.getWidgetClass().equals(QuestionListWidget.class)){
-		return new QuestionListWidget(this);
-	}
+		} else if (node.getWidgetClass().equals(QuestionListWidget.class)) {
+			return new QuestionListWidget(this);
+		}
 		return null;
 
 	}

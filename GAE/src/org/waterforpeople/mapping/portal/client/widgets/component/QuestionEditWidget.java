@@ -78,6 +78,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private Map<Long, List<QuestionDto>> optionQuestions;
 	private Button editTranslationButton;
 
+	private QuestionGroupDto questionGroup;
 	private String operation;
 
 	public QuestionEditWidget() {
@@ -497,6 +498,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				@Override
 				public void onSuccess(QuestionDto result) {
 					currentQuestion = result;
+					questionGroup.addQuestion(currentQuestion, currentQuestion
+							.getOrder());
 					if (listener != null) {
 						listener.operationComplete(true, getContextBundle());
 					}
@@ -601,6 +604,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		this.bundle = bundle;
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
+		questionGroup = (QuestionGroupDto) bundle
+				.get(BundleConstants.QUESTION_GROUP_KEY);
 		optionQuestions = (Map<Long, List<QuestionDto>>) bundle
 				.get(BundleConstants.OPTION_QUESTION_LIST_KEY);
 		if (optionQuestions == null) {
@@ -615,6 +620,13 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			currentQuestion.setSurveyId(currentGroup.getSurveyId());
 			currentQuestion.setPath(currentGroup.getPath() + "/"
 					+ currentGroup.getCode());
+			currentQuestion.setQuestionGroupId(currentGroup.getKeyId());
+			if (currentGroup.getQuestionMap() != null) {
+				currentQuestion
+						.setOrder(currentGroup.getQuestionMap().size() + 1);
+			} else {
+				currentQuestion.setOrder(1);
+			}
 		}
 	}
 
@@ -659,23 +671,23 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	@Override
 	public void translationsUpdated(List<TranslationDto> translationList) {
-			if (translationList != null) {
-				for (TranslationDto trans : translationList) {
-					if ("QUESTION_TYPE".equals(trans.getParentType())) {
-						currentQuestion.addTranslation(trans);
-					} else if ("QUESTION_OPTION".equals(trans.getParentType())) {
-						// need to find the right option
-						if (currentQuestion.getOptionContainerDto() != null) {
-							for (QuestionOptionDto opt : currentQuestion
-									.getOptionContainerDto().getOptionsList()) {
-								if (opt.getKeyId().equals(trans.getParentId())) {
-									opt.addTranslation(trans);
-									break;
-								}
+		if (translationList != null) {
+			for (TranslationDto trans : translationList) {
+				if ("QUESTION_TYPE".equals(trans.getParentType())) {
+					currentQuestion.addTranslation(trans);
+				} else if ("QUESTION_OPTION".equals(trans.getParentType())) {
+					// need to find the right option
+					if (currentQuestion.getOptionContainerDto() != null) {
+						for (QuestionOptionDto opt : currentQuestion
+								.getOptionContainerDto().getOptionsList()) {
+							if (opt.getKeyId().equals(trans.getParentId())) {
+								opt.addTranslation(trans);
+								break;
 							}
 						}
 					}
 				}
+			}
 		}
 	}
 
