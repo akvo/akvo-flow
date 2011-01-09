@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -44,12 +45,14 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class QuestionEditWidget extends Composite implements ContextAware,
-		ChangeHandler, ClickHandler {
+		ChangeHandler, ClickHandler, TranslationChangeListener,
+		CompletionListener {
 
 	private static final String INPUT_LABEL_CSS = "input-label";
 	private static final String REORDER_BUTTON_CSS = "reorder-button";
 	private static final String DEFAULT_BOX_WIDTH = "300px";
 	private static final String SELECT_TXT = "Select...";
+	private static final String EDIT_TRANS_OP = "Edit Translation";
 	private VerticalPanel panel;
 	private CaptionPanel basePanel;
 	private TextArea questionTextArea;
@@ -59,7 +62,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private CheckBox mandatoryBox;
 	private CheckBox dependentBox;
 	private ListBox dependentQuestionSelector;
-	private ListBox dependentAnswerSelector;	
+	private ListBox dependentAnswerSelector;
 	private CaptionPanel dependencyPanel;
 	private Grid dependencyGrid;
 
@@ -73,6 +76,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private Map<String, Object> bundle;
 	private QuestionDto currentQuestion;
 	private Map<Long, List<QuestionDto>> optionQuestions;
+	private Button editTranslationButton;
+
+	private String operation;
 
 	public QuestionEditWidget() {
 		surveyService = GWT.create(SurveyService.class);
@@ -155,6 +161,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		optionContent.add(addOptionButton);
 		optionPanel.setVisible(false);
 		panel.add(optionPanel);
+
+		editTranslationButton = new Button("Edit Translations");
+		editTranslationButton.addClickHandler(this);
+		panel.add(editTranslationButton);
 	}
 
 	private void installRow(String labelText, Widget widget, Grid parent,
@@ -499,13 +509,14 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					}
 				}
 			});
-		}else{
+		} else {
 			StringBuilder builder = new StringBuilder("<ul>");
-			for(String err: validationErrors){
-				builder.append("<li>").append(err).append("</li>");				
+			for (String err : validationErrors) {
+				builder.append("<li>").append(err).append("</li>");
 			}
 			builder.append("</ul>");
-			MessageDialog errorDialog = new MessageDialog("Cannot save survey list", builder.toString());
+			MessageDialog errorDialog = new MessageDialog(
+					"Cannot save survey list", builder.toString());
 			errorDialog.showCentered();
 			listener.operationComplete(false, getContextBundle());
 		}
@@ -640,6 +651,44 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			}
 		} else if (event.getSource() == addOptionButton) {
 			installOptionRow(null);
+		} else if (event.getSource() == editTranslationButton) {
+			operation = EDIT_TRANS_OP;
+			persistContext(this);
 		}
+	}
+
+	@Override
+	public void translationsUpdated(List<TranslationDto> translationList) {
+			if (translationList != null) {
+				for (TranslationDto trans : translationList) {
+					if ("QUESTION_TYPE".equals(trans.getParentType())) {
+						currentQuestion.addTranslation(trans);
+					} else if ("QUESTION_OPTION".equals(trans.getParentType())) {
+						// need to find the right option
+						if (currentQuestion.getOptionContainerDto() != null) {
+							for (QuestionOptionDto opt : currentQuestion
+									.getOptionContainerDto().getOptionsList()) {
+								if (opt.getKeyId().equals(trans.getParentId())) {
+									opt.addTranslation(trans);
+									break;
+								}
+							}
+						}
+					}
+				}
+		}
+	}
+
+	@Override
+	public void operationComplete(boolean wasSuccessful,
+			Map<String, Object> payload) {
+		if (wasSuccessful) {
+			if (EDIT_TRANS_OP.equals(operation)) {
+				SurveyQuestionTranslationDialog dia = new SurveyQuestionTranslationDialog(
+						(QuestionDto) currentQuestion, this);
+				dia.show();
+			}
+		}
+		operation = null;
 	}
 }
