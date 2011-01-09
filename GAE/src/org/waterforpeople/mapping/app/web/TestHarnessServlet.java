@@ -142,6 +142,12 @@ public class TestHarnessServlet extends HttpServlet {
 						}
 					} else if (ap.getCommunityCode() == null) {
 						ap.setCommunityCode(new Random().toString());
+						apDao.save(ap);
+						resp.getWriter()
+						.println(
+								"Found "
+										+ ap.getCommunityCode()
+										+ "added random community code");
 					}
 				}
 
