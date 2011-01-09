@@ -123,6 +123,7 @@ public class TestHarnessServlet extends HttpServlet {
 			try {
 
 				AccessPointDao apDao = new AccessPointDao();
+				
 				for (AccessPoint ap : apDao.list("all")) {
 					if ((ap.getCountryCode() == null || ap.getCountryCode()
 							.equals("US"))
@@ -593,10 +594,11 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("createAP".equals(action)) {
 			AccessPoint ap = new AccessPoint();
 			ap.setCollectionDate(new Date());
-			ap.setCommunityCode("Geneva");
+			ap.setCommunityCode(new Random().toString());
 			ap.setPointStatus(Status.FUNCTIONING_OK);
 			ap.setLatitude(47.3);
 			ap.setLongitude(9d);
+			ap.setCountryCode("SZ");
 			ap.setPointType(AccessPointType.WATER_POINT);
 			AccessPointHelper helper = new AccessPointHelper();
 			helper.saveAccessPoint(ap);
