@@ -30,8 +30,8 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	public String getPath() {
 		return path;
 	}
-	
-	public String getQuestionTypeString(){
+
+	public String getQuestionTypeString() {
 		return type.toString();
 	}
 
@@ -178,5 +178,32 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public Boolean getAllowOtherFlag() {
 		return allowOtherFlag;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof QuestionDto)) {
+			return false;
+		}
+		QuestionDto otherQ = (QuestionDto) other;
+		if (getKeyId() != null && otherQ.getKeyId().equals(getKeyId())) {
+			return true;
+		} else if (getKeyId() == null && otherQ.getKeyId() == null) {
+			if (getText() != null && getText().equals(otherQ.getText())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode(){
+		if(getKeyId()!= null){
+			return getKeyId().hashCode();
+		}else if (getText() != null){
+			return getText().hashCode();
+		}else{
+			return 0; 
+		}
 	}
 }
