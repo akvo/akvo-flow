@@ -22,12 +22,12 @@ public class PropertyUtil {
 		}
 	}
 
-	public String getProperty(String propertyName) {
+	public static String getProperty(String propertyName) {
 		
 		return props.getProperty(propertyName);
 	}
 
-	public  HashMap<String, String> getPropertiesMap(ArrayList<String> keyList) {
+	public static  HashMap<String, String> getPropertiesMap(ArrayList<String> keyList) {
 		HashMap<String, String> propertyMap = new HashMap<String, String>();
 		for (String key : keyList) {
 			String value = props.getProperty(key);

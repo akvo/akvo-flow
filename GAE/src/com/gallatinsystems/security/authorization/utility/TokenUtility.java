@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.Properties;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.google.gdata.client.http.AuthSubUtil;
 import com.google.gdata.util.AuthenticationException;
 
@@ -24,7 +25,7 @@ public class TokenUtility {
 		String keypassword = props.getProperty("keypass");
 		
 		return  AuthSubUtil
-				.getPrivateKeyFromKeystore("WEB-INF/watermapmonitordev.jks",
+				.getPrivateKeyFromKeystore(PropertyUtil.getProperty("keystore"),
 						storepassword, alias,
 						keypassword);
 	}
