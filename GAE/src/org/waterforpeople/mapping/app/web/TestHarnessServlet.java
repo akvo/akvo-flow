@@ -119,15 +119,42 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
 
+		} else if ("resetLRAP".equals(action)) {
+			try {
+
+				AccessPointDao apDao = new AccessPointDao();
+				for (AccessPoint ap : apDao.list("all")) {
+					if (ap.getCountryCode() == null
+							|| ap.getCountryCode().equals("US")) {
+						if (ap.getLatitude() > 5.9 && ap.getLatitude() < 8) {
+							if (ap.getLongitude() < -9
+									&& ap.getLongitude() > -11) {
+								ap.setCountryCode("LR");
+								apDao.save(ap);
+								resp.getWriter()
+										.println(
+												"Found "
+														+ ap.getCommunityCode()
+														+ "mapped to US changing mapping to LR");
+
+							}
+						}
+					}
+				}
+
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Could not execute test", e);
+			}
+
 		} else if ("clearSurveyInstanceQAS".equals(action)) {
-//			QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-//			for (QuestionAnswerStore qas : qasDao.list("all")) {
-//				qasDao.delete(qas);
-//			}
-//			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-//			for (SurveyInstance si : siDao.list("all")) {
-//				siDao.delete(si);
-//			}
+			// QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+			// for (QuestionAnswerStore qas : qasDao.list("all")) {
+			// qasDao.delete(qas);
+			// }
+			// SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+			// for (SurveyInstance si : siDao.list("all")) {
+			// siDao.delete(si);
+			// }
 			AccessPointDao apDao = new AccessPointDao();
 			for (AccessPoint ap : apDao.list("all"))
 				apDao.delete(ap);
