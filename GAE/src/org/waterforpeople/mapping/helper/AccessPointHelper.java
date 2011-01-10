@@ -470,14 +470,17 @@ public class AccessPointHelper {
 
 			if ("functioning but with problems".equals(statusVal)) {
 				status = AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS;
-			} else if ("broken down system".equals(statusVal)) {
+			} else if ("broken down system".equals(statusVal)
+					|| "broken down".equals(statusVal)
+					|| statusVal.contains("broken")) {
 				status = AccessPoint.Status.BROKEN_DOWN;
-			} else if ("no improved system".equals(statusVal))
+			} else if ("no improved system".equals(statusVal)) {
 				status = AccessPoint.Status.NO_IMPROVED_SYSTEM;
-			else if ("functioning and meets government standards"
-					.equals(statusVal))
+			} else if ("functioning and meets government standards"
+					.equals(statusVal)) {
 				status = AccessPoint.Status.FUNCTIONING_HIGH;
-			else if ("high".equalsIgnoreCase(statusVal)) {
+			} else if ("high".equalsIgnoreCase(statusVal)
+					|| "functioning".equals(statusVal)) {
 				status = AccessPoint.Status.FUNCTIONING_HIGH;
 			} else if ("ok".equalsIgnoreCase(statusVal)) {
 				status = AccessPoint.Status.FUNCTIONING_OK;
