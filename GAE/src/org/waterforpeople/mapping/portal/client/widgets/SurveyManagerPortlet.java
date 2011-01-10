@@ -321,9 +321,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				validationRule.setText(item.getValidationRule());
 			if (item.getMandatoryFlag() != null)
 				if (item.getMandatoryFlag())
-					mandatoryQuestion.setValue(item.getMandatoryFlag());
+					mandatoryQuestion.setValue(true);
 				else
-					mandatoryQuestion.setValue(item.getMandatoryFlag());
+					mandatoryQuestion.setValue(false);
 		} else {
 			Integer order = surveyTree.getCurrentlySelectedItem()
 					.getChildCount();
