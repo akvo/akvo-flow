@@ -969,8 +969,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				accessPointDetail, 25, 1));
 		apDto.setEstimatedPeoplePerHouse(getLongValueFromWidget(
 				accessPointDetail, 26, 1));
-		apDto.setEstimatedPopulation(getLongValueFromWidget(
-				accessPointDetail, 27, 1));
+		apDto.setEstimatedPopulation(getLongValueFromWidget(accessPointDetail,
+				27, 1));
 		apDto.setHasSystemBeenDown1DayFlag(getValueFromWidget(
 				accessPointDetail, 29, 1).equals("yes") ? true : false);
 		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
@@ -1051,7 +1051,21 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			@Override
 			public void onClick(ClickEvent event) {
 				Button pressedButton = (Button) event.getSource();
-				Window.alert("delete key id: " + pressedButton.getTitle());
+				svc.deleteAccessPoint(Long.parseLong(pressedButton.getTitle()), new AsyncCallback(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(Object result) {
+						Window.alert("Deleted AccessPoint");
+					}
+					
+				});
+				
 			}
 
 		});
@@ -1207,12 +1221,13 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		else
 			return -1;
 	}
-	
-	private Long getLongValueFromWidget(FlexTable ft, Integer row, Integer column) {
+
+	private Long getLongValueFromWidget(FlexTable ft, Integer row,
+			Integer column) {
 		String val = getValueFromWidget(ft, row, column);
-		if(val != null && val.trim().length()>0){
+		if (val != null && val.trim().length() > 0) {
 			return new Long(val);
-		}else{
+		} else {
 			return null;
 		}
 	}
