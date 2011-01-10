@@ -235,6 +235,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		qDto.setPath(q.getPath());
 		qDto.setOrder(q.getOrder());
 		qDto.setSurveyId(q.getSurveyId());
+		if (q.getMandatoryFlag() != null) {
+			if (q.getMandatoryFlag()) {
+				qDto.setMandatoryFlag(true);
+			}
+		} else {
+			qDto.setMandatoryFlag(false);
+		}
 		if (q.getText() != null)
 			qDto.setText(q.getText());
 		if (q.getTip() != null)
@@ -316,8 +323,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			for (TranslationDto trans : translationMap.values()) {
 				Translation t = new Translation();
 				if (trans.getKeyId() != null)
-					t.setKey((KeyFactory.createKey(Translation.class
-							.getSimpleName(), trans.getKeyId())));
+					t.setKey((KeyFactory.createKey(
+							Translation.class.getSimpleName(), trans.getKeyId())));
 				t.setLanguageCode(trans.getLangCode());
 				t.setText(trans.getText());
 				t.setParentId(trans.getParentId());
@@ -337,8 +344,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public Question marshalQuestion(QuestionDto qdto) {
 		Question q = new Question();
 		if (qdto.getKeyId() != null)
-			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(), qdto
-					.getKeyId())));
+			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(),
+					qdto.getKeyId())));
 
 		q.setQuestionGroupId(qdto.getQuestionGroupId());
 		q.setOrder(qdto.getOrder());
@@ -385,8 +392,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (QuestionOptionDto qoDto : optionDtoList) {
 					QuestionOption oo = new QuestionOption();
 					if (qoDto.getKeyId() != null)
-						oo.setKey((KeyFactory.createKey(QuestionOption.class
-								.getSimpleName(), qoDto.getKeyId())));
+						oo.setKey((KeyFactory.createKey(
+								QuestionOption.class.getSimpleName(),
+								qoDto.getKeyId())));
 					if (qoDto.getCode() != null)
 						oo.setCode(qoDto.getCode());
 					if (qoDto.getText() != null)
@@ -535,11 +543,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionGroup questionGroup = new QuestionGroup();
 		DtoMarshaller.copyToCanonical(questionGroup, dto);
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
-		if(questionGroup.getOrder() == null || questionGroup.getOrder() == 0){
-			Map<Integer, QuestionGroup>  items = questionGroupDao.listQuestionGroupsBySurvey(questionGroup.getSurveyId());
-			if(items != null){
-				questionGroup.setOrder(items.size()+1);
-			}else{
+		if (questionGroup.getOrder() == null || questionGroup.getOrder() == 0) {
+			Map<Integer, QuestionGroup> items = questionGroupDao
+					.listQuestionGroupsBySurvey(questionGroup.getSurveyId());
+			if (items != null) {
+				questionGroup.setOrder(items.size() + 1);
+			} else {
 				questionGroup.setOrder(1);
 			}
 		}
@@ -839,12 +848,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				}
 				buffer.append(siList.get(i).getKey().getId());
 			}
-			queue.add(url("/app_worker/surveytask").param("action",
-					"reprocessMapSurveyInstance").param(
-					SurveyTaskRequest.ID_PARAM, surveyId.toString()).param(
-					SurveyTaskRequest.ID_LIST_PARAM, buffer.toString()).param(
-					SurveyTaskRequest.CURSOR_PARAM,
-					SurveyInstanceDAO.getCursor(siList)));
+			queue.add(url("/app_worker/surveytask")
+					.param("action", "reprocessMapSurveyInstance")
+					.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
+					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
+					.param(SurveyTaskRequest.CURSOR_PARAM,
+							SurveyInstanceDAO.getCursor(siList)));
 		}
 	}
 
