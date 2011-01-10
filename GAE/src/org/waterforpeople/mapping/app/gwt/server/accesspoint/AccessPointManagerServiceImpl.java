@@ -86,8 +86,9 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public Integer deleteAccessPoint(Long id) {
-		// TODO: implement delete
-		return null;
+		AccessPointDao apDao = new AccessPointDao();
+		apDao.delete(apDao.getByKey(id));
+		return 1;
 	}
 
 	@Override
