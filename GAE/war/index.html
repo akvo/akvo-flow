@@ -334,6 +334,7 @@ a {
 			country = $.jqURL.get('country').toUpperCase();
 		} else {
 			country = 'MW';
+			$("#tabs").tabs("select",5);
 		}
 		setCountryLatLon();
 	}
@@ -618,30 +619,39 @@ a {
 							if (document.getElementById("countrySel").selectedIndex == 1) {
 								map.setCenter(latlngBO);
 								map.setZoom(10);
+								$("#tabs").tabs("select",0);
 							} else if (document.getElementById("countrySel").selectedIndex == 2) {
 								map.setCenter(latlngSV);
 								map.setZoom(10);
+								$("#tabs").tabs("select",1);
 							} else if (document.getElementById("countrySel").selectedIndex == 3) {
 								map.setCenter(latlngGT);
 								map.setZoom(10);
+								$("#tabs").tabs("select",2);
 							} else if (document.getElementById("countrySel").selectedIndex == 4) {
 								map.setCenter(latlngHN);
 								map.setZoom(10);
+								$("#tabs").tabs("select",3);
 							} else if (document.getElementById("countrySel").selectedIndex == 5) {
 								map.setCenter(latlngIN);
 								map.setZoom(10);
+								$("#tabs").tabs("select",4);
 							} else if (document.getElementById("countrySel").selectedIndex == 6) {
 								map.setCenter(latlngMW);
 								map.setZoom(10);
+								$("#tabs").tabs("select",5);
 							} else if (document.getElementById("countrySel").selectedIndex == 7) {
 								map.setCenter(latlngNI);
 								map.setZoom(10);
+								$("#tabs").tabs("select",6);
 							} else if (document.getElementById("countrySel").selectedIndex == 8) {
 								map.setCenter(latlngPE);
 								map.setZoom(10);
+								$("#tabs").tabs("select",7);
 							} else if (document.getElementById("countrySel").selectedIndex == 9) {
 								map.setCenter(latlngRW);
 								map.setZoom(10);
+								$("#tabs").tabs("select",8);
 							}
 						});
 
