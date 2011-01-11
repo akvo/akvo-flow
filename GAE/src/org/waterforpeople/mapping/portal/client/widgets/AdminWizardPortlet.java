@@ -22,9 +22,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	public static final String NAME = "Admin Wizard";
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 800;
+	private UserDto user;
 
-	public AdminWizardPortlet(UserDto user) {
-		super(NAME, WIDTH, HEIGHT, user);
+	public AdminWizardPortlet(UserDto user) {		
+		super(NAME, WIDTH, HEIGHT);
+		this.user = user;
+		init();
 	}
 
 	protected WizardWorkflow getWizardWorkflow() {
@@ -74,7 +77,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	@Override
 	protected Widget initializeNode(WizardNode node) {
 		if (node.getWidgetClass().equals(AdminHomeWidget.class)) {
-			return new AdminHomeWidget(this, getCurrentUser());
+			return new AdminHomeWidget(this,user);
 		} else if (node.getWidgetClass().equals(PublicationWidget.class)) {
 			return new PublicationWidget();
 		} else if (node.getWidgetClass().equals(QuestionEditWidget.class)) {

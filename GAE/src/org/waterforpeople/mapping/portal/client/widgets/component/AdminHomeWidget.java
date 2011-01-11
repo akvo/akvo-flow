@@ -21,7 +21,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button mappingButton;
 	private PageController controller;
 	
-	public AdminHomeWidget(PageController controller, UserDto currentUser) {
+	public AdminHomeWidget(PageController controller, UserDto user) {
 		Grid widget = new Grid(4, 2);
 		this.controller = controller;
 		userMgmtButton = initButton("Manage Users");
@@ -31,7 +31,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 				0,
 				1,
 				createDescription("Create, edit and delete user accounts for the dashboard (Appengine Admins Only)."));
-		if(!currentUser.isAdmin()){
+		if(!user.isAdmin()){
 			userMgmtButton.setEnabled(false);
 		}
 		userMgmtButton.addClickHandler(this);

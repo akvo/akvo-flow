@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
-import org.waterforpeople.mapping.portal.client.widgets.UserAwarePortlet;
-import org.waterforpeople.mapping.portal.client.widgets.component.BundleConstants;
-
 import com.gallatinsystems.framework.gwt.component.Breadcrumb;
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.portlet.client.WizardBundleConstants;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -42,7 +40,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Christopher Fagiani
  */
-public abstract class AbstractWizardPortlet extends UserAwarePortlet implements
+public abstract class AbstractWizardPortlet extends Portlet implements
 		ClickHandler, PageController, CompletionListener {
 
 	private static final String NAV_BUTTON_STYLE = "wizard-navbutton";
@@ -68,8 +66,8 @@ public abstract class AbstractWizardPortlet extends UserAwarePortlet implements
 	private WizardNode pageToLoad;
 	private MessageDialog waitDialog;
 
-	protected AbstractWizardPortlet(String name, int width, int height, UserDto user) {
-		super(name, true, false, false, width, height,user);
+	protected AbstractWizardPortlet(String name, int width, int height) {
+		super(name, true, false, false, width, height);
 		contentPane = new VerticalPanel();
 		breadcrumbPanel = new HorizontalPanel();
 		breadcrumbPanel.setStylePrimaryName(BREADCRUMB_PANEL_STYLE);
@@ -85,13 +83,14 @@ public abstract class AbstractWizardPortlet extends UserAwarePortlet implements
 
 		breadcrumbList = new ArrayList<String>();
 		breadcrumbWidgets = new HashMap<String, Widget>();
-		workflow = getWizardWorkflow();
-
+		workflow = getWizardWorkflow();	
+	}
+	
+	protected void init(){
 		pageToLoad = workflow.getStartNode();
 		renderWizardPage(pageToLoad, true, null);
 		setContent(contentPane);
-		waitDialog = new MessageDialog("Saving...", "Please wait", true);
-
+		waitDialog = new MessageDialog("Saving...", "Please wait", true);	
 	}
 
 	/**
@@ -207,9 +206,10 @@ public abstract class AbstractWizardPortlet extends UserAwarePortlet implements
 		if (isSuccessful) {
 			widgetPanel.add(currentPage);
 			populateBundle(bundle);
-			if (bundle.get(BundleConstants.AUTO_ADVANCE_FLAG) != null) {
-				bundle.remove(BundleConstants.AUTO_ADVANCE_FLAG);
-				renderWizardPage(workflow.getWorkflowNode(pageToLoad.getNextNodes()[0]), true, bundle);
+			if (bundle.get(WizardBundleConstants.AUTO_ADVANCE_FLAG) != null) {
+				bundle.remove(WizardBundleConstants.AUTO_ADVANCE_FLAG);
+				renderWizardPage(workflow.getWorkflowNode(pageToLoad
+						.getNextNodes()[0]), true, bundle);
 			} else {
 				if (currentPage instanceof AutoAdvancing) {
 					((AutoAdvancing) currentPage).advance(this);
@@ -217,7 +217,7 @@ public abstract class AbstractWizardPortlet extends UserAwarePortlet implements
 					resetNav(pageToLoad);
 				}
 			}
-			onLoadComplete(pageToLoad);			
+			onLoadComplete(pageToLoad);
 		} else {
 			widgetPanel.clear();
 			currentPage = (Widget) pendingPage;
