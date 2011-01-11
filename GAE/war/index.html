@@ -325,6 +325,8 @@ a {
 <script src="/js/jqURL.js"></script>
 <script src="/js/smartinfowindow.js"></script>
 <script type="text/javascript">
+	var isIE = false;
+	var eventType= 'change';
 	var map;
 	var country;
 	var countryLatLon;
@@ -426,7 +428,11 @@ a {
 				|| navigator.userAgent.match(/iPod/i)
 				|| navigator.userAgent.match(/android/i)) {
 			isSmartphone = true;
+		}else if (navigator.appName == 'Microsoft Internet Explorer'){
+			isIE = true;
+			eventType = 'click';
 		}
+
 
 		if (isSmartphone) {
 			document.getElementById("map_canvas").style.width = '90%';
@@ -614,7 +620,7 @@ a {
 		google.maps.event
 				.addDomListener(
 						controlUI,
-						'click',
+						eventType,
 						function() {
 							if (document.getElementById("countrySel").selectedIndex == 1) {
 								map.setCenter(latlngBO);
