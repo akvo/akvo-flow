@@ -38,6 +38,13 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private String currentSortField;
 	private String defaultSortField;
 	private int currentSelection;
+	public int getCurrentSelection() {
+		return currentSelection;
+	}
+
+	public void setCurrentSelection(int currentSelection) {
+		this.currentSelection = currentSelection;
+	}
 	private List<String> cursorArray;
 	private Grid instanceGrid;
 	private int currentPage;
@@ -50,6 +57,10 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private VerticalPanel contentPanel;
 	private boolean rowClickable;
 	private boolean sortOverriden;
+	
+	public Grid getGrid(){
+		return instanceGrid;
+	}
 
 	/**
 	 * constructs a data table with rows that will be populated by a
@@ -346,5 +357,8 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		instanceGrid.resizeRows(rowCount + 1);
 		instanceGrid.setWidget(rowCount, 0, w);
 
+	}
+	public void removeRow(Integer row){
+		instanceGrid.removeRow(row);
 	}
 }

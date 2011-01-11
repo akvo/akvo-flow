@@ -1005,7 +1005,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 	}
 
 	@Override
-	public void bindRow(Grid grid, AccessPointDto apDto, int row) {
+	public void bindRow(final Grid grid, AccessPointDto apDto, int row) {
 		Label keyIdLabel = new Label(apDto.getKeyId().toString());
 		grid.setWidget(row, 0, keyIdLabel);
 		if (apDto.getCommunityCode() != null) {
@@ -1030,7 +1030,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		Button editAccessPoint = new Button("edit");
 		editAccessPoint.setTitle(keyIdLabel.getText());
 		Button deleteAccessPoint = new Button("delete");
-		deleteAccessPoint.setTitle(keyIdLabel.getText());
+		deleteAccessPoint.setTitle(new Integer(row).toString() + "|" + keyIdLabel.getText());
 		HorizontalPanel buttonHPanel = new HorizontalPanel();
 		buttonHPanel.add(editAccessPoint);
 		buttonHPanel.add(deleteAccessPoint);
@@ -1040,7 +1040,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			@Override
 			public void onClick(ClickEvent event) {
 				Button pressedButton = (Button) event.getSource();
-				Long itemId = new Long(pressedButton.getTitle());
+				Long itemId = Long.parseLong(pressedButton.getTitle());
 				loadAccessPointDetailTable(itemId);
 			}
 
@@ -1050,18 +1050,33 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Button pressedButton = (Button) event.getSource();
-				svc.deleteAccessPoint(Long.parseLong(pressedButton.getTitle()), new AsyncCallback(){
+				final Button pressedButton = (Button) event.getSource();
+				String[] titleParts = pressedButton.getTitle().split("\\|");
+				final Integer row = Integer.parseInt(titleParts[0]);
+				final Long itemId = Long.parseLong(titleParts[1]);
+				
+				svc.deleteAccessPoint(itemId, new AsyncCallback(){
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-						
+						Window.alert("Could not deleted Access Point");
 					}
 
 					@Override
 					public void onSuccess(Object result) {
-						Window.alert("Deleted AccessPoint");
+						int rowSelected =row;
+						apTable.removeRow(rowSelected);
+						Grid grid = apTable.getGrid();
+						for(int i=rowSelected;i<grid.getRowCount()-1;i++){
+							HorizontalPanel hPanel =(HorizontalPanel)grid.getWidget(i, 6);
+							Button deleteButton = (Button)hPanel.getWidget(1);
+							String[] buttonTitleParts = deleteButton.getTitle().split("\\|");
+							Integer newRowNum = Integer.parseInt(buttonTitleParts[0]);
+							newRowNum = newRowNum-1;
+							deleteButton.setTitle(newRowNum + "|"+ buttonTitleParts[1]);
+							
+						}
+						Window.alert("Deleted Access Point");
 					}
 					
 				});
