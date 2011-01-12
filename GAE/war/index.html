@@ -812,6 +812,10 @@ a {
 			map.setZoom(10);
 		}else if (ui.index == 5){
 			jQuery("select#countrySel option[value='MW']").attr("selected", "selected");
+			if(map!=null){
+				map.setCenter(latlngMW);
+				map.setZoom(10);
+			}
 		}else if (ui.index == 6){
 			jQuery("select#countrySel option[value='NI']").attr("selected", "selected");
 			map.setCenter(latlngNI);
