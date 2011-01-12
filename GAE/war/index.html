@@ -7,9 +7,14 @@
 html {
 	height: 100%
 }
+#outerContainer{
+height: 80%;
+width: 100%;
+overflow: auto;
+}
 
 #info_canvas {
-	height: 80%;
+	height: 100%;
 	width: 25%;
 	float: left;
 	position: relative;
@@ -18,7 +23,7 @@ html {
 }
 
 #map_canvas {
-	height: 80%;
+	height: 100%;
 	width: 75%;
 	float: right;
 	position: relative;
@@ -841,6 +846,7 @@ a {
 <div id="header" style="width: 100%"><a
 	href="http://www.waterforpeople.org"><img
 	src="/images/wfp_flow_header.jpg"></a></div>
+<div id="outerContainer">
 <div id="info_canvas">
 <div id="tabs">
 <ul>
@@ -1086,7 +1092,7 @@ a {
 </div>
 
 <div id="map_canvas"></div>
-
+</div>
 <div id="footer">
 <ul class="menu">
 	<li>
