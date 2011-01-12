@@ -786,6 +786,34 @@ a {
 <script>
 	$(function() {
 		$("#tabs").tabs();
+		
+		
+	$('#tabs').bind('tabsselect',function(event,ui){
+   		jQuery("select#countrySel option[selected]").removeAttr("selected");
+   		if(ui.index == 0){
+			jQuery("select#countrySel option[value='BO']").attr("selected", "selected");
+		}else if (ui.index == 1){
+			jQuery("select#countrySel option[value='SV']").attr("selected", "selected");
+		}else if (ui.index == 2){
+			jQuery("select#countrySel option[value='GT']").attr("selected", "selected");
+		}else if (ui.index == 3){
+			jQuery("select#countrySel option[value='HN']").attr("selected", "selected");
+		}else if (ui.index == 4){
+			jQuery("select#countrySel option[value='IN']").attr("selected", "selected");
+		}else if (ui.index == 5){
+			jQuery("select#countrySel option[value='MW']").attr("selected", "selected");
+		}else if (ui.index == 6){
+			jQuery("select#countrySel option[value='NI']").attr("selected", "selected");
+		}else if (ui.index == 7){
+			jQuery("select#countrySel option[value='PE']").attr("selected", "selected");
+		}else if (ui.index == 8){
+			jQuery("select#countrySel option[value='RW']").attr("selected", "selected");
+		}
+		
+		
+	});
+
+
 	});
 </script>
 </head>
