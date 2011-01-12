@@ -98,6 +98,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new QuestionListWidget(this);
 		} else if (node.getWidgetClass().equals(UserManagerWidget.class)) {
 			return new UserManagerWidget();
+		}else if (node.getWidgetClass().equals(AttributeAssignmentWidget.class)){
+			return new AttributeAssignmentWidget();
 		}
 		return null;
 

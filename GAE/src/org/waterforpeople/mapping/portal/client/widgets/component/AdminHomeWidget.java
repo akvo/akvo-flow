@@ -34,17 +34,18 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 		if(!user.isAdmin()){
 			userMgmtButton.setEnabled(false);
 		}
-		userMgmtButton.addClickHandler(this);
+		
 		surveyMgmtButton = initButton("Manage Surveys");
 		widget.setWidget(1, 0, surveyMgmtButton);
 		widget.setWidget(1, 1, createDescription("Create and publish surveys."));
-		assignmentButton = initButton("Assign Surveys to Devices");
+		assignmentButton = initButton("Assign Surveys to Devices");		
 		widget.setWidget(2, 0, assignmentButton);
 		widget.setWidget(
 				2,
 				1,
 				createDescription("Assign surveys to remote devices for auto delivery."));
 		mappingButton = initButton("Map Access PointAttributes");
+		
 		widget.setWidget(3, 0, mappingButton);
 		widget.setWidget(
 				3,
@@ -73,6 +74,8 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 			controller.openPage(SurveyGroupListWidget.class,null);
 		}else if (event.getSource() == userMgmtButton){
 			controller.openPage(UserManagerWidget.class,null);
+		}else if (event.getSource() == mappingButton){
+			controller.openPage(AttributeAssignmentWidget.class,null);
 		}
 	}
 

@@ -191,7 +191,10 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * 
 	 */
 	private void populateBundle(Map<String, Object> bundle) {
-		if (bundle != null && currentPage instanceof ContextAware) {
+		if (currentPage instanceof ContextAware) {
+			if(bundle == null){
+				bundle = new HashMap<String, Object>();
+			}
 			((ContextAware) currentPage).setContextBundle(bundle);
 		}
 	}
