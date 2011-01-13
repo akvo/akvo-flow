@@ -43,4 +43,7 @@ public interface AccessPointManagerServiceAsync {
 
 	void listCountryCodes(AsyncCallback<List<String>> callback);
 
+	void deleteAccessPoints(AccessPointSearchCriteriaDto searchCriteria,
+			AsyncCallback<Void> callback);
+
 }

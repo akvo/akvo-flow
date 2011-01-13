@@ -88,6 +88,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 	private Button searchButton = new Button("Search");
 	private Button errorsButton = new Button("Show Errors");
+	private Button deleteAllButton = new Button("Delete All Matches");
 
 	private FlexTable accessPointFT = new FlexTable();
 	private AccessPointManagerServiceAsync svc;
@@ -179,6 +180,46 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		});
 
+		deleteAllButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				MessageDialog warning = new MessageDialog(
+						"Warning",
+						"This will delete <b>ALL</b> Access Points that match the current query. Are you sure you want to continue?",
+						false, new ClickHandler() {
+
+							@Override
+							public void onClick(ClickEvent event) {
+
+								AccessPointSearchCriteriaDto criteria = formSearchCriteria();
+								svc.deleteAccessPoints(criteria,
+										new AsyncCallback<Void>() {
+
+											@Override
+											public void onSuccess(Void result) {
+												requestData(null, false);
+											}
+
+											@Override
+											public void onFailure(
+													Throwable caught) {
+												MessageDialog errDia = new MessageDialog(
+														"Error while deleting",
+														"Could not delete all access points: <br>"
+																+ caught
+																		.getLocalizedMessage());
+												errDia.showCentered();
+
+											}
+										});
+							}
+						});
+				warning.showCentered();
+			}
+
+		});
+
 		return grid;
 	}
 
@@ -202,6 +243,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		searchTable.setWidget(4, 0, searchButton);
 		searchTable.setWidget(4, 1, createNewAccessPoint);
 		searchTable.setWidget(4, 2, errorsButton);
+		searchTable.setWidget(4,3,deleteAllButton);
 
 		mainVPanel.add(searchTable);
 	}
@@ -222,8 +264,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				AccessPointType.SANITATION_POINT.toString());
 		accessPointTypeListBox.addItem("Public Institution",
 				AccessPointType.PUBLIC_INSTITUTION.toString());
-		accessPointTypeListBox.addItem("School",
-				AccessPointType.SCHOOL.toString());
+		accessPointTypeListBox.addItem("School", AccessPointType.SCHOOL
+				.toString());
 
 	}
 
@@ -312,10 +354,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 						.getWidget(10, 3)).getWidget()).getFilename();
 
 				if (fileName.contains("/")) {
-					fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+					fileName = fileName
+							.substring(fileName.lastIndexOf("/") + 1);
 				}
 				if (fileName.contains("\\")) {
-					fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+					fileName = fileName
+							.substring(fileName.lastIndexOf("\\") + 1);
 				}
 
 				((TextBox) accessPointDetail.getWidget(10, 1))
@@ -327,8 +371,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 				if (i == null) {
 					Image photo = new Image();
-					photo.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
-							+ fileName);
+					photo
+							.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
+									+ fileName);
 					photo.setHeight("200px");
 					accessPointDetail.setWidget(11, 1, photo);
 				} else {
@@ -378,8 +423,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 									.setVisible(false);
 							photo.setUrl(((TextBox) accessPointDetail
 									.getWidget(11, 1)).getText()
-									+ "?random="
-									+ random);
+									+ "?random=" + random);
 							photo.setVisible(true);
 						}
 					});
@@ -543,8 +587,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		ListBox pointType = new ListBox();
 		pointType
 				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
-		pointType.addItem("Sanitation Point",
-				AccessPointType.SANITATION_POINT.toString());
+		pointType.addItem("Sanitation Point", AccessPointType.SANITATION_POINT
+				.toString());
 		pointType.addItem("Public Institution",
 				AccessPointType.PUBLIC_INSTITUTION.toString());
 		pointType.addItem("School", AccessPointType.SCHOOL.toString());
@@ -602,45 +646,36 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		accessPointDetail.setWidget(17, 0, new Label(
 				"Farthest household with acceptable distance: "));
-		accessPointDetail
-				.setWidget(
-						17,
-						1,
-						addListBox(accessPointDto
-								.getFarthestHouseholdfromPoint() != null ? accessPointDto
-								.getFarthestHouseholdfromPoint() : null));
+		accessPointDetail.setWidget(17, 1, addListBox(accessPointDto
+				 != null ? accessPointDto
+				.getFarthestHouseholdfromPoint() : null));
 
 		// footer
 		// header
 		// meetGovtQualtiyStandardFlag
 		accessPointDetail.setWidget(18, 0, new Label(
 				"Meet Government Quality Standard: "));
-		accessPointDetail.setWidget(18, 1, addListBox(accessPointDto
+		accessPointDetail.setWidget(18, 1, addListBox(accessPointDto != null && accessPointDto
 				.getMeetGovtQualityStandards() != null ? accessPointDto
 				.getMeetGovtQualityStandards().toString() : null));
 
 		// meetGovtQuantityStandardFlag
 		accessPointDetail.setWidget(19, 0, new Label(
 				"Meet Government Quantity Standard: "));
-		accessPointDetail
-				.setWidget(
-						19,
-						1,
-						addListBox(accessPointDto
-								.getMeetGovtQunatityStandardsFlag() != null ? accessPointDto
-								.getMeetGovtQunatityStandardsFlag().toString()
-								: null));
+		accessPointDetail.setWidget(19, 1, addListBox(accessPointDto != null && accessPointDto
+				.getMeetGovtQunatityStandardsFlag() != null ? accessPointDto
+				.getMeetGovtQunatityStandardsFlag().toString() : null));
 		// numberOfHouseholdsUsingPoint
 		// provideAdequateQuantity
 		accessPointDetail.setWidget(21, 0, new Label(
 				"Provide adequate quantity: "));
-		accessPointDetail.setWidget(21, 1, addListBox(accessPointDto
+		accessPointDetail.setWidget(21, 1, addListBox(accessPointDto != null && accessPointDto
 				.getProvideAdequateQuantity() != null ? accessPointDto
 				.getProvideAdequateQuantity().toString() : null));
 		// SecondaryTechnologyString
 		// typeTechnologyString
 		TextBox techTypeString = new TextBox();
-		if (accessPointDto.getTypeTechnologyString() != null)
+		if (accessPointDto != null && accessPointDto.getTypeTechnologyString() != null)
 			techTypeString.setText(accessPointDto.getTypeTechnologyString());
 		accessPointDetail.setWidget(22, 0,
 				new Label("Technology Type String: "));
@@ -649,14 +684,14 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox secondaryTechTypeString = new TextBox();
 		accessPointDetail.setWidget(23, 0, new Label(
 				"Secondary Technology String: "));
-		if (accessPointDto.getSecondaryTechnologyString() != null)
+		if (accessPointDto!= null && accessPointDto.getSecondaryTechnologyString() != null)
 			secondaryTechTypeString.setText(accessPointDto
 					.getSecondaryTechnologyString());
 		accessPointDetail.setWidget(23, 1, secondaryTechTypeString);
 		// whoRepairsPoint
 		TextBox whoRepairsPoint = new TextBox();
 		accessPointDetail.setWidget(24, 0, new Label("Who Repairs Point"));
-		if (accessPointDto.getWhoRepairsPoint() != null)
+		if (accessPointDto!= null && accessPointDto.getWhoRepairsPoint() != null)
 			whoRepairsPoint.setText(accessPointDto.getWhoRepairsPoint());
 		accessPointDetail.setWidget(24, 1, whoRepairsPoint);
 
@@ -664,7 +699,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox estHouseholds = new TextBox();
 		accessPointDetail.setWidget(25, 0, new Label(
 				"Estimated number of households using point:"));
-		if (accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
+		if (accessPointDto!= null && accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
 			estHouseholds.setText(accessPointDto
 					.getNumberOfHouseholdsUsingPoint().toString());
 		accessPointDetail.setWidget(25, 1, estHouseholds);
@@ -673,7 +708,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox estPeoplePerHouse = new TextBox();
 		accessPointDetail.setWidget(26, 0, new Label(
 				"Estimated people per household:"));
-		if (accessPointDto.getEstimatedPeoplePerHouse() != null)
+		if (accessPointDto!= null && accessPointDto.getEstimatedPeoplePerHouse() != null)
 			estPeoplePerHouse.setText(accessPointDto
 					.getEstimatedPeoplePerHouse().toString());
 		accessPointDetail.setWidget(26, 1, estPeoplePerHouse);
@@ -681,7 +716,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		// extimatedPopulation
 		TextBox estimatedPopulation = new TextBox();
 		accessPointDetail.setWidget(27, 0, new Label("Estimated Population: "));
-		if (accessPointDto.getEstimatedPopulation() != null)
+		if (accessPointDto!= null && accessPointDto.getEstimatedPopulation() != null)
 			estimatedPopulation.setText(accessPointDto.getEstimatedPopulation()
 					.toString());
 		accessPointDetail.setWidget(27, 1, estimatedPopulation);
@@ -689,28 +724,18 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		// hasSystemBeenDown1DayFlag
 		accessPointDetail.setWidget(29, 0, new Label(
 				"Has system been down 1 day: "));
-		accessPointDetail
-				.setWidget(
-						29,
-						1,
-						addListBox(accessPointDto
-								.getHasSystemBeenDown1DayFlag() != null ? accessPointDto
-								.getHasSystemBeenDown1DayFlag().toString()
-								: null));
+		accessPointDetail.setWidget(29, 1, addListBox(accessPointDto!= null && accessPointDto
+				.getHasSystemBeenDown1DayFlag() != null ? accessPointDto
+				.getHasSystemBeenDown1DayFlag().toString() : null));
 
 		accessPointDetail.setWidget(30, 0, new Label(
 				"Water For People Supported Project:"));
-		accessPointDetail
-				.setWidget(
-						30,
-						1,
-						addListBox(accessPointDto
-								.getWaterForPeopleProjectFlag() != null ? accessPointDto
-								.getWaterForPeopleProjectFlag().toString()
-								: null));
+		accessPointDetail.setWidget(30, 1, addListBox(accessPointDto!= null && accessPointDto
+				.getWaterForPeopleProjectFlag() != null ? accessPointDto
+				.getWaterForPeopleProjectFlag().toString() : null));
 		accessPointDetail.setWidget(31, 0, new Label("Water For People Role:"));
 		TextBox roleTextBox = new TextBox();
-		if (accessPointDto.getWaterForPeopleRole() != null)
+		if (accessPointDto!= null && accessPointDto.getWaterForPeopleRole() != null)
 			roleTextBox.setText(accessPointDto.getWaterForPeopleRole());
 		accessPointDetail.setWidget(31, 1, roleTextBox);
 
@@ -757,7 +782,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 								@Override
 								public void onSuccess(AccessPointDto result) {
-									Window.alert("Access Point successfully updated");
+									Window
+											.alert("Access Point successfully updated");
 								}
 
 							});
@@ -975,7 +1001,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				accessPointDetail, 29, 1).equals("yes") ? true : false);
 		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
 				accessPointDetail, 30, 1).equals("yes") ? true : false);
-		apDto.setWaterForPeopleRole(getValueFromWidget(accessPointDetail, 31, 1));
+		apDto
+				.setWaterForPeopleRole(getValueFromWidget(accessPointDetail,
+						31, 1));
 		return apDto;
 	}
 
@@ -1023,14 +1051,15 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			grid.setWidget(row, 4, new Label(apDto.getPointType().name()));
 		}
 		if (apDto.getCollectionDate() != null) {
-			grid.setWidget(row, 5,
-					new Label(dateFormat.format(apDto.getCollectionDate())));
+			grid.setWidget(row, 5, new Label(dateFormat.format(apDto
+					.getCollectionDate())));
 		}
 
 		Button editAccessPoint = new Button("edit");
 		editAccessPoint.setTitle(keyIdLabel.getText());
 		Button deleteAccessPoint = new Button("delete");
-		deleteAccessPoint.setTitle(new Integer(row).toString() + "|" + keyIdLabel.getText());
+		deleteAccessPoint.setTitle(new Integer(row).toString() + "|"
+				+ keyIdLabel.getText());
 		HorizontalPanel buttonHPanel = new HorizontalPanel();
 		buttonHPanel.add(editAccessPoint);
 		buttonHPanel.add(deleteAccessPoint);
@@ -1054,8 +1083,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				String[] titleParts = pressedButton.getTitle().split("\\|");
 				final Integer row = Integer.parseInt(titleParts[0]);
 				final Long itemId = Long.parseLong(titleParts[1]);
-				
-				svc.deleteAccessPoint(itemId, new AsyncCallback(){
+
+				svc.deleteAccessPoint(itemId, new AsyncCallback() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -1064,23 +1093,27 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 					@Override
 					public void onSuccess(Object result) {
-						int rowSelected =row;
+						int rowSelected = row;
 						apTable.removeRow(rowSelected);
 						Grid grid = apTable.getGrid();
-						for(int i=rowSelected;i<grid.getRowCount()-1;i++){
-							HorizontalPanel hPanel =(HorizontalPanel)grid.getWidget(i, 6);
-							Button deleteButton = (Button)hPanel.getWidget(1);
-							String[] buttonTitleParts = deleteButton.getTitle().split("\\|");
-							Integer newRowNum = Integer.parseInt(buttonTitleParts[0]);
-							newRowNum = newRowNum-1;
-							deleteButton.setTitle(newRowNum + "|"+ buttonTitleParts[1]);
-							
+						for (int i = rowSelected; i < grid.getRowCount() - 1; i++) {
+							HorizontalPanel hPanel = (HorizontalPanel) grid
+									.getWidget(i, 6);
+							Button deleteButton = (Button) hPanel.getWidget(1);
+							String[] buttonTitleParts = deleteButton.getTitle()
+									.split("\\|");
+							Integer newRowNum = Integer
+									.parseInt(buttonTitleParts[0]);
+							newRowNum = newRowNum - 1;
+							deleteButton.setTitle(newRowNum + "|"
+									+ buttonTitleParts[1]);
+
 						}
 						Window.alert("Deleted Access Point");
 					}
-					
+
 				});
-				
+
 			}
 
 		});

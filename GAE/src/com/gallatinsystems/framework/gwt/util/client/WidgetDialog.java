@@ -7,6 +7,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -47,5 +48,15 @@ public class WidgetDialog extends DialogBox {
 			return true;
 		}
 		return false;
+	}
+	
+	public void showCentered() {
+		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
+				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;
+				setPopupPosition(left, top);
+			}
+		});
 	}
 }

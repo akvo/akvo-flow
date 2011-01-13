@@ -90,6 +90,18 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		apDao.delete(apDao.getByKey(id));
 		return 1;
 	}
+	
+	@Override
+	public void deleteAccessPoints(AccessPointSearchCriteriaDto searchCriteria){
+		AccessPointDao apDao = new AccessPointDao();
+		apDao.deleteByQuery(searchCriteria
+				.getCountryCode(), searchCriteria.getCommunityCode(),
+				searchCriteria.getCollectionDateFrom(), searchCriteria
+						.getCollectionDateTo(), searchCriteria.getPointType(),
+				searchCriteria.getTechType(), searchCriteria
+						.getConstructionDateFrom(), searchCriteria
+						.getConstructionDateTo());	
+	}
 
 	@Override
 	public AccessPointDto getAccessPoint(Long id) {

@@ -113,12 +113,37 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			String community, Date collDateFrom, Date collDateTo, String type,
 			String tech, Date constructionDateFrom, Date constructionDateTo,
 			String orderByField, String orderByDir, String cursorString) {
+	
+		Map<String, Object> paramMap =  new HashMap<String, Object>();	
+		javax.jdo.Query query = constructQuery(country, community,
+				collDateFrom, collDateTo, type, tech, constructionDateFrom,
+				constructionDateTo, orderByField, orderByDir, paramMap);
+		prepareCursor(cursorString, query);
+		List<AccessPoint> results = (List<AccessPoint>) query
+				.executeWithMap(paramMap);
+
+		return results;
+	}
+
+	public void deleteByQuery(String country, String community,
+			Date collDateFrom, Date collDateTo, String type, String tech,
+			Date constructionDateFrom, Date constructionDateTo) {
+		Map<String, Object> paramMap =  new HashMap<String, Object>();	
+		javax.jdo.Query query = constructQuery(country, community,
+				collDateFrom, collDateTo, type, tech, constructionDateFrom,
+				constructionDateTo, null, null, paramMap);
+		query.deletePersistentAll(paramMap);
+	}
+
+	private javax.jdo.Query constructQuery(String country, String community,
+			Date collDateFrom, Date collDateTo, String type, String tech,
+			Date constructionDateFrom, Date constructionDateTo,
+			String orderByField, String orderByDir, Map<String, Object> paramMap) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = null;
-		paramMap = new HashMap<String, Object>();
+		
 
 		appendNonNullParam("countryCode", filterString, paramString, "String",
 				country, paramMap);
@@ -151,12 +176,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				|| constructionDateFrom != null || constructionDateTo != null) {
 			query.declareImports("import java.util.Date");
 		}
-
-		prepareCursor(cursorString, query);
-		List<AccessPoint> results = (List<AccessPoint>) query
-				.executeWithMap(paramMap);
-
-		return results;
+		return query;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -203,8 +223,10 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			String technologyType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
-		q.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
-		q.declareParameters("String countryCodeParam, String typeTechnologyParam");
+		q
+				.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
+		q
+				.declareParameters("String countryCodeParam, String typeTechnologyParam");
 		prepareCursor(cursorString, q);
 		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode,
 				technologyType);
