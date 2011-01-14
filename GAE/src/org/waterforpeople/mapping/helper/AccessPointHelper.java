@@ -468,16 +468,19 @@ public class AccessPointHelper {
 		statusVal = statusVal.toLowerCase().trim();
 		if (pointType.equals(AccessPointType.WATER_POINT)) {
 
-			if ("functioning but with problems".equals(statusVal)) {
+			if ("functioning but with problems".equals(statusVal)
+					|| "working but with problems".equals(statusVal)) {
 				status = AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS;
 			} else if ("broken down system".equals(statusVal)
 					|| "broken down".equals(statusVal)
 					|| statusVal.contains("broken")) {
 				status = AccessPoint.Status.BROKEN_DOWN;
-			} else if ("no improved system".equals(statusVal)) {
+			} else if ("no improved system".equals(statusVal)
+					|| "not a protected waterpoint".equals(statusVal)) {
 				status = AccessPoint.Status.NO_IMPROVED_SYSTEM;
 			} else if ("functioning and meets government standards"
-					.equals(statusVal)) {
+					.equals(statusVal)
+					|| "working and protected".equals(statusVal)) {
 				status = AccessPoint.Status.FUNCTIONING_HIGH;
 			} else if ("high".equalsIgnoreCase(statusVal)
 					|| "functioning".equals(statusVal)) {
