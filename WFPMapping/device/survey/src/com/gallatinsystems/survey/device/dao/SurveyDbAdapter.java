@@ -201,8 +201,6 @@ public class SurveyDbAdapter {
 				}
 			}else if (oldVersion == 58){
 				db.execSQL("insert into preferences values('survey.textsize','LARGE')");
-			}else{
-				db.execSQL("insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')");
 			}
 
 		}
