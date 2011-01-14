@@ -35,6 +35,7 @@ import com.gallatinsystems.survey.device.domain.AltText;
 import com.gallatinsystems.survey.device.domain.Option;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
+import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
@@ -417,12 +418,12 @@ public class OptionQuestionView extends QuestionView {
 						ConstantUtil.VALUE_RESPONSE_TYPE, question.getId()));
 			} else {
 				// if there is already a response and we support multiple,
-				// we
-				// have to combine
+				// we have to combine
 				QuestionResponse r = getResponse();
 				String newResponse = getMultipleSelections(r);
 				r.setValue(newResponse);
 				r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
+				notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
 			}
 		}
 	}
