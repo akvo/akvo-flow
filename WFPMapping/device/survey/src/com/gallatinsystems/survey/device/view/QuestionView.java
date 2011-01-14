@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.view;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,9 +10,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -64,8 +63,8 @@ public class QuestionView extends TableLayout implements
 	public QuestionView(final Context context, Question q, String[] langs,
 			boolean readOnly) {
 		super(context);
-		question = q;		
-		
+		question = q;
+
 		this.langs = langs;
 		if (colors == null) {
 			colors = context.getResources().getStringArray(R.array.colors);
@@ -73,9 +72,9 @@ public class QuestionView extends TableLayout implements
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
 
-		if(q.getHelpTypeCount()>0){
-			questionText.setWidth(screenWidth-80);
-		}else{
+		if (q.getHelpTypeCount() > 0) {
+			questionText.setWidth(screenWidth - 80);
+		} else {
 			questionText.setWidth(screenWidth);
 		}
 		this.readOnly = readOnly;
@@ -99,7 +98,7 @@ public class QuestionView extends TableLayout implements
 				}
 			});
 		}
-		questionText.setText(formText(), BufferType.SPANNABLE);		
+		questionText.setText(formText(), BufferType.SPANNABLE);
 		tr.addView(questionText);
 
 		// if there is a tip for this question, construct an alert dialog box
@@ -139,8 +138,7 @@ public class QuestionView extends TableLayout implements
 			setVisibility(View.GONE);
 		}
 	}
-	
-	
+
 	/**
 	 * forms the question text based on the selected languages
 	 * 
@@ -349,11 +347,28 @@ public class QuestionView extends TableLayout implements
 	 */
 	public boolean handleDependencyParentResponse(Dependency dep,
 			QuestionResponse resp) {
+		boolean isMatch = false;
+		if (dep.getAnswer() != null && resp != null
+				&& dep.getAnswer().equalsIgnoreCase(resp.getValue())) {
+			isMatch = true;
+		} else if (dep.getAnswer() != null
+				&& resp != null) {
+			if (resp.getValue() != null) {
+				StringTokenizer strTok = new StringTokenizer(resp.getValue(),
+						"|");
+				while (strTok.hasMoreTokens()) {
+					if (dep.getAnswer().trim().equalsIgnoreCase(
+							strTok.nextToken().trim())) {
+						isMatch = true;
+					}
+				}
+			}
+		}
+
 		// if we're here, then the question on which we depend
 		// has been answered. Check the value to see if it's the
 		// one we are looking for
-		if (dep.getAnswer() != null && resp != null
-				&& dep.getAnswer().equalsIgnoreCase(resp.getValue())) {
+		if (isMatch) {
 			setVisibility(View.VISIBLE);
 			if (response != null) {
 				response.setIncludeFlag("true");
@@ -409,14 +424,15 @@ public class QuestionView extends TableLayout implements
 		return getResponse(false);
 	}
 
-	public void setResponse(QuestionResponse response) {		
+	public void setResponse(QuestionResponse response) {
 		setResponse(response, false);
 	}
 
 	public void setResponse(QuestionResponse response, boolean suppressListeners) {
 		if (response != null) {
-			if(question != null){
-				response.setScoredValue(question.getResponseScore(response.getValue()));				
+			if (question != null) {
+				response.setScoredValue(question.getResponseScore(response
+						.getValue()));
 			}
 			if (this.response == null) {
 				this.response = response;
@@ -432,7 +448,7 @@ public class QuestionView extends TableLayout implements
 		if (!suppressListeners) {
 			notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
 		}
-	}	
+	}
 
 	public Question getQuestion() {
 		return question;
