@@ -2,6 +2,7 @@ package com.gallatinsystems.survey.device.util;
 
 import java.util.HashMap;
 
+import com.gallatinsystems.survey.device.activity.NearbyItemActivity;
 import com.gallatinsystems.survey.device.activity.WaterflowCalculatorActivity;
 
 /**
@@ -266,6 +267,7 @@ public class ConstantUtil {
 		private static final long serialVersionUID = -6196886832065440000L;
 		{
 			put("waterflowcalculator", WaterflowCalculatorActivity.class);
+			put("nearbypoint", NearbyItemActivity.class);
 		}
 	};
 

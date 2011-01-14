@@ -34,7 +34,7 @@ import com.gallatinsystems.survey.device.util.PropertyUtil;
 
 /**
  * Activity to list all "nearby" access points
- * 
+ *
  * @author Christopher Fagiani
  */
 public class NearbyItemActivity extends ListActivity implements
@@ -64,6 +64,7 @@ public class NearbyItemActivity extends ListActivity implements
 	private PointOfInterestService pointOfInterestService;
 	private Double lastLat;
 	private Double lastLon;
+	private String mode;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,10 +74,20 @@ public class NearbyItemActivity extends ListActivity implements
 		loadMorePlaceholder = new PointOfInterest();
 		loadMorePlaceholder.setName(getString(R.string.loadmore));
 		additive = false;
+
+		Bundle extras = getIntent().getExtras();
+
+		if(extras != null){
+			mode = extras.getString(ConstantUtil.MODE_KEY);
+		}
+
+		if(mode == null && savedInstanceState != null){
+			mode = savedInstanceState.getString(ConstantUtil.MODE_KEY);
+		}
+
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
-		serverBase = databaseAdapter
-				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+		serverBase = databaseAdapter.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 		if (serverBase != null && serverBase.trim().length() > 0) {
 			serverBase = getResources().getStringArray(R.array.servers)[Integer
 					.parseInt(serverBase)];
@@ -153,7 +164,7 @@ public class NearbyItemActivity extends ListActivity implements
 	/**
 	 * loads the data from the server. TODO: make this work if offline too by
 	 * loading from db
-	 * 
+	 *
 	 * @param lat
 	 * @param lon
 	 */
@@ -198,7 +209,7 @@ public class NearbyItemActivity extends ListActivity implements
 
 	/**
 	 * saves points of interest to the db
-	 * 
+	 *
 	 * @param points
 	 */
 	private void savePoints(ArrayList<PointOfInterest> points) {
@@ -218,14 +229,21 @@ public class NearbyItemActivity extends ListActivity implements
 	protected void onListItemClick(ListView list, View view, int position,
 			long id) {
 		super.onListItemClick(list, view, position, id);
-		Intent i = new Intent(this, NearbyItemDetailActivity.class);
 		PointOfInterest dto = pointsOfInterest.get(position);
 		if (dto == loadMorePlaceholder) {
 			additive = true;
 			loadData(lastLat, lastLon, country, null);
 		} else {
-			i.putExtra(ConstantUtil.AP_KEY, pointsOfInterest.get(position));
-			startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
+			if(ConstantUtil.SURVEY_RESULT_MODE.equals(mode)){
+				Intent i = new Intent();
+				i.putExtra(ConstantUtil.CALC_RESULT_KEY,dto.getName());
+				setResult(RESULT_OK,i);
+				finish();
+			}else{
+				Intent i = new Intent(this, NearbyItemDetailActivity.class);
+				i.putExtra(ConstantUtil.AP_KEY, pointsOfInterest.get(position));
+				startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
+			}
 		}
 	}
 
@@ -380,5 +398,14 @@ public class NearbyItemActivity extends ListActivity implements
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// no-op
 	}
+
+	@Override
+		protected void onSaveInstanceState(Bundle outState) {
+			super.onSaveInstanceState(outState);
+			if (outState != null && mode != null) {
+				outState.putString(ConstantUtil.MODE_KEY, mode);
+			}
+		}
+
 
 }

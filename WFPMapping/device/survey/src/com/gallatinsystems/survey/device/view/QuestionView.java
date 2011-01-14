@@ -9,7 +9,9 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -62,7 +64,8 @@ public class QuestionView extends TableLayout implements
 	public QuestionView(final Context context, Question q, String[] langs,
 			boolean readOnly) {
 		super(context);
-		question = q;
+		question = q;		
+		
 		this.langs = langs;
 		if (colors == null) {
 			colors = context.getResources().getStringArray(R.array.colors);
@@ -70,7 +73,11 @@ public class QuestionView extends TableLayout implements
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
 
-		questionText.setWidth(screenWidth);
+		if(q.getHelpTypeCount()>0){
+			questionText.setWidth(screenWidth-80);
+		}else{
+			questionText.setWidth(screenWidth);
+		}
 		this.readOnly = readOnly;
 		if (!readOnly) {
 			questionText.setLongClickable(true);
@@ -92,7 +99,7 @@ public class QuestionView extends TableLayout implements
 				}
 			});
 		}
-		questionText.setText(formText(), BufferType.SPANNABLE);
+		questionText.setText(formText(), BufferType.SPANNABLE);		
 		tr.addView(questionText);
 
 		// if there is a tip for this question, construct an alert dialog box
@@ -132,7 +139,8 @@ public class QuestionView extends TableLayout implements
 			setVisibility(View.GONE);
 		}
 	}
-
+	
+	
 	/**
 	 * forms the question text based on the selected languages
 	 * 
