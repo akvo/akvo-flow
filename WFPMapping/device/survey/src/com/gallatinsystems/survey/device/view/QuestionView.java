@@ -348,11 +348,16 @@ public class QuestionView extends TableLayout implements
 	public boolean handleDependencyParentResponse(Dependency dep,
 			QuestionResponse resp) {
 		boolean isMatch = false;
-		if (dep.getAnswer() != null && resp != null
-				&& dep.getAnswer().equalsIgnoreCase(resp.getValue())) {
+		if (dep.getAnswer() != null
+				&& resp != null
+				&& dep.getAnswer().equalsIgnoreCase(resp.getValue())
+				&& (resp.getIncludeFlag() == null || "true"
+						.equalsIgnoreCase(resp.getIncludeFlag()))) {
 			isMatch = true;
 		} else if (dep.getAnswer() != null
-				&& resp != null) {
+				&& resp != null
+				&& (resp.getIncludeFlag() == null || "true"
+						.equalsIgnoreCase(resp.getIncludeFlag()))) {
 			if (resp.getValue() != null) {
 				StringTokenizer strTok = new StringTokenizer(resp.getValue(),
 						"|");
@@ -365,6 +370,7 @@ public class QuestionView extends TableLayout implements
 			}
 		}
 
+		boolean setVisible = false;
 		// if we're here, then the question on which we depend
 		// has been answered. Check the value to see if it's the
 		// one we are looking for
@@ -373,14 +379,20 @@ public class QuestionView extends TableLayout implements
 			if (response != null) {
 				response.setIncludeFlag("true");
 			}
-			return true;
+			setVisible = true;
 		} else {
 			if (response != null) {
 				response.setIncludeFlag("false");
 			}
 			setVisibility(View.GONE);
 		}
-		return false;
+
+		// now notify our own listeners to make sure we correctly toggle
+		// nested dependencies (i.e. if A -> B -> C and C changes, A needs to
+		// know too).
+		notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
+
+		return setVisible;
 	}
 
 	/**
