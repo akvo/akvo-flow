@@ -54,6 +54,10 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(TaskServlet.class
 			.getName());
 
+	private static final String CHART_API_URL = "http://chart.apis.google.com/chart?chs=300x225&cht=p&chtt=";
+	private static final String CHART_API_DATA_PARAM = "&chd=t:";
+	private static final String CHART_API_LEGEND_PARAM = "&chdl=";
+
 	private SurveyGroupDAO sgDao;
 	private SurveyDAO surveyDao;
 	private QuestionOptionDao optionDao;
@@ -90,73 +94,113 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		SurveyRestResponse response = new SurveyRestResponse();
-		SurveyRestRequest importReq = (SurveyRestRequest) req;
+		SurveyRestRequest surveyReq = (SurveyRestRequest) req;
 		Boolean questionSaved = null;
 		if (SurveyRestRequest.SAVE_QUESTION_ACTION
-				.equals(importReq.getAction())) {
-			questionSaved = saveQuestion(importReq.getSurveyGroupName(),
-					importReq.getSurveyName(),
-					importReq.getQuestionGroupName(),
-					importReq.getQuestionType(), importReq.getQuestionText(),
-					importReq.getOptions(), importReq.getDependQuestion(),
-					importReq.getAllowOtherFlag(),
-					importReq.getAllowMultipleFlag(),
-					importReq.getMandatoryFlag(), importReq.getQuestionId(),
-					importReq.getQuestionGroupOrder(), importReq.getScoring());
+				.equals(surveyReq.getAction())) {
+			questionSaved = saveQuestion(surveyReq.getSurveyGroupName(),
+					surveyReq.getSurveyName(),
+					surveyReq.getQuestionGroupName(), surveyReq
+							.getQuestionType(), surveyReq.getQuestionText(),
+					surveyReq.getOptions(), surveyReq.getDependQuestion(),
+					surveyReq.getAllowOtherFlag(), surveyReq
+							.getAllowMultipleFlag(), surveyReq
+							.getMandatoryFlag(), surveyReq.getQuestionId(),
+					surveyReq.getQuestionGroupOrder(), surveyReq.getScoring());
 			response.setCode("200");
 			response.setMessage("Record Saved status: " + questionSaved);
-		} else if (SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION.equals(importReq
+		} else if (SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION.equals(surveyReq
 				.getAction())) {
-			response = listSurveyGroups(importReq.getCursor(), response);
-		} else if (SurveyRestRequest.GET_SURVEY_GROUP_ACTION.equals(importReq
+			response = listSurveyGroups(surveyReq.getCursor(), response);
+		} else if (SurveyRestRequest.GET_SURVEY_GROUP_ACTION.equals(surveyReq
 				.getAction())) {
 			List<SurveyGroupDto> sgList = new ArrayList<SurveyGroupDto>();
-			sgList.add(getSurveyGroup(importReq.getSurveyGroupId()));
+			sgList.add(getSurveyGroup(surveyReq.getSurveyGroupId()));
 			response.setDtoList(sgList);
-		} else if (SurveyRestRequest.LIST_SURVEYS_ACTION.equals(importReq
+		} else if (SurveyRestRequest.LIST_SURVEYS_ACTION.equals(surveyReq
 				.getAction())) {
-			response = listSurveys(importReq.getSurveyGroupId(),importReq.getCursor(), response);
-		}else if (SurveyRestRequest.GET_SURVEY_ACTION.equals(importReq
+			response = listSurveys(surveyReq.getSurveyGroupId(), surveyReq
+					.getCursor(), response);
+		} else if (SurveyRestRequest.GET_SURVEY_ACTION.equals(surveyReq
 				.getAction())) {
 			List<SurveyDto> sDtoList = new ArrayList<SurveyDto>();
-			sDtoList.add(getSurvey(new Long(importReq.getSurveyId())));
+			sDtoList.add(getSurvey(new Long(surveyReq.getSurveyId())));
 			response.setDtoList(sDtoList);
-		} else if (SurveyRestRequest.LIST_GROUP_ACTION.equals(importReq
-				.getAction())|| SurveyRestRequest.LIST_QUESTION_GROUP_ACTION.equals(importReq.getAction())) {
-			response.setDtoList(listQuestionGroups(new Long(importReq
+		} else if (SurveyRestRequest.LIST_GROUP_ACTION.equals(surveyReq
+				.getAction())
+				|| SurveyRestRequest.LIST_QUESTION_GROUP_ACTION
+						.equals(surveyReq.getAction())) {
+			response.setDtoList(listQuestionGroups(new Long(surveyReq
 					.getSurveyId())));
-		} else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(importReq
+		} else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(surveyReq
 				.getAction())) {
-			response.setDtoList(listQuestions(new Long(importReq
+			response.setDtoList(listQuestions(new Long(surveyReq
 					.getQuestionGroupId())));
-		} else if (SurveyRestRequest.GET_SUMMARY_ACTION.equals(importReq
+		} else if (SurveyRestRequest.GET_SUMMARY_ACTION.equals(surveyReq
 				.getAction())) {
-			response.setDtoList(listSummaries(new Long(importReq
+			response.setDtoList(listSummaries(new Long(surveyReq
 					.getQuestionId())));
 		} else if (SurveyRestRequest.GET_QUESTION_DETAILS_ACTION
-				.equals(importReq.getAction())) {
-			QuestionDto dto = loadQuestionDetails(new Long(
-					importReq.getQuestionId()));
+				.equals(surveyReq.getAction())) {
+			QuestionDto dto = loadQuestionDetails(new Long(surveyReq
+					.getQuestionId()));
 			List<BaseDto> dtoList = new ArrayList<BaseDto>();
 			dtoList.add(dto);
 			response.setDtoList(dtoList);
 		} else if (SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION
-				.equals(importReq.getAction())) {
-			SurveyInstanceDto dto = findSurveyInstance(importReq
+				.equals(surveyReq.getAction())) {
+			SurveyInstanceDto dto = findSurveyInstance(surveyReq
 					.getInstanceId());
 			List<BaseDto> dtoList = new ArrayList<BaseDto>();
 			dtoList.add(dto);
 			response.setDtoList(dtoList);
-		}else if(SurveyRestRequest.DELETE_SURVEY_INSTANCE.equals(importReq.getAction())){
+		} else if (SurveyRestRequest.DELETE_SURVEY_INSTANCE.equals(surveyReq
+				.getAction())) {
 			SurveyInstanceService sis = new SurveyInstanceServiceImpl();
-			sis.deleteSurveyInstance(importReq.getInstanceId());
+			sis.deleteSurveyInstance(surveyReq.getInstanceId());
+		} else if (SurveyRestRequest.GET_GRAPH_ACTION.equals(surveyReq
+				.getAction())) {
+			response.setUrl(constructChartUrl(surveyReq.getQuestionId(),
+					surveyReq.getGraphType()));
 		}
-
 		return response;
 	}
 
-	private SurveyRestResponse listSurveys(Long surveyGroupId, String cursorString,
-			SurveyRestResponse response) {
+	/**
+	 * constructs a Google Charts API url for creating an image chart using the
+	 * data in the data store for the selected question
+	 * 
+	 * TODO: support other graph types. Right now, we always return pie charts
+	 * 
+	 * @param questionId
+	 * @param graphType
+	 * @return
+	 */
+	private String constructChartUrl(Integer questionId, String graphType){
+		StringBuilder url = new StringBuilder(CHART_API_URL);
+		SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+		List<SurveyQuestionSummary> summaries = summaryDao.listByQuestion(questionId.toString());
+		Question q = qDao.getByKey(new Long(questionId));
+		if(q != null && summaries != null){
+			url.append(q.getText()).append(CHART_API_LEGEND_PARAM);
+			StringBuilder legend = new StringBuilder();
+			StringBuilder data = new StringBuilder();
+			int i =0;
+			for(SurveyQuestionSummary sum: summaries){
+				if(i>0){
+					legend.append("|");
+					data.append(",");
+				}
+				legend.append(sum.getResponse());
+				data.append(sum.getCount());
+			}
+			url.append(legend.toString()).append(CHART_API_DATA_PARAM).append(data.toString());
+		}
+		return url.toString();
+	}
+
+	private SurveyRestResponse listSurveys(Long surveyGroupId,
+			String cursorString, SurveyRestResponse response) {
 		SurveyDAO sDao = new SurveyDAO();
 		List<Survey> groups = sDao.listSurveysByGroup(surveyGroupId);
 		List<SurveyDto> dtoList = new ArrayList<SurveyDto>();

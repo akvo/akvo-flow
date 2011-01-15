@@ -23,6 +23,7 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String GET_QUESTION_DETAILS_ACTION = "getQuestionDetails";
 	public static final String GET_SURVEY_INSTANCE_ACTION = "getSurveyInstance";
 	public static final String DELETE_SURVEY_INSTANCE= "deleteSurveyInstance";
+	public static final String GET_GRAPH_ACTION="getGraph";
 	
 	
 
@@ -44,24 +45,34 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String QUESTION_ID_PARAM_ALT = "questionId";
 	public static final String SCORING_PARAM = "scoring";
 	public static final String INSTANCE_PARAM = "instanceId";
+	public static final String GRAPH_TYPE_PARAM="graphType";
 
-	private String surveyGroupName = null;
-	private String surveyName = null;
-	private Long surveyGroupId = null;
-	private String questionGroupName = null;
-	private Integer questionId = null;
-	private String questionText = null;
-	private String questionType = null;
-	private String options = null;
-	private String dependQuestion = null;
-	private Boolean allowOtherFlag = null;
-	private Boolean allowMultipleFlag = null;
-	private Boolean mandatoryFlag = null;
-	private Integer questionGroupOrder = null;
+	private String surveyGroupName;
+	private String surveyName;
+	private Long surveyGroupId;
+	private String questionGroupName;
+	private Integer questionId;
+	private String questionText;
+	private String questionType;
+	private String options;
+	private String dependQuestion;
+	private Boolean allowOtherFlag;
+	private Boolean allowMultipleFlag;
+	private Boolean mandatoryFlag;
+	private Integer questionGroupOrder;
 	private Integer surveyId;
 	private Integer questionGroupId;
 	private String scoring;
 	private Long instanceId;
+	private String graphType;
+
+	public String getGraphType() {
+		return graphType;
+	}
+
+	public void setGraphType(String graphType) {
+		this.graphType = graphType;
+	}
 
 	public Long getInstanceId() {
 		return instanceId;
@@ -256,6 +267,9 @@ public class SurveyRestRequest extends RestRequest {
 			instanceId = Long
 					.parseLong(req.getParameter(INSTANCE_PARAM).trim());
 		}
+		if(req.getParameter(GRAPH_TYPE_PARAM)!= null){
+			graphType = req.getParameter(GRAPH_TYPE_PARAM).trim();
+		}		
 	}
 
 	@Override

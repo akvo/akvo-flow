@@ -18,8 +18,18 @@ public class SurveyRestResponse extends RestResponse {
 
 	private static final long serialVersionUID = -3851323551471422767L;
 	private String cursor = null;
-	
+	private String url;	
 	private List<? extends BaseDto> dtoList;
+	
+	
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	public List<? extends BaseDto> getDtoList() {
 		return dtoList;
