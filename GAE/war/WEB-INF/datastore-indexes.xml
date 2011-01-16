@@ -216,4 +216,9 @@
         <property name="processedStatus" direction="asc"/>
         <property name="createdDateTime" direction="desc"/>
     </datastore-index>
+    <datastore-index kind="EditorialPageContent" ancestor="false" source="manual">
+        <property name="editorialPageId" direction="asc"/>
+        <property name="sortOrder" direction="asc"/>
+    </datastore-index>
+    
 </datastore-indexes>
