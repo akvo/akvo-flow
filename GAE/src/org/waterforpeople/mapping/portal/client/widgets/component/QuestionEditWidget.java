@@ -44,6 +44,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
+/**
+ * Widget for creating and editing a Survey Question.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class QuestionEditWidget extends Composite implements ContextAware,
 		ChangeHandler, ClickHandler, TranslationChangeListener,
 		CompletionListener {
@@ -88,6 +94,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		initWidget(panel);
 	}
 
+	/**
+	 * installs all the UI elements in their respective panels (even invisible
+	 * items).
+	 */
 	private void installWidgets() {
 		panel = new VerticalPanel();
 		questionTextArea = new TextArea();
@@ -168,11 +178,31 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		panel.add(editTranslationButton);
 	}
 
+	/**
+	 * helper method for installing a row in a grid that consists of a label and
+	 * a widget
+	 * 
+	 * @param labelText
+	 * @param widget
+	 * @param parent
+	 * @param row
+	 */
 	private void installRow(String labelText, Widget widget, Grid parent,
 			int row) {
 		installRow(labelText, widget, parent, row, 0);
 	}
 
+	/**
+	 * helper method for installing a row in a grid consisting of a label and a
+	 * widget. This version will insert the widgets (label and widget) starting
+	 * at colOffset rather than at position 0 within the row
+	 * 
+	 * @param labelText
+	 * @param widget
+	 * @param parent
+	 * @param row
+	 * @param colOffset
+	 */
 	private void installRow(String labelText, Widget widget, Grid parent,
 			int row, int colOffset) {
 		if (labelText != null) {
@@ -187,6 +217,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * populates the UI based on the values in the loaded QuestionDto
+	 */
 	private void populateFields() {
 		questionTextArea.setText(currentQuestion.getText());
 		tooltipArea.setText(currentQuestion.getTip());
@@ -209,9 +242,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
 			loadOptions();
 		}
-
 	}
 
+	/**
+	 * fetches the QuestionOptions from the server if they haven't already been
+	 * retrieved
+	 */
 	private void loadOptions() {
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()
 				&& (currentQuestion.getOptionContainerDto() == null || currentQuestion
@@ -239,6 +275,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * populates the UI with data from all the QuestionOptionDto objects in the
+	 * question.
+	 * 
+	 * @param optionContainer
+	 */
 	private void populateOptions(OptionContainerDto optionContainer) {
 		optionPanel.setVisible(true);
 		// wipe out any old values
@@ -250,6 +292,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * adds a row representing a Question Option to the UI. The rows support
+	 * deletion as well as reordering.
+	 * 
+	 * @param opt
+	 */
 	private void installOptionRow(QuestionOptionDto opt) {
 		int row = optionTable.getRowCount();
 		optionTable.insertRow(row);
@@ -330,17 +378,34 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * displays a message in the loading label
+	 * 
+	 * @param container
+	 * @param labelText
+	 */
 	private void showLoading(HasWidgets container, String labelText) {
 		Label l = new Label(labelText);
 		container.clear();
 		container.add(l);
 	}
 
+	/**
+	 * clears the container and adds the widget in content as the new child of
+	 * container
+	 * 
+	 * @param container
+	 * @param content
+	 */
 	private void showContent(HasWidgets container, Widget content) {
 		container.clear();
 		container.add(content);
 	}
 
+	/**
+	 * loads the list of possible values for the dependent question list box. If
+	 * this has already been loade,d it may be returend from cache.
+	 */
 	private void loadDependencyList() {
 		dependencyPanel.setVisible(true);
 		if (optionQuestions != null
@@ -380,6 +445,14 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * populates the question dependency selector drop down and ensures the
+	 * correct value is selected (if the currentQuestion's depedency is
+	 * non-null).
+	 * 
+	 * @param currentQuestion
+	 * @param questionList
+	 */
 	private void populateDependencySelection(QuestionDto currentQuestion,
 			List<QuestionDto> questionList) {
 		dependencyPanel.setVisible(true);
@@ -403,6 +476,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * loads the list of potential responses for the questionId passed in.
+	 * 
+	 * @param questionId
+	 */
 	private void loadDependentQuestionAnswers(String questionId) {
 		final List<QuestionDto> questionList = optionQuestions
 				.get(currentQuestion.getSurveyId());
@@ -458,6 +536,13 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * populates the dependent question answer selector and selects the correct
+	 * value
+	 * 
+	 * @param currentQuestion
+	 * @param options
+	 */
 	private void populateDependencyAnswers(QuestionDto currentQuestion,
 			List<QuestionOptionDto> options) {
 		// first, clear out the existing data
@@ -479,6 +564,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * returns the current context bundle
+	 */
 	@Override
 	public Map<String, Object> getContextBundle() {
 		if (bundle == null) {
@@ -488,6 +576,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		return bundle;
 	}
 
+	/**
+	 * validates and saves the question. If the question does not validate, then
+	 * a failure message will be sent to the CompletionListener containing the
+	 * list of errors.
+	 */
 	@Override
 	public void persistContext(final CompletionListener listener) {
 		List<String> validationErrors = updateCurrentQuestion();
@@ -525,6 +618,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * updates the cached questionDto using the values currently present in the
+	 * UI
+	 * 
+	 * @return
+	 */
 	private List<String> updateCurrentQuestion() {
 		List<String> validationMessages = new ArrayList<String>();
 		if (ViewUtil.isTextPopulated(questionTextArea)) {
@@ -598,6 +697,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		return validationMessages;
 	}
 
+	/**
+	 * installs the contextBundle and triggers invocation of the populateFields
+	 * method (if there is a questionDto in the bundle).
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setContextBundle(Map<String, Object> bundle) {
@@ -630,6 +733,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * react to changes in the drop-downs (usually by hiding/showing panels)
+	 */
 	@Override
 	public void onChange(ChangeEvent event) {
 		if (event.getSource() == questionTypeSelector) {
@@ -652,6 +758,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * react to click events. Usually triggers loading of dependent data. In the
+	 * case of the translations button: the question will first be validated and
+	 * saved before the translations dialog will be opened
+	 */
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == dependentBox) {
@@ -669,6 +780,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * receives notification when the translations dialog has been closed so the
+	 * translations can be added to the cached question dto.
+	 */
 	@Override
 	public void translationsUpdated(List<TranslationDto> translationList) {
 		if (translationList != null) {
@@ -691,6 +806,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 	}
 
+	/**
+	 * allows this widget to act as a CompletionListener so we can display the
+	 * translation dialog after the async save if the current operation was set
+	 * to EDIT_TRANS_OP
+	 */
 	@Override
 	public void operationComplete(boolean wasSuccessful,
 			Map<String, Object> payload) {

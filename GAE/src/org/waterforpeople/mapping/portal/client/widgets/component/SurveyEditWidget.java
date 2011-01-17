@@ -23,6 +23,12 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Edits/creates Survey objects
+ * 
+ * @author Christopher Fagiani
+ *
+ */
 public class SurveyEditWidget extends Composite implements ContextAware,
 		ChangeHandler {
 

@@ -20,6 +20,13 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Displays lists of surveys. Clicking the edit button beside a survey will open
+ * that survey in edit mode.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 
 	private SurveyServiceAsync surveyService;

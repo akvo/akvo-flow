@@ -25,6 +25,12 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Widget used for creating/editing/searching users.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class UserManagerWidget extends Composite implements
 		DataTableListener<UserDto>, DataTableBinder<UserDto>, ClickHandler {
 	private static final String DEFAULT_SORT_FIELD = "username";

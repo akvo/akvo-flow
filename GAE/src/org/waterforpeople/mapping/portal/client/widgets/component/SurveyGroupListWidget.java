@@ -19,6 +19,13 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * displays lists of SurveyGroups. Clicking the edit button beside a group will
+ * open that group in edit mode.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class SurveyGroupListWidget extends ListBasedWidget implements
 		ContextAware {
 

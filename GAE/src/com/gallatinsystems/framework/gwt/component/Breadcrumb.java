@@ -8,13 +8,23 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.Label;
 
-public class Breadcrumb extends Label implements MouseOverHandler, MouseOutHandler {
+/**
+ * datastructure used to render breadcrumb navigation. Each breadcrumb can have
+ * a contextBundle associated with it that is used to restore the correct state
+ * when the user clicks a breadcrumb. Breadcrumbs use CSS to change their style
+ * when the user moves his mouse over a breadcrumb link.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
+public class Breadcrumb extends Label implements MouseOverHandler,
+		MouseOutHandler {
 	private static final String BREADCRUMB_STYLE = "breadcrumb";
 	private static final String HOVER_STYLE = "red-hover";
 	private String targetNode;
-	private Map<String,Object> bundle;
+	private Map<String, Object> bundle;
 
-	public Breadcrumb(String text, String targetNode, Map<String,Object> bundle) {
+	public Breadcrumb(String text, String targetNode, Map<String, Object> bundle) {
 		super();
 		setText(text);
 		setStylePrimaryName(BREADCRUMB_STYLE);
@@ -38,8 +48,8 @@ public class Breadcrumb extends Label implements MouseOverHandler, MouseOutHandl
 		}
 		return isSame;
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return getText().hashCode();
 	}
 
@@ -52,12 +62,12 @@ public class Breadcrumb extends Label implements MouseOverHandler, MouseOutHandl
 	public void onMouseOver(MouseOverEvent event) {
 		addStyleName(HOVER_STYLE);
 	}
-	
-	public Map<String,Object> getBundle(){
+
+	public Map<String, Object> getBundle() {
 		return bundle;
 	}
-	
-	public void setBundle(Map<String,Object> bundle){
+
+	public void setBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
 	}
 }

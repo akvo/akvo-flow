@@ -22,6 +22,14 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Widget for viewing question lists
+ * 
+ * TODO: handle delete and reorder
+ * 
+ * @author Christopher Fagiani
+ *
+ */
 public class QuestionListWidget extends ListBasedWidget implements ContextAware {
 
 	private SurveyServiceAsync surveyService;

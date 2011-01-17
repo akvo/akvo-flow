@@ -20,7 +20,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>CronCommanderServlet</servlet-name>
 		<url-pattern>/cron/croncommander</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>LocationBeacon</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.LocationBeaconServlet</servlet-class>
@@ -60,7 +60,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>SpreadsheetImport</servlet-name>
 		<url-pattern>/app_worker/sheetimport</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyAssembly</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SurveyAssemblyServlet</servlet-class>
@@ -68,7 +68,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>SurveyAssembly</servlet-name>
 		<url-pattern>/app_worker/surveyassembly</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyManager</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SurveyManagerServlet</servlet-class>
@@ -117,7 +117,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AccessPointServlet</servlet-name>
 		<url-pattern>/accesspoint</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>SMSServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SMSReceiverServlet</servlet-class>
@@ -125,7 +125,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>SMSServlet</servlet-name>
 		<url-pattern>/smsreceiver</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>PointOfInterestServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.PointOfInterestServlet</servlet-class>
@@ -142,6 +142,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>RemoteExceptionServlet</servlet-name>
 		<url-pattern>/remoteexception</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>EditorialContentService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.editorial.EditorialContentServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EditorialContentService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/editorialcontentrpcservice</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>DeviceFileRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl</servlet-class>
@@ -173,7 +182,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>SpreadsheetProcessor</servlet-name>
 		<url-pattern>/webapp/spreadsheetprocessor</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyAttributeMappingServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyAttributeMappingServiceImpl</servlet-class>
@@ -190,14 +199,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SurveyRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyrpcservice</url-pattern>
 	</servlet-mapping>
-		<servlet>
+	<servlet>
 		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyassnrpcservice</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveySummaryRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveySummaryServiceImpl</servlet-class>
@@ -246,7 +255,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>UserRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/userrpcservice</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet-mapping>
 		<servlet-name>RemoteExceptionRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/remoteexceptionrpcservice</url-pattern>
@@ -287,7 +296,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AuthSub</servlet-name>
 		<url-pattern>/authsub</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>SurveyInstanceRpcService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl</servlet-class>
@@ -339,7 +348,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>DeviceFilesRestApi</servlet-name>
 		<url-pattern>/devicefilesrestapi</url-pattern>
 	</servlet-mapping>
-		<servlet>
+	<servlet>
 		<servlet-name>PlacemarkRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.PlacemarkServlet</servlet-class>
 	</servlet>
@@ -367,7 +376,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>DataBackoutApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.DataBackoutServlet</servlet-class>
 	</servlet>
- 	<servlet>
+	<servlet>
 		<servlet-name>RawDataRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.RawDataRestServlet</servlet-class>
 	</servlet>
@@ -382,7 +391,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>MapAssembly</servlet-name>
 		<url-pattern>/app_worker/mapassembly</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DataBackoutApi</servlet-name>
 		<url-pattern>/databackout</url-pattern>

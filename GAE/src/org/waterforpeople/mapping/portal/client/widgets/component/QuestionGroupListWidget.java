@@ -20,6 +20,15 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * widget for viewing  QuestionGroupLists. This widget will load the edit
+ * widget if the edit button beside the group is clicked.
+ * 
+ * TODO: handle reorder and delete
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class QuestionGroupListWidget extends ListBasedWidget implements
 		ContextAware {
 

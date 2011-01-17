@@ -2,6 +2,12 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import com.gallatinsystems.framework.gwt.portlet.client.WizardBundleConstants;
 
+/**
+ * Constants used to pass data through a wizard workflow instance
+ * 
+ * @author Christopher Fagiani
+ *
+ */
 public class BundleConstants extends WizardBundleConstants{
 
 	public static final String QUESTION_GROUP_KEY = "QUESTION_GROUP";

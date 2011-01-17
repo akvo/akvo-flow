@@ -24,6 +24,12 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Widget for editing question group objects
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		ChangeHandler {
 
@@ -80,6 +86,11 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		return ViewUtil.isTextPopulated(nameBox);
 	}
 
+	/**
+	 * validates and saves the group
+	 * 
+	 * @param listener
+	 */
 	public void saveSurveyGroup(final CompletionListener listener) {
 		if (validateInput()) {
 			if (currentDto == null) {
@@ -132,7 +143,7 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 	public void persistContext(CompletionListener listener) {
 		if (isChanged) {
 			saveSurveyGroup(listener);
-		}else{
+		} else {
 			listener.operationComplete(true, getContextBundle());
 		}
 	}

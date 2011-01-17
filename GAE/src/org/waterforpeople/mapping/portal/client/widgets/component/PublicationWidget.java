@@ -16,6 +16,17 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * This is a HEADLESS (no UI) widget that will publish the survey indicated by
+ * the ContextBundle. Since this widget implements AutoAdvancing, the Wizard
+ * controller will load the next node in the workflow after calling the advance
+ * method. Due to this behavior, WizardWorkflows that make use of this component
+ * should only have a single "forward" transition coming out of the the
+ * publication node.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class PublicationWidget extends Composite implements ContextAware,
 		AutoAdvancing {
 
@@ -38,13 +49,13 @@ public class PublicationWidget extends Composite implements ContextAware,
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
-		bundle.put(BundleConstants.AUTO_ADVANCE_FLAG,Boolean.TRUE);
+		bundle.put(BundleConstants.AUTO_ADVANCE_FLAG, Boolean.TRUE);
 		return bundle;
 	}
 
 	@Override
 	public void persistContext(CompletionListener listener) {
-
+		// no-op. This is handled by advance in this case
 	}
 
 	@Override
@@ -53,6 +64,10 @@ public class PublicationWidget extends Composite implements ContextAware,
 		survey = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 	}
 
+	/**
+	 * sends the publication message and then reports the status to the
+	 * completion listener
+	 */
 	@Override
 	public void advance(final CompletionListener listener) {
 		surveyService.publishSurveyAsync(survey.getKeyId(),

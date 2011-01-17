@@ -36,6 +36,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * Widget used to assign survey questions to access point attributes.
+ * 
+ *  TODO: add in the save/reset buttons
+ * 
+ * @author Christopher Fagiani
+ *
+ */
 public class AttributeAssignmentWidget extends Composite implements
 		ContextAware, ChangeHandler, ClickHandler {
 

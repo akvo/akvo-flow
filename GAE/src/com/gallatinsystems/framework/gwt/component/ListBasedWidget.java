@@ -14,6 +14,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * this abstract widget provides basic support for rendering clickable lists of
+ * items. It includes CSS definitions that will alter the style on mouse-over of
+ * any of the options.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public abstract class ListBasedWidget extends Composite implements
 		ClickHandler, MouseOverHandler, MouseOutHandler {
 
@@ -62,10 +70,10 @@ public abstract class ListBasedWidget extends Composite implements
 		} else if (mode == ClickMode.EDIT) {
 			button.setStylePrimaryName(DEL_BUTTON_CSS);
 		}
-		button.addClickHandler(new ClickHandler() {			
+		button.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				handleItemClick(event.getSource(), mode);				
+				handleItemClick(event.getSource(), mode);
 			}
 		});
 		return button;
