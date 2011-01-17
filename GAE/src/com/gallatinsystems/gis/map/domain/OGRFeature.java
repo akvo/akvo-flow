@@ -19,7 +19,7 @@ public class OGRFeature extends BaseDomain {
 	private String firstCCOD;
 	private String firstDCOD;
 	private String firstCLCO;
-
+	private String point;
 	private Text polygon;
 
 	public String getName() {
@@ -124,6 +124,14 @@ public class OGRFeature extends BaseDomain {
 
 	public void setPolygon(Text polygon) {
 		this.polygon = polygon;
+	}
+
+	public void setPoint(String point) {
+		this.point = point;
+	}
+
+	public String getPoint() {
+		return point;
 	}
 
 	
