@@ -7,16 +7,6 @@ import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable
 public class OGRFeature extends BaseDomain {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
-	 * 
-	 */
-	/**
-	 * 
-	 */
 	private String name;
 	private String clname;
 	private Integer count;
@@ -31,5 +21,111 @@ public class OGRFeature extends BaseDomain {
 	private String firstCLCO;
 
 	private Text polygon;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getClname() {
+		return clname;
+	}
+
+	public void setClname(String clname) {
+		this.clname = clname;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public String getFirstCCNA() {
+		return firstCCNA;
+	}
+
+	public void setFirstCCNA(String firstCCNA) {
+		this.firstCCNA = firstCCNA;
+	}
+
+	public String getFirtDNAM() {
+		return firtDNAM;
+	}
+
+	public void setFirtDNAM(String firtDNAM) {
+		this.firtDNAM = firtDNAM;
+	}
+
+	public Integer getSumTotal() {
+		return sumTotal;
+	}
+
+	public void setSumTotal(Integer sumTotal) {
+		this.sumTotal = sumTotal;
+	}
+
+	public Integer getSumMale() {
+		return sumMale;
+	}
+
+	public void setSumMale(Integer sumMale) {
+		this.sumMale = sumMale;
+	}
+
+	public Integer getSumFemale() {
+		return sumFemale;
+	}
+
+	public void setSumFemale(Integer sumFemale) {
+		this.sumFemale = sumFemale;
+	}
+
+	public Integer getSumHH() {
+		return sumHH;
+	}
+
+	public void setSumHH(Integer sumHH) {
+		this.sumHH = sumHH;
+	}
+
+	public String getFirstCCOD() {
+		return firstCCOD;
+	}
+
+	public void setFirstCCOD(String firstCCOD) {
+		this.firstCCOD = firstCCOD;
+	}
+
+	public String getFirstDCOD() {
+		return firstDCOD;
+	}
+
+	public void setFirstDCOD(String firstDCOD) {
+		this.firstDCOD = firstDCOD;
+	}
+
+	public String getFirstCLCO() {
+		return firstCLCO;
+	}
+
+	public void setFirstCLCO(String firstCLCO) {
+		this.firstCLCO = firstCLCO;
+	}
+
+	public Text getPolygon() {
+		return polygon;
+	}
+
+	public void setPolygon(Text polygon) {
+		this.polygon = polygon;
+	}
+
+	
 
 }
