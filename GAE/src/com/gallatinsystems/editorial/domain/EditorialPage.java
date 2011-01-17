@@ -3,21 +3,22 @@ package com.gallatinsystems.editorial.domain;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable
 public class EditorialPage extends BaseDomain {
 
 	private static final long serialVersionUID = 1907982353218334734L;
 
-	private String template;
+	private Text template;
 	private String type;	
 	private String targetFileName;
 
-	public String getTemplate() {
+	public Text getTemplate() {
 		return template;
 	}
 
-	public void setTemplate(String template) {
+	public void setTemplate(Text template) {
 		this.template = template;
 	}
 

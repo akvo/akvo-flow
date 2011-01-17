@@ -16,7 +16,7 @@ import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
  * @author Christopher Fagiani
  * 
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings("unchecked")
 public class TypeEnumConverter extends AbstractConverter {
 
 	@Override

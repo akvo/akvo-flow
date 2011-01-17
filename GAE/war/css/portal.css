@@ -540,3 +540,14 @@ button {
 	padding-left: 3px;
 	cursor: pointer;	
 }
+
+.input-label{
+	font:14px/17px Veranda, Helvetica, sans-serif;
+	font-style: bold;
+}
+
+.input-label-topalign{
+	font:14px/17px Veranda, Helvetica, sans-serif;
+	font-style: bold;
+	vertical-align: top;	
+}

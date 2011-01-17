@@ -31,6 +31,7 @@ public abstract class ListBasedWidget extends Composite implements
 	private static final String LIST_ITEM_HOVER_CSS = "red-hover";
 	private static final String EDIT_BUTTON_CSS = "edit-listitem-button";
 	private static final String DEL_BUTTON_CSS = "delete-listitem-button";
+	private static final String UNNAMED_TEXT="unnamed";
 
 	protected static enum ClickMode {
 		OPEN, EDIT, DELETE
@@ -53,7 +54,11 @@ public abstract class ListBasedWidget extends Composite implements
 	public Label createListEntry(String text) {
 		Label l = new Label();
 		l.setStylePrimaryName(LIST_ITEM_CSS);
-		l.setText(text);
+		if(text != null && text.trim().length()>0){
+			l.setText(text);
+		}else{
+			l.setText(UNNAMED_TEXT);
+		}
 		l.addMouseOutHandler(this);
 		l.addMouseOverHandler(this);
 		l.addClickHandler(this);

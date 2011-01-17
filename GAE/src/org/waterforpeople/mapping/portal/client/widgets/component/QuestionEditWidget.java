@@ -54,7 +54,6 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		ChangeHandler, ClickHandler, TranslationChangeListener,
 		CompletionListener {
 
-	private static final String INPUT_LABEL_CSS = "input-label";
 	private static final String REORDER_BUTTON_CSS = "reorder-button";
 	private static final String DEFAULT_BOX_WIDTH = "300px";
 	private static final String SELECT_TXT = "Select...";
@@ -129,12 +128,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		Grid grid = new Grid(7, 2);
 		basePanel.add(grid);
 
-		installRow("Question Text", questionTextArea, grid, 0);
-		installRow("Question Type", questionTypeSelector, grid, 1);
-		installRow("Tooltip", tooltipArea, grid, 2);
-		installRow("Validation Rule", validationRuleBox, grid, 3);
-		installRow("Mandatory", mandatoryBox, grid, 4);
-		installRow("Dependent", dependentBox, grid, 5);
+		ViewUtil.installGridRow("Question Text", questionTextArea, grid, 0);
+		ViewUtil.installGridRow("Question Type", questionTypeSelector, grid, 1);
+		ViewUtil.installGridRow("Tooltip", tooltipArea, grid, 2);
+		ViewUtil.installGridRow("Validation Rule", validationRuleBox, grid, 3);
+		ViewUtil.installGridRow("Mandatory", mandatoryBox, grid, 4);
+		ViewUtil.installGridRow("Dependent", dependentBox, grid, 5);
 
 		dependencyPanel = new CaptionPanel("Dependency Details:");
 		dependentQuestionSelector = new ListBox();
@@ -148,10 +147,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 		dependencyGrid = new Grid(2, 2);
 		dependencyPanel.add(dependencyGrid);
-		installRow(null, dependencyPanel, grid, 6, 1);
+		ViewUtil.installGridRow(null, dependencyPanel, grid, 6, 1,null);
 		dependencyPanel.setVisible(false);
-		installRow("Question", dependentQuestionSelector, dependencyGrid, 0);
-		installRow("Response", dependentAnswerSelector, dependencyGrid, 1);
+		ViewUtil.installGridRow("Question", dependentQuestionSelector, dependencyGrid, 0);
+		ViewUtil.installGridRow("Response", dependentAnswerSelector, dependencyGrid, 1);
 
 		panel.add(basePanel);
 
@@ -164,8 +163,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		optionPanel.add(optionContent);
 		optionTable = new FlexTable();
 		Grid optGrid = new Grid(2, 4);
-		installRow("Allow Multiple", allowMultipleBox, optGrid, 0, 0);
-		installRow("Allow 'Other'", allowOtherBox, optGrid, 0, 2);
+		ViewUtil.installGridRow("Allow Multiple", allowMultipleBox, optGrid, 0, 0,null);
+		ViewUtil.installGridRow("Allow 'Other'", allowOtherBox, optGrid, 0, 2,null);
 
 		optionContent.add(optGrid);
 		optionContent.add(optionTable);
@@ -178,45 +177,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		panel.add(editTranslationButton);
 	}
 
-	/**
-	 * helper method for installing a row in a grid that consists of a label and
-	 * a widget
-	 * 
-	 * @param labelText
-	 * @param widget
-	 * @param parent
-	 * @param row
-	 */
-	private void installRow(String labelText, Widget widget, Grid parent,
-			int row) {
-		installRow(labelText, widget, parent, row, 0);
-	}
-
-	/**
-	 * helper method for installing a row in a grid consisting of a label and a
-	 * widget. This version will insert the widgets (label and widget) starting
-	 * at colOffset rather than at position 0 within the row
-	 * 
-	 * @param labelText
-	 * @param widget
-	 * @param parent
-	 * @param row
-	 * @param colOffset
-	 */
-	private void installRow(String labelText, Widget widget, Grid parent,
-			int row, int colOffset) {
-		if (labelText != null) {
-			Label label = new Label();
-			label.setStylePrimaryName(INPUT_LABEL_CSS);
-			label.setText(labelText);
-			parent.setWidget(row, colOffset, label);
-			parent.setWidget(row, colOffset + 1, widget);
-
-		} else {
-			parent.setWidget(row, colOffset, widget);
-		}
-	}
-
+	
 	/**
 	 * populates the UI based on the values in the loaded QuestionDto
 	 */

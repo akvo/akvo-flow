@@ -3,6 +3,7 @@ package com.gallatinsystems.editorial.domain;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable
 public class EditorialPageContent extends BaseDomain {
@@ -11,7 +12,7 @@ public class EditorialPageContent extends BaseDomain {
 	private Long editorialPageId;
 	private String type;
 	private String heading;
-	private String text;
+	private Text text;
 	private Long sortOrder;
 
 	public Long getEditorialPageId() {
@@ -38,11 +39,11 @@ public class EditorialPageContent extends BaseDomain {
 		this.heading = heading;
 	}
 
-	public String getText() {
+	public Text getText() {
 		return text;
 	}
 
-	public void setText(String text) {
+	public void setText(Text text) {
 		this.text = text;
 	}
 

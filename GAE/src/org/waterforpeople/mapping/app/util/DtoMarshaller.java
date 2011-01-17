@@ -15,6 +15,7 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
 
 public class DtoMarshaller {
 
@@ -69,6 +70,9 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureType.class);
 		ConvertUtils.register(enumConverter,UnitOfMeasureDto.UnitOfMeasureType.class);
 		
+		DatastoreTextConverter textConverter = new DatastoreTextConverter();
+		ConvertUtils.register(textConverter,Text.class);				
+		ConvertUtils.register(textConverter,String.class);
 	}
 
 }

@@ -27,10 +27,11 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button surveyMgmtButton;
 	private Button assignmentButton;
 	private Button mappingButton;
+	private Button editorialButton;
 	private PageController controller;
 
 	public AdminHomeWidget(PageController controller, UserDto user) {
-		Grid widget = new Grid(4, 2);
+		Grid widget = new Grid(5, 2);
 		this.controller = controller;
 		userMgmtButton = initButton("Manage Users");
 
@@ -64,6 +65,15 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 						3,
 						1,
 						createDescription("Map survey questions to fields in the Access Point. This is required before survey data will appear in maps."));
+		
+		editorialButton = initButton("Edit Editorial Content");
+		widget.setWidget(4,0,editorialButton);
+		widget
+		.setWidget(
+				4,
+				1,
+				createDescription("Create and edit static content to appear on editorial driven pages."));
+
 		initWidget(widget);
 	}
 
@@ -89,6 +99,8 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 			controller.openPage(UserManagerWidget.class, null);
 		} else if (event.getSource() == mappingButton) {
 			controller.openPage(AttributeAssignmentWidget.class, null);
+		}else if (event.getSource() == editorialButton){
+			controller.openPage(EditorialPageListWidget.class, null);
 		}
 	}
 

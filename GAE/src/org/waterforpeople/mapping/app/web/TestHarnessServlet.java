@@ -114,6 +114,7 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -1241,7 +1242,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 		try {
 			RuntimeServices runtimeServices = RuntimeSingleton.getRuntimeServices();            
-	        StringReader reader = new StringReader(p.getTemplate());
+	        StringReader reader = new StringReader(p.getTemplate().getValue());
 	        SimpleNode node = runtimeServices.parse(reader, "dynamicTemplate");
 	        Template template = new Template();
 	        template.setRuntimeServices(runtimeServices);
@@ -1259,23 +1260,24 @@ public class TestHarnessServlet extends HttpServlet {
 	}
 
 	private void createEditorialContent(String pageName) {		
-		EditorialPageDao dao = new EditorialPageDao();		
+		EditorialPageDao dao = new EditorialPageDao();
+		
 		EditorialPage page = new EditorialPage();
 		page.setTargetFileName(pageName);
 		page.setType("landing");
 		page
-				.setTemplate("<html><head><title>Test Generated</title></head><body><h1>This is a test</h1><ul>#foreach( $pageContent in $pages )<li>$pageContent.heading : $pageContent.text</li>#end</ul>");
+				.setTemplate(new Text("<html><head><title>Test Generated</title></head><body><h1>This is a test</h1><ul>#foreach( $pageContent in $pages )<li>$pageContent.heading : $pageContent.text.value</li>#end</ul>"));
 		page = dao.save(page);
 		EditorialPageContent content = new EditorialPageContent();
 		List<EditorialPageContent> contentList = new ArrayList<EditorialPageContent>();
 		content.setHeading("Heading 1");
-		content.setText("this is some text");
+		content.setText(new Text("this is some text"));
 		content.setSortOrder(1L);
 		content.setEditorialPageId(page.getKey().getId());
 		contentList.add(content);
 		content = new EditorialPageContent();
 		content.setHeading("Heading 2");
-		content.setText("this is more text");
+		content.setText(new Text("this is more text"));
 		content.setSortOrder(2L);
 		content.setEditorialPageId(page.getKey().getId());
 		contentList.add(content);

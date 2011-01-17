@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageEditWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.PublicationWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupEditWidget;
@@ -24,7 +26,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	public static final int HEIGHT = 800;
 	private UserDto user;
 
-	public AdminWizardPortlet(UserDto user) {		
+	public AdminWizardPortlet(UserDto user) {
 		super(NAME, WIDTH, HEIGHT);
 		this.user = user;
 		init();
@@ -66,6 +68,11 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				"Device Assignment", "Administration"));
 		wf.addInternalNode(new WizardNode("User Management", null,
 				UserManagerWidget.class, (String) null, (String) null));
+		wf.addInternalNode(new WizardNode("Editorial Page List", null,
+				EditorialPageListWidget.class, "Create Page",
+				"Administration"));
+		wf.addInternalNode(new WizardNode("Create Page", null,
+				EditorialPageEditWidget.class, null, "Editorial Page List"));
 		return wf;
 
 	}
@@ -100,6 +107,10 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new UserManagerWidget();
 		}else if (node.getWidgetClass().equals(AttributeAssignmentWidget.class)){
 			return new AttributeAssignmentWidget();
+		}else if (node.getWidgetClass().equals(EditorialPageEditWidget.class)){
+			return new EditorialPageEditWidget();
+		}else if (node.getWidgetClass().equals(EditorialPageListWidget.class)){
+			return new EditorialPageListWidget(this);
 		}
 		return null;
 
