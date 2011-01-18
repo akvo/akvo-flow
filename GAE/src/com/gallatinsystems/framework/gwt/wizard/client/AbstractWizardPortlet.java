@@ -40,6 +40,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Christopher Fagiani
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractWizardPortlet extends Portlet implements
 		ClickHandler, PageController, CompletionListener {
 
@@ -60,8 +61,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private Map<String, Widget> breadcrumbWidgets;
 
 	private WizardWorkflow workflow;
-	private Widget currentPage;
-	private Breadcrumb currentBreadcrumb;
+	private Widget currentPage;	
 	private ContextAware pendingPage;
 	private WizardNode pageToLoad;
 	private MessageDialog waitDialog;
@@ -162,10 +162,10 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {
-				currentBreadcrumb = addBreadcrumb(page,
+				addBreadcrumb(page,
 						((ContextAware) currentPage).getContextBundle());
 			} else {
-				currentBreadcrumb = addBreadcrumb(page, null);
+				addBreadcrumb(page, null);
 			}
 		} else if (!isForward && page != null && page.getBreadcrumb() != null) {
 			removeBreadcrumb(page);
