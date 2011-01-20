@@ -220,5 +220,8 @@
         <property name="editorialPageId" direction="asc"/>
         <property name="sortOrder" direction="asc"/>
     </datastore-index>
-    
+    <datastore-index kind="GeoRegion" ancestor="false" source="manual">
+        <property name="uuid" direction="asc"/>
+        <property name="order" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>
