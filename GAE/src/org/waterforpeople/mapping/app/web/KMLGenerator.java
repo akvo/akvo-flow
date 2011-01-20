@@ -19,11 +19,12 @@ import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.GeoRegionDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.GeoRegion;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class KMLGenerator {
@@ -56,6 +57,7 @@ public class KMLGenerator {
 			log.log(Level.SEVERE, "Could not initialize velocity", e);
 		}
 	}
+	public static final String defaultPhotoCaption = new PropertyUtil().getProperty("defaultPhotoCaption");
 
 	public String generateRegionDocumentString(String regionVMName) {
 		String regionKML = generateRegionOutlines(regionVMName);
@@ -574,7 +576,7 @@ public class KMLGenerator {
 			}
 			if (ap.getPointPhotoCaption() == null
 					|| ap.getPointPhotoCaption().trim().equals("")) {
-				context.put("waterPointPhotoCaption", "Water For People");
+				context.put("waterPointPhotoCaption", defaultPhotoCaption);
 			} else {
 				context.put("waterPointPhotoCaption", ap.getPointPhotoCaption());
 			}
