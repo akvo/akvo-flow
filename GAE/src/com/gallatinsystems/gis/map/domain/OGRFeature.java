@@ -1,139 +1,102 @@
 package com.gallatinsystems.gis.map.domain;
 
+import java.util.ArrayList;
+
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable
 public class OGRFeature extends BaseDomain {
-	private String name;
-	private String clname;
-	private Integer count;
-	private String firstCCNA;
-	private String firtDNAM;
-	private Integer sumTotal;
-	private Integer sumMale;
-	private Integer sumFemale;
-	private Integer sumHH;
-	private String firstCCOD;
-	private String firstDCOD;
-	private String firstCLCO;
-	private String point;
-	private Text polygon;
 
-	public String getName() {
-		return name;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private String name = null;
+	private String countryCode = null;
+	private Double x1 = null;
+	private Double x2 = null;
+	private Double y1 = null;
+	private Double y2 = null;
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	public Double[] getBoundingBox() {
+		return new Double[] { x1, y1, x2, y2 };
+	}
+
+	public void setBoundingBox(Double[] boundingBox) {
+		x1 = boundingBox[0];
+		y1 = boundingBox[1];
+		x2 = boundingBox[2];
+		y2 = boundingBox[3];
+	}
+
+	public void addBoundingBox(Double x1, Double y1, Double x2, Double y2) {
+		this.x1 = x1;
+		this.x2 = x2;
+		this.y1 = y1;
+		this.y2 = y2;
+
+	}
+
+	public ArrayList<GeoMeasure> getPropertyList() {
+		return propertyList;
+	}
+
+	public void setPropertyList(ArrayList<GeoMeasure> propertyList) {
+		this.propertyList = propertyList;
+	}
+
+	@Persistent
+	private ArrayList<GeoMeasure> propertyList = null;
+
+	private Geometry geometry = null;
+
+	public ArrayList<GeoMeasure> getpropertyList() {
+		return propertyList;
+	}
+
+	public void setpropertyList(ArrayList<GeoMeasure> propertyList) {
+		this.propertyList = propertyList;
+	}
+
+	public Geometry getGeometry() {
+		if (geometry == null)
+			return new Geometry();
+		return geometry;
+	}
+
+	public void setGeometry(Geometry geometry) {
+		this.geometry = geometry;
+	}
+
+	public void addGeoMeasure(String name, String type, String value) {
+		if (propertyList == null)
+			propertyList = new ArrayList<GeoMeasure>();
+		GeoMeasure geoMeasure = new GeoMeasure();
+		geoMeasure.setName(name);
+		geoMeasure.setType(type);
+		geoMeasure.setValue(value);
+		propertyList.add(geoMeasure);
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public String getClname() {
-		return clname;
+	public String getName() {
+		return name;
 	}
-
-	public void setClname(String clname) {
-		this.clname = clname;
-	}
-
-	public Integer getCount() {
-		return count;
-	}
-
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-
-	public String getFirstCCNA() {
-		return firstCCNA;
-	}
-
-	public void setFirstCCNA(String firstCCNA) {
-		this.firstCCNA = firstCCNA;
-	}
-
-	public String getFirtDNAM() {
-		return firtDNAM;
-	}
-
-	public void setFirtDNAM(String firtDNAM) {
-		this.firtDNAM = firtDNAM;
-	}
-
-	public Integer getSumTotal() {
-		return sumTotal;
-	}
-
-	public void setSumTotal(Integer sumTotal) {
-		this.sumTotal = sumTotal;
-	}
-
-	public Integer getSumMale() {
-		return sumMale;
-	}
-
-	public void setSumMale(Integer sumMale) {
-		this.sumMale = sumMale;
-	}
-
-	public Integer getSumFemale() {
-		return sumFemale;
-	}
-
-	public void setSumFemale(Integer sumFemale) {
-		this.sumFemale = sumFemale;
-	}
-
-	public Integer getSumHH() {
-		return sumHH;
-	}
-
-	public void setSumHH(Integer sumHH) {
-		this.sumHH = sumHH;
-	}
-
-	public String getFirstCCOD() {
-		return firstCCOD;
-	}
-
-	public void setFirstCCOD(String firstCCOD) {
-		this.firstCCOD = firstCCOD;
-	}
-
-	public String getFirstDCOD() {
-		return firstDCOD;
-	}
-
-	public void setFirstDCOD(String firstDCOD) {
-		this.firstDCOD = firstDCOD;
-	}
-
-	public String getFirstCLCO() {
-		return firstCLCO;
-	}
-
-	public void setFirstCLCO(String firstCLCO) {
-		this.firstCLCO = firstCLCO;
-	}
-
-	public Text getPolygon() {
-		return polygon;
-	}
-
-	public void setPolygon(Text polygon) {
-		this.polygon = polygon;
-	}
-
-	public void setPoint(String point) {
-		this.point = point;
-	}
-
-	public String getPoint() {
-		return point;
-	}
-
-	
-
 }
