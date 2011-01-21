@@ -14,7 +14,6 @@ public class DisplayTemplateMapping extends BaseDomain{
 	private String attributeName = null;
 	private String attributeFormattingInstructions = null;
 	private Integer displayOrder = null;
-	private String accessPointType = null;
 	public String getLanguageCode() {
 		return languageCode;
 	}
@@ -45,12 +44,5 @@ public class DisplayTemplateMapping extends BaseDomain{
 	}
 	public void setDisplayOrder(Integer displayOrder) {
 		this.displayOrder = displayOrder;
-	}
-	public String getAccessPointType() {
-		return accessPointType;
-	}
-	public void setAccessPointType(String accessPointType) {
-		this.accessPointType = accessPointType;
-	}
-	
+	}	
 }
