@@ -18,11 +18,50 @@ public class OGRFeature extends BaseDomain {
 	 * 
 	 */
 	private String name = null;
+	private String projectCoordinateSystemIdentifier = null;
+	private String geoCoordinateSystemIdentifier = null;
+	private String datumIdentifier = null;
+	private Double spheroid = null;
 	private String countryCode = null;
 	private Double x1 = null;
 	private Double x2 = null;
 	private Double y1 = null;
 	private Double y2 = null;
+	private Double reciprocalOfFlattening = null;
+
+	public String getProjectCoordinateSystemIdentifier() {
+		return projectCoordinateSystemIdentifier;
+	}
+
+	public void setProjectCoordinateSystemIdentifier(
+			String projectCoordinateSystemIdentifier) {
+		this.projectCoordinateSystemIdentifier = projectCoordinateSystemIdentifier;
+	}
+
+	public String getGeoCoordinateSystemIdentifier() {
+		return geoCoordinateSystemIdentifier;
+	}
+
+	public void setGeoCoordinateSystemIdentifier(
+			String geoCoordinateSystemIdentifier) {
+		this.geoCoordinateSystemIdentifier = geoCoordinateSystemIdentifier;
+	}
+
+	public String getDatumIdentifier() {
+		return datumIdentifier;
+	}
+
+	public void setDatumIdentifier(String datumIdentifier) {
+		this.datumIdentifier = datumIdentifier;
+	}
+
+	public Double getSpheroid() {
+		return spheroid;
+	}
+
+	public void setSpheroid(Double spheroid) {
+		this.spheroid = spheroid;
+	}
 
 	public String getCountryCode() {
 		return countryCode;
@@ -98,5 +137,13 @@ public class OGRFeature extends BaseDomain {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setReciprocalOfFlattening(Double reciprocalOfFlattening) {
+		this.reciprocalOfFlattening = reciprocalOfFlattening;
+	}
+
+	public Double getReciprocalOfFlattening() {
+		return reciprocalOfFlattening;
 	}
 }
