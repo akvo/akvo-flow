@@ -13,7 +13,7 @@ public class QuestionHelpMedia extends BaseDomain {
 	 * 
 	 */
 	private static final long serialVersionUID = 7035250558880867571L;
-	private String url = null;
+	private String resourceUrl = null;
 	private Type type = null;
 	private String text = null;
 	private Long questionId;
@@ -21,7 +21,7 @@ public class QuestionHelpMedia extends BaseDomain {
 	private HashMap<String, Translation> translationMap;
 
 	public enum Type {
-		PHOTO, VIDEO, TEXT
+		PHOTO, VIDEO, TEXT, ACTIVITY
 	}
 
 	public Long getQuestionId() {
@@ -40,12 +40,12 @@ public class QuestionHelpMedia extends BaseDomain {
 		this.translationMap = translationMap;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getResourceUrl() {
+		return resourceUrl;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setResourceUrl(String url) {
+		this.resourceUrl = url;
 	}
 
 	public Type getType() {

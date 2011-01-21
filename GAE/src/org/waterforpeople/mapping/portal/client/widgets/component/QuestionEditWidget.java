@@ -58,6 +58,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private static final String DEFAULT_BOX_WIDTH = "300px";
 	private static final String SELECT_TXT = "Select...";
 	private static final String EDIT_TRANS_OP = "Edit Translation";
+	private static final String EDIT_HELP_OP = "Edit Help";
 	private VerticalPanel panel;
 	private CaptionPanel basePanel;
 	private TextArea questionTextArea;
@@ -82,6 +83,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private QuestionDto currentQuestion;
 	private Map<Long, List<QuestionDto>> optionQuestions;
 	private Button editTranslationButton;
+	private Button editHelpButton;
 
 	private QuestionGroupDto questionGroup;
 	private String operation;
@@ -147,10 +149,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 		dependencyGrid = new Grid(2, 2);
 		dependencyPanel.add(dependencyGrid);
-		ViewUtil.installGridRow(null, dependencyPanel, grid, 6, 1,null);
+		ViewUtil.installGridRow(null, dependencyPanel, grid, 6, 1, null);
 		dependencyPanel.setVisible(false);
-		ViewUtil.installGridRow("Question", dependentQuestionSelector, dependencyGrid, 0);
-		ViewUtil.installGridRow("Response", dependentAnswerSelector, dependencyGrid, 1);
+		ViewUtil.installGridRow("Question", dependentQuestionSelector,
+				dependencyGrid, 0);
+		ViewUtil.installGridRow("Response", dependentAnswerSelector,
+				dependencyGrid, 1);
 
 		panel.add(basePanel);
 
@@ -163,8 +167,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		optionPanel.add(optionContent);
 		optionTable = new FlexTable();
 		Grid optGrid = new Grid(2, 4);
-		ViewUtil.installGridRow("Allow Multiple", allowMultipleBox, optGrid, 0, 0,null);
-		ViewUtil.installGridRow("Allow 'Other'", allowOtherBox, optGrid, 0, 2,null);
+		ViewUtil.installGridRow("Allow Multiple", allowMultipleBox, optGrid, 0,
+				0, null);
+		ViewUtil.installGridRow("Allow 'Other'", allowOtherBox, optGrid, 0, 2,
+				null);
 
 		optionContent.add(optGrid);
 		optionContent.add(optionTable);
@@ -175,9 +181,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		editTranslationButton = new Button("Edit Translations");
 		editTranslationButton.addClickHandler(this);
 		panel.add(editTranslationButton);
+
+		editHelpButton = new Button("Edit Help");
+		editHelpButton.addClickHandler(this);
+		panel.add(editHelpButton);
 	}
 
-	
 	/**
 	 * populates the UI based on the values in the loaded QuestionDto
 	 */
@@ -738,6 +747,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		} else if (event.getSource() == editTranslationButton) {
 			operation = EDIT_TRANS_OP;
 			persistContext(this);
+		} else if (event.getSource() == editHelpButton) {
+			operation = EDIT_HELP_OP;
+			persistContext(this);
 		}
 	}
 
@@ -780,6 +792,13 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				SurveyQuestionTranslationDialog dia = new SurveyQuestionTranslationDialog(
 						(QuestionDto) currentQuestion, this);
 				dia.show();
+			} else if (EDIT_HELP_OP.equals(operation)) {
+				operation = null;
+				QuestionHelpDialog dia = new QuestionHelpDialog(
+						(QuestionDto) currentQuestion, this);
+				dia.show();
+			} else if (operation == null) {
+
 			}
 		}
 		operation = null;

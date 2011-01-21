@@ -1586,7 +1586,7 @@ public class TestHarnessServlet extends HttpServlet {
 							com.gallatinsystems.survey.domain.QuestionHelpMedia qhm = new com.gallatinsystems.survey.domain.QuestionHelpMedia();
 							qhm.setText("en:" + n + ":" + new Date());
 							qhm.setType(QuestionHelpMedia.Type.PHOTO);
-							qhm.setUrl("http://test.com/" + n + ".jpg");
+							qhm.setResourceUrl("http://test.com/" + n + ".jpg");
 							qhm.setQuestionId(q.getKey().getId());
 							qhm = helpDao.save(qhm);
 

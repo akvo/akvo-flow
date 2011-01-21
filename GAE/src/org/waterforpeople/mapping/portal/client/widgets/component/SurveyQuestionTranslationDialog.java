@@ -42,6 +42,8 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	private static final String TITLE = "Edit Translations";
 	private static final String QUESTION_PARENT_TYPE = "QUESTION_TEXT";
 	private static final String OPTION_PARENT_TYPE = "QUESTION_OPTION";
+	private static final String HELP_PARENT_TYPE = "QUESTION_HELP_MEDIA";
+	
 	private static final Map<String, String> LANGUAGES = new TreeMap<String, String>() {
 		private static final long serialVersionUID = -5226209579099503771L;
 		{

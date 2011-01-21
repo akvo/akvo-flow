@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -94,4 +95,18 @@ public class ViewUtil {
 		}
 	}
 
+	/**
+	 * selects the value in a list box
+	 */
+	public static boolean setListboxSelection(ListBox list, String value){		
+		if(list != null && value != null){
+			for(int i =0; i < list.getItemCount(); i++){
+				if(list.getValue(i).equals(value)){
+					list.setSelectedIndex(i);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

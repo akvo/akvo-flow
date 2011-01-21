@@ -4,10 +4,12 @@ import org.apache.commons.beanutils.converters.AbstractConverter;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 
 /**
@@ -48,6 +50,10 @@ public class TypeEnumConverter extends AbstractConverter {
 				return UnitOfMeasure.UnitOfMeasureType.valueOf(value.toString());
 			}else if (type == UnitOfMeasureDto.UnitOfMeasureType.class){
 				return UnitOfMeasureDto.UnitOfMeasureType.valueOf(value.toString());
+			}else if (type == QuestionHelpMedia.Type.class){
+				return QuestionHelpMedia.Type.valueOf(value.toString());
+			}else if (type == QuestionHelpDto.Type.class){
+				return QuestionHelpDto.Type.valueOf(value.toString());
 			}
 		}
 		return null;

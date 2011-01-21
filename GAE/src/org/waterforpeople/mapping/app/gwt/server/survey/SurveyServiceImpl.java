@@ -257,7 +257,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				QuestionHelpDto qhDto = new QuestionHelpDto();
 				// Beanutils throws a concurrent exception so need
 				// to copy props by hand
-				qhDto.setResourceUrl(qh.getUrl());
+				qhDto.setResourceUrl(qh.getResourceUrl());
 				qhDto.setText(qhDto.getText());
 				qDto.addQuestionHelp(qhDto);
 			}
@@ -370,7 +370,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				QuestionHelpMedia qh = new QuestionHelpMedia();
 				// Beanutils throws a concurrent exception so need
 				// to copy props by hand
-				qh.setUrl(qhDto.getResourceUrl());
+				qh.setResourceUrl(qhDto.getResourceUrl());
 				qh.setText(qhDto.getText());
 				q.addHelpMedia(i++, qh);
 			}

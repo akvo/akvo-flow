@@ -8,11 +8,13 @@ import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
@@ -69,6 +71,9 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter,UnitOfMeasureDto.UnitOfMeasureSystem.class);
 		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureType.class);
 		ConvertUtils.register(enumConverter,UnitOfMeasureDto.UnitOfMeasureType.class);
+		ConvertUtils.register(enumConverter,QuestionHelpMedia.Type.class);
+		ConvertUtils.register(enumConverter,QuestionHelpDto.Type.class);
+		
 		
 		DatastoreTextConverter textConverter = new DatastoreTextConverter();
 		ConvertUtils.register(textConverter,Text.class);				
