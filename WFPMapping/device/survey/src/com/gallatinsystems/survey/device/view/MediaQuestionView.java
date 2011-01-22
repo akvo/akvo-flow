@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 
 import com.gallatinsystems.survey.device.R;
@@ -39,26 +40,34 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	protected void init(String type) {
 		Context context = getContext();
 		mediaType = type;
-		TableRow tr = new TableRow(context);
+		TableRow tr = new TableRow(context);		
 		mediaButton = new Button(context);
+	
+				
+	
 		if (ConstantUtil.PHOTO_QUESTION_TYPE.equals(type)) {
 			mediaButton.setText(R.string.takephoto);
 		} else {
 			mediaButton.setText(R.string.takevideo);
-		}
+		}		
 		mediaButton.setOnClickListener(this);
 		if (readOnly) {
 			mediaButton.setEnabled(false);
 		}
-		mediaButton.setWidth(screenWidth-50);
+	
 		completeIcon = new ImageView(context);
 		completeIcon.setImageResource(R.drawable.checkmark);
 		completeIcon.setClickable(true);
 		completeIcon.setOnClickListener(this);
-		completeIcon.setVisibility(View.GONE);
-		tr.addView(mediaButton);
-		tr.addView(completeIcon);
+		LinearLayout layout = new LinearLayout(context);
+		layout.setOrientation(LinearLayout.HORIZONTAL);
+		mediaButton.setWidth(DEFAULT_WIDTH);
+		completeIcon.setMinimumWidth(50);
+		layout.addView(mediaButton);
+		layout.addView(completeIcon);
+		tr.addView(layout);
 		addView(tr);
+		completeIcon.setVisibility(View.INVISIBLE);
 	}
 
 	/**
@@ -123,6 +132,6 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	@Override
 	public void resetQuestion(boolean fireEvent) {
 		super.resetQuestion(fireEvent);
-		completeIcon.setVisibility(View.GONE);
+		completeIcon.setVisibility(View.INVISIBLE);
 	}
 }
