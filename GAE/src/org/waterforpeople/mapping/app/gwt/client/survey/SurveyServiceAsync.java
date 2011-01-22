@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
@@ -74,5 +75,8 @@ public interface SurveyServiceAsync {
 
 	void saveHelp(List<QuestionHelpDto> helpList,
 			AsyncCallback<List<QuestionHelpDto>> callback);
+
+	void listTranslations(Long parentId, String parentType,
+			AsyncCallback<Map<String, TranslationDto>> callback);
 
 }

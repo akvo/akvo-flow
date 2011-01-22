@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
@@ -16,7 +17,7 @@ public class QuestionHelpMedia extends BaseDomain {
 	private String text = null;
 	private Long questionId;
 	@NotPersistent
-	private HashMap<String, Translation> translationMap;
+	private Map<String, Translation> translationMap;
 
 	public enum Type {
 		PHOTO, VIDEO, TEXT, ACTIVITY
@@ -30,11 +31,11 @@ public class QuestionHelpMedia extends BaseDomain {
 		this.questionId = questionId;
 	}
 
-	public HashMap<String, Translation> getTranslationMap() {
+	public Map<String, Translation> getTranslationMap() {
 		return translationMap;
 	}
 
-	public void setTranslationMap(HashMap<String, Translation> translationMap) {
+	public void setTranslationMap(Map<String, Translation> translationMap) {
 		this.translationMap = translationMap;
 	}
 

@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -22,7 +23,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
 	private Long questionGroupId;
-	private TreeMap<String, TranslationDto> translationMap;
+	private Map<String, TranslationDto> translationMap;
 	private String path;
 	private Integer order;
 	private Boolean allowMultipleFlag = null;
@@ -48,11 +49,11 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		this.order = order;
 	}
 
-	public TreeMap<String, TranslationDto> getTranslationMap() {
+	public Map<String, TranslationDto> getTranslationMap() {
 		return translationMap;
 	}
 
-	public void setTranslationMap(TreeMap<String, TranslationDto> translationMap) {
+	public void setTranslationMap(Map<String, TranslationDto> translationMap) {
 		this.translationMap = translationMap;
 	}
 

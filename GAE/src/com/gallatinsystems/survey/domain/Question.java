@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.domain;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.jdo.annotations.NotPersistent;
@@ -23,7 +24,7 @@ public class Question extends BaseDomain {
 	private String tip = null;
 	private String text = null;
 	@NotPersistent
-	private TreeMap<String, Translation> translationMap;
+	private Map<String, Translation> translationMap;
 	private Boolean dependentFlag = null;
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
@@ -83,11 +84,11 @@ public class Question extends BaseDomain {
 		this.questionGroupId = questionGroupId;
 	}
 
-	public TreeMap<String, Translation> getTranslationMap() {
+	public Map<String, Translation> getTranslationMap() {
 		return translationMap;
 	}
 
-	public void setTranslationMap(TreeMap<String, Translation> translationMap) {
+	public void setTranslationMap(Map<String, Translation> translationMap) {
 		this.translationMap = translationMap;
 	}
 	

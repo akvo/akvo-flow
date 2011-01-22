@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
@@ -62,5 +63,6 @@ public interface SurveyService extends RemoteService {
 	public List<TranslationDto> saveTranslations(List<TranslationDto> translations);
 	public void rerunAPMappings(Long surveyId);
 	public List<QuestionHelpDto> listHelpByQuestion(Long questionId);
-	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList);	
+	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList);
+	public Map<String,TranslationDto> listTranslations(Long parentId, String parentType);
 }

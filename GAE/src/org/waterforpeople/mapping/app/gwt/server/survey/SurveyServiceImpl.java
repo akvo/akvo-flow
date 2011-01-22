@@ -325,18 +325,21 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			for (TranslationDto trans : translationMap.values()) {
 				Translation t = new Translation();
 				if (trans.getKeyId() != null)
-					t.setKey((KeyFactory.createKey(
-							Translation.class.getSimpleName(), trans.getKeyId())));
+					t.setKey((KeyFactory.createKey(Translation.class
+							.getSimpleName(), trans.getKeyId())));
 				t.setLanguageCode(trans.getLangCode());
 				t.setText(trans.getText());
 				t.setParentId(trans.getParentId());
 				if (trans.getParentType().equals(
-						Translation.ParentType.QUESTION_TEXT.toString()))
+						Translation.ParentType.QUESTION_TEXT.toString())) {
 					t.setParentType(ParentType.QUESTION_TEXT);
-				else if (trans.getParentType().equals(
-						Translation.ParentType.QUESTION_OPTION.toString()))
+				} else if (trans.getParentType().equals(
+						Translation.ParentType.QUESTION_OPTION.toString())) {
 					t.setParentType(ParentType.QUESTION_OPTION);
-
+				} else if (Translation.ParentType.QUESTION_HELP_MEDIA_TEXT
+						.toString().equals(trans.getParentType())) {
+					t.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
+				}
 				transMap.put(t.getLanguageCode(), t);
 			}
 		}
@@ -346,8 +349,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public Question marshalQuestion(QuestionDto qdto) {
 		Question q = new Question();
 		if (qdto.getKeyId() != null)
-			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(),
-					qdto.getKeyId())));
+			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(), qdto
+					.getKeyId())));
 
 		q.setQuestionGroupId(qdto.getQuestionGroupId());
 		q.setOrder(qdto.getOrder());
@@ -370,11 +373,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			int i = 1;
 			for (QuestionHelpDto qhDto : qHListDto) {
 				QuestionHelpMedia qh = new QuestionHelpMedia();
-				// Beanutils throws a concurrent exception so need
-				// to copy props by hand
-				qh.setResourceUrl(qhDto.getResourceUrl());
-				qh.setText(qhDto.getText());
-				q.addHelpMedia(i++, qh);
+				DtoMarshaller.copyToCanonical(qh, qhDto);
 			}
 		}
 
@@ -394,9 +393,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (QuestionOptionDto qoDto : optionDtoList) {
 					QuestionOption oo = new QuestionOption();
 					if (qoDto.getKeyId() != null)
-						oo.setKey((KeyFactory.createKey(
-								QuestionOption.class.getSimpleName(),
-								qoDto.getKeyId())));
+						oo.setKey((KeyFactory.createKey(QuestionOption.class
+								.getSimpleName(), qoDto.getKeyId())));
 					if (qoDto.getCode() != null)
 						oo.setCode(qoDto.getCode());
 					if (qoDto.getText() != null)
@@ -850,50 +848,63 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				}
 				buffer.append(siList.get(i).getKey().getId());
 			}
-			queue.add(url("/app_worker/surveytask")
-					.param("action", "reprocessMapSurveyInstance")
-					.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
-					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
-					.param(SurveyTaskRequest.CURSOR_PARAM,
-							SurveyInstanceDAO.getCursor(siList)));
+			queue.add(url("/app_worker/surveytask").param("action",
+					"reprocessMapSurveyInstance").param(
+					SurveyTaskRequest.ID_PARAM, surveyId.toString()).param(
+					SurveyTaskRequest.ID_LIST_PARAM, buffer.toString()).param(
+					SurveyTaskRequest.CURSOR_PARAM,
+					SurveyInstanceDAO.getCursor(siList)));
 		}
 	}
 
 	@Override
 	public List<QuestionHelpDto> listHelpByQuestion(Long questionId) {
 		QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
-		TreeMap<Integer,QuestionHelpMedia> helpMedia = helpDao.listHelpByQuestion(questionId);
+		TreeMap<Integer, QuestionHelpMedia> helpMedia = helpDao
+				.listHelpByQuestion(questionId);
 		List<QuestionHelpDto> dtoList = new ArrayList<QuestionHelpDto>();
-		if(helpMedia != null){
-			for(QuestionHelpMedia help: helpMedia.values()){
+		if (helpMedia != null) {
+			for (QuestionHelpMedia help : helpMedia.values()) {
 				QuestionHelpDto dto = new QuestionHelpDto();
-				DtoMarshaller.copyToDto(help,dto);
+				Map<String, Translation> transMap = help.getTranslationMap();
+				help.setTranslationMap(null);
+				DtoMarshaller.copyToDto(help, dto);
+				if (transMap != null) {
+					dto.setTranslationMap(marshalTranslations(transMap));
+				}
+
 				dtoList.add(dto);
 			}
 		}
 		return dtoList;
 	}
-	
-	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList){
-		QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();		
-		if(helpList != null && helpList.size()>0){
+
+	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList) {
+		QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
+		if (helpList != null && helpList.size() > 0) {
 			Collection<QuestionHelpMedia> domainList = new ArrayList<QuestionHelpMedia>();
-			for(QuestionHelpDto dto: helpList){
+			for (QuestionHelpDto dto : helpList) {
 				QuestionHelpMedia canonical = new QuestionHelpMedia();
 				DtoMarshaller.copyToCanonical(canonical, dto);
 				domainList.add(canonical);
 			}
 			domainList = helpDao.save(domainList);
 			helpList.clear();
-			for(QuestionHelpMedia domain: domainList){
+			for (QuestionHelpMedia domain : domainList) {
 				QuestionHelpDto dto = new QuestionHelpDto();
-				DtoMarshaller.copyToDto(domain,dto);
+				DtoMarshaller.copyToDto(domain, dto);
 				helpList.add(dto);
 			}
 		}
-	
 		return helpList;
-		
+	}
+
+	public Map<String, TranslationDto> listTranslations(Long parentId,
+			String parentType) {
+		TranslationDao transDao = new TranslationDao();
+		Map<String, Translation> transMap = transDao.findTranslations(
+				Translation.ParentType.valueOf(parentType), parentId);		
+		return marshalTranslations(transMap);		
 	}
 
 }

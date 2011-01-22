@@ -64,7 +64,6 @@ public class HelpMediaWidget extends Composite implements
 		textPanel = new HorizontalPanel();
 		panel.add(textPanel);
 		panel.add(statusPanel);
-		textPanel.setVisible(false);
 		helpText = new TextBox();
 		textPanel.add(helpText);
 		activityPanel = new HorizontalPanel();
@@ -114,7 +113,8 @@ public class HelpMediaWidget extends Composite implements
 			ViewUtil.setListboxSelection(typeSelector, helpDto.getType()
 					.toString());
 			toggleTypePanels(helpDto.getType().toString());
-			if (QuestionHelpDto.Type.TEXT != helpDto.getType()
+			if ((QuestionHelpDto.Type.PHOTO == helpDto.getType() || QuestionHelpDto.Type.VIDEO == helpDto
+					.getType())
 					&& helpDto.getResourceUrl() != null) {
 				statusPanel.setVisible(true);
 				if (helpDto.getResourceUrl().contains("/")) {
@@ -127,13 +127,12 @@ public class HelpMediaWidget extends Composite implements
 					statusPanel.add(new Label(helpDto.getResourceUrl()));
 				}
 			}
-			if (helpDto.getText() != null
-					&& helpDto.getType() == QuestionHelpDto.Type.TEXT) {
+			if (helpDto.getText() != null) {
 				helpText.setValue(helpDto.getText());
-			} else if (helpDto.getText() != null
-					&& helpDto.getType() == QuestionHelpDto.Type.ACTIVITY) {
+			}
+			if (helpDto.getType() == QuestionHelpDto.Type.ACTIVITY) {
 				ViewUtil.setListboxSelection(activitySelector, helpDto
-						.getText());
+						.getResourceUrl());
 			}
 		}
 	}
@@ -144,10 +143,9 @@ public class HelpMediaWidget extends Composite implements
 		}
 		helpDto.setType(QuestionHelpDto.Type.valueOf(typeSelector
 				.getValue(typeSelector.getSelectedIndex())));
-		if (QuestionHelpDto.Type.TEXT == helpDto.getType()) {
-			helpDto.setText(helpText.getValue());
-		} else if (QuestionHelpDto.Type.ACTIVITY == helpDto.getType()) {
-			helpDto.setText(activitySelector.getValue(activitySelector
+		helpDto.setText(helpText.getValue());
+		if (QuestionHelpDto.Type.ACTIVITY == helpDto.getType()) {
+			helpDto.setResourceUrl(activitySelector.getValue(activitySelector
 					.getSelectedIndex()));
 		} else {
 			helpDto.setResourceUrl(UPLOAD_CONSTANTS.uploadUrl()
@@ -212,16 +210,13 @@ public class HelpMediaWidget extends Composite implements
 		statusPanel.setVisible(false);
 		if (QuestionHelpDto.Type.TEXT.toString().equals(type)) {
 			uploadPanel.setVisible(false);
-			textPanel.setVisible(true);
 			activityPanel.setVisible(false);
 
 		} else if (QuestionHelpDto.Type.ACTIVITY.toString().equals(type)) {
 			uploadPanel.setVisible(false);
-			textPanel.setVisible(false);
 			activityPanel.setVisible(true);
 		} else {
 			uploadPanel.setVisible(true);
-			textPanel.setVisible(false);
 			activityPanel.setVisible(false);
 		}
 	}

@@ -178,13 +178,15 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		optionPanel.setVisible(false);
 		panel.add(optionPanel);
 
+		HorizontalPanel tempPanel = new HorizontalPanel();
 		editTranslationButton = new Button("Edit Translations");
 		editTranslationButton.addClickHandler(this);
-		panel.add(editTranslationButton);
+		tempPanel.add(editTranslationButton);
 
 		editHelpButton = new Button("Edit Help");
 		editHelpButton.addClickHandler(this);
-		panel.add(editHelpButton);
+		tempPanel.add(editHelpButton);
+		panel.add(tempPanel);
 	}
 
 	/**

@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
@@ -42,8 +43,8 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	private static final String TITLE = "Edit Translations";
 	private static final String QUESTION_PARENT_TYPE = "QUESTION_TEXT";
 	private static final String OPTION_PARENT_TYPE = "QUESTION_OPTION";
-	private static final String HELP_PARENT_TYPE = "QUESTION_HELP_MEDIA";
-	
+	private static final String HELP_PARENT_TYPE = "QUESTION_HELP_MEDIA_TEXT";
+
 	private static final Map<String, String> LANGUAGES = new TreeMap<String, String>() {
 		private static final long serialVersionUID = -5226209579099503771L;
 		{
@@ -56,6 +57,8 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	private Map<TextBox, TranslationDto> inputToTranslationMap;
 	private SurveyServiceAsync surveyService;
 	private TranslationChangeListener listener;
+	private Label loadingLabel;
+	private DockPanel contentPane;
 
 	/**
 	 * instantiates and displays the dialog box using the translations present
@@ -74,10 +77,11 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		this.listener = listener;
 		surveyService = GWT.create(SurveyService.class);
 		inputToTranslationMap = new HashMap<TextBox, TranslationDto>();
-		DockPanel contentPane = new DockPanel();
+		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
 				Window.getClientHeight() / 4);
-		contentPane.add(buildContent(), DockPanel.CENTER);
+		loadingLabel = new Label("Loading...");
+		contentPane.add(loadingLabel, DockPanel.CENTER);
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
@@ -98,6 +102,53 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 			}
 		});
 		setWidget(contentPane);
+		if(dto.getTranslationMap() == null){
+			surveyService.listTranslations(dto.getKeyId(), QUESTION_PARENT_TYPE, 			
+				new AsyncCallback<Map<String,TranslationDto>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						loadingLabel.setText("Error while loading data: "
+								+ caught.getLocalizedMessage());
+					}
+
+					@Override
+					public void onSuccess(Map<String,TranslationDto> result) {						
+						questionDto.setTranslationMap(result);
+						loadHelpTranslations();
+					}
+				});
+		}else{
+			loadHelpTranslations();
+		}			
+	}
+	
+	private void loadHelpTranslations(){
+		if(questionDto.getQuestionHelpList() == null){
+			surveyService.listHelpByQuestion(questionDto.getKeyId(),
+				new AsyncCallback<List<QuestionHelpDto>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						loadingLabel.setText("Error while loading data: "
+								+ caught.getLocalizedMessage());
+					}
+
+					@Override
+					public void onSuccess(List<QuestionHelpDto> result) {						
+						questionDto.setQuestionHelpList(result);
+						displayContent();
+					}
+				});
+		}else{
+			displayContent();
+		}	
+	}
+	
+	private void displayContent(){
+		contentPane.remove(loadingLabel);
+		contentPane.add(buildContent(), DockPanel.CENTER);
+	
 	}
 
 	/**
@@ -166,6 +217,9 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 			options = questionDto.getOptionContainerDto().getOptionsList();
 			rowCount += (1 + options.size());
 		}
+		if (questionDto.getQuestionHelpList() != null) {
+			rowCount += questionDto.getQuestionHelpList().size();
+		}
 		Grid grid = new Grid(rowCount, colCount);
 		// set up the headers
 		grid.setWidget(0, 0, new Label("Text"));
@@ -175,15 +229,23 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		}
 		StyleUtil.setGridRowStyle(grid, 0, false);
 		grid.setWidget(1, 0, new Label(questionDto.getText()));
-		populateTranslationControl(questionDto.getTranslationMap(),
-				questionDto.getKeyId(), QUESTION_PARENT_TYPE, grid, 1, 1);
+		populateTranslationControl(questionDto.getTranslationMap(), questionDto
+				.getKeyId(), QUESTION_PARENT_TYPE, grid, 1, 1);
 		StyleUtil.setGridRowStyle(grid, 1, false);
 		int curRow = 2;
 		if (options != null) {
 			for (QuestionOptionDto opt : options) {
 				grid.setWidget(curRow, 0, new Label(opt.getText()));
-				populateTranslationControl(opt.getTranslationMap(),
-						opt.getKeyId(), OPTION_PARENT_TYPE, grid, curRow, 1);
+				populateTranslationControl(opt.getTranslationMap(), opt
+						.getKeyId(), OPTION_PARENT_TYPE, grid, curRow, 1);
+				StyleUtil.setGridRowStyle(grid, curRow++, false);
+			}
+		}
+		if (questionDto.getQuestionHelpList() != null) {
+			for (QuestionHelpDto help : questionDto.getQuestionHelpList()) {
+				grid.setWidget(curRow, 0, new Label(help.getText()));
+				populateTranslationControl(help.getTranslationMap(), help
+						.getKeyId(), HELP_PARENT_TYPE, grid, curRow, 1);
 				StyleUtil.setGridRowStyle(grid, curRow++, false);
 			}
 		}

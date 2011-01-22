@@ -122,9 +122,9 @@ public class QuestionHelpDialog extends DialogBox {
 
 						@Override
 						public void onSuccess(List<QuestionHelpDto> result) {
+							questionDto.setQuestionHelpList(result);
 							hide();
 							notifyListeners();
-
 						}
 					});
 		} else {

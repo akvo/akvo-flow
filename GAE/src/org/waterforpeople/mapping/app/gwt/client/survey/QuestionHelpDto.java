@@ -1,16 +1,26 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import java.util.Map;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class QuestionHelpDto extends BaseDto {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1563528591253495401L;
 	private String text;
 	private String resourceUrl;
 	private Type type;
 	private Long questionId;
+	private Map<String, TranslationDto> translationMap;
+
+	public Map<String, TranslationDto> getTranslationMap() {
+		return translationMap;
+	}
+
+	public void setTranslationMap(Map<String, TranslationDto> translationMap) {
+		this.translationMap = translationMap;
+	}
+
 
 	public Long getQuestionId() {
 		return questionId;
