@@ -38,15 +38,16 @@ public class HelpMediaWidget extends Composite implements
 	private HorizontalPanel uploadPanel;
 	private HorizontalPanel activityPanel;
 	private HorizontalPanel textPanel;
+	private HorizontalPanel statusPanel;
 	private FormPanel form;
 	private FileUpload upload;
-	private Label uploadStatusLabel;
 	private ListBox typeSelector;
 	private ListBox activitySelector;
 	private TextBox helpText;
 	private Hidden contentType;
 	private Button uploadButton;
 	private QuestionHelpDto helpDto;
+	private String uploadedFile;
 
 	public HelpMediaWidget(QuestionHelpDto helpDto) {
 		this.helpDto = helpDto;
@@ -57,11 +58,12 @@ public class HelpMediaWidget extends Composite implements
 		}
 		typeSelector.addChangeHandler(this);
 		ViewUtil.installFieldRow(panel, "Type", typeSelector, null);
-		
-		
+
+		statusPanel = new HorizontalPanel();
 		uploadPanel = new HorizontalPanel();
 		textPanel = new HorizontalPanel();
 		panel.add(textPanel);
+		panel.add(statusPanel);
 		textPanel.setVisible(false);
 		helpText = new TextBox();
 		textPanel.add(helpText);
@@ -72,16 +74,14 @@ public class HelpMediaWidget extends Composite implements
 		installHelpActivities(activitySelector);
 		ViewUtil.installFieldRow(activityPanel, "Helper Activity",
 				activitySelector, null);
-		uploadStatusLabel = new Label("Uploading...");
-		uploadStatusLabel.setVisible(false);
-		
 
 		form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.setAction(UPLOAD_CONSTANTS.uploadUrl());
 		form.addSubmitCompleteHandler(this);
-		Hidden filePath = new Hidden("key");
+		Hidden filePath = new Hidden("key", UPLOAD_CONSTANTS.helpS3Path()
+				+ "/${filename}");
 
 		uploadPanel.add(filePath);
 		uploadPanel.add(new Hidden("AWSAccessKeyId", UPLOAD_CONSTANTS.s3Id()));
@@ -103,7 +103,6 @@ public class HelpMediaWidget extends Composite implements
 		upload.setName("file");
 		uploadPanel.add(upload);
 		uploadPanel.add(uploadButton);
-		uploadPanel.add(uploadStatusLabel);
 		form.setWidget(uploadPanel);
 		panel.add(form);
 		bindValues();
@@ -111,10 +110,19 @@ public class HelpMediaWidget extends Composite implements
 	}
 
 	private void bindValues() {
-		if (helpDto != null) {
+		if (helpDto != null && helpDto.getType()!= null) {
 			toggleTypePanels(helpDto.getType().toString());
 			if (helpDto.getResourceUrl() != null) {
-				// TODO populate widget
+				statusPanel.setVisible(true);
+				if (helpDto.getResourceUrl().contains("/")) {
+					statusPanel.add(new Label(
+							helpDto.getResourceUrl()
+									.substring(
+											helpDto.getResourceUrl()
+													.lastIndexOf("/") + 1)));
+				} else {
+					statusPanel.add(new Label(helpDto.getResourceUrl()));
+				}
 			}
 			if (helpDto.getText() != null
 					&& helpDto.getType() == QuestionHelpDto.Type.TEXT) {
@@ -124,13 +132,42 @@ public class HelpMediaWidget extends Composite implements
 				ViewUtil.setListboxSelection(activitySelector, helpDto
 						.getText());
 			}
-
 		}
+	}
+
+	public QuestionHelpDto getHelpDto() {
+		if (helpDto == null) {
+			helpDto = new QuestionHelpDto();
+		}
+		helpDto.setType(QuestionHelpDto.Type.valueOf(typeSelector
+				.getValue(typeSelector.getSelectedIndex())));
+		if (QuestionHelpDto.Type.TEXT == helpDto.getType()) {
+			helpDto.setText(helpText.getValue());
+		} else if (QuestionHelpDto.Type.ACTIVITY == helpDto.getType()) {
+			helpDto.setText(activitySelector.getValue(activitySelector
+					.getSelectedIndex()));
+		} else {
+			helpDto.setResourceUrl(UPLOAD_CONSTANTS.uploadUrl()
+					+ UPLOAD_CONSTANTS.helpS3Path() + "/" + uploadedFile);
+		}
+		return helpDto;
 	}
 
 	@Override
 	public void onSubmitComplete(SubmitCompleteEvent event) {
-		uploadStatusLabel.setVisible(false);
+		statusPanel.clear();
+		uploadedFile = upload.getFilename();
+		if (uploadedFile != null) {
+			if (uploadedFile.contains("\\")) {
+				uploadedFile = uploadedFile.substring(uploadedFile
+						.lastIndexOf("\\") + 1);
+			}
+			if (uploadedFile.contains("/")) {
+				uploadedFile = uploadedFile.substring(uploadedFile
+						.lastIndexOf("/") + 1);
+			}
+		}
+		statusPanel.add(new Label("Uploaded " + uploadedFile));
 	}
 
 	@Override
@@ -153,7 +190,11 @@ public class HelpMediaWidget extends Composite implements
 				} else {
 					contentType.setValue(UPLOAD_CONSTANTS.videoContentType());
 				}
-				uploadStatusLabel.setVisible(true);
+
+				uploadPanel.setVisible(false);
+				statusPanel.setVisible(true);
+				statusPanel.clear();
+				statusPanel.add(new Label("Uploading..."));
 				form.submit();
 			} else {
 				MessageDialog dia = new MessageDialog("Error",
@@ -164,6 +205,8 @@ public class HelpMediaWidget extends Composite implements
 	}
 
 	private void toggleTypePanels(String type) {
+		statusPanel.clear();
+		statusPanel.setVisible(false);
 		if (QuestionHelpDto.Type.TEXT.toString().equals(type)) {
 			upload.setVisible(false);
 			textPanel.setVisible(true);

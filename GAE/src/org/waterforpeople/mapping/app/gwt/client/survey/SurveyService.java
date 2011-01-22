@@ -61,5 +61,6 @@ public interface SurveyService extends RemoteService {
 	public void publishSurveyAsync(Long surveyId);
 	public List<TranslationDto> saveTranslations(List<TranslationDto> translations);
 	public void rerunAPMappings(Long surveyId);
-	
+	public List<QuestionHelpDto> listHelpByQuestion(Long questionId);
+	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList);	
 }

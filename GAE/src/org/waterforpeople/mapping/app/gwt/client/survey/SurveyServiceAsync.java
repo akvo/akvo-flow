@@ -69,4 +69,10 @@ public interface SurveyServiceAsync {
 
 	void rerunAPMappings(Long surveyId, AsyncCallback<Void> callback);
 
+	void listHelpByQuestion(Long questionId,
+			AsyncCallback<List<QuestionHelpDto>> callback);
+
+	void saveHelp(List<QuestionHelpDto> helpList,
+			AsyncCallback<List<QuestionHelpDto>> callback);
+
 }

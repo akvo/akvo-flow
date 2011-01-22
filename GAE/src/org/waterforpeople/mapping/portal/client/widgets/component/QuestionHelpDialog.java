@@ -1,6 +1,10 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
@@ -9,10 +13,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -20,16 +27,17 @@ import com.google.gwt.user.client.ui.Widget;
  * Dialog box used for adding help media to survey questions
  * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class QuestionHelpDialog extends DialogBox {
-	private static final String TITLE = "Edit Help Media";	
+	private static final String TITLE = "Edit Help Media";
 	private QuestionDto questionDto;
 	private SurveyServiceAsync surveyService;
 	private CompletionListener listener;
-	
-	
-	
+	private Label loadingLabel;
+	private DockPanel contentPane;
+	private FlexTable helpTable;
+
 	/**
 	 * instantiates and displays the dialog box using the translations present
 	 * in the questionDto. If the question has options, the translations for the
@@ -38,19 +46,18 @@ public class QuestionHelpDialog extends DialogBox {
 	 * @param dto
 	 * @param listener
 	 */
-	public QuestionHelpDialog(QuestionDto dto,
-			CompletionListener listener) {
+	public QuestionHelpDialog(QuestionDto dto, CompletionListener listener) {
 		setText(TITLE);
 		setAnimationEnabled(true);
 		setGlassEnabled(true);
 		questionDto = dto;
 		this.listener = listener;
 		surveyService = GWT.create(SurveyService.class);
-		
-		DockPanel contentPane = new DockPanel();
+		loadingLabel = new Label("Loading...");
+		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
 				Window.getClientHeight() / 4);
-		contentPane.add(buildContent(), DockPanel.CENTER);
+		contentPane.add(loadingLabel, DockPanel.CENTER);
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
@@ -71,23 +78,96 @@ public class QuestionHelpDialog extends DialogBox {
 			}
 		});
 		setWidget(contentPane);
+		loadData();
 	}
-	
-	private void saveHelp(){
-		//TODO: implement
+
+	private void loadData() {
+		surveyService.listHelpByQuestion(questionDto.getKeyId(),
+				new AsyncCallback<List<QuestionHelpDto>>() {
+
+					@Override
+					public void onSuccess(List<QuestionHelpDto> result) {						
+						Widget w = buildContent(result);
+						contentPane.remove(loadingLabel);
+						contentPane.add(w,DockPanel.CENTER);
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						loadingLabel
+								.setText("Could not load help. Please close this dialog and try again: "
+										+ caught.getLocalizedMessage());
+
+					}
+				});
 	}
-	
+
+	private void saveHelp() {
+		if (helpTable != null && helpTable.getRowCount() > 0) {
+			List<QuestionHelpDto> helpDtos = new ArrayList<QuestionHelpDto>();
+			for (int i = 0; i < helpTable.getRowCount(); i++) {
+				QuestionHelpDto dto = ((HelpMediaWidget) helpTable.getWidget(i,
+						0)).getHelpDto();
+				dto.setQuestionId(questionDto.getKeyId());
+				helpDtos.add(dto);
+			}
+			surveyService.saveHelp(helpDtos,
+					new AsyncCallback<List<QuestionHelpDto>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+
+						}
+
+						@Override
+						public void onSuccess(List<QuestionHelpDto> result) {
+							hide();
+							notifyListeners();
+
+						}
+					});
+		} else {
+			hide();
+		}
+	}
+
 	/**
-	 * builds the UI. 
+	 * builds the UI.
 	 * 
 	 * @return
 	 */
-	private Widget buildContent() {
+	private Widget buildContent(List<QuestionHelpDto> questionHelpList) {
 		VerticalPanel vPanel = new VerticalPanel();
-		HelpMediaWidget helpWidget = new HelpMediaWidget(null);
-		vPanel.add(helpWidget);
-		
+		helpTable = new FlexTable();
+		if (questionHelpList != null) {
+			int count = 0;
+			for (QuestionHelpDto help : questionHelpList) {
+				helpTable.insertRow(count);
+				helpTable.setWidget(count, 0, new HelpMediaWidget(help));
+				count++;
+			}
+		}
+		vPanel.add(helpTable);
+		HorizontalPanel buttonPanel = new HorizontalPanel();
+		Button addButton = new Button("Add Help Item");
+		addButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				int idx = helpTable.insertRow(helpTable.getRowCount());
+				helpTable.setWidget(idx, 0, new HelpMediaWidget(null));
+			}
+		});
+		buttonPanel.add(addButton);
+		vPanel.add(buttonPanel);
+
 		return vPanel;
 	}
 
+	private void notifyListeners() {
+		if (listener != null) {
+			listener.operationComplete(true, null);
+		}
+	}
 }

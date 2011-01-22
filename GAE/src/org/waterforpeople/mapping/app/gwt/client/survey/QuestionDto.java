@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -14,7 +15,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	private QuestionType type;
 	private OptionContainerDto optionContainerDto = null;
-	private ArrayList<QuestionHelpDto> questionHelpList;
+	private List<QuestionHelpDto> questionHelpList;
 	private String tip = null;
 	private String validationRule = null;
 	private Boolean mandatoryFlag = null;
@@ -107,11 +108,11 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		this.type = type;
 	}
 
-	public ArrayList<QuestionHelpDto> getQuestionHelpList() {
+	public List<QuestionHelpDto> getQuestionHelpList() {
 		return questionHelpList;
 	}
 
-	public void setQuestionHelpList(ArrayList<QuestionHelpDto> questionHelpList) {
+	public void setQuestionHelpList(List<QuestionHelpDto> questionHelpList) {
 		this.questionHelpList = questionHelpList;
 	}
 

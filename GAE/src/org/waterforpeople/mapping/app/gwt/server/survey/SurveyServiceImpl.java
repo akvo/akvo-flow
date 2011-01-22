@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
@@ -364,7 +366,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			q.setValidationRule(qdto.getValidationRule());
 
 		if (qdto.getQuestionHelpList() != null) {
-			ArrayList<QuestionHelpDto> qHListDto = qdto.getQuestionHelpList();
+			List<QuestionHelpDto> qHListDto = qdto.getQuestionHelpList();
 			int i = 1;
 			for (QuestionHelpDto qhDto : qHListDto) {
 				QuestionHelpMedia qh = new QuestionHelpMedia();
@@ -855,6 +857,43 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					.param(SurveyTaskRequest.CURSOR_PARAM,
 							SurveyInstanceDAO.getCursor(siList)));
 		}
+	}
+
+	@Override
+	public List<QuestionHelpDto> listHelpByQuestion(Long questionId) {
+		QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
+		TreeMap<Integer,QuestionHelpMedia> helpMedia = helpDao.listHelpByQuestion(questionId);
+		List<QuestionHelpDto> dtoList = new ArrayList<QuestionHelpDto>();
+		if(helpMedia != null){
+			for(QuestionHelpMedia help: helpMedia.values()){
+				QuestionHelpDto dto = new QuestionHelpDto();
+				DtoMarshaller.copyToDto(help,dto);
+				dtoList.add(dto);
+			}
+		}
+		return dtoList;
+	}
+	
+	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList){
+		QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();		
+		if(helpList != null && helpList.size()>0){
+			Collection<QuestionHelpMedia> domainList = new ArrayList<QuestionHelpMedia>();
+			for(QuestionHelpDto dto: helpList){
+				QuestionHelpMedia canonical = new QuestionHelpMedia();
+				DtoMarshaller.copyToCanonical(canonical, dto);
+				domainList.add(canonical);
+			}
+			domainList = helpDao.save(domainList);
+			helpList.clear();
+			for(QuestionHelpMedia domain: domainList){
+				QuestionHelpDto dto = new QuestionHelpDto();
+				DtoMarshaller.copyToDto(domain,dto);
+				helpList.add(dto);
+			}
+		}
+	
+		return helpList;
+		
 	}
 
 }

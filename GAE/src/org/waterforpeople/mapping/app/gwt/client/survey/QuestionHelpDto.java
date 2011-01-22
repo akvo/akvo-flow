@@ -10,6 +10,15 @@ public class QuestionHelpDto extends BaseDto {
 	private String text;
 	private String resourceUrl;
 	private Type type;
+	private Long questionId;
+
+	public Long getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(Long questionId) {
+		this.questionId = questionId;
+	}
 
 	public Type getType() {
 		return type;

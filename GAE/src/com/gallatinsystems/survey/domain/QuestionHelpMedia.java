@@ -9,9 +9,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
 public class QuestionHelpMedia extends BaseDomain {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 7035250558880867571L;
 	private String resourceUrl = null;
 	private Type type = null;
