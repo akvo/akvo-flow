@@ -110,9 +110,12 @@ public class HelpMediaWidget extends Composite implements
 	}
 
 	private void bindValues() {
-		if (helpDto != null && helpDto.getType()!= null) {
+		if (helpDto != null && helpDto.getType() != null) {
+			ViewUtil.setListboxSelection(typeSelector, helpDto.getType()
+					.toString());
 			toggleTypePanels(helpDto.getType().toString());
-			if (helpDto.getResourceUrl() != null) {
+			if (QuestionHelpDto.Type.TEXT != helpDto.getType()
+					&& helpDto.getResourceUrl() != null) {
 				statusPanel.setVisible(true);
 				if (helpDto.getResourceUrl().contains("/")) {
 					statusPanel.add(new Label(
@@ -208,16 +211,16 @@ public class HelpMediaWidget extends Composite implements
 		statusPanel.clear();
 		statusPanel.setVisible(false);
 		if (QuestionHelpDto.Type.TEXT.toString().equals(type)) {
-			upload.setVisible(false);
+			uploadPanel.setVisible(false);
 			textPanel.setVisible(true);
 			activityPanel.setVisible(false);
 
 		} else if (QuestionHelpDto.Type.ACTIVITY.toString().equals(type)) {
-			upload.setVisible(false);
+			uploadPanel.setVisible(false);
 			textPanel.setVisible(false);
 			activityPanel.setVisible(true);
 		} else {
-			upload.setVisible(true);
+			uploadPanel.setVisible(true);
 			textPanel.setVisible(false);
 			activityPanel.setVisible(false);
 		}
