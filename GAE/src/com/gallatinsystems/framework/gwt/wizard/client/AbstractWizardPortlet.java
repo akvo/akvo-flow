@@ -65,6 +65,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private ContextAware pendingPage;
 	private WizardNode pageToLoad;
 	private MessageDialog waitDialog;
+	private Map<String,String> buttonMapping;
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
 		super(name, true, false, false, width, height);
@@ -73,6 +74,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		breadcrumbPanel.setStylePrimaryName(BREADCRUMB_PANEL_STYLE);
 		buttonPanel = new HorizontalPanel();
 		widgetPanel = new VerticalPanel();
+		buttonMapping = new HashMap<String,String>();
 
 		contentPane.add(breadcrumbPanel);
 		contentPane.add(widgetPanel);
@@ -102,6 +104,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		buttonPanel.clear();
 		forwardNavButtons.clear();
 		backwardNavButtons.clear();
+		buttonMapping.clear();
 		installButtons(backwardNavButtons, node.getPrevNodes(),
 				BACK_NAV_BUTTON_STYLE);
 		installButtons(forwardNavButtons, node.getNextNodes(),
@@ -114,20 +117,21 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * listeners
 	 * 
 	 */
-	private void installButtons(List<Button> buttonList, String[] buttonNames,
+	private void installButtons(List<Button> buttonList, WizardButton[] buttonDefinitions,
 			String style) {
-		if (buttonNames != null) {
-			for (int i = 0; i < buttonNames.length; i++) {
+		if (buttonDefinitions != null) {
+			for (int i = 0; i < buttonDefinitions.length; i++) {
 				Button button = new Button();
 				if (style == null) {
 					button.setStylePrimaryName(NAV_BUTTON_STYLE);
 				} else {
 					button.setStylePrimaryName(style);
 				}
-				button.setText(buttonNames[i]);
+				button.setText(buttonDefinitions[i].getLabel());
 				button.addClickHandler(this);
 				buttonList.add(button);
 				buttonPanel.add(button);
+				buttonMapping.put(buttonDefinitions[i].getLabel(),buttonDefinitions[i].getNodeName());
 			}
 		}
 	}
@@ -212,7 +216,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			if (bundle.get(WizardBundleConstants.AUTO_ADVANCE_FLAG) != null) {
 				bundle.remove(WizardBundleConstants.AUTO_ADVANCE_FLAG);
 				renderWizardPage(workflow.getWorkflowNode(pageToLoad
-						.getNextNodes()[0]), true, bundle);
+						.getNextNodes()[0].getNodeName()), true, bundle);
 			} else {
 				if (currentPage instanceof AutoAdvancing) {
 					((AutoAdvancing) currentPage).advance(this);
@@ -274,11 +278,11 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 */
 	public void onClick(ClickEvent event) {
 		if (forwardNavButtons.contains(event.getSource())) {
-			renderWizardPage(workflow.getWorkflowNode(((Button) event
-					.getSource()).getText()), true, null);
+			renderWizardPage(workflow.getWorkflowNode(buttonMapping.get(((Button) event
+					.getSource()).getText())), true, null);
 		} else if (backwardNavButtons.contains(event.getSource())) {
-			renderWizardPage(workflow.getWorkflowNode(((Button) event
-					.getSource()).getText()), false, null);
+			renderWizardPage(workflow.getWorkflowNode(buttonMapping.get(((Button) event
+					.getSource()).getText())), false, null);
 		} else if (event.getSource() instanceof Breadcrumb) {
 			// if it is a breadcrumb
 			renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
@@ -377,30 +381,30 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		private Class widgetClass;
 		private String name;
 		private String breadcrumb;
-		private String[] nextNodes;
-		private String[] prevNodes;
+		private WizardButton[] nextNodes;
+		private WizardButton[] prevNodes;
 
 		public WizardNode(String name, String breadcrumb, Class clazz,
-				String next, String prev) {
+				WizardButton next, WizardButton prev) {
 			this.name = name;
 			widgetClass = clazz;
 			if (next != null) {
-				nextNodes = new String[1];
+				nextNodes = new WizardButton[1];
 				nextNodes[0] = next;
 			} else {
-				nextNodes = new String[0];
+				nextNodes = new WizardButton[0];
 			}
 			if (prev != null) {
-				prevNodes = new String[1];
+				prevNodes = new WizardButton[1];
 				prevNodes[0] = prev;
 			} else {
-				prevNodes = new String[0];
+				prevNodes = new WizardButton[0];
 			}
 			this.breadcrumb = breadcrumb;
 		}
 
 		public WizardNode(String name, String breadcrumb, Class clazz,
-				String[] next, String[] prev) {
+				WizardButton[] next, WizardButton[] prev) {
 			this.name = name;
 			this.breadcrumb = breadcrumb;
 			widgetClass = clazz;
@@ -416,11 +420,11 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			return widgetClass;
 		}
 
-		public String[] getNextNodes() {
+		public WizardButton[] getNextNodes() {
 			return nextNodes;
 		}
 
-		public String[] getPrevNodes() {
+		public WizardButton[] getPrevNodes() {
 			return prevNodes;
 		}
 
@@ -429,4 +433,31 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
+	public class WizardButton{
+		private String nodeName;
+		private String label;
+		
+		public WizardButton(String node){
+			nodeName = node;
+			label = node;
+		}
+		public WizardButton(String node, String label){
+			nodeName = node;
+			this.label = label;
+		}
+		
+		public String getNodeName() {
+			return nodeName;
+		}
+		public void setNodeName(String nodeName) {
+			this.nodeName = nodeName;
+		}
+		public String getLabel() {
+			return label;
+		}
+		public void setLabel(String label) {
+			this.label = label;
+		}
+		
+	}
 }

@@ -34,45 +34,69 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 
 	protected WizardWorkflow getWizardWorkflow() {
 		WizardWorkflow wf = new WizardWorkflow();
-		wf.setStartNode(new WizardNode("Administration", "Administration Home",
-				AdminHomeWidget.class, (String) null, (String) null));
-		wf.addInternalNode(new WizardNode("SurveyGroupList", "Survey Groups",
-				SurveyGroupListWidget.class, "SurveyGroupCreate",
-				"Administration"));
-		wf.addInternalNode(new WizardNode("SurveyGroupCreate", null,
-				SurveyGroupEditWidget.class, "SurveyList", "SurveyGroupList"));
-		wf.addInternalNode(new WizardNode("SurveyList", "Surveys",
-				SurveyListWidget.class, "SurveyCreate", "SurveyGroupList"));
-		wf.addInternalNode(new WizardNode("SurveyCreate", null,
-				SurveyEditWidget.class, "QuestionGroupList", "SurveyList"));
-		wf.addInternalNode(new WizardNode("QuestionGroupList",
-				"Question Groups", QuestionGroupListWidget.class, new String[] {
-						"QuestionGroupCreate", "Publish" },
-				new String[] { "SurveyList" }));
-		wf.addInternalNode(new WizardNode("QuestionGroupCreate", null,
-				QuestionGroupEditWidget.class, "QuestionList",
-				"QuestionGroupList"));
-		wf.addInternalNode(new WizardNode("QuestionList", "Questions",
-				QuestionListWidget.class, new String[] { "QuestionCreate",
-						"Publish" }, new String[] { "QuestionGroupList" }));
 		wf
-				.addInternalNode(new WizardNode("QuestionCreate", null,
-						QuestionEditWidget.class,
-						new String[] { "QuestionList" }, null));
+				.setStartNode(new WizardNode("Administration",
+						"Administration Home", AdminHomeWidget.class,
+						(WizardButton) null, (WizardButton) null));
+		wf.addInternalNode(new WizardNode("SurveyGroupList", "Survey Groups",
+				SurveyGroupListWidget.class, new WizardButton(
+						"SurveyGroupCreate", "Create Survey Group"),
+				new WizardButton("Administration", "Go Back to Admin Home")));
+		wf.addInternalNode(new WizardNode("SurveyGroupCreate", null,
+				SurveyGroupEditWidget.class, new WizardButton("SurveyList",
+						"Save and Continue"), new WizardButton(
+						"SurveyGroupList", "Back to Survey Group List")));
+		wf.addInternalNode(new WizardNode("SurveyList", "Surveys",
+				SurveyListWidget.class, new WizardButton("SurveyCreate",
+						"Create Survey"), new WizardButton("SurveyGroupList",
+						"Back to Survey Group List")));
+		wf.addInternalNode(new WizardNode("SurveyCreate", null,
+				SurveyEditWidget.class, new WizardButton("QuestionGroupList",
+						"Save and Continue"), new WizardButton("SurveyList",
+						"Back to Survey List")));
+		wf.addInternalNode(new WizardNode("QuestionGroupList",
+				"Question Groups", QuestionGroupListWidget.class,
+				new WizardButton[] {
+						new WizardButton("QuestionGroupCreate",
+								"Create Question Group"),
+						new WizardButton("Publish", "Publish Survey") },
+				new WizardButton[] { new WizardButton("SurveyList",
+						"Back to Survey List") }));
+		wf.addInternalNode(new WizardNode("QuestionGroupCreate", null,
+				QuestionGroupEditWidget.class, new WizardButton("QuestionList",
+						"Save and Continue"), new WizardButton(
+						"QuestionGroupList", "Back to Question Group List")));
+		wf.addInternalNode(new WizardNode("QuestionList", "Questions",
+				QuestionListWidget.class, new WizardButton[] {
+						new WizardButton("QuestionCreate", "Create Question"),
+						new WizardButton("Publish", "Publish Survey") },
+				new WizardButton[] { new WizardButton("QuestionGroupList",
+						"Back to Question Group List") }));
+		wf.addInternalNode(new WizardNode("QuestionCreate", null,
+				QuestionEditWidget.class,
+				new WizardButton[] { new WizardButton("QuestionList",
+						"Save and Continue") }, null));
 		wf.addInternalNode(new WizardNode("Publish", null,
-				PublicationWidget.class,
-				new String[] { "Attribute Assignment" },
-				new String[] { "QuestionList" }));
+				PublicationWidget.class, new WizardButton[] { new WizardButton(
+						"Attribute Assignment",
+						"Assign Questions to Attributes") },
+				new WizardButton[] { new WizardButton("QuestionList",
+						"Back to Question List") }));
 		wf.addInternalNode(new WizardNode("Attribute Assignment",
 				"Attribute Assignment", AttributeAssignmentWidget.class,
-				"Device Assignment", "Administration"));
+				new WizardButton("Device Assignment",
+						"Assign Surveys to Devices"), new WizardButton(
+						"Administration", "Back to Admin Home")));
 		wf.addInternalNode(new WizardNode("User Management", null,
-				UserManagerWidget.class, (String) null, (String) null));
+				UserManagerWidget.class, (WizardButton) null,
+				(WizardButton) null));
 		wf.addInternalNode(new WizardNode("Editorial Page List", null,
-				EditorialPageListWidget.class, "Create Page",
-				"Administration"));
+				EditorialPageListWidget.class, new WizardButton("Create Page",
+						"Create Editorial Page"), new WizardButton(
+						"Administration", "Back to Admin Home")));
 		wf.addInternalNode(new WizardNode("Create Page", null,
-				EditorialPageEditWidget.class, null, "Editorial Page List"));
+				EditorialPageEditWidget.class, null, new WizardButton(
+						"Editorial Page List", "Save and Continue")));
 		return wf;
 
 	}
@@ -84,7 +108,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	@Override
 	protected Widget initializeNode(WizardNode node) {
 		if (node.getWidgetClass().equals(AdminHomeWidget.class)) {
-			return new AdminHomeWidget(this,user);
+			return new AdminHomeWidget(this, user);
 		} else if (node.getWidgetClass().equals(PublicationWidget.class)) {
 			return new PublicationWidget();
 		} else if (node.getWidgetClass().equals(QuestionEditWidget.class)) {
@@ -105,11 +129,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new QuestionListWidget(this);
 		} else if (node.getWidgetClass().equals(UserManagerWidget.class)) {
 			return new UserManagerWidget();
-		}else if (node.getWidgetClass().equals(AttributeAssignmentWidget.class)){
+		} else if (node.getWidgetClass()
+				.equals(AttributeAssignmentWidget.class)) {
 			return new AttributeAssignmentWidget();
-		}else if (node.getWidgetClass().equals(EditorialPageEditWidget.class)){
+		} else if (node.getWidgetClass().equals(EditorialPageEditWidget.class)) {
 			return new EditorialPageEditWidget();
-		}else if (node.getWidgetClass().equals(EditorialPageListWidget.class)){
+		} else if (node.getWidgetClass().equals(EditorialPageListWidget.class)) {
 			return new EditorialPageListWidget(this);
 		}
 		return null;
