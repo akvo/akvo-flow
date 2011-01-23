@@ -978,6 +978,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			for (QuestionHelpMedia help : questionToSave
 					.getQuestionHelpMediaMap().values()) {
 				help.setKey(null);
+				if(help.getTranslationMap()!= null){
+					for(Translation t: help.getTranslationMap().values()){
+						t.setParentId(null);
+						t.setKey(null);
+					}
+				}
 			}
 		}
 		QuestionDao dao = new QuestionDao();

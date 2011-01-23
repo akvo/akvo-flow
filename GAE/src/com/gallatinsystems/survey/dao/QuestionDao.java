@@ -37,7 +37,8 @@ public class QuestionDao extends BaseDAO<Question> {
 	@SuppressWarnings("unchecked")
 	public List<Question> listQuestionByType(Long surveyId, Question.Type type) {
 		if (surveyId == null) {
-			return listByProperty("type", type.toString(), "String", "order", "asc");
+			return listByProperty("type", type.toString(), "String", "order",
+					"asc");
 		} else {
 			PersistenceManager pm = PersistenceFilter.getManager();
 			javax.jdo.Query query = pm.newQuery(Question.class);
@@ -66,7 +67,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	 * @return
 	 */
 	public List<Question> listQuestionsBySurvey(Long surveyId) {
-		return listByProperty("surveyId", surveyId, "Long","order","asc");
+		return listByProperty("surveyId", surveyId, "Long", "order", "asc");
 	}
 
 	public void delete(Question question) throws IllegalDeletionException {
@@ -105,12 +106,13 @@ public class QuestionDao extends BaseDAO<Question> {
 			}
 		}
 		question = save(question);
-		//delete existing options
-		
+		// delete existing options
+
 		QuestionOptionDao qoDao = new QuestionOptionDao();
-		TreeMap<Integer,QuestionOption> qoMap = qoDao.listOptionByQuestion(question.getKey().getId());
-		if(qoMap!=null){
-			for(Map.Entry<Integer, QuestionOption> entry:qoMap.entrySet()){
+		TreeMap<Integer, QuestionOption> qoMap = qoDao
+				.listOptionByQuestion(question.getKey().getId());
+		if (qoMap != null) {
+			for (Map.Entry<Integer, QuestionOption> entry : qoMap.entrySet()) {
 				qoDao.delete(entry.getValue());
 			}
 		}
@@ -125,29 +127,38 @@ public class QuestionDao extends BaseDAO<Question> {
 				}
 				save(opt);
 				if (opt.getTranslationMap() != null) {
-					for (Translation t : opt.getTranslationMap().values()){
-						if(t.getParentId() == null){
+					for (Translation t : opt.getTranslationMap().values()) {
+						if (t.getParentId() == null) {
 							t.setParentId(opt.getKey().getId());
-						}
-						save(t);
+						}					
 					}
+					save(opt.getTranslationMap().values());
 				}
 			}
 		}
 		if (question.getTranslationMap() != null) {
 			for (Translation t : question.getTranslationMap().values()) {
-				if(t.getParentId() == null){
+				if (t.getParentId() == null) {
 					t.setParentId(question.getKey().getId());
-				}
-				save(t);
+				}				
 			}
+			save(question.getTranslationMap().values());
 		}
 
 		if (question.getQuestionHelpMediaMap() != null) {
 			for (QuestionHelpMedia help : question.getQuestionHelpMediaMap()
 					.values()) {
 				help.setQuestionId(question.getKey().getId());
+
 				save(help);
+				if (help.getTranslationMap() != null) {
+					for (Translation t : help.getTranslationMap().values()) {
+						if (t.getParentId() == null) {
+							t.setParentId(help.getKey().getId());
+						}
+					}
+					save(help.getTranslationMap().values());
+				}
 			}
 		}
 		return question;
@@ -187,7 +198,7 @@ public class QuestionDao extends BaseDAO<Question> {
 	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
 			Long questionGroupId, boolean needDetails) {
 		List<Question> qList = listByProperty("questionGroupId",
-				questionGroupId, "Long","order","asc");
+				questionGroupId, "Long", "order", "asc");
 		TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
 		if (qList != null) {
 			int i = 1;
@@ -238,8 +249,10 @@ public class QuestionDao extends BaseDAO<Question> {
 			String questionText) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
-		query.declareParameters("Long questionGroupIdParam, String questionTextParam");
+		query
+				.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
+		query
+				.declareParameters("Long questionGroupIdParam, String questionTextParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, questionText);
 		if (results != null && results.size() > 0) {
@@ -249,11 +262,14 @@ public class QuestionDao extends BaseDAO<Question> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
-		query.declareParameters("Long questionGroupIdParam, Integer orderParam");
+		query
+				.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
+		query
+				.declareParameters("Long questionGroupIdParam, Integer orderParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, order);
 		if (results != null && results.size() > 0) {

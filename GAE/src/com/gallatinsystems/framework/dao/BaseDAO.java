@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
-import javax.jdo.Transaction;
 
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 

@@ -367,13 +367,13 @@ public class SurveyCopyDialog extends DialogBox {
 	 */
 	@Override
 	public boolean onKeyDownPreview(char key, int modifiers) {
-//		if (enabled) {
+		if (enabled) {
 			switch (key) {
 			case KeyCodes.KEY_ESCAPE:
 				hide();
 				return true;
 			}
-	//	}
+		}
 		return false;
 	}
 

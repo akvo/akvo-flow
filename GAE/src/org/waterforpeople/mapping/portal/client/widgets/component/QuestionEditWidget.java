@@ -224,7 +224,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()
 				&& (currentQuestion.getOptionContainerDto() == null || currentQuestion
 						.getOptionContainerDto().getOptionsList() == null)) {
-			optionPanel.setVisible(true);
+			optionPanel.setVisible(true);			
 			showLoading(optionPanel, "Loading options...");
 			surveyService.loadQuestionDetails(currentQuestion.getKeyId(),
 					new AsyncCallback<QuestionDto>() {
@@ -235,7 +235,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						}
 
 						@Override
-						public void onSuccess(QuestionDto result) {
+						public void onSuccess(QuestionDto result) {							
 							showContent(optionPanel, optionContent);
 							currentQuestion = result;
 							populateOptions(currentQuestion
@@ -257,6 +257,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		optionPanel.setVisible(true);
 		// wipe out any old values
 		optionTable.clear(true);
+		allowMultipleBox.setValue(optionContainer.getAllowMultipleFlag());
+		allowOtherBox.setValue(optionContainer.getAllowOtherFlag());
 		if (optionContainer != null && optionContainer.getOptionsList() != null) {
 			for (QuestionOptionDto opt : optionContainer.getOptionsList()) {
 				installOptionRow(opt);
@@ -644,7 +646,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			OptionContainerDto container = currentQuestion
 					.getOptionContainerDto();
 			if (container == null) {
-				container = new OptionContainerDto();
+				container = new OptionContainerDto();							
 				currentQuestion.setOptionContainerDto(container);
 			}
 			container.setAllowMultipleFlag(allowMultipleBox.getValue());
