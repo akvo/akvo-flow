@@ -255,13 +255,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			qDto.setValidationRule(q.getValidationRule());
 
 		if (q.getQuestionHelpMediaMap() != null) {
-			for (QuestionHelpMedia qh : q.getQuestionHelpMediaMap().values()) {
-				QuestionHelpDto qhDto = new QuestionHelpDto();
-				// Beanutils throws a concurrent exception so need
-				// to copy props by hand
-				qhDto.setResourceUrl(qh.getResourceUrl());
-				qhDto.setText(qhDto.getText());
-				qDto.addQuestionHelp(qhDto);
+			for (QuestionHelpMedia help : q.getQuestionHelpMediaMap().values()) {
+				QuestionHelpDto dto = new QuestionHelpDto();
+				Map<String, Translation> transMap = help.getTranslationMap();
+				help.setTranslationMap(null);
+				DtoMarshaller.copyToDto(help, dto);
+				if (transMap != null) {
+					dto.setTranslationMap(marshalTranslations(transMap));
+				}
+				qDto.addQuestionHelp(dto);
 			}
 		}
 
@@ -426,9 +428,22 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 
 		if (qdto.getTranslationMap() != null) {
-			TreeMap<String, Translation> transMap = SurveyServiceImpl
-					.marshalFromDtoTranslations(qdto.getTranslationMap());
+			TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto.getTranslationMap());
 			q.setTranslationMap(transMap);
+		}
+		
+		if(qdto.getQuestionHelpList()!= null){
+			int count =0;
+			for(QuestionHelpDto help: qdto.getQuestionHelpList()){
+				QuestionHelpMedia helpDomain = new QuestionHelpMedia();
+				Map<String,TranslationDto> transMap = help.getTranslationMap();
+				help.setTranslationMap(null);
+				DtoMarshaller.copyToCanonical(helpDomain,help);
+				if(transMap != null){
+					helpDomain.setTranslationMap(marshalFromDtoTranslations(transMap));
+				}				
+				q.addHelpMedia(count++, helpDomain);				
+			}
 		}
 
 		return q;

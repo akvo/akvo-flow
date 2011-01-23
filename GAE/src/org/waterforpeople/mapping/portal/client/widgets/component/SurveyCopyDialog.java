@@ -222,7 +222,7 @@ public class SurveyCopyDialog extends DialogBox {
 	}
 
 	private void loadQuestionList(final int groupIndex) {
-		statusLabel.setText("Loading questions to copy");
+		statusLabel.setText("Loading questions to copy for group "+(groupIndex+1));
 		if (surveyDto.getQuestionGroupList() != null) {
 			if (groupIndex < surveyDto.getQuestionGroupList().size()) {
 				if (surveyDto.getQuestionGroupList().get(groupIndex)
@@ -257,7 +257,7 @@ public class SurveyCopyDialog extends DialogBox {
 									surveyDto.getQuestionGroupList().get(
 											groupIndex).setQuestionMap(
 											questionMap);
-
+									loadQuestionList(groupIndex+1);
 								}
 
 							});
@@ -278,8 +278,8 @@ public class SurveyCopyDialog extends DialogBox {
 
 	private void loadQuestionDetails(final int groupIndex,
 			final int questionIndex) {
-		statusLabel.setText("Loading details for group " + groupIndex + 1
-				+ ", question " + questionIndex + 1);
+		statusLabel.setText("Loading details for group " + (groupIndex + 1)
+				+ ", question " + (questionIndex + 1));
 		if (groupIndex < surveyDto.getQuestionGroupList().size()) {
 			final QuestionGroupDto group = surveyDto.getQuestionGroupList()
 					.get(groupIndex);
@@ -314,8 +314,8 @@ public class SurveyCopyDialog extends DialogBox {
 	}
 
 	private void copyQuestion(final int groupIndex,final int questionIndex) {
-		statusLabel.setText("Saving details for group " + groupIndex + 1
-				+ ", question " + questionIndex + 1);
+		statusLabel.setText("Saving details for group " + (groupIndex + 1)
+				+ ", question " + (questionIndex + 1));
 		if (groupIndex < surveyDto.getQuestionGroupList().size()) {
 			final QuestionGroupDto group = surveyDto.getQuestionGroupList()
 					.get(groupIndex);
@@ -367,13 +367,13 @@ public class SurveyCopyDialog extends DialogBox {
 	 */
 	@Override
 	public boolean onKeyDownPreview(char key, int modifiers) {
-		if (enabled) {
+//		if (enabled) {
 			switch (key) {
 			case KeyCodes.KEY_ESCAPE:
 				hide();
 				return true;
 			}
-		}
+	//	}
 		return false;
 	}
 
