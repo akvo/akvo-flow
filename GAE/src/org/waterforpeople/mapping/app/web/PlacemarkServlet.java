@@ -149,6 +149,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						.getPointType()));
 		pdto.setCommunityCode(ap.getCommunityCode());
 		pdto.setMarkType(ap.getPointType().toString());
+		pdto.setCollectionDate(ap.getCollectionDate());
 		if (needDetailsFlag) {
 			String placemarkString = null;
 			try {

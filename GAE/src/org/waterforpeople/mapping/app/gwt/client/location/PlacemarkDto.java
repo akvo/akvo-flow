@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.location;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class PlacemarkDto implements Serializable {
 
@@ -15,6 +16,7 @@ public class PlacemarkDto implements Serializable {
 	private String iconUrl = null;
 	private String communityCode = null;
 	private String markType = null;
+	private Date collectionDate = null;
 	
 	public Double getLatitude() {
 		return latitude;
@@ -57,6 +59,12 @@ public class PlacemarkDto implements Serializable {
 	}
 	public String getMarkType() {
 		return markType;
+	}
+	public void setCollectionDate(Date collectionDate) {
+		this.collectionDate = collectionDate;
+	}
+	public Date getCollectionDate() {
+		return collectionDate;
 	}
 	
 
