@@ -95,8 +95,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 						"Create Editorial Page"), new WizardButton(
 						"Administration", "Back to Admin Home")));
 		wf.addInternalNode(new WizardNode("Create Page", null,
-				EditorialPageEditWidget.class, null, new WizardButton(
-						"Editorial Page List", "Save and Continue")));
+				EditorialPageEditWidget.class, new WizardButton(
+						"Editorial Page List", "Save and Continue"), new WizardButton(
+						"Editorial Page List", "Back to Editorial Page List")));
 		return wf;
 
 	}
