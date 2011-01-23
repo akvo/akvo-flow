@@ -364,6 +364,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>GeoRestApi</servlet-name>
 		<url-pattern>/georestapi</url-pattern>
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>ExternalGISDataRestApi</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.ExternalGISDataServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ExternalGISDataRestApi</servlet-name>
+		<url-pattern>/externalgisdatarestapi</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>ChartUrlRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.ChartUrlServlet</servlet-class>
