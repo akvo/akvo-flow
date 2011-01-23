@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
@@ -12,7 +13,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String version;
 	private String description;
 	private String status;
-	private ArrayList<QuestionGroupDto> questionGroupList;
+	private List<QuestionGroupDto> questionGroupList;
 	private String path;
 	private Long surveyGroupId = null;
 
@@ -31,12 +32,12 @@ public class SurveyDto extends BaseDto implements NamedObject {
 		questionGroupList.add(questionGroup);
 	}
 
-	public ArrayList<QuestionGroupDto> getQuestionGroupList() {
+	public List<QuestionGroupDto> getQuestionGroupList() {
 		return questionGroupList;
 	}
 
 	public void setQuestionGroupList(
-			ArrayList<QuestionGroupDto> questionGroupList) {
+			List<QuestionGroupDto> questionGroupList) {
 		this.questionGroupList = questionGroupList;
 	}
 

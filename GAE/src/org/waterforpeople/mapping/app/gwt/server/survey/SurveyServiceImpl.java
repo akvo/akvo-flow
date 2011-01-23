@@ -558,6 +558,31 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public List<QuestionGroupDto> saveQuestionGroups(
+			List<QuestionGroupDto> dtoList) {
+		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
+		if (dtoList != null) {
+			List<QuestionGroup> groupList = new ArrayList<QuestionGroup>();
+			int i = 0;
+			for (QuestionGroupDto dto : dtoList) {
+				QuestionGroup questionGroup = new QuestionGroup();
+				DtoMarshaller.copyToCanonical(questionGroup, dto);
+				if (questionGroup.getOrder() == null
+						|| questionGroup.getOrder() == 0) {
+					questionGroup.setOrder(i);
+				}
+				groupList.add(questionGroup);
+				i++;
+			}
+			questionGroupDao.save(groupList);
+			for (int j = 0; j < groupList.size(); j++) {
+				dtoList.get(j).setKeyId(groupList.get(j).getKey().getId());
+			}
+		}
+		return dtoList;
+	}
+
+	@Override
 	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId) {
 		Survey canonical = new Survey();
 		DtoMarshaller.copyToCanonical(canonical, surveyDto);
@@ -903,8 +928,46 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			String parentType) {
 		TranslationDao transDao = new TranslationDao();
 		Map<String, Translation> transMap = transDao.findTranslations(
-				Translation.ParentType.valueOf(parentType), parentId);		
-		return marshalTranslations(transMap);		
+				Translation.ParentType.valueOf(parentType), parentId);
+		return marshalTranslations(transMap);
+	}
+
+	public QuestionDto copyQuestion(QuestionDto existingQuestion,
+			QuestionGroupDto newParentGroup) {
+		Question questionToSave = marshalQuestion(existingQuestion);
+		// now override all the IDs
+		questionToSave.setKey(null);
+		questionToSave.setPath(newParentGroup.getPath() + "/"
+				+ newParentGroup.getName());
+		questionToSave.setQuestionGroupId(newParentGroup.getKeyId());
+		if (questionToSave.getQuestionOptionMap() != null) {
+			for (QuestionOption opt : questionToSave.getQuestionOptionMap()
+					.values()) {
+				opt.setKey(null);
+				opt.setQuestionId(null);
+				if (opt.getTranslationMap() != null) {
+					for (Translation t : opt.getTranslationMap().values()) {
+						t.setKey(null);
+						t.setParentId(null);
+					}
+				}
+			}
+		}
+		if (questionToSave.getTranslationMap() != null) {
+			for (Translation t : questionToSave.getTranslationMap().values()) {
+				t.setParentId(null);
+				t.setKey(null);
+			}
+		}
+		if (questionToSave.getQuestionHelpMediaMap() != null) {
+			for (QuestionHelpMedia help : questionToSave
+					.getQuestionHelpMediaMap().values()) {
+				help.setKey(null);
+			}
+		}
+		QuestionDao dao = new QuestionDao();
+		dao.save(questionToSave, newParentGroup.getKeyId());
+		return marshalQuestionDto(questionToSave);
 	}
 
 }

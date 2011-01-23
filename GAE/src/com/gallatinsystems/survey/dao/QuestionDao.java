@@ -125,16 +125,22 @@ public class QuestionDao extends BaseDAO<Question> {
 				}
 				save(opt);
 				if (opt.getTranslationMap() != null) {
-					for (Translation t : opt.getTranslationMap().values())
+					for (Translation t : opt.getTranslationMap().values()){
+						if(t.getParentId() == null){
+							t.setParentId(opt.getKey().getId());
+						}
 						save(t);
+					}
 				}
 			}
 		}
 		if (question.getTranslationMap() != null) {
 			for (Translation t : question.getTranslationMap().values()) {
+				if(t.getParentId() == null){
+					t.setParentId(question.getKey().getId());
+				}
 				save(t);
 			}
-
 		}
 
 		if (question.getQuestionHelpMediaMap() != null) {

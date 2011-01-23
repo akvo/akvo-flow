@@ -65,4 +65,7 @@ public interface SurveyService extends RemoteService {
 	public List<QuestionHelpDto> listHelpByQuestion(Long questionId);
 	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList);
 	public Map<String,TranslationDto> listTranslations(Long parentId, String parentType);
+	public List<QuestionGroupDto> saveQuestionGroups(List<QuestionGroupDto> dtoList);
+	public QuestionDto copyQuestion(QuestionDto existingQuestion,
+			QuestionGroupDto newParentGroup);
 }

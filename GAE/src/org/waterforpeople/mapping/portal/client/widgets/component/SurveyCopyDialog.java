@@ -1,7 +1,11 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
@@ -28,7 +32,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * Dialog box used to copy an entire survey to a new survey
  * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class SurveyCopyDialog extends DialogBox {
 	private static final String TITLE = "Copy Survey";
@@ -44,6 +48,7 @@ public class SurveyCopyDialog extends DialogBox {
 	private Button okButton;
 	private Button cancelButton;
 	private boolean enabled;
+	private SurveyDto newSurveyDto;
 
 	/**
 	 * instantiates and displays the dialog box using the survey in the dto
@@ -125,10 +130,230 @@ public class SurveyCopyDialog extends DialogBox {
 				});
 	}
 
+	/**
+	 * starts the copy operation. this operation will consist of many server
+	 * calls to load the selected survey's details and save the new one
+	 */
 	private void performCopy() {
 		disableEnableAll(false);
 		statusLabel.setText("Copying Survey...");
 		mainPanel.add(statusLabel);
+		newSurveyDto = new SurveyDto();
+		newSurveyDto.setCode(surveyName.getText());
+		newSurveyDto.setName(surveyName.getText());
+		newSurveyDto.setDescription(surveyDto.getDescription());
+		newSurveyDto.setPath(surveyGroupList.getItemText(surveyGroupList
+				.getSelectedIndex()));
+		newSurveyDto.setSurveyGroupId(new Long(surveyGroupList
+				.getValue(surveyGroupList.getSelectedIndex())));
+		surveyService.saveSurvey(newSurveyDto, newSurveyDto.getSurveyGroupId(),
+				new AsyncCallback<SurveyDto>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						displayErrorMessage(caught);
+					}
+
+					@Override
+					public void onSuccess(SurveyDto result) {
+						newSurveyDto = result;
+						if (surveyDto.getQuestionGroupList() != null
+								&& surveyDto.getQuestionGroupList().size() > 0) {
+							saveQuestionGroups();
+						} else {
+							loadQuestionGroups();
+						}
+					}
+				});
+	}
+
+	private void loadQuestionGroups() {
+		statusLabel.setText("Loading question groups to copy");
+		surveyService.listQuestionGroupsBySurvey(surveyDto.getKeyId()
+				.toString(), new AsyncCallback<ArrayList<QuestionGroupDto>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				displayErrorMessage(caught);
+			}
+
+			@Override
+			public void onSuccess(ArrayList<QuestionGroupDto> result) {
+				surveyDto.setQuestionGroupList(result);
+				saveQuestionGroups();
+			}
+		});
+	}
+
+	private void saveQuestionGroups() {
+		statusLabel.setText("Saving new question groups");
+		if (surveyDto.getQuestionGroupList() != null) {
+			List<QuestionGroupDto> dtoList = new ArrayList<QuestionGroupDto>();
+			for (QuestionGroupDto existingGroup : surveyDto
+					.getQuestionGroupList()) {
+				QuestionGroupDto newGroup = new QuestionGroupDto();
+				newGroup.setCode(existingGroup.getCode());
+				newGroup.setDescription(existingGroup.getDescription());
+				newGroup.setName(existingGroup.getName());
+				newGroup.setOrder(existingGroup.getOrder());
+				newGroup.setPath(newSurveyDto.getPath() + "/"
+						+ newSurveyDto.getName());
+				newGroup.setSurveyId(newSurveyDto.getKeyId());
+				dtoList.add(newGroup);
+			}
+			surveyService.saveQuestionGroups(dtoList,
+					new AsyncCallback<List<QuestionGroupDto>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							displayErrorMessage(caught);
+						}
+
+						@Override
+						public void onSuccess(List<QuestionGroupDto> result) {
+							newSurveyDto.setQuestionGroupList(result);
+							loadQuestionList(0);
+						}
+					});
+		} else {
+			notifyListeners();
+			hide();
+		}
+	}
+
+	private void loadQuestionList(final int groupIndex) {
+		statusLabel.setText("Loading questions to copy");
+		if (surveyDto.getQuestionGroupList() != null) {
+			if (groupIndex < surveyDto.getQuestionGroupList().size()) {
+				if (surveyDto.getQuestionGroupList().get(groupIndex)
+						.getQuestionMap() == null
+						|| surveyDto.getQuestionGroupList().get(groupIndex)
+								.getQuestionMap().size() == 0) {
+					surveyService.listQuestionsByQuestionGroup(surveyDto
+							.getQuestionGroupList().get(groupIndex).getKeyId()
+							.toString(), false,
+							new AsyncCallback<ArrayList<QuestionDto>>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									displayErrorMessage(caught);
+								}
+
+								@Override
+								public void onSuccess(
+										ArrayList<QuestionDto> result) {
+									TreeMap<Integer, QuestionDto> questionMap = new TreeMap<Integer, QuestionDto>();
+									if (result != null) {
+										int i = 1;
+										for (QuestionDto q : result) {
+											if (q.getOrder() != null) {
+												questionMap
+														.put(q.getOrder(), q);
+											} else {
+												questionMap.put(i, q);
+											}
+											i++;
+										}
+									}
+									surveyDto.getQuestionGroupList().get(
+											groupIndex).setQuestionMap(
+											questionMap);
+
+								}
+
+							});
+				} else {
+					// if the questions are already loaded, try to load the next
+					// group
+					loadQuestionList(groupIndex + 1);
+				}
+			} else {
+				loadQuestionDetails(0, 0);
+			}
+		} else {
+			// if there are no groups, we're done
+			notifyListeners();
+			hide();
+		}
+	}
+
+	private void loadQuestionDetails(final int groupIndex,
+			final int questionIndex) {
+		statusLabel.setText("Loading details for group " + groupIndex + 1
+				+ ", question " + questionIndex + 1);
+		if (groupIndex < surveyDto.getQuestionGroupList().size()) {
+			final QuestionGroupDto group = surveyDto.getQuestionGroupList()
+					.get(groupIndex);
+			if (group.getQuestionMap() != null
+					&& questionIndex < group.getQuestionMap().size()) {
+				surveyService.loadQuestionDetails(group.getQuestionMap().get(
+						questionIndex + 1).getKeyId(),
+						new AsyncCallback<QuestionDto>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								displayErrorMessage(caught);
+							}
+
+							@Override
+							public void onSuccess(QuestionDto result) {
+								group.getQuestionMap().put(questionIndex + 1,
+										result);
+								loadQuestionDetails(groupIndex,
+										questionIndex + 1);
+							}
+						});
+			} else {
+				// if questionIndex is > size then load next group's questions
+				loadQuestionDetails(groupIndex + 1, 0);
+			}
+		} else {
+			// at this point, all questions should be fully loaded so we can
+			// start saving them one at a time
+			copyQuestion(0, 0);
+
+		}
+	}
+
+	private void copyQuestion(final int groupIndex,final int questionIndex) {
+		statusLabel.setText("Saving details for group " + groupIndex + 1
+				+ ", question " + questionIndex + 1);
+		if (groupIndex < surveyDto.getQuestionGroupList().size()) {
+			final QuestionGroupDto group = surveyDto.getQuestionGroupList()
+					.get(groupIndex);
+			if (group.getQuestionMap() != null
+					&& questionIndex < group.getQuestionMap().size()) {
+				QuestionDto existingQuestion = group.getQuestionMap().get(
+						questionIndex + 1);
+
+				surveyService.copyQuestion(existingQuestion, newSurveyDto
+						.getQuestionGroupList().get(groupIndex),
+						new AsyncCallback<QuestionDto>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								displayErrorMessage(caught);
+							}
+
+							@Override
+							public void onSuccess(QuestionDto result) {
+								copyQuestion(groupIndex,questionIndex+1);
+							}
+						});
+
+			} else {
+				// if questionIndex is > size then save next group's questions
+				copyQuestion(groupIndex + 1, 0);
+			}
+		} else {
+			// at this point, we should be done.
+			notifyListeners();
+			hide();
+		}
+	}
+
+	private void displayErrorMessage(Throwable caught) {
+		statusLabel.setText("Could not copy survey: "
+				+ caught.getLocalizedMessage());
+		disableEnableAll(true);
 	}
 
 	private void disableEnableAll(boolean isEnabled) {
@@ -142,14 +367,19 @@ public class SurveyCopyDialog extends DialogBox {
 	 */
 	@Override
 	public boolean onKeyDownPreview(char key, int modifiers) {
-		// if (enabled) {
-		switch (key) {
-		case KeyCodes.KEY_ESCAPE:
-			hide();
-			return true;
+		if (enabled) {
+			switch (key) {
+			case KeyCodes.KEY_ESCAPE:
+				hide();
+				return true;
+			}
 		}
-		// }
 		return false;
 	}
 
+	private void notifyListeners() {
+		if (listener != null) {
+			listener.operationComplete(true, null);
+		}
+	}
 }

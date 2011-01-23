@@ -79,4 +79,10 @@ public interface SurveyServiceAsync {
 	void listTranslations(Long parentId, String parentType,
 			AsyncCallback<Map<String, TranslationDto>> callback);
 
+	void saveQuestionGroups(List<QuestionGroupDto> dtoList,
+			AsyncCallback<List<QuestionGroupDto>> callback);
+
+	void copyQuestion(QuestionDto existingQuestion,
+			QuestionGroupDto newParentGroup, AsyncCallback<QuestionDto> callback);
+
 }
