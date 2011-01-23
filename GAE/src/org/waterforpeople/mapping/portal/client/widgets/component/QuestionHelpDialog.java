@@ -12,6 +12,7 @@ import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -37,6 +38,7 @@ public class QuestionHelpDialog extends DialogBox {
 	private Label loadingLabel;
 	private DockPanel contentPane;
 	private FlexTable helpTable;
+	private boolean enabled;
 
 	/**
 	 * instantiates and displays the dialog box using the translations present
@@ -48,6 +50,7 @@ public class QuestionHelpDialog extends DialogBox {
 	 */
 	public QuestionHelpDialog(QuestionDto dto, CompletionListener listener) {
 		setText(TITLE);
+		enabled = true;
 		setAnimationEnabled(true);
 		setGlassEnabled(true);
 		questionDto = dto;
@@ -86,10 +89,10 @@ public class QuestionHelpDialog extends DialogBox {
 				new AsyncCallback<List<QuestionHelpDto>>() {
 
 					@Override
-					public void onSuccess(List<QuestionHelpDto> result) {						
+					public void onSuccess(List<QuestionHelpDto> result) {
 						Widget w = buildContent(result);
 						contentPane.remove(loadingLabel);
-						contentPane.add(w,DockPanel.CENTER);
+						contentPane.add(w, DockPanel.CENTER);
 					}
 
 					@Override
@@ -103,6 +106,7 @@ public class QuestionHelpDialog extends DialogBox {
 	}
 
 	private void saveHelp() {
+		enabled = false;
 		if (helpTable != null && helpTable.getRowCount() > 0) {
 			List<QuestionHelpDto> helpDtos = new ArrayList<QuestionHelpDto>();
 			for (int i = 0; i < helpTable.getRowCount(); i++) {
@@ -117,11 +121,12 @@ public class QuestionHelpDialog extends DialogBox {
 						@Override
 						public void onFailure(Throwable caught) {
 							// TODO Auto-generated method stub
-
+							enabled = true;
 						}
 
 						@Override
 						public void onSuccess(List<QuestionHelpDto> result) {
+							enabled = true;
 							questionDto.setQuestionHelpList(result);
 							hide();
 							notifyListeners();
@@ -169,5 +174,21 @@ public class QuestionHelpDialog extends DialogBox {
 		if (listener != null) {
 			listener.operationComplete(true, null);
 		}
+	}
+
+	/**
+	 * allow the user to press escape to close
+	 */
+	@Override
+	public boolean onKeyDownPreview(char key, int modifiers) {
+		if (enabled) {
+			switch (key) {
+			case KeyCodes.KEY_ESCAPE:
+				hide();
+				return true;
+			}
+		}
+		return false;
+
 	}
 }

@@ -34,7 +34,7 @@ public abstract class ListBasedWidget extends Composite implements
 	private static final String UNNAMED_TEXT="unnamed";
 
 	protected static enum ClickMode {
-		OPEN, EDIT, DELETE
+		OPEN, EDIT, DELETE, COPY
 	};
 
 	private Label loadingLabel;

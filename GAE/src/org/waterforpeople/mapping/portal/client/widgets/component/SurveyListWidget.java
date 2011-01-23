@@ -55,7 +55,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 						public void onSuccess(ArrayList<SurveyDto> result) {
 							toggleLoading(false);
 							if (result != null && result.size() > 0) {
-								Grid dataGrid = new Grid(result.size(), 2);
+								Grid dataGrid = new Grid(result.size(), 3);
 								for (int i = 0; i < result.size(); i++) {
 									Label l = createListEntry(result.get(i)
 											.getName());
@@ -64,6 +64,9 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 									Button b = createButton(ClickMode.EDIT,
 											"Edit");
 									dataGrid.setWidget(i, 1, b);
+									Button e = createButton(ClickMode.COPY,
+									"Copy");
+									dataGrid.setWidget(i, 2, e);
 									surveyMap.put(b, result.get(i));
 								}
 								addWidget(dataGrid);
@@ -87,6 +90,17 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 			openPage(QuestionGroupListWidget.class, bundle);
 		} else if (ClickMode.EDIT == mode) {
 			openPage(SurveyEditWidget.class, bundle);
+		}else if (ClickMode.COPY == mode){
+			SurveyCopyDialog copyDialog = new SurveyCopyDialog(surveyMap.get(source),new CompletionListener() {
+				
+				@Override
+				public void operationComplete(boolean wasSuccessful,
+						Map<String, Object> payload) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			copyDialog.show();
 		}
 	}
 
