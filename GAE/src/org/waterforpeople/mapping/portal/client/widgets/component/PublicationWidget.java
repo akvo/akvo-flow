@@ -45,11 +45,13 @@ public class PublicationWidget extends Composite implements ContextAware,
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
-		bundle.put(BundleConstants.AUTO_ADVANCE_FLAG, Boolean.TRUE);
+		if (doPopulation) {
+			bundle.put(BundleConstants.AUTO_ADVANCE_FLAG, Boolean.TRUE);
+		}
 		return bundle;
 	}
 
@@ -74,12 +76,12 @@ public class PublicationWidget extends Composite implements ContextAware,
 				new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						listener.operationComplete(false, getContextBundle());
+						listener.operationComplete(false, getContextBundle(true));
 					}
 
 					@Override
 					public void onSuccess(Void result) {
-						listener.operationComplete(true, getContextBundle());
+						listener.operationComplete(true, getContextBundle(true));
 					}
 				});
 	}

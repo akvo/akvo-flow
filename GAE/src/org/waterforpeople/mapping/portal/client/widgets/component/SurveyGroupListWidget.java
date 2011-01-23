@@ -86,14 +86,14 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		return bundle;
 	}
 
 	@Override
 	public void persistContext(CompletionListener listener) {
 		if (listener != null) {
-			listener.operationComplete(true, getContextBundle());
+			listener.operationComplete(true, getContextBundle(true));
 		}
 	}
 

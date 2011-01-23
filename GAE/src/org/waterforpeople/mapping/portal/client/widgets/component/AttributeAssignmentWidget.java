@@ -112,7 +112,7 @@ public class AttributeAssignmentWidget extends Composite implements
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}

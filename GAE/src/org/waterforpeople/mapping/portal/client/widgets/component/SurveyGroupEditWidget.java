@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
  * edits/creates SurveyGroup objects
  * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class SurveyGroupEditWidget extends Composite implements ContextAware,
 		ChangeHandler {
@@ -77,7 +77,6 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 		return ViewUtil.isTextPopulated(codeBox);
 	}
 
-
 	public void saveSurveyGroup(final CompletionListener listener) {
 		if (validateInput()) {
 			if (currentDto == null) {
@@ -86,28 +85,31 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 			currentDto.setCode(codeBox.getText().trim());
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
-							.getText().trim() : null);			
+							.getText().trim()
+							: null);
 			surveyService.saveSurveyGroup(currentDto,
 					new AsyncCallback<SurveyGroupDto>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							
+
 							MessageDialog errDia = new MessageDialog(
 									"Could not save survey group",
 									"There was an error while attempting to save the survey group. Please try again. If the problem persists, please contact an administrator");
 							errDia.showRelativeTo(panel);
-							if(listener != null){
-								listener.operationComplete(false,getContextBundle());
+							if (listener != null) {
+								listener.operationComplete(false,
+										getContextBundle(true));
 							}
 
 						}
 
 						@Override
 						public void onSuccess(SurveyGroupDto result) {
-							currentDto = result;							
-							if(listener != null){
-								listener.operationComplete(true,getContextBundle());
+							currentDto = result;
+							if (listener != null) {
+								listener.operationComplete(true,
+										getContextBundle(true));
 							}
 
 						}
@@ -124,8 +126,8 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 	public void persistContext(CompletionListener listener) {
 		if (isChanged) {
 			saveSurveyGroup(listener);
-		}else{
-			listener.operationComplete(true, getContextBundle());
+		} else {
+			listener.operationComplete(true, getContextBundle(true));
 		}
 	}
 
@@ -138,11 +140,13 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
-		bundle.put(BundleConstants.SURVEY_GROUP_KEY, currentDto);
+		if (doPopulation) {
+			bundle.put(BundleConstants.SURVEY_GROUP_KEY, currentDto);
+		}
 		return bundle;
 	}
 
@@ -156,7 +160,8 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 					&& !currentDto.getDescription().equals(
 							descriptionBox.getText())) {
 				isChanged = true;
-			} else if ((ViewUtil.isTextPopulated(codeBox) && currentDto.getCode() == null)
+			} else if ((ViewUtil.isTextPopulated(codeBox) && currentDto
+					.getCode() == null)
 					|| (ViewUtil.isTextPopulated(descriptionBox) && currentDto
 							.getDescription() == null)) {
 				isChanged = true;
@@ -166,7 +171,8 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 		} else {
 			// if we haven't saved, set isChanged to true if either field is non
 			// empty
-			isChanged = (ViewUtil.isTextPopulated(codeBox) || ViewUtil.isTextPopulated(descriptionBox));
+			isChanged = (ViewUtil.isTextPopulated(codeBox) || ViewUtil
+					.isTextPopulated(descriptionBox));
 		}
 	}
 }

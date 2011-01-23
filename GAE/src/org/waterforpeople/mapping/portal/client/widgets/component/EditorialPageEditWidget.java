@@ -91,7 +91,7 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}

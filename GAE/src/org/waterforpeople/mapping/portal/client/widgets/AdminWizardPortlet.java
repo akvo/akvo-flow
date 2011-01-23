@@ -74,8 +74,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 						"Back to Question Group List") }));
 		wf.addInternalNode(new WizardNode("QuestionCreate", null,
 				QuestionEditWidget.class,
-				new WizardButton[] { new WizardButton("QuestionList",
-						"Save and Continue") }, null));
+				new WizardButton("QuestionList",
+						"Save and Continue") , new WizardButton("QuestionList",
+						"Back to Question List")));
 		wf.addInternalNode(new WizardNode("Publish", null,
 				PublicationWidget.class, new WizardButton[] { new WizardButton(
 						"Attribute Assignment",

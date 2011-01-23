@@ -96,13 +96,13 @@ public class EditorialPageListWidget extends ListBasedWidget implements
 			editorialPage = page;
 		}
 		if (ClickMode.DELETE != mode) {
-			openPage(EditorialPageEditWidget.class, getContextBundle());
+			openPage(EditorialPageEditWidget.class, getContextBundle(true));
 		}
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
-		if (editorialPage != null) {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
+		if (editorialPage != null && doPopulation) {
 			bundle.put(BundleConstants.EDITORIAL_PAGE, editorialPage);
 		}
 		return bundle;
@@ -111,7 +111,7 @@ public class EditorialPageListWidget extends ListBasedWidget implements
 	@Override
 	public void persistContext(CompletionListener listener) {
 		if (listener != null) {
-			listener.operationComplete(true, getContextBundle());
+			listener.operationComplete(true, getContextBundle(true));
 		}
 	}
 

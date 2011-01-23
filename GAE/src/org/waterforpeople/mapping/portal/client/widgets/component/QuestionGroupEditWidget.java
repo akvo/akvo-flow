@@ -127,7 +127,7 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 							currentDto = result;
 							if (listener != null) {
 								listener.operationComplete(true,
-										getContextBundle());
+										getContextBundle(true));
 							}
 						}
 					});
@@ -144,7 +144,7 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		if (isChanged) {
 			saveSurveyGroup(listener);
 		} else {
-			listener.operationComplete(true, getContextBundle());
+			listener.operationComplete(true, getContextBundle(true));
 		}
 	}
 
@@ -160,11 +160,13 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
-		bundle.put(BundleConstants.QUESTION_GROUP_KEY, currentDto);
+		if (doPopulation) {
+			bundle.put(BundleConstants.QUESTION_GROUP_KEY, currentDto);
+		}
 		return bundle;
 	}
 

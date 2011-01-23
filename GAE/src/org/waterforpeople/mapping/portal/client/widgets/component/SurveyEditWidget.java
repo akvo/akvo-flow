@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
  * Edits/creates Survey objects
  * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class SurveyEditWidget extends Composite implements ContextAware,
 		ChangeHandler {
@@ -118,7 +118,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 							currentDto = result;
 							if (listener != null) {
 								listener.operationComplete(true,
-										getContextBundle());
+										getContextBundle(true));
 							}
 						}
 					});
@@ -134,8 +134,8 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	public void persistContext(CompletionListener listener) {
 		if (isChanged) {
 			saveSurveyGroup(listener);
-		}else{
-			listener.operationComplete(true, getContextBundle());
+		} else {
+			listener.operationComplete(true, getContextBundle(true));
 		}
 	}
 
@@ -149,11 +149,13 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	}
 
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
-		bundle.put(BundleConstants.SURVEY_KEY, currentDto);
+		if (doPopulation) {
+			bundle.put(BundleConstants.SURVEY_KEY, currentDto);
+		}
 		return bundle;
 	}
 

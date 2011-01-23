@@ -61,20 +61,22 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private Map<String, Widget> breadcrumbWidgets;
 
 	private WizardWorkflow workflow;
-	private Widget currentPage;	
+	private Widget currentPage;
 	private ContextAware pendingPage;
 	private WizardNode pageToLoad;
 	private MessageDialog waitDialog;
-	private Map<String,String> buttonMapping;
+	private Map<String, String> buttonMapping;
+	private boolean working;
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
 		super(name, true, false, false, width, height);
+		working = false;
 		contentPane = new VerticalPanel();
 		breadcrumbPanel = new HorizontalPanel();
 		breadcrumbPanel.setStylePrimaryName(BREADCRUMB_PANEL_STYLE);
 		buttonPanel = new HorizontalPanel();
 		widgetPanel = new VerticalPanel();
-		buttonMapping = new HashMap<String,String>();
+		buttonMapping = new HashMap<String, String>();
 
 		contentPane.add(breadcrumbPanel);
 		contentPane.add(widgetPanel);
@@ -85,14 +87,14 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 		breadcrumbList = new ArrayList<String>();
 		breadcrumbWidgets = new HashMap<String, Widget>();
-		workflow = getWizardWorkflow();	
+		workflow = getWizardWorkflow();
 	}
-	
-	protected void init(){
+
+	protected void init() {
 		pageToLoad = workflow.getStartNode();
 		renderWizardPage(pageToLoad, true, null);
 		setContent(contentPane);
-		waitDialog = new MessageDialog("Saving...", "Please wait", true);	
+		waitDialog = new MessageDialog("Saving...", "Please wait", true);
 	}
 
 	/**
@@ -117,8 +119,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * listeners
 	 * 
 	 */
-	private void installButtons(List<Button> buttonList, WizardButton[] buttonDefinitions,
-			String style) {
+	private void installButtons(List<Button> buttonList,
+			WizardButton[] buttonDefinitions, String style) {
 		if (buttonDefinitions != null) {
 			for (int i = 0; i < buttonDefinitions.length; i++) {
 				Button button = new Button();
@@ -131,7 +133,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 				button.addClickHandler(this);
 				buttonList.add(button);
 				buttonPanel.add(button);
-				buttonMapping.put(buttonDefinitions[i].getLabel(),buttonDefinitions[i].getNodeName());
+				buttonMapping.put(buttonDefinitions[i].getLabel(),
+						buttonDefinitions[i].getNodeName());
 			}
 		}
 	}
@@ -164,10 +167,13 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			pendingPage.persistContext(this);
 			calledSave = true;
 		}
+		if(!isForward && currentPage instanceof ContextAware){
+			bundle = ((ContextAware) currentPage).getContextBundle(isForward);
+		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {
-				addBreadcrumb(page,
-						((ContextAware) currentPage).getContextBundle());
+				addBreadcrumb(page, ((ContextAware) currentPage)
+						.getContextBundle(isForward));
 			} else {
 				addBreadcrumb(page, null);
 			}
@@ -196,7 +202,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 */
 	private void populateBundle(Map<String, Object> bundle) {
 		if (currentPage instanceof ContextAware) {
-			if(bundle == null){
+			if (bundle == null) {
 				bundle = new HashMap<String, Object>();
 			}
 			((ContextAware) currentPage).setContextBundle(bundle);
@@ -277,17 +283,21 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * 
 	 */
 	public void onClick(ClickEvent event) {
-		if (forwardNavButtons.contains(event.getSource())) {
-			renderWizardPage(workflow.getWorkflowNode(buttonMapping.get(((Button) event
-					.getSource()).getText())), true, null);
-		} else if (backwardNavButtons.contains(event.getSource())) {
-			renderWizardPage(workflow.getWorkflowNode(buttonMapping.get(((Button) event
-					.getSource()).getText())), false, null);
-		} else if (event.getSource() instanceof Breadcrumb) {
-			// if it is a breadcrumb
-			renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
-					.getSource()).getTargetNode()), false, ((Breadcrumb) event
-					.getSource()).getBundle());
+		if (!working) {
+			if (forwardNavButtons.contains(event.getSource())) {
+				renderWizardPage(workflow.getWorkflowNode(buttonMapping
+						.get(((Button) event.getSource()).getText())), true,
+						null);
+			} else if (backwardNavButtons.contains(event.getSource())) {
+				renderWizardPage(workflow.getWorkflowNode(buttonMapping
+						.get(((Button) event.getSource()).getText())), false,
+						null);
+			} else if (event.getSource() instanceof Breadcrumb) {
+				// if it is a breadcrumb
+				renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
+						.getSource()).getTargetNode()), false,
+						((Breadcrumb) event.getSource()).getBundle());
+			}
 		}
 	}
 
@@ -297,12 +307,22 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * 
 	 */
 	public void openPage(Class clazz, Map<String, Object> bundle) {
+		if(!working){
 		if (clazz != null) {
 			WizardNode node = workflow.findNode(clazz);
 			if (node != null) {
 				renderWizardPage(node, true, bundle);
 			}
 		}
+		}
+	}
+	
+	public void setWorking(boolean isWorking){
+		working = isWorking;
+	}
+	
+	public boolean isWorking(){
+		return working;
 	}
 
 	/**
@@ -433,31 +453,35 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
-	public class WizardButton{
+	public class WizardButton {
 		private String nodeName;
 		private String label;
-		
-		public WizardButton(String node){
+
+		public WizardButton(String node) {
 			nodeName = node;
 			label = node;
 		}
-		public WizardButton(String node, String label){
+
+		public WizardButton(String node, String label) {
 			nodeName = node;
 			this.label = label;
 		}
-		
+
 		public String getNodeName() {
 			return nodeName;
 		}
+
 		public void setNodeName(String nodeName) {
 			this.nodeName = nodeName;
 		}
+
 		public String getLabel() {
 			return label;
 		}
+
 		public void setLabel(String label) {
 			this.label = label;
 		}
-		
+
 	}
 }

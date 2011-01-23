@@ -405,7 +405,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 										.asList(result);
 								optionQuestions.put(currentQuestion
 										.getSurveyId(), questionList);
-								getContextBundle()
+								getContextBundle(true)
 										.put(
 												BundleConstants.OPTION_QUESTION_LIST_KEY,
 												optionQuestions);
@@ -542,11 +542,13 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * returns the current context bundle
 	 */
 	@Override
-	public Map<String, Object> getContextBundle() {
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
-		bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);
+		if(doPopulation){
+			bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);
+		}
 		return bundle;
 	}
 
@@ -568,14 +570,14 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					questionGroup.addQuestion(currentQuestion, currentQuestion
 							.getOrder());
 					if (listener != null) {
-						listener.operationComplete(true, getContextBundle());
+						listener.operationComplete(true, getContextBundle(true));
 					}
 				}
 
 				@Override
 				public void onFailure(Throwable caught) {
 					if (listener != null) {
-						listener.operationComplete(false, getContextBundle());
+						listener.operationComplete(false, getContextBundle(true));
 					}
 				}
 			});
@@ -588,7 +590,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			MessageDialog errorDialog = new MessageDialog(
 					"Cannot save survey list", builder.toString());
 			errorDialog.showCentered();
-			listener.operationComplete(false, getContextBundle());
+			listener.operationComplete(false, getContextBundle(true));
 		}
 	}
 

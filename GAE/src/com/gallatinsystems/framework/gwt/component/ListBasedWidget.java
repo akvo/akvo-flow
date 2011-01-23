@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -31,10 +32,10 @@ public abstract class ListBasedWidget extends Composite implements
 	private static final String LIST_ITEM_HOVER_CSS = "red-hover";
 	private static final String EDIT_BUTTON_CSS = "edit-listitem-button";
 	private static final String DEL_BUTTON_CSS = "delete-listitem-button";
-	private static final String UNNAMED_TEXT="unnamed";
+	private static final String UNNAMED_TEXT = "unnamed";
 
 	protected static enum ClickMode {
-		OPEN, EDIT, DELETE, COPY
+		OPEN, EDIT, DELETE, COPY, MOVE_UP, MOVE_DOWN
 	};
 
 	private Label loadingLabel;
@@ -54,9 +55,9 @@ public abstract class ListBasedWidget extends Composite implements
 	public Label createListEntry(String text) {
 		Label l = new Label();
 		l.setStylePrimaryName(LIST_ITEM_CSS);
-		if(text != null && text.trim().length()>0){
+		if (text != null && text.trim().length() > 0) {
 			l.setText(text);
-		}else{
+		} else {
 			l.setText(UNNAMED_TEXT);
 		}
 		l.addMouseOutHandler(this);
@@ -75,13 +76,18 @@ public abstract class ListBasedWidget extends Composite implements
 		} else if (mode == ClickMode.EDIT) {
 			button.setStylePrimaryName(DEL_BUTTON_CSS);
 		}
-		button.addClickHandler(new ClickHandler() {
+		createClickableWidget(mode, button);
+		return button;
+	}
+
+	public void createClickableWidget(final ClickMode mode,
+			HasClickHandlers widget) {
+		widget.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				handleItemClick(event.getSource(), mode);
 			}
 		});
-		return button;
 	}
 
 	@Override
@@ -96,7 +102,9 @@ public abstract class ListBasedWidget extends Composite implements
 
 	@Override
 	public void onClick(ClickEvent event) {
-		handleItemClick(event.getSource(), ClickMode.OPEN);
+		if (!controller.isWorking()) {
+			handleItemClick(event.getSource(), ClickMode.OPEN);
+		}
 	}
 
 	protected void toggleLoading(boolean show) {
@@ -110,6 +118,14 @@ public abstract class ListBasedWidget extends Composite implements
 	@SuppressWarnings("unchecked")
 	protected void openPage(Class clazz, Map<String, Object> bundle) {
 		controller.openPage(clazz, bundle);
+	}
+
+	protected void setWorking(boolean isWorking) {
+		controller.setWorking(isWorking);
+	}
+
+	protected boolean isWorking() {
+		return controller.isWorking();
 	}
 
 	protected abstract void handleItemClick(Object source, ClickMode mode);
