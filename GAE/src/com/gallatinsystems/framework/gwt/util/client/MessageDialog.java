@@ -18,12 +18,14 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * 
  */
 public class MessageDialog extends DialogBox {
+	private HTML content;
+	private DockPanel dock;
 
 	public MessageDialog(String title, String bodyHtml, boolean suppressButton,
 			final ClickHandler okHandler) {
 		setText(title);
-		DockPanel dock = new DockPanel();
-		HTML content = new HTML(bodyHtml);
+		dock = new DockPanel();
+		content = new HTML(bodyHtml);
 
 		dock.add(content, DockPanel.CENTER);
 		if (!suppressButton) {
@@ -39,7 +41,7 @@ public class MessageDialog extends DialogBox {
 				}
 			});
 			hp.add(ok);
-			//only add Cancel button if there is a click handler
+			// only add Cancel button if there is a click handler
 			if (okHandler != null) {
 				Button cancel = new Button("Cancel");
 				hp.add(cancel);

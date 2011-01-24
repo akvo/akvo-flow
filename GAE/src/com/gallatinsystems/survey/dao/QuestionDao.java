@@ -1,5 +1,7 @@
 package com.gallatinsystems.survey.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -130,7 +132,7 @@ public class QuestionDao extends BaseDAO<Question> {
 					for (Translation t : opt.getTranslationMap().values()) {
 						if (t.getParentId() == null) {
 							t.setParentId(opt.getKey().getId());
-						}					
+						}
 					}
 					save(opt.getTranslationMap().values());
 				}
@@ -140,7 +142,7 @@ public class QuestionDao extends BaseDAO<Question> {
 			for (Translation t : question.getTranslationMap().values()) {
 				if (t.getParentId() == null) {
 					t.setParentId(question.getKey().getId());
-				}				
+				}
 			}
 			save(question.getTranslationMap().values());
 		}
@@ -276,6 +278,22 @@ public class QuestionDao extends BaseDAO<Question> {
 			return results.get(0);
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * updates ONLY the order field within the question object for the questions
+	 * passed in. All questions must exist in the datastore
+	 * 
+	 * @param questionList
+	 */	
+	public void updateQuestionOrder(List<Question> questionList) {		
+		if(questionList != null){					
+			for(Question q: questionList){
+				Question persistentQuestion  = getByKey(q.getKey());
+				persistentQuestion.setOrder(q.getOrder());
+				//since the object is still attached, we don't need to call save. It will be saved on flush of the Persistent session 
+			}			
 		}
 	}
 }

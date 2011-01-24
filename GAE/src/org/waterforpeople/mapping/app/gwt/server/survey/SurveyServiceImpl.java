@@ -428,21 +428,23 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 
 		if (qdto.getTranslationMap() != null) {
-			TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto.getTranslationMap());
+			TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto
+					.getTranslationMap());
 			q.setTranslationMap(transMap);
 		}
-		
-		if(qdto.getQuestionHelpList()!= null){
-			int count =0;
-			for(QuestionHelpDto help: qdto.getQuestionHelpList()){
+
+		if (qdto.getQuestionHelpList() != null) {
+			int count = 0;
+			for (QuestionHelpDto help : qdto.getQuestionHelpList()) {
 				QuestionHelpMedia helpDomain = new QuestionHelpMedia();
-				Map<String,TranslationDto> transMap = help.getTranslationMap();
+				Map<String, TranslationDto> transMap = help.getTranslationMap();
 				help.setTranslationMap(null);
-				DtoMarshaller.copyToCanonical(helpDomain,help);
-				if(transMap != null){
-					helpDomain.setTranslationMap(marshalFromDtoTranslations(transMap));
-				}				
-				q.addHelpMedia(count++, helpDomain);				
+				DtoMarshaller.copyToCanonical(helpDomain, help);
+				if (transMap != null) {
+					helpDomain
+							.setTranslationMap(marshalFromDtoTranslations(transMap));
+				}
+				q.addHelpMedia(count++, helpDomain);
 			}
 		}
 
@@ -978,8 +980,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			for (QuestionHelpMedia help : questionToSave
 					.getQuestionHelpMediaMap().values()) {
 				help.setKey(null);
-				if(help.getTranslationMap()!= null){
-					for(Translation t: help.getTranslationMap().values()){
+				if (help.getTranslationMap() != null) {
+					for (Translation t : help.getTranslationMap().values()) {
 						t.setParentId(null);
 						t.setKey(null);
 					}
@@ -989,6 +991,29 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDao dao = new QuestionDao();
 		dao.save(questionToSave, newParentGroup.getKeyId());
 		return marshalQuestionDto(questionToSave);
+	}
+
+	/**
+	 * updates the order for the list of questions passed in
+	 * 
+	 * @param q1
+	 * @param q2
+	 * @return
+	 */
+	public void updateQuestionOrder(List<QuestionDto> questions) {
+		if (questions != null) {
+			List<Question> questionList = new ArrayList<Question>();
+			for(QuestionDto qDto: questions){
+				Question q = new Question();
+				q.setKey(KeyFactory.createKey(Question.class.getSimpleName(), qDto.getKeyId()));
+				q.setOrder(qDto.getOrder());
+				questionList.add(q);
+			}
+			QuestionDao dao = new QuestionDao();			
+			dao.updateQuestionOrder(questionList);
+
+		}
+
 	}
 
 }

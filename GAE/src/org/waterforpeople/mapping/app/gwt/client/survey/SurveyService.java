@@ -68,4 +68,5 @@ public interface SurveyService extends RemoteService {
 	public List<QuestionGroupDto> saveQuestionGroups(List<QuestionGroupDto> dtoList);
 	public QuestionDto copyQuestion(QuestionDto existingQuestion,
 			QuestionGroupDto newParentGroup);
+	public void updateQuestionOrder(List<QuestionDto> questions);
 }

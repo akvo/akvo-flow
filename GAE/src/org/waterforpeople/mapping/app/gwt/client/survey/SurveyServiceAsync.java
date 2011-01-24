@@ -85,4 +85,7 @@ public interface SurveyServiceAsync {
 	void copyQuestion(QuestionDto existingQuestion,
 			QuestionGroupDto newParentGroup, AsyncCallback<QuestionDto> callback);
 
+	void updateQuestionOrder(List<QuestionDto> questions,
+			AsyncCallback<Void> callback);
+
 }

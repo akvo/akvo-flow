@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
@@ -96,8 +97,8 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 				@Override
 				public void operationComplete(boolean wasSuccessful,
 						Map<String, Object> payload) {
-					// TODO Auto-generated method stub
-					
+					MessageDialog dia = new MessageDialog("Copy Complete","The survey has been copied");
+					dia.showCentered();					
 				}
 			});
 			copyDialog.show();
