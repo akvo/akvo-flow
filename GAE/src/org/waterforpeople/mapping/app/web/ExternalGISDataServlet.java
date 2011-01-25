@@ -13,9 +13,11 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.gis.map.domain.Geometry;
+import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -76,11 +78,18 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		GeometryFactory geometryFactory = JTSFactoryFinder
 				.getGeometryFactory(null);
 		WKTReader reader = new WKTReader(geometryFactory);
-		Polygon polygon = (Polygon) reader.read(geometryString);
 		Geometry geo = new Geometry();
-		geo.setType("POLYGON");
-		for (Coordinate coord : polygon.getCoordinates()) {
-			geo.addCoordinate(coord.x, coord.y);
+		if (geometryString.startsWith("POLYGON")) {
+			Polygon polygon = (Polygon) reader.read(geometryString);
+			geo.setType(GeometryType.POLYGON);
+			for (Coordinate coord : polygon.getCoordinates()) {
+				geo.addCoordinate(coord.x, coord.y);
+			}
+		}else if(geometryString.startsWith("POINT")){
+			Point point = (Point) reader.read(geometryString);
+			geo.setType(GeometryType.POINT);
+			Coordinate coord = point.getCoordinate();
+			geo.addCoordinate(coord.x,coord.y);
 		}
 		return geo;
 	}

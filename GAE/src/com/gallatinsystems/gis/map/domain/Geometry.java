@@ -13,14 +13,14 @@ public class Geometry extends BaseDomain {
 	 * 
 	 */
 	private static final long serialVersionUID = -694616882164561459L;
-	private String type = null;
+	private GeometryType type = null;
 	private ArrayList<Coordinate> coordinates = null;
 
-	public String getType() {
+	public GeometryType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(GeometryType type) {
 		this.type = type;
 	}
 
@@ -39,4 +39,7 @@ public class Geometry extends BaseDomain {
 		coordinates.add(coordinate);
 	}
 
+	public enum GeometryType{
+		MULITPOLYGON,POLYGON, POINT,RECTANGLE
+	}
 }
