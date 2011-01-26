@@ -222,8 +222,8 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	 * @return
 	 */
 	private String generateCode(double lat, double lon) {
-		Long code = Long.parseLong((int) ((Math.abs(lat) * 1000d)) + ""
-				+ (int) ((Math.abs(lon) * 1000d)));
+		Long code = Long.parseLong((int) ((Math.abs(lat) * 10000d)) + ""
+				+ (int) ((Math.abs(lon) * 10000d)));
 		return Long.toString(code, 36);
 	}
 
