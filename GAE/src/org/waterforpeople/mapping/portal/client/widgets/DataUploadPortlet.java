@@ -1,5 +1,8 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+
+import org.waterforpeople.mapping.portal.client.util.UploadConstants;
+
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,31 +21,37 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 /**
  * portlet for manual upload of data zip files
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class DataUploadPortlet extends Portlet implements ClickHandler,
 		SubmitCompleteHandler {
 
 	public static final String NAME = "Data Upload";
 	public static final String DESCRIPTION = "Manual upload of data zip files";
+
+
+	private static UploadConstants UPLOAD_CONSTANTS = GWT
+			.create(UploadConstants.class);
+
 	private static final int WIDTH = 300;
 	private static final int HEIGHT = 300;
 	private static final String NOTIFICATION_URL = "/processor";
-	private static final String UPLOAD_URL = "http://waterforpeople.s3.amazonaws.com/";
+	private static final String UPLOAD_URL = UPLOAD_CONSTANTS.uploadUrl();
 
-	private static final String S3_ID = "1JZZVDSNFFQYF23ZYJ02";
+	private static final String S3_ID = UPLOAD_CONSTANTS.s3Id();
 	// NOTE: the S3 policies expire on 10/2/2013
-	private static final String DATA_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTMtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJkZXZpY2V6aXAvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String DATA_S3_SIG = "fJ585oyvef7e8t5NuHQDf1iioWw=";
+	private static final String DATA_S3_POLICY = UPLOAD_CONSTANTS.surveyDataS3Policy();
+	private static final String DATA_S3_SIG = UPLOAD_CONSTANTS.surveyDataS3Sig();
 
-	private static final String S3_DATA_FILE_PATH = "devicezip";
+	private static final String S3_DATA_FILE_PATH = UPLOAD_CONSTANTS.surveyDataS3Path();
+
 	private static final String DATA_CONTENT_TYPE = "application/zip";
-	private static final String IMAGE_S3_POLICY = "eyJleHBpcmF0aW9uIjogIjIwMTMtMTAtMDJUMDA6MDA6MDBaIiwgICJjb25kaXRpb25zIjogWyAgICAgeyJidWNrZXQiOiAid2F0ZXJmb3JwZW9wbGUifSwgICAgIFsic3RhcnRzLXdpdGgiLCAiJGtleSIsICJpbWFnZXMvIl0sICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIn0sICAgIHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiAiaHR0cDovL3d3dy5nYWxsYXRpbnN5c3RlbXMuY29tL1N1Y2Nlc3NVcGxvYWQuaHRtbCJ9LCAgICBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiIl0sICAgIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCAzMTQ1NzI4XSAgXX0=";
-	private static final String IMAGE_S3_SIG = "smmfHmVzQ+LS75ZdA0PxrUagj3s=";
+	private static final String IMAGE_S3_POLICY = UPLOAD_CONSTANTS.imageS3Policy();
+	private static final String IMAGE_S3_SIG = UPLOAD_CONSTANTS.imageS3Sig();
 
-	private static final String S3_IMAGE_FILE_PATH = "images";
+	private static final String S3_IMAGE_FILE_PATH = UPLOAD_CONSTANTS.imageS3Path();
 	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
 
 	private Button submitBtn;
@@ -109,7 +118,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 	/**
 	 * sets the hidden variables on the form so we can do the upload
-	 * 
+	 *
 	 * @param path
 	 * @param sig
 	 * @param policy
