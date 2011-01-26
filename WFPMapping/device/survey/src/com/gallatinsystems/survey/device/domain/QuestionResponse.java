@@ -1,5 +1,7 @@
 package com.gallatinsystems.survey.device.domain;
 
+import java.util.StringTokenizer;
+
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 public class QuestionResponse {
