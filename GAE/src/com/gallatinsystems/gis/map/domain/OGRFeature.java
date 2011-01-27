@@ -28,6 +28,9 @@ public class OGRFeature extends BaseDomain {
 	private Double y1 = null;
 	private Double y2 = null;
 	private Double reciprocalOfFlattening = null;
+	private FeatureType featureType= null;
+	
+	public enum FeatureType {COUNTRY, SUB_COUNTRY_OTHER};
 
 	public String getProjectCoordinateSystemIdentifier() {
 		return projectCoordinateSystemIdentifier;
@@ -145,5 +148,13 @@ public class OGRFeature extends BaseDomain {
 
 	public Double getReciprocalOfFlattening() {
 		return reciprocalOfFlattening;
+	}
+
+	public void setFeatureType(FeatureType featureType) {
+		this.featureType = featureType;
+	}
+
+	public FeatureType getFeatureType() {
+		return featureType;
 	}
 }

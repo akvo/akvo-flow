@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.web.dto;
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 
 public class ExternalGISRequest extends RestRequest {
 
@@ -18,6 +19,7 @@ public class ExternalGISRequest extends RestRequest {
 	private static final String GEO_COORDINATE_SYSTEM_IDENTIFIER_PARAM = "geoCoordinateSystemIdentifier";
 	private static final String PROJECT_COORDINATE_SYSTEM_IDENTIFIER_PARAM = "projectCoordinateSystemIdentifier";
 	private static final String NAME_PARAM = "name";
+	private static final String OGR_FEATURE_TYPE_PARAM = "ogrFeatureType";
 	/**
 	 * 
 	 */
@@ -35,6 +37,7 @@ public class ExternalGISRequest extends RestRequest {
 	private Double y2 = null;
 	private Double reciprocalOfFlattening = null;
 	private String geometryString =null; 
+	private FeatureType ogrFeatureType = null;
 
 	public String getName() {
 		return name;
@@ -164,7 +167,9 @@ public class ExternalGISRequest extends RestRequest {
 		if(req.getParameter(GEOMETRY_STRING_PARAM)!=null){
 			this.setGeometryString(req.getParameter(GEOMETRY_STRING_PARAM));
 		}
-
+		if(req.getParameter(OGR_FEATURE_TYPE_PARAM)!=null){
+			this.setOgrFeatureType(FeatureType.valueOf(req.getParameter(OGR_FEATURE_TYPE_PARAM)));
+		}
 	}
 
 	@Override
@@ -179,6 +184,14 @@ public class ExternalGISRequest extends RestRequest {
 
 	public String getGeometryString() {
 		return geometryString;
+	}
+
+	public void setOgrFeatureType(FeatureType ogrFeatureType) {
+		this.ogrFeatureType = ogrFeatureType;
+	}
+
+	public FeatureType getOgrFeatureType() {
+		return ogrFeatureType;
 	}
 
 }

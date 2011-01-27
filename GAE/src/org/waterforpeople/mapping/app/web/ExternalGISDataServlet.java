@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.waterforpeople.mapping.app.web.dto.ExternalGISRequest;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
@@ -43,8 +43,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		ExternalGISRequest importReq = (ExternalGISRequest) convertRequest();
 		if (req.getAction().equals(ExternalGISRequest.IMPORT_ACTION)) {
-			BaseDAO<OGRFeature> ogrFeatureDao = new BaseDAO<OGRFeature>(
-					OGRFeature.class);
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			OGRFeature ogrFeature = new OGRFeature();
 			ogrFeature.setCountryCode(importReq.getCountryCode());
 			ogrFeature.setName(importReq.getName());
@@ -57,6 +56,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 			Double[] boundingBox = new Double[] { importReq.getX1(),
 					importReq.getY1(), importReq.getX2(), importReq.getY2() };
 			ogrFeature.setBoundingBox(boundingBox);
+			ogrFeature.setFeatureType(importReq.getOgrFeatureType());
 			if (importReq.getGeometryString() != null) {
 				try {
 					Geometry geometry = parseGeometryString(importReq
@@ -79,17 +79,18 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 				.getGeometryFactory(null);
 		WKTReader reader = new WKTReader(geometryFactory);
 		Geometry geo = new Geometry();
+		geo.setWktText(geometryString);
 		if (geometryString.startsWith("POLYGON")) {
 			Polygon polygon = (Polygon) reader.read(geometryString);
 			geo.setType(GeometryType.POLYGON);
 			for (Coordinate coord : polygon.getCoordinates()) {
 				geo.addCoordinate(coord.x, coord.y);
 			}
-		}else if(geometryString.startsWith("POINT")){
+		} else if (geometryString.startsWith("POINT")) {
 			Point point = (Point) reader.read(geometryString);
 			geo.setType(GeometryType.POINT);
 			Coordinate coord = point.getCoordinate();
-			geo.addCoordinate(coord.x,coord.y);
+			geo.addCoordinate(coord.x, coord.y);
 		}
 		return geo;
 	}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable
 public class Geometry extends BaseDomain {
@@ -15,6 +16,8 @@ public class Geometry extends BaseDomain {
 	private static final long serialVersionUID = -694616882164561459L;
 	private GeometryType type = null;
 	private ArrayList<Coordinate> coordinates = null;
+	private Text wktText = null;
+	
 
 	public GeometryType getType() {
 		return type;
@@ -37,6 +40,14 @@ public class Geometry extends BaseDomain {
 			coordinates = new ArrayList<Coordinate>();
 		Coordinate coordinate = new Coordinate(x, y);
 		coordinates.add(coordinate);
+	}
+
+	public void setWktText(String wktText) {
+		this.wktText = new Text(wktText);
+	}
+
+	public String getWktText() {
+		return wktText.toString();
 	}
 
 	public enum GeometryType{
