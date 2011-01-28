@@ -587,6 +587,7 @@ public class SurveyDbAdapter {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SURVEY_FK_COL, surveyId);
 		initialValues.put(SUBMITTED_FLAG_COL, "false");
+		initialValues.put(EXPORTED_FLAG_COL,"false");
 		initialValues.put(USER_FK_COL, userId);
 		initialValues.put(STATUS_COL, ConstantUtil.CURRENT_STATUS);
 		return database.insert(RESPONDENT_TABLE, null, initialValues);
