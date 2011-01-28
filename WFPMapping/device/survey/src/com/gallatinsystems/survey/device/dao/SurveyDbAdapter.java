@@ -313,7 +313,7 @@ public class SurveyDbAdapter {
 				RESPONDENT_TABLE + "." + SURVEY_FK_COL, SCORED_VAL_COL,
 				STRENGTH_COL }, SUBMITTED_FLAG_COL + "= 'true' AND "
 				+ INCLUDE_FLAG_COL + "='true' AND " + EXPORTED_FLAG_COL
-				+ " = 'false' AND " + "(" + DELIVERED_DATE_COL + " is null OR "
+				+ " <> 'true' AND " + "(" + DELIVERED_DATE_COL + " is null OR "
 				+ MEDIA_SENT_COL + " <> 'true')", null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
