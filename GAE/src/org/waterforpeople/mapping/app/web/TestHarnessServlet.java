@@ -88,10 +88,12 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
+import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
-import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
+import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -133,6 +135,10 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
+		} else if ("testGeoLocation".equals(action)) {
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
+			String countryCode = gs.getCountryCodeForPoint("6.3008","-10.7972");
 		} else if ("loadOGRFeature".equals(action)) {
 			OGRFeature ogrFeature = new OGRFeature();
 			ogrFeature.setName("clan-21061011");
@@ -142,27 +148,30 @@ public class TestHarnessServlet extends HttpServlet {
 			ogrFeature.setSpheroid(6378137D);
 			ogrFeature.setReciprocalOfFlattening(298.257223563);
 			ogrFeature.setCountryCode("LR");
-			ogrFeature.addBoundingBox(223700.015625, 481399.468750,680781.375000, 945462.437500);
+			ogrFeature.addBoundingBox(223700.015625, 481399.468750,
+					680781.375000, 945462.437500);
 			Geometry geo = new Geometry();
 			geo.setType(GeometryType.POLYGON);
 			String coords = "497974.5625 557051.875,498219.03125 557141.75,498655.34375 557169.4375,499001.65625 557100.1875,499250.96875 556933.9375,499167.875 556615.375,499230.1875 556407.625,499392.78125 556362.75,499385.90625 556279.875,499598.5 556067.3125,499680.25 555952.8125,499218.5625 554988.875,498775.65625 554860.1875,498674.5 554832.5625,498282.0 554734.4375,498020.34375 554554.5625,497709.59375 554374.6875,497614.84375 554374.6875,497519.46875 554369.1875,497297.3125 554359.9375,496852.96875 554355.3125,496621.125 554351.375,496695.75 554454.625,496771.59375 554604.625,496836.3125 554734.0625,496868.65625 554831.125,496847.09375 554863.4375,496760.8125 554863.4375,496663.75 554928.125,496620.625 554992.875,496555.90625 555025.1875,496448.0625 554992.875,496372.5625 555025.1875,496351.0 555133.0625,496415.71875 555197.75,496480.40625 555294.8125,496480.40625 555381.0625,496430.875 555430.75,496446.0625 555547.375,496490.53125 555849.625,496526.09375 556240.75,496721.65625 556596.375,496924.90625 556774.1875,497006.125 556845.25,497281.71875 556978.625,497610.625 556969.6875,497859.53125 556969.6875,497974.5625 557051.875";
-			for(String item:coords.split(",")){
+			for (String item : coords.split(",")) {
 				String[] coord = item.split(" ");
-				geo.addCoordinate(Double.parseDouble(coord[0]),Double.parseDouble(coord[1]));
+				geo.addCoordinate(Double.parseDouble(coord[0]),
+						Double.parseDouble(coord[1]));
 			}
 			ogrFeature.setGeometry(geo);
 			ogrFeature.addGeoMeasure("CLNAME", "STRING", "Loisiana Township");
 			ogrFeature.addGeoMeasure("COUNT", "FLOAT", "1");
-			BaseDAO<OGRFeature> ogrDao = new BaseDAO<OGRFeature>(OGRFeature.class);
+			BaseDAO<OGRFeature> ogrDao = new BaseDAO<OGRFeature>(
+					OGRFeature.class);
 			ogrDao.save(ogrFeature);
 			try {
-				resp.getWriter().println("OGRFeature: " + ogrFeature.toString());
+				resp.getWriter()
+						.println("OGRFeature: " + ogrFeature.toString());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
+
 		} else if ("resetLRAP".equals(action)) {
 			try {
 

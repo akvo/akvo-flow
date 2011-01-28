@@ -19,7 +19,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 
 	}
 
-	public ArrayList<OGRFeature> listByExtentAndType(Double x1, Double y1,
+	public List<OGRFeature> listByExtentAndType(Double x1, Double y1,
 			OGRFeature.FeatureType featureType, String orderByCol,
 			String orderByDirection, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -30,8 +30,6 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		paramMap = new HashMap<String, Object>();
 
 		appendNonNullParam("x1", filterString, paramString, "Double", x1,
-				paramMap, GTE_OP);
-		appendNonNullParam("y1", filterString, paramString, "Double", y1,
 				paramMap, GTE_OP);
 		appendNonNullParam("featureType", filterString, paramString, "String",
 				featureType, paramMap, EQ_OP);
@@ -44,9 +42,9 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 
 		prepareCursor(cursorString, query);
 		@SuppressWarnings("unchecked")
-		ArrayList<OGRFeature> resultsGTE = (ArrayList<OGRFeature>) query
+		List<OGRFeature> resultsGTE = (List<OGRFeature>) query
 				.executeWithMap(paramMap);
-		ArrayList<OGRFeature> results = new ArrayList<OGRFeature>();
+		List<OGRFeature> results = new ArrayList<OGRFeature>();
 		for (OGRFeature item : resultsGTE) {
 			Double[] boundingBox = item.getBoundingBox();
 			if (boundingBox[2] < x1 && boundingBox[3] < y1) {
@@ -92,7 +90,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				existingItem.setBoundingBox(item.getBoundingBox());
 				super.save(existingItem);
 				return existingItem;
-			}else{
+			} else {
 				super.save(item);
 				return item;
 			}
