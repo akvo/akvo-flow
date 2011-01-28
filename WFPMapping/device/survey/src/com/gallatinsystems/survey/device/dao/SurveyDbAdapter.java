@@ -69,6 +69,7 @@ public class SurveyDbAdapter {
 	public static final String SCORED_VAL_COL = "scored_val";
 	public static final String STRENGTH_COL = "strength";
 	public static final String TRANS_START_COL = "trans_start_date";
+	public static final String EXPORTED_FLAG_COL = "exported_flag";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -99,14 +100,14 @@ public class SurveyDbAdapter {
 	private static final String TRANSMISSION_HISTORY_TABLE_CREATE = "create table transmission_history (_id integer primary key, survey_respondent_id integer not null, status text, filename text, trans_start_date long, delivered_date long);";
 
 	private static final String[] DEFAULT_INSERTS = new String[] {
-			//"insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
+			// "insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')",
 			// "insert into survey values(1039101,'Houshold Interview', 1.0,'Survey','res','hh1039101','english','N','N')",
 			// "insert into survey values(1062135,'Public Institution', 1.0,'Survey','res','pi1062135','english','N','N')",
 			// "insert into survey values(1086117,'CommunityWaterPoint', 1.0,'Survey','res','cwp1086117','english','N','N')",
 
-			//"insert into survey values(943186,'Community Water Point', 1.0,'Survey','res','cw943186','english','N','N')",
-			//"insert into survey values(1007024,'Household Interview', 1.0,'Survey','res','hh1007024','english','N','N')",
-			//"insert into survey values(971189,'Public Institution', 1.0,'Survey','res','pi971189','english','N','N')",
+			// "insert into survey values(943186,'Community Water Point', 1.0,'Survey','res','cw943186','english','N','N')",
+			// "insert into survey values(1007024,'Household Interview', 1.0,'Survey','res','hh1007024','english','N','N')",
+			// "insert into survey values(971189,'Public Institution', 1.0,'Survey','res','pi971189','english','N','N')",
 
 			"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
@@ -120,7 +121,7 @@ public class SurveyDbAdapter {
 			"insert into preferences values('screen.keepon','true')",
 			"insert into preferences values('precache.points.countries','2')",
 			"insert into preferences values('precache.points.limit','200')",
-			"insert into preferences values('survey.textsize','LARGE')"};
+			"insert into preferences values('survey.textsize','LARGE')" };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -137,7 +138,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 60;
+	private static final int DATABASE_VERSION = 62;
 
 	private final Context context;
 
@@ -192,17 +193,24 @@ public class SurveyDbAdapter {
 						.execSQL("DROP TABLE IF EXISTS "
 								+ TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
-			} else if(oldVersion == 57){
+			} else if (oldVersion == 57) {
 				try {
 					// just add the changes made in version 58
 					db.execSQL(TRANSMISSION_HISTORY_TABLE_CREATE);
 				} catch (Exception e) {
 					// swallow since this fails if the update is already applied
 				}
-			}else if (oldVersion == 58){
-				db.execSQL("insert into preferences values('survey.textsize','LARGE')");
+			} else if (oldVersion == 58) {
+				db
+						.execSQL("insert into preferences values('survey.textsize','LARGE')");
+			} else if (oldVersion <= 62) {
+				try {
+					db
+							.execSQL("alter table survey_respondent add column exported_flag text");
+				} catch (Exception e) {
+					// swallow
+				}
 			}
-
 		}
 
 		@Override
@@ -217,7 +225,7 @@ public class SurveyDbAdapter {
 		@Override
 		public synchronized void close() {
 			instanceCount--;
-			if (instanceCount <= 0) {
+			if (instanceCount <= 0) {				
 				super.close();
 				database = null;
 			}
@@ -293,6 +301,27 @@ public class SurveyDbAdapter {
 	}
 
 	/**
+	 * returns a cursor that lists all unexported (sentFlag = false) survey data
+	 * 
+	 * @return
+	 */
+	public Cursor fetchUnexportedData() {
+		Cursor cursor = database.query(RESPONSE_JOIN, new String[] {
+				RESPONDENT_TABLE + "." + PK_ID_COL, RESP_ID_COL, ANSWER_COL,
+				ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL, EMAIL_COL,
+				DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
+				RESPONDENT_TABLE + "." + SURVEY_FK_COL, SCORED_VAL_COL,
+				STRENGTH_COL }, SUBMITTED_FLAG_COL + "= 'true' AND "
+				+ INCLUDE_FLAG_COL + "='true' AND " + EXPORTED_FLAG_COL
+				+ " = 'false' AND " + "(" + DELIVERED_DATE_COL + " is null OR "
+				+ MEDIA_SENT_COL + " <> 'true')", null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+
+	/**
 	 * marks the data as submitted in the respondent table (submittedFlag =
 	 * true) thereby making it ready for transmission
 	 * 
@@ -318,6 +347,28 @@ public class SurveyDbAdapter {
 			updatedValues.put(DELIVERED_DATE_COL, System.currentTimeMillis()
 					+ "");
 			updatedValues.put(MEDIA_SENT_COL, mediaSentFlag);
+			// enhanced FOR ok here since we're dealing with an implicit
+			// iterator anyway
+			for (String id : idList) {
+				if (database.update(RESPONDENT_TABLE, updatedValues, PK_ID_COL
+						+ " = ?", new String[] { id }) < 1) {
+					Log.e(TAG,
+							"Could not update record for Survey_respondent_id "
+									+ id);
+				}
+			}
+		}
+	}
+
+	/**
+	 * updates the respondent table by recording the sent date stamp
+	 * 
+	 * @param idList
+	 */
+	public void markDataAsExported(HashSet<String> idList) {
+		if (idList != null) {
+			ContentValues updatedValues = new ContentValues();
+			updatedValues.put(EXPORTED_FLAG_COL, "true");
 			// enhanced FOR ok here since we're dealing with an implicit
 			// iterator anyway
 			for (String id : idList) {

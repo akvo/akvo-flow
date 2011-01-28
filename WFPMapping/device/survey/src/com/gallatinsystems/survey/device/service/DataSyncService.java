@@ -146,7 +146,7 @@ public class DataSyncService extends Service {
 
 			counter++;
 			if (isAbleToRun(type, uploadIndex)) {
-				String fileName = createFileName();
+				String fileName = createFileName(ConstantUtil.EXPORT.equals(type));
 				HashSet<String>[] idList = formZip(fileName,
 						(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex));
 				String destName = fileName;
@@ -217,6 +217,14 @@ public class DataSyncService extends Service {
 					fireNotification(NOTHING, null);
 				}
 
+			}else{
+				//if we can't run the export, write the data as a zip
+				String fileName = createFileName(false);
+				HashSet<String>[] idList = formZip(fileName,
+						(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex));
+				if(idList != null){
+					databaseAdaptor.markDataAsExported(idList[0]);
+				}
 			}
 		} catch (InterruptedException e) {
 			Log.e(TAG, "Data sync interrupted", e);
@@ -691,9 +699,9 @@ public class DataSyncService extends Service {
 	 * 
 	 * @return
 	 */
-	private String createFileName() {
+	private String createFileName(boolean isAll) {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
-				+ TEMP_FILE_NAME + System.nanoTime() + ".zip";
+				+ TEMP_FILE_NAME + System.nanoTime() +(isAll?"-all-":"")+".zip";
 	}
 
 	/**
