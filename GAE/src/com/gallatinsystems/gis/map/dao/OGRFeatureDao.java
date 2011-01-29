@@ -30,7 +30,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		paramMap = new HashMap<String, Object>();
 
 		appendNonNullParam("x1", filterString, paramString, "Double", x1,
-				paramMap, GTE_OP);
+				paramMap, LTE_OP);
 		appendNonNullParam("featureType", filterString, paramString, "String",
 				featureType, paramMap, EQ_OP);
 
@@ -47,10 +47,11 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		List<OGRFeature> results = new ArrayList<OGRFeature>();
 		for (OGRFeature item : resultsGTE) {
 			Double[] boundingBox = item.getBoundingBox();
-			if (boundingBox[2] < x1 && boundingBox[3] < y1) {
+			if (boundingBox[3] >y1) {
 				results.add(item);
 			}
 		}
+
 		return results;
 	}
 

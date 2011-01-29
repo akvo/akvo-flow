@@ -17,6 +17,7 @@ import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
@@ -80,10 +81,16 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		WKTReader reader = new WKTReader(geometryFactory);
 		Geometry geo = new Geometry();
 		geo.setWktText(geometryString);
-		if (geometryString.startsWith("POLYGON")) {
-			Polygon polygon = (Polygon) reader.read(geometryString);
-			geo.setType(GeometryType.POLYGON);
-			for (Coordinate coord : polygon.getCoordinates()) {
+		if (geometryString.contains("POLYGON")) {
+			com.vividsolutions.jts.geom.Geometry geoHolder = null;
+			if (geometryString.startsWith("POLYGON")) {
+				geoHolder = (Polygon) reader.read(geometryString);
+				geo.setType(GeometryType.POLYGON);
+			} else if (geometryString.startsWith("MULTIPOLYGON")) {
+				geoHolder = (MultiPolygon) reader.read(geometryString);
+				geo.setType(GeometryType.MULITPOLYGON);
+			}
+			for (Coordinate coord : geoHolder.getCoordinates()) {
 				geo.addCoordinate(coord.x, coord.y);
 			}
 		} else if (geometryString.startsWith("POINT")) {

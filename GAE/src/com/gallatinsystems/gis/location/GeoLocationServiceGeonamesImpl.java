@@ -26,6 +26,7 @@ import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
@@ -93,51 +94,53 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 	 */
 	public String getCountryCodeForPoint(String lat, String lon) {
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
-		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(Double.parseDouble(lon),Double.parseDouble(lat),FeatureType.COUNTRY,"x1",
-				"asc", "all");
+		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
+				Double.parseDouble(lon), Double.parseDouble(lat),
+				FeatureType.COUNTRY, "x1", "asc", "all");
 		String countryCode = null;
 		for (OGRFeature item : ogrList) {
 			Geometry geo = item.getGeometry();
 			GeometryFactory geometryFactory = JTSFactoryFinder
 					.getGeometryFactory(null);
 			WKTReader reader = new WKTReader(geometryFactory);
-			if (geo.getType().equals(GeometryType.POLYGON)) {
-				try {
-					Polygon polygon = (Polygon) reader.read(geo.getWktText());
-					Coordinate coord = new Coordinate(Double.parseDouble(lon),Double.parseDouble(lat));
-					Point point = geometryFactory.createPoint(coord);
-					if(polygon.contains(point)){
-						countryCode = item.getCountryCode();
-						break;
-					}
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			com.vividsolutions.jts.geom.Geometry shape = null;
+			try {
+				if (geo.getType().equals(GeometryType.POLYGON)) {
+					shape = (Polygon) reader.read(geo.getWktText());
+				} else if (geo.getType().equals(GeometryType.MULITPOLYGON)) {
+					shape = (MultiPolygon) reader.read(geo.getWktText());
 				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Coordinate coord = new Coordinate(Double.parseDouble(lon),
+					Double.parseDouble(lat));
+			Point point = geometryFactory.createPoint(coord);
+			if (shape.contains(point)) {
+				countryCode = item.getCountryCode();
+				break;
 			}
 		}
 		return countryCode;
 	}
 
-	
-	
-	
-//	/**
-//	 * returns the 2-letter country code for the lat/lon location passed in
-//	 */
-//	public String getCountryCodeForPoint(String lat, String lon) {
-//		String countryCode = null;
-//		countryCode = callApi(COUNTRY_SERVICE_URL, lat, lon, true);
-//		if (countryCode != null) {
-//			countryCode = countryCode.trim();
-//		} else {
-//			GeoPlace p = manualLookup(lat, lon);
-//			if (p != null) {
-//				countryCode = p.getCountryCode();
-//			}
-//		}
-//		return countryCode;
-//	}
+	// /**
+	// * returns the 2-letter country code for the lat/lon location passed in
+	// */
+	// public String getCountryCodeForPoint(String lat, String lon) {
+	// String countryCode = null;
+	// countryCode = callApi(COUNTRY_SERVICE_URL, lat, lon, true);
+	// if (countryCode != null) {
+	// countryCode = countryCode.trim();
+	// } else {
+	// GeoPlace p = manualLookup(lat, lon);
+	// if (p != null) {
+	// countryCode = p.getCountryCode();
+	// }
+	// }
+	// return countryCode;
+	// }
 
 	/**
 	 * returns a geo place object that is closest to the lat/lon passed in.
@@ -211,7 +214,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		}
 		return places;
 	}
-	
+
 	private GeoPlace manualLookup(String latStr, String lonStr) {
 		GeoPlace place = null;
 		try {
@@ -238,8 +241,4 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		return place;
 	}
 
-
-
-
-	
 }
