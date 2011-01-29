@@ -18,12 +18,13 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
+import org.waterforpeople.mapping.portal.client.util.PermissionConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyQuestionTranslationDialog;
 import org.waterforpeople.mapping.portal.client.widgets.component.TranslationChangeListener;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -45,8 +46,8 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SurveyManagerPortlet extends Portlet implements ClickHandler,
-		SurveyTreeListener, TranslationChangeListener {
+public class SurveyManagerPortlet extends UserAwarePortlet implements
+		ClickHandler, SurveyTreeListener, TranslationChangeListener {
 
 	public static final String NAME = "Survey Manager Portlet";
 	public static final String DESCRIPTION = "Manages Create/Edit/Delete of Surveys";
@@ -87,8 +88,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		SURVEYGROUP, SURVEY, QUESTIONGROUP, QUESTION, NONE
 	};
 
-	public SurveyManagerPortlet() {
-		super(title, scrollable, configurable, WIDTH, HEIGHT);
+	public SurveyManagerPortlet(UserDto user) {
+		super(title, scrollable, configurable, false, WIDTH, HEIGHT, user);
 		svc = GWT.create(SurveyService.class);
 		surveyOptionQuestionMap = new HashMap<Long, QuestionDto[]>();
 		buildContentPanel();
@@ -131,37 +132,39 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 	 * @param state
 	 */
 	private void setButtonState(ButtonState state) {
-		switch (state) {
-		case SURVEYGROUP:
-			addSurveyGroupButton.setVisible(true);
-			addSurveyButton.setVisible(false);
-			addQuestionGroupButton.setVisible(false);
-			addQuestionButton.setVisible(false);
-			break;
-		case SURVEY:
-			addSurveyGroupButton.setVisible(false);
-			addSurveyButton.setVisible(true);
-			addQuestionGroupButton.setVisible(false);
-			addQuestionButton.setVisible(false);
-			break;
-		case QUESTIONGROUP:
-			addSurveyGroupButton.setVisible(false);
-			addSurveyButton.setVisible(false);
-			addQuestionGroupButton.setVisible(true);
-			addQuestionButton.setVisible(false);
-			break;
-		case QUESTION:
-			addSurveyGroupButton.setVisible(false);
-			addSurveyButton.setVisible(false);
-			addQuestionGroupButton.setVisible(false);
-			addQuestionButton.setVisible(true);
-			break;
-		case NONE:
-			addSurveyGroupButton.setVisible(false);
-			addSurveyButton.setVisible(false);
-			addQuestionGroupButton.setVisible(false);
-			addQuestionButton.setVisible(false);
-			break;
+		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			switch (state) {
+			case SURVEYGROUP:
+				addSurveyGroupButton.setVisible(true);
+				addSurveyButton.setVisible(false);
+				addQuestionGroupButton.setVisible(false);
+				addQuestionButton.setVisible(false);
+				break;
+			case SURVEY:
+				addSurveyGroupButton.setVisible(false);
+				addSurveyButton.setVisible(true);
+				addQuestionGroupButton.setVisible(false);
+				addQuestionButton.setVisible(false);
+				break;
+			case QUESTIONGROUP:
+				addSurveyGroupButton.setVisible(false);
+				addSurveyButton.setVisible(false);
+				addQuestionGroupButton.setVisible(true);
+				addQuestionButton.setVisible(false);
+				break;
+			case QUESTION:
+				addSurveyGroupButton.setVisible(false);
+				addSurveyButton.setVisible(false);
+				addQuestionGroupButton.setVisible(false);
+				addQuestionButton.setVisible(true);
+				break;
+			case NONE:
+				addSurveyGroupButton.setVisible(false);
+				addSurveyButton.setVisible(false);
+				addQuestionGroupButton.setVisible(false);
+				addQuestionButton.setVisible(false);
+				break;
+			}
 		}
 	}
 
@@ -185,6 +188,27 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		addQuestionButton = constructAndInstallButton("Add Question", true);
 		deleteQuestionButton = constructAndInstallButton("Delete Question",
 				false);
+
+		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			addSurveyGroupButton.setEnabled(false);
+			deleteSurveyGroupButton.setEnabled(false);
+			addSurveyButton.setEnabled(false);
+			deleteSurveyButton.setEnabled(false);
+			addQuestionGroupButton.setEnabled(false);
+			deleteQuestionGroupButton.setEnabled(false);
+			addQuestionButton.setEnabled(false);
+			deleteQuestionButton.setEnabled(false);
+
+			addSurveyGroupButton.setVisible(false);
+			deleteSurveyGroupButton.setVisible(false);
+			addSurveyButton.setVisible(false);
+			deleteSurveyButton.setVisible(false);
+			addQuestionGroupButton.setVisible(false);
+			deleteQuestionGroupButton.setVisible(false);
+			addQuestionButton.setVisible(false);
+			deleteQuestionButton.setVisible(false);
+		}
+
 	}
 
 	/**
@@ -403,6 +427,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button deleteQuestionButton = new Button("Delete Question");
 		Button viewResponsesButton = new Button("View Responses");
 		Button editTranslationButton = new Button("Edit Translations");
+		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			saveQuestionButton.setVisible(false);
+			deleteQuestionButton.setVisible(false);
+			editTranslationButton.setVisible(false);
+		}
+
 		questionId.setVisible(false);
 
 		questionDetailPanel.setWidget(0, 0, questionId);
@@ -437,10 +467,13 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					if (message == null) {
 						saveQuestion();
 					} else {
-						Window.alert("Cannot save question. Issues: " + message);
+						Window
+								.alert("Cannot save question. Issues: "
+										+ message);
 					}
 				} catch (Exception e) {
-					Window.alert("Could not save question no Question Group was selected");
+					Window
+							.alert("Could not save question no Question Group was selected");
 				}
 			}
 
@@ -514,7 +547,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				} else {
 					// Likely have the QG selected because this is a new
 					// question need to figure out how to get QuestionDto
-					Window.alert("Please save question first then select question before pressing edit translations buttons");
+					Window
+							.alert("Please save question first then select question before pressing edit translations buttons");
 				}
 			}
 		});
@@ -557,8 +591,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(
-										currentQuestion.getSurveyId(), result);
+								surveyOptionQuestionMap.put(currentQuestion
+										.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 								dia.hide();
@@ -747,6 +781,9 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		}
 
 		Button addNewOptionButton = new Button("Add New Option");
+		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			addNewOptionButton.setVisible(false);
+		}
 		// Button deleteOptionButton = new Button("Delete Option");
 
 		questionOptionDetail.setWidget(row, 2, addNewOptionButton);
@@ -755,8 +792,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null,
-						questionOptionDetail.getRowCount() - 1);
+				loadQuestionOptionRowDetail(null, questionOptionDetail
+						.getRowCount() - 1);
 			}
 
 		});
@@ -819,11 +856,13 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					qoId = Long.parseLong(optionId.getText());
 				}
 				questionOptionDetail.removeRow(row);
-				
-				for (Integer i = row; i < questionOptionDetail.getRowCount()-1; i++) {
-					ListBox lbOptOrder = (ListBox) questionOptionDetail.getWidget(i, 1);
+
+				for (Integer i = row; i < questionOptionDetail.getRowCount() - 1; i++) {
+					ListBox lbOptOrder = (ListBox) questionOptionDetail
+							.getWidget(i, 1);
 					lbOptOrder.setSelectedIndex(i);
-					Button bDelete = (Button)questionOptionDetail.getWidget(i,5);
+					Button bDelete = (Button) questionOptionDetail.getWidget(i,
+							5);
 					bDelete.setTitle(i.toString());
 				}
 			}
@@ -1060,7 +1099,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 				if (validateSurveyGroup())
 					saveSurveyGroup();
 				else
-					Window.alert("Cannot Save Survey Group. You must fill provide a Survey Code");
+					Window
+							.alert("Cannot Save Survey Group. You must fill provide a Survey Code");
 			}
 
 		});
@@ -1111,6 +1151,18 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 		Button remapSurveyFormButton = new Button("Remap to Access Point");
 		Button importRawDataButton = new Button("Import Raw Data XLS");
 
+		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			saveSurveyButton.setVisible(false);
+			deleteSurveyButton.setVisible(false);
+			publishSurveyButton.setVisible(false);
+			remapSurveyFormButton.setVisible(false);
+
+		}
+		if (!getCurrentUser().hasPermission(
+				PermissionConstants.IMPORT_SURVEY_DATA)) {
+			importRawDataButton.setVisible(false);
+		}
+
 		surveyDetail.setWidget(0, 0, surveyId);
 		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
 		surveyDetail.setWidget(1, 1, surveyname);
@@ -1145,7 +1197,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 					@Override
 					public void onSuccess(Object result) {
-						Window.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
+						Window
+								.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
 					}
 
 				});
@@ -1169,10 +1222,12 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					if (validateSurvey()) {
 						saveSurvey();
 					} else {
-						Window.alert("Cannot Save Survey.  You must provide a survey name");
+						Window
+								.alert("Cannot Save Survey.  You must provide a survey name");
 					}
 				} catch (Exception e) {
-					Window.alert("Could not save survey no survey group selected");
+					Window
+							.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -1316,6 +1371,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 
 		Button saveQuestionGroupButton = new Button("Save Question Group");
 		Button deleteQuestionGroupButton = new Button("Delete Question Group");
+		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			saveQuestionGroupButton.setVisible(false);
+			deleteQuestionGroupButton.setVisible(false);
+		}
+
 		questionGroupDetail.setWidget(0, 0, questionGroupId);
 
 		questionGroupDetail.setWidget(1, 0, new Label("Name"));
@@ -1335,9 +1395,11 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 					if (validateQuestionGroup())
 						saveQuestionGroup();
 					else
-						Window.alert("Cannot save Question Group.  You must provide a name.");
+						Window
+								.alert("Cannot save Question Group.  You must provide a name.");
 				} catch (Exception ex) {
-					Window.alert("Cannot Save Question Group Because no parent survey is selected");
+					Window
+							.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
 			}
 
@@ -1368,7 +1430,8 @@ public class SurveyManagerPortlet extends Portlet implements ClickHandler,
 										MessageDialog errDia = new MessageDialog(
 												"Could not delete question group",
 												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
-										errDia.showRelativeTo(questionGroupDetail);
+										errDia
+												.showRelativeTo(questionGroupDetail);
 									}
 
 									@Override

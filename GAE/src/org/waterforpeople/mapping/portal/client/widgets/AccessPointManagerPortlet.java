@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
+import org.waterforpeople.mapping.portal.client.util.PermissionConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -36,10 +37,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -51,6 +48,10 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
@@ -243,7 +244,12 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		searchTable.setWidget(4, 0, searchButton);
 		searchTable.setWidget(4, 1, createNewAccessPoint);
 		searchTable.setWidget(4, 2, errorsButton);
-		searchTable.setWidget(4,3,deleteAllButton);
+		searchTable.setWidget(4, 3, deleteAllButton);
+
+		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_AP)) {
+			createNewAccessPoint.setVisible(false);
+			deleteAllButton.setVisible(false);
+		}
 
 		mainVPanel.add(searchTable);
 	}
@@ -485,11 +491,15 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			MapWidget map = new MapWidget();
 			map.setSize("180px", "180px");
 			map.addControl(new SmallZoomControl());
-			LatLng point = LatLng.newInstance(accessPointDto.getLatitude(),
-					accessPointDto.getLongitude());
-			map.addOverlay(new Marker(point));
-			map.setZoomLevel(12);
-			map.setCenter(point);
+			try {
+				LatLng point = LatLng.newInstance(accessPointDto.getLatitude(),
+						accessPointDto.getLongitude());
+				map.addOverlay(new Marker(point));
+				map.setZoomLevel(12);
+				map.setCenter(point);
+			} catch (Throwable e) {
+				// swallow
+			}
 			accessPointDetail.setWidget(0, 2, map);
 			accessPointDetail.getFlexCellFormatter().setRowSpan(0, 2, 5);
 		}
@@ -646,36 +656,53 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		accessPointDetail.setWidget(17, 0, new Label(
 				"Farthest household with acceptable distance: "));
-		accessPointDetail.setWidget(17, 1, addListBox(accessPointDto
-				 != null ? accessPointDto
-				.getFarthestHouseholdfromPoint() : null));
+		accessPointDetail.setWidget(17, 1,
+				addListBox(accessPointDto != null ? accessPointDto
+						.getFarthestHouseholdfromPoint() : null));
 
 		// footer
 		// header
 		// meetGovtQualtiyStandardFlag
 		accessPointDetail.setWidget(18, 0, new Label(
 				"Meet Government Quality Standard: "));
-		accessPointDetail.setWidget(18, 1, addListBox(accessPointDto != null && accessPointDto
-				.getMeetGovtQualityStandards() != null ? accessPointDto
-				.getMeetGovtQualityStandards().toString() : null));
+		accessPointDetail
+				.setWidget(
+						18,
+						1,
+						addListBox(accessPointDto != null
+								&& accessPointDto.getMeetGovtQualityStandards() != null ? accessPointDto
+								.getMeetGovtQualityStandards().toString()
+								: null));
 
 		// meetGovtQuantityStandardFlag
 		accessPointDetail.setWidget(19, 0, new Label(
 				"Meet Government Quantity Standard: "));
-		accessPointDetail.setWidget(19, 1, addListBox(accessPointDto != null && accessPointDto
-				.getMeetGovtQunatityStandardsFlag() != null ? accessPointDto
-				.getMeetGovtQunatityStandardsFlag().toString() : null));
+		accessPointDetail
+				.setWidget(
+						19,
+						1,
+						addListBox(accessPointDto != null
+								&& accessPointDto
+										.getMeetGovtQunatityStandardsFlag() != null ? accessPointDto
+								.getMeetGovtQunatityStandardsFlag().toString()
+								: null));
 		// numberOfHouseholdsUsingPoint
 		// provideAdequateQuantity
 		accessPointDetail.setWidget(21, 0, new Label(
 				"Provide adequate quantity: "));
-		accessPointDetail.setWidget(21, 1, addListBox(accessPointDto != null && accessPointDto
-				.getProvideAdequateQuantity() != null ? accessPointDto
-				.getProvideAdequateQuantity().toString() : null));
+		accessPointDetail
+				.setWidget(
+						21,
+						1,
+						addListBox(accessPointDto != null
+								&& accessPointDto.getProvideAdequateQuantity() != null ? accessPointDto
+								.getProvideAdequateQuantity().toString()
+								: null));
 		// SecondaryTechnologyString
 		// typeTechnologyString
 		TextBox techTypeString = new TextBox();
-		if (accessPointDto != null && accessPointDto.getTypeTechnologyString() != null)
+		if (accessPointDto != null
+				&& accessPointDto.getTypeTechnologyString() != null)
 			techTypeString.setText(accessPointDto.getTypeTechnologyString());
 		accessPointDetail.setWidget(22, 0,
 				new Label("Technology Type String: "));
@@ -684,14 +711,16 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox secondaryTechTypeString = new TextBox();
 		accessPointDetail.setWidget(23, 0, new Label(
 				"Secondary Technology String: "));
-		if (accessPointDto!= null && accessPointDto.getSecondaryTechnologyString() != null)
+		if (accessPointDto != null
+				&& accessPointDto.getSecondaryTechnologyString() != null)
 			secondaryTechTypeString.setText(accessPointDto
 					.getSecondaryTechnologyString());
 		accessPointDetail.setWidget(23, 1, secondaryTechTypeString);
 		// whoRepairsPoint
 		TextBox whoRepairsPoint = new TextBox();
 		accessPointDetail.setWidget(24, 0, new Label("Who Repairs Point"));
-		if (accessPointDto!= null && accessPointDto.getWhoRepairsPoint() != null)
+		if (accessPointDto != null
+				&& accessPointDto.getWhoRepairsPoint() != null)
 			whoRepairsPoint.setText(accessPointDto.getWhoRepairsPoint());
 		accessPointDetail.setWidget(24, 1, whoRepairsPoint);
 
@@ -699,7 +728,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox estHouseholds = new TextBox();
 		accessPointDetail.setWidget(25, 0, new Label(
 				"Estimated number of households using point:"));
-		if (accessPointDto!= null && accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
+		if (accessPointDto != null
+				&& accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
 			estHouseholds.setText(accessPointDto
 					.getNumberOfHouseholdsUsingPoint().toString());
 		accessPointDetail.setWidget(25, 1, estHouseholds);
@@ -708,7 +738,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox estPeoplePerHouse = new TextBox();
 		accessPointDetail.setWidget(26, 0, new Label(
 				"Estimated people per household:"));
-		if (accessPointDto!= null && accessPointDto.getEstimatedPeoplePerHouse() != null)
+		if (accessPointDto != null
+				&& accessPointDto.getEstimatedPeoplePerHouse() != null)
 			estPeoplePerHouse.setText(accessPointDto
 					.getEstimatedPeoplePerHouse().toString());
 		accessPointDetail.setWidget(26, 1, estPeoplePerHouse);
@@ -716,7 +747,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		// extimatedPopulation
 		TextBox estimatedPopulation = new TextBox();
 		accessPointDetail.setWidget(27, 0, new Label("Estimated Population: "));
-		if (accessPointDto!= null && accessPointDto.getEstimatedPopulation() != null)
+		if (accessPointDto != null
+				&& accessPointDto.getEstimatedPopulation() != null)
 			estimatedPopulation.setText(accessPointDto.getEstimatedPopulation()
 					.toString());
 		accessPointDetail.setWidget(27, 1, estimatedPopulation);
@@ -724,18 +756,31 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		// hasSystemBeenDown1DayFlag
 		accessPointDetail.setWidget(29, 0, new Label(
 				"Has system been down 1 day: "));
-		accessPointDetail.setWidget(29, 1, addListBox(accessPointDto!= null && accessPointDto
-				.getHasSystemBeenDown1DayFlag() != null ? accessPointDto
-				.getHasSystemBeenDown1DayFlag().toString() : null));
+		accessPointDetail
+				.setWidget(
+						29,
+						1,
+						addListBox(accessPointDto != null
+								&& accessPointDto
+										.getHasSystemBeenDown1DayFlag() != null ? accessPointDto
+								.getHasSystemBeenDown1DayFlag().toString()
+								: null));
 
 		accessPointDetail.setWidget(30, 0, new Label(
 				"Water For People Supported Project:"));
-		accessPointDetail.setWidget(30, 1, addListBox(accessPointDto!= null && accessPointDto
-				.getWaterForPeopleProjectFlag() != null ? accessPointDto
-				.getWaterForPeopleProjectFlag().toString() : null));
+		accessPointDetail
+				.setWidget(
+						30,
+						1,
+						addListBox(accessPointDto != null
+								&& accessPointDto
+										.getWaterForPeopleProjectFlag() != null ? accessPointDto
+								.getWaterForPeopleProjectFlag().toString()
+								: null));
 		accessPointDetail.setWidget(31, 0, new Label("Water For People Role:"));
 		TextBox roleTextBox = new TextBox();
-		if (accessPointDto!= null && accessPointDto.getWaterForPeopleRole() != null)
+		if (accessPointDto != null
+				&& accessPointDto.getWaterForPeopleRole() != null)
 			roleTextBox.setText(accessPointDto.getWaterForPeopleRole());
 		accessPointDetail.setWidget(31, 1, roleTextBox);
 
@@ -1063,6 +1108,9 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		HorizontalPanel buttonHPanel = new HorizontalPanel();
 		buttonHPanel.add(editAccessPoint);
 		buttonHPanel.add(deleteAccessPoint);
+		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_AP)) {
+			buttonHPanel.setVisible(false);
+		}
 
 		editAccessPoint.addClickHandler(new ClickHandler() {
 

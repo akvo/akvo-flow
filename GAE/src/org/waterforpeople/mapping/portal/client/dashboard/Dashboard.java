@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.waterforpeople.mapping.portal.client.util.PermissionConstants;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
@@ -51,10 +52,10 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -76,7 +77,9 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
 	private Image confImage;
+	private Panel menuPanel;	
 
+	
 	public Dashboard() {
 		super(COLUMNS);
 	}
@@ -88,10 +91,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 		containerPanel = new VerticalPanel();
 
-		final Widget menu = constructMenu(true);
+		menuPanel = constructMenu();
 		RootPanel.get().add(containerPanel);
-		containerPanel.add(menu);
-		menu.setVisible(false);
+		containerPanel.add(menuPanel);
+		menuPanel.setVisible(false);
 		// now add the portal container to the vertical panel
 		containerPanel.add(this);
 		// get the user config
@@ -104,8 +107,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			public void onSuccess(UserDto result) {
 				if (result != null && result.hasAccess()) {
-					menu.setVisible(true);
+				
 					setCurrentUser(result);
+					populateMenuPanel(true);
+					menuPanel.setVisible(true);
 					initializeContent(result);
 				} else if (result == null || !result.hasAccess()) {
 					containerPanel.clear();
@@ -128,18 +133,18 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		userService.getCurrentUserConfig(false, userCallback);
 	}
 
+	protected void hideMenuItems(){
+		
+	}
+	
 	/**
-	 * constructs the header menu and binds the click listener for the
-	 * "addWidget" button
-	 * 
-	 * @return
+	 * populates menu optiosn and binds click listeners for addWidget button
+	 * @param isConfigurable
 	 */
-	protected Widget constructMenu(boolean isConfigurable) {
-		VerticalPanel menuPanel = new VerticalPanel();
-		menuPanel.add(new Image("images/wfp-logo.gif"));
-		DockPanel statusDock = new DockPanel();
-		statusDock.setPixelSize(1024, 20);
-		statusDock.setStyleName(CSS_SYSTEM_HEAD);
+	protected void populateMenuPanel(boolean isConfigurable){
+		DockPanel menuDock = new DockPanel();
+		menuDock.setPixelSize(1024, 20);
+		menuDock.setStyleName(CSS_SYSTEM_HEAD);
 		MenuBar menu = new MenuBar();
 
 		menu.addItem("Dashboard", new Command() {
@@ -159,28 +164,39 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			}
 		});
-		mgrMenu.addItem("Tech Type", new Command() {
-			public void execute() {
-				launchFullscreen(TechnologyTypeManagerPortlet.NAME);
-			}
-		});
-		mgrMenu.addItem("Survey Assignment", new Command() {
-			public void execute() {
-				launchFullscreen(SurveyAssignmentPortlet.NAME);
-			}
-		});
-		mgrMenu.addItem("Display Template Content Manager", new Command() {
-			public void execute() {
-				launchFullscreen(DisplayContentManager.NAME);
 
-			}
-		});
-		mgrMenu.addItem("Survey Question Attribute Mapper", new Command() {
-			public void execute() {
-				launchFullscreen(SurveyAttributeMappingPortlet.NAME);
+		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			mgrMenu.addItem("Survey Assignment", new Command() {
+				public void execute() {
+					launchFullscreen(SurveyAssignmentPortlet.NAME);
+				}
+			});
+			mgrMenu.addItem("Survey Question Attribute Mapper", new Command() {
+				public void execute() {
+					launchFullscreen(SurveyAttributeMappingPortlet.NAME);
 
-			}
-		});
+				}
+			});
+			mgrMenu.addItem("Survey Loader", new Command() {
+				public void execute() {
+					launchFullscreen(SurveyLoaderPortlet.NAME);
+				}
+			});
+
+			mgrMenu.addItem("Tech Type", new Command() {
+				public void execute() {
+					launchFullscreen(TechnologyTypeManagerPortlet.NAME);
+				}
+			});
+		}
+		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
+			mgrMenu.addItem("Display Template Content Manager", new Command() {
+				public void execute() {
+					launchFullscreen(DisplayContentManager.NAME);
+
+				}
+			});
+		}
 
 		mgrMenu.addItem("Survey Manager", new Command() {
 			public void execute() {
@@ -188,53 +204,58 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			}
 		});
-		mgrMenu.addItem("Data Upload", new Command() {
-			public void execute() {
-				launchFullscreen(DataUploadPortlet.NAME);
-			}
-		});
-		mgrMenu.addItem("Survey Loader", new Command() {
-			public void execute() {
-				launchFullscreen(SurveyLoaderPortlet.NAME);
-			}
-		});
+		if (getCurrentUser().hasPermission(
+				PermissionConstants.UPLOAD_SURVEY_DATA)) {
+			mgrMenu.addItem("Data Upload", new Command() {
+				public void execute() {
+					launchFullscreen(DataUploadPortlet.NAME);
+				}
+			});
+		}
+
 		mgrMenu.addItem("Raw Data Manager", new Command() {
 			public void execute() {
 				launchFullscreen(RawDataViewPortlet.NAME);
 			}
 		});
-		mgrMenu.addItem("Import Access Point", new Command() {
-			public void execute() {
-				launchFullscreen(MappingAttributeManager.NAME);
-			}
-		});
-		mgrMenu.addItem("Manage Users", new Command() {
-			public void execute() {
-				launchFullscreen(UserManagerPortlet.NAME);
-			}
-		});
-		mgrMenu.addItem("View Remote Exceptions", new Command() {
-			public void execute() {
-				launchFullscreen(RemoteExceptionPortlet.NAME);
-			}
-		});
-		mgrMenu.addItem("Device Files", new Command() {
-			public void execute() {
-				launchFullscreen(DeviceFileManagerPortlet.NAME);
+		if (getCurrentUser().hasPermission(PermissionConstants.IMPORT_AP_DATA)) {
+			mgrMenu.addItem("Import Access Point", new Command() {
+				public void execute() {
+					launchFullscreen(MappingAttributeManager.NAME);
+				}
+			});
+		}
+		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_USER)) {
+			mgrMenu.addItem("Manage Users", new Command() {
+				public void execute() {
+					launchFullscreen(UserManagerPortlet.NAME);
+				}
+			});
+		}
+		if (getCurrentUser().isAdmin()) {
+			mgrMenu.addItem("Admin Wizard", new Command() {
+				public void execute() {
+					launchFullscreen(AdminWizardPortlet.NAME);
 
-			}
-		});
-		mgrMenu.addItem("Admin Wizard", new Command() {
-			public void execute() {
-				launchFullscreen(AdminWizardPortlet.NAME);
+				}
+			});
+			mgrMenu.addItem("View Remote Exceptions", new Command() {
+				public void execute() {
+					launchFullscreen(RemoteExceptionPortlet.NAME);
+				}
+			});
+			mgrMenu.addItem("Device Files", new Command() {
+				public void execute() {
+					launchFullscreen(DeviceFileManagerPortlet.NAME);
 
-			}
-		});
+				}
+			});
+		}
 
 		menu.addItem("Data Managers", mgrMenu);
 
-		statusDock.add(menu, DockPanel.WEST);
-		statusDock.add(new SimplePanel(), DockPanel.CENTER);
+		menuDock.add(menu, DockPanel.WEST);
+		menuDock.add(new SimplePanel(), DockPanel.CENTER);
 		if (isConfigurable) {
 			confImage = new Image(ADD_ICON);
 			confImage.setTitle(ADD_TOOLTIP);
@@ -246,9 +267,19 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 				}
 			});
-			statusDock.add(confImage, DockPanel.EAST);
+			menuDock.add(confImage, DockPanel.EAST);
 		}
-		menuPanel.add(statusDock);
+		menuPanel.add(menuDock);
+	}
+	
+	/**
+	 * constructs the header menu bar
+	 * 
+	 * @return
+	 */
+	protected Panel constructMenu() {
+		VerticalPanel menuPanel = new VerticalPanel();
+		menuPanel.add(new Image("images/wfp-logo.gif"));		
 		return menuPanel;
 	}
 

@@ -1,6 +1,8 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 
+import org.waterforpeople.mapping.portal.client.util.PermissionConstants;
+
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -41,16 +43,23 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 						0,
 						1,
 						createDescription("Create, edit and delete user accounts for the dashboard (Appengine Admins Only)."));
-		if (!user.isAdmin()) {
+		if (!user.hasPermission(PermissionConstants.EDIT_USER)) {
 			userMgmtButton.setEnabled(false);
 		}
 
 		surveyMgmtButton = initButton("Manage Surveys");
+		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+			surveyMgmtButton.setEnabled(false);
+		}
 		widget.setWidget(1, 0, surveyMgmtButton);
 		widget
 				.setWidget(1, 1,
 						createDescription("Create and publish surveys."));
 		assignmentButton = initButton("Assign Surveys to Devices");
+		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+			assignmentButton.setEnabled(false);
+		}
+
 		widget.setWidget(2, 0, assignmentButton);
 		widget
 				.setWidget(
@@ -58,7 +67,9 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 						1,
 						createDescription("Assign surveys to remote devices for auto delivery."));
 		mappingButton = initButton("Map Access PointAttributes");
-
+		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+			mappingButton.setEnabled(false);
+		}
 		widget.setWidget(3, 0, mappingButton);
 		widget
 				.setWidget(
@@ -67,6 +78,9 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 						createDescription("Map survey questions to fields in the Access Point. This is required before survey data will appear in maps."));
 		
 		editorialButton = initButton("Edit Editorial Content");
+		if(!user.hasPermission(PermissionConstants.EDIT_EDITORIAL)){
+			editorialButton.setEnabled(false);
+		}
 		widget.setWidget(4,0,editorialButton);
 		widget
 		.setWidget(

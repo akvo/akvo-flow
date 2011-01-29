@@ -55,13 +55,13 @@ public class PortletFactory {
 		} else if (name.equals(SurveyAttributeMappingPortlet.NAME)) {
 			return new SurveyAttributeMappingPortlet();
 		} else if (name.equals(SurveyManagerPortlet.NAME)) {
-			return new SurveyManagerPortlet();
+			return new SurveyManagerPortlet(user);
 		} else if (name.equals(DataUploadPortlet.NAME)) {
 			return new DataUploadPortlet();
 		} else if (name.equals(SurveyLoaderPortlet.NAME)) {
 			return new SurveyLoaderPortlet();
 		} else if (name.equals(RawDataViewPortlet.NAME)) {
-			return new RawDataViewPortlet();
+			return new RawDataViewPortlet(user);
 		} else if (name.equals(MappingAttributeManager.NAME)) {
 			return new MappingAttributeManager();
 		} else if (name.equals(RecentPointsPortlet.NAME)) {

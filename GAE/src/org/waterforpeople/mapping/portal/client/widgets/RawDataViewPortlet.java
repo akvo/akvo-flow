@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
+import org.waterforpeople.mapping.portal.client.util.PermissionConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -17,6 +18,7 @@ import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -67,8 +69,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 	private Long selectedInstance;
 
-	public RawDataViewPortlet() {
-		super(NAME, true, false, false, width, height, null, false, null);
+	public RawDataViewPortlet(UserDto user) {
+		super(NAME, true, false, false, width, height, user, false, null);
 		svc = GWT.create(SurveyInstanceService.class);
 		loadContentPanel();
 	}
@@ -147,48 +149,53 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					if (changedAnswers != null && changedAnswers.size() > 0) {
 						statusLabel.setText("Saving. Please wait...");
 						statusLabel.setVisible(true);
-						svc.updateQuestions(
-								new ArrayList<QuestionAnswerStoreDto>(
-										changedAnswers.values()),
-								new AsyncCallback<List<QuestionAnswerStoreDto>>() {
+						svc
+								.updateQuestions(
+										new ArrayList<QuestionAnswerStoreDto>(
+												changedAnswers.values()),
+										new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
-									@Override
-									public void onFailure(Throwable caught) {
-										MessageDialog errDia = new MessageDialog(
-												"Application Error",
-												"Cannot update responses");
-										errDia.showRelativeTo(saveButton);
-										statusLabel.setVisible(false);
-									}
+											@Override
+											public void onFailure(
+													Throwable caught) {
+												MessageDialog errDia = new MessageDialog(
+														"Application Error",
+														"Cannot update responses");
+												errDia
+														.showRelativeTo(saveButton);
+												statusLabel.setVisible(false);
+											}
 
-									@Override
-									public void onSuccess(
-											List<QuestionAnswerStoreDto> result) {
-										statusLabel.setVisible(false);
-										if (result != null) {
-											// update the value in the
-											// questionsList so we can
-											// keep the data consistent
-											// if the user presses clear
-											for (QuestionAnswerStoreDto dto : result) {
-												for (int i = 0; i < questions
-														.size(); i++) {
-													if (questions
-															.get(i)
-															.getKeyId()
-															.equals(dto
-																	.getKeyId())) {
-														questions
-																.get(i)
-																.setValue(
-																		dto.getValue());
+											@Override
+											public void onSuccess(
+													List<QuestionAnswerStoreDto> result) {
+												statusLabel.setVisible(false);
+												if (result != null) {
+													// update the value in the
+													// questionsList so we can
+													// keep the data consistent
+													// if the user presses clear
+													for (QuestionAnswerStoreDto dto : result) {
+														for (int i = 0; i < questions
+																.size(); i++) {
+															if (questions
+																	.get(i)
+																	.getKeyId()
+																	.equals(
+																			dto
+																					.getKeyId())) {
+																questions
+																		.get(i)
+																		.setValue(
+																				dto
+																						.getValue());
+															}
+														}
 													}
 												}
+												populateQuestions(questions);
 											}
-										}
-										populateQuestions(questions);
-									}
-								});
+										});
 					}
 				}
 			});
@@ -233,6 +240,12 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			qasDetailGrid.setWidget(iRow + 1, 0, saveButton);
 			qasDetailGrid.setWidget(iRow + 1, 1, clearButton);
 			qasDetailGrid.setWidget(iRow + 1, 2, deleteInstanceButton);
+			if (!getCurrentUser().hasPermission(
+					PermissionConstants.RAW_DATA_EDIT)) {
+				saveButton.setVisible(false);
+				clearButton.setVisible(false);
+				deleteInstanceButton.setVisible(false);
+			}
 		}
 	}
 
@@ -295,7 +308,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			if (qasDto.getCollectionDate() != null)
 				qCollectionDate.setText(DateTimeFormat.getMediumDateFormat()
 						.format(qasDto.getCollectionDate()));
-			if(qasDto.getQuestionText()!=null)
+			if (qasDto.getQuestionText() != null)
 				qText.setText(qasDto.getQuestionText());
 		}
 		qasDetailGrid.setWidget(iRow, 0, qId);
