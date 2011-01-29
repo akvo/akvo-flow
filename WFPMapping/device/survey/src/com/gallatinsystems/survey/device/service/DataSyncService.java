@@ -221,7 +221,7 @@ public class DataSyncService extends Service {
 				//if we can't run the export, write the data as a zip
 				String fileName = createFileName(false);
 				HashSet<String>[] idList = formZip(fileName,
-						(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex));
+						true, true);
 				if(idList != null){
 					databaseAdaptor.markDataAsExported(idList[0]);
 				}
@@ -238,7 +238,8 @@ public class DataSyncService extends Service {
 			stopSelf();
 		}
 	}
-
+	
+	
 	/**
 	 * sends a message to the service with the file name that was just uploaded
 	 * so it can start processing the file
@@ -283,13 +284,17 @@ public class DataSyncService extends Service {
 				extraText != null ? extraText : "", this, COMPLETE_ID, null);
 	}
 
+	private HashSet<String>[] formZip(String fileName, boolean dataOnly){
+		return formZip(fileName, dataOnly, false);
+	}
+	
 	/**
 	 * create a zip file containing all the submitted data and images
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private HashSet<String>[] formZip(String fileName, boolean dataOnly) {
+	private HashSet<String>[] formZip(String fileName, boolean dataOnly, boolean unexportedOnly) {
 		HashSet<String>[] idsToUpdate = new HashSet[3];
 		idsToUpdate[0] = new HashSet<String>();
 		idsToUpdate[1] = new HashSet<String>();
@@ -299,7 +304,7 @@ public class DataSyncService extends Service {
 		StringBuilder regionBuf = new StringBuilder();
 		try {
 			// extract survey data
-			processSurveyData(surveyBuf, imagePaths, idsToUpdate[0]);
+			processSurveyData(surveyBuf, imagePaths, idsToUpdate[0], unexportedOnly);
 
 			// extract region data
 			processRegionData(regionBuf, idsToUpdate[1]);
@@ -526,10 +531,14 @@ public class DataSyncService extends Service {
 	 */
 	private void processSurveyData(StringBuilder buf,
 			HashMap<String, ArrayList<String>> imagePaths,
-			HashSet<String> respondentIds) {
+			HashSet<String> respondentIds, boolean unexportedOnly) {
 		Cursor data = null;
 		try {
-			data = databaseAdaptor.fetchUnsentData();
+			if(unexportedOnly){
+				data = databaseAdaptor.fetchUnexportedData();
+			}else{
+				data = databaseAdaptor.fetchUnsentData();
+			}
 			if (data != null && data.isFirst()) {
 				Log.i(TAG, "There is data to send. Forming contents");
 				String deviceIdentifier = databaseAdaptor

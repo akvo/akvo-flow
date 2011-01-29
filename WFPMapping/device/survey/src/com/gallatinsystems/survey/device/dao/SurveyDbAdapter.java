@@ -366,7 +366,7 @@ public class SurveyDbAdapter {
 	 * @param idList
 	 */
 	public void markDataAsExported(HashSet<String> idList) {
-		if (idList != null) {
+		if (idList != null && idList.size()>0) {
 			ContentValues updatedValues = new ContentValues();
 			updatedValues.put(EXPORTED_FLAG_COL, "true");
 			// enhanced FOR ok here since we're dealing with an implicit
