@@ -285,8 +285,11 @@ public class SurveyCopyDialog extends DialogBox {
 					.get(groupIndex);
 			if (group.getQuestionMap() != null
 					&& questionIndex < group.getQuestionMap().size()) {
-				surveyService.loadQuestionDetails(group.getQuestionMap().get(
-						questionIndex + 1).getKeyId(),
+				
+				//since, after deletions, question order may not be contiguous, we need to do this to get the order index
+				List<Integer> questionOrderList = new ArrayList<Integer>(group.getQuestionMap().keySet());								
+				surveyService.loadQuestionDetails(group.getQuestionMap().get(questionOrderList.get(
+						questionIndex)).getKeyId(),
 						new AsyncCallback<QuestionDto>() {
 							@Override
 							public void onFailure(Throwable caught) {
