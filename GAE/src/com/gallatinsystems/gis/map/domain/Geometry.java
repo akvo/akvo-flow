@@ -47,7 +47,7 @@ public class Geometry extends BaseDomain {
 	}
 
 	public String getWktText() {
-		return wktText.toString();
+		return wktText.getValue();
 	}
 
 	public enum GeometryType{

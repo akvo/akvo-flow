@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.web.dto.ExternalGISRequest;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
@@ -74,12 +75,14 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		return resp;
 	}
 
+	@SuppressWarnings("deprecation")
 	private Geometry parseGeometryString(String geometryString)
 			throws ParseException {
 		GeometryFactory geometryFactory = JTSFactoryFinder
 				.getGeometryFactory(null);
 		WKTReader reader = new WKTReader(geometryFactory);
 		Geometry geo = new Geometry();
+		//geometryString = URLDecoder.decode(geometryString);
 		geo.setWktText(geometryString);
 		if (geometryString.contains("POLYGON")) {
 			com.vividsolutions.jts.geom.Geometry geoHolder = null;
