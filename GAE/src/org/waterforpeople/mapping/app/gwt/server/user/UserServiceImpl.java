@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.waterforpeople.mapping.app.gwt.client.user.PermissionDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserConfig;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -52,6 +55,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				dto.setKeyId(u.getKey().getId());
 				dto.setUserName(u.getUserName());
 				dto.setEmailAddress(u.getEmailAddress());
+				dto.setPermissionList(u.getPermissionList());
 				dtoList.add(dto);
 			}
 			response.setCursorString(UserDao.getCursor(users));
@@ -74,6 +78,8 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				UserDto dto = new UserDto();
 				dto.setUserName(users.get(i).getUserName());
 				dto.setEmailAddress(users.get(i).getEmailAddress());
+				dto.setKeyId(users.get(i).getKey().getId());
+				dto.setPermissionList(users.get(i).getPermissionList());
 				result[i] = dto;
 			}
 		}
@@ -128,6 +134,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 					userDto.setConfig(configMap);
 					userDto.setUserName(u.getUserName());
 					userDto.setEmailAddress(u.getEmailAddress());
+					userDto.setPermissionList(u.getPermissionList());
 					userDto.setAdmin(userService.isUserAdmin());
 				}
 			} else {
@@ -151,6 +158,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 		}
 		if (user.getUserName() != null) {
 			newUser.setUserName(user.getUserName());
+		}
+		if(user.getPermissionList() != null){
+			newUser.setPermissionList(user.getPermissionList());
 		}
 		if (user.getConfig() != null) {
 			List<UserConfig> confList = new ArrayList<UserConfig>();
@@ -279,6 +289,23 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 		if (u != null) {
 			userDao.delete(u);
 		}
+	}
+	
+	/**
+	 * lists all permissions
+	 * @return
+	 */
+	public List<PermissionDto> listPermissions(){
+		List<Permission> permissionList =userDao.listPermissions();
+		List<PermissionDto> dtoList = new ArrayList<PermissionDto>();
+		if(permissionList!= null){
+			for(Permission p: permissionList){
+				PermissionDto pd = new PermissionDto();
+				DtoMarshaller.copyToDto(p,pd);
+				dtoList.add(pd);
+			}
+		}
+		return dtoList;
 	}
 
 }

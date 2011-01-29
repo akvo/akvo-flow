@@ -15,6 +15,15 @@ public class UserDto extends BaseDto {
 	private String logoutUrl;
 	private boolean hasAccess = true;
 	private boolean admin = false;
+	private String permissionList;
+
+	public String getPermissionList() {
+		return permissionList;
+	}
+
+	public void setPermissionList(String permissionList) {
+		this.permissionList = permissionList;
+	}
 
 	public boolean isAdmin() {
 		return admin;
@@ -62,5 +71,18 @@ public class UserDto extends BaseDto {
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public boolean hasPermission(String permission) {
+		if (admin) {
+			//admins automatically get all permissions
+			return true;
+		} else {
+			if (permissionList != null) {
+				return permissionList.contains(permission);
+			} else {
+				return false;
+			}
+		}
 	}
 }

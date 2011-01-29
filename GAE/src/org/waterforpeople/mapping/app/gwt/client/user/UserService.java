@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.user;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -75,4 +76,10 @@ public interface UserService extends RemoteService {
 	 * @param id
 	 */
 	public void deleteUser(Long id);
+	
+	/**
+	 * lists all permissions
+	 * @return
+	 */
+	public List<PermissionDto> listPermissions();
 }

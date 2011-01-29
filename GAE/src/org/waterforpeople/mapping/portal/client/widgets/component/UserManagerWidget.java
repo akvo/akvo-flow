@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.waterforpeople.mapping.app.gwt.client.user.PermissionDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
@@ -21,6 +23,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,7 +39,8 @@ public class UserManagerWidget extends Composite implements
 	private static final String DEFAULT_SORT_FIELD = "username";
 	private static final DataTableHeader[] GRID_HEADERS = {
 			new DataTableHeader("User Name"),
-			new DataTableHeader("Email Address"), new DataTableHeader("") };
+			new DataTableHeader("Email Address"),
+			new DataTableHeader("Permissions"), new DataTableHeader("") };
 	private VerticalPanel contentPane;
 	private PaginatedDataTable<UserDto> dataTable;
 	private TextBox usernameField;
@@ -44,6 +48,7 @@ public class UserManagerWidget extends Composite implements
 	private Button searchButton;
 	private Button addNewButton;
 	private UserServiceAsync userService;
+	private List<PermissionDto> permissionList;
 
 	public UserManagerWidget() {
 		contentPane = new VerticalPanel();
@@ -54,7 +59,22 @@ public class UserManagerWidget extends Composite implements
 		initWidget(contentPane);
 
 		userService = GWT.create(UserService.class);
-		requestData(null, false);
+		userService.listPermissions(new AsyncCallback<List<PermissionDto>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				MessageDialog errDia = new MessageDialog("Error",
+						"Could not load permissions: "
+								+ caught.getLocalizedMessage());
+				errDia.showCentered();
+			}
+
+			@Override
+			public void onSuccess(List<PermissionDto> result) {
+				permissionList = result;
+				requestData(null, false);
+			}
+		});
 	}
 
 	/**
@@ -124,6 +144,9 @@ public class UserManagerWidget extends Composite implements
 		final TextBox eBox = new TextBox();
 		eBox.setText(item.getEmailAddress());
 		grid.setWidget(row, 1, eBox);
+		final ListBox permBox = constructPermissionBox(item);
+		grid.setWidget(row, 2, permBox);
+
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		Button saveButton = new Button("Save");
 		saveButton.addClickHandler(new ClickHandler() {
@@ -132,6 +155,7 @@ public class UserManagerWidget extends Composite implements
 			public void onClick(ClickEvent event) {
 				item.setUserName(uBox.getText());
 				item.setEmailAddress(eBox.getText());
+				item.setPermissionList(formPermissionString(permBox));
 				userService.saveUser(item, new AsyncCallback<Void>() {
 
 					@Override
@@ -183,7 +207,47 @@ public class UserManagerWidget extends Composite implements
 			}
 		});
 		buttonPanel.add(deleteButton);
-		grid.setWidget(row, 2, buttonPanel);
+		grid.setWidget(row, 3, buttonPanel);
+
+	}
+
+	private ListBox constructPermissionBox(UserDto u) {
+		ListBox lb = new ListBox(true);
+		if (permissionList != null) {
+			for (int i = 0; i < permissionList.size(); i++) {
+				lb.addItem(permissionList.get(i).getName(), permissionList.get(
+						i).getCode());
+				if (u != null
+						&& u.hasPermission(permissionList.get(i).getCode())) {
+					lb.setItemSelected(i, true);
+				}
+			}
+		}
+		return lb;
+	}
+
+	/**
+	 * forms a comma delimited string of permission codes using what is selected
+	 * in the box
+	 * 
+	 * @param box
+	 * @return
+	 */
+	private String formPermissionString(ListBox box) {
+		StringBuilder buf = new StringBuilder();
+		if (box != null) {
+			int count = 0;
+			for (int i = 0; i < box.getItemCount(); i++) {
+				if (box.isItemSelected(i)) {
+					if (count > 0) {
+						buf.append(",");
+					}
+					buf.append(box.getValue(i));
+					count++;
+				}
+			}
+		}
+		return buf.toString();
 	}
 
 	@Override

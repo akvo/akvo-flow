@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.user;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -27,5 +28,7 @@ public interface UserServiceAsync {
 			AsyncCallback<ResponseDto<ArrayList<UserDto>>> callback);
 
 	void deleteUser(Long id, AsyncCallback<Void> callback);
+
+	void listPermissions(AsyncCallback<List<PermissionDto>> callback);
 
 }

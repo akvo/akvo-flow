@@ -16,21 +16,29 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  */
 @PersistenceCapable
 public class User extends BaseDomain {
-	 
-	private static final long serialVersionUID = -1416095159769575254L;
-	
-	private String userName;
-	
-	private String emailAddress;
 
+	private static final long serialVersionUID = -1416095159769575254L;
+
+	private String userName;
+
+	private String emailAddress;
+	private String permissionList;
 	@Persistent
 	private List<UserConfig> config;
 
-	public  List<UserConfig> getConfig() {
+	public String getPermissionList() {
+		return permissionList;
+	}
+
+	public void setPermissionList(String permissionList) {
+		this.permissionList = permissionList;
+	}
+
+	public List<UserConfig> getConfig() {
 		return config;
 	}
 
-	public void setConfig( List<UserConfig> config) {
+	public void setConfig(List<UserConfig> config) {
 		this.config = config;
 	}
 
