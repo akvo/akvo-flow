@@ -8,11 +8,11 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserService;
-import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.gallatinsystems.user.app.gwt.client.UserService;
+import com.gallatinsystems.user.app.gwt.client.UserServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

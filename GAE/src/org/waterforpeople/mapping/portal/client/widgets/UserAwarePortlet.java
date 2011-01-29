@@ -2,12 +2,11 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.Set;
 
-import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserService;
-import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
-
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.user.app.gwt.client.UserConfigDto;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.gallatinsystems.user.app.gwt.client.UserService;
+import com.gallatinsystems.user.app.gwt.client.UserServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.gwt.client.user;
+package com.gallatinsystems.user.app.gwt.client;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 

@@ -1,8 +1,8 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;

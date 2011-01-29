@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageEditWidget;
@@ -17,6 +16,7 @@ import org.waterforpeople.mapping.portal.client.widgets.component.SurveyListWidg
 import org.waterforpeople.mapping.portal.client.widgets.component.UserManagerWidget;
 
 import com.gallatinsystems.framework.gwt.wizard.client.AbstractWizardPortlet;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AdminWizardPortlet extends AbstractWizardPortlet {

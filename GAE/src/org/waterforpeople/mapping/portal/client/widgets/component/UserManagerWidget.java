@@ -3,17 +3,16 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.waterforpeople.mapping.app.gwt.client.user.PermissionDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserService;
-import org.waterforpeople.mapping.app.gwt.client.user.UserServiceAsync;
-
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
 import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.user.app.gwt.client.PermissionDto;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.gallatinsystems.user.app.gwt.client.UserService;
+import com.gallatinsystems.user.app.gwt.client.UserServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -163,14 +162,14 @@ public class UserManagerWidget extends Composite implements
 						MessageDialog errDia = new MessageDialog("Error",
 								"There was an error while attempting to save the user: "
 										+ caught.getMessage());
-						errDia.show();
+						errDia.showCentered();
 					}
 
 					@Override
 					public void onSuccess(Void result) {
 						MessageDialog confDia = new MessageDialog("User Saved",
 								"The user has been updated");
-						confDia.show();
+						confDia.showCentered();
 
 					}
 				});

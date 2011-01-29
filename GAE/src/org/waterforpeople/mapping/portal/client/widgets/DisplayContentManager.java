@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerService;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateMappingDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

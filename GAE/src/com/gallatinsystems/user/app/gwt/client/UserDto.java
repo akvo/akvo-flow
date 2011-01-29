@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.gwt.client.user;
+package com.gallatinsystems.user.app.gwt.client;
 
 import java.util.Map;
 import java.util.Set;

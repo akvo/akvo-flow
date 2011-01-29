@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.gwt.server.user;
+package com.gallatinsystems.user.app.gwt.server;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.waterforpeople.mapping.app.gwt.client.user.PermissionDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserConfigDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
-import org.waterforpeople.mapping.app.gwt.client.user.UserService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.user.app.gwt.client.PermissionDto;
+import com.gallatinsystems.user.app.gwt.client.UserConfigDto;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.gallatinsystems.user.app.gwt.client.UserService;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;

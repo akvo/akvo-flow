@@ -1,8 +1,8 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-import org.waterforpeople.mapping.app.gwt.client.user.UserDto;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 
 /**
  * utility to create any of the portlets we know about. There are better ways to

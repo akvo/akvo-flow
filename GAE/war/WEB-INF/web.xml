@@ -249,7 +249,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>UserRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.user.UserServiceImpl</servlet-class>
+		<servlet-class>com.gallatinsystems.user.app.gwt.server.UserServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>UserRpcServlet</servlet-name>
