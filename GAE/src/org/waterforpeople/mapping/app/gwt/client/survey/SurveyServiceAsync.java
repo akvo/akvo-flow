@@ -88,4 +88,7 @@ public interface SurveyServiceAsync {
 	void updateQuestionOrder(List<QuestionDto> questions,
 			AsyncCallback<Void> callback);
 
+	void updateQuestionGroupOrder(List<QuestionGroupDto> groups,
+			AsyncCallback<Void> callback);
+
 }

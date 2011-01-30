@@ -1,7 +1,5 @@
 package com.gallatinsystems.survey.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -292,6 +290,22 @@ public class QuestionDao extends BaseDAO<Question> {
 			for(Question q: questionList){
 				Question persistentQuestion  = getByKey(q.getKey());
 				persistentQuestion.setOrder(q.getOrder());
+				//since the object is still attached, we don't need to call save. It will be saved on flush of the Persistent session 
+			}			
+		}
+	}
+	
+	/**
+	 * updates ONLY the order field within the question group object for the questions
+	 * passed in. All question groups must exist in the datastore
+	 * 
+	 * @param questionList
+	 */	
+	public void updateQuestionGroupOrder(List<QuestionGroup> groupList) {		
+		if(groupList != null){					
+			for(QuestionGroup q: groupList){
+				QuestionGroup persistentGroup  = getByKey(q.getKey(),QuestionGroup.class);
+				persistentGroup.setOrder(q.getOrder());
 				//since the object is still attached, we don't need to call save. It will be saved on flush of the Persistent session 
 			}			
 		}

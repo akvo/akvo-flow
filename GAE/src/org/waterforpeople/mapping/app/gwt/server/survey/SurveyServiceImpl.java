@@ -1011,9 +1011,31 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 			QuestionDao dao = new QuestionDao();			
 			dao.updateQuestionOrder(questionList);
+		}
+	}
+	
+	/**
+	 * updates the order for the list of question groups passed in
+	 * 
+	 * @param q1
+	 * @param q2
+	 * @return
+	 */
+	public void updateQuestionGroupOrder(List<QuestionGroupDto> groups) {
+		if (groups != null) {
+			List<QuestionGroup> groupList = new ArrayList<QuestionGroup>();
+			for(QuestionGroupDto qDto: groups){
+				QuestionGroup q = new QuestionGroup();
+				q.setKey(KeyFactory.createKey(QuestionGroup.class.getSimpleName(), qDto.getKeyId()));
+				q.setOrder(qDto.getOrder());
+				groupList.add(q);
+			}
+			QuestionDao dao = new QuestionDao();			
+			dao.updateQuestionGroupOrder(groupList);
 
 		}
 
 	}
+
 
 }
