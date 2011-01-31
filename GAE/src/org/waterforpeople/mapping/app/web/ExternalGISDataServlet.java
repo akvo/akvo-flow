@@ -55,6 +55,10 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 			ogrFeature.setReciprocalOfFlattening(importReq
 					.getReciprocalOfFlattening());
 			ogrFeature.setSpheroid(importReq.getSpheroid());
+			ogrFeature.setUnCode(importReq.getUnCode());
+			ogrFeature.setPop2005(importReq.getPop2005());
+			ogrFeature.setCentroidLat(importReq.getCentroidLat());
+			ogrFeature.setCentroidLon(importReq.getCentroidLon());
 			Double[] boundingBox = new Double[] { importReq.getX1(),
 					importReq.getY1(), importReq.getX2(), importReq.getY2() };
 			ogrFeature.setBoundingBox(boundingBox);
