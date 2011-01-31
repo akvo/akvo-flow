@@ -20,6 +20,11 @@ public class ExternalGISRequest extends RestRequest {
 	private static final String PROJECT_COORDINATE_SYSTEM_IDENTIFIER_PARAM = "projectCoordinateSystemIdentifier";
 	private static final String NAME_PARAM = "name";
 	private static final String OGR_FEATURE_TYPE_PARAM = "ogrFeatureType";
+	private static final String UN_CODE_PARAM = "unCode";
+	private static final String CENTROID_LAT_PARAM = "centroidLat";
+	private static final String CENTROID_LON_PARAM = "centroldLon";
+	private static final String POP_2005_PARAM = "pop2005";
+
 	/**
 	 * 
 	 */
@@ -36,8 +41,44 @@ public class ExternalGISRequest extends RestRequest {
 	private Double y1 = null;
 	private Double y2 = null;
 	private Double reciprocalOfFlattening = null;
-	private String geometryString =null; 
+	private String geometryString = null;
 	private FeatureType ogrFeatureType = null;
+	private String unCode = null;
+	private Double centroidLat = null;
+	private Double centroidLon = null;
+	private Integer pop2005 = null;
+
+	public String getUnCode() {
+		return unCode;
+	}
+
+	public void setUnCode(String unCode) {
+		this.unCode = unCode;
+	}
+
+	public Double getCentroidLat() {
+		return centroidLat;
+	}
+
+	public void setCentroidLat(Double centroidLat) {
+		this.centroidLat = centroidLat;
+	}
+
+	public Double getCentroidLon() {
+		return centroidLon;
+	}
+
+	public void setCentroidLon(Double centroidLon) {
+		this.centroidLon = centroidLon;
+	}
+
+	public Integer getPop2005() {
+		return pop2005;
+	}
+
+	public void setPop2005(Integer pop2005) {
+		this.pop2005 = pop2005;
+	}
 
 	public String getName() {
 		return name;
@@ -135,16 +176,19 @@ public class ExternalGISRequest extends RestRequest {
 			setName(req.getParameter(NAME_PARAM));
 		}
 		if (req.getParameter(PROJECT_COORDINATE_SYSTEM_IDENTIFIER_PARAM) != null) {
-			this.setProjectCoordinateSystemIdentifier(req.getParameter(PROJECT_COORDINATE_SYSTEM_IDENTIFIER_PARAM));
+			this.setProjectCoordinateSystemIdentifier(req
+					.getParameter(PROJECT_COORDINATE_SYSTEM_IDENTIFIER_PARAM));
 		}
 		if (req.getParameter(GEO_COORDINATE_SYSTEM_IDENTIFIER_PARAM) != null) {
-			this.setGeoCoordinateSystemIdentifier(req.getParameter(GEO_COORDINATE_SYSTEM_IDENTIFIER_PARAM));
+			this.setGeoCoordinateSystemIdentifier(req
+					.getParameter(GEO_COORDINATE_SYSTEM_IDENTIFIER_PARAM));
 		}
 		if (req.getParameter(DATUM_IDENTIFIER_PARAM) != null) {
 			this.setDatumIdentifier(req.getParameter(DATUM_IDENTIFIER_PARAM));
 		}
 		if (req.getParameter(SPHEROID_PARAM) != null) {
-			this.setSpheroid(Double.parseDouble(req.getParameter(SPHEROID_PARAM)));
+			this.setSpheroid(Double.parseDouble(req
+					.getParameter(SPHEROID_PARAM)));
 		}
 		if (req.getParameter(COUNTRY_CODE_PARAM) != null) {
 			this.setCountryCode(req.getParameter(COUNTRY_CODE_PARAM));
@@ -162,14 +206,29 @@ public class ExternalGISRequest extends RestRequest {
 			this.setY2(Double.parseDouble(req.getParameter(Y2_PARAM)));
 		}
 		if (req.getParameter(RECIPROCAL_OF_FLATTENING_PARAM) != null) {
-			this.setReciprocalOfFlattening(Double.parseDouble(req.getParameter(RECIPROCAL_OF_FLATTENING_PARAM)));
+			this.setReciprocalOfFlattening(Double.parseDouble(req
+					.getParameter(RECIPROCAL_OF_FLATTENING_PARAM)));
 		}
-		if(req.getParameter(GEOMETRY_STRING_PARAM)!=null){
+		if (req.getParameter(GEOMETRY_STRING_PARAM) != null) {
 			this.setGeometryString(req.getParameter(GEOMETRY_STRING_PARAM));
 		}
-		if(req.getParameter(OGR_FEATURE_TYPE_PARAM)!=null){
-			this.setOgrFeatureType(FeatureType.valueOf(req.getParameter(OGR_FEATURE_TYPE_PARAM)));
+		if (req.getParameter(OGR_FEATURE_TYPE_PARAM) != null) {
+			this.setOgrFeatureType(FeatureType.valueOf(req
+					.getParameter(OGR_FEATURE_TYPE_PARAM)));
 		}
+		if (req.getParameter(CENTROID_LAT_PARAM) != null) {
+			this.setCentroidLat(Double.parseDouble(req.getParameter(CENTROID_LAT_PARAM)));
+		}
+		if (req.getParameter(CENTROID_LON_PARAM) != null) {
+			this.setCentroidLon(Double.parseDouble(req.getParameter(CENTROID_LON_PARAM)));
+		}
+		if (req.getParameter(UN_CODE_PARAM) != null) {
+			this.setUnCode(req.getParameter(UN_CODE_PARAM));
+		}
+		if (req.getParameter(POP_2005_PARAM) != null) {
+			this.setPop2005(Integer.parseInt(req.getParameter(POP_2005_PARAM)));
+		}
+
 	}
 
 	@Override

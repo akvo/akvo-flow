@@ -23,6 +23,10 @@ public class OGRFeature extends BaseDomain {
 	private String datumIdentifier = null;
 	private Double spheroid = null;
 	private String countryCode = null;
+	private String unCode = null;
+	private Integer pop2005 = null;
+	private Double centroidLat = null;
+	private Double centroidLon = null;
 	private Double x1 = null;
 	private Double x2 = null;
 	private Double y1 = null;
@@ -31,6 +35,38 @@ public class OGRFeature extends BaseDomain {
 	private FeatureType featureType= null;
 	
 	public enum FeatureType {COUNTRY, SUB_COUNTRY_OTHER};
+
+	public String getUnCode() {
+		return unCode;
+	}
+
+	public void setUnCode(String unCode) {
+		this.unCode = unCode;
+	}
+
+	public Integer getPop2005() {
+		return pop2005;
+	}
+
+	public void setPop2005(Integer pop2005) {
+		this.pop2005 = pop2005;
+	}
+
+	public Double getCentroidLat() {
+		return centroidLat;
+	}
+
+	public void setCentroidLat(Double centroidLat) {
+		this.centroidLat = centroidLat;
+	}
+
+	public Double getCentroidLon() {
+		return centroidLon;
+	}
+
+	public void setCentroidLon(Double centroidLon) {
+		this.centroidLon = centroidLon;
+	}
 
 	public String getProjectCoordinateSystemIdentifier() {
 		return projectCoordinateSystemIdentifier;
