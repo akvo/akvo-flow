@@ -103,26 +103,30 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 			GeometryFactory geometryFactory = new GeometryFactory();
 			WKTReader reader = new WKTReader(geometryFactory);
 			com.vividsolutions.jts.geom.Geometry shape = null;
-			try {
-				if (geo.getType().equals(GeometryType.POLYGON)) {
-					shape = (Polygon) reader.read(geo.getWktText());
-				} else if (geo.getType().equals(GeometryType.MULITPOLYGON)) {
-					shape = (MultiPolygon) reader.read(geo.getWktText());
+			if (geo != null && geo.getType() != null) {
+				try {
+					if (geo.getType().equals(GeometryType.POLYGON)) {
+						shape = (Polygon) reader.read(geo.getWktText());
+					} else if (geo.getType().equals(GeometryType.MULITPOLYGON)) {
+						shape = (MultiPolygon) reader.read(geo.getWktText());
+					}
+				} catch (ParseException e) {
+					log.log(Level.SEVERE, e.getMessage());
 				}
-			} catch (ParseException e) {
-				log.log(Level.SEVERE, e.getMessage());
-			}
-			Coordinate coord = new Coordinate(Double.parseDouble(lon),
-					Double.parseDouble(lat));
-			Point point = geometryFactory.createPoint(coord);
-			if (shape!=null&&shape.contains(point)) {
-				countryCode = item.getCountryCode();
-				break;
+				Coordinate coord = new Coordinate(Double.parseDouble(lon),
+						Double.parseDouble(lat));
+				Point point = geometryFactory.createPoint(coord);
+				if (shape != null && shape.contains(point)) {
+					countryCode = item.getCountryCode();
+					break;
+				}
+			} else {
+				log.log(Level.INFO,item.getCountryCode() + " has a null geometry");
 			}
 		}
 		return countryCode;
-	}
 
+	}
 
 	// /**
 	// * returns the 2-letter country code for the lat/lon location passed in
