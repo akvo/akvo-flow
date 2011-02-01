@@ -224,4 +224,8 @@
         <property name="uuid" direction="asc"/>
         <property name="order" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="OGRFeature" ancestor="false" source="manual">
+        <property name="featureType" direction="asc"/>
+        <property name="x1" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>
