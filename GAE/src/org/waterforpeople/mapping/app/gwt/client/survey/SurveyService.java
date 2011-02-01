@@ -70,4 +70,6 @@ public interface SurveyService extends RemoteService {
 			QuestionGroupDto newParentGroup);
 	public void updateQuestionOrder(List<QuestionDto> questions);
 	public void updateQuestionGroupOrder(List<QuestionGroupDto> groups);
+	public void updateQuestionDependency(Long questionId,
+			QuestionDependencyDto dep);
 }

@@ -1003,17 +1003,18 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public void updateQuestionOrder(List<QuestionDto> questions) {
 		if (questions != null) {
 			List<Question> questionList = new ArrayList<Question>();
-			for(QuestionDto qDto: questions){
+			for (QuestionDto qDto : questions) {
 				Question q = new Question();
-				q.setKey(KeyFactory.createKey(Question.class.getSimpleName(), qDto.getKeyId()));
+				q.setKey(KeyFactory.createKey(Question.class.getSimpleName(),
+						qDto.getKeyId()));
 				q.setOrder(qDto.getOrder());
 				questionList.add(q);
 			}
-			QuestionDao dao = new QuestionDao();			
+			QuestionDao dao = new QuestionDao();
 			dao.updateQuestionOrder(questionList);
 		}
 	}
-	
+
 	/**
 	 * updates the order for the list of question groups passed in
 	 * 
@@ -1024,18 +1025,38 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public void updateQuestionGroupOrder(List<QuestionGroupDto> groups) {
 		if (groups != null) {
 			List<QuestionGroup> groupList = new ArrayList<QuestionGroup>();
-			for(QuestionGroupDto qDto: groups){
+			for (QuestionGroupDto qDto : groups) {
 				QuestionGroup q = new QuestionGroup();
-				q.setKey(KeyFactory.createKey(QuestionGroup.class.getSimpleName(), qDto.getKeyId()));
+				q.setKey(KeyFactory.createKey(QuestionGroup.class
+						.getSimpleName(), qDto.getKeyId()));
 				q.setOrder(qDto.getOrder());
 				groupList.add(q);
 			}
-			QuestionDao dao = new QuestionDao();			
+			QuestionDao dao = new QuestionDao();
 			dao.updateQuestionGroupOrder(groupList);
 
 		}
-
 	}
 
+	/**
+	 * updates a question with new dependency information.
+	 * 
+	 * @param questionId
+	 * @param dep
+	 */
+	public void updateQuestionDependency(Long questionId,
+			QuestionDependencyDto dep) {
+		QuestionDao qDao = new QuestionDao();
+		Question q = qDao.getByKey(questionId, false);
+		if (q != null) {
+			if (dep != null) {
+				q.setDependentFlag(true);
+				q.setDependentQuestionId(dep.getQuestionId());
+				q.setDependentQuestionAnswer(dep.getAnswerValue());
+			} else {
+				q.setDependentFlag(false);
+			}
+		}
+	}
 
 }

@@ -1,9 +1,12 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -49,6 +52,9 @@ public class SurveyCopyDialog extends DialogBox {
 	private Button cancelButton;
 	private boolean enabled;
 	private SurveyDto newSurveyDto;
+	private List<QuestionDto> origQuestionsWithDeps;
+
+	private Map<Long, Long> questionIdMap;
 
 	/**
 	 * instantiates and displays the dialog box using the survey in the dto
@@ -64,6 +70,8 @@ public class SurveyCopyDialog extends DialogBox {
 		setGlassEnabled(true);
 		surveyDto = dto;
 		this.listener = listener;
+		questionIdMap = new HashMap<Long, Long>();
+		origQuestionsWithDeps = new ArrayList<QuestionDto>();
 		mainPanel = new VerticalPanel();
 		surveyService = GWT.create(SurveyService.class);
 		statusLabel = new Label("Loading...");
@@ -216,13 +224,15 @@ public class SurveyCopyDialog extends DialogBox {
 						}
 					});
 		} else {
+			//if there are no questions, we're done.
 			notifyListeners();
 			hide();
 		}
 	}
 
 	private void loadQuestionList(final int groupIndex) {
-		statusLabel.setText("Loading questions to copy for group "+(groupIndex+1));
+		statusLabel.setText("Loading questions to copy for group "
+				+ (groupIndex + 1));
 		if (surveyDto.getQuestionGroupList() != null) {
 			if (groupIndex < surveyDto.getQuestionGroupList().size()) {
 				if (surveyDto.getQuestionGroupList().get(groupIndex)
@@ -257,7 +267,7 @@ public class SurveyCopyDialog extends DialogBox {
 									surveyDto.getQuestionGroupList().get(
 											groupIndex).setQuestionMap(
 											questionMap);
-									loadQuestionList(groupIndex+1);
+									loadQuestionList(groupIndex + 1);
 								}
 
 							});
@@ -285,11 +295,13 @@ public class SurveyCopyDialog extends DialogBox {
 					.get(groupIndex);
 			if (group.getQuestionMap() != null
 					&& questionIndex < group.getQuestionMap().size()) {
-				
-				//since, after deletions, question order may not be contiguous, we need to do this to get the order index
-				List<Integer> questionOrderList = new ArrayList<Integer>(group.getQuestionMap().keySet());								
-				surveyService.loadQuestionDetails(group.getQuestionMap().get(questionOrderList.get(
-						questionIndex)).getKeyId(),
+
+				// since, after deletions, question order may not be contiguous,
+				// we need to do this to get the order index
+				List<Integer> questionOrderList = new ArrayList<Integer>(group
+						.getQuestionMap().keySet());
+				surveyService.loadQuestionDetails(group.getQuestionMap().get(
+						questionOrderList.get(questionIndex)).getKeyId(),
 						new AsyncCallback<QuestionDto>() {
 							@Override
 							public void onFailure(Throwable caught) {
@@ -312,11 +324,42 @@ public class SurveyCopyDialog extends DialogBox {
 			// at this point, all questions should be fully loaded so we can
 			// start saving them one at a time
 			copyQuestion(0, 0);
-
 		}
 	}
 
-	private void copyQuestion(final int groupIndex,final int questionIndex) {
+	/**
+	 * iterates over all the questions with dependencies and remaps the ids to
+	 * point to the corresponding copy
+	 * 
+	 * @param index
+	 */
+	private void correctDependencies(final int index) {
+		if (index < origQuestionsWithDeps.size()) {
+			QuestionDependencyDto dep = origQuestionsWithDeps.get(index)
+					.getQuestionDependency();
+			dep.setQuestionId(questionIdMap.get(dep.getQuestionId()));
+			surveyService.updateQuestionDependency(questionIdMap
+					.get(origQuestionsWithDeps.get(index).getKeyId()), dep,
+					new AsyncCallback<Void>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							displayErrorMessage(caught);
+						}
+
+						@Override
+						public void onSuccess(Void result) {
+							correctDependencies(index + 1);
+
+						}
+					});
+		} else {
+			notifyListeners();
+			hide();
+		}
+	}
+
+	private void copyQuestion(final int groupIndex, final int questionIndex) {
 		statusLabel.setText("Saving details for group " + (groupIndex + 1)
 				+ ", question " + (questionIndex + 1));
 		if (groupIndex < surveyDto.getQuestionGroupList().size()) {
@@ -324,8 +367,8 @@ public class SurveyCopyDialog extends DialogBox {
 					.get(groupIndex);
 			if (group.getQuestionMap() != null
 					&& questionIndex < group.getQuestionMap().size()) {
-				QuestionDto existingQuestion = group.getQuestionMap().get(
-						questionIndex + 1);
+				final QuestionDto existingQuestion = group.getQuestionMap()
+						.get(questionIndex + 1);
 
 				surveyService.copyQuestion(existingQuestion, newSurveyDto
 						.getQuestionGroupList().get(groupIndex),
@@ -338,7 +381,12 @@ public class SurveyCopyDialog extends DialogBox {
 
 							@Override
 							public void onSuccess(QuestionDto result) {
-								copyQuestion(groupIndex,questionIndex+1);
+								questionIdMap.put(existingQuestion.getKeyId(),
+										result.getKeyId());
+								if (existingQuestion.getQuestionDependency() != null) {
+									origQuestionsWithDeps.add(existingQuestion);
+								}
+								copyQuestion(groupIndex, questionIndex + 1);
 							}
 						});
 
@@ -347,9 +395,7 @@ public class SurveyCopyDialog extends DialogBox {
 				copyQuestion(groupIndex + 1, 0);
 			}
 		} else {
-			// at this point, we should be done.
-			notifyListeners();
-			hide();
+			correctDependencies(0);
 		}
 	}
 

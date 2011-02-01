@@ -91,4 +91,7 @@ public interface SurveyServiceAsync {
 	void updateQuestionGroupOrder(List<QuestionGroupDto> groups,
 			AsyncCallback<Void> callback);
 
+	void updateQuestionDependency(Long questionId, QuestionDependencyDto dep,
+			AsyncCallback<Void> callback);
+
 }
