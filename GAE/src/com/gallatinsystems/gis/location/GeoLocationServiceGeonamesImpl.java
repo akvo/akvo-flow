@@ -218,28 +218,66 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		return places;
 	}
 
-	private GeoPlace manualLookup(String latStr, String lonStr) {
+//	private GeoPlace manualLookup(String latStr, String lonStr) {
+//		GeoPlace place = null;
+//		try {
+//			if (latStr != null && lonStr != null) {
+//				double lat = Double.parseDouble(latStr);
+//				double lon = Double.parseDouble(lonStr);
+//				for (Entry<String, Double[]> entry : COUNTRY_MBR.entrySet()) {
+//					if (lat <= entry.getValue()[0]
+//							&& lat >= entry.getValue()[2]
+//							&& lon >= entry.getValue()[1]
+//							&& lon <= entry.getValue()[3]) {
+//						place = new GeoPlace();
+//						place.setCountryCode(entry.getKey());
+//						place.setCountryName(COUNTRY_NAME.get(entry.getKey()));
+//						break;
+//					}
+//				}
+//			} else {
+//				log.log(Level.SEVERE, "Lat or lon is null");
+//			}
+//		} catch (Exception e) {
+//			log.log(Level.SEVERE, "Lat/Lon are non numeric: ", e);
+//		}
+//		return place;
+//	}
+	
+	private GeoPlace manualLookup(String latStr, String lonStr){
 		GeoPlace place = null;
-		try {
-			if (latStr != null && lonStr != null) {
-				double lat = Double.parseDouble(latStr);
-				double lon = Double.parseDouble(lonStr);
-				for (Entry<String, Double[]> entry : COUNTRY_MBR.entrySet()) {
-					if (lat <= entry.getValue()[0]
-							&& lat >= entry.getValue()[2]
-							&& lon >= entry.getValue()[1]
-							&& lon <= entry.getValue()[3]) {
-						place = new GeoPlace();
-						place.setCountryCode(entry.getKey());
-						place.setCountryName(COUNTRY_NAME.get(entry.getKey()));
-						break;
+		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
+				Double.parseDouble(lonStr), Double.parseDouble(latStr),
+				FeatureType.COUNTRY, "x1", "asc", "all");
+		String countryCode = null;
+		for (OGRFeature item : ogrList) {
+			Geometry geo = item.getGeometry();
+			GeometryFactory geometryFactory = new GeometryFactory();
+			WKTReader reader = new WKTReader(geometryFactory);
+			com.vividsolutions.jts.geom.Geometry shape = null;
+			if (geo != null && geo.getType() != null) {
+				try {
+					if (geo.getType().equals(GeometryType.POLYGON)) {
+						shape = (Polygon) reader.read(geo.getWktText());
+					} else if (geo.getType().equals(GeometryType.MULITPOLYGON)) {
+						shape = (MultiPolygon) reader.read(geo.getWktText());
 					}
+				} catch (ParseException e) {
+					log.log(Level.SEVERE, e.getMessage());
+				}
+				Coordinate coord = new Coordinate(Double.parseDouble(lonStr),
+						Double.parseDouble(latStr));
+				Point point = geometryFactory.createPoint(coord);
+				if (shape != null && shape.contains(point)) {
+					countryCode = item.getCountryCode();
+					place.setCountryCode(countryCode);
+					place.setCountryName(item.getName());
+					break;
 				}
 			} else {
-				log.log(Level.SEVERE, "Lat or lon is null");
+				log.log(Level.INFO,item.getCountryCode() + " has a null geometry");
 			}
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Lat/Lon are non numeric: ", e);
 		}
 		return place;
 	}
