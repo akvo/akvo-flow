@@ -39,11 +39,11 @@ import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
@@ -58,15 +58,15 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.DeviceFilesReplicationImporter;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -76,9 +76,9 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.diagnostics.dao.RemoteStacktraceDao;
 import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
 import com.gallatinsystems.editorial.dao.EditorialPageDao;
@@ -89,13 +89,14 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
+import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
-import com.gallatinsystems.gis.map.domain.MapFragment;
-import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
+import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
@@ -106,6 +107,7 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -114,7 +116,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
@@ -137,14 +138,29 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
+		} else if ("deleteGeoData".equals(action)) {
+			try {
+				OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+				for (OGRFeature item : ogrFeatureDao.list("all")) {
+					resp.getWriter().println(
+							"deleting: " + item.getCountryCode());
+					//ogrFeatureDao.delete(item);
+				}
+				resp.getWriter().println("Finished");
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if ("testGeoLocation".equals(action)) {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
-			String countryCode = gs.getCountryCodeForPoint("6.3008","-10.7972");
+			String lat = req.getParameter("lat");
+			String lon = req.getParameter("lon");
+			GeoPlace geoPlace  = gs.manualLookup(lat, lon);
 			try {
-				resp.getWriter()
-						.println("Found: " + countryCode + 
-								 " for 6.3008,-10.7972");
+				resp.getWriter().println(
+						"Found: " +geoPlace.getCountryName() + ":"+ geoPlace.getCountryCode() + " for " + lat + ", " + lon);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1271,37 +1287,38 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}else if ("populateperms".equals(action)){
+		} else if ("populateperms".equals(action)) {
 			populatePermissions();
 		}
 	}
-	
-	private void populatePermissions(){
+
+	private void populatePermissions() {
 		UserDao userDao = new UserDao();
 		List<Permission> permList = userDao.listPermissions();
-		if(permList == null){
+		if (permList == null) {
 			permList = new ArrayList<Permission>();
 		}
-		savePerm("Edit Survey", permList,userDao);
-		savePerm("Edit Users", permList,userDao);
-		savePerm("Edit Access Point", permList,userDao);								
-		savePerm("Edit Editorial Content", permList,userDao);
-		savePerm("Import Survey Data", permList,userDao);
-		savePerm("Import Access Point Data", permList,userDao);
-		savePerm("Upload Survey Data", permList,userDao);
-		savePerm("Edit Raw Data", permList,userDao);
+		savePerm("Edit Survey", permList, userDao);
+		savePerm("Edit Users", permList, userDao);
+		savePerm("Edit Access Point", permList, userDao);
+		savePerm("Edit Editorial Content", permList, userDao);
+		savePerm("Import Survey Data", permList, userDao);
+		savePerm("Import Access Point Data", permList, userDao);
+		savePerm("Upload Survey Data", permList, userDao);
+		savePerm("Edit Raw Data", permList, userDao);
 	}
-	
-	private void savePerm(String name, List<Permission> permList, UserDao userDao){
+
+	private void savePerm(String name, List<Permission> permList,
+			UserDao userDao) {
 		Permission p = new Permission(name);
 		boolean found = false;
-		for(Permission perm: permList){
-			if(perm.equals(p)){
+		for (Permission perm : permList) {
+			if (perm.equals(p)) {
 				found = true;
 				break;
 			}
 		}
-		if(!found){
+		if (!found) {
 			userDao.save(p);
 		}
 	}
