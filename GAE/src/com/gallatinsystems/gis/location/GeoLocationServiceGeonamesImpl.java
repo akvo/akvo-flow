@@ -100,8 +100,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		String countryCode = null;
 		for (OGRFeature item : ogrList) {
 			Geometry geo = item.getGeometry();
-			GeometryFactory geometryFactory = JTSFactoryFinder
-					.getGeometryFactory(null);
+			GeometryFactory geometryFactory = new GeometryFactory();
 			WKTReader reader = new WKTReader(geometryFactory);
 			com.vividsolutions.jts.geom.Geometry shape = null;
 			try {

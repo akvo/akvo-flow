@@ -82,8 +82,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 	@SuppressWarnings("deprecation")
 	private Geometry parseGeometryString(String geometryString)
 			throws ParseException {
-		GeometryFactory geometryFactory = JTSFactoryFinder
-				.getGeometryFactory(null);
+		GeometryFactory geometryFactory = new GeometryFactory();
 		WKTReader reader = new WKTReader(geometryFactory);
 		Geometry geo = new Geometry();
 		//geometryString = URLDecoder.decode(geometryString);
