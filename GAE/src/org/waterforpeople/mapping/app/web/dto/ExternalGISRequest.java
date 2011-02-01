@@ -24,6 +24,13 @@ public class ExternalGISRequest extends RestRequest {
 	private static final String CENTROID_LAT_PARAM = "centroidLat";
 	private static final String CENTROID_LON_PARAM = "centroldLon";
 	private static final String POP_2005_PARAM = "pop2005";
+	private static final String SUBDIVISION_1_PARAM = "sub1";
+	private static final String SUBDIVISION_2_PARAM = "sub2";
+	private static final String SUBDIVISION_3_PARAM = "sub3";
+	private static final String SUBDIVISION_4_PARAM = "sub4";
+	private static final String SUBDIVISION_5_PARAM = "sub5";
+	private static final String SUBDIVISION_6_PARAM = "sub6";
+	
 
 	/**
 	 * 
@@ -47,6 +54,61 @@ public class ExternalGISRequest extends RestRequest {
 	private Double centroidLat = null;
 	private Double centroidLon = null;
 	private Integer pop2005 = null;
+	private String sub1 = null;
+	private String sub2 = null;
+	private String sub3 = null;
+	private String sub4 = null;
+	private String sub5 = null;
+	private String sub6 = null;
+	
+
+	public String getSub1() {
+		return sub1;
+	}
+
+	public void setSub1(String sub1) {
+		this.sub1 = sub1;
+	}
+
+	public String getSub2() {
+		return sub2;
+	}
+
+	public void setSub2(String sub2) {
+		this.sub2 = sub2;
+	}
+
+	public String getSub3() {
+		return sub3;
+	}
+
+	public void setSub3(String sub3) {
+		this.sub3 = sub3;
+	}
+
+	public String getSub4() {
+		return sub4;
+	}
+
+	public void setSub4(String sub4) {
+		this.sub4 = sub4;
+	}
+
+	public String getSub5() {
+		return sub5;
+	}
+
+	public void setSub5(String sub5) {
+		this.sub5 = sub5;
+	}
+
+	public String getSub6() {
+		return sub6;
+	}
+
+	public void setSub6(String sub6) {
+		this.sub6 = sub6;
+	}
 
 	public String getUnCode() {
 		return unCode;
@@ -228,7 +290,24 @@ public class ExternalGISRequest extends RestRequest {
 		if (req.getParameter(POP_2005_PARAM) != null) {
 			this.setPop2005(Integer.parseInt(req.getParameter(POP_2005_PARAM)));
 		}
-
+		if(req.getParameter(SUBDIVISION_1_PARAM)!=null){
+			this.setSub1(req.getParameter(SUBDIVISION_1_PARAM));
+		}
+		if(req.getParameter(SUBDIVISION_2_PARAM)!=null){
+			this.setSub1(req.getParameter(SUBDIVISION_2_PARAM));
+		}
+		if(req.getParameter(SUBDIVISION_3_PARAM)!=null){
+			this.setSub1(req.getParameter(SUBDIVISION_3_PARAM));
+		}
+		if(req.getParameter(SUBDIVISION_4_PARAM)!=null){
+			this.setSub1(req.getParameter(SUBDIVISION_4_PARAM));
+		}
+		if(req.getParameter(SUBDIVISION_5_PARAM)!=null){
+			this.setSub1(req.getParameter(SUBDIVISION_5_PARAM));
+		}
+		if(req.getParameter(SUBDIVISION_6_PARAM)!=null){
+			this.setSub1(req.getParameter(SUBDIVISION_6_PARAM));
+		}
 	}
 
 	@Override
