@@ -241,7 +241,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 //		return place;
 //	}
 	
-	private GeoPlace manualLookup(String latStr, String lonStr){
+	public GeoPlace manualLookup(String latStr, String lonStr){
 		GeoPlace place = null;
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
