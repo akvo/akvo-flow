@@ -141,6 +141,14 @@ public class TestHarnessServlet extends HttpServlet {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
 			String countryCode = gs.getCountryCodeForPoint("6.3008","-10.7972");
+			try {
+				resp.getWriter()
+						.println("Found: " + countryCode + 
+								 " for 6.3008,-10.7972");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if ("loadOGRFeature".equals(action)) {
 			OGRFeature ogrFeature = new OGRFeature();
 			ogrFeature.setName("clan-21061011");
