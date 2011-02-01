@@ -90,15 +90,15 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		if (geometryString.contains("POLYGON")) {
 			com.vividsolutions.jts.geom.Geometry geoHolder = null;
 			if (geometryString.startsWith("POLYGON")) {
-				geoHolder = (Polygon) reader.read(geometryString);
+				//geoHolder = (Polygon) reader.read(geometryString);
 				geo.setType(GeometryType.POLYGON);
 			} else if (geometryString.startsWith("MULTIPOLYGON")) {
-				geoHolder = (MultiPolygon) reader.read(geometryString);
+				//geoHolder = (MultiPolygon) reader.read(geometryString);
 				geo.setType(GeometryType.MULITPOLYGON);
 			}
-			for (Coordinate coord : geoHolder.getCoordinates()) {
-				geo.addCoordinate(coord.x, coord.y);
-			}
+//			for (Coordinate coord : geoHolder.getCoordinates()) {
+//				geo.addCoordinate(coord.x, coord.y);
+//			}
 		} else if (geometryString.startsWith("POINT")) {
 			Point point = (Point) reader.read(geometryString);
 			geo.setType(GeometryType.POINT);
