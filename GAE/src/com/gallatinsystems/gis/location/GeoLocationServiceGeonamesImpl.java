@@ -267,6 +267,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 						Double.parseDouble(latStr));
 				Point point = geometryFactory.createPoint(coord);
 				if (shape != null && shape.contains(point)) {
+					place = new GeoPlace();
 					countryCode = item.getCountryCode();
 					place.setCountryCode(countryCode);
 					place.setCountryName(item.getName());
