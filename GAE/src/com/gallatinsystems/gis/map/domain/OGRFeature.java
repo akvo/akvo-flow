@@ -249,4 +249,17 @@ public class OGRFeature extends BaseDomain {
 	public FeatureType getFeatureType() {
 		return featureType;
 	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CountryCode: " + countryCode + " ");
+		sb.append("FeatureType: " + featureType + " ");
+		sb.append("Sub1: " + sub1 + " ");
+		sb.append("Sub2: " + sub2 + " ");
+		sb.append("Sub3: " + sub3 + " ");
+		sb.append("Sub4: " + sub4 + " ");
+		sb.append("Sub5: " + sub5 + " ");
+		sb.append("Sub6: " + sub6 + " ");
+		return sb.toString();
+	}
 }

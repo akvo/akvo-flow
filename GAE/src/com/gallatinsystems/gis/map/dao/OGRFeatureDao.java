@@ -47,7 +47,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		List<OGRFeature> results = new ArrayList<OGRFeature>();
 		for (OGRFeature item : resultsGTE) {
 			Double[] boundingBox = item.getBoundingBox();
-			if (boundingBox[3] >y1) {
+			if (boundingBox[3] > y1) {
 				results.add(item);
 			}
 		}
@@ -81,6 +81,36 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 			return null;
 	}
 
+	public OGRFeature findByCountryTypeAndSub(String countryCode,
+			FeatureType featureType, ArrayList<String> subArray) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("featureType", filterString, paramString, "String",
+				featureType, paramMap, EQ_OP);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap, EQ_OP);
+		for (int i = 1; i < subArray.size()+1; i++) {
+			appendNonNullParam("sub" + i, filterString, paramString, "String",
+					subArray.get(i-1), paramMap, EQ_OP);
+		}
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		@SuppressWarnings("unchecked")
+		List<OGRFeature> results = (List<OGRFeature>) query
+				.executeWithMap(paramMap);
+		if (results != null && results.size() > 0)
+			return results.get(0);
+		else
+			return null;
+	}
+
 	public OGRFeature save(OGRFeature item) {
 		// If type == country then must update can't have 2 shapes for 1 country
 		if (item.getFeatureType().equals(FeatureType.COUNTRY)) {
@@ -96,10 +126,38 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				return item;
 			}
 		} else {
-			// Need to think about this branch probably need to look up existing
-			// features and update
-			super.save(item);
-			return item;
+			ArrayList<String> subList = new ArrayList<String>();
+			if(item.getSub1()!=null){
+				subList.add(item.getSub1());
+			}
+			if(item.getSub2()!=null){
+				subList.add(item.getSub2());
+			}
+			if(item.getSub3()!=null){
+				subList.add(item.getSub3());
+			}
+			if(item.getSub4()!=null){
+				subList.add(item.getSub4());
+			}
+			if(item.getSub5()!=null){
+				subList.add(item.getSub5());
+			}
+			if(item.getSub6()!=null){
+				subList.add(item.getSub6());
+			}
+			
+			
+			OGRFeature existingItem = findByCountryTypeAndSub(
+					item.getCountryCode(), FeatureType.SUB_COUNTRY_OTHER,subList );
+			if (existingItem != null) {
+				existingItem.setGeometry(item.getGeometry());
+				existingItem.setBoundingBox(item.getBoundingBox());
+				super.save(existingItem);
+				return existingItem;
+			} else {
+				super.save(item);
+				return item;
+			}
 		}
 	}
 

@@ -30,7 +30,6 @@ public class ExternalGISRequest extends RestRequest {
 	private static final String SUBDIVISION_4_PARAM = "sub4";
 	private static final String SUBDIVISION_5_PARAM = "sub5";
 	private static final String SUBDIVISION_6_PARAM = "sub6";
-	
 
 	/**
 	 * 
@@ -60,7 +59,6 @@ public class ExternalGISRequest extends RestRequest {
 	private String sub4 = null;
 	private String sub5 = null;
 	private String sub6 = null;
-	
 
 	public String getSub1() {
 		return sub1;
@@ -279,10 +277,12 @@ public class ExternalGISRequest extends RestRequest {
 					.getParameter(OGR_FEATURE_TYPE_PARAM)));
 		}
 		if (req.getParameter(CENTROID_LAT_PARAM) != null) {
-			this.setCentroidLat(Double.parseDouble(req.getParameter(CENTROID_LAT_PARAM)));
+			this.setCentroidLat(Double.parseDouble(req
+					.getParameter(CENTROID_LAT_PARAM)));
 		}
 		if (req.getParameter(CENTROID_LON_PARAM) != null) {
-			this.setCentroidLon(Double.parseDouble(req.getParameter(CENTROID_LON_PARAM)));
+			this.setCentroidLon(Double.parseDouble(req
+					.getParameter(CENTROID_LON_PARAM)));
 		}
 		if (req.getParameter(UN_CODE_PARAM) != null) {
 			this.setUnCode(req.getParameter(UN_CODE_PARAM));
@@ -290,23 +290,29 @@ public class ExternalGISRequest extends RestRequest {
 		if (req.getParameter(POP_2005_PARAM) != null) {
 			this.setPop2005(Integer.parseInt(req.getParameter(POP_2005_PARAM)));
 		}
-		if(req.getParameter(SUBDIVISION_1_PARAM)!=null){
+		if (req.getParameter(SUBDIVISION_1_PARAM) != null
+				&& !req.getParameter(SUBDIVISION_1_PARAM).equals("-")) {
 			this.setSub1(req.getParameter(SUBDIVISION_1_PARAM));
 		}
-		if(req.getParameter(SUBDIVISION_2_PARAM)!=null){
-			this.setSub1(req.getParameter(SUBDIVISION_2_PARAM));
+		if (req.getParameter(SUBDIVISION_2_PARAM) != null
+				&& !req.getParameter(SUBDIVISION_2_PARAM).equals("-")) {
+			this.setSub2(req.getParameter(SUBDIVISION_2_PARAM));
 		}
-		if(req.getParameter(SUBDIVISION_3_PARAM)!=null){
-			this.setSub1(req.getParameter(SUBDIVISION_3_PARAM));
+		if (req.getParameter(SUBDIVISION_3_PARAM) != null
+				&& !req.getParameter(SUBDIVISION_3_PARAM).equals("-")) {
+			this.setSub3(req.getParameter(SUBDIVISION_3_PARAM));
 		}
-		if(req.getParameter(SUBDIVISION_4_PARAM)!=null){
-			this.setSub1(req.getParameter(SUBDIVISION_4_PARAM));
+		if (req.getParameter(SUBDIVISION_4_PARAM) != null
+				&& !req.getParameter(SUBDIVISION_4_PARAM).equals("-")) {
+			this.setSub4(req.getParameter(SUBDIVISION_4_PARAM));
 		}
-		if(req.getParameter(SUBDIVISION_5_PARAM)!=null){
-			this.setSub1(req.getParameter(SUBDIVISION_5_PARAM));
+		if (req.getParameter(SUBDIVISION_5_PARAM) != null
+				&& !req.getParameter(SUBDIVISION_5_PARAM).equals("-")) {
+			this.setSub5(req.getParameter(SUBDIVISION_5_PARAM));
 		}
-		if(req.getParameter(SUBDIVISION_6_PARAM)!=null){
-			this.setSub1(req.getParameter(SUBDIVISION_6_PARAM));
+		if (req.getParameter(SUBDIVISION_6_PARAM) != null
+				&& !req.getParameter(SUBDIVISION_6_PARAM).equals("-")) {
+			this.setSub6(req.getParameter(SUBDIVISION_6_PARAM));
 		}
 	}
 

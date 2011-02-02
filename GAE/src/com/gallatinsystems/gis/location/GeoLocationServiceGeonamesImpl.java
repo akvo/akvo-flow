@@ -118,7 +118,8 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 					break;
 				}
 			} else {
-				log.log(Level.INFO,item.getCountryCode() + " has a null geometry");
+				log.log(Level.INFO, item.getCountryCode()
+						+ " has a null geometry");
 			}
 		}
 		return countryCode;
@@ -215,38 +216,43 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		return places;
 	}
 
-//	private GeoPlace manualLookup(String latStr, String lonStr) {
-//		GeoPlace place = null;
-//		try {
-//			if (latStr != null && lonStr != null) {
-//				double lat = Double.parseDouble(latStr);
-//				double lon = Double.parseDouble(lonStr);
-//				for (Entry<String, Double[]> entry : COUNTRY_MBR.entrySet()) {
-//					if (lat <= entry.getValue()[0]
-//							&& lat >= entry.getValue()[2]
-//							&& lon >= entry.getValue()[1]
-//							&& lon <= entry.getValue()[3]) {
-//						place = new GeoPlace();
-//						place.setCountryCode(entry.getKey());
-//						place.setCountryName(COUNTRY_NAME.get(entry.getKey()));
-//						break;
-//					}
-//				}
-//			} else {
-//				log.log(Level.SEVERE, "Lat or lon is null");
-//			}
-//		} catch (Exception e) {
-//			log.log(Level.SEVERE, "Lat/Lon are non numeric: ", e);
-//		}
-//		return place;
-//	}
-	
-	public GeoPlace manualLookup(String latStr, String lonStr){
+	// private GeoPlace manualLookup(String latStr, String lonStr) {
+	// GeoPlace place = null;
+	// try {
+	// if (latStr != null && lonStr != null) {
+	// double lat = Double.parseDouble(latStr);
+	// double lon = Double.parseDouble(lonStr);
+	// for (Entry<String, Double[]> entry : COUNTRY_MBR.entrySet()) {
+	// if (lat <= entry.getValue()[0]
+	// && lat >= entry.getValue()[2]
+	// && lon >= entry.getValue()[1]
+	// && lon <= entry.getValue()[3]) {
+	// place = new GeoPlace();
+	// place.setCountryCode(entry.getKey());
+	// place.setCountryName(COUNTRY_NAME.get(entry.getKey()));
+	// break;
+	// }
+	// }
+	// } else {
+	// log.log(Level.SEVERE, "Lat or lon is null");
+	// }
+	// } catch (Exception e) {
+	// log.log(Level.SEVERE, "Lat/Lon are non numeric: ", e);
+	// }
+	// return place;
+	// }
+
+	public GeoPlace manualLookup(String latStr, String lonStr) {
+		return manualLookup(latStr, lonStr, FeatureType.COUNTRY);
+	}
+
+	public GeoPlace manualLookup(String latStr, String lonStr,
+			OGRFeature.FeatureType type) {
 		GeoPlace place = null;
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
-				Double.parseDouble(lonStr), Double.parseDouble(latStr),
-				FeatureType.COUNTRY, "x1", "asc", "all");
+				Double.parseDouble(lonStr), Double.parseDouble(latStr), type,
+				"x1", "asc", "all");
 		String countryCode = null;
 		for (OGRFeature item : ogrList) {
 			Geometry geo = item.getGeometry();
@@ -263,6 +269,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				} catch (ParseException e) {
 					log.log(Level.SEVERE, e.getMessage());
 				}
+				//log.log(Level.INFO,"Testing " + item.toString());
 				Coordinate coord = new Coordinate(Double.parseDouble(lonStr),
 						Double.parseDouble(latStr));
 				Point point = geometryFactory.createPoint(coord);
@@ -271,10 +278,18 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 					countryCode = item.getCountryCode();
 					place.setCountryCode(countryCode);
 					place.setCountryName(item.getName());
+					place.setSub1(item.getSub1());
+					place.setSub2(item.getSub2());
+					place.setSub3(item.getSub3());
+					place.setSub4(item.getSub4());
+					place.setSub5(item.getSub5());
+					place.setSub6(item.getSub6());
+//					log.log(Level.INFO,"Found point inside " + item.getCountryCode() + " " +  item.toString());
 					break;
 				}
 			} else {
-				log.log(Level.INFO,item.getCountryCode() + " has a null geometry");
+				log.log(Level.INFO, item.getCountryCode()
+						+ " has a null geometry");
 			}
 		}
 		return place;
