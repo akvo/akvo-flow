@@ -157,20 +157,25 @@ public class TestHarnessServlet extends HttpServlet {
 			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
 			String lat = req.getParameter("lat");
 			String lon = req.getParameter("lon");
-			GeoPlace geoPlace  = gs.manualLookup(lat, lon);
+			GeoPlace geoPlace = gs.manualLookup(lat, lon);
 			try {
-				resp.getWriter().println(
-						"Found: " +geoPlace.getCountryName() + ":"+ geoPlace.getCountryCode() + " for " + lat + ", " + lon);
-				geoPlace  = gs.manualLookup(lat, lon,OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
-				resp.getWriter().println(
-						"Found: " + geoPlace.getCountryName() 
-						+ ":" + geoPlace.getSub1()
-						+ ":" + geoPlace.getSub2()
-						+ ":" + geoPlace.getSub3()
-						+ ":" + geoPlace.getSub4()
-						+ ":" + geoPlace.getSub5()
-						+ ":" + geoPlace.getSub6()
-						+ " for " + lat + ", " + lon);
+				if (geoPlace != null)
+					resp.getWriter().println(
+							"Found: " + geoPlace.getCountryName() + ":"
+									+ geoPlace.getCountryCode() + " for " + lat
+									+ ", " + lon);
+				geoPlace = gs.manualLookup(lat, lon,
+						OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+				if (geoPlace != null)
+					resp.getWriter().println(
+							"Found: " + geoPlace.getCountryCode() + ":"
+									+ geoPlace.getSub1() + ":"
+									+ geoPlace.getSub2() + ":"
+									+ geoPlace.getSub3() + ":"
+									+ geoPlace.getSub4() + ":"
+									+ geoPlace.getSub5() + ":"
+									+ geoPlace.getSub6() + " for " + lat + ", "
+									+ lon);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

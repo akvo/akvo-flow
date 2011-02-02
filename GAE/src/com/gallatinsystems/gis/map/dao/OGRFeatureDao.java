@@ -81,7 +81,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 			return null;
 	}
 
-	public OGRFeature findByCountryTypeAndSub(String countryCode,
+	public OGRFeature findByCountryTypeAndSub(String countryCode,String name,
 			FeatureType featureType, ArrayList<String> subArray) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
@@ -92,6 +92,8 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 
 		appendNonNullParam("featureType", filterString, paramString, "String",
 				featureType, paramMap, EQ_OP);
+		appendNonNullParam("name", filterString, paramString, "String",
+				name, paramMap, EQ_OP);
 		appendNonNullParam("countryCode", filterString, paramString, "String",
 				countryCode, paramMap, EQ_OP);
 		for (int i = 1; i < subArray.size()+1; i++) {
@@ -148,7 +150,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 			
 			
 			OGRFeature existingItem = findByCountryTypeAndSub(
-					item.getCountryCode(), FeatureType.SUB_COUNTRY_OTHER,subList );
+					item.getCountryCode(),item.getName(), FeatureType.SUB_COUNTRY_OTHER,subList );
 			if (existingItem != null) {
 				existingItem.setGeometry(item.getGeometry());
 				existingItem.setBoundingBox(item.getBoundingBox());
