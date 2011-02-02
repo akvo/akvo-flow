@@ -16,18 +16,21 @@ public class TaskRequest extends RestRequest {
 	private static final long serialVersionUID = 3002548651592779931L;
 	public static final String ADD_ACCESS_POINT_ACTION = "addAccessPoint";
 	public static final String PROCESS_FILE_ACTION = "processFile";
+	public static final String UPDATE_AP_GEO_SUB = "updateAccessPointGeoSub";
 
 	private static final String FILE_NAME_PARAM = "fileName";
 	private static final String SURVEY_ID_PARAM = "surveyId";
 	private static final String PHONE_NUM_PARAM = "phoneNumber";
 	private static final String CHECKSUM_PARAM = "checksum";
 	public static final String OFFSET_PARAM = "offset";
+	public static final String ACCESS_POINT_ID_PARAM = "accessPointId";
 
 	private String fileName;
 	private Long surveyId;
 	private String phoneNumber;
 	private String checksum;
 	private Integer offset = 0;
+	private Long accessPointId = null;
 
 	public Integer getOffset() {
 		return offset;
@@ -74,6 +77,9 @@ public class TaskRequest extends RestRequest {
 		fileName = req.getParameter(FILE_NAME_PARAM);
 		phoneNumber = req.getParameter(PHONE_NUM_PARAM);
 		checksum = req.getParameter(CHECKSUM_PARAM);
+		if(req.getParameter(ACCESS_POINT_ID_PARAM)!=null){
+			setAccessPointId(Long.parseLong(req.getParameter(ACCESS_POINT_ID_PARAM)));
+		}
 		try {
 			if (req.getParameter(SURVEY_ID_PARAM) != null) {
 				surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
@@ -100,6 +106,14 @@ public class TaskRequest extends RestRequest {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
 		}
+	}
+
+	public void setAccessPointId(Long accessPointId) {
+		this.accessPointId = accessPointId;
+	}
+
+	public Long getAccessPointId() {
+		return accessPointId;
 	}
 
 }

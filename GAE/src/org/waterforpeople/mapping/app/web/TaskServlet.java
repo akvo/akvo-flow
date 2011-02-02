@@ -288,6 +288,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 		} else if (TaskRequest.ADD_ACCESS_POINT_ACTION.equalsIgnoreCase(taskReq
 				.getAction())) {
 			addAccessPoint(taskReq);
+		}else if(TaskRequest.UPDATE_AP_GEO_SUB.equalsIgnoreCase(taskReq.getAction())){
+			AccessPointHelper aph = new AccessPointHelper();
+			Long apId = taskReq.getAccessPointId();
+			aph.updateGeoDetails(apId);
 		}
 		return response;
 	}

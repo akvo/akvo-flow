@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.dao;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,6 +10,7 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
+import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
@@ -16,9 +19,8 @@ import com.beoui.geocell.model.GeocellQuery;
 import com.beoui.geocell.model.Point;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
-import com.gallatinsystems.gis.location.GeoPlace;
-import com.gallatinsystems.gis.map.domain.OGRFeature;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 /**
  * dao for manipulating access points
@@ -325,29 +327,14 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return latest;
 	}
 
+	
+	public AccessPoint saveButDonotFireAsync(AccessPoint point){
+		return super.save(point);
+	}
 	public AccessPoint save(AccessPoint point) {
-		if (point.getLatitude() != null && point.getLongitude() != null) {
-			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
-			GeoPlace geoPlace = gs.manualLookup(point.getLatitude().toString(),
-					point.getLongitude().toString(),
-					OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
-			if (geoPlace != null) {
-				point.setCountryCode(geoPlace.getCountryCode());
-				point.setSub1(geoPlace.getSub1());
-				point.setSub2(geoPlace.getSub2());
-				point.setSub3(geoPlace.getSub3());
-				point.setSub4(geoPlace.getSub4());
-				point.setSub5(geoPlace.getSub5());
-				point.setSub6(geoPlace.getSub6());
-			}else if(geoPlace==null && point.getCountryCode()==null){
-				GeoPlace geoPlaceCountry = gs.manualLookup(point.getLatitude().toString(),
-						point.getLongitude().toString(),
-						OGRFeature.FeatureType.COUNTRY);
-				if (geoPlaceCountry != null) {
-					point.setCountryCode(geoPlaceCountry.getCountryCode());
-				}
-			}
-		}
+		Queue queue = QueueFactory.getDefaultQueue();
+		
+		queue.add(url("/app_worker/task").param("action", TaskRequest.UPDATE_AP_GEO_SUB).param(TaskRequest.ACCESS_POINT_ID_PARAM,new Long(point.getKey().getId()).toString()));
 		return super.save(point);
 	}
 }

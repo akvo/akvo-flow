@@ -29,6 +29,9 @@ import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
+import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
+import com.gallatinsystems.gis.location.GeoPlace;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.labs.taskqueue.Queue;
@@ -558,5 +561,34 @@ public class AccessPointHelper {
 			return false;
 		}
 		return true;
+	}
+	
+	public AccessPoint updateGeoDetails(Long apId){
+		AccessPointDao apDao = new AccessPointDao();
+		AccessPoint point = apDao.getByKey(apId);
+		if (point.getLatitude() != null && point.getLongitude() != null) {
+			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
+			GeoPlace geoPlace = gs.manualLookup(point.getLatitude().toString(),
+					point.getLongitude().toString(),
+					OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+			if (geoPlace != null) {
+				point.setCountryCode(geoPlace.getCountryCode());
+				point.setSub1(geoPlace.getSub1());
+				point.setSub2(geoPlace.getSub2());
+				point.setSub3(geoPlace.getSub3());
+				point.setSub4(geoPlace.getSub4());
+				point.setSub5(geoPlace.getSub5());
+				point.setSub6(geoPlace.getSub6());
+			}else if(geoPlace==null && point.getCountryCode()==null){
+				GeoPlace geoPlaceCountry = gs.manualLookup(point.getLatitude().toString(),
+						point.getLongitude().toString(),
+						OGRFeature.FeatureType.COUNTRY);
+				if (geoPlaceCountry != null) {
+					point.setCountryCode(geoPlaceCountry.getCountryCode());
+				}
+			}
+			point = apDao.saveButDonotFireAsync(point);
+		}
+		return point;
 	}
 }
