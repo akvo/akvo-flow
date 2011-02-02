@@ -16,6 +16,9 @@ import com.beoui.geocell.model.GeocellQuery;
 import com.beoui.geocell.model.Point;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
+import com.gallatinsystems.gis.location.GeoPlace;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 
 /**
  * dao for manipulating access points
@@ -113,8 +116,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			String community, Date collDateFrom, Date collDateTo, String type,
 			String tech, Date constructionDateFrom, Date constructionDateTo,
 			String orderByField, String orderByDir, String cursorString) {
-	
-		Map<String, Object> paramMap =  new HashMap<String, Object>();	
+
+		Map<String, Object> paramMap = new HashMap<String, Object>();
 		javax.jdo.Query query = constructQuery(country, community,
 				collDateFrom, collDateTo, type, tech, constructionDateFrom,
 				constructionDateTo, orderByField, orderByDir, paramMap);
@@ -128,7 +131,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public void deleteByQuery(String country, String community,
 			Date collDateFrom, Date collDateTo, String type, String tech,
 			Date constructionDateFrom, Date constructionDateTo) {
-		Map<String, Object> paramMap =  new HashMap<String, Object>();	
+		Map<String, Object> paramMap = new HashMap<String, Object>();
 		javax.jdo.Query query = constructQuery(country, community,
 				collDateFrom, collDateTo, type, tech, constructionDateFrom,
 				constructionDateTo, null, null, paramMap);
@@ -143,7 +146,6 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
-		
 
 		appendNonNullParam("countryCode", filterString, paramString, "String",
 				country, paramMap);
@@ -223,10 +225,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			String technologyType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
-		q
-				.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
-		q
-				.declareParameters("String countryCodeParam, String typeTechnologyParam");
+		q.setFilter("countryCode == countryCodeParam && typeTechnologyString ==  typeTechnologyParam");
+		q.declareParameters("String countryCodeParam, String typeTechnologyParam");
 		prepareCursor(cursorString, q);
 		List<AccessPoint> result = (List<AccessPoint>) q.execute(countryCode,
 				technologyType);
@@ -323,5 +323,31 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 			}
 		}
 		return latest;
+	}
+
+	public AccessPoint save(AccessPoint point) {
+		if (point.getLatitude() != null && point.getLongitude() != null) {
+			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
+			GeoPlace geoPlace = gs.manualLookup(point.getLatitude().toString(),
+					point.getLongitude().toString(),
+					OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+			if (geoPlace != null) {
+				point.setCountryCode(geoPlace.getCountryCode());
+				point.setSub1(geoPlace.getSub1());
+				point.setSub2(geoPlace.getSub2());
+				point.setSub3(geoPlace.getSub3());
+				point.setSub4(geoPlace.getSub4());
+				point.setSub5(geoPlace.getSub5());
+				point.setSub6(geoPlace.getSub6());
+			}else if(geoPlace==null && point.getCountryCode()==null){
+				GeoPlace geoPlaceCountry = gs.manualLookup(point.getLatitude().toString(),
+						point.getLongitude().toString(),
+						OGRFeature.FeatureType.COUNTRY);
+				if (geoPlaceCountry != null) {
+					point.setCountryCode(geoPlaceCountry.getCountryCode());
+				}
+			}
+		}
+		return super.save(point);
 	}
 }
