@@ -23,7 +23,9 @@ public class PropertyUtil {
 	}
 
 	public static String getProperty(String propertyName) {
-		
+		if(props == null){
+			new PropertyUtil();
+		}
 		return props.getProperty(propertyName);
 	}
 
