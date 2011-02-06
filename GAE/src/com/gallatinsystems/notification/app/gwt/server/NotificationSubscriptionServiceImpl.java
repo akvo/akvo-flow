@@ -9,6 +9,7 @@ import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionD
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionService;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
 import com.gallatinsystems.notification.domain.NotificationSubscription;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * Service for editing notificationSubscription objects
@@ -16,9 +17,11 @@ import com.gallatinsystems.notification.domain.NotificationSubscription;
  * @author Christopher Fagiani
  * 
  */
-public class NotificationSubscriptionServiceImpl implements
+public class NotificationSubscriptionServiceImpl extends RemoteServiceServlet implements
 		NotificationSubscriptionService {
 
+
+	private static final long serialVersionUID = -6085743838802553835L;
 	private NotificationSubscriptionDao notifDao;
 
 	public NotificationSubscriptionServiceImpl() {

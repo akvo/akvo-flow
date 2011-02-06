@@ -150,7 +150,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>EditorialContentService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/editorialcontentrpcservice</url-pattern>
 	</servlet-mapping>
-
+<servlet>
+		<servlet-name>NotificationSubscriptionService</servlet-name>
+		<servlet-class>com.gallatinsystems.notification.app.gwt.server.NotificationSubscriptionServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>NotificationSubscriptionService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/notificationsubrpcservice</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>DeviceFileRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl</servlet-class>

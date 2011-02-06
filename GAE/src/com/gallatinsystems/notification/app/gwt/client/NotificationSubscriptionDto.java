@@ -59,4 +59,35 @@ public class NotificationSubscriptionDto extends BaseDto {
 		this.expiryDate = expiryDate;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o != null) {
+			if (o instanceof NotificationSubscriptionDto) {
+				NotificationSubscriptionDto otherDto = (NotificationSubscriptionDto) o;
+				if (notificationType != null && entityId != null) {
+					if (notificationType.equals(otherDto.getNotificationType())
+							&& entityId.equals(otherDto.getEntityId())) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public boolean validate() {
+		if (entityId == null || notificationType == null || expiryDate == null
+				|| notificationDestination == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }

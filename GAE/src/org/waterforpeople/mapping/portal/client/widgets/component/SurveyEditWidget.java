@@ -15,7 +15,10 @@ import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -30,7 +33,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class SurveyEditWidget extends Composite implements ContextAware,
-		ChangeHandler {
+		ChangeHandler, ClickHandler {
 
 	private static final String FORM_LABEL_CSS = "form-label";
 	private static final String TXT_BOX_CSS = "txt-box";
@@ -43,6 +46,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	private SurveyDto currentDto;
 	private SurveyGroupDto groupDto;
 	private boolean isChanged;
+	private Button editNotificationButton;
 
 	public SurveyEditWidget() {
 		panel = new VerticalPanel();
@@ -54,6 +58,9 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		panel.add(buildRow("Name: ", nameBox));
 		panel.add(buildRow("Description: ", descriptionBox));
 		panel.add(buildRow("Version: ", versionBox));
+		editNotificationButton = new Button("Manage Notifications");
+		editNotificationButton.addClickHandler(this);
+		panel.add(editNotificationButton);
 		currentDto = null;
 		initWidget(panel);
 	}
@@ -73,7 +80,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	private void populateWidgets() {
 		isChanged = false;
 		if (currentDto != null) {
-			nameBox.setText(currentDto.getCode());
+			nameBox.setText(currentDto.getName());
 			descriptionBox.setText(currentDto.getDescription());
 			versionBox.setText(currentDto.getVersion());
 		}
@@ -83,7 +90,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		return ViewUtil.isTextPopulated(nameBox);
 	}
 
-	public void saveSurveyGroup(final CompletionListener listener) {
+	public void saveSurvey(final CompletionListener listener) {
 		if (validateInput()) {
 			if (currentDto == null) {
 				currentDto = new SurveyDto();
@@ -133,7 +140,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	@Override
 	public void persistContext(CompletionListener listener) {
 		if (isChanged) {
-			saveSurveyGroup(listener);
+			saveSurvey(listener);
 		} else {
 			listener.operationComplete(true, getContextBundle(true));
 		}
@@ -183,5 +190,15 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			isChanged = (ViewUtil.isTextPopulated(nameBox) || ViewUtil
 					.isTextPopulated(descriptionBox));
 		}
+	}
+
+	@Override
+	public void onClick(ClickEvent event) {
+		if (event.getSource() == editNotificationButton) {
+			NotificationSubscriptionDialog dia = new NotificationSubscriptionDialog(
+					currentDto.getKeyId(), "rawDataReport", null);
+			dia.show();
+		}
+
 	}
 }

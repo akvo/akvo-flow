@@ -53,7 +53,7 @@ public class NotificationSubscriptionDao extends
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("type", filterString, paramString, "String", type,
+		appendNonNullParam("notificationType", filterString, paramString, "String", type,
 				paramMap);
 		appendNonNullParam("entityId", filterString, paramString, "Long",
 				entityId, paramMap);

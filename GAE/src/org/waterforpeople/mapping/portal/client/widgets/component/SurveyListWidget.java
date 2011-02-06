@@ -64,6 +64,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 									surveyMap.put(l, result.get(i));
 									Button b = createButton(ClickMode.EDIT,
 											"Edit");
+									surveyMap.put(b, result.get(i));
 									dataGrid.setWidget(i, 1, b);
 									Button e = createButton(ClickMode.COPY,
 									"Copy");
