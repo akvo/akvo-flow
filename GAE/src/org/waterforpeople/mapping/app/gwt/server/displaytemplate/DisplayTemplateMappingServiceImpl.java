@@ -3,10 +3,8 @@ package org.waterforpeople.mapping.app.gwt.server.displaytemplate;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerService;
-import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateMappingDto;
-import org.waterforpeople.mapping.app.util.DisplayTemplateMappingUtil;
+import org.waterforpeople.mapping.app.gwt.client.displaytemplate.MapBalloonDefinitionDto;
 import org.waterforpeople.mapping.dao.DisplayTemplateMappingDAO;
-import org.waterforpeople.mapping.domain.DisplayTemplateMapping;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -36,18 +34,8 @@ public class DisplayTemplateMappingServiceImpl extends RemoteServiceServlet
 	}
 
 	@Override
-	public ArrayList<DisplayTemplateMappingDto> getRows() {
-		ArrayList<DisplayTemplateMappingDto> list = new ArrayList<DisplayTemplateMappingDto>();
-		for (DisplayTemplateMapping itemFrom : dao.list("all")) {
-			DisplayTemplateMappingDto itemTo = new DisplayTemplateMappingDto();
-			try {
-				DisplayTemplateMappingUtil.copyCanonicalToDto(itemFrom, itemTo);
-			} catch (Exception e) {
-				log("Cannot get template rows", e);
-			}
-			list.add(itemTo);
-		}
-		return list;
+	public ArrayList<MapBalloonDefinitionDto> getRows() {
+		return null;
 	}
 
 	@Override
@@ -56,16 +44,8 @@ public class DisplayTemplateMappingServiceImpl extends RemoteServiceServlet
 	}
 
 	@Override
-	public DisplayTemplateMappingDto save(DisplayTemplateMappingDto item) {
-		DisplayTemplateMapping itemTo = new DisplayTemplateMapping();
-		try {
-			DisplayTemplateMappingUtil.copyDtoToCanonical(item, itemTo);
-			DisplayTemplateMappingUtil.copyCanonicalToDto(dao.save(itemTo),
-					item);
-		} catch (Exception e) {
-			log("Could not save mapping", e);
-		}
-		return item;
+	public MapBalloonDefinitionDto save(MapBalloonDefinitionDto item) {
+		return null;
 	}
 
 }

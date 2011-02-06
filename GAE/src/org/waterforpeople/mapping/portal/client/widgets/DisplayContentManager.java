@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerService;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateMappingDto;
+import org.waterforpeople.mapping.app.gwt.client.displaytemplate.MapBalloonDefinitionDto;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -101,7 +101,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 	}
 
 	private void buildTableDetails() {
-		svc.getRows(new AsyncCallback<ArrayList<DisplayTemplateMappingDto>>() {
+		svc.getRows(new AsyncCallback<ArrayList<MapBalloonDefinitionDto>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -112,9 +112,9 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 			}
 
 			@Override
-			public void onSuccess(ArrayList<DisplayTemplateMappingDto> result) {
+			public void onSuccess(ArrayList<MapBalloonDefinitionDto> result) {
 				Integer row = 1;
-				for (DisplayTemplateMappingDto rowItem : result) {
+				for (MapBalloonDefinitionDto rowItem : result) {
 					addDetailRow(rowItem, row);
 				}
 				Button addRow = new Button("Add New");
@@ -126,7 +126,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 	private Integer savedRow = null;
 
-	private void addDetailRow(DisplayTemplateMappingDto item, Integer row) {
+	private void addDetailRow(MapBalloonDefinitionDto item, Integer row) {
 		TextBox displayOrderTB = new TextBox();
 		dspEntryTable.setWidget(row, 0, displayOrderTB);
 		TextBox descTB = new TextBox();
@@ -147,11 +147,11 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 		if (item != null) {
 			idLabel.setText(item.getKeyId().toString());
-			displayOrderTB.setText(item.getDisplayOrder().toString());
-			descTB.setText(item.getRowDescription());
+			displayOrderTB.setText(item.getName());
+			descTB.setText(null);
 			for (int i = 0; i < attributesLB.getItemCount(); i++) {
 				String itemText = attributesLB.getItemText(i);
-				if (itemText.equals(item.getAttributeName()))
+				if (itemText.equals(null))
 					attributesLB.setSelectedIndex(i);
 			}
 		}
@@ -163,8 +163,8 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 				Button calledButton = (Button) event.getSource();
 				Integer iRow = new Integer(calledButton.getTitle());
 				savedRow = iRow;
-				DisplayTemplateMappingDto item = null;
-				svc.save(item, new AsyncCallback<DisplayTemplateMappingDto>() {
+				MapBalloonDefinitionDto item = null;
+				svc.save(item, new AsyncCallback<MapBalloonDefinitionDto>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -175,7 +175,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 					}
 
 					@Override
-					public void onSuccess(DisplayTemplateMappingDto result) {
+					public void onSuccess(MapBalloonDefinitionDto result) {
 						Label idLabel = (Label) dspEntryTable.getWidget(
 								savedRow, 5);
 						idLabel.setText(result.getKeyId().toString());

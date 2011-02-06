@@ -8,14 +8,14 @@ public interface DisplayTemplateManagerServiceAsync {
 
 	void getLabels(AsyncCallback<ArrayList<String>> callback);
 
-	void getRows(AsyncCallback<ArrayList<DisplayTemplateMappingDto>> callback);
+	void getRows(AsyncCallback<ArrayList<MapBalloonDefinitionDto>> callback);
 
 	void delete(Long keyId, AsyncCallback<Void> callback);
 
 	void listObjectAttributes(String objectNames,
 			AsyncCallback<ArrayList<String>> callback);
 
-	void save(DisplayTemplateMappingDto item,
-			AsyncCallback<DisplayTemplateMappingDto> callback);
+	void save(MapBalloonDefinitionDto item,
+			AsyncCallback<MapBalloonDefinitionDto> callback);
 
 }

@@ -85,6 +85,8 @@ import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
 import com.gallatinsystems.editorial.dao.EditorialPageDao;
 import com.gallatinsystems.editorial.domain.EditorialPage;
 import com.gallatinsystems.editorial.domain.EditorialPageContent;
+import com.gallatinsystems.editorial.domain.MapBalloonDefinition;
+import com.gallatinsystems.editorial.domain.MapBalloonDefinition.BalloonType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
@@ -121,6 +123,7 @@ import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
+import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -140,6 +143,14 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
+		} else if ("setupTestUser".equals(action)) {
+			setupTestUser();
+		} else if ("genBalloonData".equals(action)) {
+			MapBalloonDefinition mpd = new MapBalloonDefinition();
+			mpd.setBalloonType(BalloonType.KML_WATER_POINT);
+			mpd.setStyleData("@charset \"utf-8\"; body {font-family: Trebuchet MS, Arial, Helvetica, sans-serif;font-weight: bold;color: #6d6e71;}");
+			mpd.setName("WFPWaterPoint");
+
 		} else if ("deleteGeoData".equals(action)) {
 			try {
 				OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
@@ -1384,6 +1395,22 @@ public class TestHarnessServlet extends HttpServlet {
 		if (!found) {
 			userDao.save(p);
 		}
+	}
+
+	private void setupTestUser() {
+		UserDao userDao = new UserDao();
+		User user = userDao.findUserByEmail("test@example.com");
+		String permissionList = "";
+		int i = 0;
+		List<Permission> pList = userDao.listPermissions();
+		for (Permission p : pList) {
+			permissionList += p.getCode();
+			if (i < pList.size())
+				permissionList += ",";
+			i++;
+		}
+		user.setPermissionList(permissionList);
+		userDao.save(user);
 	}
 
 	private String generateEditorialContent(String pageName) {
