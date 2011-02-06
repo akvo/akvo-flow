@@ -160,6 +160,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicefilerpc</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>NotificationProcessor</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.notification.MappingNotificationProcessor</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>NotificationProcessor</servlet-name>
+		<url-pattern>/notificationprocessor</url-pattern>
+	</servlet-mapping>	
+	<servlet>
 		<servlet-name>MapingSummarization</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.MappingSummarizationServlet</servlet-class>
 	</servlet>

@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,11 +40,11 @@ import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
@@ -58,15 +59,15 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.DeviceFilesReplicationImporter;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -76,9 +77,9 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.diagnostics.dao.RemoteStacktraceDao;
 import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
 import com.gallatinsystems.editorial.dao.EditorialPageDao;
@@ -93,10 +94,11 @@ import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
-import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.MapFragment;
-import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
+import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
+import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
+import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
@@ -107,7 +109,6 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -116,6 +117,7 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
@@ -1304,7 +1306,53 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("populateperms".equals(action)) {
 			populatePermissions();
+		}else if ("testnotif".equals(action)){
+			sendNotification(req.getParameter("surveyId"));
+		}else if ("popsurvey".equals(action)){
+			SurveyDAO sDao = new SurveyDAO();
+			List<Survey> sList = sDao.list(null);
+			QuestionDao questionDao = new QuestionDao();
+			List<Question> qList = questionDao.listQuestionByType(sList.get(0).getKey().getId(),
+					Question.Type.FREE_TEXT);
+			SurveyInstanceDAO instDao = new SurveyInstanceDAO();
+			for(int i =0; i < 10; i++){
+				SurveyInstance instance = new SurveyInstance();
+				
+				instance.setSurveyId(sList.get(0).getKey().getId());
+				
+				instance = instDao.save(instance);
+				
+				for(int j = 0;  j < qList.size(); j++){
+					QuestionAnswerStore ans = new QuestionAnswerStore();
+					ans.setQuestionID(qList.get(j).getKey().getId()+"");
+					ans.setValue(""+j*i);
+					ans.setSurveyInstanceId(instance.getKey().getId());
+					//ans.setSurveyInstance(instance);
+					instDao.save(ans);
+				}
+			}
+			try {
+				resp.getWriter().print(sList.get(0).getKey().getId());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 		}
+	}
+	
+	private void sendNotification(String surveyId){
+	//	com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory.getQueue("notification");
+		Queue queue = QueueFactory.getQueue("notification");
+
+		queue.add(url("/notificationprocessor").param(
+				NotificationRequest.DEST_PARAM,
+				"christopher.fagiani@gmail.com").param(
+						NotificationRequest.ENTITY_PARAM,
+			surveyId).param(
+						NotificationRequest.TYPE_PARAM,
+				"rawDataReport"));
 	}
 
 	private void populatePermissions() {

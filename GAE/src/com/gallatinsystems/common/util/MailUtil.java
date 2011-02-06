@@ -1,6 +1,5 @@
 package com.gallatinsystems.common.util;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -9,12 +8,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
+import com.gallatinsystems.notification.NotificationRequest;
 
 public class MailUtil {
 	private static final String RECIPIENT_LIST_STRING = "recipientListString";
@@ -24,11 +26,9 @@ public class MailUtil {
 	public static Boolean sendMail(String fromAddress, String fromName,
 			TreeMap<String, String> recipientList, String subject,
 			String messageBody) {
-		Properties props = new Properties();
-		Session session = Session.getDefaultInstance(props, null);
 
 		try {
-			Message msg = new MimeMessage(session);
+			Message msg = createMessage();
 			msg.setFrom(new InternetAddress(fromAddress, fromName));
 			for (Map.Entry<String, String> recipientMap : recipientList
 					.entrySet()) {
@@ -40,24 +40,16 @@ public class MailUtil {
 			Transport.send(msg);
 			return true;
 
-		} catch (AddressException e) {
-			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " "
-					+ e.getMessage());
-			return false;
-		} catch (MessagingException e) {
-			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " "
-					+ e.getMessage());
-			return false;
-		} catch (UnsupportedEncodingException e) {
-			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " "
-					+ e.getMessage());
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " ",
+					e.getMessage());
 			return false;
 		}
 	}
 
 	public static TreeMap<String, String> loadRecipientList() {
 		TreeMap<String, String> recipientList = new TreeMap<String, String>();
-		String recipientListString = new com.gallatinsystems.common.util.PropertyUtil()
+		String recipientListString = com.gallatinsystems.common.util.PropertyUtil
 				.getProperty(RECIPIENT_LIST_STRING);
 		StringTokenizer st = new StringTokenizer(recipientListString, "|");
 		while (st.hasMoreTokens()) {
@@ -65,5 +57,66 @@ public class MailUtil {
 			recipientList.put(emailParts[0], emailParts[1]);
 		}
 		return recipientList;
+	}
+
+	private static Message createMessage() {
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
+		return new MimeMessage(session);
+	}
+
+	/**
+	 * sends an html email to 1 or more recipients with an optional attachment
+	 * 
+	 * @param fromAddr
+	 * @param toAddressList
+	 * @param toDelimiter
+	 * @param subject
+	 * @param body
+	 * @param attachmentBytes
+	 * @param attachmentName
+	 * @param mimeType
+	 * @return
+	 */
+	public static Boolean sendMail(String fromAddr, String toAddressList,
+			String toDelimiter, String subject, String body,
+			byte[] attachmentBytes, String attachmentName, String mimeType) {
+		try {
+			Message msg = createMessage();
+			msg.setFrom(new InternetAddress(fromAddr));
+			// TODO: parse and handle multiple destinations
+			if (toDelimiter != null) {
+				StringTokenizer strTok = new StringTokenizer(toAddressList,
+						NotificationRequest.DELIMITER);
+				while (strTok.hasMoreTokens()) {
+					msg.addRecipient(Message.RecipientType.TO,
+							new InternetAddress(strTok.nextToken()));
+				}
+			} else {
+				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
+						toAddressList));
+			}
+			msg.setSubject(subject);
+
+			Multipart mp = new MimeMultipart();
+
+			MimeBodyPart htmlPart = new MimeBodyPart();
+			htmlPart.setContent(body, "text/html");
+			mp.addBodyPart(htmlPart);
+
+			if (attachmentName != null && attachmentBytes != null) {
+				MimeBodyPart attachment = new MimeBodyPart();
+				attachment.setFileName(attachmentName);
+				attachment.setContent(attachmentBytes, mimeType);
+				mp.addBodyPart(attachment);
+			}
+			msg.setContent(mp);
+			Transport.send(msg);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " ",
+					e);
+			return false;
+		}
+		return true;
 	}
 }

@@ -55,6 +55,26 @@ public class RawDataExporter extends AbstractDataExporter {
 			}
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void export(String serverBase, Long surveyIdentifier, PrintWriter pw){
+		try {
+			this.surveyId = surveyIdentifier.toString();
+			this.serverBase = serverBase;
+			Object[] results = BulkDataServiceClient.loadQuestions(surveyId,
+					serverBase);
+			if (results != null) {
+				keyList = (List<String>) results[0];
+				questionMap = (Map<String, String>) results[1];		
+				writeHeader(pw, questionMap);
+				exportInstances(pw, keyList);
+			} else {
+				System.out.println("Error getting questions");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	private void writeHeader(PrintWriter pw, Map<String, String> questions) {
 		pw.print("Instance\tSubmission Date\tSubmitter");
