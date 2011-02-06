@@ -10,4 +10,9 @@
 		<description>Purge Orphan Job QueeuDevice Survey Job Queue</description>
 		<schedule>every 4 hours</schedule>
 	</cron>
+	<cron>
+		<url>/cron/croncommander?action=generateNotifications</url>
+		<description>Trigger Notification Processing</description>
+		<schedule>every 24 hours</schedule>
+	</cron>
 </cronentries>

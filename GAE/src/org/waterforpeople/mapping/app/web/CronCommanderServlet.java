@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
+import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
@@ -43,7 +44,14 @@ public class CronCommanderServlet extends HttpServlet {
 			purgeExpiredSurveys();
 		} else if ("purgeOrphanJobQueueRecords".equals(action)) {
 			purgeOrphanJobQueueRecords();
+		} else if ("generateNotifications".equals(action)) {
+			generateNotifications();
 		}
+	}
+
+	private void generateNotifications() {
+		NotificationHelper helper = new NotificationHelper();
+		helper.execute();
 	}
 
 	private void purgeExpiredSurveys() {
@@ -51,8 +59,8 @@ public class CronCommanderServlet extends HttpServlet {
 		List<DeviceSurveyJobQueue> dsjqList = dsjqDao
 				.listAssignmentsWithEarlierExpirationDate(new Date());
 		for (DeviceSurveyJobQueue item : dsjqList) {
-			SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue",
-					item.getAssignmentId());
+			SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue", item
+					.getAssignmentId());
 		}
 	}
 

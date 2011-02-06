@@ -1,6 +1,7 @@
 package com.gallatinsystems.notification.helper;
 
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,12 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.gallatinsystems.notification.NotificationProcessor;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
 import com.gallatinsystems.notification.domain.NotificationSubscription;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
+//import com.google.appengine.api.taskqueue.Queue;
+//import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 /**
  * Finds current notification subscriptions from the data store and spawns async
@@ -58,7 +60,14 @@ public class NotificationHelper {
 									.getNotificationDestination());
 						}
 						// now dump the item on the queue
-						queue.add(withUrl(PROCESSOR_URL).param(
+						/*queue.add(withUrl(PROCESSOR_URL).param(
+								NotificationRequest.DEST_PARAM,
+								builder.toString()).param(
+										NotificationRequest.ENTITY_PARAM,
+								notifEntry.getKey().toString()).param(
+										NotificationRequest.TYPE_PARAM,
+								entry.getKey()));*/
+						queue.add(url(PROCESSOR_URL).param(
 								NotificationRequest.DEST_PARAM,
 								builder.toString()).param(
 										NotificationRequest.ENTITY_PARAM,
