@@ -31,13 +31,47 @@ public class NotificationSubscriptionDao extends
 	 * @return
 	 */
 	public List<NotificationSubscription> listUnexpiredNotifications() {
-
-		return listByProperty("expiryDate", new Date(), "Date", LTE_OP);
+		return listByProperty("expiryDate", new Date(), "Date", null, null,
+				GTE_OP, NotificationSubscription.class);
 	}
 
 	/**
-	 * finds the notificaiton history record (if it exists) for this type/entity
-	 * combo
+	 * lists all subscriptions
+	 * 
+	 * @param entityId
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<NotificationSubscription> listSubscriptions(Long entityId,
+			String type, boolean unexpiredOnly) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(NotificationSubscription.class);
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("type", filterString, paramString, "String", type,
+				paramMap);
+		appendNonNullParam("entityId", filterString, paramString, "Long",
+				entityId, paramMap);
+		if (unexpiredOnly) {
+			appendNonNullParam("expiryDate", filterString, paramString, "Date",
+					new Date(), paramMap, GTE_OP);
+			query.declareImports("import java.util.Date");
+		}
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		return (List<NotificationSubscription>) query.executeWithMap(paramMap);
+	}
+
+	/**
+	 * finds the notification history record (if it exists) for this type/entity
+	 * combination
 	 * 
 	 * @param type
 	 * @param entityId

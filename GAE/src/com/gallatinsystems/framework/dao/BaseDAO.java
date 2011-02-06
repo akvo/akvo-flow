@@ -66,7 +66,7 @@ public class BaseDAO<T extends BaseDomain> {
 		}
 		obj.setLastUpdateDateTime(new Date());
 		obj = pm.makePersistent(obj);
-	
+
 		return obj;
 	}
 
@@ -170,8 +170,8 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	/**
-	 * lists all of the concreteClass instances in the datastore. 
-	 * if we think we'll use this on large tables, we should use Extents
+	 * lists all of the concreteClass instances in the datastore. if we think
+	 * we'll use this on large tables, we should use Extents
 	 * 
 	 * @return
 	 */
@@ -182,7 +182,7 @@ public class BaseDAO<T extends BaseDomain> {
 	/**
 	 * lists all of the type passed in.
 	 * 
-	 *  if we think we'll use this on large tables, we should use Extents
+	 * if we think we'll use this on large tables, we should use Extents
 	 * 
 	 * @return
 	 */
@@ -241,20 +241,34 @@ public class BaseDAO<T extends BaseDomain> {
 	 */
 	protected List<T> listByProperty(String propertyName, Object propertyValue,
 			String propertyType) {
-		return listByProperty(propertyName, propertyValue, propertyType,
-				concreteClass);
+		return listByProperty(propertyName, propertyValue, propertyType, null,
+				null, EQ_OP, concreteClass);
 	}
-	
+
+	protected <E extends BaseDomain> List<E> listByProperty(
+			String propertyName, Object propertyValue, String propertyType,
+			Class<E> clazz) {
+		return listByProperty(propertyName, propertyValue, propertyType, null,
+				null, EQ_OP, clazz);
+	}
+
+	protected <E extends BaseDomain> List<E> listByProperty(
+			String propertyName, Object propertyValue, String propertyType,
+			String orderBy, Class<E> clazz) {
+		return listByProperty(propertyName, propertyValue, propertyType,
+				orderBy, null, EQ_OP, clazz);
+	}
+
 	protected List<T> listByProperty(String propertyName, Object propertyValue,
 			String propertyType, String orderByCol, String orderByDir) {
-		return listByProperty(propertyName, propertyValue, propertyType, orderByCol, orderByDir,
-				concreteClass);
+		return (List<T>) listByProperty(propertyName, propertyValue,
+				propertyType, orderByCol, orderByDir, EQ_OP, concreteClass);
 	}
 
 	protected List<T> listByProperty(String propertyName, Object propertyValue,
 			String propertyType, String orderByCol) {
 		return listByProperty(propertyName, propertyValue, propertyType,
-				orderByCol, concreteClass);
+				orderByCol, null, EQ_OP, concreteClass);
 	}
 
 	/**
@@ -274,6 +288,7 @@ public class BaseDAO<T extends BaseDomain> {
 	@SuppressWarnings("unchecked")
 	protected <E extends BaseDomain> List<E> listByProperty(
 			String propertyName, Object propertyValue, String propertyType,
+			String orderByField, String orderByDir, String operator,
 			Class<E> clazz) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		List<E> results = null;
@@ -283,62 +298,16 @@ public class BaseDAO<T extends BaseDomain> {
 			paramName = paramName.substring(paramName.indexOf(".") + 1);
 		}
 		javax.jdo.Query query = pm.newQuery(clazz);
-		query.setFilter(propertyName + " == " + paramName);
-		query.declareParameters(propertyType + " " + paramName);
-		results = (List<E>) query.execute(propertyValue);
+		query.setFilter(propertyName + " " + operator + " " + paramName);
 
-		return results;
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected <E extends BaseDomain> List<E> listByProperty(
-			String propertyName, Object propertyValue, String propertyType, String orderByField, String orderByDir,
-			Class<E> clazz) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		List<E> results = null;
-
-		String paramName = propertyName + "Param";
-		if (paramName.contains(".")) {
-			paramName = paramName.substring(paramName.indexOf(".") + 1);
+		if (orderByField != null) {
+			query.setOrdering(orderByField
+					+ (orderByDir != null ? " " + orderByDir : ""));
 		}
-		javax.jdo.Query query = pm.newQuery(clazz);
-		query.setFilter(propertyName + " == " + paramName);
-		
-		query.setOrdering(orderByField + " " + orderByDir);
 		query.declareParameters(propertyType + " " + paramName);
-		results = (List<E>) query.execute(propertyValue);
-
-		return results;
-	}
-	/**
-	 * convenience method to list all instances of the type passed in that match
-	 * the property
-	 * 
-	 * since using this requires the caller know the persistence data type of
-	 * the field and the field name, this method is protected so that it can
-	 * only be used by subclass DAOs. We don't want those details to leak into
-	 * higher layers of the code.
-	 * 
-	 * @param propertyName
-	 * @param propertyValue
-	 * @param propertyType
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	protected <E extends BaseDomain> List<E> listByProperty(
-			String propertyName, Object propertyValue, String propertyType,
-			String orderByCol, Class<E> clazz) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		List<E> results = null;
-
-		String paramName = propertyName + "Param";
-		if (paramName.contains(".")) {
-			paramName = paramName.substring(paramName.indexOf(".") + 1);
+		if (propertyValue instanceof Date) {
+			query.declareImports("import java.util.Date");
 		}
-		javax.jdo.Query query = pm.newQuery(clazz);
-		query.setFilter(propertyName + " == " + paramName);
-		query.declareParameters(propertyType + " " + paramName);
-		query.setOrdering(orderByCol);
 		results = (List<E>) query.execute(propertyValue);
 
 		return results;
