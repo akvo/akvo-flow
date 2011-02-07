@@ -232,7 +232,7 @@ public class TestHarnessServlet extends HttpServlet {
 			try {
 
 				AccessPointDao apDao = new AccessPointDao();
-
+				Random rand = new Random();
 				for (AccessPoint ap : apDao.list("all")) {
 					if ((ap.getCountryCode() == null || ap.getCountryCode()
 							.equals("US"))
@@ -252,7 +252,7 @@ public class TestHarnessServlet extends HttpServlet {
 							}
 						}
 					} else if (ap.getCommunityCode() == null) {
-						ap.setCommunityCode(new Random().toString());
+						ap.setCommunityCode(rand.nextLong()+"");
 						apDao.save(ap);
 						resp.getWriter().println(
 								"Found " + ap.getCommunityCode()
