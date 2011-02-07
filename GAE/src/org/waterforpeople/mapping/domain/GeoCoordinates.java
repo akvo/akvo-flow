@@ -4,6 +4,7 @@ public class GeoCoordinates {
 	private Double latitude;
 	private Double longitude;
 	private Double altitude;
+	private String code;
 
 	public Double getLatitude() {
 		return latitude;
@@ -29,6 +30,14 @@ public class GeoCoordinates {
 		this.altitude = altitude;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	public GeoCoordinates extractGeoCoordinate(String line) {
 		if (line != null && line.trim().length() > 0
 				&& !line.trim().equals("||") && !line.startsWith("||")) {
@@ -40,6 +49,9 @@ public class GeoCoordinates {
 			if (coordinates.length > 2) {
 				setAltitude(new Double(coordinates[2]));
 			}
+			if (coordinates.length > 3) {
+				setCode(coordinates[3]);
+			}
 		}
 		return this;
 	}
@@ -49,7 +61,7 @@ public class GeoCoordinates {
 		sb.append("GeoCoordinates:");
 		sb.append("\n--Latitude: " + this.latitude);
 		sb.append("\n--Longitude: " + this.longitude);
-		sb.append("\n--Altitude: " + this.altitude);
+		sb.append("\n--Altitude: " + this.altitude);		
 		return sb.toString();
 	}
 

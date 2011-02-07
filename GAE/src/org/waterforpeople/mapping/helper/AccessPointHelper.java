@@ -160,12 +160,14 @@ public class AccessPointHelper {
 							setAccessPointField(ap, qas, mapping, apmh);
 
 						} catch (NoSuchFieldException e) {
-							logger.log(
-									Level.SEVERE,
-									"Could not map field to access point: "
-											+ mapping.getAttributeName()
-											+ ". Check the surveyAttribueMapping for surveyId "
-											+ surveyId);
+							logger
+									.log(
+											Level.SEVERE,
+											"Could not map field to access point: "
+													+ mapping
+															.getAttributeName()
+													+ ". Check the surveyAttribueMapping for surveyId "
+													+ surveyId);
 						} catch (IllegalAccessException e) {
 							logger.log(Level.SEVERE,
 									"Could not set field to access point: "
@@ -218,6 +220,9 @@ public class AccessPointHelper {
 			ap.setLatitude(geoC.getLatitude());
 			ap.setLongitude(geoC.getLongitude());
 			ap.setAltitude(geoC.getAltitude());
+			if (ap.getCommunityCode() == null && geoC.getCode() != null) {
+				ap.setCommunityCode(geoC.getCode());
+			}
 			apmh.setSurveyResponse(geoC.getLatitude() + "|"
 					+ geoC.getLongitude() + "|" + geoC.getAltitude());
 			apmh.setQuestionAnswerType("GEO");
@@ -377,9 +382,9 @@ public class AccessPointHelper {
 		if (ap != null) {
 			if (ap.getPointType() != null && ap.getLatitude() != null
 					&& ap.getLongitude() != null) {
-				apCurrent = apDao.findAccessPoint(ap.getPointType(),
-						ap.getLatitude(), ap.getLongitude(),
-						ap.getCollectionDate());
+				apCurrent = apDao.findAccessPoint(ap.getPointType(), ap
+						.getLatitude(), ap.getLongitude(), ap
+						.getCollectionDate());
 				if (apCurrent != null) {
 					if (!apCurrent.getKey().equals(ap.getKey())) {
 						ap.setKey(apCurrent.getKey());
@@ -410,13 +415,13 @@ public class AccessPointHelper {
 								AccessPointStatusSummary.class.getName(),
 								"n/a", oldValues, newValues);
 						Queue queue = QueueFactory.getQueue("dataUpdate");
-						queue.add(url("/app_worker/dataupdate")
-								.param(DataSummarizationRequest.OBJECT_KEY,
-										ap.getKey().getId() + "")
-								.param(DataSummarizationRequest.OBJECT_TYPE,
-										"AccessPointSummaryChange")
-								.param(DataSummarizationRequest.VALUE_KEY,
-										change.packString()));
+						queue.add(url("/app_worker/dataupdate").param(
+								DataSummarizationRequest.OBJECT_KEY,
+								ap.getKey().getId() + "").param(
+								DataSummarizationRequest.OBJECT_TYPE,
+								"AccessPointSummaryChange").param(
+								DataSummarizationRequest.VALUE_KEY,
+								change.packString()));
 
 					}
 				}
@@ -562,8 +567,8 @@ public class AccessPointHelper {
 		}
 		return true;
 	}
-	
-	public AccessPoint updateGeoDetails(Long apId){
+
+	public AccessPoint updateGeoDetails(Long apId) {
 		AccessPointDao apDao = new AccessPointDao();
 		AccessPoint point = apDao.getByKey(apId);
 		if (point.getLatitude() != null && point.getLongitude() != null) {
@@ -579,9 +584,9 @@ public class AccessPointHelper {
 				point.setSub4(geoPlace.getSub4());
 				point.setSub5(geoPlace.getSub5());
 				point.setSub6(geoPlace.getSub6());
-			}else if(geoPlace==null && point.getCountryCode()==null){
-				GeoPlace geoPlaceCountry = gs.manualLookup(point.getLatitude().toString(),
-						point.getLongitude().toString(),
+			} else if (geoPlace == null && point.getCountryCode() == null) {
+				GeoPlace geoPlaceCountry = gs.manualLookup(point.getLatitude()
+						.toString(), point.getLongitude().toString(),
 						OGRFeature.FeatureType.COUNTRY);
 				if (geoPlaceCountry != null) {
 					point.setCountryCode(geoPlaceCountry.getCountryCode());
