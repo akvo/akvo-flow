@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 import android.os.Environment;
 import android.util.Log;
@@ -56,13 +58,30 @@ public class PersistentUncaughtExceptionHandler implements
 	 */
 	@Override
 	public void uncaughtException(Thread sourceThread, Throwable exception) {
-
-		recordException(exception);
+		if (!ignoreException(exception)) {
+			recordException(exception);
+		}
 		// Still process the exception with the default handler so we don't
 		// change system behavior
 		if (oldHandler != null) {
 			oldHandler.uncaughtException(sourceThread, exception);
 		}
+	}
+
+	/**
+	 * checks against a white-list of exceptions we ignore (mainly communication
+	 * errors that can arise if we're offline).
+	 * 
+	 * @param exception
+	 * @return
+	 */
+	private boolean ignoreException(Throwable exception) {
+		if (exception instanceof UnknownHostException) {
+			return true;
+		}else if (exception instanceof SocketException){
+			return true;
+		}
+		return false;
 	}
 
 	/**

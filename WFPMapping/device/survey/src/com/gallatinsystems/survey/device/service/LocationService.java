@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.device.service;
 
+import java.net.URLEncoder;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -102,7 +103,9 @@ public class LocationService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
-		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
+		Thread
+				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+						.getInstance());
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
@@ -117,12 +120,14 @@ public class LocationService extends Service {
 	private void sendLocation(String serverBase, Location loc) {
 		try {
 			if (loc != null) {
-				String url = serverBase + BEACON_SERVICE_PATH
-						+ StatusUtil.getPhoneNumber(this) + LAT
-						+ loc.getLatitude() + LON + loc.getLongitude() + ACC
-						+ loc.getAccuracy() + VER + version;
+				String url = serverBase
+						+ BEACON_SERVICE_PATH
+						+ URLEncoder.encode(StatusUtil.getPhoneNumber(this),
+								"UTF-8") + LAT + loc.getLatitude() + LON
+						+ loc.getLongitude() + ACC + loc.getAccuracy() + VER
+						+ version;
 				if (deviceId != null) {
-					url += DEV_ID + deviceId;
+					url += DEV_ID + URLEncoder.encode(deviceId, "UTF-8");
 				}
 				HttpUtil.httpGet(url);
 			} else {

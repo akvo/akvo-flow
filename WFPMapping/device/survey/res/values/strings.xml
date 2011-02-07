@@ -26,6 +26,7 @@
 	<string name="email">Email Address</string>
 	<string name="userinstructions">Select the current user by clicking. To create a new user, press the Menu button and select Add User. Long-click to edit a user.</string>
 	<string name="editmenu">Edit User</string>
+	<string name="deleteusermenu">Delete User</string>
 	<string name="mustselectuser">Please click the Manage Users icon and choose a user before continuing.</string>
 	<string name="syncinprogress">Synchronizing...</string>
 	<string name="exportcomplete">Data has been exported to SD card</string>
@@ -176,5 +177,5 @@
 	<string name="generatedcode">Unique Code</string>
 	<string name="confirmchangetitle">Change response?</string>
 	<string name="confirmchangetext">Do you want to change your response?</string>
-	<string name="appversion">1.8.5</string>	
+	<string name="appversion">1.8.6</string>	
 </resources>
