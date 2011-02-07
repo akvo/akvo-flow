@@ -228,4 +228,7 @@
         <property name="featureType" direction="asc"/>
         <property name="x1" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="GeoMeasure" ancestor="true" source="manual">
+        <property name="propertyList_INTEGER_IDX" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>
