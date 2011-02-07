@@ -804,7 +804,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		TextBox optionValue = new TextBox();
 		optionValue.setWidth("3em");
 		ListBox lbOptOrder = new ListBox();
-		for (Integer i = 0; i < 25; i++) {
+		for (Integer i = 0; i < 50; i++) {
 			lbOptOrder.addItem(i.toString());
 		}
 		TextBox optionText = new TextBox();
@@ -1350,7 +1350,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			description.setText(item.getDescription());
 		}
 		ListBox order = new ListBox();
-		for (Integer i = 1; i < 25; i++) {
+		for (Integer i = 1; i < 50; i++) {
 			order.addItem(i.toString());
 			if (item != null) {
 				if (item.getOrder().equals(i)) {
