@@ -32,6 +32,7 @@
 	 		<include name="org/waterforpeople/mapping/app/gwt/client/accesspoint/**"/>
 	 		<include name="org/waterforpeople/mapping/app/gwt/client/survey/**"/>
 	 		<include name="org/waterforpeople/mapping/app/gwt/client/surveyinstance/**"/>
+	 		<include name="org/waterforpeople/mapping/app/gwt/client/location/**"/>
 	 		<include name="org/waterforpeople/mapping/app/web/dto/**"/>	 		
 	 		<include name="com/gallatinsystems/framework/rest/**"/>	 	
 	 		
