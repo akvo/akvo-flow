@@ -467,13 +467,10 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					if (message == null) {
 						saveQuestion();
 					} else {
-						Window
-								.alert("Cannot save question. Issues: "
-										+ message);
+						Window.alert("Cannot save question. Issues: " + message);
 					}
 				} catch (Exception e) {
-					Window
-							.alert("Could not save question no Question Group was selected");
+					Window.alert("Could not save question no Question Group was selected");
 				}
 			}
 
@@ -547,8 +544,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				} else {
 					// Likely have the QG selected because this is a new
 					// question need to figure out how to get QuestionDto
-					Window
-							.alert("Please save question first then select question before pressing edit translations buttons");
+					Window.alert("Please save question first then select question before pressing edit translations buttons");
 				}
 			}
 		});
@@ -591,8 +587,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(currentQuestion
-										.getSurveyId(), result);
+								surveyOptionQuestionMap.put(
+										currentQuestion.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 								dia.hide();
@@ -792,8 +788,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null, questionOptionDetail
-						.getRowCount() - 1);
+				loadQuestionOptionRowDetail(null,
+						questionOptionDetail.getRowCount() - 1);
 			}
 
 		});
@@ -1099,8 +1095,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				if (validateSurveyGroup())
 					saveSurveyGroup();
 				else
-					Window
-							.alert("Cannot Save Survey Group. You must fill provide a Survey Code");
+					Window.alert("Cannot Save Survey Group. You must fill provide a Survey Code");
 			}
 
 		});
@@ -1150,6 +1145,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		Button exportFormButton = new Button("Export Survey Form");
 		Button remapSurveyFormButton = new Button("Remap to Access Point");
 		Button importRawDataButton = new Button("Import Raw Data XLS");
+		Button genKMLButton = new Button("Generate KML");
 
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			saveSurveyButton.setVisible(false);
@@ -1178,6 +1174,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		surveyDetail.setWidget(4, 5, exportFormButton);
 		surveyDetail.setWidget(5, 1, remapSurveyFormButton);
 		surveyDetail.setWidget(5, 2, importRawDataButton);
+		surveyDetail.setWidget(5, 3, genKMLButton);
 
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
@@ -1197,8 +1194,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onSuccess(Object result) {
-						Window
-								.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
+						Window.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
 					}
 
 				});
@@ -1222,12 +1218,10 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					if (validateSurvey()) {
 						saveSurvey();
 					} else {
-						Window
-								.alert("Cannot Save Survey.  You must provide a survey name");
+						Window.alert("Cannot Save Survey.  You must provide a survey name");
 					}
 				} catch (Exception e) {
-					Window
-							.alert("Could not save survey no survey group selected");
+					Window.alert("Could not save survey no survey group selected");
 					e.printStackTrace();
 				}
 			}
@@ -1267,6 +1261,24 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					Window.alert("Please save survey before publishing");
 				}
 			}
+		});
+
+		genKMLButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+
+				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.KMLApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
+				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
+				appletString += "<PARAM name='surveyId' value='"
+						+ item.getKeyId() + "'>";
+				appletString += "</applet>";
+				HTML html = new HTML();
+				html.setHTML(appletString);
+				surveyDetail.setWidget(5, 0, html);
+			}
+
 		});
 
 		exportSummaryButton.addClickHandler(new ClickHandler() {
@@ -1395,11 +1407,9 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					if (validateQuestionGroup())
 						saveQuestionGroup();
 					else
-						Window
-								.alert("Cannot save Question Group.  You must provide a name.");
+						Window.alert("Cannot save Question Group.  You must provide a name.");
 				} catch (Exception ex) {
-					Window
-							.alert("Cannot Save Question Group Because no parent survey is selected");
+					Window.alert("Cannot Save Question Group Because no parent survey is selected");
 				}
 			}
 
@@ -1430,8 +1440,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 										MessageDialog errDia = new MessageDialog(
 												"Could not delete question group",
 												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
-										errDia
-												.showRelativeTo(questionGroupDetail);
+										errDia.showRelativeTo(questionGroupDetail);
 									}
 
 									@Override

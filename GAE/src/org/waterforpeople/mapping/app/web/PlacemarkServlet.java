@@ -86,21 +86,21 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		if (piReq.getAction() != null
 				&& PlacemarkRestRequest.GET_AP_DETAILS_ACTION.equals(piReq
 						.getAction())) {
-			AccessPoint ap = (AccessPoint) apDao.findAccessPoint(piReq
-					.getCommunityCode(), piReq.getPointType());
+			AccessPoint ap = (AccessPoint) apDao.findAccessPoint(
+					piReq.getCommunityCode(), piReq.getPointType());
 			List<AccessPoint> apList = new ArrayList<AccessPoint>();
 			apList.add(ap);
 			response = (PlacemarkRestResponse) convertToResponse(apList, true,
 					null, null, piReq.getDisplay());
-		} else {
+		}  else {
 
-			List<AccessPoint> results = apDao.searchAccessPoints(piReq
-					.getCountry(), null, null, null, null, null, null, null,
-					null, null, piReq.getCursor());
+			List<AccessPoint> results = apDao.searchAccessPoints(
+					piReq.getCountry(), null, null, null, null, null, null,
+					null, null, null, piReq.getCursor());
 
-			response = (PlacemarkRestResponse) convertToResponse(results, piReq
-					.getNeedDetailsFlag(), AccessPointDao.getCursor(results),
-					piReq.getCursor(), null);
+			response = (PlacemarkRestResponse) convertToResponse(results,
+					piReq.getNeedDetailsFlag(),
+					AccessPointDao.getCursor(results), piReq.getCursor(), null);
 		}
 		if (response != null && cache != null) {
 			try {
@@ -144,9 +144,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		PlacemarkDto pdto = new PlacemarkDto();
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
-		pdto
-				.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap
-						.getPointType()));
+		pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
 		pdto.setCommunityCode(ap.getCommunityCode());
 		pdto.setMarkType(ap.getPointType().toString());
 		pdto.setCollectionDate(ap.getCollectionDate());

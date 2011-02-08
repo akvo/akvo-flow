@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,9 +14,11 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
+import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -60,51 +63,28 @@ public class BulkDataServiceClient {
 				+ instanceId);
 		return parseInstanceValues(instanceValues);
 	}
-	
-	public static List<AccessPointDto> fetchAccessPoints(String cursor,String serverBase) throws Exception{
-		String action = ACCESS_POINT_SERVLET_PATH + (cursor!=null?"&cursor="+cursor:"");
-		String url = serverBase + action; 
-		
-			String response = fetchDataFromServer(url);
-			JSONObject jsonOuter = new JSONObject(response);
-			if (jsonOuter.has("cursor")) {
-				cursor = jsonOuter.getString("cursor");
-			}
-			List<AccessPointDto> apDtoList = parseAccessPoints(response);
-			return apDtoList;
+
+	public static List<AccessPointDto> fetchAccessPoints(String cursor,
+			String serverBase) throws Exception {
+		String action = ACCESS_POINT_SERVLET_PATH
+				+ (cursor != null ? "&cursor=" + cursor : "");
+		String url = serverBase + action;
+
+		String response = fetchDataFromServer(url);
+		JSONObject jsonOuter = new JSONObject(response);
+		if (jsonOuter.has("cursor")) {
+			cursor = jsonOuter.getString("cursor");
+		}
+		List<AccessPointDto> apDtoList = parseAccessPoints(response);
+		return apDtoList;
 	}
-	private static List<AccessPointDto> parseAccessPoints(String response){
+
+	private static List<AccessPointDto> parseAccessPoints(String response) {
 		return null;
 	}
 
 	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
 			String serverBase) throws Exception {
-		/*
-		 * String cursor = null; List<DeviceFilesDto> dfDto = new
-		 * ArrayList<DeviceFilesDto>(); String queryString = serverBase +
-		 * DEVICE_FILES_SERVLET_PATH +
-		 * DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&" +
-		 * DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "=" + statusCode;
-		 * String response = fetchDataFromServer(queryString); JSONObject
-		 * jsonOuter = new JSONObject(response);
-		 * 
-		 * if (jsonOuter.has("cursor")) { cursor =
-		 * jsonOuter.getString("cursor"); } for (DeviceFilesDto dto :
-		 * parseDeviceFiles(response)) { dfDto.add(dto); }
-		 * 
-		 * if (cursor != null) { queryString = serverBase +
-		 * DEVICE_FILES_SERVLET_PATH +
-		 * DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&" +
-		 * DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "=" + statusCode;
-		 * response = fetchDataFromServer(queryString); jsonOuter = new
-		 * JSONObject(response);
-		 * 
-		 * if (jsonOuter.has("cursor")) { cursor =
-		 * jsonOuter.getString("cursor"); } for (DeviceFilesDto dto :
-		 * parseDeviceFiles(response)) { dfDto.add(dto); } }
-		 * 
-		 * return dfDto;
-		 */
 		return fetchData(null, serverBase, statusCode);
 	}
 
@@ -142,6 +122,105 @@ public class BulkDataServiceClient {
 		}
 
 		return dfDto;
+	}
+
+	public static List<PlacemarkDto> fetchPlacemarks(String countryCode,
+			String serverBase) throws Exception {
+		return fetchPlacemarkData(null, serverBase, countryCode);
+	}
+
+	
+	private static List<PlacemarkDto> fetchPlacemarkData(String cursor,
+			String serverBase, String countryCode) throws Exception {
+		String queryString = null;
+		String response = null;
+		ArrayList<PlacemarkDto> pmDto = new ArrayList<PlacemarkDto>();
+		queryString = serverBase + "/placemarkrestapi?" + "needDetailsFlag=true"
+				+ "&country=" + countryCode;
+		if (cursor != null) {
+			queryString = queryString + "&cursor=" + cursor;
+		}
+		System.out.println("fetching: " + queryString);
+		response = fetchDataFromServer(queryString);
+		List<PlacemarkDto> list = parsePlacemarks(response);
+		if (list == null || list.size() == 0) {
+			return null;
+		}
+		for (PlacemarkDto dto : list) {
+			pmDto.add(dto);
+		}
+
+		JSONObject jsonOuter = new JSONObject(response);
+		if (jsonOuter.has("cursor")) {
+			cursor = jsonOuter.getString("cursor");
+			List<PlacemarkDto> pmDtoTemp = fetchPlacemarkData(cursor,
+					serverBase, countryCode);
+			if (pmDtoTemp != null)
+				for (PlacemarkDto item : pmDtoTemp) {
+					pmDto.add(item);
+				}
+		}
+
+		return pmDto;
+	}
+
+	private static List<PlacemarkDto> parsePlacemarks(String response) throws Exception {
+		JSONArray arr=null;
+		if (response.startsWith("{")) {
+			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
+			
+			
+			System.out.println("response: " + response);
+			if (response != null) {
+				JSONObject json = new JSONObject(response);
+				if (json != null) {
+					arr = json.getJSONArray("placemarks");
+				}
+			}
+			
+
+			if (arr != null) {
+
+				for (int i = 0; i < arr.length(); i++) {
+					PlacemarkDto dto = new PlacemarkDto();
+					JSONObject json = arr.getJSONObject(i);
+					if (json != null) {
+						if (json.has("communityCode")) {
+							String x = json.getString("communityCode");
+							dto.setCommunityCode(x);
+						}
+						if (json.has("markType")) {
+							String x = json.getString("markType");
+							dto.setMarkType(x);
+						}
+						if (json.has("iconUrl")) {
+							String x = json.getString("iconUrl");
+							dto.setIconUrl(x);
+						}
+						if (json.has("longitude")) {
+							String x = json.getString("longitude");
+							dto.setLatitude(new Double(x));
+						}
+						if (json.has("latitude")) {
+							String x = json.getString("latitude");
+							dto.setLatitude(new Double(x));
+						}
+						if (json.has("collectionDate")) {
+							String x = json.getString("collectionDate");
+							dto.setCollectionDate(new Date(x));
+						}
+						if (json.has("placemarkContents")) {
+							String x = json.getString("placemarkContents");
+							dto.setPlacemarkContents(x);
+						}
+					}
+					dtoList.add(dto);
+				}
+				return dtoList;
+			}
+			return null;
+		}
+		return null;
 	}
 
 	/**
@@ -535,6 +614,8 @@ public class BulkDataServiceClient {
 		}
 		return dtoList;
 	}
+	
+	
 
 	private static List<DeviceFilesDto> parseDeviceFiles(String response)
 			throws Exception {

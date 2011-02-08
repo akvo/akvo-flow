@@ -178,4 +178,11 @@ public class UploadUtil {
 		}
 		return true;
 	}
+
+	public static boolean sendStringAsFileMultiPart(String fileName,
+			String fileContents, String dir, String uploadUrl, String s3ID,
+			String policy, String sig, String contentType) {
+		
+		return false;
+	}
 }
