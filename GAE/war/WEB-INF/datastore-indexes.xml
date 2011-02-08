@@ -231,4 +231,7 @@
     <datastore-index kind="GeoMeasure" ancestor="true" source="manual">
         <property name="propertyList_INTEGER_IDX" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="Coordinate" ancestor="true" source="manual">
+        <property name="coordinates_INTEGER_IDX" direction="asc"/>
+    </datastore-index>   
 </datastore-indexes>
