@@ -10,6 +10,14 @@ public class CoordinateUtilities {
 	static final Double k0 = 0.9996;
 	static final Double pi = 3.14159265358979323846264338327950288;
 
+	public static void main(String[] args){
+		Integer x = Integer.parseInt(args[0]);
+		Integer y = Integer.parseInt(args[1]);
+		Integer zone = Integer.parseInt(args[2]);
+		System.out.println("Converted Coordiantes: " + convertUTMtoLatLon(x,y,NSLatitude.SOUTH,zone) );
+	}
+	
+	
 	
 	/**
 	 * computes the APPROXIMATE distance between 2 points (lat/lon in DEGREES,
@@ -47,7 +55,7 @@ public class CoordinateUtilities {
 		return degrees;
 	}
 
-	public String convertUTMtoLatLon(Integer eastingCoor, Integer northingCoor,
+	public static String convertUTMtoLatLon(Integer eastingCoor, Integer northingCoor,
 			NSLatitude lat, Integer zone) {
 		Integer zoneCentralLongitude = computeZoneCentralLongitude(zone);
 
@@ -129,7 +137,7 @@ public class CoordinateUtilities {
 		return latitude + ", " + longitude;
 	}
 
-	private Integer computeZoneCentralLongitude(Integer zone) {
+	private static Integer computeZoneCentralLongitude(Integer zone) {
 		Integer zcl = 0;
 		// =IF(E19>0,6*E19-183,3)
 		if (zone > 0) {
