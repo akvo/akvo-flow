@@ -67,6 +67,13 @@ public class AccessPointServiceSupport {
 		apDto.setWaterForPeopleRole(apCanonical.getWaterForPeopleRole());
 		apDto.setWhoRepairsPoint(apCanonical.getWhoRepairsPoint());
 		apDto.setInstitutionName(apCanonical.getInstitutionName());
+		apDto.setSub1(apCanonical.getSub1());
+		apDto.setSub2(apCanonical.getSub2());
+		apDto.setSub3(apCanonical.getSub3());
+		apDto.setSub4(apCanonical.getSub4());
+		apDto.setSub5(apCanonical.getSub5());
+		apDto.setSub6(apCanonical.getSub6());
+		
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
 		}

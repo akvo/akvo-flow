@@ -47,7 +47,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		List<OGRFeature> results = new ArrayList<OGRFeature>();
 		for (OGRFeature item : resultsGTE) {
 			Double[] boundingBox = item.getBoundingBox();
-			if (boundingBox[3] > y1) {
+			if (y1 < boundingBox[3] ) {
 				results.add(item);
 			}
 		}

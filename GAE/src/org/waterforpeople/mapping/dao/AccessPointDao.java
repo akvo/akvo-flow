@@ -201,6 +201,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				lon, paramMap);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				collectionDate, paramMap, EQ_OP);
+	
+		
 		query.declareImports("import java.util.Date");
 
 		query.setFilter(filterString.toString());

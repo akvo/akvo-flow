@@ -4,8 +4,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -14,8 +16,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
+
+import com.gallatinsystems.common.Constants;
 
 public class KMLApplet extends JApplet implements Runnable {
 	/**
@@ -28,6 +35,7 @@ public class KMLApplet extends JApplet implements Runnable {
 	private String date;
 	private String country;
 	private String serverBase;
+	private VelocityEngine engine;
 
 	@Override
 	public void run() {
@@ -36,6 +44,14 @@ public class KMLApplet extends JApplet implements Runnable {
 	}
 
 	public void init() {
+		engine = new VelocityEngine();
+		engine.setProperty("runtime.log.logsystem.class",
+				"org.apache.velocity.runtime.log.NullLogChute");
+		try {
+			engine.init();
+		} catch (Exception e) {
+			System.out.println("Could not initialize velocity" + e);
+		}
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
 		serverBase = getCodeBase().toString();
@@ -116,14 +132,12 @@ public class KMLApplet extends JApplet implements Runnable {
 			setVisible(true);
 		}
 
+		final String PLACEMARK_PREAMBLE = null;
+		final String PLACEMARK_CONCLUSION = null;
+
 		private void processFile() throws Exception {
 			okButton.setEnabled(false);
-			List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient.fetchPlacemarks("MW",
-					serverBase);
-			for (PlacemarkDto pm : placemarkDtoList) {
-				System.out.println(pm.getCommunityCode());
-				System.out.println(pm.getPlacemarkContents());
-			}
+
 			status.setText("Completed Import of Raw Data.");
 			okButton.setEnabled(true);
 		}
@@ -155,6 +169,49 @@ public class KMLApplet extends JApplet implements Runnable {
 		public boolean isCancelled() {
 			return cancelled;
 		}
+	}
+
+	/**
+	 * merges a hydrated context with a template identified by the templateName
+	 * passed in.
+	 * 
+	 * @param context
+	 * @param templateName
+	 * @return
+	 * @throws Exception
+	 */
+	private String mergeContext(VelocityContext context, String templateName)
+			throws Exception {
+		Template t = engine.getTemplate(templateName);
+		StringWriter writer = new StringWriter();
+		t.merge(context, writer);
+		context = null;
+		return writer.toString();
+	}
+
+	public String generateDocument(String placemarksVMName) {
+		try {
+			VelocityContext context = new VelocityContext();
+			String placemarks = null;
+			List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient
+					.fetchPlacemarks("MW", serverBase);
+			StringBuilder sbPlacemarks = new StringBuilder();
+			for (PlacemarkDto pm : placemarkDtoList) {
+				VelocityContext vc = new VelocityContext();
+				vc.put("timestamp", pm.getCollectionDate());
+				vc.put("pinStyle", null);
+				vc.put("balloon", pm.getPlacemarkContents());
+				vc.put("longitude", pm.getLongitude());
+				vc.put("latitude", pm.getLatitude());
+				vc.put("altitude", pm.getAltitude());
+				sbPlacemarks.append(mergeContext(vc, "PlacemarksNewLook.vm"));
+			}
+			context.put("folderContents", sbPlacemarks.toString());
+			return mergeContext(context, "Document.vm");
+		} catch (Exception ex) {
+			System.out.println("SEVERE: Could create kml" + ex);
+		}
+		return null;
 	}
 
 }

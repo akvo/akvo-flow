@@ -129,14 +129,13 @@ public class BulkDataServiceClient {
 		return fetchPlacemarkData(null, serverBase, countryCode);
 	}
 
-	
 	private static List<PlacemarkDto> fetchPlacemarkData(String cursor,
 			String serverBase, String countryCode) throws Exception {
 		String queryString = null;
 		String response = null;
 		ArrayList<PlacemarkDto> pmDto = new ArrayList<PlacemarkDto>();
-		queryString = serverBase + "/placemarkrestapi?" + "needDetailsFlag=true"
-				+ "&country=" + countryCode;
+		queryString = serverBase + "/placemarkrestapi?"
+				+ "needDetailsFlag=true" + "&country=" + countryCode;
 		if (cursor != null) {
 			queryString = queryString + "&cursor=" + cursor;
 		}
@@ -164,20 +163,22 @@ public class BulkDataServiceClient {
 		return pmDto;
 	}
 
-	private static List<PlacemarkDto> parsePlacemarks(String response) throws Exception {
-		JSONArray arr=null;
+	private static List<PlacemarkDto> parsePlacemarks(String response)
+			throws Exception {
+		JSONArray arr = null;
 		if (response.startsWith("{")) {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
-			
-			
+
 			System.out.println("response: " + response);
 			if (response != null) {
 				JSONObject json = new JSONObject(response);
 				if (json != null) {
-					arr = json.getJSONArray("placemarks");
+					if (json.has("placemarks"))
+						arr = json.getJSONArray("placemarks");
+					else
+						return null;
 				}
 			}
-			
 
 			if (arr != null) {
 
@@ -614,8 +615,6 @@ public class BulkDataServiceClient {
 		}
 		return dtoList;
 	}
-	
-	
 
 	private static List<DeviceFilesDto> parseDeviceFiles(String response)
 			throws Exception {

@@ -516,6 +516,44 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			pickerConstructionDate.setValue(accessPointDto
 					.getConstructionDate());
 		accessPointDetail.setWidget(5, 1, pickerConstructionDate);
+		
+		accessPointDetail.setWidget(6,0, new Label("Subdivision 1"));
+		TextBox sub1 = new TextBox();
+		if(accessPointDto!=null && accessPointDto.getSub1()!=null)
+			sub1.setText(accessPointDto.getSub1());
+		accessPointDetail.setWidget(6,1, sub1);
+		
+		accessPointDetail.setWidget(7,0, new Label("Subdivision 2"));
+		TextBox sub2 = new TextBox();
+		if(accessPointDto!=null && accessPointDto.getSub2()!=null)
+			sub2.setText(accessPointDto.getSub2());
+		accessPointDetail.setWidget(7,1, sub2);
+		
+		accessPointDetail.setWidget(8,0, new Label("Subdivision 3"));
+		TextBox sub3 = new TextBox();
+		if(accessPointDto!=null && accessPointDto.getSub3()!=null)
+			sub3.setText(accessPointDto.getSub3());
+		accessPointDetail.setWidget(8,1, sub3);
+		
+		accessPointDetail.setWidget(9,0, new Label("Subdivision 4"));
+		TextBox sub4 = new TextBox();
+		if(accessPointDto!=null && accessPointDto.getSub4()!=null)
+			sub1.setText(accessPointDto.getSub4());
+		accessPointDetail.setWidget(9,1, sub4);
+		
+		accessPointDetail.setWidget(10,0, new Label("Subdivision 5"));
+		TextBox sub5 = new TextBox();
+		if(accessPointDto!=null && accessPointDto.getSub5()!=null)
+			sub5.setText(accessPointDto.getSub5());
+		accessPointDetail.setWidget(10,1, sub5);
+		
+		accessPointDetail.setWidget(11,0, new Label("Subdivision 6"));
+		TextBox sub6 = new TextBox();
+		if(accessPointDto!=null && accessPointDto.getSub6()!=null)
+			sub6.setText(accessPointDto.getSub6());
+		accessPointDetail.setWidget(11,1, sub6);
+		
+		
 		// Missing
 		// InstitutionName
 		Label apId;

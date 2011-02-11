@@ -248,6 +248,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 
 	public GeoPlace manualLookup(String latStr, String lonStr,
 			OGRFeature.FeatureType type) {
+		log.log(Level.INFO,"Inside Manaual Lookup for " + latStr + ":"+lonStr+":"+type.toString());
 		GeoPlace place = null;
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
@@ -269,7 +270,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				} catch (ParseException e) {
 					log.log(Level.SEVERE, e.getMessage());
 				}
-				//log.log(Level.INFO,"Testing " + item.toString());
+				log.log(Level.INFO,"Testing " + item.toString());
 				Coordinate coord = new Coordinate(Double.parseDouble(lonStr),
 						Double.parseDouble(latStr));
 				Point point = geometryFactory.createPoint(coord);
@@ -284,7 +285,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 					place.setSub4(item.getSub4());
 					place.setSub5(item.getSub5());
 					place.setSub6(item.getSub6());
-//					log.log(Level.INFO,"Found point inside " + item.getCountryCode() + " " +  item.toString());
+					log.log(Level.INFO,"Found point inside " + item.getCountryCode() + " " +  item.toString());
 					break;
 				}
 			} else {
