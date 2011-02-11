@@ -21,6 +21,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.AltText;
 import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
+import com.gallatinsystems.survey.device.domain.QuestionHelp;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
@@ -72,11 +73,8 @@ public class QuestionView extends TableLayout implements
 		TableRow tr = new TableRow(context);
 		questionText = new TextView(context);
 
-		if (q.getHelpTypeCount() > 0) {
-			questionText.setWidth(screenWidth - 80);
-		} else {
-			questionText.setWidth(screenWidth);
-		}
+		questionText.setWidth(getMaxTextWidth());
+
 		this.readOnly = readOnly;
 		if (!readOnly) {
 			questionText.setLongClickable(true);
@@ -247,7 +245,17 @@ public class QuestionView extends TableLayout implements
 		} else if (ConstantUtil.TIP_HELP_TYPE.equals(type)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 			TextView tipText = new TextView(getContext());
-			// tipText.setText(Html.fromHtml(question.getTip()));
+			StringBuilder textBuilder = new StringBuilder();
+			ArrayList<QuestionHelp> helpItems = question.getHelpByType(type);
+			if (helpItems != null) {
+				for (int i = 0; i < helpItems.size(); i++) {
+					if (i > 0) {
+						textBuilder.append("<br>");
+					}
+					textBuilder.append(helpItems.get(i).getText());
+				}
+			}
+			tipText.setText(Html.fromHtml(textBuilder.toString()));
 			builder.setView(tipText);
 			builder.setPositiveButton(R.string.okbutton,
 					new DialogInterface.OnClickListener() {
@@ -484,6 +492,20 @@ public class QuestionView extends TableLayout implements
 			if (tipImage != null) {
 				tipImage.setVisibility(View.VISIBLE);
 			}
+		}
+	}
+
+	/**
+	 * gets the maximum width to use for the first component in the table row
+	 * (used to ensure the help image icon is on the screen)
+	 * 
+	 * @return
+	 */
+	protected int getMaxTextWidth() {
+		if (getQuestion().getHelpTypeCount() > 0) {
+			return (screenWidth - 90);
+		} else {
+			return screenWidth;
 		}
 	}
 }

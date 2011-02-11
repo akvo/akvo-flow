@@ -131,7 +131,7 @@ public class OptionQuestionView extends QuestionView {
 				if (readOnly) {
 					spinner.setEnabled(false);
 				}
-			} else if (!question.isAllowMultiple()) {
+			} else if (!question.isAllowMultiple()) {				
 				optionGroup = new RadioGroup(context);
 				optionGroup
 						.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -169,7 +169,7 @@ public class OptionQuestionView extends QuestionView {
 						}
 					});
 					rb.setText(formOptionText(o), BufferType.SPANNABLE);
-					rb.setWidth(screenWidth);
+					rb.setWidth(getMaxTextWidth());
 					optionGroup.addView(rb, i++,
 							new LayoutParams(LayoutParams.FILL_PARENT,
 									LayoutParams.WRAP_CONTENT));
@@ -189,13 +189,13 @@ public class OptionQuestionView extends QuestionView {
 						optionGroup.getChildAt(j).setEnabled(false);
 					}
 				}
-			} else {
+			} else {				
 				checkBoxes = new ArrayList<CheckBox>();
 				for (int i = 0; i < options.size(); i++) {
 					TableRow boxRow = new TableRow(context);
-					CheckBox box = new CheckBox(context);
+					CheckBox box = new CheckBox(context);					
 					box.setId(i);
-					box.setWidth(screenWidth);
+					box.setWidth(getMaxTextWidth());
 					checkBoxes.add(box);
 					box.setText(formOptionText(options.get(i)),
 							BufferType.SPANNABLE);
