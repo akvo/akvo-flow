@@ -5,23 +5,27 @@
 // Generated on: 2010.08.05 at 05:55:36 PM MDT 
 //
 
-
 package com.gallatinsystems.survey.domain.xml;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -41,116 +45,89 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "text",
-    "altText"
-})
+@XmlType(name = "", propOrder = { "text", "altText" })
 @XmlRootElement(name = "help")
 public class Help {
 
-    protected Text text;
-    protected AltText altText;
-    @XmlAttribute(required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NMTOKEN")
-    protected String type;
-    @XmlAttribute
-    protected String value;
+	protected Text text;
+	@XmlElement(required = false)
+	protected List<AltText> altText;
+	@XmlAttribute(required = true)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String type;
+	@XmlAttribute
+	protected String value;
 
-    /**
-     * Gets the value of the text property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Text }
-     *     
-     */
-    public Text getText() {
-        return text;
-    }
+	/**
+	 * Gets the value of the text property.
+	 * 
+	 * @return possible object is {@link Text }
+	 * 
+	 */
+	public Text getText() {
+		return text;
+	}
 
-    /**
-     * Sets the value of the text property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Text }
-     *     
-     */
-    public void setText(Text value) {
-        this.text = value;
-    }
+	/**
+	 * Sets the value of the text property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Text }
+	 * 
+	 */
+	public void setText(Text value) {
+		this.text = value;
+	}
 
-    /**
-     * Gets the value of the altText property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link AltText }
-     *     
-     */
-    public AltText getAltText() {
-        return altText;
-    }
+	public List<AltText> getAltText() {
+		return altText;
+	}
 
-    /**
-     * Sets the value of the altText property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link AltText }
-     *     
-     */
-    public void setAltText(AltText value) {
-        this.altText = value;
-    }
+	public void setAltText(List<AltText> altText) {
+		this.altText = altText;
+	}
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * Gets the value of the type property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getType() {
+		return type;
+	}
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
-    }
+	/**
+	 * Sets the value of the type property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setType(String value) {
+		this.type = value;
+	}
 
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
+	/**
+	 * Gets the value of the value property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getValue() {
+		return value;
+	}
 
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+	/**
+	 * Sets the value of the value property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 }

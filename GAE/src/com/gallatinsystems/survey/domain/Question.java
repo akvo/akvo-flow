@@ -198,6 +198,11 @@ public class Question extends BaseDomain {
 		this.tip = tip;
 	}
 
+	/**
+	 * use helpMedia instead
+	 * @return
+	 */
+	@Deprecated
 	public String getTip() {
 		return tip;
 	}

@@ -27,6 +27,7 @@ import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.SurveyContainer;
@@ -257,12 +258,49 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			t.setContent(q.getText());
 			qXML.setText(t);
 		}
+		List<Help> helpList = new ArrayList<Help>();
+		// this is here for backward compatibility
 		if (q.getTip() != null) {
 			Help tip = new Help();
 			com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
 			t.setContent(q.getTip());
 			tip.setText(t);
-			qXML.setHelp(tip);
+			tip.setType("tip");
+			if (q.getTip() != null && q.getTip().trim().length() > 0
+					&& !"null".equalsIgnoreCase(q.getTip().trim())) {
+				helpList.add(tip);
+			}
+		}
+		if (q.getQuestionHelpMediaMap() != null) {
+			for (QuestionHelpMedia helpItem : q.getQuestionHelpMediaMap()
+					.values()) {
+				Help tip = new Help();
+				com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+				t.setContent(helpItem.getText());
+				if (helpItem.getType() == QuestionHelpMedia.Type.TEXT) {
+					tip.setType("tip");
+				} else {
+					tip.setType(helpItem.getType().toString().toLowerCase());
+				}
+				if (helpItem.getTranslationMap() != null) {
+					List<AltText> translationList = new ArrayList<AltText>();
+					for (Translation trans : helpItem.getTranslationMap()
+							.values()) {
+						AltText aText = new AltText();
+						aText.setContent(trans.getText());
+						aText.setLanguage(trans.getLanguageCode());
+						aText.setType("translation");
+						translationList.add(aText);
+					}
+					if (translationList.size() > 0) {
+						tip.setAltText(translationList);
+					}
+				}
+				helpList.add(tip);
+			}
+		}
+		if (helpList.size() > 0) {
+			qXML.setHelp(helpList);
 		}
 
 		if (q.getValidationRule() != null) {

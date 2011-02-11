@@ -68,7 +68,8 @@ public class Question {
 	@XmlElement(required = false)
 	protected List<AltText> altText;
 	protected Dependency dependency;
-	protected Help help;
+	@XmlElement(required =false)
+	protected List<Help> help;
 	protected Options options;
 	protected Text text;
 	protected ValidationRule validationRule;
@@ -133,7 +134,7 @@ public class Question {
 	 * @return possible object is {@link Help }
 	 * 
 	 */
-	public Help getHelp() {
+	public List<Help> getHelp() {
 		return help;
 	}
 
@@ -144,7 +145,7 @@ public class Question {
 	 *            allowed object is {@link Help }
 	 * 
 	 */
-	public void setHelp(Help value) {
+	public void setHelp(List<Help> value) {
 		this.help = value;
 	}
 
