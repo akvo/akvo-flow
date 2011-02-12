@@ -30,6 +30,7 @@
 			<jvmarg value="-Xmx256M" />
 			<arg value="org.waterforpeople.mapping.portal.portal" />
 			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
+			<arg value="com.gallatinsystems.mapping.surveyentry.surveyentry" />
 		</java>
 	</target>
 
