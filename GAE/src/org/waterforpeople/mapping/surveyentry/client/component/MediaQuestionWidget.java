@@ -34,13 +34,13 @@ public class MediaQuestionWidget extends QuestionWidget implements
 	private Image completeIcon;
 
 	public MediaQuestionWidget(QuestionDto q) {
-		super(q);
-		uploadPanel = new HorizontalPanel();
+		super(q);		
 	}
 
 	@Override
 	protected void bindResponseSection() {
-		uploadButton = new Button("Upload");
+		uploadPanel = new HorizontalPanel();
+		uploadButton = new Button("Upload");		
 		completeIcon = new Image("images/icon-check.gif");
 		form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);

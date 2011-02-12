@@ -1,16 +1,9 @@
 package org.waterforpeople.mapping.surveyentry.client.component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * handles option questions
@@ -20,37 +13,31 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class OptionQuestionWidget extends QuestionWidget {
 
-	private List<CheckBox> checkBoxes;
-	private List<RadioButton> radioButtons;
 	private ListBox listBox;
-	private Panel optPanel;
 
 	public OptionQuestionWidget(QuestionDto q) {
 		super(q);
-		optPanel = new VerticalPanel();
 	}
 
 	@Override
 	protected void bindResponseSection() {
-		if (getQuestion().getOptionContainerDto() != null) {
-			if (getQuestion().getOptionContainerDto().getAllowMultipleFlag()) {
-				checkBoxes = new ArrayList<CheckBox>();
-				for (QuestionOptionDto opt : getQuestion()
-						.getOptionContainerDto().getOptionsList()) {
-					CheckBox box = new CheckBox(opt.getText());
-					optPanel.add(box);
 
-				}
-			} else {
-				radioButtons = new ArrayList<RadioButton>();
-				for (QuestionOptionDto opt : getQuestion()
-						.getOptionContainerDto().getOptionsList()) {
-					RadioButton rad = new RadioButton(getQuestion().getKeyId()
-							.toString(), opt.getText());
-					optPanel.add(rad);
-				}
+		if (getQuestion().getOptionContainerDto() != null) {
+			listBox = new ListBox(getQuestion().getOptionContainerDto()
+					.getAllowMultipleFlag());
+			if(getQuestion().getOptionContainerDto()
+					.getAllowMultipleFlag()){
+				listBox.setVisibleItemCount(getQuestion()
+						.getOptionContainerDto().getOptionsList().size());	
+			}else{
+				listBox.addItem("","");
 			}
+			for (QuestionOptionDto opt : getQuestion().getOptionContainerDto()
+					.getOptionsList()) {
+				listBox.addItem(opt.getText(), opt.getText());
+			}			
+
 		}
-		getPanel().add(optPanel);
+		getPanel().add(listBox);
 	}
 }

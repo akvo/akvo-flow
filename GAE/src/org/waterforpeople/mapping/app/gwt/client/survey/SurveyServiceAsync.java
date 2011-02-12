@@ -12,8 +12,8 @@ public interface SurveyServiceAsync {
 
 	public void listSurvey(AsyncCallback<SurveyDto[]> callback);
 
-	public void listSurveyQuestionByType(Long surveyId,
-			QuestionType type, AsyncCallback<QuestionDto[]> callback);
+	public void listSurveyQuestionByType(Long surveyId, QuestionType type,
+			AsyncCallback<QuestionDto[]> callback);
 
 	void listSurveysByGroup(String selectedGroupId,
 			AsyncCallback<ArrayList<SurveyDto>> callback);
@@ -93,5 +93,7 @@ public interface SurveyServiceAsync {
 
 	void updateQuestionDependency(Long questionId, QuestionDependencyDto dep,
 			AsyncCallback<Void> callback);
+
+	void getPublishedSurvey(String surveyId, AsyncCallback<SurveyDto> callback);
 
 }

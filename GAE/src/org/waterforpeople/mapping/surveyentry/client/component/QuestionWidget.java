@@ -4,6 +4,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -15,16 +16,20 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public abstract class QuestionWidget extends Composite {
-	private Panel panel;
+	private static String TEXT_WIDTH = "300px"; 
+	private Grid mainGrid;
+	private Panel answerPanel;
 	private QuestionDto question;
 	private QuestionAnswerStoreDto answer;
 
 	protected QuestionWidget(QuestionDto question) {
-		panel = new VerticalPanel();
+		answerPanel = new VerticalPanel();
 		answer = new QuestionAnswerStoreDto();
+		mainGrid = new Grid(1, 2);
+		mainGrid.setWidget(0, 1, answerPanel);
 		this.question = question;
 		bindQuestion();
-		initWidget(panel);
+		initWidget(mainGrid);
 	}
 
 	/**
@@ -34,8 +39,10 @@ public abstract class QuestionWidget extends Composite {
 	 * TODO: handle unsupported question types (SCAN, TRACK, etc)
 	 */
 	protected void bindQuestion() {
-		Label text = new Label(question.getText());
-		panel.add(text);
+		Label text = new Label(question.getText()+(question.getMandatoryFlag()?"*":""));
+		text.setWordWrap(true);
+		text.setWidth(TEXT_WIDTH);
+		mainGrid.setWidget(0, 0, text);
 		bindResponseSection();
 	}
 
@@ -46,7 +53,7 @@ public abstract class QuestionWidget extends Composite {
 	}
 
 	protected Panel getPanel() {
-		return panel;
+		return answerPanel;
 	}
 
 	protected QuestionDto getQuestion() {

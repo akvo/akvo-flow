@@ -72,4 +72,14 @@ public interface SurveyService extends RemoteService {
 	public void updateQuestionGroupOrder(List<QuestionGroupDto> groups);
 	public void updateQuestionDependency(Long questionId,
 			QuestionDependencyDto dep);
+	/**
+	 * returns a surveyDto populated from the published xml. This domain graph
+	 * lacks many keyIds so it is not suitable for updating the survey
+	 * structure. It is, however, suitable for rendering the survey and
+	 * collecting responses.
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
+	public SurveyDto getPublishedSurvey(String surveyId);
 }

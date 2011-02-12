@@ -2,6 +2,9 @@ package org.waterforpeople.mapping.app.gwt.server.survey;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -73,6 +77,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
 	public static final String STRENGTH_QUESTION_TYPE = "strength";
+	private static final String SURVEY_S3_PROP = "surveyuploadurl";
+	private static final String SURVEY_DIR_PROP = "surveyuploaddir";
 
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
@@ -723,29 +729,33 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							t.setContent(q.getTip());
 							tip.setText(t);
 							tip.setType("tip");
-							if (q.getTip() != null && q.getTip().trim().length() > 0
-									&& !"null".equalsIgnoreCase(q.getTip().trim())) {
+							if (q.getTip() != null
+									&& q.getTip().trim().length() > 0
+									&& !"null".equalsIgnoreCase(q.getTip()
+											.trim())) {
 								helpList.add(tip);
 							}
 						}
 						if (q.getQuestionHelpMediaMap() != null) {
-							for (QuestionHelpMedia helpItem : q.getQuestionHelpMediaMap()
-									.values()) {
+							for (QuestionHelpMedia helpItem : q
+									.getQuestionHelpMediaMap().values()) {
 								Help tip = new Help();
 								com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
 								t.setContent(helpItem.getText());
 								if (helpItem.getType() == QuestionHelpMedia.Type.TEXT) {
 									tip.setType("tip");
 								} else {
-									tip.setType(helpItem.getType().toString().toLowerCase());
+									tip.setType(helpItem.getType().toString()
+											.toLowerCase());
 								}
 								if (helpItem.getTranslationMap() != null) {
 									List<AltText> translationList = new ArrayList<AltText>();
-									for (Translation trans : helpItem.getTranslationMap()
-											.values()) {
+									for (Translation trans : helpItem
+											.getTranslationMap().values()) {
 										AltText aText = new AltText();
 										aText.setContent(trans.getText());
-										aText.setLanguage(trans.getLanguageCode());
+										aText.setLanguage(trans
+												.getLanguageCode());
 										aText.setType("translation");
 										translationList.add(aText);
 									}
@@ -1091,6 +1101,41 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				q.setDependentFlag(false);
 			}
 		}
+	}
+
+	/**
+	 * returns a surveyDto populated from the published xml. This domain graph
+	 * lacks many keyIds so it is not suitable for updating the survey
+	 * structure. It is, however, suitable for rendering the survey and
+	 * collecting responses.
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
+	public SurveyDto getPublishedSurvey(String surveyId) {
+		SurveyDto dto = null;
+		try {
+			URL url = new URL(PropertyUtil.getProperty(SURVEY_S3_PROP)
+					+ PropertyUtil.getProperty(SURVEY_DIR_PROP) + "/"
+					+ surveyId + ".xml");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					url.openStream()));
+			StringBuffer buff = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				buff.append(line);
+			}
+			reader.close();
+			String fullContent = buff.toString();
+			if (fullContent.trim().length() > 0) {
+				SurveyXmlDtoHelper helper = new SurveyXmlDtoHelper();
+				dto = helper.parseAsDtoGraph(fullContent.trim(), new Long(
+						surveyId));
+			}
+		} catch (Exception e) {
+			// TODO: handle
+		}
+		return dto;
 	}
 
 }

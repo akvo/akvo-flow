@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
@@ -21,6 +22,12 @@ public class QuestionHelpDto extends BaseDto {
 		this.translationMap = translationMap;
 	}
 
+	public void addTranslation(TranslationDto trans){
+		if(translationMap == null){
+			translationMap = new TreeMap<String,TranslationDto>();			
+		}
+		translationMap.put(trans.getLangCode(), trans);
+	}
 
 	public Long getQuestionId() {
 		return questionId;

@@ -3,7 +3,7 @@
 <module>
 	<inherits name="com.gallatinsystems.framework.gwt.PortletFramework" />	
 	<inherits name="org.waterforpeople.mapping.app.gwt.WFPServices" />
-	<inherits name="com.google.gwt.i18n.I18N" />
+	<inherits name="com.google.gwt.i18n.I18N" />	
 	<source path="client" />	
 	<entry-point
 		class="org.waterforpeople.mapping.surveyentry.client.SurveyEntryClient" />
