@@ -10,13 +10,14 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.surveyentry.client.component.QuestionWidget;
+import org.waterforpeople.mapping.surveyentry.client.component.QuestionWidgetFactory;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -192,12 +193,16 @@ public class SurveyEntryClient implements EntryPoint {
 		}
 	}
 
-	
 	protected void installQuestions(int idx) {
 		Panel tabContent = (Panel) tabPanel.getWidget(idx);
-		Collection<QuestionDto> questions = surveyDto.getQuestionGroupList().get(idx).getQuestionMap().values();
-		for(QuestionDto q: questions){
-			tabContent.add(new Label(q.getText()));
+		Collection<QuestionDto> questions = surveyDto.getQuestionGroupList()
+				.get(idx).getQuestionMap().values();
+		QuestionWidgetFactory factory = new QuestionWidgetFactory();
+		for (QuestionDto q : questions) {
+			QuestionWidget w = factory.createQuestionWidget(q);
+			if (w != null) {
+				tabContent.add(w);
+			}
 		}
 	}
 }

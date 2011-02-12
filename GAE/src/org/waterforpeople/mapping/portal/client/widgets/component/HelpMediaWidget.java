@@ -1,7 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
-import org.waterforpeople.mapping.portal.client.util.UploadConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;

@@ -1,7 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 
-import org.waterforpeople.mapping.portal.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.user.app.gwt.client.UserDto;

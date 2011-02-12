@@ -18,7 +18,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
-import org.waterforpeople.mapping.portal.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyQuestionTranslationDialog;
 import org.waterforpeople.mapping.portal.client.widgets.component.TranslationChangeListener;
 

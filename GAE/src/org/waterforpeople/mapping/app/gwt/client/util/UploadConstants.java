@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.portal.client.util;
+package org.waterforpeople.mapping.app.gwt.client.util;
 
 import com.google.gwt.i18n.client.Constants;
 

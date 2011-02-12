@@ -1,7 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 
-import org.waterforpeople.mapping.portal.client.util.UploadConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
