@@ -1,7 +1,6 @@
 package com.gallatinsystems.survey.device.service;
 
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.concurrent.Semaphore;
 
 import android.app.Service;
