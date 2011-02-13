@@ -18,18 +18,21 @@ public class QuestionWidgetFactory {
 	 * @param question
 	 * @return
 	 */
-	public QuestionWidget createQuestionWidget(QuestionDto question, QuestionAnswerListener listener) {
+	public QuestionWidget createQuestionWidget(QuestionDto question,
+			QuestionAnswerListener listener) {
 
-		if (QuestionDto.QuestionType.FREE_TEXT == question.getType()
-				|| QuestionDto.QuestionType.NUMBER == question.getType()) {
-			return new TextQuestionWidget(question);
+		if (QuestionDto.QuestionType.FREE_TEXT == question.getType()) {
+			return new TextQuestionWidget(question, false);
+		} else if (QuestionDto.QuestionType.NUMBER == question.getType()) {
+			return new TextQuestionWidget(question, true);
 		} else if (QuestionDto.QuestionType.GEO == question.getType()) {
 			return new GeoQuestionWidget(question);
 		} else if (QuestionDto.QuestionType.PHOTO == question.getType()
 				|| QuestionDto.QuestionType.VIDEO == question.getType()) {
-			return new MediaQuestionWidget(question, question.getType().toString());
+			return new MediaQuestionWidget(question, question.getType()
+					.toString());
 		} else if (QuestionDto.QuestionType.OPTION == question.getType()) {
-			return new OptionQuestionWidget(question,listener);
+			return new OptionQuestionWidget(question, listener);
 		}
 		return null;
 	}
