@@ -49,6 +49,9 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		}
 	}
 
+	/**
+	 * sets up the upload form
+	 */
 	protected void constructForm() {
 		uploadPanel = new HorizontalPanel();
 		form = new FormPanel();
@@ -102,6 +105,9 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		getPanel().add(contentPanel);
 	}
 
+	/**
+	 * turn on the completion icon and the reset button
+	 */
 	@Override
 	public void onSubmitComplete(SubmitCompleteEvent event) {
 		statusLabel.setVisible(false);
@@ -110,6 +116,9 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		form.setVisible(true);
 	}
 
+	/**
+	 * checks the file extension and invokes the upload
+	 */
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == uploadButton) {
@@ -159,6 +168,9 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		resetPanels();
 	}
 
+	/**
+	 * clears the content and re-installs the upload panel
+	 */
 	private void resetPanels() {
 		contentPanel.clear();
 		uploadPanel.clear();

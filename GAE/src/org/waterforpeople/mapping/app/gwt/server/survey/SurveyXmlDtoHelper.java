@@ -91,6 +91,11 @@ public class SurveyXmlDtoHelper {
 									.getOptions().getAllowMultiple()));
 							optC.setAllowOtherFlag(new Boolean(q.getOptions()
 									.getAllowOther()));
+							
+							//set the values on the question (for backward compatibility)
+							qDto.setAllowMultipleFlag(optC.getAllowMultipleFlag());
+							qDto.setAllowOtherFlag(optC.getAllowOtherFlag());
+							
 							for (Option option : q.getOptions().getOption()) {
 								QuestionOptionDto opt = new QuestionOptionDto();
 								List<Object> contentList = option.getContent();
