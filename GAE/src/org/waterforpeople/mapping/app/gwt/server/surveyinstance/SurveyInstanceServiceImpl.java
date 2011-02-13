@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -16,6 +17,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceSe
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -29,6 +31,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.TaskOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
@@ -247,7 +250,19 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				answerList.add(store);
 			}
 			dao.save(answerList);
+
+			// send async request to populate the AccessPoint using the mapping
+			QueueFactory.getDefaultQueue().add(
+					url("/app_worker/task").param("action", "addAccessPoint")
+							.param("surveyId", domain.getKey().getId() + ""));
+			// send asyn crequest to summarize the instance
+			QueueFactory.getQueue("dataSummarization").add(
+					url("/app_worker/datasummarization").param("objectKey",
+							domain.getKey().getId() + "").param("type",
+							"SurveyInstance"));
+
 		}
+
 		return instance;
 	}
 }
