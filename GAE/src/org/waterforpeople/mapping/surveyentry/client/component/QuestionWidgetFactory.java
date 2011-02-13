@@ -18,7 +18,7 @@ public class QuestionWidgetFactory {
 	 * @param question
 	 * @return
 	 */
-	public QuestionWidget createQuestionWidget(QuestionDto question) {
+	public QuestionWidget createQuestionWidget(QuestionDto question, QuestionAnswerListener listener) {
 
 		if (QuestionDto.QuestionType.FREE_TEXT == question.getType()
 				|| QuestionDto.QuestionType.NUMBER == question.getType()) {
@@ -29,7 +29,7 @@ public class QuestionWidgetFactory {
 				|| QuestionDto.QuestionType.VIDEO == question.getType()) {
 			return new MediaQuestionWidget(question);
 		} else if (QuestionDto.QuestionType.OPTION == question.getType()) {
-			return new OptionQuestionWidget(question);
+			return new OptionQuestionWidget(question,listener);
 		}
 		return null;
 	}

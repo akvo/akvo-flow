@@ -56,7 +56,7 @@ public abstract class QuestionWidget extends Composite {
 		return answerPanel;
 	}
 
-	protected QuestionDto getQuestion() {
+	public QuestionDto getQuestion() {
 		return question;
 	}
 }

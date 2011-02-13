@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
@@ -91,7 +92,7 @@ public class SurveyXmlDtoHelper {
 								for (Object o : contentList) {
 									if (o instanceof Text) {
 										opt.setText(((Text) o).getContent());
-									} else if (o instanceof String) {										
+									} else if (o instanceof String) {
 										if (opt.getText() == null
 												|| opt.getText().trim()
 														.length() == 0) {
@@ -139,6 +140,15 @@ public class SurveyXmlDtoHelper {
 							qDto.addQuestionHelp(hDto);
 						}
 					}
+					if (q.getDependency() != null) {
+						QuestionDependencyDto depDto = new QuestionDependencyDto();
+						depDto.setAnswerValue(q.getDependency()
+								.getAnswerValue());
+						depDto.setQuestionId(new Long(q.getDependency()
+								.getQuestion()));
+						qDto.setQuestionDependency(depDto);
+					}
+
 					group.addQuestion(qDto, qDto.getOrder());
 				}
 
