@@ -20,4 +20,11 @@ public interface SurveyInstanceService extends RemoteService {
 	public ResponseDto<ArrayList<QuestionAnswerStoreDto>> listResponsesByQuestion(Long questionId, String cursorString);
 	
 	public void deleteSurveyInstance(Long instanceId);
+	/**
+	 * saves a new survey instance and triggers processing
+	 * 
+	 * @param instance
+	 * @return
+	 */
+	public SurveyInstanceDto submitSurveyInstance(SurveyInstanceDto instance);
 }

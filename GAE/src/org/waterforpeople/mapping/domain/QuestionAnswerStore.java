@@ -67,17 +67,6 @@ public class QuestionAnswerStore extends BaseDomain {
 		this.collectionDate = collectionDate;
 	}
 
-	@Persistent
-	private SurveyInstance surveyInstance;
-
-	public SurveyInstance getSurveyInstance() {
-		return surveyInstance;
-	}
-
-	public void setSurveyInstance(SurveyInstance surveyInstance) {
-		this.surveyInstance = surveyInstance;
-	}
-
 	public Long getArbitratyNumber() {
 		return arbitratyNumber;
 	}

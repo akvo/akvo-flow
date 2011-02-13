@@ -46,7 +46,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		List<Survey> surveyList = surveyDao.list("all");
 		HashMap<Long, String> surveyMap = new HashMap<Long, String>();
 		for (Survey s : surveyList) {
-			surveyMap.put(s.getKey().getId(),s.getPath()+ "/"+ s.getCode());
+			surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
 		}
 		List<SurveyInstance> siList = null;
 		if (beginDate == null) {
@@ -138,12 +138,11 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			DataChangeRecord value = new DataChangeRecord(
 					QuestionAnswerStore.class.getName(), item.getQuestionID(),
 					item.getOldValue(), item.getValue());
-			queue.add(url("/app_worker/dataupdate")
-					.param(DataSummarizationRequest.OBJECT_KEY,
-							item.getQuestionID())
+			queue.add(url("/app_worker/dataupdate").param(
+					DataSummarizationRequest.OBJECT_KEY, item.getQuestionID())
 					.param(DataSummarizationRequest.OBJECT_TYPE,
-							"QuestionDataChange")
-					.param(DataSummarizationRequest.VALUE_KEY,
+							"QuestionDataChange").param(
+							DataSummarizationRequest.VALUE_KEY,
 							value.packString()));
 			// see if the question is mapped. And if it is, send an Access Point
 			// change message
@@ -156,13 +155,13 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 								+ item.getSurveyInstanceId() + "|"
 								+ mapping.getKey().getId(), item.getOldValue(),
 						item.getValue());
-				queue.add(url("/app_worker/dataupdate")
-						.param(DataSummarizationRequest.OBJECT_KEY,
-								item.getQuestionID())
-						.param(DataSummarizationRequest.OBJECT_TYPE,
-								"AccessPointChange")
-						.param(DataSummarizationRequest.VALUE_KEY,
-								apValue.packString()));
+				queue.add(url("/app_worker/dataupdate").param(
+						DataSummarizationRequest.OBJECT_KEY,
+						item.getQuestionID()).param(
+						DataSummarizationRequest.OBJECT_TYPE,
+						"AccessPointChange").param(
+						DataSummarizationRequest.VALUE_KEY,
+						apValue.packString()));
 			}
 		}
 
@@ -206,15 +205,15 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				Queue queue = QueueFactory.getQueue("dataUpdate");
 				for (QuestionAnswerStore ans : answers) {
 					DataChangeRecord value = new DataChangeRecord(
-							QuestionAnswerStore.class.getName(),
-							ans.getQuestionID(), ans.getValue(), "");
-					queue.add(url("/app_worker/dataupdate")
-							.param(DataSummarizationRequest.OBJECT_KEY,
-									ans.getQuestionID())
-							.param(DataSummarizationRequest.OBJECT_TYPE,
-									"QuestionDataChange")
-							.param(DataSummarizationRequest.VALUE_KEY,
-									value.packString()));
+							QuestionAnswerStore.class.getName(), ans
+									.getQuestionID(), ans.getValue(), "");
+					queue.add(url("/app_worker/dataupdate").param(
+							DataSummarizationRequest.OBJECT_KEY,
+							ans.getQuestionID()).param(
+							DataSummarizationRequest.OBJECT_TYPE,
+							"QuestionDataChange").param(
+							DataSummarizationRequest.VALUE_KEY,
+							value.packString()));
 				}
 				dao.delete(answers);
 			}
@@ -224,5 +223,31 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				log.log(Level.INFO, "Deleted: " + instanceId);
 			}
 		}
+	}
+
+	/**
+	 * saves a new survey instance and triggers processing
+	 * 
+	 * @param instance
+	 * @return
+	 */
+	public SurveyInstanceDto submitSurveyInstance(SurveyInstanceDto instance) {
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		SurveyInstance domain = new SurveyInstance();
+		DtoMarshaller.copyToCanonical(domain, instance);
+		domain = dao.save(domain);
+		instance.setKeyId(domain.getKey().getId());
+		if (instance.getQuestionAnswersStore() != null) {
+			List<QuestionAnswerStore> answerList = new ArrayList<QuestionAnswerStore>();
+			for (QuestionAnswerStoreDto ans : instance
+					.getQuestionAnswersStore()) {
+				QuestionAnswerStore store = new QuestionAnswerStore();
+				DtoMarshaller.copyToCanonical(store, ans);
+				store.setSurveyInstanceId(domain.getKey().getId());
+				answerList.add(store);
+			}
+			dao.save(answerList);
+		}
+		return instance;
 	}
 }

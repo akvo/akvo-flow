@@ -23,4 +23,7 @@ public interface SurveyInstanceServiceAsync {
 
 	void deleteSurveyInstance(Long instanceId, AsyncCallback<Void> callback);
 
+	void submitSurveyInstance(SurveyInstanceDto instance,
+			AsyncCallback<SurveyInstanceDto> callback);
+
 }

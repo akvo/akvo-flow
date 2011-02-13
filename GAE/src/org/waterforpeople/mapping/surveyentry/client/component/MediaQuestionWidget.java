@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.surveyentry.client.component;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
  */
 public class MediaQuestionWidget extends QuestionWidget implements
 		SubmitCompleteHandler, ClickHandler {
+
 	private static UploadConstants UPLOAD_CONSTANTS = GWT
 			.create(UploadConstants.class);
 
@@ -32,15 +34,21 @@ public class MediaQuestionWidget extends QuestionWidget implements
 	private FileUpload upload;
 	private Hidden contentType;
 	private Image completeIcon;
+	private String type;
 
-	public MediaQuestionWidget(QuestionDto q) {
-		super(q);		
+	public MediaQuestionWidget(QuestionDto q, String type) {
+		super(q);
+		if("PHOTO".equalsIgnoreCase(type)){
+			this.type = "IMAGE";
+		}else{
+			this.type = type;
+		}
 	}
 
 	@Override
-	protected void bindResponseSection() {
+	protected void constructResponseUi() {
 		uploadPanel = new HorizontalPanel();
-		uploadButton = new Button("Upload");		
+		uploadButton = new Button("Upload");
 		completeIcon = new Image("images/icon-check.gif");
 		form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -90,4 +98,16 @@ public class MediaQuestionWidget extends QuestionWidget implements
 
 	}
 
+	public void captureAnswer() {
+		getAnswer().setType(type);
+		if (upload.getFilename() != null
+				&& upload.getFilename().trim().length() > 0) {
+			getAnswer().setValue(upload.getFilename().trim());
+		}
+	}
+
+	@Override
+	protected void resetUi() {
+		form.reset();
+	}
 }

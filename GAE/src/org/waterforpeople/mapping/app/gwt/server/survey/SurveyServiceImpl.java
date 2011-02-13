@@ -1133,7 +1133,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						surveyId));
 			}
 		} catch (Exception e) {
-			// TODO: handle
+			log.log(Level.SEVERE, "Could not popuate survey from xml", e);			
 		}
 		return dto;
 	}

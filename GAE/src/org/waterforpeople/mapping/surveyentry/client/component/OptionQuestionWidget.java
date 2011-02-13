@@ -10,12 +10,16 @@ import com.google.gwt.user.client.ui.ListBox;
 /**
  * handles option questions
  * 
+ * TODO: handle "other" question type
+ * 
  * @author Christopher Fagiani
  * 
  */
 public class OptionQuestionWidget extends QuestionWidget implements
 		ChangeHandler {
 
+	private static final String OTHER_TYPE = "OTHER";
+	private static final String TYPE = "VALUE";
 	private ListBox listBox;
 	private QuestionAnswerListener listener;
 
@@ -25,7 +29,7 @@ public class OptionQuestionWidget extends QuestionWidget implements
 	}
 
 	@Override
-	protected void bindResponseSection() {
+	protected void constructResponseUi() {
 
 		if (getQuestion().getOptionContainerDto() != null) {
 			listBox = new ListBox(getQuestion().getOptionContainerDto()
@@ -47,6 +51,21 @@ public class OptionQuestionWidget extends QuestionWidget implements
 
 	@Override
 	public void onChange(ChangeEvent event) {
+		String response = getSelectionAsString();
+		if (listener != null) {
+			listener.answerUpdated(getQuestion().getKeyId(),
+					response != null ? response : "");
+		}
+	}
+
+	@Override
+	protected void captureAnswer() {
+		getAnswer().setType(TYPE);
+		getAnswer().setValue(getSelectionAsString());
+
+	}
+
+	protected String getSelectionAsString() {
 		StringBuilder buf = new StringBuilder();
 		int count = 0;
 		for (int i = 0; i < listBox.getItemCount(); i++) {
@@ -58,8 +77,20 @@ public class OptionQuestionWidget extends QuestionWidget implements
 				count++;
 			}
 		}
-		if (listener != null) {
-			listener.answerUpdated(getQuestion().getKeyId(), buf.toString());
+		if (count > 0 && buf.toString().trim().length() > 0) {
+			return buf.toString();
+		} else {
+			return null;
 		}
+	}
+
+	@Override
+	protected void resetUi() {
+		for (int i = 0; i < listBox.getItemCount(); i++) {
+			if (listBox.isItemSelected(i)) {
+				listBox.setItemSelected(i, false);
+			}
+		}
+
 	}
 }

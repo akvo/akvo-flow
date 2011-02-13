@@ -27,7 +27,7 @@ public class QuestionWidgetFactory {
 			return new GeoQuestionWidget(question);
 		} else if (QuestionDto.QuestionType.PHOTO == question.getType()
 				|| QuestionDto.QuestionType.VIDEO == question.getType()) {
-			return new MediaQuestionWidget(question);
+			return new MediaQuestionWidget(question, question.getType().toString());
 		} else if (QuestionDto.QuestionType.OPTION == question.getType()) {
 			return new OptionQuestionWidget(question,listener);
 		}

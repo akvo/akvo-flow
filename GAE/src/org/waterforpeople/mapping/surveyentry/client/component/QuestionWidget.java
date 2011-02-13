@@ -16,7 +16,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public abstract class QuestionWidget extends Composite {
-	private static String TEXT_WIDTH = "300px"; 
+	private static String TEXT_WIDTH = "300px";
+	private static final String DEFAULT_ANS_TYPE = "VALUE";
 	private Grid mainGrid;
 	private Panel answerPanel;
 	private QuestionDto question;
@@ -25,6 +26,9 @@ public abstract class QuestionWidget extends Composite {
 	protected QuestionWidget(QuestionDto question) {
 		answerPanel = new VerticalPanel();
 		answer = new QuestionAnswerStoreDto();
+		answer.setType(DEFAULT_ANS_TYPE);
+		answer.setQuestionID(question.getKeyId().toString());
+		answer.setSurveyId(question.getSurveyId());
 		mainGrid = new Grid(1, 2);
 		mainGrid.setWidget(0, 1, answerPanel);
 		this.question = question;
@@ -39,16 +43,30 @@ public abstract class QuestionWidget extends Composite {
 	 * TODO: handle unsupported question types (SCAN, TRACK, etc)
 	 */
 	protected void bindQuestion() {
-		Label text = new Label(question.getText()+(question.getMandatoryFlag()?"*":""));
+		Label text = new Label(question.getText()
+				+ (question.getMandatoryFlag() ? "*" : ""));
 		text.setWordWrap(true);
 		text.setWidth(TEXT_WIDTH);
 		mainGrid.setWidget(0, 0, text);
-		bindResponseSection();
+		constructResponseUi();
 	}
 
-	protected abstract void bindResponseSection();
+	/**
+	 * constructs the ui for the response section of the question
+	 */
+	protected abstract void constructResponseUi();
 
-	protected QuestionAnswerStoreDto getAnswer() {
+	/**
+	 * populates the answer object with values from the ui
+	 */
+	protected abstract void captureAnswer();
+
+	/**
+	 * clears input from the ui widgets
+	 */
+	protected abstract void resetUi();
+
+	public QuestionAnswerStoreDto getAnswer() {
 		return answer;
 	}
 
@@ -59,4 +77,28 @@ public abstract class QuestionWidget extends Composite {
 	public QuestionDto getQuestion() {
 		return question;
 	}
+
+	/**
+	 * returns true if the question has a valid answer
+	 * 
+	 * @return
+	 */
+	public boolean isAnswered() {
+		captureAnswer();
+		if (answer != null && answer.getValue() != null
+				&& answer.getValue().trim().length() > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * resets the question to the unanswered state
+	 */
+	public void reset() {
+		answer.setValue(null);
+		resetUi();
+	}
+
 }

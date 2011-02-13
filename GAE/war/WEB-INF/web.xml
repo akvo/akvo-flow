@@ -324,6 +324,10 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SurveyInstanceRpcService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyinstance</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SurveyInstanceRpcService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/surveyinstance</url-pattern>
+	</servlet-mapping>
 
 
 

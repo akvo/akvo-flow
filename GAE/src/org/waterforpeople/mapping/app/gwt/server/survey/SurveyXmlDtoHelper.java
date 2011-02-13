@@ -70,8 +70,14 @@ public class SurveyXmlDtoHelper {
 				for (com.gallatinsystems.survey.domain.xml.Question q : qg
 						.getQuestion()) {
 					QuestionDto qDto = new QuestionDto();
-					qDto.setText(q.getText().getContent());
+					if (q.getText() != null) {
+						qDto.setText(q.getText().getContent());
+					} else if (q.getAltText() != null
+							&& q.getAltText().size() > 0) {
+						qDto.setText(q.getAltText().get(0).getContent());
+					}
 					qDto.setKeyId(new Long(q.getId()));
+					qDto.setSurveyId(surveyId);
 					qDto.setMandatoryFlag(new Boolean(q.getMandatory()));
 					qDto.setOrder(new Integer(q.getOrder()));
 					String type = q.getType();

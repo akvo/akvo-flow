@@ -13,6 +13,8 @@ import com.google.gwt.user.client.ui.TextBox;
  * 
  */
 public class GeoQuestionWidget extends QuestionWidget {
+	private static final String TYPE = "GEO";
+	private static final String DELIM = "|";
 	private TextBox lat;
 	private TextBox lon;
 	private TextBox alt;
@@ -23,7 +25,7 @@ public class GeoQuestionWidget extends QuestionWidget {
 	}
 
 	@Override
-	protected void bindResponseSection() {
+	protected void constructResponseUi() {
 		lat = new TextBox();
 		ViewUtil.installFieldRow(getPanel(), "Latitude", lat, null);
 		lon = new TextBox();
@@ -32,6 +34,30 @@ public class GeoQuestionWidget extends QuestionWidget {
 		ViewUtil.installFieldRow(getPanel(), "Altitude", alt, null);
 		code = new TextBox();
 		ViewUtil.installFieldRow(getPanel(), "Code", code, null);
+	}
+
+	public void captureAnswer() {
+		getAnswer().setType(TYPE);
+		StringBuilder value = new StringBuilder();
+		// answers don't count unless lat and lon are captured
+		if (ViewUtil.isTextPopulated(lat) && ViewUtil.isTextPopulated(lon)) {
+			value.append(lat.getText().trim()).append(DELIM).append(
+					lon.getText().trim()).append(DELIM);
+			value.append(
+					ViewUtil.isTextPopulated(alt) ? alt.getText().trim() : "")
+					.append(DELIM);
+			value.append(ViewUtil.isTextPopulated(code) ? code.getText().trim()
+					: "");
+			getAnswer().setValue(value.toString());
+		}
+	}
+
+	@Override
+	protected void resetUi() {
+		lat.setText("");
+		lon.setText("");
+		alt.setText("");
+		code.setText("");
 	}
 
 }
