@@ -3,7 +3,7 @@ package org.waterforpeople.mapping.surveyentry.client.component;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
-import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
@@ -29,8 +30,11 @@ public class MediaQuestionWidget extends QuestionWidget implements
 			.create(UploadConstants.class);
 
 	private FormPanel form;
+	private HorizontalPanel contentPanel;
+	private Label statusLabel;
 	private HorizontalPanel uploadPanel;
 	private Button uploadButton;
+	private Button resetButton;
 	private FileUpload upload;
 	private Hidden contentType;
 	private Image completeIcon;
@@ -38,24 +42,21 @@ public class MediaQuestionWidget extends QuestionWidget implements
 
 	public MediaQuestionWidget(QuestionDto q, String type) {
 		super(q);
-		if("PHOTO".equalsIgnoreCase(type)){
+		if ("PHOTO".equalsIgnoreCase(type)) {
 			this.type = "IMAGE";
-		}else{
+		} else {
 			this.type = type;
 		}
 	}
 
-	@Override
-	protected void constructResponseUi() {
+	protected void constructForm() {
 		uploadPanel = new HorizontalPanel();
-		uploadButton = new Button("Upload");
-		completeIcon = new Image("images/icon-check.gif");
 		form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
 		form.setAction(UPLOAD_CONSTANTS.uploadUrl());
 		form.addSubmitCompleteHandler(this);
-		Hidden filePath = new Hidden("key", UPLOAD_CONSTANTS.helpS3Path()
+		Hidden filePath = new Hidden("key", UPLOAD_CONSTANTS.imageS3Path()
 				+ "/${filename}");
 
 		uploadPanel.add(filePath);
@@ -64,10 +65,10 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		uploadPanel.add(new Hidden("success_action_redirect",
 				"http://www.gallatinsystems.com/SuccessUpload.html"));
 		Hidden s3Policy = new Hidden("policy");
-		s3Policy.setValue(UPLOAD_CONSTANTS.helpS3Policy());
+		s3Policy.setValue(UPLOAD_CONSTANTS.imageS3Policy());
 		uploadPanel.add(s3Policy);
 		Hidden s3Sig = new Hidden("signature");
-		s3Sig.setValue(UPLOAD_CONSTANTS.helpS3Sig());
+		s3Sig.setValue(UPLOAD_CONSTANTS.imageS3Sig());
 		uploadPanel.add(s3Sig);
 		contentType = new Hidden("Content-Type");
 		uploadPanel.add(contentType);
@@ -79,28 +80,73 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		uploadPanel.add(upload);
 		uploadPanel.add(uploadButton);
 		form.setWidget(uploadPanel);
-		uploadPanel.add(completeIcon);
-		getPanel().add(form);
+		statusLabel.setVisible(false);
+		contentPanel.add(form);
+		contentPanel.add(completeIcon);
+		contentPanel.add(statusLabel);
 
 		completeIcon.setVisible(false);
+	}
 
+	@Override
+	protected void constructResponseUi() {
+
+		contentPanel = new HorizontalPanel();
+		statusLabel = new Label("Uploading...");
+		uploadButton = new Button("Upload");
+		resetButton = new Button("Clear");
+		uploadButton.addClickHandler(this);
+		resetButton.addClickHandler(this);
+		completeIcon = new Image("images/icon-check.gif");
+		constructForm();
+		getPanel().add(contentPanel);
 	}
 
 	@Override
 	public void onSubmitComplete(SubmitCompleteEvent event) {
-		// TODO Auto-generated method stub
-
+		statusLabel.setVisible(false);
+		completeIcon.setVisible(true);
+		contentPanel.add(resetButton);
+		form.setVisible(true);
 	}
 
 	@Override
 	public void onClick(ClickEvent event) {
-		// TODO Auto-generated method stub
+		if (event.getSource() == uploadButton) {
+			boolean valid = true;
+			if (upload.getFilename() == null
+					|| upload.getFilename().trim().length() == 0) {
+				valid = false;
+			} else if (!(upload.getFilename().toLowerCase().endsWith(".mpeg")
+					|| upload.getFilename().toLowerCase().endsWith(".jpg")
+					|| upload.getFilename().toLowerCase().endsWith(".jpeg") || upload
+					.getFilename().toLowerCase().endsWith(".mp4"))) {
+				valid = false;
+			}
+			if (valid) {
+				if (upload.getFilename().toLowerCase().endsWith(".jpg")
+						|| upload.getFilename().toLowerCase().endsWith(".jpeg")) {
+					contentType.setValue(UPLOAD_CONSTANTS.imageContentType());
+				} else {
+					contentType.setValue(UPLOAD_CONSTANTS.videoContentType());
+				}
 
+				uploadPanel.setVisible(false);
+				statusLabel.setVisible(true);
+				form.submit();
+			} else {
+				MessageDialog dia = new MessageDialog("Error",
+						"You must specify either a jpg or mp4 file");
+				dia.showCentered();
+			}
+		} else if (event.getSource() == resetButton) {
+			super.reset();
+		}
 	}
 
 	public void captureAnswer() {
 		getAnswer().setType(type);
-		if (upload.getFilename() != null
+		if (completeIcon.isVisible() && upload.getFilename() != null
 				&& upload.getFilename().trim().length() > 0) {
 			getAnswer().setValue(upload.getFilename().trim());
 		}
@@ -108,6 +154,14 @@ public class MediaQuestionWidget extends QuestionWidget implements
 
 	@Override
 	protected void resetUi() {
-		form.reset();
+		statusLabel.setVisible(false);
+		completeIcon.setVisible(false);
+		resetPanels();
+	}
+
+	private void resetPanels() {
+		contentPanel.clear();
+		uploadPanel.clear();
+		constructForm();
 	}
 }

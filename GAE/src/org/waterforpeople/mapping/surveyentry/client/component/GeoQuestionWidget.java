@@ -57,7 +57,7 @@ public class GeoQuestionWidget extends QuestionWidget {
 		lat.setText("");
 		lon.setText("");
 		alt.setText("");
-		code.setText("");
+		code.setText("");		
 	}
 
 }
