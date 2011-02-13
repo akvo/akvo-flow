@@ -303,8 +303,11 @@ public class SurveyHandler extends DefaultHandler {
 			currentAltText.setLanguage(attributes.getValue(LANG));
 			currentAltText.setType(attributes.getValue(TYPE));
 		} else if (localName.equalsIgnoreCase(HELP)) {
-			currentHelp = new QuestionHelp();
+			currentHelp = new QuestionHelp();			
 			currentHelp.setType(attributes.getValue(TYPE));
+			if(currentHelp.getType() == null || currentHelp.getType().trim().length()==0){
+				currentHelp.setType(ConstantUtil.TIP_HELP_TYPE);
+			}
 			currentHelp.setValue(attributes.getValue(VALUE));
 		} else if (localName.equalsIgnoreCase(SCORING)) {
 			currentScoringType = attributes.getValue(TYPE);

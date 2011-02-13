@@ -146,7 +146,8 @@ public class DataSyncService extends Service {
 
 			counter++;
 			if (isAbleToRun(type, uploadIndex)) {
-				String fileName = createFileName(ConstantUtil.EXPORT.equals(type));
+				String fileName = createFileName(ConstantUtil.EXPORT
+						.equals(type));
 				HashSet<String>[] idList = formZip(fileName,
 						(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex));
 				String destName = fileName;
@@ -217,12 +218,11 @@ public class DataSyncService extends Service {
 					fireNotification(NOTHING, null);
 				}
 
-			}else{
-				//if we can't run the export, write the data as a zip
+			} else {
+				// if we can't run the export, write the data as a zip
 				String fileName = createFileName(false);
-				HashSet<String>[] idList = formZip(fileName,
-						true, true);
-				if(idList != null){
+				HashSet<String>[] idList = formZip(fileName, true, true);
+				if (idList != null) {
 					databaseAdaptor.markDataAsExported(idList[0]);
 				}
 			}
@@ -238,8 +238,7 @@ public class DataSyncService extends Service {
 			stopSelf();
 		}
 	}
-	
-	
+
 	/**
 	 * sends a message to the service with the file name that was just uploaded
 	 * so it can start processing the file
@@ -284,17 +283,18 @@ public class DataSyncService extends Service {
 				extraText != null ? extraText : "", this, COMPLETE_ID, null);
 	}
 
-	private HashSet<String>[] formZip(String fileName, boolean dataOnly){
+	private HashSet<String>[] formZip(String fileName, boolean dataOnly) {
 		return formZip(fileName, dataOnly, false);
 	}
-	
+
 	/**
 	 * create a zip file containing all the submitted data and images
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private HashSet<String>[] formZip(String fileName, boolean dataOnly, boolean unexportedOnly) {
+	private HashSet<String>[] formZip(String fileName, boolean dataOnly,
+			boolean unexportedOnly) {
 		HashSet<String>[] idsToUpdate = new HashSet[3];
 		idsToUpdate[0] = new HashSet<String>();
 		idsToUpdate[1] = new HashSet<String>();
@@ -304,7 +304,8 @@ public class DataSyncService extends Service {
 		StringBuilder regionBuf = new StringBuilder();
 		try {
 			// extract survey data
-			processSurveyData(surveyBuf, imagePaths, idsToUpdate[0], unexportedOnly);
+			processSurveyData(surveyBuf, imagePaths, idsToUpdate[0],
+					unexportedOnly);
 
 			// extract region data
 			processRegionData(regionBuf, idsToUpdate[1]);
@@ -534,9 +535,9 @@ public class DataSyncService extends Service {
 			HashSet<String> respondentIds, boolean unexportedOnly) {
 		Cursor data = null;
 		try {
-			if(unexportedOnly){
+			if (unexportedOnly) {
 				data = databaseAdaptor.fetchUnexportedData();
-			}else{
+			} else {
 				data = databaseAdaptor.fetchUnsentData();
 			}
 			if (data != null && data.isFirst()) {
@@ -680,6 +681,9 @@ public class DataSyncService extends Service {
 								percentComplete = ((double) bytesSent)
 										/ ((double) totalBytes);
 							}
+							if (percentComplete >= 1) {
+								percentComplete = 0.99d;
+							}
 							fireNotification(ConstantUtil.PROGRESS, PCT_FORMAT
 									.format(percentComplete)
 									+ " - " + fileNameForNotification);
@@ -689,6 +693,9 @@ public class DataSyncService extends Service {
 
 			if (code != REDIRECT_CODE && code != OK_CODE) {
 				Log.e(TAG, "Server returned a bad code after upload: " + code);
+				fireNotification(ConstantUtil.ERROR,
+						getString(R.string.uploaderror) + " "
+								+ fileNameForNotification);
 				return false;
 			} else {
 				fireNotification(ConstantUtil.FILE_COMPLETE,
@@ -710,7 +717,8 @@ public class DataSyncService extends Service {
 	 */
 	private String createFileName(boolean isAll) {
 		return Environment.getExternalStorageDirectory().getAbsolutePath()
-				+ TEMP_FILE_NAME + System.nanoTime() +(isAll?"-all-":"")+".zip";
+				+ TEMP_FILE_NAME + System.nanoTime() + (isAll ? "-all-" : "")
+				+ ".zip";
 	}
 
 	/**

@@ -136,6 +136,7 @@ public class ConstantUtil {
 	 */
 	public static final String PROGRESS = "PROGRESS";
 	public static final String FILE_COMPLETE = "FILE_COMPLETE";
+	public static final String ERROR = "ERROR";
 
 	/**
 	 * keys for saved state and bundle extras
