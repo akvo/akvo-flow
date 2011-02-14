@@ -18,10 +18,11 @@ import com.gallatinsystems.survey.device.domain.ScoringRule;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.domain.ValidationRule;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.StringUtil;
 
 /**
  * Handler for sax-based xml parser for Survey files
- * 
+ *
  * @author Christopher Fagiani
  **/
 public class SurveyHandler extends DefaultHandler {
@@ -119,7 +120,13 @@ public class SurveyHandler extends DefaultHandler {
 				currentQuestion.setValidationRule(currentValidation);
 				currentValidation = null;
 			} else if (localName.equalsIgnoreCase(HELP)) {
-				currentQuestion.addQuestionHelp(currentHelp);
+				if(currentHelp.isValid()){
+					if(StringUtil.isNullOrEmpty(currentHelp.getType())){
+						currentHelp.setType(ConstantUtil.TIP_HELP_TYPE);
+					}
+					currentQuestion.addQuestionHelp(currentHelp);
+					
+				}
 				currentHelp = null;
 			} else if (localName.equalsIgnoreCase(SCORE)) {
 				currentQuestion.addScoringRule(currentScoringRule);
@@ -303,11 +310,8 @@ public class SurveyHandler extends DefaultHandler {
 			currentAltText.setLanguage(attributes.getValue(LANG));
 			currentAltText.setType(attributes.getValue(TYPE));
 		} else if (localName.equalsIgnoreCase(HELP)) {
-			currentHelp = new QuestionHelp();			
+			currentHelp = new QuestionHelp();
 			currentHelp.setType(attributes.getValue(TYPE));
-			if(currentHelp.getType() == null || currentHelp.getType().trim().length()==0){
-				currentHelp.setType(ConstantUtil.TIP_HELP_TYPE);
-			}
 			currentHelp.setValue(attributes.getValue(VALUE));
 		} else if (localName.equalsIgnoreCase(SCORING)) {
 			currentScoringType = attributes.getValue(TYPE);
