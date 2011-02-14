@@ -12,6 +12,18 @@
 	</datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="pointStatus" direction="desc" />
+		<property name="collectionDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="pointStatus" direction="asc" />
+		<property name="collectionDate" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
 		<property name="pointType" direction="asc" />
 		<property name="communityCode" direction="desc" />
 	</datastore-index>
@@ -209,6 +221,11 @@
         <property name="order" direction="asc"/>
     </datastore-index>
     <datastore-index kind="Question" ancestor="false" source="manual">
+        <property name="surveyId" direction="asc"/>
+        <property name="order" direction="asc"/>
+    </datastore-index>
+     <datastore-index kind="Question" ancestor="false" source="manual">
+        <property name="path" direction="asc"/>
         <property name="surveyId" direction="asc"/>
         <property name="order" direction="asc"/>
     </datastore-index>
