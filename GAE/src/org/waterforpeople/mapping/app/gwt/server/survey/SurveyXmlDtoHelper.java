@@ -91,11 +91,13 @@ public class SurveyXmlDtoHelper {
 									.getOptions().getAllowMultiple()));
 							optC.setAllowOtherFlag(new Boolean(q.getOptions()
 									.getAllowOther()));
-							
-							//set the values on the question (for backward compatibility)
-							qDto.setAllowMultipleFlag(optC.getAllowMultipleFlag());
+
+							// set the values on the question (for backward
+							// compatibility)
+							qDto.setAllowMultipleFlag(optC
+									.getAllowMultipleFlag());
 							qDto.setAllowOtherFlag(optC.getAllowOtherFlag());
-							
+
 							for (Option option : q.getOptions().getOption()) {
 								QuestionOptionDto opt = new QuestionOptionDto();
 								List<Object> contentList = option.getContent();
@@ -135,7 +137,9 @@ public class SurveyXmlDtoHelper {
 					if (q.getHelp() != null) {
 						for (Help h : q.getHelp()) {
 							QuestionHelpDto hDto = new QuestionHelpDto();
-							if ("tip".equalsIgnoreCase(h.getType())) {
+							if (h.getType() == null
+									|| h.getType().trim().length() == 0
+									|| "tip".equalsIgnoreCase(h.getType())) {
 								hDto.setType(Type.TEXT);
 							} else {
 								hDto.setType(Type.valueOf(h.getType()
