@@ -30,11 +30,10 @@
 			<jvmarg value="-Xmx256M" />
 			<arg value="org.waterforpeople.mapping.portal.portal" />
 			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
-			<arg value="com.gallatinsystems.mapping.surveyentry.surveyentry" />
+			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
 		</java>
 	</target>
-
-	<target name="compile" depends="copyjars, GWTcompile" description="Compiles Java source and copies other source files to the WAR.">
+	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
 		<mkdir dir="war/WEB-INF/classes" />
 		<copy todir="war/WEB-INF/classes">
 			<fileset dir="src">
