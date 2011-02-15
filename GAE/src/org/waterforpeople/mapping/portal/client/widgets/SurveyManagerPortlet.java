@@ -907,7 +907,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 							.setText(result.getQuestionDependency()
 									.getQuestionId().toString());
 
-				Window.alert("Question Saved");
+				Window.alert("Question Saved" );
 			}
 
 		});
@@ -931,7 +931,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				5, 1);
 
 		ListBox lbOrder = (ListBox) questionDetailPanel.getWidget(6, 1);
-
+		
 		if (questionId.getText().length() > 0) {
 			value.setKeyId(new Long(questionId.getText()));
 		}

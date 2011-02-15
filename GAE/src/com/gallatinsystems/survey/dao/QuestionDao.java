@@ -195,6 +195,12 @@ public class QuestionDao extends BaseDAO<Question> {
 		return super.getByKey(key);
 	}
 
+	public List<Question> listQuestionsByQuestionGroupOrderByCreatedDateTime(
+			Long questionGroupId) {
+		return listByProperty("questionGroupId", questionGroupId, "Long",
+				"createdDateTime", "asc");
+	}
+
 	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
 			Long questionGroupId, boolean needDetails) {
 		List<Question> qList = listByProperty("questionGroupId",
@@ -203,10 +209,7 @@ public class QuestionDao extends BaseDAO<Question> {
 		if (qList != null) {
 			int i = 1;
 			for (Question q : qList) {
-				if (q.getOrder() == null)
-					q.setOrder(qList.size() + 1);
-				map.put(q.getOrder(), q);
-				i++;
+
 				if (needDetails) {
 					q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q
 							.getKey().getId()));
@@ -217,7 +220,8 @@ public class QuestionDao extends BaseDAO<Question> {
 					}
 					q.setTranslationMap(translationDao.findTranslations(
 							ParentType.QUESTION_TEXT, q.getKey().getId()));
-					// only load scoring rules for types that support scoring
+					// only load scoring rules for types that support
+					// scoring
 					if (Question.Type.OPTION == q.getType()
 							|| Question.Type.FREE_TEXT == q.getType()
 							|| Question.Type.NUMBER == q.getType()) {
@@ -225,6 +229,21 @@ public class QuestionDao extends BaseDAO<Question> {
 								.getKey().getId()));
 					}
 				}
+				if (q.getOrder() == null) {
+					q.setOrder(qList.size() + 1);
+					i++;
+				} else {
+					if (map.size() > 0 && !(q.getOrder() > map.size())) {
+						q.setOrder(map.size() + 1);
+						super.save(q);
+					} else if (map.size() == 0) {
+						super.save(q);
+						map.put(1, q);
+					} else {
+						map.put(q.getOrder(), q);
+					}
+				}
+				map.put(q.getOrder(), q);
 			}
 		}
 		return map;
@@ -249,10 +268,8 @@ public class QuestionDao extends BaseDAO<Question> {
 			String questionText) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query
-				.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
-		query
-				.declareParameters("Long questionGroupIdParam, String questionTextParam");
+		query.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
+		query.declareParameters("Long questionGroupIdParam, String questionTextParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, questionText);
 		if (results != null && results.size() > 0) {
@@ -266,10 +283,8 @@ public class QuestionDao extends BaseDAO<Question> {
 	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query
-				.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
-		query
-				.declareParameters("Long questionGroupIdParam, Integer orderParam");
+		query.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
+		query.declareParameters("Long questionGroupIdParam, Integer orderParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, order);
 		if (results != null && results.size() > 0) {
@@ -284,30 +299,33 @@ public class QuestionDao extends BaseDAO<Question> {
 	 * passed in. All questions must exist in the datastore
 	 * 
 	 * @param questionList
-	 */	
-	public void updateQuestionOrder(List<Question> questionList) {		
-		if(questionList != null){					
-			for(Question q: questionList){
-				Question persistentQuestion  = getByKey(q.getKey());
+	 */
+	public void updateQuestionOrder(List<Question> questionList) {
+		if (questionList != null) {
+			for (Question q : questionList) {
+				Question persistentQuestion = getByKey(q.getKey());
 				persistentQuestion.setOrder(q.getOrder());
-				//since the object is still attached, we don't need to call save. It will be saved on flush of the Persistent session 
-			}			
+				// since the object is still attached, we don't need to call
+				// save. It will be saved on flush of the Persistent session
+			}
 		}
 	}
-	
+
 	/**
-	 * updates ONLY the order field within the question group object for the questions
-	 * passed in. All question groups must exist in the datastore
+	 * updates ONLY the order field within the question group object for the
+	 * questions passed in. All question groups must exist in the datastore
 	 * 
 	 * @param questionList
-	 */	
-	public void updateQuestionGroupOrder(List<QuestionGroup> groupList) {		
-		if(groupList != null){					
-			for(QuestionGroup q: groupList){
-				QuestionGroup persistentGroup  = getByKey(q.getKey(),QuestionGroup.class);
+	 */
+	public void updateQuestionGroupOrder(List<QuestionGroup> groupList) {
+		if (groupList != null) {
+			for (QuestionGroup q : groupList) {
+				QuestionGroup persistentGroup = getByKey(q.getKey(),
+						QuestionGroup.class);
 				persistentGroup.setOrder(q.getOrder());
-				//since the object is still attached, we don't need to call save. It will be saved on flush of the Persistent session 
-			}			
+				// since the object is still attached, we don't need to call
+				// save. It will be saved on flush of the Persistent session
+			}
 		}
 	}
 }
