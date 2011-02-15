@@ -100,6 +100,7 @@ public class ConstantUtil {
 	 * scoring types
 	 */
 	public static final String NUMERIC_SCORING = "numeric";
+	public static final String TEXT_MATCH_SCORING = "textmatch";
 
 	/**
 	 * survey types

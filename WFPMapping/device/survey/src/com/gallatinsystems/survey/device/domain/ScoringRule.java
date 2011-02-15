@@ -18,12 +18,15 @@ public class ScoringRule {
 	private String min;
 	private String max;
 	private String value;
+	private String text;
 
-	public ScoringRule(String type, String min, String max, String val) {
+	public ScoringRule(String type, String min, String max, String text,
+			String val) {
 		this.type = type;
 		this.min = min;
 		this.max = max;
 		this.value = val;
+		this.text = text;
 		if (type == null) {
 			this.type = ConstantUtil.NUMERIC_SCORING;
 		}
@@ -66,7 +69,8 @@ public class ScoringRule {
 	 * response does not fall within the min/max range designated on this rule,
 	 * this method will return null.
 	 * 
-	 * rules are considered satisified if min <= value <= max
+	 * rules are considered satisfied if min <= value <= max or, if textmatch,
+	 * if text matches response
 	 * 
 	 * @param response
 	 * @return
@@ -85,6 +89,10 @@ public class ScoringRule {
 					}
 				} catch (NumberFormatException e) {
 					Log.e(TAG, "Can't perform numeric scoring", e);
+				}
+			} else if (ConstantUtil.TEXT_MATCH_SCORING.equalsIgnoreCase(type)) {
+				if (response.equals(text)) {
+					score = value;
 				}
 			}
 		}

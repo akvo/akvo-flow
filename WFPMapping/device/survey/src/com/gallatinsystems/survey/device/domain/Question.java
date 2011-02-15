@@ -231,7 +231,7 @@ public class Question {
 	}
 
 	/**
-	 * scores a response accoring to the question's scoring rules. If there are
+	 * scores a response according to the question's scoring rules. If there are
 	 * no rules or none of the rules match, this method will return null
 	 * otherwise it will return the scored value
 	 * 

@@ -22,7 +22,7 @@ import com.gallatinsystems.survey.device.util.StringUtil;
 
 /**
  * Handler for sax-based xml parser for Survey files
- *
+ * 
  * @author Christopher Fagiani
  **/
 public class SurveyHandler extends DefaultHandler {
@@ -120,12 +120,12 @@ public class SurveyHandler extends DefaultHandler {
 				currentQuestion.setValidationRule(currentValidation);
 				currentValidation = null;
 			} else if (localName.equalsIgnoreCase(HELP)) {
-				if(currentHelp.isValid()){
-					if(StringUtil.isNullOrEmpty(currentHelp.getType())){
+				if (currentHelp.isValid()) {
+					if (StringUtil.isNullOrEmpty(currentHelp.getType())) {
 						currentHelp.setType(ConstantUtil.TIP_HELP_TYPE);
 					}
 					currentQuestion.addQuestionHelp(currentHelp);
-					
+
 				}
 				currentHelp = null;
 			} else if (localName.equalsIgnoreCase(SCORE)) {
@@ -318,7 +318,7 @@ public class SurveyHandler extends DefaultHandler {
 		} else if (localName.equalsIgnoreCase(SCORE)) {
 			currentScoringRule = new ScoringRule(currentScoringType, attributes
 					.getValue(RANGE_MIN), attributes.getValue(RANGE_MAX),
-					attributes.getValue(VALUE));
+					attributes.getValue(TEXT), attributes.getValue(VALUE));
 		}
 	}
 }
