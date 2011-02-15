@@ -203,7 +203,7 @@ public class SurveyDbAdapter {
 			} else if (oldVersion == 58) {
 				db
 						.execSQL("insert into preferences values('survey.textsize','LARGE')");
-			} else if (oldVersion <= 62) {
+			} else if (oldVersion <= 63) {
 				try {
 					db
 							.execSQL("alter table survey_respondent add column exported_flag text");
