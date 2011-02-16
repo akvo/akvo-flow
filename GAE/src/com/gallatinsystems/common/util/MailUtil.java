@@ -12,11 +12,13 @@ import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import com.gallatinsystems.notification.NotificationRequest;
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailService.Attachment;
+import com.google.appengine.api.mail.MailServiceFactory;
 
 public class MailUtil {
 	private static final String RECIPIENT_LIST_STRING = "recipientListString";
@@ -82,36 +84,52 @@ public class MailUtil {
 			String toDelimiter, String subject, String body,
 			byte[] attachmentBytes, String attachmentName, String mimeType) {
 		try {
-			Message msg = createMessage();
-			msg.setFrom(new InternetAddress(fromAddr));
+			//Message msg = createMessage();
+			MailService service = MailServiceFactory.getMailService();
+			MailService.Attachment attachment = new MailService.Attachment(attachmentName,attachmentBytes);
+			
+			com.google.appengine.api.mail.MailService.Message msg = new MailService.Message();
+			msg.setSender(fromAddr);
+			msg.setTextBody(body);
+			
+			//msg.setFrom(new InternetAddress(fromAddr));
 			// TODO: parse and handle multiple destinations
 			if (toDelimiter != null) {
 				StringTokenizer strTok = new StringTokenizer(toAddressList,
 						NotificationRequest.DELIMITER);
 				while (strTok.hasMoreTokens()) {
-					msg.addRecipient(Message.RecipientType.TO,
-							new InternetAddress(strTok.nextToken()));
+//					msg.addRecipient(Message.RecipientType.TO,
+//							new InternetAddress(strTok.nextToken()));
+					msg.setTo(strTok.nextToken());
 				}
 			} else {
-				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-						toAddressList));
+//				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
+//						toAddressList));
+				msg.setTo(toAddressList);
 			}
-			msg.setSubject(subject);
+			// msg.setSubject(subject);
 
 			Multipart mp = new MimeMultipart();
 
-//			MimeBodyPart htmlPart = new MimeBodyPart();
-//			htmlPart.setContent(body, "text/html");
-//			mp.addBodyPart(htmlPart);
-			msg.setText(body);
-			if (attachmentName != null && attachmentBytes != null) {
-				MimeBodyPart attachment = new MimeBodyPart();
-				attachment.setFileName(attachmentName);
-				attachment.setContent(attachmentBytes, mimeType);
-				mp.addBodyPart(attachment);
-			}
-			msg.setContent(mp);
-			Transport.send(msg);
+			// MimeBodyPart htmlPart = new MimeBodyPart();
+			// htmlPart.setContent(body, "text/html");
+			// mp.addBodyPart(htmlPart);
+			// msg.setText(body);
+			// if (attachmentName != null && attachmentBytes != null) {
+			// MimeBodyPart attachment = new MimeBodyPart();
+			// attachment.setFileName(attachmentName);
+			// attachment.setContent(attachmentBytes, mimeType);
+			// mp.addBodyPart(attachment);
+			// }
+			// msg.setContent(mp);
+
+			
+			
+
+			msg.setSubject(subject);
+			msg.setTextBody(body);
+			msg.setAttachments(attachment);
+			service.send(msg);
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " ",
 					e);
