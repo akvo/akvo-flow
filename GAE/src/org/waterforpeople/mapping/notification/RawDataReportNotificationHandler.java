@@ -56,7 +56,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 			MailUtil.sendMail(FROM_ADDRESS, destinations,
 					NotificationRequest.DELIMITER, "FLOW Raw Data Report",
 					"Please see the latest raw data report", bos.toByteArray(),
-					"rawDataReport.csv", "text/comma-separated-values");
+					"rawDataReport.txt", "text/comma-separated-values");
 			NotificationSubscriptionDao.saveNotificationHistory(hist);
 		}
 		pw.close();

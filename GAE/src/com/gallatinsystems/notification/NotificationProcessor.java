@@ -57,7 +57,7 @@ public abstract class NotificationProcessor extends AbstractRestApiServlet {
 			String serverBase = req.getScheme()
 					+ "://"
 					+ req.getServerName()
-					+ ((req.getLocalPort() != 80 && req.getLocalPort() != 443) ? ":"
+					+ ((req.getLocalPort() != 80 && req.getLocalPort() != 443 && req.getLocalPort() != 0) ? ":"
 							+ req.getLocalPort()
 							: "");
 			handler.generateNotification(notificationRequest.getEntityId(),
