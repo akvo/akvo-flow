@@ -270,7 +270,6 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				} catch (ParseException e) {
 					log.log(Level.SEVERE, e.getMessage());
 				}
-				log.log(Level.INFO,"Testing " + item.toString());
 				Coordinate coord = new Coordinate(Double.parseDouble(lonStr),
 						Double.parseDouble(latStr));
 				Point point = geometryFactory.createPoint(coord);
