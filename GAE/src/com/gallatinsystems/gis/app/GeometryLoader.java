@@ -1,6 +1,7 @@
 package com.gallatinsystems.gis.app;
 
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +22,6 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
-
-
 
 import com.ibm.util.CoordinateConversion;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -69,33 +68,24 @@ public class GeometryLoader {
 	public static void main(String[] args) {
 		GeometryLoader gl = new GeometryLoader();
 		String baseUrl = args[0];
+		
 
 		for (int i = 1; i < args.length; i++) {
-			//args[i],
-			//CoordinateType.UTM, 29, 0.0
-			String[] commandParts = args[i].split("//|");
+			// args[i],
+			// CoordinateType.UTM, 29, 0.0
+			String[] commandParts = args[i].split("\\|");
 			String fileName = commandParts[0];
 			CoordinateType ct = CoordinateType.valueOf(commandParts[1]);
 			Integer utmZone = null;
 			Double centralMeridian = null;
-			if(ct.equals(CoordinateType.UTM)){
+			String countryCodeOverride = null;
+			if (ct.equals(CoordinateType.UTM)) {
 				utmZone = Integer.parseInt(commandParts[2]);
 				centralMeridian = Double.parseDouble(commandParts[3]);
 			}
+			
 			try {
-				// gl.formURL("http://flowdevelopmentenvironment.appspot.com/",
-				gl.formURL(baseUrl,fileName,ct,utmZone,centralMeridian);
-				// gl.formURL("http://watermapmonitordev.appspot.com/",
-				// "/Users/dru/Downloads/TM_WORLD_BORDERS-0.3/TM_WORLD_BORDERS-0.3.shp");
-				// gl.formURL("http://watermapmonitordev.appspot.com/",
-				// "/Users/dru/Downloads/LIB_admin_SHP/LIB.shp");
-				// gl.formURL("http://watermapmonitordev.appspot.com//",
-				// "/Users/dru/Downloads/MAA_admin_SHP/MAA.shp");
-				// gl.formURL("http://watermapmonitordev.appspot.com/",
-				// "/Users/dru/Downloads/RWA_admin_SHP/RWA.shp");
-
-				// gl.sendRequest("http://flowdemoenvironment.appspot.com/",
-				// request);
+				gl.formURL(baseUrl, fileName, ct, utmZone, centralMeridian, countryCodeOverride);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -114,6 +104,10 @@ public class GeometryLoader {
 		countryMap.put("Liberia", "LR");
 		countryMap.put("Malawi", "MW");
 		countryMap.put("Rwanda", "RW");
+		countryMap.put("Guatemala", "GT");
+		countryMap.put("Honduras", "HN");
+		countryMap.put("Nicaragua", "NI");
+		countryMap.put("El Salvador", "SV");
 	}
 
 	TreeMap<String, String> attributeURLMapping = new TreeMap<String, String>();
@@ -131,6 +125,8 @@ public class GeometryLoader {
 		attributeIdentifierMapping.put("ADM3", SUBDIVISION_3_PARAM);
 		attributeIdentifierMapping.put("ADM4", SUBDIVISION_4_PARAM);
 		attributeIdentifierMapping.put("ADM5", SUBDIVISION_5_PARAM);
+		attributeIdentifierMapping.put("NAME1", SUBDIVISION_1_PARAM);
+		attributeIdentifierMapping.put("NAME2", SUBDIVISION_2_PARAM);
 		attributeIdentifierMapping.put("CLNAME", SUBDIVISION_1_PARAM);
 		attributeIdentifierMapping.put("FIRST_CCNA", SUBDIVISION_2_PARAM);
 		attributeIdentifierMapping.put("FIRST_DNAM", SUBDIVISION_3_PARAM);
@@ -154,7 +150,8 @@ public class GeometryLoader {
 
 	private void formURL(String baseUrl, String fileName,
 			CoordinateType coordType, Integer utmZoneNumber,
-			Double centralMeridian) throws IOException {
+			Double centralMeridian, String countryCodeOverride)
+			throws IOException {
 		String serviceUrl = "action=%s&"
 				+ "projectCoordinateSystemIdentifier=%s&"
 				+ "geoCoordinateSystemIdentifier=%s&" + "datumIdentifier=%s&"
@@ -218,6 +215,9 @@ public class GeometryLoader {
 			for (Property prop : sf.getProperties()) {
 				for (Map.Entry<String, String> entry : attributeIdentifierMapping
 						.entrySet()) {
+					// System.out.println("Entry to compareto: " +
+					// entry.getKey() + " Property :" + prop.getName() + ": " +
+					// prop.getValue());
 					if (entry.getKey().equalsIgnoreCase(
 							prop.getName().toString())) {
 						if (entry.getKey().equals("ADM0")
@@ -283,12 +283,16 @@ public class GeometryLoader {
 								System.out.println(ex);
 							}
 
+						
 						} else {
 							valuesMap.put(entry.getValue(), prop.getValue()
 									.toString());
 						}
 					}
 				}
+			}
+			if(countryCodeOverride!=null){
+				valuesMap.put("ISO2", countryCodeOverride);
 			}
 			String urlRequest = null;
 			urlRequest = String.format(serviceUrl, actionParam, prjcrs,
@@ -350,4 +354,3 @@ public class GeometryLoader {
 		rd.close();
 	}
 }
-

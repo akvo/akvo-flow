@@ -12,12 +12,12 @@ import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import com.gallatinsystems.notification.NotificationRequest;
 import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailService.Attachment;
 import com.google.appengine.api.mail.MailServiceFactory;
 
 public class MailUtil {
@@ -81,6 +81,56 @@ public class MailUtil {
 	 * @return
 	 */
 	public static Boolean sendMail(String fromAddr, String toAddressList,
+			String toDelimiter, String subject, String body,
+			byte[] attachmentBytes, String attachmentName, String mimeType) {
+		try {
+			Message msg = createMessage();
+			MailService service = MailServiceFactory.getMailService();
+			
+			msg.setFrom(new InternetAddress(fromAddr));
+			// TODO: parse and handle multiple destinations
+			if (toDelimiter != null) {
+				StringTokenizer strTok = new StringTokenizer(toAddressList,
+						NotificationRequest.DELIMITER);
+				while (strTok.hasMoreTokens()) {
+					msg.addRecipient(Message.RecipientType.TO,
+							new InternetAddress(strTok.nextToken()));
+			
+				}
+			} else {
+				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
+						toAddressList));
+			
+			}
+			 msg.setSubject(subject);
+
+			Multipart mp = new MimeMultipart();
+
+			MimeBodyPart htmlPart = new MimeBodyPart();
+			htmlPart.setContent(body, "text/html");
+			mp.addBodyPart(htmlPart);
+			msg.setText(body);
+			if (attachmentName != null && attachmentBytes != null) {
+				MimeBodyPart attachment = new MimeBodyPart();
+				attachment.setFileName(attachmentName);
+				attachment.setContent(attachmentBytes, mimeType);
+				mp.addBodyPart(attachment);
+			}
+			msg.setContent(mp);
+			
+			
+
+			msg.setSubject(subject);
+			Transport.send(msg);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " ",
+					e);
+			return false;
+		}
+		return true;
+	}
+	
+	public static Boolean sendMailLowLevel(String fromAddr, String toAddressList,
 			String toDelimiter, String subject, String body,
 			byte[] attachmentBytes, String attachmentName, String mimeType) {
 		try {
