@@ -100,10 +100,10 @@ public class MailUtil {
 
 			Multipart mp = new MimeMultipart();
 
-			MimeBodyPart htmlPart = new MimeBodyPart();
-			htmlPart.setContent(body, "text/html");
-			mp.addBodyPart(htmlPart);
-
+//			MimeBodyPart htmlPart = new MimeBodyPart();
+//			htmlPart.setContent(body, "text/html");
+//			mp.addBodyPart(htmlPart);
+			msg.setText(body);
 			if (attachmentName != null && attachmentBytes != null) {
 				MimeBodyPart attachment = new MimeBodyPart();
 				attachment.setFileName(attachmentName);
