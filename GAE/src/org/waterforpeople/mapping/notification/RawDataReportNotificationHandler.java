@@ -102,7 +102,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 			} else {
 				String surveyCodeFormatted = null;
 				if (survey.getCode() != null) {
-					surveyCodeFormatted = survey.getCode().replace(" ", "_");
+					surveyCodeFormatted = survey.getCode().trim().replace(" ", "_");
 				} else {
 					surveyCodeFormatted = "RawDataReport";
 				}

@@ -102,6 +102,9 @@ public class MailUtil {
 		}
 
 		message.setHtmlBody("<HTML>" + body + "</HTML>");
+		if(attachmentName==null){
+			attachmentName = "Report.txt";
+		}
 		MailService.Attachment attachment = new MailService.Attachment(
 				attachmentName, attachmentBytes);
 		message.setAttachments(attachment);

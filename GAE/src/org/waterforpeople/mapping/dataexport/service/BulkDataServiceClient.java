@@ -173,9 +173,15 @@ public class BulkDataServiceClient {
 			if (response != null) {
 				JSONObject json = new JSONObject(response);
 				if (json != null) {
-					if (json.has("placemarks"))
-						arr = json.getJSONArray("placemarks");
-					else
+					if (json.has("placemarks")) {
+						try {
+							if (!json.getString("placemarks").equals("null"))
+								arr = json.getJSONArray("placemarks");
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							arr = null;
+						}
+					} else
 						return null;
 				}
 			}

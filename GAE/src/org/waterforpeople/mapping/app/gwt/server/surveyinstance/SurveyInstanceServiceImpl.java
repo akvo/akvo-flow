@@ -85,17 +85,19 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		if (questions != null) {
 			List<Question> qList = qDao.listQuestionsBySurvey(questions.get(0)
 					.getSurveyId());
-			for (QuestionAnswerStore qas : questions) {
-				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-				DtoMarshaller.copyToDto(qas, qasDto);
-				for (Question q : qList) {
-					if (Long.parseLong(qas.getQuestionID()) == q.getKey()
-							.getId()) {
-						qasDto.setQuestionText(q.getText());
-						break;
+			if (qList != null) {
+				for (QuestionAnswerStore qas : questions) {
+					QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
+					DtoMarshaller.copyToDto(qas, qasDto);
+					for (Question q : qList) {
+						if (Long.parseLong(qas.getQuestionID()) == q.getKey()
+								.getId()) {
+							qasDto.setQuestionText(q.getText());
+							break;
+						}
 					}
+					questionDtos.add(qasDto);
 				}
-				questionDtos.add(qasDto);
 			}
 		}
 		return questionDtos;
@@ -141,11 +143,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			DataChangeRecord value = new DataChangeRecord(
 					QuestionAnswerStore.class.getName(), item.getQuestionID(),
 					item.getOldValue(), item.getValue());
-			queue.add(url("/app_worker/dataupdate").param(
-					DataSummarizationRequest.OBJECT_KEY, item.getQuestionID())
+			queue.add(url("/app_worker/dataupdate")
+					.param(DataSummarizationRequest.OBJECT_KEY,
+							item.getQuestionID())
 					.param(DataSummarizationRequest.OBJECT_TYPE,
-							"QuestionDataChange").param(
-							DataSummarizationRequest.VALUE_KEY,
+							"QuestionDataChange")
+					.param(DataSummarizationRequest.VALUE_KEY,
 							value.packString()));
 			// see if the question is mapped. And if it is, send an Access Point
 			// change message
@@ -158,13 +161,13 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 								+ item.getSurveyInstanceId() + "|"
 								+ mapping.getKey().getId(), item.getOldValue(),
 						item.getValue());
-				queue.add(url("/app_worker/dataupdate").param(
-						DataSummarizationRequest.OBJECT_KEY,
-						item.getQuestionID()).param(
-						DataSummarizationRequest.OBJECT_TYPE,
-						"AccessPointChange").param(
-						DataSummarizationRequest.VALUE_KEY,
-						apValue.packString()));
+				queue.add(url("/app_worker/dataupdate")
+						.param(DataSummarizationRequest.OBJECT_KEY,
+								item.getQuestionID())
+						.param(DataSummarizationRequest.OBJECT_TYPE,
+								"AccessPointChange")
+						.param(DataSummarizationRequest.VALUE_KEY,
+								apValue.packString()));
 			}
 		}
 
@@ -208,15 +211,15 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				Queue queue = QueueFactory.getQueue("dataUpdate");
 				for (QuestionAnswerStore ans : answers) {
 					DataChangeRecord value = new DataChangeRecord(
-							QuestionAnswerStore.class.getName(), ans
-									.getQuestionID(), ans.getValue(), "");
-					queue.add(url("/app_worker/dataupdate").param(
-							DataSummarizationRequest.OBJECT_KEY,
-							ans.getQuestionID()).param(
-							DataSummarizationRequest.OBJECT_TYPE,
-							"QuestionDataChange").param(
-							DataSummarizationRequest.VALUE_KEY,
-							value.packString()));
+							QuestionAnswerStore.class.getName(),
+							ans.getQuestionID(), ans.getValue(), "");
+					queue.add(url("/app_worker/dataupdate")
+							.param(DataSummarizationRequest.OBJECT_KEY,
+									ans.getQuestionID())
+							.param(DataSummarizationRequest.OBJECT_TYPE,
+									"QuestionDataChange")
+							.param(DataSummarizationRequest.VALUE_KEY,
+									value.packString()));
 				}
 				dao.delete(answers);
 			}

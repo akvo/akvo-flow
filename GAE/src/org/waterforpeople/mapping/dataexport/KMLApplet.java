@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.TreeMap;
@@ -137,7 +138,11 @@ public class KMLApplet extends JApplet implements Runnable {
 
 		private void processFile() throws Exception {
 			okButton.setEnabled(false);
-
+			String kml = generateDocument();
+			PrintWriter pw = new PrintWriter("testkml.txt");
+			pw.print(kml);
+			if (pw != null)
+				pw.close();
 			status.setText("Completed Import of Raw Data.");
 			okButton.setEnabled(true);
 		}
@@ -189,10 +194,9 @@ public class KMLApplet extends JApplet implements Runnable {
 		return writer.toString();
 	}
 
-	public String generateDocument(String placemarksVMName) {
+	public String generateDocument() {
 		try {
 			VelocityContext context = new VelocityContext();
-			String placemarks = null;
 			List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient
 					.fetchPlacemarks("MW", serverBase);
 			StringBuilder sbPlacemarks = new StringBuilder();
@@ -204,10 +208,10 @@ public class KMLApplet extends JApplet implements Runnable {
 				vc.put("longitude", pm.getLongitude());
 				vc.put("latitude", pm.getLatitude());
 				vc.put("altitude", pm.getAltitude());
-				sbPlacemarks.append(mergeContext(vc, "PlacemarksNewLook.vm"));
+				sbPlacemarks.append(mergeContext(vc, "template/PlacemarksNewLook.vm"));
 			}
-			context.put("folderContents", sbPlacemarks.toString());
-			return mergeContext(context, "Document.vm");
+			context.put("template/folderContents", sbPlacemarks.toString());
+			return mergeContext(context, "template/Document.vm");
 		} catch (Exception ex) {
 			System.out.println("SEVERE: Could create kml" + ex);
 		}
