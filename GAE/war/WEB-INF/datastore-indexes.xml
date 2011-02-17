@@ -216,6 +216,10 @@
         <property name="order" direction="asc"/>
     </datastore-index>
      <datastore-index kind="Question" ancestor="false" source="manual">
+        <property name="questionGroupId" direction="asc"/>
+        <property name="createdDateTime" direction="asc"/>
+    </datastore-index>
+     <datastore-index kind="Question" ancestor="false" source="manual">
         <property name="surveyId" direction="asc"/>
         <property name="type" direction="asc"/>
         <property name="order" direction="asc"/>
