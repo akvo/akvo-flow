@@ -67,11 +67,13 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		pw.flush();
 		NotificationHistory hist = getHistory(TYPE, entityId);
 		String newChecksum = MD5Util.generateChecksum(bos.toByteArray());
-		SurveyDAO surveyDao  = new SurveyDAO();
+		SurveyDAO surveyDao = new SurveyDAO();
 		Survey survey = surveyDao.getById(entityId);
-		String emailTitle = EMAIL_TITLE + survey.getPath() + "/" + survey.getName();
-		String emailBody = EMAIL_BODY + survey.getPath() + "/" + survey.getName() + " ";
-		
+		String emailTitle = EMAIL_TITLE + survey.getPath() + "/"
+				+ survey.getName();
+		String emailBody = EMAIL_BODY + survey.getPath() + "/"
+				+ survey.getName() + " ";
+
 		if (hist.getChecksum() == null
 				|| !hist.getChecksum().equals(newChecksum)) {
 			hist.setChecksum(newChecksum);
@@ -80,12 +82,12 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 					.getProperty(ATTACH_REPORT_FLAG))) {
 				String fileName = "rawDataReport-" + entityId + "-"
 						+ df.format(new Date()) + ".txt";
-				UploadUtil.upload(bos, fileName, PropertyUtil
-						.getProperty(REPORT_S3_PATH), PropertyUtil
-						.getProperty(SURVEY_UPLOAD_URL), PropertyUtil
-						.getProperty(AWS_IDENTIFIER), PropertyUtil
-						.getProperty(REPORT_S3_POLICY), PropertyUtil
-						.getProperty(REPORT_S3_SIG), "text/plain");
+				UploadUtil.upload(bos, fileName,
+						PropertyUtil.getProperty(REPORT_S3_PATH),
+						PropertyUtil.getProperty(SURVEY_UPLOAD_URL),
+						PropertyUtil.getProperty(AWS_IDENTIFIER),
+						PropertyUtil.getProperty(REPORT_S3_POLICY),
+						PropertyUtil.getProperty(REPORT_S3_SIG), "text/plain");
 				StringTokenizer strTok = new StringTokenizer(destinations,
 						NotificationRequest.DELIMITER);
 				TreeMap<String, String> addr = new TreeMap<String, String>();
@@ -93,19 +95,22 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 					String name = strTok.nextToken();
 					addr.put(name, name);
 				}
-				MailUtil.sendMail(FROM_ADDRESS, "FLOW", addr,
-						emailTitle,
-						emailBody
-								+ PropertyUtil.getProperty(SURVEY_UPLOAD_URL)
+				MailUtil.sendMail(FROM_ADDRESS, "FLOW", addr, emailTitle,
+						emailBody + PropertyUtil.getProperty(SURVEY_UPLOAD_URL)
 								+ PropertyUtil.getProperty(REPORT_S3_PATH)
 								+ "/" + fileName);
 			} else {
-				String surveyCodeFormatted = survey.getCode().replace(" ", "_");
+				String surveyCodeFormatted = null;
+				if (survey.getCode() != null) {
+					surveyCodeFormatted = survey.getCode().replace(" ", "_");
+				} else {
+					surveyCodeFormatted = "RawDataReport";
+				}
 				MailUtil.sendMail(FROM_ADDRESS, destinations,
-						NotificationRequest.DELIMITER, emailTitle,
-						emailBody, bos
-								.toByteArray(), "rawDataReport" +surveyCodeFormatted + df.format(new Date()) + ".txt",
-						"text/plain");
+						NotificationRequest.DELIMITER, emailTitle, emailBody,
+						bos.toByteArray(),
+						surveyCodeFormatted + "_" + df.format(new Date())
+								+ ".txt", "text/plain");
 			}
 			NotificationSubscriptionDao.saveNotificationHistory(hist);
 		}
@@ -122,7 +127,5 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		}
 		return hist;
 	}
-	
-	
 
 }
