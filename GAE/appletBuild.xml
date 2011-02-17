@@ -17,6 +17,7 @@
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
   		<fileset dir="war">
   				<include name="poi-3.5-signed.jar" />
+  				<include name="velocity-1.6.2-dep.jar"/>	
   		</fileset>
 		<pathelement location="build" />
 		<pathelement location="src" />
@@ -40,12 +41,22 @@
 	 		
 	</target>
 
+	
 	<target name="package" depends="compile">	
-	 	<jar destfile="${dist}/exporterapplet.jar" basedir="${build}"/>
+		<copy todir="${build}/template">
+			<fileset dir="war">
+				<include name="*.vm"/>
+			</fileset>
+		</copy>
+	 	<jar destfile="${dist}/exporterapplet.jar" basedir="${build}">
+	 	</jar>
 	</target>
 
 	<target name="signjar" depends="package">		
 		<signjar jar="${dist}/exporterapplet.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true"/>		
+	</target>
+	<target name="sign3rdjar" depends="">		
+			<signjar jar="war/velocity-1.6.2-dep.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true"/>		
 	</target>
 		
 	
