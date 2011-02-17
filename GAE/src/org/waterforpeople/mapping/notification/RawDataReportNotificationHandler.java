@@ -48,6 +48,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PrintWriter pw = new PrintWriter(bos);
 		exporter.export(serverBase, entityId, pw);
+		pw.flush();
 		NotificationHistory hist = getHistory(TYPE, entityId);
 		String newChecksum = MD5Util.generateChecksum(bos.toByteArray());
 		if (hist.getChecksum() == null
