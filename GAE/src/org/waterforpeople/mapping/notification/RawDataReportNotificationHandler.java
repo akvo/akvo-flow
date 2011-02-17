@@ -19,6 +19,8 @@ import com.gallatinsystems.notification.NotificationHandler;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
 import com.gallatinsystems.notification.domain.NotificationHistory;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
 
 /**
  * notifier that is capable of generating the raw data report for a survey and
@@ -28,6 +30,15 @@ import com.gallatinsystems.notification.domain.NotificationHistory;
  * 
  */
 public class RawDataReportNotificationHandler implements NotificationHandler {
+	private static final String EMAIL_BODY = "Please see the latest raw data report here (Recommend you open in Microsoft Excel) for Survey : ";
+	private static final String EMAIL_TITLE = "FLOW Raw Data Report for survey: ";
+	private static final String REPORT_S3_SIG = "reportS3Sig";
+	private static final String REPORT_S3_POLICY = "reportS3Policy";
+	private static final String AWS_IDENTIFIER = "aws_identifier";
+	private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
+	private static final String REPORT_S3_PATH = "reportS3Path";
+	private static final String DATE_DISPLAY_FORMAT = "MMddyyyy";
+	private static final String ATTACH_REPORT_FLAG = "attachreport";
 	public static final String TYPE = "rawDataReport";
 	private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
 	private static String FROM_ADDRESS;
@@ -55,21 +66,26 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		exporter.export(serverBase, entityId, pw);
 		pw.flush();
 		NotificationHistory hist = getHistory(TYPE, entityId);
-		String newChecksum = MD5Util.generateChecksum(bos.toByteArray());		
+		String newChecksum = MD5Util.generateChecksum(bos.toByteArray());
+		SurveyDAO surveyDao  = new SurveyDAO();
+		Survey survey = surveyDao.getById(entityId);
+		String emailTitle = EMAIL_TITLE + survey.getPath() + "/" + survey.getName();
+		String emailBody = EMAIL_BODY + survey.getPath() + "/" + survey.getName() + " ";
+		
 		if (hist.getChecksum() == null
 				|| !hist.getChecksum().equals(newChecksum)) {
 			hist.setChecksum(newChecksum);
-			DateFormat df = new SimpleDateFormat("MMddyyyy");
+			DateFormat df = new SimpleDateFormat(DATE_DISPLAY_FORMAT);
 			if ("false".equalsIgnoreCase(PropertyUtil
-					.getProperty("attachreport"))) {
+					.getProperty(ATTACH_REPORT_FLAG))) {
 				String fileName = "rawDataReport-" + entityId + "-"
 						+ df.format(new Date()) + ".txt";
 				UploadUtil.upload(bos, fileName, PropertyUtil
-						.getProperty("reportS3Path"), PropertyUtil
-						.getProperty("surveyuploadurl"), PropertyUtil
-						.getProperty("aws_identifier"), PropertyUtil
-						.getProperty("reportS3Policy"), PropertyUtil
-						.getProperty("reportS3Sig"), "text/plain");
+						.getProperty(REPORT_S3_PATH), PropertyUtil
+						.getProperty(SURVEY_UPLOAD_URL), PropertyUtil
+						.getProperty(AWS_IDENTIFIER), PropertyUtil
+						.getProperty(REPORT_S3_POLICY), PropertyUtil
+						.getProperty(REPORT_S3_SIG), "text/plain");
 				StringTokenizer strTok = new StringTokenizer(destinations,
 						NotificationRequest.DELIMITER);
 				TreeMap<String, String> addr = new TreeMap<String, String>();
@@ -78,16 +94,17 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 					addr.put(name, name);
 				}
 				MailUtil.sendMail(FROM_ADDRESS, "FLOW", addr,
-						"FLOW Raw Data Report",
-						"Please see the latest raw data report here: "
-								+ PropertyUtil.getProperty("surveyuploadurl")
-								+ PropertyUtil.getProperty("reportS3Path")
+						emailTitle,
+						emailBody
+								+ PropertyUtil.getProperty(SURVEY_UPLOAD_URL)
+								+ PropertyUtil.getProperty(REPORT_S3_PATH)
 								+ "/" + fileName);
 			} else {
+				String surveyCodeFormatted = survey.getCode().replace(" ", "_");
 				MailUtil.sendMail(FROM_ADDRESS, destinations,
-						NotificationRequest.DELIMITER, "FLOW Raw Data Report",
-						"Please see the latest raw data report", bos
-								.toByteArray(), "rawDataReport.txt",
+						NotificationRequest.DELIMITER, emailTitle,
+						emailBody, bos
+								.toByteArray(), "rawDataReport" +surveyCodeFormatted + df.format(new Date()) + ".txt",
 						"text/plain");
 			}
 			NotificationSubscriptionDao.saveNotificationHistory(hist);

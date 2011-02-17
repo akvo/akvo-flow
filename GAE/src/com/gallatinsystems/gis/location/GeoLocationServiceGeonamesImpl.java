@@ -170,12 +170,12 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				try {
 					result = invokeApi(base, lat, lon);
 				} catch (Exception e) {
-					log.log(Level.SEVERE,
+					log.log(Level.WARNING,
 							"Could not invoke geonames api via url " + base, e);
 				}
 			}
 		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not invoke geonames api via url "
+			log.log(Level.WARNING, "Could not invoke geonames api via url "
 					+ base, e);
 		}
 		return result;
