@@ -79,7 +79,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 				}
 				MailUtil.sendMail(FROM_ADDRESS, "FLOW", addr,
 						"FLOW Raw Data Report",
-						"Please see the latest raw data report here: http://"
+						"Please see the latest raw data report here: "
 								+ PropertyUtil.getProperty("surveyuploadurl")
 								+ PropertyUtil.getProperty("reportS3Path")
 								+ "/" + fileName);
