@@ -103,7 +103,7 @@ public class MailUtil {
 
 		message.setHtmlBody("<HTML>" + body + "</HTML>");
 		MailService.Attachment attachment = new MailService.Attachment(
-				"rawdata.txt", attachmentBytes);
+				attachmentName, attachmentBytes);
 		message.setAttachments(attachment);
 		try {
 			mailService.send(message);
