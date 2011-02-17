@@ -2,6 +2,11 @@ package org.waterforpeople.mapping.notification;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.dataexport.RawDataExporter;
@@ -9,6 +14,7 @@ import org.waterforpeople.mapping.dataexport.RawDataExporter;
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.common.util.UploadUtil;
 import com.gallatinsystems.notification.NotificationHandler;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
@@ -22,7 +28,6 @@ import com.gallatinsystems.notification.domain.NotificationHistory;
  * 
  */
 public class RawDataReportNotificationHandler implements NotificationHandler {
-
 	public static final String TYPE = "rawDataReport";
 	private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
 	private static String FROM_ADDRESS;
@@ -54,10 +59,37 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		if (hist.getChecksum() == null
 				|| !hist.getChecksum().equals(newChecksum)) {
 			hist.setChecksum(newChecksum);
-			MailUtil.sendMail(FROM_ADDRESS, destinations,
-					NotificationRequest.DELIMITER, "FLOW Raw Data Report",
-					"Please see the latest raw data report", bos.toByteArray(),
-					"rawDataReport.txt", "text/plain");
+			DateFormat df = new SimpleDateFormat("MMddyyyy");
+			if ("false".equalsIgnoreCase(PropertyUtil
+					.getProperty("attachreport"))) {
+				String fileName = "rawDataReport-" + entityId + "-"
+						+ df.format(new Date()) + ".txt";
+				UploadUtil.upload(bos, fileName, PropertyUtil
+						.getProperty("reportS3Path"), PropertyUtil
+						.getProperty("surveyuploadurl"), PropertyUtil
+						.getProperty("aws_identifier"), PropertyUtil
+						.getProperty("reportS3Policy"), PropertyUtil
+						.getProperty("reportS3Sig"), "text/plain");
+				StringTokenizer strTok = new StringTokenizer(destinations,
+						NotificationRequest.DELIMITER);
+				TreeMap<String, String> addr = new TreeMap<String, String>();
+				while (strTok.hasMoreTokens()) {
+					String name = strTok.nextToken();
+					addr.put(name, name);
+				}
+				MailUtil.sendMail(FROM_ADDRESS, "FLOW", addr,
+						"FLOW Raw Data Report",
+						"Please see the latest raw data report here: http://"
+								+ PropertyUtil.getProperty("surveyuploadurl")
+								+ PropertyUtil.getProperty("reportS3Path")
+								+ "/" + fileName);
+			} else {
+				MailUtil.sendMail(FROM_ADDRESS, destinations,
+						NotificationRequest.DELIMITER, "FLOW Raw Data Report",
+						"Please see the latest raw data report", bos
+								.toByteArray(), "rawDataReport.txt",
+						"text/plain");
+			}
 			NotificationSubscriptionDao.saveNotificationHistory(hist);
 		}
 		pw.close();
