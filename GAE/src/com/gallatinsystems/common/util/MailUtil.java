@@ -1,5 +1,8 @@
 package com.gallatinsystems.common.util;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -7,18 +10,11 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.mail.BodyPart;
 import javax.mail.Message;
-import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
 
 import com.gallatinsystems.notification.NotificationRequest;
 import com.google.appengine.api.mail.MailService;
@@ -87,109 +83,35 @@ public class MailUtil {
 	public static Boolean sendMail(String fromAddr, String toAddressList,
 			String toDelimiter, String subject, String body,
 			byte[] attachmentBytes, String attachmentName, String mimeType) {
+
+		MailService mailService = MailServiceFactory.getMailService();
+		MailService.Message message = new MailService.Message();
+		message.setSender(fromAddr);
+		message.setSubject(subject);
+
+		if (toDelimiter != null) {
+			Collection<String> toList = new ArrayList<String>();
+			StringTokenizer strTok = new StringTokenizer(toAddressList,
+					NotificationRequest.DELIMITER);
+			while (strTok.hasMoreTokens()) {
+				toList.add(strTok.nextToken());
+			}
+			message.setTo(toList);
+		} else {
+			message.setTo(toAddressList);
+		}
+
+		message.setHtmlBody("<HTML>" + body + "</HTML>");
+		MailService.Attachment attachment = new MailService.Attachment(
+				"rawdata.txt", attachmentBytes);
+		message.setAttachments(attachment);
 		try {
-			Message msg = createMessage();
-			MailService service = MailServiceFactory.getMailService();
-
-			msg.setFrom(new InternetAddress(fromAddr));
-			msg.setSubject(subject);
-			// TODO: parse and handle multiple destinations
-			if (toDelimiter != null) {
-				StringTokenizer strTok = new StringTokenizer(toAddressList,
-						NotificationRequest.DELIMITER);
-				while (strTok.hasMoreTokens()) {
-					msg.addRecipient(Message.RecipientType.TO,
-							new InternetAddress(strTok.nextToken()));
-
-				}
-			} else {
-				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-						toAddressList));
-
-			}
-			msg.setSubject(subject);
-
-			BodyPart messageBodyPart = new MimeBodyPart();
-			messageBodyPart.setText(body);
-
-			Multipart mp = new MimeMultipart();
-			mp.addBodyPart(messageBodyPart);
-
-			if (attachmentName != null && attachmentBytes != null) {
-				MimeBodyPart attachment = new MimeBodyPart();
-				attachment.setFileName(attachmentName);
-				// attachment.setContent(attachmentBytes, mimeType);
-				DataSource src = new ByteArrayDataSource(attachmentBytes,
-						mimeType);
-				attachment.setDataHandler(new DataHandler(src));
-				mp.addBodyPart(attachment);
-			}
-			msg.setContent(mp);
-			msg.saveChanges();
-			Transport.send(msg);
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " ",
-					e);
+			mailService.send(message);
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Could not send email with attachment", e);
 			return false;
 		}
 		return true;
 	}
 
-	public static Boolean sendMailLowLevel(String fromAddr,
-			String toAddressList, String toDelimiter, String subject,
-			String body, byte[] attachmentBytes, String attachmentName,
-			String mimeType) {
-		try {
-			// Message msg = createMessage();
-			MailService service = MailServiceFactory.getMailService();
-			MailService.Attachment attachment = new MailService.Attachment(
-					attachmentName, attachmentBytes);
-
-			com.google.appengine.api.mail.MailService.Message msg = new MailService.Message();
-			msg.setSender(fromAddr);
-			msg.setTextBody(body);
-
-			// msg.setFrom(new InternetAddress(fromAddr));
-			// TODO: parse and handle multiple destinations
-			if (toDelimiter != null) {
-				StringTokenizer strTok = new StringTokenizer(toAddressList,
-						NotificationRequest.DELIMITER);
-				while (strTok.hasMoreTokens()) {
-					// msg.addRecipient(Message.RecipientType.TO,
-					// new InternetAddress(strTok.nextToken()));
-					msg.setTo(strTok.nextToken());
-				}
-			} else {
-				// msg.addRecipient(Message.RecipientType.TO, new
-				// InternetAddress(
-				// toAddressList));
-				msg.setTo(toAddressList);
-			}
-			// msg.setSubject(subject);
-
-			Multipart mp = new MimeMultipart();
-
-			// MimeBodyPart htmlPart = new MimeBodyPart();
-			// htmlPart.setContent(body, "text/html");
-			// mp.addBodyPart(htmlPart);
-			// msg.setText(body);
-			// if (attachmentName != null && attachmentBytes != null) {
-			// MimeBodyPart attachment = new MimeBodyPart();
-			// attachment.setFileName(attachmentName);
-			// attachment.setContent(attachmentBytes, mimeType);
-			// mp.addBodyPart(attachment);
-			// }
-			// msg.setContent(mp);
-
-			msg.setSubject(subject);
-			msg.setTextBody(body);
-			msg.setAttachments(attachment);
-			service.send(msg);
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " ",
-					e);
-			return false;
-		}
-		return true;
-	}
 }

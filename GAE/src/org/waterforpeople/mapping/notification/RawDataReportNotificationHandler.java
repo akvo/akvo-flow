@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.notification;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,8 +19,6 @@ import com.gallatinsystems.notification.NotificationHandler;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
 import com.gallatinsystems.notification.domain.NotificationHistory;
-import com.google.appengine.api.mail.MailService;
-import com.google.appengine.api.mail.MailServiceFactory;
 
 /**
  * notifier that is capable of generating the raw data report for a survey and
@@ -58,8 +55,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		exporter.export(serverBase, entityId, pw);
 		pw.flush();
 		NotificationHistory hist = getHistory(TYPE, entityId);
-		String newChecksum = MD5Util.generateChecksum(bos.toByteArray());
-		sendMail("http://watermapmonitordev.appspot.com",bos);
+		String newChecksum = MD5Util.generateChecksum(bos.toByteArray());		
 		if (hist.getChecksum() == null
 				|| !hist.getChecksum().equals(newChecksum)) {
 			hist.setChecksum(newChecksum);
@@ -110,22 +106,6 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		return hist;
 	}
 	
-	private void sendMail(String serverBase, ByteArrayOutputStream bos){
-		MailService mailService = MailServiceFactory.getMailService();
-		MailService.Message message = new MailService.Message();
-		message.setSender("dru.borden@gmail.com");
-		message.setSubject("title");
-		message.setTo("dru.borden@gmail.com");
-		message.setHtmlBody("<HTML>File Attached</HTML>");
-		MailService.Attachment attachment =
-		        new MailService.Attachment("rawdata.txt", bos.toByteArray());
-		message.setAttachments(attachment);
-		try {
-			mailService.send(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 
 }
