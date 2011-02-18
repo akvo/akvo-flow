@@ -139,7 +139,6 @@ public class BulkDataServiceClient {
 		if (cursor != null) {
 			queryString = queryString + "&cursor=" + cursor;
 		}
-		System.out.println("fetching: " + queryString);
 		response = fetchDataFromServer(queryString);
 		List<PlacemarkDto> list = parsePlacemarks(response);
 		if (list == null || list.size() == 0) {
@@ -168,8 +167,6 @@ public class BulkDataServiceClient {
 		JSONArray arr = null;
 		if (response.startsWith("{")) {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
-
-			System.out.println("response: " + response);
 			if (response != null) {
 				JSONObject json = new JSONObject(response);
 				if (json != null) {
@@ -206,7 +203,7 @@ public class BulkDataServiceClient {
 						}
 						if (json.has("longitude")) {
 							String x = json.getString("longitude");
-							dto.setLatitude(new Double(x));
+							dto.setLongitude(new Double(x));
 						}
 						if (json.has("latitude")) {
 							String x = json.getString("latitude");
