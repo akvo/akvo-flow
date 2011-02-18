@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -30,6 +32,7 @@ import com.gallatinsystems.survey.domain.Survey;
  * 
  */
 public class RawDataReportNotificationHandler implements NotificationHandler {
+	private static final String LINK_OPT = "LINK";
 	private static final String EMAIL_BODY = "Please see the latest raw data report here (Recommend you open in Microsoft Excel) for Survey : ";
 	private static final String EMAIL_TITLE = "FLOW Raw Data Report for survey: ";
 	private static final String REPORT_S3_SIG = "reportS3Sig";
@@ -60,7 +63,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 	 */
 	@Override
 	public void generateNotification(Long entityId, String destinations,
-			String serverBase) {
+			String destOptions, String serverBase) {
 		RawDataExporter exporter = new RawDataExporter();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PrintWriter pw = new PrintWriter(bos);
@@ -79,8 +82,25 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 					|| !hist.getChecksum().equals(newChecksum)) {
 				hist.setChecksum(newChecksum);
 				DateFormat df = new SimpleDateFormat(DATE_DISPLAY_FORMAT);
-				if ("false".equalsIgnoreCase(PropertyUtil
-						.getProperty(ATTACH_REPORT_FLAG))) {
+				TreeMap<String, String> linkAddrList = new TreeMap<String, String>();
+				List<String> attachAddrList = new ArrayList<String>();
+				StringTokenizer strTok = new StringTokenizer(destinations,
+						NotificationRequest.DELIMITER);
+				StringTokenizer optTok = new StringTokenizer(destOptions,
+						NotificationRequest.DELIMITER);
+				while (strTok.hasMoreTokens()) {
+					String item = strTok.nextToken();
+					String opt = optTok.nextToken();
+					if ("false".equalsIgnoreCase(PropertyUtil
+							.getProperty(ATTACH_REPORT_FLAG))
+							|| LINK_OPT.equalsIgnoreCase(opt)) {
+						linkAddrList.put(item, item);
+					} else {
+						attachAddrList.add(item);
+					}
+				}
+
+				if (linkAddrList.size() > 0) {
 					String fileName = "rawDataReport-" + entityId + "-"
 							+ df.format(new Date()) + ".txt";
 					UploadUtil.upload(bos, fileName, PropertyUtil
@@ -89,20 +109,15 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 							.getProperty(AWS_IDENTIFIER), PropertyUtil
 							.getProperty(REPORT_S3_POLICY), PropertyUtil
 							.getProperty(REPORT_S3_SIG), "text/plain");
-					StringTokenizer strTok = new StringTokenizer(destinations,
-							NotificationRequest.DELIMITER);
-					TreeMap<String, String> addr = new TreeMap<String, String>();
-					while (strTok.hasMoreTokens()) {
-						String name = strTok.nextToken();
-						addr.put(name, name);
-					}
-					MailUtil.sendMail(FROM_ADDRESS, "FLOW", addr, emailTitle,
-							emailBody
+
+					MailUtil.sendMail(FROM_ADDRESS, "FLOW", linkAddrList,
+							emailTitle, emailBody
 									+ PropertyUtil
 											.getProperty(SURVEY_UPLOAD_URL)
 									+ PropertyUtil.getProperty(REPORT_S3_PATH)
 									+ "/" + fileName);
-				} else {
+				}
+				if (attachAddrList.size() > 0) {
 					String surveyCodeFormatted = null;
 					if (survey.getCode() != null) {
 						surveyCodeFormatted = survey.getCode().trim().replace(
@@ -110,8 +125,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 					} else {
 						surveyCodeFormatted = "RawDataReport";
 					}
-					MailUtil.sendMail(FROM_ADDRESS, destinations,
-							NotificationRequest.DELIMITER, emailTitle,
+					MailUtil.sendMail(FROM_ADDRESS, attachAddrList, emailTitle,
 							emailBody, bos.toByteArray(), surveyCodeFormatted
 									+ "_" + df.format(new Date()) + ".txt",
 							"text/plain");

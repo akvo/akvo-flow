@@ -20,8 +20,17 @@ public class NotificationSubscription extends BaseDomain {
 	private String notificationType;
 	private String notificationMethod;
 	private String notificationDestination;
+	private String notificationOption;
 	private Long entityId;
 	private Date expiryDate;
+
+	public String getNotificationOption() {
+		return notificationOption;
+	}
+
+	public void setNotificationOption(String notificationOption) {
+		this.notificationOption = notificationOption;
+	}
 
 	public String getNotificationType() {
 		return notificationType;

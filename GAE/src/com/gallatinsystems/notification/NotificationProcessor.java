@@ -61,7 +61,7 @@ public abstract class NotificationProcessor extends AbstractRestApiServlet {
 							+ req.getLocalPort()
 							: "");
 			handler.generateNotification(notificationRequest.getEntityId(),
-					notificationRequest.getDestinations(), serverBase);
+					notificationRequest.getDestinations(), notificationRequest.getDestOptions(),serverBase);
 		} else {
 			log("Could not find notification handler for type: "
 					+ notificationRequest.getType());

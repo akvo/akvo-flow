@@ -1,8 +1,7 @@
 package com.gallatinsystems.common.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -16,7 +15,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.gallatinsystems.notification.NotificationRequest;
 import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailServiceFactory;
 
@@ -72,7 +70,6 @@ public class MailUtil {
 	 * 
 	 * @param fromAddr
 	 * @param toAddressList
-	 * @param toDelimiter
 	 * @param subject
 	 * @param body
 	 * @param attachmentBytes
@@ -80,29 +77,18 @@ public class MailUtil {
 	 * @param mimeType
 	 * @return
 	 */
-	public static Boolean sendMail(String fromAddr, String toAddressList,
-			String toDelimiter, String subject, String body,
-			byte[] attachmentBytes, String attachmentName, String mimeType) {
+	public static Boolean sendMail(String fromAddr, List<String> toAddressList,
+			String subject, String body, byte[] attachmentBytes,
+			String attachmentName, String mimeType) {
 
 		MailService mailService = MailServiceFactory.getMailService();
 		MailService.Message message = new MailService.Message();
 		message.setSender(fromAddr);
 		message.setSubject(subject);
-
-		if (toDelimiter != null) {
-			Collection<String> toList = new ArrayList<String>();
-			StringTokenizer strTok = new StringTokenizer(toAddressList,
-					NotificationRequest.DELIMITER);
-			while (strTok.hasMoreTokens()) {
-				toList.add(strTok.nextToken());
-			}
-			message.setTo(toList);
-		} else {
-			message.setTo(toAddressList);
-		}
+		message.setTo(toAddressList);
 
 		message.setHtmlBody("<HTML>" + body + "</HTML>");
-		if(attachmentName==null){
+		if (attachmentName == null) {
 			attachmentName = "Report.txt";
 		}
 		MailService.Attachment attachment = new MailService.Attachment(

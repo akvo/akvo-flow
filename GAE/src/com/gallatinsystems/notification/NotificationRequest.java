@@ -19,11 +19,21 @@ public class NotificationRequest extends RestRequest {
 	public static final String ENTITY_PARAM = "entityId";
 	public static final String TYPE_PARAM = "type";
 	public static final String METHOD_PARAM = "method";
+	public static final String DEST_OPT_PARAM = "destOptions";
 
 	private String destinations;
 	private Long entityId;
 	private String type;
 	private String method;
+	private String destOptions;
+
+	public String getDestOptions() {
+		return destOptions;
+	}
+
+	public void setDestOptions(String destOptions) {
+		this.destOptions = destOptions;
+	}
 
 	public String getDestinations() {
 		return destinations;
@@ -83,6 +93,7 @@ public class NotificationRequest extends RestRequest {
 			type = req.getParameter(TYPE_PARAM).trim();
 		}
 		destinations = req.getParameter(DEST_PARAM);
+		destOptions = req.getParameter(DEST_OPT_PARAM);
 		method = req.getParameter(METHOD_PARAM);
 
 	}

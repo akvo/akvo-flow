@@ -1,6 +1,5 @@
 package com.gallatinsystems.notification.helper;
 
-import static com.google.appengine.api.taskqueue.TaskOptions.Builder.withUrl;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.ArrayList;
@@ -12,8 +11,6 @@ import java.util.Map.Entry;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
 import com.gallatinsystems.notification.domain.NotificationSubscription;
-//import com.google.appengine.api.taskqueue.Queue;
-//import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
@@ -27,6 +24,7 @@ import com.google.appengine.api.labs.taskqueue.QueueFactory;
  */
 public class NotificationHelper {
 
+	private static final String UNSPECIFIED = "unspecified";
 	private static final String QUEUE_NAME = "notification";
 	private static final String PROCESSOR_URL = "/notificationprocessor";
 	private NotificationSubscriptionDao notificationDao;
@@ -50,30 +48,40 @@ public class NotificationHelper {
 				for (Entry<Long, List<NotificationSubscription>> notifEntry : entry
 						.getValue().entrySet()) {
 					StringBuilder builder = new StringBuilder();
+					StringBuilder optBuilder = new StringBuilder();
 					if (notifEntry.getValue() != null
 							&& notifEntry.getValue().size() > 0) {
 						for (int i = 0; i < notifEntry.getValue().size(); i++) {
 							if (i > 0) {
 								builder.append(NotificationRequest.DELIMITER);
+								optBuilder
+										.append(NotificationRequest.DELIMITER);
 							}
 							builder.append(notifEntry.getValue().get(i)
 									.getNotificationDestination());
+							String opt = notifEntry.getValue().get(i)
+									.getNotificationOption();
+							optBuilder.append(opt != null ? opt : UNSPECIFIED);
 						}
 						// now dump the item on the queue
-						/*queue.add(withUrl(PROCESSOR_URL).param(
-								NotificationRequest.DEST_PARAM,
-								builder.toString()).param(
+						/*
+						 * queue.add(withUrl(PROCESSOR_URL).param(
+						 * NotificationRequest.DEST_PARAM,
+						 * builder.toString()).param(
+						 * NotificationRequest.ENTITY_PARAM,
+						 * notifEntry.getKey().toString()).param(
+						 * NotificationRequest.TYPE_PARAM, entry.getKey()));
+						 */
+						queue
+								.add(url(PROCESSOR_URL).param(
+										NotificationRequest.DEST_PARAM,
+										builder.toString()).param(
+										NotificationRequest.DEST_OPT_PARAM,
+										optBuilder.toString()).param(
 										NotificationRequest.ENTITY_PARAM,
-								notifEntry.getKey().toString()).param(
+										notifEntry.getKey().toString()).param(
 										NotificationRequest.TYPE_PARAM,
-								entry.getKey()));*/
-						queue.add(url(PROCESSOR_URL).param(
-								NotificationRequest.DEST_PARAM,
-								builder.toString()).param(
-										NotificationRequest.ENTITY_PARAM,
-								notifEntry.getKey().toString()).param(
-										NotificationRequest.TYPE_PARAM,
-								entry.getKey()));
+										entry.getKey()));
 					}
 				}
 

@@ -8,6 +8,6 @@ package com.gallatinsystems.notification;
  */
 public interface NotificationHandler {
 	
-	public void generateNotification(Long entityId, String destinations, String serverBase);
+	public void generateNotification(Long entityId, String destinations,String destOptions, String serverBase);
 
 }
