@@ -167,6 +167,10 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	}
 
 	@Override
+	public void flushContext(){
+		//no-op
+	}
+	@Override
 	public void onChange(ChangeEvent event) {
 		if (currentDto != null) {
 			if (currentDto.getCode() != null

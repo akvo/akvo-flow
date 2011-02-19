@@ -156,6 +156,7 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		surveyDto = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 		groupDto = (SurveyGroupDto) bundle
 				.get(BundleConstants.SURVEY_GROUP_KEY);
+		flushContext();
 		populateWidgets();
 	}
 
@@ -169,7 +170,12 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		}
 		return bundle;
 	}
-
+	
+	@Override
+	public void flushContext(){
+		//no-op
+	}
+	
 	@Override
 	public void onChange(ChangeEvent event) {
 		if (currentDto != null) {

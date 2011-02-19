@@ -136,6 +136,7 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 		this.bundle = bundle;
 		currentDto = (SurveyGroupDto) bundle
 				.get(BundleConstants.SURVEY_GROUP_KEY);
+		flushContext();
 		populateWidgets();
 	}
 
@@ -148,6 +149,11 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 			bundle.put(BundleConstants.SURVEY_GROUP_KEY, currentDto);
 		}
 		return bundle;
+	}
+	
+	@Override
+	public void flushContext(){
+		//no-op
 	}
 
 	@Override

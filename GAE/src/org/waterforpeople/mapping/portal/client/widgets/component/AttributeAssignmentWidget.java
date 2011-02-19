@@ -118,6 +118,11 @@ public class AttributeAssignmentWidget extends Composite implements
 		}
 		return bundle;
 	}
+	
+	@Override
+	public void flushContext(){
+		//no-op
+	}
 
 	@Override
 	public void persistContext(CompletionListener listener) {

@@ -171,6 +171,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 		if(!isForward && currentPage instanceof ContextAware){
 			bundle = ((ContextAware) currentPage).getContextBundle(isForward);
+			((ContextAware) currentPage).flushContext();
+			
 		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {

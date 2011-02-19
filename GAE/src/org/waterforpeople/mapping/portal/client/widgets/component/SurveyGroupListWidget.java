@@ -83,6 +83,7 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
+		flushContext();
 	}
 
 	@Override
@@ -90,11 +91,20 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 		return bundle;
 	}
 
+
 	@Override
 	public void persistContext(CompletionListener listener) {
 		if (listener != null) {
 			listener.operationComplete(true, getContextBundle(true));
 		}
+	}
+
+	@Override
+	public void flushContext() {
+		if(bundle != null){
+			bundle.remove(BundleConstants.SURVEY_GROUP_KEY);
+		}
+		
 	}
 
 }

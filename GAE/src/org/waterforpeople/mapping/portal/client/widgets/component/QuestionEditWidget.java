@@ -551,6 +551,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 		return bundle;
 	}
+	
+	@Override
+	public void flushContext(){
+		//no-op
+	}
+	
 
 	/**
 	 * validates and saves the question. If the question does not validate, then
@@ -681,6 +687,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	@SuppressWarnings("unchecked")
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
+		flushContext();
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
 		questionGroup = (QuestionGroupDto) bundle
@@ -707,6 +714,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				currentQuestion.setOrder(1);
 			}
 		}
+		
 	}
 
 	/**

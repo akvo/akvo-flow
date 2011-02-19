@@ -45,6 +45,7 @@ public class EditorialPageListWidget extends ListBasedWidget implements
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
+		flushContext();
 		loadData();
 	}
 
@@ -106,6 +107,13 @@ public class EditorialPageListWidget extends ListBasedWidget implements
 			bundle.put(BundleConstants.EDITORIAL_PAGE, editorialPage);
 		}
 		return bundle;
+	}
+	
+	@Override
+	public void flushContext(){
+		if(bundle!= null){
+			bundle.remove(BundleConstants.EDITORIAL_PAGE);
+		}
 	}
 
 	@Override

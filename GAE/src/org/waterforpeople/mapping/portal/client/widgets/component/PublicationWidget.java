@@ -56,6 +56,13 @@ public class PublicationWidget extends Composite implements ContextAware,
 	}
 
 	@Override
+	public void flushContext(){
+		if(bundle!= null){
+			bundle.remove(BundleConstants.AUTO_ADVANCE_FLAG);
+		}
+	}
+	
+	@Override
 	public void persistContext(CompletionListener listener) {
 		// no-op. This is handled by advance in this case
 	}
@@ -64,6 +71,7 @@ public class PublicationWidget extends Composite implements ContextAware,
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
 		survey = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
+		flushContext();
 	}
 
 	/**

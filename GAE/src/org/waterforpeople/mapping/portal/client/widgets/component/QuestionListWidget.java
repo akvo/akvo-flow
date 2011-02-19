@@ -297,6 +297,14 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		}
 		return bundle;
 	}
+	
+	@Override
+	public void flushContext(){
+		if(bundle!= null){
+			bundle.remove(BundleConstants.QUESTION_KEY);
+		}
+	}
+	
 
 	@Override
 	public void persistContext(CompletionListener listener) {

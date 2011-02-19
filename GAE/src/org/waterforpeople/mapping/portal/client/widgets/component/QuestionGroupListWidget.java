@@ -122,7 +122,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
-		bundle.remove(BundleConstants.QUESTION_GROUP_KEY);
+		flushContext();		
 		survey = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 		loadData(survey);
 	}
@@ -263,11 +263,20 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		return bundle;
 	}
 
+	
+	
 	@Override
 	public void persistContext(CompletionListener listener) {
 		if (listener != null) {
 			listener.operationComplete(true, getContextBundle(true));
 		}
 
+	}
+
+	@Override
+	public void flushContext() {
+		if(bundle != null){
+			bundle.remove(BundleConstants.QUESTION_GROUP_KEY);
+		}		
 	}
 }

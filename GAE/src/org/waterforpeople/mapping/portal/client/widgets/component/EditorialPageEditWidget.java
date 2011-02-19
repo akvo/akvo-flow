@@ -97,6 +97,11 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 		}
 		return bundle;
 	}
+	
+	@Override
+	public void flushContext(){
+		//no-op
+	}
 
 	@Override
 	public void persistContext(CompletionListener listener) {
@@ -112,6 +117,7 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 		if (currentPage != null) {
 			fetchContentItems(currentPage);
 		}
+		flushContext();
 	}
 
 	/**

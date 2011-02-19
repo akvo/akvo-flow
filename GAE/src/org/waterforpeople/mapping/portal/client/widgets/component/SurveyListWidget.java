@@ -67,7 +67,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 									surveyMap.put(b, result.get(i));
 									dataGrid.setWidget(i, 1, b);
 									Button e = createButton(ClickMode.COPY,
-									"Copy");
+											"Copy");
 									dataGrid.setWidget(i, 2, e);
 									surveyMap.put(e, result.get(i));
 								}
@@ -80,8 +80,8 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
-		this.bundle = bundle;
-		bundle.remove(BundleConstants.SURVEY_KEY);
+		this.bundle = bundle;		
+		flushContext();
 		loadData((SurveyGroupDto) bundle.get(BundleConstants.SURVEY_GROUP_KEY));
 	}
 
@@ -92,14 +92,16 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 			openPage(QuestionGroupListWidget.class, bundle);
 		} else if (ClickMode.EDIT == mode) {
 			openPage(SurveyEditWidget.class, bundle);
-		}else if (ClickMode.COPY == mode){
-			SurveyCopyDialog copyDialog = new SurveyCopyDialog(surveyMap.get(source),new CompletionListener() {
-				
+		} else if (ClickMode.COPY == mode) {
+			SurveyCopyDialog copyDialog = new SurveyCopyDialog(surveyMap
+					.get(source), new CompletionListener() {
+
 				@Override
 				public void operationComplete(boolean wasSuccessful,
 						Map<String, Object> payload) {
-					MessageDialog dia = new MessageDialog("Copy Complete","The survey has been copied");
-					dia.showCentered();					
+					MessageDialog dia = new MessageDialog("Copy Complete",
+							"The survey has been copied");
+					dia.showCentered();
 				}
 			});
 			copyDialog.show();
@@ -109,6 +111,13 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 	@Override
 	public Map<String, Object> getContextBundle(boolean doPopulation) {
 		return bundle;
+	}
+
+	@Override
+	public void flushContext() {
+		if (bundle != null) {
+			bundle.remove(BundleConstants.SURVEY_KEY);
+		}
 	}
 
 	@Override
