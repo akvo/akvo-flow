@@ -162,10 +162,12 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			// need to update current page first since we don't know when the
 			// callback to operationComplete will occur and currentPage needs to
 			// point to the new page at that point
-			currentPage = initializeNode(page);
-			waitDialog.showRelativeTo(widgetPanel);
-			pendingPage.persistContext(this);
-			calledSave = true;
+			currentPage = initializeNode(page);			
+			if(! (pendingPage instanceof AutoAdvancing)){
+				waitDialog.showRelativeTo(widgetPanel);
+				pendingPage.persistContext(this);
+				calledSave = true;
+			}
 		}
 		if(!isForward && currentPage instanceof ContextAware){
 			bundle = ((ContextAware) currentPage).getContextBundle(isForward);
