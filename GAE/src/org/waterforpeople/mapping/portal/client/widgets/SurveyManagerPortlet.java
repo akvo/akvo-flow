@@ -261,7 +261,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 						MessageDialog errDia = new MessageDialog(
 								"Could not delete survey",
 								"There was an error while attempting to delete the survey. Please try again. If the problem persists, please contact an administrator");
-						errDia.showRelativeTo(surveyDetail);
+						errDia.showCentered();
 
 					}
 
@@ -294,7 +294,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					MessageDialog errDia = new MessageDialog(
 							"Error while deleting",
 							"Could not delete survey group. Please try again. If the problem persits, please contact an administrator");
-					errDia.showRelativeTo(surveyGroupDetail);
+					errDia.showCentered();
 				}
 			}
 		});
@@ -576,7 +576,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			final MessageDialog dia = new MessageDialog("Please wait",
 					"Loading question details...");
-			dia.showRelativeTo(questionDetailPanel.getWidget(7, 1));
+			dia.showCentered();
 			if (surveyOptionQuestionMap.get(currentQuestion.getSurveyId()) == null) {
 				// if we haven't loaded the Option questions for this survey, do
 				// it now
@@ -591,7 +591,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 										"Error loading questions",
 										"Could not load questions for dependency selection: "
 												+ caught.getMessage());
-								errDia.showRelativeTo(questionDetailPanel);
+								errDia.showCentered();
 							}
 
 							@Override
@@ -779,8 +779,6 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 		if (questionOptionList != null) {
 			for (QuestionOptionDto qoDto : questionOptionList) {
-				if (qoDto.getOrder() != null)
-					row = qoDto.getOrder();
 				loadQuestionOptionRowDetail(qoDto, row++);
 			}
 		}
@@ -1039,6 +1037,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				String sanitizedOption = optionText.getText().replaceAll(",",
 						" ");
 				qoDto.setText(sanitizedOption);
+				qoDto.setCode(sanitizedOption);
 				optionText.setText(sanitizedOption);
 			}
 			if (qoId.getText().length() > 0)
@@ -1455,8 +1454,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 										MessageDialog errDia = new MessageDialog(
 												"Could not delete question group",
 												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
-										errDia
-												.showRelativeTo(questionGroupDetail);
+										errDia.showCentered();
 									}
 
 									@Override
