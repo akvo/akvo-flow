@@ -95,7 +95,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 		return response;
 	}
 
-	
 	/**
 	 * lists all questionAnswerStore records for a given instance
 	 * 
@@ -104,18 +103,20 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	 */
 	private String listResponses(Long surveyInstanceId) {
 		StringBuilder result = new StringBuilder();
-		List<QuestionAnswerStore> qasList = instanceDao
-				.listQuestionAnswerStore(surveyInstanceId, null);
-		if (qasList != null) {
-			boolean isFirst = true;
-			for (QuestionAnswerStore qas : qasList) {
-				if (!isFirst) {
-					result.append("\n");
-				} else {
-					isFirst = false;
+		if (surveyInstanceId != null) {
+			List<QuestionAnswerStore> qasList = instanceDao
+					.listQuestionAnswerStore(surveyInstanceId, null);
+			if (qasList != null) {
+				boolean isFirst = true;
+				for (QuestionAnswerStore qas : qasList) {
+					if (!isFirst) {
+						result.append("\n");
+					} else {
+						isFirst = false;
+					}
+					result.append(qas.getQuestionID()).append(",").append(
+							qas.getValue());
 				}
-				result.append(qas.getQuestionID()).append(",").append(
-						qas.getValue());
 			}
 		}
 		return result.toString();

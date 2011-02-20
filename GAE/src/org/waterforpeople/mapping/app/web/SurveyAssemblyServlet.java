@@ -367,7 +367,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
 				t.setContent(qo.getText());
 				option.addContent(t);
-				option.setValue(qo.getCode());
+				option.setValue(qo.getCode()!=null?qo.getCode():qo.getText());
 				List<AltText> altTextList = formAltText(qo.getTranslationMap());
 				if (altTextList != null) {
 					for (AltText alt : altTextList) {
