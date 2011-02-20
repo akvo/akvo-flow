@@ -34,8 +34,7 @@ public class PrecacheService extends Service {
 	private static final int DEFAULT_LIMIT = 200;
 
 	private SurveyDbAdapter databaseAdapter;
-	private String serverBase;
-	private PointOfInterestService pointOfInterestService;
+	private String serverBase;	
 
 	private Thread thread;
 	private static Semaphore lock = new Semaphore(1);
@@ -116,7 +115,7 @@ public class PrecacheService extends Service {
 	private void cachePoints(String countries, int limit) {
 		String[] countryList = countries.split(",");
 		for (int i = 0; i < countryList.length; i++) {
-			pointOfInterestService = new PointOfInterestService(serverBase);
+			PointOfInterestService pointOfInterestService = new PointOfInterestService(serverBase);
 			int count = 0;
 			do {
 				ArrayList<PointOfInterest> points = pointOfInterestService

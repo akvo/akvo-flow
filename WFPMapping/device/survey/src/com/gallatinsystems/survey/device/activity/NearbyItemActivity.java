@@ -60,8 +60,7 @@ public class NearbyItemActivity extends ListActivity implements
 	private Thread dataThread;
 	private SurveyDbAdapter databaseAdapter;
 	private String serverBase;
-	private PointOfInterest loadMorePlaceholder;
-	private PointOfInterestService pointOfInterestService;
+	private PointOfInterest loadMorePlaceholder;	
 	private Double lastLat;
 	private Double lastLon;
 	private String mode;
@@ -95,7 +94,7 @@ public class NearbyItemActivity extends ListActivity implements
 			serverBase = new PropertyUtil(getResources())
 					.getProperty(ConstantUtil.SERVER_BASE);
 		}
-		pointOfInterestService = new PointOfInterestService(serverBase);
+		
 
 		setContentView(R.layout.nearbyitem);
 		Resources resources = getResources();
@@ -180,6 +179,7 @@ public class NearbyItemActivity extends ListActivity implements
 		dataThread = new Thread() {
 			public void run() {
 				if (useServer) {
+					PointOfInterestService pointOfInterestService = new PointOfInterestService(serverBase);
 					ArrayList<PointOfInterest> newPoints = pointOfInterestService
 							.getNearbyAccessPoints(lat, lon, country,
 									serverBase, additive);
