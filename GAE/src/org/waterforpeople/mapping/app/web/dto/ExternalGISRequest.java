@@ -30,6 +30,11 @@ public class ExternalGISRequest extends RestRequest {
 	private static final String SUBDIVISION_4_PARAM = "sub4";
 	private static final String SUBDIVISION_5_PARAM = "sub5";
 	private static final String SUBDIVISION_6_PARAM = "sub6";
+	private static final String DENSITY_PARAM = "density";
+	private static final String TOTAL_POPULATION_PARAM = "totalPopulation";
+	private static final String FEMALE_POPULATION_PARAM = "femalePopulation";
+	private static final String MALE_POPULATION_PARAM = "malePopulation";
+	private static final String NUMBER_HOUSEHOLDS_PARAM = "numberOfHouseholds";
 
 	/**
 	 * 
@@ -59,6 +64,51 @@ public class ExternalGISRequest extends RestRequest {
 	private String sub4 = null;
 	private String sub5 = null;
 	private String sub6 = null;
+	private Integer density = null;
+	private Integer totalPopulation = null;
+	private Integer femalePopulation = null;
+	private Integer malePopulation = null;
+	private Integer numberHouseholds = null;
+	
+	public Integer getDensity() {
+		return density;
+	}
+
+	public void setDensity(Integer density) {
+		this.density = density;
+	}
+
+	public Integer getTotalPopulation() {
+		return totalPopulation;
+	}
+
+	public void setTotalPopulation(Integer totalPopulation) {
+		this.totalPopulation = totalPopulation;
+	}
+
+	public Integer getFemalePopulation() {
+		return femalePopulation;
+	}
+
+	public void setFemalePopulation(Integer femalePopulation) {
+		this.femalePopulation = femalePopulation;
+	}
+
+	public Integer getMalePopulation() {
+		return malePopulation;
+	}
+
+	public void setMalePopulation(Integer malePopulation) {
+		this.malePopulation = malePopulation;
+	}
+
+	public Integer getNumberHouseholds() {
+		return numberHouseholds;
+	}
+
+	public void setNumberHouseholds(Integer numberHouseholds) {
+		this.numberHouseholds = numberHouseholds;
+	}
 
 	public String getSub1() {
 		return sub1;
@@ -313,6 +363,21 @@ public class ExternalGISRequest extends RestRequest {
 		if (req.getParameter(SUBDIVISION_6_PARAM) != null
 				&& !req.getParameter(SUBDIVISION_6_PARAM).equals("-")) {
 			this.setSub6(req.getParameter(SUBDIVISION_6_PARAM));
+		}
+		if(req.getParameter(TOTAL_POPULATION_PARAM)!=null){
+			this.setTotalPopulation(Integer.parseInt(req.getParameter(TOTAL_POPULATION_PARAM)));
+		}
+		if(req.getParameter(FEMALE_POPULATION_PARAM)!=null){
+			this.setFemalePopulation(Integer.parseInt(req.getParameter(FEMALE_POPULATION_PARAM)));
+		}
+		if(req.getParameter(MALE_POPULATION_PARAM)!=null){
+			this.setMalePopulation(Integer.parseInt(req.getParameter(MALE_POPULATION_PARAM)));
+		}
+		if(req.getParameter(DENSITY_PARAM)!=null){
+			this.setDensity(Integer.parseInt(req.getParameter(DENSITY_PARAM)));
+		}
+		if(req.getParameter(NUMBER_HOUSEHOLDS_PARAM)!=null){
+			this.setNumberHouseholds(Integer.parseInt(req.getParameter(NUMBER_HOUSEHOLDS_PARAM)));
 		}
 	}
 

@@ -59,13 +59,17 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 					importReq.getY1(), importReq.getX2(), importReq.getY2() };
 			ogrFeature.setBoundingBox(boundingBox);
 			ogrFeature.setFeatureType(importReq.getOgrFeatureType());
-
 			ogrFeature.setSub1(importReq.getSub1());
 			ogrFeature.setSub2(importReq.getSub2());
 			ogrFeature.setSub3(importReq.getSub3());
 			ogrFeature.setSub4(importReq.getSub4());
 			ogrFeature.setSub5(importReq.getSub5());
 			ogrFeature.setSub6(importReq.getSub6());
+			ogrFeature.setTotalPopulation(importReq.getTotalPopulation());
+			ogrFeature.setDensity(importReq.getDensity());
+			ogrFeature.setFemalePopulation(importReq.getFemalePopulation());
+			ogrFeature.setMalePopulation(importReq.getMalePopulation());
+			ogrFeature.setNumberHouseholds(importReq.getNumberHouseholds());
 
 			if (importReq.getGeometryString() != null) {
 				try {

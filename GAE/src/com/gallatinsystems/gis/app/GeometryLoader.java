@@ -57,6 +57,11 @@ public class GeometryLoader {
 	private static final String SUBDIVISION_4_PARAM = "sub4";
 	private static final String SUBDIVISION_5_PARAM = "sub5";
 	private static final String SUBDIVISION_6_PARAM = "sub6";
+	private static final String DENSITY_PARAM = "density";
+	private static final String TOTAL_POPULATION_PARAM = "totalPopulation";
+	private static final String FEMALE_POPULATION_PARAM = "femalePopulation";
+	private static final String MALE_POPULATION_PARAM = "malePopulation";
+	private static final String NUMBER_HOUSEHOLDS_PARAM = "numberOfHouseholds";
 
 	public enum CoordinateType {
 		LATLONG, UTM
@@ -131,6 +136,11 @@ public class GeometryLoader {
 		attributeIdentifierMapping.put("FIRST_CCNA", SUBDIVISION_2_PARAM);
 		attributeIdentifierMapping.put("FIRST_DNAM", SUBDIVISION_3_PARAM);
 		attributeIdentifierMapping.put("LBL", NAME_PARAM);
+		attributeIdentifierMapping.put("DENSITY", DENSITY_PARAM);
+		attributeIdentifierMapping.put("TOTAL",TOTAL_POPULATION_PARAM);
+		attributeIdentifierMapping.put("MALE",MALE_POPULATION_PARAM);
+		attributeIdentifierMapping.put("FEMALE",FEMALE_POPULATION_PARAM);
+		attributeIdentifierMapping.put("HHOLDS",NUMBER_HOUSEHOLDS_PARAM);
 		attributeURLMapping.put(COUNTRY_CODE_PARAM, "STRING|%s");
 		attributeURLMapping.put(CENTROID_LON_PARAM, "DOUBLE|%14.12f");
 		attributeURLMapping.put(CENTROID_LAT_PARAM, "DOUBLE|%14.12f");
@@ -144,6 +154,11 @@ public class GeometryLoader {
 		attributeURLMapping.put(SUBDIVISION_4_PARAM, "STRING|%s");
 		attributeURLMapping.put(SUBDIVISION_5_PARAM, "STRING|%s");
 		attributeURLMapping.put(SUBDIVISION_6_PARAM, "STRING|%s");
+		attributeURLMapping.put(DENSITY_PARAM, "INTEGER|%d");
+		attributeURLMapping.put(TOTAL_POPULATION_PARAM, "INTEGER|%d");
+		attributeURLMapping.put(MALE_POPULATION_PARAM, "INTEGER|%d");
+		attributeURLMapping.put(FEMALE_POPULATION_PARAM, "INTEGER|%d");
+		attributeURLMapping.put(NUMBER_HOUSEHOLDS_PARAM, "INTEGER|%d");
 	}
 
 	TreeMap<String, String> valuesMap = new TreeMap<String, String>();

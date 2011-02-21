@@ -39,6 +39,52 @@ public class OGRFeature extends BaseDomain {
 	private String sub4 = null;
 	private String sub5 = null;
 	private String sub6 = null;
+	private Integer density = null;
+	private Integer totalPopulation = null;
+	private Integer femalePopulation = null;
+	private Integer malePopulation = null;
+	private Integer numberHouseholds = null;
+	
+
+	public Integer getDensity() {
+		return density;
+	}
+
+	public void setDensity(Integer density) {
+		this.density = density;
+	}
+
+	public Integer getTotalPopulation() {
+		return totalPopulation;
+	}
+
+	public void setTotalPopulation(Integer totalPopulation) {
+		this.totalPopulation = totalPopulation;
+	}
+
+	public Integer getFemalePopulation() {
+		return femalePopulation;
+	}
+
+	public void setFemalePopulation(Integer femalePopulation) {
+		this.femalePopulation = femalePopulation;
+	}
+
+	public Integer getMalePopulation() {
+		return malePopulation;
+	}
+
+	public void setMalePopulation(Integer malePopulation) {
+		this.malePopulation = malePopulation;
+	}
+
+	public Integer getNumberHouseholds() {
+		return numberHouseholds;
+	}
+
+	public void setNumberHouseholds(Integer numberHouseholds) {
+		this.numberHouseholds = numberHouseholds;
+	}
 
 	public enum FeatureType {
 		COUNTRY, SUB_COUNTRY_OTHER
