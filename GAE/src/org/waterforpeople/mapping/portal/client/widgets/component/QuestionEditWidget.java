@@ -194,7 +194,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 */
 	private void populateFields() {
 		questionTextArea.setText(currentQuestion.getText());
-		tooltipArea.setText(currentQuestion.getTip());
+		if (currentQuestion.getTip() != null
+				&& currentQuestion.getTip().trim().length() > 0
+				&& !"null".equals(currentQuestion.getTip())) {
+			tooltipArea.setText(currentQuestion.getTip());
+		}
 		if (currentQuestion.getType() != null) {
 			for (int i = 0; i < questionTypeSelector.getItemCount(); i++) {
 				if (currentQuestion.getType().toString().equals(
@@ -224,7 +228,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()
 				&& (currentQuestion.getOptionContainerDto() == null || currentQuestion
 						.getOptionContainerDto().getOptionsList() == null)) {
-			optionPanel.setVisible(true);			
+			optionPanel.setVisible(true);
 			showLoading(optionPanel, "Loading options...");
 			surveyService.loadQuestionDetails(currentQuestion.getKeyId(),
 					new AsyncCallback<QuestionDto>() {
@@ -235,7 +239,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						}
 
 						@Override
-						public void onSuccess(QuestionDto result) {							
+						public void onSuccess(QuestionDto result) {
 							showContent(optionPanel, optionContent);
 							currentQuestion = result;
 							populateOptions(currentQuestion
@@ -546,17 +550,16 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
-		if(doPopulation){
+		if (doPopulation) {
 			bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);
 		}
 		return bundle;
 	}
-	
+
 	@Override
-	public void flushContext(){
-		//no-op
+	public void flushContext() {
+		// no-op
 	}
-	
 
 	/**
 	 * validates and saves the question. If the question does not validate, then
@@ -576,14 +579,16 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					questionGroup.addQuestion(currentQuestion, currentQuestion
 							.getOrder());
 					if (listener != null) {
-						listener.operationComplete(true, getContextBundle(true));
+						listener
+								.operationComplete(true, getContextBundle(true));
 					}
 				}
 
 				@Override
 				public void onFailure(Throwable caught) {
 					if (listener != null) {
-						listener.operationComplete(false, getContextBundle(true));
+						listener.operationComplete(false,
+								getContextBundle(true));
 					}
 				}
 			});
@@ -654,7 +659,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			OptionContainerDto container = currentQuestion
 					.getOptionContainerDto();
 			if (container == null) {
-				container = new OptionContainerDto();							
+				container = new OptionContainerDto();
 				currentQuestion.setOptionContainerDto(container);
 			}
 			container.setAllowMultipleFlag(allowMultipleBox.getValue());
@@ -714,7 +719,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				currentQuestion.setOrder(1);
 			}
 		}
-		
+
 	}
 
 	/**
