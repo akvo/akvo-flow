@@ -237,10 +237,7 @@ public class QuestionDao extends BaseDAO<Question> {
 						q.setOrder(map.size() + 1);
 						super.save(q);
 					} else if (map.size() == 0) {
-						super.save(q);
-						map.put(1, q);
-					} else {
-						map.put(q.getOrder(), q);
+						super.save(q);					
 					}
 				}
 				map.put(q.getOrder(), q);
