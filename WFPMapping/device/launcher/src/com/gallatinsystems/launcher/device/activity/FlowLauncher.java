@@ -18,6 +18,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -202,8 +204,7 @@ public class FlowLauncher extends Activity {
 		appGrid.setSelection(0);
 		appGrid.setOnItemClickListener(new ApplicationLauncher());
 	}
- 
-	
+
 	/**
 	 * checks to see if the application name is in the array of approved apps
 	 */
@@ -310,4 +311,45 @@ public class FlowLauncher extends Activity {
 			startActivity(app.getLaunchIntent());
 		}
 	}
+
+	/**
+	 * intercept "BACK" presses
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// since onBackPressed is from version 2.0 and later, we need to do this
+		// to maintain compatibility
+		if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.ECLAIR
+				&& keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getRepeatCount() == 0) {
+			onBackPressed();
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	}
+
+	/**
+	 * this method is automatically called by API level > 5 (otherwise it will
+	 * be invoked by the onKeyDown handler)
+	 */
+	@Override
+	public void onBackPressed() {
+		// no-op
+		return;
+	}
+
+	/**
+	 * also override long-presses of Back
+	 */
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			onBackPressed();
+			return true;
+		} else {
+			return super.onKeyLongPress(keyCode, event);
+		}
+	}
+
 }
