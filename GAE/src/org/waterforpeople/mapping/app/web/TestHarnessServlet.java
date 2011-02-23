@@ -147,19 +147,26 @@ public class TestHarnessServlet extends HttpServlet {
 			setupTestUser();
 		} else if ("reorderQuestionsByCollectionDate".equals(action)) {
 			try {
-				Long questionGroupId = Long.parseLong(req
-						.getParameter("questionGroupId"));
+				Long surveyId = Long.parseLong(req.getParameter("surveyId"));
+				SurveyDAO surveyDao = new SurveyDAO();
 				QuestionDao qDao = new QuestionDao();
 
-				List<Question> qList = qDao
-						.listQuestionsByQuestionGroupOrderByCreatedDateTime(questionGroupId);
+				Survey survey = surveyDao.loadFullSurvey(surveyId);
 				int i = 0;
-				for (Question q : qList) {
-					q.setOrder(i + 1);
-					qDao.save(q);
-					resp.getWriter().println(
-							q.getOrder() + " :Change: " + q.getText());
-					++i;
+				for (Map.Entry<Integer, QuestionGroup> qGEntry : survey
+						.getQuestionGroupMap().entrySet()) {
+					List<Question> qList = qDao
+							.listQuestionsByQuestionGroupOrderByCreatedDateTime(qGEntry
+									.getValue().getKey().getId());
+					for (Question q : qDao
+							.listQuestionsByQuestionGroupOrderByCreatedDateTime(qGEntry
+									.getValue().getKey().getId())) {
+						q.setOrder(i + 1);
+						qDao.save(q);
+						resp.getWriter().println(
+								q.getOrder() + " :Change: " + q.getText());
+						++i;
+					}
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -168,8 +175,7 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("genBalloonData".equals(action)) {
 			MapBalloonDefinition mpd = new MapBalloonDefinition();
 			mpd.setBalloonType(BalloonType.KML_WATER_POINT);
-			mpd
-					.setStyleData("@charset \"utf-8\"; body {font-family: Trebuchet MS, Arial, Helvetica, sans-serif;font-weight: bold;color: #6d6e71;}");
+			mpd.setStyleData("@charset \"utf-8\"; body {font-family: Trebuchet MS, Arial, Helvetica, sans-serif;font-weight: bold;color: #6d6e71;}");
 			mpd.setName("WFPWaterPoint");
 
 		} else if ("deleteGeoData".equals(action)) {
@@ -233,8 +239,8 @@ public class TestHarnessServlet extends HttpServlet {
 			String coords = "497974.5625 557051.875,498219.03125 557141.75,498655.34375 557169.4375,499001.65625 557100.1875,499250.96875 556933.9375,499167.875 556615.375,499230.1875 556407.625,499392.78125 556362.75,499385.90625 556279.875,499598.5 556067.3125,499680.25 555952.8125,499218.5625 554988.875,498775.65625 554860.1875,498674.5 554832.5625,498282.0 554734.4375,498020.34375 554554.5625,497709.59375 554374.6875,497614.84375 554374.6875,497519.46875 554369.1875,497297.3125 554359.9375,496852.96875 554355.3125,496621.125 554351.375,496695.75 554454.625,496771.59375 554604.625,496836.3125 554734.0625,496868.65625 554831.125,496847.09375 554863.4375,496760.8125 554863.4375,496663.75 554928.125,496620.625 554992.875,496555.90625 555025.1875,496448.0625 554992.875,496372.5625 555025.1875,496351.0 555133.0625,496415.71875 555197.75,496480.40625 555294.8125,496480.40625 555381.0625,496430.875 555430.75,496446.0625 555547.375,496490.53125 555849.625,496526.09375 556240.75,496721.65625 556596.375,496924.90625 556774.1875,497006.125 556845.25,497281.71875 556978.625,497610.625 556969.6875,497859.53125 556969.6875,497974.5625 557051.875";
 			for (String item : coords.split(",")) {
 				String[] coord = item.split(" ");
-				geo.addCoordinate(Double.parseDouble(coord[0]), Double
-						.parseDouble(coord[1]));
+				geo.addCoordinate(Double.parseDouble(coord[0]),
+						Double.parseDouble(coord[1]));
 			}
 			ogrFeature.setGeometry(geo);
 			ogrFeature.addGeoMeasure("CLNAME", "STRING", "Loisiana Township");
@@ -264,8 +270,7 @@ public class TestHarnessServlet extends HttpServlet {
 									&& ap.getLongitude() > -11) {
 								ap.setCountryCode("LR");
 								apDao.save(ap);
-								resp
-										.getWriter()
+								resp.getWriter()
 										.println(
 												"Found "
 														+ ap.getCommunityCode()
@@ -319,8 +324,8 @@ public class TestHarnessServlet extends HttpServlet {
 					log.info("submiting task for SurveyInstanceId: "
 							+ surveyInstanceId);
 				}
-				siList = siDao.listSurveyInstanceBySurveyId(1362011L, cursor
-						.toWebSafeString());
+				siList = siDao.listSurveyInstanceBySurveyId(1362011L,
+						cursor.toWebSafeString());
 				cursor = JDOCursorHelper.getCursor(siList);
 			}
 			System.out.println("finished");
@@ -409,8 +414,7 @@ public class TestHarnessServlet extends HttpServlet {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 
 			DeviceFiles df = new DeviceFiles();
-			df
-					.setURI("http://waterforpeople.s3.amazonaws.com/devicezip/wfp1737657928520.zip");
+			df.setURI("http://waterforpeople.s3.amazonaws.com/devicezip/wfp1737657928520.zip");
 			df.setCreatedDateTime(new Date());
 			df.setPhoneNumber("a4:ed:4e:54:ef:6d");
 			df.setChecksum("1149406886");
@@ -441,8 +445,8 @@ public class TestHarnessServlet extends HttpServlet {
 			ArrayList<String> regionLines = new ArrayList<String>();
 			for (int i = 0; i < 10; i++) {
 				StringBuilder builder = new StringBuilder();
-				builder.append("1,").append("" + i).append(",test,").append(
-						20 + i + ",").append(30 + i + "\n");
+				builder.append("1,").append("" + i).append(",test,")
+						.append(20 + i + ",").append(30 + i + "\n");
 				regionLines.add(builder.toString());
 			}
 			geoHelp.processRegionsSurvey(regionLines);
@@ -552,8 +556,7 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setAltitude(0.0);
 					ap.setCommunityCode("test" + new Date());
 					ap.setCommunityName("test" + new Date());
-					ap
-							.setPhotoURL("http://waterforpeople.s3.amazonaws.com/images/peru/pc28water.jpg");
+					ap.setPhotoURL("http://waterforpeople.s3.amazonaws.com/images/peru/pc28water.jpg");
 					ap.setProvideAdequateQuantity(true);
 					ap.setHasSystemBeenDown1DayFlag(false);
 					ap.setMeetGovtQualityStandardFlag(true);
@@ -572,14 +575,11 @@ public class TestHarnessServlet extends HttpServlet {
 					ap.setCollectionDate(new Date());
 					ap.setPhotoName("Water point");
 					if (i % 2 == 0)
-						ap
-								.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 					else if (i % 3 == 0)
-						ap
-								.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
+						ap.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
 					else
-						ap
-								.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
+						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
 					if (i == 0)
 						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 					else if (i == 1)
@@ -649,9 +649,7 @@ public class TestHarnessServlet extends HttpServlet {
 				for (MapFragment mfItem : mfList) {
 					String contents = ZipUtil
 							.unZip(mfItem.getBlob().getBytes());
-					log
-							.log(Level.INFO, "Contents Length: "
-									+ contents.length());
+					log.log(Level.INFO, "Contents Length: " + contents.length());
 					resp.setContentType("application/vnd.google-earth.kmz+xml");
 					ServletOutputStream out = resp.getOutputStream();
 					resp.setHeader("Content-Disposition",
@@ -1011,11 +1009,8 @@ public class TestHarnessServlet extends HttpServlet {
 							|| ap.getGeocells().size() == 0) {
 						if (ap.getLatitude() != null
 								&& ap.getLongitude() != null) {
-							ap
-									.setGeocells(GeocellManager
-											.generateGeoCell(new Point(ap
-													.getLatitude(), ap
-													.getLongitude())));
+							ap.setGeocells(GeocellManager.generateGeoCell(new Point(
+									ap.getLatitude(), ap.getLongitude())));
 							apDao.save(ap);
 						}
 					}
@@ -1183,9 +1178,9 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 			} else {
 
-				deleteSurveyResponses(Integer.parseInt(req
-						.getParameter("surveyId")), Integer.parseInt(req
-						.getParameter("count")));
+				deleteSurveyResponses(
+						Integer.parseInt(req.getParameter("surveyId")),
+						Integer.parseInt(req.getParameter("count")));
 			}
 		} else if ("fixNameQuestion".equals(action)) {
 			if (req.getParameter("questionId") == null) {
@@ -1395,12 +1390,12 @@ public class TestHarnessServlet extends HttpServlet {
 		// com.google.appengine.api.taskqueue.QueueFactory.getQueue("notification");
 		Queue queue = QueueFactory.getQueue("notification");
 
-		queue.add(url("/notificationprocessor").param(
-				NotificationRequest.DEST_PARAM,
-				"christopher.fagiani@gmail.com||christopher.fagiani@gmail.com")
+		queue.add(url("/notificationprocessor")
+				.param(NotificationRequest.DEST_PARAM,
+						"christopher.fagiani@gmail.com||christopher.fagiani@gmail.com")
 				.param(NotificationRequest.DEST_OPT_PARAM, "ATTACHMENT||LINK")
-				.param(NotificationRequest.ENTITY_PARAM, surveyId).param(
-						NotificationRequest.TYPE_PARAM, "rawDataReport"));
+				.param(NotificationRequest.ENTITY_PARAM, surveyId)
+				.param(NotificationRequest.TYPE_PARAM, "rawDataReport"));
 	}
 
 	private void populatePermissions() {
@@ -1483,9 +1478,8 @@ public class TestHarnessServlet extends HttpServlet {
 		EditorialPage page = new EditorialPage();
 		page.setTargetFileName(pageName);
 		page.setType("landing");
-		page
-				.setTemplate(new Text(
-						"<html><head><title>Test Generated</title></head><body><h1>This is a test</h1><ul>#foreach( $pageContent in $pages )<li>$pageContent.heading : $pageContent.text.value</li>#end</ul>"));
+		page.setTemplate(new Text(
+				"<html><head><title>Test Generated</title></head><body><h1>This is a test</h1><ul>#foreach( $pageContent in $pages )<li>$pageContent.heading : $pageContent.text.value</li>#end</ul>"));
 		page = dao.save(page);
 		EditorialPageContent content = new EditorialPageContent();
 		List<EditorialPageContent> contentList = new ArrayList<EditorialPageContent>();
@@ -1812,8 +1806,7 @@ public class TestHarnessServlet extends HttpServlet {
 							Translation tqhm = new Translation();
 							tqhm.setLanguageCode("es");
 							tqhm.setText("es:" + n + ":" + new Date());
-							tqhm
-									.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
+							tqhm.setParentType(ParentType.QUESTION_HELP_MEDIA_TEXT);
 							tqhm.setParentId(qhm.getKey().getId());
 							tDao.save(tqhm);
 							qhm.addTranslation(tqhm);
@@ -1825,9 +1818,7 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 				sg.addSurvey(survey);
 			}
-			log
-					.log(Level.INFO, "Finished Saving sg: "
-							+ sg.getKey().toString());
+			log.log(Level.INFO, "Finished Saving sg: " + sg.getKey().toString());
 		}
 	}
 }
