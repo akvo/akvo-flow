@@ -16,5 +16,13 @@ public interface DeviceService extends RemoteService {
 	 * @return
 	 */
 	public HashMap<String, ArrayList<DeviceDto>> listDeviceByGroup();
+	
+	/**
+	 * finds a device by its phone number
+	 * 
+	 * @param phoneNumber
+	 * @return
+	 */
+	public DeviceDto findDeviceByPhoneNumber(String phoneNumber);
 
 }

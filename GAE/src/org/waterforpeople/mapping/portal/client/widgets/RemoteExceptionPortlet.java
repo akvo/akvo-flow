@@ -2,6 +2,9 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.diagnostics.RemoteExceptionService;
 import org.waterforpeople.mapping.app.gwt.client.diagnostics.RemoteExceptionServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.diagnostics.RemoteStacktraceDto;
@@ -17,6 +20,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.control.SmallZoomControl;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.maps.client.overlay.Overlay;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
@@ -35,12 +43,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class RemoteExceptionPortlet extends Portlet implements
 		DataTableBinder<RemoteStacktraceDto>,
-		DataTableListener<RemoteStacktraceDto> {
+		DataTableListener<RemoteStacktraceDto>, ClickHandler {
 
 	public static final String NAME = "Remote Exception Manager";
 
-	private static Integer width = 1024;
-	private static Integer height = 768;
+	private static final Integer width = 1024;
+	private static final Integer height = 768;
+	private static final String TRACE_WIDTH = "350px";
+	private static final String TRACE_HEIGHT = "400px";	
 	private static final DataTableHeader TABLE_HEADERS[] = {
 			new DataTableHeader("Error Date"),
 			new DataTableHeader("Phone Number"),
@@ -48,17 +58,21 @@ public class RemoteExceptionPortlet extends Portlet implements
 			new DataTableHeader("Software Version"), new DataTableHeader("") };
 
 	private RemoteExceptionServiceAsync remoteExceptionService;
+	private DeviceServiceAsync deviceService;
 	private PaginatedDataTable<RemoteStacktraceDto> remoteExceptionTable;
 	private HorizontalPanel finderPanel;
 	private TextBox phoneNumberBox;
 	private TextBox deviceIdBox;
 	private HorizontalPanel contentPanel;
 	private TextArea traceArea;
+	private Button findButton;
+	private MapWidget mapWidget;
+	private Overlay deviceLocOverlay;
 
 	public RemoteExceptionPortlet() {
 		super(NAME, false, false, true, width, height);
 		remoteExceptionService = GWT.create(RemoteExceptionService.class);
-
+		deviceService = GWT.create(DeviceService.class);
 		loadContentPanel();
 	}
 
@@ -70,29 +84,32 @@ public class RemoteExceptionPortlet extends Portlet implements
 		deviceIdBox = new TextBox();
 		finderPanel.add(new Label("Device Id: "));
 		finderPanel.add(deviceIdBox);
-		Button findButton = new Button("Find");
+		findButton = new Button("Find");
 		finderPanel.add(findButton);
-		findButton.addClickHandler(new ClickHandler() {
+		findButton.addClickHandler(this);
+		mapWidget = new MapWidget();
+		mapWidget.setSize(TRACE_WIDTH, TRACE_WIDTH);
+		mapWidget.addControl(new SmallZoomControl());
+		mapWidget.setZoomLevel(12);
+		mapWidget.setVisible(false);
 
-			@Override
-			public void onClick(ClickEvent event) {
-				requestData(null, false);
-			}
-		});
 		remoteExceptionTable = new PaginatedDataTable<RemoteStacktraceDto>(
 				"Error Date", this, this, true);
 
 		contentPanel = new HorizontalPanel();
+		VerticalPanel rightPanel = new VerticalPanel();
 		traceArea = new TextArea();
-		traceArea.setWidth("350px");
-		traceArea.setHeight("400px");
+		traceArea.setWidth(TRACE_WIDTH);
+		traceArea.setHeight(TRACE_HEIGHT);
 		traceArea.setReadOnly(true);
+		rightPanel.add(traceArea);
+		rightPanel.add(mapWidget);
 
 		VerticalPanel leftPanel = new VerticalPanel();
 		leftPanel.add(finderPanel);
 		leftPanel.add(remoteExceptionTable);
 		contentPanel.add(leftPanel);
-		contentPanel.add(traceArea);
+		contentPanel.add(rightPanel);
 		requestData(null, false);
 		ScrollPanel sp = new ScrollPanel(contentPanel);
 		sp.setHeight(height.toString());
@@ -170,6 +187,39 @@ public class RemoteExceptionPortlet extends Portlet implements
 	@Override
 	public void onItemSelected(RemoteStacktraceDto item) {
 		traceArea.setText(item.getStackTrace());
+		// now try to show the last known device location on a map
+		if (item.getPhoneNumber() != null) {
+			deviceService.findDeviceByPhoneNumber(item.getPhoneNumber(),
+					new AsyncCallback<DeviceDto>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							mapWidget.setVisible(false);
+						}
+
+						@Override
+						public void onSuccess(DeviceDto result) {							
+							if (result != null && result.getLastKnownLat() != null
+									&& result.getLastKnownLon() != null) {
+								LatLng point = LatLng.newInstance(result
+										.getLastKnownLat(), result
+										.getLastKnownLon());
+								if (deviceLocOverlay != null) {									
+									mapWidget.removeOverlay(deviceLocOverlay);
+								}
+								deviceLocOverlay = new Marker(point);
+								mapWidget.addOverlay(deviceLocOverlay);
+								mapWidget.setZoomLevel(12);
+								mapWidget.panTo(point);
+								mapWidget.setVisible(true);
+							} else {
+								mapWidget.setVisible(false);
+							}
+						}
+					});
+		} else {
+			mapWidget.setVisible(false);
+		}
 	}
 
 	/**
@@ -221,6 +271,13 @@ public class RemoteExceptionPortlet extends Portlet implements
 	@Override
 	public String getName() {
 		return NAME;
+	}
+
+	@Override
+	public void onClick(ClickEvent event) {
+		if (event.getSource() == findButton) {
+			requestData(null, false);
+		}
 	}
 
 }

@@ -39,22 +39,30 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 		if (devices != null) {
 			deviceDtos = new DeviceDto[devices.size()];
 			for (int i = 0; i < devices.size(); i++) {
-				DeviceDto dto = new DeviceDto();
-				Device d = devices.get(i);
-
-				dto.setPhoneNumber(d.getPhoneNumber());
-				dto.setEsn(d.getEsn());
-				dto.setLastKnownAccuracy(d.getLastKnownAccuracy());
-				dto.setLastKnownLat(d.getLastKnownLat());
-				dto.setLastKnownLon(d.getLastKnownLon());
-				dto.setLastPositionDate(d.getLastLocationBeaconTime());
-				dto.setDeviceGroup(d.getDeviceGroup());
-				dto.setKeyId(d.getKey().getId());
-				dto.setDeviceIdentifier(d.getDeviceIdentifier());
-				deviceDtos[i] = dto;
+				deviceDtos[i] = marshalDevice(devices.get(i));
 			}
 		}
 		return deviceDtos;
+	}
+
+	/**
+	 * converts a device domain object to a dto
+	 * 
+	 * @param d
+	 * @return
+	 */
+	private DeviceDto marshalDevice(Device d) {
+		DeviceDto dto = new DeviceDto();
+		dto.setPhoneNumber(d.getPhoneNumber());
+		dto.setEsn(d.getEsn());
+		dto.setLastKnownAccuracy(d.getLastKnownAccuracy());
+		dto.setLastKnownLat(d.getLastKnownLat());
+		dto.setLastKnownLon(d.getLastKnownLon());
+		dto.setLastPositionDate(d.getLastLocationBeaconTime());
+		dto.setDeviceGroup(d.getDeviceGroup());
+		dto.setKeyId(d.getKey().getId());
+		dto.setDeviceIdentifier(d.getDeviceIdentifier());
+		return dto;
 	}
 
 	/**
@@ -84,4 +92,19 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 
 	}
 
+	/**
+	 * finds a device by its phone number
+	 * 
+	 * @param phoneNumber
+	 * @return
+	 */
+	public DeviceDto findDeviceByPhoneNumber(String phoneNumber) {
+		DeviceDAO dao = new DeviceDAO();
+		Device d = dao.get(phoneNumber);
+		if (d != null) {
+			return marshalDevice(d);
+		} else {
+			return null;
+		}
+	}
 }

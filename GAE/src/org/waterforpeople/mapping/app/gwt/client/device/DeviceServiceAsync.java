@@ -12,4 +12,7 @@ public interface DeviceServiceAsync {
 	void listDeviceByGroup(
 			AsyncCallback<HashMap<String, ArrayList<DeviceDto>>> callback);
 
+	void findDeviceByPhoneNumber(String phoneNumber,
+			AsyncCallback<DeviceDto> callback);
+
 }

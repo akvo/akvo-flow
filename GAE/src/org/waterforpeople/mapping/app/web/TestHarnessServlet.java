@@ -130,6 +130,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.gwt.rpc.client.impl.RemoteException;
 
 public class TestHarnessServlet extends HttpServlet {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
@@ -1382,7 +1383,37 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("testnotifhelper".equals(action)) {
 			NotificationHelper helper = new NotificationHelper();
 			helper.execute();
+		}else if("testremotemap".equals(action)){
+			createDevice("12345", 40.78,-73.95);
+			createDevice("777", 43.0,-78.8);	
+			RemoteStacktrace st = new RemoteStacktrace();
+			st.setAcknowleged(false);
+			st.setPhoneNumber("12345");
+			st.setErrorDate(new Date());			
+			st.setStackTrace(new Text("blah"));
+			RemoteStacktraceDao dao = new RemoteStacktraceDao();
+			dao.save(st);
+			st = new RemoteStacktrace();
+			st.setAcknowleged(false);
+			st.setErrorDate(new Date());
+			st.setPhoneNumber("777");
+			st.setStackTrace(new Text("ugh"));
+			dao.save(st);
 		}
+	}
+	
+	private Device createDevice(String num, Double lat, Double lon){
+		DeviceDAO devDao = new DeviceDAO();
+		Device d = devDao.get(num);
+		if(d == null){
+			d = new Device();
+			d.setPhoneNumber(num);
+		}
+		if(lat != null){
+			d.setLastKnownLat(lat);
+			d.setLastKnownLon(lon);
+		}
+		return devDao.save(d);			
 	}
 
 	private void sendNotification(String surveyId) {
