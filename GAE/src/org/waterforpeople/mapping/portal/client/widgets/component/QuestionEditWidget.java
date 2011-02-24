@@ -713,13 +713,31 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					+ currentGroup.getCode());
 			currentQuestion.setQuestionGroupId(currentGroup.getKeyId());
 			if (currentGroup.getQuestionMap() != null) {
-				currentQuestion
-						.setOrder(currentGroup.getQuestionMap().size() + 1);
+				currentQuestion.setOrder(getMaxOrder(currentGroup) + 1);
 			} else {
 				currentQuestion.setOrder(1);
 			}
 		}
 
+	}
+
+	/**
+	 * finds the highest Order value amongst all the questions in a group
+	 * 
+	 * @param group
+	 * @return
+	 */
+	private Integer getMaxOrder(QuestionGroupDto group) {
+		Integer max = 0;
+		if (group != null && group.getQuestionMap() != null) {
+
+			for (QuestionDto q : group.getQuestionMap().values()) {
+				if (q.getOrder() > max) {
+					max = q.getOrder();
+				}
+			}
+		}
+		return max;
 	}
 
 	/**

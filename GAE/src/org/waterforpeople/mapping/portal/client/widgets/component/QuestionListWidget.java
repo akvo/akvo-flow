@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Widget for viewing question lists
  * 
- * TODO: handle delete and reorder
  * 
  * @author Christopher Fagiani
  * 
@@ -275,6 +274,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				@Override
 				public void onFailure(Throwable caught) {
 					setWorking(false);
+					selectedQuestion = null;
 					MessageDialog errDia = new MessageDialog("Error",
 							"Could not delete question: "
 									+ caught.getLocalizedMessage());
@@ -284,6 +284,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				@Override
 				public void onSuccess(String result) {
 					setWorking(false);
+					selectedQuestion = null;
 					loadData(questionGroup);
 				}
 			});
