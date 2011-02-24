@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 public class BaseDAO<T extends BaseDomain> {
 	public static final int DEFAULT_RESULT_COUNT = 20;
+	protected static final int RETRY_INTERVAL_MILLIS = 200;
 	protected static final String STRING_TYPE = "String";
 	protected static final String EQ_OP = " == ";
 	protected static final String GTE_OP = " >= ";
@@ -417,5 +418,13 @@ public class BaseDAO<T extends BaseDomain> {
 		}
 		if (cursorString == null || !cursorString.equals(Constants.ALL_RESULTS))
 			query.setRange(0, DEFAULT_RESULT_COUNT);
+	}
+
+	protected static void sleep() {
+		try {
+			Thread.sleep(RETRY_INTERVAL_MILLIS);
+		} catch (InterruptedException e) {
+			// no-op
+		}
 	}
 }

@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.google.appengine.api.datastore.DatastoreTimeoutException;
 
 /**
  * updates access point status summary objects
@@ -77,7 +78,12 @@ public class AccessPointStatusSummaryDao extends
 			if (summary.getCount() == 0 && summary.getKey() != null) {
 				thisDao.delete(summary);
 			} else if (summary.getCount() > 0) {
-				thisDao.save(summary);
+				try {
+					thisDao.save(summary);
+				} catch (DatastoreTimeoutException te) {					
+						sleep();
+						thisDao.save(summary);					
+				}
 			}
 		}
 	}

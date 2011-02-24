@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.domain.Status.StatusCode;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.DatastoreTimeoutException;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
@@ -52,8 +53,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				while ((startIndex = line.indexOf(",", startIndex + 1)) != -1) {
 					if (iCount == 4) {
 						String firstPart = line.substring(0, startIndex);
-						String secondPart = line.substring(startIndex + 1,
-								line.length());
+						String secondPart = line.substring(startIndex + 1, line
+								.length());
 						line = firstPart + secondPart;
 						break;
 					}
@@ -87,6 +88,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 							.addProcessingMessage("Could not parse survey id: "
 									+ parts[0] + e.getMessage());
 					hasErrors = true;
+				} catch (DatastoreTimeoutException te) {
+					sleep();
+					si = save(si);
+
 				}
 			}
 			qas.setSurveyId(si.getSurveyId());
@@ -117,7 +122,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			}
 			qasList.add(qas);
 		}
-		save(qasList);
+		try {
+			save(qasList);
+		} catch (DatastoreTimeoutException te) {
+			sleep();
+			save(qasList);
+		}
 		deviceFile.setSurveyInstanceId(si.getKey().getId());
 		if (!hasErrors) {
 			si.getDeviceFile().setProcessedStatus(
@@ -162,8 +172,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			Long surveyInstanceId, String questionId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(QuestionAnswerStore.class);
-		q.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
-		q.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+		q
+				.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
+		q
+				.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
 		List<QuestionAnswerStore> result = (List<QuestionAnswerStore>) q
 				.execute(surveyInstanceId, questionId);
 		if (result != null && result.size() > 0) {
