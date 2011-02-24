@@ -23,6 +23,34 @@ public class MailUtil {
 	private static final Logger log = Logger
 			.getLogger(MailUtil.class.getName());
 
+	/**
+	 * conviencence method for sending email to a single recipient. In this
+	 * case, the email address is used as the recipient name
+	 * 
+	 * @param fromAddress
+	 * @param fromName
+	 * @param recipient
+	 * @param subject
+	 * @param messageBody
+	 * @return
+	 */
+	public static Boolean sendMail(String fromAddress, String fromName,
+			String recipient, String subject, String messageBody) {
+		TreeMap<String, String> recip = new TreeMap<String, String>();
+		recip.put(recipient, recipient);
+		return sendMail(fromAddress, fromName, recip, subject, messageBody);
+	}
+
+	/**
+	 * sends an email to a list of recipients
+	 * 
+	 * @param fromAddress
+	 * @param fromName
+	 * @param recipientList
+	 * @param subject
+	 * @param messageBody
+	 * @return
+	 */
 	public static Boolean sendMail(String fromAddress, String fromName,
 			TreeMap<String, String> recipientList, String subject,
 			String messageBody) {

@@ -82,4 +82,14 @@ public interface SurveyService extends RemoteService {
 	 * @return
 	 */
 	public SurveyDto getPublishedSurvey(String surveyId);
+	/**
+	 * fires an async request to generate a bootstrap xml file
+	 * 
+	 * @param surveyIdList
+	 * @param dbInstructions
+	 * @param notificationEmail
+	 */
+	public void generateBootstrapFile(List<Long> surveyIdList,
+			String dbInstructions, String notificationEmail);
+
 }

@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
-
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -30,10 +29,11 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button assignmentButton;
 	private Button mappingButton;
 	private Button editorialButton;
+	private Button generateBootstrapButton;
 	private PageController controller;
 
 	public AdminHomeWidget(PageController controller, UserDto user) {
-		Grid widget = new Grid(5, 2);
+		Grid widget = new Grid(6, 2);
 		this.controller = controller;
 		userMgmtButton = initButton("Manage Users");
 
@@ -88,6 +88,12 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 				1,
 				createDescription("Create and edit static content to appear on editorial driven pages."));
 
+		generateBootstrapButton = initButton("Generate Bootstrap File");
+		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+			generateBootstrapButton.setEnabled(false);
+		}
+		widget.setWidget(5,0,generateBootstrapButton);
+		widget.setWidget(5,1,createDescription("Creates a bootstrap zip file for use in manually loading surveys on a device via the SD card."));
 		initWidget(widget);
 	}
 
@@ -113,8 +119,10 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 			controller.openPage(UserManagerWidget.class, null);
 		} else if (event.getSource() == mappingButton) {
 			controller.openPage(AttributeAssignmentWidget.class, null);
-		}else if (event.getSource() == editorialButton){
+		} else if (event.getSource() == editorialButton) {
 			controller.openPage(EditorialPageListWidget.class, null);
+		}else if (event.getSource() == generateBootstrapButton){
+			controller.openPage(BootstrapGeneratorWidget.class, null);
 		}
 	}
 

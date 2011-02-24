@@ -27,11 +27,13 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.portal.client.widgets.component.BootstrapGeneratorWidget;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
@@ -1133,9 +1135,40 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						surveyId));
 			}
 		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not popuate survey from xml", e);			
+			log.log(Level.SEVERE, "Could not popuate survey from xml", e);
 		}
 		return dto;
+	}
+
+	/**
+	 * fires an async request to generate a bootstrap xml file
+	 * 
+	 * @param surveyIdList
+	 * @param dbInstructions
+	 * @param notificationEmail
+	 */
+	public void generateBootstrapFile(List<Long> surveyIdList,
+			String dbInstructions, String notificationEmail) {
+		StringBuilder buf = new StringBuilder();
+		if (surveyIdList != null) {
+			for (int i = 0; i < surveyIdList.size(); i++) {
+				if (i > 0) {
+					buf.append(BootstrapGeneratorRequest.DELMITER);
+				}
+				buf.append(surveyIdList.get(i).toString());
+			}
+		}
+		Queue queue = QueueFactory.getQueue("background-processing");
+		queue
+				.add(url("/app_worker/bootstrapgen").param(
+						BootstrapGeneratorRequest.ACTION_PARAM,
+						BootstrapGeneratorRequest.GEN_ACTION).param(
+						BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,
+						buf.toString()).param(
+						BootstrapGeneratorRequest.EMAIL_PARAM,
+						notificationEmail).param(
+						BootstrapGeneratorRequest.DB_PARAM,
+						dbInstructions != null ? dbInstructions : ""));
 	}
 
 }

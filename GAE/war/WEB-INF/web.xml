@@ -38,6 +38,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/processor</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>BootstrapGenerator</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.BootstrapGeneratorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BootstrapGenerator</servlet-name>
+		<url-pattern>/app_worker/bootstrapgen</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>Task</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.TaskServlet</servlet-class>
 	</servlet>

@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -38,6 +40,36 @@ public class ZipUtil {
 		}
 		return bos;
 
+	}
+
+	/**
+	 * generates a zip containing multiple entries
+	 * 
+	 * @param contents
+	 *            - map of data to zip. Keys are filenames for the entry and
+	 *            values is the content that will be written as an UTF-8 string
+	 * @return
+	 */
+	public static ByteArrayOutputStream generateZip(Map<String, String> contents) {
+		ZipOutputStream zipOut = null;
+		ByteArrayOutputStream bos = null;
+		try {
+			bos = new ByteArrayOutputStream();
+			zipOut = new ZipOutputStream(bos);
+			zipOut.setLevel(ZipOutputStream.DEFLATED);
+			for (Entry<String, String> contentEntry : contents.entrySet()) {
+				ZipEntry entry = new ZipEntry(contentEntry.getKey());
+				zipOut.putNextEntry(entry);
+				zipOut.write(contentEntry.getValue().getBytes("UTF-8"));
+				zipOut.closeEntry();
+			}
+			zipOut.close();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bos;
 	}
 
 	public static String unZip(byte[] contents) throws IOException {

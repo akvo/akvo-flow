@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.BootstrapGeneratorWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.PublicationWidget;
@@ -73,9 +74,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				new WizardButton[] { new WizardButton("QuestionGroupList",
 						"Back to Question Group List") }));
 		wf.addInternalNode(new WizardNode("QuestionCreate", null,
-				QuestionEditWidget.class,
-				new WizardButton("QuestionList",
-						"Save and Continue") , new WizardButton("QuestionList",
+				QuestionEditWidget.class, new WizardButton("QuestionList",
+						"Save and Continue"), new WizardButton("QuestionList",
 						"Back to Question List")));
 		wf.addInternalNode(new WizardNode("Publish", null,
 				PublicationWidget.class, new WizardButton[] { new WizardButton(
@@ -97,8 +97,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 						"Administration", "Back to Admin Home")));
 		wf.addInternalNode(new WizardNode("Create Page", null,
 				EditorialPageEditWidget.class, new WizardButton(
-						"Editorial Page List", "Save and Continue"), new WizardButton(
-						"Editorial Page List", "Back to Editorial Page List")));
+						"Editorial Page List", "Save and Continue"),
+				new WizardButton("Editorial Page List",
+						"Back to Editorial Page List")));
+		wf.addInternalNode(new WizardNode("Generate Bootstrap File", null,
+				BootstrapGeneratorWidget.class, (WizardButton) null,
+				(WizardButton) null));
 		return wf;
 
 	}
@@ -138,6 +142,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new EditorialPageEditWidget();
 		} else if (node.getWidgetClass().equals(EditorialPageListWidget.class)) {
 			return new EditorialPageListWidget(this);
+		} else if (node.getWidgetClass().equals(BootstrapGeneratorWidget.class)) {
+			return new BootstrapGeneratorWidget();
 		}
 		return null;
 

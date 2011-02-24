@@ -96,4 +96,7 @@ public interface SurveyServiceAsync {
 
 	void getPublishedSurvey(String surveyId, AsyncCallback<SurveyDto> callback);
 
+	void generateBootstrapFile(List<Long> surveyIdList, String dbInstructions,
+			String notificationEmail, AsyncCallback<Void> callback);
+
 }
