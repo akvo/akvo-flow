@@ -261,29 +261,71 @@ public class BootstrapGeneratorWidget extends Composite implements
 					selectionListbox.removeItem(victimList.get(i));
 				}
 			}
-		}else if (event.getSource() == generateFileButton){
-			
+		} else if (event.getSource() == generateFileButton) {
+
 			List<Long> idList = new ArrayList<Long>();
-			for (int i = 0; i < selectionListbox.getItemCount(); i++) {				
-					idList.add(new Long(selectionListbox.getValue(i)));				
+			for (int i = 0; i < selectionListbox.getItemCount(); i++) {
+				idList.add(new Long(selectionListbox.getValue(i)));
 			}
-						
-			//TODO: VALIDATE!
-			surveyService.generateBootstrapFile(idList, dbInstructionArea.getText(), notificationEmailBox.getText(), new AsyncCallback<Void>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
+			List<String> errors = validate();
+			if (errors.size() == 0) {
+				surveyService.generateBootstrapFile(idList, dbInstructionArea
+						.getText(), notificationEmailBox.getText(),
+						new AsyncCallback<Void>() {
 
-					
+							@Override
+							public void onFailure(Throwable caught) {
+								MessageDialog errDia = new MessageDialog(
+										"Error",
+										"Could not submit generation request");
+								errDia.showCentered();
+
+							}
+
+							@Override
+							public void onSuccess(Void result) {
+								MessageDialog dia = new MessageDialog(
+										"Request Submitted",
+										"An email will be sent when the file is available");
+								dia.showCentered();
+								resetUI();
+							}
+						});
+			} else {
+				StringBuilder builder = new StringBuilder(
+						"Please corect the following errors and try again: <br><ul>");
+				for (String e : errors) {
+					builder.append("<li>").append(e).append("</li>");
 				}
-
-				@Override
-				public void onSuccess(Void result) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
+				builder.append("</ul>");
+				MessageDialog dia = new MessageDialog("Missing data", builder
+						.toString());
+				dia.showCentered();
+			}
 		}
 	}
 
+	private void resetUI() {
+		dbInstructionArea.setText("");
+		dbInstructionArea.setVisible(false);
+		includeDbScriptBox.setValue(false);
+		selectionListbox.clear();
+		surveyListbox.clear();
+		surveyGroupListbox.setSelectedIndex(0);
+		notificationEmailBox.setText("");
+	}
+
+	private List<String> validate() {
+		List<String> errors = new ArrayList<String>();
+		if (selectionListbox.getItemCount() == 0
+				&& !ViewUtil.isTextPopulated(dbInstructionArea)) {
+			errors
+					.add("If no db instructions are included, then at least 1 survey must be selected");
+		}
+		if (!ViewUtil.isTextPopulated(notificationEmailBox)) {
+			errors.add("You must provide a notification email address");
+		}
+		return errors;
+	}
 }

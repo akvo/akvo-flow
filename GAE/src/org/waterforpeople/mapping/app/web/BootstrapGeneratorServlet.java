@@ -77,26 +77,30 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
 	private void generateFile(BootstrapGeneratorRequest req) {
 		Map<String, String> contentMap = new HashMap<String, String>();
 		StringBuilder errors = new StringBuilder();
-		for (Long id : req.getSurveyIds()) {
-			try {
-				Survey s = surveyDao.getById(id);
-				String name = s.getName().replaceAll(" ", "_");
-				StringBuilder buf = new StringBuilder();
+		if (req.getSurveyIds() != null) {
+			for (Long id : req.getSurveyIds()) {
+				try {
+					Survey s = surveyDao.getById(id);
+					String name = s.getName().replaceAll(" ", "_");
+					StringBuilder buf = new StringBuilder();
 
-				URL url = new URL(PropertyUtil.getProperty(SURVEY_UPLOAD_URL)
-						+ PropertyUtil.getProperty(SURVEY_UPLOAD_DIR)+"/"+
-						+ s.getKey().getId() + ".xml");
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(url.openStream()));
-				String line;
-				while ((line = reader.readLine()) != null) {
-					buf.append(line).append("\n");
+					URL url = new URL(PropertyUtil
+							.getProperty(SURVEY_UPLOAD_URL)
+							+ PropertyUtil.getProperty(SURVEY_UPLOAD_DIR)
+							+ "/"
+							+ +s.getKey().getId() + ".xml");
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(url.openStream()));
+					String line;
+					while ((line = reader.readLine()) != null) {
+						buf.append(line).append("\n");
+					}
+					reader.close();
+					contentMap.put(s.getKey().getId() + "/" + name + ".xml",
+							buf.toString());
+				} catch (Exception e) {
+					errors.append("Could not include survey id " + id + "\n");
 				}
-				reader.close();
-				contentMap.put(s.getKey().getId() + "/" + name + ".xml", buf
-						.toString());
-			} catch (Exception e) {
-				errors.append("Could not include survey id " + id + "\n");
 			}
 		}
 		if (req.getDbInstructions() != null
@@ -117,7 +121,8 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
 			body = ERROR_BODY + "\n\n" + errors.toString();
 		} else {
 			body += "\n\n" + PropertyUtil.getProperty(SURVEY_UPLOAD_URL)
-					+ PropertyUtil.getProperty(BOOTSTRAP_UPLOAD_DIR) + "/"+filename;
+					+ PropertyUtil.getProperty(BOOTSTRAP_UPLOAD_DIR) + "/"
+					+ filename;
 		}
 		MailUtil.sendMail(PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY),
 				"FLOW", req.getEmail(), EMAIL_SUB, body);

@@ -32,16 +32,17 @@ public class BootstrapGeneratorRequest extends RestRequest {
 	@Override
 	protected void populateErrors() {
 		if (surveyIds == null || surveyIds.size() == 0) {
+			if(dbInstructions== null || dbInstructions.trim().length()==0){
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, SURVEY_ID_LIST_PARAM
-							+ " cannot be null or empty"));
+							+ " cannot be null or empty if "+DB_PARAM+" is also null"));
+			}
 		}
 		if (email == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
 					RestError.MISSING_PARAM_ERROR_MESSAGE, EMAIL_PARAM
 							+ " cannot be null or empty"));
 		}
-
 	}
 
 	@Override
@@ -49,7 +50,7 @@ public class BootstrapGeneratorRequest extends RestRequest {
 		email = req.getParameter(EMAIL_PARAM);
 		dbInstructions = req.getParameter(DB_PARAM);
 		String ids = req.getParameter(SURVEY_ID_LIST_PARAM);
-		if (ids != null) {
+		if (ids != null && ids.trim().length()>0) {
 			surveyIds = new ArrayList<Long>();
 			StringTokenizer strTok = new StringTokenizer(ids, DELMITER);
 			while (strTok.hasMoreTokens()) {
