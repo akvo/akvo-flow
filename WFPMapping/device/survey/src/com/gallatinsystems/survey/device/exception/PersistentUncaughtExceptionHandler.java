@@ -58,9 +58,9 @@ public class PersistentUncaughtExceptionHandler implements
 	 */
 	@Override
 	public void uncaughtException(Thread sourceThread, Throwable exception) {
-		if (!ignoreException(exception)) {
-			recordException(exception);
-		}
+
+		recordException(exception);
+
 		// Still process the exception with the default handler so we don't
 		// change system behavior
 		if (oldHandler != null) {
@@ -75,10 +75,10 @@ public class PersistentUncaughtExceptionHandler implements
 	 * @param exception
 	 * @return
 	 */
-	private boolean ignoreException(Throwable exception) {
+	private static boolean ignoreException(Throwable exception) {
 		if (exception instanceof UnknownHostException) {
 			return true;
-		}else if (exception instanceof SocketException){
+		} else if (exception instanceof SocketException) {
 			return true;
 		}
 		return false;
@@ -91,40 +91,41 @@ public class PersistentUncaughtExceptionHandler implements
 	 * @param exception
 	 */
 	public static void recordException(Throwable exception) {
-		// save the error
-		final Writer result = new StringWriter();
-		final PrintWriter printWriter = new PrintWriter(result);
-		exception.printStackTrace(printWriter);
+		if (!ignoreException(exception)) {
+			// save the error
+			final Writer result = new StringWriter();
+			final PrintWriter printWriter = new PrintWriter(result);
+			exception.printStackTrace(printWriter);
 
-		try {
-			FileOutputStream out = null;
-			if (Environment.getExternalStorageState().equals(
-					Environment.MEDIA_MOUNTED)) {
-				out = FileUtil.getFileOutputStream(
-						ConstantUtil.STACKTRACE_FILENAME
-								+ Long.toString(System.currentTimeMillis())
-								+ ConstantUtil.STACKTRACE_SUFFIX,
-						ConstantUtil.STACKTRACE_DIR, "false", null);
-			} else {
-				out = FileUtil.getFileOutputStream(
-						ConstantUtil.STACKTRACE_FILENAME
-								+ Long.toString(System.currentTimeMillis())
-								+ ConstantUtil.STACKTRACE_SUFFIX,
-						ConstantUtil.STACKTRACE_DIR, "false", null);
-			}
+			try {
+				FileOutputStream out = null;
+				if (Environment.getExternalStorageState().equals(
+						Environment.MEDIA_MOUNTED)) {
+					out = FileUtil.getFileOutputStream(
+							ConstantUtil.STACKTRACE_FILENAME
+									+ Long.toString(System.currentTimeMillis())
+									+ ConstantUtil.STACKTRACE_SUFFIX,
+							ConstantUtil.STACKTRACE_DIR, "false", null);
+				} else {
+					out = FileUtil.getFileOutputStream(
+							ConstantUtil.STACKTRACE_FILENAME
+									+ Long.toString(System.currentTimeMillis())
+									+ ConstantUtil.STACKTRACE_SUFFIX,
+							ConstantUtil.STACKTRACE_DIR, "false", null);
+				}
 
-			FileUtil.writeStringToFile(result.toString(), out);
-		} catch (IOException e) {
-			Log.e(TAG, "Couldn't save trace file", e);
-		} finally {
-			if (result != null) {
-				try {
-					result.close();
-				} catch (IOException e) {
-					Log.w(TAG, "Can't close print writer object", e);
+				FileUtil.writeStringToFile(result.toString(), out);
+			} catch (IOException e) {
+				Log.e(TAG, "Couldn't save trace file", e);
+			} finally {
+				if (result != null) {
+					try {
+						result.close();
+					} catch (IOException e) {
+						Log.w(TAG, "Can't close print writer object", e);
+					}
 				}
 			}
 		}
 	}
-
 }
