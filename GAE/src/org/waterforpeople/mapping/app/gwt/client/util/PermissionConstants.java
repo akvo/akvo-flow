@@ -10,4 +10,5 @@ public class PermissionConstants {
 	public static final String IMPORT_AP_DATA = "IMPORT ACCESS POINT DATA";
 	public static final String UPLOAD_SURVEY_DATA = "UPLOAD SURVEY DATA";
 	public static final String RAW_DATA_EDIT = "EDIT RAW DATA";
+	public static final String ADMIN = "ADMIN";
 }

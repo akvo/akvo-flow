@@ -3,6 +3,8 @@ package com.gallatinsystems.user.app.gwt.client;
 import java.util.Map;
 import java.util.Set;
 
+import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class UserDto extends BaseDto {
@@ -26,7 +28,8 @@ public class UserDto extends BaseDto {
 	}
 
 	public boolean isAdmin() {
-		return admin;
+		
+		return hasPermission(PermissionConstants.ADMIN);
 	}
 
 	public void setAdmin(boolean isAdmin) {
@@ -79,7 +82,7 @@ public class UserDto extends BaseDto {
 			return true;
 		} else {
 			if (permissionList != null) {
-				return permissionList.contains(permission);
+				return (permissionList.contains(permission)||permissionList.contains(PermissionConstants.ADMIN));
 			} else {
 				return false;
 			}

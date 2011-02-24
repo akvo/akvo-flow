@@ -1412,6 +1412,7 @@ public class TestHarnessServlet extends HttpServlet {
 		savePerm("Import Access Point Data", permList, userDao);
 		savePerm("Upload Survey Data", permList, userDao);
 		savePerm("Edit Raw Data", permList, userDao);
+		savePerm("Admin", permList, userDao);
 	}
 
 	private void savePerm(String name, List<Permission> permList,
