@@ -59,6 +59,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 	private static final int HEIGHT = 800;
 	private static final int WIDTH = 1080;
 
+	private HorizontalPanel buttonHPanel = new HorizontalPanel();
 	private HorizontalPanel buttonPanel = new HorizontalPanel();
 	private Button addSurveyGroupButton;
 	private Button addSurveyButton;
@@ -333,9 +334,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			if (item.getOrder() != null) {
 				lbOrder.setItemSelected(item.getOrder() - 1, true);
 			} else {
-				Integer order = surveyTree.getCurrentlySelectedItem()
-						.getChildCount();
-				lbOrder.setSelectedIndex(order);
+				Integer order = getMaxOrder((QuestionGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject());
+				lbOrder.setSelectedIndex(order+1);
 			}
 			questionId.setText(item.getKeyId().toString());
 			if (item.getText() != null)
@@ -354,9 +354,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				else
 					mandatoryQuestion.setValue(false);
 		} else {
-			Integer order = surveyTree.getCurrentlySelectedItem()
-					.getChildCount();
-			lbOrder.setSelectedIndex(order);
+			Integer order = getMaxOrder((QuestionGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject());
+			lbOrder.setSelectedIndex(order+1);			
 		}
 		ListBox questionTypeLB = new ListBox();
 		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO, STRENGTH
@@ -559,8 +558,26 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		});
 
 	}
+	
+	/**
+	 * finds the highest Order value amongst all the questions in a group
+	 * 
+	 * @param group
+	 * @return
+	 */
+	private Integer getMaxOrder(QuestionGroupDto group) {
+		Integer max = 0;
+		if (group != null && group.getQuestionMap() != null) {
 
-	private HorizontalPanel buttonHPanel = new HorizontalPanel();
+			for (QuestionDto q : group.getQuestionMap().values()) {
+				if (q.getOrder() > max) {
+					max = q.getOrder();
+				}
+			}
+		}
+		return max;
+	}
+
 
 	private void loadDependencyTable(Boolean dependentValue) {
 		if (dependentValue) {
