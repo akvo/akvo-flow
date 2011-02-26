@@ -6,13 +6,15 @@ import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -21,17 +23,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeServices;
-import org.apache.velocity.runtime.RuntimeSingleton;
-import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
-
-import com.google.gwt.user.client.Window;
 
 public class KMLApplet extends JApplet implements Runnable {
 	/**
@@ -144,45 +140,61 @@ public class KMLApplet extends JApplet implements Runnable {
 			setVisible(true);
 		}
 
-		final String PLACEMARK_PREAMBLE = null;
-		final String PLACEMARK_CONCLUSION = null;
-
-		private void processFile(String fileName) throws Exception {
+		private void processFile(String fileName, ArrayList<String> countryList)
+				throws Exception {
 			okButton.setEnabled(false);
 			System.out.println("Calling GenerateDocument");
-			String kml = generateDocument();
 			VelocityContext context = new VelocityContext();
 			File f = new File(fileName);
 			if (!f.exists()) {
 				f.createNewFile();
 			}
-			PrintWriter pw = new PrintWriter(fileName);
-			List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient
-					.fetchPlacemarks("MW", serverBase);
-			StringBuilder sbPlacemarks = new StringBuilder();
-			pw.print(mergeContext(context, "template/DocumentHead.vm"));
-			int i = 0;
-			for (PlacemarkDto pm : placemarkDtoList) {
-				VelocityContext vc = new VelocityContext();
-				vc.put("timestamp", pm.getCollectionDate());
-				vc.put("pinStyle", pm.getPinStyle());
-				vc.put("balloon", pm.getPlacemarkContents());
-				vc.put("longitude", pm.getLongitude());
-				vc.put("latitude", pm.getLatitude());
-				vc.put("altitude", pm.getAltitude());
-				vc.put("communityCode", pm.getCommunityCode());
-				String placemark = mergeContext(vc,
-						"template/PlacemarksNewLook.vm");
-				pw.print(placemark);
-				statusLabel
-						.setText(i + ": Processed: " + pm.getCommunityCode());
-				i++;
+			ZipOutputStream zipOut = null;
+			ByteArrayOutputStream bos = null;
+			try {
+
+				bos = new ByteArrayOutputStream();
+				zipOut = new ZipOutputStream(new FileOutputStream(fileName));
+				zipOut.setLevel(ZipOutputStream.DEFLATED);
+				ZipEntry entry = new ZipEntry("ap.kml");
+				zipOut.putNextEntry(entry);
+
+				zipOut.write(mergeContext(context, "template/DocumentHead.vm")
+						.getBytes("UTF-8"));
+
+				
+				for (String countryCode : countryList) {
+					int i = 0;
+					List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient
+							.fetchPlacemarks(countryCode, serverBase);
+					System.out.println("Starting to process: " + countryCode);
+					if (placemarkDtoList != null) {
+						for (PlacemarkDto pm : placemarkDtoList) {
+							VelocityContext vc = new VelocityContext();
+							vc.put("timestamp", pm.getCollectionDate());
+							vc.put("pinStyle", pm.getPinStyle());
+							vc.put("balloon", pm.getPlacemarkContents());
+							vc.put("longitude", pm.getLongitude());
+							vc.put("latitude", pm.getLatitude());
+							vc.put("altitude", pm.getAltitude());
+							vc.put("communityCode", pm.getCommunityCode());
+							String placemark = mergeContext(vc,
+									"template/PlacemarksNewLook.vm");
+							zipOut.write(placemark.getBytes("UTF-8"));
+							i++;
+						}
+					}
+					System.out.println("processed: " + countryCode + " : " + i);
+				}
+				zipOut.write(mergeContext(context, "template/DocumentFooter.vm")
+						.getBytes("UTF-8"));
+				zipOut.closeEntry();
+				zipOut.close();
+				System.out.println("Finished Writing File");
+			} catch (Exception ex) {
+				System.out.println(ex);
 			}
-			pw.print(mergeContext(context, "template/DocumentFooter.vm"));
-			pw.flush();
-			System.out.println("Finished Writing File");
-			if (pw != null)
-				pw.close();
+
 			status.setText("Completed writing kml to " + fileName);
 			okButton.setEnabled(true);
 		}
@@ -206,9 +218,20 @@ public class KMLApplet extends JApplet implements Runnable {
 
 			} else if (e.getSource() == okButton) {
 				try {
-					String filelocation = path + "/kmloutput.kml";
+					String filelocation = path + "/kmloutput.kmz";
 					System.out.println("File to save to: " + filelocation);
-					processFile(filelocation);
+					// Temp
+					ArrayList<String> countryList = new ArrayList<String>();
+					countryList.add("MW");
+					countryList.add("RW");
+					countryList.add("BO");
+					countryList.add("PE");
+					countryList.add("GT");
+					countryList.add("IN");
+					countryList.add("NI");
+					countryList.add("SV");
+					countryList.add("LR");
+					processFile(filelocation, countryList);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
