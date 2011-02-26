@@ -34,8 +34,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	private static final String LABEL_STYLE = "input-label-padded";
 	private static final int DEFAULT_ITEM_COUNT = 5;
 	private ListBox surveyGroupListbox;
-	private ListBox surveyListbox;
-	private ListBox selectionListbox;
+	private ListBox surveyListbox;	
 	private ListBox questionGroupListbox;
 	private SurveyServiceAsync surveyService;
 	private Panel contentPanel;
@@ -249,8 +248,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		}
 	}
 
-	public void reset() {
-		selectionListbox.clear();
+	public void reset() {		
 		surveyListbox.clear();
 		surveyGroupListbox.setSelectedIndex(0);
 		if (questionGroupListbox != null) {

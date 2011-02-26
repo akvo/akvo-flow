@@ -124,8 +124,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 		}else if (event.getSource() == generateBootstrapButton){
 			controller.openPage(BootstrapGeneratorWidget.class, null);
 		}else if (event.getSource() == assignmentButton){
-			//TODO: replace with list widget first
-			//controller.openPage(SurveyAssignmentEditWidget.class,null);
+			controller.openPage(SurveyAssignmentListWidget.class,null);
 		}
 	}
 

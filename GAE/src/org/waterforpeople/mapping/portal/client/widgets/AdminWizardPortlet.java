@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupE
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentEditWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyGroupEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyGroupListWidget;
@@ -104,10 +105,18 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("Generate Bootstrap File", null,
 				BootstrapGeneratorWidget.class, (WizardButton) null,
 				(WizardButton) null));
-		wf.addInternalNode(new WizardNode("Edit Assignment", "Edit Assignment",
-				SurveyAssignmentEditWidget.class, new WizardButton("Administration",
-				"Save and Continue"),
-				(WizardButton) null));
+		wf.addInternalNode(new WizardNode("Assignment List", "Assignment List",
+				SurveyAssignmentListWidget.class, new WizardButton(
+						"Edit Assignment", "Create Assignment"),
+				new WizardButton("Administration", "Back to Admin Home")));
+		wf
+				.addInternalNode(new WizardNode(
+						"Edit Assignment",
+						"Edit Assignment",
+						SurveyAssignmentEditWidget.class,
+						new WizardButton("Administration", "Save and Continue"),
+						new WizardButton("Assignment List",
+								"Back to Assignment List")));
 		return wf;
 
 	}
@@ -152,6 +161,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		} else if (node.getWidgetClass().equals(
 				SurveyAssignmentEditWidget.class)) {
 			return new SurveyAssignmentEditWidget();
+		} else if (node.getWidgetClass().equals(
+				SurveyAssignmentListWidget.class)) {
+			return new SurveyAssignmentListWidget(this);
 		}
 		return null;
 
