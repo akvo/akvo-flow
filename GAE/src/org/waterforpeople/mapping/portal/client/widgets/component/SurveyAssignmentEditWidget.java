@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,10 @@ import java.util.Map.Entry;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
@@ -128,7 +131,7 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		buttonPanel.add(removeSelectedButton);
 		clearButton = new Button("Undo Changes");
 		clearButton.addClickHandler(this);
-		buttonPanel.add(clearButton);		
+		buttonPanel.add(clearButton);
 		main.add(buttonPanel);
 		detailPanelCap.add(main);
 		return detailPanelCap;
@@ -154,24 +157,19 @@ public class SurveyAssignmentEditWidget extends Composite implements
 									}
 								}
 							}
-							populateDeviceControl(null);
+							populateDeviceControl();
 						}
 					}
 				});
 	}
 
-	private void populateDeviceControl(List<DeviceDto> deviceList) {
-		if (deviceList == null && allDevices != null) {
-			deviceList = allDevices;
-		}
-		if (deviceList != null) {
-			devicePickerListbox.clear();
-			for (DeviceDto dto : deviceList) {
-				devicePickerListbox.addItem(dto.getPhoneNumber()
-						+ (dto.getDeviceIdentifier() != null ? " ("
-								+ dto.getDeviceIdentifier() + ")" : ""), dto
-						.getKeyId().toString());
-			}
+	private void populateDeviceControl() {
+		devicePickerListbox.clear();
+		for (DeviceDto dto : allDevices) {
+			devicePickerListbox.addItem(dto.getPhoneNumber()
+					+ (dto.getDeviceIdentifier() != null ? " ("
+							+ dto.getDeviceIdentifier() + ")" : ""), dto
+					.getKeyId().toString());
 		}
 	}
 
@@ -180,7 +178,6 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		if (contextBundle != null) {
 			contextBundle.remove(BundleConstants.SURVEY_ASSIGNMENT);
 		}
-
 	}
 
 	@Override
@@ -192,20 +189,58 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	}
 
 	@Override
-	public void persistContext(CompletionListener listener) {
-		/*
-		 * surveyAssignmentService.saveSurveyAssignment(dto, new
-		 * AsyncCallback<SurveyAssignmentDto>() {
-		 * 
-		 * @Override public void onSuccess(SurveyAssignmentDto result) {
-		 * statusLabel.setText("Assignment Saved");
-		 * statusLabel.setVisible(true); currentDto = result; }
-		 * 
-		 * @Override public void onFailure(Throwable caught) {
-		 * statusLabel.setText("Error: " + caught.getLocalizedMessage());
-		 * statusLabel.setVisible(true); } });
-		 */
+	public void persistContext(final CompletionListener listener) {
+		SurveyAssignmentDto dto = (SurveyAssignmentDto) contextBundle
+				.get(BundleConstants.SURVEY_ASSIGNMENT);
 
+		if (dto == null) {
+			dto = new SurveyAssignmentDto();
+		}
+		dto.setName(eventName.getText());
+		dto.setStartDate(effectiveStartDate.getValue());
+		dto.setEndDate(effectiveEndDate.getValue());
+		List<Long> ids = getSelectedIds(selectedSurveyListbox);
+		ArrayList<SurveyDto> surveys = new ArrayList<SurveyDto>();
+		for (Long id : ids) {
+			SurveyDto s = new SurveyDto();
+			s.setKeyId(id);
+			surveys.add(s);
+		}
+		dto.setSurveys(surveys);
+
+		ids = getSelectedIds(selectedDevicesListbox);
+		ArrayList<DeviceDto> devices = new ArrayList<DeviceDto>();
+		for (Long id : ids) {
+			DeviceDto d = new DeviceDto();
+			d.setKeyId(id);
+			devices.add(d);
+		}
+		dto.setDevices(devices);
+
+		surveyAssignmentService.saveSurveyAssignment(dto,
+				new AsyncCallback<SurveyAssignmentDto>() {
+					@Override
+					public void onSuccess(SurveyAssignmentDto result) {
+						contextBundle.put(BundleConstants.SURVEY_ASSIGNMENT,
+								result);
+						listener.operationComplete(true, contextBundle);
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						listener.operationComplete(false, contextBundle);
+					}
+				});
+	}
+
+	public List<Long> getSelectedIds(ListBox box) {
+		List<Long> ids = new ArrayList<Long>();
+		for (int i = 0; i < box.getItemCount(); i++) {
+			if (box.isItemSelected(i)) {
+				ids.add(new Long(box.getValue(i)));
+			}
+		}
+		return ids;
 	}
 
 	@Override
@@ -215,12 +250,113 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		} else {
 			contextBundle = bundle;
 		}
+		populateControl();
+	}
+
+	private void populateControl() {
+		SurveyAssignmentDto dto = (SurveyAssignmentDto) contextBundle
+				.get(BundleConstants.SURVEY_ASSIGNMENT);
+		if (dto != null) {
+			eventName.setText(dto.getName());
+			effectiveEndDate.setValue(dto.getEndDate());
+			effectiveStartDate.setValue(dto.getStartDate());
+			if (dto.getSurveys() != null) {
+				for (SurveyDto s : dto.getSurveys()) {
+					selectedSurveyListbox.addItem(s.getName(), s.getKeyId()
+							.toString());
+				}
+			}
+			if (dto.getDevices() != null) {
+				for (DeviceDto d : dto.getDevices()) {
+					selectedDevicesListbox.addItem(d.getPhoneNumber()
+							+ (d.getDeviceIdentifier() != null ? " ("
+									+ d.getDeviceIdentifier() + ")" : ""), d
+							.getKeyId().toString());
+				}
+			}
+		}
+	}
+
+	private void resetUI() {
+		surveySelectWidget.reset();
+		eventName.setText("");
+		effectiveEndDate.setValue(null);
+		effectiveStartDate.setValue(null);
+		selectedDevicesListbox.clear();
+		selectedSurveyListbox.clear();
 	}
 
 	@Override
 	public void onClick(ClickEvent event) {
-		// TODO Auto-generated method stub
-
+		if (event.getSource() == addSelectedButton) {
+			handleSurveySelection();
+			handleDeviceSelection();
+		} else if (event.getSource() == removeSelectedButton) {
+			handleRemove(selectedSurveyListbox);
+			handleRemove(selectedDevicesListbox);
+		} else if (event.getSource() == clearButton) {
+			resetUI();
+			populateControl();
+		}
 	}
 
+	/**
+	 * removes all selected items from a list box
+	 * 
+	 * @param box
+	 */
+	private void handleRemove(ListBox box) {
+		List<Integer> victimIndicies = new ArrayList<Integer>();
+		for (int i = 0; i < box.getItemCount(); i++) {
+			if (box.isItemSelected(i)) {
+				victimIndicies.add(i);
+			}
+		}
+		if (victimIndicies.size() > 0) {
+			Collections.sort(victimIndicies);
+			for (int i = victimIndicies.size() - 1; i >= 0; i--) {
+				box.removeItem(victimIndicies.get(i));
+			}
+		}
+	}
+
+	private void handleSurveySelection() {
+		String group = surveySelectWidget.getSelectedSurveyGroupName();
+		List<String> name = surveySelectWidget.getSelectedSurveyNames();
+		List<Long> ids = surveySelectWidget.getSelectedSurveyIds();
+		for (int i = 0; i < name.size(); i++) {
+			boolean alreadyThere = false;
+			for (int j = 0; j < selectedSurveyListbox.getItemCount(); j++) {
+				if (selectedSurveyListbox.getValue(j).equals(
+						ids.get(i).toString())) {
+					alreadyThere = true;
+					break;
+				}
+			}
+			if (!alreadyThere) {
+				selectedSurveyListbox.addItem(group + ": " + name.get(i), ids
+						.get(i).toString());
+			}
+		}
+	}
+
+	private void handleDeviceSelection() {
+		for (int i = 0; i < devicePickerListbox.getItemCount(); i++) {
+			if (devicePickerListbox.isItemSelected(i)) {
+				boolean alreadyThere = false;
+				for (int j = 0; j < selectedDevicesListbox.getItemCount(); j++) {
+					if (selectedDevicesListbox.getValue(j).equals(
+							devicePickerListbox.getValue(i))) {
+						alreadyThere = true;
+						break;
+					}
+				}
+				if (!alreadyThere) {
+					selectedDevicesListbox.addItem(devicePickerListbox
+							.getItemText(i), devicePickerListbox.getValue(i));
+				}
+			}
+		}
+
+	}
 }
