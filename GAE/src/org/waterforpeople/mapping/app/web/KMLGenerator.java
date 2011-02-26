@@ -727,7 +727,7 @@ public class KMLGenerator {
 		}
 	}
 
-	private String encodePinStyle(AccessPointType type,
+	public static String encodePinStyle(AccessPointType type,
 			AccessPoint.Status status) {
 		String prefix = "water";
 		if (AccessPointType.SANITATION_POINT == type) {

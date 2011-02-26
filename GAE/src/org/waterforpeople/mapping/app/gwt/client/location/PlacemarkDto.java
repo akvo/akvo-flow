@@ -17,7 +17,14 @@ public class PlacemarkDto implements Serializable {
 	private String communityCode = null;
 	private String markType = null;
 	private Date collectionDate = null;
+	private String pinStyle = null;
 	
+	public String getPinStyle() {
+		return pinStyle;
+	}
+	public void setPinStyle(String pinStyle) {
+		this.pinStyle = pinStyle;
+	}
 	public Double getLatitude() {
 		return latitude;
 	}

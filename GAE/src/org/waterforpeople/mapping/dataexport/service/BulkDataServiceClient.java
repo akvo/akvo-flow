@@ -217,6 +217,9 @@ public class BulkDataServiceClient {
 							String x = json.getString("placemarkContents");
 							dto.setPlacemarkContents(x);
 						}
+						if(json.has("pinStyle")){
+							dto.setPinStyle(json.getString("pinStyle"));
+						}
 					}
 					dtoList.add(dto);
 				}

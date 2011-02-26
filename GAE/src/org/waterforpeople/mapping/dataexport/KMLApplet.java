@@ -151,13 +151,34 @@ public class KMLApplet extends JApplet implements Runnable {
 			okButton.setEnabled(false);
 			System.out.println("Calling GenerateDocument");
 			String kml = generateDocument();
-			
+			VelocityContext context = new VelocityContext();
 			File f = new File(fileName);
-			 if(!f.exists()){
-			      f.createNewFile();
-			 }
+			if (!f.exists()) {
+				f.createNewFile();
+			}
 			PrintWriter pw = new PrintWriter(fileName);
-			pw.print(kml);
+			List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient
+					.fetchPlacemarks("MW", serverBase);
+			StringBuilder sbPlacemarks = new StringBuilder();
+			pw.print(mergeContext(context, "template/DocumentHead.vm"));
+			int i = 0;
+			for (PlacemarkDto pm : placemarkDtoList) {
+				VelocityContext vc = new VelocityContext();
+				vc.put("timestamp", pm.getCollectionDate());
+				vc.put("pinStyle", pm.getPinStyle());
+				vc.put("balloon", pm.getPlacemarkContents());
+				vc.put("longitude", pm.getLongitude());
+				vc.put("latitude", pm.getLatitude());
+				vc.put("altitude", pm.getAltitude());
+				vc.put("communityCode", pm.getCommunityCode());
+				String placemark = mergeContext(vc,
+						"template/PlacemarksNewLook.vm");
+				pw.print(placemark);
+				statusLabel
+						.setText(i + ": Processed: " + pm.getCommunityCode());
+				i++;
+			}
+			pw.print(mergeContext(context, "template/DocumentFooter.vm"));
 			pw.flush();
 			System.out.println("Finished Writing File");
 			if (pw != null)
@@ -165,25 +186,27 @@ public class KMLApplet extends JApplet implements Runnable {
 			status.setText("Completed writing kml to " + fileName);
 			okButton.setEnabled(true);
 		}
+
 		private String path = null;
+
 		public void actionPerformed(ActionEvent e) {
 			boolean isValid = true;
 			if (e.getSource() == cancelButton) {
 				cancelled = true;
 			} else if (e.getSource() == selectFileButton) {
-				 fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				 fc.setAcceptAllFileFilterUsed(false);
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				fc.setAcceptAllFileFilterUsed(false);
 				int returnVal = fc.showOpenDialog(InputDialog.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					file =fc.getCurrentDirectory();
-					path= file.getPath();
+					file = fc.getCurrentDirectory();
+					path = file.getPath();
 				} else {
 
 				}
 
 			} else if (e.getSource() == okButton) {
 				try {
-					String filelocation = path + "/kmloutput.txt";
+					String filelocation = path + "/kmloutput.kml";
 					System.out.println("File to save to: " + filelocation);
 					processFile(filelocation);
 				} catch (Exception e1) {
@@ -197,6 +220,10 @@ public class KMLApplet extends JApplet implements Runnable {
 
 		public boolean isCancelled() {
 			return cancelled;
+		}
+
+		public void setStatusText(String text) {
+			status.setText(text);
 		}
 	}
 
@@ -238,19 +265,25 @@ public class KMLApplet extends JApplet implements Runnable {
 			List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient
 					.fetchPlacemarks("MW", serverBase);
 			StringBuilder sbPlacemarks = new StringBuilder();
+			int i = 0;
 			for (PlacemarkDto pm : placemarkDtoList) {
 				VelocityContext vc = new VelocityContext();
 				vc.put("timestamp", pm.getCollectionDate());
-				vc.put("pinStyle", null);
+				vc.put("pinStyle", pm.getPinStyle());
 				vc.put("balloon", pm.getPlacemarkContents());
 				vc.put("longitude", pm.getLongitude());
 				vc.put("latitude", pm.getLatitude());
 				vc.put("altitude", pm.getAltitude());
-				sbPlacemarks.append(mergeContext(vc, "template/PlacemarksNewLook.vm"));
-				System.out.println("Processed: " + pm.getCommunityCode());
+				vc.put("communityCode", pm.getCommunityCode());
+				String placemark = mergeContext(vc,
+						"template/PlacemarksNewLook.vm");
+				sbPlacemarks.append(placemark);
+				statusLabel
+						.setText(i + ": Processed: " + pm.getCommunityCode());
+				i++;
 			}
 			System.out.println("Finished Processing APs");
-			context.put("template/folderContents", sbPlacemarks.toString());
+			// context.put("folderContents", sbPlacemarks.toString());
 			System.out.println("Returning KML");
 			return mergeContext(context, "template/Document.vm");
 		} catch (Exception ex) {

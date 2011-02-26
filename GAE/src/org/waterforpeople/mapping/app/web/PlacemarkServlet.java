@@ -142,6 +142,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private PlacemarkDto marshallDomainToDto(AccessPoint ap,
 			Boolean needDetailsFlag, String display) {
 		PlacemarkDto pdto = new PlacemarkDto();
+		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(), ap.getPointStatus()));
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
 		pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
