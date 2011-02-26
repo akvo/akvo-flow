@@ -35,6 +35,24 @@ public class ViewUtil {
 	}
 
 	/**
+	 * constructs a new label and sets its style. If no style is supplised, it
+	 * will be set to the default label style.
+	 * 
+	 * @param text
+	 * @param style
+	 * @return
+	 */
+	public static Label initLabel(String text, String style) {
+		Label l = new Label(text);
+		if (style != null) {
+			l.setStylePrimaryName(style);
+		} else {
+			l.setStyleName(DEFAULT_INPUT_LABEL_CSS);
+		}
+		return l;
+	}
+
+	/**
 	 * installs a field with a Label containing text as the field label
 	 * 
 	 * @param container
@@ -65,7 +83,8 @@ public class ViewUtil {
 	 */
 	public static void installGridRow(String labelText, Widget widget,
 			Grid parent, int row) {
-		installGridRow(labelText, widget, parent, row, 0, DEFAULT_INPUT_LABEL_CSS);
+		installGridRow(labelText, widget, parent, row, 0,
+				DEFAULT_INPUT_LABEL_CSS);
 	}
 
 	/**
@@ -85,7 +104,7 @@ public class ViewUtil {
 			Label label = new Label();
 			if (style != null) {
 				label.setStylePrimaryName(style);
-			} 
+			}
 			label.setText(labelText);
 			parent.setWidget(row, colOffset, label);
 			parent.setWidget(row, colOffset + 1, widget);
@@ -98,10 +117,10 @@ public class ViewUtil {
 	/**
 	 * selects the value in a list box
 	 */
-	public static boolean setListboxSelection(ListBox list, String value){		
-		if(list != null && value != null){
-			for(int i =0; i < list.getItemCount(); i++){
-				if(list.getValue(i).equals(value)){
+	public static boolean setListboxSelection(ListBox list, String value) {
+		if (list != null && value != null) {
+			for (int i = 0; i < list.getItemCount(); i++) {
+				if (list.getValue(i).equals(value)) {
 					list.setSelectedIndex(i);
 					return true;
 				}

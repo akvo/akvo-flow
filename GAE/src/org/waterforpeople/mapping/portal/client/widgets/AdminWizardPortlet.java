@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWi
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionListWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyGroupEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyGroupListWidget;
@@ -103,6 +104,10 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("Generate Bootstrap File", null,
 				BootstrapGeneratorWidget.class, (WizardButton) null,
 				(WizardButton) null));
+		wf.addInternalNode(new WizardNode("Edit Assignment", "Edit Assignment",
+				SurveyAssignmentEditWidget.class, new WizardButton("Administration",
+				"Save and Continue"),
+				(WizardButton) null));
 		return wf;
 
 	}
@@ -144,6 +149,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new EditorialPageListWidget(this);
 		} else if (node.getWidgetClass().equals(BootstrapGeneratorWidget.class)) {
 			return new BootstrapGeneratorWidget();
+		} else if (node.getWidgetClass().equals(
+				SurveyAssignmentEditWidget.class)) {
+			return new SurveyAssignmentEditWidget();
 		}
 		return null;
 
