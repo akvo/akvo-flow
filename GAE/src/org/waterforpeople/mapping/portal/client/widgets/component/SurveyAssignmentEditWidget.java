@@ -137,6 +137,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		return detailPanelCap;
 	}
 
+	/**
+	 * gets all devices from the server
+	 */
 	private void getDevices() {
 		deviceService
 				.listDeviceByGroup(new AsyncCallback<HashMap<String, ArrayList<DeviceDto>>>() {
@@ -163,6 +166,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 				});
 	}
 
+	/**
+	 * installs the devices into the selection listbox
+	 */
 	private void populateDeviceControl() {
 		devicePickerListbox.clear();
 		for (DeviceDto dto : allDevices) {
@@ -188,6 +194,10 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		return contextBundle;
 	}
 
+	/**
+	 * populates a dto with values from the UI, validates it and, if valid,
+	 * saves the assignment to the datastore
+	 */
 	@Override
 	public void persistContext(final CompletionListener listener) {
 		SurveyAssignmentDto dto = (SurveyAssignmentDto) contextBundle
@@ -217,28 +227,72 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		}
 		dto.setDevices(devices);
 
-		surveyAssignmentService.saveSurveyAssignment(dto,
-				new AsyncCallback<SurveyAssignmentDto>() {
-					@Override
-					public void onSuccess(SurveyAssignmentDto result) {
-						contextBundle.put(BundleConstants.SURVEY_ASSIGNMENT,
-								result);
-						listener.operationComplete(true, contextBundle);
-					}
+		List<String> errors = validate(dto);
+		if (errors.size() == 0) {
+			surveyAssignmentService.saveSurveyAssignment(dto,
+					new AsyncCallback<SurveyAssignmentDto>() {
+						@Override
+						public void onSuccess(SurveyAssignmentDto result) {
+							contextBundle.put(
+									BundleConstants.SURVEY_ASSIGNMENT, result);
+							listener.operationComplete(true, contextBundle);
+						}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						listener.operationComplete(false, contextBundle);
-					}
-				});
+						@Override
+						public void onFailure(Throwable caught) {
+							listener.operationComplete(false, contextBundle);
+						}
+					});
+		} else {
+			StringBuilder buf = new StringBuilder(
+					"Please correct the following errors and try saving again:<br><ul>");
+			for (String e : errors) {
+				buf.append("<li>").append(e).append("</li>");
+			}
+			buf.append("</ul>");
+			MessageDialog validDia = new MessageDialog("Invalid input", buf
+					.toString());
+			validDia.showCentered();
+			listener.operationComplete(false, getContextBundle(true));
+		}
 	}
 
+	/**
+	 * checks all required fields are populated
+	 * 
+	 * @param dto
+	 * @return
+	 */
+	private List<String> validate(SurveyAssignmentDto dto) {
+		List<String> errors = new ArrayList<String>();
+		if (dto.getName() == null || dto.getName().trim().length() == 0) {
+			errors.add("Name must not be empty");
+		}
+		if (dto.getStartDate() == null) {
+			errors.add("Start date must not be empty");
+		}
+		if (dto.getEndDate() == null) {
+			errors.add("End date must not be empty");
+		}
+		if (dto.getSurveys() == null || dto.getSurveys().size() == 0) {
+			errors.add("At least 1 survey must be selected");
+		}
+		if (dto.getDevices() == null || dto.getDevices().size() == 0) {
+			errors.add("At least 1 device must be selected");
+		}
+		return errors;
+	}
+
+	/**
+	 * gets the value of all the selected listbox entries
+	 * 
+	 * @param box
+	 * @return
+	 */
 	public List<Long> getSelectedIds(ListBox box) {
 		List<Long> ids = new ArrayList<Long>();
-		for (int i = 0; i < box.getItemCount(); i++) {
-			if (box.isItemSelected(i)) {
-				ids.add(new Long(box.getValue(i)));
-			}
+		for (int i = 0; i < box.getItemCount(); i++) {		
+				ids.add(new Long(box.getValue(i)));		
 		}
 		return ids;
 	}
@@ -253,6 +307,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		populateControl();
 	}
 
+	/**
+	 * populates the assignment details with data from the dto (if not null)
+	 */
 	private void populateControl() {
 		SurveyAssignmentDto dto = (SurveyAssignmentDto) contextBundle
 				.get(BundleConstants.SURVEY_ASSIGNMENT);
@@ -277,6 +334,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		}
 	}
 
+	/**
+	 * restores widget to state after first load
+	 */
 	private void resetUI() {
 		surveySelectWidget.reset();
 		eventName.setText("");
@@ -320,6 +380,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		}
 	}
 
+	/**
+	 * adds selected surveys to the selection widget
+	 */
 	private void handleSurveySelection() {
 		String group = surveySelectWidget.getSelectedSurveyGroupName();
 		List<String> name = surveySelectWidget.getSelectedSurveyNames();
@@ -340,6 +403,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		}
 	}
 
+	/**
+	 * adds selected devices to the selection widget
+	 */
 	private void handleDeviceSelection() {
 		for (int i = 0; i < devicePickerListbox.getItemCount(); i++) {
 			if (devicePickerListbox.isItemSelected(i)) {
@@ -357,6 +423,5 @@ public class SurveyAssignmentEditWidget extends Composite implements
 				}
 			}
 		}
-
 	}
 }
