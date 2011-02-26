@@ -258,14 +258,17 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * @param optionContainer
 	 */
 	private void populateOptions(OptionContainerDto optionContainer) {
-		optionPanel.setVisible(true);
-		// wipe out any old values
-		optionTable.clear(true);
-		allowMultipleBox.setValue(optionContainer.getAllowMultipleFlag());
-		allowOtherBox.setValue(optionContainer.getAllowOtherFlag());
-		if (optionContainer != null && optionContainer.getOptionsList() != null) {
-			for (QuestionOptionDto opt : optionContainer.getOptionsList()) {
-				installOptionRow(opt);
+		if (optionContainer != null) {
+			optionPanel.setVisible(true);
+			// wipe out any old values
+			optionTable.clear(true);
+			allowMultipleBox.setValue(optionContainer.getAllowMultipleFlag());
+			allowOtherBox.setValue(optionContainer.getAllowOtherFlag());
+			if (optionContainer != null
+					&& optionContainer.getOptionsList() != null) {
+				for (QuestionOptionDto opt : optionContainer.getOptionsList()) {
+					installOptionRow(opt);
+				}
 			}
 		}
 	}
