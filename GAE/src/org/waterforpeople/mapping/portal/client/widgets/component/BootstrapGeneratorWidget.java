@@ -2,20 +2,17 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -35,18 +32,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * can select any number of surveys and optionally supply a set of db
  * instructions. They will be emailed when the zip file is ready for download.
  * 
- * TODO: refactor survey group/survey loading into a shared component
  * 
  * @author Christopher Fagiani
  * 
  */
-public class BootstrapGeneratorWidget extends Composite implements
-		ClickHandler, ChangeHandler {
+public class BootstrapGeneratorWidget extends Composite implements ClickHandler {
 
 	private static final String LABEL_STYLE = "input-label-padded";
 	private static final int DEFAULT_ITEM_COUNT = 5;
-	private ListBox surveyGroupListbox;
-	private ListBox surveyListbox;
 	private ListBox selectionListbox;
 	private SurveyServiceAsync surveyService;
 	private TextArea dbInstructionArea;
@@ -55,22 +48,15 @@ public class BootstrapGeneratorWidget extends Composite implements
 	private Button generateFileButton;
 	private Button removeButton;
 	private Panel contentPanel;
-	private MessageDialog loadingDialog;
 	private TextBox notificationEmailBox;
+	private SurveySelectionWidget selectionWidget;
 
 	List<SurveyDto> currentSurveyDtoList;
-	private Map<String, List<SurveyDto>> surveys;
 
 	public BootstrapGeneratorWidget() {
-		surveys = new HashMap<String, List<SurveyDto>>();
 		contentPanel = new VerticalPanel();
-		loadingDialog = new MessageDialog("Loading...", "Please wait.");
 		contentPanel.setWidth("800px");
 		surveyService = GWT.create(SurveyService.class);
-		surveyGroupListbox = new ListBox();
-		surveyGroupListbox.addChangeHandler(this);
-		surveyListbox = new ListBox(true);
-		surveyListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
 		addSurveyButton = new Button("Add Selected");
 		addSurveyButton.addClickHandler(this);
 		generateFileButton = new Button("Generate");
@@ -80,9 +66,9 @@ public class BootstrapGeneratorWidget extends Composite implements
 		CaptionPanel selectorPanel = new CaptionPanel(
 				"Select Surveys for Inclusion");
 		HorizontalPanel temp = new HorizontalPanel();
-		ViewUtil.installFieldRow(temp, "Survey Group", surveyGroupListbox,
-				LABEL_STYLE);
-		ViewUtil.installFieldRow(temp, "Surveys", surveyListbox, LABEL_STYLE);
+		selectionWidget = new SurveySelectionWidget(Orientation.HORIZONTAL,
+				TerminalType.SURVEY);
+		temp.add(selectionWidget);
 		temp.add(addSurveyButton);
 		selectorPanel.add(temp);
 		contentPanel.add(selectorPanel);
@@ -113,117 +99,6 @@ public class BootstrapGeneratorWidget extends Composite implements
 		zipPanel.add(zipPanelContent);
 		contentPanel.add(zipPanel);
 		initWidget(contentPanel);
-		loadSurveyGroups();
-	}
-
-	/**
-	 * loads the survey groups
-	 */
-	private void loadSurveyGroups() {
-		surveyService.listSurveyGroups("all", false, false, false,
-				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Application Error",
-								"Cannot load survey groups");
-						errDia.showCentered();
-					}
-
-					@Override
-					public void onSuccess(ArrayList<SurveyGroupDto> result) {
-						surveyGroupListbox.addItem("", "");
-						if (result != null) {
-							int i = 0;
-							for (SurveyGroupDto dto : result) {
-								surveyGroupListbox.addItem(dto.getCode(), dto
-										.getKeyId().toString());
-								i++;
-							}
-						}
-						toggleLoading(false);
-					}
-				});
-	}
-
-	private void getSurveys() {
-		if (surveyGroupListbox.getSelectedIndex() > 0) {
-			final String selectedGroupId = surveyGroupListbox
-					.getValue(surveyGroupListbox.getSelectedIndex());
-
-			if (selectedGroupId != null) {
-				if (surveys.get(selectedGroupId) != null) {
-					populateSurveyList(surveys.get(selectedGroupId));
-				} else {
-					// Set up the callback object.
-					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
-						public void onFailure(Throwable caught) {
-							toggleLoading(false);
-							MessageDialog errDia = new MessageDialog(
-									"Cannot list surveys",
-									"The application encountered an error: "
-											+ caught.getLocalizedMessage());
-							errDia.showCentered();
-						}
-
-						public void onSuccess(ArrayList<SurveyDto> result) {
-							if (result != null) {
-								surveys.put(selectedGroupId, result);
-								populateSurveyList(result);
-								toggleLoading(false);
-							}
-						}
-					};
-					toggleLoading(true);
-					surveyService.listSurveysByGroup(selectedGroupId,
-							surveyCallback);
-				}
-			} else {
-				toggleLoading(false);
-				MessageDialog errDia = new MessageDialog(
-						"Please select a group",
-						"You must select a survey group first");
-				errDia.showCentered();
-			}
-		} else {
-			surveyListbox.clear();
-		}
-	}
-
-	/**
-	 * shows/hides the loading dialog box
-	 * 
-	 * @param show
-	 */
-	private void toggleLoading(boolean show) {
-		if (!show) {
-			loadingDialog.hide();
-		} else {
-			loadingDialog.showCentered();
-		}
-	}
-
-	private void populateSurveyList(List<SurveyDto> surveyItems) {
-		surveyListbox.clear();
-		currentSurveyDtoList = surveyItems;
-		if (surveyItems != null) {
-			int i = 0;
-			for (SurveyDto survey : surveyItems) {
-				surveyListbox.addItem(survey.getName() != null ? survey
-						.getName() : "Survey " + survey.getKeyId().toString(),
-						survey.getKeyId().toString());
-
-				i++;
-			}
-		}
-	}
-
-	@Override
-	public void onChange(ChangeEvent event) {
-		if (event.getSource() == surveyGroupListbox) {
-			getSurveys();
-		}
 	}
 
 	@Override
@@ -237,13 +112,21 @@ public class BootstrapGeneratorWidget extends Composite implements
 				dbInstructionArea.setVisible(false);
 			}
 		} else if (event.getSource() == addSurveyButton) {
-			String group = surveyGroupListbox.getItemText(surveyGroupListbox
-					.getSelectedIndex());
-			for (int i = 0; i < surveyListbox.getItemCount(); i++) {
-				if (surveyListbox.isItemSelected(i)) {
-					selectionListbox.addItem(group + ": "
-							+ surveyListbox.getItemText(i), surveyListbox
-							.getValue(i));
+			String group = selectionWidget.getSelectedSurveyGroupName();
+			List<String> name = selectionWidget.getSelectedSurveyNames();
+			List<Long> ids = selectionWidget.getSelectedSurveyIds();
+			for (int i = 0; i < name.size(); i++) {
+				boolean alreadyThere = false;
+				for (int j = 0; j < selectionListbox.getItemCount(); j++) {
+					if (selectionListbox.getValue(j).equals(
+							ids.get(i).toString())) {
+						alreadyThere = true;
+						break;
+					}
+				}
+				if (!alreadyThere) {
+					selectionListbox.addItem(group + ": " + name.get(i), ids
+							.get(i).toString());
 				}
 			}
 		} else if (event.getSource() == removeButton) {
@@ -311,8 +194,7 @@ public class BootstrapGeneratorWidget extends Composite implements
 		dbInstructionArea.setVisible(false);
 		includeDbScriptBox.setValue(false);
 		selectionListbox.clear();
-		surveyListbox.clear();
-		surveyGroupListbox.setSelectedIndex(0);
+		selectionWidget.reset();
 		notificationEmailBox.setText("");
 	}
 
