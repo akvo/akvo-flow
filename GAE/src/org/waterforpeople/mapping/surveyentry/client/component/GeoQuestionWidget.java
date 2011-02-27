@@ -1,6 +1,8 @@
 package org.waterforpeople.mapping.surveyentry.client.component;
 
+import org.apache.tools.ant.listener.AnsiColorLogger;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.user.client.ui.TextBox;
@@ -20,8 +22,8 @@ public class GeoQuestionWidget extends QuestionWidget {
 	private TextBox alt;
 	private TextBox code;
 
-	public GeoQuestionWidget(QuestionDto q) {
-		super(q);
+	public GeoQuestionWidget(QuestionDto q, QuestionAnswerStoreDto a) {
+		super(q,a);
 	}
 
 	@Override
@@ -34,6 +36,10 @@ public class GeoQuestionWidget extends QuestionWidget {
 		ViewUtil.installFieldRow(getPanel(), "Altitude", alt, null);
 		code = new TextBox();
 		ViewUtil.installFieldRow(getPanel(), "Code", code, null);
+		if(getAnswer().getKeyId() != null){
+			//if we're initializing and key id is not null, prepopulate
+			
+		}
 	}
 
 	public void captureAnswer() {

@@ -14,7 +14,6 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
@@ -287,8 +286,8 @@ public class BulkDataServiceClient {
 				if (instanceId.contains("|")) {
 					dateString = instanceId
 							.substring(instanceId.indexOf("|") + 1);
-					instanceId = instanceId.substring(0,
-							instanceId.indexOf("|"));
+					instanceId = instanceId.substring(0, instanceId
+							.indexOf("|"));
 				}
 				values.put(instanceId, dateString);
 			}
@@ -308,8 +307,8 @@ public class BulkDataServiceClient {
 			StringTokenizer lines = new StringTokenizer(data, "\n");
 			if (lines != null) {
 				while (lines.hasMoreTokens()) {
-					StringTokenizer strTok = new StringTokenizer(
-							lines.nextToken(), ",");
+					StringTokenizer strTok = new StringTokenizer(lines
+							.nextToken(), ",");
 					String key = null;
 					String val = "";
 					if (strTok.hasMoreTokens()) {
@@ -386,8 +385,8 @@ public class BulkDataServiceClient {
 				if (questionDtos != null) {
 					for (QuestionDto question : questionDtos) {
 						keyList.add(question.getKeyId().toString());
-						questions.put(question.getKeyId().toString(),
-								question.getText());
+						questions.put(question.getKeyId().toString(), question
+								.getText());
 					}
 				}
 			}
@@ -502,6 +501,9 @@ public class BulkDataServiceClient {
 					}
 					if (json.has("submitterName")) {
 						dto.setSubmitterName(json.getString("submitterName"));
+					}
+					if (json.has("approvedFlag")) {
+						dto.setApprovedFlag(json.getString("approvedFlag"));
 					}
 					if (json.has("deviceIdentifier")) {
 						dto.setDeviceIdentifier(json
@@ -723,7 +725,9 @@ public class BulkDataServiceClient {
 								if (json.getString("surveyId") != null) {
 									String numberC = json.getString("surveyId");
 									try {
-										dto.setSurveyId(Long.parseLong(numberC));
+										dto
+												.setSurveyId(Long
+														.parseLong(numberC));
 									} catch (NumberFormatException nex) {
 										dto.setSurveyId(null);
 									}
@@ -732,22 +736,28 @@ public class BulkDataServiceClient {
 
 							if (json.has("mandatoryFlag")) {
 								if (json.getString("mandatoryFlag") != null)
-									dto.setMandatoryFlag(Boolean.parseBoolean(json
-											.getString("mandatoryFlag")));
+									dto
+											.setMandatoryFlag(Boolean
+													.parseBoolean(json
+															.getString("mandatoryFlag")));
 								else
 									dto.setMandatoryFlag(false);
 							}
 							if (json.has("allowMultipleFlag")) {
 								if (json.getString("allowMultipleFlag") != null)
-									dto.setAllowMultipleFlag(Boolean.parseBoolean(json
-											.getString("allowMultipleFlag")));
+									dto
+											.setAllowMultipleFlag(Boolean
+													.parseBoolean(json
+															.getString("allowMultipleFlag")));
 								else
 									dto.setAllowMultipleFlag(false);
 							}
 							if (json.has("allowOtherFlag")) {
 								if (json.getString("allowOtherFlag") != null)
-									dto.setAllowOtherFlag(Boolean.parseBoolean(json
-											.getString("allowOtherFlag")));
+									dto
+											.setAllowOtherFlag(Boolean
+													.parseBoolean(json
+															.getString("allowOtherFlag")));
 								else
 									dto.setAllowOtherFlag(null);
 							}
@@ -786,8 +796,10 @@ public class BulkDataServiceClient {
 							}
 							if (json.has("questionTypeString")
 									&& json.getString("questionTypeString") != null) {
-								dto.setType(QuestionDto.QuestionType.valueOf(json
-										.getString("questionTypeString")));
+								dto
+										.setType(QuestionDto.QuestionType
+												.valueOf(json
+														.getString("questionTypeString")));
 							}
 
 							if (json.has("optionContainerDto")
@@ -816,8 +828,9 @@ public class BulkDataServiceClient {
 													&& !JSONObject.NULL
 															.equals(optJson
 																	.get("translationMap"))) {
-												opt.setTranslationMap(parseTranslations(optJson
-														.getJSONObject("translationMap")));
+												opt
+														.setTranslationMap(parseTranslations(optJson
+																.getJSONObject("translationMap")));
 											}
 											container.addQuestionOption(opt);
 										}
@@ -890,8 +903,8 @@ public class BulkDataServiceClient {
 			conn.setRequestMethod("GET");
 			conn.setDoOutput(true);
 
-			reader = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
+			reader = new BufferedReader(new InputStreamReader(conn
+					.getInputStream()));
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 

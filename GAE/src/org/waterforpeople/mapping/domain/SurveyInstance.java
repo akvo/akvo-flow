@@ -34,6 +34,15 @@ public class SurveyInstance extends BaseDomain {
 
 	private String deviceIdentifier;
 	private String submitterName;
+	private String approvedFlag;
+
+	public String getApprovedFlag() {
+		return approvedFlag;
+	}
+
+	public void setApprovedFlag(String approvedFlag) {
+		this.approvedFlag = approvedFlag;
+	}
 
 	public Long getSurveyId() {
 		return surveyId;

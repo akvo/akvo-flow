@@ -23,12 +23,16 @@ public abstract class QuestionWidget extends Composite {
 	private QuestionDto question;
 	private QuestionAnswerStoreDto answer;
 
-	protected QuestionWidget(QuestionDto question) {
+	protected QuestionWidget(QuestionDto question, QuestionAnswerStoreDto ans) {
 		answerPanel = new VerticalPanel();
-		answer = new QuestionAnswerStoreDto();
-		answer.setType(DEFAULT_ANS_TYPE);
-		answer.setQuestionID(question.getKeyId().toString());
-		answer.setSurveyId(question.getSurveyId());
+		answer = ans;
+		if (answer == null) {
+			answer = new QuestionAnswerStoreDto();
+			answer.setType(DEFAULT_ANS_TYPE);
+			answer.setQuestionID(question.getKeyId().toString());
+			answer.setSurveyId(question.getSurveyId());
+		}
+
 		mainGrid = new Grid(1, 2);
 		mainGrid.setWidget(0, 1, answerPanel);
 		this.question = question;
@@ -70,6 +74,7 @@ public abstract class QuestionWidget extends Composite {
 		return answer;
 	}
 
+
 	protected Panel getPanel() {
 		return answerPanel;
 	}
@@ -98,6 +103,7 @@ public abstract class QuestionWidget extends Composite {
 	 */
 	public void reset() {
 		answer.setValue(null);
+		answer.setKeyId(null);
 		resetUi();
 	}
 

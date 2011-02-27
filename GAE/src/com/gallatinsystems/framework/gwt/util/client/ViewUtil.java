@@ -51,6 +51,15 @@ public class ViewUtil {
 		}
 		return l;
 	}
+	
+	/**
+	 * constructs a new label using the default style
+	 * @param text
+	 * @return
+	 */
+	public static Label initLabel(String text){
+		return initLabel(text,null);
+	}
 
 	/**
 	 * installs a field with a Label containing text as the field label

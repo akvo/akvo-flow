@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.surveyentry.client.component;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -40,8 +41,8 @@ public class MediaQuestionWidget extends QuestionWidget implements
 	private Image completeIcon;
 	private String type;
 
-	public MediaQuestionWidget(QuestionDto q, String type) {
-		super(q);
+	public MediaQuestionWidget(QuestionDto q, QuestionAnswerStoreDto a, String type) {
+		super(q,a);
 		if ("PHOTO".equalsIgnoreCase(type)) {
 			this.type = "IMAGE";
 		} else {
@@ -102,6 +103,10 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		resetButton.addClickHandler(this);
 		completeIcon = new Image("images/icon-check.gif");
 		constructForm();
+		if(getAnswer().getKeyId() != null){
+			//if we're initializing and key id is not null, prepopulate
+			completeIcon.setVisible(true);			
+		}
 		getPanel().add(contentPanel);
 	}
 

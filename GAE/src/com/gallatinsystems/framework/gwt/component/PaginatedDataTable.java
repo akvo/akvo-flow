@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.util.client.StyleUtil;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -27,8 +28,9 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		ClickHandler {
 
-	public static final String ASC_SORT = "asc";
+	public static final String ASC_SORT = "asc";	
 	public static final String DSC_SORT = "desc";
+	private static final String HEADER_CSS = "datatable-header";
 	private static final String DOWN_IMG = "images/downarrow.gif";
 	private static final String UP_IMG = "images/uparrow.gif";
 
@@ -197,7 +199,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 */
 	private void addHeaderItem(int col, final DataTableHeader header) {
 		HorizontalPanel panel = new HorizontalPanel();
-		Label temp = new Label(header.getDisplayName());
+		Label temp = ViewUtil.initLabel(header.getDisplayName(), HEADER_CSS);
 		panel.add(temp);
 		instanceGrid.setWidget(0, col, panel);
 		if (header.isSortable()) {

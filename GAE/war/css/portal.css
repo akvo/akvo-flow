@@ -559,3 +559,9 @@ button {
 	font-style: bold;
 	vertical-align: top;	
 }
+
+.datatable-header{
+	font:14px/17px Veranda, Helvetica, sans-serif;
+	font-style: bold;
+	vertical-align: top;
+}

@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.surveyentry.client.component;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -18,8 +19,9 @@ public class TextQuestionWidget extends QuestionWidget {
 	private TextBox textBox;
 	private boolean isNumeric;
 
-	public TextQuestionWidget(QuestionDto q, boolean numericOnly) {
-		super(q);
+	public TextQuestionWidget(QuestionDto q, QuestionAnswerStoreDto a,
+			boolean numericOnly) {
+		super(q, a);
 		isNumeric = numericOnly;
 		if (textBox != null && isNumeric) {
 			// prevent non-numeric entry in the text box but allow navigational
@@ -50,7 +52,9 @@ public class TextQuestionWidget extends QuestionWidget {
 	protected void constructResponseUi() {
 		textBox = new TextBox();
 		getPanel().add(textBox);
-
+		if (getAnswer().getKeyId() != null) {
+			textBox.setText(getAnswer().getValue());
+		}
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-
 public class SurveyInstanceDto extends BaseDto {
 
 	private static final long serialVersionUID = 8484584703637564931L;
@@ -22,6 +21,15 @@ public class SurveyInstanceDto extends BaseDto {
 	private String submitterName;
 	private String deviceIdentifier;
 	private String surveyCode;
+	private String approvedFlag;
+
+	public String getApprovedFlag() {
+		return approvedFlag;
+	}
+
+	public void setApprovedFlag(String approvedFlag) {
+		this.approvedFlag = approvedFlag;
+	}
 
 	public String getSubmitterName() {
 		return submitterName;

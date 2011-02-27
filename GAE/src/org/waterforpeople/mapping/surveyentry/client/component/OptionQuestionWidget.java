@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.surveyentry.client.component;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -24,14 +25,16 @@ public class OptionQuestionWidget extends QuestionWidget implements
 	private static final String OTHER_TYPE = "OTHER";
 	private static final String TYPE = "VALUE";
 	private static final String OTHER_TEXT = "Other...";
+	private static final String DELIM = "|";
+	private static final String DELIM_REGEX = "\\|";
 	private ListBox listBox;
 	private TextBox otherBox;
 	private Panel contentPanel;
 	private QuestionAnswerListener listener;
 	private boolean otherIsSelected;
 
-	public OptionQuestionWidget(QuestionDto q, QuestionAnswerListener listener) {
-		super(q);
+	public OptionQuestionWidget(QuestionDto q, QuestionAnswerStoreDto a, QuestionAnswerListener listener) {
+		super(q,a);
 		otherIsSelected = false;
 		this.listener = listener;
 	}
@@ -60,6 +63,30 @@ public class OptionQuestionWidget extends QuestionWidget implements
 				contentPanel.add(otherBox);
 			}
 			listBox.addChangeHandler(this);
+		}
+
+		if (getAnswer().getKeyId() != null) {
+			// if we're initializing and key id is not null, prepopulate
+			if (getAnswer().getValue() != null) {
+				String[] ans = getAnswer().getValue().split(DELIM_REGEX); 
+				StringBuilder otherText = new StringBuilder();
+				for(int i =0; i < ans.length; i++){					
+					boolean found = false;
+					for (int j = 0; j < listBox.getItemCount(); j++) {
+						if(listBox.getItemText(j).equalsIgnoreCase(ans[i])){
+							listBox.setItemSelected(j, true);
+							found = true;
+						}
+					}
+					if(!found){						
+						otherText.append(ans);												
+					}
+				}
+				if(OTHER_TYPE.equals(getAnswer().getType())){
+					otherBox.setVisible(true);
+					otherBox.setValue(otherText.toString());							
+				}
+			}
 		}
 		getPanel().add(contentPanel);
 	}
@@ -105,7 +132,7 @@ public class OptionQuestionWidget extends QuestionWidget implements
 			if (listBox.isItemSelected(i)) {
 				if (!listBox.getValue(i).equals(OTHER_TEXT)) {
 					if (count > 0) {
-						buf.append("|");
+						buf.append(DELIM);
 					}
 					buf.append(listBox.getValue(i));
 					count++;
@@ -113,7 +140,7 @@ public class OptionQuestionWidget extends QuestionWidget implements
 			}
 			if (otherIsSelected) {
 				if (count > 0) {
-					buf.append("|");
+					buf.append(DELIM);
 				}
 				if (ViewUtil.isTextPopulated(otherBox)) {
 					buf.append(otherBox.getText());

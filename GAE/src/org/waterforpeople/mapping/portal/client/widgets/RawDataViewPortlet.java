@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.surveyentry.client.component.SurveyEntryWidget;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -18,6 +19,8 @@ import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -51,8 +54,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private static Integer width = 1024;
 	private static Integer height = 768;
 	private static final DataTableHeader TABLE_HEADERS[] = {
-			new DataTableHeader("Submission Id"),
-			new DataTableHeader("Survey Id"),
+			new DataTableHeader("Submission"),
+			new DataTableHeader("Survey"),
 			new DataTableHeader("Survey Code"),
 			new DataTableHeader("Collection Date") };
 
@@ -82,7 +85,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private void loadContentPanel() {
 		finderPanel = new HorizontalPanel();
 		instanceIdBox = new TextBox();
-		finderPanel.add(new Label("Instance Id: "));
+		finderPanel.add(ViewUtil.initLabel("Instance Id: "));
 		finderPanel.add(instanceIdBox);
 		Button findButton = new Button("Find");
 		finderPanel.add(findButton);
@@ -132,11 +135,11 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		changedAnswers = new HashMap<Long, QuestionAnswerStoreDto>();
 		if (questions != null) {
 			qasDetailGrid.resize(questions.size() + 2, 5);
-			qasDetailGrid.setWidget(0, 0, new Label("Question Id"));
-			qasDetailGrid.setWidget(0, 1, new Label("Question Type"));
-			qasDetailGrid.setWidget(0, 2, new Label("Answer Value"));
-			qasDetailGrid.setWidget(0, 3, new Label("Collection Date"));
-			qasDetailGrid.setWidget(0, 4, new Label("Question Text"));
+			qasDetailGrid.setWidget(0, 0, ViewUtil.initLabel("Question Id"));
+			qasDetailGrid.setWidget(0, 1, ViewUtil.initLabel("Question Type"));
+			qasDetailGrid.setWidget(0, 2, ViewUtil.initLabel("Answer Value"));
+			qasDetailGrid.setWidget(0, 3, ViewUtil.initLabel("Collection Date"));
+			qasDetailGrid.setWidget(0, 4, ViewUtil.initLabel("Question Text"));
 			Integer iRow = 0;
 			for (QuestionAnswerStoreDto qasDto : questions) {
 				bindQASRow(qasDto, ++iRow);
@@ -236,10 +239,26 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 				}
 			});
+			Button viewAsSurveyButton = new Button("View as Survey");
+			viewAsSurveyButton.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					if (questions != null && questions.size() > 0) {
+						SurveyEntryWidget c = new SurveyEntryWidget(questions
+								.get(0).getSurveyId().toString(), questions);
+						WidgetDialog wd = new WidgetDialog("Survey Submission",
+								c);					
+						wd.showCentered();
+						c.initialize();						
+					}
+
+				}
+			});
 
 			qasDetailGrid.setWidget(iRow + 1, 0, saveButton);
 			qasDetailGrid.setWidget(iRow + 1, 1, clearButton);
 			qasDetailGrid.setWidget(iRow + 1, 2, deleteInstanceButton);
+			qasDetailGrid.setWidget(iRow + 1, 3, viewAsSurveyButton);
 			if (!getCurrentUser().hasPermission(
 					PermissionConstants.RAW_DATA_EDIT)) {
 				saveButton.setVisible(false);
@@ -351,10 +370,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	 */
 	@Override
 	public void bindRow(Grid grid, SurveyInstanceDto item, int row) {
-		grid.setWidget(row, 0, new Label(item.getKeyId().toString()));
-		grid.setWidget(row, 1, new Label(item.getSurveyId().toString()));
-		grid.setWidget(row, 2, new Label(item.getSurveyCode()));
-		grid.setWidget(row, 3, new Label(DateTimeFormat
+		grid.setWidget(row, 0, ViewUtil.initLabel(item.getKeyId().toString()));
+		grid.setWidget(row, 1, ViewUtil.initLabel(item.getSurveyId().toString()));
+		grid.setWidget(row, 2, ViewUtil.initLabel(item.getSurveyCode()));
+		grid.setWidget(row, 3, ViewUtil.initLabel(DateTimeFormat
 				.getMediumDateTimeFormat().format(item.getCollectionDate())));
 	}
 
