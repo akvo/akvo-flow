@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.TextBox;
 public class GeoQuestionWidget extends QuestionWidget {
 	private static final String TYPE = "GEO";
 	private static final String DELIM = "|";
+	private static final String DELIM_REGEX  = "\\|";
 	private TextBox lat;
 	private TextBox lon;
 	private TextBox alt;
@@ -37,7 +38,21 @@ public class GeoQuestionWidget extends QuestionWidget {
 		code = new TextBox();
 		ViewUtil.installFieldRow(getPanel(), "Code", code, null);
 		if(getAnswer().getKeyId() != null){
-			//if we're initializing and key id is not null, prepopulate
+			//if we're initializing and key id is not null, pre-populate
+			String val = getAnswer().getValue();
+			if(val != null){
+				String[] valParts = val.split(DELIM_REGEX);
+				if(valParts.length>=2){
+					lat.setValue(valParts[0]);
+					lon.setValue(valParts[1]);
+				}
+				if(valParts.length>=3){
+					alt.setValue(valParts[2]);
+				}
+				if(valParts.length>=4){
+					code.setValue(valParts[3]);
+				}
+			}
 			
 		}
 	}
