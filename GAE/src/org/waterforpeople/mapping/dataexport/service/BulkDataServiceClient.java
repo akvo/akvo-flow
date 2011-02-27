@@ -140,7 +140,12 @@ public class BulkDataServiceClient {
 			queryString = queryString + "&cursor=" + cursor;
 		}
 		response = fetchDataFromServer(queryString);
-		List<PlacemarkDto> list = parsePlacemarks(response);
+		List<PlacemarkDto> list = null;
+		try {
+			list = parsePlacemarks(response);
+		} catch (Exception ex) {
+			System.out.println("Caught Exception skipping this response");
+		}
 		if (list == null || list.size() == 0) {
 			return null;
 		}
@@ -151,8 +156,12 @@ public class BulkDataServiceClient {
 		JSONObject jsonOuter = new JSONObject(response);
 		if (jsonOuter.has("cursor")) {
 			cursor = jsonOuter.getString("cursor");
-			List<PlacemarkDto> pmDtoTemp = fetchPlacemarkData(cursor,
-					serverBase, countryCode);
+			List<PlacemarkDto> pmDtoTemp = null;
+			try {
+				pmDtoTemp = fetchPlacemarkData(cursor, serverBase, countryCode);
+			} catch (Exception ex) {
+				System.out.println("Caught Exception skipping this response");
+			}
 			if (pmDtoTemp != null)
 				for (PlacemarkDto item : pmDtoTemp) {
 					pmDto.add(item);
@@ -203,21 +212,45 @@ public class BulkDataServiceClient {
 						}
 						if (json.has("longitude")) {
 							String x = json.getString("longitude");
-							dto.setLongitude(new Double(x));
+							try {
+								dto.setLongitude(new Double(x));
+							} catch (NumberFormatException nex) {
+								System.out
+										.println("Couldn't parse Longitude for"
+												+ dto.getCommunityCode());
+								dto.setLongitude(null);
+							}
 						}
 						if (json.has("latitude")) {
 							String x = json.getString("latitude");
-							dto.setLatitude(new Double(x));
+							try {
+								dto.setLatitude(new Double(x));
+							} catch (NumberFormatException nex) {
+								System.out
+										.println("Couldn't parse Latitude for"
+												+ dto.getCommunityCode());
+								dto.setLatitude(null);
+							}
 						}
 						if (json.has("collectionDate")) {
 							String x = json.getString("collectionDate");
-							dto.setCollectionDate(new Date(x));
+							if (x != null) {
+								try {
+									dto.setCollectionDate(new Date(x));
+								} catch (IllegalArgumentException iae) {
+									// log it and ignore it
+									System.out
+											.println("Couldn't parse date for"
+													+ dto.getCommunityCode());
+									dto.setCollectionDate(null);
+								}
+							}
 						}
 						if (json.has("placemarkContents")) {
 							String x = json.getString("placemarkContents");
 							dto.setPlacemarkContents(x);
 						}
-						if(json.has("pinStyle")){
+						if (json.has("pinStyle")) {
 							dto.setPinStyle(json.getString("pinStyle"));
 						}
 					}

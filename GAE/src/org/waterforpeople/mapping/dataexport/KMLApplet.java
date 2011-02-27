@@ -162,7 +162,6 @@ public class KMLApplet extends JApplet implements Runnable {
 				zipOut.write(mergeContext(context, "template/DocumentHead.vm")
 						.getBytes("UTF-8"));
 
-				
 				for (String countryCode : countryList) {
 					int i = 0;
 					List<PlacemarkDto> placemarkDtoList = BulkDataServiceClient
@@ -170,18 +169,27 @@ public class KMLApplet extends JApplet implements Runnable {
 					System.out.println("Starting to process: " + countryCode);
 					if (placemarkDtoList != null) {
 						for (PlacemarkDto pm : placemarkDtoList) {
-							VelocityContext vc = new VelocityContext();
-							vc.put("timestamp", pm.getCollectionDate());
-							vc.put("pinStyle", pm.getPinStyle());
-							vc.put("balloon", pm.getPlacemarkContents());
-							vc.put("longitude", pm.getLongitude());
-							vc.put("latitude", pm.getLatitude());
-							vc.put("altitude", pm.getAltitude());
-							vc.put("communityCode", pm.getCommunityCode());
-							String placemark = mergeContext(vc,
-									"template/PlacemarksNewLook.vm");
-							zipOut.write(placemark.getBytes("UTF-8"));
-							i++;
+							if (pm != null) {
+								if (pm.getCollectionDate() != null
+										&& pm.getLatitude() != null
+										&& pm.getLatitude() != 0
+										&& pm.getLongitude() != null
+										&& pm.getLongitude() != 0) {
+									VelocityContext vc = new VelocityContext();
+									vc.put("timestamp", pm.getCollectionDate());
+									vc.put("pinStyle", pm.getPinStyle());
+									vc.put("balloon", pm.getPlacemarkContents());
+									vc.put("longitude", pm.getLongitude());
+									vc.put("latitude", pm.getLatitude());
+									vc.put("altitude", pm.getAltitude());
+									vc.put("communityCode",
+											pm.getCommunityCode());
+									String placemark = mergeContext(vc,
+											"template/PlacemarksNewLook.vm");
+									zipOut.write(placemark.getBytes("UTF-8"));
+									i++;
+								}
+							}
 						}
 					}
 					System.out.println("processed: " + countryCode + " : " + i);
@@ -192,7 +200,8 @@ public class KMLApplet extends JApplet implements Runnable {
 				zipOut.close();
 				System.out.println("Finished Writing File");
 			} catch (Exception ex) {
-				System.out.println(ex);
+				System.out.println(ex + " " + ex.getMessage() + " ");
+				ex.printStackTrace(System.out);
 			}
 
 			status.setText("Completed writing kml to " + fileName);
