@@ -17,12 +17,14 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String COMMUNITY_CODE_PARAM = "communityCode";
 	private static final String POINT_TYPE_PARAM = "pointType";
 	private static final String DISPLAY_TYPE_PARAM = "display";
+	private static final String IGNORE_CACHE_PARAM ="ignoreCache";
 
 	private String country;
 	private Boolean needDetailsFlag = null;
 	private String communityCode = null;
 	private String display;
 	private AccessPoint.AccessPointType pointType = null;
+	private Boolean ignoreCache = false;
 
 	private static final long serialVersionUID = -3977305417999591917L;
 
@@ -47,6 +49,9 @@ public class PlacemarkRestRequest extends RestRequest {
 			setCommunityCode(req.getParameter(COMMUNITY_CODE_PARAM));
 		}
 		display = req.getParameter(DISPLAY_TYPE_PARAM);
+		if(req.getParameter(IGNORE_CACHE_PARAM)!=null){
+			setIgnoreCache(Boolean.parseBoolean(req.getParameter(IGNORE_CACHE_PARAM)));
+		}
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
 			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
 			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeValue))
@@ -148,5 +153,13 @@ public class PlacemarkRestRequest extends RestRequest {
 					+ (pointType != null ? pointType : "");
 		}
 		return key;
+	}
+
+	public void setIgnoreCache(Boolean ignoreCache) {
+		this.ignoreCache = ignoreCache;
+	}
+
+	public Boolean getIgnoreCache() {
+		return ignoreCache;
 	}
 }

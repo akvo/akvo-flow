@@ -62,13 +62,12 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		RestRequest restRequest = new PlacemarkRestRequest();
 		restRequest.populateFromHttpRequest(req);
 		return restRequest;
-
 	}
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		PlacemarkRestRequest piReq = (PlacemarkRestRequest) req;
-		if (cache != null) {
+		if (cache != null  && !piReq.getIgnoreCache()) {
 			PlacemarkRestResponse cachedResponse = null;
 			try {
 				cachedResponse = (PlacemarkRestResponse) cache.get(piReq
@@ -97,10 +96,13 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<AccessPoint> results = apDao.searchAccessPoints(
 					piReq.getCountry(), null, null, null, null, null, null,
 					null, null, null, piReq.getCursor());
-
+			String display = null;
+			if(piReq.getDisplay()!=null){
+				display = piReq.getDisplay();
+			}
 			response = (PlacemarkRestResponse) convertToResponse(results,
 					piReq.getNeedDetailsFlag(),
-					AccessPointDao.getCursor(results), piReq.getCursor(), null);
+					AccessPointDao.getCursor(results), piReq.getCursor(), display);
 		}
 		if (response != null && cache != null) {
 			try {

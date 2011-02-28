@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
+import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -123,18 +124,18 @@ public class BulkDataServiceClient {
 		return dfDto;
 	}
 
-	public static List<PlacemarkDto> fetchPlacemarks(String countryCode,
-			String serverBase) throws Exception {
-		return fetchPlacemarkData(null, serverBase, countryCode);
+	public static PlacemarkDtoResponse fetchPlacemarks(String countryCode,
+			String serverBase, String cursor) throws Exception {
+		return fetchPlacemarkData(cursor, serverBase, countryCode);
 	}
 
-	private static List<PlacemarkDto> fetchPlacemarkData(String cursor,
+	private static PlacemarkDtoResponse fetchPlacemarkData(String cursor,
 			String serverBase, String countryCode) throws Exception {
 		String queryString = null;
 		String response = null;
 		ArrayList<PlacemarkDto> pmDto = new ArrayList<PlacemarkDto>();
 		queryString = serverBase + "/placemarkrestapi?"
-				+ "needDetailsFlag=true" + "&country=" + countryCode;
+				+ "needDetailsFlag=true" + "&country=" + countryCode + "&display=googleearth&ignoreCache=true";
 		if (cursor != null) {
 			queryString = queryString + "&cursor=" + cursor;
 		}
@@ -152,22 +153,16 @@ public class BulkDataServiceClient {
 			pmDto.add(dto);
 		}
 
+		PlacemarkDtoResponse pdr = new PlacemarkDtoResponse();
+		pdr.setDtoList(pmDto);
 		JSONObject jsonOuter = new JSONObject(response);
 		if (jsonOuter.has("cursor")) {
 			cursor = jsonOuter.getString("cursor");
-			List<PlacemarkDto> pmDtoTemp = null;
-			try {
-				pmDtoTemp = fetchPlacemarkData(cursor, serverBase, countryCode);
-			} catch (Exception ex) {
-				System.out.println("Caught Exception skipping this response");
-			}
-			if (pmDtoTemp != null)
-				for (PlacemarkDto item : pmDtoTemp) {
-					pmDto.add(item);
-				}
+			pdr.setCursor(cursor);
+		}else{
+			pdr.setCursor(null);
 		}
-
-		return pmDto;
+		return pdr;
 	}
 
 	private static List<PlacemarkDto> parsePlacemarks(String response)
