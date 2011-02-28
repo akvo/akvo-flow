@@ -16,6 +16,15 @@ public class SurveyXMLFragment extends BaseDomain {
 	private Integer fragmentOrder = null;
 	private Text fragment = null;
 	private FRAGMENT_TYPE fragmentType = null;
+	private Long transactionId = null;
+
+	public Long getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(Long transactionId) {
+		this.transactionId = transactionId;
+	}
 
 	public Integer getFragmentOrder() {
 		return fragmentOrder;

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,8 +33,8 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
-import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
+import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.xml.AltText;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Help;
@@ -86,10 +87,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		} else if (SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
 			this.dispatchAssembleQuestionGroup(importReq.getSurveyId(),
-					importReq.getQuestionGroupId());
+					importReq.getQuestionGroupId(),importReq.getTransactionId());
 		} else if (SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
-			assembleQuestionGroups(importReq.getSurveyId());
+			assembleQuestionGroups(importReq.getSurveyId(),importReq.getTransactionId());
 		} else if (SurveyAssemblyRequest.DISTRIBUTE_SURVEY
 				.equalsIgnoreCase(importReq.getAction())) {
 			uploadSurvey(importReq.getSurveyId());
@@ -127,7 +128,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				props.getProperty(SURVEY_UPLOAD_POLICY), props
 						.getProperty(SURVEY_UPLOAD_SIG), "application/zip");
 
-		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null);
+		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,null);
 	}
 
 	/**
@@ -168,10 +169,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				count++;
 			}
 			count = 0;
-
+			Long transactionId = new Random().nextLong();
 			sendQueueMessage(
 					SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
-					surveyId, builder.toString());
+					surveyId, builder.toString(), transactionId);
 		}
 	}
 
@@ -183,18 +184,21 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	 * @param questionGroups
 	 */
 	private void sendQueueMessage(String action, Long surveyId,
-			String questionGroups) {
+			String questionGroups, Long transactionId) {
 		Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
 		TaskOptions task = url("/app_worker/surveyassembly").param("action",
 				action).param("surveyId", surveyId.toString());
 		if (questionGroups != null) {
 			task.param("questionGroupId", questionGroups);
 		}
+		if(transactionId!=null){
+			task.param("transactionId", transactionId.toString());
+		}
 		surveyAssemblyQueue.add(task);
 	}
 
 	private void dispatchAssembleQuestionGroup(Long surveyId,
-			String questionGroupIds) {
+			String questionGroupIds, Long transactionId) {
 		boolean isLast = true;
 		String currentId = questionGroupIds;
 		String remainingIds = null;
@@ -228,6 +232,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		sxf.setQuestionGroupId(Long.parseLong(currentId));
 		sxf.setFragmentOrder(group.getOrder());
 		sxf.setFragment(new Text(sb.append("</questionGroup>").toString()));
+		sxf.setTransactionId(transactionId);
 
 		sxf.setFragmentType(FRAGMENT_TYPE.QUESTION_GROUP);
 		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
@@ -235,12 +240,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		if (isLast) {
 			// Assemble the fragments
 			sendQueueMessage(SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP,
-					surveyId, null);
+					surveyId, null, transactionId);
 
 		} else {
 			sendQueueMessage(
 					SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
-					surveyId, remainingIds);
+					surveyId, remainingIds, transactionId);
 		}
 	}
 
@@ -428,10 +433,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		return altTextList;
 	}
 
-	private void assembleQuestionGroups(Long surveyId) {
+	private void assembleQuestionGroups(Long surveyId, Long transactionId) {
 		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
 		List<SurveyXMLFragment> sxmlfList = sxmlfDao.listSurveyFragments(
-				surveyId, SurveyXMLFragment.FRAGMENT_TYPE.QUESTION_GROUP);
+				surveyId, SurveyXMLFragment.FRAGMENT_TYPE.QUESTION_GROUP, transactionId);
 		StringBuilder sbQG = new StringBuilder();
 		for (SurveyXMLFragment item : sxmlfList) {
 			sbQG.append(item.getFragment().getValue());
@@ -455,6 +460,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		scDao.save(sc);
 
 		sendQueueMessage(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId,
-				null);
+				null,transactionId);
 	}
 }

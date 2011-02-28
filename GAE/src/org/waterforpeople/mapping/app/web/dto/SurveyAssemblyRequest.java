@@ -21,17 +21,27 @@ public class SurveyAssemblyRequest extends RestRequest {
 	public static final String CLEANUP = "cleanup";
 
 	private static final String SURVEY_ID_PARAM = "surveyId";
-	
+
 	private static final String START_ROW_PARAM = "startRow";
 	private static final String GROUP_ID_PARAM = "questionGroupId";
-	
+	private static final String TRANSACTION_ID_PARAM = "transactionId";
+
 	private static final String LAST_GROUP_FLAG_PARAM = "lastGroupFlag";
 
 	private Long surveyId = null;
 	private Boolean lastGroupFlag = null;
 	private int startRow = 0;
 	private String questionGroupId = null;
-	
+	private Long transactionId = null;
+
+	public Long getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(Long transactionId) {
+		this.transactionId = transactionId;
+	}
+
 	public Long getSurveyId() {
 		return surveyId;
 	}
@@ -40,8 +50,6 @@ public class SurveyAssemblyRequest extends RestRequest {
 		this.surveyId = surveyId;
 	}
 
-	
-
 	public int getStartRow() {
 		return startRow;
 	}
@@ -49,8 +57,6 @@ public class SurveyAssemblyRequest extends RestRequest {
 	public void setStartRow(int startRow) {
 		this.startRow = startRow;
 	}
-
-	
 
 	@Override
 	protected void populateErrors() {
@@ -72,6 +78,8 @@ public class SurveyAssemblyRequest extends RestRequest {
 		if (req.getParameter(LAST_GROUP_FLAG_PARAM) != null)
 			setLastGroupFlag(Boolean.parseBoolean(req
 					.getParameter(LAST_GROUP_FLAG_PARAM)));
+		if (req.getParameter(TRANSACTION_ID_PARAM) != null)
+			setTransactionId(Long.parseLong(req.getParameter(TRANSACTION_ID_PARAM)));
 	}
 
 	public void setQuestionGroupId(String questionGroupId) {
