@@ -96,7 +96,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			uploadSurvey(importReq.getSurveyId());
 		} else if (SurveyAssemblyRequest.CLEANUP.equalsIgnoreCase(importReq
 				.getAction())) {
-			cleanupFragments(importReq.getSurveyId());
+			cleanupFragments(importReq.getSurveyId(), importReq.getTransactionId());
 		}
 
 		return response;
@@ -136,9 +136,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	 * 
 	 * @param surveyId
 	 */
-	private void cleanupFragments(Long surveyId) {
+	private void cleanupFragments(Long surveyId, Long transactionId) {
 		SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
-		sxmlfDao.deleteFragmentsForSurvey(surveyId);
+		sxmlfDao.deleteFragmentsForSurvey(surveyId, transactionId);
 	}
 
 	@Override
