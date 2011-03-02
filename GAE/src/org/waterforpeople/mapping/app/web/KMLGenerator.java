@@ -656,6 +656,40 @@ public class KMLGenerator {
 				context.put("provideAdequateQuantity",
 						encodeBooleanDisplay(ap.getProvideAdequateQuantity()));
 			}
+			
+			if(ap.getQualityDescription()!=null){
+				context.put("qualityDescription",ap.getQualityDescription());
+			}
+			if(ap.getQuantityDescription()!=null){
+				context.put("quantityDescription", ap.getQualityDescription());
+			}
+			
+			if(ap.getSub1()!=null){
+				context.put("sub1", ap.getSub1());
+			}
+			if(ap.getSub2()!=null){
+				context.put("sub2", ap.getSub2());
+			}
+			if(ap.getSub3()!=null){
+				context.put("sub3", ap.getSub3());
+			}
+			if(ap.getSub4()!=null){
+				context.put("sub4", ap.getSub4());
+			}
+			if(ap.getSub5()!=null){
+				context.put("sub5", ap.getSub5());
+			}
+			if(ap.getSub6()!=null){
+				context.put("sub6", ap.getSub6());
+			}
+			
+			if(ap.getAccessPointCode()!=null){
+				context.put("accessPointCode", ap.getAccessPointCode());
+			}
+			
+			if(ap.getAccessPointUsage()!=null){
+				context.put("accessPointUsage", ap.getAccessPointUsage());
+			}
 
 			if (ap.getDescription() != null)
 				context.put("description", ap.getDescription());

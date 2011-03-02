@@ -132,8 +132,12 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String frequencyOfTariff=null;
 	@MappableField(displayName="Percentage Of Users Paying Tariff")
 	private Double percentageOfUsersPaying = null;
-	
-	
+	@MappableField(displayName="Access Point Usage")
+	private String accessPointUsage = null;
+	@MappableField(displayName="Access Point Quality Description")
+	private String qualityDescription = null;
+	@MappableField(displayName="Access Point Quantity Description")
+	private String quantityDescription = null;
 	private String sub1=null;
 	private String sub2=null;
 	private String sub3=null;
@@ -141,6 +145,30 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String sub5=null;
 	private String sub6=null;
 	
+	
+	public String getQualityDescription() {
+		return qualityDescription;
+	}
+
+	public void setQualityDescription(String qualityDescription) {
+		this.qualityDescription = qualityDescription;
+	}
+
+	public String getQuantityDescription() {
+		return quantityDescription;
+	}
+
+	public void setQuantityDescription(String quantityDescription) {
+		this.quantityDescription = quantityDescription;
+	}
+	public String getAccessPointUsage() {
+		return accessPointUsage;
+	}
+
+	public void setAccessPointUsage(String accessPointUsage) {
+		this.accessPointUsage = accessPointUsage;
+	}
+
 	
 
 	public String getSub1() {
