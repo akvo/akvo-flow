@@ -70,14 +70,26 @@ public class AccessPointHelper {
 		List<QuestionAnswerStore> questionAnswerList = sid
 				.listQuestionAnswerStore(Long.parseLong(surveyInstanceId), null);
 
-		Collection<AccessPoint> apList;
+		Collection<AccessPoint> apList = null;
 		if (questionAnswerList != null && questionAnswerList.size() > 0) {
-			apList = parseAccessPoint(new Long(questionAnswerList.get(0)
-					.getSurveyId()), questionAnswerList,
-					AccessPoint.AccessPointType.WATER_POINT);
+			try {
+				apList = parseAccessPoint(new Long(questionAnswerList.get(0)
+						.getSurveyId()), questionAnswerList,
+						AccessPoint.AccessPointType.WATER_POINT);
+			} catch (Exception ex) {
+				logger.log(Level.SEVERE,"problem parsing access point." + ex);
+			}
 			if (apList != null) {
 				for (AccessPoint ap : apList) {
-					saveAccessPoint(ap);
+					try {
+						saveAccessPoint(ap);
+					} catch (Exception ex) {
+						logger.log(
+								Level.SEVERE,
+								"Inside processSurveyInstance could not save AP for SurveyInstanceId: "
+										+ surveyInstanceId + ":"
+										+ ap.toString());
+					}
 				}
 			}
 		}
@@ -160,14 +172,12 @@ public class AccessPointHelper {
 							setAccessPointField(ap, qas, mapping, apmh);
 
 						} catch (NoSuchFieldException e) {
-							logger
-									.log(
-											Level.SEVERE,
-											"Could not map field to access point: "
-													+ mapping
-															.getAttributeName()
-													+ ". Check the surveyAttribueMapping for surveyId "
-													+ surveyId);
+							logger.log(
+									Level.SEVERE,
+									"Could not map field to access point: "
+											+ mapping.getAttributeName()
+											+ ". Check the surveyAttribueMapping for surveyId "
+											+ surveyId);
 						} catch (IllegalAccessException e) {
 							logger.log(Level.SEVERE,
 									"Could not set field to access point: "
@@ -371,6 +381,23 @@ public class AccessPointHelper {
 	}
 
 	/**
+	 * generates a unique code based on the lat/lon passed in. Current algorithm
+	 * returns the concatenation of the integer portion of 1000 times absolute
+	 * 
+	 * value of lat and lon in base 36
+	 * 
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
+	private String generateCode(double lat, double lon) {
+		Long code = Long.parseLong((int) ((Math.abs(lat) * 10000d)) + ""
+
+		+ (int) ((Math.abs(lon) * 10000d)));
+		return Long.toString(code, 36);
+	}
+
+	/**
 	 * saves an access point and fires off a summarization message
 	 * 
 	 * @param ap
@@ -382,66 +409,115 @@ public class AccessPointHelper {
 		if (ap != null) {
 			if (ap.getPointType() != null && ap.getLatitude() != null
 					&& ap.getLongitude() != null) {
-				apCurrent = apDao.findAccessPoint(ap.getPointType(), ap
-						.getLatitude(), ap.getLongitude(), ap
-						.getCollectionDate());
+				apCurrent = apDao.findAccessPoint(ap.getPointType(),
+						ap.getLatitude(), ap.getLongitude(),
+						ap.getCollectionDate());
 				if (apCurrent != null) {
-					if (!apCurrent.getKey().equals(ap.getKey())) {
-						ap.setKey(apCurrent.getKey());
+					// if (!apCurrent.getKey().equals(ap.getKey())) {
+					ap.setKey(apCurrent.getKey());
+					// }
+				}
+
+				if (ap.getAccessPointCode() == null) {
+					ap.setAccessPointCode(generateCode(ap.getLatitude(),
+							ap.getLongitude()));
+					logger.log(
+							Level.INFO,
+							"No APCode set in ap so setting to: "
+									+ ap.getAccessPointCode());
+				}
+				if (ap.getCommunityCode() == null) {
+					if (ap.getAccessPointCode() != null)
+						ap.setCommunityCode(ap.getAccessPointCode());
+					logger.log(
+							Level.INFO,
+							"No Community Code set in ap so setting to: "
+									+ ap.getAccessPointCode());
+				}
+
+				if (ap.getKey() != null) {
+					String oldValues = null;
+					if (ap != null && ap.getKey() != null && apCurrent == null) {
+						apCurrent = apDao.getByKey(ap.getKey());
 					}
-				}
-			}
-			if (ap.getKey() != null) {
-				String oldValues = null;
-				if (ap != null && ap.getKey() != null && apCurrent == null) {
-					apCurrent = apDao.getByKey(ap.getKey());
-				}
-				if (apCurrent != null) {
-					oldValues = formChangeRecordString(apCurrent);
 					if (apCurrent != null) {
-						ap.setKey(apCurrent.getKey());
-						apCurrent = ap;
+						oldValues = formChangeRecordString(apCurrent);
+						if (apCurrent != null) {
+							ap.setKey(apCurrent.getKey());
+							apCurrent = ap;
+							logger.log(Level.INFO,
+									"Found existing point and updating it."
+											+ apCurrent.getKey().getId());
+						}
+
+						// TODO: Hack since the fileUrl keeps getting set to
+						// incorrect value
+						// Changing from apCurrent to ap
+						ap = apDao.save(ap);
+
+						String newValues = formChangeRecordString(ap);
+
+						if (oldValues != null) {
+							DataChangeRecord change = new DataChangeRecord(
+									AccessPointStatusSummary.class.getName(),
+									"n/a", oldValues, newValues);
+							Queue queue = QueueFactory.getQueue("dataUpdate");
+							queue.add(url("/app_worker/dataupdate")
+									.param(DataSummarizationRequest.OBJECT_KEY,
+											ap.getKey().getId() + "")
+									.param(DataSummarizationRequest.OBJECT_TYPE,
+											"AccessPointSummaryChange")
+									.param(DataSummarizationRequest.VALUE_KEY,
+											change.packString()));
+
+						}
 					}
-
-					// TODO: Hack since the fileUrl keeps getting set to
-					// incorrect value
-
-					ap = apDao.save(apCurrent);
-
-					String newValues = formChangeRecordString(ap);
-
-					if (oldValues != null) {
-						DataChangeRecord change = new DataChangeRecord(
-								AccessPointStatusSummary.class.getName(),
-								"n/a", oldValues, newValues);
-						Queue queue = QueueFactory.getQueue("dataUpdate");
-						queue.add(url("/app_worker/dataupdate").param(
-								DataSummarizationRequest.OBJECT_KEY,
-								ap.getKey().getId() + "").param(
-								DataSummarizationRequest.OBJECT_TYPE,
-								"AccessPointSummaryChange").param(
-								DataSummarizationRequest.VALUE_KEY,
-								change.packString()));
-
+				} else {
+					logger.log(Level.INFO,
+							"Did not find existing point" + ap.toString());
+					if (ap.getGeocells() == null
+							|| ap.getGeocells().size() == 0) {
+						if (ap.getLatitude() != null
+								&& ap.getLongitude() != null
+								&& ap.getLongitude() < 180
+								&& ap.getLatitude() < 180) {
+							try {
+								ap.setGeocells(GeocellManager
+										.generateGeoCell(new Point(ap
+												.getLatitude(), ap
+												.getLongitude())));
+							} catch (Exception ex) {
+								logger.log(Level.INFO,
+										"Could not generate GeoCell for AP: "
+												+ ap.getKey().getId()
+												+ " error: " + ex);
+							}
+						}
+					}
+					try {
+						ap = apDao.save(ap);
+					} catch (Exception ex) {
+						logger.log(Level.INFO, "Could not save point");
+					}
+					if (ap.getKey() != null) {
+						Queue summQueue = QueueFactory
+								.getQueue("dataSummarization");
+						summQueue.add(url("/app_worker/datasummarization")
+								.param("objectKey", ap.getKey().getId() + "")
+								.param("type", "AccessPoint"));
+					} else {
+						logger.log(
+								Level.SEVERE,
+								"After saving could not get key"
+										+ ap.toString());
 					}
 				}
-			} else {
-				if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
-					if (ap.getLatitude() != null && ap.getLongitude() != null) {
-						ap.setGeocells(GeocellManager
-								.generateGeoCell(new Point(ap.getLatitude(), ap
-										.getLongitude())));
-					}
-				}
-				ap = apDao.save(ap);
-
-				Queue summQueue = QueueFactory.getQueue("dataSummarization");
-				summQueue.add(url("/app_worker/datasummarization").param(
-						"objectKey", ap.getKey().getId() + "").param("type",
-						"AccessPoint"));
 			}
 		}
-		return ap;
+		if (ap != null)
+			return ap;
+		else
+			return null;
 	}
 
 	private String formChangeRecordString(AccessPoint ap) {

@@ -661,7 +661,7 @@ public class KMLGenerator {
 				context.put("qualityDescription",ap.getQualityDescription());
 			}
 			if(ap.getQuantityDescription()!=null){
-				context.put("quantityDescription", ap.getQualityDescription());
+				context.put("quantityDescription", ap.getQuantityDescription());
 			}
 			
 			if(ap.getSub1()!=null){
