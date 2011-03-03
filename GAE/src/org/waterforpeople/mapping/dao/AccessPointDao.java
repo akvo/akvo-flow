@@ -256,6 +256,24 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> result = (List<AccessPoint>) q.execute();
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<AccessPoint> listAccessPointBySubLevel(Integer subLevel, String subName, String cursorString){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
+		appendNonNullParam("sub"+subLevel, filterString, paramString,
+				"String", subName, paramMap);
+		q.setOrdering("createdDateTime desc");
+		q.setFilter(filterString.toString());
+		q.declareParameters(paramString.toString());
+		List<AccessPoint> result = (List<AccessPoint>) q.executeWithMap(paramMap);
+		return result;
+	}
 
 	/**
 	 * lists all access points that contain invalid data

@@ -46,7 +46,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 									.setMetricName(mapping.getMetricName());
 							metricSummary.setOrganization(ap.getOrganization());
 							metricSummary.setCountry(ap.getCountryCode());
-							metricSummary.setDistrict(ap.getDistrict());
+							//metricSummary.setDistrict(ap.getDistrict());
 							metricSummary.setValueBucket(bucketizeValue(
 									mapping, fieldValue));
 							AccessPointMetricSummaryDao.incrementCount(

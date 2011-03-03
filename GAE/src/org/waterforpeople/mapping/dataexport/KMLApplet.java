@@ -23,6 +23,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
@@ -222,7 +223,10 @@ public class KMLApplet extends JApplet implements Runnable {
 								&& pm.getLongitude() != null
 								&& pm.getLongitude() != 0) {
 							VelocityContext vc = new VelocityContext();
-							vc.put("timestamp", pm.getCollectionDate());
+							String timestamp = DateFormatUtils.formatUTC(
+									pm.getCollectionDate(),
+									DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+							vc.put("timestamp", timestamp);
 							vc.put("pinStyle", pm.getPinStyle());
 							vc.put("balloon", pm.getPlacemarkContents());
 							vc.put("longitude", pm.getLongitude());

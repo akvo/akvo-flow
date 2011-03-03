@@ -43,14 +43,10 @@ public class AccessPointMetricSummaryDao extends
 				prototype.getOrganization(), paramMap);
 		appendNonNullParam("country", filterString, paramString, "String",
 				prototype.getCountry(), paramMap);
-		appendNonNullParam("district", filterString, paramString, "String",
-				prototype.getDistrict(), paramMap);		
-		appendNonNullParam("subgroup1", filterString, paramString, "String",
-				prototype.getSubgroup1(), paramMap);
-		appendNonNullParam("subgroup2", filterString, paramString, "String",
-				prototype.getSubgroup2(), paramMap);
-		appendNonNullParam("subgroup3", filterString, paramString, "String",
-				prototype.getSubgroup3(), paramMap);
+		appendNonNullParam("subLevel", filterString, paramString, "Integer",
+				prototype.getSubLevel(), paramMap);
+		appendNonNullParam("subValue", filterString, paramString, "String",
+				prototype.getSubValue(), paramMap);
 		appendNonNullParam("metricName", filterString, paramString, "String",
 				prototype.getMetricName(), paramMap);
 		appendNonNullParam("metricGroup", filterString, paramString, "String",

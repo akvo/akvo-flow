@@ -39,15 +39,17 @@ import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
+import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
+import org.waterforpeople.mapping.app.web.test.AccessPointTest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
@@ -58,15 +60,15 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.DeviceFilesReplicationImporter;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -76,9 +78,9 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.diagnostics.dao.RemoteStacktraceDao;
 import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
 import com.gallatinsystems.editorial.dao.EditorialPageDao;
@@ -95,10 +97,10 @@ import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
-import com.gallatinsystems.gis.map.domain.MapFragment;
-import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
+import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -111,6 +113,7 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -119,7 +122,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
@@ -130,7 +132,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.gwt.rpc.client.impl.RemoteException;
 
 public class TestHarnessServlet extends HttpServlet {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
@@ -146,6 +147,9 @@ public class TestHarnessServlet extends HttpServlet {
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
 		} else if ("setupTestUser".equals(action)) {
 			setupTestUser();
+		} else if ("populateAccessPointMetric".equals(action)) {
+			AccessPointMetricSummaryTest apMST = new AccessPointMetricSummaryTest();
+			apMST.runTest(resp);
 		} else if ("reorderQuestionsByCollectionDate".equals(action)) {
 			try {
 				Long surveyId = Long.parseLong(req.getParameter("surveyId"));
@@ -536,77 +540,8 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		} else if ("loadLots".equals(action)) {
-			MapFragmentDao mfDao = new MapFragmentDao();
-			AccessPointDao apDao = new AccessPointDao();
-			for (int j = 0; j < 1; j++) {
-				double lat = -15 + (new Random().nextDouble() / 10);
-				double lon = 35 + (new Random().nextDouble() / 10);
-				for (int i = 0; i < 3000; i++) {
-					AccessPoint ap = new AccessPoint();
-					ap.setLatitude(lat);
-					ap.setLongitude(lon);
-					Calendar calendar = Calendar.getInstance();
-					Date today = new Date();
-					calendar.setTime(today);
-					calendar.add(Calendar.YEAR, -1 * i);
-					System.out
-							.println("AP: " + ap.getLatitude() + "/"
-									+ ap.getLongitude() + "Date: "
-									+ calendar.getTime());
-					// ap.setCollectionDate(calendar.getTime());
-					ap.setAltitude(0.0);
-					ap.setCommunityCode("test" + new Date());
-					ap.setCommunityName("test" + new Date());
-					ap.setPhotoURL("http://waterforpeople.s3.amazonaws.com/images/peru/pc28water.jpg");
-					ap.setProvideAdequateQuantity(true);
-					ap.setHasSystemBeenDown1DayFlag(false);
-					ap.setMeetGovtQualityStandardFlag(true);
-					ap.setMeetGovtQuantityStandardFlag(false);
-					ap.setCurrentManagementStructurePoint("Community Board");
-					ap.setDescription("Waterpoint");
-					ap.setDistrict("test district");
-					ap.setEstimatedHouseholds(100L);
-					ap.setEstimatedPeoplePerHouse(11L);
-					ap.setFarthestHouseholdfromPoint("Yes");
-					ap.setNumberOfHouseholdsUsingPoint(100L);
-					ap.setConstructionDateYear("2001");
-					ap.setCostPer(1.0);
-					ap.setCountryCode("MW");
-					ap.setConstructionDate(new Date());
-					ap.setCollectionDate(new Date());
-					ap.setPhotoName("Water point");
-					if (i % 2 == 0)
-						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-					else if (i % 3 == 0)
-						ap.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
-					else
-						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
-					if (i == 0)
-						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-					else if (i == 1)
-						ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-					else if (i == 2)
-						ap.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
-					else
-						ap.setPointStatus(Status.NO_IMPROVED_SYSTEM);
-
-					if (i % 2 == 0)
-						ap.setTypeTechnologyString("Kiosk");
-					else
-						ap.setTypeTechnologyString("Afridev Handpump");
-					apDao.save(ap);
-					MapSummarizer ms = new MapSummarizer();
-					// ms.performSummarization("" + ap.getKey().getId(), "");
-					if (i % 50 == 0)
-						log.log(Level.INFO, "Loaded to " + i);
-				}
-			}
-			try {
-				resp.getWriter().println("Finished loading aps");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+			AccessPointTest apt = new AccessPointTest();
+			apt.loadLots(resp);
 		} else if ("loadCountries".equals(action)) {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");
@@ -1383,13 +1318,13 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("testnotifhelper".equals(action)) {
 			NotificationHelper helper = new NotificationHelper();
 			helper.execute();
-		}else if("testremotemap".equals(action)){
-			createDevice("12345", 40.78,-73.95);
-			createDevice("777", 43.0,-78.8);	
+		} else if ("testremotemap".equals(action)) {
+			createDevice("12345", 40.78, -73.95);
+			createDevice("777", 43.0, -78.8);
 			RemoteStacktrace st = new RemoteStacktrace();
 			st.setAcknowleged(false);
 			st.setPhoneNumber("12345");
-			st.setErrorDate(new Date());			
+			st.setErrorDate(new Date());
 			st.setStackTrace(new Text("blah"));
 			RemoteStacktraceDao dao = new RemoteStacktraceDao();
 			dao.save(st);
@@ -1401,19 +1336,19 @@ public class TestHarnessServlet extends HttpServlet {
 			dao.save(st);
 		}
 	}
-	
-	private Device createDevice(String num, Double lat, Double lon){
+
+	private Device createDevice(String num, Double lat, Double lon) {
 		DeviceDAO devDao = new DeviceDAO();
 		Device d = devDao.get(num);
-		if(d == null){
+		if (d == null) {
 			d = new Device();
 			d.setPhoneNumber(num);
 		}
-		if(lat != null){
+		if (lat != null) {
 			d.setLastKnownLat(lat);
 			d.setLastKnownLon(lon);
 		}
-		return devDao.save(d);			
+		return devDao.save(d);
 	}
 
 	private void sendNotification(String surveyId) {
