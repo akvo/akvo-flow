@@ -51,6 +51,7 @@ public class SurveyEntryWidget extends Composite implements
 	private Map<Long, QuestionWidget> questionWidgetMap;
 	private Panel submissionPanel;
 	private Map<String, QuestionAnswerStoreDto> existingAnswers;
+	private Long existingInstanceId;
 
 	public SurveyEntryWidget(String surveyId,
 			List<QuestionAnswerStoreDto> answers) {
@@ -59,6 +60,9 @@ public class SurveyEntryWidget extends Composite implements
 		if (answers != null) {
 			for (QuestionAnswerStoreDto a : answers) {
 				existingAnswers.put(a.getQuestionID(), a);
+				if(existingInstanceId == null && a.getSurveyInstanceId()!=null){
+					existingInstanceId = a.getSurveyInstanceId();
+				}
 			}
 		}
 		submissionPanel = new VerticalPanel();
@@ -126,7 +130,7 @@ public class SurveyEntryWidget extends Composite implements
 			for (QuestionGroupDto group : surveyDto.getQuestionGroupList()) {
 				tabPanel.add(new VerticalPanel(), group.getDisplayName());
 			}
-			tabPanel.add(submissionPanel, "Submit");
+			tabPanel.add(submissionPanel, "Submit/Review");
 			containerPanel.add(tabPanel);
 			tabPanel.selectTab(0);
 		}
@@ -138,7 +142,8 @@ public class SurveyEntryWidget extends Composite implements
 				.get(idx).getQuestionMap().values();
 		QuestionWidgetFactory factory = new QuestionWidgetFactory();
 		for (QuestionDto q : questions) {
-			QuestionWidget w = factory.createQuestionWidget(q, existingAnswers.get(q.getKeyId().toString()),this);
+			QuestionWidget w = factory.createQuestionWidget(q, existingAnswers
+					.get(q.getKeyId().toString()), this);
 			if (w != null) {
 				questionWidgetMap.put(q.getKeyId(), w);
 				tabContent.add(w);
@@ -193,39 +198,95 @@ public class SurveyEntryWidget extends Composite implements
 			}
 		}
 		if (missingItems.size() == 0) {
-			Button submitButton = new Button("Submit Survey");
+			String lblText = "Submit Survey";
+
+			if (existingAnswers.size() > 0) {
+				// if we already have answers, we're approving, not creating
+				lblText = "Save and Approve";
+			}
+
+			Button submitButton = new Button(lblText);
+
 			submitButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
 					SurveyInstanceDto instance = new SurveyInstanceDto();
+					instance.setApprovedFlag("False");
 					instance.setSurveyId(new Long(surveyId));
 					instance.setCollectionDate(new Date());
 					instance.setDeviceIdentifier("WEB FORM");
 					instance.setQuestionAnswersStore(answers);
-					surveyInstanceService.submitSurveyInstance(instance,
-							new AsyncCallback<SurveyInstanceDto>() {
+					if (existingAnswers.size() == 0) {
+						surveyInstanceService.submitSurveyInstance(instance,
+								new AsyncCallback<SurveyInstanceDto>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									MessageDialog errDia = new MessageDialog(
-											"Error submitting survey",
-											"Could not submit survey. Please try again");
-									errDia.showCentered();
+									@Override
+									public void onFailure(Throwable caught) {
+										MessageDialog errDia = new MessageDialog(
+												"Error submitting survey",
+												"Could not submit survey. Please try again");
+										errDia.showCentered();
 
+									}
+
+									@Override
+									public void onSuccess(
+											SurveyInstanceDto result) {
+										MessageDialog success = new MessageDialog(
+												"Survey Submitted",
+												"Survey has been submitted to the server");
+										success.showCentered();
+										resetForm();
+
+									}
+								});
+					} else {
+						// we only want to send in the changed questions in this
+						// case, so filter them
+						List<QuestionAnswerStoreDto> changeQList = new ArrayList<QuestionAnswerStoreDto>();
+						for (QuestionAnswerStoreDto newQ : answers) {
+							QuestionAnswerStoreDto existingAns = existingAnswers
+									.get(newQ.getQuestionID());
+							if (existingAns != null) {
+								if (newQ.getValue() == null
+										&& existingAns.getValue() != null) {
+									changeQList.add(newQ);
+
+								} else if (newQ.getValue() != null
+										&& existingAns.getValue() == null) {
+									changeQList.add(newQ);
+								} else if (!newQ.getValue().equals(
+										existingAns.getValue())) {
+									changeQList.add(newQ);
 								}
+							} else {
+								changeQList.add(newQ);
+							}
+						}
 
-								@Override
-								public void onSuccess(SurveyInstanceDto result) {
-									MessageDialog success = new MessageDialog(
-											"Survey Submitted",
-											"Survey has been submitted to the server");
-									success.showCentered();
-									resetForm();
+						surveyInstanceService.approveSurveyInstance(existingInstanceId, changeQList,
+								new AsyncCallback<Void>() {
 
-								}
-							});
+									@Override
+									public void onFailure(Throwable caught) {
+										MessageDialog errDia = new MessageDialog(
+												"Error approving survey",
+												"Could not approve survey. Please try again");
+										errDia.showCentered();
 
+									}
+
+									@Override
+									public void onSuccess(Void v) {
+										MessageDialog success = new MessageDialog(
+												"Survey Approved",
+												"Survey has been approved");
+										success.showCentered();
+										resetForm();
+									}
+								});
+					}
 				}
 			});
 			submissionPanel.add(submitButton);

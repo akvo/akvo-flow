@@ -9,21 +9,30 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyInstanceServiceAsync {
 
-	void listSurveyInstance(Date beginDate, String cursorString,
+	void listSurveyInstance(Date beginDate, boolean unapprovedOnlyFlag,String cursorString,
 			AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>> callback);
+	
+	
 
 	void listQuestionsByInstance(Long instanceId,
 			AsyncCallback<List<QuestionAnswerStoreDto>> callback);
 
 	void updateQuestions(List<QuestionAnswerStoreDto> dtoList,
+			boolean isApproved,
 			AsyncCallback<List<QuestionAnswerStoreDto>> callback);
 
-	void listResponsesByQuestion(Long questionId, String cursorString,
+	void listResponsesByQuestion(
+			Long questionId,
+			String cursorString,
 			AsyncCallback<ResponseDto<ArrayList<QuestionAnswerStoreDto>>> callback);
 
 	void deleteSurveyInstance(Long instanceId, AsyncCallback<Void> callback);
 
 	void submitSurveyInstance(SurveyInstanceDto instance,
 			AsyncCallback<SurveyInstanceDto> callback);
+
+	void approveSurveyInstance(Long instanceId,
+			List<QuestionAnswerStoreDto> changedQuestions,
+			AsyncCallback<Void> callback);
 
 }

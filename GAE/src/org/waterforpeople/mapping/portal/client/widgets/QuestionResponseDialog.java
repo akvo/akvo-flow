@@ -130,7 +130,7 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 				statusLabel.setVisible(true);
 				surveyInstanceSvc.updateQuestions(
 						new ArrayList<QuestionAnswerStoreDto>(changedAnswers
-								.values()),
+								.values()),true,
 						new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
 							@Override

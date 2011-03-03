@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -54,8 +55,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private static Integer width = 1024;
 	private static Integer height = 768;
 	private static final DataTableHeader TABLE_HEADERS[] = {
-			new DataTableHeader("Submission"),
-			new DataTableHeader("Survey"),
+			new DataTableHeader("Submission"), new DataTableHeader("Survey"),
 			new DataTableHeader("Survey Code"),
 			new DataTableHeader("Collection Date") };
 
@@ -71,6 +71,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private HorizontalPanel contentPanel;
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 	private Long selectedInstance;
+	private RadioButton showAllButton;
+	private RadioButton showUnapprovedButton;
 
 	public RawDataViewPortlet(UserDto user) {
 		super(NAME, true, false, false, width, height, user, false, null);
@@ -89,6 +91,23 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		finderPanel.add(instanceIdBox);
 		Button findButton = new Button("Find");
 		finderPanel.add(findButton);
+		
+		showAllButton = new RadioButton("approvedFlag", "Show All");
+		showUnapprovedButton = new RadioButton("approvedFlag", "Show Unapproved");
+		showAllButton.setValue(true);
+		finderPanel.add(showAllButton);
+		finderPanel.add(showUnapprovedButton);
+		ClickHandler radioClickHandler = new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				requestData(null, false);
+
+			}
+		};
+		showAllButton.addClickHandler(radioClickHandler);
+		showUnapprovedButton.addClickHandler(radioClickHandler);
+
 		findButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -138,7 +157,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			qasDetailGrid.setWidget(0, 0, ViewUtil.initLabel("Question Id"));
 			qasDetailGrid.setWidget(0, 1, ViewUtil.initLabel("Question Type"));
 			qasDetailGrid.setWidget(0, 2, ViewUtil.initLabel("Answer Value"));
-			qasDetailGrid.setWidget(0, 3, ViewUtil.initLabel("Collection Date"));
+			qasDetailGrid
+					.setWidget(0, 3, ViewUtil.initLabel("Collection Date"));
 			qasDetailGrid.setWidget(0, 4, ViewUtil.initLabel("Question Text"));
 			Integer iRow = 0;
 			for (QuestionAnswerStoreDto qasDto : questions) {
@@ -156,6 +176,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 								.updateQuestions(
 										new ArrayList<QuestionAnswerStoreDto>(
 												changedAnswers.values()),
+										true,
 										new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
 											@Override
@@ -247,10 +268,45 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 						SurveyEntryWidget c = new SurveyEntryWidget(questions
 								.get(0).getSurveyId().toString(), questions);
 						WidgetDialog wd = new WidgetDialog("Survey Submission",
-								c);					
+								c);
 						wd.showCentered();
-						c.initialize();						
+						c.initialize();
 					}
+
+				}
+			});
+
+			final Button approveButton = new Button("Approve");
+			approveButton.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					List<QuestionAnswerStoreDto> answerList = new ArrayList<QuestionAnswerStoreDto>();
+					if (changedAnswers.size() > 0) {
+						answerList.addAll(changedAnswers.values());
+					}
+					svc.approveSurveyInstance(selectedInstance, answerList,
+							new AsyncCallback<Void>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									MessageDialog errDia = new MessageDialog(
+											"Error",
+											"Could not approve instance: "
+													+ caught
+															.getLocalizedMessage());
+									errDia.showCentered();
+								}
+
+								@Override
+								public void onSuccess(Void v) {
+									MessageDialog dia = new MessageDialog(
+											"Approval Successful",
+											"Survey response has been approved");
+									dia.showCentered();
+									approveButton.setVisible(false);
+
+								}
+							});
 
 				}
 			});
@@ -259,6 +315,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			qasDetailGrid.setWidget(iRow + 1, 1, clearButton);
 			qasDetailGrid.setWidget(iRow + 1, 2, deleteInstanceButton);
 			qasDetailGrid.setWidget(iRow + 1, 3, viewAsSurveyButton);
+			if (approveButton != null) {
+				qasDetailGrid.setWidget(iRow + 1, 4, approveButton);
+			}
 			if (!getCurrentUser().hasPermission(
 					PermissionConstants.RAW_DATA_EDIT)) {
 				saveButton.setVisible(false);
@@ -371,7 +430,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	@Override
 	public void bindRow(Grid grid, SurveyInstanceDto item, int row) {
 		grid.setWidget(row, 0, ViewUtil.initLabel(item.getKeyId().toString()));
-		grid.setWidget(row, 1, ViewUtil.initLabel(item.getSurveyId().toString()));
+		grid.setWidget(row, 1, ViewUtil
+				.initLabel(item.getSurveyId().toString()));
 		grid.setWidget(row, 2, ViewUtil.initLabel(item.getSurveyCode()));
 		grid.setWidget(row, 3, ViewUtil.initLabel(DateTimeFormat
 				.getMediumDateTimeFormat().format(item.getCollectionDate())));
@@ -401,9 +461,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			// jumping through hoops to avoid depricated APIs
 			dateForQuery = new Date((new Date()).getTime() - (86400000L * 90L));
 		}
-		svc.listSurveyInstance(dateForQuery, cursor,
+		svc.listSurveyInstance(dateForQuery, showUnapprovedButton.getValue(),
+				cursor,
 				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
-
 					@Override
 					public void onFailure(Throwable caught) {
 						// no-op

@@ -158,6 +158,31 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		return (List<SurveyInstance>) q.execute(beginDate);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,boolean unapprovedOnlyFlag,
+			String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
+		StringBuilder filterBuffer = new StringBuilder("collectionDate >= pBeginDate");
+		StringBuilder paramBuffer = new StringBuilder("java.util.Date pBeginDate");
+		
+		if(unapprovedOnlyFlag){
+			filterBuffer.append(" && approvedFlag == pApprovedFlag");
+			paramBuffer.append(", String pApprovedFlag");
+		}	
+		q.setFilter(filterBuffer.toString());
+		q.declareParameters(paramBuffer.toString());
+		q.setOrdering("collectionDate desc");
+
+		prepareCursor(cursorString, q);
+
+		if(unapprovedOnlyFlag){
+			return (List<SurveyInstance>) q.execute(beginDate,"False");
+		}else{
+			return (List<SurveyInstance>) q.execute(beginDate);
+		}
+	}
 
 	/**
 	 * finds a questionAnswerStore object for the surveyInstance and questionId

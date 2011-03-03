@@ -254,5 +254,9 @@
     </datastore-index>
     <datastore-index kind="Coordinate" ancestor="true" source="manual">
         <property name="coordinates_INTEGER_IDX" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyInstance" ancestor="false" source="manual">
+        <property name="approvedFlag" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
     </datastore-index>   
 </datastore-indexes>

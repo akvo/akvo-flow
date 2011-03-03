@@ -55,7 +55,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				qasDto.setCollectionDate(importReq.getCollectionDate());
 				dtoList.add(qasDto);
 			}
-			sisi.updateQuestions(dtoList);
+			sisi.updateQuestions(dtoList,true);
 		} else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				.equals(importReq.getAction())) {
 			SurveyInstance instance = instanceDao.getByKey(importReq

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -17,7 +16,6 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceSe
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -31,7 +29,6 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
@@ -43,7 +40,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
-			Date beginDate, String cursorString) {
+			Date beginDate, boolean unapprovedOnlyFlag, String cursorString) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
 		List<Survey> surveyList = surveyDao.list("all");
@@ -57,7 +54,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			c.add(Calendar.DAY_OF_MONTH, -90);
 			beginDate = c.getTime();
 		}
-		siList = dao.listByDateRange(beginDate, null, cursorString);
+		siList = dao.listByDateRange(beginDate, null,unapprovedOnlyFlag, cursorString);
 		String newCursor = SurveyInstanceDAO.getCursor(siList);
 
 		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
@@ -127,7 +124,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public List<QuestionAnswerStoreDto> updateQuestions(
-			List<QuestionAnswerStoreDto> dtoList) {
+			List<QuestionAnswerStoreDto> dtoList, boolean isApproved) {
 		List<QuestionAnswerStore> domainList = new ArrayList<QuestionAnswerStore>();
 		for (QuestionAnswerStoreDto dto : dtoList) {
 			QuestionAnswerStore answer = new QuestionAnswerStore();
@@ -137,37 +134,42 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyAttributeMappingDao mappingDao = new SurveyAttributeMappingDao();
 		dao.save(domainList);
-		// now send a change message for each item
-		Queue queue = QueueFactory.getQueue("dataUpdate");
-		for (QuestionAnswerStoreDto item : dtoList) {
-			DataChangeRecord value = new DataChangeRecord(
-					QuestionAnswerStore.class.getName(), item.getQuestionID(),
-					item.getOldValue(), item.getValue());
-			queue.add(url("/app_worker/dataupdate")
-					.param(DataSummarizationRequest.OBJECT_KEY,
-							item.getQuestionID())
-					.param(DataSummarizationRequest.OBJECT_TYPE,
-							"QuestionDataChange")
-					.param(DataSummarizationRequest.VALUE_KEY,
-							value.packString()));
-			// see if the question is mapped. And if it is, send an Access Point
-			// change message
-			SurveyAttributeMapping mapping = mappingDao
-					.findMappingForQuestion(item.getQuestionID());
-			if (mapping != null) {
-				DataChangeRecord apValue = new DataChangeRecord(
-						"AcessPointUpdate", mapping.getSurveyId() + "|"
-								+ mapping.getSurveyQuestionId() + "|"
-								+ item.getSurveyInstanceId() + "|"
-								+ mapping.getKey().getId(), item.getOldValue(),
-						item.getValue());
-				queue.add(url("/app_worker/dataupdate")
-						.param(DataSummarizationRequest.OBJECT_KEY,
-								item.getQuestionID())
-						.param(DataSummarizationRequest.OBJECT_TYPE,
-								"AccessPointChange")
-						.param(DataSummarizationRequest.VALUE_KEY,
-								apValue.packString()));
+		if (isApproved) {
+			// now send a change message for each item
+			Queue queue = QueueFactory.getQueue("dataUpdate");
+			for (QuestionAnswerStoreDto item : dtoList) {
+				DataChangeRecord value = new DataChangeRecord(
+						QuestionAnswerStore.class.getName(), item
+								.getQuestionID(), item.getOldValue(), item
+								.getValue());
+				queue
+						.add(url("/app_worker/dataupdate").param(
+								DataSummarizationRequest.OBJECT_KEY,
+								item.getQuestionID()).param(
+								DataSummarizationRequest.OBJECT_TYPE,
+								"QuestionDataChange").param(
+								DataSummarizationRequest.VALUE_KEY,
+								value.packString()));
+				// see if the question is mapped. And if it is, send an Access
+				// Point
+				// change message
+				SurveyAttributeMapping mapping = mappingDao
+						.findMappingForQuestion(item.getQuestionID());
+				if (mapping != null) {
+					DataChangeRecord apValue = new DataChangeRecord(
+							"AcessPointUpdate", mapping.getSurveyId() + "|"
+									+ mapping.getSurveyQuestionId() + "|"
+									+ item.getSurveyInstanceId() + "|"
+									+ mapping.getKey().getId(), item
+									.getOldValue(), item.getValue());
+					queue.add(url("/app_worker/dataupdate").param(
+							DataSummarizationRequest.OBJECT_KEY,
+							item.getQuestionID()).param(
+							DataSummarizationRequest.OBJECT_TYPE,
+							"AccessPointChange").param(
+							DataSummarizationRequest.VALUE_KEY,
+							apValue.packString()));
+				}
 			}
 		}
 
@@ -211,15 +213,15 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				Queue queue = QueueFactory.getQueue("dataUpdate");
 				for (QuestionAnswerStore ans : answers) {
 					DataChangeRecord value = new DataChangeRecord(
-							QuestionAnswerStore.class.getName(),
-							ans.getQuestionID(), ans.getValue(), "");
-					queue.add(url("/app_worker/dataupdate")
-							.param(DataSummarizationRequest.OBJECT_KEY,
-									ans.getQuestionID())
-							.param(DataSummarizationRequest.OBJECT_TYPE,
-									"QuestionDataChange")
-							.param(DataSummarizationRequest.VALUE_KEY,
-									value.packString()));
+							QuestionAnswerStore.class.getName(), ans
+									.getQuestionID(), ans.getValue(), "");
+					queue.add(url("/app_worker/dataupdate").param(
+							DataSummarizationRequest.OBJECT_KEY,
+							ans.getQuestionID()).param(
+							DataSummarizationRequest.OBJECT_TYPE,
+							"QuestionDataChange").param(
+							DataSummarizationRequest.VALUE_KEY,
+							value.packString()));
 				}
 				dao.delete(answers);
 			}
@@ -253,19 +255,41 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				answerList.add(store);
 			}
 			dao.save(answerList);
-
-			// send async request to populate the AccessPoint using the mapping
-			QueueFactory.getDefaultQueue().add(
-					url("/app_worker/task").param("action", "addAccessPoint")
-							.param("surveyId", domain.getKey().getId() + ""));
-			// send asyn crequest to summarize the instance
-			QueueFactory.getQueue("dataSummarization").add(
-					url("/app_worker/datasummarization").param("objectKey",
-							domain.getKey().getId() + "").param("type",
-							"SurveyInstance"));
-
+			if (instance.getApprovedFlag() == null
+					|| !"False".equalsIgnoreCase(instance.getApprovedFlag())) {
+				sendProcessingMessages(domain);
+			}
 		}
 
 		return instance;
 	}
+
+	public void approveSurveyInstance(Long surveyInstanceId,
+			List<QuestionAnswerStoreDto> changedAnswers) {
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		SurveyInstance instance = dao.getByKey(surveyInstanceId);
+		if (changedAnswers != null && changedAnswers.size() > 0) {
+			updateQuestions(changedAnswers, false);
+		}
+		if (instance != null) {
+			if (instance.getApprovedFlag() == null
+					|| !"True".equalsIgnoreCase(instance.getApprovedFlag())) {
+				instance.setApprovedFlag("True");
+				sendProcessingMessages(instance);
+			}
+		}
+	}
+
+	private void sendProcessingMessages(SurveyInstance domain) {
+		// send async request to populate the AccessPoint using the mapping
+		QueueFactory.getDefaultQueue().add(
+				url("/app_worker/task").param("action", "addAccessPoint")
+						.param("surveyId", domain.getKey().getId() + ""));
+		// send asyn crequest to summarize the instance
+		QueueFactory.getQueue("dataSummarization").add(
+				url("/app_worker/datasummarization").param("objectKey",
+						domain.getKey().getId() + "").param("type",
+						"SurveyInstance"));
+	}
+
 }

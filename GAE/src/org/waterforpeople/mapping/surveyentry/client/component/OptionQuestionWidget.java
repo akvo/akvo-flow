@@ -79,11 +79,13 @@ public class OptionQuestionWidget extends QuestionWidget implements
 						}
 					}
 					if(!found){						
-						otherText.append(ans);												
+						otherText.append(ans[i]);												
 					}
 				}
 				if(OTHER_TYPE.equals(getAnswer().getType())){
 					otherBox.setVisible(true);
+					//Other is always the last entry in the box. Ensure it's selected
+					listBox.setItemSelected(listBox.getItemCount()-1,true);
 					otherBox.setValue(otherText.toString());							
 				}
 			}
