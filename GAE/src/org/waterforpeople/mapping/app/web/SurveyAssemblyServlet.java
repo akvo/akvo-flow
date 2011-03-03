@@ -93,7 +93,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			assembleQuestionGroups(importReq.getSurveyId(),importReq.getTransactionId());
 		} else if (SurveyAssemblyRequest.DISTRIBUTE_SURVEY
 				.equalsIgnoreCase(importReq.getAction())) {
-			uploadSurvey(importReq.getSurveyId());
+			uploadSurvey(importReq.getSurveyId(), importReq.getTransactionId());
 		} else if (SurveyAssemblyRequest.CLEANUP.equalsIgnoreCase(importReq
 				.getAction())) {
 			cleanupFragments(importReq.getSurveyId(), importReq.getTransactionId());
@@ -107,7 +107,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	 * 
 	 * @param surveyId
 	 */
-	private void uploadSurvey(Long surveyId) {
+	private void uploadSurvey(Long surveyId, Long transactionId) {
 		SurveyContainerDao scDao = new SurveyContainerDao();
 		SurveyContainer sc = scDao.findBySurveyId(surveyId);
 		Properties props = System.getProperties();
