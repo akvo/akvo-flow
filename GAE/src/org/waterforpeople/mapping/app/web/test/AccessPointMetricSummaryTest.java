@@ -50,13 +50,13 @@ public class AccessPointMetricSummaryTest {
 	}
 	
 	private void prepData(HttpServletResponse resp){
-//		AccessPointDao apDao = new AccessPointDao();
-//		for(AccessPoint item : apDao.listAccessPointByLocation("MW",null, null, null, "all")){
-//			apDao.delete(item);
-//		}
-//		
-//		AccessPointTest aptest = new AccessPointTest();
-//		aptest.loadLots(resp);
+		AccessPointDao apDao = new AccessPointDao();
+		for(AccessPoint item : apDao.listAccessPointByLocation("MW",null, null, null, "all")){
+			apDao.delete(item);
+		}
+		
+		AccessPointTest aptest = new AccessPointTest();
+		aptest.loadLots(resp);
 		clearAPMSTable();
 		
 	}

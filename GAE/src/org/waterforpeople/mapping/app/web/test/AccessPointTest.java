@@ -60,6 +60,7 @@ public class AccessPointTest {
 				ap.setConstructionDate(new Date());
 				ap.setCollectionDate(new Date());
 				ap.setPhotoName("Water point");
+				ap.setSub1("Southern");
 				if (i % 2 == 0)
 					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 				else if (i % 3 == 0)
