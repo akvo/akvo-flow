@@ -128,7 +128,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				props.getProperty(SURVEY_UPLOAD_POLICY), props
 						.getProperty(SURVEY_UPLOAD_SIG), "application/zip");
 
-		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,null);
+		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,transactionId);
 	}
 
 	/**
