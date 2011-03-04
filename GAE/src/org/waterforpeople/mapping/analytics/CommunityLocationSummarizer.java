@@ -88,7 +88,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 				
 				AccessPointHelper aph = new AccessPointHelper();
 				aph.setGeoDetails(ap);
-				accessPointDao.saveButDonotFireAsync(ap);
+				accessPointDao.save(ap);
 			}
 		}
 		return true;

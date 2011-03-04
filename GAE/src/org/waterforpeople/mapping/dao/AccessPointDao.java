@@ -348,13 +348,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	}
 
 	
-	public AccessPoint saveButDonotFireAsync(AccessPoint point){
-		return super.save(point);
-	}
+	
 	public AccessPoint save(AccessPoint point) {
-		Queue queue = QueueFactory.getDefaultQueue();
 		point = super.save(point);
-		queue.add(url("/app_worker/task").param("action", TaskRequest.UPDATE_AP_GEO_SUB).param(TaskRequest.ACCESS_POINT_ID_PARAM,new Long(point.getKey().getId()).toString()));
 		return point;
 	}
 }
