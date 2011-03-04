@@ -23,6 +23,8 @@ import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 
+	private static final String DELETE_OBJECT_TASK_URL = "/app_worker/deleteobjecttask";
+	private static final String DELETE_QUEUE_NAME = "deletequeue";
 	/**
 	 * 
 	 */
@@ -95,8 +97,8 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 					taskcount = Integer.parseInt(tcs) + 1;
 				}
 
-				Queue deleteQueue = QueueFactory.getQueue("deleteQueue");
-				deleteQueue.add(url("/app_worker/deleteobjecttask")
+				Queue deleteQueue = QueueFactory.getQueue(DELETE_QUEUE_NAME);
+				deleteQueue.add(url(DELETE_OBJECT_TASK_URL)
 						.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
 						.param(DeleteTaskRequest.KEY_PARAM, dtReq.getKey())
 						.param(DeleteTaskRequest.TASK_COUNT_PARAM,
