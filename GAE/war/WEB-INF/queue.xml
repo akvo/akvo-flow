@@ -37,4 +37,8 @@
 		<name>notification</name>
 		<rate>5/s</rate>
 	</queue>
+	<queue>
+		<name>deletequeue</name>
+		<rate>5/s</rate>
+	</queue>
 </queue-entries>
