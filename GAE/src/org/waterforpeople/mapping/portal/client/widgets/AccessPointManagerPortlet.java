@@ -934,7 +934,27 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox countryCodeTB = (TextBox) accessPointDetail.getWidget(1, 1);
 		String countryCode = countryCodeTB.getText();
 		apDto.setCountryCode(countryCode);
-
+				
+		TextBox subBox = (TextBox) accessPointDetail.getWidget(6, 1);		
+		apDto.setSub1(subBox.getText());
+				
+		subBox = (TextBox) accessPointDetail.getWidget(7, 1);		
+		apDto.setSub2(subBox.getText());
+				
+		subBox = (TextBox) accessPointDetail.getWidget(8, 1);		
+		apDto.setSub3(subBox.getText());
+				
+		subBox= (TextBox) accessPointDetail.getWidget(9, 1);		
+		apDto.setSub4(subBox.getText());
+				
+		subBox= (TextBox) accessPointDetail.getWidget(10, 1);		
+		apDto.setSub5(subBox.getText());
+				
+		subBox = (TextBox) accessPointDetail.getWidget(11, 1);
+		apDto.setSub6(subBox.getText());
+					
+		
+		
 		TextBox latitudeTB = (TextBox) accessPointDetail.getWidget(2, 1);
 		Double latitude = new Double(latitudeTB.getText());
 		apDto.setLatitude(latitude);
@@ -953,6 +973,8 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		return apDto;
 	}
+	
+		
 
 	private AccessPointDto getMediaAP(AccessPointDto apDto,
 			FlexTable accessPointDetail) {

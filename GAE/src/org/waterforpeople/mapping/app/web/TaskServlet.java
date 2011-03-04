@@ -24,8 +24,8 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
@@ -288,10 +288,6 @@ public class TaskServlet extends AbstractRestApiServlet {
 		} else if (TaskRequest.ADD_ACCESS_POINT_ACTION.equalsIgnoreCase(taskReq
 				.getAction())) {
 			addAccessPoint(taskReq);
-		}else if(TaskRequest.UPDATE_AP_GEO_SUB.equalsIgnoreCase(taskReq.getAction())){
-			AccessPointHelper aph = new AccessPointHelper();
-			Long apId = taskReq.getAccessPointId();
-			aph.updateGeoDetails(apId);
 		}
 		return response;
 	}

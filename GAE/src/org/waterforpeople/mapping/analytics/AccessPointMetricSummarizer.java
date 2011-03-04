@@ -38,25 +38,67 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 										.getFieldName());
 						if (fieldValue != null
 								&& fieldValue.trim().length() > 0) {
-							AccessPointMetricSummary metricSummary = new AccessPointMetricSummary();
-							metricSummary.setMetricValue(fieldValue);
-							metricSummary.setMetricGroup(mapping
-									.getMetricGroup());
-							metricSummary
-									.setMetricName(mapping.getMetricName());
-							metricSummary.setOrganization(ap.getOrganization());
-							metricSummary.setCountry(ap.getCountryCode());
-							//metricSummary.setDistrict(ap.getDistrict());
-							metricSummary.setValueBucket(bucketizeValue(
-									mapping, fieldValue));
+							String valBucket = bucketizeValue(mapping,
+									fieldValue);
+							String metricName = (mapping.getMetricName() != null ? mapping
+									.getMetricName()
+									: mapping.getFieldName());
+							AccessPointMetricSummary metricSummary = constructBaseSummary(
+									fieldValue, mapping.getMetricGroup(),
+									metricName, ap.getOrganization(), ap
+											.getCountryCode(), valBucket);
 							AccessPointMetricSummaryDao.incrementCount(
 									metricSummary, 1);
+							if (ap.getSub1() != null) {
+								metricSummary = constructBaseSummary(
+										fieldValue, mapping.getMetricGroup(),
+										metricName, ap.getOrganization(), ap
+												.getCountryCode(), valBucket);
+								metricSummary.setSubLevel(1);
+								metricSummary.setSubValue(ap.getSub1());
+								AccessPointMetricSummaryDao.incrementCount(
+										metricSummary, 1);
+							}
+
+							if (ap.getSub2() != null) {
+								metricSummary = constructBaseSummary(
+										fieldValue, mapping.getMetricGroup(),
+										metricName, ap.getOrganization(), ap
+												.getCountryCode(), valBucket);
+								metricSummary.setSubLevel(2);
+								metricSummary.setSubValue(ap.getSub2());
+								AccessPointMetricSummaryDao.incrementCount(
+										metricSummary, 1);
+							}
+							if (ap.getSub3() != null) {
+								metricSummary = constructBaseSummary(
+										fieldValue, mapping.getMetricGroup(),
+										metricName, ap.getOrganization(), ap
+												.getCountryCode(), valBucket);
+								metricSummary.setSubLevel(3);
+								metricSummary.setSubValue(ap.getSub3());
+								AccessPointMetricSummaryDao.incrementCount(
+										metricSummary, 1);
+							}
 						}
 					}
 				}
 			}
 		}
 		return true;
+	}
+
+	private AccessPointMetricSummary constructBaseSummary(String fieldValue,
+			String metricGroup, String metricName, String org, String country,
+			String valueBucket) {
+		AccessPointMetricSummary metricSummary = new AccessPointMetricSummary();
+		metricSummary.setMetricValue(fieldValue);
+		metricSummary.setMetricGroup(metricGroup);
+		metricSummary.setMetricName(metricName);
+		metricSummary.setOrganization(org);
+		metricSummary.setCountry(country);
+		metricSummary.setValueBucket(valueBucket);
+		return metricSummary;
 	}
 
 	/**

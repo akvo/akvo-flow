@@ -1,8 +1,10 @@
 package org.waterforpeople.mapping.analytics.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.jdo.PersistenceManager;
 
@@ -19,6 +21,7 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
  */
 public class AccessPointMetricSummaryDao extends
 		BaseDAO<AccessPointMetricSummary> {
+	private static final int NUM_SHARDS = 5;
 
 	public AccessPointMetricSummaryDao() {
 		super(AccessPointMetricSummary.class);
@@ -27,14 +30,58 @@ public class AccessPointMetricSummaryDao extends
 	/**
 	 * lists metrics that match the prototype passed in. The object passed in
 	 * must have at least 1 field populated (besides count). In practice,
-	 * callers should populate as many fields as possible to narrow results
+	 * callers should populate as many fields as possible to narrow results.
+	 * 
+	 * This will collapse any shards and objects returned will not have any keys
+	 * (since they are transient roll-up objects)
 	 * 
 	 * @param prototype
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<AccessPointMetricSummary> listMetrics(
 			AccessPointMetricSummary prototype) {
+		List<AccessPointMetricSummary> summaries = listMetrics(prototype, null);
+		Map<String, AccessPointMetricSummary> rollups = new HashMap<String, AccessPointMetricSummary>();
+		if (summaries != null) {
+			for (AccessPointMetricSummary s : summaries) {
+				AccessPointMetricSummary rollup = rollups.get(s.identifierString());
+				if (rollup == null) {
+					rollup = new AccessPointMetricSummary();
+					rollup.setCount((s.getCount() != null ? s.getCount() : 0));
+					rollup.setCountry(s.getCountry());
+					rollup.setLastUpdateDateTime(s.getLastUpdateDateTime());
+					rollup.setMetricGroup(s.getMetricGroup());
+					rollup.setMetricName(s.getMetricName());
+					rollup.setMetricValue(s.getMetricValue());
+					rollup.setOrganization(s.getOrganization());
+					rollup.setSubLevel(s.getSubLevel());
+					rollup.setSubLevelName(s.getSubLevelName());
+					rollup.setSubValue(s.getSubValue());
+					rollup.setPeriodType(s.getPeriodType());
+					rollup.setPeriodValue(s.getPeriodValue());
+					rollups.put(s.identifierString(), rollup);
+				} else {
+					rollup.setCount(rollup.getCount()
+							+ (s.getCount() != null ? s.getCount() : 0));
+				}
+			}
+		}
+		List<AccessPointMetricSummary> rollupList = new ArrayList<AccessPointMetricSummary>();
+		rollupList.addAll(rollups.values());
+		return rollupList;
+	}
+
+	/**
+	 * gets the metric matching the prototype passed in with a specific shard
+	 * number
+	 * 
+	 * @param prototype
+	 * @param shardNum
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<AccessPointMetricSummary> listMetrics(
+			AccessPointMetricSummary prototype, Integer shardNum) {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
@@ -53,6 +100,8 @@ public class AccessPointMetricSummaryDao extends
 				prototype.getMetricGroup(), paramMap);
 		appendNonNullParam("metricValue", filterString, paramString, "String",
 				prototype.getMetricValue(), paramMap);
+		appendNonNullParam("shardNum", filterString, paramString, "Integer",
+				shardNum, paramMap);
 
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPointMetricSummary.class);
@@ -76,23 +125,26 @@ public class AccessPointMetricSummaryDao extends
 	public static synchronized void incrementCount(
 			AccessPointMetricSummary metric, int unit) {
 		AccessPointMetricSummaryDao dao = new AccessPointMetricSummaryDao();
-		List<AccessPointMetricSummary> results = dao.listMetrics(metric);
+		Random generator = new Random();
+		int shardNum = generator.nextInt(NUM_SHARDS);
+		List<AccessPointMetricSummary> results = dao.listMetrics(metric,
+				shardNum);
 		AccessPointMetricSummary summary = null;
 		if ((results == null || results.size() == 0) && unit > 0) {
 			metric.setCount(new Long(unit));
+			metric.setShardNum(shardNum);
 			summary = metric;
 		} else if (results != null && results.size() > 0) {
 			summary = (AccessPointMetricSummary) results.get(0);
 			summary.setCount(summary.getCount() + unit);
 		}
 		if (summary != null) {
-			AccessPointMetricSummaryDao summaryDao = new AccessPointMetricSummaryDao();
 			if (summary.getCount() > 0) {
-				summaryDao.save(summary);
+				dao.save(summary);
 			} else if (summary.getKey() != null) {
 				// if count has been decremented to 0 and the object is
 				// already persisted, delete it
-				summaryDao.delete(summary);
+				dao.delete(summary);
 			}
 		}
 	}

@@ -644,9 +644,7 @@ public class AccessPointHelper {
 		return true;
 	}
 
-	public AccessPoint updateGeoDetails(Long apId) {
-		AccessPointDao apDao = new AccessPointDao();
-		AccessPoint point = apDao.getByKey(apId);
+	public AccessPoint setGeoDetails(AccessPoint point) {
 		if (point.getLatitude() != null && point.getLongitude() != null) {
 			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
 			GeoPlace geoPlace = gs.manualLookup(point.getLatitude().toString(),
@@ -668,7 +666,6 @@ public class AccessPointHelper {
 					point.setCountryCode(geoPlaceCountry.getCountryCode());
 				}
 			}
-			point = apDao.saveButDonotFireAsync(point);
 		}
 		return point;
 	}

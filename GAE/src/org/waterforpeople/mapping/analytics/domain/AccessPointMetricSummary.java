@@ -18,6 +18,7 @@ public class AccessPointMetricSummary extends BaseDomain {
 	private String organization;
 	private String country;
 	private Integer subLevel;
+	private String subLevelName;
 	private String subValue;
 	private String metricGroup;
 	private String metricName;
@@ -27,6 +28,24 @@ public class AccessPointMetricSummary extends BaseDomain {
 	private PeriodType periodType;
 	private Integer periodValue;
 	private String valueBucket;
+	private Integer shardNum;
+	
+
+	public Integer getShardNum() {
+		return shardNum;
+	}
+
+	public void setShardNum(Integer shardNum) {
+		this.shardNum = shardNum;
+	}
+
+	public String getSubLevelName() {
+		return subLevelName;
+	}
+
+	public void setSubLevelName(String subLevelName) {
+		this.subLevelName = subLevelName;
+	}
 
 	public PeriodType getPeriodType() {
 		return periodType;
@@ -131,7 +150,11 @@ public class AccessPointMetricSummary extends BaseDomain {
 	public String toString() {
 		return "Country: " + this.country + " SubLevel: " + subLevel
 				+ " subValue: " + subValue + " MetricGroup: " + metricGroup
-				+ " MetricName: " + metricName + " MetricValue: " + metricValue;
+				+ " MetricName: " + metricName + " MetricValue: " + metricValue+" count: "+count;
+	}
+	
+	public String identifierString(){
+		return country+subLevel+subValue+metricGroup+metricName+metricValue;
 	}
 
 }

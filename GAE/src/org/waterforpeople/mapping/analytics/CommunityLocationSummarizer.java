@@ -7,6 +7,7 @@ import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.Community;
+import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -83,13 +84,17 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 				}
 				if (ap.getCountryCode() == null && community != null) {
 					ap.setCountryCode(community.getCountryCode());
-					accessPointDao.save(ap);
 				}
+				
+				AccessPointHelper aph = new AccessPointHelper();
+				aph.setGeoDetails(ap);
+				accessPointDao.saveButDonotFireAsync(ap);
 			}
 		}
 		return true;
 	}
-
+	
+	
 	@Override
 	public String getCursor() {
 		return null;
