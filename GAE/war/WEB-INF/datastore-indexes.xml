@@ -116,6 +116,11 @@
 		<property name="surveyId" direction="asc" />
 		<property name="fragmentOrder" direction="asc" />
 	</datastore-index>
+	<datastore-index kind="SurveyXMLFragment" ancestor="false" source="manual">
+        <property name="surveyId" direction="asc"/>
+        <property name="transactionId" direction="asc"/>
+        <property name="fragmentOrder" direction="asc"/>
+    </datastore-index>
 	<datastore-index kind="MapFragment" ancestor="false"
 		source="manual">
 		<property name="fragmentType" direction="asc" />
