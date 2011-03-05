@@ -55,9 +55,9 @@ public class RawDataExporter extends AbstractDataExporter {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public void export(String serverBase, Long surveyIdentifier, PrintWriter pw){
+	public void export(String serverBase, Long surveyIdentifier, PrintWriter pw) {
 		try {
 			this.surveyId = surveyIdentifier.toString();
 			this.serverBase = serverBase;
@@ -65,7 +65,7 @@ public class RawDataExporter extends AbstractDataExporter {
 					serverBase);
 			if (results != null) {
 				keyList = (List<String>) results[0];
-				questionMap = (Map<String, String>) results[1];		
+				questionMap = (Map<String, String>) results[1];
 				writeHeader(pw, questionMap);
 				exportInstances(pw, keyList);
 			} else {
@@ -92,42 +92,53 @@ public class RawDataExporter extends AbstractDataExporter {
 		Map<String, String> instances = BulkDataServiceClient.fetchInstanceIds(
 				surveyId, serverBase);
 		if (instances != null) {
+			int i = 0;
 			for (Entry<String, String> instanceEntry : instances.entrySet()) {
 				String instanceId = instanceEntry.getKey();
 				String dateString = instanceEntry.getValue();
 				if (instanceId != null && instanceId.trim().length() > 0) {
-					Map<String, String> responses = BulkDataServiceClient
-							.fetchQuestionResponses(instanceId, serverBase);
-					if (responses != null) {
-						pw.print(instanceId);
-						pw.print("\t");
-						pw.print(dateString);
-						pw.print("\t");
-						SurveyInstanceDto dto = BulkDataServiceClient
-								.findSurveyInstance(Long.parseLong(instanceId
-										.trim()), serverBase);
-						if (dto != null) {
-							String name = dto.getSubmitterName();
-							if(name != null){
-								pw.print(dto.getSubmitterName().replaceAll("\n", " ").trim());
-							}
-						}
-						for (String key : idList) {
-							String val = responses.get(key);
+					try {
+						Map<String, String> responses = BulkDataServiceClient
+								.fetchQuestionResponses(instanceId, serverBase);
+						if (responses != null) {
+							pw.print(instanceId);
 							pw.print("\t");
-							if (val != null) {
-								if (val.contains(SDCARD_PREFIX)) {
-									val = IMAGE_PREFIX
-											+ val.substring(val
-													.indexOf(SDCARD_PREFIX)
-													+ SDCARD_PREFIX.length());
+							pw.print(dateString);
+							pw.print("\t");
+							SurveyInstanceDto dto = BulkDataServiceClient
+									.findSurveyInstance(
+											Long.parseLong(instanceId.trim()),
+											serverBase);
+							if (dto != null) {
+								String name = dto.getSubmitterName();
+								if (name != null) {
+									pw.print(dto.getSubmitterName()
+											.replaceAll("\n", " ").trim());
 								}
-								pw.print(val.replaceAll("\n"," ").trim());
 							}
-						}
+							for (String key : idList) {
+								String val = responses.get(key);
+								pw.print("\t");
+								if (val != null) {
+									if (val.contains(SDCARD_PREFIX)) {
+										val = IMAGE_PREFIX
+												+ val.substring(val
+														.indexOf(SDCARD_PREFIX)
+														+ SDCARD_PREFIX
+																.length());
+									}
+									pw.print(val.replaceAll("\n", " ").trim());
+								}
+							}
 
-						pw.print("\n");
+							pw.print("\n");
+							i++;
+							System.out.println("Row: " + i);
+						}
+					} catch (Exception ex) {
+						System.out.println("Swallow the exception for now and continue");
 					}
+
 				}
 			}
 		}
