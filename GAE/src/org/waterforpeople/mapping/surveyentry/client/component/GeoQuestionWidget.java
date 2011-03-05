@@ -1,10 +1,12 @@
 package org.waterforpeople.mapping.surveyentry.client.component;
 
-import org.apache.tools.ant.listener.AnsiColorLogger;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
@@ -14,7 +16,7 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author Christopher Fagiani
  * 
  */
-public class GeoQuestionWidget extends QuestionWidget {
+public class GeoQuestionWidget extends QuestionWidget implements ClickHandler{
 	private static final String TYPE = "GEO";
 	private static final String DELIM = "|";
 	private static final String DELIM_REGEX  = "\\|";
@@ -22,6 +24,7 @@ public class GeoQuestionWidget extends QuestionWidget {
 	private TextBox lon;
 	private TextBox alt;
 	private TextBox code;
+	private Button locateExisting;
 
 	public GeoQuestionWidget(QuestionDto q, QuestionAnswerStoreDto a) {
 		super(q,a);
@@ -55,6 +58,9 @@ public class GeoQuestionWidget extends QuestionWidget {
 			}
 			
 		}
+		locateExisting = new Button("Find Existing Point");
+		locateExisting.addClickHandler(this);
+		getPanel().add(locateExisting);
 	}
 
 	public void captureAnswer() {
@@ -79,6 +85,14 @@ public class GeoQuestionWidget extends QuestionWidget {
 		lon.setText("");
 		alt.setText("");
 		code.setText("");		
+	}
+
+	@Override
+	public void onClick(ClickEvent event) {
+		if(event.getSource() == locateExisting){
+			
+		}
+		
 	}
 
 }

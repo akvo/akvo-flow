@@ -1,4 +1,4 @@
-package com.gallatinsystems.framework.gwt.wizard.client;
+package com.gallatinsystems.framework.gwt.util.client;
 
 import java.util.Map;
 

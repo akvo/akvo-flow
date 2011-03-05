@@ -1,5 +1,7 @@
 package com.gallatinsystems.framework.gwt.util.client;
 
+import java.util.Map;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -18,11 +20,14 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class WidgetDialog extends DialogBox {
 
-	public WidgetDialog(String title, Widget widget) {
+	private CompletionListener listener;
+
+	public WidgetDialog(String title, Widget widget, CompletionListener listen) {
 		// Set the dialog box's caption.
 		setText(title);
 		setAnimationEnabled(true);
 		setGlassEnabled(true);
+		listener = listen;
 
 		DockPanel contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
@@ -37,7 +42,10 @@ public class WidgetDialog extends DialogBox {
 			}
 		});
 		setWidget(contentPane);
+	}
 
+	public WidgetDialog(String title, Widget widget) {
+		this(title, widget, null);
 	}
 
 	@Override
@@ -49,7 +57,7 @@ public class WidgetDialog extends DialogBox {
 		}
 		return false;
 	}
-	
+
 	public void showCentered() {
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 			public void setPosition(int offsetWidth, int offsetHeight) {
@@ -58,5 +66,19 @@ public class WidgetDialog extends DialogBox {
 				setPopupPosition(left, top);
 			}
 		});
+	}
+
+	/**
+	 * if a listener has been installed, calls the operationComplete method to
+	 * signal that the dialog box action is done
+	 * 
+	 * @param wasSuccessful
+	 * @param payload
+	 */
+	protected void notifyListener(boolean wasSuccessful,
+			Map<String, Object> payload) {
+		if (listener != null) {
+			listener.operationComplete(wasSuccessful, payload);
+		}
 	}
 }

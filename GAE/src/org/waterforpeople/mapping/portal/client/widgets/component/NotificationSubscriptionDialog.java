@@ -3,7 +3,7 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionDto;
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionService;
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionServiceAsync;

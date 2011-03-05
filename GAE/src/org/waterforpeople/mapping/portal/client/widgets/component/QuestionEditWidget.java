@@ -16,9 +16,9 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
-import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;

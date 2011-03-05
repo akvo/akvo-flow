@@ -9,8 +9,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceA
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
-import com.gallatinsystems.framework.gwt.wizard.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
