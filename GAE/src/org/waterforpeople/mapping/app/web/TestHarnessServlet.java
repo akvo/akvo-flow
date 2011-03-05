@@ -1620,7 +1620,7 @@ public class TestHarnessServlet extends HttpServlet {
 			AccessPointType dest) {
 		AccessPointDao pointDao = new AccessPointDao();
 		List<AccessPoint> list = pointDao.searchAccessPoints(null, null, null,
-				null, source.toString(), null, null, null, null, null, null);
+				null, source.toString(), null, null, null, null, null, null,null);
 
 		if (list != null && list.size() > 0) {
 			for (AccessPoint point : list) {

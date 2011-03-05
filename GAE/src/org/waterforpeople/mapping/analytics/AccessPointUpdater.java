@@ -94,7 +94,7 @@ public class AccessPointUpdater implements DataSummarizer {
 					if (communityCode != null && changedAnswer != null) {
 						List<AccessPoint> pointList = apDao.searchAccessPoints(
 								null, communityCode, null, null, null, null,
-								null, null, "collectionDate", "desc", null);
+								null, null, "collectionDate", "desc",null, null);
 						if (pointList != null && pointList.size() > 0) {
 							AccessPoint point = pointList.get(0);
 							try {

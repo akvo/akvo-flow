@@ -50,13 +50,13 @@ public class RemoteExceptionPortlet extends Portlet implements
 	private static final Integer width = 1024;
 	private static final Integer height = 768;
 	private static final String TRACE_WIDTH = "350px";
-	private static final String TRACE_HEIGHT = "400px";	
+	private static final String TRACE_HEIGHT = "400px";
 	private static final DataTableHeader TABLE_HEADERS[] = {
 			new DataTableHeader("Error Date"),
 			new DataTableHeader("Phone Number"),
 			new DataTableHeader("Device Id"),
 			new DataTableHeader("Software Version"), new DataTableHeader("") };
-
+	private static final Integer PAGE_SIZE = 20;
 	private RemoteExceptionServiceAsync remoteExceptionService;
 	private DeviceServiceAsync deviceService;
 	private PaginatedDataTable<RemoteStacktraceDto> remoteExceptionTable;
@@ -198,13 +198,14 @@ public class RemoteExceptionPortlet extends Portlet implements
 						}
 
 						@Override
-						public void onSuccess(DeviceDto result) {							
-							if (result != null && result.getLastKnownLat() != null
+						public void onSuccess(DeviceDto result) {
+							if (result != null
+									&& result.getLastKnownLat() != null
 									&& result.getLastKnownLon() != null) {
 								LatLng point = LatLng.newInstance(result
 										.getLastKnownLat(), result
 										.getLastKnownLon());
-								if (deviceLocOverlay != null) {									
+								if (deviceLocOverlay != null) {
 									mapWidget.removeOverlay(deviceLocOverlay);
 								}
 								deviceLocOverlay = new Marker(point);
@@ -280,4 +281,8 @@ public class RemoteExceptionPortlet extends Portlet implements
 		}
 	}
 
+	@Override
+	public Integer getPageSize(){
+		return PAGE_SIZE;
+	}
 }

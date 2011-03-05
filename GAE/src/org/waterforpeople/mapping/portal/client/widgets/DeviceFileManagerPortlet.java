@@ -31,9 +31,10 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		DataTableBinder<DeviceFilesDto>, DataTableListener<DeviceFilesDto> {
 	public static final String DESCRIPTION = "View and Reprocess Device Files";
 	public static final String NAME = "Device File Manager Portlet";
+
 	private static final String DEFAULT_SORT_FIELD = "createdDateTime";
 	private PaginatedDataTable<DeviceFilesDto> dfTable;
-
+	private Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader("Id", "key", true),
 			new DataTableHeader("Device Identifier", "devicePhoneNumber", true),
@@ -198,4 +199,8 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		grid.setWidget(row, 5, reprocessButton);
 	};
 
+	@Override
+	public Integer getPageSize(){
+		return PAGE_SIZE;
+	}
 }

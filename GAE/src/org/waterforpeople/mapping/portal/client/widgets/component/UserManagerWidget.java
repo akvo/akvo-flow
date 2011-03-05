@@ -40,6 +40,7 @@ public class UserManagerWidget extends Composite implements
 			new DataTableHeader("User Name"),
 			new DataTableHeader("Email Address"),
 			new DataTableHeader("Permissions"), new DataTableHeader("") };
+	private static final Integer PAGE_SIZE = 20;
 	private VerticalPanel contentPane;
 	private PaginatedDataTable<UserDto> dataTable;
 	private TextBox usernameField;
@@ -316,5 +317,10 @@ public class UserManagerWidget extends Composite implements
 						}
 					});
 		}
+	}
+	
+	@Override
+	public Integer getPageSize(){
+		return PAGE_SIZE;
 	}
 }

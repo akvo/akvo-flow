@@ -56,7 +56,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				searchCriteria.getTechType(), searchCriteria
 						.getConstructionDateFrom(), searchCriteria
 						.getConstructionDateTo(), searchCriteria.getOrderBy(),
-				searchCriteria.getOrderByDir(), cursorString);
+				searchCriteria.getOrderByDir(), searchCriteria.getPageSize(),cursorString);
 		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 		for (AccessPoint apItem : pointList) {
 			AccessPointDto apDto = AccessPointServiceSupport

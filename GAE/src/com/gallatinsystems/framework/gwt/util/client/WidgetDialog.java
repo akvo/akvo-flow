@@ -21,6 +21,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class WidgetDialog extends DialogBox {
 
 	private CompletionListener listener;
+	private Button closeButton;
+	private DockPanel contentPane;
 
 	public WidgetDialog(String title, Widget widget, CompletionListener listen) {
 		// Set the dialog box's caption.
@@ -29,14 +31,15 @@ public class WidgetDialog extends DialogBox {
 		setGlassEnabled(true);
 		listener = listen;
 
-		DockPanel contentPane = new DockPanel();
+		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
 				Window.getClientHeight() / 4);
-		contentPane.add(widget, DockPanel.CENTER);
-
-		Button ok = new Button("Done");
-		contentPane.add(ok, DockPanel.SOUTH);
-		ok.addClickHandler(new ClickHandler() {
+		if (widget != null) {
+			contentPane.add(widget, DockPanel.CENTER);
+		}
+		closeButton = new Button("Close");
+		contentPane.add(closeButton, DockPanel.SOUTH);
+		closeButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				hide();
 			}
@@ -46,6 +49,10 @@ public class WidgetDialog extends DialogBox {
 
 	public WidgetDialog(String title, Widget widget) {
 		this(title, widget, null);
+	}
+
+	public void setContentWidget(Widget w) {
+		contentPane.add(w, DockPanel.CENTER);
 	}
 
 	@Override

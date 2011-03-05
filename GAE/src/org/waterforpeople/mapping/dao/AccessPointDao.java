@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.dao;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +8,6 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
-import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
@@ -19,8 +16,6 @@ import com.beoui.geocell.model.GeocellQuery;
 import com.beoui.geocell.model.Point;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 /**
  * dao for manipulating access points
@@ -117,13 +112,13 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public List<AccessPoint> searchAccessPoints(String country,
 			String community, Date collDateFrom, Date collDateTo, String type,
 			String tech, Date constructionDateFrom, Date constructionDateTo,
-			String orderByField, String orderByDir, String cursorString) {
+			String orderByField, String orderByDir,Integer pageSize, String cursorString) {
 
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		javax.jdo.Query query = constructQuery(country, community,
 				collDateFrom, collDateTo, type, tech, constructionDateFrom,
 				constructionDateTo, orderByField, orderByDir, paramMap);
-		prepareCursor(cursorString, query);
+		prepareCursor(cursorString, pageSize, query);
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
 

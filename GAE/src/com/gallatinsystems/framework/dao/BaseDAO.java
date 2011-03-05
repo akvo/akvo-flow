@@ -407,7 +407,16 @@ public class BaseDAO<T extends BaseDomain> {
 
 	}
 
-	protected void prepareCursor(String cursorString, javax.jdo.Query query) {
+	/**
+	 * sets up the cursor with the given page size (or no page size if the
+	 * cursor string is set to the ALL_RESULTS constant)
+	 * 
+	 * @param cursorString
+	 * @param pageSize
+	 * @param query
+	 */
+	protected void prepareCursor(String cursorString, Integer pageSize,
+			javax.jdo.Query query) {
 		if (cursorString != null
 				&& !cursorString.trim().toLowerCase().equals(
 						Constants.ALL_RESULTS)) {
@@ -416,8 +425,23 @@ public class BaseDAO<T extends BaseDomain> {
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
 			query.setExtensions(extensionMap);
 		}
-		if (cursorString == null || !cursorString.equals(Constants.ALL_RESULTS))
-			query.setRange(0, DEFAULT_RESULT_COUNT);
+		if (cursorString == null || !cursorString.equals(Constants.ALL_RESULTS)) {
+			if(pageSize == null){
+				query.setRange(0, DEFAULT_RESULT_COUNT);
+			}else{
+				query.setRange(0, pageSize);
+			}
+		}
+	}
+
+	/**
+	 * sets up the cursor using the default page size
+	 * 
+	 * @param cursorString
+	 * @param query
+	 */
+	protected void prepareCursor(String cursorString, javax.jdo.Query query) {
+		prepareCursor(cursorString, DEFAULT_RESULT_COUNT, query);
 	}
 
 	protected static void sleep() {

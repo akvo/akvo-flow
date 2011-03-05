@@ -58,7 +58,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			new DataTableHeader("Submission"), new DataTableHeader("Survey"),
 			new DataTableHeader("Survey Code"),
 			new DataTableHeader("Collection Date") };
-
+	private static final Integer PAGE_SIZE = 20;
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
 	private Label statusLabel;
@@ -91,9 +91,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		finderPanel.add(instanceIdBox);
 		Button findButton = new Button("Find");
 		finderPanel.add(findButton);
-		
+
 		showAllButton = new RadioButton("approvedFlag", "Show All");
-		showUnapprovedButton = new RadioButton("approvedFlag", "Show Unapproved");
+		showUnapprovedButton = new RadioButton("approvedFlag",
+				"Show Unapproved");
 		showAllButton.setValue(true);
 		finderPanel.add(showAllButton);
 		finderPanel.add(showUnapprovedButton);
@@ -476,5 +477,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 								result.getCursorString(), isNew, isResort);
 					}
 				});
+	}
+
+	@Override
+	public Integer getPageSize() {
+		return PAGE_SIZE;
 	}
 }

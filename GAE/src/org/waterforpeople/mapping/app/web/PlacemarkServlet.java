@@ -95,7 +95,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 
 			List<AccessPoint> results = apDao.searchAccessPoints(
 					piReq.getCountry(), null, null, null, null, null, null,
-					null, null, null, piReq.getCursor());
+					null, null, null, null,piReq.getCursor());
 			String display = null;
 			if(piReq.getDisplay()!=null){
 				display = piReq.getDisplay();

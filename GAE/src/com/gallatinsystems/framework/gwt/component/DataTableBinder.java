@@ -27,4 +27,11 @@ public interface DataTableBinder<T extends BaseDto> {
 	 */
 	public void bindRow(Grid grid, T item, int row);
 
+	/**
+	 * returns the page size to use for the table
+	 * 
+	 * @return
+	 */
+	public Integer getPageSize();
+
 }

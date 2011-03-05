@@ -285,7 +285,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 			statusLabel.setText("No matches");
 			statusLabel.setVisible(true);
 		}
-		if (currentDtoList != null && currentDtoList.size() >= 20) {
+		if (currentDtoList != null && currentDtoList.size() >= binder.getPageSize()) {
 			nextButton.setVisible(true);
 		} else {
 			nextButton.setVisible(false);

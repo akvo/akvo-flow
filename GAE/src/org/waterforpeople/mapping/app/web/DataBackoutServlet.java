@@ -158,7 +158,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	private boolean deleteAccessPoint(String country, Date collectionDateFrom) {
 		boolean hasMore = false;
 		List<AccessPoint> apList = accessPointDao.searchAccessPoints(country,
-				null, collectionDateFrom, null, null, null, null, null, null,
+				null, collectionDateFrom, null, null, null, null, null, null,null,
 				null, null);
 		if (apList != null) {
 			if (apList.size() == BaseDAO.DEFAULT_RESULT_COUNT) {

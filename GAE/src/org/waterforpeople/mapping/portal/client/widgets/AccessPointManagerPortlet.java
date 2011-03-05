@@ -60,7 +60,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 	public static final String NAME = "Access Point Manager";
 
 	private static final String DEFAULT_SORT_FIELD = "key";
-
+	private static final Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader("Id", "key", true),
 			new DataTableHeader("Community Code", "communityCode", true),
@@ -306,7 +306,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				MessageDialog errDia = new MessageDialog(
 						"Error loading details",
 						"The application could not load the access point details. Please try again. If the problem persists, contact an administrator.");
-				errDia.showRelativeTo(searchTable);
+				errDia.showCentered();
 			}
 
 			@Override
@@ -516,44 +516,43 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			pickerConstructionDate.setValue(accessPointDto
 					.getConstructionDate());
 		accessPointDetail.setWidget(5, 1, pickerConstructionDate);
-		
-		accessPointDetail.setWidget(6,0, new Label("Subdivision 1"));
+
+		accessPointDetail.setWidget(6, 0, new Label("Subdivision 1"));
 		TextBox sub1 = new TextBox();
-		if(accessPointDto!=null && accessPointDto.getSub1()!=null)
+		if (accessPointDto != null && accessPointDto.getSub1() != null)
 			sub1.setText(accessPointDto.getSub1());
-		accessPointDetail.setWidget(6,1, sub1);
-		
-		accessPointDetail.setWidget(7,0, new Label("Subdivision 2"));
+		accessPointDetail.setWidget(6, 1, sub1);
+
+		accessPointDetail.setWidget(7, 0, new Label("Subdivision 2"));
 		TextBox sub2 = new TextBox();
-		if(accessPointDto!=null && accessPointDto.getSub2()!=null)
+		if (accessPointDto != null && accessPointDto.getSub2() != null)
 			sub2.setText(accessPointDto.getSub2());
-		accessPointDetail.setWidget(7,1, sub2);
-		
-		accessPointDetail.setWidget(8,0, new Label("Subdivision 3"));
+		accessPointDetail.setWidget(7, 1, sub2);
+
+		accessPointDetail.setWidget(8, 0, new Label("Subdivision 3"));
 		TextBox sub3 = new TextBox();
-		if(accessPointDto!=null && accessPointDto.getSub3()!=null)
+		if (accessPointDto != null && accessPointDto.getSub3() != null)
 			sub3.setText(accessPointDto.getSub3());
-		accessPointDetail.setWidget(8,1, sub3);
-		
-		accessPointDetail.setWidget(9,0, new Label("Subdivision 4"));
+		accessPointDetail.setWidget(8, 1, sub3);
+
+		accessPointDetail.setWidget(9, 0, new Label("Subdivision 4"));
 		TextBox sub4 = new TextBox();
-		if(accessPointDto!=null && accessPointDto.getSub4()!=null)
+		if (accessPointDto != null && accessPointDto.getSub4() != null)
 			sub1.setText(accessPointDto.getSub4());
-		accessPointDetail.setWidget(9,1, sub4);
-		
-		accessPointDetail.setWidget(10,0, new Label("Subdivision 5"));
+		accessPointDetail.setWidget(9, 1, sub4);
+
+		accessPointDetail.setWidget(10, 0, new Label("Subdivision 5"));
 		TextBox sub5 = new TextBox();
-		if(accessPointDto!=null && accessPointDto.getSub5()!=null)
+		if (accessPointDto != null && accessPointDto.getSub5() != null)
 			sub5.setText(accessPointDto.getSub5());
-		accessPointDetail.setWidget(10,1, sub5);
-		
-		accessPointDetail.setWidget(11,0, new Label("Subdivision 6"));
+		accessPointDetail.setWidget(10, 1, sub5);
+
+		accessPointDetail.setWidget(11, 0, new Label("Subdivision 6"));
 		TextBox sub6 = new TextBox();
-		if(accessPointDto!=null && accessPointDto.getSub6()!=null)
+		if (accessPointDto != null && accessPointDto.getSub6() != null)
 			sub6.setText(accessPointDto.getSub6());
-		accessPointDetail.setWidget(11,1, sub6);
-		
-		
+		accessPointDetail.setWidget(11, 1, sub6);
+
 		// Missing
 		// InstitutionName
 		Label apId;
@@ -859,7 +858,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 									MessageDialog errDialog = new MessageDialog(
 											"Error while saving",
 											"Could not save. Please try again. If the problem persists, contact an administrator");
-									errDialog.showRelativeTo(mainVPanel);
+									errDialog.showCentered();
 
 								}
 
@@ -934,27 +933,25 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		TextBox countryCodeTB = (TextBox) accessPointDetail.getWidget(1, 1);
 		String countryCode = countryCodeTB.getText();
 		apDto.setCountryCode(countryCode);
-				
-		TextBox subBox = (TextBox) accessPointDetail.getWidget(6, 1);		
+
+		TextBox subBox = (TextBox) accessPointDetail.getWidget(6, 1);
 		apDto.setSub1(subBox.getText());
-				
-		subBox = (TextBox) accessPointDetail.getWidget(7, 1);		
+
+		subBox = (TextBox) accessPointDetail.getWidget(7, 1);
 		apDto.setSub2(subBox.getText());
-				
-		subBox = (TextBox) accessPointDetail.getWidget(8, 1);		
+
+		subBox = (TextBox) accessPointDetail.getWidget(8, 1);
 		apDto.setSub3(subBox.getText());
-				
-		subBox= (TextBox) accessPointDetail.getWidget(9, 1);		
+
+		subBox = (TextBox) accessPointDetail.getWidget(9, 1);
 		apDto.setSub4(subBox.getText());
-				
-		subBox= (TextBox) accessPointDetail.getWidget(10, 1);		
+
+		subBox = (TextBox) accessPointDetail.getWidget(10, 1);
 		apDto.setSub5(subBox.getText());
-				
+
 		subBox = (TextBox) accessPointDetail.getWidget(11, 1);
 		apDto.setSub6(subBox.getText());
-					
-		
-		
+
 		TextBox latitudeTB = (TextBox) accessPointDetail.getWidget(2, 1);
 		Double latitude = new Double(latitudeTB.getText());
 		apDto.setLatitude(latitude);
@@ -973,8 +970,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 		return apDto;
 	}
-	
-		
 
 	private AccessPointDto getMediaAP(AccessPointDto apDto,
 			FlexTable accessPointDetail) {
@@ -1250,7 +1245,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			public void onFailure(Throwable caught) {
 				MessageDialog errDia = new MessageDialog("Application Error",
 						"Cannot search");
-				errDia.showRelativeTo(searchTable);
+				errDia.showCentered();
 
 			}
 
@@ -1297,7 +1292,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 						MessageDialog errDia = new MessageDialog(
 								"Invalid search criteria",
 								"Sorry, only one date range can be selected for a search at a time. If you specify collection date, you cannot also specify a construction date. Please change the criteria and retry your search");
-						errDia.showRelativeTo(searchTable);
+						errDia.showCentered();
 						isOkay = false;
 					}
 					if (isOkay) {
@@ -1309,7 +1304,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 									MessageDialog errDia = new MessageDialog(
 											"Invalid sort criteria",
 											"Sorry, when searching using Collection Date, you cannot sort by any column except Collection Date.");
-									errDia.showRelativeTo(searchTable);
+									errDia.showCentered();
 									isOkay = false;
 								}
 							} else {
@@ -1326,7 +1321,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 									MessageDialog errDia = new MessageDialog(
 											"Invalid sort criteria",
 											"Sorry, when searching using Collection Date, you cannot sort by any column except Collection Date.");
-									errDia.showRelativeTo(searchTable);
+									errDia.showCentered();
 									isOkay = false;
 								}
 							} else {
@@ -1399,5 +1394,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		}
 
 		return null;
+	}
+
+	@Override
+	public Integer getPageSize() {
+		return PAGE_SIZE;
 	}
 }

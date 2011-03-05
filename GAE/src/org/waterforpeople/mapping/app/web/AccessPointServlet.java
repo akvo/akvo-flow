@@ -68,7 +68,7 @@ public class AccessPointServlet extends AbstractRestApiServlet {
 					apReq.getCommunity(), apReq.getCollectionDateFrom(), apReq
 							.getCollectionDateTo(), apReq.getType(), null,
 					apReq.getConstructionDateFrom(), apReq
-							.getConstructionDateTo(), null, null, apReq
+							.getConstructionDateTo(), null, null,null, apReq
 							.getCursor());		
 		}		
 		if(result != null && result.size()>0){

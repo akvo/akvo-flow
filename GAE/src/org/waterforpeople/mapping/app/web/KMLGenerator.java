@@ -143,11 +143,11 @@ public class KMLGenerator {
 			BaseDAO<TechnologyType> techDAO = new BaseDAO<TechnologyType>(
 					TechnologyType.class);
 			List<TechnologyType> techTypeList = (List<TechnologyType>) techDAO
-					.list("all");
+					.list(Constants.ALL_RESULTS);
 			AccessPointDao apDao = new AccessPointDao();
 			List<AccessPoint> waterAPList = apDao.searchAccessPoints(
 					countryCode, null, null, null, "WATER_POINT", null, null,
-					null, null, null, "all");
+					null, null, null, null, Constants.ALL_RESULTS);
 			for (TechnologyType techType : techTypeList) {
 				// log.info("TechnologyType: " + techType.getName());
 				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
@@ -168,7 +168,7 @@ public class KMLGenerator {
 
 			List<AccessPoint> sanitationAPList = apDao.searchAccessPoints(
 					countryCode, null, null, null, "SANITATION_POINT", null,
-					null, null, null, null, "all");
+					null, null, null, null,null,  Constants.ALL_RESULTS);
 			HashMap<String, AccessPoint> sanitationMap = new HashMap<String, AccessPoint>();
 			for (AccessPoint item : sanitationAPList) {
 				sanitationMap.put(item.getGeocells().toString(), item);
@@ -349,11 +349,11 @@ public class KMLGenerator {
 		StringBuilder sb = new StringBuilder();
 		AccessPointDao apDAO = new AccessPointDao();
 		List<AccessPoint> entries = null;
-		if (countryCode.equals("all"))
+		if (countryCode.equals(Constants.ALL_RESULTS))
 			entries = apDAO.list(Constants.ALL_RESULTS);
 		else
 			entries = apDAO.searchAccessPoints(countryCode, null, null, null,
-					null, null, null, null, null, null, Constants.ALL_RESULTS);
+					null, null, null, null, null, null,null, Constants.ALL_RESULTS);
 
 		// loop through accessPoints and bind to variables
 		int i = 0;

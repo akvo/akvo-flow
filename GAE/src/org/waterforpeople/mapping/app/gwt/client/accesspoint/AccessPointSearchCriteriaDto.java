@@ -17,6 +17,15 @@ public class AccessPointSearchCriteriaDto implements Serializable {
 	private String techType;
 	private String orderBy;
 	private String orderByDir;
+	private Integer pageSize;
+
+	public Integer getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
 
 	public String getOrderBy() {
 		return orderBy;
