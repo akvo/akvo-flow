@@ -195,11 +195,11 @@ public class AccessPointHelper {
 						apmhList.add(apmh);
 					}
 				}
-				if (apmhList.size() > 0) {
-					BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(
-							AccessPointMappingHistory.class);
-					apmhDao.save(apmhList);
-				}
+//				if (apmhList.size() > 0) {
+//					BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(
+//							AccessPointMappingHistory.class);
+//					apmhDao.save(apmhList);
+//				}
 			}
 		}
 		return apMap.values();

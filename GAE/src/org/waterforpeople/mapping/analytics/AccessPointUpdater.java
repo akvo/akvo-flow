@@ -113,9 +113,9 @@ public class AccessPointUpdater implements DataSummarizer {
 					}
 				}
 			}
-			BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(
-					AccessPointMappingHistory.class);
-			apmhDao.save(apmh);
+//			BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(
+//					AccessPointMappingHistory.class);
+//			apmhDao.save(apmh);
 		}
 		return true;
 	}
