@@ -30,10 +30,11 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button mappingButton;
 	private Button editorialButton;
 	private Button generateBootstrapButton;
+	private Button editWebAuthButton;
 	private PageController controller;
 
 	public AdminHomeWidget(PageController controller, UserDto user) {
-		Grid widget = new Grid(6, 2);
+		Grid widget = new Grid(7, 2);
 		this.controller = controller;
 		userMgmtButton = initButton("Manage Users");
 
@@ -48,7 +49,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 		}
 
 		surveyMgmtButton = initButton("Manage Surveys");
-		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			surveyMgmtButton.setEnabled(false);
 		}
 		widget.setWidget(1, 0, surveyMgmtButton);
@@ -56,7 +57,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 				.setWidget(1, 1,
 						createDescription("Create and publish surveys."));
 		assignmentButton = initButton("Assign Surveys to Devices");
-		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			assignmentButton.setEnabled(false);
 		}
 
@@ -67,7 +68,7 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 						1,
 						createDescription("Assign surveys to remote devices for auto delivery."));
 		mappingButton = initButton("Map Access PointAttributes");
-		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			mappingButton.setEnabled(false);
 		}
 		widget.setWidget(3, 0, mappingButton);
@@ -76,24 +77,40 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 						3,
 						1,
 						createDescription("Map survey questions to fields in the Access Point. This is required before survey data will appear in maps."));
-		
+
 		editorialButton = initButton("Edit Editorial Content");
-		if(!user.hasPermission(PermissionConstants.EDIT_EDITORIAL)){
+		if (!user.hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
 			editorialButton.setEnabled(false);
 		}
-		widget.setWidget(4,0,editorialButton);
+		widget.setWidget(4, 0, editorialButton);
 		widget
-		.setWidget(
-				4,
-				1,
-				createDescription("Create and edit static content to appear on editorial driven pages."));
+				.setWidget(
+						4,
+						1,
+						createDescription("Create and edit static content to appear on editorial driven pages."));
 
 		generateBootstrapButton = initButton("Generate Bootstrap File");
-		if(!user.hasPermission(PermissionConstants.EDIT_SURVEY)){
+		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			generateBootstrapButton.setEnabled(false);
 		}
-		widget.setWidget(5,0,generateBootstrapButton);
-		widget.setWidget(5,1,createDescription("Creates a bootstrap zip file for use in manually loading surveys on a device via the SD card."));
+		widget.setWidget(5, 0, generateBootstrapButton);
+		widget
+				.setWidget(
+						5,
+						1,
+						createDescription("Creates a bootstrap zip file for use in manually loading surveys on a device via the SD card."));
+
+		editWebAuthButton = initButton("Edit Web Authorizations");
+		if (!user.hasPermission(PermissionConstants.EDIT_TOKENS)) {
+			editWebAuthButton.setEnabled(false);
+		}
+		widget.setWidget(6, 0, editWebAuthButton);
+		widget
+				.setWidget(
+						6,
+						1,
+						createDescription("Create and edit tokens used for authorization within the web-based survey entry form"));
+
 		initWidget(widget);
 	}
 
@@ -121,10 +138,12 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 			controller.openPage(AttributeAssignmentWidget.class, null);
 		} else if (event.getSource() == editorialButton) {
 			controller.openPage(EditorialPageListWidget.class, null);
-		}else if (event.getSource() == generateBootstrapButton){
+		} else if (event.getSource() == generateBootstrapButton) {
 			controller.openPage(BootstrapGeneratorWidget.class, null);
-		}else if (event.getSource() == assignmentButton){
-			controller.openPage(SurveyAssignmentListWidget.class,null);
+		} else if (event.getSource() == assignmentButton) {
+			controller.openPage(SurveyAssignmentListWidget.class, null);
+		}else if (event.getSource() == editWebAuthButton){
+			controller.openPage(WebActivityAuthorizationListWidget.class,null);
 		}
 	}
 

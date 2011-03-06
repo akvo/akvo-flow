@@ -1,13 +1,16 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
 import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.PermissionDto;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -40,6 +43,9 @@ public class UserManagerWidget extends Composite implements
 			new DataTableHeader("User Name"),
 			new DataTableHeader("Email Address"),
 			new DataTableHeader("Permissions"), new DataTableHeader("") };
+	private static final DataTableHeader[] SELECTOR_GRID_HEADERS = {
+			new DataTableHeader("User Name"),
+			new DataTableHeader("Email Address"), new DataTableHeader("") };
 	private static final Integer PAGE_SIZE = 20;
 	private VerticalPanel contentPane;
 	private PaginatedDataTable<UserDto> dataTable;
@@ -49,8 +55,15 @@ public class UserManagerWidget extends Composite implements
 	private Button addNewButton;
 	private UserServiceAsync userService;
 	private List<PermissionDto> permissionList;
+	private boolean isSelector;
+	private CompletionListener listener;
 
 	public UserManagerWidget() {
+		this(false);
+	}
+
+	public UserManagerWidget(boolean isSelector) {
+		this.isSelector = isSelector;
 		contentPane = new VerticalPanel();
 		contentPane.add(buildSearchHeader());
 		dataTable = new PaginatedDataTable<UserDto>(DEFAULT_SORT_FIELD, this,
@@ -140,74 +153,94 @@ public class UserManagerWidget extends Composite implements
 	public void bindRow(Grid grid, final UserDto item, int row) {
 		final TextBox uBox = new TextBox();
 		uBox.setText(item.getUserName());
+		uBox.setReadOnly(isSelector);
 		grid.setWidget(row, 0, uBox);
 		final TextBox eBox = new TextBox();
+		eBox.setReadOnly(isSelector);
 		eBox.setText(item.getEmailAddress());
 		grid.setWidget(row, 1, eBox);
-		final ListBox permBox = constructPermissionBox(item);
-		grid.setWidget(row, 2, permBox);
 
-		HorizontalPanel buttonPanel = new HorizontalPanel();
-		Button saveButton = new Button("Save");
-		saveButton.addClickHandler(new ClickHandler() {
+		if (!isSelector) {
+			final ListBox permBox = constructPermissionBox(item);
+			grid.setWidget(row, 2, permBox);
 
-			@Override
-			public void onClick(ClickEvent event) {
-				item.setUserName(uBox.getText());
-				item.setEmailAddress(eBox.getText());
-				item.setPermissionList(formPermissionString(permBox));
-				userService.saveUser(item, new AsyncCallback<Void>() {
+			HorizontalPanel buttonPanel = new HorizontalPanel();
+			Button saveButton = new Button("Save");
+			saveButton.addClickHandler(new ClickHandler() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog("Error",
-								"There was an error while attempting to save the user: "
-										+ caught.getMessage());
-						errDia.showCentered();
+				@Override
+				public void onClick(ClickEvent event) {
+					item.setUserName(uBox.getText());
+					item.setEmailAddress(eBox.getText());
+					item.setPermissionList(formPermissionString(permBox));
+					userService.saveUser(item, new AsyncCallback<Void>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							MessageDialog errDia = new MessageDialog("Error",
+									"There was an error while attempting to save the user: "
+											+ caught.getMessage());
+							errDia.showCentered();
+						}
+
+						@Override
+						public void onSuccess(Void result) {
+							MessageDialog confDia = new MessageDialog(
+									"User Saved", "The user has been updated");
+							confDia.showCentered();
+
+						}
+					});
+				}
+			});
+			buttonPanel.add(saveButton);
+			Button deleteButton = new Button("Delete");
+			deleteButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					item.setUserName(uBox.getText());
+					item.setEmailAddress(eBox.getText());
+					userService.deleteUser(item.getKeyId(),
+							new AsyncCallback<Void>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									MessageDialog errDia = new MessageDialog(
+											"Error",
+											"There was an error while attempting to delete the user: "
+													+ caught.getMessage());
+									errDia.show();
+
+								}
+
+								@Override
+								public void onSuccess(Void result) {
+									MessageDialog confDia = new MessageDialog(
+											"User Deleted",
+											"User has been deleted");
+									confDia.show();
+									requestData(null, false);
+								}
+							});
+				}
+			});
+			buttonPanel.add(deleteButton);
+			grid.setWidget(row, 3, buttonPanel);
+		} else {
+			Button selectButton = new Button("Select");
+			selectButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					Map<String, Object> payload = new HashMap<String, Object>();
+					payload.put(BundleConstants.USER, item);
+					if (listener != null) {
+						listener.operationComplete(true, payload);
 					}
-
-					@Override
-					public void onSuccess(Void result) {
-						MessageDialog confDia = new MessageDialog("User Saved",
-								"The user has been updated");
-						confDia.showCentered();
-
-					}
-				});
-			}
-		});
-		buttonPanel.add(saveButton);
-		Button deleteButton = new Button("Delete");
-		deleteButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				item.setUserName(uBox.getText());
-				item.setEmailAddress(eBox.getText());
-				userService.deleteUser(item.getKeyId(),
-						new AsyncCallback<Void>() {
-							@Override
-							public void onFailure(Throwable caught) {
-								MessageDialog errDia = new MessageDialog(
-										"Error",
-										"There was an error while attempting to delete the user: "
-												+ caught.getMessage());
-								errDia.show();
-
-							}
-
-							@Override
-							public void onSuccess(Void result) {
-								MessageDialog confDia = new MessageDialog(
-										"User Deleted", "User has been deleted");
-								confDia.show();
-								requestData(null, false);
-							}
-						});
-			}
-		});
-		buttonPanel.add(deleteButton);
-		grid.setWidget(row, 3, buttonPanel);
+				}
+			});
+			grid.setWidget(row, 2, selectButton);
+		}
 
 	}
 
@@ -252,7 +285,11 @@ public class UserManagerWidget extends Composite implements
 
 	@Override
 	public DataTableHeader[] getHeaders() {
-		return GRID_HEADERS;
+		if (isSelector) {
+			return SELECTOR_GRID_HEADERS;
+		} else {
+			return GRID_HEADERS;
+		}
 	}
 
 	/**
@@ -318,9 +355,13 @@ public class UserManagerWidget extends Composite implements
 					});
 		}
 	}
-	
+
 	@Override
-	public Integer getPageSize(){
+	public Integer getPageSize() {
 		return PAGE_SIZE;
+	}
+
+	public void setCompletionListener(CompletionListener l) {
+		listener = l;
 	}
 }

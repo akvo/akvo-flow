@@ -34,12 +34,13 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	private static final String LABEL_STYLE = "input-label-padded";
 	private static final int DEFAULT_ITEM_COUNT = 5;
 	private ListBox surveyGroupListbox;
-	private ListBox surveyListbox;	
+	private ListBox surveyListbox;
 	private ListBox questionGroupListbox;
 	private SurveyServiceAsync surveyService;
 	private Panel contentPanel;
 	private MessageDialog loadingDialog;
 	private TerminalType termType;
+	private Long pendingId;
 
 	private Map<String, List<SurveyDto>> surveys;
 	private Map<String, List<QuestionGroupDto>> questionGroups;
@@ -140,6 +141,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 							if (result != null) {
 								surveys.put(selectedGroupId, result);
 								populateSurveyList(result);
+								setSelectedSurvey(pendingId);
 								toggleLoading(false);
 							}
 						}
@@ -174,7 +176,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	}
 
 	private void populateSurveyList(List<SurveyDto> surveyItems) {
-		surveyListbox.clear();		
+		surveyListbox.clear();
 		if (surveyItems != null) {
 			int i = 0;
 			for (SurveyDto survey : surveyItems) {
@@ -248,7 +250,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		}
 	}
 
-	public void reset() {		
+	public void reset() {
 		surveyListbox.clear();
 		surveyGroupListbox.setSelectedIndex(0);
 		if (questionGroupListbox != null) {
@@ -320,4 +322,60 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		return idList;
 	}
 
+	/**
+	 * sets the state of the widget to show the surveyID passed in as selected
+	 * (loading the required surveys as needed)
+	 * 
+	 * @param surveyId
+	 */
+	public void setSelectedSurvey(final Long surveyId) {
+		pendingId = null;
+		if (surveyId != null) {
+			boolean found = false;
+
+			for (int i = 0; i < surveyListbox.getItemCount(); i++) {
+				if (surveyListbox.getValue(i).equals(surveyId.toString())) {
+					surveyListbox.setSelectedIndex(i);
+					found = true;
+				}
+			}
+			if (!found) {
+				toggleLoading(true);
+				// if it isn't in the box, it must belong to another group. Find
+				// it.
+				surveyService.findSurvey(surveyId,
+						new AsyncCallback<SurveyDto>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								MessageDialog errDia = new MessageDialog(
+										"Application Error",
+										"Cannot load survey");
+								errDia.showCentered();
+							}
+
+							@Override
+							public void onSuccess(SurveyDto result) {
+								if (result != null) {
+									setSelectedSurveyGroup(result
+											.getSurveyGroupId());
+									pendingId = surveyId;
+									getSurveys();
+								}
+							}
+						});
+			}
+		}
+	}
+
+	private void setSelectedSurveyGroup(Long id) {
+		if (id != null) {
+			for (int i = 0; i < surveyGroupListbox.getItemCount(); i++) {
+				if (surveyGroupListbox.getValue(i).equals(id.toString())) {
+					surveyGroupListbox.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+	}
 }

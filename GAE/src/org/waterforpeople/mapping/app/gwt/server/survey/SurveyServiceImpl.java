@@ -33,7 +33,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.portal.client.widgets.component.BootstrapGeneratorWidget;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
@@ -1171,4 +1170,20 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						dbInstructions != null ? dbInstructions : ""));
 	}
 
+	/**
+	 * returns a survey (core info only). If you need all data, use
+	 * loadFullSurvey.
+	 */
+	public SurveyDto findSurvey(Long id) {
+		SurveyDto dto = null;
+		if (id != null) {
+			Survey s = surveyDao.getById(id);
+			if (s != null) {
+				dto = new SurveyDto();
+				DtoMarshaller.copyToDto(s, dto);
+				dto.setQuestionGroupList(null);
+			}
+		}
+		return dto;
+	}
 }

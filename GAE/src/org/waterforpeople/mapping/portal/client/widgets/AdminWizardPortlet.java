@@ -16,7 +16,9 @@ import org.waterforpeople.mapping.portal.client.widgets.component.SurveyEditWidg
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyGroupEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyGroupListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyListWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyWebActivityAuthorizationEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.UserManagerWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.WebActivityAuthorizationListWidget;
 
 import com.gallatinsystems.framework.gwt.wizard.client.AbstractWizardPortlet;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -117,8 +119,20 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 						new WizardButton("Administration", "Save and Continue"),
 						new WizardButton("Assignment List",
 								"Back to Assignment List")));
+		wf.addInternalNode(new WizardNode("List Web Authorizations",
+				"Web Authorization List",
+				WebActivityAuthorizationListWidget.class, new WizardButton(
+						"Edit Web Authorization", "Create New Authorization"),
+				new WizardButton("Administration", "Back to Admin Home")));
+		wf
+				.addInternalNode(new WizardNode("Edit Web Authorization",
+						"Edit Web Authorization",
+						SurveyWebActivityAuthorizationEditWidget.class,
+						new WizardButton("List Web Authorizations",
+								"Save and Continue"), new WizardButton(
+								"List Web Authorizations",
+								"Back to Authorization List")));
 		return wf;
-
 	}
 
 	public String getName() {
@@ -164,6 +178,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		} else if (node.getWidgetClass().equals(
 				SurveyAssignmentListWidget.class)) {
 			return new SurveyAssignmentListWidget(this);
+		} else if (node.getWidgetClass().equals(
+				SurveyWebActivityAuthorizationEditWidget.class)) {
+			return new SurveyWebActivityAuthorizationEditWidget();
+		} else if (node.getWidgetClass().equals(
+				WebActivityAuthorizationListWidget.class)) {
+			return new WebActivityAuthorizationListWidget(this, user);
 		}
 		return null;
 

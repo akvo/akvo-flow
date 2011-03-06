@@ -18,7 +18,8 @@ public interface SurveyService extends RemoteService {
 
 	public SurveyDto[] listSurvey();
 
-	public QuestionDto[] listSurveyQuestionByType(Long surveyId, QuestionType type);
+	public QuestionDto[] listSurveyQuestionByType(Long surveyId,
+			QuestionType type);
 
 	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,
 			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
@@ -46,32 +47,55 @@ public interface SurveyService extends RemoteService {
 	public SurveyDto loadFullSurvey(Long surveyId);
 
 	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
-	
+
 	public QuestionDto loadQuestionDetails(Long questionId);
 
-	
 	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId);
+
 	public String deleteSurveyGroup(SurveyGroupDto value);
+
 	public String deleteSurvey(SurveyDto value, Long surveyGroupId);
+
 	public String deleteQuestionGroup(QuestionGroupDto value, Long surveyId);
+
 	public String deleteQuestion(QuestionDto value, Long questionGroupId);
+
 	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId);
-	public QuestionGroupDto saveQuestionGroup(QuestionGroupDto dto, Long surveyId);
+
+	public QuestionGroupDto saveQuestionGroup(QuestionGroupDto dto,
+			Long surveyId);
+
 	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto);
+
 	public String publishSurvey(Long surveyId);
+
 	public void publishSurveyAsync(Long surveyId);
-	public List<TranslationDto> saveTranslations(List<TranslationDto> translations);
+
+	public List<TranslationDto> saveTranslations(
+			List<TranslationDto> translations);
+
 	public void rerunAPMappings(Long surveyId);
+
 	public List<QuestionHelpDto> listHelpByQuestion(Long questionId);
+
 	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList);
-	public Map<String,TranslationDto> listTranslations(Long parentId, String parentType);
-	public List<QuestionGroupDto> saveQuestionGroups(List<QuestionGroupDto> dtoList);
+
+	public Map<String, TranslationDto> listTranslations(Long parentId,
+			String parentType);
+
+	public List<QuestionGroupDto> saveQuestionGroups(
+			List<QuestionGroupDto> dtoList);
+
 	public QuestionDto copyQuestion(QuestionDto existingQuestion,
 			QuestionGroupDto newParentGroup);
+
 	public void updateQuestionOrder(List<QuestionDto> questions);
+
 	public void updateQuestionGroupOrder(List<QuestionGroupDto> groups);
+
 	public void updateQuestionDependency(Long questionId,
 			QuestionDependencyDto dep);
+
 	/**
 	 * returns a surveyDto populated from the published xml. This domain graph
 	 * lacks many keyIds so it is not suitable for updating the survey
@@ -82,6 +106,7 @@ public interface SurveyService extends RemoteService {
 	 * @return
 	 */
 	public SurveyDto getPublishedSurvey(String surveyId);
+
 	/**
 	 * fires an async request to generate a bootstrap xml file
 	 * 
@@ -91,5 +116,13 @@ public interface SurveyService extends RemoteService {
 	 */
 	public void generateBootstrapFile(List<Long> surveyIdList,
 			String dbInstructions, String notificationEmail);
+
+	/**
+	 * returns a survey (core info only, not fully populated) based on its id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public SurveyDto findSurvey(Long id);
 
 }

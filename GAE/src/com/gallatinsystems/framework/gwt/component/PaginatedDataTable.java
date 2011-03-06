@@ -268,7 +268,6 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 				currentSortField = defaultSortField;
 			}
 		}
-
 		setCursor(cursor);
 		statusLabel.setVisible(false);
 		instanceGrid.clear();

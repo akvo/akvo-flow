@@ -99,4 +99,6 @@ public interface SurveyServiceAsync {
 	void generateBootstrapFile(List<Long> surveyIdList, String dbInstructions,
 			String notificationEmail, AsyncCallback<Void> callback);
 
+	void findSurvey(Long id, AsyncCallback<SurveyDto> callback);
+
 }

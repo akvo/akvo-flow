@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ViewUtil {
 
-	private static final String DEFAULT_INPUT_LABEL_CSS = "input-label";
+	public static final String DEFAULT_INPUT_LABEL_CSS = "input-label";
 
 	/**
 	 * returns true if the text box passed in contains at least 1 non-whitespace

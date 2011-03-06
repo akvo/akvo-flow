@@ -1,24 +1,18 @@
-package com.gallatinsystems.auth.domain;
+package org.waterforpeople.mapping.app.gwt.client.auth;
 
 import java.util.Date;
 
-import javax.jdo.annotations.PersistenceCapable;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
- * Domain to capture authorization tokens used for various web activities.
- * Authorizations are token-based and can be either 1-time or multiple use.
- * Authorizations may also be given an expiration date, after which they are no
- * longer valid.
+ * transfer object for authorization objects.
  * 
  * @author Christopher Fagiani
  * 
  */
-@PersistenceCapable
-public class WebActivityAuthorization extends BaseDomain {
+public class WebActivityAuthorizationDto extends BaseDto {
 
-	private static final long serialVersionUID = -8359553595104751266L;
+	private static final long serialVersionUID = -3441769593324302599L;
 
 	private Long userId;
 	private Long maxUses;
@@ -30,10 +24,6 @@ public class WebActivityAuthorization extends BaseDomain {
 	private String payload;
 	private String name;
 	private String userName;
-
-	public WebActivityAuthorization() {
-		usageCount = new Long(0);
-	}
 
 	public String getUserName() {
 		return userName;
@@ -115,21 +105,4 @@ public class WebActivityAuthorization extends BaseDomain {
 		this.webActivityName = webActivityName;
 	}
 
-	/**
-	 * checks that this authorization object is neither expired nor fully used
-	 * 
-	 * @return
-	 */
-	public boolean isValidForAuth() {
-		if (getExpirationDate() != null
-				&& getExpirationDate().after(new Date())) {
-			return false;
-		}
-		if (getMaxUses() != null && getUsageCount() != null) {
-			if (getUsageCount() >= getMaxUses()) {
-				return false;
-			}
-		}
-		return true;
-	}
 }
