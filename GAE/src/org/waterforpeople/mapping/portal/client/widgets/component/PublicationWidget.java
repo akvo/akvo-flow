@@ -57,9 +57,7 @@ public class PublicationWidget extends Composite implements ContextAware,
 
 	@Override
 	public void flushContext(){
-		if(bundle!= null){
-			bundle.remove(BundleConstants.AUTO_ADVANCE_FLAG);
-		}
+		
 	}
 	
 	@Override

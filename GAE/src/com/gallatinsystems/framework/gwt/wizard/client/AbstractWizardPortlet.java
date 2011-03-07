@@ -68,6 +68,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private MessageDialog waitDialog;
 	private Map<String, String> buttonMapping;
 	private boolean working;
+	
 
 	protected AbstractWizardPortlet(String name, int width, int height) {
 		super(name, true, false, false, width, height);
@@ -163,17 +164,17 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			// need to update current page first since we don't know when the
 			// callback to operationComplete will occur and currentPage needs to
 			// point to the new page at that point
-			currentPage = initializeNode(page);			
-			if(! (pendingPage instanceof AutoAdvancing)){
+			currentPage = initializeNode(page);
+			if (!(pendingPage instanceof AutoAdvancing)) {
 				waitDialog.showRelativeTo(widgetPanel);
 				pendingPage.persistContext(this);
 				calledSave = true;
 			}
 		}
-		if(!isForward && currentPage instanceof ContextAware){
+		if (!isForward && currentPage instanceof ContextAware) {
 			bundle = ((ContextAware) currentPage).getContextBundle(isForward);
 			((ContextAware) currentPage).flushContext();
-			
+
 		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {
@@ -198,7 +199,6 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 				((AutoAdvancing) currentPage).advance(this);
 			}
 		}
-
 	}
 
 	/**
@@ -258,6 +258,13 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			breadcrumbWidgets.put(node.getBreadcrumb(), bc);
 			breadcrumbPanel.add(bc);
 			return bc;
+		} else {
+			// if the breadcrumb is already there, we actually should remove the
+			// last breadcrumb since it is a case of a "forward" page that is
+			// actually going back in the page flow
+			if (breadcrumbList.size() > 0) {
+				removeBreadcrumb(breadcrumbList.size() - 1);
+			}
 		}
 		return null;
 
@@ -268,7 +275,16 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * 
 	 */
 	protected void removeBreadcrumb(WizardNode node) {
-		int index = breadcrumbList.indexOf(node.getBreadcrumb());
+		removeBreadcrumb(breadcrumbList.indexOf(node.getBreadcrumb()));
+	}
+
+	/**
+	 * removes the breadcrumb at the index passed in as well as all the crumbs
+	 * that follow it
+	 * 
+	 * @param index
+	 */
+	private void removeBreadcrumb(int index) {
 		if (index >= 0) {
 			List<String> crumbsToNix = new ArrayList<String>();
 			for (int i = index + 1; i < breadcrumbList.size(); i++) {
@@ -280,7 +296,6 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			}
 			breadcrumbList.removeAll(crumbsToNix);
 		}
-
 	}
 
 	/**
@@ -312,21 +327,21 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * 
 	 */
 	public void openPage(Class clazz, Map<String, Object> bundle) {
-		if(!working){
-		if (clazz != null) {
-			WizardNode node = workflow.findNode(clazz);
-			if (node != null) {
-				renderWizardPage(node, true, bundle);
+		if (!working) {
+			if (clazz != null) {
+				WizardNode node = workflow.findNode(clazz);
+				if (node != null) {
+					renderWizardPage(node, true, bundle);
+				}
 			}
 		}
-		}
 	}
-	
-	public void setWorking(boolean isWorking){
+
+	public void setWorking(boolean isWorking) {
 		working = isWorking;
 	}
-	
-	public boolean isWorking(){
+
+	public boolean isWorking() {
 		return working;
 	}
 
