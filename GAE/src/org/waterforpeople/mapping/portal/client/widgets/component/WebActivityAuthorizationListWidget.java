@@ -111,8 +111,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (controller != null) {
-					Map<String, Object> bundle = new HashMap<String, Object>();
+				if (controller != null) {					
 					bundle.put(BundleConstants.WEB_ACTIVITY_AUTH, authDto);
 					controller.openPage(
 							SurveyWebActivityAuthorizationEditWidget.class,
@@ -204,7 +203,9 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 
 	@Override
 	public void flushContext() {
-		// no-op
+		if(bundle != null){
+			bundle.remove(BundleConstants.WEB_ACTIVITY_AUTH);
+		}
 	}
 
 	@Override

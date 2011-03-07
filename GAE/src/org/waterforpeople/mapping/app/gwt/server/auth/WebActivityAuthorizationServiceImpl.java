@@ -52,7 +52,7 @@ public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
 				// make sure the logged-in user is the right one
 				if (WebActivityAuthorizationDto.USER_TYPE.equals(auth
 						.getAuthType())) {
-					if (user.getKeyId().equals(auth.getUserId())) {
+					if (user != null && user.getKeyId()!= null && user.getKeyId().equals(auth.getUserId())) {
 						authToUse = auth;
 						break;
 					}
