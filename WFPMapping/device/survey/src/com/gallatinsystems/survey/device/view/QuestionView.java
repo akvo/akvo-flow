@@ -145,6 +145,9 @@ public class QuestionView extends TableLayout implements
 	private Spanned formText() {
 		boolean isFirst = true;
 		StringBuilder text = new StringBuilder();
+		if(question.isMandatory()){
+			text.append("<i><b>");
+		}
 		for (int i = 0; i < langs.length; i++) {
 			if (ConstantUtil.ENGLISH_CODE.equalsIgnoreCase(langs[i])) {
 				if (!isFirst) {
@@ -167,7 +170,7 @@ public class QuestionView extends TableLayout implements
 			}
 		}
 		if (question.isMandatory()) {
-			text = text.append("*");
+			text = text.append("*</b></i>");			
 		}
 		return Html.fromHtml(text.toString());
 	}
