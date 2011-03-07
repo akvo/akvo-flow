@@ -18,6 +18,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -41,6 +42,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class SurveyEntryWidget extends Composite implements
 		QuestionAnswerListener, SelectionHandler<Integer> {
 
+	public static final String PAYLOAD_KEY = "payload";
 	private String surveyId;
 	private SurveyServiceAsync surveyService;
 	private SurveyInstanceServiceAsync surveyInstanceService;
@@ -52,6 +54,7 @@ public class SurveyEntryWidget extends Composite implements
 	private Panel submissionPanel;
 	private Map<String, QuestionAnswerStoreDto> existingAnswers;
 	private Long existingInstanceId;
+	private CompletionListener listener;
 
 	public SurveyEntryWidget(String surveyId,
 			List<QuestionAnswerStoreDto> answers) {
@@ -60,7 +63,8 @@ public class SurveyEntryWidget extends Composite implements
 		if (answers != null) {
 			for (QuestionAnswerStoreDto a : answers) {
 				existingAnswers.put(a.getQuestionID(), a);
-				if(existingInstanceId == null && a.getSurveyInstanceId()!=null){
+				if (existingInstanceId == null
+						&& a.getSurveyInstanceId() != null) {
 					existingInstanceId = a.getSurveyInstanceId();
 				}
 			}
@@ -238,6 +242,12 @@ public class SurveyEntryWidget extends Composite implements
 												"Survey has been submitted to the server");
 										success.showCentered();
 										resetForm();
+										if (listener != null) {
+											Map<String, Object> payload = new HashMap<String, Object>();
+											payload.put(PAYLOAD_KEY, result);
+											listener.operationComplete(true,
+													payload);
+										}
 
 									}
 								});
@@ -265,7 +275,8 @@ public class SurveyEntryWidget extends Composite implements
 							}
 						}
 
-						surveyInstanceService.approveSurveyInstance(existingInstanceId, changeQList,
+						surveyInstanceService.approveSurveyInstance(
+								existingInstanceId, changeQList,
 								new AsyncCallback<Void>() {
 
 									@Override
@@ -320,4 +331,7 @@ public class SurveyEntryWidget extends Composite implements
 		}
 	}
 
+	public void setListener(CompletionListener l) {
+		listener = l;
+	}
 }

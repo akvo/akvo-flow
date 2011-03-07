@@ -223,6 +223,19 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyattrmaprpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>WebActAuthRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.auth.WebActivityAuthorizationServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>WebActAuthRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/webactauthrpcservice</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>WebActAuthRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/webactauthrpcservice</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>SurveyRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl</servlet-class>
 	</servlet>
@@ -266,6 +279,10 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/apmanagerrpcservice</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/apmanagerrpcservice</url-pattern>
+	</servlet-mapping>	
 	<servlet>
 		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointSummaryServiceImpl</servlet-class>
@@ -459,6 +476,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<filter-name>persistenceFilter</filter-name>
 		<url-pattern>*</url-pattern>
 	</filter-mapping>
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/SecureSurveyEntry.html</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>*</role-name>
+		</auth-constraint>
+	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
 			<url-pattern>/Dashboard.html</url-pattern>

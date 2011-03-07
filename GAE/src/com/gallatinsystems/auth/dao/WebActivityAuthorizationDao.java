@@ -7,8 +7,6 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
-import org.waterforpeople.mapping.domain.AccessPoint;
-
 import com.gallatinsystems.auth.domain.WebActivityAuthorization;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -42,7 +40,7 @@ public class WebActivityAuthorizationDao extends
 	public List<WebActivityAuthorization> listByToken(String token,
 			String activityName, String cursorString, boolean validOnly) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		javax.jdo.Query query = pm.newQuery(WebActivityAuthorization.class);
 		Map<String, Object> paramMap = null;
 
 		StringBuilder filterString = new StringBuilder();
@@ -51,7 +49,7 @@ public class WebActivityAuthorizationDao extends
 
 		appendNonNullParam("token", filterString, paramString, "String", token,
 				paramMap);
-		appendNonNullParam("activityName", filterString, paramString, "String",
+		appendNonNullParam("webActivityName", filterString, paramString, "String",
 				activityName, paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());

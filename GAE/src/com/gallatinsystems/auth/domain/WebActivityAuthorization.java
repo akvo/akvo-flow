@@ -122,7 +122,7 @@ public class WebActivityAuthorization extends BaseDomain {
 	 */
 	public boolean isValidForAuth() {
 		if (getExpirationDate() != null
-				&& getExpirationDate().after(new Date())) {
+				&& getExpirationDate().before(new Date())) {
 			return false;
 		}
 		if (getMaxUses() != null && getUsageCount() != null) {

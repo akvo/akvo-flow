@@ -23,6 +23,11 @@ public class MessageDialog extends DialogBox {
 
 	public MessageDialog(String title, String bodyHtml, boolean suppressButton,
 			final ClickHandler okHandler) {
+		this(title, bodyHtml, suppressButton, okHandler, null);
+	}
+
+	public MessageDialog(String title, String bodyHtml, boolean suppressButton,
+			final ClickHandler okHandler, final ClickHandler cancelHandler) {
 		setText(title);
 		dock = new DockPanel();
 		content = new HTML(bodyHtml);
@@ -49,6 +54,9 @@ public class MessageDialog extends DialogBox {
 					@Override
 					public void onClick(ClickEvent event) {
 						MessageDialog.this.hide();
+						if (cancelHandler != null) {
+							cancelHandler.onClick(event);
+						}
 					}
 				});
 			}

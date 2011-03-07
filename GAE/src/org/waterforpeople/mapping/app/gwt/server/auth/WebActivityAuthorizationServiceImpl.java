@@ -11,6 +11,8 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import com.gallatinsystems.auth.dao.WebActivityAuthorizationDao;
 import com.gallatinsystems.auth.domain.WebActivityAuthorization;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.gallatinsystems.user.app.gwt.server.UserServiceImpl;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
@@ -19,10 +21,12 @@ public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
 	private static final long serialVersionUID = -6092289285517276493L;
 	private WebActivityAuthorizationDao authDao;
 	private Random random;
+	private UserServiceImpl userService;
 
 	public WebActivityAuthorizationServiceImpl() {
 		authDao = new WebActivityAuthorizationDao();
 		random = new Random();
+		userService = new UserServiceImpl();
 	}
 
 	@Override
@@ -41,9 +45,26 @@ public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
 		List<WebActivityAuthorization> authList = authDao.listByToken(token,
 				activityName, null, true);
 		WebActivityAuthorizationDto dto = null;
-		if (authList != null && authList.size() > 0) {
-			dto = new WebActivityAuthorizationDto();
-			DtoMarshaller.copyToDto(authList.get(0), dto);
+		UserDto user = userService.getCurrentUserConfig(false);
+		if (authList != null) {
+			WebActivityAuthorization authToUse = null;
+			for (WebActivityAuthorization auth : authList) {
+				// make sure the logged-in user is the right one
+				if (WebActivityAuthorizationDto.USER_TYPE.equals(auth
+						.getAuthType())) {
+					if (user.getKeyId().equals(auth.getUserId())) {
+						authToUse = auth;
+						break;
+					}
+				} else {
+					authToUse = auth;
+					break;
+				}
+			}
+			if (authToUse != null) {
+				dto = new WebActivityAuthorizationDto();
+				DtoMarshaller.copyToDto(authList.get(0), dto);
+			}
 		}
 		return dto;
 	}
@@ -78,6 +99,7 @@ public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
 			}
 			auth = authDao.save(auth);
 			authDto.setKeyId(auth.getKey().getId());
+			authDto.setToken(auth.getToken());
 		}
 		return authDto;
 	}

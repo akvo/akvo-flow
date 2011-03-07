@@ -113,7 +113,8 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				newUser.setUserName(currentUser.getNickname());
 				userDto.setEmailAddress(currentUser.getEmail());
 				userDto.setUserName(currentUser.getNickname());
-				userDao.save(newUser);
+				newUser = userDao.save(newUser);
+				userDto.setKeyId(newUser.getKey().getId());
 			} else if (u != null) {
 				Map<String, Set<UserConfigDto>> configMap = new HashMap<String, Set<UserConfigDto>>();
 
@@ -136,6 +137,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 					userDto.setEmailAddress(u.getEmailAddress());
 					userDto.setPermissionList(u.getPermissionList());
 					userDto.setAdmin(userService.isUserAdmin());
+					userDto.setKeyId(u.getKey().getId());					
 				}
 			} else {
 				userDto.setHasAccess(false);

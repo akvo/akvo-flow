@@ -13,7 +13,9 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 public class WebActivityAuthorizationDto extends BaseDto {
 
 	private static final long serialVersionUID = -3441769593324302599L;
-
+	public static final String ANON_TYPE = "ANONYMOUS";
+	public static final String USER_TYPE = "USER";
+	
 	private Long userId;
 	private Long maxUses;
 	private String token;
@@ -103,6 +105,24 @@ public class WebActivityAuthorizationDto extends BaseDto {
 
 	public void setWebActivityName(String webActivityName) {
 		this.webActivityName = webActivityName;
+	}
+
+	/**
+	 * checks that this authorization object is neither expired nor fully used
+	 * 
+	 * @return
+	 */
+	public boolean isValidForAuth() {
+		if (getExpirationDate() != null
+				&& getExpirationDate().before(new Date())) {
+			return false;
+		}
+		if (getMaxUses() != null && getUsageCount() != null) {
+			if (getUsageCount() >= getMaxUses()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

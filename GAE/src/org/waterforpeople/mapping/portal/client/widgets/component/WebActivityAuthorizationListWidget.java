@@ -17,7 +17,9 @@ import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,7 +44,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class WebActivityAuthorizationListWidget extends Composite implements
 		DataTableBinder<WebActivityAuthorizationDto>,
-		DataTableListener<WebActivityAuthorizationDto> {
+		DataTableListener<WebActivityAuthorizationDto>, ContextAware {
 
 	private static Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
@@ -60,6 +62,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 	private SurveySelectionWidget surveySelector;
 	private Panel contentPanel;
 	private PageController controller;
+	private Map<String, Object> bundle;
 
 	public WebActivityAuthorizationListWidget(PageController controller,
 			UserDto user) {
@@ -77,7 +80,6 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 		contentPanel.add(selectorPanel);
 		contentPanel.add(authTable);
 		initWidget(contentPanel);
-		requestData(null, false);
 	}
 
 	@Override
@@ -198,5 +200,31 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 							}
 						});
 
+	}
+
+	@Override
+	public void flushContext() {
+		// no-op
+	}
+
+	@Override
+	public Map<String, Object> getContextBundle(boolean doPopulation) {
+		return bundle;
+	}
+
+	@Override
+	public void persistContext(CompletionListener listener) {
+		listener.operationComplete(true, bundle);
+	}
+
+	@Override
+	public void setContextBundle(Map<String, Object> bundle) {
+		if(bundle != null){
+			this.bundle = bundle;
+		}else{
+			this.bundle = new HashMap<String,Object>();
+		}
+		
+		requestData(null, false);
 	}
 }

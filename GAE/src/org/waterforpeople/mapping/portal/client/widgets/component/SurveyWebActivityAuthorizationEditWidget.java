@@ -20,6 +20,7 @@ import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -42,9 +43,11 @@ import com.google.gwt.user.datepicker.client.DateBox;
 public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		implements ContextAware, ClickHandler {
 
+	private static final String PUBLIC_PATH = "/SurveyEntry.html?token=";
+	private static final String SECURE_PATH = "/SecureSurveyEntry.html?token=";
+
+	private static final String ACTIVITY_NAME = "WebSurvey";
 	private static final String DEFAULT_STYLE = "input-label-padded";
-	private static final String ANON_TYPE = "ANONYMOUS";
-	private static final String USER_TYPE = "USER";
 	private static final String USED_TEXT = " have been used";
 	private Map<String, Object> bundle;
 	private WebActivityAuthorizationServiceAsync authService;
@@ -132,6 +135,7 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		if (currentAuthDto == null) {
 			currentAuthDto = new WebActivityAuthorizationDto();
 		}
+		currentAuthDto.setWebActivityName(ACTIVITY_NAME);
 		if (ViewUtil.isTextPopulated(nameBox)) {
 			currentAuthDto.setName(nameBox.getText());
 		} else {
@@ -139,11 +143,11 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		}
 		currentAuthDto.setExpirationDate(expDatePicker.getValue());
 		if (authTypeAnonButton.getValue()) {
-			currentAuthDto.setAuthType(ANON_TYPE);
+			currentAuthDto.setAuthType(WebActivityAuthorizationDto.ANON_TYPE);
 			currentAuthDto.setUserId(null);
 			currentAuthDto.setUserName(null);
 		} else {
-			currentAuthDto.setAuthType(USER_TYPE);
+			currentAuthDto.setAuthType(WebActivityAuthorizationDto.USER_TYPE);
 			if (userLabel.getText() != null
 					&& userLabel.getText().trim().length() > 0) {
 				currentAuthDto.setUserName(userLabel.getText());
@@ -182,8 +186,22 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 							currentAuthDto = result;
 
 							if (listener != null) {
-								listener.operationComplete(true,
-										getContextBundle(true));
+								String url = formUrl(result.getToken(), result
+										.getAuthType());
+								ClickHandler closeClickHandler = new ClickHandler() {
+									@Override
+									public void onClick(ClickEvent event) {
+										listener.operationComplete(true,
+												getContextBundle(true));
+									}
+								};
+								MessageDialog dia = new MessageDialog(
+										"Authorization Saved",
+										"The survey can be accessed via this url:<br><a href='"
+												+ url + "'>" + url + "<a>",
+										false, closeClickHandler,
+										closeClickHandler);
+								dia.showCentered();
 							}
 						}
 
@@ -230,23 +248,24 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 			findUserButton.setVisible(true);
 			userLabel.setVisible(true);
 		} else if (event.getSource() == findUserButton) {
-			final UserManagerWidget usrMgr = new UserManagerWidget(true);					
-			final WidgetDialog dia = new WidgetDialog("Select User", usrMgr, null);
+			final UserManagerWidget usrMgr = new UserManagerWidget(true);
+			final WidgetDialog dia = new WidgetDialog("Select User", usrMgr,
+					null);
 			usrMgr.setCompletionListener(new CompletionListener() {
-						@Override
-						public void operationComplete(boolean wasSuccessful,
-								Map<String, Object> payload) {
-							UserDto u = (UserDto) payload
-									.get(BundleConstants.USER);
-							if (u != null) {
-								currentAuthDto.setUserId(u.getKeyId());
-								currentAuthDto.setUserName(u.getUserName());
-								userLabel.setText(u.getUserName()!=null?u.getUserName():"");
-								userLabel.setVisible(true);
-							}
-							dia.hide();
-						}
-					});
+				@Override
+				public void operationComplete(boolean wasSuccessful,
+						Map<String, Object> payload) {
+					UserDto u = (UserDto) payload.get(BundleConstants.USER);
+					if (u != null) {
+						currentAuthDto.setUserId(u.getKeyId());
+						currentAuthDto.setUserName(u.getUserName());
+						userLabel.setText(u.getUserName() != null ? u
+								.getUserName() : "");
+						userLabel.setVisible(true);
+					}
+					dia.hide();
+				}
+			});
 			dia.showCentered();
 		}
 	}
@@ -263,7 +282,7 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 						+ USED_TEXT
 						: "0" + USED_TEXT);
 		usedLabel.setVisible(true);
-		if (USER_TYPE.equalsIgnoreCase(currentAuthDto.getAuthType())) {
+		if (WebActivityAuthorizationDto.USER_TYPE.equalsIgnoreCase(currentAuthDto.getAuthType())) {
 			authTypeUserButton.setValue(true);
 			findUserButton.setVisible(true);
 			userLabel
@@ -277,6 +296,9 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 			userLabel.setText("");
 			userLabel.setVisible(false);
 		}
+		if (currentAuthDto.getMaxUses() != null) {
+			maxUseBox.setText(currentAuthDto.getMaxUses().toString());
+		}
 		tokenBox.setText(currentAuthDto.getToken());
 		if (currentAuthDto.getExpirationDate() != null) {
 			expDatePicker.setValue(currentAuthDto.getExpirationDate());
@@ -284,6 +306,15 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		if (currentAuthDto.getPayload() != null) {
 			surveySelector.setSelectedSurvey(new Long(currentAuthDto
 					.getPayload()));
+		}
+	}
+
+	private String formUrl(String token, String authType) {
+		String base = "http://" + Window.Location.getHost();
+		if (WebActivityAuthorizationDto.ANON_TYPE.equals(authType)) {
+			return base + PUBLIC_PATH + token;
+		} else {
+			return base + SECURE_PATH + token;
 		}
 	}
 }
