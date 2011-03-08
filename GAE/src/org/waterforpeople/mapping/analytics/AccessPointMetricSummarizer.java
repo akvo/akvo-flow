@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.analytics;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
@@ -19,7 +20,8 @@ import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
  * 
  */
 public class AccessPointMetricSummarizer implements DataSummarizer {
-
+	Logger logger = Logger.getLogger(AccessPointMetricSummarizer.class
+			.getName());
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {
