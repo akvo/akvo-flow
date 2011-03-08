@@ -62,6 +62,10 @@
 		<property name="countryCode" direction="asc" />
 		<property name="collectionDate" direction="asc" />
 	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
