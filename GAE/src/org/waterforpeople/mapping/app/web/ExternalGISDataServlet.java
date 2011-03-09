@@ -16,7 +16,9 @@ import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -76,6 +78,10 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 					Geometry geometry = parseGeometryString(importReq
 							.getGeometryString());
 					ogrFeature.setGeometry(geometry);
+					if(geometry.getCentroidLat()!=null && geometry.getCentroidLon()!=null){
+						ogrFeature.setCentroidLat(geometry.getCentroidLat());
+						ogrFeature.setCentroidLon(geometry.getCentroidLon());
+					}
 				} catch (ParseException pe) {
 					log.log(Level.SEVERE, pe.getMessage());
 				}
@@ -94,12 +100,21 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		WKTReader reader = new WKTReader(geometryFactory);
 		Geometry geo = new Geometry();
 		geo.setWktText(geometryString);
+		Point centroid = null;
 		if (geometryString.contains("POLYGON")) {
 			com.vividsolutions.jts.geom.Geometry geoHolder = null;
 			if (geometryString.startsWith("POLYGON")) {
 				geo.setType(GeometryType.POLYGON);
+				Polygon mp = (Polygon) reader.read(geometryString);
+				centroid = mp.getCentroid();
 			} else if (geometryString.startsWith("MULTIPOLYGON")) {
 				geo.setType(GeometryType.MULITPOLYGON);
+				MultiPolygon mp = (MultiPolygon) reader.read(geometryString);
+				centroid = mp.getCentroid();
+			}
+			if (centroid != null) {
+				geo.setCentroidLat(centroid.getY());
+				geo.setCentroidLon(centroid.getX());
 			}
 		} else if (geometryString.startsWith("POINT")) {
 			Point point = (Point) reader.read(geometryString);
