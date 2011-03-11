@@ -80,6 +80,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				try {
 					si.setCollectionDate(collDate);
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
+					if(parts.length>=12){
+						si.setUuid(parts[11]);
+					}
 					si = save(si);
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "

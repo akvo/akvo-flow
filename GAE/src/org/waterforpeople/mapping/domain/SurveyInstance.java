@@ -35,6 +35,15 @@ public class SurveyInstance extends BaseDomain {
 	private String deviceIdentifier;
 	private String submitterName;
 	private String approvedFlag;
+	private String uuid;
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 
 	public String getApprovedFlag() {
 		return approvedFlag;
