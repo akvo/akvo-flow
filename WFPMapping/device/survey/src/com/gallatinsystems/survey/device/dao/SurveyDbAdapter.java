@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.UUID;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -70,6 +71,7 @@ public class SurveyDbAdapter {
 	public static final String STRENGTH_COL = "strength";
 	public static final String TRANS_START_COL = "trans_start_date";
 	public static final String EXPORTED_FLAG_COL = "exported_flag";
+	public static final String UUID_COL = "uuid";
 
 	private static final String TAG = "SurveyDbAdapter";
 	private DatabaseHelper databaseHelper;
@@ -82,7 +84,7 @@ public class SurveyDbAdapter {
 			+ "display_name text not null, version real, type text, location text, filename text, language, help_downloaded_flag text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (_id integer primary key autoincrement, "
-			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text, saved_date long, exported_flag text);";
+			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text, saved_date long, exported_flag text, uuid text);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
 			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null, include_flag text not null, scored_val text, strength text);";
@@ -138,7 +140,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 64;
+	private static final int DATABASE_VERSION = 68;
 
 	private final Context context;
 
@@ -210,6 +212,31 @@ public class SurveyDbAdapter {
 				} catch (Exception e) {
 					// swallow
 				}
+			} else if (oldVersion <= 67) {
+				try {
+					db
+							.execSQL("alter table survey_respondent add column uuid text");
+					// also generate a uuid for all in-flight responses
+					Cursor cursor = db.query(RESPONDENT_JOIN, new String[] {
+							RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
+							SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL,
+							SUBMITTED_DATE_COL, DELIVERED_DATE_COL, UUID_COL },
+							null, null, null, null, null);
+					if (cursor != null) {
+						cursor.moveToFirst();
+						do {
+							String uuid = cursor.getString(cursor
+									.getColumnIndex(UUID_COL));
+							if (uuid == null || uuid.trim().length() == 0) {
+								db.execSQL("update " + RESPONDENT_TABLE
+										+ " set " + UUID_COL + "= '"
+										+ UUID.randomUUID().toString() + "'");
+							}
+						} while (cursor.moveToNext());
+					}
+				} catch (Exception e) {
+					Log.e("ERRR", "COULD NOT UPGRADE UUID", e);
+				}
 			}
 		}
 
@@ -225,7 +252,7 @@ public class SurveyDbAdapter {
 		@Override
 		public synchronized void close() {
 			instanceCount--;
-			if (instanceCount <= 0) {				
+			if (instanceCount <= 0) {
 				super.close();
 				database = null;
 			}
@@ -290,7 +317,7 @@ public class SurveyDbAdapter {
 				ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL, EMAIL_COL,
 				DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
 				RESPONDENT_TABLE + "." + SURVEY_FK_COL, SCORED_VAL_COL,
-				STRENGTH_COL }, SUBMITTED_FLAG_COL + "= 'true' AND "
+				STRENGTH_COL, UUID_COL }, SUBMITTED_FLAG_COL + "= 'true' AND "
 				+ INCLUDE_FLAG_COL + "='true' AND" + "(" + DELIVERED_DATE_COL
 				+ " is null OR " + MEDIA_SENT_COL + " <> 'true')", null, null,
 				null, null);
@@ -311,7 +338,7 @@ public class SurveyDbAdapter {
 				ANSWER_TYPE_COL, QUESTION_FK_COL, DISP_NAME_COL, EMAIL_COL,
 				DELIVERED_DATE_COL, SUBMITTED_DATE_COL,
 				RESPONDENT_TABLE + "." + SURVEY_FK_COL, SCORED_VAL_COL,
-				STRENGTH_COL }, SUBMITTED_FLAG_COL + "= 'true' AND "
+				STRENGTH_COL, UUID_COL }, SUBMITTED_FLAG_COL + "= 'true' AND "
 				+ INCLUDE_FLAG_COL + "='true' AND " + EXPORTED_FLAG_COL
 				+ " <> 'true' AND " + "(" + DELIVERED_DATE_COL + " is null OR "
 				+ MEDIA_SENT_COL + " <> 'true')", null, null, null, null);
@@ -366,7 +393,7 @@ public class SurveyDbAdapter {
 	 * @param idList
 	 */
 	public void markDataAsExported(HashSet<String> idList) {
-		if (idList != null && idList.size()>0) {
+		if (idList != null && idList.size() > 0) {
 			ContentValues updatedValues = new ContentValues();
 			updatedValues.put(EXPORTED_FLAG_COL, "true");
 			// enhanced FOR ok here since we're dealing with an implicit
@@ -587,9 +614,10 @@ public class SurveyDbAdapter {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(SURVEY_FK_COL, surveyId);
 		initialValues.put(SUBMITTED_FLAG_COL, "false");
-		initialValues.put(EXPORTED_FLAG_COL,"false");
+		initialValues.put(EXPORTED_FLAG_COL, "false");
 		initialValues.put(USER_FK_COL, userId);
 		initialValues.put(STATUS_COL, ConstantUtil.CURRENT_STATUS);
+		initialValues.put(UUID_COL, UUID.randomUUID().toString());
 		return database.insert(RESPONDENT_TABLE, null, initialValues);
 	}
 
@@ -885,8 +913,8 @@ public class SurveyDbAdapter {
 		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
 				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL, SUBMITTED_DATE_COL,
-				DELIVERED_DATE_COL }, "status = ?", whereParams, null, null,
-				null);
+				DELIVERED_DATE_COL, UUID_COL }, "status = ?", whereParams,
+				null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}

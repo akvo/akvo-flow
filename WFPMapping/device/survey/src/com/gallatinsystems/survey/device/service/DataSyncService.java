@@ -613,6 +613,7 @@ public class DataSyncService extends Service {
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL));
 					buf.append(",").append(strength != null ? strength : "");
+					buf.append(",").append(data.getString(data.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
 					buf.append("\n");
 
 					String respId = data.getString(data
