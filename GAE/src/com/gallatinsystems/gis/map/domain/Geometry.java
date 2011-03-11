@@ -17,7 +17,25 @@ public class Geometry extends BaseDomain {
 	private GeometryType type = null;
 	private ArrayList<Coordinate> coordinates = null;
 	private Text wktText = null;
+	private Double centroidLat = null;
+	private Double centroidLon = null;
 	
+
+	public Double getCentroidLat() {
+		return centroidLat;
+	}
+
+	public void setCentroidLat(Double centroidLat) {
+		this.centroidLat = centroidLat;
+	}
+
+	public Double getCentroidLon() {
+		return centroidLon;
+	}
+
+	public void setCentroidLon(Double centroidLon) {
+		this.centroidLon = centroidLon;
+	}
 
 	public GeometryType getType() {
 		return type;

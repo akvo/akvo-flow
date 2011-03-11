@@ -23,6 +23,7 @@ public class BaseDAO<T extends BaseDomain> {
 	public static final int DEFAULT_RESULT_COUNT = 20;
 	protected static final int RETRY_INTERVAL_MILLIS = 200;
 	protected static final String STRING_TYPE = "String";
+	protected static final String NOT_EQ_OP="!=";
 	protected static final String EQ_OP = " == ";
 	protected static final String GTE_OP = " >= ";
 	protected static final String LTE_OP = " <= ";

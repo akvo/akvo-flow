@@ -16,6 +16,8 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
 import org.json.JSONObject;
+import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.app.web.dto.PlacemarkRestRequest;
 import org.waterforpeople.mapping.app.web.dto.PlacemarkRestResponse;
@@ -27,6 +29,8 @@ import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
@@ -67,7 +71,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		PlacemarkRestRequest piReq = (PlacemarkRestRequest) req;
-		if (cache != null  && !piReq.getIgnoreCache()) {
+		if (cache != null && !piReq.getIgnoreCache()) {
 			PlacemarkRestResponse cachedResponse = null;
 			try {
 				cachedResponse = (PlacemarkRestResponse) cache.get(piReq
@@ -91,18 +95,39 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			apList.add(ap);
 			response = (PlacemarkRestResponse) convertToResponse(apList, true,
 					null, null, piReq.getDisplay());
-		}  else {
-
-			List<AccessPoint> results = apDao.searchAccessPoints(
-					piReq.getCountry(), null, null, null, null, null, null,
-					null, null, null, null,piReq.getCursor());
-			String display = null;
-			if(piReq.getDisplay()!=null){
-				display = piReq.getDisplay();
+		} else {
+			// ListPlacemarks Action
+			if (piReq.getSubLevel() != null) {
+				if(piReq.getSubLevel()==1){
+					OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+					AccessPointMetricSummaryDao apmDao = new AccessPointMetricSummaryDao();
+					List<OGRFeature> ogrFeatureList = ogrFeatureDao.listBySubLevelCountry(piReq.getCountry(), 1, piReq.getCursor());
+					for(OGRFeature item:ogrFeatureList){
+						String subValue =item.getSub1();
+						if(subValue!=null){
+							AccessPointMetricSummary prototype = new AccessPointMetricSummary();
+							prototype.setCountry(piReq.getCountry());
+							prototype.setSubLevel(1);
+							prototype.setSubValue(subValue);
+							prototype.setMetricName("pointType");
+							List<AccessPointMetricSummary> apmsList = apmDao.listMetrics(prototype);
+							
+						}
+					}
+				}
+			} else {
+				List<AccessPoint> results = apDao.searchAccessPoints(
+						piReq.getCountry(), null, null, null, null, null, null,
+						null, null, null, null, piReq.getCursor());
+				String display = null;
+				if (piReq.getDisplay() != null) {
+					display = piReq.getDisplay();
+				}
+				response = (PlacemarkRestResponse) convertToResponse(results,
+						piReq.getNeedDetailsFlag(),
+						AccessPointDao.getCursor(results), piReq.getCursor(),
+						display);
 			}
-			response = (PlacemarkRestResponse) convertToResponse(results,
-					piReq.getNeedDetailsFlag(),
-					AccessPointDao.getCursor(results), piReq.getCursor(), display);
 		}
 		if (response != null && cache != null) {
 			try {
@@ -144,7 +169,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private PlacemarkDto marshallDomainToDto(AccessPoint ap,
 			Boolean needDetailsFlag, String display) {
 		PlacemarkDto pdto = new PlacemarkDto();
-		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(), ap.getPointStatus()));
+		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(),
+				ap.getPointStatus()));
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
 		pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));

@@ -18,6 +18,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String POINT_TYPE_PARAM = "pointType";
 	private static final String DISPLAY_TYPE_PARAM = "display";
 	private static final String IGNORE_CACHE_PARAM ="ignoreCache";
+	private static final String SUB_LEVEL_PARAM = "subLevel";
 
 	private String country;
 	private Boolean needDetailsFlag = null;
@@ -25,6 +26,15 @@ public class PlacemarkRestRequest extends RestRequest {
 	private String display;
 	private AccessPoint.AccessPointType pointType = null;
 	private Boolean ignoreCache = false;
+	private Integer subLevel = null;
+
+	public Integer getSubLevel() {
+		return subLevel;
+	}
+
+	public void setSubLevel(Integer subLevel) {
+		this.subLevel = subLevel;
+	}
 
 	private static final long serialVersionUID = -3977305417999591917L;
 
@@ -44,6 +54,9 @@ public class PlacemarkRestRequest extends RestRequest {
 			if (country.length() == 0) {
 				country = null;
 			}
+		}
+		if(req.getParameter(SUB_LEVEL_PARAM)!=null){
+			setSubLevel(Integer.parseInt(req.getParameter(SUB_LEVEL_PARAM)));
 		}
 		if (req.getParameter(COMMUNITY_CODE_PARAM) != null) {
 			setCommunityCode(req.getParameter(COMMUNITY_CODE_PARAM));
