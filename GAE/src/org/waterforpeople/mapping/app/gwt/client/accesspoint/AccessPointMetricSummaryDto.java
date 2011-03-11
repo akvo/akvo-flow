@@ -15,14 +15,38 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 	private String organization;
 	private String country;
 	private String district;
-	private String subgroup1;
-	private String subgroup2;
-	private String subgroup3;
+	private Integer subLevel;
+	private String subLevelName;
+	private String subValue;
 	private String metricGroup;
 	private String metricName;
 	private String metricValue;
 	private Long count;
 	private Long year;
+
+	public Integer getSubLevel() {
+		return subLevel;
+	}
+
+	public void setSubLevel(Integer subLevel) {
+		this.subLevel = subLevel;
+	}
+
+	public String getSubLevelName() {
+		return subLevelName;
+	}
+
+	public void setSubLevelName(String subLevelName) {
+		this.subLevelName = subLevelName;
+	}
+	
+	public String getSubValue() {
+		return subValue;
+	}
+
+	public void setSubValue(String subValue) {
+		this.subValue = subValue;
+	}
 
 	public String getOrganization() {
 		return organization;
@@ -46,30 +70,6 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 
 	public void setDistrict(String district) {
 		this.district = district;
-	}
-
-	public String getSubgroup1() {
-		return subgroup1;
-	}
-
-	public void setSubgroup1(String subgroup1) {
-		this.subgroup1 = subgroup1;
-	}
-
-	public String getSubgroup2() {
-		return subgroup2;
-	}
-
-	public void setSubgroup2(String subgroup2) {
-		this.subgroup2 = subgroup2;
-	}
-
-	public String getSubgroup3() {
-		return subgroup3;
-	}
-
-	public void setSubgroup3(String subgroup3) {
-		this.subgroup3 = subgroup3;
 	}
 
 	public String getMetricGroup() {
