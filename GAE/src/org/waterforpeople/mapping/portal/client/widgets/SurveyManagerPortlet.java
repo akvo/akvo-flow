@@ -454,7 +454,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				.setWidget(6, 0, new Label("Question Display Order"));
 		questionDetailPanel.setWidget(6, 1, lbOrder);
 		questionDetailPanel.setWidget(7, 0, new Label(
-				"Question Dependant On Other Question"));
+				"Question Dependent On Other Question"));
 		questionDetailPanel.setWidget(7, 1, dependentQuestion);
 
 		if (item != null && item.getQuestionDependency() != null) {
@@ -633,7 +633,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 	private void populateDependencySelection(QuestionDto currentQuestion,
 			final QuestionDto[] optionQuestions) {
-		questionDetailPanel.setWidget(8, 0, new Label("Dependent on Quesiton"));
+		questionDetailPanel.setWidget(8, 0, new Label("Dependent on Question"));
 		ListBox questionLB = new ListBox();
 		ListBox answerLB = new ListBox();
 		QuestionDependencyDto item = null;
