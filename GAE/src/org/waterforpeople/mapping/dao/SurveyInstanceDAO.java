@@ -29,14 +29,19 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		boolean hasErrors = false;
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
-
+		String delimiter = "\t";
+		
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
 
-			String[] parts = line.split(",");
+			String[] parts = line.split(delimiter);
+			if(parts.length< 5){
+				delimiter = ",";
+				parts = line.split(delimiter);
+			}
 			// TODO: this will have to be removed when we use Strength and
 			// ScoredValue Questions
-			while (parts.length > 9) {
+			while (",".equals(delimiter) && parts.length > 9) {
 				try {
 					@SuppressWarnings("unused")
 					Date testDate = new Date(new Long(parts[7].trim()));
@@ -81,7 +86,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					si.setCollectionDate(collDate);
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
 					if(parts.length>=12){
-						si.setUuid(parts[11]);
+						si.setUuid(parts[parts.length-1]);
 					}
 					si = save(si);
 				} catch (NumberFormatException e) {
