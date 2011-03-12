@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,11 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
@@ -80,15 +86,25 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public static final String STRENGTH_QUESTION_TYPE = "strength";
 	private static final String SURVEY_S3_PROP = "surveyuploadurl";
 	private static final String SURVEY_DIR_PROP = "surveyuploaddir";
+	private static final String PUB_CACHE_PREFIX = "pubsrv";
 
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
 	private static final long serialVersionUID = 5557965649047558451L;
 	private SurveyDAO surveyDao;
+	private Cache cache;
 
 	public SurveyServiceImpl() {
 		surveyDao = new SurveyDAO();
+
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(Collections.emptyMap());
+		} catch (CacheException e) {
+			log.log(Level.SEVERE, "Could not initialize cache", e);
+		}
 	}
 
 	@Override
@@ -1116,6 +1132,19 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public SurveyDto getPublishedSurvey(String surveyId) {
 		SurveyDto dto = null;
 		try {
+			try {
+				if (cache != null) {
+					if (cache.containsKey(PUB_CACHE_PREFIX + surveyId)) {
+						dto = (SurveyDto) cache
+								.get(PUB_CACHE_PREFIX + surveyId);
+						if (dto != null) {
+							return dto;
+						}
+					}
+				}
+			} catch (Exception e) {
+				log.log(Level.WARNING, "Could not check cache", e);
+			}
 			URL url = new URL(PropertyUtil.getProperty(SURVEY_S3_PROP)
 					+ PropertyUtil.getProperty(SURVEY_DIR_PROP) + "/"
 					+ surveyId + ".xml");
@@ -1132,6 +1161,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				SurveyXmlDtoHelper helper = new SurveyXmlDtoHelper();
 				dto = helper.parseAsDtoGraph(fullContent.trim(), new Long(
 						surveyId));
+				try {
+					if (cache != null) {
+						cache.put(PUB_CACHE_PREFIX + surveyId, dto);
+					}
+				} catch (Exception e) {
+					log.log(Level.WARNING, "Could not cache result", e);
+				}
 			}
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not popuate survey from xml", e);
