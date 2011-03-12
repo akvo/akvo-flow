@@ -296,7 +296,7 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 			userLabel.setText("");
 			userLabel.setVisible(false);
 		}
-		if (currentAuthDto.getMaxUses() != null && currentAuthDto.getMaxUses()>0) {			
+		if (currentAuthDto.getMaxUses() != null) {			
 			maxUseBox.setText(currentAuthDto.getMaxUses().toString());
 		}
 		tokenBox.setText(currentAuthDto.getToken());

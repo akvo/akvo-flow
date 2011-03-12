@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.app.gwt.client.auth;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -13,7 +15,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * 
  */
 @RemoteServiceRelativePath("webactauthrpcservice")
-public interface WebActivityAuthorizationService extends RemoteService{
+public interface WebActivityAuthorizationService extends RemoteService {
 
 	/**
 	 * returns a WebActivityAuthorizationDto if the request is authorized for
@@ -49,5 +51,16 @@ public interface WebActivityAuthorizationService extends RemoteService{
 	 * @param cursor
 	 * @return
 	 */
-	public ResponseDto<ArrayList<WebActivityAuthorizationDto>> listAuthorizations(String cursor);
+	public ResponseDto<ArrayList<WebActivityAuthorizationDto>> listAuthorizations(
+			String cursor);
+
+	/**
+	 * lists all authorizations keyed by the dto identified by the payload for a
+	 * given user/activity
+	 * 
+	 * @param activityName
+	 * @return
+	 */
+	public ResponseDto<HashMap<BaseDto, WebActivityAuthorizationDto>> listUserAuthorizations(
+			String activityName);
 }

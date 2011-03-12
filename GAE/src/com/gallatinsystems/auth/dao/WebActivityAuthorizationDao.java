@@ -49,8 +49,8 @@ public class WebActivityAuthorizationDao extends
 
 		appendNonNullParam("token", filterString, paramString, "String", token,
 				paramMap);
-		appendNonNullParam("webActivityName", filterString, paramString, "String",
-				activityName, paramMap);
+		appendNonNullParam("webActivityName", filterString, paramString,
+				"String", activityName, paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursorString, query);
@@ -59,6 +59,46 @@ public class WebActivityAuthorizationDao extends
 				.executeWithMap(paramMap);
 
 		if (authList != null && validOnly) {
+			List<WebActivityAuthorization> filteredList = new ArrayList<WebActivityAuthorization>();
+			for (WebActivityAuthorization auth : authList) {
+				if (auth.isValidForAuth()) {
+					filteredList.add(auth);
+				}
+			}
+			authList = filteredList;
+		}
+		return authList;
+	}
+
+	/**
+	 * returns all VALID authorization objects for a given user/activity
+	 * combination
+	 * 
+	 * @param userId
+	 * @param activityName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<WebActivityAuthorization> listByUser(Long userId,
+			String activityName) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(WebActivityAuthorization.class);
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("userId", filterString, paramString, "Long", userId,
+				paramMap);
+		appendNonNullParam("webActivityName", filterString, paramString,
+				"String", activityName, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		List<WebActivityAuthorization> authList = (List<WebActivityAuthorization>) query
+				.executeWithMap(paramMap);
+		if (authList != null) {
 			List<WebActivityAuthorization> filteredList = new ArrayList<WebActivityAuthorization>();
 			for (WebActivityAuthorization auth : authList) {
 				if (auth.isValidForAuth()) {

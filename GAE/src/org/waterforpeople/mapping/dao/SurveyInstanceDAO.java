@@ -77,7 +77,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			}
 
 			if (si.getSurveyId() == null) {
-				try {
+				try {					
 					si.setCollectionDate(collDate);
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
 					if(parts.length>=12){

@@ -23,8 +23,15 @@ public class WidgetDialog extends DialogBox {
 	private CompletionListener listener;
 	private Button closeButton;
 	private DockPanel contentPane;
+	private boolean hideControls;
 
 	public WidgetDialog(String title, Widget widget, CompletionListener listen) {
+		this(title, widget, false, listen);
+	}
+
+	public WidgetDialog(String title, Widget widget, boolean noControls,
+			CompletionListener listen) {
+		hideControls = noControls;
 		// Set the dialog box's caption.
 		setText(title);
 		setAnimationEnabled(true);
@@ -37,13 +44,15 @@ public class WidgetDialog extends DialogBox {
 		if (widget != null) {
 			contentPane.add(widget, DockPanel.CENTER);
 		}
-		closeButton = new Button("Close");
-		contentPane.add(closeButton, DockPanel.SOUTH);
-		closeButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				hide();
-			}
-		});
+		if (!hideControls) {
+			closeButton = new Button("Close");
+			contentPane.add(closeButton, DockPanel.SOUTH);
+			closeButton.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					hide();
+				}
+			});
+		}
 		setWidget(contentPane);
 	}
 
@@ -59,8 +68,10 @@ public class WidgetDialog extends DialogBox {
 	public boolean onKeyDownPreview(char key, int modifiers) {
 		switch (key) {
 		case KeyCodes.KEY_ESCAPE:
-			hide();
-			return true;
+			if (!hideControls) {
+				hide();
+				return true;
+			}
 		}
 		return false;
 	}
