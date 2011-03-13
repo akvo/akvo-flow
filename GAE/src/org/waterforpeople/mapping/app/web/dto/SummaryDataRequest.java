@@ -23,8 +23,8 @@ public class SummaryDataRequest extends RestRequest {
 	public static final String YEAR_PARAM = "year";
 	public static final String SUB_VALUE_PARAM = "subValue";
 	public static final String METRIC_NAME_PARAM = "metricName";
-	public static final String SUB_LEVEL_PARAM  = "subLevel";
-	
+	public static final String SUB_LEVEL_PARAM = "subLevel";
+	public static final String INCLUDE_PLACEMARK_PARAM = "includePlacemark";
 
 	private String country;
 	private String organization;
@@ -32,7 +32,8 @@ public class SummaryDataRequest extends RestRequest {
 	private Long year;
 	private String subValue = null;
 	private Integer subLevel = null;
-	
+	private Boolean includePlacemarkFlag = false;
+
 	public Integer getSubLevel() {
 		return subLevel;
 	}
@@ -58,7 +59,6 @@ public class SummaryDataRequest extends RestRequest {
 	}
 
 	private String metricName = null;
-	
 
 	@Override
 	protected void populateErrors() {
@@ -79,16 +79,20 @@ public class SummaryDataRequest extends RestRequest {
 		if (req.getParameter(YEAR_PARAM) != null) {
 			year = Long.parseLong(req.getParameter(YEAR_PARAM));
 		}
-		if(req.getParameter(SUB_VALUE_PARAM)!=null){
+		if (req.getParameter(SUB_VALUE_PARAM) != null) {
 			setSubValue(req.getParameter(SUB_VALUE_PARAM));
 		}
-		if(req.getParameter(METRIC_NAME_PARAM)!=null){
+		if (req.getParameter(METRIC_NAME_PARAM) != null) {
 			setMetricName(req.getParameter(METRIC_NAME_PARAM));
 		}
-		if(req.getParameter(SUB_LEVEL_PARAM)!=null){
+		if (req.getParameter(SUB_LEVEL_PARAM) != null) {
 			String subLevel = req.getParameter(SUB_LEVEL_PARAM);
 			subLevel = subLevel.replace("i", "");
 			setSubLevel(Integer.parseInt(subLevel));
+		}
+		if (req.getParameter(INCLUDE_PLACEMARK_PARAM) != null) {
+			setIncludePlacemarkFlag(Boolean.parseBoolean(req
+					.getParameter(INCLUDE_PLACEMARK_PARAM)));
 		}
 	}
 
@@ -122,6 +126,14 @@ public class SummaryDataRequest extends RestRequest {
 
 	public void setYear(Long year) {
 		this.year = year;
+	}
+
+	public void setIncludePlacemarkFlag(Boolean includePlacemarkFlag) {
+		this.includePlacemarkFlag = includePlacemarkFlag;
+	}
+
+	public Boolean getIncludePlacemarkFlag() {
+		return includePlacemarkFlag;
 	}
 
 }

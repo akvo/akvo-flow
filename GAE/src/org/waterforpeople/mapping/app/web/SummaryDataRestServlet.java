@@ -2,6 +2,8 @@ package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +26,8 @@ import com.gallatinsystems.framework.rest.RestResponse;
  * 
  */
 public class SummaryDataRestServlet extends AbstractRestApiServlet {
+	private static final Logger log = Logger
+	.getLogger(SummaryDataRestServlet.class.getName());
 
 	private static final long serialVersionUID = 7550953090927763716L;
 	private AccessPointMetricSummaryDao apMetricSummaryDao;
@@ -47,7 +51,8 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 		SummaryDataResponse response = new SummaryDataResponse();
 		if (SummaryDataRequest.GET_AP_METRIC_SUMMARY_ACTION
 				.equalsIgnoreCase(dataReq.getAction())) {
-			response.setDtoList(convertAccessPointMetric(seachAPMetrics(dataReq)));
+			response.setDtoList(convertAccessPointMetric(
+					seachAPMetrics(dataReq), dataReq.getIncludePlacemarkFlag()));
 		}
 		return response;
 	}
@@ -74,7 +79,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 		prototype.setMetricName(dataReq.getMetricName());
 		if (dataReq.getSubValue() != null)
 			prototype.setSubLevelName(dataReq.getSubValue());
-		if(dataReq.getSubLevel()!=null)
+		if (dataReq.getSubLevel() != null)
 			prototype.setSubLevel(dataReq.getSubLevel());
 		prototype.setYear(dataReq.getYear());
 		return apMetricSummaryDao.listMetrics(prototype);
@@ -88,15 +93,35 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	 * @return
 	 */
 	private List<AccessPointMetricSummaryDto> convertAccessPointMetric(
-			List<AccessPointMetricSummary> summaryList) {
+			List<AccessPointMetricSummary> summaryList, Boolean includePlacemark) {
 		List<AccessPointMetricSummaryDto> dtoList = new ArrayList<AccessPointMetricSummaryDto>();
 		if (summaryList != null) {
 			for (AccessPointMetricSummary summary : summaryList) {
 				AccessPointMetricSummaryDto dto = new AccessPointMetricSummaryDto();
 				DtoMarshaller.copyToDto(summary, dto);
+				if (includePlacemark) {
+					dto.setIconUrl(getIconUrl(dto));
+					try {
+						dto.setPlacemarkContents(generatePlacemarkContents(dto));
+					} catch (Exception ex) {
+						log.log(Level.INFO, "couldn't bind summary placemark: " + ex.getMessage());
+					}
+				}
 				dtoList.add(dto);
 			}
 		}
 		return dtoList;
+	}
+
+	private String getIconUrl(AccessPointMetricSummaryDto dto) {
+		return "http://watermapmonitordev.appspot.com/images/iconGreen36.png";
+	}
+
+	private String generatePlacemarkContents(AccessPointMetricSummaryDto dto)
+			throws Exception {
+		KMLGenerator kmlGen = new KMLGenerator();
+
+		return kmlGen.bindSummaryPlacemark(dto,
+				"summaryPlacemarkExternalMap.vm");
 	}
 }

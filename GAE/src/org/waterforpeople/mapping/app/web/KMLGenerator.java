@@ -16,6 +16,7 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointMetricSummaryDto;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.GeoRegionDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -829,5 +830,14 @@ public class KMLGenerator {
 		} else {
 			return "Unknown";
 		}
+	}
+	public String bindSummaryPlacemark(AccessPointMetricSummaryDto apsDto, String vmName) throws Exception{
+		VelocityContext context = new VelocityContext();
+		StringBuilder sb = new StringBuilder();
+		context.put("subValue", apsDto.getSubLevelName());
+		context.put("waterPointCount", apsDto.getCount());
+		sb.append(mergeContext(context, vmName));
+		return sb.toString();
+		
 	}
 }

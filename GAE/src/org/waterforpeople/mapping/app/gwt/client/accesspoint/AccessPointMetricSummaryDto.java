@@ -25,7 +25,25 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 	private Long year;
 	private Double latitude = null;
 	private Double longitude = null;
+	private String iconUrl = null;
+	private String placemarkContents=null;
 	
+	public String getPlacemarkContents() {
+		return placemarkContents;
+	}
+
+	public void setPlacemarkContents(String placemarkContents) {
+		this.placemarkContents = placemarkContents;
+	}
+
+	public String getIconUrl() {
+		return iconUrl;
+	}
+
+	public void setIconUrl(String iconUrl) {
+		this.iconUrl = iconUrl;
+	}
+
 	public Double getLatitude() {
 		return latitude;
 	}
