@@ -81,6 +81,8 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 			prototype.setSubLevelName(dataReq.getSubValue());
 		if (dataReq.getSubLevel() != null)
 			prototype.setSubLevel(dataReq.getSubLevel());
+		if(dataReq.getAccessPointType()!=null)
+			prototype.setMetricValue(dataReq.getAccessPointType());
 		prototype.setYear(dataReq.getYear());
 		return apMetricSummaryDao.listMetrics(prototype);
 	}

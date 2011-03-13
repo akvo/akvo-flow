@@ -26,6 +26,7 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 	private Double latitude = null;
 	private Double longitude = null;
 	private String iconUrl = null;
+	private String accessPointType = null;
 	private String placemarkContents=null;
 	
 	public String getPlacemarkContents() {
@@ -146,5 +147,13 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 
 	public Double getLongitude() {
 		return longitude;
+	}
+
+	public void setAccessPointType(String accessPointType) {
+		this.accessPointType = accessPointType;
+	}
+
+	public String getAccessPointType() {
+		return accessPointType;
 	}
 }

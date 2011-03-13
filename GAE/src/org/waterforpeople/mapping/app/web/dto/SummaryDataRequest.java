@@ -25,6 +25,7 @@ public class SummaryDataRequest extends RestRequest {
 	public static final String METRIC_NAME_PARAM = "metricName";
 	public static final String SUB_LEVEL_PARAM = "subLevel";
 	public static final String INCLUDE_PLACEMARK_PARAM = "includePlacemark";
+	public static final String ACCESS_POINT_TYPE_PARAM = "accessPointType";
 
 	private String country;
 	private String organization;
@@ -33,6 +34,7 @@ public class SummaryDataRequest extends RestRequest {
 	private String subValue = null;
 	private Integer subLevel = null;
 	private Boolean includePlacemarkFlag = false;
+	private String accessPointType=null;
 
 	public Integer getSubLevel() {
 		return subLevel;
@@ -94,6 +96,9 @@ public class SummaryDataRequest extends RestRequest {
 			setIncludePlacemarkFlag(Boolean.parseBoolean(req
 					.getParameter(INCLUDE_PLACEMARK_PARAM)));
 		}
+		if(req.getParameter(ACCESS_POINT_TYPE_PARAM)!=null){
+			setAccessPointType(req.getParameter(ACCESS_POINT_TYPE_PARAM));
+		}
 	}
 
 	public String getCountry() {
@@ -134,6 +139,14 @@ public class SummaryDataRequest extends RestRequest {
 
 	public Boolean getIncludePlacemarkFlag() {
 		return includePlacemarkFlag;
+	}
+
+	public void setAccessPointType(String accessPointType) {
+		this.accessPointType = accessPointType;
+	}
+
+	public String getAccessPointType() {
+		return accessPointType;
 	}
 
 }
