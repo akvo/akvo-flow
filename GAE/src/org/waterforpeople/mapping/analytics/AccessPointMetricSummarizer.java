@@ -124,6 +124,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 	private Double[] getCoordinates(String countryCode,String subValue, Integer subLevel){
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 		List<OGRFeature> item = ogrFeatureDao.listBySubLevelCountry(countryCode, subLevel, null);
+		return null;
 	}
 	
 	private AccessPointMetricSummary constructBaseSummary(String fieldValue,
