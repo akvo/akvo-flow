@@ -2,6 +2,8 @@ package com.gallatinsystems.gis.app;
 
 
 
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +24,8 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
+
+
 
 import com.ibm.util.CoordinateConversion;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -57,11 +61,6 @@ public class GeometryLoader {
 	private static final String SUBDIVISION_4_PARAM = "sub4";
 	private static final String SUBDIVISION_5_PARAM = "sub5";
 	private static final String SUBDIVISION_6_PARAM = "sub6";
-	private static final String DENSITY_PARAM = "density";
-	private static final String TOTAL_POPULATION_PARAM = "totalPopulation";
-	private static final String FEMALE_POPULATION_PARAM = "femalePopulation";
-	private static final String MALE_POPULATION_PARAM = "malePopulation";
-	private static final String NUMBER_HOUSEHOLDS_PARAM = "numberOfHouseholds";
 
 	public enum CoordinateType {
 		LATLONG, UTM
@@ -73,7 +72,6 @@ public class GeometryLoader {
 	public static void main(String[] args) {
 		GeometryLoader gl = new GeometryLoader();
 		String baseUrl = args[0];
-		
 
 		for (int i = 1; i < args.length; i++) {
 			// args[i],
@@ -88,9 +86,11 @@ public class GeometryLoader {
 				utmZone = Integer.parseInt(commandParts[2]);
 				centralMeridian = Double.parseDouble(commandParts[3]);
 			}
-			
+			countryCodeOverride = commandParts[4];
+			String featureType = commandParts[5];
 			try {
-				gl.formURL(baseUrl, fileName, ct, utmZone, centralMeridian, countryCodeOverride);
+				gl.formURL(baseUrl, fileName, ct, utmZone, centralMeridian,
+						countryCodeOverride, featureType);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -124,6 +124,7 @@ public class GeometryLoader {
 		attributeIdentifierMapping.put("LON", CENTROID_LON_PARAM);
 		attributeIdentifierMapping.put("the_geom", GEOMETRY_STRING_PARAM);
 		attributeIdentifierMapping.put("NAME", NAME_PARAM);
+		attributeIdentifierMapping.put("ID", SUBDIVISION_1_PARAM);
 		attributeIdentifierMapping.put("ADM0", COUNTRY_CODE_PARAM);
 		attributeIdentifierMapping.put("ADM1", SUBDIVISION_1_PARAM);
 		attributeIdentifierMapping.put("ADM2", SUBDIVISION_2_PARAM);
@@ -136,11 +137,6 @@ public class GeometryLoader {
 		attributeIdentifierMapping.put("FIRST_CCNA", SUBDIVISION_2_PARAM);
 		attributeIdentifierMapping.put("FIRST_DNAM", SUBDIVISION_3_PARAM);
 		attributeIdentifierMapping.put("LBL", NAME_PARAM);
-		attributeIdentifierMapping.put("DENSITY", DENSITY_PARAM);
-		attributeIdentifierMapping.put("TOTAL",TOTAL_POPULATION_PARAM);
-		attributeIdentifierMapping.put("MALE",MALE_POPULATION_PARAM);
-		attributeIdentifierMapping.put("FEMALE",FEMALE_POPULATION_PARAM);
-		attributeIdentifierMapping.put("HHOLDS",NUMBER_HOUSEHOLDS_PARAM);
 		attributeURLMapping.put(COUNTRY_CODE_PARAM, "STRING|%s");
 		attributeURLMapping.put(CENTROID_LON_PARAM, "DOUBLE|%14.12f");
 		attributeURLMapping.put(CENTROID_LAT_PARAM, "DOUBLE|%14.12f");
@@ -154,19 +150,14 @@ public class GeometryLoader {
 		attributeURLMapping.put(SUBDIVISION_4_PARAM, "STRING|%s");
 		attributeURLMapping.put(SUBDIVISION_5_PARAM, "STRING|%s");
 		attributeURLMapping.put(SUBDIVISION_6_PARAM, "STRING|%s");
-		attributeURLMapping.put(DENSITY_PARAM, "INTEGER|%d");
-		attributeURLMapping.put(TOTAL_POPULATION_PARAM, "INTEGER|%d");
-		attributeURLMapping.put(MALE_POPULATION_PARAM, "INTEGER|%d");
-		attributeURLMapping.put(FEMALE_POPULATION_PARAM, "INTEGER|%d");
-		attributeURLMapping.put(NUMBER_HOUSEHOLDS_PARAM, "INTEGER|%d");
 	}
 
 	TreeMap<String, String> valuesMap = new TreeMap<String, String>();
 
 	private void formURL(String baseUrl, String fileName,
 			CoordinateType coordType, Integer utmZoneNumber,
-			Double centralMeridian, String countryCodeOverride)
-			throws IOException {
+			Double centralMeridian, String countryCodeOverride,
+			String featureType) throws IOException {
 		String serviceUrl = "action=%s&"
 				+ "projectCoordinateSystemIdentifier=%s&"
 				+ "geoCoordinateSystemIdentifier=%s&" + "datumIdentifier=%s&"
@@ -227,6 +218,10 @@ public class GeometryLoader {
 			org.opengis.feature.simple.SimpleFeatureType sft = fr
 					.getFeatureType();
 			System.out.println("   FeatureType: " + sft.getName().toString());
+			if (featureType.equals("SUB_COUNTRY_OTHER"))
+				ogrFeatureType = "SUB_COUNTRY_OTHER";
+			else
+				ogrFeatureType = "COUNTRY";
 			for (Property prop : sf.getProperties()) {
 				for (Map.Entry<String, String> entry : attributeIdentifierMapping
 						.entrySet()) {
@@ -239,7 +234,7 @@ public class GeometryLoader {
 								|| prop.getName().equals("CLNAME")) {
 							valuesMap.put(entry.getValue(),
 									countryMap.get(prop.getValue().toString()));
-							ogrFeatureType = "SUB_COUNTRY_OTHER";
+
 						} else if (prop.getName().toString()
 								.equalsIgnoreCase("the_geom")
 								&& coordType.equals(CoordinateType.UTM)) {
@@ -255,14 +250,12 @@ public class GeometryLoader {
 
 								shape = (MultiPolygon) reader.read(prop
 										.getValue().toString());
-
 								int numGeo = shape.getNumGeometries();
 								Polygon[] polygons = new Polygon[numGeo];
 
 								for (i = 0; i < numGeo; i++) {
 									Polygon poly0 = (Polygon) shape
 											.getGeometryN(0);
-
 									ArrayList<Coordinate> cNewList = new ArrayList<Coordinate>();
 									for (Coordinate c : poly0.getCoordinates()) {
 										double[] latlon = cc
@@ -298,7 +291,6 @@ public class GeometryLoader {
 								System.out.println(ex);
 							}
 
-						
 						} else {
 							valuesMap.put(entry.getValue(), prop.getValue()
 									.toString());
@@ -306,8 +298,9 @@ public class GeometryLoader {
 					}
 				}
 			}
-			if(countryCodeOverride!=null){
-				valuesMap.put("ISO2", countryCodeOverride);
+			if (countryCodeOverride != null) {
+				countryCode = countryCodeOverride;
+				valuesMap.put(COUNTRY_CODE_PARAM, countryCodeOverride);
 			}
 			String urlRequest = null;
 			urlRequest = String.format(serviceUrl, actionParam, prjcrs,
