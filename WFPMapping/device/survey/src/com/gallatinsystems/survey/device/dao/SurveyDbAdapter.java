@@ -140,7 +140,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 68;
+	private static final int DATABASE_VERSION = 69;
 
 	private final Context context;
 
@@ -212,7 +212,7 @@ public class SurveyDbAdapter {
 				} catch (Exception e) {
 					// swallow
 				}
-			} else if (oldVersion <= 67) {
+			} else if (oldVersion <= 68) {
 				try {
 					db
 							.execSQL("alter table survey_respondent add column uuid text");

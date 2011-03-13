@@ -53,6 +53,7 @@ public class DataSyncService extends Service {
 
 	private static final String TAG = "DATA_SYNC_ACTIVITY";
 	private static final String NOTHING = "NADA";
+	private static final String DELIMITER = "\t";
 
 	private static final int COMPLETE_ID = 1;
 
@@ -571,7 +572,7 @@ public class DataSyncService extends Service {
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
-							.append(",");
+							.append(DELIMITER);
 
 					String type = data
 							.getString(data
@@ -579,41 +580,41 @@ public class DataSyncService extends Service {
 					buf.append(data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 					buf
-							.append(",")
+							.append(DELIMITER)
 							.append(
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
-					buf.append(",").append(type);
-					buf.append(",").append(value);
+					buf.append(DELIMITER).append(type);
+					buf.append(DELIMITER).append(value);
 					buf
-							.append(",")
+							.append(DELIMITER)
 							.append(
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
 					buf
-							.append(",")
+							.append(DELIMITER)
 							.append(
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
 					buf
-							.append(",")
+							.append(DELIMITER)
 							.append(
 									data
 											.getString(data
 													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
-					buf.append(",").append(deviceIdentifier);
+					buf.append(DELIMITER).append(deviceIdentifier);
 					String scoredVal = data
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.SCORED_VAL_COL));
-					buf.append(",").append(scoredVal != null ? scoredVal : "");
+					buf.append(DELIMITER).append(scoredVal != null ? scoredVal : "");
 					String strength = data
 							.getString(data
 									.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL));
-					buf.append(",").append(strength != null ? strength : "");
-					buf.append(",").append(data.getString(data.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
+					buf.append(DELIMITER).append(strength != null ? strength : "");
+					buf.append(DELIMITER).append(data.getString(data.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
 					buf.append("\n");
 
 					String respId = data.getString(data
