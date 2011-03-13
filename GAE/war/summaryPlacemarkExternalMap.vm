@@ -195,48 +195,27 @@ a {
     </div>
     <div id="communityDesc">
       <div id="communityDef">
-      #if($type=="water")
+      #if($type=="WATER_POINT")
         <div id="communityName">Subdivision | $subValue </div>
        #end
       </div>
       <div class="mapIcon">				    
-      				#if($type=="water" && $waterSystemStatus=="Meets Government Standards")
+      				#if($type=="WATER_POINT" )
 	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen80.png" width="50" height="50"  />
-					#elseif($type=="water" && $waterSystemStatus=="Functioning but with Problems")
-						<img src="http://watermapmonitordev.appspot.com/images/iconYellow80.png" width="50" height="50"  />
-					#elseif($type=="water" && ($waterSystemStatus=="Broken-down system"))
-						<img src="http://watermapmonitordev.appspot.com/images/iconRed80.png" width="50" height="50"  />
-					#elseif($type=="water" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/iconBlack80.png" width="50" height="50"  />
-					#elseif($type=="school" && $waterSystemStatus=="Meets Government Standards")	
+					#elseif($type=="SCHOOL")	
 						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen80.png" width="50" height="50"  />
-					#elseif($type=="school" && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow80.png" width="50" height="50"  />
-					#elseif($type=="school" && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilRed80.png" width="50" height="50"  />
-					#elseif($type=="school" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack80.png" width="50" height="50"  />
-					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Meets Government Standards")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseGreen80.png" width="50" height="50"  />
-					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Functioning but with Problems")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseYellow80.png" width="50" height="50"  />
-					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Broken-down system")	
-						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.png" width="50" height="50"  />
-					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
+					#elseif(($type=="PUBLIC_INSTITUTION" || $type=="HEALTH_POSTS"))	
 						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="50" height="50"  />
 					#end
 </div>
   </div>
   <div id="mainContent">
       <div id="leftContent">
-			 #if($type=="water")
+			 #if($type=="WATER_POINT")
 	    					<div class="QandA"><div class="question">Number of water point</div><div class="answer"> $waterPointCount<br></div> </div>
 					#end
       </div>
     <div id="rightContent">
-        <div class="photo"><img width="175" height="150" src= "$photoUrl">
-          <div id="photoCaption">$waterPointPhotoCaption</div>
-      </div>
     </div>
     </div>
 </div>
