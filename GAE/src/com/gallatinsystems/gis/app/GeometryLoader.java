@@ -1,9 +1,5 @@
 package com.gallatinsystems.gis.app;
 
-
-
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -25,13 +21,12 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
 
-
-
 import com.ibm.util.CoordinateConversion;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
