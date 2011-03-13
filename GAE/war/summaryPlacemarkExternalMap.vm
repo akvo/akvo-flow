@@ -230,7 +230,7 @@ a {
   <div id="mainContent">
       <div id="leftContent">
 			 #if($type=="water")
-	    					<div class="QandA"><div class="question">Number of water point</div><div class="answer"> $waterNumber<br></div> </div>
+	    					<div class="QandA"><div class="question">Number of water point</div><div class="answer"> $waterPointCount<br></div> </div>
 					#end
       </div>
     <div id="rightContent">
