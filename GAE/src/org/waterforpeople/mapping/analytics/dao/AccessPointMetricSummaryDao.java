@@ -12,6 +12,8 @@ import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 
 /**
  * Dao for manipulating access point summary domain objects
@@ -44,7 +46,8 @@ public class AccessPointMetricSummaryDao extends
 		Map<String, AccessPointMetricSummary> rollups = new HashMap<String, AccessPointMetricSummary>();
 		if (summaries != null) {
 			for (AccessPointMetricSummary s : summaries) {
-				AccessPointMetricSummary rollup = rollups.get(s.identifierString());
+				AccessPointMetricSummary rollup = rollups.get(s
+						.identifierString());
 				if (rollup == null) {
 					rollup = new AccessPointMetricSummary();
 					rollup.setCount((s.getCount() != null ? s.getCount() : 0));
@@ -68,6 +71,18 @@ public class AccessPointMetricSummaryDao extends
 		}
 		List<AccessPointMetricSummary> rollupList = new ArrayList<AccessPointMetricSummary>();
 		rollupList.addAll(rollups.values());
+		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+		
+		for (AccessPointMetricSummary item : rollupList) {
+			if (item.getSubValue() != null) {
+				List<OGRFeature> ogr = ogrFeatureDao.listBySubLevelCountryName(item.getCountry(), 1, item.getSubValue(), "all");
+				for(OGRFeature ogrItem:ogr){
+					System.out.println(ogrItem);
+					item.setLatitude(ogrItem.getCentroidLat());
+					item.setLongitude(ogrItem.getCentroidLon());
+				}
+			}
+		}
 		return rollupList;
 	}
 

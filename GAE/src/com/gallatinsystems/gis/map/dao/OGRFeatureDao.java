@@ -19,6 +19,31 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 
 	}
 
+	public List<OGRFeature> listBySubLevelCountryName(String countryCode, Integer level, String subLevelValue, String cursorString){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("countryCode", filterString, paramString, "String", countryCode,
+				paramMap, EQ_OP);
+		appendNonNullParam("sub"+level, filterString, paramString, "String", subLevelValue,
+				paramMap, EQ_OP);
+		
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		
+		prepareCursor(cursorString, query);
+		@SuppressWarnings("unchecked")
+		List<OGRFeature> resultsGTE = (List<OGRFeature>) query
+				.executeWithMap(paramMap);
+		
+		return resultsGTE;
+	}
+	
 	public List<OGRFeature> listByExtentAndType(Double x1, Double y1,
 			OGRFeature.FeatureType featureType, String orderByCol,
 			String orderByDirection, String cursorString) {
