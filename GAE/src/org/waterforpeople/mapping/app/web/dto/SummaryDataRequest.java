@@ -23,6 +23,7 @@ public class SummaryDataRequest extends RestRequest {
 	public static final String YEAR_PARAM = "year";
 	public static final String SUB_VALUE_PARAM = "subValue";
 	public static final String METRIC_NAME_PARAM = "metricName";
+	public static final String SUB_LEVEL_PARAM  = "subLevel";
 	
 
 	private String country;
@@ -30,6 +31,16 @@ public class SummaryDataRequest extends RestRequest {
 	private String district;
 	private Long year;
 	private String subValue = null;
+	private Integer subLevel = null;
+	
+	public Integer getSubLevel() {
+		return subLevel;
+	}
+
+	public void setSubLevel(Integer subLevel) {
+		this.subLevel = subLevel;
+	}
+
 	public String getSubValue() {
 		return subValue;
 	}
@@ -73,6 +84,11 @@ public class SummaryDataRequest extends RestRequest {
 		}
 		if(req.getParameter(METRIC_NAME_PARAM)!=null){
 			setMetricName(req.getParameter(METRIC_NAME_PARAM));
+		}
+		if(req.getParameter(SUB_LEVEL_PARAM)!=null){
+			String subLevel = req.getParameter(SUB_LEVEL_PARAM);
+			subLevel = subLevel.replace("i", "");
+			setSubLevel(Integer.parseInt(subLevel));
 		}
 	}
 

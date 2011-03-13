@@ -47,8 +47,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 		SummaryDataResponse response = new SummaryDataResponse();
 		if (SummaryDataRequest.GET_AP_METRIC_SUMMARY_ACTION
 				.equalsIgnoreCase(dataReq.getAction())) {
-			response
-					.setDtoList(convertAccessPointMetric(seachAPMetrics(dataReq)));
+			response.setDtoList(convertAccessPointMetric(seachAPMetrics(dataReq)));
 		}
 		return response;
 	}
@@ -71,9 +70,12 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 		AccessPointMetricSummary prototype = new AccessPointMetricSummary();
 		prototype.setCountry(dataReq.getCountry());
 		prototype.setOrganization(dataReq.getOrganization());
-		//prototype.setDistrict(dataReq.getDistrict());
+		// prototype.setDistrict(dataReq.getDistrict());
 		prototype.setMetricName(dataReq.getMetricName());
-		prototype.setSubLevelName(dataReq.getSubValue());
+		if (dataReq.getSubValue() != null)
+			prototype.setSubLevelName(dataReq.getSubValue());
+		if(dataReq.getSubLevel()!=null)
+			prototype.setSubLevel(dataReq.getSubLevel());
 		prototype.setYear(dataReq.getYear());
 		return apMetricSummaryDao.listMetrics(prototype);
 	}
