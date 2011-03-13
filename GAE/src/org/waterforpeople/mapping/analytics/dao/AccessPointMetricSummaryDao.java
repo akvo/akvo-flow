@@ -77,7 +77,6 @@ public class AccessPointMetricSummaryDao extends
 			if (item.getSubValue() != null) {
 				List<OGRFeature> ogr = ogrFeatureDao.listBySubLevelCountryName(item.getCountry(), 1, item.getSubValue(), "all");
 				for(OGRFeature ogrItem:ogr){
-					System.out.println(ogrItem);
 					item.setLatitude(ogrItem.getCentroidLat());
 					item.setLongitude(ogrItem.getCentroidLon());
 				}
