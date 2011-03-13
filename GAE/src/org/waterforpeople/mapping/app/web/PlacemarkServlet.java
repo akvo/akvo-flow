@@ -98,23 +98,15 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		} else {
 			// ListPlacemarks Action
 			if (piReq.getSubLevel() != null) {
-				if(piReq.getSubLevel()==1){
-					OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
-					AccessPointMetricSummaryDao apmDao = new AccessPointMetricSummaryDao();
-					List<OGRFeature> ogrFeatureList = ogrFeatureDao.listBySubLevelCountry(piReq.getCountry(), 1, piReq.getCursor());
-					for(OGRFeature item:ogrFeatureList){
-						String subValue =item.getSub1();
-						if(subValue!=null){
-							AccessPointMetricSummary prototype = new AccessPointMetricSummary();
-							prototype.setCountry(piReq.getCountry());
-							prototype.setSubLevel(1);
-							prototype.setSubValue(subValue);
-							prototype.setMetricName("pointType");
-							List<AccessPointMetricSummary> apmsList = apmDao.listMetrics(prototype);
-							
-						}
-					}
+				List<AccessPoint> results = apDao.listBySubLevel(piReq.getCountry(),piReq.getSubLevel(), piReq.getSubLevelValue(), piReq.getCursor(), AccessPointType.WATER_POINT);
+				String display = null;
+				if (piReq.getDisplay() != null) {
+					display = piReq.getDisplay();
 				}
+				response = (PlacemarkRestResponse) convertToResponse(results,
+						piReq.getNeedDetailsFlag(),
+						AccessPointDao.getCursor(results), piReq.getCursor(),
+						display);
 			} else {
 				List<AccessPoint> results = apDao.searchAccessPoints(
 						piReq.getCountry(), null, null, null, null, null, null,

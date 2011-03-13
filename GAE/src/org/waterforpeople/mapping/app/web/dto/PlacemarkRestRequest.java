@@ -19,6 +19,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String DISPLAY_TYPE_PARAM = "display";
 	private static final String IGNORE_CACHE_PARAM ="ignoreCache";
 	private static final String SUB_LEVEL_PARAM = "subLevel";
+	private static final String SUB_LEVEL_VALUE = "subLevelValue";
 
 	private String country;
 	private Boolean needDetailsFlag = null;
@@ -27,6 +28,15 @@ public class PlacemarkRestRequest extends RestRequest {
 	private AccessPoint.AccessPointType pointType = null;
 	private Boolean ignoreCache = false;
 	private Integer subLevel = null;
+	private String subLevelValue = null;
+
+	public String getSubLevelValue() {
+		return subLevelValue;
+	}
+
+	public void setSubLevelValue(String subLevelValue) {
+		this.subLevelValue = subLevelValue;
+	}
 
 	public Integer getSubLevel() {
 		return subLevel;
@@ -57,6 +67,9 @@ public class PlacemarkRestRequest extends RestRequest {
 		}
 		if(req.getParameter(SUB_LEVEL_PARAM)!=null){
 			setSubLevel(Integer.parseInt(req.getParameter(SUB_LEVEL_PARAM)));
+		}
+		if(req.getParameter(SUB_LEVEL_VALUE)!=null){
+			setSubLevelValue(req.getParameter(SUB_LEVEL_VALUE));
 		}
 		if (req.getParameter(COMMUNITY_CODE_PARAM) != null) {
 			setCommunityCode(req.getParameter(COMMUNITY_CODE_PARAM));

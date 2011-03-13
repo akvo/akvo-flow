@@ -134,6 +134,28 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				constructionDateTo, null, null, paramMap);
 		query.deletePersistentAll(paramMap);
 	}
+	
+	public List<AccessPoint> listBySubLevel(String countryCode,Integer level, String subValue, String cursor, AccessPoint.AccessPointType type){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("pointType", filterString, paramString, "String",
+				type, paramMap);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap);
+		appendNonNullParam("sub"+level, filterString, paramString, "String",
+				subValue, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		prepareCursor(cursor, 50, query);
+		List<AccessPoint> results = (List<AccessPoint>) query
+				.executeWithMap(paramMap);
+		return results;
+	}
 
 	private javax.jdo.Query constructQuery(String country, String community,
 			Date collDateFrom, Date collDateTo, String type, String tech,
