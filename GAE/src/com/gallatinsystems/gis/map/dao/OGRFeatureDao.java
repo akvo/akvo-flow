@@ -125,7 +125,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				paramMap, EQ_OP);
 		appendNonNullParam("countryCode", filterString, paramString, "String",
 				countryCode, paramMap, EQ_OP);
-		for (int i = 1; i <6; i++) {
+		for (int i = 1; i < subArray.size() + 1; i++) {
 			appendNonNullParam("sub" + i, filterString, paramString, "String",
 					subArray.get(i - 1), paramMap, EQ_OP);
 		}
@@ -181,14 +181,40 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 					item.getCountryCode(), item.getName(),
 					FeatureType.SUB_COUNTRY_OTHER, subList);
 			if (existingItem != null) {
-				existingItem.setGeometry(item.getGeometry());
-				existingItem.setBoundingBox(item.getBoundingBox());
-				super.save(existingItem);
-				return existingItem;
-			} else {
-				super.save(item);
-				return item;
+				boolean isSame = true;
+				if (item.getSub1() != null && existingItem.getSub1() != null
+						&& !existingItem.getSub1().equals(item.getSub1())) {
+					isSame = false;
+				}
+				if ((item.getSub2() != null && existingItem.getSub2() != null
+						&& !existingItem.getSub2().equals(item.getSub2())) || (item.getSub2()==null && existingItem.getSub2()!=null)) {
+					isSame = false;
+				}
+				if (item.getSub3() != null && existingItem.getSub3() != null
+						&& !existingItem.getSub3().equals(item.getSub3())) {
+					isSame = false;
+				}
+				if (item.getSub4() != null && existingItem.getSub4() != null
+						&& !existingItem.getSub4().equals(item.getSub4())) {
+					isSame = false;
+				}
+				if (item.getSub5() != null && existingItem.getSub5() != null
+						&& !existingItem.getSub5().equals(item.getSub5())) {
+					isSame = false;
+				}
+				if (item.getSub6() != null && existingItem.getSub6() != null
+						&& !existingItem.getSub6().equals(item.getSub6())) {
+					isSame = false;
+				}
+				if (isSame) {
+					existingItem.setGeometry(item.getGeometry());
+					existingItem.setBoundingBox(item.getBoundingBox());
+					super.save(existingItem);
+					return existingItem;
+				}
 			}
+			super.save(item);
+			return item;
 		}
 	}
 

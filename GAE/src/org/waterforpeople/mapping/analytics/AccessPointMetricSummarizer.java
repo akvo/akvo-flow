@@ -11,6 +11,8 @@ import org.waterforpeople.mapping.domain.AccessPointMetricMapping;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
+import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 
 /**
  * Summarizer for populating AccessPointMetricSummary objects based on values in
@@ -119,6 +121,11 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 		return true;
 	}
 
+	private Double[] getCoordinates(String countryCode,String subValue, Integer subLevel){
+		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+		List<OGRFeature> item = ogrFeatureDao.listBySubLevelCountry(countryCode, subLevel, null);
+	}
+	
 	private AccessPointMetricSummary constructBaseSummary(String fieldValue,
 			String metricGroup, String metricName, String org, String country,
 			String valueBucket) {

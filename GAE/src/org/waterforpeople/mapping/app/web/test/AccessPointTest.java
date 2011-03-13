@@ -24,8 +24,8 @@ public class AccessPointTest {
 		MapFragmentDao mfDao = new MapFragmentDao();
 		AccessPointDao apDao = new AccessPointDao();
 		for (int j = 0; j < 1; j++) {
-			double lat = -15 + (new Random().nextDouble() / 10);
-			double lon = 35 + (new Random().nextDouble() / 10);
+			double lat = 6.6 + (new Random().nextDouble() / 10);
+			double lon = -10.8 + (new Random().nextDouble() / 10);
 			for (int i = 0; i < 5000; i++) {
 				AccessPoint ap = new AccessPoint();
 				ap.setLatitude(lat);
@@ -56,11 +56,10 @@ public class AccessPointTest {
 				ap.setNumberOfHouseholdsUsingPoint(100L);
 				ap.setConstructionDateYear("2001");
 				ap.setCostPer(1.0);
-				ap.setCountryCode("MW");
+				ap.setCountryCode("LR");
 				ap.setConstructionDate(new Date());
 				ap.setCollectionDate(new Date());
 				ap.setPhotoName("Water point");
-				ap.setSub1("Southern");
 				if (i % 2 == 0)
 					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 				else if (i % 3 == 0)

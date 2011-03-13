@@ -23,6 +23,16 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 	private String metricValue;
 	private Long count;
 	private Long year;
+	private Double latitude = null;
+	private Double longitude = null;
+	
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
 	public Integer getSubLevel() {
 		return subLevel;
@@ -39,7 +49,7 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 	public void setSubLevelName(String subLevelName) {
 		this.subLevelName = subLevelName;
 	}
-	
+
 	public String getSubValue() {
 		return subValue;
 	}
@@ -110,5 +120,13 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 
 	public void setYear(Long year) {
 		this.year = year;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
 	}
 }

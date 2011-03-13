@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.analytics.AccessPointMetricSummarizer;
+import org.waterforpeople.mapping.analytics.CommunityLocationSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.dao.AccessPointDao;
@@ -11,7 +13,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 
 public class AccessPointMetricSummaryTest {
 
-	public void runTest(HttpServletResponse resp) {
+	public void runTest2(HttpServletResponse resp) {
 		prepData(resp);
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> apList = apDao.listAccessPointBySubLevel(1,
@@ -40,6 +42,16 @@ public class AccessPointMetricSummaryTest {
 			}
 		}
 
+	}
+	public void runTest(HttpServletResponse resp){
+		CommunityLocationSummarizer cls = new CommunityLocationSummarizer();
+		AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
+		
+		AccessPointDao apDao = new AccessPointDao();
+		for(AccessPoint ap: apDao.list("all")){
+			cls.performSummarization(String.valueOf(ap.getKey().getId()), null, null, null, null);
+			apms.performSummarization(String.valueOf(ap.getKey().getId()), null, null, null, null);
+		}
 	}
 	
 	private void clearAPMSTable(){
