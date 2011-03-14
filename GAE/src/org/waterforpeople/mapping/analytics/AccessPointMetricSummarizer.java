@@ -60,6 +60,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 												.getCountryCode(), valBucket);
 								metricSummary.setSubLevel(1);
 								metricSummary.setSubValue(ap.getSub1());
+								metricSummary.setParentSubName(ap.getCountryCode());
 								AccessPointMetricSummaryDao.incrementCount(
 										metricSummary, 1);
 							}
@@ -70,6 +71,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 												.getCountryCode(), valBucket);
 								metricSummary.setSubLevel(2);
 								metricSummary.setSubValue(ap.getSub2());
+								metricSummary.setParentSubName(ap.getCountryCode() + "/"+ap.getSub1());
 								AccessPointMetricSummaryDao.incrementCount(
 										metricSummary, 1);
 							}
@@ -80,6 +82,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 												.getCountryCode(), valBucket);
 								metricSummary.setSubLevel(3);
 								metricSummary.setSubValue(ap.getSub3());
+								metricSummary.setParentSubName(ap.getCountryCode() + "/"+ap.getSub1()+ "/"+ap.getSub2());
 								AccessPointMetricSummaryDao.incrementCount(
 										metricSummary, 1);
 							}
@@ -90,6 +93,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 												.getCountryCode(), valBucket);
 								metricSummary.setSubLevel(4);
 								metricSummary.setSubValue(ap.getSub4());
+								metricSummary.setParentSubName(ap.getCountryCode() + "/"+ap.getSub1()+ "/"+ap.getSub2()+ "/"+ap.getSub3());
 								AccessPointMetricSummaryDao.incrementCount(
 										metricSummary, 1);
 							}
@@ -100,6 +104,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 												.getCountryCode(), valBucket);
 								metricSummary.setSubLevel(5);
 								metricSummary.setSubValue(ap.getSub5());
+								metricSummary.setParentSubName(ap.getCountryCode() + "/"+ap.getSub1()+ "/"+ap.getSub2()+ "/"+ap.getSub3() + "/"+ap.getSub4());
 								AccessPointMetricSummaryDao.incrementCount(
 										metricSummary, 1);
 							}
@@ -110,6 +115,7 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 												.getCountryCode(), valBucket);
 								metricSummary.setSubLevel(6);
 								metricSummary.setSubValue(ap.getSub6());
+								metricSummary.setParentSubName(ap.getCountryCode() + "/"+ap.getSub1()+ "/"+ap.getSub2()+ "/"+ap.getSub3() + "/"+ap.getSub4()+"/"+ap.getSub5());
 								AccessPointMetricSummaryDao.incrementCount(
 										metricSummary, 1);
 							}

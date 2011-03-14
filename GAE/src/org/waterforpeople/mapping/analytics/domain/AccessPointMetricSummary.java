@@ -31,7 +31,16 @@ public class AccessPointMetricSummary extends BaseDomain {
 	private Integer shardNum;
 	private Double latitude;
 	private Double longitude;
+	private String parentSubName;
 	
+
+	public String getParentSubName() {
+		return parentSubName;
+	}
+
+	public void setParentSubName(String parentSubName) {
+		this.parentSubName = parentSubName;
+	}
 
 	public Double getLatitude() {
 		return latitude;
