@@ -250,7 +250,7 @@ a {
 
 	function loadCountryData() {
 		if (country == 'LR' && loadedLR == false) {
-			getPlacemarkInfo('LR',null, 1, null);
+			getPlacemarkInfo('LR', null, 0, null);
 			loadedLR = true;
 		}
 	}
@@ -285,6 +285,7 @@ a {
 		google.maps.event.addListener(map, 'bounds_changed', function() {
 
 			var curBounds = map.getBounds();
+
 			var containsRW = curBounds.contains(latlngLR);
 			v
 			if (containsLR) {
@@ -295,14 +296,28 @@ a {
 		});
 
 		google.maps.event.addListener(map, 'zoom_changed', function() {
-
-			alert(map.getZoom());
-			getPlacemarkInfo('LR',null, 1, 'Bomi');
+			if (map.getZoom() > 8 && map.getZoom() < 10) {
+				getPlacemarkInfo('LR', null, 1, 'LR');
+			} else if (map.getZoom() > 9 && map.getZoom() < 11) {
+				getPlacemarkInfo('LR', null, 2, null);
+			} else if (map.getZoom() > 10 && map.getZoom() < 13) {
+				getPlacemarkInfo('LR', null, 3, null);
+			} else if (map.getZoom() > 12) {
+				var NE = map.getBounds().getNorthEast();
+				var SW = map.getBounds().getSouthWest();
+				var lat1 = NE.lat();
+				var lat2 = SW.lat();
+				var long1 = NE.lng();
+				var long2 = SW.lng();
+				getAccessPointPlacemarkInfo('LR', null, null, null, lat1, lat2,
+						long1, long2);
+				alert(map.getBounds());
+			}
 
 		});
 		loadCountryData();
-
 	};
+
 	var markers = [];
 	function addPlacemark(latitude, longitude, iconUrl, placemarkContents) {
 		var infowindow = new google.maps.InfoWindow({
@@ -326,20 +341,29 @@ a {
 	};
 
 	function makeMarker(latitude, longitude, iconUrl, communityCode, pointType,
-			placemarkContents) {
+			placemarkContents, subParentPath) {
+		var fullPath;
+		if (subParentPath != null) {
+			fullPath = subParentPath + "/" + communityCode;
+		} else if (communityCode != null) {
+			fullPath = communityCode;
+		} else {
+			communityCode = 'LR';
+			alert('Setting communityCode');
+		}
 		var markerOptions = {
 			map : map,
 			position : new google.maps.LatLng(latitude, longitude),
 			icon : iconUrl,
 			height : 200,
 			width : 600,
-			title : communityCode
+			title : fullPath
 		};
 		var marker = new google.maps.Marker(markerOptions);
 		markers.push(marker);
 
 		google.maps.event.addListener(marker, 'click', function(e) {
-			var communityCode = marker.title;
+			var title = marker.title;
 			var iconString = marker.icon;
 			var infobox = new SmartInfoWindow({
 				position : marker.getPosition(),
@@ -349,16 +373,15 @@ a {
 		});
 	}
 
-	function getPlacemarkInfo(countryCode, cursor, level, subValue) {
+	function getPlacemarkInfo(countryCode, cursor, level, parentSubPath) {
 		var url = 'summarydatarestapi?action=getAPMetricSummary&country='
 				+ country
 				+ '&subLevel='
 				+ level
-				+ '&metricName=pointType&includePlacemark=true&accessPointType=WATER_POINT'
+				+ '&metricName=pointType&includePlacemark=true&metricValue=WATER_POINT'
 				+ '&needDetailsFlag=false';
-		if(subValue!=null){
-			url = url + '&subValue=' + subValue;
-			alert(url);
+		if (parentSubPath != null) {
+			url = url + '&parentSubPath=' + parentSubPath;
 		}
 		if (cursor != null) {
 			url += '&cursor=' + cursor;
@@ -367,7 +390,32 @@ a {
 			var count = 0;
 			$.each(jd.dtoList, function(i, item) {
 				makeMarker(item.latitude, item.longitude, item.iconUrl,
-						item.subValue, 'WATER_POINT', item.placemarkContents);
+						item.subValue, 'WATER_POINT', item.placemarkContents,
+						item.parentSubName);
+				count++;
+			});
+			if (count > 0 && jd.cursor != null) {
+				getPlacemarkInfo(countryCode, jd.cursor);
+			}
+		});
+	};
+
+	function getAccessPointPlacemarkInfo(countryCode, subLevelValue, subLevel,
+			cursor, lat1, lat2, long1, long2) {
+		var url = '/placemarkrestapi?country=' + country
+				+ '&needDetailsFlag=true' +  '&ignoreCache=true'
+				+ 'lat1=' + lat1 + 'lat2=' + lat2 + 'long1=' + long1 + 'long2='
+				+ long2;
+		if (cursor != null) {
+			url += '&cursor=' + cursor;
+		}
+		alert(url);
+		$.getJSON(url, function(jd) {
+			var count = 0;
+			$.each(jd.placemarks, function(i, item) {
+				makeMarker(item.latitude, item.longitude, item.iconUrl, "AP|"
+						+ item.communityCode, item.markType,
+						item.placemarkContents, null);
 				count++;
 			});
 			if (count > 0 && jd.cursor != null) {

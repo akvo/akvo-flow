@@ -196,7 +196,7 @@ a {
     <div id="communityDesc">
       <div id="communityDef">
       #if($type=="WATER_POINT")
-        <div id="communityName">Subdivision | $subValue </div>
+        <div id="communityName">#if($subPath) $subPath |#end $subValue </div>
        #end
       </div>
       <div class="mapIcon">				    
