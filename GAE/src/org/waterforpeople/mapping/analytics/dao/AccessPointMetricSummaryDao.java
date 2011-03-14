@@ -75,7 +75,7 @@ public class AccessPointMetricSummaryDao extends
 		
 		for (AccessPointMetricSummary item : rollupList) {
 			if (item.getSubValue() != null) {
-				List<OGRFeature> ogr = ogrFeatureDao.listBySubLevelCountryName(item.getCountry(), 1, item.getSubValue(), "all");
+				List<OGRFeature> ogr = ogrFeatureDao.listBySubLevelCountryName(item.getCountry(), prototype.getSubLevel(), item.getSubValue(), "all");
 				for(OGRFeature ogrItem:ogr){
 					item.setLatitude(ogrItem.getCentroidLat());
 					item.setLongitude(ogrItem.getCentroidLon());
