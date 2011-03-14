@@ -1,11 +1,17 @@
 package org.waterforpeople.mapping.app.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONObject;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.ExternalGISRequest;
+import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
+import org.waterforpeople.mapping.app.web.dto.OGRFeatureRestResponse;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -42,6 +48,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		ExternalGISRequest importReq = (ExternalGISRequest) convertRequest();
+		RestResponse resp = new RestResponse();
 		if (req.getAction().equals(ExternalGISRequest.IMPORT_ACTION)) {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			OGRFeature ogrFeature = new OGRFeature();
@@ -78,7 +85,8 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 					Geometry geometry = parseGeometryString(importReq
 							.getGeometryString());
 					ogrFeature.setGeometry(geometry);
-					if(geometry.getCentroidLat()!=null && geometry.getCentroidLon()!=null){
+					if (geometry.getCentroidLat() != null
+							&& geometry.getCentroidLon() != null) {
 						ogrFeature.setCentroidLat(geometry.getCentroidLat());
 						ogrFeature.setCentroidLon(geometry.getCentroidLon());
 					}
@@ -87,10 +95,61 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 				}
 			}
 			ogrFeatureDao.save(ogrFeature);
+
+			resp.setCode("200");
+
+		} else if (req.getAction().equals(
+				ExternalGISRequest.LIST_MATCHING_OGRFEATURE_ACTION)) {
+			OGRFeatureDao ogrFeatDao = new OGRFeatureDao();
+			String subLevelValue = null;
+			Integer level = null;
+			if (importReq.getSub1() != null) {
+				subLevelValue = importReq.getSub1();
+				level = 1;
+			} else if (importReq.getSub2() != null) {
+				subLevelValue = importReq.getSub2();
+				level = 2;
+			} else if (importReq.getSub3() != null) {
+				subLevelValue = importReq.getSub3();
+				level = 3;
+			} else if (importReq.getSub4() != null) {
+				subLevelValue = importReq.getSub4();
+				level = 4;
+			} else if (importReq.getSub5() != null) {
+				subLevelValue = importReq.getSub5();
+				level = 5;
+			} else if (importReq.getSub6() != null) {
+				subLevelValue = importReq.getSub6();
+				level = 6;
+			}
+			List<OGRFeature> ogrFeatureList = ogrFeatDao
+					.listBySubLevelCountryName(importReq.getCountryCode(),
+							level, subLevelValue, null);
+			resp = convertToResponse(ogrFeatureList,
+					OGRFeatureDao.getCursor(ogrFeatureList),
+					importReq.getCursor());
+
 		}
-		RestResponse resp = new RestResponse();
-		resp.setCode("200");
 		return resp;
+	}
+
+	private RestResponse convertToResponse(List<OGRFeature> ogrList,
+			String cursor, String oldCursor) {
+		OGRFeatureRestResponse resp = new OGRFeatureRestResponse();
+		if (ogrList != null) {
+			List<OGRFeatureDto> dtoList = new ArrayList<OGRFeatureDto>();
+			for (OGRFeature item : ogrList) {
+				dtoList.add(marshallDomainToDto(item));
+			}
+			resp.setOgrFeatures(dtoList);
+		}
+		return resp;
+	}
+
+	private OGRFeatureDto marshallDomainToDto(OGRFeature item) {
+		OGRFeatureDto dto = new OGRFeatureDto();
+		DtoMarshaller.copyToDto(item, dto);
+		return dto;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -127,7 +186,10 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		resp.setCode("200");
+		getResponse().setStatus(200);
+		OGRFeatureRestResponse piResp = (OGRFeatureRestResponse) resp;
+		JSONObject result = new JSONObject(piResp);
+		getResponse().getWriter().println(result.toString());
 
 	}
 

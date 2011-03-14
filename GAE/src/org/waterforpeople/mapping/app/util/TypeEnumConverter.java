@@ -6,6 +6,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.survey.domain.Question;
@@ -42,25 +43,31 @@ public class TypeEnumConverter extends AbstractConverter {
 				return AccessPoint.AccessPointType.valueOf(value.toString());
 			} else if (type == AccessPointDto.AccessPointType.class) {
 				return AccessPointDto.AccessPointType.valueOf(value.toString());
-			}else if (type == UnitOfMeasure.UnitOfMeasureSystem.class){
-				return UnitOfMeasure.UnitOfMeasureSystem.valueOf(value.toString());
-			}else if (type == UnitOfMeasureDto.UnitOfMeasureSystem.class){
-				return UnitOfMeasureDto.UnitOfMeasureSystem.valueOf(value.toString());
-			}else if (type == UnitOfMeasure.UnitOfMeasureType.class){
-				return UnitOfMeasure.UnitOfMeasureType.valueOf(value.toString());
-			}else if (type == UnitOfMeasureDto.UnitOfMeasureType.class){
-				return UnitOfMeasureDto.UnitOfMeasureType.valueOf(value.toString());
-			}else if (type == QuestionHelpMedia.Type.class){
+			} else if (type == UnitOfMeasure.UnitOfMeasureSystem.class) {
+				return UnitOfMeasure.UnitOfMeasureSystem.valueOf(value
+						.toString());
+			} else if (type == UnitOfMeasureDto.UnitOfMeasureSystem.class) {
+				return UnitOfMeasureDto.UnitOfMeasureSystem.valueOf(value
+						.toString());
+			} else if (type == UnitOfMeasure.UnitOfMeasureType.class) {
+				return UnitOfMeasure.UnitOfMeasureType
+						.valueOf(value.toString());
+			} else if (type == UnitOfMeasureDto.UnitOfMeasureType.class) {
+				return UnitOfMeasureDto.UnitOfMeasureType.valueOf(value
+						.toString());
+			} else if (type == QuestionHelpMedia.Type.class) {
 				return QuestionHelpMedia.Type.valueOf(value.toString());
-			}else if (type == QuestionHelpDto.Type.class){
+			} else if (type == QuestionHelpDto.Type.class) {
 				return QuestionHelpDto.Type.valueOf(value.toString());
+			} else if (type == OGRFeatureDto.FeatureType.class) {
+				return OGRFeatureDto.FeatureType.valueOf(value.toString());
 			}
 		}
 		return null;
 	}
-	
+
 	@Override
-	public Object handleMissing(Class type){
+	public Object handleMissing(Class type) {
 		return null;
 	}
 

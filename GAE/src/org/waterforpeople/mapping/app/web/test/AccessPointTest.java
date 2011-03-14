@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.analytics.CommunityLocationSummarizer;
 import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.app.web.TestHarnessServlet;
 import org.waterforpeople.mapping.dao.AccessPointDao;
@@ -80,6 +81,8 @@ public class AccessPointTest {
 				else
 					ap.setTypeTechnologyString("Afridev Handpump");
 				apDao.save(ap);
+				CommunityLocationSummarizer cls = new CommunityLocationSummarizer();
+				cls.performSummarization(String.valueOf(ap.getKey().getId()), null, null, null, null);
 				MapSummarizer ms = new MapSummarizer();
 				// ms.performSummarization("" + ap.getKey().getId(), "");
 				if (i % 50 == 0)

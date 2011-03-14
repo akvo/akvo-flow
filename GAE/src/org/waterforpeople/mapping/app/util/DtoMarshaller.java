@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
+import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -73,6 +74,7 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter,UnitOfMeasureDto.UnitOfMeasureType.class);
 		ConvertUtils.register(enumConverter,QuestionHelpMedia.Type.class);
 		ConvertUtils.register(enumConverter,QuestionHelpDto.Type.class);
+		ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
 		
 		
 		DatastoreTextConverter textConverter = new DatastoreTextConverter();

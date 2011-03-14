@@ -35,7 +35,8 @@ public class ExternalGISRequest extends RestRequest {
 	private static final String FEMALE_POPULATION_PARAM = "femalePopulation";
 	private static final String MALE_POPULATION_PARAM = "malePopulation";
 	private static final String NUMBER_HOUSEHOLDS_PARAM = "numberOfHouseholds";
-
+	public static final String LIST_MATCHING_OGRFEATURE_ACTION = "listOGRFeature";
+	
 	/**
 	 * 
 	 */
