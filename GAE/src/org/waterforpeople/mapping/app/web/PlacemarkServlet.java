@@ -16,8 +16,6 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
 import org.json.JSONObject;
-import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.app.web.dto.PlacemarkRestRequest;
 import org.waterforpeople.mapping.app.web.dto.PlacemarkRestResponse;
@@ -29,8 +27,6 @@ import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
-import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
@@ -89,16 +85,28 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		if (piReq.getAction() != null
 				&& PlacemarkRestRequest.GET_AP_DETAILS_ACTION.equals(piReq
 						.getAction())) {
+
 			AccessPoint ap = (AccessPoint) apDao.findAccessPoint(
 					piReq.getCommunityCode(), piReq.getPointType());
 			List<AccessPoint> apList = new ArrayList<AccessPoint>();
 			apList.add(ap);
 			response = (PlacemarkRestResponse) convertToResponse(apList, true,
 					null, null, piReq.getDisplay());
+
 		} else {
 			// ListPlacemarks Action
-			if (piReq.getSubLevel() != null) {
-				List<AccessPoint> results = apDao.listBySubLevel(piReq.getCountry(),piReq.getSubLevel(), piReq.getSubLevelValue(), piReq.getCursor(), AccessPointType.WATER_POINT);
+			if (piReq.getLat1() != null) {
+				response = (PlacemarkRestResponse) convertToResponse(
+						apDao.listAccessPointsByBoundingBox(
+								piReq.getPointType(), piReq.getLat1(),
+								piReq.getLat2(), piReq.getLong1(),
+								piReq.getLong2()), true, null, null,
+						piReq.getDisplay());
+			} else if (piReq.getSubLevel() != null) {
+				List<AccessPoint> results = apDao.listBySubLevel(
+						piReq.getCountry(), piReq.getSubLevel(),
+						piReq.getSubLevelValue(), piReq.getCursor(),
+						AccessPointType.WATER_POINT);
 				String display = null;
 				if (piReq.getDisplay() != null) {
 					display = piReq.getDisplay();

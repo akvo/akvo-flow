@@ -20,7 +20,10 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String IGNORE_CACHE_PARAM ="ignoreCache";
 	private static final String SUB_LEVEL_PARAM = "subLevel";
 	private static final String SUB_LEVEL_VALUE = "subLevelValue";
-
+	private static final String LAT1_PARAM = "lat1";
+	private static final String LONG1_PARAM = "long1";
+	private static final String LAT2_PARAM = "lat2";
+	private static final String LONG2_PARAM = "long2";
 	private String country;
 	private Boolean needDetailsFlag = null;
 	private String communityCode = null;
@@ -29,7 +32,42 @@ public class PlacemarkRestRequest extends RestRequest {
 	private Boolean ignoreCache = false;
 	private Integer subLevel = null;
 	private String subLevelValue = null;
+	private Double lat1 = null;
+	private Double lat2 = null;
+	private Double long1 = null;
+	private Double long2 = null;
+	
+	public Double getLat1() {
+		return lat1;
+	}
 
+	public void setLat1(Double lat1) {
+		this.lat1 = lat1;
+	}
+
+	public Double getLat2() {
+		return lat2;
+	}
+
+	public void setLat2(Double lat2) {
+		this.lat2 = lat2;
+	}
+
+	public Double getLong1() {
+		return long1;
+	}
+
+	public void setLong1(Double long1) {
+		this.long1 = long1;
+	}
+
+	public Double getLong2() {
+		return long2;
+	}
+
+	public void setLong2(Double long2) {
+		this.long2 = long2;
+	}
 	public String getSubLevelValue() {
 		return subLevelValue;
 	}
@@ -78,6 +116,19 @@ public class PlacemarkRestRequest extends RestRequest {
 		if(req.getParameter(IGNORE_CACHE_PARAM)!=null){
 			setIgnoreCache(Boolean.parseBoolean(req.getParameter(IGNORE_CACHE_PARAM)));
 		}
+		if(req.getParameter(LAT1_PARAM)!=null){
+			setLat1(Double.parseDouble(req.getParameter(LAT1_PARAM)));
+		}
+		if(req.getParameter(LAT2_PARAM)!=null){
+			setLat2(Double.parseDouble(req.getParameter(LAT2_PARAM)));
+		}
+		if(req.getParameter(LONG1_PARAM)!=null){
+			setLong1(Double.parseDouble(req.getParameter(LONG1_PARAM)));
+		}
+		if(req.getParameter(LONG2_PARAM)!=null){
+			setLong2(Double.parseDouble(req.getParameter(LONG2_PARAM)));
+		}
+		
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
 			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
 			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeValue))

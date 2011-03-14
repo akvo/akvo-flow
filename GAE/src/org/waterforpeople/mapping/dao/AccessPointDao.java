@@ -112,7 +112,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public List<AccessPoint> searchAccessPoints(String country,
 			String community, Date collDateFrom, Date collDateTo, String type,
 			String tech, Date constructionDateFrom, Date constructionDateTo,
-			String orderByField, String orderByDir,Integer pageSize, String cursorString) {
+			String orderByField, String orderByDir, Integer pageSize,
+			String cursorString) {
 
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		javax.jdo.Query query = constructQuery(country, community,
@@ -134,8 +135,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				constructionDateTo, null, null, paramMap);
 		query.deletePersistentAll(paramMap);
 	}
-	
-	public List<AccessPoint> listBySubLevel(String countryCode,Integer level, String subValue, String cursor, AccessPoint.AccessPointType type){
+
+	public List<AccessPoint> listBySubLevel(String countryCode, Integer level,
+			String subValue, String cursor, AccessPoint.AccessPointType type) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		StringBuilder filterString = new StringBuilder();
@@ -147,7 +149,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				type, paramMap);
 		appendNonNullParam("countryCode", filterString, paramString, "String",
 				countryCode, paramMap);
-		appendNonNullParam("sub"+level, filterString, paramString, "String",
+		appendNonNullParam("sub" + level, filterString, paramString, "String",
 				subValue, paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
@@ -218,8 +220,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				lon, paramMap);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				collectionDate, paramMap, EQ_OP);
-	
-		
+
 		query.declareImports("import java.util.Date");
 
 		query.setFilter(filterString.toString());
@@ -273,9 +274,10 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> result = (List<AccessPoint>) q.execute();
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<AccessPoint> listAccessPointBySubLevel(Integer subLevel, String subName, String cursorString){
+	public List<AccessPoint> listAccessPointBySubLevel(Integer subLevel,
+			String subName, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Map<String, Object> paramMap = null;
 
@@ -283,12 +285,13 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 		javax.jdo.Query q = pm.newQuery(AccessPoint.class);
-		appendNonNullParam("sub"+subLevel, filterString, paramString,
+		appendNonNullParam("sub" + subLevel, filterString, paramString,
 				"String", subName, paramMap);
 		q.setOrdering("createdDateTime desc");
 		q.setFilter(filterString.toString());
 		q.declareParameters(paramString.toString());
-		List<AccessPoint> result = (List<AccessPoint>) q.executeWithMap(paramMap);
+		List<AccessPoint> result = (List<AccessPoint>) q
+				.executeWithMap(paramMap);
 		return result;
 	}
 
@@ -334,6 +337,37 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return results.get(0);
 	}
 
+	public List<AccessPoint> listAccessPointsByBoundingBox(
+			AccessPointType pointType, Double lat1, Double lat2, Double long1,
+			Double long2) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("pointType", filterString, paramString, "String",
+				pointType.toString(), paramMap);
+		appendNonNullParam("latitude", filterString, paramString, "Double",
+				lat1, paramMap, GTE_OP);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		List<AccessPoint> results = (List<AccessPoint>) query
+				.executeWithMap(paramMap);
+		List<AccessPoint> resultsInBox = new ArrayList<AccessPoint>();
+		if (!results.isEmpty()) {
+			for (AccessPoint ap : results) {
+				if (ap.getLongitude() > long1 && ap.getLatitude() < lat2
+						&& ap.getLongitude() < long2) {
+					resultsInBox.add(ap);
+				}
+			}
+		}
+		return resultsInBox;
+	}
+
 	/**
 	 * finds a single access point by its sms code. If there is more than one,
 	 * it will return the one with the latest collectionDate
@@ -364,8 +398,6 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return latest;
 	}
 
-	
-	
 	public AccessPoint save(AccessPoint point) {
 		point = super.save(point);
 		return point;

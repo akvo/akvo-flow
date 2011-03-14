@@ -834,6 +834,10 @@ public class KMLGenerator {
 	public String bindSummaryPlacemark(AccessPointMetricSummaryDto apsDto, String vmName) throws Exception{
 		VelocityContext context = new VelocityContext();
 		StringBuilder sb = new StringBuilder();
+		if(apsDto.getParentSubName()!=null){
+			context.put("subPath", apsDto.getParentSubName().replace("/", " | "));
+		}
+		
 		context.put("subValue", apsDto.getSubValue());
 		context.put("waterPointCount", apsDto.getCount());
 		context.put("type", apsDto.getMetricValue());

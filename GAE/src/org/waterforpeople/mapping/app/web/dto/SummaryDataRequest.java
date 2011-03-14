@@ -25,7 +25,7 @@ public class SummaryDataRequest extends RestRequest {
 	public static final String METRIC_NAME_PARAM = "metricName";
 	public static final String SUB_LEVEL_PARAM = "subLevel";
 	public static final String INCLUDE_PLACEMARK_PARAM = "includePlacemark";
-	public static final String ACCESS_POINT_TYPE_PARAM = "accessPointType";
+	public static final String ACCESS_POINT_TYPE_PARAM = "metricValue";
 	public static final String PARENT_SUB_PATH_PARAM = "parentSubPath";
 
 	private String country;
