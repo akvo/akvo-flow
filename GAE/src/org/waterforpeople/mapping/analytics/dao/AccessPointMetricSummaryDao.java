@@ -63,6 +63,7 @@ public class AccessPointMetricSummaryDao extends
 					rollup.setPeriodType(s.getPeriodType());
 					rollup.setPeriodValue(s.getPeriodValue());
 					rollups.put(s.identifierString(), rollup);
+					rollup.setParentSubName(s.getParentSubName());
 				} else {
 					rollup.setCount(rollup.getCount()
 							+ (s.getCount() != null ? s.getCount() : 0));
@@ -75,7 +76,7 @@ public class AccessPointMetricSummaryDao extends
 		
 		for (AccessPointMetricSummary item : rollupList) {
 			if (item.getSubValue() != null) {
-				List<OGRFeature> ogr = ogrFeatureDao.listBySubLevelCountryName(item.getCountry(), prototype.getSubLevel(), item.getSubValue(), "all");
+				List<OGRFeature> ogr = ogrFeatureDao.listBySubLevelCountryName(item.getCountry(), prototype.getSubLevel(), item.getSubValue(), "all",item.getParentSubName());
 				for(OGRFeature ogrItem:ogr){
 					item.setLatitude(ogrItem.getCentroidLat());
 					item.setLongitude(ogrItem.getCentroidLon());

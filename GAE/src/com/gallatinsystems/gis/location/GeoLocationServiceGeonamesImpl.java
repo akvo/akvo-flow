@@ -285,7 +285,6 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 					place.setSub5(item.getSub5());
 					place.setSub6(item.getSub6());
 					log.log(Level.INFO,"Found point inside " + item.getCountryCode() + " " +  item.toString());
-					break;
 				}
 			} else {
 				log.log(Level.INFO, item.getCountryCode()

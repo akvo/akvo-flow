@@ -124,7 +124,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 			}
 			List<OGRFeature> ogrFeatureList = ogrFeatDao
 					.listBySubLevelCountryName(importReq.getCountryCode(),
-							level, subLevelValue, null);
+							level, subLevelValue, null,null);
 			resp = convertToResponse(ogrFeatureList,
 					OGRFeatureDao.getCursor(ogrFeatureList),
 					importReq.getCursor());

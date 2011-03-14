@@ -19,7 +19,9 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 
 	}
 
-	public List<OGRFeature> listBySubLevelCountryName(String countryCode, Integer level, String subLevelValue, String cursorString){
+	public List<OGRFeature> listBySubLevelCountryName(String countryCode,
+			Integer level, String subLevelValue, String cursorString,
+			String parentSubPath) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
 		StringBuilder filterString = new StringBuilder();
@@ -27,23 +29,32 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		Map<String, Object> paramMap = null;
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("countryCode", filterString, paramString, "String", countryCode,
-				paramMap, EQ_OP);
-		appendNonNullParam("sub"+level, filterString, paramString, "String", subLevelValue,
-				paramMap, EQ_OP);
-		
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap, EQ_OP);
+		if (level > 0)
+			appendNonNullParam("sub" + level, filterString, paramString,
+					"String", subLevelValue, paramMap, EQ_OP);
+
+		if (parentSubPath != null) {
+			String[] subParts = parentSubPath.split("/");
+
+			for (int i = 1; i < subParts.length; i++) {
+				// first param is country so ignore
+				appendNonNullParam("sub" + i, filterString, paramString,
+						"String", subParts[i], paramMap, EQ_OP);
+			}
+		}
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
-		
 		prepareCursor(cursorString, query);
 		@SuppressWarnings("unchecked")
 		List<OGRFeature> resultsGTE = (List<OGRFeature>) query
 				.executeWithMap(paramMap);
-		
+
 		return resultsGTE;
 	}
-	
+
 	public List<OGRFeature> listByExtentAndType(Double x1, Double y1,
 			OGRFeature.FeatureType featureType, String orderByCol,
 			String orderByDirection, String cursorString) {
@@ -211,8 +222,9 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 						&& !existingItem.getSub1().equals(item.getSub1())) {
 					isSame = false;
 				}
-				if ((item.getSub2() != null && existingItem.getSub2() != null
-						&& !existingItem.getSub2().equals(item.getSub2())) || (item.getSub2()==null && existingItem.getSub2()!=null)) {
+				if ((item.getSub2() != null && existingItem.getSub2() != null && !existingItem
+						.getSub2().equals(item.getSub2()))
+						|| (item.getSub2() == null && existingItem.getSub2() != null)) {
 					isSame = false;
 				}
 				if (item.getSub3() != null && existingItem.getSub3() != null

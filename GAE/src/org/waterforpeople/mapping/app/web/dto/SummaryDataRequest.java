@@ -26,6 +26,7 @@ public class SummaryDataRequest extends RestRequest {
 	public static final String SUB_LEVEL_PARAM = "subLevel";
 	public static final String INCLUDE_PLACEMARK_PARAM = "includePlacemark";
 	public static final String ACCESS_POINT_TYPE_PARAM = "accessPointType";
+	public static final String PARENT_SUB_PATH_PARAM = "parentSubPath";
 
 	private String country;
 	private String organization;
@@ -35,6 +36,7 @@ public class SummaryDataRequest extends RestRequest {
 	private Integer subLevel = null;
 	private Boolean includePlacemarkFlag = false;
 	private String accessPointType=null;
+	private String parentSubPath=null;
 
 	public Integer getSubLevel() {
 		return subLevel;
@@ -99,6 +101,9 @@ public class SummaryDataRequest extends RestRequest {
 		if(req.getParameter(ACCESS_POINT_TYPE_PARAM)!=null){
 			setAccessPointType(req.getParameter(ACCESS_POINT_TYPE_PARAM));
 		}
+		if(req.getParameter(PARENT_SUB_PATH_PARAM)!=null){
+			setParentSubPath(req.getParameter(PARENT_SUB_PATH_PARAM));
+		}
 	}
 
 	public String getCountry() {
@@ -147,6 +152,14 @@ public class SummaryDataRequest extends RestRequest {
 
 	public String getAccessPointType() {
 		return accessPointType;
+	}
+
+	public void setParentSubPath(String parentSubPath) {
+		this.parentSubPath = parentSubPath;
+	}
+
+	public String getParentSubPath() {
+		return parentSubPath;
 	}
 
 }

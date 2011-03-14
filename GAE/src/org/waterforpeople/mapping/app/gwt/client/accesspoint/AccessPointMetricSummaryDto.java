@@ -28,6 +28,7 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 	private String iconUrl = null;
 	private String accessPointType = null;
 	private String placemarkContents=null;
+	private String parentSubName = null;
 	
 	public String getPlacemarkContents() {
 		return placemarkContents;
@@ -155,5 +156,13 @@ public class AccessPointMetricSummaryDto extends BaseDto {
 
 	public String getAccessPointType() {
 		return accessPointType;
+	}
+
+	public void setParentSubName(String parentSubName) {
+		this.parentSubName = parentSubName;
+	}
+
+	public String getParentSubName() {
+		return parentSubName;
 	}
 }

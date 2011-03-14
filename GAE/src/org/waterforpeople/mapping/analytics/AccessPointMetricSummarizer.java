@@ -51,6 +51,8 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 									fieldValue, mapping.getMetricGroup(),
 									metricName, ap.getOrganization(), ap
 											.getCountryCode(), valBucket);
+							metricSummary.setSubLevel(0);
+							metricSummary.setSubValue(ap.getCountryCode());
 							AccessPointMetricSummaryDao.incrementCount(
 									metricSummary, 1);
 							if (ap.getSub1() != null) {
