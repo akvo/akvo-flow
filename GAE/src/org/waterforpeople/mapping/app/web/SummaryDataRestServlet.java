@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SummaryDataRequest;
 import org.waterforpeople.mapping.app.web.dto.SummaryDataResponse;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -26,15 +27,18 @@ import com.gallatinsystems.framework.rest.RestResponse;
  * 
  */
 public class SummaryDataRestServlet extends AbstractRestApiServlet {
+	private static final String IMAGE_ROOT = "imageroot";
+
 	private static final Logger log = Logger
 	.getLogger(SummaryDataRestServlet.class.getName());
 
 	private static final long serialVersionUID = 7550953090927763716L;
 	private AccessPointMetricSummaryDao apMetricSummaryDao;
-
+	private static String imageRoot;
 	public SummaryDataRestServlet() {
 		setMode(JSON_MODE);
 		apMetricSummaryDao = new AccessPointMetricSummaryDao();
+		imageRoot = PropertyUtil.getProperty(IMAGE_ROOT);
 	}
 
 	@Override
@@ -118,7 +122,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	}
 
 	private String getIconUrl(AccessPointMetricSummaryDto dto) {
-		return "http://watermapmonitordev.appspot.com/images/iconGreen36.png";
+		return imageRoot + "/images/solidOrange64.png";
 	}
 
 	private String generatePlacemarkContents(AccessPointMetricSummaryDto dto)

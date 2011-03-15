@@ -29,16 +29,18 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class KMLGenerator {
+	private static final String IMAGE_ROOT = "imageroot";
+
 	private static final Logger log = Logger.getLogger(KMLGenerator.class
 			.getName());
 
 	private VelocityEngine engine;
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
-	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconGreen36.png";
-	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconYellow36.png";
-	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconRed36.png";
-	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
+	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil.getProperty(IMAGE_ROOT)+"/images/glassGreen32.png";
+	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil.getProperty(IMAGE_ROOT)+"/images/glassOrange32.png";
+	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil.getProperty(IMAGE_ROOT)+"/images/glassRed32.png";
+	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/glassBlack32.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseRed36.png";
