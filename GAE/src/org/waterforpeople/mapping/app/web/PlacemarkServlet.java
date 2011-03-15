@@ -100,7 +100,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						apDao.listAccessPointsByBoundingBox(
 								piReq.getPointType(), piReq.getLat1(),
 								piReq.getLat2(), piReq.getLong1(),
-								piReq.getLong2()), true, null, null,
+								piReq.getLong2(),piReq.getCursor()), true, null, null,
 						piReq.getDisplay());
 			} else if (piReq.getSubLevel() != null) {
 				List<AccessPoint> results = apDao.listBySubLevel(
