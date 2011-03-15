@@ -351,7 +351,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		appendNonNullParam("pointType", filterString, paramString, "String",
 				pointType.toString(), paramMap);
 		appendNonNullParam("latitude", filterString, paramString, "Double",
-				lat1, paramMap, GTE_OP);
+				lat1, paramMap, LTE_OP);
+		appendNonNullParam("latitude", filterString, paramString, "Double",
+				lat2, paramMap, GTE_OP);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursorString, query);
@@ -360,8 +362,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> resultsInBox = new ArrayList<AccessPoint>();
 		if (!results.isEmpty() && results != null) {
 			for (AccessPoint ap : results) {
-				if (ap.getLongitude() > long1 && ap.getLatitude() < lat2
-						&& ap.getLongitude() < long2) {
+				if (ap.getLongitude() < long1 
+						&& ap.getLongitude() > long2) {
 					resultsInBox.add(ap);
 				}
 			}
