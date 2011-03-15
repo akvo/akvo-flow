@@ -59,7 +59,7 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 					.getDatastoreService();
 			final long start = System.currentTimeMillis();
 			while (System.currentTimeMillis() - start < 16384) {
-
+				AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
 				final Query query = new Query(kind);
 				FetchOptions fetchOptions = FetchOptions.Builder.withLimit(128);
 
@@ -72,27 +72,17 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 				final ArrayList<Key> keys = new ArrayList<Key>();
 				QueryResultList<Entity> results = dss.prepare(query)
 						.asQueryResultList(fetchOptions);
-				if (results.isEmpty()) {
+				newCursor = results.getCursor().toWebSafeString();
+
+				if (results.isEmpty() || newCursor == null || results==null) {
 					is_finished = true;
+					break;
 				} else {
 					for (final Entity entity : results) {
-						keys.add(entity.getKey());
-					}
-					newCursor = results.getCursor().toWebSafeString();
-
-					while (System.currentTimeMillis() - start < 16384) {
-						try {
-							AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
-							for (Key key : keys) {
-								apms.performSummarization(
-										String.valueOf(key.getId()), null,
-										null, null, null);
-							}
-							deleted_count += keys.size();
-							break;
-						} catch (Throwable ignore) {
-							continue;
-						}
+						apms.performSummarization(
+								String.valueOf(entity.getKey().getId()), null,
+								null, null, null);
+						++deleted_count;
 					}
 				}
 				System.err.println("*** processed " + deleted_count
