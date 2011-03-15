@@ -97,6 +97,14 @@ public abstract class QuestionWidget extends Composite {
 			return false;
 		}
 	}
+	
+	/**
+	 * indicates whether the underlying quesiton is mandatory
+	 * @return
+	 */
+	public boolean isMandatory(){
+		return getQuestion().getMandatoryFlag();
+	}
 
 	/**
 	 * resets the question to the unanswered state

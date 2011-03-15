@@ -36,6 +36,15 @@ public class SurveyInstance extends BaseDomain {
 	private String submitterName;
 	private String approvedFlag;
 	private String uuid;
+	private String approximateLocationFlag;
+
+	public String getApproximateLocationFlag() {
+		return approximateLocationFlag;
+	}
+
+	public void setApproximateLocationFlag(String approximateLocationFlag) {
+		this.approximateLocationFlag = approximateLocationFlag;
+	}
 
 	public String getUuid() {
 		return uuid;

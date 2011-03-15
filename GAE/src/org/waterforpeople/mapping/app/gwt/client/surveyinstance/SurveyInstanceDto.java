@@ -22,6 +22,15 @@ public class SurveyInstanceDto extends BaseDto {
 	private String deviceIdentifier;
 	private String surveyCode;
 	private String approvedFlag;
+	private String approximateLocationFlag;
+
+	public String getApproximateLocationFlag() {
+		return approximateLocationFlag;
+	}
+
+	public void setApproximateLocationFlag(String approximateLocationFlag) {
+		this.approximateLocationFlag = approximateLocationFlag;
+	}
 
 	public String getApprovedFlag() {
 		return approvedFlag;

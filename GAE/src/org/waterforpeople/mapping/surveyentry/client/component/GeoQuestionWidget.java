@@ -8,8 +8,12 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.event.MapClickHandler;
+import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -30,6 +34,8 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 	private TextBox alt;
 	private TextBox code;
 	private Button locateExisting;
+	private Button mapButton;
+	private boolean isApprox;
 
 	public GeoQuestionWidget(QuestionDto q, QuestionAnswerStoreDto a) {
 		super(q, a);
@@ -37,6 +43,7 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 
 	@Override
 	protected void constructResponseUi() {
+		isApprox = false;
 		lat = new TextBox();
 		ViewUtil.installFieldRow(getPanel(), "Latitude", lat, null);
 		lon = new TextBox();
@@ -66,6 +73,13 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 		locateExisting = new Button("Find Existing Point");
 		locateExisting.addClickHandler(this);
 		getPanel().add(locateExisting);
+		mapButton = new Button("View Map");
+		mapButton.addClickHandler(this);
+		getPanel().add(mapButton);
+	}
+
+	public boolean isApproximate() {
+		return isApprox;
 	}
 
 	public void captureAnswer() {
@@ -97,8 +111,33 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 		if (event.getSource() == locateExisting) {
 			AccessPointLocatorDialog dia = new AccessPointLocatorDialog(this);
 			dia.showCentered();
-		}
+		} else if (event.getSource() == mapButton) {
+			// TODO: parameterize
+			final WidgetDialog dia = new WidgetDialog("Select location",null);
+			LatLng point = LatLng.newInstance(6.571, -9.351);
+			MapWidget map = new MapWidget(point, 10);
+			map.setWidth("400px");
+			map.setHeight("400px");
+			map.addMapClickHandler(new MapClickHandler() {
+				@Override
+				public void onClick(MapClickEvent event) {
+					if (event.getLatLng() != null) {
+						populateFromMap(event.getLatLng().getLatitude(), event
+								.getLatLng().getLongitude());
+						dia.hide();
+					}
 
+				}
+			});
+			dia.setContentWidget(map);
+			dia.showCentered();
+		}
+	}
+
+	private void populateFromMap(double latVal, double lonVal) {
+		lat.setText("" + latVal);
+		lon.setText("" + lonVal);
+		isApprox = true;
 	}
 
 	@Override
@@ -106,6 +145,7 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 			Map<String, Object> payload) {
 		if (payload != null
 				&& payload.get(AccessPointLocatorDialog.SELECTED_AP_KEY) != null) {
+			isApprox = false;
 			AccessPointDto ap = (AccessPointDto) payload
 					.get(AccessPointLocatorDialog.SELECTED_AP_KEY);
 			if (ap.getLatitude() != null) {

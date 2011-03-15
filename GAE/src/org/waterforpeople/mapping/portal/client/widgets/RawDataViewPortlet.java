@@ -57,7 +57,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private static final DataTableHeader TABLE_HEADERS[] = {
 			new DataTableHeader("Submission"), new DataTableHeader("Survey"),
 			new DataTableHeader("Survey Code"),
-			new DataTableHeader("Collection Date") };
+			new DataTableHeader("Collection Date"),
+			new DataTableHeader("Approx?") };
 	private static final Integer PAGE_SIZE = 20;
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
@@ -436,6 +437,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		grid.setWidget(row, 2, ViewUtil.initLabel(item.getSurveyCode()));
 		grid.setWidget(row, 3, ViewUtil.initLabel(DateTimeFormat
 				.getMediumDateTimeFormat().format(item.getCollectionDate())));
+		grid.setWidget(row, 4, ViewUtil.initLabel(item
+				.getApproximateLocationFlag() != null ? item
+				.getApproximateLocationFlag() : "False"));
 	}
 
 	@Override

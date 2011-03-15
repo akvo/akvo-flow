@@ -191,14 +191,19 @@ public class SurveyEntryWidget extends Composite implements
 	 */
 	private void populateSubmissionPanel() {
 		submissionPanel.clear();
+		boolean isApprox = false;
 		final List<QuestionAnswerStoreDto> answers = new ArrayList<QuestionAnswerStoreDto>();
 		List<QuestionDto> missingItems = new ArrayList<QuestionDto>();
 		for (QuestionWidget w : questionWidgetMap.values()) {
-			if (w.isVisible() && !w.isAnswered()) {
+			if (w.isVisible() && !w.isAnswered() && w.isMandatory()) {
 				missingItems.add(w.getQuestion());
 			} else if (w.isVisible()) {
 				answers.add(w.getAnswer());
-
+				if (w instanceof GeoQuestionWidget) {
+					if (((GeoQuestionWidget) w).isApproximate()) {
+						isApprox = true;
+					}
+				}
 			}
 		}
 		if (missingItems.size() == 0) {
@@ -210,12 +215,18 @@ public class SurveyEntryWidget extends Composite implements
 			}
 
 			Button submitButton = new Button(lblText);
+			final boolean isApproximateLocation = isApprox;
 
 			submitButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
 					SurveyInstanceDto instance = new SurveyInstanceDto();
+					if (isApproximateLocation) {
+						instance.setApproximateLocationFlag("True");
+					} else {
+						instance.setApproximateLocationFlag("False");
+					}
 					instance.setApprovedFlag("False");
 					instance.setSurveyId(new Long(surveyId));
 					instance.setCollectionDate(new Date());
