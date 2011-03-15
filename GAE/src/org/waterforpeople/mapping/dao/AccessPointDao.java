@@ -357,7 +357,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
 		List<AccessPoint> resultsInBox = new ArrayList<AccessPoint>();
-		if (!results.isEmpty()) {
+		if (!results.isEmpty() && results != null) {
 			for (AccessPoint ap : results) {
 				if (ap.getLongitude() > long1 && ap.getLatitude() < lat2
 						&& ap.getLongitude() < long2) {
