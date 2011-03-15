@@ -47,7 +47,7 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		DeleteTaskRequest dtReq = (DeleteTaskRequest) convertRequest();
+		DeleteTaskRequest dtReq = (DeleteTaskRequest) req;
 		String newCursor = null;
 		if (dtReq.getKey().equals("secret")) {
 			final String kind = dtReq.getObjectName();

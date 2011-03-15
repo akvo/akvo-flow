@@ -6,13 +6,10 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class DeleteTaskRequest extends RestRequest {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 8342489912346343508L;
 	public static final String OBJECT_PARAM ="object";
-	public static final String KEY_PARAM = "key";
-	public static final String CURSOR_PARAM = "cursor";
+	public static final String KEY_PARAM = "key";	
 	public static final String TASK_COUNT_PARAM = "taskCount";
 	private String objectName = null;
 	private String key = null;
