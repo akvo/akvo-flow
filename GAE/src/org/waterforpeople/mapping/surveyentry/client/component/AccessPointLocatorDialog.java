@@ -98,8 +98,8 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 		temp.add(ViewUtil.initLabel("Community Code"));
 		temp.add(commCodeBox);
 		temp.add(ViewUtil.initLabel("Point Type"));
-		temp.add(pointTypeBox);
-		temp.add(searchButton);
+		//temp.add(pointTypeBox);
+		//temp.add(searchButton);
 		controlsPanel.add(temp);
 		statusLabel = ViewUtil.initLabel("Loading. Please wait...");
 		statusLabel.setVisible(false);
@@ -199,10 +199,11 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 		if (ViewUtil.isTextPopulated(commCodeBox)) {
 			dto.setCommunityCode(commCodeBox.getText());
 		}
-
-		dto
+//TODO: put back once this is parameterized
+		/*dto
 				.setPointType(pointTypeBox.getValue(pointTypeBox
-						.getSelectedIndex()));
+						.getSelectedIndex()));*/
+		dto.setPointType(AccessPointDto.AccessPointType.WATER_POINT.toString());
 		dto.setPageSize(PAGE_SIZE);
 		dto.setOrderBy(apTable.getCurrentSortField());
 		dto.setOrderByDir(apTable.getCurrentSortDirection());
