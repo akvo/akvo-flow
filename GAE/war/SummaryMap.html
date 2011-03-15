@@ -296,7 +296,7 @@ a {
 		});
 
 		google.maps.event.addListener(map, 'zoom_changed', function() {
-			if (map.getZoom() >5 && map.getZoom() < 7) {
+			if (map.getZoom() > 5 && map.getZoom() < 7) {
 				getPlacemarkInfo('LR', null, 1, 'LR');
 			} else if (map.getZoom() > 6 && map.getZoom() < 10) {
 				getPlacemarkInfo('LR', null, 2, null);
@@ -348,7 +348,6 @@ a {
 			fullPath = communityCode;
 		} else {
 			communityCode = 'LR';
-			alert('Setting communityCode');
 		}
 		var markerOptions = {
 			map : map,
@@ -402,13 +401,12 @@ a {
 	function getAccessPointPlacemarkInfo(countryCode, subLevelValue, subLevel,
 			cursor, lat1, lat2, long1, long2) {
 		var url = '/placemarkrestapi?country=' + country
-				+ '&needDetailsFlag=true' +  '&ignoreCache=true'
-				+ '&lat1=' + lat1 + '&lat2=' + lat2 + '&long1=' + long1 + '&long2='
-				+ long2&pointType=WATER_POINT;
+				+ '&needDetailsFlag=true' + '&ignoreCache=true' + '&lat1='
+				+ lat1 + '&lat2=' + lat2 + '&long1=' + long1 + '&long2='
+				+ long2 + '&pointType=WATER_POINT';
 		if (cursor != null) {
 			url += '&cursor=' + cursor;
 		}
-		alert(url);
 		$.getJSON(url, function(jd) {
 			var count = 0;
 			$.each(jd.placemarks, function(i, item) {
@@ -418,7 +416,8 @@ a {
 				count++;
 			});
 			if (count > 0 && jd.cursor != null) {
-				getAccessPointPlacemarkInfo(countryCode,subLevelValue,subLevel, jd.cursor,lat1,lat2,long1,long2);
+				getAccessPointPlacemarkInfo(countryCode, subLevelValue,
+						subLevel, jd.cursor, lat1, lat2, long1, long2);
 			}
 		});
 	};
