@@ -119,22 +119,24 @@ public class LocationService extends Service {
 	 */
 	private void sendLocation(String serverBase, Location loc) {
 		try {
+			String phoneNumber = StatusUtil.getPhoneNumber(this);
 			if (loc != null) {
-				String url = serverBase
-						+ BEACON_SERVICE_PATH
-						+ URLEncoder.encode(StatusUtil.getPhoneNumber(this),
-								"UTF-8") + LAT + loc.getLatitude() + LON
-						+ loc.getLongitude() + ACC + loc.getAccuracy() + VER
-						+ version;
-				if (deviceId != null) {
-					url += DEV_ID + URLEncoder.encode(deviceId, "UTF-8");
+				if (phoneNumber != null) {
+					String url = serverBase + BEACON_SERVICE_PATH
+							+ URLEncoder.encode(phoneNumber, "UTF-8") + LAT
+							+ loc.getLatitude() + LON + loc.getLongitude()
+							+ ACC + loc.getAccuracy() + VER + version;
+					if (deviceId != null) {
+						url += DEV_ID + URLEncoder.encode(deviceId, "UTF-8");
+					}
+					HttpUtil.httpGet(url);
 				}
-				HttpUtil.httpGet(url);
 			} else {
 				// if location is null, send an update anyway, just without
 				// lat/lon
 				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
-						+ StatusUtil.getPhoneNumber(this) + VER + version);
+						+ URLEncoder.encode(phoneNumber, "UTF-8") + VER
+						+ version);
 
 			}
 		} catch (Exception e) {
