@@ -72,29 +72,32 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 				final ArrayList<Key> keys = new ArrayList<Key>();
 				QueryResultList<Entity> results = dss.prepare(query)
 						.asQueryResultList(fetchOptions);
-				for (final Entity entity : results) {
-					keys.add(entity.getKey());
-				}
-				newCursor = results.getCursor().toWebSafeString();
+				if (results.isEmpty()) {
+					is_finished = true;
+				} else {
+					for (final Entity entity : results) {
+						keys.add(entity.getKey());
+					}
+					newCursor = results.getCursor().toWebSafeString();
 
-				while (System.currentTimeMillis() - start < 16384) {
-					try {
-						AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
-						for (Key key : keys) {
-							apms.performSummarization(
-									String.valueOf(key.getId()), null, null,
-									null, null);
+					while (System.currentTimeMillis() - start < 16384) {
+						try {
+							AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
+							for (Key key : keys) {
+								apms.performSummarization(
+										String.valueOf(key.getId()), null,
+										null, null, null);
+							}
+							deleted_count += keys.size();
+							break;
+						} catch (Throwable ignore) {
+							continue;
 						}
-						deleted_count += keys.size();
-						break;
-					} catch (Throwable ignore) {
-						continue;
 					}
 				}
+				System.err.println("*** processed " + deleted_count
+						+ " entities form " + kind);
 			}
-			System.err.println("*** processed " + deleted_count
-					+ " entities form " + kind);
-
 			if (is_finished) {
 				System.err.println("*** process job for " + kind
 						+ " is completed.");
