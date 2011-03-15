@@ -27,7 +27,8 @@ public class AccessPointTest {
 		for (int j = 0; j < 1; j++) {
 			double lat = 6.6 + (new Random().nextDouble() / 10);
 			double lon = -10.8 + (new Random().nextDouble() / 10);
-			for (int i = 0; i < 2000; i++) {
+			for (int i = 0; i < 700; i++) {
+				log.info(i + ":");
 				AccessPoint ap = new AccessPoint();
 				ap.setLatitude(lat);
 				ap.setLongitude(lon);

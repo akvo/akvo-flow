@@ -58,36 +58,40 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 			final DatastoreService dss = DatastoreServiceFactory
 					.getDatastoreService();
 			final long start = System.currentTimeMillis();
-			while (System.currentTimeMillis() - start < 16384) {
-				AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
-				final Query query = new Query(kind);
-				FetchOptions fetchOptions = FetchOptions.Builder.withLimit(128);
 
-				if (dtReq.getCursor() != null) {
-					fetchOptions.startCursor(Cursor.fromWebSafeString(dtReq
-							.getCursor()));
-				}
-				query.setKeysOnly();
-
-				final ArrayList<Key> keys = new ArrayList<Key>();
-				QueryResultList<Entity> results = dss.prepare(query)
-						.asQueryResultList(fetchOptions);
-				newCursor = results.getCursor().toWebSafeString();
-
-				if (results.isEmpty() || newCursor == null || results==null) {
-					is_finished = true;
-					break;
-				} else {
-					for (final Entity entity : results) {
-						apms.performSummarization(
-								String.valueOf(entity.getKey().getId()), null,
-								null, null, null);
-						++deleted_count;
-					}
-				}
-				System.err.println("*** processed " + deleted_count
-						+ " entities form " + kind);
+			AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
+			final Query query = new Query(kind);
+			int limit = 10;
+			if(dtReq.getCursor()!=null){
+				limit=150;
 			}
+			
+			FetchOptions fetchOptions = FetchOptions.Builder.withLimit(limit);
+			if (dtReq.getCursor() != null) {
+				fetchOptions.startCursor(Cursor.fromWebSafeString(dtReq
+						.getCursor()));
+			}
+			
+			query.setKeysOnly();
+
+			ArrayList<Key> keys = new ArrayList<Key>();
+			QueryResultList<Entity> results = dss.prepare(query)
+					.asQueryResultList(fetchOptions);
+			newCursor = results.getCursor().toWebSafeString();
+
+			if (results.isEmpty() || results == null) {
+				is_finished = true;
+			} else {
+				for (Entity entity : results) {
+					apms.performSummarization(
+							String.valueOf(entity.getKey().getId()), null,
+							null, null, null);
+					++deleted_count;
+				}
+			}
+			System.err.println("*** processed " + deleted_count
+					+ " entities form " + kind);
+
 			if (is_finished) {
 				System.err.println("*** process job for " + kind
 						+ " is completed.");
