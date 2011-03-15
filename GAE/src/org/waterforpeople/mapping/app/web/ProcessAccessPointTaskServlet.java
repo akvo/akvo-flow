@@ -62,16 +62,16 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 			AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
 			final Query query = new Query(kind);
 			int limit = 10;
-			if(dtReq.getCursor()!=null){
-				limit=150;
+			if (dtReq.getCursor() != null) {
+				limit = 150;
 			}
-			
+
 			FetchOptions fetchOptions = FetchOptions.Builder.withLimit(limit);
 			if (dtReq.getCursor() != null) {
 				fetchOptions.startCursor(Cursor.fromWebSafeString(dtReq
 						.getCursor()));
 			}
-			
+
 			query.setKeysOnly();
 
 			ArrayList<Key> keys = new ArrayList<Key>();
@@ -82,10 +82,28 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 			if (results.isEmpty() || results == null) {
 				is_finished = true;
 			} else {
+				final Integer taskcount;
+				final String tcs = dtReq.getTaskCount();
+				if (tcs == null) {
+					taskcount = 0;
+				} else {
+					taskcount = Integer.parseInt(tcs) + 1;
+				}
 				for (Entity entity : results) {
-					apms.performSummarization(
-							String.valueOf(entity.getKey().getId()), null,
-							null, null, null);
+					Queue deleteQueue = QueueFactory
+							.getQueue("accesspointmetricsummqueue");
+					
+					deleteQueue.add(url(
+							"/app_worker/accesspointmetricprocessor")
+							.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
+							.param(DeleteTaskRequest.KEY_PARAM,
+									String.valueOf(entity.getKey().getId()))
+							.param(DeleteTaskRequest.CURSOR_PARAM, newCursor)
+							.param("itemnum",
+									String.valueOf(deleted_count)).param(
+											DeleteTaskRequest.TASK_COUNT_PARAM,
+											taskcount.toString()));
+
 					++deleted_count;
 				}
 			}

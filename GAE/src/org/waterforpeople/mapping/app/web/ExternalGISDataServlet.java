@@ -95,6 +95,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 				}
 			}
 			ogrFeatureDao.save(ogrFeature);
+			resp = convertToResponse(null,null,null);
 		} else if (req.getAction().equals(
 				ExternalGISRequest.LIST_MATCHING_OGRFEATURE_ACTION)) {
 			OGRFeatureDao ogrFeatDao = new OGRFeatureDao();
