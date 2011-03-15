@@ -246,6 +246,8 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				if (isSame) {
 					existingItem.setGeometry(item.getGeometry());
 					existingItem.setBoundingBox(item.getBoundingBox());
+					existingItem.setCentroidLat(item.getCentroidLat());
+					existingItem.setCentroidLon(item.getCentroidLon());
 					super.save(existingItem);
 					return existingItem;
 				}
