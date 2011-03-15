@@ -39,6 +39,10 @@
 	</queue>
 	<queue>
 		<name>deletequeue</name>
-		<rate>5/s</rate>
+		<rate>10/s</rate>
+	</queue>
+	<queue>
+		<name>accesspointqueue</name>
+		<rate>10/s</rate>
 	</queue>
 </queue-entries>

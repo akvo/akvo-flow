@@ -16,11 +16,12 @@
 		<property name="pointStatus" direction="desc" />
 		<property name="collectionDate" direction="desc" />
 	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="countryCode" direction="asc"/>
-        <property name="pointType" direction="asc"/>
-        <property name="collectionDate" direction="asc"/>
-    </datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="pointType" direction="asc" />
+		<property name="collectionDate" direction="asc" />
+	</datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
@@ -67,10 +68,10 @@
 		<property name="countryCode" direction="asc" />
 		<property name="collectionDate" direction="asc" />
 	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="countryCode" direction="asc"/>
-        <property name="lastUpdateDateTime" direction="desc"/>
-    </datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false">
+		<property name="countryCode" direction="asc" />
+		<property name="lastUpdateDateTime" direction="desc" />
+	</datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="countryCode" direction="asc" />
@@ -125,11 +126,12 @@
 		<property name="surveyId" direction="asc" />
 		<property name="fragmentOrder" direction="asc" />
 	</datastore-index>
-	<datastore-index kind="SurveyXMLFragment" ancestor="false" source="manual">
-        <property name="surveyId" direction="asc"/>
-        <property name="transactionId" direction="asc"/>
-        <property name="fragmentOrder" direction="asc"/>
-    </datastore-index>
+	<datastore-index kind="SurveyXMLFragment" ancestor="false"
+		source="manual">
+		<property name="surveyId" direction="asc" />
+		<property name="transactionId" direction="asc" />
+		<property name="fragmentOrder" direction="asc" />
+	</datastore-index>
 	<datastore-index kind="MapFragment" ancestor="false"
 		source="manual">
 		<property name="fragmentType" direction="asc" />
@@ -183,94 +185,122 @@
 		<property name="surveyID" direction="asc" />
 		<property name="devicePhoneNumber" direction="asc" />
 	</datastore-index>
-	 <!-- Used 2 times in query history -->
-    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
-        <property name="acknowleged" direction="asc"/>
-        <property name="errorDate" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
-        <property name="acknowleged" direction="asc"/>
-        <property name="phoneNumber" direction="asc"/>
-        <property name="errorDate" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
-        <property name="acknowleged" direction="asc"/>
-        <property name="deviceIdentifier" direction="asc"/>
-        <property name="phoneNumber" direction="asc"/>
-        <property name="errorDate" direction="desc"/>
-    </datastore-index>
-   <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
-        <property name="acknowleged" direction="asc"/>
-        <property name="deviceIdentifier" direction="asc"/>
-        <property name="errorDate" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
-        <property name="phoneNumber" direction="asc"/>
-        <property name="errorDate" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
-        <property name="deviceIdentifier" direction="asc"/>
-        <property name="phoneNumber" direction="asc"/>
-        <property name="errorDate" direction="desc"/>
-    </datastore-index> 
-    <datastore-index kind="RemoteStacktrace" ancestor="false" source="manual">
-        <property name="deviceIdentifier" direction="asc"/>
-        <property name="errorDate" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="QuestionOption" ancestor="false" source="manual">
-        <property name="questionId" direction="asc"/>
-        <property name="order" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="Question" ancestor="false" source="manual">
-        <property name="type" direction="asc"/>
-        <property name="order" direction="asc"/>
-    </datastore-index>
-     <datastore-index kind="Question" ancestor="false" source="manual">
-        <property name="questionGroupId" direction="asc"/>
-        <property name="order" direction="asc"/>
-    </datastore-index>
-     <datastore-index kind="Question" ancestor="false" source="manual">
-        <property name="questionGroupId" direction="asc"/>
-        <property name="createdDateTime" direction="asc"/>
-    </datastore-index>
-     <datastore-index kind="Question" ancestor="false" source="manual">
-        <property name="surveyId" direction="asc"/>
-        <property name="type" direction="asc"/>
-        <property name="order" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="Question" ancestor="false" source="manual">
-        <property name="surveyId" direction="asc"/>
-        <property name="order" direction="asc"/>
-    </datastore-index>
-     <datastore-index kind="Question" ancestor="false" source="manual">
-        <property name="path" direction="asc"/>
-        <property name="surveyId" direction="asc"/>
-        <property name="order" direction="asc"/>
-    </datastore-index>
-     <datastore-index kind="DeviceFiles" ancestor="false" source="manual">
-        <property name="processedStatus" direction="asc"/>
-        <property name="createdDateTime" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="EditorialPageContent" ancestor="false" source="manual">
-        <property name="editorialPageId" direction="asc"/>
-        <property name="sortOrder" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="GeoRegion" ancestor="false" source="manual">
-        <property name="uuid" direction="asc"/>
-        <property name="order" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="OGRFeature" ancestor="false" source="manual">
-        <property name="featureType" direction="asc"/>
-        <property name="x1" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="GeoMeasure" ancestor="true" source="manual">
-        <property name="propertyList_INTEGER_IDX" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="Coordinate" ancestor="true" source="manual">
-        <property name="coordinates_INTEGER_IDX" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="SurveyInstance" ancestor="false" source="manual">
-        <property name="approvedFlag" direction="asc"/>
-        <property name="collectionDate" direction="desc"/>
-    </datastore-index>   
+	<!-- Used 2 times in query history -->
+	<datastore-index kind="RemoteStacktrace" ancestor="false"
+		source="manual">
+		<property name="acknowleged" direction="asc" />
+		<property name="errorDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="RemoteStacktrace" ancestor="false"
+		source="manual">
+		<property name="acknowleged" direction="asc" />
+		<property name="phoneNumber" direction="asc" />
+		<property name="errorDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="RemoteStacktrace" ancestor="false"
+		source="manual">
+		<property name="acknowleged" direction="asc" />
+		<property name="deviceIdentifier" direction="asc" />
+		<property name="phoneNumber" direction="asc" />
+		<property name="errorDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="RemoteStacktrace" ancestor="false"
+		source="manual">
+		<property name="acknowleged" direction="asc" />
+		<property name="deviceIdentifier" direction="asc" />
+		<property name="errorDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="RemoteStacktrace" ancestor="false"
+		source="manual">
+		<property name="phoneNumber" direction="asc" />
+		<property name="errorDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="RemoteStacktrace" ancestor="false"
+		source="manual">
+		<property name="deviceIdentifier" direction="asc" />
+		<property name="phoneNumber" direction="asc" />
+		<property name="errorDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="RemoteStacktrace" ancestor="false"
+		source="manual">
+		<property name="deviceIdentifier" direction="asc" />
+		<property name="errorDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="QuestionOption" ancestor="false"
+		source="manual">
+		<property name="questionId" direction="asc" />
+		<property name="order" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="Question" ancestor="false"
+		source="manual">
+		<property name="type" direction="asc" />
+		<property name="order" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="Question" ancestor="false"
+		source="manual">
+		<property name="questionGroupId" direction="asc" />
+		<property name="order" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="Question" ancestor="false"
+		source="manual">
+		<property name="questionGroupId" direction="asc" />
+		<property name="createdDateTime" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="Question" ancestor="false"
+		source="manual">
+		<property name="surveyId" direction="asc" />
+		<property name="type" direction="asc" />
+		<property name="order" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="Question" ancestor="false"
+		source="manual">
+		<property name="surveyId" direction="asc" />
+		<property name="order" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="Question" ancestor="false"
+		source="manual">
+		<property name="path" direction="asc" />
+		<property name="surveyId" direction="asc" />
+		<property name="order" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="DeviceFiles" ancestor="false"
+		source="manual">
+		<property name="processedStatus" direction="asc" />
+		<property name="createdDateTime" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="EditorialPageContent" ancestor="false"
+		source="manual">
+		<property name="editorialPageId" direction="asc" />
+		<property name="sortOrder" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="GeoRegion" ancestor="false"
+		source="manual">
+		<property name="uuid" direction="asc" />
+		<property name="order" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="OGRFeature" ancestor="false"
+		source="manual">
+		<property name="featureType" direction="asc" />
+		<property name="x1" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="OGRFeature" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="featureType" direction="asc" />
+		<property name="sub1" direction="asc" />
+		<property name="sub2" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="GeoMeasure" ancestor="true"
+		source="manual">
+		<property name="propertyList_INTEGER_IDX" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="Coordinate" ancestor="true"
+		source="manual">
+		<property name="coordinates_INTEGER_IDX" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="SurveyInstance" ancestor="false"
+		source="manual">
+		<property name="approvedFlag" direction="asc" />
+		<property name="collectionDate" direction="desc" />
+	</datastore-index>
 </datastore-indexes>
