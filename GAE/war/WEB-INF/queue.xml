@@ -45,4 +45,8 @@
 		<name>accesspointqueue</name>
 		<rate>10/s</rate>
 	</queue>
+	<queue>
+		<name>accesspointmetricsummqueue</name>
+		<rate>10/s</rate>
+	</queue>
 </queue-entries>

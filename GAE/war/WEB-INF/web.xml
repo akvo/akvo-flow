@@ -69,7 +69,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>ProcessAccessPointTaskServlet</servlet-name>
 		<url-pattern>/app_worker/processaccesspointtaskservlet</url-pattern>
 	</servlet-mapping>
-	
+	<servlet>
+		<servlet-name>AccessPointMetricProcessor</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.AccessPointMetricProcessor</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AccessPointMetricProcessor</servlet-name>
+		<url-pattern>/app_worker/accesspointmetricprocessor</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyTask</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SurveyTaskServlet</servlet-class>
