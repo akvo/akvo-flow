@@ -97,9 +97,9 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 		searchButton.addClickHandler(this);
 		temp.add(ViewUtil.initLabel("Community Code"));
 		temp.add(commCodeBox);
-		temp.add(ViewUtil.initLabel("Point Type"));
+		//temp.add(ViewUtil.initLabel("Point Type"));
 		//temp.add(pointTypeBox);
-		//temp.add(searchButton);
+		temp.add(searchButton);
 		controlsPanel.add(temp);
 		statusLabel = ViewUtil.initLabel("Loading. Please wait...");
 		statusLabel.setVisible(false);
