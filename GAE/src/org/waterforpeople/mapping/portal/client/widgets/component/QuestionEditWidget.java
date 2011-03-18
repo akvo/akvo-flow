@@ -211,7 +211,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (currentQuestion.getMandatoryFlag() != null) {
 			mandatoryBox.setValue(currentQuestion.getMandatoryFlag());
 		}
-		if (currentQuestion.getQuestionDependency() != null) {
+		if (currentQuestion.getQuestionDependency() != null && currentQuestion.getQuestionDependency().getQuestionId() != null) {
 			dependentBox.setValue(true);
 			loadDependencyList();
 		}
@@ -655,6 +655,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 									.getSelectedIndex()));
 				}
 			}
+		}else{
+			currentQuestion.setQuestionDependency(null);			
 		}
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
 			currentQuestion.setAllowMultipleFlag(allowMultipleBox.getValue());

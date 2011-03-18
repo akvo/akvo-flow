@@ -334,8 +334,9 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			if (item.getOrder() != null) {
 				lbOrder.setItemSelected(item.getOrder() - 1, true);
 			} else {
-				Integer order = getMaxOrder((QuestionGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject());
-				lbOrder.setSelectedIndex(order+1);
+				Integer order = getMaxOrder((QuestionGroupDto) surveyTree
+						.getCurrentlySelectedItem().getUserObject());
+				lbOrder.setSelectedIndex(order + 1);
 			}
 			questionId.setText(item.getKeyId().toString());
 			if (item.getText() != null)
@@ -354,8 +355,9 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				else
 					mandatoryQuestion.setValue(false);
 		} else {
-			Integer order = getMaxOrder((QuestionGroupDto)surveyTree.getCurrentlySelectedItem().getUserObject());
-			lbOrder.setSelectedIndex(order+1);			
+			Integer order = getMaxOrder((QuestionGroupDto) surveyTree
+					.getCurrentlySelectedItem().getUserObject());
+			lbOrder.setSelectedIndex(order + 1);
 		}
 		ListBox questionTypeLB = new ListBox();
 		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO, STRENGTH
@@ -457,7 +459,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				"Question Dependent On Other Question"));
 		questionDetailPanel.setWidget(7, 1, dependentQuestion);
 
-		if (item != null && item.getQuestionDependency() != null) {
+		if (item != null && item.getQuestionDependency() != null
+				&& item.getQuestionDependency().getQuestionId() != null) {
 			dependentQuestion.setValue(true);
 			loadDependencyTable(true);
 		}
@@ -558,7 +561,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		});
 
 	}
-	
+
 	/**
 	 * finds the highest Order value amongst all the questions in a group
 	 * 
@@ -578,7 +581,6 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		return max;
 	}
 
-
 	private void loadDependencyTable(Boolean dependentValue) {
 		if (dependentValue) {
 			QuestionDto tempQuestion = null;
@@ -592,7 +594,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			final QuestionDto currentQuestion = tempQuestion;
 
 			final MessageDialog dia = new MessageDialog("Please wait",
-					"Loading question details...");
+					"Loading question details...",true);
 			dia.showCentered();
 			if (surveyOptionQuestionMap.get(currentQuestion.getSurveyId()) == null) {
 				// if we haven't loaded the Option questions for this survey, do
@@ -1015,6 +1017,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			TextBox qDepId = (TextBox) questionDetailPanel.getWidget(8, 4);
 			if (qDepId.getText().length() > 0)
 				qdDto.setKeyId(new Long(qDepId.getText()));
+		}else{
+			value.setQuestionDependency(null);		
 		}
 
 		return value;
