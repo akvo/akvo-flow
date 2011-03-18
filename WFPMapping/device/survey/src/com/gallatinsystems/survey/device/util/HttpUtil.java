@@ -29,9 +29,9 @@ import android.graphics.BitmapFactory;
 
 /**
  * Simple utility to make http calls and read the responses
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class HttpUtil {
 
@@ -39,7 +39,7 @@ public class HttpUtil {
 
 	/**
 	 * executes an HTTP GET and returns the result as a String
-	 * 
+	 *
 	 * @param url
 	 * @return
 	 * @throws Exception
@@ -64,7 +64,7 @@ public class HttpUtil {
 
 	/**
 	 * does an HTTP Post to the url specified using the params passed in
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @return
@@ -99,7 +99,7 @@ public class HttpUtil {
 	/**
 	 * fetches an image from a remote url and returns it to the caller as a
 	 * bitmap
-	 * 
+	 *
 	 * @param url
 	 * @return
 	 * @throws Exception
@@ -154,7 +154,7 @@ public class HttpUtil {
 
 	/**
 	 * downloads the resource at url and saves the contents to file
-	 * 
+	 *
 	 * @param url
 	 * @param file
 	 * @throws Exception
@@ -162,65 +162,54 @@ public class HttpUtil {
 	public static void httpDownload(String url, FileOutputStream file) throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(new HttpGet(url));
-		BufferedOutputStream writer = null;
-		BufferedInputStream reader = null;
-		try {
-			writer = new BufferedOutputStream(file);
-			reader = new BufferedInputStream(response.getEntity().getContent());
+		if(response.getStatusLine().getStatusCode() < 400){
+			BufferedOutputStream writer = null;
+			BufferedInputStream reader = null;
+			try {
+				writer = new BufferedOutputStream(file);
+				reader = new BufferedInputStream(response.getEntity().getContent());
 
-			byte[] buffer = new byte[BUF_SIZE];
-			int bytesRead = reader.read(buffer);
+				byte[] buffer = new byte[BUF_SIZE];
+				int bytesRead = reader.read(buffer);
 
-			while (bytesRead > 0) {
-				writer.write(buffer, 0, bytesRead);
-				bytesRead = reader.read(buffer);
-			}
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
-			if (reader != null) {
-				reader.close();
+				while (bytesRead > 0) {
+					writer.write(buffer, 0, bytesRead);
+					bytesRead = reader.read(buffer);
+				}
+			} finally {
+				if (writer != null) {
+					writer.close();
+				}
+				if (reader != null) {
+					reader.close();
+				}
 			}
 		}
 	}
-	
+
 	/**
 	 * downloads the resource at url and saves the contents to file
-	 * 
+	 *
 	 * @param url
 	 * @param file
 	 * @throws Exception
 	 */
 	public static void httpDownload(String url, String destFile) throws Exception {
-		DefaultHttpClient client = new DefaultHttpClient();
-		HttpResponse response = client.execute(new HttpGet(url));
-		BufferedOutputStream writer = null;
-		BufferedInputStream reader = null;
+		FileOutputStream out = null;
 		try {
-			writer = new BufferedOutputStream(new FileOutputStream(destFile));
-			reader = new BufferedInputStream(response.getEntity().getContent());
+			out = new FileOutputStream(destFile);
+			httpDownload(url, out);
 
-			byte[] buffer = new byte[BUF_SIZE];
-			int bytesRead = reader.read(buffer);
-
-			while (bytesRead > 0) {
-				writer.write(buffer, 0, bytesRead);
-				bytesRead = reader.read(buffer);
-			}
 		} finally {
-			if (writer != null) {
-				writer.close();
-			}
-			if (reader != null) {
-				reader.close();
+			if (out != null) {
+				out.close();
 			}
 		}
 	}
 
 	/**
 	 * parses the response from the HttpResponse
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
