@@ -6,11 +6,8 @@ import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.Label;
 
 /**
  * Widget meant to be used as the "Home" screen in a wizard. It presents a
@@ -153,7 +150,7 @@ public class AdminHomeWidget extends MenuBasedWidget {
 		} else if (event.getSource() == reportButton) {
 			controller.openPage(RunReportWidget.class, null);
 		} else if (event.getSource() == importButton) {
-
+			controller.openPage(DataImportWidget.class, null);
 		}
 	}
 

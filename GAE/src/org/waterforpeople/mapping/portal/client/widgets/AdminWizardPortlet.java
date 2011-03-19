@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.BootstrapGeneratorWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.DataImportWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.PublicationWidget;
@@ -136,6 +137,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("Run Reports", "Run Reports",
 				RunReportWidget.class, null, new WizardButton("Administration",
 						"Back to Admin Home")));
+		wf.addInternalNode(new WizardNode("Import Data", "Import Data",
+				DataImportWidget.class, null, new WizardButton("Administration",
+						"Back to Admin Home")));
 		return wf;
 	}
 
@@ -190,7 +194,10 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new WebActivityAuthorizationListWidget(this, user);
 		} else if (node.getWidgetClass().equals(RunReportWidget.class)) {
 			return new RunReportWidget();
+		}else if (node.getWidgetClass().equals(DataImportWidget.class)) {
+			return new DataImportWidget();
 		}
+		
 		return null;
 
 	}

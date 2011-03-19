@@ -3,9 +3,7 @@ package com.gallatinsystems.framework.gwt.component;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 
 /**
  * base class to be used for any widget that needs to present a grid of buttons
