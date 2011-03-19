@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Label;
 public class AdminHomeWidget extends Composite implements ClickHandler {
 
 	private static final String DESC_CSS = "description-text";
-	private static final String BUTTION_CSS = "admin-button";
+	private static final String BUTTON_CSS = "admin-button";
 
 	private Button userMgmtButton;
 	private Button surveyMgmtButton;
@@ -31,10 +31,12 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 	private Button editorialButton;
 	private Button generateBootstrapButton;
 	private Button editWebAuthButton;
+	private Button reportButton;
+	private Button importButton;
 	private PageController controller;
 
 	public AdminHomeWidget(PageController controller, UserDto user) {
-		Grid widget = new Grid(7, 2);
+		Grid widget = new Grid(9, 2);
 		this.controller = controller;
 		userMgmtButton = initButton("Manage Users");
 
@@ -111,16 +113,49 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 						1,
 						createDescription("Create and edit tokens used for authorization within the web-based survey entry form"));
 
+		reportButton = initButton("Run Reports");
+		if (!user.hasPermission(PermissionConstants.RUN_REPORTS)) {
+			reportButton.setEnabled(false);
+		}
+		widget.setWidget(7, 0, reportButton);
+		widget
+				.setWidget(
+						7,
+						1,
+						createDescription("Run survey and access port reports, generate survey KMZ files, and generate survey forms."));
+
+		importButton = initButton("Import Data");
+		if (!user.hasPermission(PermissionConstants.IMPORT_DATA)) {
+			importButton.setEnabled(false);
+		}
+		widget.setWidget(8, 0, importButton);
+		widget.setWidget(8, 1,
+				createDescription("Import survey and access point data."));
+
 		initWidget(widget);
 	}
 
+	/**
+	 * constructs a new button, sets its style and adds this class as a click
+	 * handler
+	 * 
+	 * @param buttonText
+	 * @return
+	 */
 	private Button initButton(String text) {
 		Button button = new Button(text);
 		button.addClickHandler(this);
-		button.setStylePrimaryName(BUTTION_CSS);
+		button.setStylePrimaryName(BUTTON_CSS);
 		return button;
 	}
 
+	/**
+	 * constructs a new label containing the text passed in and sets the style
+	 * to the description css
+	 * 
+	 * @param text
+	 * @return
+	 */
 	private Label createDescription(String text) {
 		Label desc = new Label();
 		desc.setStylePrimaryName(DESC_CSS);
@@ -142,8 +177,12 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 			controller.openPage(BootstrapGeneratorWidget.class, null);
 		} else if (event.getSource() == assignmentButton) {
 			controller.openPage(SurveyAssignmentListWidget.class, null);
-		}else if (event.getSource() == editWebAuthButton){
-			controller.openPage(WebActivityAuthorizationListWidget.class,null);
+		} else if (event.getSource() == editWebAuthButton) {
+			controller.openPage(WebActivityAuthorizationListWidget.class, null);
+		} else if (event.getSource() == reportButton) {
+			controller.openPage(RunReportWidget.class, null);
+		} else if (event.getSource() == importButton) {
+
 		}
 	}
 

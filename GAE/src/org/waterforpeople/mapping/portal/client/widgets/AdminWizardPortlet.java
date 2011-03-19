@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWi
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionListWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.RunReportWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyEditWidget;
@@ -132,6 +133,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 								"Save and Continue"), new WizardButton(
 								"List Web Authorizations",
 								"Back to Authorization List")));
+		wf.addInternalNode(new WizardNode("Run Reports", "Run Reports",
+				RunReportWidget.class, null, new WizardButton("Administration",
+						"Back to Admin Home")));
 		return wf;
 	}
 
@@ -184,6 +188,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		} else if (node.getWidgetClass().equals(
 				WebActivityAuthorizationListWidget.class)) {
 			return new WebActivityAuthorizationListWidget(this, user);
+		} else if (node.getWidgetClass().equals(RunReportWidget.class)) {
+			return new RunReportWidget();
 		}
 		return null;
 
