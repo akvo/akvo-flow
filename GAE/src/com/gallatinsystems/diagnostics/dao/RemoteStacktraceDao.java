@@ -1,5 +1,6 @@
 package com.gallatinsystems.diagnostics.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,20 @@ public class RemoteStacktraceDao extends BaseDAO<RemoteStacktrace> {
 			results = (List<RemoteStacktrace>) q.execute();
 		}
 		return results;
+	}
+
+	/**
+	 * deletes all items older than the date passed in
+	 * 
+	 * @param date
+	 */
+	public long deleteItemsOlderThan(Date date) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(RemoteStacktrace.class);
+		query.setFilter("errorDate < dateParam");
+		query.declareParameters("Date dateParam");
+		query.declareImports("import java.util.Date");
+		return query.deletePersistentAll(date);
 	}
 
 }

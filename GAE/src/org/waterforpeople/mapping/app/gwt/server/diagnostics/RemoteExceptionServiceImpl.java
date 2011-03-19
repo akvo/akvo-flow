@@ -1,6 +1,8 @@
 package org.waterforpeople.mapping.app.gwt.server.diagnostics;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.diagnostics.RemoteExceptionService;
@@ -93,6 +95,15 @@ public class RemoteExceptionServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		return acked;
+	}
+
+	/**
+	 * deletes exceptions older than 30 days
+	 */
+	public void deleteOldExceptions() {
+		Calendar cal = new GregorianCalendar();
+		cal.roll(Calendar.MONTH, false);
+		traceDao.deleteItemsOlderThan(cal.getTime());
 	}
 
 }

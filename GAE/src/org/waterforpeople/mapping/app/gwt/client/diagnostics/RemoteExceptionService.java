@@ -37,4 +37,9 @@ public interface RemoteExceptionService extends RemoteService {
 	 */
 	public boolean acknowledgeRemoteStacktrace(Long exceptionId);
 
+	/**
+	 * deletes all items older than 30 days
+	 */
+	public void deleteOldExceptions();
+
 }

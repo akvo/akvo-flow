@@ -17,4 +17,6 @@ public interface RemoteExceptionServiceAsync {
 	void acknowledgeRemoteStacktrace(Long exceptionId,
 			AsyncCallback<Boolean> callback);
 
+	void deleteOldExceptions(AsyncCallback<Void> callback);
+
 }

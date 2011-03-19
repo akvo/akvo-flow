@@ -68,6 +68,7 @@ public class RemoteExceptionPortlet extends Portlet implements
 	private Button findButton;
 	private MapWidget mapWidget;
 	private Overlay deviceLocOverlay;
+	private Button deleteOldButton;
 
 	public RemoteExceptionPortlet() {
 		super(NAME, false, false, true, width, height);
@@ -108,6 +109,9 @@ public class RemoteExceptionPortlet extends Portlet implements
 		VerticalPanel leftPanel = new VerticalPanel();
 		leftPanel.add(finderPanel);
 		leftPanel.add(remoteExceptionTable);
+		deleteOldButton = new Button("Delete Exceptions");
+		deleteOldButton.addClickHandler(this);
+		leftPanel.add(deleteOldButton);
 		contentPanel.add(leftPanel);
 		contentPanel.add(rightPanel);
 		requestData(null, false);
@@ -278,11 +282,44 @@ public class RemoteExceptionPortlet extends Portlet implements
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == findButton) {
 			requestData(null, false);
+		} else if (event.getSource() == deleteOldButton) {
+			MessageDialog confDia = new MessageDialog(
+					"Confirm Delete",
+					"This will delete all remote exceptions more than 30 days old. Do you want to proceed?",
+					false, new ClickHandler() {
+						@Override
+						public void onClick(ClickEvent event) {
+							final MessageDialog waitDia = new MessageDialog(
+									"Deleting...", "Please Wait", true);
+							waitDia.showCentered();
+							remoteExceptionService
+									.deleteOldExceptions(new AsyncCallback<Void>() {
+
+										@Override
+										public void onFailure(Throwable caught) {
+											waitDia.hide();
+											MessageDialog errDia = new MessageDialog(
+													"Error",
+													"Could not delete exceptions: "
+															+ caught
+																	.getLocalizedMessage());
+											errDia.showCentered();
+										}
+
+										@Override
+										public void onSuccess(Void result) {
+											waitDia.hide();
+											requestData(null, false);
+										}
+									});
+						}
+					});
+			confDia.showCentered();
 		}
 	}
 
 	@Override
-	public Integer getPageSize(){
+	public Integer getPageSize() {
 		return PAGE_SIZE;
 	}
 }
