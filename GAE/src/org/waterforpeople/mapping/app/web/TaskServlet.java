@@ -122,7 +122,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 					int lineNum = offset;
 					String curId = null;
 					while (lineNum < unparsedLines.size()) {
-						String[] parts = unparsedLines.get(lineNum).split(",");
+						String[] parts = unparsedLines.get(lineNum).split("\t");
+						if (parts.length < 5) {
+							parts = unparsedLines.get(lineNum).split(",");
+						}
 						if (parts.length >= 2) {
 							if (curId == null) {
 								curId = parts[1];
@@ -141,38 +144,42 @@ public class TaskServlet extends AbstractRestApiServlet {
 					Long userID = 1L;
 					dfDao.save(deviceFile);
 					SurveyInstance inst = siDao.save(collectionDate,
-							deviceFile, userID,
-							unparsedLines.subList(offset, lineNum));
-					surveyInstances.add(inst);
-					// TODO: HACK because we were saving so many duplicate
-					// device files this way they all get the same status
-					if (dfList != null) {
-						for (DeviceFiles dfitem : dfList) {
-							dfitem.setProcessedStatus(inst.getDeviceFile()
-									.getProcessedStatus());
+							deviceFile, userID, unparsedLines.subList(offset,
+									lineNum));
+					if (inst != null) {
+						surveyInstances.add(inst);
+						// TODO: HACK because we were saving so many duplicate
+						// device files this way they all get the same status
+						if (dfList != null) {
+							for (DeviceFiles dfitem : dfList) {
+								dfitem.setProcessedStatus(inst.getDeviceFile()
+										.getProcessedStatus());
+							}
 						}
 					}
 					if (lineNum < unparsedLines.size()) {
-						StatusCode processingStatus = inst.getDeviceFile()
-								.getProcessedStatus();
-						if (processingStatus
-								.equals(StatusCode.PROCESSED_WITH_ERRORS)) {
-							String message = "Error in file during first processing step. Continuing to next part";
-							deviceFile.addProcessingMessage(message);
-							deviceFile
-									.setProcessedStatus(StatusCode.IN_PROGRESS);
-						} else {
-							deviceFile.addProcessingMessage("Processed "
-									+ lineNum + " lines spawning queue call");
-							deviceFile
-									.setProcessedStatus(StatusCode.IN_PROGRESS);
+						if (inst != null) {
+							StatusCode processingStatus = inst.getDeviceFile()
+									.getProcessedStatus();
+							if (processingStatus
+									.equals(StatusCode.PROCESSED_WITH_ERRORS)) {
+								String message = "Error in file during first processing step. Continuing to next part";
+								deviceFile.addProcessingMessage(message);
+								deviceFile
+										.setProcessedStatus(StatusCode.IN_PROGRESS);
+							} else {
+								deviceFile.addProcessingMessage("Processed "
+										+ lineNum
+										+ " lines spawning queue call");
+								deviceFile
+										.setProcessedStatus(StatusCode.IN_PROGRESS);
+							}
 						}
 						// if we haven't processed everything yet, invoke a
 						// new service
 						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task")
-								.param("action", "processFile")
-								.param("fileName", fileName)
+						queue.add(url("/app_worker/task").param("action",
+								"processFile").param("fileName", fileName)
 								.param("offset", lineNum + ""));
 					}
 				}
@@ -190,8 +197,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 			zis.close();
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
-			MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-					"Device File Processing Error: " + fileName, e.getMessage());
+			MailUtil
+					.sendMail(FROM_ADDRESS, "FLOW", recepientList,
+							"Device File Processing Error: " + fileName, e
+									.getMessage());
 		}
 
 		return surveyInstances;
@@ -317,8 +326,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private void ingestFile(TaskRequest req) {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
-			ArrayList<SurveyInstance> surveyInstances = processFile(
-					req.getFileName(), req.getPhoneNumber(), req.getChecksum(),
+			ArrayList<SurveyInstance> surveyInstances = processFile(req
+					.getFileName(), req.getPhoneNumber(), req.getChecksum(),
 					req.getOffset());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			for (SurveyInstance instance : surveyInstances) {

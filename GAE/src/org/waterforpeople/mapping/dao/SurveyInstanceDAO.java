@@ -30,12 +30,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
 		String delimiter = "\t";
-		
+
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
 
 			String[] parts = line.split(delimiter);
-			if(parts.length< 5){
+			if (parts.length < 5) {
 				delimiter = ",";
 				parts = line.split(delimiter);
 			}
@@ -43,8 +43,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			// ScoredValue Questions
 			while (",".equals(delimiter) && parts.length > 9) {
 				try {
-					@SuppressWarnings("unused")
-					Date testDate = new Date(new Long(parts[7].trim()));
+					new Date(new Long(parts[7].trim()));
 					break;
 				} catch (Exception e) {
 					logger.log(Level.INFO,
@@ -82,11 +81,19 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			}
 
 			if (si.getSurveyId() == null) {
-				try {					
+				try {
 					si.setCollectionDate(collDate);
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
-					if(parts.length>=12){
-						si.setUuid(parts[parts.length-1]);
+					if (parts.length >= 12) {
+						String uuid = parts[parts.length - 1];
+						if (uuid != null && uuid.trim().length() > 0) {
+							SurveyInstance existingSi = findByUUID(uuid);
+							if (existingSi != null) {
+								return null;
+							} else {
+								si.setUuid(uuid);
+							}
+						}
 					}
 					si = save(si);
 				} catch (NumberFormatException e) {
@@ -150,7 +157,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	public SurveyInstanceDAO() {
 		super(SurveyInstance.class);
-		// loadReplaceList();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -166,28 +172,30 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		return (List<SurveyInstance>) q.execute(beginDate);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,boolean unapprovedOnlyFlag,
-			String cursorString) {
+	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,
+			boolean unapprovedOnlyFlag, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
-		StringBuilder filterBuffer = new StringBuilder("collectionDate >= pBeginDate");
-		StringBuilder paramBuffer = new StringBuilder("java.util.Date pBeginDate");
-		
-		if(unapprovedOnlyFlag){
+		StringBuilder filterBuffer = new StringBuilder(
+				"collectionDate >= pBeginDate");
+		StringBuilder paramBuffer = new StringBuilder(
+				"java.util.Date pBeginDate");
+
+		if (unapprovedOnlyFlag) {
 			filterBuffer.append(" && approvedFlag == pApprovedFlag");
 			paramBuffer.append(", String pApprovedFlag");
-		}	
+		}
 		q.setFilter(filterBuffer.toString());
 		q.declareParameters(paramBuffer.toString());
 		q.setOrdering("collectionDate desc");
 
 		prepareCursor(cursorString, q);
 
-		if(unapprovedOnlyFlag){
-			return (List<SurveyInstance>) q.execute(beginDate,"False");
-		}else{
+		if (unapprovedOnlyFlag) {
+			return (List<SurveyInstance>) q.execute(beginDate, "False");
+		} else {
 			return (List<SurveyInstance>) q.execute(beginDate);
 		}
 	}
@@ -298,6 +306,17 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				.execute(surveyId);
 
 		return siList;
+	}
+
+	/**
+	 * finds a single survey instance by uuid. This method will NOT load all
+	 * QuestionAnswerStore objects.
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public SurveyInstance findByUUID(String uuid) {
+		return findByProperty("uuid", uuid, "String");
 	}
 
 }
