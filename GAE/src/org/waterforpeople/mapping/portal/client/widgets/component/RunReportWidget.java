@@ -2,14 +2,12 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.Map;
 
+import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -19,10 +17,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author Christopher Fagiani
  * 
  */
-public class RunReportWidget extends Composite implements ClickHandler {
-
-	private static final String DESC_CSS = "description-text";
-	private static final String BUTTON_CSS = "admin-button";
+public class RunReportWidget extends MenuBasedWidget{
 
 	private Grid grid;
 	private Panel appletPanel;
@@ -75,35 +70,7 @@ public class RunReportWidget extends Composite implements ClickHandler {
 						1,
 						createDescription("Generates a printable form that can be used to conduct a paper-based survey."));
 		initWidget(contentPanel);
-	}
-
-	/**
-	 * constructs a new button, sets its style and adds this class as a click
-	 * handler
-	 * 
-	 * @param buttonText
-	 * @return
-	 */
-	private Button initButton(String buttonText) {
-		Button button = new Button(buttonText);
-		button.addClickHandler(this);
-		button.setStylePrimaryName(BUTTON_CSS);
-		return button;
-	}
-
-	/**
-	 * constructs a new label containing the text passed in and sets the style
-	 * to the description css
-	 * 
-	 * @param text
-	 * @return
-	 */
-	private Label createDescription(String text) {
-		Label desc = new Label();
-		desc.setStylePrimaryName(DESC_CSS);
-		desc.setText(text);
-		return desc;
-	}
+	}	
 
 	@Override
 	public void onClick(ClickEvent event) {

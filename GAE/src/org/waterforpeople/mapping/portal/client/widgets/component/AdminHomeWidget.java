@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 
+import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,11 +20,9 @@ import com.google.gwt.user.client.ui.Label;
  * @author Christopher Fagiani
  * 
  */
-public class AdminHomeWidget extends Composite implements ClickHandler {
+public class AdminHomeWidget extends MenuBasedWidget {
 
-	private static final String DESC_CSS = "description-text";
-	private static final String BUTTON_CSS = "admin-button";
-
+	
 	private Button userMgmtButton;
 	private Button surveyMgmtButton;
 	private Button assignmentButton;
@@ -133,34 +132,6 @@ public class AdminHomeWidget extends Composite implements ClickHandler {
 				createDescription("Import survey and access point data."));
 
 		initWidget(widget);
-	}
-
-	/**
-	 * constructs a new button, sets its style and adds this class as a click
-	 * handler
-	 * 
-	 * @param buttonText
-	 * @return
-	 */
-	private Button initButton(String text) {
-		Button button = new Button(text);
-		button.addClickHandler(this);
-		button.setStylePrimaryName(BUTTON_CSS);
-		return button;
-	}
-
-	/**
-	 * constructs a new label containing the text passed in and sets the style
-	 * to the description css
-	 * 
-	 * @param text
-	 * @return
-	 */
-	private Label createDescription(String text) {
-		Label desc = new Label();
-		desc.setStylePrimaryName(DESC_CSS);
-		desc.setText(text);
-		return desc;
 	}
 
 	@Override
