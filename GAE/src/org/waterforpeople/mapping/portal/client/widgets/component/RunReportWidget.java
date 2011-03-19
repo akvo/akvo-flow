@@ -2,6 +2,8 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -17,7 +19,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author Christopher Fagiani
  * 
  */
-public class RunReportWidget extends MenuBasedWidget{
+public class RunReportWidget extends MenuBasedWidget {
 
 	private Grid grid;
 	private Panel appletPanel;
@@ -70,7 +72,7 @@ public class RunReportWidget extends MenuBasedWidget{
 						1,
 						createDescription("Generates a printable form that can be used to conduct a paper-based survey."));
 		initWidget(contentPanel);
-	}	
+	}
 
 	@Override
 	public void onClick(ClickEvent event) {
@@ -83,19 +85,33 @@ public class RunReportWidget extends MenuBasedWidget{
 			html.setHTML(appletString);
 			appletPanel.add(html);
 		} else if (event.getSource() == apReportButton) {
-			/*
-			 * String appletString =
-			 * "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>"
-			 * ; appletString +=
-			 * "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>"
-			 * ; appletString +=
-			 * "<PARAM name='exportType' value='ACCESS_POINT'>"; appletString +=
-			 * "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>"
-			 * ; AccessPointSearchCriteriaDto crit = formSearchCriteria(); if
-			 * (crit != null) { appletString += "<PARAM name='criteria' value='"
-			 * + crit.toDelimitedString() + "'>"; } appletString += "</applet>";
-			 * HTML html = new HTML(); html.setHTML(appletString);
-			 */
+			AccessPointFilterDialog filterDia = new AccessPointFilterDialog(
+					new CompletionListener() {
+
+						@Override
+						public void operationComplete(boolean wasSuccessful,
+								Map<String, Object> payload) {
+							if (wasSuccessful
+									&& payload
+											.get(AccessPointFilterDialog.CRITERIA_KEY) != null) {
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
+								appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
+								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+								AccessPointSearchCriteriaDto crit = (AccessPointSearchCriteriaDto) payload
+										.get(AccessPointFilterDialog.CRITERIA_KEY);
+								if (crit != null) {
+									appletString += "<PARAM name='criteria' value='"
+											+ crit.toDelimitedString() + "'>";
+								}
+								appletString += "</applet>";
+								HTML html = new HTML();
+								html.setHTML(appletString);
+								appletPanel.add(html);
+							}
+						}
+					});
+			filterDia.showCentered();
 		} else {
 			final Object eventSource = event.getSource();
 			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
