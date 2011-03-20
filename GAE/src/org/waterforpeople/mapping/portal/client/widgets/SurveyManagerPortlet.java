@@ -594,7 +594,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			final QuestionDto currentQuestion = tempQuestion;
 
 			final MessageDialog dia = new MessageDialog("Please wait",
-					"Loading question details...",true);
+					"Loading question details...", true);
 			dia.showCentered();
 			if (surveyOptionQuestionMap.get(currentQuestion.getSurveyId()) == null) {
 				// if we haven't loaded the Option questions for this survey, do
@@ -851,8 +851,6 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		} else {
 			lbOptOrder.setSelectedIndex(row);
 		}
-		// if (row >= 2)
-		// row = row - 1;
 		Button deleteOptionButton = new Button("Delete Option");
 		deleteOptionButton.setTitle(row.toString());
 
@@ -871,12 +869,6 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			public void onClick(ClickEvent event) {
 				Button b = (Button) event.getSource();
 				Integer row = Integer.parseInt(b.getTitle());
-				// ft.get
-				Long qoId = null;
-				if (optionId.getText() != null
-						&& !optionId.getText().trim().equals("")) {
-					qoId = Long.parseLong(optionId.getText());
-				}
 				questionOptionDetail.removeRow(row);
 
 				for (Integer i = row; i < questionOptionDetail.getRowCount() - 1; i++) {
@@ -1017,8 +1009,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			TextBox qDepId = (TextBox) questionDetailPanel.getWidget(8, 4);
 			if (qDepId.getText().length() > 0)
 				qdDto.setKeyId(new Long(qDepId.getText()));
-		}else{
-			value.setQuestionDependency(null);		
+		} else {
+			value.setQuestionDependency(null);
 		}
 
 		return value;
@@ -1301,7 +1293,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onClick(ClickEvent event) {
 
-				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.KMLApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.KMLApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,velocity-1.6.2-dep.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar, velocity-1.6.2-dep.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 				appletString += "<PARAM name='surveyId' value='"
