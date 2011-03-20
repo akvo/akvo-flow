@@ -672,31 +672,50 @@ public class SurveyViewActivity extends TabActivity implements
 
 			// now make sure that the candidate missing questions are really
 			// missing by seeing if their dependencies are fulfilled
+			HashMap<String, QuestionResponse> responseMap = tabContentFactories
+					.get(0).loadState(getRespondentId());
 			for (int i = 0; i < candidateMissingQuestions.size(); i++) {
 				ArrayList<Dependency> dependencies = candidateMissingQuestions
 						.get(i).getDependencies();
 				if (dependencies != null) {
 					int satisfiedCount = 0;
 					for (int j = 0; j < dependencies.size(); j++) {
-						for (int k = 0; k < tabContentFactories.size(); k++) {
-							if (tabContentFactories.get(k)
-									.isDependencySatisfied(dependencies.get(j))) {
-								satisfiedCount++;
-								break;
-							}
+						if (isDependencySatisfied(dependencies.get(j),
+								responseMap)) {
+							satisfiedCount++;
 						}
-						if (satisfiedCount == dependencies.size()) {
-							missingQuestions.add(candidateMissingQuestions
-									.get(i));
-						}
-
 					}
+					if (satisfiedCount == dependencies.size()) {
+						missingQuestions.add(candidateMissingQuestions.get(i));
+					}
+
 				} else {
 					missingQuestions.add(candidateMissingQuestions.get(i));
 				}
 			}
 		}
 		return missingQuestions;
+	}
+
+	/**
+	 * checks if the dependency passed in is satisfied (i.e. if a question view
+	 * exists with the id and answer that match the dependency values)
+	 * 
+	 * @param dep
+	 * @return
+	 */
+	protected boolean isDependencySatisfied(Dependency dep,
+			HashMap<String, QuestionResponse> responses) {
+		boolean isSatisfied = false;
+		if (responses != null) {
+			QuestionResponse resp = responses.get(dep.getQuestion());
+			if (resp != null && resp.hasValue()
+					&& resp.getValue().equalsIgnoreCase(dep.getAnswer())
+					&& "true".equalsIgnoreCase(resp.getIncludeFlag())) {
+				isSatisfied = true;
+			}
+		}
+		return isSatisfied;
 	}
 
 	/**

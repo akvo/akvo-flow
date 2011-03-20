@@ -78,7 +78,7 @@ public class QuestionResponse {
 						String token = strTok.nextToken();
 						try{
 							if(token.trim().length()>0){
-								Double d = Double.parseDouble(token);
+								Double.parseDouble(token);
 							}else{
 								return false;
 							}

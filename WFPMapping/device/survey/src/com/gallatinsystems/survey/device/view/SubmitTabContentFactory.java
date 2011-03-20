@@ -43,8 +43,7 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 
 	@Override
 	public View createTabContent(String tag) {
-
-		return refreshView();
+		return replaceViewContent(null);
 	}
 
 	/**

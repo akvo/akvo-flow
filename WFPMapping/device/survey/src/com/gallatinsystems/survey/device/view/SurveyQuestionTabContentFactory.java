@@ -16,7 +16,6 @@ import android.widget.TableRow;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.activity.SurveyViewActivity;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
-import com.gallatinsystems.survey.device.domain.Dependency;
 import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionGroup;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
@@ -35,6 +34,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 
 	private QuestionGroup questionGroup;
 	private HashMap<String, QuestionView> questionMap;
+	private HashMap<String, QuestionResponse> responseMap;
 
 	private boolean readOnly;
 
@@ -52,6 +52,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 			QuestionGroup qg, SurveyDbAdapter dbAdaptor, float textSize,
 			String[] languageCodes, boolean readOnly) {
 		super(c, dbAdaptor, textSize, languageCodes);
+		responseMap = null;
 		questionGroup = qg;
 		questionMap = new HashMap<String, QuestionView>();
 		this.readOnly = readOnly;
@@ -192,6 +193,9 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 	 * @return
 	 */
 	public ArrayList<Question> checkMandatoryQuestions() {
+		if (responseMap == null) {
+			loadState(context.getRespondentId());
+		}
 		ArrayList<Question> missingQuestions = new ArrayList<Question>();
 		// we have to check if the map is null or empty since the views aren't
 		// created until the tab is clicked the first time
@@ -201,7 +205,11 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					.getQuestions();
 			for (int i = 0; i < uninitializedQuesitons.size(); i++) {
 				if (uninitializedQuesitons.get(i).isMandatory()) {
-					missingQuestions.add(uninitializedQuesitons.get(i));
+					QuestionResponse resp = responseMap
+							.get(uninitializedQuesitons.get(i).getId());
+					if (resp == null || !resp.isValid()) {
+						missingQuestions.add(uninitializedQuesitons.get(i));
+					}
 				}
 			}
 		} else {
@@ -224,7 +232,10 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 	 * 
 	 * @param respondentId
 	 */
-	public void loadState(Long respondentId) {
+	public HashMap<String,QuestionResponse> loadState(Long respondentId) {
+		if (responseMap == null) {
+			responseMap = new HashMap<String, QuestionResponse>();
+		}
 		if (respondentId != null) {
 			Cursor responseCursor = databaseAdaptor
 					.fetchResponsesByRespondent(respondentId.toString());
@@ -253,15 +264,16 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 						resp.setStrength(responseCursor.getString(i));
 					}
 				}
+				responseMap.put(resp.getQuestionId(), resp);
 				if (questionMap != null) {
 					// update the question view to reflect the loaded data
 					if (questionMap.get(resp.getQuestionId()) != null) {
 						questionMap.get(resp.getQuestionId()).rehydrate(resp);
-
 					}
 				}
 			}
 		}
+		return responseMap;
 	}
 
 	/**
@@ -284,6 +296,9 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 	 * @param respondentId
 	 */
 	public void saveState(Long respondentId) {
+		if (responseMap == null) {
+			responseMap = new HashMap<String, QuestionResponse>();
+		}
 		if (questionMap != null) {
 			for (QuestionView q : questionMap.values()) {
 				if (q.getResponse(true) != null
@@ -291,30 +306,20 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					q.getResponse(true).setRespondentId(respondentId);
 					databaseAdaptor.createOrUpdateSurveyResponse(q
 							.getResponse(true));
+					responseMap.put(q.getResponse(true).getQuestionId(), q
+							.getResponse(true));
+				} else if (q.getResponse(true) != null
+						&& q.getResponse(true).getId() != null
+						&& q.getResponse(true).getId() > 0) {
+					// if we don't have a value BUT there is an ID, we need to
+					// remove it since the user blanked out their response
+					databaseAdaptor.deleteResponse(respondentId.toString(), q
+							.getQuestion().getId());
+					responseMap.remove(q.getResponse(true).getQuestionId());
+				} else if (q.getResponse(true) != null) {
+					responseMap.remove(q.getResponse(true).getQuestionId());
 				}
 			}
 		}
-	}
-
-	/**
-	 * checks if the dependency passed in is satisfied (i.e. if a question view
-	 * exists with the id and answer that match the dependency values)
-	 * 
-	 * @param dep
-	 * @return
-	 */
-	public boolean isDependencySatisfied(Dependency dep) {
-		boolean isSatisfied = false;
-		if (questionMap != null) {
-			QuestionView view = questionMap.get(dep.getQuestion());
-			if (view != null) {
-				QuestionResponse resp = view.getResponse(true);
-				if (resp != null && resp.hasValue()
-						&& resp.getValue().equalsIgnoreCase(dep.getAnswer())) {
-					isSatisfied = true;
-				}
-			}
-		}
-		return isSatisfied;
 	}
 }

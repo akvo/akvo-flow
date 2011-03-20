@@ -65,7 +65,9 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 			createSurveyTabContent();
 		}
 		scrollView.removeAllViews();
-		scrollView.addView(content);
+		if (content != null) {
+			scrollView.addView(content);
+		}
 		return scrollView;
 	}
 
