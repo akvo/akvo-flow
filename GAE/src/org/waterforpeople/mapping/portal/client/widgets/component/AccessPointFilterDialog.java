@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -22,19 +20,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author Christopher Fagiani
  * 
  */
-public class AccessPointFilterDialog extends DialogBox implements ClickHandler {
+public class AccessPointFilterDialog extends WidgetDialog implements ClickHandler {
 
 	public static final String CRITERIA_KEY = "APcriteria";
-	private CompletionListener listener;
 	private AccessPointSearchControl searchControl;
 	private Button okButton;
 	private Button cancelButton;
 
 	public AccessPointFilterDialog(CompletionListener listener) {
-		this.listener = listener;
-		setText("Specify Access Point Filters");
-		setAnimationEnabled(true);
-		setGlassEnabled(true);
+		super("Specify Access Point Filters", null,true,listener);
 		Panel panel = new VerticalPanel();
 		searchControl = new AccessPointSearchControl();
 		panel.add(searchControl);
@@ -46,8 +40,7 @@ public class AccessPointFilterDialog extends DialogBox implements ClickHandler {
 		buttonPanel.add(okButton);
 		buttonPanel.add(cancelButton);
 		panel.add(buttonPanel);
-		setWidget(panel);
-
+		setContentWidget(panel);
 	}
 
 	@Override
@@ -61,32 +54,4 @@ public class AccessPointFilterDialog extends DialogBox implements ClickHandler {
 			notifyListener(true, payload);
 		}
 	}
-
-	/**
-	 * if a listener has been installed, calls the operationComplete method to
-	 * signal that the dialog box action is done
-	 * 
-	 * @param wasSuccessful
-	 * @param payload
-	 */
-	protected void notifyListener(boolean wasSuccessful,
-			Map<String, Object> payload) {
-		if (listener != null) {
-			listener.operationComplete(wasSuccessful, payload);
-		}
-	}
-
-	/**
-	 * shows the dialog box in the center of the screen
-	 */
-	public void showCentered() {
-		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-			public void setPosition(int offsetWidth, int offsetHeight) {
-				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
-				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;
-				setPopupPosition(left, top);
-			}
-		});
-	}
-
 }
