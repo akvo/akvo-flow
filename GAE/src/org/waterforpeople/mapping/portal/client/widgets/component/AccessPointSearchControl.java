@@ -46,6 +46,7 @@ public class AccessPointSearchControl extends Composite {
 		collectionDateTo = new DateBox();
 		constructionDateFrom = new DateBox();
 		constructionDateTo = new DateBox();
+		specialOption = ANY_OPT;
 		Grid grid = new Grid(4, 4);
 		configureAccessPointListBox();
 		grid.setWidget(0, 0, ViewUtil.initLabel("Country"));

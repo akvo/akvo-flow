@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
@@ -12,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Acce
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.portal.client.widgets.component.AccessPointSearchControl;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -21,8 +21,6 @@ import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -54,7 +52,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
-public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
+public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto> {
 	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
 	public static final String NAME = "Access Point Manager";
@@ -70,7 +68,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			new DataTableHeader("Collection Date", "collectionDate", true),
 			new DataTableHeader("Edit/Delete") };
 
-	private static final String ANY_OPT = "Any";
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
@@ -79,13 +76,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 	// Search UI Elements
 	private VerticalPanel mainVPanel = new VerticalPanel();
-	private FlexTable searchTable = new FlexTable();
-
-	private Label accessPointTypeLabel = new Label("Access Point Type");
-	private ListBox accessPointTypeListBox = new ListBox();
-
-	private Label technologyTypeLabel = new Label("Technology Type");
-	private ListBox techTypeListBox = new ListBox();
 
 	private Button searchButton = new Button("Search");
 	private Button errorsButton = new Button("Show Errors");
@@ -96,10 +86,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 
 	private Label statusLabel = new Label();
 
-	private DateBox collectionDateDPLower = new DateBox();
-	private DateBox collectionDateDPUpper = new DateBox();
-	private DateBox constructionDateDPLower = new DateBox();
-	private DateBox constructionDateDPUpper = new DateBox();
 	private Button createNewAccessPoint = new Button("Create New Access Point");
 
 	private ListBox statusLB = new ListBox();
@@ -109,10 +95,10 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 	private FlexTable accessPointDetail = new FlexTable();
 
 	private PaginatedDataTable<AccessPointDto> apTable;
+	private AccessPointSearchControl apSearchControl;
 
 	public AccessPointManagerPortlet(UserDto user) {
-		super(NAME, true, false, false, WIDTH, HEIGHT, user, true,
-				LocationDrivenPortlet.ANY_OPT);
+		super(NAME,true,false,false,WIDTH,HEIGHT,user);		
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		apTable = new PaginatedDataTable<AccessPointDto>(DEFAULT_SORT_FIELD,
@@ -149,16 +135,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				errorMode = false;
 				requestData(null, false);
 			}
-		});
-
-		accessPointTypeListBox.addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				// TODO: implement on change
-				// configureTechTypeListBox(event);
-			}
-
 		});
 
 		createNewAccessPoint.addClickHandler(new ClickHandler() {
@@ -225,54 +201,20 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 	}
 
 	private void configureSearchRibbon() {
-		configureDependantControls();
-		searchTable.setWidget(0, 0, new Label("Country"));
-		searchTable.setWidget(0, 1, getCountryControl());
-		searchTable.setWidget(0, 2, new Label("Community"));
-		searchTable.setWidget(0, 3, getCommunityControl());
-		searchTable.setWidget(1, 0, new Label("Collection Date from: "));
-		searchTable.setWidget(1, 1, collectionDateDPLower);
-		searchTable.setWidget(1, 2, new Label("to"));
-		searchTable.setWidget(1, 3, collectionDateDPUpper);
-		searchTable.setWidget(2, 0, accessPointTypeLabel);
-		searchTable.setWidget(2, 1, accessPointTypeListBox);
-		searchTable.setWidget(2, 2, technologyTypeLabel);
-		searchTable.setWidget(2, 3, techTypeListBox);
-		searchTable.setWidget(3, 0, new Label("Construction Date From: "));
-		searchTable.setWidget(3, 1, constructionDateDPLower);
-		searchTable.setWidget(3, 2, constructionDateDPUpper);
-		searchTable.setWidget(4, 0, searchButton);
-		searchTable.setWidget(4, 1, createNewAccessPoint);
-		searchTable.setWidget(4, 2, errorsButton);
-		searchTable.setWidget(4, 3, deleteAllButton);
+		apSearchControl = new AccessPointSearchControl();
+		Grid buttonGrid = new Grid(1, 4);
+		buttonGrid.setWidget(0, 0, searchButton);
+		buttonGrid.setWidget(0, 1, createNewAccessPoint);
+		buttonGrid.setWidget(0, 2, errorsButton);
+		buttonGrid.setWidget(0, 3, deleteAllButton);
 
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_AP)) {
 			createNewAccessPoint.setVisible(false);
 			deleteAllButton.setVisible(false);
 		}
 
-		mainVPanel.add(searchTable);
-	}
-
-	private void configureDependantControls() {
-		configureAccessPointListBox();
-		configureTechnologyType();
-	}
-
-	private void configureTechnologyType() {
-
-	}
-
-	private void configureAccessPointListBox() {
-		accessPointTypeListBox.addItem("Water Point",
-				AccessPointType.WATER_POINT.toString());
-		accessPointTypeListBox.addItem("Sanitation Point",
-				AccessPointType.SANITATION_POINT.toString());
-		accessPointTypeListBox.addItem("Public Institution",
-				AccessPointType.PUBLIC_INSTITUTION.toString());
-		accessPointTypeListBox.addItem("School", AccessPointType.SCHOOL
-				.toString());
-
+		mainVPanel.add(apSearchControl);
+		mainVPanel.add(buttonGrid);
 	}
 
 	/**
@@ -281,14 +223,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 	 * @return
 	 */
 	private AccessPointSearchCriteriaDto formSearchCriteria() {
-		AccessPointSearchCriteriaDto dto = new AccessPointSearchCriteriaDto();
-		dto.setCommunityCode(getSelectedCommunity());
-		dto.setCountryCode(getSelectedCountry());
-		dto.setCollectionDateFrom(collectionDateDPLower.getValue());
-		dto.setCollectionDateTo(collectionDateDPUpper.getValue());
-		dto.setConstructionDateFrom(constructionDateDPLower.getValue());
-		dto.setConstructionDateTo(constructionDateDPUpper.getValue());
-		dto.setPointType(getSelectedValue(accessPointTypeListBox));
+		AccessPointSearchCriteriaDto dto = apSearchControl.getSearchCriteria();
 		dto.setOrderBy(apTable.getCurrentSortField());
 		dto.setOrderByDir(apTable.getCurrentSortDirection());
 		return dto;
@@ -316,9 +251,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			}
 
 		});
-	}
-
-	private HashMap<String, String> fieldsMap = new HashMap<String, String>();
+	}	
 
 	private TabPanel loadTabs(AccessPointDto accessPointDto) {
 		TabPanel tp = new TabPanel();
@@ -1111,27 +1044,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 		return true;
 	}
 
-	/**
-	 * helper method to get value out of a listbox. If "Any" is selected, it's
-	 * translated to null since the service expects null to be passed in rather
-	 * than "all" if you don't want to filter by that param
-	 * 
-	 * @param lb
-	 * @return
-	 */
-	private String getSelectedValue(ListBox lb) {
-		if (lb.getSelectedIndex() >= 0) {
-			String val = lb.getValue(lb.getSelectedIndex());
-			if (ANY_OPT.equals(val)) {
-				return null;
-			} else {
-				return val;
-			}
-		} else {
-			return null;
-		}
-	}
-
 	@Override
 	public void bindRow(final Grid grid, AccessPointDto apDto, int row) {
 		Label keyIdLabel = new Label(apDto.getKeyId().toString());
@@ -1187,7 +1099,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 				final Integer row = Integer.parseInt(titleParts[0]);
 				final Long itemId = Long.parseLong(titleParts[1]);
 
-				svc.deleteAccessPoint(itemId, new AsyncCallback() {
+				svc.deleteAccessPoint(itemId, new AsyncCallback<Integer>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -1195,7 +1107,7 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 					}
 
 					@Override
-					public void onSuccess(Object result) {
+					public void onSuccess(Integer result) {
 						int rowSelected = row;
 						apTable.removeRow(rowSelected);
 						Grid grid = apTable.getGrid();
@@ -1361,16 +1273,6 @@ public class AccessPointManagerPortlet extends LocationDrivenPortlet implements
 			xLB.setSelectedIndex(3);
 
 		return xLB;
-	}
-
-	private Integer encodeString(String value) {
-		if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true"))
-			return 1;
-		else if (value.equalsIgnoreCase("no")
-				|| value.equalsIgnoreCase("false"))
-			return 0;
-		else
-			return -1;
 	}
 
 	private Long getLongValueFromWidget(FlexTable ft, Integer row,
