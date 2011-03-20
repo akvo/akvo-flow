@@ -678,6 +678,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					if (ViewUtil.isTextPopulated(box)) {
 						container.getOptionsList().get(i)
 								.setText(box.getText());
+						container.getOptionsList().get(i).setOrder(i+1);
 					} else {
 						validationMessages
 								.add("Options cannot be blank. Please correct option at position "
