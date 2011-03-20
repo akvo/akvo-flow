@@ -293,6 +293,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 			@Override
 			public void onClick(ClickEvent event) {
+				updateCurrentQuestion();
 				ArrayList<QuestionOptionDto> optList = currentQuestion
 						.getOptionContainerDto().getOptionsList();
 				Cell cell = optionTable.getCellForEvent(event);
