@@ -644,19 +644,22 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			item = currentQuestion.getQuestionDependency();
 
 			for (int i = 0; i < optionQuestions.length; i++) {
-
-				String txt = optionQuestions[i].getText();
-				if (txt != null && txt.trim().length() > MAX_Q_LENGTH) {
-					txt = txt.substring(0, MAX_Q_LENGTH);
-				}
-				questionLB.addItem(txt, optionQuestions[i].getKeyId()
-						.toString());
-				if (item != null
-						&& item.getQuestionId().equals(
+				if (currentQuestion.getKeyId() == null
+						|| !currentQuestion.getKeyId().equals(
 								optionQuestions[i].getKeyId())) {
-					questionLB.setSelectedIndex(i);
+					String txt = optionQuestions[i].getText();
+					if (txt != null && txt.trim().length() > MAX_Q_LENGTH) {
+						txt = txt.substring(0, MAX_Q_LENGTH);
+					}
+					questionLB.addItem(txt, optionQuestions[i].getKeyId()
+							.toString());
+					if (item != null
+							&& item.getQuestionId().equals(
+									optionQuestions[i].getKeyId())) {
+						questionLB
+								.setSelectedIndex(questionLB.getItemCount() - 1);
+					}
 				}
-
 			}
 			questionDetailPanel.setWidget(8, 1, questionLB);
 			TextBox dependentQId = new TextBox();

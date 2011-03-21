@@ -444,7 +444,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			for (int i = 0; i < questionList.size(); i++) {
 				QuestionDto q = questionList.get(i);
 				if (currentQuestion == null
-						|| (currentQuestion.getKeyId() != null && !currentQuestion
+						|| (currentQuestion.getKeyId() == null || !currentQuestion
 								.getKeyId().equals(q.getKeyId()))) {
 					dependentQuestionSelector.addItem(q.getText(), q.getKeyId()
 							.toString());
@@ -452,7 +452,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 							&& currentQuestion.getQuestionDependency() != null
 							&& currentQuestion.getQuestionDependency()
 									.getQuestionId().equals(q.getKeyId())) {
-						dependentQuestionSelector.setSelectedIndex(i + 1);
+						dependentQuestionSelector
+								.setSelectedIndex(dependentQuestionSelector
+										.getItemCount() - 1);
 						selectedQId = q.getKeyId().toString();
 					}
 				}
