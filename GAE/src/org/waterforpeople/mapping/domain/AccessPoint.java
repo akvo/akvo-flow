@@ -735,7 +735,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 		this.improvedWaterPointFlag = improvedWaterPointFlag;
 	}
 
-	public boolean isImprovedWaterPointFlag() {
+	public Boolean isImprovedWaterPointFlag() {
 		return improvedWaterPointFlag;
 	}
 

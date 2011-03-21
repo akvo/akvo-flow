@@ -456,6 +456,8 @@ public class AccessPointHelper {
 						// TODO: Hack since the fileUrl keeps getting set to
 						// incorrect value
 						// Changing from apCurrent to ap
+						KMLGenerator kmlGen = new KMLGenerator();
+						ap =kmlGen.scoreAccessPoint(ap); 
 						ap = apDao.save(ap);
 
 						String newValues = formChangeRecordString(ap);

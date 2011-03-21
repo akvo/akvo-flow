@@ -824,6 +824,9 @@ public class KMLGenerator {
 			}
 		} else {
 			String statusString = encodeStatusUsingScore(ap);
+			if(statusString==null){
+				statusString ="Unknown";
+			}
 			context.put("waterSystemStatus", statusString);
 			AccessPointDao apDao = new AccessPointDao();
 			apDao.save(ap);
@@ -857,26 +860,32 @@ public class KMLGenerator {
 		// Are there current problems: no=1,yes=0
 		// meet govt quantity standards:no=0,yes=1
 		// Is there a tarriff or fee no=0,yes=1
-
+		log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode());
 		Integer score = 0;
 
-		if (ap.isImprovedWaterPointFlag()) {
+		if (ap.isImprovedWaterPointFlag()!=null&&ap.isImprovedWaterPointFlag()) {
 			score++;
+			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for ImprovedWaterSystem: " + score );
 		}
-		if (ap.getProvideAdequateQuantity().equals(true)) {
+		if (ap.getProvideAdequateQuantity()!=null&&ap.getProvideAdequateQuantity().equals(true)) {
 			score++;
+			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for AdqQuantity: " + score );
 		}
-		if (!ap.getHasSystemBeenDown1DayFlag().equals(true)) {
+		if (ap.getHasSystemBeenDown1DayFlag()!=null&&!ap.getHasSystemBeenDown1DayFlag().equals(true)) {
 			score++;
+			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for Has System Been down: " + score );
 		}
-		if (ap.getCurrentProblem() == null) {
+		if (ap.getCurrentProblem()!=null&&ap.getCurrentProblem() == null) {
 			score++;
+			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for ImprovedWaterSystem: " + score );
 		}
-		if (ap.getMeetGovtQuantityStandardFlag().equals(true)) {
+		if (ap.getMeetGovtQuantityStandardFlag()!=null&&ap.getMeetGovtQuantityStandardFlag().equals(true)) {
 			score++;
+			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for Meets Govt Quantity Flag: " + score );
 		}
-		if (ap.isCollectTariffFlag()) {
+		if (ap.isCollectTariffFlag()!=null&&ap.isCollectTariffFlag()) {
 			score++;
+			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for Collect Tarif: " + score );
 		}
 
 		ap.setScore(score);
