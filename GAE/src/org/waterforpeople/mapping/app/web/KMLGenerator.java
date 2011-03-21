@@ -858,7 +858,7 @@ public class KMLGenerator {
 
 		Integer score = 0;
 
-		if (!ap.getTypeTechnologyString().equals("No Improved System")) {
+		if (ap.isImprovedWaterPointFlag()) {
 			score++;
 		}
 		if (ap.getProvideAdequateQuantity().equals(true)) {
@@ -873,7 +873,7 @@ public class KMLGenerator {
 		if (ap.getMeetGovtQuantityStandardFlag().equals(true)) {
 			score++;
 		}
-		if (ap.getCostPer() != null) {
+		if (ap.isCollectTariffFlag()) {
 			score++;
 		}
 		return 0;

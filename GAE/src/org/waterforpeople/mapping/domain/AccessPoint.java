@@ -138,6 +138,10 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String qualityDescription = null;
 	@MappableField(displayName="Access Point Quantity Description")
 	private String quantityDescription = null;
+	@MappableField(displayName="Is improved waterpoint")
+	private boolean improvedWaterPointFlag=false;
+	@MappableField(displayName="collectTariff")
+	private boolean collectTariffFlag=false;
 	private String sub1=null;
 	private String sub2=null;
 	private String sub3=null;
@@ -723,6 +727,22 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public String getWaterForPeopleRole() {
 		return waterForPeopleRole;
+	}
+
+	public void setImprovedWaterPointFlag(boolean improvedWaterPointFlag) {
+		this.improvedWaterPointFlag = improvedWaterPointFlag;
+	}
+
+	public boolean isImprovedWaterPointFlag() {
+		return improvedWaterPointFlag;
+	}
+
+	public void setCollectTariffFlag(boolean collectTariffFlag) {
+		this.collectTariffFlag = collectTariffFlag;
+	}
+
+	public boolean isCollectTariffFlag() {
+		return collectTariffFlag;
 	}
 
 }
