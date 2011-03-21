@@ -38,12 +38,12 @@ public class KMLGenerator {
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
 	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
+			.getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
 	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
+			.getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
 	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
-	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/glassBlack32.png";
+			.getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
+	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseRed36.png";
@@ -797,7 +797,8 @@ public class KMLGenerator {
 
 	private String encodeStatusString(AccessPoint ap, VelocityContext context) {
 		AccessPoint.Status status = ap.getPointStatus();
-		if (ap.getCollectionDate().before(new Date("01/01/2011"))) {
+		if (ap.getCollectionDate() != null
+				&& ap.getCollectionDate().before(new Date("01/01/2011"))) {
 			if (status != null) {
 				if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
 					context.put("waterSystemStatus",
@@ -823,9 +824,15 @@ public class KMLGenerator {
 				return "Unknown";
 			}
 		} else {
-			String statusString = encodeStatusUsingScore(ap);
-			if(statusString==null){
-				statusString ="Unknown";
+			String statusString = null;
+			try {
+				statusString = encodeStatusUsingScore(ap);
+			} catch (Exception ex) {
+				log.log(Level.INFO, "Couldn't score  ap: " + ap.toString()
+						+ " " + ex);
+			}
+			if (statusString == null) {
+				statusString = "Unknown";
 			}
 			context.put("waterSystemStatus", statusString);
 			AccessPointDao apDao = new AccessPointDao();
@@ -860,32 +867,50 @@ public class KMLGenerator {
 		// Are there current problems: no=1,yes=0
 		// meet govt quantity standards:no=0,yes=1
 		// Is there a tarriff or fee no=0,yes=1
-		log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode());
+		log.log(Level.INFO,
+				"About to compute score for: " + ap.getCommunityCode());
 		Integer score = 0;
 
-		if (ap.isImprovedWaterPointFlag()!=null&&ap.isImprovedWaterPointFlag()) {
+		if (ap.isImprovedWaterPointFlag() != null
+				&& ap.isImprovedWaterPointFlag()) {
 			score++;
-			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for ImprovedWaterSystem: " + score );
+			log.log(Level.INFO,
+					"About to compute score for: " + ap.getCommunityCode()
+							+ " : plus 1 for ImprovedWaterSystem: " + score);
 		}
-		if (ap.getProvideAdequateQuantity()!=null&&ap.getProvideAdequateQuantity().equals(true)) {
+		if (ap.getProvideAdequateQuantity() != null
+				&& ap.getProvideAdequateQuantity().equals(true)) {
 			score++;
-			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for AdqQuantity: " + score );
+			log.log(Level.INFO,
+					"About to compute score for: " + ap.getCommunityCode()
+							+ " : plus 1 for AdqQuantity: " + score);
 		}
-		if (ap.getHasSystemBeenDown1DayFlag()!=null&&!ap.getHasSystemBeenDown1DayFlag().equals(true)) {
+		if (ap.getHasSystemBeenDown1DayFlag() != null
+				&& !ap.getHasSystemBeenDown1DayFlag().equals(true)) {
 			score++;
-			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for Has System Been down: " + score );
+			log.log(Level.INFO,
+					"About to compute score for: " + ap.getCommunityCode()
+							+ " : plus 1 for Has System Been down: " + score);
 		}
-		if (ap.getCurrentProblem()!=null&&ap.getCurrentProblem() == null) {
+		if (ap.getCurrentProblem() != null && ap.getCurrentProblem() == null) {
 			score++;
-			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for ImprovedWaterSystem: " + score );
+			log.log(Level.INFO,
+					"About to compute score for: " + ap.getCommunityCode()
+							+ " : plus 1 for ImprovedWaterSystem: " + score);
 		}
-		if (ap.getMeetGovtQuantityStandardFlag()!=null&&ap.getMeetGovtQuantityStandardFlag().equals(true)) {
+		if (ap.getMeetGovtQuantityStandardFlag() != null
+				&& ap.getMeetGovtQuantityStandardFlag().equals(true)) {
 			score++;
-			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for Meets Govt Quantity Flag: " + score );
+			log.log(Level.INFO,
+					"About to compute score for: " + ap.getCommunityCode()
+							+ " : plus 1 for Meets Govt Quantity Flag: "
+							+ score);
 		}
-		if (ap.isCollectTariffFlag()!=null&&ap.isCollectTariffFlag()) {
+		if (ap.isCollectTariffFlag() != null && ap.isCollectTariffFlag()) {
 			score++;
-			log.log(Level.INFO,"About to compute score for: "+ ap.getCommunityCode() + " : plus 1 for Collect Tarif: " + score );
+			log.log(Level.INFO,
+					"About to compute score for: " + ap.getCommunityCode()
+							+ " : plus 1 for Collect Tarif: " + score);
 		}
 
 		ap.setScore(score);
