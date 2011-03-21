@@ -42,6 +42,8 @@ public class KMLApplet extends JApplet implements Runnable {
 			if (filePath != null) {
 				System.out.println(filePath);
 				SwingUtilities.invokeLater(new StatusUpdater("Running export"));
+				if(filePath.endsWith("/"))
+					filePath = filePath.substring(0, filePath.length()-2);
 				executeExport(filePath + "/MAP.kmz");
 				SwingUtilities
 						.invokeLater(new StatusUpdater("Export Complete"));
