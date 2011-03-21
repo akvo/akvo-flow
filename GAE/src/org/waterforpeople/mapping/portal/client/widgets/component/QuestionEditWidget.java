@@ -211,7 +211,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (currentQuestion.getMandatoryFlag() != null) {
 			mandatoryBox.setValue(currentQuestion.getMandatoryFlag());
 		}
-		if (currentQuestion.getQuestionDependency() != null && currentQuestion.getQuestionDependency().getQuestionId() != null) {
+		if (currentQuestion.getQuestionDependency() != null
+				&& currentQuestion.getQuestionDependency().getQuestionId() != null) {
 			dependentBox.setValue(true);
 			loadDependencyList();
 		}
@@ -429,7 +430,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	/**
 	 * populates the question dependency selector drop down and ensures the
-	 * correct value is selected (if the currentQuestion's depedency is
+	 * correct value is selected (if the currentQuestion's dependency is
 	 * non-null).
 	 * 
 	 * @param currentQuestion
@@ -442,14 +443,18 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			String selectedQId = null;
 			for (int i = 0; i < questionList.size(); i++) {
 				QuestionDto q = questionList.get(i);
-				dependentQuestionSelector.addItem(q.getText(), q.getKeyId()
-						.toString());
-				if (currentQuestion != null
-						&& currentQuestion.getQuestionDependency() != null
-						&& currentQuestion.getQuestionDependency()
-								.getQuestionId().equals(q.getKeyId())) {
-					dependentQuestionSelector.setSelectedIndex(i + 1);
-					selectedQId = q.getKeyId().toString();
+				if (currentQuestion == null
+						|| (currentQuestion.getKeyId() != null && !currentQuestion
+								.getKeyId().equals(q.getKeyId()))) {
+					dependentQuestionSelector.addItem(q.getText(), q.getKeyId()
+							.toString());
+					if (currentQuestion != null
+							&& currentQuestion.getQuestionDependency() != null
+							&& currentQuestion.getQuestionDependency()
+									.getQuestionId().equals(q.getKeyId())) {
+						dependentQuestionSelector.setSelectedIndex(i + 1);
+						selectedQId = q.getKeyId().toString();
+					}
 				}
 			}
 			if (selectedQId != null) {
@@ -656,8 +661,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 									.getSelectedIndex()));
 				}
 			}
-		}else{
-			currentQuestion.setQuestionDependency(null);			
+		} else {
+			currentQuestion.setQuestionDependency(null);
 		}
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
 			currentQuestion.setAllowMultipleFlag(allowMultipleBox.getValue());
@@ -679,7 +684,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					if (ViewUtil.isTextPopulated(box)) {
 						container.getOptionsList().get(i)
 								.setText(box.getText());
-						container.getOptionsList().get(i).setOrder(i+1);
+						container.getOptionsList().get(i).setOrder(i + 1);
 					} else {
 						validationMessages
 								.add("Options cannot be blank. Please correct option at position "
