@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -42,9 +43,7 @@ public class KMLApplet extends JApplet implements Runnable {
 			if (filePath != null) {
 				System.out.println(filePath);
 				SwingUtilities.invokeLater(new StatusUpdater("Running export"));
-				if(filePath.endsWith(File.separator))
-					filePath = filePath.substring(0, filePath.length()-2);
-				executeExport(filePath + File.separator+"MAP.kmz");
+				executeExport(filePath);
 				SwingUtilities
 						.invokeLater(new StatusUpdater("Export Complete"));
 			} else {
@@ -204,7 +203,7 @@ public class KMLApplet extends JApplet implements Runnable {
 
 	private String promptForFile() {
 		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fc.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
 		fc.setAcceptAllFileFilterUsed(false);
 		int returnVal = fc.showOpenDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
