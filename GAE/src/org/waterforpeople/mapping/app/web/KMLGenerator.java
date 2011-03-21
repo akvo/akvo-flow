@@ -38,14 +38,11 @@ public class KMLGenerator {
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
 	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT)
-			+ "/images/glassGreen32.png";
+			.getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
 	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT)
-			+ "/images/glassOrange32.png";
+			.getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
 	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT)
-			+ "/images/glassRed32.png";
+			.getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
 	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/glassBlack32.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
@@ -96,11 +93,9 @@ public class KMLGenerator {
 	public String generateDocument(String placemarksVMName) {
 		try {
 			VelocityContext context = new VelocityContext();
-			context.put("folderContents", generatePlacemarks(placemarksVMName,
-					Constants.ALL_RESULTS));
-			context
-					.put("regionPlacemark",
-							generateRegionOutlines("Regions.vm"));
+			context.put("folderContents",
+					generatePlacemarks(placemarksVMName, Constants.ALL_RESULTS));
+			context.put("regionPlacemark", generateRegionOutlines("Regions.vm"));
 			return mergeContext(context, "Document.vm");
 		} catch (Exception ex) {
 			log.log(Level.SEVERE, "Could create kml", ex);
@@ -114,9 +109,7 @@ public class KMLGenerator {
 			String placemarks = generatePlacemarks(placemarksVMName,
 					countryCode);
 			context.put("folderContents", placemarks);
-			context
-					.put("regionPlacemark",
-							generateRegionOutlines("Regions.vm"));
+			context.put("regionPlacemark", generateRegionOutlines("Regions.vm"));
 			return mergeContext(context, "Document.vm");
 		} catch (Exception ex) {
 			log.log(Level.SEVERE, "Could create kml", ex);
@@ -168,8 +161,8 @@ public class KMLGenerator {
 				ArrayList<AccessPoint> techTypeAPList = new ArrayList<AccessPoint>();
 				for (AccessPoint item : waterAPList) {
 
-					if (techType.getName().toLowerCase().equals(
-							"unimproved waterpoint")
+					if (techType.getName().toLowerCase()
+							.equals("unimproved waterpoint")
 							&& item.getTypeTechnologyString().toLowerCase()
 									.contains("unimproved waterpoint")) {
 						techTypeAPList.add(item);
@@ -222,9 +215,9 @@ public class KMLGenerator {
 		try {
 			HashMap<String, String> contextBindingsMap = new HashMap<String, String>();
 			if (waterAP.getCollectionDate() != null) {
-				String timestamp = DateFormatUtils.formatUTC(waterAP
-						.getCollectionDate(), DateFormatUtils.ISO_DATE_FORMAT
-						.getPattern());
+				String timestamp = DateFormatUtils.formatUTC(
+						waterAP.getCollectionDate(),
+						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(waterAP.getCollectionDate());
 				contextBindingsMap.put("collectionDate", formattedDate);
@@ -246,55 +239,73 @@ public class KMLGenerator {
 						.format(new Date());
 				contextBindingsMap.put("collectionYear", collectionYear);
 			}
-			contextBindingsMap.put("communityCode", encodeNullDefault(waterAP
-					.getCommunityCode(), "Unknown"));
-			contextBindingsMap.put("communityName", encodeNullDefault(waterAP
-					.getCommunityName(), "Unknown"));
-			contextBindingsMap.put("typeOfWaterPointTechnology",
+			contextBindingsMap.put("communityCode",
+					encodeNullDefault(waterAP.getCommunityCode(), "Unknown"));
+			contextBindingsMap.put("communityName",
+					encodeNullDefault(waterAP.getCommunityName(), "Unknown"));
+			contextBindingsMap.put(
+					"typeOfWaterPointTechnology",
 					encodeNullDefault(waterAP.getTypeTechnologyString(),
 							"Unknown"));
-			contextBindingsMap.put("constructionDateOfWaterPoint",
+			contextBindingsMap.put(
+					"constructionDateOfWaterPoint",
 					encodeNullDefault(waterAP.getConstructionDateYear(),
 							"Unknown"));
-			contextBindingsMap.put("numberOfHouseholdsUsingWaterPoint",
+			contextBindingsMap.put(
+					"numberOfHouseholdsUsingWaterPoint",
 					encodeNullDefault(
 							waterAP.getNumberOfHouseholdsUsingPoint(),
 							"Unknown"));
-			contextBindingsMap.put("costPer20ML", encodeNullDefault(waterAP
-					.getCostPer(), "Unknown"));
-			contextBindingsMap.put("farthestHouseholdFromWaterPoint",
+			contextBindingsMap.put("costPer20ML",
+					encodeNullDefault(waterAP.getCostPer(), "Unknown"));
+			contextBindingsMap.put(
+					"farthestHouseholdFromWaterPoint",
 					encodeNullDefault(waterAP.getFarthestHouseholdfromPoint(),
 							"Unknown"));
-			contextBindingsMap.put("currentManagementStructureOfWaterPoint",
-					encodeNullDefault(waterAP
-							.getCurrentManagementStructurePoint(), "Unknown"));
+			contextBindingsMap.put(
+					"currentManagementStructureOfWaterPoint",
+					encodeNullDefault(
+							waterAP.getCurrentManagementStructurePoint(),
+							"Unknown"));
 			contextBindingsMap.put("waterSystemStatus",
 					encodeStatusString(waterAP.getPointStatus()));
-			contextBindingsMap.put("photoUrl", encodeNullDefault(waterAP
-					.getPhotoURL(), "Unknown"));
-			contextBindingsMap.put("waterPointPhotoCaption", encodeNullDefault(
-					waterAP.getPointPhotoCaption(), "Unknown"));
-			contextBindingsMap.put("primarySanitationTechnology",
+			contextBindingsMap.put("photoUrl",
+					encodeNullDefault(waterAP.getPhotoURL(), "Unknown"));
+			contextBindingsMap
+					.put("waterPointPhotoCaption",
+							encodeNullDefault(waterAP.getPointPhotoCaption(),
+									"Unknown"));
+			contextBindingsMap.put(
+					"primarySanitationTechnology",
 					encodeNullDefault(sanitationAP.getTypeTechnologyString(),
 							"Unknown"));
 			contextBindingsMap.put(
 					"percentageOfHouseholdsWithImprovedSanitation",
-					encodeNullDefault(sanitationAP
-							.getNumberOfHouseholdsUsingPoint(), "Unknown"));
+					encodeNullDefault(
+							sanitationAP.getNumberOfHouseholdsUsingPoint(),
+							"Unknown"));
 			contextBindingsMap.put("photoOfPrimarySanitationtechnology",
 					encodeNullDefault(sanitationAP.getPhotoURL(), "Unknown"));
-			contextBindingsMap.put("sanitationPhotoCaption", encodeNullDefault(
-					sanitationAP.getPointPhotoCaption(), "Unknown"));
-			contextBindingsMap.put("footer", encodeNullDefault(waterAP
-					.getFooter(), "Unknown"));
-			contextBindingsMap.put("longitude", encodeNullDefault(waterAP
-					.getLongitude().toString(), "Unknown"));
-			contextBindingsMap.put("latitude", encodeNullDefault(waterAP
-					.getLatitude().toString(), "Unknown"));
-			contextBindingsMap.put("altitude", encodeNullDefault(waterAP
-					.getAltitude().toString(), "0.0"));
-			contextBindingsMap.put("pinStyle", encodePinStyle(waterAP
-					.getPointType(), waterAP.getPointStatus()));
+			contextBindingsMap.put(
+					"sanitationPhotoCaption",
+					encodeNullDefault(sanitationAP.getPointPhotoCaption(),
+							"Unknown"));
+			contextBindingsMap.put("footer",
+					encodeNullDefault(waterAP.getFooter(), "Unknown"));
+			contextBindingsMap.put(
+					"longitude",
+					encodeNullDefault(waterAP.getLongitude().toString(),
+							"Unknown"));
+			contextBindingsMap.put(
+					"latitude",
+					encodeNullDefault(waterAP.getLatitude().toString(),
+							"Unknown"));
+			contextBindingsMap.put("altitude",
+					encodeNullDefault(waterAP.getAltitude().toString(), "0.0"));
+			contextBindingsMap.put(
+					"pinStyle",
+					encodePinStyle(waterAP.getPointType(),
+							waterAP.getPointStatus()));
 			return contextBindingsMap;
 		} catch (NullPointerException nex) {
 			log.log(Level.SEVERE, "Could not load context bindings", nex);
@@ -388,14 +399,14 @@ public class KMLGenerator {
 						if (ap.getCommunityCode() != null)
 							context.put("communityCode", ap.getCommunityCode());
 						else
-							context
-									.put("communityCode", "Unknown"
-											+ new Date());
+							context.put("communityCode", "Unknown" + new Date());
 						// Need to check this
 						if (ap.getPointType() != null) {
-							context.put("pinStyle", encodePinStyle(ap
-									.getPointType(), ap.getPointStatus()));
-							encodeStatusString(ap.getPointStatus(), context);
+							context.put(
+									"pinStyle",
+									encodePinStyle(ap.getPointType(),
+											ap.getPointStatus()));
+							encodeStatusString(ap, context);
 						} else {
 							context.put("pinStyle", "waterpushpinblk");
 						}
@@ -437,9 +448,9 @@ public class KMLGenerator {
 			}
 			context.put("countryCode", ap.getCountryCode());
 			if (ap.getCollectionDate() != null) {
-				String timestamp = DateFormatUtils.formatUTC(ap
-						.getCollectionDate(), DateFormatUtils.ISO_DATE_FORMAT
-						.getPattern());
+				String timestamp = DateFormatUtils.formatUTC(
+						ap.getCollectionDate(),
+						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(ap.getCollectionDate());
 				context.put("collectionDate", formattedDate);
@@ -462,8 +473,8 @@ public class KMLGenerator {
 				context.put("communityCode", "Unknown" + new Date());
 
 			if (ap.getWaterForPeopleProjectFlag() != null) {
-				context.put("waterForPeopleProject", encodeBooleanDisplay(ap
-						.getWaterForPeopleProjectFlag()));
+				context.put("waterForPeopleProject",
+						encodeBooleanDisplay(ap.getWaterForPeopleProjectFlag()));
 			} else {
 				context.put("waterForPeopleProject", "null");
 			}
@@ -483,9 +494,8 @@ public class KMLGenerator {
 			if (ap.getPhotoURL() != null && ap.getPhotoURL().trim() != "")
 				context.put("photoUrl", ap.getPhotoURL());
 			else
-				context
-						.put("photoUrl",
-								"http://waterforpeople.s3.amazonaws.com/images/wfplogo.jpg");
+				context.put("photoUrl",
+						"http://waterforpeople.s3.amazonaws.com/images/wfplogo.jpg");
 			if (ap.getPointType() != null) {
 				if (ap.getPointType().equals(
 						AccessPoint.AccessPointType.WATER_POINT)) {
@@ -515,15 +525,15 @@ public class KMLGenerator {
 			if (ap.getTypeTechnologyString() == null) {
 				context.put("primaryTypeTechnology", "Unknown");
 			} else {
-				context.put("primaryTypeTechnology", ap
-						.getTypeTechnologyString());
+				context.put("primaryTypeTechnology",
+						ap.getTypeTechnologyString());
 			}
 
 			if (ap.getHasSystemBeenDown1DayFlag() == null) {
 				context.put("down1DayFlag", "Unknown");
 			} else {
-				context.put("down1DayFlag", encodeBooleanDisplay(ap
-						.getHasSystemBeenDown1DayFlag()));
+				context.put("down1DayFlag",
+						encodeBooleanDisplay(ap.getHasSystemBeenDown1DayFlag()));
 			}
 
 			if (ap.getInstitutionName() == null) {
@@ -551,8 +561,8 @@ public class KMLGenerator {
 						constructionDateYear);
 			}
 			if (ap.getNumberOfHouseholdsUsingPoint() != null) {
-				context.put("numberOfHouseholdsUsingWaterPoint", ap
-						.getNumberOfHouseholdsUsingPoint());
+				context.put("numberOfHouseholdsUsingWaterPoint",
+						ap.getNumberOfHouseholdsUsingPoint());
 			} else {
 				context.put("numberOfHouseholdsUsingWaterPoint", "null");
 			}
@@ -565,22 +575,20 @@ public class KMLGenerator {
 					|| ap.getFarthestHouseholdfromPoint().trim().equals("")) {
 				context.put("farthestHouseholdfromWaterPoint", "N/A");
 			} else {
-				context.put("farthestHouseholdfromWaterPoint", ap
-						.getFarthestHouseholdfromPoint());
+				context.put("farthestHouseholdfromWaterPoint",
+						ap.getFarthestHouseholdfromPoint());
 			}
 			if (ap.getCurrentManagementStructurePoint() == null) {
 				context.put("currMgmtStructure", "N/A");
 			} else {
-				context.put("currMgmtStructure", ap
-						.getCurrentManagementStructurePoint());
+				context.put("currMgmtStructure",
+						ap.getCurrentManagementStructurePoint());
 			}
 			if (ap.getPointPhotoCaption() == null
 					|| ap.getPointPhotoCaption().trim().equals("")) {
 				context.put("waterPointPhotoCaption", defaultPhotoCaption);
 			} else {
-				context
-						.put("waterPointPhotoCaption", ap
-								.getPointPhotoCaption());
+				context.put("waterPointPhotoCaption", ap.getPointPhotoCaption());
 			}
 			if (ap.getCommunityName() == null) {
 				context.put("communityName", "Unknown");
@@ -635,15 +643,15 @@ public class KMLGenerator {
 			if (ap.getSecondaryTechnologyString() == null) {
 				context.put("secondaryTypeTechnology", "N/A");
 			} else {
-				context.put("secondaryTypeTechnology", ap
-						.getSecondaryTechnologyString());
+				context.put("secondaryTypeTechnology",
+						ap.getSecondaryTechnologyString());
 			}
 
 			if (ap.getProvideAdequateQuantity() == null) {
 				context.put("provideAdequateQuantity", "N/A");
 			} else {
-				context.put("provideAdequateQuantity", encodeBooleanDisplay(ap
-						.getProvideAdequateQuantity()));
+				context.put("provideAdequateQuantity",
+						encodeBooleanDisplay(ap.getProvideAdequateQuantity()));
 			}
 
 			if (ap.getBalloonTitle() == null) {
@@ -655,8 +663,8 @@ public class KMLGenerator {
 			if (ap.getProvideAdequateQuantity() == null) {
 				context.put("provideAdequateQuantity", "N/A");
 			} else {
-				context.put("provideAdequateQuantity", encodeBooleanDisplay(ap
-						.getProvideAdequateQuantity()));
+				context.put("provideAdequateQuantity",
+						encodeBooleanDisplay(ap.getProvideAdequateQuantity()));
 			}
 
 			if (ap.getQualityDescription() != null) {
@@ -700,9 +708,9 @@ public class KMLGenerator {
 
 			// Need to check this
 			if (ap.getPointType() != null) {
-				context.put("pinStyle", encodePinStyle(ap.getPointType(), ap
-						.getPointStatus()));
-				encodeStatusString(ap.getPointStatus(), context);
+				context.put("pinStyle",
+						encodePinStyle(ap.getPointType(), ap.getPointStatus()));
+				encodeStatusString(ap, context);
 			} else {
 				context.put("pinStyle", "waterpushpinblk");
 			}
@@ -787,31 +795,37 @@ public class KMLGenerator {
 		}
 	}
 
-	private String encodeStatusString(AccessPoint.Status status,
-			VelocityContext context) {
-
-		if (status != null) {
-			if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
-				context.put("waterSystemStatus", "Meets Government Standards");
-				return "System Functioning and Meets Government Standards";
-			} else if (AccessPoint.Status.FUNCTIONING_OK == status
-					|| AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
-				context.put("waterSystemStatus",
-						"Functioning but with Problems");
-				return "Functioning but with Problems";
-			} else if (AccessPoint.Status.BROKEN_DOWN == status) {
-				context.put("waterSystemStatus", "Broken-down system");
-				return "Broken-down system";
-			} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
-				context.put("waterSystemStatus", "No Improved System");
-				return "No Improved System";
+	private String encodeStatusString(AccessPoint ap, VelocityContext context) {
+		AccessPoint.Status status = ap.getPointStatus();
+		if (ap.getCollectionDate().before(new Date("01/01/2011"))) {
+			if (status != null) {
+				if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
+					context.put("waterSystemStatus",
+							"Meets Government Standards");
+					return "System Functioning and Meets Government Standards";
+				} else if (AccessPoint.Status.FUNCTIONING_OK == status
+						|| AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS == status) {
+					context.put("waterSystemStatus",
+							"Functioning but with Problems");
+					return "Functioning but with Problems";
+				} else if (AccessPoint.Status.BROKEN_DOWN == status) {
+					context.put("waterSystemStatus", "Broken-down system");
+					return "Broken-down system";
+				} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
+					context.put("waterSystemStatus", "No Improved System");
+					return "No Improved System";
+				} else {
+					context.put("waterSystemStatus", "Unknown");
+					return "Unknown";
+				}
 			} else {
 				context.put("waterSystemStatus", "Unknown");
 				return "Unknown";
 			}
 		} else {
-			context.put("waterSystemStatus", "Unknown");
-			return "Unknown";
+			String statusString = encodeStatusUsingScore(ap);
+			context.put("waterSystemStatus", statusString);
+			return statusString;
 		}
 	}
 
@@ -875,7 +889,7 @@ public class KMLGenerator {
 			return "Functioning but with Problems";
 		} else if (score > 5) {
 			return "System Functioning and Meets Government Standards";
-		}else {
+		} else {
 			return "Unknown";
 		}
 	}
