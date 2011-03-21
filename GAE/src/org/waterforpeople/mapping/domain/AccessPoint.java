@@ -139,9 +139,11 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@MappableField(displayName="Access Point Quantity Description")
 	private String quantityDescription = null;
 	@MappableField(displayName="Is improved waterpoint")
-	private boolean improvedWaterPointFlag=false;
+	private Boolean improvedWaterPointFlag=null;
 	@MappableField(displayName="collectTariff")
-	private boolean collectTariffFlag=false;
+	private Boolean collectTariffFlag=null;
+	private Integer score = null;
+	private Date scoreComputationDate = null;
 	private String sub1=null;
 	private String sub2=null;
 	private String sub3=null;
@@ -737,12 +739,28 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 		return improvedWaterPointFlag;
 	}
 
-	public void setCollectTariffFlag(boolean collectTariffFlag) {
+	public void setCollectTariffFlag(Boolean collectTariffFlag) {
 		this.collectTariffFlag = collectTariffFlag;
 	}
 
-	public boolean isCollectTariffFlag() {
+	public Boolean isCollectTariffFlag() {
 		return collectTariffFlag;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScoreComputationDate(Date scoreComputationDate) {
+		this.scoreComputationDate = scoreComputationDate;
+	}
+
+	public Date getScoreComputationDate() {
+		return scoreComputationDate;
 	}
 
 }

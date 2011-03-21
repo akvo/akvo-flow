@@ -5,7 +5,6 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -13,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
+import org.waterforpeople.mapping.app.web.KMLGenerator;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -88,7 +88,7 @@ public class AccessPointHelper {
 								Level.SEVERE,
 								"Inside processSurveyInstance could not save AP for SurveyInstanceId: "
 										+ surveyInstanceId + ":"
-										+ ap.toString());
+										+ ap.toString() + " ex: " + ex + " exMessage: " + ex.getMessage());
 					}
 				}
 			}
@@ -326,6 +326,9 @@ public class AccessPointHelper {
 							} else if (stringVal.toLowerCase().contains("no")) {
 								val = false;
 							} else {
+								if(stringVal==null || stringVal.equals("")){
+									val=null;
+								}
 								val = Boolean.parseBoolean(stringVal.trim());
 							}
 							f.set(ap, val);
@@ -495,6 +498,8 @@ public class AccessPointHelper {
 						}
 					}
 					try {
+						KMLGenerator kmlGen = new KMLGenerator();
+						ap =kmlGen.scoreAccessPoint(ap); 
 						ap = apDao.save(ap);
 					} catch (Exception ex) {
 						logger.log(Level.INFO, "Could not save point");
@@ -514,8 +519,9 @@ public class AccessPointHelper {
 				}
 			}
 		}
-		if (ap != null)
+		if (ap != null){
 			return ap;
+		}
 		else
 			return null;
 	}

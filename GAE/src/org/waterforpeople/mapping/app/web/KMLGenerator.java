@@ -825,6 +825,8 @@ public class KMLGenerator {
 		} else {
 			String statusString = encodeStatusUsingScore(ap);
 			context.put("waterSystemStatus", statusString);
+			AccessPointDao apDao = new AccessPointDao();
+			apDao.save(ap);
 			return statusString;
 		}
 	}
@@ -847,7 +849,7 @@ public class KMLGenerator {
 		}
 	}
 
-	private Integer scoreAccessPoint(AccessPoint ap) {
+	public AccessPoint scoreAccessPoint(AccessPoint ap) {
 		// Is there an improved water system no=0, yes=1
 		// Provide enough drinking water for community everyday of year no=0,
 		// yes=1, don't know=0,
@@ -876,11 +878,30 @@ public class KMLGenerator {
 		if (ap.isCollectTariffFlag()) {
 			score++;
 		}
-		return 0;
+
+		ap.setScore(score);
+		ap.setScoreComputationDate(new Date());
+
+		log.log(Level.INFO,
+				"AP Collected in 2011 so scoring: " + ap.getCommunityCode()
+						+ "/" + ap.getCollectionDate() + " score: " + score);
+		if (score == 0) {
+			ap.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
+		} else if (score > 0 && score < 3) {
+			ap.setPointStatus(AccessPoint.Status.BROKEN_DOWN);
+		} else if (score > 2 && score < 6) {
+			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+		} else if (score > 5) {
+			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+		} else {
+			ap.setPointStatus(AccessPoint.Status.OTHER);
+		}
+
+		return ap;
 	}
 
-	private String encodeStatusUsingScore(AccessPoint ap) {
-		Integer score = scoreAccessPoint(ap);
+	public String encodeStatusUsingScore(AccessPoint ap) {
+		Integer score = scoreAccessPoint(ap).getScore();
 		if (score == 0) {
 			return "No Improved System";
 		} else if (score > 0 && score < 3) {

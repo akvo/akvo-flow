@@ -52,6 +52,8 @@ public class AccessPointDto extends BaseDto {
 	private String reasonForInadequateWaterSupply=null;
 	private String frequencyOfTariff=null;
 	private Double percentageOfUsersPaying = null;
+	private Integer score = null;
+	private Date scoreComputationDate = null;
 	private String sub1;
 	private String sub2;
 	private String sub3;
@@ -525,5 +527,21 @@ public class AccessPointDto extends BaseDto {
 
 	public String getAccessPointCode() {
 		return accessPointCode;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
+	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScoreComputationDate(Date scoreComputationDate) {
+		this.scoreComputationDate = scoreComputationDate;
+	}
+
+	public Date getScoreComputationDate() {
+		return scoreComputationDate;
 	}
 }
