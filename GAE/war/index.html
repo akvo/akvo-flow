@@ -333,17 +333,17 @@ a {
 	var isIE = false;
 	var eventType= 'change';
 	var map;
-	var country;
+	var initialCountry;
 	var countryLatLon;
 	var openWindow = null;
 	function getCountry() {
 		if ($.jqURL.get('country')) {
-			country = $.jqURL.get('country').toUpperCase();
+			initialCountry = $.jqURL.get('country').toUpperCase();
 		} else {
-			country = 'MW';
+			initialCountry = 'MW';
 			$("#tabs").tabs("select", 5);
 		}
-		setCountryLatLon();
+		setCountryLatLon(initialCountry);
 	}
 	var loadedMW = new Boolean(false);
 	var loadedHN = new Boolean(false);
@@ -364,7 +364,7 @@ a {
 	var latlngNI = new google.maps.LatLng(12.7, -85.7);
 	var latlngBO = new google.maps.LatLng(-17.648, -65.812);
 
-	function setCountryLatLon() {
+	function setCountryLatLon(country) {
 		if (country == 'MW') {
 			countryLatLon = latlngMW;
 		} else if (country == 'RW') {
@@ -390,32 +390,32 @@ a {
 
 	}
 
-	function loadCountryData() {
-		if (country == 'MW' && loadedMW == false) {
+	function loadCountryData(countryToLoad) {
+		if (countryToLoad == 'MW' && loadedMW == false) {
 			getPlacemarkInfo('MW');
 			loadedMW = true;
-		} else if (country == 'RW' && loadedRW == false) {
+		} else if (countryToLoad == 'RW' && loadedRW == false) {
 			getPlacemarkInfo('RW');
 			loadedRW = true;
-		} else if (country == 'HN' && loadedHN == false) {
+		} else if (countryToLoad == 'HN' && loadedHN == false) {
 			getPlacemarkInfo('HN');
 			loadedHN = true;
-		} else if (country == 'PE' && loadedPE == false) {
+		} else if (countryToLoad == 'PE' && loadedPE == false) {
 			getPlacemarkInfo('PE');
 			loadedPE = true;
-		} else if (country == 'GT' && loadedGT == false) {
+		} else if (countryToLoad == 'GT' && loadedGT == false) {
 			getPlacemarkInfo('GT');
 			loadedGT = true;
-		} else if (country == 'IN' && loadedIN == false) {
+		} else if (countryToLoad == 'IN' && loadedIN == false) {
 			getPlacemarkInfo('IN');
 			loadedIN = true;
-		} else if (country == 'SV' && loadedSV == false) {
+		} else if (countryToLoad == 'SV' && loadedSV == false) {
 			getPlacemarkInfo('SV');
 			loadedSV = true;
-		} else if (country == 'NI' && loadedNI == false) {
+		} else if (countryToLoad == 'NI' && loadedNI == false) {
 			getPlacemarkInfo('NI');
 			loadedNI = true;
-		} else if (country == 'BO' && loadedBO == false) {
+		} else if (countryToLoad == 'BO' && loadedBO == false) {
 			getPlacemarkInfo('BO');
 			loadedBO = true;
 		}
@@ -465,46 +465,37 @@ a {
 			var containsNI = curBounds.contains(latlngNI);
 			var containsBO = curBounds.contains(latlngBO);
 
-			if (containsRW) {
-				country = 'RW';
-				loadCountryData();
+			if (containsRW) {				
+				loadCountryData('RW');
 			}
 
-			if (containsMW) {
-				country = 'MW';
-				loadCountryData();
+			if (containsMW) {				
+				loadCountryData('MW');
 			}
 
-			if (containsHN) {
-				country = 'HN';
-				loadCountryData();
+			if (containsHN) {				
+				loadCountryData('HN');
 			}
-			if (containsIN) {
-				country = 'IN';
-				loadCountryData();
+			if (containsIN) {				
+				loadCountryData('IN');
 			}
-			if (containsGT) {
-				country = 'GT';
-				loadCountryData();
+			if (containsGT) {				
+				loadCountryData('GT');
 			}
-			if (containsSV) {
-				country = 'SV';
-				loadCountryData();
+			if (containsSV) {				
+				loadCountryData('SV');
 			}
-			if (containsPE) {
-				country = 'PE';
-				loadCountryData();
+			if (containsPE) {				
+				loadCountryData('PE');
 			}
-			if (containsNI) {
-				country = 'NI';
-				loadCountryData();
+			if (containsNI) {				
+				loadCountryData('NI');
 			}
-			if (containsBO) {
-				country = 'BO';
-				loadCountryData();
+			if (containsBO) {				
+				loadCountryData('BO');
 			}
 		});
-		loadCountryData();
+		loadCountryData(initialCountry);
 	};
 	var markers = [];
 	function addPlacemark(latitude, longitude, iconUrl, placemarkContents) {
@@ -574,7 +565,7 @@ a {
 	}
 
 	function getPlacemarkInfo(countryCode, cursor) {
-		var url = '/placemarkrestapi?country=' + country
+		var url = '/placemarkrestapi?country=' + countryCode
 				+ '&needDetailsFlag=false';
 		if (cursor != null) {
 			url += '&cursor=' + cursor;
