@@ -23,7 +23,7 @@ import com.gallatinsystems.gis.map.domain.OGRFeature;
  */
 public class AccessPointMetricSummaryDao extends
 		BaseDAO<AccessPointMetricSummary> {
-	private static final int NUM_SHARDS = 5;
+	private static final int NUM_SHARDS = 11;
 
 	public AccessPointMetricSummaryDao() {
 		super(AccessPointMetricSummary.class);
