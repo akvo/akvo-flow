@@ -37,12 +37,21 @@ public class KMLGenerator {
 	private VelocityEngine engine;
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
+	// public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
+	// PropertyUtil
+	// .getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
+	// public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL =
+	// PropertyUtil
+	// .getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
+	// public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL =
+	// PropertyUtil
+	// .getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
 	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
+			.getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
 	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
+			.getProperty(IMAGE_ROOT) + "/images/glassYellow32.png";
 	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
+			.getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
 	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
@@ -52,7 +61,7 @@ public class KMLGenerator {
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilYellow36.png";
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilRed36.png";
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilBlack36.png";
-
+	public static final Boolean useScore = Boolean.parseBoolean(PropertyUtil.getProperty("scoreAPFlag"));
 	public KMLGenerator() {
 		engine = new VelocityEngine();
 		engine.setProperty("runtime.log.logsystem.class",
@@ -797,8 +806,8 @@ public class KMLGenerator {
 
 	private String encodeStatusString(AccessPoint ap, VelocityContext context) {
 		AccessPoint.Status status = ap.getPointStatus();
-		if (ap.getCollectionDate() != null
-				&& ap.getCollectionDate().before(new Date("01/01/2011"))) {
+		if (ap.getCollectionDate() == null
+				|| ap.getCollectionDate().before(new Date("01/01/2011")) ||!useScore) {
 			if (status != null) {
 				if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
 					context.put("waterSystemStatus",
