@@ -49,7 +49,7 @@ public class KMLGenerator {
 	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
 			.getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
 	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/glassYellow32.png";
+			.getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
 	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
 			.getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
 	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
@@ -907,14 +907,7 @@ public class KMLGenerator {
 					"About to compute score for: " + ap.getCommunityCode()
 							+ " : plus 1 for ImprovedWaterSystem: " + score);
 		}
-		if (ap.getMeetGovtQuantityStandardFlag() != null
-				&& ap.getMeetGovtQuantityStandardFlag().equals(true)) {
-			score++;
-			log.log(Level.INFO,
-					"About to compute score for: " + ap.getCommunityCode()
-							+ " : plus 1 for Meets Govt Quantity Flag: "
-							+ score);
-		}
+		
 		if (ap.isCollectTariffFlag() != null && ap.isCollectTariffFlag()) {
 			score++;
 			log.log(Level.INFO,
@@ -930,11 +923,11 @@ public class KMLGenerator {
 						+ "/" + ap.getCollectionDate() + " score: " + score);
 		if (score == 0) {
 			ap.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
-		} else if (score > 0 && score < 3) {
+		} else if (score >= 1 && score <= 2) {
 			ap.setPointStatus(AccessPoint.Status.BROKEN_DOWN);
-		} else if (score > 2 && score < 6) {
+		} else if (score >= 3 && score <= 4) {
 			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
-		} else if (score > 5) {
+		} else if (score >= 5) {
 			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else {
 			ap.setPointStatus(AccessPoint.Status.OTHER);
