@@ -203,9 +203,7 @@ public class KMLApplet extends JApplet implements Runnable {
 
 	private String promptForFile() {
 		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
-		fc.setAcceptAllFileFilterUsed(false);
-		int returnVal = fc.showOpenDialog(this);
+		int returnVal = fc.showSaveDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			return fc.getSelectedFile().getAbsolutePath();
 		} else {
