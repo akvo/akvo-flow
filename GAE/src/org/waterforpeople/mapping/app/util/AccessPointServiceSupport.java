@@ -1,10 +1,15 @@
 package org.waterforpeople.mapping.app.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDetailDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
+import org.waterforpeople.mapping.domain.AccessPointScoreDetail;
 
 import com.gallatinsystems.common.util.DateUtil;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
@@ -23,7 +28,7 @@ public class AccessPointServiceSupport {
 	public static AccessPointDto copyCanonicalToDto(AccessPoint apCanonical) {
 
 		AccessPointDto apDto = new AccessPointDto();
-		//DtoMarshaller.copyToDto(apCanonical, apDto);
+		// DtoMarshaller.copyToDto(apCanonical, apDto);
 		apDto.setKeyId(apCanonical.getKey().getId());
 		apDto.setAltitude(apCanonical.getAltitude());
 		apDto.setLatitude(apCanonical.getLatitude());
@@ -73,7 +78,7 @@ public class AccessPointServiceSupport {
 		apDto.setSub4(apCanonical.getSub4());
 		apDto.setSub5(apCanonical.getSub5());
 		apDto.setSub6(apCanonical.getSub6());
-		
+
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
 		}
@@ -106,7 +111,27 @@ public class AccessPointServiceSupport {
 		} else {
 			apDto.setPointType(AccessPointDto.AccessPointType.WATER_POINT);
 		}
-
+		apDto.setScore(apCanonical.getScore());
+		apDto.setScoreComputationDate(apCanonical.getScoreComputationDate());
+		if (apCanonical.getApScoreDetailList() != null) {
+			List<AccessPointScoreDetailDto> apScoreDetailList = new ArrayList<AccessPointScoreDetailDto>();
+			for (AccessPointScoreDetail item : apCanonical
+					.getApScoreDetailList()) {
+				AccessPointScoreDetailDto dtoItem = new AccessPointScoreDetailDto();
+				dtoItem.setKeyId(item.getKey().getId());
+				dtoItem.setAccessPointId(item.getAccessPointId());
+				dtoItem.setScore(item.getScore());
+				ArrayList<String> scoreItems = new ArrayList<String>();
+				for (String scoreCompItem : item.getScoreComputationItems()) {
+					scoreItems.add(scoreCompItem);
+				}
+				dtoItem.setScoreComputationItems(scoreItems);
+				dtoItem.setStatus(item.getStatus());
+				dtoItem.setComputationDate(item.getComputationDate());
+				apScoreDetailList.add(dtoItem);
+			}
+			apDto.setApScoreDetailList(apScoreDetailList);
+		}
 		return apDto;
 	}
 
@@ -117,11 +142,11 @@ public class AccessPointServiceSupport {
 		UnitOfMeasureDto measDto = apDto.getCostPerUnitOfMeasure();
 		apDto.setCostPerUnitOfMeasure(null);
 		DtoMarshaller.copyToCanonical(accessPoint, apDto);
-		if(measDto != null){
+		if (measDto != null) {
 			UnitOfMeasure measDomain = new UnitOfMeasure();
 			DtoMarshaller.copyToCanonical(measDomain, measDto);
 			accessPoint.setCostPerUnitOfMeasure(measDomain);
-			
+
 		}
 		if (apDto.getKeyId() != null) {
 			Key key = KeyFactory.createKey(AccessPoint.class.getSimpleName(),

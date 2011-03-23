@@ -1,10 +1,12 @@
 package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -19,7 +21,7 @@ import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	private static final long serialVersionUID = -7708214468114860788L;
-	
+
 	@MappableField(displayName = "SMS Identifier Code")
 	private String smsCode;
 
@@ -43,45 +45,45 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String balloonTitle = null;
 	@MappableField(displayName = "Region")
 	private String region;
-	@MappableField(displayName="URL of Photo")
+	@MappableField(displayName = "URL of Photo")
 	private String photoURL = null;
-	@MappableField(displayName="Do Not Use = Type Technology")
+	@MappableField(displayName = "Do Not Use = Type Technology")
 	@Persistent
 	private TechnologyType typeTechnology = null;
-	@MappableField(displayName="Do Not Use = Type Technology2")
+	@MappableField(displayName = "Do Not Use = Type Technology2")
 	private String technologyTypeOther = null;
-	@MappableField(displayName="Type of Technology")
+	@MappableField(displayName = "Type of Technology")
 	private String typeTechnologyString = null;
-	@MappableField(displayName="Do Not Use = Construction Date")
+	@MappableField(displayName = "Do Not Use = Construction Date")
 	private Date constructionDate = null;
 	@MappableField(displayName = "Year of Construction")
 	private String constructionDateYear = null;
 	@MappableField(displayName = "Number of households using point")
 	private Long numberOfHouseholdsUsingPoint = null;
-	@MappableField(displayName="Tarrif")
+	@MappableField(displayName = "Tarrif")
 	private Double costPer = null;
-	@MappableField(displayName="Do Not Use = costPerUnitOfMeasure")
+	@MappableField(displayName = "Do Not Use = costPerUnitOfMeasure")
 	private UnitOfMeasure costPerUnitOfMeasure = null;
-	@MappableField(displayName="Do Not Use = Cost Per Currency")
+	@MappableField(displayName = "Do Not Use = Cost Per Currency")
 	private Currency costPerCurrency = null;
-	@MappableField(displayName="Farthest Household From Point")
+	@MappableField(displayName = "Farthest Household From Point")
 	private String farthestHouseholdfromPoint = null;
-	@MappableField(displayName="Current Management Structure")
+	@MappableField(displayName = "Current Management Structure")
 	private String currentManagementStructurePoint = null;
-	@MappableField(displayName="Point Status")
+	@MappableField(displayName = "Point Status")
 	@Persistent
 	private AccessPoint.Status pointStatus = null;
-	@MappableField(displayName="Do Not Use = Other Status")
+	@MappableField(displayName = "Do Not Use = Other Status")
 	private String otherStatus = null;
-	@MappableField(displayName="Photo Caption")
+	@MappableField(displayName = "Photo Caption")
 	private String pointPhotoCaption = null;
-	@MappableField(displayName="Point Description")
+	@MappableField(displayName = "Point Description")
 	private String description = null;
-	
-	@MappableField(displayName="Point Type")
+
+	@MappableField(displayName = "Point Type")
 	@Persistent
 	private AccessPointType pointType;
-	@MappableField(displayName="Country Code")
+	@MappableField(displayName = "Country Code")
 	private String countryCode;
 	private List<String> geocells;
 	@MappableField(displayName = "Estimated Population")
@@ -94,64 +96,65 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String district;
 	@MappableField(displayName = "Organization")
 	private String organization;
-	@MappableField(displayName="Water For People Supported Project")
+	@MappableField(displayName = "Water For People Supported Project")
 	private Boolean waterForPeopleProjectFlag = null;
-	@MappableField(displayName="Balloon Header")
+	@MappableField(displayName = "Balloon Header")
 	private String header = null;
-	@MappableField(displayName="Balloon Footer")
+	@MappableField(displayName = "Balloon Footer")
 	private String footer = null;
-	@MappableField(displayName="Photo Name")
+	@MappableField(displayName = "Photo Name")
 	private String photoName = null;
-	@MappableField(displayName="Meet Quality Standard")
+	@MappableField(displayName = "Meet Quality Standard")
 	private Boolean meetGovtQualityStandardFlag = null;
-	@MappableField(displayName="Meet Quantity Standard Flag")
+	@MappableField(displayName = "Meet Quantity Standard Flag")
 	private Boolean meetGovtQuantityStandardFlag = null;
-	@MappableField(displayName="Who Repairs Point")
+	@MappableField(displayName = "Who Repairs Point")
 	private String whoRepairsPoint = null;
-	@MappableField(displayName="Secondary TechnologyType")
+	@MappableField(displayName = "Secondary TechnologyType")
 	private String secondaryTechnologyString = null;
-	@MappableField(displayName="Provide Adequate Quantity")
+	@MappableField(displayName = "Provide Adequate Quantity")
 	private Boolean provideAdequateQuantity = null;
-	@MappableField(displayName="System Been Down 1 Day/30")
+	@MappableField(displayName = "System Been Down 1 Day/30")
 	private Boolean hasSystemBeenDown1DayFlag = null;
-	@MappableField(displayName="Location Type")
+	@MappableField(displayName = "Location Type")
 	private String locationTypeString = null;
-	@MappableField(displayName="Water For People Role")
+	@MappableField(displayName = "Water For People Role")
 	private String waterForPeopleRole = null;
-	@MappableField(displayName="Current Problem")
+	@MappableField(displayName = "Current Problem")
 	private String currentProblem = null;
-	@MappableField(displayName="Current Treatment")
+	@MappableField(displayName = "Current Treatment")
 	private String currentTreatment = null;
-	@MappableField(displayName="Water Available Day of Visit")
+	@MappableField(displayName = "Water Available Day of Visit")
 	private Boolean waterAvailableDayVisitFlag = null;
-	@MappableField(displayName="PPM Fecal Coliform")
+	@MappableField(displayName = "PPM Fecal Coliform")
 	private Double ppmFecalColiform = null;
-	@MappableField(displayName="Reason For Inadequate Water Supply")
-	private String reasonForInadequateWaterSupply=null;
-	@MappableField(displayName="Frequency of Tariff")
-	private String frequencyOfTariff=null;
-	@MappableField(displayName="Percentage Of Users Paying Tariff")
+	@MappableField(displayName = "Reason For Inadequate Water Supply")
+	private String reasonForInadequateWaterSupply = null;
+	@MappableField(displayName = "Frequency of Tariff")
+	private String frequencyOfTariff = null;
+	@MappableField(displayName = "Percentage Of Users Paying Tariff")
 	private Double percentageOfUsersPaying = null;
-	@MappableField(displayName="Access Point Usage")
+	@MappableField(displayName = "Access Point Usage")
 	private String accessPointUsage = null;
-	@MappableField(displayName="Access Point Quality Description")
+	@MappableField(displayName = "Access Point Quality Description")
 	private String qualityDescription = null;
-	@MappableField(displayName="Access Point Quantity Description")
+	@MappableField(displayName = "Access Point Quantity Description")
 	private String quantityDescription = null;
-	@MappableField(displayName="Is improved waterpoint")
-	private Boolean improvedWaterPointFlag=null;
-	@MappableField(displayName="collectTariff")
-	private Boolean collectTariffFlag=null;
+	@MappableField(displayName = "Is improved waterpoint")
+	private Boolean improvedWaterPointFlag = null;
+	@MappableField(displayName = "collectTariff")
+	private Boolean collectTariffFlag = null;
 	private Integer score = null;
 	private Date scoreComputationDate = null;
-	private String sub1=null;
-	private String sub2=null;
-	private String sub3=null;
-	private String sub4=null;
-	private String sub5=null;
-	private String sub6=null;
-	
-	
+	private String sub1 = null;
+	private String sub2 = null;
+	private String sub3 = null;
+	private String sub4 = null;
+	private String sub5 = null;
+	private String sub6 = null;
+	@NotPersistent
+	private List<AccessPointScoreDetail> apScoreDetailList = null;
+
 	public String getQualityDescription() {
 		return qualityDescription;
 	}
@@ -167,6 +170,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	public void setQuantityDescription(String quantityDescription) {
 		this.quantityDescription = quantityDescription;
 	}
+
 	public String getAccessPointUsage() {
 		return accessPointUsage;
 	}
@@ -174,8 +178,6 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	public void setAccessPointUsage(String accessPointUsage) {
 		this.accessPointUsage = accessPointUsage;
 	}
-
-	
 
 	public String getSub1() {
 		return sub1;
@@ -403,7 +405,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	public void setProvideAdequateQuantity(Boolean provideAdequateQuantity) {
 		this.provideAdequateQuantity = provideAdequateQuantity;
 	}
-	
+
 	public String getCommunityName() {
 		return communityName;
 	}
@@ -635,8 +637,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	public Status encodeStatus(String unencodedStatus) {
 		if (unencodedStatus.trim().equals("high")) {
 			return Status.FUNCTIONING_HIGH;
-		} else if (unencodedStatus.trim().toLowerCase().equals(
-				"functioning but with problems")) {
+		} else if (unencodedStatus.trim().toLowerCase()
+				.equals("functioning but with problems")) {
 			return Status.FUNCTIONING_WITH_PROBLEMS;
 		} else if (unencodedStatus.trim().toLowerCase().equals("functional")
 				|| unencodedStatus.trim().toLowerCase().equals("functioning")
@@ -761,6 +763,22 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public Date getScoreComputationDate() {
 		return scoreComputationDate;
+	}
+
+	public void setApScoreDetail(AccessPointScoreDetail apsd) {
+		if (apScoreDetailList == null) {
+			apScoreDetailList = new ArrayList<AccessPointScoreDetail>();
+		}
+		apScoreDetailList.add(apsd);
+	}
+
+	public void setApScoreDetailList(
+			List<AccessPointScoreDetail> apScoreDetailList) {
+		this.apScoreDetailList = apScoreDetailList;
+	}
+
+	public List<AccessPointScoreDetail> getApScoreDetailList() {
+		return apScoreDetailList;
 	}
 
 }

@@ -106,9 +106,10 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	@Override
 	public AccessPointDto getAccessPoint(Long id) {
 
-		AccessPoint canonicalItem = aph.getAccessPoint(id);
+		AccessPoint canonicalItem = aph.getAccessPoint(id,true);
 		AccessPointDto apDto = AccessPointServiceSupport
 				.copyCanonicalToDto(canonicalItem);
+		
 		return apDto;
 	}
 

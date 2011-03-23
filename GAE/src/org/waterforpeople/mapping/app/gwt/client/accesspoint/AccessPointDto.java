@@ -1,8 +1,8 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
 import java.util.Date;
+import java.util.List;
 
-import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class AccessPointDto extends BaseDto {
@@ -54,6 +54,7 @@ public class AccessPointDto extends BaseDto {
 	private Double percentageOfUsersPaying = null;
 	private Integer score = null;
 	private Date scoreComputationDate = null;
+	private List<AccessPointScoreDetailDto> apScoreDetailList= null;
 	private String sub1;
 	private String sub2;
 	private String sub3;
@@ -543,5 +544,13 @@ public class AccessPointDto extends BaseDto {
 
 	public Date getScoreComputationDate() {
 		return scoreComputationDate;
+	}
+
+	public void setApScoreDetailList(List<AccessPointScoreDetailDto> apScoreDetailList) {
+		this.apScoreDetailList = apScoreDetailList;
+	}
+
+	public List<AccessPointScoreDetailDto> getApScoreDetailList() {
+		return apScoreDetailList;
 	}
 }

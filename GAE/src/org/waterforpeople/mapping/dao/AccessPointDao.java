@@ -10,6 +10,8 @@ import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPointScoreDetail;
+import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.GeocellQuery;
@@ -362,8 +364,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> resultsInBox = new ArrayList<AccessPoint>();
 		if (!results.isEmpty() && results != null) {
 			for (AccessPoint ap : results) {
-				if (ap.getLongitude() < long1 
-						&& ap.getLongitude() > long2) {
+				if (ap.getLongitude() < long1 && ap.getLongitude() > long2) {
 					resultsInBox.add(ap);
 				}
 			}
@@ -402,7 +403,17 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	}
 
 	public AccessPoint save(AccessPoint point) {
+		point = AccessPointHelper.scoreAccessPoint(point);
 		point = super.save(point);
+		if (point.getApScoreDetailList() != null) {
+			for (AccessPointScoreDetail item : point.getApScoreDetailList()) {
+				if (item.getKey() == null) {
+					item.setAccessPointId(point.getKey().getId());
+					AccessPointScoreDetailDao apsddao = new AccessPointScoreDetailDao();
+					apsddao.save(item);
+				}
+			}
+		}
 		return point;
 	}
 }

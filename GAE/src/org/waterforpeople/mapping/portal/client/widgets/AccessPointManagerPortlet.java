@@ -3,12 +3,13 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDetailDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AccessPointSearchControl;
@@ -35,6 +36,10 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -46,10 +51,6 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends UserAwarePortlet implements
@@ -98,7 +99,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	private AccessPointSearchControl apSearchControl;
 
 	public AccessPointManagerPortlet(UserDto user) {
-		super(NAME,true,false,false,WIDTH,HEIGHT,user);		
+		super(NAME, true, false, false, WIDTH, HEIGHT, user);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		apTable = new PaginatedDataTable<AccessPointDto>(DEFAULT_SORT_FIELD,
@@ -184,8 +185,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 												MessageDialog errDia = new MessageDialog(
 														"Error while deleting",
 														"Could not delete all access points: <br>"
-																+ caught
-																		.getLocalizedMessage());
+																+ caught.getLocalizedMessage());
 												errDia.showCentered();
 
 											}
@@ -251,15 +251,55 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			}
 
 		});
-	}	
+	}
 
 	private TabPanel loadTabs(AccessPointDto accessPointDto) {
 		TabPanel tp = new TabPanel();
 		tp.add(loadGeneralTab(accessPointDto), "General");
 		tp.add(loadMediaTab(accessPointDto), "Media");
 		tp.add(loadAttributeTab(accessPointDto), "Attributes");
+		tp.add(loadScoreTab(accessPointDto), "Score Details");
 		tp.selectTab(0);
 		return tp;
+	}
+
+	private Widget loadScoreTab(AccessPointDto accessPointDto) {
+		final FlexTable accessPointDetail = new FlexTable();
+		if(accessPointDto.getApScoreDetailList()!=null){
+			for(AccessPointScoreDetailDto item:accessPointDto.getApScoreDetailList()){
+				TextBox scoreCompDate = new TextBox();
+				TextBox score = new TextBox();
+				TextBox status = new TextBox();
+				TextArea scoreItems = new TextArea();
+				if(item.getComputationDate()!=null){
+					scoreCompDate.setText(item.getComputationDate().toString());
+				}
+				if(item.getScore()!=null){
+					score.setText(item.getScore().toString());
+				}
+				if(item.getStatus()!=null){
+					status.setText(item.getStatus());
+				}
+				if(item.getScoreComputationItems()!=null){
+					StringBuilder sb = new StringBuilder();
+					for(String scoreitem:item.getScoreComputationItems()){
+						sb.append(scoreitem + "\n");
+					}
+					scoreItems.setText(sb.toString());
+					scoreItems.setWidth("30em");
+					scoreItems.setHeight("10em");
+				}
+				accessPointDetail.setWidget(0, 0, new Label("Score Computation Date: "));
+				accessPointDetail.setWidget(0, 1, scoreCompDate);
+				accessPointDetail.setWidget(1, 0, new Label("Score: "));
+				accessPointDetail.setWidget(1, 1, score);
+				accessPointDetail.setWidget(2, 0, new Label("Status: "));
+				accessPointDetail.setWidget(2, 1, status);
+				accessPointDetail.setWidget(3, 0, new Label("Score Makeup: "));
+				accessPointDetail.setWidget(3, 1, scoreItems);
+			}
+		}
+		return accessPointDetail;
 	}
 
 	private FlexTable loadMediaTab(AccessPointDto accessPointDto) {
@@ -293,12 +333,10 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 						.getWidget(10, 3)).getWidget()).getFilename();
 
 				if (fileName.contains("/")) {
-					fileName = fileName
-							.substring(fileName.lastIndexOf("/") + 1);
+					fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 				}
 				if (fileName.contains("\\")) {
-					fileName = fileName
-							.substring(fileName.lastIndexOf("\\") + 1);
+					fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 				}
 
 				((TextBox) accessPointDetail.getWidget(10, 1))
@@ -310,9 +348,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 				if (i == null) {
 					Image photo = new Image();
-					photo
-							.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
-									+ fileName);
+					photo.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
+							+ fileName);
 					photo.setHeight("200px");
 					accessPointDetail.setWidget(11, 1, photo);
 				} else {
@@ -362,7 +399,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 									.setVisible(false);
 							photo.setUrl(((TextBox) accessPointDetail
 									.getWidget(11, 1)).getText()
-									+ "?random=" + random);
+									+ "?random="
+									+ random);
 							photo.setVisible(true);
 						}
 					});
@@ -567,8 +605,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		ListBox pointType = new ListBox();
 		pointType
 				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
-		pointType.addItem("Sanitation Point", AccessPointType.SANITATION_POINT
-				.toString());
+		pointType.addItem("Sanitation Point",
+				AccessPointType.SANITATION_POINT.toString());
 		pointType.addItem("Public Institution",
 				AccessPointType.PUBLIC_INSTITUTION.toString());
 		pointType.addItem("School", AccessPointType.SCHOOL.toString());
@@ -626,7 +664,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail.setWidget(17, 0, new Label(
 				"Farthest household with acceptable distance: "));
-		accessPointDetail.setWidget(17, 1,
+		accessPointDetail.setWidget(
+				17,
+				1,
 				addListBox(accessPointDto != null ? accessPointDto
 						.getFarthestHouseholdfromPoint() : null));
 
@@ -666,8 +706,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 						1,
 						addListBox(accessPointDto != null
 								&& accessPointDto.getProvideAdequateQuantity() != null ? accessPointDto
-								.getProvideAdequateQuantity().toString()
-								: null));
+								.getProvideAdequateQuantity().toString() : null));
 		// SecondaryTechnologyString
 		// typeTechnologyString
 		TextBox techTypeString = new TextBox();
@@ -754,6 +793,22 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			roleTextBox.setText(accessPointDto.getWaterForPeopleRole());
 		accessPointDetail.setWidget(31, 1, roleTextBox);
 
+		TextBox currentScoreCompDate = new TextBox();
+		accessPointDetail.setWidget(32, 0, new Label("Current Score Computation Date: "));
+		if (accessPointDto.getScoreComputationDate() != null)
+			currentScoreCompDate.setText(accessPointDto.getScoreComputationDate().toString());
+		else
+			currentScoreCompDate.setText("Unknown");
+		accessPointDetail.setWidget(32, 1, currentScoreCompDate);
+		
+		TextBox currentScore = new TextBox();
+		accessPointDetail.setWidget(33, 0, new Label("Current Score"));
+		if (accessPointDto.getScore() != null)
+			currentScore.setText(accessPointDto.getScore().toString());
+		else
+			currentScore.setText("No Score Computed");
+		accessPointDetail.setWidget(33, 1, currentScore);
+
 		return accessPointDetail;
 	}
 
@@ -797,8 +852,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 								@Override
 								public void onSuccess(AccessPointDto result) {
-									Window
-											.alert("Access Point successfully updated");
+									Window.alert("Access Point successfully updated");
 								}
 
 							});
@@ -1034,9 +1088,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				accessPointDetail, 29, 1).equals("yes") ? true : false);
 		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
 				accessPointDetail, 30, 1).equals("yes") ? true : false);
-		apDto
-				.setWaterForPeopleRole(getValueFromWidget(accessPointDetail,
-						31, 1));
+		apDto.setWaterForPeopleRole(getValueFromWidget(accessPointDetail, 31, 1));
 		return apDto;
 	}
 
@@ -1063,8 +1115,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			grid.setWidget(row, 4, new Label(apDto.getPointType().name()));
 		}
 		if (apDto.getCollectionDate() != null) {
-			grid.setWidget(row, 5, new Label(dateFormat.format(apDto
-					.getCollectionDate())));
+			grid.setWidget(row, 5,
+					new Label(dateFormat.format(apDto.getCollectionDate())));
 		}
 
 		Button editAccessPoint = new Button("edit");

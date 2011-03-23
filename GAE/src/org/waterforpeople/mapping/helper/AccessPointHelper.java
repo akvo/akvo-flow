@@ -5,6 +5,7 @@ import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -12,13 +13,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
-import org.waterforpeople.mapping.app.web.KMLGenerator;
 import org.waterforpeople.mapping.dao.AccessPointDao;
+import org.waterforpeople.mapping.dao.AccessPointScoreDetailDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPointMappingHistory;
+import org.waterforpeople.mapping.domain.AccessPointScoreDetail;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
@@ -61,6 +63,17 @@ public class AccessPointHelper {
 		return apDAO.getByKey(id);
 	}
 
+	public AccessPoint getAccessPoint(Long id, Boolean needScoreDetail) {
+		BaseDAO<AccessPoint> apDAO = new BaseDAO<AccessPoint>(AccessPoint.class);
+		AccessPointScoreDetailDao apddao = new AccessPointScoreDetailDao();
+		AccessPoint ap = apDAO.getByKey(id);
+		List<AccessPointScoreDetail> apScoreSummaryList = apddao
+				.listByAccessPointId(id);
+		if (apScoreSummaryList != null && !apScoreSummaryList.isEmpty())
+			ap.setApScoreDetailList(apScoreSummaryList);
+		return ap;
+	}
+
 	public void processSurveyInstance(String surveyInstanceId) {
 		// Get the survey and QuestionAnswerStore
 		// Get the surveyDefinition
@@ -77,7 +90,7 @@ public class AccessPointHelper {
 						.getSurveyId()), questionAnswerList,
 						AccessPoint.AccessPointType.WATER_POINT);
 			} catch (Exception ex) {
-				logger.log(Level.SEVERE,"problem parsing access point." + ex);
+				logger.log(Level.SEVERE, "problem parsing access point." + ex);
 			}
 			if (apList != null) {
 				for (AccessPoint ap : apList) {
@@ -88,7 +101,8 @@ public class AccessPointHelper {
 								Level.SEVERE,
 								"Inside processSurveyInstance could not save AP for SurveyInstanceId: "
 										+ surveyInstanceId + ":"
-										+ ap.toString() + " ex: " + ex + " exMessage: " + ex.getMessage());
+										+ ap.toString() + " ex: " + ex
+										+ " exMessage: " + ex.getMessage());
 					}
 				}
 			}
@@ -195,11 +209,12 @@ public class AccessPointHelper {
 						apmhList.add(apmh);
 					}
 				}
-//				if (apmhList.size() > 0) {
-//					BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(
-//							AccessPointMappingHistory.class);
-//					apmhDao.save(apmhList);
-//				}
+				// if (apmhList.size() > 0) {
+				// BaseDAO<AccessPointMappingHistory> apmhDao = new
+				// BaseDAO<AccessPointMappingHistory>(
+				// AccessPointMappingHistory.class);
+				// apmhDao.save(apmhList);
+				// }
 			}
 		}
 		return apMap.values();
@@ -326,8 +341,8 @@ public class AccessPointHelper {
 							} else if (stringVal.toLowerCase().contains("no")) {
 								val = false;
 							} else {
-								if(stringVal==null || stringVal.equals("")){
-									val=null;
+								if (stringVal == null || stringVal.equals("")) {
+									val = null;
 								}
 								val = Boolean.parseBoolean(stringVal.trim());
 							}
@@ -456,8 +471,6 @@ public class AccessPointHelper {
 						// TODO: Hack since the fileUrl keeps getting set to
 						// incorrect value
 						// Changing from apCurrent to ap
-						KMLGenerator kmlGen = new KMLGenerator();
-						ap =kmlGen.scoreAccessPoint(ap); 
 						ap = apDao.save(ap);
 
 						String newValues = formChangeRecordString(ap);
@@ -500,8 +513,6 @@ public class AccessPointHelper {
 						}
 					}
 					try {
-						KMLGenerator kmlGen = new KMLGenerator();
-						ap =kmlGen.scoreAccessPoint(ap); 
 						ap = apDao.save(ap);
 					} catch (Exception ex) {
 						logger.log(Level.INFO, "Could not save point");
@@ -521,10 +532,9 @@ public class AccessPointHelper {
 				}
 			}
 		}
-		if (ap != null){
+		if (ap != null) {
 			return ap;
-		}
-		else
+		} else
 			return null;
 	}
 
@@ -677,4 +687,83 @@ public class AccessPointHelper {
 		}
 		return point;
 	}
+
+	public static AccessPoint scoreAccessPoint(AccessPoint ap) {
+		// Is there an improved water system no=0, yes=1
+		// Provide enough drinking water for community everyday of year no=0,
+		// yes=1, don't know=0,
+		// Water system been down in 30 days: No=1,yes=0
+		// Are there current problems: no=1,yes=0
+		// meet govt quantity standards:no=0,yes=1
+		// Is there a tarriff or fee no=0,yes=1
+		AccessPointScoreDetail apss = new AccessPointScoreDetail();
+		logger.log(Level.INFO,
+				"About to compute score for: " + ap.getCommunityCode());
+		Integer score = 0;
+
+		if (ap.isImprovedWaterPointFlag() != null
+				&& ap.isImprovedWaterPointFlag()) {
+			score++;
+			apss.addScoreComputationItem("Plus 1 for Improved Water System = true: ");
+		} else {
+			apss.addScoreComputationItem("Plus 0 for Improved Water System = false or null: ");
+		}
+		if (ap.getProvideAdequateQuantity() != null
+				&& ap.getProvideAdequateQuantity().equals(true)) {
+			score++;
+			apss.addScoreComputationItem("Plus 1 for Provide Adequate Quantity = true: ");
+
+		} else {
+			apss.addScoreComputationItem("Plus 0 for Provide Adequate Quantity = false or null: ");
+		}
+		if (ap.getHasSystemBeenDown1DayFlag() != null
+				&& !ap.getHasSystemBeenDown1DayFlag().equals(true)) {
+			score++;
+			apss.addScoreComputationItem("Plus 1 for Has System Been Down 1 Day Flag = false: ");
+		} else {
+			apss.addScoreComputationItem("Plus 0 for Has System Been Down 1 Day Flag = true or null: ");
+		}
+		if (ap.getCurrentProblem() != null) {
+			score++;
+			apss.addScoreComputationItem("Plus 1 for Get Current Problem = null");
+		} else {
+			apss.addScoreComputationItem("Plus 0 for Get Current Problem != null value: "
+					+ ap.getCurrentProblem());
+		}
+
+		if (ap.isCollectTariffFlag() != null && ap.isCollectTariffFlag()) {
+			score++;
+			apss.addScoreComputationItem("Plus 1 for Collect Tariff Flag = true ");
+		} else {
+			apss.addScoreComputationItem("Plus 0 for Collect Tariff Flag = false or null: ");
+		}
+		apss.setScore(score);
+		ap.setScore(score);
+		ap.setScoreComputationDate(new Date());
+		apss.setComputationDate(ap.getScoreComputationDate());
+
+		logger.log(Level.INFO,
+				"AP Collected in 2011 so scoring: " + ap.getCommunityCode()
+						+ "/" + ap.getCollectionDate() + " score: " + score);
+		if (score == 0) {
+			ap.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
+			apss.setStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM.toString());
+		} else if (score >= 1 && score <= 2) {
+			ap.setPointStatus(AccessPoint.Status.BROKEN_DOWN);
+			apss.setStatus(AccessPoint.Status.BROKEN_DOWN.toString());
+		} else if (score >= 3 && score <= 4) {
+			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+			apss.setStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS
+					.toString());
+		} else if (score >= 5) {
+			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+			apss.setStatus(AccessPoint.Status.FUNCTIONING_HIGH.toString());
+		} else {
+			ap.setPointStatus(AccessPoint.Status.OTHER);
+			apss.setStatus(AccessPoint.Status.OTHER.toString());
+		}
+		ap.setApScoreDetail(apss);
+		return ap;
+	}
+
 }
