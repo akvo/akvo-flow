@@ -7,6 +7,7 @@ import java.util.List;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
@@ -40,6 +41,9 @@ public class BootstrapGeneratorWidget extends Composite implements ClickHandler 
 
 	private static final String LABEL_STYLE = "input-label-padded";
 	private static final int DEFAULT_ITEM_COUNT = 5;
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+
 	private ListBox selectionListbox;
 	private SurveyServiceAsync surveyService;
 	private TextArea dbInstructionArea;
@@ -57,14 +61,14 @@ public class BootstrapGeneratorWidget extends Composite implements ClickHandler 
 		contentPanel = new VerticalPanel();
 		contentPanel.setWidth("800px");
 		surveyService = GWT.create(SurveyService.class);
-		addSurveyButton = new Button("Add Selected");
+		addSurveyButton = new Button(TEXT_CONSTANTS.addSelected());
 		addSurveyButton.addClickHandler(this);
-		generateFileButton = new Button("Generate");
+		generateFileButton = new Button(TEXT_CONSTANTS.generate());
 		generateFileButton.addClickHandler(this);
-		removeButton = new Button("Remove Selected");
+		removeButton = new Button(TEXT_CONSTANTS.removeSelected());
 		removeButton.addClickHandler(this);
-		CaptionPanel selectorPanel = new CaptionPanel(
-				"Select Surveys for Inclusion");
+		CaptionPanel selectorPanel = new CaptionPanel(TEXT_CONSTANTS
+				.selectSurveyForInclusion());
 		HorizontalPanel temp = new HorizontalPanel();
 		selectionWidget = new SurveySelectionWidget(Orientation.HORIZONTAL,
 				TerminalType.SURVEY);
@@ -72,19 +76,19 @@ public class BootstrapGeneratorWidget extends Composite implements ClickHandler 
 		temp.add(addSurveyButton);
 		selectorPanel.add(temp);
 		contentPanel.add(selectorPanel);
-		CaptionPanel zipPanel = new CaptionPanel("File Contents");
+		CaptionPanel zipPanel = new CaptionPanel(TEXT_CONSTANTS.fileContents());
 		selectionListbox = new ListBox(true);
 		selectionListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
 		VerticalPanel zipPanelContent = new VerticalPanel();
 		HorizontalPanel selectedSurveyPanel = new HorizontalPanel();
-		ViewUtil.installFieldRow(selectedSurveyPanel, "Selected Surveys",
-				selectionListbox, LABEL_STYLE);
+		ViewUtil.installFieldRow(selectedSurveyPanel, TEXT_CONSTANTS
+				.selectedSurveys(), selectionListbox, LABEL_STYLE);
 		selectedSurveyPanel.add(removeButton);
 		zipPanelContent.add(selectedSurveyPanel);
 		temp = new HorizontalPanel();
 		includeDbScriptBox = new CheckBox();
 		includeDbScriptBox.addClickHandler(this);
-		ViewUtil.installFieldRow(temp, "Include DB Instructions?",
+		ViewUtil.installFieldRow(temp, TEXT_CONSTANTS.includeDB(),
 				includeDbScriptBox, LABEL_STYLE);
 		zipPanelContent.add(temp);
 		dbInstructionArea = new TextArea();
@@ -92,7 +96,7 @@ public class BootstrapGeneratorWidget extends Composite implements ClickHandler 
 		zipPanelContent.add(dbInstructionArea);
 		temp = new HorizontalPanel();
 		notificationEmailBox = new TextBox();
-		ViewUtil.installFieldRow(temp, "Notification Email:",
+		ViewUtil.installFieldRow(temp, TEXT_CONSTANTS.notificationEmail(),
 				notificationEmailBox, LABEL_STYLE);
 		zipPanelContent.add(temp);
 		zipPanelContent.add(generateFileButton);
@@ -160,8 +164,10 @@ public class BootstrapGeneratorWidget extends Composite implements ClickHandler 
 							@Override
 							public void onFailure(Throwable caught) {
 								MessageDialog errDia = new MessageDialog(
-										"Error",
-										"Could not submit generation request");
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
 								errDia.showCentered();
 
 							}
@@ -169,21 +175,22 @@ public class BootstrapGeneratorWidget extends Composite implements ClickHandler 
 							@Override
 							public void onSuccess(Void result) {
 								MessageDialog dia = new MessageDialog(
-										"Request Submitted",
-										"An email will be sent when the file is available");
+										TEXT_CONSTANTS.requestSubmitted(),
+										TEXT_CONSTANTS.emailWillBeSent());
 								dia.showCentered();
 								resetUI();
 							}
 						});
 			} else {
-				StringBuilder builder = new StringBuilder(
-						"Please corect the following errors and try again: <br><ul>");
+				StringBuilder builder = new StringBuilder(TEXT_CONSTANTS
+						.pleaseCorrect()
+						+ "<br><ul>");
 				for (String e : errors) {
 					builder.append("<li>").append(e).append("</li>");
 				}
 				builder.append("</ul>");
-				MessageDialog dia = new MessageDialog("Missing data", builder
-						.toString());
+				MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
+						.inputError(), builder.toString());
 				dia.showCentered();
 			}
 		}
@@ -202,11 +209,10 @@ public class BootstrapGeneratorWidget extends Composite implements ClickHandler 
 		List<String> errors = new ArrayList<String>();
 		if (selectionListbox.getItemCount() == 0
 				&& !ViewUtil.isTextPopulated(dbInstructionArea)) {
-			errors
-					.add("If no db instructions are included, then at least 1 survey must be selected");
+			errors.add(TEXT_CONSTANTS.noDBSurveyMandatory());
 		}
 		if (!ViewUtil.isTextPopulated(notificationEmailBox)) {
-			errors.add("You must provide a notification email address");
+			errors.add(TEXT_CONSTANTS.emailMandatory());
 		}
 		return errors;
 	}

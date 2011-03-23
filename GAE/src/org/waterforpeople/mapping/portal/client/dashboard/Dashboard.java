@@ -72,8 +72,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String CONFIG_GROUP = "DASHBOARD";
 	private static TextConstants TEXT_CONSTANTS = GWT
 	.create(TextConstants.class);
-
-
+	
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
 	private static final String ADD_TOOLTIP = "Add portlets to dashboard";

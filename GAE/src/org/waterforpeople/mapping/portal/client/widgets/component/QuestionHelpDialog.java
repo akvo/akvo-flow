@@ -7,6 +7,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.google.gwt.core.client.GWT;
@@ -31,7 +32,8 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class QuestionHelpDialog extends DialogBox {
-	private static final String TITLE = "Edit Help Media";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private QuestionDto questionDto;
 	private SurveyServiceAsync surveyService;
 	private CompletionListener listener;
@@ -49,14 +51,14 @@ public class QuestionHelpDialog extends DialogBox {
 	 * @param listener
 	 */
 	public QuestionHelpDialog(QuestionDto dto, CompletionListener listener) {
-		setText(TITLE);
+		setText(TEXT_CONSTANTS.editHelpMedia());
 		enabled = true;
 		setAnimationEnabled(true);
 		setGlassEnabled(true);
 		questionDto = dto;
 		this.listener = listener;
 		surveyService = GWT.create(SurveyService.class);
-		loadingLabel = new Label("Loading...");
+		loadingLabel = new Label(TEXT_CONSTANTS.loading());
 		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
 				Window.getClientHeight() / 4);
@@ -64,8 +66,8 @@ public class QuestionHelpDialog extends DialogBox {
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
-		Button ok = new Button("Save");
-		Button cancel = new Button("Discard Changes");
+		Button ok = new Button(TEXT_CONSTANTS.save());
+		Button cancel = new Button(TEXT_CONSTANTS.discardChanges());
 		buttonPanel.add(ok);
 		buttonPanel.add(cancel);
 		contentPane.add(buttonPanel, DockPanel.SOUTH);
@@ -97,9 +99,8 @@ public class QuestionHelpDialog extends DialogBox {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						loadingLabel
-								.setText("Could not load help. Please close this dialog and try again: "
-										+ caught.getLocalizedMessage());
+						loadingLabel.setText(TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 
 					}
 				});
@@ -120,7 +121,6 @@ public class QuestionHelpDialog extends DialogBox {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
 							enabled = true;
 						}
 
@@ -155,7 +155,7 @@ public class QuestionHelpDialog extends DialogBox {
 		}
 		vPanel.add(helpTable);
 		HorizontalPanel buttonPanel = new HorizontalPanel();
-		Button addButton = new Button("Add Help Item");
+		Button addButton = new Button(TEXT_CONSTANTS.addHelpItem());
 		addButton.addClickHandler(new ClickHandler() {
 
 			@Override

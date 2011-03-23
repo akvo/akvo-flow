@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionDto;
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionService;
@@ -31,7 +33,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class NotificationSubscriptionDialog extends DialogBox {
 
-	private static final String TITLE = "Edit Notification Subscriptions";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);	
 	private Long entityId;
 	private NotificationSubscriptionServiceAsync notifService;
 	private CompletionListener listener;
@@ -53,7 +56,7 @@ public class NotificationSubscriptionDialog extends DialogBox {
 	 */
 	public NotificationSubscriptionDialog(Long entityId, String type,
 			CompletionListener listener) {
-		setText(TITLE);
+		setText(TEXT_CONSTANTS.editSubscriptions());
 		this.type = type;
 		this.entityId = entityId;
 		enabled = true;
@@ -63,7 +66,7 @@ public class NotificationSubscriptionDialog extends DialogBox {
 
 		this.listener = listener;
 		notifService = GWT.create(NotificationSubscriptionService.class);
-		loadingLabel = new Label("Loading...");
+		loadingLabel = new Label(TEXT_CONSTANTS.loading());
 		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
 				Window.getClientHeight() / 4);
@@ -71,8 +74,8 @@ public class NotificationSubscriptionDialog extends DialogBox {
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
-		Button ok = new Button("Save");
-		Button cancel = new Button("Close");
+		Button ok = new Button(TEXT_CONSTANTS.save());
+		Button cancel = new Button(TEXT_CONSTANTS.close());
 		buttonPanel.add(ok);
 		buttonPanel.add(cancel);
 		contentPane.add(buttonPanel, DockPanel.SOUTH);
@@ -107,7 +110,7 @@ public class NotificationSubscriptionDialog extends DialogBox {
 					@Override
 					public void onFailure(Throwable caught) {
 						loadingLabel
-								.setText("Could not load subscriptions. Please close this dialog and try again: "
+								.setText(TEXT_CONSTANTS.errorTracePrefix()+" "
 										+ caught.getLocalizedMessage());
 					}
 				});
@@ -150,8 +153,7 @@ public class NotificationSubscriptionDialog extends DialogBox {
 							}
 						});
 			} else {
-				validationLabel = new Label(
-						"The date and email address must be specified for all entries");
+				validationLabel = new Label(TEXT_CONSTANTS.dateAndEmailMandatory());
 				mainContent.add(validationLabel);
 			}
 		} else {
@@ -187,7 +189,7 @@ public class NotificationSubscriptionDialog extends DialogBox {
 		}
 		mainContent.add(subscriptionTable);
 		HorizontalPanel buttonPanel = new HorizontalPanel();
-		Button addButton = new Button("Add");
+		Button addButton = new Button(TEXT_CONSTANTS.add());
 		addButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -210,7 +212,7 @@ public class NotificationSubscriptionDialog extends DialogBox {
 		subscriptionTable.insertRow(idx);
 		subscriptionTable.setWidget(idx, 0, new NotificationSubscriptionWidget(
 				dto));
-		Button delButton = new Button("Remove");
+		Button delButton = new Button(TEXT_CONSTANTS.remove());
 		delButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {

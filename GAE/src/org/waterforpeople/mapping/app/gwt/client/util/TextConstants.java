@@ -28,4 +28,26 @@ public interface TextConstants extends Constants{
 	public String attribute();
 	public String pointType();
 	public String saveComplete();
+	public String selectSurveyForInclusion();
+	public String generate();
+	public String addSelected();
+	public String removeSelected();
+	public String fileContents();
+	public String selectedSurveys();
+	public String includeDB();
+	public String notificationEmail();
+	public String pleaseCorrect();
+	public String requestSubmitted();
+	public String emailWillBeSent();
+	public String noDBSurveyMandatory();
+	public String emailMandatory();
+	public String editSubscriptions();
+	public String save();
+	public String close();
+	public String dateAndEmailMandatory();
+	public String remove();
+	public String add();
+	public String editHelpMedia();
+	public String discardChanges();
+	public String addHelpItem();
 }
