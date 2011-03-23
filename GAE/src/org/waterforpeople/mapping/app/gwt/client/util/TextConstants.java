@@ -1,12 +1,15 @@
 package org.waterforpeople.mapping.app.gwt.client.util;
 
+import com.google.gwt.i18n.client.Constants;
+
+
 /**
  * holds all strings displayed in the UI
  * 
  * @author Christopher Fagiani
  * 
  */
-public interface TextConstants {
+public interface TextConstants extends Constants{
 	public String addItemToDashboard();
 	public String selectPortlets();
 	public String done();
