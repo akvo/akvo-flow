@@ -37,21 +37,21 @@ public class KMLGenerator {
 	private VelocityEngine engine;
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
-	// public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
-	// PropertyUtil
-	// .getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
-	// public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL =
-	// PropertyUtil
-	// .getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
-	// public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL =
-	// PropertyUtil
-	// .getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
-	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
-	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
-	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
+	 public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
+	 PropertyUtil
+	 .getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
+	 public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL =
+	 PropertyUtil
+	 .getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
+	 public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL =
+	 PropertyUtil
+	 .getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
+//	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
+//			.getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
+//	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
+//			.getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
+//	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
+//			.getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
 	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
@@ -940,11 +940,11 @@ public class KMLGenerator {
 		Integer score = scoreAccessPoint(ap).getScore();
 		if (score == 0) {
 			return "No Improved System";
-		} else if (score > 0 && score < 3) {
+		} else if (score >= 1 && score <= 2) {
 			return "Broken-down system";
-		} else if (score > 2 && score < 6) {
+		} else if (score >= 3 && score <= 4) {
 			return "Functioning but with Problems";
-		} else if (score > 5) {
+		} else if (score >= 5) {
 			return "System Functioning and Meets Government Standards";
 		} else {
 			return "Unknown";
