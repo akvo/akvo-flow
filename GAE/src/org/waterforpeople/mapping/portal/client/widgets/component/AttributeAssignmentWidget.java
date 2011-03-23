@@ -17,6 +17,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -39,10 +40,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Widget used to assign survey questions to access point attributes.
  * 
- *  TODO: add in the save/reset buttons
+ * TODO: add in the save/reset buttons
  * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class AttributeAssignmentWidget extends Composite implements
 		ContextAware, ChangeHandler, ClickHandler {
@@ -52,6 +53,8 @@ public class AttributeAssignmentWidget extends Composite implements
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
 	private static final String GRID_HEADER_CSS = "gridCell-header";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 
 	private VerticalPanel contentPanel;
 	private VerticalPanel gridPanel;
@@ -73,7 +76,7 @@ public class AttributeAssignmentWidget extends Composite implements
 
 	private TreeMap<String, String> attributes;
 	private List<QuestionGroupDto> currentQuestionGroupDtoList;
-	private ArrayList<QuestionDto> currentQuestionList;	
+	private ArrayList<QuestionDto> currentQuestionList;
 	private QuestionGroupDto currentQuestionGroupSelection;
 	private List<SurveyDto> currentSurveyDtoList;
 	private HashMap<String, ArrayList<SurveyDto>> surveys;
@@ -89,16 +92,17 @@ public class AttributeAssignmentWidget extends Composite implements
 		surveyListbox = new ListBox();
 		questionGroupListbox = new ListBox();
 		contentPanel.add(selectorPanel);
-		addFieldPair(surveyGroup, "Survey Group", tempPanel);
-		addFieldPair(surveyListbox, "Survey", tempPanel);
-		addFieldPair(questionGroupListbox, "Question Group", tempPanel);
+		addFieldPair(surveyGroup, TEXT_CONSTANTS.surveyGroup(), tempPanel);
+		addFieldPair(surveyListbox, TEXT_CONSTANTS.survey(), tempPanel);
+		addFieldPair(questionGroupListbox, TEXT_CONSTANTS.questionGroup(),
+				tempPanel);
 		gridPanel = new VerticalPanel();
 		selectorPanel.add(tempPanel);
 		mappingService = GWT.create(SurveyAttributeMappingService.class);
 		surveyService = GWT.create(SurveyService.class);
 		surveys = new HashMap<String, ArrayList<SurveyDto>>();
 		contentPanel.add(gridPanel);
-		
+
 		loadAttributes();
 		initWidget(contentPanel);
 
@@ -118,10 +122,10 @@ public class AttributeAssignmentWidget extends Composite implements
 		}
 		return bundle;
 	}
-	
+
 	@Override
-	public void flushContext(){
-		//no-op
+	public void flushContext() {
+		// no-op
 	}
 
 	@Override
@@ -131,7 +135,7 @@ public class AttributeAssignmentWidget extends Composite implements
 
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
-		
+
 		this.bundle = bundle;
 		currentSurveySelection = (SurveyDto) bundle
 				.get(BundleConstants.SURVEY_KEY);
@@ -147,7 +151,7 @@ public class AttributeAssignmentWidget extends Composite implements
 
 	protected void toggleLoading(boolean isLoading) {
 		if (isLoading) {
-			statusLabel.setText("Loading...");
+			statusLabel.setText(TEXT_CONSTANTS.loading());
 			statusLabel.setVisible(true);
 		} else {
 			statusLabel.setVisible(false);
@@ -164,9 +168,9 @@ public class AttributeAssignmentWidget extends Composite implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Application Error",
-								"Cannot load survey groups");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS
+								.couldNotLoadSurveyGroups());
 						errDia.showCentered();
 					}
 
@@ -175,7 +179,7 @@ public class AttributeAssignmentWidget extends Composite implements
 						surveyGroup.addItem("", "");
 						boolean done = true;
 						if (result != null) {
-							int i = 0;							
+							int i = 0;
 							for (SurveyGroupDto dto : result) {
 								surveyGroup.addItem(dto.getCode(), dto
 										.getKeyId().toString());
@@ -190,7 +194,7 @@ public class AttributeAssignmentWidget extends Composite implements
 								i++;
 							}
 						}
-						if(done){
+						if (done) {
 							toggleLoading(false);
 						}
 					}
@@ -210,8 +214,9 @@ public class AttributeAssignmentWidget extends Composite implements
 					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
 						public void onFailure(Throwable caught) {
 							MessageDialog errDia = new MessageDialog(
-									"Cannot list surveys",
-									"The application encountered an error: "
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
 											+ caught.getLocalizedMessage());
 							errDia.showCentered();
 						}
@@ -227,9 +232,8 @@ public class AttributeAssignmentWidget extends Composite implements
 							surveyCallback);
 				}
 			} else {
-				MessageDialog errDia = new MessageDialog(
-						"Please select a group",
-						"You must select a survey group first");
+				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+						.inputError(), TEXT_CONSTANTS.mustSelectSurveyGroup());
 				errDia.showCentered();
 			}
 		} else {
@@ -244,14 +248,15 @@ public class AttributeAssignmentWidget extends Composite implements
 	 * @return
 	 */
 	private void loadSurveyQuestionGroups(final Long id) {
-		statusLabel.setText("Loading survey question groups. Please wait...");
+		statusLabel.setText(TEXT_CONSTANTS.loading());
 		statusLabel.setVisible(true);
 		AsyncCallback<ArrayList<QuestionGroupDto>> surveyCallback = new AsyncCallback<ArrayList<QuestionGroupDto>>() {
 			public void onFailure(Throwable caught) {
 				statusLabel.setVisible(false);
-				MessageDialog errDia = new MessageDialog("Cannot load survey",
-						"The application encountered an error: "
-								+ caught.getLocalizedMessage());
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -267,14 +272,15 @@ public class AttributeAssignmentWidget extends Composite implements
 	}
 
 	private void loadQuestions(final Long groupId) {
-		statusLabel.setText("Loading survey questions. Please wait...");
+		statusLabel.setText(TEXT_CONSTANTS.loading());
 		statusLabel.setVisible(true);
 		AsyncCallback<ArrayList<QuestionDto>> questionCallback = new AsyncCallback<ArrayList<QuestionDto>>() {
 			public void onFailure(Throwable caught) {
 				statusLabel.setVisible(false);
-				MessageDialog errDia = new MessageDialog("Cannot load survey",
-						"The application encountered an error: "
-								+ caught.getLocalizedMessage());
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -301,9 +307,9 @@ public class AttributeAssignmentWidget extends Composite implements
 
 			Grid grid = new Grid(questions.size() + 1, 3);
 			// build headers
-			grid.setText(0, 0, "Question Text");
-			grid.setText(0, 1, "Attribute");
-			grid.setText(0, 2, "Point Type");
+			grid.setText(0, 0, TEXT_CONSTANTS.questionText());
+			grid.setText(0, 1, TEXT_CONSTANTS.attribute());
+			grid.setText(0, 2, TEXT_CONSTANTS.pointType());
 			setGridRowStyle(grid, 0, false);
 
 			int count = 1;
@@ -356,8 +362,9 @@ public class AttributeAssignmentWidget extends Composite implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Application Error", "Cannot load attributes");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 
 					}
@@ -471,14 +478,15 @@ public class AttributeAssignmentWidget extends Composite implements
 						@Override
 						public void onSuccess(
 								ArrayList<SurveyAttributeMappingDto> result) {
-							statusLabel.setText("Mapping Saved");
+							statusLabel.setText(TEXT_CONSTANTS.saveComplete());
 							statusLabel.setVisible(true);
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							statusLabel.setText("Error: "
-									+ caught.getLocalizedMessage());
+							statusLabel.setText(TEXT_CONSTANTS
+									.errorTracePrefix()
+									+ " " + caught.getLocalizedMessage());
 							statusLabel.setVisible(true);
 						}
 					});
@@ -490,12 +498,11 @@ public class AttributeAssignmentWidget extends Composite implements
 	 */
 	@Override
 	public void onClick(ClickEvent event) {
-	/*	if (event.getSource() == resetButton) {
-			reset();
-			currentSurveySelection = null;
-		} else if (event.getSource() == saveButton) {
-			saveMapping();
-		}*/
+		/*
+		 * if (event.getSource() == resetButton) { reset();
+		 * currentSurveySelection = null; } else if (event.getSource() ==
+		 * saveButton) { saveMapping(); }
+		 */
 	}
 
 	@Override
@@ -510,11 +517,10 @@ public class AttributeAssignmentWidget extends Composite implements
 			currentQuestionGroupSelection = currentQuestionGroupDtoList
 					.get(questionGroupListbox.getSelectedIndex() - 1);
 			loadQuestions(currentQuestionGroupSelection.getKeyId());
-		} /*else if (event.getSource() == saveButton) {
-			saveMapping();
-		} else if (event.getSource() == resetButton) {
-			reset();
-		}*/
+		} /*
+		 * else if (event.getSource() == saveButton) { saveMapping(); } else if
+		 * (event.getSource() == resetButton) { reset(); }
+		 */
 	}
 
 	private void loadExistingMappings(final Long id) {
@@ -522,10 +528,9 @@ public class AttributeAssignmentWidget extends Composite implements
 				new AsyncCallback<ArrayList<SurveyAttributeMappingDto>>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Cannot load mappings",
-								"The application encountered an error: "
-										+ caught.getLocalizedMessage());
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 					}
 

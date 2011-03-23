@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
@@ -69,6 +70,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final int COLUMNS = 3;
 	private static final String CONFIG_GROUP = "DASHBOARD";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+
 
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
@@ -434,23 +438,22 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 		public ConfigurationDialog() {
 			// Set the dialog box's caption.
-			setText("Add Items to Dashboard");
+			setText(TEXT_CONSTANTS.addItemToDashboard());
 			setAnimationEnabled(true);
 			setGlassEnabled(true);
 
 			VerticalPanel contentPane = new VerticalPanel();
 			contentPane
-					.add(new Label(
-							"Select the portlets you want to add to your dashboard screen"));
+					.add(new Label(TEXT_CONSTANTS.selectPortlets()));
 			setPopupPosition(Window.getClientWidth() / 4, Window
 					.getClientHeight() / 4);
 			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);
 			g.setStyleName(DIALOG_CONTENT_CSS);
 
-			Label header = new Label("Portlets");
+			Label header = new Label(TEXT_CONSTANTS.portlets());
 			header.setStyleName(HEADER_CSS);
 			g.setWidget(0, 0, header);
-			header = new Label("Description");
+			header = new Label(TEXT_CONSTANTS.description());
 			header.setStyleName(HEADER_CSS);
 			g.setWidget(0, 1, header);
 

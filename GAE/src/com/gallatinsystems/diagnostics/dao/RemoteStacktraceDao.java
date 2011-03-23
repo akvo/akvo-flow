@@ -71,7 +71,7 @@ public class RemoteStacktraceDao extends BaseDAO<RemoteStacktrace> {
 	 */
 	public long deleteItemsOlderThan(Date date) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(RemoteStacktrace.class);
+		javax.jdo.Query query = pm.newQuery(RemoteStacktrace.class);		
 		query.setFilter("errorDate < dateParam");
 		query.declareParameters("Date dateParam");
 		query.declareImports("import java.util.Date");
