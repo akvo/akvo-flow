@@ -723,7 +723,7 @@ public class AccessPointHelper {
 		} else {
 			apss.addScoreComputationItem("Plus 0 for Has System Been Down 1 Day Flag = true or null: ");
 		}
-		if (ap.getCurrentProblem() != null) {
+		if (ap.getCurrentProblem() == null) {
 			score++;
 			apss.addScoreComputationItem("Plus 1 for Get Current Problem = null");
 		} else {
