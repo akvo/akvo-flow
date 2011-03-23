@@ -879,11 +879,11 @@ public class KMLGenerator {
 		if (score == 0) {
 			return "No Improved System";
 		} else if (score >= 1 && score <= 2) {
-			return "Broken-down system";
+			return "Basic Level Service";
 		} else if (score >= 3 && score <= 4) {
-			return "Functioning but with Problems";
+			return "Intermediate Level Service";
 		} else if (score >= 5) {
-			return "System Functioning and Meets Government Standards";
+			return "High Level Service";
 		} else {
 			return "Unknown";
 		}
