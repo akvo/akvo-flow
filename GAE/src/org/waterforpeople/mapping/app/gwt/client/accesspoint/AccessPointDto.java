@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 import java.util.Date;
 import java.util.List;
 
+import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class AccessPointDto extends BaseDto {
@@ -55,6 +56,8 @@ public class AccessPointDto extends BaseDto {
 	private Integer score = null;
 	private Date scoreComputationDate = null;
 	private List<AccessPointScoreDetailDto> apScoreDetailList= null;
+	private Boolean improvedWaterPointFlag = null;
+	private Boolean collectTariffFlag = null;
 	private String sub1;
 	private String sub2;
 	private String sub3;
@@ -64,6 +67,22 @@ public class AccessPointDto extends BaseDto {
 	
 	
 	
+	public Boolean getImprovedWaterPointFlag() {
+		return improvedWaterPointFlag;
+	}
+
+	public void setImprovedWaterPointFlag(Boolean improvedWaterPointFlag) {
+		this.improvedWaterPointFlag = improvedWaterPointFlag;
+	}
+
+	public Boolean getCollectTariffFlag() {
+		return collectTariffFlag;
+	}
+
+	public void setCollectTariffFlag(Boolean collectTariffFlag) {
+		this.collectTariffFlag = collectTariffFlag;
+	}
+
 	public String getSub1() {
 		return sub1;
 	}
