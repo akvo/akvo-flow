@@ -471,10 +471,10 @@ public class KMLGenerator {
 						.getCollectionDate());
 				context.put("collectionYear", collectionYear);
 			} else {
-				String timestamp = DateFormatUtils.formatUTC(new Date(),
+				String timestamp = DateFormatUtils.formatUTC(ap.getCreatedDateTime(),
 						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
-						DateFormat.SHORT).format(new Date());
+						DateFormat.SHORT).format(ap.getCreatedDateTime());
 				context.put("collectionDate", formattedDate);
 				context.put("timestamp", timestamp);
 			}
