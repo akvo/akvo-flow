@@ -142,8 +142,16 @@ public class AccessPointExporter extends AbstractDataExporter {
 							if (doubleString != null
 									&& !NULL_STR.equalsIgnoreCase(doubleString
 											.trim())) {
-								field.set(point, Double
-										.parseDouble(doubleString));
+								field.set(point,
+										Double.parseDouble(doubleString));
+							}
+						} else if (field.getType() == Boolean.class) {
+							String booleanString = json.getString(header);
+							if (booleanString != null
+									&& !NULL_STR.equalsIgnoreCase(booleanString
+											.trim())) {
+								field.set(point,
+										Boolean.parseBoolean(booleanString));
 							}
 						}
 						// TODO: handle status fields. Not sure yet if they can
@@ -173,7 +181,8 @@ public class AccessPointExporter extends AbstractDataExporter {
 						|| fields[i].getType() == Date.class
 						|| fields[i].getType() == AccessPointDto.AccessPointType.class
 						|| fields[i].getType() == AccessPointDto.Status.class
-						|| fields[i].getType() == Double.class) {
+						|| fields[i].getType() == Double.class
+						|| fields[i].getType() == Boolean.class) {
 					headers.add(fields[i].getName());
 				}
 			}
@@ -232,6 +241,11 @@ public class AccessPointExporter extends AbstractDataExporter {
 							.get(dto);
 					if (status != null) {
 						pw.write(status.toString());
+					}
+				} else if (field.getType() == Boolean.class) {
+					Boolean temp = (Boolean) field.get(dto);
+					if (temp != null) {
+						pw.write(temp.toString());
 					}
 				}
 				j++;
