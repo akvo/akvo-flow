@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.StyleUtil;
@@ -40,7 +41,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SurveyQuestionTranslationDialog extends DialogBox {
 
-	private static final String TITLE = "Edit Translations";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);	
 	private static final String QUESTION_PARENT_TYPE = "QUESTION_TEXT";
 	private static final String OPTION_PARENT_TYPE = "QUESTION_OPTION";
 	private static final String HELP_PARENT_TYPE = "QUESTION_HELP_MEDIA_TEXT";
@@ -48,9 +50,9 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	private static final Map<String, String> LANGUAGES = new TreeMap<String, String>() {
 		private static final long serialVersionUID = -5226209579099503771L;
 		{
-			put("French", "fr");
-			put("Spanish", "es");
-			put("Kinyarwanda", "rw");
+			put(TEXT_CONSTANTS.french(), "fr");
+			put(TEXT_CONSTANTS.spanish(), "es");
+			put(TEXT_CONSTANTS.kinyarwanda(), "rw");
 		}
 	};
 	private QuestionDto questionDto;
@@ -70,7 +72,7 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	 */
 	public SurveyQuestionTranslationDialog(QuestionDto dto,
 			TranslationChangeListener listener) {
-		setText(TITLE);
+		setText(TEXT_CONSTANTS.editTranslations());
 		setAnimationEnabled(true);
 		setGlassEnabled(true);
 		questionDto = dto;
@@ -80,13 +82,13 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
 				Window.getClientHeight() / 4);
-		loadingLabel = new Label("Loading...");
+		loadingLabel = new Label(TEXT_CONSTANTS.loading());
 		contentPane.add(loadingLabel, DockPanel.CENTER);
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
-		Button ok = new Button("Save");
-		Button cancel = new Button("Discard Changes");
+		Button ok = new Button(TEXT_CONSTANTS.save());
+		Button cancel = new Button(TEXT_CONSTANTS.discardChanges());
 		buttonPanel.add(ok);
 		buttonPanel.add(cancel);
 		contentPane.add(buttonPanel, DockPanel.SOUTH);
@@ -108,7 +110,7 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						loadingLabel.setText("Error while loading data: "
+						loadingLabel.setText(TEXT_CONSTANTS.errorTracePrefix()+" "
 								+ caught.getLocalizedMessage());
 					}
 
@@ -130,7 +132,7 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						loadingLabel.setText("Error while loading data: "
+						loadingLabel.setText(TEXT_CONSTANTS.errorTracePrefix()+" "
 								+ caught.getLocalizedMessage());
 					}
 
@@ -192,8 +194,8 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog errDia = new MessageDialog(
-								"Error saving translations",
-								"The application could not save the translation values. Please try again. If the problem persists, contact an administrator.");
+								TEXT_CONSTANTS.error(),
+								TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 						errDia.showRelativeTo(getWidget());
 					}
 				});
@@ -222,7 +224,7 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 		}
 		Grid grid = new Grid(rowCount, colCount);
 		// set up the headers
-		grid.setWidget(0, 0, new Label("Text"));
+		grid.setWidget(0, 0, new Label(TEXT_CONSTANTS.text()));
 		int curCol = 1;
 		for (String lang : LANGUAGES.keySet()) {
 			grid.setWidget(0, curCol++, new Label(lang));
@@ -255,7 +257,7 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 	}
 
 	/**
-	 * constructs a text box for each supported lanaguge and, if there is
+	 * constructs a text box for each supported language and, if there is
 	 * already a translation present for the question dto, populates the current
 	 * text in the control.
 	 * 

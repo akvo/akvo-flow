@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -38,7 +39,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public class SurveyCopyDialog extends DialogBox {
-	private static final String TITLE = "Copy Survey";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private HorizontalPanel controlPanel;
 	private VerticalPanel mainPanel;
 	private ListBox surveyGroupList;
@@ -65,7 +67,7 @@ public class SurveyCopyDialog extends DialogBox {
 	 * @param listener
 	 */
 	public SurveyCopyDialog(SurveyDto dto, CompletionListener listener) {
-		setText(TITLE);
+		setText(TEXT_CONSTANTS.copySurvey());
 		setAnimationEnabled(true);
 		setGlassEnabled(true);
 		surveyDto = dto;
@@ -74,7 +76,7 @@ public class SurveyCopyDialog extends DialogBox {
 		origQuestionsWithDeps = new ArrayList<QuestionDto>();
 		mainPanel = new VerticalPanel();
 		surveyService = GWT.create(SurveyService.class);
-		statusLabel = new Label("Loading...");
+		statusLabel = new Label(TEXT_CONSTANTS.loading());
 		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
 				Window.getClientHeight() / 4);
@@ -84,14 +86,14 @@ public class SurveyCopyDialog extends DialogBox {
 		surveyGroupList = new ListBox();
 		surveyName = new TextBox();
 		mainPanel.add(controlPanel);
-		ViewUtil.installFieldRow(controlPanel, "Destination Group",
-				surveyGroupList, null);
-		ViewUtil.installFieldRow(controlPanel, "New Survey name", surveyName,
-				null);
+		ViewUtil.installFieldRow(controlPanel, TEXT_CONSTANTS
+				.destinationGroup(), surveyGroupList, null);
+		ViewUtil.installFieldRow(controlPanel, TEXT_CONSTANTS.newSurveyName(),
+				surveyName, null);
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 
-		okButton = new Button("Copy");
-		cancelButton = new Button("Cancel");
+		okButton = new Button(TEXT_CONSTANTS.copy());
+		cancelButton = new Button(TEXT_CONSTANTS.cancel());
 		buttonPanel.add(okButton);
 		buttonPanel.add(cancelButton);
 		contentPane.add(buttonPanel, DockPanel.SOUTH);
@@ -124,15 +126,15 @@ public class SurveyCopyDialog extends DialogBox {
 								contentPane.add(mainPanel, DockPanel.CENTER);
 							}
 						} else {
-							statusLabel.setText("No survey groups");
+							statusLabel
+									.setText(TEXT_CONSTANTS.noSurveyGroups());
 						}
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						statusLabel
-								.setText("Could not load survey groups. Please close this dialog and try again: "
-										+ caught.getLocalizedMessage());
+						statusLabel.setText(TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 
 					}
 				});
@@ -144,7 +146,7 @@ public class SurveyCopyDialog extends DialogBox {
 	 */
 	private void performCopy() {
 		disableEnableAll(false);
-		statusLabel.setText("Copying Survey...");
+		statusLabel.setText(TEXT_CONSTANTS.copying());
 		mainPanel.add(statusLabel);
 		newSurveyDto = new SurveyDto();
 		newSurveyDto.setCode(surveyName.getText());
@@ -176,7 +178,7 @@ public class SurveyCopyDialog extends DialogBox {
 	}
 
 	private void loadQuestionGroups() {
-		statusLabel.setText("Loading question groups to copy");
+		statusLabel.setText(TEXT_CONSTANTS.loadingQuestionGroups());
 		surveyService.listQuestionGroupsBySurvey(surveyDto.getKeyId()
 				.toString(), new AsyncCallback<ArrayList<QuestionGroupDto>>() {
 
@@ -194,7 +196,7 @@ public class SurveyCopyDialog extends DialogBox {
 	}
 
 	private void saveQuestionGroups() {
-		statusLabel.setText("Saving new question groups");
+		statusLabel.setText(TEXT_CONSTANTS.savingNewQuestionGroups());
 		if (surveyDto.getQuestionGroupList() != null) {
 			List<QuestionGroupDto> dtoList = new ArrayList<QuestionGroupDto>();
 			for (QuestionGroupDto existingGroup : surveyDto
@@ -224,14 +226,14 @@ public class SurveyCopyDialog extends DialogBox {
 						}
 					});
 		} else {
-			//if there are no questions, we're done.
+			// if there are no questions, we're done.
 			notifyListeners();
 			hide();
 		}
 	}
 
 	private void loadQuestionList(final int groupIndex) {
-		statusLabel.setText("Loading questions to copy for group "
+		statusLabel.setText(TEXT_CONSTANTS.loadingQuestionsForGroup() + " "
 				+ (groupIndex + 1));
 		if (surveyDto.getQuestionGroupList() != null) {
 			if (groupIndex < surveyDto.getQuestionGroupList().size()) {
@@ -288,8 +290,9 @@ public class SurveyCopyDialog extends DialogBox {
 
 	private void loadQuestionDetails(final int groupIndex,
 			final int questionIndex) {
-		statusLabel.setText("Loading details for group " + (groupIndex + 1)
-				+ ", question " + (questionIndex + 1));
+		statusLabel.setText(TEXT_CONSTANTS.loadingDetailsForGroup()
+				+ (groupIndex + 1) + ", " + TEXT_CONSTANTS.question()
+				+ (questionIndex + 1));
 		if (groupIndex < surveyDto.getQuestionGroupList().size()) {
 			final QuestionGroupDto group = surveyDto.getQuestionGroupList()
 					.get(groupIndex);
@@ -360,8 +363,9 @@ public class SurveyCopyDialog extends DialogBox {
 	}
 
 	private void copyQuestion(final int groupIndex, final int questionIndex) {
-		statusLabel.setText("Saving details for group " + (groupIndex + 1)
-				+ ", question " + (questionIndex + 1));
+		statusLabel.setText(TEXT_CONSTANTS.savingDetailsForGroup() + " "
+				+ (groupIndex + 1) + ", " + TEXT_CONSTANTS.question()
+				+ (questionIndex + 1));
 		if (groupIndex < surveyDto.getQuestionGroupList().size()) {
 			final QuestionGroupDto group = surveyDto.getQuestionGroupList()
 					.get(groupIndex);
@@ -400,7 +404,7 @@ public class SurveyCopyDialog extends DialogBox {
 	}
 
 	private void displayErrorMessage(Throwable caught) {
-		statusLabel.setText("Could not copy survey: "
+		statusLabel.setText(TEXT_CONSTANTS.errorTracePrefix() + " "
 				+ caught.getLocalizedMessage());
 		disableEnableAll(true);
 	}

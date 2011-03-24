@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -25,6 +27,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class SurveySelectionDialog extends WidgetDialog implements ClickHandler {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);	
 	public static final String SURVEY_KEY = "survey";
 	private SurveySelectionWidget selector;
 	private Button okButton;
@@ -32,7 +36,7 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 	private Label messageLabel;
 
 	public SurveySelectionDialog(CompletionListener listener) {
-		super("Select Survey", null, true, listener);
+		super(TEXT_CONSTANTS.selectSurvey(), null, true, listener);
 		Panel panel = new VerticalPanel();
 		messageLabel = new Label();
 		Panel buttonPanel = new HorizontalPanel();
@@ -41,9 +45,9 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 		panel.add(selector);
 		panel.add(messageLabel);
 		messageLabel.setVisible(false);
-		okButton = new Button("Ok");
+		okButton = new Button(TEXT_CONSTANTS.ok());
 		okButton.addClickHandler(this);
-		cancelButton = new Button("Cancel");
+		cancelButton = new Button(TEXT_CONSTANTS.cancel());
 		cancelButton.addClickHandler(this);
 		buttonPanel.add(okButton);
 		buttonPanel.add(cancelButton);
@@ -59,7 +63,7 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 			if (selector.getSelectedSurveyIds() == null
 					|| selector.getSelectedSurveyIds().size() == 0) {
 				messageLabel
-						.setText("Please select a survey before you click 'Ok'");
+						.setText(TEXT_CONSTANTS.selectSurveyFirst());
 				messageLabel.setVisible(true);
 			} else {
 				hide(true);

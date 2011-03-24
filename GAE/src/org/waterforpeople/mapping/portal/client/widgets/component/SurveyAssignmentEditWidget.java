@@ -14,6 +14,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
@@ -44,6 +45,8 @@ import com.google.gwt.user.datepicker.client.DateBox;
  */
 public class SurveyAssignmentEditWidget extends Composite implements
 		ContextAware, ClickHandler {
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String LABEL_STYLE = "input-label-padded";
 	private static final int DEFAULT_ITEM_COUNT = 5;
 	private Panel contentPanel;
@@ -77,40 +80,43 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	private Composite constructSelectorPanel() {
 		Panel mainPanel = new VerticalPanel();
 		Panel selectorPanel = new HorizontalPanel();
-		CaptionPanel selectorPanelCap = new CaptionPanel("Selection Criteria");
+		CaptionPanel selectorPanelCap = new CaptionPanel(TEXT_CONSTANTS
+				.selectionCriteria());
 		selectorPanelCap.add(mainPanel);
 		surveySelectWidget = new SurveySelectionWidget(Orientation.VERTICAL,
 				TerminalType.SURVEY);
 		selectorPanel.add(surveySelectWidget);
 		VerticalPanel devPanel = new VerticalPanel();
-		devPanel.add(ViewUtil.initLabel("Devices", LABEL_STYLE));
+		devPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.devices(), LABEL_STYLE));
 		devicePickerListbox = new ListBox(true);
 		devicePickerListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
 		devPanel.add(devicePickerListbox);
 		selectorPanel.add(devPanel);
 		mainPanel.add(selectorPanel);
-		addSelectedButton = new Button("Add Selected");
+		addSelectedButton = new Button(TEXT_CONSTANTS.addSelected());
 		addSelectedButton.addClickHandler(this);
 		mainPanel.add(addSelectedButton);
 		return selectorPanelCap;
 	}
 
 	private Composite constructDetailsPanel() {
-		CaptionPanel detailPanelCap = new CaptionPanel("Assignment Details");
+		CaptionPanel detailPanelCap = new CaptionPanel(TEXT_CONSTANTS
+				.assignmentDetails());
 		selectedDevicesListbox = new ListBox(true);
 		selectedDevicesListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
 		selectedSurveyListbox = new ListBox(true);
 		selectedSurveyListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
 		HorizontalPanel labelPanel = new HorizontalPanel();
-		labelPanel.add(ViewUtil.initLabel("Trip Name: ", LABEL_STYLE));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.tripName(),
+				LABEL_STYLE));
 		eventName = new TextBox();
 		labelPanel.add(eventName);
-		labelPanel.add(ViewUtil.initLabel("Start: ", LABEL_STYLE));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.start(), LABEL_STYLE));
 		effectiveStartDate = new DateBox();
 		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
 				.getShortDateFormat()));
 		labelPanel.add(effectiveStartDate);
-		labelPanel.add(ViewUtil.initLabel("End: ", LABEL_STYLE));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.end(), LABEL_STYLE));
 		effectiveEndDate = new DateBox();
 		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
 				.getShortDateFormat()));
@@ -118,18 +124,18 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		VerticalPanel main = new VerticalPanel();
 		main.add(labelPanel);
 		HorizontalPanel selectedItemPanel = new HorizontalPanel();
-		selectedItemPanel.add(ViewUtil.initLabel("Selected Surveys",
-				LABEL_STYLE));
+		selectedItemPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
+				.selectedSurveys(), LABEL_STYLE));
 		selectedItemPanel.add(selectedSurveyListbox);
-		selectedItemPanel.add(ViewUtil.initLabel("Selected Devices",
-				LABEL_STYLE));
+		selectedItemPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
+				.selectedDevices(), LABEL_STYLE));
 		selectedItemPanel.add(selectedDevicesListbox);
 		main.add(selectedItemPanel);
 		Panel buttonPanel = new HorizontalPanel();
-		removeSelectedButton = new Button("Remove Selected");
+		removeSelectedButton = new Button(TEXT_CONSTANTS.removeSelected());
 		removeSelectedButton.addClickHandler(this);
 		buttonPanel.add(removeSelectedButton);
-		clearButton = new Button("Undo Changes");
+		clearButton = new Button(TEXT_CONSTANTS.discardChanges());
 		clearButton.addClickHandler(this);
 		buttonPanel.add(clearButton);
 		main.add(buttonPanel);
@@ -144,8 +150,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		deviceService
 				.listDeviceByGroup(new AsyncCallback<HashMap<String, ArrayList<DeviceDto>>>() {
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog("Error",
-								"Could not get devices. Please try again");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 					}
 
@@ -244,14 +251,15 @@ public class SurveyAssignmentEditWidget extends Composite implements
 						}
 					});
 		} else {
-			StringBuilder buf = new StringBuilder(
-					"Please correct the following errors and try saving again:<br><ul>");
+			StringBuilder buf = new StringBuilder(TEXT_CONSTANTS
+					.pleaseCorrect()
+					+ "<br><ul>");
 			for (String e : errors) {
 				buf.append("<li>").append(e).append("</li>");
 			}
 			buf.append("</ul>");
-			MessageDialog validDia = new MessageDialog("Invalid input", buf
-					.toString());
+			MessageDialog validDia = new MessageDialog(TEXT_CONSTANTS
+					.inputError(), buf.toString());
 			validDia.showCentered();
 			listener.operationComplete(false, getContextBundle(true));
 		}
@@ -266,19 +274,19 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	private List<String> validate(SurveyAssignmentDto dto) {
 		List<String> errors = new ArrayList<String>();
 		if (dto.getName() == null || dto.getName().trim().length() == 0) {
-			errors.add("Name must not be empty");
+			errors.add(TEXT_CONSTANTS.nameMandatory());
 		}
 		if (dto.getStartDate() == null) {
-			errors.add("Start date must not be empty");
+			errors.add(TEXT_CONSTANTS.startMandatory());
 		}
 		if (dto.getEndDate() == null) {
-			errors.add("End date must not be empty");
+			errors.add(TEXT_CONSTANTS.endMandatory());
 		}
 		if (dto.getSurveys() == null || dto.getSurveys().size() == 0) {
-			errors.add("At least 1 survey must be selected");
+			errors.add(TEXT_CONSTANTS.surveyMandatory());
 		}
 		if (dto.getDevices() == null || dto.getDevices().size() == 0) {
-			errors.add("At least 1 device must be selected");
+			errors.add(TEXT_CONSTANTS.deviceMandatory());
 		}
 		return errors;
 	}
@@ -291,8 +299,8 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	 */
 	public List<Long> getSelectedIds(ListBox box) {
 		List<Long> ids = new ArrayList<Long>();
-		for (int i = 0; i < box.getItemCount(); i++) {		
-				ids.add(new Long(box.getValue(i)));		
+		for (int i = 0; i < box.getItemCount(); i++) {
+			ids.add(new Long(box.getValue(i)));
 		}
 		return ids;
 	}
