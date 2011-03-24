@@ -414,11 +414,11 @@ public class KMLGenerator {
 							context.put("communityCode", "Unknown" + new Date());
 						// Need to check this
 						if (ap.getPointType() != null) {
+							encodeStatusString(ap, context);
 							context.put(
 									"pinStyle",
 									encodePinStyle(ap.getPointType(),
 											ap.getPointStatus()));
-							encodeStatusString(ap, context);
 						} else {
 							context.put("pinStyle", "waterpushpinblk");
 						}
@@ -720,9 +720,9 @@ public class KMLGenerator {
 
 			// Need to check this
 			if (ap.getPointType() != null) {
+				encodeStatusString(ap, context);
 				context.put("pinStyle",
 						encodePinStyle(ap.getPointType(), ap.getPointStatus()));
-				encodeStatusString(ap, context);
 			} else {
 				context.put("pinStyle", "waterpushpinblk");
 			}
@@ -874,8 +874,7 @@ public class KMLGenerator {
 	}
 
 	public String encodeStatusUsingScore(AccessPoint ap) {
-		AccessPointHelper aph = new AccessPointHelper();
-		Integer score = aph.scoreAccessPoint(ap).getScore();
+		Integer score = AccessPointHelper.scoreAccessPoint(ap).getScore();
 		if (score == 0) {
 			return "No Improved System";
 		} else if (score >= 1 && score <= 2) {
