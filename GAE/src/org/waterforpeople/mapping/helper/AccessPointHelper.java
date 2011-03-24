@@ -239,7 +239,8 @@ public class AccessPointHelper {
 			IllegalAccessException {
 		apmh.setResponseAnswerType(qas.getType());
 		QuestionDao qDao = new QuestionDao();
-		
+		ap.setSurveyId(qas.getSurveyId());
+		ap.setSurveyInstanceId(qas.getSurveyInstanceId());
 		Question q = qDao.getByKey(Long.parseLong(qas.getQuestionID()));
 		if (!qas.getType().equals(q.getType().toString())){
 			qas.setType(q.getType().toString());

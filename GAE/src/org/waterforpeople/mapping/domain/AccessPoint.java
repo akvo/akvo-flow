@@ -152,8 +152,40 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String sub4 = null;
 	private String sub5 = null;
 	private String sub6 = null;
+	private Long surveyInstanceId = null;
+	private Long surveyId = null;
 	@NotPersistent
 	private List<AccessPointScoreDetail> apScoreDetailList = null;
+
+	
+
+	public Boolean getImprovedWaterPointFlag() {
+		return improvedWaterPointFlag;
+	}
+
+	public void setImprovedWaterPointFlag(Boolean improvedWaterPointFlag) {
+		this.improvedWaterPointFlag = improvedWaterPointFlag;
+	}
+
+	public Long getSurveyInstanceId() {
+		return surveyInstanceId;
+	}
+
+	public void setSurveyInstanceId(Long surveyInstanceId) {
+		this.surveyInstanceId = surveyInstanceId;
+	}
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public Boolean getCollectTariffFlag() {
+		return collectTariffFlag;
+	}
 
 	public String getQualityDescription() {
 		return qualityDescription;
