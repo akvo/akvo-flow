@@ -1,17 +1,26 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
 
 import org.json.JSONObject;
 import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointMetricSummaryDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.PlacemarkRestResponse;
 import org.waterforpeople.mapping.app.web.dto.SummaryDataRequest;
 import org.waterforpeople.mapping.app.web.dto.SummaryDataResponse;
 
@@ -19,6 +28,8 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 
 /**
  * handles requests for summary data
@@ -28,7 +39,7 @@ import com.gallatinsystems.framework.rest.RestResponse;
  */
 public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	private static final String IMAGE_ROOT = "imageroot";
-
+	private Cache cache;
 	private static final Logger log = Logger
 	.getLogger(SummaryDataRestServlet.class.getName());
 
@@ -39,6 +50,17 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 		setMode(JSON_MODE);
 		apMetricSummaryDao = new AccessPointMetricSummaryDao();
 		imageRoot = PropertyUtil.getProperty(IMAGE_ROOT);
+		CacheFactory cacheFactory;
+		try {
+			cacheFactory = CacheManager.getInstance().getCacheFactory();
+			Map configMap = new HashMap();
+			configMap.put(GCacheFactory.EXPIRATION_DELTA, 3600);
+			configMap.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+			cache = cacheFactory.createCache(Collections.emptyMap());
+		} catch (CacheException e) {
+			log.log(Level.SEVERE, "Could not initialize cache", e);
+
+		}
 	}
 
 	@Override
@@ -53,6 +75,21 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		SummaryDataRequest dataReq = (SummaryDataRequest) req;
 		SummaryDataResponse response = new SummaryDataResponse();
+		
+		if (cache != null) {
+			SummaryDataResponse cachedResponse = null;
+			try {
+				cachedResponse = (SummaryDataResponse) cache.get(dataReq
+						.getCacheKey());
+			} catch (Throwable t) {
+				log.log(Level.WARNING, "Could not look up data in cache", t);
+			}
+			if (cachedResponse != null) {
+				return cachedResponse;
+			}
+		}
+		
+		
 		if (SummaryDataRequest.GET_AP_METRIC_SUMMARY_ACTION
 				.equalsIgnoreCase(dataReq.getAction())) {
 			response.setDtoList(convertAccessPointMetric(

@@ -64,6 +64,8 @@ public class SummaryDataRequest extends RestRequest {
 
 	private String metricName = null;
 
+	private Boolean ignoreCache;
+
 	@Override
 	protected void populateErrors() {
 		if (GET_AP_METRIC_SUMMARY_ACTION.equalsIgnoreCase(getAction())) {
@@ -160,6 +162,23 @@ public class SummaryDataRequest extends RestRequest {
 
 	public String getParentSubPath() {
 		return parentSubPath;
+	}
+	public String getCacheKey() {
+		String key = getAction();
+		if (key == null) {
+			key = GET_AP_METRIC_SUMMARY_ACTION;
+			key += country 
+					+ (getCursor() != null ? getCursor() : "");
+		}
+		return key;
+	}
+
+	public void setIgnoreCache(Boolean ignoreCache) {
+		this.ignoreCache = ignoreCache;
+	}
+
+	public Boolean getIgnoreCache() {
+		return ignoreCache;
 	}
 
 }
