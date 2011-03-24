@@ -7,9 +7,11 @@ import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpread
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -31,9 +33,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class MappingAttributeManager extends Portlet {
 
-	public static final String DESCRIPTION = "Import Access Points from Google Doc";
-	public static final String NAME = "Google Doc Access Point Importer";
-	public static final String TITLE = "Import Access Points from Google Docs";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane = new VerticalPanel();
@@ -55,7 +56,8 @@ public class MappingAttributeManager extends Portlet {
 	}
 
 	public MappingAttributeManager() {
-		super(TITLE, true, false, WIDTH, HEIGHT);
+		super(TEXT_CONSTANTS.mappingAttributeManagerTitle(), true, false,
+				WIDTH, HEIGHT);
 		setContent(buildHeader());
 	}
 
@@ -63,14 +65,16 @@ public class MappingAttributeManager extends Portlet {
 	private ListBox spreadSheetTypeListBox = new ListBox();
 	private Tree spreadsheetMappingTree = new Tree();
 	private FlexTable colMapTable = new FlexTable();
-	private Button saveSpreadsheetMapButton = new Button("save");
-	private Button getSpreadsheetColumnsButton = new Button(
-			"Retrieve Spreadsheet Info");
-	private Label spreadsheetNameLabel = new Label("Spreadsheet Name");
-	private Button processSpreadsheetButton = new Button("Process Spreadsheet");
-	private Label treeStatusLabel = new Label(
-			"Please wait loading spreadsheets");
-	private Label colMapStatusLabel = new Label("Please wait loading columns");
+	private Button saveSpreadsheetMapButton = new Button(TEXT_CONSTANTS.save());
+	private Button getSpreadsheetColumnsButton = new Button(TEXT_CONSTANTS.retrieveSpreadsheetData());			
+	private Label spreadsheetNameLabel = ViewUtil.initLabel(TEXT_CONSTANTS
+			.spreadsheetName());
+	private Button processSpreadsheetButton = new Button(TEXT_CONSTANTS
+			.processSpreadsheet());
+	private Label treeStatusLabel = ViewUtil.initLabel(TEXT_CONSTANTS
+			.pleaseWait());
+	private Label colMapStatusLabel = ViewUtil.initLabel(TEXT_CONSTANTS
+			.pleaseWait());
 
 	private HorizontalPanel mainHPanel = new HorizontalPanel();
 	private VerticalPanel mainVRightPanel = new VerticalPanel();
@@ -92,9 +96,10 @@ public class MappingAttributeManager extends Portlet {
 				new AsyncCallback<ArrayList<String>>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog("Error",
-								"Cannot list spreadsheets. Will reauth with Google");
-						errDia.showRelativeTo(processSpreadsheetButton);
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
+						errDia.showCentered();
 						Window.open("/authsub", "_self", "");
 					}
 
@@ -106,11 +111,12 @@ public class MappingAttributeManager extends Portlet {
 					}
 				});
 
-		spreadSheetTypeListBox.addItem("Google Spreadsheet");
-		spreadSheetTypeListBox.addItem("Excel Spreadsheet");
+		spreadSheetTypeListBox.addItem(TEXT_CONSTANTS.googleSpreadsheet());
+		spreadSheetTypeListBox.addItem(TEXT_CONSTANTS.excelSpreadsheet());
 
 		colMapTable.setVisible(false);
-		mainVLeftPanel.add(new Label("Available Spreadsheets"));
+		mainVLeftPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
+				.avaialbleSpreadsheets()));
 		mainVLeftPanel.add(treeStatusLabel);
 		spreadsheetMappingTree.setVisible(false);
 		mainVLeftPanel.add(spreadsheetMappingTree);
@@ -124,8 +130,8 @@ public class MappingAttributeManager extends Portlet {
 		spreadsheetNameHPanel.add(getSpreadsheetColumnsButton);
 		mainVRightPanel.add(spreadsheetNameHPanel);
 
-		colMapTable.setText(0, 0, "Spreadsheet Columns");
-		colMapTable.setText(0, 1, "Attribute List");
+		colMapTable.setText(0, 0, TEXT_CONSTANTS.spreadsheetColumns());
+		colMapTable.setText(0, 1, TEXT_CONSTANTS.attributeList());
 		colMapTable.setVisible(false);
 		colMapStatusLabel.setVisible(false);
 		mapVPanel.add(colMapStatusLabel);
@@ -142,7 +148,7 @@ public class MappingAttributeManager extends Portlet {
 
 			public void onClick(ClickEvent event) {
 				colMapTable.setVisible(false);
-				colMapStatusLabel.setText("Please wait saving columns");
+				colMapStatusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 				colMapStatusLabel.setVisible(true);
 				saveSpreadsheetMapping();
 			}
@@ -152,7 +158,6 @@ public class MappingAttributeManager extends Portlet {
 		mainHPanel.add(mainVLeftPanel);
 		mainHPanel.add(mainVRightPanel);
 
-		// RootPanel.get("content").add(mainHPanel);
 		spreadsheetMappingTree
 				.addSelectionHandler(new SelectionHandler<TreeItem>() {
 					public void onSelection(SelectionEvent<TreeItem> event) {
@@ -188,8 +193,7 @@ public class MappingAttributeManager extends Portlet {
 			@Override
 			public void onClick(ClickEvent event) {
 				colMapTable.setVisible(false);
-				colMapStatusLabel
-						.setText("Please wait ingesting data from spreadsheet");
+				colMapStatusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 				colMapStatusLabel.setVisible(true);
 				MappingSpreadsheetDefinition mapDef = new MappingSpreadsheetDefinition();
 				mapDef.setSpreadsheetURL(spreadSheetTextBox.getText().trim());
@@ -198,50 +202,27 @@ public class MappingAttributeManager extends Portlet {
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog errDialog = new MessageDialog(
-								"Error while processing sheet",
-								"Could not process shpreadsheet. Please try again. If the problem persists, contact an administrator");
-						errDialog.showRelativeTo(spreadSheetTextBox);
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
+						errDialog.showCentered();
 					}
 
 					@Override
 					public void onSuccess(String result) {
 						colMapTable.setVisible(true);
 						colMapStatusLabel.setVisible(false);
-						colMapStatusLabel
-								.setText("Please wait loading columns");
-
+						colMapStatusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 						Window.alert(result);
-
 					}
-
 				});
-
 			}
-
 		});
 		contentPane.add(mainHPanel);
 	}
 
 	private void clearColumnMapTable() {
 		colMapTable.removeAllRows();
-	}
-
-	@SuppressWarnings("unused")
-	private void setSpreadsheetCols() {
-		svc.listSpreadsheetColumns(spreadSheetTextBox.getText().trim(),
-				new AsyncCallback<ArrayList<String>>() {
-
-					@Override
-					public void onSuccess(ArrayList<String> result) {
-						spreadsheetCols = result;
-
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-
-					}
-				});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -259,10 +240,10 @@ public class MappingAttributeManager extends Portlet {
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog errDialog = new MessageDialog(
-								"Error while loading data",
-								"Could not load columns. Please try again. If the problem persists, contact an administrator");
-						errDialog.showRelativeTo(spreadSheetTextBox);
-
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
+						errDialog.showCentered();
 					}
 				});
 	}
@@ -274,9 +255,10 @@ public class MappingAttributeManager extends Portlet {
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog errDialog = new MessageDialog(
-								"Error while fetching data",
-								"Could not get spreadsheet mapping. Please try again. If the problem persists, contact an administrator");
-						errDialog.showRelativeTo(mainHPanel);
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
+						errDialog.showCentered();
 					}
 
 					@Override
@@ -288,8 +270,8 @@ public class MappingAttributeManager extends Portlet {
 									.getSpreadsheetColsList(), existingMapDef
 									.getMapDef());
 						} else {
-
-							colMapStatusLabel.setText("No Existing Map Found");
+							colMapStatusLabel.setText(TEXT_CONSTANTS
+									.noMapFound());
 							colMapStatusLabel.setVisible(false);
 							retrieveSpreadsheetCols();
 						}
@@ -306,7 +288,7 @@ public class MappingAttributeManager extends Portlet {
 	}
 
 	private void loadSpreadsheetTree(ArrayList<String> spreadsheetList) {
-		TreeItem outerRoot = new TreeItem("Google Docs Spreadsheets");
+		TreeItem outerRoot = new TreeItem(TEXT_CONSTANTS.googleSpreadsheet());
 		spreadsheetMappingTree.addItem(outerRoot);
 		for (String item : spreadsheetList) {
 			outerRoot.addItem(item);
@@ -315,8 +297,8 @@ public class MappingAttributeManager extends Portlet {
 
 	private void loadColumnsAndAttributes(ArrayList<String> cols,
 			MappingSpreadsheetDefinition existingMap) {
-		colMapTable.setWidget(0, 0, new Label("Spreadsheet Columns"));
-		colMapTable.setWidget(0, 1, new Label("Database Column"));
+		colMapTable.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.spreadsheetColumns()));
+		colMapTable.setWidget(0, 1, ViewUtil.initLabel(TEXT_CONSTANTS.databaseColumn()));
 
 		for (int i = 0; i < cols.size(); i++) {
 			ListBox objectAttributeList = new ListBox();
@@ -348,10 +330,7 @@ public class MappingAttributeManager extends Portlet {
 							iMatchCol = j;
 						}
 					}
-				}
-				// } else if ((Integer iMatchCol=patternMatch(columnName))>=0) {
-				//					
-				// }
+				}				
 
 				j++;
 			}
@@ -369,9 +348,10 @@ public class MappingAttributeManager extends Portlet {
 			@Override
 			public void onFailure(Throwable caught) {
 				MessageDialog errDialog = new MessageDialog(
-						"Error while fetching data",
-						"Could not list annotations. Please try again. If the problem persists, contact an administrator");
-				errDialog.showRelativeTo(mainHPanel);
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
+				errDialog.showCentered();
 			}
 
 			@Override
@@ -413,28 +393,25 @@ public class MappingAttributeManager extends Portlet {
 			@Override
 			public void onFailure(Throwable caught) {
 				MessageDialog errDialog = new MessageDialog(
-						"Error while saving",
-						"Could not save. Please try again. If the problem persists, contact an administrator");
-				errDialog.showRelativeTo(mainHPanel);
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
+				errDialog.showCentered();
 			}
 
 			@Override
 			public void onSuccess(Void result) {
 				colMapTable.setVisible(true);
 				colMapStatusLabel.setVisible(false);
-				colMapStatusLabel.setText("Please wait loading columns");
-
-				Window.alert("Spreadsheet Mapping successfully saved");
+				colMapStatusLabel.setText(TEXT_CONSTANTS.pleaseWait());
+				Window.alert(TEXT_CONSTANTS.saveComplete());
 				processSpreadsheetButton.setVisible(true);
 			}
-
 		});
-
 	}
 
 	@Override
 	public String getName() {
-		return NAME;
+		return TEXT_CONSTANTS.mappingAttributeManagerTitle();
 	}
-
 }

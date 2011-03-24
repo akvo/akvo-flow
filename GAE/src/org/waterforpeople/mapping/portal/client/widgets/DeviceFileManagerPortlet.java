@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesService;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -29,21 +30,21 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		DataTableBinder<DeviceFilesDto>, DataTableListener<DeviceFilesDto> {
-	public static final String DESCRIPTION = "View and Reprocess Device Files";
-	public static final String NAME = "Device File Manager Portlet";
+
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 
 	private static final String DEFAULT_SORT_FIELD = "createdDateTime";
 	private PaginatedDataTable<DeviceFilesDto> dfTable;
 	private Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
-			new DataTableHeader("Id", "key", true),
-			new DataTableHeader("Device Identifier", "devicePhoneNumber", true),
-			new DataTableHeader("Uri", "uri", true),
-			new DataTableHeader("Status", "processedStatus", true),
-			new DataTableHeader("Created Date Time", "createDateTime", true),
-			new DataTableHeader("Action") };
-
-	private static final String ANY_OPT = "Any";
+			new DataTableHeader(TEXT_CONSTANTS.id(), "key", true),
+			new DataTableHeader(TEXT_CONSTANTS.deviceIdentifier(), "devicePhoneNumber", true),
+			new DataTableHeader(TEXT_CONSTANTS.uri(), "uri", true),
+			new DataTableHeader(TEXT_CONSTANTS.status(), "processedStatus", true),
+			new DataTableHeader(TEXT_CONSTANTS.createdDate(), "createDateTime", true),
+			new DataTableHeader(TEXT_CONSTANTS.action()) };
+	
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
@@ -56,9 +57,8 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 			UserDto user, boolean useCommunity, String specialOption) {
 		super(title, scrollable, configurable, snapable, width, height, user,
 				useCommunity, specialOption);
-		// TODO Auto-generated constructor stub
 	}
-	
+
 	public DeviceFileManagerPortlet(UserDto user) {
 		super(NAME, true, false, false, WIDTH, HEIGHT, user, true,
 				LocationDrivenPortlet.ANY_OPT);
@@ -76,28 +76,27 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		mainVPanel.add(dfTable);
 
 	}
-	
-	private void prepareProcessStatusLB(){
-		processStatus.addItem("Error Inflating Zip", "ERROR_INFLATING_ZIP");
-		processStatus.addItem("In Progress","IN_PROGRESS");
-		processStatus.addItem("Processed No Errors","PROCESSED_NO_ERRORS");
-		processStatus.addItem("Processed With Errors","PROCESSED_WITH_ERRORS");
-		processStatus.addItem("Reprocessing","REPROCESSING");
+
+	private void prepareProcessStatusLB() {
+		processStatus.addItem(TEXT_CONSTANTS.errorInflating(), "ERROR_INFLATING_ZIP");
+		processStatus.addItem(TEXT_CONSTANTS.inProgress(), "IN_PROGRESS");
+		processStatus.addItem(TEXT_CONSTANTS.processedNoErrors(), "PROCESSED_NO_ERRORS");
+		processStatus.addItem(TEXT_CONSTANTS.processedWithErorrs(), "PROCESSED_WITH_ERRORS");
+		processStatus.addItem(TEXT_CONSTANTS.reprocessing(), "REPROCESSING");
 		processStatus.setSelectedIndex(3);
-		processStatus.addChangeHandler(new ChangeHandler(){
+		processStatus.addChangeHandler(new ChangeHandler() {
 
 			@Override
 			public void onChange(ChangeEvent event) {
 				requestData(null, false);
 			}
-			
+
 		});
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return TEXT_CONSTANTS.deviceFileManagerTitle();
 	}
 
 	private Widget buildHeader() {
@@ -115,17 +114,16 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 
 	@Override
 	public void requestData(String cursor, final boolean isResort) {
-		final boolean isNew = (cursor == null);
-		boolean isOkay = true;
-		final String statusCode = processStatus.getValue(processStatus.getSelectedIndex()); 
+		final boolean isNew = (cursor == null);	
+		final String statusCode = processStatus.getValue(processStatus
+				.getSelectedIndex());
 		AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>> dataCallback = new AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				MessageDialog errDia = new MessageDialog("Application Error",
-						"Cannot search");
-				errDia.showRelativeTo(dfTable);
-
+				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),
+						TEXT_CONSTANTS.errorTracePrefix()+ " "+caught.getLocalizedMessage());
+				errDia.showCentered();
 			}
 
 			@Override
@@ -155,43 +153,41 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 		grid.setWidget(row, 1, new Label(item.getPhoneNumber()));
 		String[] formattedFileNameParts = item.getURI().split("/");
 		grid.setWidget(row, 2, new Hyperlink(
-				formattedFileNameParts[formattedFileNameParts.length - 1],item.getURI()));
-		
+				formattedFileNameParts[formattedFileNameParts.length - 1], item
+						.getURI()));
+
 		grid.setWidget(row, 3, new Label(item.getProcessedStatus()));
 		grid.setWidget(row, 4, new Label(item.getProcessDate()));
-		/*String abbrvProcessingMessage = "";
-		if (item.getProcessingMessage() != null) {
-			if (item.getProcessingMessage().length() > 25) {
-				abbrvProcessingMessage = item.getProcessingMessage().substring(
-						0, 25);
-			}else{
-				abbrvProcessingMessage = item.getProcessingMessage();
-			}
-		}
-		grid.setWidget(row, 5, new Label(abbrvProcessingMessage));*/
-		Button reprocessButton = new Button("Reprocess");
-		
+		/*
+		 * String abbrvProcessingMessage = ""; if (item.getProcessingMessage()
+		 * != null) { if (item.getProcessingMessage().length() > 25) {
+		 * abbrvProcessingMessage = item.getProcessingMessage().substring( 0,
+		 * 25); }else{ abbrvProcessingMessage = item.getProcessingMessage(); } }
+		 * grid.setWidget(row, 5, new Label(abbrvProcessingMessage));
+		 */
+		Button reprocessButton = new Button(TEXT_CONSTANTS.reprocess());
+
 		reprocessButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Hyperlink uri = (Hyperlink)grid.getWidget(row, 2);
-				svc.reprocessDeviceFile(uri.getText(), new AsyncCallback<String>(){
+				Hyperlink uri = (Hyperlink) grid.getWidget(row, 2);
+				svc.reprocessDeviceFile(uri.getText(),
+						new AsyncCallback<String>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-						
-					}
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
 
-					@Override
-					public void onSuccess(String result) {
-						Label status = (Label)grid.getWidget(row, 3);
-						status.setText("REPROCESSING");
-						
-					}
-					
-				});
+							}
+
+							@Override
+							public void onSuccess(String result) {
+								Label status = (Label) grid.getWidget(row, 3);
+								status.setText(TEXT_CONSTANTS.reprocessing());
+							}
+
+						});
 
 			}
 
@@ -200,7 +196,7 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 	};
 
 	@Override
-	public Integer getPageSize(){
+	public Integer getPageSize() {
 		return PAGE_SIZE;
 	}
 }

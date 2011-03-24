@@ -1,10 +1,11 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -22,16 +23,14 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 /**
  * portlet for manual upload of data zip files
- *
+ * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class DataUploadPortlet extends Portlet implements ClickHandler,
 		SubmitCompleteHandler {
-
-	public static final String NAME = "Data Upload";
-	public static final String DESCRIPTION = "Manual upload of data zip files";
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 
 	private static UploadConstants UPLOAD_CONSTANTS = GWT
 			.create(UploadConstants.class);
@@ -43,16 +42,21 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 	private static final String S3_ID = UPLOAD_CONSTANTS.s3Id();
 	// NOTE: the S3 policies expire on 10/2/2013
-	private static final String DATA_S3_POLICY = UPLOAD_CONSTANTS.surveyDataS3Policy();
-	private static final String DATA_S3_SIG = UPLOAD_CONSTANTS.surveyDataS3Sig();
+	private static final String DATA_S3_POLICY = UPLOAD_CONSTANTS
+			.surveyDataS3Policy();
+	private static final String DATA_S3_SIG = UPLOAD_CONSTANTS
+			.surveyDataS3Sig();
 
-	private static final String S3_DATA_FILE_PATH = UPLOAD_CONSTANTS.surveyDataS3Path();
+	private static final String S3_DATA_FILE_PATH = UPLOAD_CONSTANTS
+			.surveyDataS3Path();
 
 	private static final String DATA_CONTENT_TYPE = "application/zip";
-	private static final String IMAGE_S3_POLICY = UPLOAD_CONSTANTS.imageS3Policy();
+	private static final String IMAGE_S3_POLICY = UPLOAD_CONSTANTS
+			.imageS3Policy();
 	private static final String IMAGE_S3_SIG = UPLOAD_CONSTANTS.imageS3Sig();
 
-	private static final String S3_IMAGE_FILE_PATH = UPLOAD_CONSTANTS.imageS3Path();
+	private static final String S3_IMAGE_FILE_PATH = UPLOAD_CONSTANTS
+			.imageS3Path();
 	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
 
 	private Button submitBtn;
@@ -70,11 +74,11 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 	public DataUploadPortlet() {
 		super(NAME, false, false, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
-		Label instructions = new Label(
-				"Manual upload of handheld data. You can export the data from the handheld's SD card and upload from your computer");
+		Label instructions = new Label(TEXT_CONSTANTS
+				.uploadPortletInstructions());
 		contentPane.add(instructions);
 		HorizontalPanel phPanel = new HorizontalPanel();
-		phPanel.add(new Label("Device Phone #: "));
+		phPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.devicePhoneNumber()));
 		phoneNumberBox = new TextBox();
 		phoneNumberBox.setWidth("100px");
 		phPanel.add(phoneNumberBox);
@@ -108,7 +112,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 		form.setWidget(tempPanel);
 		contentPane.add(form);
 
-		submitBtn = new Button("Upload");
+		submitBtn = new Button(TEXT_CONSTANTS.upload());
 		submitBtn.addClickHandler(this);
 		contentPane.add(submitBtn);
 		statusLabel = new Label();
@@ -119,7 +123,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 	/**
 	 * sets the hidden variables on the form so we can do the upload
-	 *
+	 * 
 	 * @param path
 	 * @param sig
 	 * @param policy
@@ -135,7 +139,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 	@Override
 	public String getName() {
-		return NAME;
+		return TEXT_CONSTANTS.uploadPortletTitle();
 	}
 
 	@Override
@@ -159,13 +163,13 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 							IMAGE_S3_POLICY, IMAGE_CONTENT_TYPE);
 				}
 				submitBtn.setVisible(false);
-				statusLabel.setText("Uploading...");
+				statusLabel.setText(TEXT_CONSTANTS.uploading());
 				statusLabel.setVisible(true);
 				form.submit();
 			} else {
-				MessageDialog dia = new MessageDialog("Error",
-						"You must specify either a zip file or a jpg");
-				dia.showRelativeTo(submitBtn);
+				MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.error(),
+						TEXT_CONSTANTS.filetypeError());
+				dia.showCentered();
 			}
 		}
 	}
@@ -174,7 +178,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 	public void onSubmitComplete(SubmitCompleteEvent event) {
 		submitBtn.setVisible(true);
 		if (event.getResults() == null) {
-			statusLabel.setText("Upload complete.");
+			statusLabel.setText(TEXT_CONSTANTS.uploadComplete());
 			String filename = upload.getFilename();
 			// create a form to submit the processing notification. This form
 			// MUST be added to the contentPane before it can be submitted
@@ -206,7 +210,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 				}
 			}
 		} else {
-			statusLabel.setText("Upload error. Please try again.");
+			statusLabel.setText(TEXT_CONSTANTS.uploadError());
 		}
 	}
 }

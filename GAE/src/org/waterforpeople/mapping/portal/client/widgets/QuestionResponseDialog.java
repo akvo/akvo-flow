@@ -8,6 +8,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -37,7 +38,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public class QuestionResponseDialog extends DialogBox implements ClickHandler {
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String EDITED_ROW_CSS = "gridCell-edited";
@@ -66,7 +68,7 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 		super();
 		this.questionId = questionId;
 		// Set the dialog box's caption.
-		setText("Question Responses");
+		setText(TEXT_CONSTANTS.questionResponses());
 		setAnimationEnabled(true);
 		setGlassEnabled(true);
 		currentAnswers = new ArrayList<QuestionAnswerStoreDto>();
@@ -75,11 +77,11 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 		cursorArray = new ArrayList<String>();
 		statusLabel = new Label();
 		surveyInstanceSvc = GWT.create(SurveyInstanceService.class);
-		nextButton = new Button("Next 20");
+		nextButton = new Button(TEXT_CONSTANTS.next());
 		nextButton.setVisible(true);
 		currentPage = 0;
 		nextButton.addClickHandler(this);
-		previousButton = new Button("Previous 20");
+		previousButton = new Button(TEXT_CONSTANTS.previous());
 		previousButton.setVisible(false);
 		previousButton.addClickHandler(this);
 		paginationPanel = new HorizontalPanel();
@@ -89,11 +91,11 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 		contentPanel = new VerticalPanel();
 		contentPanel.add(statusLabel);
 		contentPanel.add(dataGrid);
-		doneButton = new Button("Done");
-		saveButton = new Button("Save Changes");
+		doneButton = new Button(TEXT_CONSTANTS.done());
+		saveButton = new Button(TEXT_CONSTANTS.save());
 		saveButton.addClickHandler(this);
 		saveButton.setEnabled(false);
-		clearButton = new Button("Clear Changes");
+		clearButton = new Button(TEXT_CONSTANTS.discardChanges());
 		clearButton.addClickHandler(this);
 		clearButton.setEnabled(false);
 		contentPanel.add(doneButton);
@@ -126,19 +128,21 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 			populateData(currentAnswers);
 		} else if (event.getSource() == saveButton) {
 			if (changedAnswers != null && changedAnswers.size() > 0) {
-				statusLabel.setText("Saving. Please wait...");
+				statusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 				statusLabel.setVisible(true);
 				surveyInstanceSvc.updateQuestions(
 						new ArrayList<QuestionAnswerStoreDto>(changedAnswers
-								.values()),true,
+								.values()), true,
 						new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
 							@Override
 							public void onFailure(Throwable caught) {
 								MessageDialog errDia = new MessageDialog(
-										"Application Error",
-										"Cannot update responses");
-								errDia.showRelativeTo(saveButton);
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
+								errDia.showCentered();
 								statusLabel.setVisible(false);
 							}
 
@@ -193,7 +197,7 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 	}
 
 	private void loadResponses() {
-		statusLabel.setText("Please wait loading responses");
+		statusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 		statusLabel.setVisible(true);
 
 		surveyInstanceSvc
@@ -204,9 +208,11 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 							@Override
 							public void onFailure(Throwable caught) {
 								MessageDialog errDia = new MessageDialog(
-										"Application Error",
-										"Cannot load responses");
-								errDia.showRelativeTo(dataGrid);
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
+								errDia.showCentered();
 							}
 
 							@Override
@@ -295,7 +301,7 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 
 		} else {
 			dataGrid.resize(1, 1);
-			statusLabel.setText("There are no responses for this question");
+			statusLabel.setText(TEXT_CONSTANTS.noResponsesForQuestion());
 			statusLabel.setVisible(true);
 		}
 	}
@@ -326,9 +332,9 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 	}
 
 	private void loadHeaderRow() {
-		addHeaderItem(0, "Submission Id");
-		addHeaderItem(1, "Value");
-		addHeaderItem(2, "Collection Date");
+		addHeaderItem(0, TEXT_CONSTANTS.id());
+		addHeaderItem(1, TEXT_CONSTANTS.value());
+		addHeaderItem(2, TEXT_CONSTANTS.collectionDate());
 		setGridRowStyle(dataGrid, 0, false);
 	}
 

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.util.client.FrameworkTextConstants;
 import com.gallatinsystems.framework.gwt.util.client.StyleUtil;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -27,6 +29,8 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
  */
 public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		ClickHandler {
+	private static FrameworkTextConstants TEXT_CONSTANTS = GWT
+	.create(FrameworkTextConstants.class);
 
 	public static final String ASC_SORT = "asc";	
 	public static final String DSC_SORT = "desc";
@@ -93,7 +97,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		binder = b;
 		resetCursorArray();
 		HorizontalPanel buttonPanel = new HorizontalPanel();
-		nextButton = new Button("Next");
+		nextButton = new Button(TEXT_CONSTANTS.next());
 		nextButton.setVisible(false);
 		nextButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -102,7 +106,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 			}
 		});
 
-		previousButton = new Button("Previous");
+		previousButton = new Button(TEXT_CONSTANTS.previous());
 		previousButton.setVisible(false);
 		previousButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -113,7 +117,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		buttonPanel.add(previousButton);
 		buttonPanel.add(nextButton);
 		statusLabel = new Label();
-		statusLabel.setText("Loading...");
+		statusLabel.setText(TEXT_CONSTANTS.loading());
 		contentPanel.add(statusLabel);
 		contentPanel.add(instanceGrid);
 		contentPanel.add(buttonPanel);
@@ -129,7 +133,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 */
 	private void loadDataPage(int increment) {
 		currentPage += increment;
-		statusLabel.setText("Loading...");
+		statusLabel.setText(TEXT_CONSTANTS.loading());
 		statusLabel.setVisible(true);
 		listener.requestData(getCursor(currentPage - 1), false);
 	}
@@ -245,7 +249,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 * @param dir
 	 */
 	private void resort() {
-		statusLabel.setText("Please wait...");
+		statusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 		statusLabel.setVisible(true);
 		listener.requestData(null, true);
 	}
@@ -281,7 +285,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 
 		} else {
 			instanceGrid.resize(0, 0);
-			statusLabel.setText("No matches");
+			statusLabel.setText(TEXT_CONSTANTS.noMatches());
 			statusLabel.setVisible(true);
 		}
 		if (currentDtoList != null && currentDtoList.size() >= binder.getPageSize()) {
