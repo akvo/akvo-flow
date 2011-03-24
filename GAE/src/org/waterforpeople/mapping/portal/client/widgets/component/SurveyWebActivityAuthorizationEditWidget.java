@@ -8,6 +8,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationDto;
 import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationService;
 import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
@@ -43,6 +44,8 @@ import com.google.gwt.user.datepicker.client.DateBox;
 public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		implements ContextAware, ClickHandler {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String PUBLIC_PATH = "/SurveyEntry.html?token=";
 	private static final String SECURE_PATH = "/SecureSurveyEntry.html?token=";
 
@@ -75,9 +78,9 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		HorizontalPanel row = new HorizontalPanel();
 		nameBox = new TextBox();
 		expDatePicker = new DateBox();
-		row.add(ViewUtil.initLabel("Name", DEFAULT_STYLE));
+		row.add(ViewUtil.initLabel(TEXT_CONSTANTS.name(), DEFAULT_STYLE));
 		row.add(nameBox);
-		row.add(ViewUtil.initLabel("Expires", DEFAULT_STYLE));
+		row.add(ViewUtil.initLabel(TEXT_CONSTANTS.expires(), DEFAULT_STYLE));
 		row.add(expDatePicker);
 		contentPanel.add(row);
 		surveySelector = new SurveySelectionWidget(Orientation.HORIZONTAL,
@@ -90,18 +93,17 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		authTypeUserButton = new RadioButton("authType", "User");
 		authTypeUserButton.addClickHandler(this);
 		row.add(authTypeUserButton);
-		findUserButton = new Button("Find User");
+		findUserButton = new Button(TEXT_CONSTANTS.findUser());
 		findUserButton.addClickHandler(this);
 		row.add(findUserButton);
 		userLabel = ViewUtil.initLabel("", DEFAULT_STYLE);
 		row.add(userLabel);
 		userLabel.setVisible(false);
 		findUserButton.setVisible(false);
-		ViewUtil.installFieldRow(contentPanel, "Authorization Type", row,
+		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.authType(), row,
 				DEFAULT_STYLE);
 		row = new HorizontalPanel();
-		row.add(ViewUtil.initLabel("Maximum Uses (leave blank for Unlimited)",
-				DEFAULT_STYLE));
+		row.add(ViewUtil.initLabel(TEXT_CONSTANTS.maxUses(), DEFAULT_STYLE));
 		maxUseBox = new TextBox();
 		row.add(maxUseBox);
 		usedLabel = ViewUtil.initLabel("", DEFAULT_STYLE);
@@ -110,8 +112,8 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		contentPanel.add(row);
 		tokenBox = new TextBox();
 		tokenBox.setReadOnly(true);
-		ViewUtil
-				.installFieldRow(contentPanel, "Token", tokenBox, DEFAULT_STYLE);
+		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.token(),
+				tokenBox, DEFAULT_STYLE);
 	}
 
 	@Override
@@ -139,7 +141,7 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 		if (ViewUtil.isTextPopulated(nameBox)) {
 			currentAuthDto.setName(nameBox.getText());
 		} else {
-			errorList.add("Name is mandatory");
+			errorList.add(TEXT_CONSTANTS.nameMandatory());
 		}
 		currentAuthDto.setExpirationDate(expDatePicker.getValue());
 		if (authTypeAnonButton.getValue()) {
@@ -152,15 +154,14 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 					&& userLabel.getText().trim().length() > 0) {
 				currentAuthDto.setUserName(userLabel.getText());
 			} else {
-				errorList
-						.add("Since the authorization type is set to 'User,' a user must be selected");
+				errorList.add(TEXT_CONSTANTS.userMandatoryForAuth());
 			}
 		}
 		if (ViewUtil.isTextPopulated(maxUseBox)) {
 			try {
 				currentAuthDto.setMaxUses(Long.parseLong(maxUseBox.getText()));
 			} catch (Exception e) {
-				errorList.add("Max uses must be numeric");
+				errorList.add(TEXT_CONSTANTS.maxUseNumeric());
 			}
 		} else {
 			currentAuthDto.setMaxUses(null);
@@ -169,7 +170,7 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 			currentAuthDto.setPayload(surveySelector.getSelectedSurveyIds()
 					.get(0).toString());
 		} else {
-			errorList.add("You must select a survey");
+			errorList.add(TEXT_CONSTANTS.surveyMandatory());
 		}
 		return errorList;
 	}
@@ -196,11 +197,11 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 									}
 								};
 								MessageDialog dia = new MessageDialog(
-										"Authorization Saved",
-										"The survey can be accessed via this url:<br><a href='"
-												+ url + "'>" + url + "<a>",
-										false, closeClickHandler,
-										closeClickHandler);
+										TEXT_CONSTANTS.saveComplete(),
+										TEXT_CONSTANTS.authUrl()
+												+ "<br><a href='" + url + "'>"
+												+ url + "<a>", false,
+										closeClickHandler, closeClickHandler);
 								dia.showCentered();
 							}
 						}
@@ -219,8 +220,8 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 				builder.append("<li>").append(err).append("</li>");
 			}
 			builder.append("</ul>");
-			MessageDialog errorDialog = new MessageDialog(
-					"Cannot save authorization", builder.toString());
+			MessageDialog errorDialog = new MessageDialog(TEXT_CONSTANTS
+					.inputError(), builder.toString());
 			errorDialog.showCentered();
 			listener.operationComplete(false, getContextBundle(true));
 		}
@@ -249,8 +250,8 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 			userLabel.setVisible(true);
 		} else if (event.getSource() == findUserButton) {
 			final UserManagerWidget usrMgr = new UserManagerWidget(true);
-			final WidgetDialog dia = new WidgetDialog("Select User", usrMgr,
-					null);
+			final WidgetDialog dia = new WidgetDialog(TEXT_CONSTANTS
+					.selectUser(), usrMgr, null);
 			usrMgr.setCompletionListener(new CompletionListener() {
 				@Override
 				public void operationComplete(boolean wasSuccessful,
@@ -282,7 +283,8 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 						+ USED_TEXT
 						: "0" + USED_TEXT);
 		usedLabel.setVisible(true);
-		if (WebActivityAuthorizationDto.USER_TYPE.equalsIgnoreCase(currentAuthDto.getAuthType())) {
+		if (WebActivityAuthorizationDto.USER_TYPE
+				.equalsIgnoreCase(currentAuthDto.getAuthType())) {
 			authTypeUserButton.setValue(true);
 			findUserButton.setVisible(true);
 			userLabel
@@ -296,7 +298,7 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 			userLabel.setText("");
 			userLabel.setVisible(false);
 		}
-		if (currentAuthDto.getMaxUses() != null) {			
+		if (currentAuthDto.getMaxUses() != null) {
 			maxUseBox.setText(currentAuthDto.getMaxUses().toString());
 		}
 		tokenBox.setText(currentAuthDto.getToken());

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
 import com.gallatinsystems.framework.gwt.component.DataTableListener;
@@ -12,6 +14,7 @@ import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.user.app.gwt.client.PermissionDto;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.app.gwt.client.UserService;
@@ -24,7 +27,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -38,14 +40,18 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class UserManagerWidget extends Composite implements
 		DataTableListener<UserDto>, DataTableBinder<UserDto>, ClickHandler {
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String DEFAULT_SORT_FIELD = "username";
 	private static final DataTableHeader[] GRID_HEADERS = {
-			new DataTableHeader("User Name"),
-			new DataTableHeader("Email Address"),
-			new DataTableHeader("Permissions"), new DataTableHeader("") };
+			new DataTableHeader(TEXT_CONSTANTS.userName()),
+			new DataTableHeader(TEXT_CONSTANTS.emailAddress()),
+			new DataTableHeader(TEXT_CONSTANTS.permissions()),
+			new DataTableHeader("") };
 	private static final DataTableHeader[] SELECTOR_GRID_HEADERS = {
-			new DataTableHeader("User Name"),
-			new DataTableHeader("Email Address"), new DataTableHeader("") };
+			new DataTableHeader(TEXT_CONSTANTS.userName()),
+			new DataTableHeader(TEXT_CONSTANTS.emailAddress()),
+			new DataTableHeader("") };
 	private static final Integer PAGE_SIZE = 20;
 	private VerticalPanel contentPane;
 	private PaginatedDataTable<UserDto> dataTable;
@@ -76,9 +82,10 @@ public class UserManagerWidget extends Composite implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				MessageDialog errDia = new MessageDialog("Error",
-						"Could not load permissions: "
-								+ caught.getLocalizedMessage());
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -97,18 +104,16 @@ public class UserManagerWidget extends Composite implements
 	 */
 	private Widget buildSearchHeader() {
 		HorizontalPanel hPanel = new HorizontalPanel();
-		Label l = new Label("Username: ");
-		hPanel.add(l);
+		hPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.userName()));
 		usernameField = new TextBox();
 		hPanel.add(usernameField);
-		l = new Label("Email: ");
-		hPanel.add(l);
+		hPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.emailAddress()));
 		emailField = new TextBox();
 		hPanel.add(emailField);
-		searchButton = new Button("Search");
+		searchButton = new Button(TEXT_CONSTANTS.search());
 		searchButton.addClickHandler(this);
 		hPanel.add(searchButton);
-		addNewButton = new Button("Add User");
+		addNewButton = new Button(TEXT_CONSTANTS.addUser());
 		addNewButton.addClickHandler(this);
 		hPanel.add(addNewButton);
 
@@ -138,9 +143,9 @@ public class UserManagerWidget extends Composite implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog("Error",
-								"There was an error while attempting to search for users: "
-										+ caught.getMessage());
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.show();
 					}
 				});
@@ -165,7 +170,7 @@ public class UserManagerWidget extends Composite implements
 			grid.setWidget(row, 2, permBox);
 
 			HorizontalPanel buttonPanel = new HorizontalPanel();
-			Button saveButton = new Button("Save");
+			Button saveButton = new Button(TEXT_CONSTANTS.save());
 			saveButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -177,16 +182,19 @@ public class UserManagerWidget extends Composite implements
 
 						@Override
 						public void onFailure(Throwable caught) {
-							MessageDialog errDia = new MessageDialog("Error",
-									"There was an error while attempting to save the user: "
-											+ caught.getMessage());
+							MessageDialog errDia = new MessageDialog(
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
+											+ caught.getLocalizedMessage());
 							errDia.showCentered();
 						}
 
 						@Override
 						public void onSuccess(Void result) {
 							MessageDialog confDia = new MessageDialog(
-									"User Saved", "The user has been updated");
+									TEXT_CONSTANTS.saveComplete(),
+									TEXT_CONSTANTS.userUpdated());
 							confDia.showCentered();
 
 						}
@@ -194,7 +202,7 @@ public class UserManagerWidget extends Composite implements
 				}
 			});
 			buttonPanel.add(saveButton);
-			Button deleteButton = new Button("Delete");
+			Button deleteButton = new Button(TEXT_CONSTANTS.delete());
 			deleteButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -206,19 +214,20 @@ public class UserManagerWidget extends Composite implements
 								@Override
 								public void onFailure(Throwable caught) {
 									MessageDialog errDia = new MessageDialog(
-											"Error",
-											"There was an error while attempting to delete the user: "
-													+ caught.getMessage());
-									errDia.show();
-
+											TEXT_CONSTANTS.error(),
+											TEXT_CONSTANTS.errorTracePrefix()
+													+ " "
+													+ caught
+															.getLocalizedMessage());
+									errDia.showCentered();
 								}
 
 								@Override
 								public void onSuccess(Void result) {
 									MessageDialog confDia = new MessageDialog(
-											"User Deleted",
-											"User has been deleted");
-									confDia.show();
+											TEXT_CONSTANTS.deleteComplete(),
+											TEXT_CONSTANTS.userDeleted());
+									confDia.showCentered();
 									requestData(null, false);
 								}
 							});
@@ -227,7 +236,7 @@ public class UserManagerWidget extends Composite implements
 			buttonPanel.add(deleteButton);
 			grid.setWidget(row, 3, buttonPanel);
 		} else {
-			Button selectButton = new Button("Select");
+			Button selectButton = new Button(TEXT_CONSTANTS.select());
 			selectButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -301,9 +310,8 @@ public class UserManagerWidget extends Composite implements
 		String email = emailField.getText().trim();
 		if (event.getSource() == addNewButton) {
 			if (userName.length() == 0 || email.length() == 0) {
-				MessageDialog errDia = new MessageDialog(
-						"Missing Mandatory Data",
-						"Please enter both email address and username.");
+				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+						.inputError(), TEXT_CONSTANTS.emailUsernameMandatory());
 				errDia.showCentered();
 			} else {
 				UserDto u = new UserDto();
@@ -314,16 +322,17 @@ public class UserManagerWidget extends Composite implements
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog errorDia = new MessageDialog(
-								"Could not save user",
-								"There was an error while trying to save the user: "
-										+ caught.getMessage());
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
 						errorDia.showCentered();
 					}
 
 					@Override
 					public void onSuccess(Void result) {
-						MessageDialog confDia = new MessageDialog("User Saved",
-								"User has been saved");
+						MessageDialog confDia = new MessageDialog(
+								TEXT_CONSTANTS.saveComplete(), TEXT_CONSTANTS
+										.saveComplete());
 						confDia.showCentered();
 						usernameField.setText("");
 						emailField.setText("");
@@ -340,9 +349,10 @@ public class UserManagerWidget extends Composite implements
 						@Override
 						public void onFailure(Throwable caught) {
 							MessageDialog errorDia = new MessageDialog(
-									"Could not search",
-									"There was an error while trying to search for usesr: "
-											+ caught.getMessage());
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
+											+ caught.getLocalizedMessage());
 							errorDia.showCentered();
 						}
 

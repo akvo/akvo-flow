@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCr
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AccessPointSearchControl;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
@@ -20,6 +21,7 @@ import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -55,19 +57,21 @@ import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto> {
-	public static final String DESCRIPTION = "Create/Edit/Delete Access Points";
-	public static final String NAME = "Access Point Manager";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 
 	private static final String DEFAULT_SORT_FIELD = "key";
 	private static final Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
-			new DataTableHeader("Id", "key", true),
-			new DataTableHeader("Community Code", "communityCode", true),
-			new DataTableHeader("Latitude", "latitude", true),
-			new DataTableHeader("Longitude", "longitude", true),
-			new DataTableHeader("Point Type", "pointType", true),
-			new DataTableHeader("Collection Date", "collectionDate", true),
-			new DataTableHeader("Edit/Delete") };
+			new DataTableHeader(TEXT_CONSTANTS.id(), "key", true),
+			new DataTableHeader(TEXT_CONSTANTS.communityCode(),
+					"communityCode", true),
+			new DataTableHeader(TEXT_CONSTANTS.latitude(), "latitude", true),
+			new DataTableHeader(TEXT_CONSTANTS.longitude(), "longitude", true),
+			new DataTableHeader(TEXT_CONSTANTS.pointType(), "pointType", true),
+			new DataTableHeader(TEXT_CONSTANTS.collectionDate(),
+					"collectionDate", true),
+			new DataTableHeader(TEXT_CONSTANTS.editDelete()) };
 
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
@@ -78,16 +82,16 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	// Search UI Elements
 	private VerticalPanel mainVPanel = new VerticalPanel();
 
-	private Button searchButton = new Button("Search");
-	private Button errorsButton = new Button("Show Errors");
-	private Button deleteAllButton = new Button("Delete All Matches");
+	private Button searchButton = new Button(TEXT_CONSTANTS.search());
+	private Button errorsButton = new Button(TEXT_CONSTANTS.showErrors());
+	private Button deleteAllButton = new Button(TEXT_CONSTANTS.deleteMatches());
 
 	private FlexTable accessPointFT = new FlexTable();
 	private AccessPointManagerServiceAsync svc;
 
 	private Label statusLabel = new Label();
 
-	private Button createNewAccessPoint = new Button("Create New Access Point");
+	private Button createNewAccessPoint = new Button(TEXT_CONSTANTS.createAP());
 
 	private ListBox statusLB = new ListBox();
 
@@ -115,7 +119,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	@Override
 	public String getName() {
-		return NAME;
+		return TEXT_CONSTANTS.apManagerTitle();
 	}
 
 	/**
@@ -162,9 +166,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				MessageDialog warning = new MessageDialog(
-						"Warning",
-						"This will delete <b>ALL</b> Access Points that match the current query. Are you sure you want to continue?",
+				MessageDialog warning = new MessageDialog(TEXT_CONSTANTS
+						.warning(), TEXT_CONSTANTS.thisWillDeleteAllAP(),
 						false, new ClickHandler() {
 
 							@Override
@@ -183,20 +186,20 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 											public void onFailure(
 													Throwable caught) {
 												MessageDialog errDia = new MessageDialog(
-														"Error while deleting",
-														"Could not delete all access points: <br>"
-																+ caught.getLocalizedMessage());
+														TEXT_CONSTANTS.error(),
+														TEXT_CONSTANTS
+																.errorTracePrefix()
+																+ " "
+																+ caught
+																		.getLocalizedMessage());
 												errDia.showCentered();
-
 											}
 										});
 							}
 						});
 				warning.showCentered();
 			}
-
 		});
-
 		return grid;
 	}
 
@@ -231,7 +234,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private void loadAccessPointDetailTable(Long id) {
 		apTable.setVisible(false);
-		statusLabel.setText("Please wait loading access point for edit");
+		statusLabel.setText(TEXT_CONSTANTS.loading());
 		statusLabel.setVisible(true);
 		mainVPanel.add(statusLabel);
 		svc.getAccessPoint(id, new AsyncCallback<AccessPointDto>() {
@@ -239,8 +242,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onFailure(Throwable caught) {
 				MessageDialog errDia = new MessageDialog(
-						"Error loading details",
-						"The application could not load the access point details. Please try again. If the problem persists, contact an administrator.");
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -255,47 +259,52 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private TabPanel loadTabs(AccessPointDto accessPointDto) {
 		TabPanel tp = new TabPanel();
-		tp.add(loadGeneralTab(accessPointDto), "General");
-		tp.add(loadMediaTab(accessPointDto), "Media");
-		tp.add(loadAttributeTab(accessPointDto), "Attributes");
-		tp.add(loadScoreTab(accessPointDto), "Score Details");
+		tp.add(loadGeneralTab(accessPointDto), TEXT_CONSTANTS.general());
+		tp.add(loadMediaTab(accessPointDto), TEXT_CONSTANTS.media());
+		tp.add(loadAttributeTab(accessPointDto), TEXT_CONSTANTS.attributes());
+		tp.add(loadScoreTab(accessPointDto), TEXT_CONSTANTS.scoreDetails());
 		tp.selectTab(0);
 		return tp;
 	}
 
 	private Widget loadScoreTab(AccessPointDto accessPointDto) {
 		final FlexTable accessPointDetail = new FlexTable();
-		if(accessPointDto.getApScoreDetailList()!=null){
-			for(AccessPointScoreDetailDto item:accessPointDto.getApScoreDetailList()){
+		if (accessPointDto!= null && accessPointDto.getApScoreDetailList() != null) {
+			for (AccessPointScoreDetailDto item : accessPointDto
+					.getApScoreDetailList()) {
 				TextBox scoreCompDate = new TextBox();
 				TextBox score = new TextBox();
 				TextBox status = new TextBox();
 				TextArea scoreItems = new TextArea();
-				if(item.getComputationDate()!=null){
+				if (item.getComputationDate() != null) {
 					scoreCompDate.setText(item.getComputationDate().toString());
 				}
-				if(item.getScore()!=null){
+				if (item.getScore() != null) {
 					score.setText(item.getScore().toString());
 				}
-				if(item.getStatus()!=null){
+				if (item.getStatus() != null) {
 					status.setText(item.getStatus());
 				}
-				if(item.getScoreComputationItems()!=null){
+				if (item.getScoreComputationItems() != null) {
 					StringBuilder sb = new StringBuilder();
-					for(String scoreitem:item.getScoreComputationItems()){
+					for (String scoreitem : item.getScoreComputationItems()) {
 						sb.append(scoreitem + "\n");
 					}
 					scoreItems.setText(sb.toString());
 					scoreItems.setWidth("30em");
 					scoreItems.setHeight("10em");
 				}
-				accessPointDetail.setWidget(0, 0, new Label("Score Computation Date: "));
+				accessPointDetail.setWidget(0, 0, ViewUtil
+						.initLabel(TEXT_CONSTANTS.scoreDate()));
 				accessPointDetail.setWidget(0, 1, scoreCompDate);
-				accessPointDetail.setWidget(1, 0, new Label("Score: "));
+				accessPointDetail.setWidget(1, 0, ViewUtil
+						.initLabel(TEXT_CONSTANTS.score()));
 				accessPointDetail.setWidget(1, 1, score);
-				accessPointDetail.setWidget(2, 0, new Label("Status: "));
+				accessPointDetail.setWidget(2, 0, ViewUtil
+						.initLabel(TEXT_CONSTANTS.status()));
 				accessPointDetail.setWidget(2, 1, status);
-				accessPointDetail.setWidget(3, 0, new Label("Score Makeup: "));
+				accessPointDetail.setWidget(3, 0, ViewUtil
+						.initLabel(TEXT_CONSTANTS.scoreMakeup()));
 				accessPointDetail.setWidget(3, 1, scoreItems);
 			}
 		}
@@ -304,7 +313,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private FlexTable loadMediaTab(AccessPointDto accessPointDto) {
 		final FlexTable accessPointDetail = new FlexTable();
-		accessPointDetail.setWidget(10, 0, new Label("Photo Url: "));
+		accessPointDetail.setWidget(10, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.photoUrl()));
 		TextBox photoURLTB = new TextBox();
 		photoURLTB.setWidth("500px");
 		FormPanel form = new FormPanel();
@@ -314,7 +324,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		FileUpload upload = new FileUpload();
 		form.setWidget(upload);
 		accessPointDetail.setWidget(10, 3, form);
-		Button submitUpload = new Button("Upload");
+		Button submitUpload = new Button(TEXT_CONSTANTS.upload());
 		upload.setName("uploadFormElement");
 		accessPointDetail.setWidget(10, 4, submitUpload);
 
@@ -328,15 +338,17 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			@Override
 			public void onSubmitComplete(SubmitCompleteEvent event) {
-				Window.alert("File uploaded");
+				Window.alert(TEXT_CONSTANTS.uploadComplete());
 				String fileName = ((FileUpload) ((FormPanel) accessPointDetail
 						.getWidget(10, 3)).getWidget()).getFilename();
 
 				if (fileName.contains("/")) {
-					fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+					fileName = fileName
+							.substring(fileName.lastIndexOf("/") + 1);
 				}
 				if (fileName.contains("\\")) {
-					fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+					fileName = fileName
+							.substring(fileName.lastIndexOf("\\") + 1);
 				}
 
 				((TextBox) accessPointDetail.getWidget(10, 1))
@@ -348,8 +360,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 				if (i == null) {
 					Image photo = new Image();
-					photo.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
-							+ fileName);
+					photo
+							.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
+									+ fileName);
 					photo.setHeight("200px");
 					accessPointDetail.setWidget(11, 1, photo);
 				} else {
@@ -381,8 +394,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				public void onClick(ClickEvent event) {
 					((Image) accessPointDetail.getWidget(11, 1))
 							.setVisible(false);
-					accessPointDetail.setWidget(10, 4, new Label(
-							"Please wait while image is rotated 90 Degrees"));
+					accessPointDetail.setWidget(10, 4, new Label(TEXT_CONSTANTS
+							.waitForRotate()));
 					svc.rotateImage(((TextBox) accessPointDetail.getWidget(10,
 							1)).getText(), new AsyncCallback<byte[]>() {
 						@Override
@@ -399,8 +412,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 									.setVisible(false);
 							photo.setUrl(((TextBox) accessPointDetail
 									.getWidget(11, 1)).getText()
-									+ "?random="
-									+ random);
+									+ "?random=" + random);
 							photo.setVisible(true);
 						}
 					});
@@ -409,7 +421,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		}
 		accessPointDetail.setWidget(10, 1, photoURLTB);
 
-		accessPointDetail.setWidget(12, 0, new Label("Photo Caption: "));
+		accessPointDetail.setWidget(12, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.photoCaption()));
 		TextArea captionTB = new TextArea();
 		captionTB.setWidth("500px");
 		captionTB.setHeight("200px");
@@ -429,7 +442,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private FlexTable loadGeneralTab(AccessPointDto accessPointDto) {
 		FlexTable accessPointDetail = new FlexTable();
-		accessPointDetail.setWidget(0, 0, new Label("Community Code: "));
+		accessPointDetail.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.communityCode()));
 		TextBox communityCodeTB = new TextBox();
 		if (accessPointDto != null) {
 			communityCodeTB.setText(accessPointDto.getCommunityCode());
@@ -437,7 +451,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail.setWidget(0, 1, communityCodeTB);
 
-		accessPointDetail.setWidget(1, 0, new Label("Country Code: "));
+		accessPointDetail.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.countryCode()));
 		TextBox countryCodeTB = new TextBox();
 		if (accessPointDto != null) {
 			countryCodeTB.setText(accessPointDto.getCountryCode());
@@ -445,7 +460,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail.setWidget(1, 1, countryCodeTB);
 
-		accessPointDetail.setWidget(2, 0, new Label("Latititude: "));
+		accessPointDetail.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.latitude()));
 		TextBox latitudeTB = new TextBox();
 		if (accessPointDto != null)
 			latitudeTB.setText(accessPointDto.getLatitude().toString());
@@ -605,8 +621,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		ListBox pointType = new ListBox();
 		pointType
 				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
-		pointType.addItem("Sanitation Point",
-				AccessPointType.SANITATION_POINT.toString());
+		pointType.addItem("Sanitation Point", AccessPointType.SANITATION_POINT
+				.toString());
 		pointType.addItem("Public Institution",
 				AccessPointType.PUBLIC_INSTITUTION.toString());
 		pointType.addItem("School", AccessPointType.SCHOOL.toString());
@@ -664,9 +680,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail.setWidget(17, 0, new Label(
 				"Farthest household with acceptable distance: "));
-		accessPointDetail.setWidget(
-				17,
-				1,
+		accessPointDetail.setWidget(17, 1,
 				addListBox(accessPointDto != null ? accessPointDto
 						.getFarthestHouseholdfromPoint() : null));
 
@@ -706,7 +720,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 						1,
 						addListBox(accessPointDto != null
 								&& accessPointDto.getProvideAdequateQuantity() != null ? accessPointDto
-								.getProvideAdequateQuantity().toString() : null));
+								.getProvideAdequateQuantity().toString()
+								: null));
 		// SecondaryTechnologyString
 		// typeTechnologyString
 		TextBox techTypeString = new TextBox();
@@ -794,19 +809,24 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		accessPointDetail.setWidget(31, 1, roleTextBox);
 
 		TextBox currentScoreCompDate = new TextBox();
-		accessPointDetail.setWidget(32, 0, new Label("Current Score Computation Date: "));
-		if (accessPointDto.getScoreComputationDate() != null)
-			currentScoreCompDate.setText(accessPointDto.getScoreComputationDate().toString());
-		else
+		accessPointDetail.setWidget(32, 0, new Label(
+				"Current Score Computation Date: "));
+		if (accessPointDto != null
+				&& accessPointDto.getScoreComputationDate() != null) {
+			currentScoreCompDate.setText(accessPointDto
+					.getScoreComputationDate().toString());
+		} else {
 			currentScoreCompDate.setText("Unknown");
-		accessPointDetail.setWidget(32, 1, currentScoreCompDate);
-		
+			accessPointDetail.setWidget(32, 1, currentScoreCompDate);
+		}
+
 		TextBox currentScore = new TextBox();
 		accessPointDetail.setWidget(33, 0, new Label("Current Score"));
-		if (accessPointDto.getScore() != null)
+		if (accessPointDto!= null && accessPointDto.getScore() != null){
 			currentScore.setText(accessPointDto.getScore().toString());
-		else
+		}else{
 			currentScore.setText("No Score Computed");
+		}
 		accessPointDetail.setWidget(33, 1, currentScore);
 
 		return accessPointDetail;
@@ -852,7 +872,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 								@Override
 								public void onSuccess(AccessPointDto result) {
-									Window.alert("Access Point successfully updated");
+									Window
+											.alert("Access Point successfully updated");
 								}
 
 							});
@@ -1088,7 +1109,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				accessPointDetail, 29, 1).equals("yes") ? true : false);
 		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
 				accessPointDetail, 30, 1).equals("yes") ? true : false);
-		apDto.setWaterForPeopleRole(getValueFromWidget(accessPointDetail, 31, 1));
+		apDto
+				.setWaterForPeopleRole(getValueFromWidget(accessPointDetail,
+						31, 1));
 		return apDto;
 	}
 
@@ -1115,8 +1138,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			grid.setWidget(row, 4, new Label(apDto.getPointType().name()));
 		}
 		if (apDto.getCollectionDate() != null) {
-			grid.setWidget(row, 5,
-					new Label(dateFormat.format(apDto.getCollectionDate())));
+			grid.setWidget(row, 5, new Label(dateFormat.format(apDto
+					.getCollectionDate())));
 		}
 
 		Button editAccessPoint = new Button("edit");
