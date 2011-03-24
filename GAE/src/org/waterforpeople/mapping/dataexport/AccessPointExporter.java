@@ -85,7 +85,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 	/**
 	 * converts the json string into an AccessPointResponse pojo.
 	 */
-	private AccessPointResponse parseJson(String response) throws Exception {
+	public AccessPointResponse parseJson(String response) throws Exception {
 		System.out.println("response: " + response);
 		AccessPointResponse apResp = new AccessPointResponse();
 		List<AccessPointDto> dtoList = new ArrayList<AccessPointDto>();
@@ -152,6 +152,19 @@ public class AccessPointExporter extends AbstractDataExporter {
 											.trim())) {
 								field.set(point,
 										Boolean.parseBoolean(booleanString));
+							}
+						} else if (field.getType() == Integer.class) {
+							String integerString = json.getString(header);
+							if (integerString != null
+									&& !NULL_STR.equalsIgnoreCase(integerString
+											.trim())) {
+								field.set(point,
+										Integer.parseInt(integerString));
+							}
+						}else if(field.getType() == Long.class){
+							String longString = json.getString(header);
+							if(longString!=null && !NULL_STR.equalsIgnoreCase(longString.trim())){
+								field.set(point,Long.parseLong(longString));
 							}
 						}
 						// TODO: handle status fields. Not sure yet if they can

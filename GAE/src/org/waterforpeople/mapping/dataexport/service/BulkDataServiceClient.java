@@ -75,13 +75,11 @@ public class BulkDataServiceClient {
 		if (jsonOuter.has("cursor")) {
 			cursor = jsonOuter.getString("cursor");
 		}
-		List<AccessPointDto> apDtoList = parseAccessPoints(response);
+		List<AccessPointDto> apDtoList = RestAccessPointParser.parseAccessPoint(response);
 		return apDtoList;
 	}
 
-	private static List<AccessPointDto> parseAccessPoints(String response) {
-		return null;
-	}
+	
 
 	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
 			String serverBase) throws Exception {
