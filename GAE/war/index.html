@@ -7,10 +7,11 @@
 html {
 	height: 100%
 }
-#outerContainer{
-height: 80%;
-width: 100%;
-overflow: auto;
+
+#outerContainer {
+	height: 80%;
+	width: 100%;
+	overflow: auto;
 }
 
 #info_canvas {
@@ -354,6 +355,7 @@ a {
 	var loadedSV = new Boolean(false);
 	var loadedNI = new Boolean(false);
 	var loadedBO = new Boolean(false);
+	var loadedDO = new Boolean(false);
 	var latlngRW = new google.maps.LatLng(-1.7, 30);
 	var latlngMW = new google.maps.LatLng(-15.79, 35);
 	var latlngHN = new google.maps.LatLng(15, -88);;
@@ -363,6 +365,7 @@ a {
 	var latlngSV = new google.maps.LatLng(14, -89);
 	var latlngNI = new google.maps.LatLng(12.7, -85.7);
 	var latlngBO = new google.maps.LatLng(-17.648, -65.812);
+	var latlngDO = new google.maps.LatLng(19.015,-70.729);
 
 	function setCountryLatLon(country) {
 		if (country == 'MW') {
@@ -383,7 +386,9 @@ a {
 			countryLatLon = latlngNI;
 		} else if (country == 'BO') {
 			countryLatLon = latlngBO;
-		} else {
+		} else if (country == 'DO'){
+			countryLatLon= latlngDO;
+		}else{
 			countryLatLon = new google.maps.LatLng(-15, 35);
 			alert('Water For People does not have projects in that country yet. So we will show you our work in Malawi.');
 		}
@@ -418,6 +423,9 @@ a {
 		} else if (countryToLoad == 'BO' && loadedBO == false) {
 			getPlacemarkInfo('BO');
 			loadedBO = true;
+		}else if(countryToLoad =='DO' && loadedDO == false){
+			getPlacemarkInfo('DO');
+			loadedDO = true;
 		}
 	}
 
@@ -464,6 +472,7 @@ a {
 			var containsPE = curBounds.contains(latlngPE);
 			var containsNI = curBounds.contains(latlngNI);
 			var containsBO = curBounds.contains(latlngBO);
+			var containsDO = curBounds.contains(latlngDO);
 
 			if (containsRW) {				
 				loadCountryData('RW');
@@ -493,6 +502,9 @@ a {
 			}
 			if (containsBO) {				
 				loadCountryData('BO');
+			}
+			if(containsDO){
+				loadCountryData('DO');
 			}
 		});
 		loadCountryData(initialCountry);
@@ -609,7 +621,7 @@ a {
 		controlText.style.fontSize = '12px';
 		controlText.style.paddingLeft = '4px';
 		controlText.style.paddingRight = '4px';
-		controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="BO">Bolivia</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+		controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="BO">Bolivia</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option><option value="DO">Dominican Republic</option></select>';
 		controlUI.appendChild(controlText);
 		map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 		google.maps.event
@@ -653,6 +665,10 @@ a {
 								map.setCenter(latlngRW);
 								map.setZoom(10);
 								$("#tabs").tabs("select", 8);
+							}else if (document.getElementById("countrySel").selectedIndex == 10) {
+								map.setCenter(latlngDO);
+								map.setZoom(10);
+								$("#tabs").tabs("select", 9);
 							}
 						});
 
@@ -706,6 +722,8 @@ a {
 				displayChart("PE", latlngPE);
 			} else if (document.getElementById("chartSel").selectedIndex == 9) {
 				displayChart("RW", latlngRW);
+			} else if(document.getElementById("chartSel").selectedIndex ==10){
+				displayChart("DO".latlngDO);
 			}
 		});
 	}
@@ -824,6 +842,10 @@ a {
 			jQuery("select#countrySel option[value='RW']").attr("selected", "selected");
 			map.setCenter(latlngRW);
 			map.setZoom(10);
+		}else if (ui.index == 9){
+			jQuery("select#countrySel option[value='DO']").attr("selected", "selected");
+			map.setCenter(latlngDO);
+			map.setZoom(10);
 		}
 		
 		
@@ -850,6 +872,7 @@ a {
 	<li id="tabNI"><a href="#tabs-ni">Nicaragua</a></li>
 	<li id="tabPE"><a href="#tabs-pe">Peru</a></li>
 	<li id="tabRW"><a href="#tabs-rw">Rwanda</a></li>
+	<li id="tabDO"><a href="#tab-do">Dominican Republic</a></li>
 	<div id="tabs-bo"><br>
 	<p><br>
 	<br>
@@ -1078,10 +1101,19 @@ a {
 		src="images/rwcollectwaterpie.jpg"></div>
 </div>
 
+<div id="tabs-do">
+<p><br>
+<br>
+<h3>Country: Dominican Republic<br>
+</h3>
+<h3>Year Began Working: 2011</h3>
+<h3>Description of Work:</h3>
 
-
+</p>
+<br>
+<br>
 </div>
-
+</div>
 <div id="map_canvas"></div>
 </div>
 <div id="footer">
