@@ -227,7 +227,7 @@ a {
 						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.png" width="50" height="50"  />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
 						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="50" height="50"  />
-					#elseif($type=="water" && $waterSystemStatus=="High Level Of Service")
+					#elseif($type=="water" && $waterSystemStatus=="High Level Service")
 	                    <img src="http://watermapmonitordev.appspot.com/images/iconGreen80.png" width="50" height="50"  />
 					#elseif($type=="water" && $waterSystemStatus=="Intermediate Level Service")
 						<img src="http://watermapmonitordev.appspot.com/images/iconYellow80.png" width="50" height="50"  />
@@ -235,7 +235,7 @@ a {
 						<img src="http://watermapmonitordev.appspot.com/images/iconRed80.png" width="50" height="50"  />
 					#elseif($type=="water" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
 						<img src="http://watermapmonitordev.appspot.com/images/iconBlack80.png" width="50" height="50"  />
-					#elseif($type=="school" && $waterSystemStatus=="High Level Of Service")	
+					#elseif($type=="school" && $waterSystemStatus=="High Level Service")	
 						<img src="http://watermapmonitordev.appspot.com/images/pencilGreen80.png" width="50" height="50"  />
 					#elseif($type=="school" && $waterSystemStatus=="Intermediate Level Service")	
 						<img src="http://watermapmonitordev.appspot.com/images/pencilYellow80.png" width="50" height="50"  />
@@ -243,14 +243,14 @@ a {
 						<img src="http://watermapmonitordev.appspot.com/images/pencilRed80.png" width="50" height="50"  />
 					#elseif($type=="school" && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
 						<img src="http://watermapmonitordev.appspot.com/images/pencilBlack80.png" width="50" height="50"  />
-					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="High Level Of Service")	
+					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="High Level Service")	
 						<img src="http://watermapmonitordev.appspot.com/images/houseGreen80.png" width="50" height="50"  />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Intermediate Level Service")	
 						<img src="http://watermapmonitordev.appspot.com/images/houseYellow80.png" width="50" height="50"  />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && $waterSystemStatus=="Basic Level Service")	
 						<img src="http://watermapmonitordev.appspot.com/images/houseRed80.png" width="50" height="50"  />
 					#elseif(($type=="public_institutions" || $type=="health_posts") && ($waterSystemStatus=="No Improved System" || $waterSystemStatus=="Unknown"))	
-						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="50" height="50"  />
+						<img src="http://watermapmonitordev.appspot.com/images/houseBlack80.png" width="50" height="50"  />New 
 					#end
 </div>
   </div>
