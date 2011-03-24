@@ -238,8 +238,16 @@ public class AccessPointHelper {
 			NoSuchFieldException, IllegalArgumentException,
 			IllegalAccessException {
 		apmh.setResponseAnswerType(qas.getType());
+		QuestionDao qDao = new QuestionDao();
+		
+		Question q = qDao.getByKey(Long.parseLong(qas.getQuestionID()));
+		if (!qas.getType().equals(q.getType().toString())){
+			qas.setType(q.getType().toString());
+			logger.log(Level.INFO,"Remapping question type value because QAS version is incorrect");
+		}
+		//FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH
 
-		if (GEO_TYPE.equalsIgnoreCase(qas.getType())) {
+		if (GEO_TYPE.equals(q.getType())) {
 			GeoCoordinates geoC = new GeoCoordinates().extractGeoCoordinate(qas
 					.getValue());
 			ap.setLatitude(geoC.getLatitude());
@@ -265,7 +273,7 @@ public class AccessPointHelper {
 			apmh.setAccessPointField(f.getName());
 			// TODO: Hack. In the QAS the type is PHOTO, but we were looking for
 			// image this is why we were getting /sdcard I think.
-			if (PHOTO_TYPE.equalsIgnoreCase(qas.getType())
+			if (PHOTO_TYPE.equals(q.getType())
 					|| qas.getType().equals("PHOTO")) {
 				String newURL = null;
 				String[] photoParts = qas.getValue().split("/");
