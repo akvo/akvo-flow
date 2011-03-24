@@ -705,38 +705,39 @@ public class AccessPointHelper {
 				&& ap.isImprovedWaterPointFlag()) {
 			score++;
 			apss.addScoreComputationItem("Plus 1 for Improved Water System = true: ");
+			if (ap.getProvideAdequateQuantity() != null
+					&& ap.getProvideAdequateQuantity().equals(true)) {
+				score++;
+				apss.addScoreComputationItem("Plus 1 for Provide Adequate Quantity = true: ");
+
+			} else {
+				apss.addScoreComputationItem("Plus 0 for Provide Adequate Quantity = false or null: ");
+			}
+			if (ap.getHasSystemBeenDown1DayFlag() != null
+					&& !ap.getHasSystemBeenDown1DayFlag().equals(true)) {
+				score++;
+				apss.addScoreComputationItem("Plus 1 for Has System Been Down 1 Day Flag = false: ");
+			} else {
+				apss.addScoreComputationItem("Plus 0 for Has System Been Down 1 Day Flag = true or null: ");
+			}
+			if (ap.getCurrentProblem() == null) {
+				score++;
+				apss.addScoreComputationItem("Plus 1 for Get Current Problem = null");
+			} else {
+				apss.addScoreComputationItem("Plus 0 for Get Current Problem != null value: "
+						+ ap.getCurrentProblem());
+			}
+
+			if (ap.isCollectTariffFlag() != null && ap.isCollectTariffFlag()) {
+				score++;
+				apss.addScoreComputationItem("Plus 1 for Collect Tariff Flag = true ");
+			} else {
+				apss.addScoreComputationItem("Plus 0 for Collect Tariff Flag = false or null: ");
+			}
 		} else {
 			apss.addScoreComputationItem("Plus 0 for Improved Water System = false or null: ");
 		}
-		if (ap.getProvideAdequateQuantity() != null
-				&& ap.getProvideAdequateQuantity().equals(true)) {
-			score++;
-			apss.addScoreComputationItem("Plus 1 for Provide Adequate Quantity = true: ");
 
-		} else {
-			apss.addScoreComputationItem("Plus 0 for Provide Adequate Quantity = false or null: ");
-		}
-		if (ap.getHasSystemBeenDown1DayFlag() != null
-				&& !ap.getHasSystemBeenDown1DayFlag().equals(true)) {
-			score++;
-			apss.addScoreComputationItem("Plus 1 for Has System Been Down 1 Day Flag = false: ");
-		} else {
-			apss.addScoreComputationItem("Plus 0 for Has System Been Down 1 Day Flag = true or null: ");
-		}
-		if (ap.getCurrentProblem() == null) {
-			score++;
-			apss.addScoreComputationItem("Plus 1 for Get Current Problem = null");
-		} else {
-			apss.addScoreComputationItem("Plus 0 for Get Current Problem != null value: "
-					+ ap.getCurrentProblem());
-		}
-
-		if (ap.isCollectTariffFlag() != null && ap.isCollectTariffFlag()) {
-			score++;
-			apss.addScoreComputationItem("Plus 1 for Collect Tariff Flag = true ");
-		} else {
-			apss.addScoreComputationItem("Plus 0 for Collect Tariff Flag = false or null: ");
-		}
 		apss.setScore(score);
 		ap.setScore(score);
 		ap.setScoreComputationDate(new Date());
