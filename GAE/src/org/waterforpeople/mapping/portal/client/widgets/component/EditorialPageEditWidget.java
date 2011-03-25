@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageContentD
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageDto;
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageService;
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -36,6 +37,8 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
  * 
  */
 public class EditorialPageEditWidget extends Composite implements ContextAware {
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String TEXT_AREA_WIDTH = "600px";
 	private static final String TEXT_AREA_HEIGHT = "400px";
 	private static final String TOP_ALIGN_LABEL_STYLE = "input-label-topalign";
@@ -66,10 +69,10 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 		template = new TextArea();
 		template.setWidth(TEXT_AREA_WIDTH);
 		template.setHeight(TEXT_AREA_HEIGHT);
-		ViewUtil.installGridRow("File Name", targetFileNameBox, dataGrid, 0, 0,
-				TOP_ALIGN_LABEL_STYLE);
-		ViewUtil.installGridRow("Template Text", template, dataGrid, 1, 0,
-				TOP_ALIGN_LABEL_STYLE);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.fileName(), targetFileNameBox,
+				dataGrid, 0, 0, TOP_ALIGN_LABEL_STYLE);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.templateText(), template,
+				dataGrid, 1, 0, TOP_ALIGN_LABEL_STYLE);
 
 		contentPanel.add(dataGrid);
 		contentPanel.add(itemPanel);
@@ -97,10 +100,10 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 		}
 		return bundle;
 	}
-	
+
 	@Override
-	public void flushContext(){
-		//no-op
+	public void flushContext() {
+		// no-op
 	}
 
 	@Override
@@ -136,10 +139,9 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Could not load editorial content items",
-								"There was an error while attempting to load content items from the server:<br>"
-										+ caught.getLocalizedMessage());
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 					}
 				});
@@ -157,7 +159,7 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 		TextBox heading = new TextBox();
 		itemTable.setWidget(row, 0, heading);
 		TextArea text = new TextArea();
-		itemTable.setWidget(row,1,text);
+		itemTable.setWidget(row, 1, text);
 		HorizontalPanel bp = new HorizontalPanel();
 		final Image moveUp = new Image("/images/greenuparrow.png");
 		final Image moveDown = new Image("/images/greendownarrow.png");

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -29,6 +30,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class SurveyGroupListWidget extends ListBasedWidget implements
 		ContextAware {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyGroupDto> groupMap;
 	Map<String, Object> bundle;
@@ -60,7 +63,7 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 										.getDisplayName());
 								dataGrid.setWidget(i, 0, l);
 								groupMap.put(l, result.get(i));
-								Button b = createButton(ClickMode.EDIT, "Edit");
+								Button b = createButton(ClickMode.EDIT, TEXT_CONSTANTS.edit());
 								groupMap.put(b, result.get(i));
 								dataGrid.setWidget(i, 1, b);
 							}

@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationDt
 import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationService;
 import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
@@ -46,13 +47,15 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 		DataTableBinder<WebActivityAuthorizationDto>,
 		DataTableListener<WebActivityAuthorizationDto>, ContextAware {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
-			new DataTableHeader("Id", "key", false),
-			new DataTableHeader("Name", "name", false),
-			new DataTableHeader("Token", "token", false),
-			new DataTableHeader("Expires", "expiry", false),
-			new DataTableHeader("Edit/Delete") };
+			new DataTableHeader(TEXT_CONSTANTS.id(), "key", false),
+			new DataTableHeader(TEXT_CONSTANTS.name(), "name", false),
+			new DataTableHeader(TEXT_CONSTANTS.token(), "token", false),
+			new DataTableHeader(TEXT_CONSTANTS.expires(), "expiry", false),
+			new DataTableHeader(TEXT_CONSTANTS.editDelete()) };
 	private static final String DEFAULT_SORT_FIELD = "key";
 
 	private PaginatedDataTable<WebActivityAuthorizationDto> authTable;
@@ -75,7 +78,8 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 		contentPanel = new VerticalPanel();
 		surveySelector = new SurveySelectionWidget(Orientation.HORIZONTAL,
 				TerminalType.SURVEY);
-		CaptionPanel selectorPanel = new CaptionPanel("Filter Results");
+		CaptionPanel selectorPanel = new CaptionPanel(TEXT_CONSTANTS
+				.filterResults());
 		selectorPanel.add(surveySelector);
 		contentPanel.add(selectorPanel);
 		contentPanel.add(authTable);
@@ -90,7 +94,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 		if (authDto.getName() != null && authDto.getName().trim().length() > 0) {
 			grid.setWidget(row, 1, new Label(authDto.getName()));
 		} else {
-			grid.setWidget(row, 1, new Label("UNNAMED"));
+			grid.setWidget(row, 1, new Label(TEXT_CONSTANTS.unnamed()));
 		}
 		grid.setWidget(row, 2, new Label(authDto.getToken()));
 		if (authDto.getExpirationDate() != null) {
@@ -98,8 +102,8 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 					.getExpirationDate())));
 		}
 
-		Button editButton = new Button("Edit");
-		Button deleteButton = new Button("Delete");
+		Button editButton = new Button(TEXT_CONSTANTS.edit());
+		Button deleteButton = new Button(TEXT_CONSTANTS.delete());
 		HorizontalPanel buttonHPanel = new HorizontalPanel();
 		buttonHPanel.add(editButton);
 		buttonHPanel.add(deleteButton);
@@ -111,7 +115,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (controller != null) {					
+				if (controller != null) {
 					bundle.put(BundleConstants.WEB_ACTIVITY_AUTH, authDto);
 					controller.openPage(
 							SurveyWebActivityAuthorizationEditWidget.class,
@@ -125,7 +129,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 			@Override
 			public void onClick(ClickEvent event) {
 				final MessageDialog waitDialog = new MessageDialog(
-						"Deleting...", "Please wait");
+						TEXT_CONSTANTS.deleting(), TEXT_CONSTANTS.pleaseWait());
 				waitDialog.showCentered();
 				authService.deleteAuthorization(authDto,
 						new AsyncCallback<Void>() {
@@ -134,7 +138,9 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 							public void onFailure(Throwable caught) {
 								waitDialog.hide();
 								MessageDialog errDia = new MessageDialog(
-										"Error", "Could not delete record: "
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
 												+ caught.getLocalizedMessage());
 								errDia.showCentered();
 							}
@@ -192,8 +198,9 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 							public void onFailure(Throwable caught) {
 
 								MessageDialog errDia = new MessageDialog(
-										"Error",
-										"Could not list authorizations: "
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
 												+ caught.getLocalizedMessage());
 								errDia.showCentered();
 							}
@@ -203,7 +210,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 
 	@Override
 	public void flushContext() {
-		if(bundle != null){
+		if (bundle != null) {
 			bundle.remove(BundleConstants.WEB_ACTIVITY_AUTH);
 		}
 	}
@@ -220,12 +227,12 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
-		if(bundle != null){
+		if (bundle != null) {
 			this.bundle = bundle;
-		}else{
-			this.bundle = new HashMap<String,Object>();
+		} else {
+			this.bundle = new HashMap<String, Object>();
 		}
-		
+
 		requestData(null, false);
 	}
 }

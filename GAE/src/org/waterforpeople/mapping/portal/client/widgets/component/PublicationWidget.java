@@ -6,6 +6,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.wizard.client.AutoAdvancing;
@@ -29,7 +30,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class PublicationWidget extends Composite implements ContextAware,
 		AutoAdvancing {
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private VerticalPanel panel;
 	private Label statusLabel;
 	private Map<String, Object> bundle;
@@ -39,7 +41,7 @@ public class PublicationWidget extends Composite implements ContextAware,
 	public PublicationWidget() {
 		surveyService = GWT.create(SurveyService.class);
 		panel = new VerticalPanel();
-		statusLabel = new Label("Publishing. Please wait");
+		statusLabel = new Label(TEXT_CONSTANTS.publishing());
 		panel.add(statusLabel);
 		initWidget(panel);
 	}

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -32,6 +33,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class SurveyGroupEditWidget extends Composite implements ContextAware,
 		ChangeHandler {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private static final String FORM_LABEL_CSS = "form-label";
 	private static final String TXT_BOX_CSS = "txt-box";
 	private VerticalPanel panel;
@@ -47,8 +50,8 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 		surveyService = GWT.create(SurveyService.class);
 		codeBox = new TextBox();
 		descriptionBox = new TextBox();
-		panel.add(buildRow("Code: ", codeBox));
-		panel.add(buildRow("Description: ", descriptionBox));
+		panel.add(buildRow(TEXT_CONSTANTS.code(), codeBox));
+		panel.add(buildRow(TEXT_CONSTANTS.description(), descriptionBox));
 		currentDto = null;
 		initWidget(panel);
 	}
@@ -93,9 +96,7 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 						@Override
 						public void onFailure(Throwable caught) {
 
-							MessageDialog errDia = new MessageDialog(
-									"Could not save survey group",
-									"There was an error while attempting to save the survey group. Please try again. If the problem persists, please contact an administrator");
+							MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());									
 							errDia.showRelativeTo(panel);
 							if (listener != null) {
 								listener.operationComplete(false,
@@ -115,9 +116,7 @@ public class SurveyGroupEditWidget extends Composite implements ContextAware,
 						}
 					});
 		} else {
-			MessageDialog validationDialog = new MessageDialog(
-					"Invalid Survey Group",
-					"The survey group code must contain at least 1 character.");
+			MessageDialog validationDialog = new MessageDialog(TEXT_CONSTANTS.inputError(),TEXT_CONSTANTS.invalidSurveyGroup());										
 			validationDialog.showRelativeTo(panel);
 		}
 	}

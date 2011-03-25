@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -37,7 +38,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class QuestionGroupListWidget extends ListBasedWidget implements
 		ContextAware {
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, QuestionGroupDto> questionGroupMap;
 	Map<String, Object> bundle;
@@ -96,8 +98,10 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 				if (i < groupList.size() - 1) {
 					createClickableWidget(ClickMode.MOVE_DOWN, moveDown);
 				}
-				Button deleteButton = createButton(ClickMode.DELETE, "Delete");
-				Button editButton = createButton(ClickMode.EDIT, "Edit");
+				Button deleteButton = createButton(ClickMode.DELETE,
+						TEXT_CONSTANTS.delete());
+				Button editButton = createButton(ClickMode.EDIT, TEXT_CONSTANTS
+						.edit());
 
 				bp.add(moveUp);
 				bp.add(moveDown);
@@ -122,7 +126,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
-		flushContext();		
+		flushContext();
 		survey = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 		loadData(survey);
 	}
@@ -130,8 +134,9 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	@Override
 	protected void handleItemClick(Object source, ClickMode mode) {
 		int i = 0;
-		selectedQuestionGroup = survey.getQuestionGroupList().get(widgetRowMap.get((Widget) source));
-		
+		selectedQuestionGroup = survey.getQuestionGroupList().get(
+				widgetRowMap.get((Widget) source));
+
 		bundle.put(BundleConstants.QUESTION_GROUP_KEY, selectedQuestionGroup);
 		if (ClickMode.OPEN == mode) {
 			openPage(QuestionListWidget.class, bundle);
@@ -148,8 +153,8 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 
 	private void moveQuestionGroup(int increment, QuestionGroupDto questionGroup) {
 		setWorking(true);
-		final MessageDialog savingDialog = new MessageDialog("Saving order",
-				"Please wait", true);
+		final MessageDialog savingDialog = new MessageDialog(TEXT_CONSTANTS
+				.saving(), TEXT_CONSTANTS.pleaseWait(), true);
 		savingDialog.showCentered();
 		Integer idx = findIndexForGroup(questionGroup);
 
@@ -161,8 +166,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 			targetGroup = survey.getQuestionGroupList().get(idx + increment);
 		}
 
-		
-		gToMove.setOrder(idx+increment);
+		gToMove.setOrder(idx + increment);
 		targetGroup.setOrder(idx);
 
 		survey.getQuestionGroupList().add(targetGroup.getOrder(), targetGroup);
@@ -197,9 +201,9 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 					public void onFailure(Throwable caught) {
 						setWorking(false);
 						savingDialog.hide();
-						MessageDialog errDia = new MessageDialog("Error",
-								"Could not save ordering: "
-										+ caught.getLocalizedMessage());
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 					}
 
@@ -240,21 +244,21 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 			survey.getQuestionGroupList().remove(key.intValue());
 			surveyService.deleteQuestionGroup(group, group.getSurveyId(),
 					new AsyncCallback<String>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					setWorking(false);
-					MessageDialog errDia = new MessageDialog("Error",
-							"Could not delete question: "
-									+ caught.getLocalizedMessage());
-					errDia.showCentered();
-				}
+						@Override
+						public void onFailure(Throwable caught) {
+							setWorking(false);
+							MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+									.error(), TEXT_CONSTANTS.errorTracePrefix()
+									+ " " + caught.getLocalizedMessage());
+							errDia.showCentered();
+						}
 
-				@Override
-				public void onSuccess(String result) {
-					setWorking(false);
-					loadData(survey);
-				}
-			});
+						@Override
+						public void onSuccess(String result) {
+							setWorking(false);
+							loadData(survey);
+						}
+					});
 		}
 	}
 
@@ -263,8 +267,6 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		return bundle;
 	}
 
-	
-	
 	@Override
 	public void persistContext(CompletionListener listener) {
 		if (listener != null) {
@@ -275,8 +277,8 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 
 	@Override
 	public void flushContext() {
-		if(bundle != null){
+		if (bundle != null) {
 			bundle.remove(BundleConstants.QUESTION_GROUP_KEY);
-		}		
+		}
 	}
 }

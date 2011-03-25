@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -53,10 +54,11 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 public class QuestionEditWidget extends Composite implements ContextAware,
 		ChangeHandler, ClickHandler, TranslationChangeListener,
 		CompletionListener {
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String REORDER_BUTTON_CSS = "reorder-button";
 	private static final String DEFAULT_BOX_WIDTH = "300px";
-	private static final String SELECT_TXT = "Select...";
+	private static final String SELECT_TXT = TEXT_CONSTANTS.select()+"...";
 	private static final String EDIT_TRANS_OP = "Edit Translation";
 	private static final String EDIT_HELP_OP = "Edit Help";
 	private VerticalPanel panel;
@@ -110,34 +112,39 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		dependentBox = new CheckBox();
 		dependentBox.addClickHandler(this);
 		questionTypeSelector = new ListBox();
-		questionTypeSelector.addItem("Free Text",
+		questionTypeSelector.addItem(TEXT_CONSTANTS.freeText(),
 				QuestionDto.QuestionType.FREE_TEXT.toString());
-		questionTypeSelector.addItem("Option", QuestionDto.QuestionType.OPTION
-				.toString());
-		questionTypeSelector.addItem("Number", QuestionDto.QuestionType.NUMBER
-				.toString());
-		questionTypeSelector.addItem("Geo", QuestionDto.QuestionType.GEO
-				.toString());
-		questionTypeSelector.addItem("Photo", QuestionDto.QuestionType.PHOTO
-				.toString());
-		questionTypeSelector.addItem("Video", QuestionDto.QuestionType.VIDEO
-				.toString());
-		questionTypeSelector.addItem("Strength",
+		questionTypeSelector.addItem(TEXT_CONSTANTS.option(),
+				QuestionDto.QuestionType.OPTION.toString());
+		questionTypeSelector.addItem(TEXT_CONSTANTS.number(),
+				QuestionDto.QuestionType.NUMBER.toString());
+		questionTypeSelector.addItem(TEXT_CONSTANTS.geo(),
+				QuestionDto.QuestionType.GEO.toString());
+		questionTypeSelector.addItem(TEXT_CONSTANTS.photo(),
+				QuestionDto.QuestionType.PHOTO.toString());
+		questionTypeSelector.addItem(TEXT_CONSTANTS.video(),
+				QuestionDto.QuestionType.VIDEO.toString());
+		questionTypeSelector.addItem(TEXT_CONSTANTS.strength(),
 				QuestionDto.QuestionType.STRENGTH.toString());
 		questionTypeSelector.addChangeHandler(this);
-		basePanel = new CaptionPanel("Question Basics:");
+		basePanel = new CaptionPanel(TEXT_CONSTANTS.questionBasics());
 
 		Grid grid = new Grid(7, 2);
 		basePanel.add(grid);
 
-		ViewUtil.installGridRow("Question Text", questionTextArea, grid, 0);
-		ViewUtil.installGridRow("Question Type", questionTypeSelector, grid, 1);
-		ViewUtil.installGridRow("Tooltip", tooltipArea, grid, 2);
-		ViewUtil.installGridRow("Validation Rule", validationRuleBox, grid, 3);
-		ViewUtil.installGridRow("Mandatory", mandatoryBox, grid, 4);
-		ViewUtil.installGridRow("Dependent", dependentBox, grid, 5);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.questionText(),
+				questionTextArea, grid, 0);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.questionType(),
+				questionTypeSelector, grid, 1);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.tooltip(), tooltipArea, grid, 2);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.validationRule(),
+				validationRuleBox, grid, 3);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.mandatory(), mandatoryBox, grid,
+				4);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.dependent(), dependentBox, grid,
+				5);
 
-		dependencyPanel = new CaptionPanel("Dependency Details:");
+		dependencyPanel = new CaptionPanel(TEXT_CONSTANTS.dependencyDetails());
 		dependentQuestionSelector = new ListBox();
 		dependentQuestionSelector.setWidth(DEFAULT_BOX_WIDTH);
 		dependentQuestionSelector.addChangeHandler(this);
@@ -151,26 +158,26 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		dependencyPanel.add(dependencyGrid);
 		ViewUtil.installGridRow(null, dependencyPanel, grid, 6, 1, null);
 		dependencyPanel.setVisible(false);
-		ViewUtil.installGridRow("Question", dependentQuestionSelector,
+		ViewUtil.installGridRow(TEXT_CONSTANTS.question(), dependentQuestionSelector,
 				dependencyGrid, 0);
-		ViewUtil.installGridRow("Response", dependentAnswerSelector,
+		ViewUtil.installGridRow(TEXT_CONSTANTS.response(), dependentAnswerSelector,
 				dependencyGrid, 1);
 
 		panel.add(basePanel);
 
 		allowMultipleBox = new CheckBox();
 		allowOtherBox = new CheckBox();
-		addOptionButton = new Button("Add Option");
+		addOptionButton = new Button(TEXT_CONSTANTS.addOption());
 		addOptionButton.addClickHandler(this);
-		optionPanel = new CaptionPanel("Option Details:");
+		optionPanel = new CaptionPanel(TEXT_CONSTANTS.optionDetails());
 		optionContent = new VerticalPanel();
 		optionPanel.add(optionContent);
 		optionTable = new FlexTable();
 		Grid optGrid = new Grid(2, 4);
-		ViewUtil.installGridRow("Allow Multiple", allowMultipleBox, optGrid, 0,
-				0, null);
-		ViewUtil.installGridRow("Allow 'Other'", allowOtherBox, optGrid, 0, 2,
-				null);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.allowMultiple(),
+				allowMultipleBox, optGrid, 0, 0, null);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.allowOther(), allowOtherBox,
+				optGrid, 0, 2, null);
 
 		optionContent.add(optGrid);
 		optionContent.add(optionTable);
@@ -179,11 +186,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		panel.add(optionPanel);
 
 		HorizontalPanel tempPanel = new HorizontalPanel();
-		editTranslationButton = new Button("Edit Translations");
+		editTranslationButton = new Button(TEXT_CONSTANTS.editTranslations());
 		editTranslationButton.addClickHandler(this);
 		tempPanel.add(editTranslationButton);
 
-		editHelpButton = new Button("Edit Help");
+		editHelpButton = new Button(TEXT_CONSTANTS.editHelpMedia());
 		editHelpButton.addClickHandler(this);
 		tempPanel.add(editHelpButton);
 		panel.add(tempPanel);
@@ -230,13 +237,14 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				&& (currentQuestion.getOptionContainerDto() == null || currentQuestion
 						.getOptionContainerDto().getOptionsList() == null)) {
 			optionPanel.setVisible(true);
-			showLoading(optionPanel, "Loading options...");
+			showLoading(optionPanel, TEXT_CONSTANTS.loading());
 			surveyService.loadQuestionDetails(currentQuestion.getKeyId(),
 					new AsyncCallback<QuestionDto>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							showContent(optionPanel, new Label("Error"));
+							showContent(optionPanel, new Label(TEXT_CONSTANTS
+									.error()));
 						}
 
 						@Override
@@ -288,7 +296,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		HorizontalPanel bp = new HorizontalPanel();
 		final Image moveUp = new Image("/images/greenuparrow.png");
 		final Image moveDown = new Image("/images/greendownarrow.png");
-		final Button deleteButton = new Button("Remove");
+		final Button deleteButton = new Button(TEXT_CONSTANTS.remove());
 
 		ClickHandler optionClickHandler = new ClickHandler() {
 
@@ -396,7 +404,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			populateDependencySelection(currentQuestion, optionQuestions
 					.get(currentQuestion.getSurveyId()));
 		} else {
-			showLoading(dependencyPanel, "Loading...");
+			showLoading(dependencyPanel, TEXT_CONSTANTS.loading());
 			surveyService.listSurveyQuestionByType(currentQuestion
 					.getSurveyId(), QuestionType.OPTION,
 					new AsyncCallback<QuestionDto[]>() {
@@ -404,7 +412,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						@Override
 						public void onFailure(Throwable caught) {
 							showContent(dependencyPanel, new Label(
-									"Error loading questions"));
+									TEXT_CONSTANTS.error()));
 						}
 
 						@Override
@@ -487,7 +495,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				populateDependencyAnswers(currentQuestion, question
 						.getOptionContainerDto().getOptionsList());
 			} else {
-				showLoading(dependencyPanel, "Loading");
+				showLoading(dependencyPanel, TEXT_CONSTANTS.loading());
 				// if the option container is null, we probably have not
 				// yet loaded the question details. so do it now
 				surveyService.loadQuestionDetails(question.getKeyId(),
@@ -518,7 +526,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 							@Override
 							public void onFailure(Throwable caught) {
 								showContent(dependencyPanel, dependencyGrid);
-								Window.alert("Could not load answers");
+								Window.alert(TEXT_CONSTANTS.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
 							}
 						});
 			}
@@ -604,13 +613,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				}
 			});
 		} else {
-			StringBuilder builder = new StringBuilder("<ul>");
+			StringBuilder builder = new StringBuilder("<br><ul>");
 			for (String err : validationErrors) {
 				builder.append("<li>").append(err).append("</li>");
 			}
 			builder.append("</ul>");
-			MessageDialog errorDialog = new MessageDialog(
-					"Cannot save survey list", builder.toString());
+			MessageDialog errorDialog = new MessageDialog(TEXT_CONSTANTS.inputError(),TEXT_CONSTANTS.pleaseCorrect()+builder.toString());
 			errorDialog.showCentered();
 			listener.operationComplete(false, getContextBundle(true));
 		}
@@ -627,7 +635,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (ViewUtil.isTextPopulated(questionTextArea)) {
 			currentQuestion.setText(questionTextArea.getText());
 		} else {
-			validationMessages.add("Question text cannot be blank");
+			validationMessages.add(TEXT_CONSTANTS.questionTextMandatory());
 		}
 		currentQuestion.setTip(tooltipArea.getText());
 		if (mandatoryBox.getValue()) {
@@ -648,7 +656,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			}
 			if (dependentQuestionSelector.getSelectedIndex() == 0) {
 				validationMessages
-						.add("If 'Dependent' is true, you must select a dependent question");
+						.add(TEXT_CONSTANTS.dependentMandatory());
 			} else {
 				depDto.setQuestionId(Long
 						.parseLong(dependentQuestionSelector
@@ -656,7 +664,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 										.getSelectedIndex())));
 				if (dependentAnswerSelector.getSelectedIndex() == 0) {
 					validationMessages
-							.add("You must select a response for the dependent question");
+							.add(TEXT_CONSTANTS.dependentResponseMandatory());
 				} else {
 					depDto.setAnswerValue(dependentAnswerSelector
 							.getValue(dependentAnswerSelector
@@ -679,7 +687,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			container.setAllowOtherFlag(allowOtherBox.getValue());
 			if (container.getOptionsList() == null
 					|| container.getOptionsList().size() == 0) {
-				validationMessages.add("You must supply at least 1 option");
+				validationMessages.add(TEXT_CONSTANTS.optionMandatory());
 			} else {
 				for (int i = 0; i < container.getOptionsList().size(); i++) {
 					TextBox box = (TextBox) optionTable.getWidget(i, 0);
@@ -689,7 +697,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						container.getOptionsList().get(i).setOrder(i + 1);
 					} else {
 						validationMessages
-								.add("Options cannot be blank. Please correct option at position "
+								.add(TEXT_CONSTANTS.optionNotBlank() + " "
 										+ i);
 					}
 				}

@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -36,6 +37,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class QuestionListWidget extends ListBasedWidget implements ContextAware {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private SurveyServiceAsync surveyService;
 	private QuestionDto selectedQuestion;
 	private QuestionGroupDto questionGroup;
@@ -110,8 +113,10 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				if (i < questionList.size() - 1) {
 					createClickableWidget(ClickMode.MOVE_DOWN, moveDown);
 				}
-				Button deleteButton = createButton(ClickMode.DELETE, "Delete");
-				Button editButton = createButton(ClickMode.EDIT, "Edit");
+				Button deleteButton = createButton(ClickMode.DELETE,
+						TEXT_CONSTANTS.delete());
+				Button editButton = createButton(ClickMode.EDIT, TEXT_CONSTANTS
+						.edit());
 
 				bp.add(moveUp);
 				bp.add(moveDown);
@@ -166,8 +171,8 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 
 	private void moveQuestion(int increment, QuestionDto question) {
 		setWorking(true);
-		final MessageDialog savingDialog = new MessageDialog("Saving order",
-				"Please wait", true);
+		final MessageDialog savingDialog = new MessageDialog(TEXT_CONSTANTS
+				.saving(), TEXT_CONSTANTS.pleaseWait(), true);
 		savingDialog.showCentered();
 		Integer prevIdx = null;
 		Integer nextIdx = null;
@@ -228,9 +233,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 					public void onFailure(Throwable caught) {
 						setWorking(false);
 						savingDialog.hide();
-						MessageDialog errDia = new MessageDialog("Error",
-								"Could not save ordering: "
-										+ caught.getLocalizedMessage());
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 					}
 
@@ -275,9 +280,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				public void onFailure(Throwable caught) {
 					setWorking(false);
 					selectedQuestion = null;
-					MessageDialog errDia = new MessageDialog("Error",
-							"Could not delete question: "
-									+ caught.getLocalizedMessage());
+					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+							.error(), TEXT_CONSTANTS.errorTracePrefix()
+							+ " " + caught.getLocalizedMessage());
 					errDia.showCentered();
 				}
 
@@ -298,14 +303,13 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		}
 		return bundle;
 	}
-	
+
 	@Override
-	public void flushContext(){
-		if(bundle!= null){
+	public void flushContext() {
+		if (bundle != null) {
 			bundle.remove(BundleConstants.QUESTION_KEY);
 		}
 	}
-	
 
 	@Override
 	public void persistContext(CompletionListener listener) {

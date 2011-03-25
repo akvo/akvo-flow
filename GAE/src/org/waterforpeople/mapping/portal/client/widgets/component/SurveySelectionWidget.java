@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -31,6 +32,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class SurveySelectionWidget extends Composite implements ChangeHandler {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String LABEL_STYLE = "input-label-padded";
 	private static final int DEFAULT_ITEM_COUNT = 5;
 	private ListBox surveyGroupListbox;
@@ -58,7 +61,8 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		surveys = new HashMap<String, List<SurveyDto>>();
 		questionGroups = new HashMap<String, List<QuestionGroupDto>>();
 
-		loadingDialog = new MessageDialog("Loading...", "Please wait.");
+		loadingDialog = new MessageDialog(TEXT_CONSTANTS.loading(),
+				TEXT_CONSTANTS.pleaseWait());
 		surveyService = GWT.create(SurveyService.class);
 		surveyGroupListbox = new ListBox();
 		surveyGroupListbox.addChangeHandler(this);
@@ -74,13 +78,13 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		} else {
 			contentPanel = new VerticalPanel();
 		}
-		ViewUtil.installFieldRow(contentPanel, "Survey Group",
+		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.surveyGroup(),
 				surveyGroupListbox, LABEL_STYLE);
-		ViewUtil.installFieldRow(contentPanel, "Surveys", surveyListbox,
-				LABEL_STYLE);
+		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.survey(),
+				surveyListbox, LABEL_STYLE);
 		if (TerminalType.QUESTIONGROUP == type) {
-			ViewUtil.installFieldRow(contentPanel, "Question Groups",
-					questionGroupListbox, LABEL_STYLE);
+			ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS
+					.questionGroup(), questionGroupListbox, LABEL_STYLE);
 		}
 		initWidget(contentPanel);
 		loadSurveyGroups();
@@ -95,9 +99,9 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Application Error",
-								"Cannot load survey groups");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 					}
 
@@ -131,8 +135,9 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 						public void onFailure(Throwable caught) {
 							toggleLoading(false);
 							MessageDialog errDia = new MessageDialog(
-									"Cannot list surveys",
-									"The application encountered an error: "
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
 											+ caught.getLocalizedMessage());
 							errDia.showCentered();
 						}
@@ -152,9 +157,8 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 				}
 			} else {
 				toggleLoading(false);
-				MessageDialog errDia = new MessageDialog(
-						"Please select a group",
-						"You must select a survey group first");
+				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+						.inputError(), TEXT_CONSTANTS.selectGroupFirst());
 				errDia.showCentered();
 			}
 		} else {
@@ -181,8 +185,9 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 			int i = 0;
 			for (SurveyDto survey : surveyItems) {
 				surveyListbox.addItem(survey.getName() != null ? survey
-						.getName() : "Survey " + survey.getKeyId().toString(),
-						survey.getKeyId().toString());
+						.getName() : TEXT_CONSTANTS.survey() + " "
+						+ survey.getKeyId().toString(), survey.getKeyId()
+						.toString());
 
 				i++;
 			}
@@ -206,8 +211,9 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 						public void onFailure(Throwable caught) {
 							toggleLoading(false);
 							MessageDialog errDia = new MessageDialog(
-									"Cannot load survey",
-									"The application encountered an error: "
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
 											+ caught.getLocalizedMessage());
 							errDia.showCentered();
 						}
@@ -349,8 +355,10 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 							@Override
 							public void onFailure(Throwable caught) {
 								MessageDialog errDia = new MessageDialog(
-										"Application Error",
-										"Cannot load survey");
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
 								errDia.showCentered();
 							}
 

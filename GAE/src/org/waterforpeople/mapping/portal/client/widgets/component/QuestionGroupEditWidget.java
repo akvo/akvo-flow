@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -33,6 +34,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		ChangeHandler {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String FORM_LABEL_CSS = "form-label";
 	private static final String TXT_BOX_CSS = "txt-box";
 	private VerticalPanel panel;
@@ -53,9 +56,9 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		descriptionBox = new TextBox();
 		orderBox = new TextBox();
 		orderBox.setReadOnly(true);
-		panel.add(buildRow("Name: ", nameBox));
-		panel.add(buildRow("Description: ", descriptionBox));
-		panel.add(buildRow("Order: ", orderBox));
+		panel.add(buildRow(TEXT_CONSTANTS.name(), nameBox));
+		panel.add(buildRow(TEXT_CONSTANTS.description(), descriptionBox));
+		panel.add(buildRow(TEXT_CONSTANTS.order(), orderBox));
 		currentDto = null;
 		initWidget(panel);
 	}
@@ -113,8 +116,10 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 						public void onFailure(Throwable caught) {
 
 							MessageDialog errDia = new MessageDialog(
-									"Could not save question group",
-									"There was an error while attempting to save the question group. Please try again. If the problem persists, please contact an administrator");
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
+											+ caught.getLocalizedMessage());
 							errDia.showRelativeTo(panel);
 							if (listener != null) {
 								listener.operationComplete(false, null);
@@ -132,9 +137,8 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 						}
 					});
 		} else {
-			MessageDialog validationDialog = new MessageDialog(
-					"Invalid Question Group",
-					"The question group name must contain at least 1 character.");
+			MessageDialog validationDialog = new MessageDialog(TEXT_CONSTANTS
+					.inputError(), TEXT_CONSTANTS.invalidQuestionGroup());
 			validationDialog.showRelativeTo(panel);
 		}
 	}
@@ -170,12 +174,12 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		}
 		return bundle;
 	}
-	
+
 	@Override
-	public void flushContext(){
-		//no-op
+	public void flushContext() {
+		// no-op
 	}
-	
+
 	@Override
 	public void onChange(ChangeEvent event) {
 		if (currentDto != null) {

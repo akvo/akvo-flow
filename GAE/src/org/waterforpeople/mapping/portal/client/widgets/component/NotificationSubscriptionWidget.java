@@ -1,7 +1,10 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionDto;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -19,7 +22,8 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * 
  */
 public class NotificationSubscriptionWidget extends Composite {
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private static final String ATTACHMENT_OPTION = "Attachment";
 	private static final String LINK_OPTION = "Link";
 	private HorizontalPanel horizPanel;
@@ -33,15 +37,15 @@ public class NotificationSubscriptionWidget extends Composite {
 		horizPanel = new HorizontalPanel();
 		emailBox = new TextBox();
 		optionSelector = new ListBox(false);
-		optionSelector.addItem(ATTACHMENT_OPTION, ATTACHMENT_OPTION
+		optionSelector.addItem(TEXT_CONSTANTS.attachment(), ATTACHMENT_OPTION
 				.toUpperCase());
-		optionSelector.addItem(LINK_OPTION, LINK_OPTION.toUpperCase());
+		optionSelector.addItem(TEXT_CONSTANTS.link(), LINK_OPTION.toUpperCase());
 		expiryBox = new DateBox();
 		expiryBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat
 				.getShortDateFormat()));
-		ViewUtil.installFieldRow(horizPanel, "Email:", emailBox, null);
-		ViewUtil.installFieldRow(horizPanel, "Type:", optionSelector, null);
-		ViewUtil.installFieldRow(horizPanel, "Expires", expiryBox, null);
+		ViewUtil.installFieldRow(horizPanel,TEXT_CONSTANTS.email(), emailBox, null);
+		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.type(), optionSelector, null);
+		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.expires(), expiryBox, null);
 
 		initWidget(horizPanel);
 		bindDataToUi();

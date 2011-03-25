@@ -8,6 +8,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageDto;
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageService;
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -30,7 +31,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class EditorialPageListWidget extends ListBasedWidget implements
 		ContextAware {
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private Map<String, Object> bundle;
 	private Map<Widget, EditorialPageDto> pageMap;
 	private EditorialPageDto editorialPage;
@@ -79,7 +81,7 @@ public class EditorialPageListWidget extends ListBasedWidget implements
 			for (EditorialPageDto p : pageList) {
 				Label l = createListEntry(p.getTargetFileName());
 				pageMap.put(l, p);
-				Button b = createButton(ClickMode.EDIT, "Edit");
+				Button b = createButton(ClickMode.EDIT, TEXT_CONSTANTS.edit());
 				dataGrid.setWidget(i, 1, b);
 				pageMap.put(b, p);
 				dataGrid.setWidget(i, 0, l);

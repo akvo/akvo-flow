@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -30,6 +31,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyDto> surveyMap;
 	private Map<String, Object> bundle;
@@ -63,11 +66,11 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 									dataGrid.setWidget(i, 0, l);
 									surveyMap.put(l, result.get(i));
 									Button b = createButton(ClickMode.EDIT,
-											"Edit");
+											TEXT_CONSTANTS.edit());
 									surveyMap.put(b, result.get(i));
 									dataGrid.setWidget(i, 1, b);
 									Button e = createButton(ClickMode.COPY,
-											"Copy");
+											TEXT_CONSTANTS.copy());
 									dataGrid.setWidget(i, 2, e);
 									surveyMap.put(e, result.get(i));
 								}
@@ -99,8 +102,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 				@Override
 				public void operationComplete(boolean wasSuccessful,
 						Map<String, Object> payload) {
-					MessageDialog dia = new MessageDialog("Copy Complete",
-							"The survey has been copied");
+					MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.copyComplete(),TEXT_CONSTANTS.copyCompleteMessage());							
 					dia.showCentered();
 				}
 			});

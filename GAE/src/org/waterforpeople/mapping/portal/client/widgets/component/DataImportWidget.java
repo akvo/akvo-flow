@@ -2,8 +2,11 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
@@ -19,6 +22,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class DataImportWidget extends MenuBasedWidget {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private Panel appletPanel;
 	private Button surveyImportButton;
 	private Button rawDataImportButton;
@@ -29,17 +34,17 @@ public class DataImportWidget extends MenuBasedWidget {
 		contentPanel.add(grid);
 		appletPanel = new VerticalPanel();
 		contentPanel.add(appletPanel);
-		surveyImportButton = initButton("Import Survey");
+		surveyImportButton = initButton(TEXT_CONSTANTS.importSurvey());
 		grid.setWidget(0, 0, surveyImportButton);
 		grid.setWidget(0, 1,
-				createDescription("Imports a survey definition spreadsheet."));
-		rawDataImportButton = initButton("Raw Data Import");
+				createDescription(TEXT_CONSTANTS.importSurveyDescription()));
+		rawDataImportButton = initButton(TEXT_CONSTANTS.rawDataImport());
 		grid.setWidget(1, 0, rawDataImportButton);
 		grid
 				.setWidget(
 						1,
 						1,
-						createDescription("Imports raw data spreadsheets that were created using the Raw Data report. This is typically used to re-import data after it has been cleansed"));
+						createDescription(TEXT_CONSTANTS.rawDataImportDescription()));
 		initWidget(contentPanel);
 	}
 

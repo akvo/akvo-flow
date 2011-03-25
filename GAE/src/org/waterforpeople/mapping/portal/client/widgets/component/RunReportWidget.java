@@ -3,9 +3,11 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
@@ -21,6 +23,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class RunReportWidget extends MenuBasedWidget {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private Grid grid;
 	private Panel appletPanel;
 	private Panel contentPanel;
@@ -36,41 +40,41 @@ public class RunReportWidget extends MenuBasedWidget {
 		appletPanel = new VerticalPanel();
 		contentPanel.add(grid);
 		contentPanel.add(appletPanel);
-		apReportButton = initButton("Access Point Report");
+		apReportButton = initButton(TEXT_CONSTANTS.accessPointReport());
 		grid.setWidget(0, 0, apReportButton);
 		grid
 				.setWidget(
 						0,
 						1,
-						createDescription("Generates a report containing all data for Access Points in the system. Upon selection, the user may specify search criteria that will be used to filter the results."));
-		kmlButton = initButton("Google Earth File");
+						createDescription(TEXT_CONSTANTS.accessPointReportDescription()));
+		kmlButton = initButton(TEXT_CONSTANTS.googleEarthFile());
 		grid.setWidget(1, 0, kmlButton);
 		grid
 				.setWidget(
 						1,
 						1,
-						createDescription("Exports a Google Earth KMZ file. The file, when opened in Google Earth, will show the location of each Access Point in the system."));
-		rawDataReportButton = initButton("Raw Data Report");
+						createDescription(TEXT_CONSTANTS.googleEarthFileDescription()));
+		rawDataReportButton = initButton(TEXT_CONSTANTS.rawDataReport());
 		grid.setWidget(2, 0, rawDataReportButton);
 		grid
 				.setWidget(
 						2,
 						1,
-						createDescription("Exports all submitted raw data for a single survey. This report will contain all responses collected for the survey."));
-		summaryReportButton = initButton("Survey Summary Report");
+						createDescription(TEXT_CONSTANTS.rawDataReportDescription()));
+		summaryReportButton = initButton(TEXT_CONSTANTS.surveySummaryReport());
 		grid.setWidget(3, 0, summaryReportButton);
 		grid
 				.setWidget(
 						3,
 						1,
-						createDescription("Exports a summary report for a single survey. This report will contain the response frequencies for each question in the survey."));
-		surveyFormButton = initButton("Survey Form");
+						createDescription(TEXT_CONSTANTS.surveySummaryReportDescription()));
+		surveyFormButton = initButton(TEXT_CONSTANTS.surveyForm());
 		grid.setWidget(4, 0, surveyFormButton);
 		grid
 				.setWidget(
 						4,
 						1,
-						createDescription("Generates a printable form that can be used to conduct a paper-based survey."));
+						createDescription(TEXT_CONSTANTS.surveyFormDescription()));
 		initWidget(contentPanel);
 	}
 

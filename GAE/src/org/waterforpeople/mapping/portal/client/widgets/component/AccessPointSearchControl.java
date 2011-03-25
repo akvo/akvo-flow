@@ -6,6 +6,7 @@ import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
@@ -25,10 +26,12 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * 
  */
 public class AccessPointSearchControl extends Composite {
-
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	
 	private ListBox apTypeBox;
-	public static final String ANY_OPT = "Any";
-	public static final String ALL_OPT = "All";
+	public static final String ANY_OPT = TEXT_CONSTANTS.any();
+	public static final String ALL_OPT = TEXT_CONSTANTS.all();
 	private ListBox countryListbox;
 	private ListBox communityListbox;
 	private String specialOption;
@@ -49,19 +52,20 @@ public class AccessPointSearchControl extends Composite {
 		specialOption = ANY_OPT;
 		Grid grid = new Grid(4, 4);
 		configureAccessPointListBox();
-		grid.setWidget(0, 0, ViewUtil.initLabel("Country"));
+		grid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 		grid.setWidget(0, 1, countryListbox);
-		grid.setWidget(0, 2, ViewUtil.initLabel("Community"));
+		grid.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS.community()));
 		grid.setWidget(0, 3, communityListbox);
-		grid.setWidget(1, 0, ViewUtil.initLabel("Collection Date from: "));
+		grid.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.collectionDateFrom()));
 		grid.setWidget(1, 1, collectionDateFrom);
-		grid.setWidget(1, 2, ViewUtil.initLabel("to"));
+		grid.setWidget(1, 2, ViewUtil.initLabel(TEXT_CONSTANTS.to()));
 		grid.setWidget(1, 3, collectionDateTo);
-		grid.setWidget(2, 0, ViewUtil.initLabel("Access Point Type"));
+		grid.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.pointType()));
 		grid.setWidget(2, 1, apTypeBox);
-		grid.setWidget(3, 0, ViewUtil.initLabel("Construction Date From: "));
+		grid.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.constructionDateFrom()));
 		grid.setWidget(3, 1, constructionDateFrom);
-		grid.setWidget(3, 2, constructionDateTo);
+		grid.setWidget(3, 2, ViewUtil.initLabel(TEXT_CONSTANTS.to()));
+		grid.setWidget(3, 3, constructionDateTo);
 
 		communityService = GWT.create(CommunityService.class);
 		loadCountries();
@@ -72,12 +76,12 @@ public class AccessPointSearchControl extends Composite {
 
 	private void configureAccessPointListBox() {
 		apTypeBox
-				.addItem("Water Point", AccessPointType.WATER_POINT.toString());
-		apTypeBox.addItem("Sanitation Point", AccessPointType.SANITATION_POINT
+				.addItem(TEXT_CONSTANTS.waterPoint(), AccessPointType.WATER_POINT.toString());
+		apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(), AccessPointType.SANITATION_POINT
 				.toString());
-		apTypeBox.addItem("Public Institution",
+		apTypeBox.addItem(TEXT_CONSTANTS.publicInst(),
 				AccessPointType.PUBLIC_INSTITUTION.toString());
-		apTypeBox.addItem("School", AccessPointType.SCHOOL.toString());
+		apTypeBox.addItem(TEXT_CONSTANTS.school(), AccessPointType.SCHOOL.toString());
 
 	}
 

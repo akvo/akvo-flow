@@ -6,6 +6,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -28,6 +29,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class SurveyAssignmentListWidget extends ListBasedWidget implements
 		ContextAware {
 
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private Map<String, Object> bundle;
 	private Map<Widget, SurveyAssignmentDto> assignmentMap;
 	private SurveyAssignmentServiceAsync surveyAssignmentService;
@@ -56,11 +59,11 @@ public class SurveyAssignmentListWidget extends ListBasedWidget implements
 								Label l = createListEntry(result[i].getName());
 								dataGrid.setWidget(i, 0, l);
 								assignmentMap.put(l, result[i]);
-								Button b = createButton(ClickMode.EDIT, "Edit");
+								Button b = createButton(ClickMode.EDIT, TEXT_CONSTANTS.edit());
 								assignmentMap.put(b, result[i]);
 								dataGrid.setWidget(i, 1, b);
 								Button e = createButton(ClickMode.DELETE,
-										"Delete");
+										TEXT_CONSTANTS.delete());
 								dataGrid.setWidget(i, 2, e);
 								assignmentMap.put(e, result[i]);
 							}
@@ -71,8 +74,7 @@ public class SurveyAssignmentListWidget extends ListBasedWidget implements
 					@Override
 					public void onFailure(Throwable caught) {
 						toggleLoading(false);
-						MessageDialog errDia = new MessageDialog("Error",
-								"Could not load assignments");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());							
 						errDia.showCentered();
 					}
 				});
@@ -101,9 +103,7 @@ public class SurveyAssignmentListWidget extends ListBasedWidget implements
 				public void onFailure(Throwable caught) {
 					setWorking(false);
 					flushContext();
-					MessageDialog errDia = new MessageDialog("Error",
-							"Could not delete assignment: "
-									+ caught.getLocalizedMessage());
+					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 					errDia.showCentered();
 				}
 

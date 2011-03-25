@@ -3,8 +3,11 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -15,27 +18,28 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Dialog box that can be used to construct an AccessPointSearchCriteria object
  * 
- * TODO: refactor this, SurveySelectorDialog and WidgetDialog
  * 
  * @author Christopher Fagiani
  * 
  */
-public class AccessPointFilterDialog extends WidgetDialog implements ClickHandler {
-
+public class AccessPointFilterDialog extends WidgetDialog implements
+		ClickHandler {
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	public static final String CRITERIA_KEY = "APcriteria";
 	private AccessPointSearchControl searchControl;
 	private Button okButton;
 	private Button cancelButton;
 
 	public AccessPointFilterDialog(CompletionListener listener) {
-		super("Specify Access Point Filters", null,true,listener);
+		super(TEXT_CONSTANTS.accessPointFilterDialogTitle(), null, true, listener);
 		Panel panel = new VerticalPanel();
 		searchControl = new AccessPointSearchControl();
 		panel.add(searchControl);
 		Panel buttonPanel = new HorizontalPanel();
-		okButton = new Button("Ok");
+		okButton = new Button(TEXT_CONSTANTS.ok());
 		okButton.addClickHandler(this);
-		cancelButton = new Button("Cancel");
+		cancelButton = new Button(TEXT_CONSTANTS.cancel());
 		cancelButton.addClickHandler(this);
 		buttonPanel.add(okButton);
 		buttonPanel.add(cancelButton);

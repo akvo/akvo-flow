@@ -345,7 +345,7 @@ public class AttributeAssignmentWidget extends Composite implements
 
 			gridPanel.add(grid);
 		} else {
-			gridPanel.add(new Label("No Questions"));
+			gridPanel.add(new Label(TEXT_CONSTANTS.noQuestions()));
 		}
 	}
 

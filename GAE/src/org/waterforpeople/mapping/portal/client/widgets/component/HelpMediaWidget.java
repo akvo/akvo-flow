@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -33,6 +34,8 @@ public class HelpMediaWidget extends Composite implements
 
 	private static UploadConstants UPLOAD_CONSTANTS = GWT
 			.create(UploadConstants.class);
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 
 	private HorizontalPanel panel;
 	private HorizontalPanel uploadPanel;
@@ -57,7 +60,7 @@ public class HelpMediaWidget extends Composite implements
 			typeSelector.addItem(type.toString(), type.toString());
 		}
 		typeSelector.addChangeHandler(this);
-		ViewUtil.installFieldRow(panel, "Type", typeSelector, null);
+		ViewUtil.installFieldRow(panel, TEXT_CONSTANTS.type(), typeSelector, null);
 
 		statusPanel = new HorizontalPanel();
 		uploadPanel = new HorizontalPanel();
@@ -71,7 +74,7 @@ public class HelpMediaWidget extends Composite implements
 		panel.add(activityPanel);
 		activityPanel.setVisible(false);
 		installHelpActivities(activitySelector);
-		ViewUtil.installFieldRow(activityPanel, "Helper Activity",
+		ViewUtil.installFieldRow(activityPanel, TEXT_CONSTANTS.helperActivity(),
 				activitySelector, null);
 
 		form = new FormPanel();
@@ -96,7 +99,7 @@ public class HelpMediaWidget extends Composite implements
 		contentType = new Hidden("Content-Type");
 		uploadPanel.add(contentType);
 
-		uploadButton = new Button("Upload");
+		uploadButton = new Button(TEXT_CONSTANTS.upload());
 		uploadButton.addClickHandler(this);
 		upload = new FileUpload();
 		upload.setName("file");
@@ -195,11 +198,10 @@ public class HelpMediaWidget extends Composite implements
 				uploadPanel.setVisible(false);
 				statusPanel.setVisible(true);
 				statusPanel.clear();
-				statusPanel.add(new Label("Uploading..."));
+				statusPanel.add(new Label(TEXT_CONSTANTS.uploading()));
 				form.submit();
 			} else {
-				MessageDialog dia = new MessageDialog("Error",
-						"You must specify either a jpg or mp4 file");
+				MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.filetypeError());
 				dia.showCentered();
 			}
 		}

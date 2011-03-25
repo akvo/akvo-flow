@@ -87,10 +87,10 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 				TerminalType.SURVEY);
 		contentPanel.add(surveySelector);
 		row = new HorizontalPanel();
-		authTypeAnonButton = new RadioButton("authType", "Anonymous");
+		authTypeAnonButton = new RadioButton("authType", TEXT_CONSTANTS.anonymous());
 		authTypeAnonButton.addClickHandler(this);
 		row.add(authTypeAnonButton);
-		authTypeUserButton = new RadioButton("authType", "User");
+		authTypeUserButton = new RadioButton("authType", TEXT_CONSTANTS.user());
 		authTypeUserButton.addClickHandler(this);
 		row.add(authTypeUserButton);
 		findUserButton = new Button(TEXT_CONSTANTS.findUser());

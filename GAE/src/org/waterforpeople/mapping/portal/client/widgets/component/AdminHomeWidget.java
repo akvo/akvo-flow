@@ -1,10 +1,12 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
@@ -18,8 +20,9 @@ import com.google.gwt.user.client.ui.Grid;
  * 
  */
 public class AdminHomeWidget extends MenuBasedWidget {
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 
-	
 	private Button userMgmtButton;
 	private Button surveyMgmtButton;
 	private Button assignmentButton;
@@ -34,27 +37,24 @@ public class AdminHomeWidget extends MenuBasedWidget {
 	public AdminHomeWidget(PageController controller, UserDto user) {
 		Grid widget = new Grid(9, 2);
 		this.controller = controller;
-		userMgmtButton = initButton("Manage Users");
+		userMgmtButton = initButton(TEXT_CONSTANTS.manageUsers());
 
 		widget.setWidget(0, 0, userMgmtButton);
-		widget
-				.setWidget(
-						0,
-						1,
-						createDescription("Create, edit and delete user accounts for the dashboard (Appengine Admins Only)."));
+		widget.setWidget(0, 1, createDescription(TEXT_CONSTANTS
+				.manageUsersDescription()));
 		if (!user.hasPermission(PermissionConstants.EDIT_USER)) {
 			userMgmtButton.setEnabled(false);
 		}
 
-		surveyMgmtButton = initButton("Manage Surveys");
+		surveyMgmtButton = initButton(TEXT_CONSTANTS.manageSurveys());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			surveyMgmtButton.setEnabled(false);
 		}
 		widget.setWidget(1, 0, surveyMgmtButton);
 		widget
 				.setWidget(1, 1,
-						createDescription("Create and publish surveys."));
-		assignmentButton = initButton("Assign Surveys to Devices");
+						createDescription(TEXT_CONSTANTS.manageSurveysDescription()));
+		assignmentButton = initButton(TEXT_CONSTANTS.assignSurveys());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			assignmentButton.setEnabled(false);
 		}
@@ -64,8 +64,8 @@ public class AdminHomeWidget extends MenuBasedWidget {
 				.setWidget(
 						2,
 						1,
-						createDescription("Assign surveys to remote devices for auto delivery."));
-		mappingButton = initButton("Map Access PointAttributes");
+						createDescription(TEXT_CONSTANTS.assignSurveysDescription()));
+		mappingButton = initButton(TEXT_CONSTANTS.mapAPAttributes());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			mappingButton.setEnabled(false);
 		}
@@ -74,9 +74,9 @@ public class AdminHomeWidget extends MenuBasedWidget {
 				.setWidget(
 						3,
 						1,
-						createDescription("Map survey questions to fields in the Access Point. This is required before survey data will appear in maps."));
+						createDescription(TEXT_CONSTANTS.mapAPAttributesDescription()));
 
-		editorialButton = initButton("Edit Editorial Content");
+		editorialButton = initButton(TEXT_CONSTANTS.editEditorial());
 		if (!user.hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
 			editorialButton.setEnabled(false);
 		}
@@ -85,9 +85,9 @@ public class AdminHomeWidget extends MenuBasedWidget {
 				.setWidget(
 						4,
 						1,
-						createDescription("Create and edit static content to appear on editorial driven pages."));
+						createDescription(TEXT_CONSTANTS.editEditorialDescription()));
 
-		generateBootstrapButton = initButton("Generate Bootstrap File");
+		generateBootstrapButton = initButton(TEXT_CONSTANTS.generateBootstrap());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			generateBootstrapButton.setEnabled(false);
 		}
@@ -96,9 +96,9 @@ public class AdminHomeWidget extends MenuBasedWidget {
 				.setWidget(
 						5,
 						1,
-						createDescription("Creates a bootstrap zip file for use in manually loading surveys on a device via the SD card."));
+						createDescription(TEXT_CONSTANTS.generateBootstrapDescription()));
 
-		editWebAuthButton = initButton("Edit Web Authorizations");
+		editWebAuthButton = initButton(TEXT_CONSTANTS.editWebAuth());
 		if (!user.hasPermission(PermissionConstants.EDIT_TOKENS)) {
 			editWebAuthButton.setEnabled(false);
 		}
@@ -107,9 +107,9 @@ public class AdminHomeWidget extends MenuBasedWidget {
 				.setWidget(
 						6,
 						1,
-						createDescription("Create and edit tokens used for authorization within the web-based survey entry form"));
+						createDescription(TEXT_CONSTANTS.editWebAuthDescription()));
 
-		reportButton = initButton("Run Reports");
+		reportButton = initButton(TEXT_CONSTANTS.runReports());
 		if (!user.hasPermission(PermissionConstants.RUN_REPORTS)) {
 			reportButton.setEnabled(false);
 		}
@@ -118,15 +118,15 @@ public class AdminHomeWidget extends MenuBasedWidget {
 				.setWidget(
 						7,
 						1,
-						createDescription("Run survey and access port reports, generate survey KMZ files, and generate survey forms."));
+						createDescription(TEXT_CONSTANTS.runReportsDescription()));
 
-		importButton = initButton("Import Data");
+		importButton = initButton(TEXT_CONSTANTS.importData());
 		if (!user.hasPermission(PermissionConstants.IMPORT_DATA)) {
 			importButton.setEnabled(false);
 		}
 		widget.setWidget(8, 0, importButton);
 		widget.setWidget(8, 1,
-				createDescription("Import survey and access point data."));
+				createDescription(TEXT_CONSTANTS.importDataDescription()));
 
 		initWidget(widget);
 	}
