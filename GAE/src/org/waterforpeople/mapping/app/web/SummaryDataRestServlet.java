@@ -20,7 +20,6 @@ import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointMetricSummaryDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.dto.PlacemarkRestResponse;
 import org.waterforpeople.mapping.app.web.dto.SummaryDataRequest;
 import org.waterforpeople.mapping.app.web.dto.SummaryDataResponse;
 
