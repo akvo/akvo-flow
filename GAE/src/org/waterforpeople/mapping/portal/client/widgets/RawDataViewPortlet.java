@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.surveyentry.client.component.SurveyEntryWidget;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
@@ -48,17 +49,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		DataTableBinder<SurveyInstanceDto>,
 		DataTableListener<SurveyInstanceDto> {
-	public static final String NAME = "Raw Data Manager";
-	public static final String DESCRIPTION = "Allows the management of raw imported survey data";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+	
+	public static final String NAME = TEXT_CONSTANTS.rawDataViewPortletName();
 	private static final String EDITED_ROW_CSS = "gridCell-edited";
 
 	private static Integer width = 1024;
 	private static Integer height = 768;
 	private static final DataTableHeader TABLE_HEADERS[] = {
-			new DataTableHeader("Submission"), new DataTableHeader("Survey"),
-			new DataTableHeader("Survey Code"),
-			new DataTableHeader("Collection Date"),
-			new DataTableHeader("Approx?") };
+			new DataTableHeader(TEXT_CONSTANTS.submission()), new DataTableHeader(TEXT_CONSTANTS.survey()),
+			new DataTableHeader(TEXT_CONSTANTS.surveyCode()),
+			new DataTableHeader(TEXT_CONSTANTS.collectionDate()),
+			new DataTableHeader(TEXT_CONSTANTS.approx()) };
 	private static final Integer PAGE_SIZE = 20;
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
@@ -76,26 +79,27 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private RadioButton showUnapprovedButton;
 
 	public RawDataViewPortlet(UserDto user) {
-		super(NAME, true, false, false, width, height, user, false, null);
+		super(TEXT_CONSTANTS.rawDataViewPortletName(), true, false, false, width, height, user, false, null);
 		svc = GWT.create(SurveyInstanceService.class);
 		loadContentPanel();
 	}
 
 	public String getDescription() {
-		return DESCRIPTION;
+		return TEXT_CONSTANTS.rawDataViewPortletDescription();
 	}
 
 	private void loadContentPanel() {
 		finderPanel = new HorizontalPanel();
 		instanceIdBox = new TextBox();
-		finderPanel.add(ViewUtil.initLabel("Instance Id: "));
+		finderPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.instanceId()));
 		finderPanel.add(instanceIdBox);
-		Button findButton = new Button("Find");
+		Button findButton = new Button(TEXT_CONSTANTS.find());
 		finderPanel.add(findButton);
 
-		showAllButton = new RadioButton("approvedFlag", "Show All");
-		showUnapprovedButton = new RadioButton("approvedFlag",
-				"Show Unapproved");
+		showAllButton = new RadioButton("approvedFlag", TEXT_CONSTANTS
+				.showAll());
+		showUnapprovedButton = new RadioButton("approvedFlag", TEXT_CONSTANTS
+				.showUnapproved());
 		showAllButton.setValue(true);
 		finderPanel.add(showAllButton);
 		finderPanel.add(showUnapprovedButton);
@@ -122,7 +126,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			}
 		});
 		surveyInstanceTable = new PaginatedDataTable<SurveyInstanceDto>(
-				"Collection Date", this, this, true);
+				"collectionDate", this, this, true);
 		qasDetailGrid = new Grid();
 		contentPanel = new HorizontalPanel();
 
@@ -142,7 +146,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 	@Override
 	public String getName() {
-		return NAME;
+		return TEXT_CONSTANTS.rawDataViewPortletName();
 	}
 
 	/**
@@ -156,23 +160,27 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		changedAnswers = new HashMap<Long, QuestionAnswerStoreDto>();
 		if (questions != null) {
 			qasDetailGrid.resize(questions.size() + 2, 5);
-			qasDetailGrid.setWidget(0, 0, ViewUtil.initLabel("Question Id"));
-			qasDetailGrid.setWidget(0, 1, ViewUtil.initLabel("Question Type"));
-			qasDetailGrid.setWidget(0, 2, ViewUtil.initLabel("Answer Value"));
-			qasDetailGrid
-					.setWidget(0, 3, ViewUtil.initLabel("Collection Date"));
-			qasDetailGrid.setWidget(0, 4, ViewUtil.initLabel("Question Text"));
+			qasDetailGrid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+					.questionId()));
+			qasDetailGrid.setWidget(0, 1, ViewUtil.initLabel(TEXT_CONSTANTS
+					.questionType()));
+			qasDetailGrid.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS
+					.answerValue()));
+			qasDetailGrid.setWidget(0, 3, ViewUtil.initLabel(TEXT_CONSTANTS
+					.collectionDate()));
+			qasDetailGrid.setWidget(0, 4, ViewUtil.initLabel(TEXT_CONSTANTS
+					.questionText()));
 			Integer iRow = 0;
 			for (QuestionAnswerStoreDto qasDto : questions) {
 				bindQASRow(qasDto, ++iRow);
 			}
-			final Button saveButton = new Button("Save Changes");
+			final Button saveButton = new Button(TEXT_CONSTANTS.save());
 			saveButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
 					if (changedAnswers != null && changedAnswers.size() > 0) {
-						statusLabel.setText("Saving. Please wait...");
+						statusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 						statusLabel.setVisible(true);
 						svc
 								.updateQuestions(
@@ -185,8 +193,12 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 											public void onFailure(
 													Throwable caught) {
 												MessageDialog errDia = new MessageDialog(
-														"Application Error",
-														"Cannot update responses");
+														TEXT_CONSTANTS.error(),
+														TEXT_CONSTANTS
+																.errorTracePrefix()
+																+ " "
+																+ caught
+																		.getLocalizedMessage());
 												errDia
 														.showRelativeTo(saveButton);
 												statusLabel.setVisible(false);
@@ -225,7 +237,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					}
 				}
 			});
-			Button clearButton = new Button("Clear Changes");
+			Button clearButton = new Button(TEXT_CONSTANTS.discardChanges());
 			clearButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -234,7 +246,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 				}
 			});
 
-			Button deleteInstanceButton = new Button("Delete Instance");
+			Button deleteInstanceButton = new Button(TEXT_CONSTANTS.delete());
 			deleteInstanceButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -245,15 +257,19 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 								@Override
 								public void onFailure(Throwable caught) {
 									MessageDialog errDia = new MessageDialog(
-											"Could not delete instance",
-											"There was an error while deleting the survey instance. Please try again. If the problem persists, please contact an administrator");
+											TEXT_CONSTANTS.error(),
+											TEXT_CONSTANTS.errorTracePrefix()
+													+ " "
+													+ caught
+															.getLocalizedMessage());
 									errDia.showRelativeTo(qasDetailGrid);
 
 								}
 
 								@Override
 								public void onSuccess(Void result) {
-									statusLabel.setText("Instance Deleted");
+									statusLabel.setText(TEXT_CONSTANTS
+											.deleteComplete());
 									statusLabel.setVisible(true);
 									qasDetailGrid.clear(true);
 									requestData(null, false);
@@ -262,15 +278,16 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 				}
 			});
-			Button viewAsSurveyButton = new Button("View as Survey");
+			Button viewAsSurveyButton = new Button(TEXT_CONSTANTS
+					.viewAsSurvey());
 			viewAsSurveyButton.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					if (questions != null && questions.size() > 0) {
 						SurveyEntryWidget c = new SurveyEntryWidget(questions
 								.get(0).getSurveyId().toString(), questions);
-						WidgetDialog wd = new WidgetDialog("Survey Submission",
-								c);
+						WidgetDialog wd = new WidgetDialog(TEXT_CONSTANTS
+								.surveySubmission(), c);
 						wd.showCentered();
 						c.initialize();
 					}
@@ -278,7 +295,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 				}
 			});
 
-			final Button approveButton = new Button("Approve");
+			final Button approveButton = new Button(TEXT_CONSTANTS.approve());
 			approveButton.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
@@ -292,8 +309,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 								@Override
 								public void onFailure(Throwable caught) {
 									MessageDialog errDia = new MessageDialog(
-											"Error",
-											"Could not approve instance: "
+											TEXT_CONSTANTS.error(),
+											TEXT_CONSTANTS.errorTracePrefix()
+													+ " "
 													+ caught
 															.getLocalizedMessage());
 									errDia.showCentered();
@@ -302,14 +320,14 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 								@Override
 								public void onSuccess(Void v) {
 									MessageDialog dia = new MessageDialog(
-											"Approval Successful",
-											"Survey response has been approved");
+											TEXT_CONSTANTS.approvalComplete(),
+											TEXT_CONSTANTS
+													.approvalCompleteMessage());
 									dia.showCentered();
 									approveButton.setVisible(false);
 
 								}
 							});
-
 				}
 			});
 
@@ -407,7 +425,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	 * @param instanceId
 	 */
 	private void loadInstanceResponses(final Long instanceId) {
-		statusLabel.setText("Loading responses. Please wait...");
+		statusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 		statusLabel.setVisible(true);
 		selectedInstance = null;
 		svc.listQuestionsByInstance(instanceId,
@@ -463,7 +481,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		final boolean isNew = (cursor == null);
 		if (isNew) {
 			// create a date object that is 90 days earlier than now.
-			// jumping through hoops to avoid depricated APIs
+			// jumping through hoops to avoid deprecated APIs
 			dateForQuery = new Date((new Date()).getTime() - (86400000L * 90L));
 		}
 		svc.listSurveyInstance(dateForQuery, showUnapprovedButton.getValue(),

@@ -34,9 +34,12 @@ import com.google.gwt.user.client.ui.Widget;
 public class MappingAttributeManager extends Portlet {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
-			.create(TextConstants.class);
+			.create(TextConstants.class);	
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
+	
+	public static final String NAME = TEXT_CONSTANTS.mappingAttributeManagerTitle();
+	
 	private VerticalPanel contentPane = new VerticalPanel();
 	@SuppressWarnings("unused")
 	private ArrayList<String> spreadsheetCols = null;

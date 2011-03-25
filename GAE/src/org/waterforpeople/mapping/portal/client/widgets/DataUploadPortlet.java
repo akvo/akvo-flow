@@ -34,6 +34,8 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 	private static UploadConstants UPLOAD_CONSTANTS = GWT
 			.create(UploadConstants.class);
+	
+	public static final String NAME = TEXT_CONSTANTS.uploadPortletTitle();
 
 	private static final int WIDTH = 300;
 	private static final int HEIGHT = 300;

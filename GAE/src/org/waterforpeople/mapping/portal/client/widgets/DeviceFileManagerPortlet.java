@@ -39,19 +39,23 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 	private Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader(TEXT_CONSTANTS.id(), "key", true),
-			new DataTableHeader(TEXT_CONSTANTS.deviceIdentifier(), "devicePhoneNumber", true),
+			new DataTableHeader(TEXT_CONSTANTS.deviceIdentifier(),
+					"devicePhoneNumber", true),
 			new DataTableHeader(TEXT_CONSTANTS.uri(), "uri", true),
-			new DataTableHeader(TEXT_CONSTANTS.status(), "processedStatus", true),
-			new DataTableHeader(TEXT_CONSTANTS.createdDate(), "createDateTime", true),
-			new DataTableHeader(TEXT_CONSTANTS.action()) };
-	
+			new DataTableHeader(TEXT_CONSTANTS.status(), "processedStatus",
+					true),
+			new DataTableHeader(TEXT_CONSTANTS.createdDate(), "createDateTime",
+					true), new DataTableHeader(TEXT_CONSTANTS.action()) };
+
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
-	VerticalPanel mainVPanel = new VerticalPanel();
-	DeviceFilesServiceAsync svc;
-	ListBox processStatus = new ListBox();
+	private VerticalPanel mainVPanel = new VerticalPanel();
+	private DeviceFilesServiceAsync svc;
+	private ListBox processStatus = new ListBox();
 
+	public static final String NAME = TEXT_CONSTANTS.deviceFileManagerTitle();
+	
 	public DeviceFileManagerPortlet(String title, boolean scrollable,
 			boolean configurable, boolean snapable, int width, int height,
 			UserDto user, boolean useCommunity, String specialOption) {
@@ -78,10 +82,13 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 	}
 
 	private void prepareProcessStatusLB() {
-		processStatus.addItem(TEXT_CONSTANTS.errorInflating(), "ERROR_INFLATING_ZIP");
+		processStatus.addItem(TEXT_CONSTANTS.errorInflating(),
+				"ERROR_INFLATING_ZIP");
 		processStatus.addItem(TEXT_CONSTANTS.inProgress(), "IN_PROGRESS");
-		processStatus.addItem(TEXT_CONSTANTS.processedNoErrors(), "PROCESSED_NO_ERRORS");
-		processStatus.addItem(TEXT_CONSTANTS.processedWithErorrs(), "PROCESSED_WITH_ERRORS");
+		processStatus.addItem(TEXT_CONSTANTS.processedNoErrors(),
+				"PROCESSED_NO_ERRORS");
+		processStatus.addItem(TEXT_CONSTANTS.processedWithErorrs(),
+				"PROCESSED_WITH_ERRORS");
 		processStatus.addItem(TEXT_CONSTANTS.reprocessing(), "REPROCESSING");
 		processStatus.setSelectedIndex(3);
 		processStatus.addChangeHandler(new ChangeHandler() {
@@ -114,15 +121,17 @@ public class DeviceFileManagerPortlet extends LocationDrivenPortlet implements
 
 	@Override
 	public void requestData(String cursor, final boolean isResort) {
-		final boolean isNew = (cursor == null);	
+		final boolean isNew = (cursor == null);
 		final String statusCode = processStatus.getValue(processStatus
 				.getSelectedIndex());
 		AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>> dataCallback = new AsyncCallback<ResponseDto<ArrayList<DeviceFilesDto>>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),
-						TEXT_CONSTANTS.errorTracePrefix()+ " "+caught.getLocalizedMessage());
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 

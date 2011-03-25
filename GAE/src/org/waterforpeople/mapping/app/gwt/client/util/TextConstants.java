@@ -212,4 +212,21 @@ public interface TextConstants extends Constants{
 	public String previous();
 	public String noResponsesForQuestion();
 	public String value();
+	public String rawDataViewPortletName();
+	public String rawDataViewPortletDescription();
+	public String instanceId();
+	public String find();
+	public String showAll();
+	public String showUnapproved();
+	public String questionId();
+	public String questionType();
+	public String answerValue();
+	public String viewAsSurvey();
+	public String approve();
+	public String surveySubmission();
+	public String approvalComplete();
+	public String approvalCompleteMessage();
+	public String submission();
+	public String surveyCode();
+	public String approx();
 }
