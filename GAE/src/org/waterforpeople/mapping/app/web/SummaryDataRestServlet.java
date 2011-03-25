@@ -95,6 +95,13 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 			response.setDtoList(convertAccessPointMetric(
 					seachAPMetrics(dataReq), dataReq.getIncludePlacemarkFlag()));
 		}
+		if (response != null && cache != null) {
+			try {
+				cache.put(dataReq.getCacheKey(), response);
+			} catch (Throwable t) {
+				log.log(Level.WARNING, "Could not cache results", t);
+			}
+		}
 		return response;
 	}
 
