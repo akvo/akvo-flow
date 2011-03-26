@@ -260,10 +260,13 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		Integer key = findIndexForGroup(group);
 		if (key != null) {
 			survey.getQuestionGroupList().remove(key.intValue());
+			final MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
+					.deleting(), TEXT_CONSTANTS.pleaseWait(), true);
 			surveyService.deleteQuestionGroup(group, group.getSurveyId(),
 					new AsyncCallback<String>() {
 						@Override
 						public void onFailure(Throwable caught) {
+							dia.hide(true);
 							setWorking(false);
 							MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
 									.error(), TEXT_CONSTANTS.errorTracePrefix()
@@ -273,6 +276,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 
 						@Override
 						public void onSuccess(String result) {
+							dia.hide(true);
 							setWorking(false);
 							loadData(survey);
 						}

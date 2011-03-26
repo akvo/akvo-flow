@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 
 /**
@@ -61,6 +62,8 @@ public class TypeEnumConverter extends AbstractConverter {
 				return QuestionHelpDto.Type.valueOf(value.toString());
 			} else if (type == OGRFeatureDto.FeatureType.class) {
 				return OGRFeatureDto.FeatureType.valueOf(value.toString());
+			}else if (type == Survey.Status.class){
+				return Survey.Status.valueOf(value.toString());
 			}
 		}
 		return null;

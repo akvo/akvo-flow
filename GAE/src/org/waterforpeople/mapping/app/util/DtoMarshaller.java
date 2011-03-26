@@ -16,6 +16,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
@@ -75,6 +76,7 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter,QuestionHelpMedia.Type.class);
 		ConvertUtils.register(enumConverter,QuestionHelpDto.Type.class);
 		ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
+		ConvertUtils.register(enumConverter, Survey.Status.class);
 		
 		
 		DatastoreTextConverter textConverter = new DatastoreTextConverter();

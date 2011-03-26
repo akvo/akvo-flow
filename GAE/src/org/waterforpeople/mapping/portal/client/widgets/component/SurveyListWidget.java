@@ -32,10 +32,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
+			.create(TextConstants.class);
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyDto> surveyMap;
 	private Map<String, Object> bundle;
+	private SurveyGroupDto surveyGroup;
 
 	public SurveyListWidget(PageController controller) {
 		super(controller);
@@ -46,6 +47,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 	}
 
 	public void loadData(SurveyGroupDto groupDto) {
+		surveyGroup = groupDto;
 		if (groupDto != null) {
 			surveyService.listSurveysByGroup(groupDto.getKeyId().toString(),
 					new AsyncCallback<ArrayList<SurveyDto>>() {
@@ -58,21 +60,26 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 						@Override
 						public void onSuccess(ArrayList<SurveyDto> result) {
 							toggleLoading(false);
+							surveyGroup.setSurveyList(result);
 							if (result != null && result.size() > 0) {
-								Grid dataGrid = new Grid(result.size(), 3);
+								Grid dataGrid = new Grid(result.size(), 4);
 								for (int i = 0; i < result.size(); i++) {
 									Label l = createListEntry(result.get(i)
 											.getName());
 									dataGrid.setWidget(i, 0, l);
 									surveyMap.put(l, result.get(i));
-									Button b = createButton(ClickMode.EDIT,
+									Button edit = createButton(ClickMode.EDIT,
 											TEXT_CONSTANTS.edit());
-									surveyMap.put(b, result.get(i));
-									dataGrid.setWidget(i, 1, b);
-									Button e = createButton(ClickMode.COPY,
+									surveyMap.put(edit, result.get(i));
+									dataGrid.setWidget(i, 1, edit);
+									Button copy = createButton(ClickMode.COPY,
 											TEXT_CONSTANTS.copy());
-									dataGrid.setWidget(i, 2, e);
-									surveyMap.put(e, result.get(i));
+									dataGrid.setWidget(i, 2, copy);
+									surveyMap.put(copy, result.get(i));
+									Button del = createButton(ClickMode.DELETE,
+											TEXT_CONSTANTS.delete());
+									dataGrid.setWidget(i, 2, del);
+									surveyMap.put(del, result.get(i));
 								}
 								addWidget(dataGrid);
 							}
@@ -83,7 +90,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
-		this.bundle = bundle;		
+		this.bundle = bundle;
 		flushContext();
 		loadData((SurveyGroupDto) bundle.get(BundleConstants.SURVEY_GROUP_KEY));
 	}
@@ -102,11 +109,53 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 				@Override
 				public void operationComplete(boolean wasSuccessful,
 						Map<String, Object> payload) {
-					MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.copyComplete(),TEXT_CONSTANTS.copyCompleteMessage());							
+					MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
+							.copyComplete(), TEXT_CONSTANTS
+							.copyCompleteMessage());
 					dia.showCentered();
 				}
 			});
 			copyDialog.show();
+		} else if (ClickMode.DELETE == mode) {
+			deleteSurvey(surveyMap.get(source));
+		}
+	}
+
+	private void deleteSurvey(SurveyDto survey) {
+		setWorking(true);
+		Integer idx = null;
+		for (int i = 0; i < surveyGroup.getSurveyList().size(); i++) {
+			if (surveyGroup.getSurveyList().get(i).getKeyId().equals(
+					survey.getKeyId())) {
+				idx = i;
+			}
+		}
+		if (idx != null && idx >= 0) {
+			surveyGroup.getSurveyList().remove(idx);
+			final MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
+					.deleting(), TEXT_CONSTANTS.pleaseWait(), true);
+			dia.showCentered();
+			surveyService.deleteSurvey(survey, surveyGroup.getKeyId(),
+					new AsyncCallback<String>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							dia.hide(true);
+							setWorking(false);
+							MessageDialog errDia = new MessageDialog(
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
+											+ caught.getLocalizedMessage());
+							errDia.showCentered();
+						}
+
+						@Override
+						public void onSuccess(String result) {
+							dia.hide(true);
+							setWorking(false);
+							loadData(surveyGroup);
+						}
+					});
 		}
 	}
 
