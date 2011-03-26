@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerS
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
@@ -34,8 +35,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * 
  */
 public class RecentPointsPortlet extends Portlet {
-	public static final String DESCRIPTION = "Displays most recent access point information";
-	public static final String NAME = "Recent Access Points";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS.recentPointsPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.recentPointsPortletTitle();
 	private static final int WIDTH = 500;
 	private static final int HEIGHT = 500;
 	private MapWidget map;
@@ -60,8 +63,7 @@ public class RecentPointsPortlet extends Portlet {
 				new AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Application Error", "Cannot search");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());								
 						errDia.showRelativeTo(RecentPointsPortlet.this);
 					}
 
@@ -95,8 +97,8 @@ public class RecentPointsPortlet extends Portlet {
 		marker.addMarkerClickHandler(new MarkerClickHandler() {
 			public void onClick(MarkerClickEvent event) {
 				InfoWindow info = map.getInfoWindow();
-				info.open(marker, new InfoWindowContent("<b>Point Type:</b> "
-						+ dto.getPointType().toString() + "<br><b>Status:</b> "
+				info.open(marker, new InfoWindowContent("<b>"+TEXT_CONSTANTS.pointType()+":</b> "
+						+ dto.getPointType().toString() + "<br><b>"+TEXT_CONSTANTS.status()+"</b> "
 						+ dto.getPointStatus().toString()));
 				
 			}

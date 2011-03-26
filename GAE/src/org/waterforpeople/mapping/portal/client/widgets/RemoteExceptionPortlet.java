@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.diagnostics.RemoteExceptionService;
 import org.waterforpeople.mapping.app.gwt.client.diagnostics.RemoteExceptionServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.diagnostics.RemoteStacktraceDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -16,6 +17,7 @@ import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -44,18 +46,21 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class RemoteExceptionPortlet extends Portlet implements
 		DataTableBinder<RemoteStacktraceDto>,
 		DataTableListener<RemoteStacktraceDto>, ClickHandler {
-
-	public static final String NAME = "Remote Exception Manager";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+	public static final String NAME = TEXT_CONSTANTS
+			.remoteExceptionPortletTitle();
 
 	private static final Integer width = 1024;
 	private static final Integer height = 768;
 	private static final String TRACE_WIDTH = "350px";
 	private static final String TRACE_HEIGHT = "400px";
 	private static final DataTableHeader TABLE_HEADERS[] = {
-			new DataTableHeader("Error Date"),
-			new DataTableHeader("Phone Number"),
-			new DataTableHeader("Device Id"),
-			new DataTableHeader("Software Version"), new DataTableHeader("") };
+			new DataTableHeader(TEXT_CONSTANTS.errorDate()),
+			new DataTableHeader(TEXT_CONSTANTS.phoneNumber()),
+			new DataTableHeader(TEXT_CONSTANTS.deviceId()),
+			new DataTableHeader(TEXT_CONSTANTS.softwareVersion()),
+			new DataTableHeader("") };
 	private static final Integer PAGE_SIZE = 20;
 	private RemoteExceptionServiceAsync remoteExceptionService;
 	private DeviceServiceAsync deviceService;
@@ -80,12 +85,12 @@ public class RemoteExceptionPortlet extends Portlet implements
 	private void loadContentPanel() {
 		finderPanel = new HorizontalPanel();
 		phoneNumberBox = new TextBox();
-		finderPanel.add(new Label("Phone Number: "));
+		finderPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.phoneNumber()));
 		finderPanel.add(phoneNumberBox);
 		deviceIdBox = new TextBox();
-		finderPanel.add(new Label("Device Id: "));
+		finderPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.deviceId()));
 		finderPanel.add(deviceIdBox);
-		findButton = new Button("Find");
+		findButton = new Button(TEXT_CONSTANTS.find());
 		finderPanel.add(findButton);
 		findButton.addClickHandler(this);
 		mapWidget = new MapWidget();
@@ -95,7 +100,7 @@ public class RemoteExceptionPortlet extends Portlet implements
 		mapWidget.setVisible(false);
 
 		remoteExceptionTable = new PaginatedDataTable<RemoteStacktraceDto>(
-				"Error Date", this, this, true);
+				"errorDate", this, this, true);
 
 		contentPanel = new HorizontalPanel();
 		VerticalPanel rightPanel = new VerticalPanel();
@@ -109,7 +114,7 @@ public class RemoteExceptionPortlet extends Portlet implements
 		VerticalPanel leftPanel = new VerticalPanel();
 		leftPanel.add(finderPanel);
 		leftPanel.add(remoteExceptionTable);
-		deleteOldButton = new Button("Delete Exceptions");
+		deleteOldButton = new Button(TEXT_CONSTANTS.deleteExceptions());
 		deleteOldButton.addClickHandler(this);
 		leftPanel.add(deleteOldButton);
 		contentPanel.add(leftPanel);
@@ -137,8 +142,8 @@ public class RemoteExceptionPortlet extends Portlet implements
 						: ""));
 		HorizontalPanel hp = new HorizontalPanel();
 
-		final Button ackButton = new Button("Acknowledge");
-		final Button delButton = new Button("Delete");
+		final Button ackButton = new Button(TEXT_CONSTANTS.acknowledge());
+		final Button delButton = new Button(TEXT_CONSTANTS.delete());
 		ClickHandler handler = new ClickHandler() {
 
 			@Override
@@ -147,11 +152,10 @@ public class RemoteExceptionPortlet extends Portlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Could not perform operation",
-								"There was an error performing the operation, please try again. If the problem persists, contact an administrator.");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showRelativeTo(remoteExceptionTable);
-
 					}
 
 					@Override
@@ -174,7 +178,6 @@ public class RemoteExceptionPortlet extends Portlet implements
 		};
 
 		ackButton.addClickHandler(handler);
-
 		delButton.addClickHandler(handler);
 		hp.add(ackButton);
 		hp.add(delButton);
@@ -184,7 +187,6 @@ public class RemoteExceptionPortlet extends Portlet implements
 
 	@Override
 	public DataTableHeader[] getHeaders() {
-
 		return TABLE_HEADERS;
 	}
 
@@ -264,8 +266,10 @@ public class RemoteExceptionPortlet extends Portlet implements
 							@Override
 							public void onFailure(Throwable caught) {
 								MessageDialog errDia = new MessageDialog(
-										"Error listing exceptions",
-										"Could not list remote exceptions. Please try again. If the problem persists, contact an administrator");
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
 								errDia.showRelativeTo(remoteExceptionTable);
 
 							}
@@ -283,14 +287,14 @@ public class RemoteExceptionPortlet extends Portlet implements
 		if (event.getSource() == findButton) {
 			requestData(null, false);
 		} else if (event.getSource() == deleteOldButton) {
-			MessageDialog confDia = new MessageDialog(
-					"Confirm Delete",
-					"This will delete all remote exceptions more than 30 days old. Do you want to proceed?",
+			MessageDialog confDia = new MessageDialog(TEXT_CONSTANTS
+					.confirmDelete(), TEXT_CONSTANTS.deleteExceptionsWarning(),
 					false, new ClickHandler() {
 						@Override
 						public void onClick(ClickEvent event) {
 							final MessageDialog waitDia = new MessageDialog(
-									"Deleting...", "Please Wait", true);
+									TEXT_CONSTANTS.deleting(), TEXT_CONSTANTS
+											.pleaseWait(), true);
 							waitDia.showCentered();
 							remoteExceptionService
 									.deleteOldExceptions(new AsyncCallback<Void>() {
@@ -299,8 +303,10 @@ public class RemoteExceptionPortlet extends Portlet implements
 										public void onFailure(Throwable caught) {
 											waitDia.hide();
 											MessageDialog errDia = new MessageDialog(
-													"Error",
-													"Could not delete exceptions: "
+													TEXT_CONSTANTS.error(),
+													TEXT_CONSTANTS
+															.errorTracePrefix()
+															+ " "
 															+ caught
 																	.getLocalizedMessage());
 											errDia.showCentered();

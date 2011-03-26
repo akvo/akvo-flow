@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
@@ -25,6 +26,7 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -56,8 +58,12 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * 
  */
 public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
-	public static final String NAME = "Survey Assignment Portlet";
-	public static final String DESCRIPTION = "Assigns surveys to devices";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+	public static final String NAME = TEXT_CONSTANTS
+			.surveyAssignmentPortletTitle();
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.surveyAssignmentPortletDescription();
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
 	private static final String SELECTED_ROW_CSS = "gridCell-selected";
@@ -117,31 +123,31 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		selectedDevices = new ListBox();
 		HorizontalPanel treeHost = new HorizontalPanel();
 
-		installDeviceControl("Devices", selectedDevices, treeHost);
+		installDeviceControl(selectedDevices, treeHost);
 
 		surveyRoot = new Tree();
 		allDevices = new HashMap<Long, DeviceDto>();
 
 		selectedSurveys = new ListBox();
-		surveyDragController = installSurveySelector("Surveys", surveyRoot,
+		surveyDragController = installSurveySelector(surveyRoot,
 				selectedSurveys, treeHost, surveyMap);
 		surveyTree = new SurveyTree(surveyRoot, surveyDragController, false);
 		inputPanel.add(treeHost, DockPanel.CENTER);
 
 		surveyAssignmentService = GWT.create(SurveyAssignmentService.class);
 
-		resetButton = new Button("Clear");
+		resetButton = new Button(TEXT_CONSTANTS.clear());
 		resetButton.addClickHandler(this);
 
-		saveButton = new Button("Save");
+		saveButton = new Button(TEXT_CONSTANTS.save());
 		saveButton.addClickHandler(this);
 
 		HorizontalPanel masterButtonPanel = new HorizontalPanel();
-		deleteButton = new Button("Delete Selected");
+		deleteButton = new Button(TEXT_CONSTANTS.deleteSelected());
 		deleteButton.addClickHandler(this);
-		editButton = new Button("Edit Assignment");
+		editButton = new Button(TEXT_CONSTANTS.editAssignment());
 		editButton.addClickHandler(this);
-		createButton = new Button("Create Assignment");
+		createButton = new Button(TEXT_CONSTANTS.createAssignment());
 		createButton.addClickHandler(this);
 
 		masterButtonPanel.add(createButton);
@@ -170,8 +176,9 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 				.listSurveyAssignments(new AsyncCallback<SurveyAssignmentDto[]>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog("Error",
-								"Cannot load assignment");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showRelativeTo(gridPanel);
 					}
 
@@ -189,10 +196,10 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			currentGrid = new Grid(currentDtoList.length + 1, 4);
 			currentGrid.addClickHandler(this);
 			// build headers
-			currentGrid.setText(0, 0, "Event");
-			currentGrid.setText(0, 1, "Language");
-			currentGrid.setText(0, 2, "Start");
-			currentGrid.setText(0, 3, "End");
+			currentGrid.setText(0, 0, TEXT_CONSTANTS.event());
+			currentGrid.setText(0, 1, TEXT_CONSTANTS.language());
+			currentGrid.setText(0, 2, TEXT_CONSTANTS.start());
+			currentGrid.setText(0, 3, TEXT_CONSTANTS.end());
 			setGridRowStyle(currentGrid, 0, false);
 			for (int i = 1; i < currentDtoList.length + 1; i++) {
 				currentGrid.setWidget(i, 0, new Label(currentDtoList[i - 1]
@@ -212,7 +219,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			}
 			gridPanel.add(currentGrid);
 		} else {
-			gridPanel.add(new Label("No Assignments"));
+			gridPanel.add(new Label(TEXT_CONSTANTS.noData()));
 		}
 	}
 
@@ -314,24 +321,24 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	 */
 	private Widget createInputControls() {
 		HorizontalPanel labelPanel = new HorizontalPanel();
-		labelPanel.add(new Label("Trip Name: "));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.tripName()));
 		eventName = new TextBox();
 		labelPanel.add(eventName);
-		labelPanel.add(new Label("Start: "));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.start()));
 		effectiveStartDate = new DateBox();
 		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
 				.getShortDateFormat()));
 		labelPanel.add(effectiveStartDate);
-		labelPanel.add(new Label("End: "));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.end()));
 		effectiveEndDate = new DateBox();
 		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
 				.getShortDateFormat()));
 		labelPanel.add(effectiveEndDate);
-		labelPanel.add(new Label("Language: "));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.language()));
 		language = new ListBox();
-		language.addItem("English", "English");
-		language.addItem("French", "French");
-		language.addItem("Spanish", "Spanish");
+		language.addItem(TEXT_CONSTANTS.english(), "English");
+		language.addItem(TEXT_CONSTANTS.french(), "French");
+		language.addItem(TEXT_CONSTANTS.spanish(), "Spanish");
 		labelPanel.add(language);
 		return labelPanel;
 	}
@@ -343,13 +350,13 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	 * 
 	 * @return
 	 */
-	private TreeDragController installSurveySelector(String typeDisplayName,
-			final Tree sourceTree, final ListBox targetBox,
-			InsertPanel hostPanel, final Map<Widget, BaseDto> dtoMap) {
+	private TreeDragController installSurveySelector(final Tree sourceTree,
+			final ListBox targetBox, InsertPanel hostPanel,
+			final Map<Widget, BaseDto> dtoMap) {
 		HorizontalPanel widgetPanel = new HorizontalPanel();
 
 		VerticalPanel availPanel = new VerticalPanel();
-		availPanel.add(new Label("Available " + typeDisplayName));
+		availPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.availableSurveys()));
 		ScrollPanel scrollPanel = new ScrollPanel();
 
 		scrollPanel.setWidth("200px");
@@ -358,12 +365,12 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		availPanel.add(scrollPanel);
 
 		VerticalPanel selectedPanel = new VerticalPanel();
-		selectedPanel.add(new Label("Assigned " + typeDisplayName));
+		selectedPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.assignedSurveys()));
 
 		targetBox.setVisibleItemCount(5);
 		targetBox.setWidth("250px");
 		selectedPanel.add(targetBox);
-		Button removeButton = new Button("Remove Selected");
+		Button removeButton = new Button(TEXT_CONSTANTS.removeSelected());
 		removeButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -426,12 +433,12 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		return deviceDragController;
 	}
 
-	private void installDeviceControl(String typeDisplayName,
-			final ListBox targetBox, InsertPanel hostPanel) {
+	private void installDeviceControl(final ListBox targetBox,
+			InsertPanel hostPanel) {
 		HorizontalPanel widgetPanel = new HorizontalPanel();
 
 		VerticalPanel availPanel = new VerticalPanel();
-		availPanel.add(new Label("Available " + typeDisplayName));
+		availPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.availableDevices()));
 		availPanel.add(deviceFilter);
 		deviceFilter.addKeyUpHandler(new KeyUpHandler() {
 
@@ -516,7 +523,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		buttonPanel.add(removeButton);
 
 		VerticalPanel selectedPanel = new VerticalPanel();
-		selectedPanel.add(new Label("Assigned " + typeDisplayName));
+		selectedPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.assignedDevices()));
 
 		targetBox.setVisibleItemCount(5);
 		targetBox.setWidth("150px");
@@ -611,7 +618,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		}
 		if (currentSelection > 0) {
 			dto.setKeyId(currentDtoList[currentSelection - 1].getKeyId());
-		}else if (currentDto != null){
+		} else if (currentDto != null) {
 			dto.setKeyId(currentDto.getKeyId());
 		}
 		dto.setDevices(dtoList);
@@ -623,8 +630,9 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		ArrayList<String> errors = dto.getErrorMessages();
 		if (errors.size() == 0) {
 			boolean hasUnreleased = false;
-			StringBuffer msg = new StringBuffer(
-					"The following surveys must be released before they will be distributed to the devices: <br><ul>");
+			StringBuffer msg = new StringBuffer(TEXT_CONSTANTS
+					.surveysMustBeReleased()
+					+ ": <br><ul>");
 			for (SurveyDto survey : dto.getSurveys()) {
 				if (surveyTree.isReleased(survey.getKeyId())) {
 					hasUnreleased = true;
@@ -639,8 +647,8 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 			}
 			msg.append("</ul>");
 			if (hasUnreleased) {
-				MessageDialog warnDialog = new MessageDialog("Information", msg
-						.toString());
+				MessageDialog warnDialog = new MessageDialog(TEXT_CONSTANTS
+						.information(), msg.toString());
 				warnDialog.showRelativeTo(saveButton);
 			}
 			surveyAssignmentService.saveSurveyAssignment(dto,
@@ -648,25 +656,27 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 
 						@Override
 						public void onSuccess(SurveyAssignmentDto result) {
-							statusLabel.setText("Assignment Saved");
+							statusLabel.setText(TEXT_CONSTANTS.saveComplete());
 							statusLabel.setVisible(true);
 							currentDto = result;
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							statusLabel.setText("Error: "
-									+ caught.getLocalizedMessage());
+							statusLabel.setText(TEXT_CONSTANTS
+									.errorTracePrefix()
+									+ " " + caught.getLocalizedMessage());
 							statusLabel.setVisible(true);
 						}
 					});
 		} else {
-			StringBuilder builder = new StringBuilder("Invalid input:\n");
+			StringBuilder builder = new StringBuilder(TEXT_CONSTANTS
+					.pleaseCorrect()).append("<br>");
 			for (String msg : errors) {
 				builder.append(msg).append("<br>");
 			}
-			MessageDialog errDia = new MessageDialog("Cannot save assignment",
-					builder.toString());
+			MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+					.inputError(), builder.toString());
 			errDia.showRelativeTo(saveButton);
 		}
 	}
@@ -721,8 +731,11 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							MessageDialog errDia = new MessageDialog("Error",
-									"Cannot delete assignment");
+							MessageDialog errDia = new MessageDialog(
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
+											+ caught.getLocalizedMessage());
 							errDia.showRelativeTo(gridPanel);
 						}
 

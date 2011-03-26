@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -31,8 +32,10 @@ import com.google.gwt.user.client.ui.TreeItem;
  * 
  */
 public class SummaryPortlet extends Portlet {
-	public static final String DESCRIPTION = "Displays a tree allowing you to drill-down into survey, device, and user details";
-	public static final String NAME = "System Summary";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String DESCRIPTION =TEXT_CONSTANTS.summaryPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.summaryPortletTitle();
 	private static final int WIDTH = 300;
 	private static final int HEIGHT = 300;
 	private static final String TREE_ITEM_HEIGHT = "25";
@@ -100,19 +103,19 @@ public class SummaryPortlet extends Portlet {
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(SURVEY_IMAGE));
-		panel.add(new Label("Surveys"));
+		panel.add(new Label(TEXT_CONSTANTS.surveys()));
 		surveyRoot = t.addItem(panel);
 		surveyTree = new SurveyTree(surveyRoot, null, false);
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(USER_IMAGE));
-		panel.add(new Label("Users"));
+		panel.add(new Label(TEXT_CONSTANTS.users()));
 		userRoot = t.addItem(panel);
 
 		panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(DEVICE_IMAGE));
-		panel.add(new Label("Devices"));
+		panel.add(new Label(TEXT_CONSTANTS.devices()));
 		deviceRoot = t.addItem(panel);
 
 		loadCountryMapLinks(t);
@@ -145,7 +148,7 @@ String currentCountryCode = null;
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setHeight(TREE_ITEM_HEIGHT);
 		panel.add(new Image(GOOGLE_EARTH_IMAGE));
-		Label l = new Label("View Current Map for: " + countryCode);
+		Label l = new Label(TEXT_CONSTANTS.viewCurrentMapFor()+": " + countryCode);
 		currentCountryCode = countryCode;
 		l.addClickHandler(new ClickHandler() {
 

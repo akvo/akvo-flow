@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -22,8 +24,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TechnologyTypeManagerPortlet extends Portlet {
-	public static final String DESCRIPTION = "Create/Edit/Delete Technology Types for Access Points";
-	public static final String NAME = "Technology Type Manager";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.technologyTypeManagerPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS
+			.technologyTypeManagerPortletTitle();
 
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 800;
@@ -49,12 +55,11 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 
 	}
 
-	private static final String TITLE = "Manage System Technology Types";
 	private static final Boolean SCROLLABLE = true;
 	private static final Boolean CONFIGURABLE = false;
 
 	public TechnologyTypeManagerPortlet() {
-		super(TITLE, SCROLLABLE, CONFIGURABLE, WIDTH, HEIGHT);
+		super(NAME, SCROLLABLE, CONFIGURABLE, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		contentPane.add(header);
@@ -112,7 +117,7 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 
 	private void addControlButtons() {
 		Integer numRows = entryTable.getRowCount();
-		Button addNewTechType = new Button("Add New");
+		Button addNewTechType = new Button(TEXT_CONSTANTS.add());
 
 		addNewTechType.addClickHandler(new ClickHandler() {
 
@@ -129,9 +134,10 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 	}
 
 	private void createHeaderRow() {
-		entryTable.setWidget(0, 0, new Label("Code"));
-		entryTable.setWidget(0, 1, new Label("Name"));
-		entryTable.setWidget(0, 2, new Label("Description"));
+		entryTable.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.code()));
+		entryTable.setWidget(0, 1, ViewUtil.initLabel(TEXT_CONSTANTS.name()));
+		entryTable.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS
+				.description()));
 	}
 
 	private void createDetailRow(TechnologyTypeDto item, Integer row) {
@@ -181,8 +187,9 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog errDialog = new MessageDialog(
-								"Error while saving",
-								"Could not save. Please try again. If the problem persists, contact an administrator");
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
 						errDialog.showRelativeTo(mainVPanel);
 					}
 
@@ -212,8 +219,9 @@ public class TechnologyTypeManagerPortlet extends Portlet {
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog errDialog = new MessageDialog(
-								"Error while deleting",
-								"Could not delete. Please try again. If the problem persists, contact an administrator");
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
 						errDialog.showRelativeTo(mainVPanel);
 					}
 

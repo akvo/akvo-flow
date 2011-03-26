@@ -11,8 +11,10 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -37,8 +39,11 @@ import com.google.gwt.visualization.client.visualizations.PieChart.Options;
  * 
  */
 public class SurveyQuestionPortlet extends Portlet {
-	public static final String DESCRIPTION = "Survey Question Responses as a Pie Chart";
-	public static final String NAME = "Survey Answer Breakdown";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+
+	public static final String DESCRIPTION =TEXT_CONSTANTS.surveyQuestionPortletDescription(); ;
+	public static final String NAME = TEXT_CONSTANTS.surveyQuestionPortletTitle();
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 400;
 	private static final int MAX_LEN = 40;
@@ -62,13 +67,13 @@ public class SurveyQuestionPortlet extends Portlet {
 		
 		VerticalPanel header = new VerticalPanel();
 		HorizontalPanel line = new HorizontalPanel();
-		line.add(new Label("Survey Group: "));
+		line.add(ViewUtil.initLabel(TEXT_CONSTANTS.surveyGroup()));
 		line.add(surveyGroupListbox);
-		line.add(new Label("Survey: "));
+		line.add(ViewUtil.initLabel(TEXT_CONSTANTS.survey()));
 		line.add(surveyListbox);
 		header.add(line);
 		line = new HorizontalPanel();
-		line.add(new Label("Survey Question: "));
+		line.add(ViewUtil.initLabel(TEXT_CONSTANTS.question()));
 		line.add(questionListbox);
 		header.add(line);
 
@@ -224,8 +229,8 @@ public class SurveyQuestionPortlet extends Portlet {
 								noDataLabel.removeFromParent();
 							}
 							DataTable dataTable = DataTable.create();
-							dataTable.addColumn(ColumnType.STRING, "Response");
-							dataTable.addColumn(ColumnType.NUMBER, "Count");
+							dataTable.addColumn(ColumnType.STRING,TEXT_CONSTANTS.response());
+							dataTable.addColumn(ColumnType.NUMBER, TEXT_CONSTANTS.count());
 							for (int i = 0; i < result.length; i++) {
 								dataTable.addRow();
 								dataTable.setValue(i, 0, result[i]
@@ -238,7 +243,7 @@ public class SurveyQuestionPortlet extends Portlet {
 								contentPane.add(pieChart);
 								currentTable = dataTable;
 							}else{
-								noDataLabel = new Label("No Data");
+								noDataLabel = new Label(TEXT_CONSTANTS.noData());
 								contentPane.add(noDataLabel);
 							}
 

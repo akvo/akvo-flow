@@ -3,9 +3,11 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -23,8 +25,10 @@ import com.google.gwt.user.client.ui.ListBox;
  */
 public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 
-	public static final String NAME = "Survey Loader";
-	public static final String DESCRIPTION = "Allows loading of surveys from Google Docs Spreadsheets";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String NAME = TEXT_CONSTANTS.surveyLoaderPortletTitle();
+	public static final String DESCRIPTION = TEXT_CONSTANTS.surveyLoaderPortletDescription();
 	private static final int WIDTH = 300;
 	private static final int HEIGHT = 300;
 
@@ -50,7 +54,7 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 		svc = GWT.create(SpreadsheetMappingAttributeService.class);
 		bindListSpreadsheets();
 		contentPanel.add(processSpreadsheetButton);*/
-		importLocalButton = new Button("Import Local Sheet");
+		importLocalButton = new Button(TEXT_CONSTANTS.importLocalSheet());
 		importLocalButton.addClickHandler(this);
 		contentPanel.add(importLocalButton);
 
@@ -76,14 +80,13 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 							@Override
 							public void onFailure(Throwable caught) {
 								MessageDialog errDia = new MessageDialog(
-										"Error",
-										"Cannot import spreadsheet into survey.");
+										TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 								errDia.showRelativeTo(processSpreadsheetButton);
 							}
 
 							@Override
 							public void onSuccess(Void result) {
-								Window.alert("Imported Survey");
+								Window.alert(TEXT_CONSTANTS.importComplete());
 							}
 						});
 			}
@@ -105,8 +108,8 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 			@Override
 			public void onFailure(Throwable caught) {
 
-				MessageDialog errDia = new MessageDialog("Error",
-						"Cannot list spreadsheets.");
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 				errDia.showRelativeTo(processSpreadsheetButton);
 				Window.open("/authsub", "_self", "");
 			}

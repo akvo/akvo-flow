@@ -19,6 +19,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyQuestionTranslationDialog;
 import org.waterforpeople.mapping.portal.client.widgets.component.TranslationChangeListener;
 
@@ -50,8 +51,10 @@ import com.google.gwt.user.client.ui.Widget;
 public class SurveyManagerPortlet extends UserAwarePortlet implements
 		ClickHandler, SurveyTreeListener, TranslationChangeListener {
 
-	public static final String NAME = "Survey Manager Portlet";
-	public static final String DESCRIPTION = "Manages Create/Edit/Delete of Surveys";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String NAME = TEXT_CONSTANTS.surveyManagerPortletTitle();
+	public static final String DESCRIPTION = TEXT_CONSTANTS.surveyManagerPortletDescription();
 	private static final int MAX_Q_LENGTH = 50;
 	private static String title = "";
 	private static Boolean scrollable = true;
@@ -174,21 +177,21 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 	 * constructs all the buttons and sets their initial visibility
 	 */
 	private void configureButtonPanel() {
-		addSurveyGroupButton = constructAndInstallButton("Add Survey Group",
+		addSurveyGroupButton = constructAndInstallButton(TEXT_CONSTANTS.createSurveyGroup(),
 				true);
 		deleteSurveyGroupButton = constructAndInstallButton(
 				"Delete Survey Group", false);
 
-		addSurveyButton = constructAndInstallButton("Add Survey", true);
-		deleteSurveyButton = constructAndInstallButton("Delete Survey", false);
+		addSurveyButton = constructAndInstallButton(TEXT_CONSTANTS.createSurvey(), true);
+		deleteSurveyButton = constructAndInstallButton(TEXT_CONSTANTS.deleteSurvey(), false);
 
 		addQuestionGroupButton = constructAndInstallButton(
 				"Add Question Group", true);
 		deleteQuestionGroupButton = constructAndInstallButton(
 				"Delete Question Group", false);
 
-		addQuestionButton = constructAndInstallButton("Add Question", true);
-		deleteQuestionButton = constructAndInstallButton("Delete Question",
+		addQuestionButton = constructAndInstallButton(TEXT_CONSTANTS.createQuestion(), true);
+		deleteQuestionButton = constructAndInstallButton(TEXT_CONSTANTS.deleteQuestion(),
 				false);
 
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
@@ -259,9 +262,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Could not delete survey",
-								"There was an error while attempting to delete the survey. Please try again. If the problem persists, please contact an administrator");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());								
 						errDia.showCentered();
 
 					}
@@ -281,20 +282,19 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		svc.deleteSurveyGroup(getSurveyGroupDto(), new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Could not delete survey group.");
+				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());								
+				errDia.showCentered();
 			}
 
 			@Override
 			public void onSuccess(String result) {
 				if (result == null) {
-					Window.alert("Deleted survey group");
+					Window.alert(TEXT_CONSTANTS.deleteComplete());
 					surveyTree.removeItem(item);
 					surveyGroupDetail.setVisible(false);
 
 				} else {
-					MessageDialog errDia = new MessageDialog(
-							"Error while deleting",
-							"Could not delete survey group. Please try again. If the problem persits, please contact an administrator");
+					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.error());
 					errDia.showCentered();
 				}
 			}
@@ -361,13 +361,13 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		}
 		ListBox questionTypeLB = new ListBox();
 		// FREE_TEXT, OPTION, NUMBER, GEO, PICTURE, VIDEO, STRENGTH
-		questionTypeLB.addItem("Free Text");
-		questionTypeLB.addItem("Option");
-		questionTypeLB.addItem("Number");
-		questionTypeLB.addItem("Geo");
-		questionTypeLB.addItem("Photo");
-		questionTypeLB.addItem("Video");
-		questionTypeLB.addItem("Strength");
+		questionTypeLB.addItem(TEXT_CONSTANTS.freeText());
+		questionTypeLB.addItem(TEXT_CONSTANTS.option());
+		questionTypeLB.addItem(TEXT_CONSTANTS.number());
+		questionTypeLB.addItem(TEXT_CONSTANTS.geo());
+		questionTypeLB.addItem(TEXT_CONSTANTS.photo());
+		questionTypeLB.addItem(TEXT_CONSTANTS.video());
+		questionTypeLB.addItem(TEXT_CONSTANTS.strength());
 		if (item != null) {
 			QuestionDto.QuestionType qType = item.getType();
 			if (qType.equals(QuestionType.FREE_TEXT)) {
@@ -429,10 +429,10 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 		// Fix this section so that multiple buttons aren't created
 
-		Button saveQuestionButton = new Button("Save Question");
-		Button deleteQuestionButton = new Button("Delete Question");
-		Button viewResponsesButton = new Button("View Responses");
-		Button editTranslationButton = new Button("Edit Translations");
+		Button saveQuestionButton = new Button(TEXT_CONSTANTS.saveQuestion());
+		Button deleteQuestionButton = new Button(TEXT_CONSTANTS.deleteQuestion());
+		Button viewResponsesButton = new Button(TEXT_CONSTANTS.viewResponses());
+		Button editTranslationButton = new Button(TEXT_CONSTANTS.editTranslations());
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			saveQuestionButton.setVisible(false);
 			deleteQuestionButton.setVisible(false);
@@ -442,21 +442,20 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		questionId.setVisible(false);
 
 		questionDetailPanel.setWidget(0, 0, questionId);
-		questionDetailPanel.setWidget(1, 0, new Label("Question Text"));
+		questionDetailPanel.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.questionText()));
 		questionDetailPanel.setWidget(1, 1, questionText);
-		questionDetailPanel.setWidget(2, 0, new Label("Question Type"));
+		questionDetailPanel.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.questionType()));
 		questionDetailPanel.setWidget(2, 1, questionTypeLB);
-		questionDetailPanel.setWidget(3, 0, new Label("Question Tool Tip"));
+		questionDetailPanel.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.questionToolTip()));
 		questionDetailPanel.setWidget(3, 1, tip);
-		questionDetailPanel.setWidget(4, 0, new Label("Validation Rule"));
+		questionDetailPanel.setWidget(4, 0, ViewUtil.initLabel(TEXT_CONSTANTS.validationRule()));
 		questionDetailPanel.setWidget(4, 1, validationRule);
-		questionDetailPanel.setWidget(5, 0, new Label("Mandatory Question"));
+		questionDetailPanel.setWidget(5, 0, ViewUtil.initLabel(TEXT_CONSTANTS.mandatory()));
 		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
 		questionDetailPanel
-				.setWidget(6, 0, new Label("Question Display Order"));
+				.setWidget(6, 0, ViewUtil.initLabel(TEXT_CONSTANTS.order()));
 		questionDetailPanel.setWidget(6, 1, lbOrder);
-		questionDetailPanel.setWidget(7, 0, new Label(
-				"Question Dependent On Other Question"));
+		questionDetailPanel.setWidget(7, 0, ViewUtil.initLabel(TEXT_CONSTANTS.dependent()));
 		questionDetailPanel.setWidget(7, 1, dependentQuestion);
 
 		if (item != null && item.getQuestionDependency() != null
@@ -475,12 +474,12 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 						saveQuestion();
 					} else {
 						Window
-								.alert("Cannot save question. Issues: "
+								.alert(TEXT_CONSTANTS.pleaseCorrect()+" "
 										+ message);
 					}
 				} catch (Exception e) {
 					Window
-							.alert("Could not save question no Question Group was selected");
+							.alert(TEXT_CONSTANTS.noQuestionGroupSelected());
 				}
 			}
 
@@ -488,19 +487,19 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				String message = null;
 				QuestionDto qDto = getQuestionDto();
 				if (qDto.getText() == null)
-					message = "Must provide question text.\n";
+					message = TEXT_CONSTANTS.questionTextMandatory()+"\n";
 				if (qDto.getType().equals(QuestionType.OPTION)) {
 					ArrayList<QuestionOptionDto> qoList = qDto
 							.getOptionContainerDto().getOptionsList();
 					if (qoList == null) {
 						message = message
-								+ " You must specify question options for this type of question.\n";
+								+ " "+TEXT_CONSTANTS.optionMandatory()+"\n";
 					} else {
 						for (QuestionOptionDto qoDto : qoList) {
 							if (qoDto.getText() == null
 									|| qoDto.getText().trim().equals("")) {
 								message = message
-										+ "You must specify a text value for the question option.\n";
+										+ " "+TEXT_CONSTANTS.optionNotBlank()+"\n";
 							}
 						}
 					}
@@ -555,7 +554,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					// Likely have the QG selected because this is a new
 					// question need to figure out how to get QuestionDto
 					Window
-							.alert("Please save question first then select question before pressing edit translations buttons");
+							.alert(TEXT_CONSTANTS.saveQuestionFirst());
 				}
 			}
 		});
@@ -593,8 +592,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			}
 			final QuestionDto currentQuestion = tempQuestion;
 
-			final MessageDialog dia = new MessageDialog("Please wait",
-					"Loading question details...", true);
+			final MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.loading(),TEXT_CONSTANTS.pleaseWait(),true);					
 			dia.showCentered();
 			if (surveyOptionQuestionMap.get(currentQuestion.getSurveyId()) == null) {
 				// if we haven't loaded the Option questions for this survey, do
@@ -606,10 +604,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 							@Override
 							public void onFailure(Throwable caught) {
 								dia.hide();
-								MessageDialog errDia = new MessageDialog(
-										"Error loading questions",
-										"Could not load questions for dependency selection: "
-												+ caught.getMessage());
+								MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());										
 								errDia.showCentered();
 							}
 
@@ -635,7 +630,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 	private void populateDependencySelection(QuestionDto currentQuestion,
 			final QuestionDto[] optionQuestions) {
-		questionDetailPanel.setWidget(8, 0, new Label("Dependent on Question"));
+		questionDetailPanel.setWidget(8, 0, ViewUtil.initLabel(TEXT_CONSTANTS.dependentOnQuestion()));
 		ListBox questionLB = new ListBox();
 		ListBox answerLB = new ListBox();
 		QuestionDependencyDto item = null;
@@ -727,8 +722,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Window.alert("Could not load answers");
-
+								Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 							}
 						});
 			}
@@ -784,9 +778,9 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 
-		questionOptionDetail.setWidget(row, 0, new Label("Allow Other"));
+		questionOptionDetail.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.allowOther()));
 		questionOptionDetail.setWidget(row, 1, allowOther);
-		questionOptionDetail.setWidget(row, 2, new Label("Allow Multiple"));
+		questionOptionDetail.setWidget(row, 2, ViewUtil.initLabel(TEXT_CONSTANTS.allowMultiple()));
 		questionOptionDetail.setWidget(row, 3, allowMultiple);
 		questionOptionDetail.setWidget(row, 4, ocId);
 
@@ -805,7 +799,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 
-		Button addNewOptionButton = new Button("Add New Option");
+		Button addNewOptionButton = new Button(TEXT_CONSTANTS.addOption());
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			addNewOptionButton.setVisible(false);
 		}
@@ -854,14 +848,14 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		} else {
 			lbOptOrder.setSelectedIndex(row);
 		}
-		Button deleteOptionButton = new Button("Delete Option");
+		Button deleteOptionButton = new Button(TEXT_CONSTANTS.delete());
 		deleteOptionButton.setTitle(row.toString());
 
 		questionOptionDetail.insertRow(row);
 
-		questionOptionDetail.setWidget(row, 0, new Label("Order"));
+		questionOptionDetail.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.order()));
 		questionOptionDetail.setWidget(row, 1, lbOptOrder);
-		questionOptionDetail.setWidget(row, 2, new Label("Option Text"));
+		questionOptionDetail.setWidget(row, 2, ViewUtil.initLabel(TEXT_CONSTANTS.optionText()));
 		questionOptionDetail.setWidget(row, 3, optionText);
 		questionOptionDetail.setWidget(row, 4, optionId);
 		questionOptionDetail.setWidget(row, 5, deleteOptionButton);
@@ -912,7 +906,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Could not save question");
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 			}
 
 			@Override
@@ -928,7 +922,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 							.setText(result.getQuestionDependency()
 									.getQuestionId().toString());
 
-				Window.alert("Question Saved");
+				Window.alert(TEXT_CONSTANTS.saveComplete());
 			}
 
 		});
@@ -1070,14 +1064,14 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Could not delete question");
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 
 			}
 
 			@Override
 			public void onSuccess(String result) {
 				if (result == null) {
-					Window.alert("Question Deleted");
+					Window.alert(TEXT_CONSTANTS.deleteComplete());
 					questionDetailPanel.setVisible(false);
 					surveyTree.removeItem(item);
 				} else {
@@ -1101,14 +1095,14 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		}
 
 		surveyGroupId.setVisible(false);
-		Button saveSurveyGroupButton = new Button("Save Survey Group");
-		Button deleteSurveyGroupButton = new Button("Delete Survey Group");
+		Button saveSurveyGroupButton = new Button(TEXT_CONSTANTS.saveSurveyGroup());
+		Button deleteSurveyGroupButton = new Button(TEXT_CONSTANTS.deleteSurveyGroup());
 
 		surveyGroupDetail.setWidget(0, 1, surveyGroupId);
-		surveyGroupDetail.setWidget(1, 0, new Label("Survey Group Code"));
+		surveyGroupDetail.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.code()));
 		surveyGroupDetail.setWidget(1, 1, surveyGroupCode);
 		surveyGroupDetail
-				.setWidget(2, 0, new Label("Survey Group Description"));
+				.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.description()));
 		surveyGroupDetail.setWidget(2, 1, surveyGroupDesc);
 		surveyGroupDetail.setWidget(3, 0, saveSurveyGroupButton);
 		surveyGroupDetail.setWidget(3, 1, deleteSurveyGroupButton);
@@ -1120,7 +1114,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					saveSurveyGroup();
 				else
 					Window
-							.alert("Cannot Save Survey Group. You must fill provide a Survey Code");
+							.alert(TEXT_CONSTANTS.cannotSaveSurveyGroup());
 			}
 
 		});
@@ -1162,15 +1156,15 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 		}
 
-		Button saveSurveyButton = new Button("Save");
-		Button deleteSurveyButton = new Button("Delete");
-		Button publishSurveyButton = new Button("Publish");
-		Button exportSummaryButton = new Button("Export Summary");
-		Button exportRawDataButton = new Button("Export Raw Data");
-		Button exportFormButton = new Button("Export Survey Form");
-		Button remapSurveyFormButton = new Button("Remap to Access Point");
-		Button importRawDataButton = new Button("Import Raw Data XLS");
-		Button genKMLButton = new Button("Generate KML");
+		Button saveSurveyButton = new Button(TEXT_CONSTANTS.save());
+		Button deleteSurveyButton = new Button(TEXT_CONSTANTS.delete());
+		Button publishSurveyButton = new Button(TEXT_CONSTANTS.publishSurvey());
+		Button exportSummaryButton = new Button(TEXT_CONSTANTS.exportSummary());
+		Button exportRawDataButton = new Button(TEXT_CONSTANTS.exportRawData());
+		Button exportFormButton = new Button(TEXT_CONSTANTS.exportSurveyForm());
+		Button remapSurveyFormButton = new Button(TEXT_CONSTANTS.remapToAccessPoint());
+		Button importRawDataButton = new Button(TEXT_CONSTANTS.importRawData());
+		Button genKMLButton = new Button(TEXT_CONSTANTS.generateKml());
 
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			saveSurveyButton.setVisible(false);
@@ -1185,11 +1179,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		}
 
 		surveyDetail.setWidget(0, 0, surveyId);
-		surveyDetail.setWidget(1, 0, new Label("Survey Name"));
+		surveyDetail.setWidget(1, 0, new Label(TEXT_CONSTANTS.name()));
 		surveyDetail.setWidget(1, 1, surveyname);
-		surveyDetail.setWidget(2, 0, new Label("Description"));
+		surveyDetail.setWidget(2, 0, new Label(TEXT_CONSTANTS.description()));
 		surveyDetail.setWidget(2, 1, surveyDesc);
-		surveyDetail.setWidget(3, 0, new Label("Version"));
+		surveyDetail.setWidget(3, 0, new Label(TEXT_CONSTANTS.version()));
 		surveyDetail.setWidget(3, 1, version);
 		surveyDetail.setWidget(4, 0, saveSurveyButton);
 		surveyDetail.setWidget(4, 1, deleteSurveyButton);
@@ -1214,13 +1208,13 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Could not process remapping request.");
+						Window.alert(TEXT_CONSTANTS.couldNotProcessRemap()+" "+caught.getLocalizedMessage());
 					}
 
 					@Override
 					public void onSuccess(Object result) {
 						Window
-								.alert("Remapping request for survey submitted.  It will take a few minute to complete.");
+								.alert(TEXT_CONSTANTS.remapSubmitted());
 					}
 
 				});
@@ -1245,12 +1239,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 						saveSurvey();
 					} else {
 						Window
-								.alert("Cannot Save Survey.  You must provide a survey name");
+								.alert(TEXT_CONSTANTS.cannotSaveSurvey());
 					}
 				} catch (Exception e) {
 					Window
-							.alert("Could not save survey no survey group selected");
-					e.printStackTrace();
+							.alert(TEXT_CONSTANTS.noSurveyGroupSelected());					
 				}
 			}
 
@@ -1276,17 +1269,17 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 						@Override
 						public void onFailure(Throwable caught) {
-							Window.alert("Could not publish survey");
+							Window.alert(TEXT_CONSTANTS.couldNotPublish());
 						}
 
 						@Override
 						public void onSuccess(Void result) {
-							Window.alert("Survey published");
+							Window.alert(TEXT_CONSTANTS.surveyPublished());
 
 						}
 					});
 				} else {
-					Window.alert("Please save survey before publishing");
+					Window.alert(TEXT_CONSTANTS.saveBeforePublish());
 				}
 			}
 		});
@@ -1409,8 +1402,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 
-		Button saveQuestionGroupButton = new Button("Save Question Group");
-		Button deleteQuestionGroupButton = new Button("Delete Question Group");
+		Button saveQuestionGroupButton = new Button(TEXT_CONSTANTS.save());
+		Button deleteQuestionGroupButton = new Button(TEXT_CONSTANTS.delete());
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			saveQuestionGroupButton.setVisible(false);
 			deleteQuestionGroupButton.setVisible(false);
@@ -1418,11 +1411,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 		questionGroupDetail.setWidget(0, 0, questionGroupId);
 
-		questionGroupDetail.setWidget(1, 0, new Label("Name"));
+		questionGroupDetail.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.name()));
 		questionGroupDetail.setWidget(1, 1, name);
-		questionGroupDetail.setWidget(2, 0, new Label("Description"));
+		questionGroupDetail.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.description()));
 		questionGroupDetail.setWidget(2, 1, description);
-		questionGroupDetail.setWidget(3, 0, new Label("Order"));
+		questionGroupDetail.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.order()));
 		questionGroupDetail.setWidget(3, 1, order);
 		questionGroupDetail.setWidget(4, 0, saveQuestionGroupButton);
 		questionGroupDetail.setWidget(4, 1, deleteQuestionGroupButton);
@@ -1436,10 +1429,10 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 						saveQuestionGroup();
 					else
 						Window
-								.alert("Cannot save Question Group.  You must provide a name.");
+								.alert(TEXT_CONSTANTS.cannotSaveQuestionGroup());
 				} catch (Exception ex) {
 					Window
-							.alert("Cannot Save Question Group Because no parent survey is selected");
+							.alert(TEXT_CONSTANTS.noParentSurvey());
 				}
 			}
 
@@ -1457,7 +1450,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onClick(ClickEvent event) {
 				if (Window
-						.confirm("This will remove all question associatons with this Question Group, but will not delete the questions. Are you sure you want to delete?")) {
+						.confirm(TEXT_CONSTANTS.deleteQuestionGroupWarning())) {
 					final TreeItem selectedItem = surveyTree
 							.getCurrentlySelectedItem();
 					QuestionGroupDto dto = getQuestionGroupDto();
@@ -1468,8 +1461,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 									@Override
 									public void onFailure(Throwable caught) {
 										MessageDialog errDia = new MessageDialog(
-												"Could not delete question group",
-												"The system encountered an error while attempting to delete the question group. Please try again. If the problem persists, contact an administrator");
+												TEXT_CONSTANTS.error(), TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 										errDia.showCentered();
 									}
 
@@ -1550,7 +1542,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Could not save question group");
+						Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 					}
 
 					@Override
@@ -1577,7 +1569,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 									.getCurrentlySelectedItem();
 							item.setText(result.getCode());
 						}
-						Window.alert("Saved Question Group");
+						Window.alert(TEXT_CONSTANTS.saveComplete());
 					}
 
 				});
@@ -1597,7 +1589,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Could not save survey");
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 			}
 
 			@Override
@@ -1612,7 +1604,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 						currentSelection = (BaseDto) item.getUserObject();
 					}
 				}
-				Window.alert("Saved Survey");
+				Window.alert(TEXT_CONSTANTS.saveComplete());
 			}
 
 		});
@@ -1682,7 +1674,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Could not save survey group");
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 
 			}
 
@@ -1697,7 +1689,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 						currentSelection = (BaseDto) item.getUserObject();
 					}
 				}
-				Window.alert("Survey Group Saved");
+				Window.alert(TEXT_CONSTANTS.saveComplete());
 			}
 		});
 	}

@@ -16,9 +16,11 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -42,8 +44,12 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SurveyAttributeMappingPortlet extends Portlet implements
 		ChangeHandler, ClickHandler {
-	public static final String NAME = "Survey Attribute Mapping Portlet";
-	public static final String DESCRIPTION = "Maps survey questions to Access Point attributes";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+	public static final String NAME = TEXT_CONSTANTS
+			.surveyAttributeMappingPortletTitle();
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.surveyAttributeMappingPortletDescription();
 	private static final String MAP_TARGET_OBJECT_NAME = "org.waterforpeople.mapping.domain.AccessPoint";
 	private static final String EVEN_ROW_CSS = "gridCell-even";
 	private static final String ODD_ROW_CSS = "gridCell-odd";
@@ -78,10 +84,12 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private QuestionGroupDto currentQuestionGroupSelection = null;
 	private SurveyDto currentSurveySelection = null;
 
+	private MessageDialog loadingDialog;
 	private HashMap<String, ArrayList<SurveyDto>> surveys;
 
 	public SurveyAttributeMappingPortlet() {
 		super(NAME, true, false, WIDTH, HEIGHT);
+		loadingDialog = new MessageDialog(TEXT_CONSTANTS.loading(), TEXT_CONSTANTS.pleaseWait(),true);
 		surveys = new HashMap<String, ArrayList<SurveyDto>>();
 		inputPanel = new DockPanel();
 		contentPanel = new DockPanel();
@@ -97,10 +105,10 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 		inputPanel.add(treeHost, DockPanel.CENTER);
 
-		resetButton = new Button("Clear");
+		resetButton = new Button(TEXT_CONSTANTS.clear());
 		resetButton.addClickHandler(this);
 
-		saveButton = new Button("Save");
+		saveButton = new Button(TEXT_CONSTANTS.save());
 		saveButton.addClickHandler(this);
 
 		HorizontalPanel inputButtonPanel = new HorizontalPanel();
@@ -130,8 +138,9 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Application Error", "Cannot load attributes");
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showRelativeTo(saveButton);
 
 					}
@@ -142,19 +151,22 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	 * loads the survey gruops
 	 */
 	private void loadSurveyGroups() {
+		loadingDialog.showCentered();
 		surveyService.listSurveyGroups("all", false, false, false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(
-								"Application Error",
-								"Cannot load survey groups");
+						loadingDialog.hide(true);
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showRelativeTo(saveButton);
 					}
 
 					@Override
 					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+						loadingDialog.hide(true);
 						surveyGroup.addItem("", "");
 						if (result != null) {
 							for (SurveyGroupDto dto : result) {
@@ -175,9 +187,9 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 			Grid grid = new Grid(questions.size() + 1, 3);
 			// build headers
-			grid.setText(0, 0, "Question Text");
-			grid.setText(0, 1, "Attribute");
-			grid.setText(0, 2, "Point Type");
+			grid.setText(0, 0, TEXT_CONSTANTS.questionText());
+			grid.setText(0, 1, TEXT_CONSTANTS.attribute());
+			grid.setText(0, 2, TEXT_CONSTANTS.pointType());
 			setGridRowStyle(grid, 0, false);
 
 			int count = 1;
@@ -213,7 +225,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 
 			gridPanel.add(grid);
 		} else {
-			gridPanel.add(new Label("No Questions"));
+			gridPanel.add(new Label(TEXT_CONSTANTS.noQuestions()));
 		}
 	}
 
@@ -271,17 +283,21 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 				if (surveys.get(selectedGroupId) != null) {
 					populateSurveyList(surveys.get(selectedGroupId));
 				} else {
+					loadingDialog.showCentered();
 					// Set up the callback object.
 					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
 						public void onFailure(Throwable caught) {
+							loadingDialog.hide(true);
 							MessageDialog errDia = new MessageDialog(
-									"Cannot list surveys",
-									"The application encountered an error: "
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
 											+ caught.getLocalizedMessage());
 							errDia.showRelativeTo(saveButton);
 						}
 
 						public void onSuccess(ArrayList<SurveyDto> result) {
+							loadingDialog.hide(true);
 							if (result != null) {
 								surveys.put(selectedGroupId, result);
 								populateSurveyList(result);
@@ -292,9 +308,8 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 							surveyCallback);
 				}
 			} else {
-				MessageDialog errDia = new MessageDialog(
-						"Please select a group",
-						"You must select a survey group first");
+				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+						.inputError(), TEXT_CONSTANTS.selectGroupFirst());
 				errDia.showRelativeTo(saveButton);
 			}
 		} else {
@@ -309,18 +324,23 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	 * @return
 	 */
 	private void loadSurveyQuestionGroups(final Long id) {
-		statusLabel.setText("Loading survey question groups. Please wait...");
+		statusLabel.setText(TEXT_CONSTANTS.loading());
 		statusLabel.setVisible(true);
+		loadingDialog.showCentered();
 		AsyncCallback<ArrayList<QuestionGroupDto>> surveyCallback = new AsyncCallback<ArrayList<QuestionGroupDto>>() {
 			public void onFailure(Throwable caught) {
+				loadingDialog.hide(true);
 				statusLabel.setVisible(false);
-				MessageDialog errDia = new MessageDialog("Cannot load survey",
-						"The application encountered an error: "
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " "
 								+ caught.getLocalizedMessage());
 				errDia.showRelativeTo(saveButton);
 			}
 
 			public void onSuccess(ArrayList<QuestionGroupDto> result) {
+				loadingDialog.hide(true);
 				statusLabel.setVisible(false);
 				if (result != null) {
 					currentQuestionGroupDtoList = result;
@@ -332,18 +352,23 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	}
 
 	private void loadQuestions(final Long groupId) {
-		statusLabel.setText("Loading survey questions. Please wait...");
+		loadingDialog.showCentered();
+		statusLabel.setText(TEXT_CONSTANTS.loading());
 		statusLabel.setVisible(true);
 		AsyncCallback<ArrayList<QuestionDto>> questionCallback = new AsyncCallback<ArrayList<QuestionDto>>() {
 			public void onFailure(Throwable caught) {
+				loadingDialog.hide(true);
 				statusLabel.setVisible(false);
-				MessageDialog errDia = new MessageDialog("Cannot load survey",
-						"The application encountered an error: "
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " "
 								+ caught.getLocalizedMessage());
 				errDia.showRelativeTo(saveButton);
 			}
 
 			public void onSuccess(ArrayList<QuestionDto> result) {
+				loadingDialog.hide(true);
 				statusLabel.setVisible(false);
 				if (result != null) {
 					currentQuestionList = result;
@@ -358,13 +383,16 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	}
 
 	private void loadExistingMappings(final Long id) {
+		loadingDialog.showCentered();
 		mappingService.listMappingsBySurvey(id,
 				new AsyncCallback<ArrayList<SurveyAttributeMappingDto>>() {
 					@Override
 					public void onFailure(Throwable caught) {
+						loadingDialog.hide(true);
 						MessageDialog errDia = new MessageDialog(
-								"Cannot load mappings",
-								"The application encountered an error: "
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " "
 										+ caught.getLocalizedMessage());
 						errDia.showRelativeTo(saveButton);
 					}
@@ -372,6 +400,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 					@Override
 					public void onSuccess(
 							ArrayList<SurveyAttributeMappingDto> result) {
+						loadingDialog.hide(true);
 						if (result != null) {
 							for (SurveyAttributeMappingDto dto : result) {
 								ListBox box = findListBox(dto,
@@ -405,7 +434,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	private void selectBoxItem(String val, ListBox box) {
 		for (int i = 0; i < box.getItemCount(); i++) {
 			if (box.getValue(i) != null && box.getValue(i).equals(val)) {
-				box.setItemSelected(i,true);				
+				box.setItemSelected(i, true);
 				break;
 			}
 		}
@@ -431,7 +460,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 			surveyListbox.addItem("", "");
 			for (SurveyDto survey : surveyItems) {
 				surveyListbox.addItem(survey.getName() != null ? survey
-						.getName() : "Survey " + survey.getKeyId().toString(),
+						.getName() : TEXT_CONSTANTS.survey()+ " " + survey.getKeyId().toString(),
 						survey.getKeyId().toString());
 			}
 		}
@@ -458,21 +487,21 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 		VerticalPanel controlPanel = new VerticalPanel();
 
 		HorizontalPanel labelPanel = new HorizontalPanel();
-		labelPanel.add(new Label("Survey Group: "));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.surveyGroup()));
 		surveyGroup = new ListBox();
 		labelPanel.add(surveyGroup);
 		controlPanel.add(labelPanel);
 		surveyGroup.addChangeHandler(this);
 
 		labelPanel = new HorizontalPanel();
-		labelPanel.add(new Label("Survey: "));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.survey()));
 		surveyListbox = new ListBox();
 		surveyListbox.addChangeHandler(this);
 		labelPanel.add(surveyListbox);
 		controlPanel.add(labelPanel);
 
 		labelPanel = new HorizontalPanel();
-		labelPanel.add(new Label("Question Group: "));
+		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.questionGroup()));
 		questionGroupListbox = new ListBox();
 		questionGroupListbox.addChangeHandler(this);
 		labelPanel.add(questionGroupListbox);
@@ -531,13 +560,13 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 						@Override
 						public void onSuccess(
 								ArrayList<SurveyAttributeMappingDto> result) {
-							statusLabel.setText("Mapping Saved");
+							statusLabel.setText(TEXT_CONSTANTS.saveComplete());
 							statusLabel.setVisible(true);
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							statusLabel.setText("Error: "
+							statusLabel.setText(TEXT_CONSTANTS.errorTracePrefix()+" "
 									+ caught.getLocalizedMessage());
 							statusLabel.setVisible(true);
 						}

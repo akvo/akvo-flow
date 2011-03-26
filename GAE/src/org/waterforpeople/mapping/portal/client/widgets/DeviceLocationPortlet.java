@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.google.gwt.core.client.GWT;
@@ -22,8 +23,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * 
  */
 public class DeviceLocationPortlet extends Portlet {
-	public static final String DESCRIPTION = "Displays last known location of all devices";
-	public static final String NAME = "Device Location";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS.deviceLocationPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.deviceLocatoinPortletTitle();
 	private static final int WIDTH = 500;
 	private static final int HEIGHT = 500;
 	private MapWidget map;
@@ -68,8 +71,8 @@ public class DeviceLocationPortlet extends Portlet {
 		marker.addMarkerClickHandler(new MarkerClickHandler() {
 			public void onClick(MarkerClickEvent event) {
 				InfoWindow info = map.getInfoWindow();
-				info.open(marker, new InfoWindowContent("<b>Phone #:</b> "
-						+ device.getPhoneNumber() + "<br><b>Last Updated:</b> "
+				info.open(marker, new InfoWindowContent("<b>"+TEXT_CONSTANTS.phoneNum()+":</b> "
+						+ device.getPhoneNumber() + "<br><b>"+TEXT_CONSTANTS.lastUpdated()+":</b> "
 						+ device.getLastPositionDate()));
 			}
 		});

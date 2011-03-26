@@ -1,10 +1,12 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.UserManagerWidget;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.google.gwt.core.client.GWT;
 
 /**
  * Portlet for adding / removing users from the application.
@@ -13,8 +15,11 @@ import com.gallatinsystems.user.app.gwt.client.UserDto;
  * 
  */
 public class UserManagerPortlet extends UserAwarePortlet {
+	
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 
-	public static final String NAME = "User Management";
+	public static final String NAME = TEXT_CONSTANTS.userManagerPortletTitle();
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 800;
 
@@ -25,8 +30,7 @@ public class UserManagerPortlet extends UserAwarePortlet {
 			UserManagerWidget managerWidget = new UserManagerWidget();
 			setContent(managerWidget);
 		} else {
-			MessageDialog errDia = new MessageDialog("Admin Only",
-					"You must be an administrator to access this feature.");
+			MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.adminOnly(),TEXT_CONSTANTS.adminOnlyMessage());					
 			errDia.show();
 		}
 	}

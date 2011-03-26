@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerService;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.MapBalloonDefinitionDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -21,13 +22,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DisplayContentManager extends LocationDrivenPortlet {
-	public static final String DESCRIPTION = "Create/Edit/Delete Display Mapping";
-	public static final String NAME = "Display Mapping Manager";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.displayContentManagerDescription();
+	public static final String NAME = TEXT_CONSTANTS
+			.displayContentManagerTitle();
 
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
-	private static final String title = "Display Template Content Manager";
 	private static final Boolean scrollable = true;
 	private static final Boolean configurable = false;
 
@@ -38,7 +42,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 	FlexTable dspEntryTable = new FlexTable();
 
 	public DisplayContentManager() {
-		super(title, scrollable, configurable, false, WIDTH, HEIGHT, null,
+		super(NAME, scrollable, configurable, false, WIDTH, HEIGHT, null,
 				false, "");
 	}
 
@@ -81,9 +85,9 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				MessageDialog errDialog = new MessageDialog(
-						"Error while fetching data",
-						"Could not list labels. Please try again. If the problem persists, contact an administrator");
+				MessageDialog errDialog = new MessageDialog(TEXT_CONSTANTS
+						.error(), TEXT_CONSTANTS.errorTracePrefix() + " "
+						+ caught.getLocalizedMessage());
 				errDialog.showRelativeTo(mainVPanel);
 			}
 
@@ -105,9 +109,9 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				MessageDialog errDialog = new MessageDialog(
-						"Error while fetching data",
-						"Could not list rows. Please try again. If the problem persists, contact an administrator");
+				MessageDialog errDialog = new MessageDialog(TEXT_CONSTANTS
+						.error(), TEXT_CONSTANTS.errorTracePrefix() + " "
+						+ caught.getLocalizedMessage());
 				errDialog.showRelativeTo(mainVPanel);
 			}
 
@@ -117,7 +121,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 				for (MapBalloonDefinitionDto rowItem : result) {
 					addDetailRow(rowItem, row);
 				}
-				Button addRow = new Button("Add New");
+				Button addRow = new Button(TEXT_CONSTANTS.add());
 				dspEntryTable.setWidget(row, 1, addRow);
 				mainVPanel.add(dspEntryTable);
 			}
@@ -168,9 +172,9 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDialog = new MessageDialog(
-								"Error while saving",
-								"Could not save. Please try again. If the problem persists, contact an administrator");
+						MessageDialog errDialog = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 						errDialog.showRelativeTo(mainVPanel);
 					}
 
@@ -199,9 +203,9 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDialog = new MessageDialog(
-								"Error while deleting",
-								"Could not delete. Please try again. If the problem persists, contact an administrator");
+						MessageDialog errDialog = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 						errDialog.showRelativeTo(mainVPanel);
 					}
 
@@ -227,9 +231,9 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDialog = new MessageDialog(
-								"Error while fetching data",
-								"Could not list access point annotations. Please try again. If the problem persists, contact an administrator");
+						MessageDialog errDialog = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 						errDialog.showRelativeTo(mainVPanel);
 
 					}
