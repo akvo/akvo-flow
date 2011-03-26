@@ -115,6 +115,9 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					.getType())) {
 				questionView = new StrengthQuestionView(context, q,
 						languageCodes, readOnly);
+			} else if (ConstantUtil.HEADING_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
+				questionView = new CompassQuestionView(context, q, languageCodes, readOnly);
 			} else {
 				questionView = new QuestionView(context, q, languageCodes,
 						readOnly);
@@ -232,7 +235,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 	 * 
 	 * @param respondentId
 	 */
-	public HashMap<String,QuestionResponse> loadState(Long respondentId) {
+	public HashMap<String, QuestionResponse> loadState(Long respondentId) {
 		if (responseMap == null) {
 			responseMap = new HashMap<String, QuestionResponse>();
 		}

@@ -1364,4 +1364,11 @@ public class SurveyDbAdapter {
 	public void executeSql(String sql) {
 		database.execSQL(sql);
 	}
+	
+	/**
+	 * reinserts the test survey into the database. For debugging purposes only. The survey xml must exist in the APK
+	 */
+	public void reinstallTestSurvey(){
+		executeSql("insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')");
+	}
 }

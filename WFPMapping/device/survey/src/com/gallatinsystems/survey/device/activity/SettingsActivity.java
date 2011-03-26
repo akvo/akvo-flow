@@ -214,16 +214,26 @@ public class SettingsActivity extends ListActivity {
 												if (value != null
 														&& value.trim()
 																.length() > 0) {
-													Intent downloadIntent = new Intent(
-															SettingsActivity.this,
-															SurveyDownloadService.class);
-													downloadIntent
-															.putExtra(
-																	ConstantUtil.SURVEY_ID_KEY,
-																	value);
-													getApplicationContext()
-															.startService(
-																	downloadIntent);
+													if (value.trim()
+															.equals("0")) {
+														SurveyDbAdapter database = new SurveyDbAdapter(
+																SettingsActivity.this);
+														database.open();
+														database
+																.reinstallTestSurvey();
+														database.close();
+													} else {
+														Intent downloadIntent = new Intent(
+																SettingsActivity.this,
+																SurveyDownloadService.class);
+														downloadIntent
+																.putExtra(
+																		ConstantUtil.SURVEY_ID_KEY,
+																		value);
+														getApplicationContext()
+																.startService(
+																		downloadIntent);
+													}
 												}
 											}
 										});

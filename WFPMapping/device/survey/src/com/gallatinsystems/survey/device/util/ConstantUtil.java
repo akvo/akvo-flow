@@ -65,6 +65,7 @@ public class ConstantUtil {
 	public static final String SCAN_QUESTION_TYPE = "scan";
 	public static final String TRACK_QUESTION_TYPE = "track";
 	public static final String STRENGTH_QUESTION_TYPE = "strength";
+	public static final String HEADING_QUESTION_TYPE = "heading";
 
 	/**
 	 * help types
