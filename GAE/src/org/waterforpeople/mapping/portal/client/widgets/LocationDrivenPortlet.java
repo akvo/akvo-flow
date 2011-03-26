@@ -4,6 +4,7 @@ import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
@@ -30,9 +31,10 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 
 	private boolean useCommunity;
-
-	public static final String ANY_OPT = "Any";
-	public static final String ALL_OPT = "All";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String ANY_OPT = TEXT_CONSTANTS.any();
+	public static final String ALL_OPT = TEXT_CONSTANTS.all();
 	private ListBox countryListbox;
 	private ListBox communityListbox;
 	private String specialOption;

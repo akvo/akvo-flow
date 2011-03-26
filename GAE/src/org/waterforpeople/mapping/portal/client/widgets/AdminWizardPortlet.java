@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.BootstrapGeneratorWidget;
@@ -24,11 +25,21 @@ import org.waterforpeople.mapping.portal.client.widgets.component.WebActivityAut
 
 import com.gallatinsystems.framework.gwt.wizard.client.AbstractWizardPortlet;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Portlet to integrate the admin wizard with the portal framework
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class AdminWizardPortlet extends AbstractWizardPortlet {
-	public static final String DESCRIPTION = "Provides system administration ui";
-	public static final String NAME = "Admin Wizard";
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.adminWizardPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.adminWizardPortletTitle();;
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 800;
 	private UserDto user;
@@ -41,105 +52,112 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 
 	protected WizardWorkflow getWizardWorkflow() {
 		WizardWorkflow wf = new WizardWorkflow();
-		wf
-				.setStartNode(new WizardNode("Administration",
-						"Administration Home", AdminHomeWidget.class,
-						(WizardButton) null, (WizardButton) null));
-		wf.addInternalNode(new WizardNode("SurveyGroupList", "Survey Groups",
-				SurveyGroupListWidget.class, new WizardButton(
-						"SurveyGroupCreate", "Create Survey Group"),
-				new WizardButton("Administration", "Go Back to Admin Home")));
+		wf.setStartNode(new WizardNode("Administration", TEXT_CONSTANTS
+				.adminHome(), AdminHomeWidget.class, (WizardButton) null,
+				(WizardButton) null));
+		wf.addInternalNode(new WizardNode("SurveyGroupList", TEXT_CONSTANTS
+				.surveyGroups(), SurveyGroupListWidget.class, new WizardButton(
+				"SurveyGroupCreate", TEXT_CONSTANTS.createSurveyGroup()),
+				new WizardButton("Administration", TEXT_CONSTANTS
+						.backToAdminHome())));
 		wf.addInternalNode(new WizardNode("SurveyGroupCreate", null,
 				SurveyGroupEditWidget.class, new WizardButton("SurveyList",
-						"Save and Continue"), new WizardButton(
-						"SurveyGroupList", "Back to Survey Group List")));
-		wf.addInternalNode(new WizardNode("SurveyList", "Surveys",
-				SurveyListWidget.class, new WizardButton("SurveyCreate",
-						"Create Survey"), new WizardButton("SurveyGroupList",
-						"Back to Survey Group List")));
+						TEXT_CONSTANTS.saveAndContinue()), new WizardButton(
+						"SurveyGroupList", TEXT_CONSTANTS
+								.backToSurveyGroupList())));
+		wf.addInternalNode(new WizardNode("SurveyList", TEXT_CONSTANTS
+				.surveys(), SurveyListWidget.class, new WizardButton(
+				"SurveyCreate", TEXT_CONSTANTS.createSurvey()),
+				new WizardButton("SurveyGroupList", TEXT_CONSTANTS
+						.backToSurveyGroupList())));
 		wf.addInternalNode(new WizardNode("SurveyCreate", null,
 				SurveyEditWidget.class, new WizardButton("QuestionGroupList",
-						"Save and Continue"), new WizardButton("SurveyList",
-						"Back to Survey List")));
-		wf.addInternalNode(new WizardNode("QuestionGroupList",
-				"Question Groups", QuestionGroupListWidget.class,
+						TEXT_CONSTANTS.saveAndContinue()), new WizardButton(
+						"SurveyList", TEXT_CONSTANTS.backToSurveyList())));
+		wf.addInternalNode(new WizardNode("QuestionGroupList", TEXT_CONSTANTS
+				.questionGroups(), QuestionGroupListWidget.class,
 				new WizardButton[] {
-						new WizardButton("QuestionGroupCreate",
-								"Create Question Group"),
-						new WizardButton("Publish", "Publish Survey") },
+						new WizardButton("QuestionGroupCreate", TEXT_CONSTANTS
+								.createQuestionGroup()),
+						new WizardButton("Publish", TEXT_CONSTANTS
+								.publishSurvey()) },
 				new WizardButton[] { new WizardButton("SurveyList",
-						"Back to Survey List") }));
+						TEXT_CONSTANTS.backToSurveyList()) }));
 		wf.addInternalNode(new WizardNode("QuestionGroupCreate", null,
 				QuestionGroupEditWidget.class, new WizardButton("QuestionList",
-						"Save and Continue"), new WizardButton(
-						"QuestionGroupList", "Back to Question Group List")));
-		wf.addInternalNode(new WizardNode("QuestionList", "Questions",
-				QuestionListWidget.class, new WizardButton[] {
-						new WizardButton("QuestionCreate", "Create Question"),
-						new WizardButton("Publish", "Publish Survey") },
+						TEXT_CONSTANTS.saveAndContinue()), new WizardButton(
+						"QuestionGroupList", TEXT_CONSTANTS
+								.backToQuestionGroupList())));
+		wf.addInternalNode(new WizardNode("QuestionList", TEXT_CONSTANTS
+				.questions(), QuestionListWidget.class, new WizardButton[] {
+				new WizardButton("QuestionCreate", TEXT_CONSTANTS
+						.createQuestion()),
+				new WizardButton("Publish", TEXT_CONSTANTS.publishSurvey()) },
 				new WizardButton[] { new WizardButton("QuestionGroupList",
-						"Back to Question Group List") }));
+						TEXT_CONSTANTS.backToQuestionGroupList()) }));
 		wf.addInternalNode(new WizardNode("QuestionCreate", null,
 				QuestionEditWidget.class, new WizardButton("QuestionList",
-						"Save and Continue"), new WizardButton("QuestionList",
-						"Back to Question List")));
+						TEXT_CONSTANTS.saveAndContinue()), new WizardButton(
+						"QuestionList", TEXT_CONSTANTS.backToQuestionList())));
 		wf.addInternalNode(new WizardNode("Publish", null,
 				PublicationWidget.class, new WizardButton[] { new WizardButton(
-						"Attribute Assignment",
-						"Assign Questions to Attributes") },
+						"Attribute Assignment", TEXT_CONSTANTS
+								.assignQuestionsToAttributes()) },
 				new WizardButton[] { new WizardButton("QuestionList",
-						"Back to Question List") }));
+						TEXT_CONSTANTS.backToQuestionList()) }));
 		wf.addInternalNode(new WizardNode("Attribute Assignment",
-				"Attribute Assignment", AttributeAssignmentWidget.class,
-				new WizardButton("Device Assignment",
-						"Assign Surveys to Devices"), new WizardButton(
-						"Administration", "Back to Admin Home")));
+				TEXT_CONSTANTS.attributeAssignment(),
+				AttributeAssignmentWidget.class, new WizardButton(
+						"Device Assignment", TEXT_CONSTANTS
+								.assignSurveysToDevices()), new WizardButton(
+						"Administration", TEXT_CONSTANTS.backToAdminHome())));
 		wf.addInternalNode(new WizardNode("User Management", null,
 				UserManagerWidget.class, (WizardButton) null,
 				(WizardButton) null));
 		wf.addInternalNode(new WizardNode("Editorial Page List", null,
 				EditorialPageListWidget.class, new WizardButton("Create Page",
-						"Create Editorial Page"), new WizardButton(
-						"Administration", "Back to Admin Home")));
+						TEXT_CONSTANTS.createEditorialPage()),
+				new WizardButton("Administration", TEXT_CONSTANTS
+						.backToAdminHome())));
 		wf.addInternalNode(new WizardNode("Create Page", null,
-				EditorialPageEditWidget.class, new WizardButton(
-						"Editorial Page List", "Save and Continue"),
-				new WizardButton("Editorial Page List",
-						"Back to Editorial Page List")));
+				EditorialPageEditWidget.class,
+				new WizardButton("Editorial Page List", TEXT_CONSTANTS
+						.saveAndContinue()), new WizardButton(
+						"Editorial Page List", TEXT_CONSTANTS
+								.backToEditorialPageList())));
 		wf.addInternalNode(new WizardNode("Generate Bootstrap File", null,
 				BootstrapGeneratorWidget.class, (WizardButton) null,
 				(WizardButton) null));
-		wf.addInternalNode(new WizardNode("Assignment List", "Assignment List",
-				SurveyAssignmentListWidget.class, new WizardButton(
-						"Edit Assignment", "Create Assignment"),
-				new WizardButton("Administration", "Back to Admin Home")));
-		wf
-				.addInternalNode(new WizardNode(
-						"Edit Assignment",
-						"Edit Assignment",
-						SurveyAssignmentEditWidget.class,
-						new WizardButton("Administration", "Save and Continue"),
-						new WizardButton("Assignment List",
-								"Back to Assignment List")));
+		wf.addInternalNode(new WizardNode("Assignment List", TEXT_CONSTANTS
+				.assignmentList(), SurveyAssignmentListWidget.class,
+				new WizardButton("Edit Assignment", TEXT_CONSTANTS
+						.createAssignment()), new WizardButton(
+						"Administration", TEXT_CONSTANTS.backToAdminHome())));
+		wf.addInternalNode(new WizardNode("Edit Assignment", TEXT_CONSTANTS
+				.editAssignment(), SurveyAssignmentEditWidget.class,
+				new WizardButton("Administration", TEXT_CONSTANTS
+						.saveAndContinue()), new WizardButton(
+						"Assignment List", TEXT_CONSTANTS
+								.backToAssignmentList())));
 		wf.addInternalNode(new WizardNode("List Web Authorizations",
-				"Web Authorization List",
+				TEXT_CONSTANTS.webAuthList(),
 				WebActivityAuthorizationListWidget.class, new WizardButton(
-						"Edit Web Authorization", "Create New Authorization"),
-				new WizardButton("Administration", "Back to Admin Home")));
-		wf
-				.addInternalNode(new WizardNode("Edit Web Authorization",
-						"Edit Web Authorization",
-						SurveyWebActivityAuthorizationEditWidget.class,
-						new WizardButton("List Web Authorizations",
-								"Save and Continue"), new WizardButton(
-								"List Web Authorizations",
-								"Back to Authorization List")));
-		wf.addInternalNode(new WizardNode("Run Reports", "Run Reports",
-				RunReportWidget.class, null, new WizardButton("Administration",
-						"Back to Admin Home")));
-		wf.addInternalNode(new WizardNode("Import Data", "Import Data",
-				DataImportWidget.class, null, new WizardButton("Administration",
-						"Back to Admin Home")));
+						"Edit Web Authorization", TEXT_CONSTANTS
+								.createNewAuth()), new WizardButton(
+						"Administration", TEXT_CONSTANTS.backToAdminHome())));
+		wf.addInternalNode(new WizardNode("Edit Web Authorization",
+				TEXT_CONSTANTS.editWebAuth(),
+				SurveyWebActivityAuthorizationEditWidget.class,
+				new WizardButton("List Web Authorizations", TEXT_CONSTANTS
+						.saveAndContinue()), new WizardButton(
+						"List Web Authorizations", TEXT_CONSTANTS
+								.backToAuthorizationList())));
+		wf.addInternalNode(new WizardNode("Run Reports", TEXT_CONSTANTS
+				.runReports(), RunReportWidget.class, null, new WizardButton(
+				"Administration", TEXT_CONSTANTS.backToAdminHome())));
+		wf.addInternalNode(new WizardNode("Import Data", TEXT_CONSTANTS
+				.importData(), DataImportWidget.class, null, new WizardButton(
+				"Administration", TEXT_CONSTANTS.backToAdminHome())));
 		return wf;
 	}
 
@@ -194,10 +212,10 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new WebActivityAuthorizationListWidget(this, user);
 		} else if (node.getWidgetClass().equals(RunReportWidget.class)) {
 			return new RunReportWidget();
-		}else if (node.getWidgetClass().equals(DataImportWidget.class)) {
+		} else if (node.getWidgetClass().equals(DataImportWidget.class)) {
 			return new DataImportWidget();
 		}
-		
+
 		return null;
 
 	}

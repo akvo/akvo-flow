@@ -3,14 +3,15 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
@@ -34,8 +35,10 @@ import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Wind
  * 
  */
 public class ActivityChartPortlet extends LocationDrivenPortlet {
-	public static final String DESCRIPTION = "Displays survey response activity over a configurable timeframe";
-	public static final String NAME = "Survey Activity Over Time";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS.activityChartPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.activityChartPortletTitle();
 	private static final String CONFIG_NAME = "ActivityChart";
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 300;
@@ -105,8 +108,8 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 					public void run() {
 						if (result != null) {
 							DataTable dataTable = DataTable.create();
-							dataTable.addColumn(ColumnType.DATE, "Date");
-							dataTable.addColumn(ColumnType.NUMBER, "Count");
+							dataTable.addColumn(ColumnType.DATE, TEXT_CONSTANTS.date());
+							dataTable.addColumn(ColumnType.NUMBER, TEXT_CONSTANTS.count());
 							for (int i = 0; i < result.length; i++) {
 								if (result[i] != null
 										&& result[i].getDate() != null) {
@@ -155,12 +158,12 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 		Grid grid = new Grid(1, 2);
 
 		HorizontalPanel countryPanel = new HorizontalPanel();
-		countryPanel.add(new Label("Country: "));
+		countryPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 		countryPanel.add(getCountryControl());
 		grid.setWidget(0, 0, countryPanel);
 
 		HorizontalPanel commPanel = new HorizontalPanel();
-		commPanel.add(new Label("Community: "));
+		commPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.community()));
 		commPanel.add(getCommunityControl());
 		grid.setWidget(0, 1, commPanel);
 

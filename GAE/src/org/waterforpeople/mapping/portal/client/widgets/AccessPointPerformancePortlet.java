@@ -8,7 +8,9 @@ import java.util.TreeSet;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
@@ -22,7 +24,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -44,8 +45,12 @@ import com.google.gwt.visualization.client.visualizations.LineChart.Options;
  */
 public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 		implements ChangeHandler, ClickHandler, ValueChangeHandler<Boolean> {
-	public static final String DESCRIPTION = "Compare Access Point performance over time across communities";
-	public static final String NAME = "Access Point Performance";
+	
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	
+	public static final String DESCRIPTION = TEXT_CONSTANTS.accessPointPerformancePortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.accessPointPerformancePortletTitle();
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
 
@@ -135,8 +140,8 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 	private Widget buildHeader() {
 
 		metricListbox = new ListBox();
-		metricListbox.addItem("Cost", COST_METRIC);
-		metricListbox.addItem("Households Served", COUNT_METRIC);
+		metricListbox.addItem(TEXT_CONSTANTS.cost(), COST_METRIC);
+		metricListbox.addItem(TEXT_CONSTANTS.householdsServed(), COUNT_METRIC);
 		// metricListbox.addItem("Status", STATUS_METRIC);
 		metricListbox.addChangeHandler(this);
 
@@ -144,9 +149,9 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 
 		HorizontalPanel controlPanel = new HorizontalPanel();
 
-		controlPanel.add(new Label("Type: "));
-		wpTypeButton = new RadioButton("APperfTypeGroup", "Waterpoint");
-		spTypeButton = new RadioButton("APperfTypeGroup", "Sanitation");
+		controlPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.type()));
+		wpTypeButton = new RadioButton("APperfTypeGroup", TEXT_CONSTANTS.waterPoint());
+		spTypeButton = new RadioButton("APperfTypeGroup", TEXT_CONSTANTS.sanitationPoint());
 
 		wpTypeButton.addValueChangeHandler(this);
 		spTypeButton.addValueChangeHandler(this);
@@ -155,11 +160,11 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 		controlPanel.add(wpTypeButton);
 		controlPanel.add(spTypeButton);
 
-		controlPanel.add(new Label("Metric: "));
+		controlPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.metric()));
 		controlPanel.add(metricListbox);
 
 		HorizontalPanel buttonPanel = new HorizontalPanel();
-		addLocationButton = new Button("Add Location");
+		addLocationButton = new Button(TEXT_CONSTANTS.addLocation());
 		addLocationButton.addClickHandler(this);
 		addLocationButton.setEnabled(false);
 		buttonPanel.add(addLocationButton);
@@ -267,7 +272,7 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 				years.addAll(apList.keySet());
 			}
 
-			dataTable.addColumn(ColumnType.STRING, "Year");
+			dataTable.addColumn(ColumnType.STRING, TEXT_CONSTANTS.year());
 			// add a column for each location
 			for (String location : summaryMap.keySet()) {
 				if (STATUS_METRIC.equals(metric)) {
@@ -373,30 +378,30 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 
 		public LocationDialog() {
 			// Set the dialog box's caption.
-			setText("Add Items to Dashboard");
+			setText(TEXT_CONSTANTS.selectCriteria());
 			setAnimationEnabled(true);
 			setGlassEnabled(true);
 			VerticalPanel contentPane = new VerticalPanel();
-			contentPane.add(new Label("Add Community to Chart"));
+			contentPane.add(ViewUtil.initLabel(TEXT_CONSTANTS.addCommunityToChart()));
 
 			HorizontalPanel countryPanel = new HorizontalPanel();
-			countryPanel.add(new Label("Country: "));
+			countryPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 			countryPanel.add(AccessPointPerformancePortlet.this
 					.getCountryControl());
 			contentPane.add(countryPanel);
 
 			HorizontalPanel commPanel = new HorizontalPanel();
-			commPanel.add(new Label("Community: "));
+			commPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.community()));
 			commPanel.add(AccessPointPerformancePortlet.this
 					.getCommunityControl());
 			contentPane.add(commPanel);
 
 			HorizontalPanel buttonPanel = new HorizontalPanel();
-			okButton = new Button("Ok");
+			okButton = new Button(TEXT_CONSTANTS.ok());
 			okButton.setEnabled(false);
 			okButton.addClickHandler(this);
 			buttonPanel.add(okButton);
-			cancelButton = new Button("Cancel");
+			cancelButton = new Button(TEXT_CONSTANTS.cancel());
 			cancelButton.addClickHandler(this);
 			buttonPanel.add(cancelButton);
 			setWidget(contentPane);

@@ -3,7 +3,9 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
@@ -36,8 +38,12 @@ import com.google.gwt.visualization.client.visualizations.PieChart.Options;
  */
 public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 		ChangeHandler, ValueChangeHandler<Boolean> {
-	public static final String DESCRIPTION = "Access Point status as a Pie Chart";
-	public static final String NAME = "Access Point Status";
+	
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+
+	public static final String DESCRIPTION = TEXT_CONSTANTS.accessPointStatusPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.accessPointStatusPortletTitle();
 	private static final String CONFIG_ITEM_NAME = "APStatus";
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
@@ -151,26 +157,26 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 		Grid grid = new Grid(2, 2);
 
 		HorizontalPanel countryPanel = new HorizontalPanel();
-		countryPanel.add(new Label("Country: "));
+		countryPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 		countryPanel.add(getCountryControl());
 		grid.setWidget(0, 0, countryPanel);
 
 		HorizontalPanel commPanel = new HorizontalPanel();
-		commPanel.add(new Label("Community: "));
+		commPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.community()));
 		commPanel.add(getCommunityControl());
 		grid.setWidget(1, 0, commPanel);
 
 		HorizontalPanel yearPanel = new HorizontalPanel();
-		yearPanel.add(new Label("Year: "));
+		yearPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.year()));
 		yearListbox = new ListBox();
 		yearPanel.add(yearListbox);
 		grid.setWidget(0, 1, yearPanel);
 		yearListbox.addChangeHandler(this);
 
 		HorizontalPanel typePanel = new HorizontalPanel();
-		typePanel.add(new Label("Type: "));
-		wpTypeButton = new RadioButton("APStatusTypeGroup", "Waterpoint");
-		spTypeButton = new RadioButton("APStatusTypeGroup", "Sanitation");
+		typePanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.type()));
+		wpTypeButton = new RadioButton("APStatusTypeGroup", TEXT_CONSTANTS.waterPoint());
+		spTypeButton = new RadioButton("APStatusTypeGroup", TEXT_CONSTANTS.sanitationPoint());
 		typePanel.add(wpTypeButton);
 		typePanel.add(spTypeButton);
 		wpTypeButton.addValueChangeHandler(this);
@@ -221,8 +227,8 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 
 						if (result != null) {
 							final DataTable dataTable = DataTable.create();
-							dataTable.addColumn(ColumnType.STRING, "Status");
-							dataTable.addColumn(ColumnType.NUMBER, "Count");
+							dataTable.addColumn(ColumnType.STRING,TEXT_CONSTANTS.status());
+							dataTable.addColumn(ColumnType.NUMBER, TEXT_CONSTANTS.count());
 							for (int i = 0; i < result.length; i++) {
 								dataTable.addRow();
 								dataTable.setValue(i, 0, result[i].getStatus());
@@ -247,7 +253,7 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 								currentTable = dataTable;
 								contentPane.add(pieChart);
 							} else {
-								noDataLabel = new Label("No Data");
+								noDataLabel = new Label(TEXT_CONSTANTS.noData());
 								contentPane.add(noDataLabel);
 							}
 						}

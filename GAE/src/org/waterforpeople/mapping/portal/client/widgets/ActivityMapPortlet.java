@@ -3,7 +3,9 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
@@ -41,8 +43,10 @@ import com.google.gwt.visualization.client.visualizations.IntensityMap.Region;
  */
 public class ActivityMapPortlet extends UserAwarePortlet implements
 		ChangeHandler, ValueChangeHandler<Boolean> {
-	public static final String DESCRIPTION = "Displays access points by status by region on a map";
-	public static final String NAME = "Access Point Status by Country";
+	private static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS.activityMapPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS.activityMapPortletTitle();
 	private static final String CONFIG_NAME = "ActivityMap";
 	private static final String WATER_TYPE = "WATER_POINT";
 	private static final String SANITATION_TYPE = "SANITATION_POINT";
@@ -157,8 +161,8 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 					public void run() {
 						if (result != null) {
 							final DataTable dataTable = DataTable.create();
-							dataTable.addColumn(ColumnType.STRING, "Country");
-							dataTable.addColumn(ColumnType.NUMBER, "Count");
+							dataTable.addColumn(ColumnType.STRING, TEXT_CONSTANTS.country());
+							dataTable.addColumn(ColumnType.NUMBER, TEXT_CONSTANTS.count());
 							for (int i = 0; i < result.length; i++) {
 								dataTable.addRow();
 								dataTable.setValue(i, 0, result[i]
@@ -200,10 +204,10 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 		HorizontalPanel statusPanel = new HorizontalPanel();
 		statusPanel.add(new Label("Status: "));
 		statusListbox = new ListBox();
-		statusListbox.addItem("High", "FUNCTIONING_HIGH");
-		statusListbox.addItem("Ok", "FUNCTIONING_OK");
-		statusListbox.addItem("Poor", "FUNCTIONING_WITH_PROBLEMS");
-		statusListbox.addItem("Other", "OTHER");
+		statusListbox.addItem(TEXT_CONSTANTS.funcHigh(), "FUNCTIONING_HIGH");
+		statusListbox.addItem(TEXT_CONSTANTS.funcOk(), "FUNCTIONING_OK");
+		statusListbox.addItem(TEXT_CONSTANTS.funcProb(), "FUNCTIONING_WITH_PROBLEMS");
+		statusListbox.addItem(TEXT_CONSTANTS.other(), "OTHER");
 		statusListbox.setVisibleItemCount(1);
 		statusPanel.add(statusListbox);
 		grid.setWidget(0, 0, statusPanel);
@@ -211,8 +215,8 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 
 		HorizontalPanel typePanel = new HorizontalPanel();
 		typePanel.add(new Label("Type: "));
-		wpTypeButton = new RadioButton("ActMapTypeGroup", "Waterpoint");
-		spTypeButton = new RadioButton("ActMapTypeGroup", "Sanitation");
+		wpTypeButton = new RadioButton("ActMapTypeGroup", TEXT_CONSTANTS.waterPoint());
+		spTypeButton = new RadioButton("ActMapTypeGroup", TEXT_CONSTANTS.sanitationPoint());
 		typePanel.add(wpTypeButton);
 		typePanel.add(spTypeButton);
 		wpTypeButton.addValueChangeHandler(this);
@@ -223,14 +227,14 @@ public class ActivityMapPortlet extends UserAwarePortlet implements
 		headerPanel.add(grid);
 
 		HorizontalPanel regionPanel = new HorizontalPanel();
-		regionPanel.add(new Label("Region: "));
+		regionPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.region()));
 		regionListbox = new ListBox();
-		regionListbox.addItem("World", "world");
-		regionListbox.addItem("Africa", "africa");
-		regionListbox.addItem("Asia", "asia");
-		regionListbox.addItem("Europe", "europe");
-		regionListbox.addItem("Middle East", "middle_east");
-		regionListbox.addItem("South America", "south_america");
+		regionListbox.addItem(TEXT_CONSTANTS.world(), "world");
+		regionListbox.addItem(TEXT_CONSTANTS.africa(), "africa");
+		regionListbox.addItem(TEXT_CONSTANTS.asia(), "asia");
+		regionListbox.addItem(TEXT_CONSTANTS.europe(), "europe");
+		regionListbox.addItem(TEXT_CONSTANTS.middleEast(), "middle_east");
+		regionListbox.addItem(TEXT_CONSTANTS.southAmerica(), "south_america");
 		regionListbox.addChangeHandler(this);
 		regionPanel.add(regionListbox);
 		headerPanel.add(regionPanel);
