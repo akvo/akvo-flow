@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 		CompletionListener {
+	
 	private static final String TYPE = "GEO";
 	private static final String DELIM = "|";
 	private static final String DELIM_REGEX = "\\|";
@@ -45,13 +46,13 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 	protected void constructResponseUi() {
 		isApprox = false;
 		lat = new TextBox();
-		ViewUtil.installFieldRow(getPanel(), "Latitude", lat, null);
+		ViewUtil.installFieldRow(getPanel(), TEXT_CONSTANTS.latitude(), lat, null);
 		lon = new TextBox();
-		ViewUtil.installFieldRow(getPanel(), "Longitude", lon, null);
+		ViewUtil.installFieldRow(getPanel(), TEXT_CONSTANTS.longitude(), lon, null);
 		alt = new TextBox();
-		ViewUtil.installFieldRow(getPanel(), "Altitude", alt, null);
+		ViewUtil.installFieldRow(getPanel(), TEXT_CONSTANTS.altitude(), alt, null);
 		code = new TextBox();
-		ViewUtil.installFieldRow(getPanel(), "Code", code, null);
+		ViewUtil.installFieldRow(getPanel(), TEXT_CONSTANTS.code(), code, null);
 		if (getAnswer().getKeyId() != null) {
 			// if we're initializing and key id is not null, pre-populate
 			String val = getAnswer().getValue();
@@ -70,10 +71,10 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 			}
 
 		}
-		locateExisting = new Button("Find Existing Point");
+		locateExisting = new Button(TEXT_CONSTANTS.findAccessPoint());
 		locateExisting.addClickHandler(this);
 		getPanel().add(locateExisting);
-		mapButton = new Button("View Map");
+		mapButton = new Button(TEXT_CONSTANTS.viewMap());
 		mapButton.addClickHandler(this);
 		getPanel().add(mapButton);
 	}
@@ -113,7 +114,7 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 			dia.showCentered();
 		} else if (event.getSource() == mapButton) {
 			// TODO: parameterize
-			final WidgetDialog dia = new WidgetDialog("Select location",null);
+			final WidgetDialog dia = new WidgetDialog(TEXT_CONSTANTS.selectLocation(),null);
 			LatLng point = LatLng.newInstance(6.571, -9.351);
 			MapWidget map = new MapWidget(point, 10);
 			map.setWidth("400px");
@@ -161,7 +162,5 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 				alt.setText(ap.getAltitude().toString());
 			}
 		}
-
 	}
-
 }

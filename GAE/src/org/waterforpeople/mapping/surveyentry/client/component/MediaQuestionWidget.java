@@ -77,7 +77,7 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		contentType = new Hidden("Content-Type");
 		uploadPanel.add(contentType);
 
-		uploadButton = new Button("Upload");
+		uploadButton = new Button(TEXT_CONSTANTS.upload());
 		uploadButton.addClickHandler(this);
 		upload = new FileUpload();
 		upload.setName("file");
@@ -96,15 +96,15 @@ public class MediaQuestionWidget extends QuestionWidget implements
 	protected void constructResponseUi() {
 
 		contentPanel = new HorizontalPanel();
-		statusLabel = new Label("Uploading...");
-		uploadButton = new Button("Upload");
-		resetButton = new Button("Clear");
+		statusLabel = new Label(TEXT_CONSTANTS.uploading());
+		uploadButton = new Button(TEXT_CONSTANTS.upload());
+		resetButton = new Button(TEXT_CONSTANTS.clear());
 		uploadButton.addClickHandler(this);
 		resetButton.addClickHandler(this);
 		completeIcon = new Image("images/icon-check.gif");
 		constructForm();
 		if(getAnswer().getKeyId() != null){
-			//if we're initializing and key id is not null, prepopulate
+			//if we're initializing and key id is not null, pre-populate
 			completeIcon.setVisible(true);			
 		}
 		getPanel().add(contentPanel);
@@ -149,8 +149,8 @@ public class MediaQuestionWidget extends QuestionWidget implements
 				statusLabel.setVisible(true);
 				form.submit();
 			} else {
-				MessageDialog dia = new MessageDialog("Error",
-						"You must specify either a jpg or mp4 file");
+				MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.inputError(),
+						TEXT_CONSTANTS.filetypeError());
 				dia.showCentered();
 			}
 		} else if (event.getSource() == resetButton) {

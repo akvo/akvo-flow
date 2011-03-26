@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -42,16 +43,18 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class AccessPointLocatorDialog extends WidgetDialog implements
 		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto>,
 		ClickHandler {
-	
+	private static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
+
 	public static final String SELECTED_AP_KEY = "SELECTEDAP";
 	private static final Integer PAGE_SIZE = 10;
-	private static final String TITLE = "Find Access Point";
+	private static final String TITLE =TEXT_CONSTANTS.findAccessPoint();
 	private static final DataTableHeader HEADERS[] = {
-			new DataTableHeader("Id", "key", true),
-			new DataTableHeader("Community Code", "communityCode", true),
-			new DataTableHeader("Latitude", "latitude", true),
-			new DataTableHeader("Longitude", "longitude", true),
-			new DataTableHeader("Point Type", "pointType", true) };
+			new DataTableHeader(TEXT_CONSTANTS.id(), "key", true),
+			new DataTableHeader(TEXT_CONSTANTS.communityCode(), "communityCode", true),
+			new DataTableHeader(TEXT_CONSTANTS.latitude(), "latitude", true),
+			new DataTableHeader(TEXT_CONSTANTS.longitude(), "longitude", true),
+			new DataTableHeader(TEXT_CONSTANTS.pointType(), "pointType", true) };
 	private static final String DEFAULT_SORT_FIELD = "key";
 
 	private AccessPointManagerServiceAsync apmService;
@@ -75,7 +78,7 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 		initSearchPanel();
 		mainPanel.add(searchPanel);
 		mainPanel.add(apTable);
-		selectButton = new Button("Select and Close");
+		selectButton = new Button(TEXT_CONSTANTS.selectAndClose());
 		selectButton.setEnabled(false);
 		selectButton.addClickHandler(this);
 		mainPanel.add(selectButton);
@@ -83,7 +86,7 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 	}
 
 	private void initSearchPanel() {
-		searchPanel = new CaptionPanel("Search Criteria");
+		searchPanel = new CaptionPanel(TEXT_CONSTANTS.searchCriteria());
 		VerticalPanel controlsPanel = new VerticalPanel();
 		Panel temp = new HorizontalPanel();
 		pointTypeBox = new ListBox();
@@ -93,15 +96,15 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 					.toString());
 		}
 		commCodeBox = new TextBox();
-		searchButton = new Button("Search");
+		searchButton = new Button(TEXT_CONSTANTS.search());
 		searchButton.addClickHandler(this);
-		temp.add(ViewUtil.initLabel("Community Code"));
+		temp.add(ViewUtil.initLabel(TEXT_CONSTANTS.communityCode()));
 		temp.add(commCodeBox);
-		//temp.add(ViewUtil.initLabel("Point Type"));
-		//temp.add(pointTypeBox);
+		// temp.add(ViewUtil.initLabel("Point Type"));
+		// temp.add(pointTypeBox);
 		temp.add(searchButton);
 		controlsPanel.add(temp);
-		statusLabel = ViewUtil.initLabel("Loading. Please wait...");
+		statusLabel = ViewUtil.initLabel(TEXT_CONSTANTS.loading());
 		statusLabel.setVisible(false);
 		controlsPanel.add(statusLabel);
 		((CaptionPanel) searchPanel).add(controlsPanel);
@@ -150,8 +153,7 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 			@Override
 			public void onFailure(Throwable caught) {
 				statusLabel.setVisible(false);
-				MessageDialog errDia = new MessageDialog("Application Error",
-						"Cannot search");
+				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 				errDia.showCentered();
 
 			}
@@ -199,18 +201,20 @@ public class AccessPointLocatorDialog extends WidgetDialog implements
 		if (ViewUtil.isTextPopulated(commCodeBox)) {
 			dto.setCommunityCode(commCodeBox.getText());
 		}
-//TODO: put back once this is parameterized
-		/*dto
-				.setPointType(pointTypeBox.getValue(pointTypeBox
-						.getSelectedIndex()));*/
+		// TODO: put back once this is parameterized
+		/*
+		 * dto .setPointType(pointTypeBox.getValue(pointTypeBox
+		 * .getSelectedIndex()));
+		 */
 		dto.setPointType(AccessPointDto.AccessPointType.WATER_POINT.toString());
 		dto.setPageSize(PAGE_SIZE);
 		dto.setOrderBy(apTable.getCurrentSortField());
 		dto.setOrderByDir(apTable.getCurrentSortDirection());
 		return dto;
 	}
+
 	@Override
-	public Integer getPageSize(){
+	public Integer getPageSize() {
 		return PAGE_SIZE;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -13,6 +14,7 @@ import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -26,12 +28,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class WebSurveySelectorDialog extends WidgetDialog implements
 		DataTableBinder<SurveyDto>, DataTableListener<SurveyDto> {
 
+	protected static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	public static final String SELECTED_SURVEY_KEY = "SELECTEDSURVEY";
 	private static final Integer PAGE_SIZE = 10;
-	private static final String TITLE = "Select a Survey";
+	private static final String TITLE = TEXT_CONSTANTS.selectSurvey();
 	private static final DataTableHeader HEADERS[] = {
-			new DataTableHeader("Survey Group", "path", false),
-			new DataTableHeader("Survey Name", "name", false) };
+			new DataTableHeader(TEXT_CONSTANTS.surveyGroup(), "path", false),
+			new DataTableHeader(TEXT_CONSTANTS.survey(), "name", false) };
 	private static final String DEFAULT_SORT_FIELD = "name";
 
 	private PaginatedDataTable<SurveyDto> surveyTable;
@@ -50,7 +54,7 @@ public class WebSurveySelectorDialog extends WidgetDialog implements
 				this, this, true);
 		mainPanel
 				.add(ViewUtil
-						.initLabel("Please select the survey you wish to submit by clicking it."));
+						.initLabel(TEXT_CONSTANTS.selectSurveyClick()));
 		mainPanel.add(surveyTable);
 		setContentWidget(mainPanel);
 		requestData(null, false);

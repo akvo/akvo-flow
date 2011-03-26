@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationDt
 import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationService;
 import org.waterforpeople.mapping.app.gwt.client.auth.WebActivityAuthorizationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.surveyentry.client.component.SurveyEntryWidget;
 import org.waterforpeople.mapping.surveyentry.client.component.WebSurveySelectorDialog;
 
@@ -32,7 +33,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  * 
  */
 public class SurveyEntryClient implements EntryPoint, CompletionListener {
-
+	protected static TextConstants TEXT_CONSTANTS = GWT
+			.create(TextConstants.class);
 	private static final String TOKEN_PARAM = "token";
 	private static final String ACTIVITY_NAME = "WebSurvey";
 	private SurveyEntryWidget entryWidget;
@@ -48,8 +50,8 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 		RootPanel.get().getElement().getStyle().setProperty("position",
 				"relative");
 		RootPanel.get().add(new Image("images/wfp-logo.gif"));
-		final MessageDialog authDia = new MessageDialog("Authenticating...",
-				"Validating authentication. Please wait", true);
+		final MessageDialog authDia = new MessageDialog(TEXT_CONSTANTS
+				.authenticating(), TEXT_CONSTANTS.validatingAuth(), true);
 		authDia.showCentered();
 		if (token != null) {
 			authService.isAuthorized(token, ACTIVITY_NAME,
@@ -68,8 +70,10 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							MessageDialog dia = new MessageDialog("Error",
-									"Could not validate authentication: "
+							MessageDialog dia = new MessageDialog(
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
 											+ caught.getLocalizedMessage());
 							dia.showCentered();
 						}
@@ -84,8 +88,9 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 								@Override
 								public void onFailure(Throwable caught) {
 									MessageDialog dia = new MessageDialog(
-											"Error",
-											"Could not validate authentication: "
+											TEXT_CONSTANTS.error(),
+											TEXT_CONSTANTS.errorTracePrefix()
+													+ " "
 													+ caught
 															.getLocalizedMessage());
 									dia.showCentered();
@@ -136,8 +141,8 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 										}
 									} else {
 										MessageDialog dia = new MessageDialog(
-												"No Surveys",
-												"You do not have access to submit any surveys at this time");
+												TEXT_CONSTANTS.noSurveys(),
+												TEXT_CONSTANTS.noSurveyAccess());
 										dia.showCentered();
 									}
 								}
@@ -154,7 +159,7 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 	}
 
 	private void authorizationFailed() {
-		Label l = new Label("Authorization failed. Please check your token.");
+		Label l = new Label(TEXT_CONSTANTS.authFailed());
 		RootPanel.get().add(l);
 	}
 
@@ -183,8 +188,8 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 								if (!result.isValidForAuth()) {
 									entryWidget.setVisible(false);
 									MessageDialog dia = new MessageDialog(
-											"Thank you",
-											"Thank you for your submission.");
+											TEXT_CONSTANTS.thankYou(),
+											TEXT_CONSTANTS.thankYouMessage());
 									dia.showCentered();
 								}
 							}

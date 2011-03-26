@@ -2,6 +2,7 @@ package com.gallatinsystems.framework.gwt.util.client;
 
 import java.util.Map;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -19,6 +20,8 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class WidgetDialog extends DialogBox {
+	private static FrameworkTextConstants TEXT_CONSTANTS = GWT
+	.create(FrameworkTextConstants.class);
 
 	private CompletionListener listener;
 	private Button closeButton;
@@ -45,7 +48,7 @@ public class WidgetDialog extends DialogBox {
 			contentPane.add(widget, DockPanel.CENTER);
 		}
 		if (!hideControls) {
-			closeButton = new Button("Close");
+			closeButton = new Button(TEXT_CONSTANTS.close());
 			contentPane.add(closeButton, DockPanel.SOUTH);
 			closeButton.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {

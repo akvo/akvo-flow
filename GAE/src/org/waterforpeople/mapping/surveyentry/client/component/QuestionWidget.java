@@ -2,7 +2,9 @@ package org.waterforpeople.mapping.surveyentry.client.component;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -16,6 +18,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public abstract class QuestionWidget extends Composite {
+	protected static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	private static String TEXT_WIDTH = "300px";
 	private static final String DEFAULT_ANS_TYPE = "VALUE";
 	private Grid mainGrid;

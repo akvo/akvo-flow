@@ -68,6 +68,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public class Dashboard extends PortalContainer implements EntryPoint {
+	
 	private static final int COLUMNS = 3;
 	private static final String CONFIG_GROUP = "DASHBOARD";
 	private static TextConstants TEXT_CONSTANTS = GWT
@@ -75,7 +76,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
-	private static final String ADD_TOOLTIP = "Add portlets to dashboard";
+	private static final String ADD_TOOLTIP = TEXT_CONSTANTS.addToDashboard();
 
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
@@ -119,17 +120,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					containerPanel.clear();
 					containerPanel.add(new Image("images/wfp-logo.gif"));
 					if (result != null) {
-						Anchor logoutAnchor = new Anchor(
-								"Log in as different user", result
+						Anchor logoutAnchor = new Anchor(TEXT_CONSTANTS.logOnAsDifferentUser(), result
 										.getLogoutUrl());
 						containerPanel.add(logoutAnchor);
 					}
-					MessageDialog errDia = new MessageDialog(
-							"Unkown User",
-							"You do not have access to the FLOW server. Please contact an administrator for access");
+					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.unknownUser(),TEXT_CONSTANTS.noFlowAccess());							
 					errDia.show();
-					// initializeContent(null);
-
 				}
 			}
 		};
@@ -150,7 +146,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		menuDock.setStyleName(CSS_SYSTEM_HEAD);
 		MenuBar menu = new MenuBar();
 
-		menu.addItem("Dashboard", new Command() {
+		menu.addItem(TEXT_CONSTANTS.dashboard(), new Command() {
 			public void execute() {
 				exitFullscreen();
 				if (confImage != null) {
@@ -161,7 +157,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 		MenuBar mgrMenu = new MenuBar(true);
 		mgrMenu.setAnimationEnabled(true);
-		mgrMenu.addItem("Access Point", new Command() {
+		mgrMenu.addItem(TEXT_CONSTANTS.accessPoint(), new Command() {
 			public void execute() {
 				launchFullscreen(AccessPointManagerPortlet.NAME);
 
@@ -169,31 +165,31 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		});
 
 		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
-			mgrMenu.addItem("Survey Assignment", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.surveyAssignmentPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(SurveyAssignmentPortlet.NAME);
 				}
 			});
-			mgrMenu.addItem("Survey Question Attribute Mapper", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.surveyAttributeMappingPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(SurveyAttributeMappingPortlet.NAME);
 
 				}
 			});
-			mgrMenu.addItem("Survey Loader", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.surveyLoaderPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(SurveyLoaderPortlet.NAME);
 				}
 			});
 
-			mgrMenu.addItem("Tech Type", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.technologyTypeManagerPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(TechnologyTypeManagerPortlet.NAME);
 				}
 			});
 		}
 		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
-			mgrMenu.addItem("Display Template Content Manager", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.displayContentManagerTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(DisplayContentManager.NAME);
 
@@ -201,7 +197,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			});
 		}
 
-		mgrMenu.addItem("Survey Manager", new Command() {
+		mgrMenu.addItem(TEXT_CONSTANTS.surveyManagerPortletTitle(), new Command() {
 			public void execute() {
 				launchFullscreen(SurveyManagerPortlet.NAME);
 
@@ -209,45 +205,45 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		});
 		if (getCurrentUser().hasPermission(
 				PermissionConstants.UPLOAD_SURVEY_DATA)) {
-			mgrMenu.addItem("Data Upload", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.uploadPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(DataUploadPortlet.NAME);
 				}
 			});
 		}
 
-		mgrMenu.addItem("Raw Data Manager", new Command() {
+		mgrMenu.addItem(TEXT_CONSTANTS.rawDataViewPortletName(), new Command() {
 			public void execute() {
 				launchFullscreen(RawDataViewPortlet.NAME);
 			}
 		});
 		if (getCurrentUser().hasPermission(PermissionConstants.IMPORT_AP_DATA)) {
-			mgrMenu.addItem("Import Access Point", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.mappingAttributeManagerTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(MappingAttributeManager.NAME);
 				}
 			});
 		}
 		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_USER)) {
-			mgrMenu.addItem("Manage Users", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.userManagerPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(UserManagerPortlet.NAME);
 				}
 			});
 		}
 		if (getCurrentUser().isAdmin()) {
-			mgrMenu.addItem("Admin Wizard", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.adminWizardPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(AdminWizardPortlet.NAME);
 
 				}
 			});
-			mgrMenu.addItem("View Remote Exceptions", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.remoteExceptionPortletTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(RemoteExceptionPortlet.NAME);
 				}
 			});
-			mgrMenu.addItem("Device Files", new Command() {
+			mgrMenu.addItem(TEXT_CONSTANTS.deviceFileManagerTitle(), new Command() {
 				public void execute() {
 					launchFullscreen(DeviceFileManagerPortlet.NAME);
 
@@ -255,7 +251,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			});
 		}
 
-		menu.addItem("Data Managers", mgrMenu);
+		menu.addItem(TEXT_CONSTANTS.dataManagers(), mgrMenu);
 
 		menuDock.add(menu, DockPanel.WEST);
 		menuDock.add(new SimplePanel(), DockPanel.CENTER);
@@ -471,7 +467,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			// DialogBox is a SimplePanel, so you have to set its widget
 			// property to
 			// whatever you want its contents to be.
-			Button ok = new Button("Done");
+			Button ok = new Button(TEXT_CONSTANTS.done());
 			contentPane.add(ok);
 			ok.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {

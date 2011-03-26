@@ -1,5 +1,6 @@
 package com.gallatinsystems.framework.gwt.util.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -18,6 +19,8 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * 
  */
 public class MessageDialog extends DialogBox {
+	private static FrameworkTextConstants TEXT_CONSTANTS = GWT
+	.create(FrameworkTextConstants.class);
 	private HTML content;
 	private DockPanel dock;
 
@@ -35,7 +38,7 @@ public class MessageDialog extends DialogBox {
 		dock.add(content, DockPanel.CENTER);
 		if (!suppressButton) {
 			HorizontalPanel hp = new HorizontalPanel();
-			Button ok = new Button("OK");
+			Button ok = new Button(TEXT_CONSTANTS.ok());
 
 			ok.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
@@ -48,7 +51,7 @@ public class MessageDialog extends DialogBox {
 			hp.add(ok);
 			// only add Cancel button if there is a click handler
 			if (okHandler != null) {
-				Button cancel = new Button("Cancel");
+				Button cancel = new Button(TEXT_CONSTANTS.cancel());
 				hp.add(cancel);
 				cancel.addClickHandler(new ClickHandler() {
 					@Override

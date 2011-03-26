@@ -10,7 +10,9 @@ import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.portlet.client.WizardBundleConstants;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.gallatinsystems.framework.gwt.util.client.FrameworkTextConstants;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -46,6 +48,8 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class AbstractWizardPortlet extends Portlet implements
 		ClickHandler, PageController, CompletionListener {
 
+	private static FrameworkTextConstants TEXT_CONSTANTS = GWT
+	.create(FrameworkTextConstants.class);
 	private static final String NAV_BUTTON_STYLE = "wizard-navbutton";
 	private static final String BACK_NAV_BUTTON_STYLE = "wizard-back-navbutton";
 	private static final String FWD_NAV_BUTTON_STYLE = "wizard-fwd-navbutton";
@@ -97,7 +101,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		pageToLoad = workflow.getStartNode();
 		renderWizardPage(pageToLoad, true, null);
 		setContent(contentPane);
-		waitDialog = new MessageDialog("Saving...", "Please wait", true);
+		waitDialog = new MessageDialog(TEXT_CONSTANTS.saving(), TEXT_CONSTANTS.pleaseWait(), true);
 	}
 
 	/**

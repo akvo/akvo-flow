@@ -451,5 +451,34 @@ public interface TextConstants extends Constants{
 	public String userManagerPortletTitle();
 	public String adminOnly();
 	public String adminOnlyMessage();
+	public String logOnAsDifferentUser();
+	public String unknownUser();
+	public String noFlowAccess();
+	public String dashboard();
+	public String accessPoint();
+	public String dataManagers();
+	public String addToDashboard();
+	public String findAccessPoint();
+	public String selectAndClose();
+	public String searchCriteria();
+	public String altitude();
+	public String viewMap();
+	public String selectLocation();
+	public String submitReview();
+	public String submitSurvey();
+	public String saveAndApprove();
+	public String surveySubmittedMessage();
+	public String surveySubmitted();
+	public String surveyApproved();
+	public String surveyApprovedMessage();
+	public String pleaseAnswerMandatory();
+	public String selectSurveyClick();
+	public String authenticating();
+	public String validatingAuth();
+	public String noSurveys();
+	public String noSurveyAccess();
+	public String authFailed();
+	public String thankYou();
+	public String thankYouMessage();
 	
 }

@@ -24,7 +24,7 @@ public class OptionQuestionWidget extends QuestionWidget implements
 
 	private static final String OTHER_TYPE = "OTHER";
 	private static final String TYPE = "VALUE";
-	private static final String OTHER_TEXT = "Other...";
+	private static final String OTHER_TEXT = TEXT_CONSTANTS.other()+"...";
 	private static final String DELIM = "|";
 	private static final String DELIM_REGEX = "\\|";
 	private ListBox listBox;

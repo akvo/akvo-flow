@@ -8,5 +8,8 @@ public interface FrameworkTextConstants extends Constants{
 	public String next();
 	public String pleaseWait();
 	public String noMatches();
-
+	public String ok();
+	public String cancel();
+	public String close();
+	public String saving();
 }

@@ -17,6 +17,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
@@ -42,6 +43,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class SurveyEntryWidget extends Composite implements
 		QuestionAnswerListener, SelectionHandler<Integer> {
 
+	protected static TextConstants TEXT_CONSTANTS = GWT
+	.create(TextConstants.class);
 	public static final String PAYLOAD_KEY = "payload";
 	private String surveyId;
 	private SurveyServiceAsync surveyService;
@@ -73,8 +76,8 @@ public class SurveyEntryWidget extends Composite implements
 		surveyService = GWT.create(SurveyService.class);
 		surveyInstanceService = GWT.create(SurveyInstanceService.class);
 		containerPanel = new VerticalPanel();
-		loadingDialog = new MessageDialog("Loading Survey",
-				"Please wait while your survey is loaded", true);
+		loadingDialog = new MessageDialog(TEXT_CONSTANTS.loading(),
+				TEXT_CONSTANTS.pleaseWait(), true);
 		initWidget(containerPanel);
 	}
 
@@ -118,8 +121,7 @@ public class SurveyEntryWidget extends Composite implements
 
 	private void displayErrorMessage(Throwable caught) {
 		loadingDialog.hide();
-		MessageDialog errDia = new MessageDialog("Error",
-				"Survey could not be loaded.");
+		MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());				
 		errDia.showCentered();
 	}
 
@@ -134,7 +136,7 @@ public class SurveyEntryWidget extends Composite implements
 			for (QuestionGroupDto group : surveyDto.getQuestionGroupList()) {
 				tabPanel.add(new VerticalPanel(), group.getDisplayName());
 			}
-			tabPanel.add(submissionPanel, "Submit/Review");
+			tabPanel.add(submissionPanel, TEXT_CONSTANTS.submitReview());
 			containerPanel.add(tabPanel);
 			tabPanel.selectTab(0);
 		}
@@ -207,11 +209,11 @@ public class SurveyEntryWidget extends Composite implements
 			}
 		}
 		if (missingItems.size() == 0) {
-			String lblText = "Submit Survey";
+			String lblText = TEXT_CONSTANTS.submitSurvey();
 
 			if (existingAnswers.size() > 0) {
 				// if we already have answers, we're approving, not creating
-				lblText = "Save and Approve";
+				lblText = TEXT_CONSTANTS.saveAndApprove();
 			}
 
 			Button submitButton = new Button(lblText);
@@ -238,9 +240,7 @@ public class SurveyEntryWidget extends Composite implements
 
 									@Override
 									public void onFailure(Throwable caught) {
-										MessageDialog errDia = new MessageDialog(
-												"Error submitting survey",
-												"Could not submit survey. Please try again");
+										MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());												
 										errDia.showCentered();
 
 									}
@@ -248,9 +248,7 @@ public class SurveyEntryWidget extends Composite implements
 									@Override
 									public void onSuccess(
 											SurveyInstanceDto result) {
-										MessageDialog success = new MessageDialog(
-												"Survey Submitted",
-												"Survey has been submitted to the server");
+										MessageDialog success = new MessageDialog(TEXT_CONSTANTS.surveySubmitted(),TEXT_CONSTANTS.surveySubmittedMessage());												
 										success.showCentered();
 										resetForm();
 										if (listener != null) {
@@ -292,18 +290,14 @@ public class SurveyEntryWidget extends Composite implements
 
 									@Override
 									public void onFailure(Throwable caught) {
-										MessageDialog errDia = new MessageDialog(
-												"Error approving survey",
-												"Could not approve survey. Please try again");
+										MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
 										errDia.showCentered();
 
 									}
 
 									@Override
 									public void onSuccess(Void v) {
-										MessageDialog success = new MessageDialog(
-												"Survey Approved",
-												"Survey has been approved");
+										MessageDialog success = new MessageDialog(TEXT_CONSTANTS.surveyApproved(),TEXT_CONSTANTS.surveyApprovedMessage());
 										success.showCentered();
 										resetForm();
 									}
@@ -314,8 +308,7 @@ public class SurveyEntryWidget extends Composite implements
 			submissionPanel.add(submitButton);
 		} else {
 			submissionPanel
-					.add(new Label(
-							"The following mandatory questions must be answered before the survey can be submitted."));
+					.add(new Label(TEXT_CONSTANTS.pleaseAnswerMandatory()));
 			for (QuestionDto q : missingItems) {
 				submissionPanel.add(new Label(q.getText()));
 			}
