@@ -40,9 +40,8 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		ContextAware {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
-	private SurveyServiceAsync surveyService;
-	private Map<Widget, QuestionGroupDto> questionGroupMap;
-	Map<String, Object> bundle;
+	private SurveyServiceAsync surveyService;	
+	private Map<String, Object> bundle;
 	private Map<Widget, Integer> widgetRowMap;
 	private Grid dataGrid;
 	private QuestionGroupDto selectedQuestionGroup;
@@ -51,8 +50,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	public QuestionGroupListWidget(PageController controller) {
 		super(controller);
 		bundle = new HashMap<String, Object>();
-		surveyService = GWT.create(SurveyService.class);
-		questionGroupMap = new HashMap<Widget, QuestionGroupDto>();
+		surveyService = GWT.create(SurveyService.class);		
 	}
 
 	public void loadData(SurveyDto surveyDto) {
@@ -133,7 +131,6 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 
 	@Override
 	protected void handleItemClick(Object source, ClickMode mode) {
-		int i = 0;
 		selectedQuestionGroup = survey.getQuestionGroupList().get(
 				widgetRowMap.get((Widget) source));
 
@@ -155,22 +152,43 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		setWorking(true);
 		final MessageDialog savingDialog = new MessageDialog(TEXT_CONSTANTS
 				.saving(), TEXT_CONSTANTS.pleaseWait(), true);
-		savingDialog.showCentered();
-		Integer idx = findIndexForGroup(questionGroup);
+		savingDialog.showCentered();		
 
+		Integer prevIdx = null;
+		Integer nextIdx = null;
+		Integer idx = null;		
+		for (int i =0; i < survey.getQuestionGroupList().size(); i++) {
+			if (idx != null) {
+				nextIdx = i;
+				break;
+			}
+			if (survey.getQuestionGroupList().get(i)!= null && survey.getQuestionGroupList().get(i).getKeyId().equals(questionGroup.getKeyId())) {
+				idx = i;
+			} else {
+				prevIdx =i;
+			}
+		}
+		
 		List<QuestionGroupDto> groupsToUpdate = new ArrayList<QuestionGroupDto>();
 		QuestionGroupDto gToMove = survey.getQuestionGroupList().get(idx);
 		QuestionGroupDto targetGroup = null;
+		if (increment > 0) {
+			targetGroup = survey.getQuestionGroupList().get(nextIdx);
+		} else {
+			targetGroup = survey.getQuestionGroupList().get(prevIdx);
+		}
+				
+		
 		if (idx + increment >= 0
 				&& idx + increment < survey.getQuestionGroupList().size()) {
 			targetGroup = survey.getQuestionGroupList().get(idx + increment);
 		}
 
 		gToMove.setOrder(idx + increment);
-		targetGroup.setOrder(idx);
-
-		survey.getQuestionGroupList().add(targetGroup.getOrder(), targetGroup);
-		survey.getQuestionGroupList().add(gToMove.getOrder(), gToMove);
+		targetGroup.setOrder(idx);		
+		
+		survey.getQuestionGroupList().set(targetGroup.getOrder(), targetGroup);
+		survey.getQuestionGroupList().set(gToMove.getOrder(), gToMove);
 
 		groupsToUpdate.add(gToMove);
 		groupsToUpdate.add(targetGroup);
