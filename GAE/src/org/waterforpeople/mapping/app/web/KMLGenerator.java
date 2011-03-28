@@ -38,21 +38,21 @@ public class KMLGenerator {
 	private VelocityEngine engine;
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
-	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
-	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
-	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
-			.getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
-	// public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
-	// PropertyUtil
-	// .getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
-	// public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL =
-	// PropertyUtil
-	// .getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
-	// public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL =
-	// PropertyUtil
-	// .getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
+//	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
+//			.getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
+//	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
+//			.getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
+//	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
+//			.getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
+	 public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
+	 PropertyUtil
+	 .getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
+	 public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL =
+	 PropertyUtil
+	 .getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
+	 public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL =
+	 PropertyUtil
+	 .getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
 	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";

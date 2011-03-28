@@ -96,13 +96,14 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		} else {
 			// ListPlacemarks Action
 			if (piReq.getLat1() != null) {
-				List<AccessPoint> results = apDao.listAccessPointsByBoundingBox(
-						piReq.getPointType(), piReq.getLat1(),
-						piReq.getLat2(), piReq.getLong1(),
-						piReq.getLong2(),piReq.getCursor());
-				response = (PlacemarkRestResponse) convertToResponse(
-						results, true, AccessPointDao.getCursor(results), piReq.getCursor(),
-						piReq.getDisplay());
+				List<AccessPoint> results = apDao
+						.listAccessPointsByBoundingBox(piReq.getPointType(),
+								piReq.getLat1(), piReq.getLat2(),
+								piReq.getLong1(), piReq.getLong2(),
+								piReq.getCursor());
+				response = (PlacemarkRestResponse) convertToResponse(results,
+						true, AccessPointDao.getCursor(results),
+						piReq.getCursor(), piReq.getDisplay());
 			} else if (piReq.getSubLevel() != null) {
 				List<AccessPoint> results = apDao.listBySubLevel(
 						piReq.getCountry(), piReq.getSubLevel(),
@@ -117,9 +118,18 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						AccessPointDao.getCursor(results), piReq.getCursor(),
 						display);
 			} else {
+				int desiredResults = 20;
+				if (piReq.getDesiredResults() > 20) {
+					if (piReq.getDesiredResults() > 500) {
+						desiredResults = 500;
+					} else {
+						desiredResults = piReq.getDesiredResults();
+					}
+				}
+
 				List<AccessPoint> results = apDao.searchAccessPoints(
 						piReq.getCountry(), null, null, null, null, null, null,
-						null, null, null, null, piReq.getCursor());
+						null, null, null, desiredResults, piReq.getCursor());
 				String display = null;
 				if (piReq.getDisplay() != null) {
 					display = piReq.getDisplay();
