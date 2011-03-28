@@ -165,11 +165,12 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			qasDetailGrid.setWidget(0, 1, ViewUtil.initLabel(TEXT_CONSTANTS
 					.questionType()));
 			qasDetailGrid.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS
-					.answerValue()));
-			qasDetailGrid.setWidget(0, 3, ViewUtil.initLabel(TEXT_CONSTANTS
-					.collectionDate()));
-			qasDetailGrid.setWidget(0, 4, ViewUtil.initLabel(TEXT_CONSTANTS
 					.questionText()));
+			qasDetailGrid.setWidget(0, 3, ViewUtil.initLabel(TEXT_CONSTANTS
+					.answerValue()));
+			qasDetailGrid.setWidget(0, 4, ViewUtil.initLabel(TEXT_CONSTANTS
+					.collectionDate()));
+			
 			Integer iRow = 0;
 			for (QuestionAnswerStoreDto qasDto : questions) {
 				bindQASRow(qasDto, ++iRow);
@@ -370,7 +371,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 				String oldVal = qasDto.getValue();
 				String newVal = ((TextBox) event.getSource()).getValue();
 				if (!newVal.trim().equals(oldVal)) {
-					qasDetailGrid.getCellFormatter().setStyleName(iRow, 2,
+					qasDetailGrid.getCellFormatter().setStyleName(iRow, 3,
 							EDITED_ROW_CSS);
 					// create a new copy of the answer so we don't overwrite the
 					// old value
@@ -387,7 +388,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					changedAnswers.put(newAnswer.getKeyId(), newAnswer);
 
 				} else {
-					qasDetailGrid.getCellFormatter().setStyleName(iRow, 2, "");
+					qasDetailGrid.getCellFormatter().setStyleName(iRow, 3, "");
 					changedAnswers.remove(qasDto.getKeyId());
 				}
 
@@ -411,9 +412,10 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		}
 		qasDetailGrid.setWidget(iRow, 0, qId);
 		qasDetailGrid.setWidget(iRow, 1, qType);
-		qasDetailGrid.setWidget(iRow, 2, qValue);
-		qasDetailGrid.setWidget(iRow, 3, qCollectionDate);
-		qasDetailGrid.setWidget(iRow, 4, qText);
+		qasDetailGrid.setWidget(iRow, 2, qText);
+		qasDetailGrid.setWidget(iRow, 3, qValue);
+		qasDetailGrid.setWidget(iRow, 4, qCollectionDate);
+		
 		for (int j = 0; j < qasDetailGrid.getCellCount(iRow); j++) {
 			qasDetailGrid.getCellFormatter().setStyleName(iRow, j, "");
 		}
