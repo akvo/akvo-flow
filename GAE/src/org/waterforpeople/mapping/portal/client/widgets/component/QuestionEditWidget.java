@@ -578,7 +578,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	@Override
 	public void flushContext() {
-		// no-op
+		bundle.remove(BundleConstants.QUESTION_KEY);
 	}
 
 	/**
