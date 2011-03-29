@@ -185,16 +185,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 		QuestionDao questionDao = new QuestionDao();
 		List<Question> qList = questionDao.listQuestionByType(surveyId,
-				Question.Type.valueOf(type.toString()));		
-		Map<Integer,QuestionDto> dtoMap = new TreeMap<Integer,QuestionDto>();
-		if (qList != null) {			
-			for (int i = 0; i < qList.size(); i++) {
-				dtoMap.put(qList.get(i).getOrder(), marshalQuestionDto(qList.get(i)));
-			}
-		}
-		
-		QuestionDto[] dtoArr = new QuestionDto[dtoMap.size()];
-		return dtoMap.values().toArray(dtoArr);
+				Question.Type.valueOf(type.toString()));			
+		QuestionDto[] dtoArr = new QuestionDto[qList.size()];
+		return qList.toArray(dtoArr);
 	}
 
 	/**

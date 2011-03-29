@@ -35,18 +35,24 @@ public class QuestionDao extends BaseDAO<Question> {
 		scoringRuleDao = new ScoringRuleDao();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Question> listQuestionByType(Long surveyId, Question.Type type) {
 		if (surveyId == null) {
 			return listByProperty("type", type.toString(), "String", "order",
 					"asc");
 		} else {
-			PersistenceManager pm = PersistenceFilter.getManager();
-			javax.jdo.Query query = pm.newQuery(Question.class);
-			query.setFilter("surveyId == surveyIdParam && type == typeParam");
-			query.declareParameters("Long surveyIdParam, String typeParam");
-			query.setOrdering("order asc");
-			return (List<Question>) query.execute(surveyId, type);
+			List<Question> allQuestionsInOrder = listQuestionInOrder(surveyId);
+			List<Question> typeQuestions = new ArrayList<Question>();
+			if (type != null) {
+				if (allQuestionsInOrder != null) {
+					for (Question q : allQuestionsInOrder) {
+						if (type.equals(q.getType())) {
+							typeQuestions.add(q);
+						}
+					}
+					return typeQuestions;
+				}
+			}
+			return allQuestionsInOrder;
 		}
 	}
 
@@ -283,8 +289,10 @@ public class QuestionDao extends BaseDAO<Question> {
 			String questionText) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
-		query.declareParameters("Long questionGroupIdParam, String questionTextParam");
+		query
+				.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
+		query
+				.declareParameters("Long questionGroupIdParam, String questionTextParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, questionText);
 		if (results != null && results.size() > 0) {
@@ -298,8 +306,10 @@ public class QuestionDao extends BaseDAO<Question> {
 	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
-		query.declareParameters("Long questionGroupIdParam, Integer orderParam");
+		query
+				.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
+		query
+				.declareParameters("Long questionGroupIdParam, Integer orderParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, order);
 		if (results != null && results.size() > 0) {

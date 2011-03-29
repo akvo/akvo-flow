@@ -37,8 +37,10 @@ import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -1362,6 +1364,23 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("deleteMetricSummaries".equals(action)) {
 			deleteMetricSummaries(new Integer(req.getParameter("level")),
 					req.getParameter("name"));
+		}else if ("createSurveyQuestionSummary".equals(action)){
+			SurveyQuestionSummary sum = new SurveyQuestionSummary();
+			sum.setCount(10L);
+			sum.setResponse("TEST");
+			sum.setQuestionId("2166031");
+			SurveyQuestionSummaryDao dao = new SurveyQuestionSummaryDao();
+			dao.save(sum);
+			sum = new SurveyQuestionSummary();
+			sum.setCount(20L);
+			sum.setResponse("OTHER");
+			sum.setQuestionId("2166031");
+			dao.save(sum);
+			sum = new SurveyQuestionSummary();
+			sum.setCount(30L);
+			sum.setResponse("GWAR");
+			sum.setQuestionId("2166031");
+			dao.save(sum);			
 		}
 	}
 
