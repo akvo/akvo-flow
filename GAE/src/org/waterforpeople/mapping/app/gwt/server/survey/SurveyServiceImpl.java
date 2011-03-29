@@ -546,12 +546,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				.listQuestionsByQuestionGroup(Long.parseLong(questionGroupId),
 						needDetails);
 		java.util.ArrayList<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
-		for (Question canonical : questionList.values()) {
-			QuestionDto dto = marshalQuestionDto(canonical);
-
-			questionDtoList.add(dto);
+		if (questionList != null && !questionList.isEmpty()) {
+			for (Question canonical : questionList.values()) {
+				QuestionDto dto = marshalQuestionDto(canonical);
+				questionDtoList.add(dto);
+			}
+			return questionDtoList;
+		} else {
+			return null;
 		}
-		return questionDtoList;
 	}
 
 	@Override
