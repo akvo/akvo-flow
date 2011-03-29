@@ -41,11 +41,11 @@ import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
@@ -63,16 +63,16 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.DeviceFilesReplicationImporter;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.domain.AccessPointMetricMapping;
 import org.waterforpeople.mapping.domain.Community;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import org.waterforpeople.mapping.helper.KMLHelper;
@@ -82,9 +82,9 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.diagnostics.dao.RemoteStacktraceDao;
 import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
 import com.gallatinsystems.editorial.dao.EditorialPageDao;
@@ -101,10 +101,10 @@ import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
-import com.gallatinsystems.gis.map.domain.MapFragment;
-import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
+import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
+import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -117,6 +117,7 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -125,7 +126,6 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
@@ -149,6 +149,16 @@ public class TestHarnessServlet extends HttpServlet {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			SurveyGroup sgItem = sgDao.list("all").get(0);
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
+		} else if ("testQuestionOrder".equals(action)) {
+			QuestionDao qDao = new QuestionDao();
+			for(Question q: qDao.listQuestionInOrder(Long.parseLong(req.getParameter("surveyId")))){
+				try {
+					resp.getWriter().println("qgId: " + q.getQuestionGroupId() + " order: " + q.getOrder() + " question: " + q.getText() );
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		} else if ("setupTestUser".equals(action)) {
 			setupTestUser();
 		} else if ("populateAccessPointMetric".equals(action)) {
@@ -1338,51 +1348,56 @@ public class TestHarnessServlet extends HttpServlet {
 			st.setPhoneNumber("777");
 			st.setStackTrace(new Text("ugh"));
 			dao.save(st);
-		}else if ("createMetricMapping".equals(action)){
+		} else if ("createMetricMapping".equals(action)) {
 			createMetricMapping(req.getParameter("metric"));
-		}else if ("listMetricSummaries".equals(action)){
+		} else if ("listMetricSummaries".equals(action)) {
 			try {
 				resp.getWriter().print(
-						listMetricSummaries(new Integer(req.getParameter("level")),req.getParameter("name")));
+						listMetricSummaries(
+								new Integer(req.getParameter("level")),
+								req.getParameter("name")));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}else if ("deleteMetricSummaries".equals(action)){
-			deleteMetricSummaries(new Integer(req.getParameter("level")),req.getParameter("name"));
+		} else if ("deleteMetricSummaries".equals(action)) {
+			deleteMetricSummaries(new Integer(req.getParameter("level")),
+					req.getParameter("name"));
 		}
 	}
-	
-	private void deleteMetricSummaries(Integer level, String name){
+
+	private void deleteMetricSummaries(Integer level, String name) {
 		AccessPointMetricSummaryDao sumDao = new AccessPointMetricSummaryDao();
 		AccessPointMetricSummary prototype = new AccessPointMetricSummary();
-		prototype.setMetricName(name);		
+		prototype.setMetricName(name);
 		prototype.setSubLevel(level);
 		List<AccessPointMetricSummary> sumList = sumDao.listMetrics(prototype);
-		if(sumList != null && sumList.size()>0){
+		if (sumList != null && sumList.size() > 0) {
 			sumDao.delete(sumList);
 		}
 	}
-	
-	private String listMetricSummaries(Integer level, String name){
+
+	private String listMetricSummaries(Integer level, String name) {
 		AccessPointMetricSummaryDao sumDao = new AccessPointMetricSummaryDao();
 		AccessPointMetricSummary prototype = new AccessPointMetricSummary();
-		prototype.setMetricName(name);		
+		prototype.setMetricName(name);
 		prototype.setSubLevel(level);
 		List<AccessPointMetricSummary> sumList = sumDao.listMetrics(prototype);
 		StringBuilder buf = new StringBuilder();
-		if(sumList != null){
-			for(AccessPointMetricSummary m: sumList){
-				buf.append(m.toString()+", shard: "+m.getShardNum()).append("\n");
+		if (sumList != null) {
+			for (AccessPointMetricSummary m : sumList) {
+				buf.append(m.toString() + ", shard: " + m.getShardNum())
+						.append("\n");
 			}
-		} 
+		}
 		return buf.toString();
 	}
-	
-	private void createMetricMapping(String name){
+
+	private void createMetricMapping(String name) {
 		AccessPointMetricMappingDao dao = new AccessPointMetricMappingDao();
-		List<AccessPointMetricMapping> mappingList = dao.findMappings(null, null, name);
-		if(mappingList == null || mappingList.isEmpty()){
-			AccessPointMetricMapping map= new AccessPointMetricMapping();
+		List<AccessPointMetricMapping> mappingList = dao.findMappings(null,
+				null, name);
+		if (mappingList == null || mappingList.isEmpty()) {
+			AccessPointMetricMapping map = new AccessPointMetricMapping();
 			map.setFieldName(name);
 			map.setMetricName(name);
 			dao.save(map);
@@ -1620,7 +1635,8 @@ public class TestHarnessServlet extends HttpServlet {
 			AccessPointType dest) {
 		AccessPointDao pointDao = new AccessPointDao();
 		List<AccessPoint> list = pointDao.searchAccessPoints(null, null, null,
-				null, source.toString(), null, null, null, null, null, null,null);
+				null, source.toString(), null, null, null, null, null, null,
+				null);
 
 		if (list != null && list.size() > 0) {
 			for (AccessPoint point : list) {

@@ -55,6 +55,9 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		}
 		return map;
 	}
+	public List<QuestionGroup> listQuestionGroupBySurvey(Long surveyId){
+		return super.listByProperty("surveyId", surveyId, "Long","order","asc");
+	}
 
 	public QuestionGroup getByParentIdandCode(String code, Long surveyId) {
 		PersistenceManager pm = PersistenceFilter.getManager();

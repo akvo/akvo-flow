@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -95,6 +96,23 @@ public class QuestionDao extends BaseDAO<Question> {
 							+ " because there is a QuestionAnswerStore value for this question. Please delete all survey response first");
 		}
 
+	}
+
+	public List<Question> listQuestionInOrder(Long surveyId) {
+		List<Question> orderedQuestionList = new ArrayList<Question>();
+		List<Question> unknownOrder = listByProperty("surveyId", surveyId,
+				"Long", "order", "asc");
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+
+		List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(surveyId);
+		for (QuestionGroup qg : qgList) {
+			for (Question q : unknownOrder) {
+				if (qg.getKey().getId() == q.getQuestionGroupId()) {
+					orderedQuestionList.add(q);
+				}
+			}
+		}
+		return orderedQuestionList;
 	}
 
 	public Question save(Question question, Long questionGroupId) {
@@ -237,7 +255,7 @@ public class QuestionDao extends BaseDAO<Question> {
 						q.setOrder(map.size() + 1);
 						super.save(q);
 					} else if (map.size() == 0) {
-						super.save(q);					
+						super.save(q);
 					}
 				}
 				map.put(q.getOrder(), q);
