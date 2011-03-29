@@ -77,21 +77,32 @@ public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 	 * @param attributeName
 	 * @return - mapping or null if no match
 	 */
-	@SuppressWarnings("unchecked")
 	public SurveyAttributeMapping findMappingForAttribute(Long surveyId,
+			String attributeName) {
+		List<SurveyAttributeMapping> mappingList = findMappingsForAttribute(surveyId, attributeName);
+		if (mappingList != null && mappingList.size() > 0) {
+			return mappingList.get(0);
+		} else {
+			return null;
+		}	
+	}
+	
+	/**
+	 * lists multiple mappings that correspond to the attribute passed in for a given survey
+	 * @param surveyId
+	 * @param attributeName
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyAttributeMapping> findMappingsForAttribute(Long surveyId,
 			String attributeName) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(SurveyAttributeMapping.class);
 		q
 				.setFilter("surveyId == surveyIdParam && attributeName == attrNameParam");
 		q.declareParameters("Long surveyIdParam, String attrNameParam");
-		List<SurveyAttributeMapping> mappingList = (List<SurveyAttributeMapping>) q
+		return (List<SurveyAttributeMapping>) q
 				.execute(surveyId, attributeName);
-		if (mappingList != null && mappingList.size() > 0) {
-			return mappingList.get(0);
-		} else {
-			return null;
-		}
 	}
 
 	/**
