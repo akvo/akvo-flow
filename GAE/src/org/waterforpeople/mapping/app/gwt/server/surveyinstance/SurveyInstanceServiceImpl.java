@@ -96,7 +96,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 						if (Long.parseLong(qas.getQuestionID()) == qList.get(i)
 								.getKey().getId()) {
 							qasDto.setQuestionText(qList.get(i).getText());
-							idx = 1;
+							idx = i;
 							break;
 						}
 					}
