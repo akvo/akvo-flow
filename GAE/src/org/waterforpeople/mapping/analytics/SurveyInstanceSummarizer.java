@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.analytics;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +28,7 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 			.getLogger(SurveyInstanceSummarizer.class.getName());
 
 	private static final String COMMUNITY_QUESTION_ATTRIBUTE = "communityCode";
+	private static final String ALT_COMMUNITY_QUESTION_ATTRIBUTE = "communityName";
 	private SurveyInstanceDAO instanceDao;
 	private SurveyAttributeMappingDao mappingDao;
 
@@ -48,15 +50,25 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 
 			SurveyInstance instance = instanceDao.getByKey(new Long(key));
 			if (instance != null) {
-				SurveyAttributeMapping mapping = mappingDao
-						.findMappingForAttribute(instance.getSurveyId(),
+				List<SurveyAttributeMapping> mappings = mappingDao
+						.findMappingsForAttribute(instance.getSurveyId(),
 								COMMUNITY_QUESTION_ATTRIBUTE);
-				if (mapping != null) {
+				if (mappings == null || mappings.size() == 0) {
+					mappings = mappingDao.findMappingsForAttribute(instance
+							.getSurveyId(), ALT_COMMUNITY_QUESTION_ATTRIBUTE);
+				}
+				if (mappings != null && mappings.size() > 0) {
 					// if the survey has the attribute mapped, find the
 					// appropriate question
-					QuestionAnswerStore qas = instanceDao
-							.findQuestionAnswerStoreForQuestion(new Long(key),
-									mapping.getSurveyQuestionId());
+					QuestionAnswerStore qas = null;
+					for (SurveyAttributeMapping mapping : mappings) {
+						 qas = instanceDao
+								.findQuestionAnswerStoreForQuestion(new Long(
+										key), mapping.getSurveyQuestionId());
+						 if(qas != null){
+							 break;
+						 }
+					}
 					if (qas != null && qas.getValue() != null) {
 						CommunityDao commDao = new CommunityDao();
 						Community community = commDao.findCommunityByCode(qas
