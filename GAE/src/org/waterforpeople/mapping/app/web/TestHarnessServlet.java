@@ -695,12 +695,15 @@ public class TestHarnessServlet extends HttpServlet {
 			si.setCollectionDate(new Date());
 			ArrayList<QuestionAnswerStore> store = new ArrayList<QuestionAnswerStore>();
 			QuestionAnswerStore ans = new QuestionAnswerStore();
-			ans.setQuestionID("q2");
+			ans.setQuestionID("2166031");
 			ans.setValue("Geneva");
+			ans.setSurveyId(1360012L);
 			store.add(ans);
 			si.setQuestionAnswersStore(store);
 			SurveyInstanceDAO dao = new SurveyInstanceDAO();
 			si = dao.save(si);
+			ans.setSurveyInstanceId(si.getKey().getId());
+			dao.save(ans);
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			summQueue.add(url("/app_worker/datasummarization").param(
 					"objectKey", si.getKey().getId() + "").param("type",

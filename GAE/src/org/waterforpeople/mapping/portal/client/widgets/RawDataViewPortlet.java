@@ -364,6 +364,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		qType.setTabIndex(-1);
 		TextBox qValue = new TextBox();
 		TextBox qText = new TextBox();
+		qText.setReadOnly(true);
 		qValue.addChangeHandler(new ChangeHandler() {
 
 			@Override

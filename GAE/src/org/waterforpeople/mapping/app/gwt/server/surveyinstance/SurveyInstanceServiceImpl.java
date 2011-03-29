@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -54,7 +56,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			c.add(Calendar.DAY_OF_MONTH, -90);
 			beginDate = c.getTime();
 		}
-		siList = dao.listByDateRange(beginDate, null,unapprovedOnlyFlag, cursorString);
+		siList = dao.listByDateRange(beginDate, null, unapprovedOnlyFlag,
+				cursorString);
 		String newCursor = SurveyInstanceDAO.getCursor(siList);
 
 		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
@@ -79,23 +82,34 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				instanceId, null);
 		QuestionDao qDao = new QuestionDao();
 
-		if (questions != null) {
-			List<Question> qList = qDao.listQuestionsBySurvey(questions.get(0)
+		if (questions != null && questions.size()>0) {
+			List<Question> qList = qDao.listQuestionInOrder(questions.get(0)
 					.getSurveyId());
+			Map<Integer, QuestionAnswerStoreDto> orderedResults = new TreeMap<Integer, QuestionAnswerStoreDto>();
+			int notFoundCount = 0;
 			if (qList != null) {
 				for (QuestionAnswerStore qas : questions) {
 					QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
 					DtoMarshaller.copyToDto(qas, qasDto);
-					for (Question q : qList) {
-						if (Long.parseLong(qas.getQuestionID()) == q.getKey()
-								.getId()) {
-							qasDto.setQuestionText(q.getText());
+					int idx = -1 - notFoundCount;
+					for (int i = 0; i < qList.size(); i++) {
+						if (Long.parseLong(qas.getQuestionID()) == qList.get(i)
+								.getKey().getId()) {
+							qasDto.setQuestionText(qList.get(i).getText());
+							idx = 1;
 							break;
 						}
 					}
-					questionDtos.add(qasDto);
+					if (idx < 0) {
+						// do this to prevent collisions on the -1 key if there
+						// is more than one questionAnswerStore item that isn't
+						// in the question list
+						notFoundCount++;
+					}
+					orderedResults.put(idx, qasDto);
 				}
 			}
+			questionDtos = new ArrayList<QuestionAnswerStoreDto>(orderedResults.values());
 		}
 		return questionDtos;
 	}
