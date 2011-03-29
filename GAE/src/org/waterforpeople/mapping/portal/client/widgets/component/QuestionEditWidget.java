@@ -713,8 +713,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setContextBundle(Map<String, Object> bundle) {
-		this.bundle = bundle;
-		flushContext();
+		this.bundle = bundle;		
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
 		questionGroup = (QuestionGroupDto) bundle
@@ -740,7 +739,6 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				currentQuestion.setOrder(1);
 			}
 		}
-
 	}
 
 	/**
