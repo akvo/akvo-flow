@@ -50,25 +50,25 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 
 			SurveyInstance instance = instanceDao.getByKey(new Long(key));
 			if (instance != null) {
-				SurveyAttributeMapping mappings = mappingDao
-						.findMappingForAttribute(instance.getSurveyId(),
+				List<SurveyAttributeMapping> mappings = mappingDao
+						.findMappingsForAttribute(instance.getSurveyId(),
 								COMMUNITY_QUESTION_ATTRIBUTE);
-				if (mappings == null ) {
-					mappings = mappingDao.findMappingForAttribute(instance
+				if (mappings == null || mappings.size() ==0) {
+					mappings = mappingDao.findMappingsForAttribute(instance
 							.getSurveyId(), ALT_COMMUNITY_QUESTION_ATTRIBUTE);
 				}
-				if (mappings != null ) {
+				if (mappings != null && mappings.size()>0) {
 					// if the survey has the attribute mapped, find the
 					// appropriate question
 					QuestionAnswerStore qas = null;
-//					for (SurveyAttributeMapping mapping : mappings) {
+					for (SurveyAttributeMapping mapping : mappings) {
 						 qas = instanceDao
 								.findQuestionAnswerStoreForQuestion(new Long(
-										key), mappings.getSurveyQuestionId());
+										key), mapping.getSurveyQuestionId());
 						 if(qas != null){
-							// break;
+							 break;
 						 }
-//					}
+					}
 					if (qas != null && qas.getValue() != null) {
 						CommunityDao commDao = new CommunityDao();
 						Community community = commDao.findCommunityByCode(qas
