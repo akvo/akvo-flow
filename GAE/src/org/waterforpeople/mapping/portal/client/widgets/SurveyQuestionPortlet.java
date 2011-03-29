@@ -268,7 +268,7 @@ public class SurveyQuestionPortlet extends Portlet {
 			public void run() {
 				ImagePieChart.Options options = ImagePieChart.Options.create();
 				options.setHeight(HEIGHT - 60);
-				options.setWidth(WIDTH);
+				options.setWidth(WIDTH + 60);
 				options.setLabels("value");
 				options.setLegend(LegendPosition.RIGHT);
 				ImagePieChart ipc = new ImagePieChart(currentTable, options);
