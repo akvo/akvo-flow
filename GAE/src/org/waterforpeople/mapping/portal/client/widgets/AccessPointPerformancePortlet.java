@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.ImageLineChart;
@@ -353,7 +354,8 @@ public class AccessPointPerformancePortlet extends LocationDrivenPortlet
 				ImageLineChart.Options options = ImageLineChart.Options
 						.create();
 				options.setHeight(HEIGHT - 60);
-				options.setWidth(WIDTH);
+				options.setWidth(WIDTH + 60);								
+				options.setLegend(LegendPosition.RIGHT);
 				ImageLineChart ilc = new ImageLineChart(currentTable, options);
 				WidgetDialog dia = new WidgetDialog(NAME, ilc);
 				dia.showRelativeTo(getHeaderWidget());
