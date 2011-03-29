@@ -408,6 +408,11 @@ public class KMLGenerator {
 							context.put("collectionDate", formattedDate);
 							context.put("timestamp", timestamp);
 						}
+						if (ap.getCommunityName() == null) {
+							context.put("communityName", "Unknown");
+						} else {
+							context.put("communityName", ap.getCommunityName());
+						}
 						if (ap.getCommunityCode() != null)
 							context.put("communityCode", ap.getCommunityCode());
 						else
