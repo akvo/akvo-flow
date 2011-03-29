@@ -185,9 +185,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 		QuestionDao questionDao = new QuestionDao();
 		List<Question> qList = questionDao.listQuestionByType(surveyId,
-				Question.Type.valueOf(type.toString()));			
+				Question.Type.valueOf(type.toString()));
 		QuestionDto[] dtoArr = new QuestionDto[qList.size()];
-		return qList.toArray(dtoArr);
+		int i = 0;
+		for (Question q : qList) {
+			dtoArr[i] = marshalQuestionDto(q);
+			i++;
+		}
+		return dtoArr;
 	}
 
 	/**
@@ -345,8 +350,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			for (TranslationDto trans : translationMap.values()) {
 				Translation t = new Translation();
 				if (trans.getKeyId() != null)
-					t.setKey((KeyFactory.createKey(Translation.class
-							.getSimpleName(), trans.getKeyId())));
+					t.setKey((KeyFactory.createKey(
+							Translation.class.getSimpleName(), trans.getKeyId())));
 				t.setLanguageCode(trans.getLangCode());
 				t.setText(trans.getText());
 				t.setParentId(trans.getParentId());
@@ -369,8 +374,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public Question marshalQuestion(QuestionDto qdto) {
 		Question q = new Question();
 		if (qdto.getKeyId() != null)
-			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(), qdto
-					.getKeyId())));
+			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(),
+					qdto.getKeyId())));
 
 		q.setQuestionGroupId(qdto.getQuestionGroupId());
 		q.setOrder(qdto.getOrder());
@@ -413,8 +418,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				for (QuestionOptionDto qoDto : optionDtoList) {
 					QuestionOption oo = new QuestionOption();
 					if (qoDto.getKeyId() != null)
-						oo.setKey((KeyFactory.createKey(QuestionOption.class
-								.getSimpleName(), qoDto.getKeyId())));
+						oo.setKey((KeyFactory.createKey(
+								QuestionOption.class.getSimpleName(),
+								qoDto.getKeyId())));
 					if (qoDto.getCode() != null)
 						oo.setCode(qoDto.getCode());
 					if (qoDto.getText() != null)
@@ -945,12 +951,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				}
 				buffer.append(siList.get(i).getKey().getId());
 			}
-			queue.add(url("/app_worker/surveytask").param("action",
-					"reprocessMapSurveyInstance").param(
-					SurveyTaskRequest.ID_PARAM, surveyId.toString()).param(
-					SurveyTaskRequest.ID_LIST_PARAM, buffer.toString()).param(
-					SurveyTaskRequest.CURSOR_PARAM,
-					SurveyInstanceDAO.getCursor(siList)));
+			queue.add(url("/app_worker/surveytask")
+					.param("action", "reprocessMapSurveyInstance")
+					.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
+					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
+					.param(SurveyTaskRequest.CURSOR_PARAM,
+							SurveyInstanceDAO.getCursor(siList)));
 		}
 	}
 
@@ -1082,8 +1088,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			List<QuestionGroup> groupList = new ArrayList<QuestionGroup>();
 			for (QuestionGroupDto qDto : groups) {
 				QuestionGroup q = new QuestionGroup();
-				q.setKey(KeyFactory.createKey(QuestionGroup.class
-						.getSimpleName(), qDto.getKeyId()));
+				q.setKey(KeyFactory.createKey(
+						QuestionGroup.class.getSimpleName(), qDto.getKeyId()));
 				q.setOrder(qDto.getOrder());
 				groupList.add(q);
 			}
@@ -1188,15 +1194,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		Queue queue = QueueFactory.getQueue("background-processing");
-		queue
-				.add(url("/app_worker/bootstrapgen").param(
-						BootstrapGeneratorRequest.ACTION_PARAM,
-						BootstrapGeneratorRequest.GEN_ACTION).param(
-						BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,
-						buf.toString()).param(
-						BootstrapGeneratorRequest.EMAIL_PARAM,
-						notificationEmail).param(
-						BootstrapGeneratorRequest.DB_PARAM,
+		queue.add(url("/app_worker/bootstrapgen")
+				.param(BootstrapGeneratorRequest.ACTION_PARAM,
+						BootstrapGeneratorRequest.GEN_ACTION)
+				.param(BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,
+						buf.toString())
+				.param(BootstrapGeneratorRequest.EMAIL_PARAM, notificationEmail)
+				.param(BootstrapGeneratorRequest.DB_PARAM,
 						dbInstructions != null ? dbInstructions : ""));
 	}
 
