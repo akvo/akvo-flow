@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.ImagePieChart;
@@ -267,7 +268,8 @@ public class SurveyQuestionPortlet extends Portlet {
 			public void run() {
 				ImagePieChart.Options options = ImagePieChart.Options.create();
 				options.setHeight(HEIGHT - 60);
-				options.setWidth(WIDTH);
+				options.setWidth(WIDTH);				
+				options.setLegend(LegendPosition.RIGHT);
 				ImagePieChart ipc = new ImagePieChart(currentTable, options);
 				WidgetDialog dia = new WidgetDialog(NAME, ipc);
 				dia.showRelativeTo(getHeaderWidget());
