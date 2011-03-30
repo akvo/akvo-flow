@@ -306,6 +306,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 	}
 
 	private void loadQuestionDetails(final QuestionDto item) {
+		Window.scrollTo(0, 0);
 		setButtonState(ButtonState.NONE);
 		questionOptionDetail.removeAllRows();
 		questionDetailPanel.removeAllRows();
