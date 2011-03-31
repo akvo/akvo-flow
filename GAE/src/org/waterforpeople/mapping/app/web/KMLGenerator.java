@@ -901,6 +901,7 @@ public class KMLGenerator {
 			String vmName) throws Exception {
 		VelocityContext context = new VelocityContext();
 		StringBuilder sb = new StringBuilder();
+		context.put("organization", ORGANIZATION);
 		if (apsDto.getParentSubName() != null) {
 			context.put("subPath", apsDto.getParentSubName()
 					.replace("/", " | "));
