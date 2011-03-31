@@ -283,7 +283,7 @@ a {
 			createLegend();
 		}
 
-		google.maps.event.addListener(map, 'bounds_changed', function() {
+		google.maps.event.addListener(map, 'dragend', function() {
 			if (map.getZoom() > 10) {
 				var NE = map.getBounds().getNorthEast();
 				var SW = map.getBounds().getSouthWest();
@@ -291,9 +291,11 @@ a {
 						/ Math.pow(10, 2);
 				var lat2 = Math.round(SW.lat() * Math.pow(10, 2))
 						/ Math.pow(10, 2);
-				var long1 = NE.lng();
-				var long2 = SW.lng();
-				if (!fetchingApStatus) {
+				var long1 = Math.round(NE.lng() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
+				var long2 = Math.round(SW.lng() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
+				if (true) {
 					getAccessPointPlacemarkInfo('LR', null, null, null, lat1,
 							lat2, long1, long2);
 				}
@@ -314,9 +316,11 @@ a {
 						/ Math.pow(10, 2);
 				var lat2 = Math.round(SW.lat() * Math.pow(10, 2))
 						/ Math.pow(10, 2);
-				var long1 = NE.lng();
-				var long2 = SW.lng();
-				if (!fetchingApStatus) {
+				var long1 = Math.round(NE.lng() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
+				var long2 = Math.round(SW.lng() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
+				if (true) {
 					getAccessPointPlacemarkInfo('LR', null, null, null, lat1,
 							lat2, long1, long2);
 				}
@@ -457,7 +461,7 @@ a {
 		var url = '/placemarkrestapi?action=listByBoundingBox&country='
 				+ country + '&needDetailsFlag=false' + '&lat1=' + lat1
 				+ '&lat2=' + lat2 + '&long1=' + long1 + '&long2=' + long2
-				+ '&pointType=WATER_POINT&maxResults=200';
+				+ '&pointType=WATER_POINT&maxResults=500';
 		if (cursor != null) {
 			url += '&cursor=' + cursor;
 		}
