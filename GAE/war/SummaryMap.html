@@ -414,7 +414,7 @@ a {
 		var url = '/placemarkrestapi?country=' + country
 				+ '&needDetailsFlag=true' + '&ignoreCache=true' + '&lat1='
 				+ lat1 + '&lat2=' + lat2 + '&long1=' + long1 + '&long2='
-				+ long2 + '&pointType=WATER_POINT';
+				+ long2 + '&pointType=WATER_POINT&maxResults=100';
 		if (cursor != null) {
 			url += '&cursor=' + cursor;
 		}
