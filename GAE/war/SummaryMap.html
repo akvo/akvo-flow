@@ -370,7 +370,10 @@ a {
 			});
 		});
 	}
-
+ var countiesLoadPlacemarkFlag; 
+ function genArray(n){
+	 this.length=n;
+ }	 
 	function getPlacemarkInfo(countryCode, cursor, level, parentSubPath) {
 		var url = 'summarydatarestapi?action=getAPMetricSummary&country='
 				+ country
@@ -386,12 +389,20 @@ a {
 		}
 		$.getJSON(url, function(jd) {
 			var count = 0;
+			countiesLoadPlacemarkFlag=genArray(60);
+			
 			$.each(jd.dtoList, function(i, item) {
 				makeMarker(item.latitude, item.longitude, item.iconUrl,
 						item.subValue, 'WATER_POINT', item.placemarkContents,
 						item.parentSubName);
+				countiesLoadPlacemarkFlag[count]=item.subValue+"=false";
 				count++;
 			});
+			var status;
+			for(i=0;i<60;i++){
+				status=status + countiesLoadPlacemarkFlag;
+			}
+			alert(status);
 			if (count > 0 && jd.cursor != null) {
 				getPlacemarkInfo(countryCode, jd.cursor);
 			}
