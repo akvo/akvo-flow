@@ -369,15 +369,59 @@ a {
 		var marker = new google.maps.Marker(markerOptions);
 		markers.push(marker);
 
-		google.maps.event.addListener(marker, 'click', function(e) {
-			var title = marker.title;
-			var iconString = marker.icon;
-			var infobox = new SmartInfoWindow({
-				position : marker.getPosition(),
-				map : map,
-				content : placemarkContents
-			});
-		});
+		google.maps.event
+				.addListener(
+						marker,
+						'click',
+						function(e) {
+							var title = marker.title;
+							if (title.indexOf("|") > -1) {
+								var communityCode = title.substring(title
+										.indexOf("|") + 1, title.length);
+								var url = '/placemarkrestapi?action=getAPDetails&display=external&communityCode='
+										+ communityCode
+										+ '&pointType=WATER_POINT';
+								$
+										.getJSON(
+												url,
+												function(jd) {
+													var count = 0;
+													$
+															.each(
+																	jd.placemarks,
+																	function(i,
+																			item) {
+																		if (openWindow != null) {
+																			openWindow
+																					.onRemove();
+																		}
+																		var infobox = new SmartInfoWindow(
+																				{
+																					position : marker
+																							.getPosition(),
+																					map : map,
+																					content : item.placemarkContents
+																				});
+																		openWindow = infobox;
+																		count++;
+																	});
+													if (count > 0
+															&& jd.cursor != null) {
+														getPlacemarkInfo(
+																countryCode,
+																jd.cursor);
+													}
+												});
+
+							} else {
+								var iconString = marker.icon;
+								var infobox = new SmartInfoWindow({
+									position : marker.getPosition(),
+									map : map,
+									content : placemarkContents
+								});
+							}
+						});
 	}
 
 	function getPlacemarkInfo(countryCode, cursor, level, parentSubPath) {
@@ -411,9 +455,9 @@ a {
 			cursor, lat1, lat2, long1, long2) {
 		fetchingApStatus = true;
 		var url = '/placemarkrestapi?action=listByBoundingBox&country='
-				+ country + '&needDetailsFlag=true' + '&lat1=' + lat1
+				+ country + '&needDetailsFlag=false' + '&lat1=' + lat1
 				+ '&lat2=' + lat2 + '&long1=' + long1 + '&long2=' + long2
-				+ '&pointType=WATER_POINT&maxResults=100';
+				+ '&pointType=WATER_POINT&maxResults=200';
 		if (cursor != null) {
 			url += '&cursor=' + cursor;
 		}
