@@ -140,7 +140,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						display);
 			}
 		}
-		if (response != null && cache != null) {
+		if (response != null && cache != null  && piReq.getLat1()==null) {
 			try {
 				cache.put(piReq.getCacheKey(), response);
 			} catch (Throwable t) {
