@@ -231,6 +231,9 @@ public class PlacemarkRestRequest extends RestRequest {
 					+ (pointType != null ? pointType : "");
 		}else if(LIST_BOUNDING_BOX_ACTION.equals(key)){
 			key+="/"+getLat1()+"/"+getLat2()+"/"+getPointType();
+			if(getCursor()!=null){
+				key+="/"+getCursor();
+			}
 		}
 		return key;
 	}

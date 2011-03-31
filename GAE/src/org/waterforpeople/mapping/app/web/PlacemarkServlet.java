@@ -70,6 +70,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		if (cache != null && !piReq.getIgnoreCache()) {
 			PlacemarkRestResponse cachedResponse = null;
 			try {
+				log.log(Level.INFO,"Checking Cache for: " + piReq.getCacheKey());
 				cachedResponse = (PlacemarkRestResponse) cache.get(piReq
 						.getCacheKey());
 			} catch (Throwable t) {
@@ -99,7 +100,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					PlacemarkRestRequest.LIST_BOUNDING_BOX_ACTION)
 					&& piReq.getLat1() != null) {
 				Integer maxResults = 20;
-				if(piReq.getDesiredResults()>20&&piReq.getDesiredResults()<500){
+				if(piReq.getDesiredResults()>20&&piReq.getDesiredResults()<=500){
 					maxResults = piReq.getDesiredResults();
 				}
 				List<AccessPoint> results = apDao
@@ -108,7 +109,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 								piReq.getLong1(), piReq.getLong2(),
 								piReq.getCursor(),maxResults);
 				response = (PlacemarkRestResponse) convertToResponse(results,
-						true, AccessPointDao.getCursor(results),
+						piReq.getNeedDetailsFlag(), AccessPointDao.getCursor(results),
 						piReq.getCursor(), piReq.getDisplay());
 			} else if (piReq.getSubLevel() != null) {
 				List<AccessPoint> results = apDao.listBySubLevel(
