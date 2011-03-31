@@ -9,7 +9,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyInstanceServiceAsync {
 
-	void listSurveyInstance(Date beginDate, boolean unapprovedOnlyFlag,String cursorString,
+	void listSurveyInstance(Date beginDate, Date endDate, boolean unapprovedOnlyFlag,String cursorString,
 			AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>> callback);
 	
 	

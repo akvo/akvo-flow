@@ -34,10 +34,12 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 /**
  * Portlet that allows the user to browse and edit the last 90 days of survey
@@ -70,13 +72,16 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 	private VerticalPanel surveyInstancePanel;
 	private PaginatedDataTable<SurveyInstanceDto> surveyInstanceTable;
-	private HorizontalPanel finderPanel;
+	private Panel finderPanel;
 	private TextBox instanceIdBox;
 	private HorizontalPanel contentPanel;
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 	private Long selectedInstance;
 	private RadioButton showAllButton;
 	private RadioButton showUnapprovedButton;
+	private DateBox dateFromBox;
+	private DateBox dateToBox;
+	
 
 	public RawDataViewPortlet(UserDto user) {
 		super(TEXT_CONSTANTS.rawDataViewPortletName(), true, false, false, width, height, user, false, null);
@@ -89,31 +94,33 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	}
 
 	private void loadContentPanel() {
-		finderPanel = new HorizontalPanel();
+		finderPanel = new VerticalPanel();
 		instanceIdBox = new TextBox();
-		finderPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.instanceId()));
-		finderPanel.add(instanceIdBox);
-		Button findButton = new Button(TEXT_CONSTANTS.find());
-		finderPanel.add(findButton);
-
+		ViewUtil.installFieldRow(finderPanel, TEXT_CONSTANTS.instanceId(), instanceIdBox, ViewUtil.DEFAULT_INPUT_LABEL_CSS);
+		
+	
+		Panel tempPanel = new HorizontalPanel();
+		dateFromBox = new DateBox();
+		dateFromBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
+		dateToBox = new DateBox();
+		dateToBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
+		tempPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.collectionDateFrom()));
+		tempPanel.add(dateFromBox);
+		tempPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.to()));
+		tempPanel.add(dateToBox);
+		finderPanel.add(tempPanel);
+		tempPanel = new HorizontalPanel();
 		showAllButton = new RadioButton("approvedFlag", TEXT_CONSTANTS
 				.showAll());
 		showUnapprovedButton = new RadioButton("approvedFlag", TEXT_CONSTANTS
 				.showUnapproved());
 		showAllButton.setValue(true);
-		finderPanel.add(showAllButton);
-		finderPanel.add(showUnapprovedButton);
-		ClickHandler radioClickHandler = new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				requestData(null, false);
-
-			}
-		};
-		showAllButton.addClickHandler(radioClickHandler);
-		showUnapprovedButton.addClickHandler(radioClickHandler);
-
+		tempPanel.add(showAllButton);
+		tempPanel.add(showUnapprovedButton);
+		finderPanel.add(tempPanel);
+		Button findButton = new Button(TEXT_CONSTANTS.find());
+		finderPanel.add(findButton);
+		
 		findButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -122,6 +129,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 						&& instanceIdBox.getText().trim().length() > 0) {
 					loadInstanceResponses(new Long(instanceIdBox.getText()
 							.trim()));
+				}else{
+					requestData(null,false);
 				}
 			}
 		});
@@ -482,12 +491,16 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	@Override
 	public void requestData(String cursor, final boolean isResort) {
 		final boolean isNew = (cursor == null);
-		if (isNew) {
+		Date fromDate = dateFromBox.getValue();
+		Date toDate = dateToBox.getValue();
+		
+		if (fromDate == null && toDate == null && isNew) {
 			// create a date object that is 90 days earlier than now.
 			// jumping through hoops to avoid deprecated APIs
 			dateForQuery = new Date((new Date()).getTime() - (86400000L * 90L));
+			fromDate = dateForQuery;
 		}
-		svc.listSurveyInstance(dateForQuery, showUnapprovedButton.getValue(),
+		svc.listSurveyInstance(fromDate,toDate, showUnapprovedButton.getValue(),
 				cursor,
 				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
 					@Override

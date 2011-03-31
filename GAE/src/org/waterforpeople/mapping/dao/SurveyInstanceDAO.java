@@ -2,7 +2,9 @@ package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -160,7 +162,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,
+	public List<SurveyInstance> listByDateRange(Date beginDate,
 			String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
@@ -177,27 +179,31 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,
 			boolean unapprovedOnlyFlag, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query q = pm.newQuery(SurveyInstance.class);
-		StringBuilder filterBuffer = new StringBuilder(
-				"collectionDate >= pBeginDate");
-		StringBuilder paramBuffer = new StringBuilder(
-				"java.util.Date pBeginDate");
+		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
 
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				beginDate, paramMap, GTE_OP);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				endDate, paramMap, LTE_OP);
 		if (unapprovedOnlyFlag) {
-			filterBuffer.append(" && approvedFlag == pApprovedFlag");
-			paramBuffer.append(", String pApprovedFlag");
+			appendNonNullParam("approvedFlag", filterString, paramString,
+					"String", "False", paramMap);
 		}
-		q.setFilter(filterBuffer.toString());
-		q.declareParameters(paramBuffer.toString());
-		q.setOrdering("collectionDate desc");
-
-		prepareCursor(cursorString, q);
-
-		if (unapprovedOnlyFlag) {
-			return (List<SurveyInstance>) q.execute(beginDate, "False");
-		} else {
-			return (List<SurveyInstance>) q.execute(beginDate);
+		if (beginDate != null || endDate != null) {
+			query.declareImports("import java.util.Date");
 		}
+		query.setOrdering("collectionDate desc");
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		prepareCursor(cursorString, query);
+		return (List<SurveyInstance>) query.executeWithMap(paramMap);
 	}
 
 	/**

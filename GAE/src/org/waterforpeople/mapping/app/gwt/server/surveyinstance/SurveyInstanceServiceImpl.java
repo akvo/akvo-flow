@@ -42,7 +42,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
-			Date beginDate, boolean unapprovedOnlyFlag, String cursorString) {
+			Date beginDate, Date toDate, boolean unapprovedOnlyFlag, String cursorString) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
 		List<Survey> surveyList = surveyDao.list("all");
@@ -51,12 +51,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
 		}
 		List<SurveyInstance> siList = null;
-		if (beginDate == null) {
+		if (beginDate == null && toDate == null) {
 			Calendar c = Calendar.getInstance();
 			c.add(Calendar.DAY_OF_MONTH, -90);
 			beginDate = c.getTime();
 		}
-		siList = dao.listByDateRange(beginDate, null, unapprovedOnlyFlag,
+		siList = dao.listByDateRange(beginDate, toDate, unapprovedOnlyFlag,
 				cursorString);
 		String newCursor = SurveyInstanceDAO.getCursor(siList);
 

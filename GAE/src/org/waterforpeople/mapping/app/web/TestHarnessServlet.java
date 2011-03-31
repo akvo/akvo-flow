@@ -1642,8 +1642,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 			startDate = sdf.parse(date);
 
-			List<SurveyInstance> instances = dao.listByDateRange(startDate,
-					null, null);
+			List<SurveyInstance> instances = dao.listByDateRange(startDate,null);
 			if (instances != null) {
 				AccessPointHelper aph = new AccessPointHelper();
 				for (SurveyInstance instance : instances) {
