@@ -27,7 +27,10 @@ public class SummaryDataRequest extends RestRequest {
 	public static final String INCLUDE_PLACEMARK_PARAM = "includePlacemark";
 	public static final String ACCESS_POINT_TYPE_PARAM = "metricValue";
 	public static final String PARENT_SUB_PATH_PARAM = "parentSubPath";
+	public static final String IGNORE_CACHE_PARAM = "ignoreCache";
 
+	private String metricName = null;
+	private Boolean ignoreCache = false;
 	private String country;
 	private String organization;
 	private String district;
@@ -35,8 +38,8 @@ public class SummaryDataRequest extends RestRequest {
 	private String subValue = null;
 	private Integer subLevel = null;
 	private Boolean includePlacemarkFlag = false;
-	private String accessPointType=null;
-	private String parentSubPath=null;
+	private String accessPointType = null;
+	private String parentSubPath = null;
 
 	public Integer getSubLevel() {
 		return subLevel;
@@ -61,10 +64,6 @@ public class SummaryDataRequest extends RestRequest {
 	public void setMetricName(String metricName) {
 		this.metricName = metricName;
 	}
-
-	private String metricName = null;
-
-	private Boolean ignoreCache;
 
 	@Override
 	protected void populateErrors() {
@@ -100,11 +99,15 @@ public class SummaryDataRequest extends RestRequest {
 			setIncludePlacemarkFlag(Boolean.parseBoolean(req
 					.getParameter(INCLUDE_PLACEMARK_PARAM)));
 		}
-		if(req.getParameter(ACCESS_POINT_TYPE_PARAM)!=null){
+		if (req.getParameter(ACCESS_POINT_TYPE_PARAM) != null) {
 			setAccessPointType(req.getParameter(ACCESS_POINT_TYPE_PARAM));
 		}
-		if(req.getParameter(PARENT_SUB_PATH_PARAM)!=null){
+		if (req.getParameter(PARENT_SUB_PATH_PARAM) != null) {
 			setParentSubPath(req.getParameter(PARENT_SUB_PATH_PARAM));
+		}
+		if (req.getParameter(IGNORE_CACHE_PARAM) != null) {
+			setIgnoreCache(Boolean.parseBoolean(req
+					.getParameter(IGNORE_CACHE_PARAM)));
 		}
 	}
 
@@ -163,11 +166,13 @@ public class SummaryDataRequest extends RestRequest {
 	public String getParentSubPath() {
 		return parentSubPath;
 	}
+
 	public String getCacheKey() {
 		String key = getAction();
 		if (key == null) {
 			key = GET_AP_METRIC_SUMMARY_ACTION;
-			key += country 
+			key = key + "/" + country + "/" + subLevel + "/" + metricName + "/"
+					+ accessPointType
 					+ (getCursor() != null ? getCursor() : "");
 		}
 		return key;

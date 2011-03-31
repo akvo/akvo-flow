@@ -40,11 +40,12 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	private static final String IMAGE_ROOT = "imageroot";
 	private Cache cache;
 	private static final Logger log = Logger
-	.getLogger(SummaryDataRestServlet.class.getName());
+			.getLogger(SummaryDataRestServlet.class.getName());
 
 	private static final long serialVersionUID = 7550953090927763716L;
 	private AccessPointMetricSummaryDao apMetricSummaryDao;
 	private static String imageRoot;
+
 	public SummaryDataRestServlet() {
 		setMode(JSON_MODE);
 		apMetricSummaryDao = new AccessPointMetricSummaryDao();
@@ -74,8 +75,8 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		SummaryDataRequest dataReq = (SummaryDataRequest) req;
 		SummaryDataResponse response = new SummaryDataResponse();
-		
-		if (cache != null) {
+
+		if (cache != null && !dataReq.getIgnoreCache()) {
 			SummaryDataResponse cachedResponse = null;
 			try {
 				cachedResponse = (SummaryDataResponse) cache.get(dataReq
@@ -87,8 +88,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 				return cachedResponse;
 			}
 		}
-		
-		
+
 		if (SummaryDataRequest.GET_AP_METRIC_SUMMARY_ACTION
 				.equalsIgnoreCase(dataReq.getAction())) {
 			response.setDtoList(convertAccessPointMetric(
@@ -128,9 +128,9 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 			prototype.setSubLevelName(dataReq.getSubValue());
 		if (dataReq.getSubLevel() != null)
 			prototype.setSubLevel(dataReq.getSubLevel());
-		if(dataReq.getAccessPointType()!=null)
+		if (dataReq.getAccessPointType() != null)
 			prototype.setMetricValue(dataReq.getAccessPointType());
-		if(dataReq.getParentSubPath()!=null)
+		if (dataReq.getParentSubPath() != null)
 			prototype.setParentSubName(dataReq.getParentSubPath());
 		prototype.setYear(dataReq.getYear());
 		return apMetricSummaryDao.listMetrics(prototype);
@@ -155,7 +155,8 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 					try {
 						dto.setPlacemarkContents(generatePlacemarkContents(dto));
 					} catch (Exception ex) {
-						log.log(Level.INFO, "couldn't bind summary placemark: " + ex.getMessage());
+						log.log(Level.INFO, "couldn't bind summary placemark: "
+								+ ex.getMessage());
 					}
 				}
 				dtoList.add(dto);

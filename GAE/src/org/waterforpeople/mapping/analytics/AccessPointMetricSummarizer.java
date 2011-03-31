@@ -32,8 +32,9 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 			Integer offset, String cursor) {
 		AccessPointMetricSummaryDao summaryDao = new AccessPointMetricSummaryDao();
 		AccessPointMetricMappingDao mappingDao = new AccessPointMetricMappingDao();
+		AccessPointDao apDao = new AccessPointDao();
 		if (key != null) {
-			AccessPoint ap = summaryDao.getByKey(Long.parseLong(key),
+			AccessPoint ap = apDao.getByKey(Long.parseLong(key),
 					AccessPoint.class);
 			if (ap != null) {
 				if (ap.getCountryCode() == null) {
@@ -41,7 +42,6 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 							"During APMS Summarization ap was missing countryCode so try GeoLocation");
 					AccessPointHelper aph = new AccessPointHelper();
 					ap = aph.setGeoDetails(ap);
-					AccessPointDao apDao = new AccessPointDao();
 					apDao.save(ap);
 					if (ap.getCountryCode() != null)
 						logger.log(java.util.logging.Level.INFO,

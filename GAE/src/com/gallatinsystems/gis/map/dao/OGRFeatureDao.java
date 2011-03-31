@@ -146,6 +146,33 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 			return null;
 	}
 
+	public List<OGRFeature> listByCountryAndType(String countryCode,
+			FeatureType featureType) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("featureType", filterString, paramString, "String",
+				featureType, paramMap, EQ_OP);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap, EQ_OP);
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		@SuppressWarnings("unchecked")
+		List<OGRFeature> results = (List<OGRFeature>) query
+				.executeWithMap(paramMap);
+
+		if (results != null && results.size() > 0)
+			return results;
+		else
+			return null;
+	}
+
 	public OGRFeature findByCountryTypeAndSub(String countryCode, String name,
 			FeatureType featureType, ArrayList<String> subArray) {
 		PersistenceManager pm = PersistenceFilter.getManager();

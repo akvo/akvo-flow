@@ -107,6 +107,7 @@ import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
+import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -153,9 +154,13 @@ public class TestHarnessServlet extends HttpServlet {
 			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
 		} else if ("testQuestionOrder".equals(action)) {
 			QuestionDao qDao = new QuestionDao();
-			for(Question q: qDao.listQuestionInOrder(Long.parseLong(req.getParameter("surveyId")))){
+			for (Question q : qDao.listQuestionInOrder(Long.parseLong(req
+					.getParameter("surveyId")))) {
 				try {
-					resp.getWriter().println("qgId: " + q.getQuestionGroupId() + " order: " + q.getOrder() + " question: " + q.getText() );
+					resp.getWriter().println(
+							"qgId: " + q.getQuestionGroupId() + " order: "
+									+ q.getOrder() + " question: "
+									+ q.getText());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -312,6 +317,23 @@ public class TestHarnessServlet extends HttpServlet {
 				log.log(Level.SEVERE, "Could not execute test", e);
 			}
 
+		} else if ("populateAccessPointMetricSummary".equals(action)) {
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+			AccessPointMetricSummaryDao apmsDao = new AccessPointMetricSummaryDao();
+			List<OGRFeature> ogrList = ogrFeatureDao.listByCountryAndType("LR",
+					FeatureType.SUB_COUNTRY_OTHER);
+			Boolean firstTimeFlag = false;
+			for (OGRFeature item : ogrList) {
+				AccessPointMetricSummary apms = new AccessPointMetricSummary();
+				apms.setCount(1L);
+				apms.setCountry("LR");
+				apms.setSubLevel(1);
+				apms.setSubValue(item.getSub1());
+				apms.setShardNum(1);
+				apms.setParentSubName("LR");
+				apms.setMetricName("WATER_POINT");
+				apmsDao.save(apms);
+			}
 		} else if ("clearSurveyInstanceQAS".equals(action)) {
 			// QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 			// for (QuestionAnswerStore qas : qasDao.list("all")) {
@@ -1367,7 +1389,7 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("deleteMetricSummaries".equals(action)) {
 			deleteMetricSummaries(new Integer(req.getParameter("level")),
 					req.getParameter("name"));
-		}else if ("createSurveyQuestionSummary".equals(action)){
+		} else if ("createSurveyQuestionSummary".equals(action)) {
 			SurveyQuestionSummary sum = new SurveyQuestionSummary();
 			sum.setCount(10L);
 			sum.setResponse("TEST");
@@ -1383,7 +1405,7 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setCount(30L);
 			sum.setResponse("GWAR");
 			sum.setQuestionId("2166031");
-			dao.save(sum);			
+			dao.save(sum);
 		}
 	}
 

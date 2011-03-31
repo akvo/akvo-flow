@@ -352,8 +352,8 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 
 		appendNonNullParam("pointType", filterString, paramString, "String",
 				pointType.toString(), paramMap);
-//		appendNonNullParam("latitude", filterString, paramString, "Double",
-//				lat1, paramMap, LTE_OP);
+		appendNonNullParam("latitude", filterString, paramString, "Double",
+				lat1, paramMap, LTE_OP);
 		appendNonNullParam("latitude", filterString, paramString, "Double",
 				lat2, paramMap, GTE_OP);
 		query.setFilter(filterString.toString());
