@@ -156,6 +156,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, 50, query);
+		@SuppressWarnings("unchecked")
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
 		return results;

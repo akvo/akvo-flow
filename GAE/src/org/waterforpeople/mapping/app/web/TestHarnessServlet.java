@@ -320,20 +320,20 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("populateAccessPointMetricSummary".equals(action)) {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			AccessPointMetricSummaryDao apmsDao = new AccessPointMetricSummaryDao();
-			List<OGRFeature> ogrList = ogrFeatureDao.listByCountryAndType("LR",
-					FeatureType.SUB_COUNTRY_OTHER);
+			//List<OGRFeature> ogrList = ogrFeatureDao.listByCountryAndType("LR",
+			//		FeatureType.SUB_COUNTRY_OTHER);
 			Boolean firstTimeFlag = false;
-			for (OGRFeature item : ogrList) {
-				AccessPointMetricSummary apms = new AccessPointMetricSummary();
-				apms.setCount(1L);
-				apms.setCountry("LR");
-				apms.setSubLevel(1);
-				apms.setSubValue(item.getSub1());
-				apms.setShardNum(1);
-				apms.setParentSubName("LR");
-				apms.setMetricName("WATER_POINT");
-				apmsDao.save(apms);
-			}
+//			for (OGRFeature item : ogrList) {
+//				AccessPointMetricSummary apms = new AccessPointMetricSummary();
+//				apms.setCount(1L);
+//				apms.setCountry("LR");
+//				apms.setSubLevel(1);
+//				apms.setSubValue(item.getSub1());
+//				apms.setShardNum(1);
+//				apms.setParentSubName("LR");
+//				apms.setMetricName("WATER_POINT");
+//				apmsDao.save(apms);
+//			}
 		} else if ("clearSurveyInstanceQAS".equals(action)) {
 			// QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 			// for (QuestionAnswerStore qas : qasDao.list("all")) {

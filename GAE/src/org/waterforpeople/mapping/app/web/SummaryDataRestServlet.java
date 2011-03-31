@@ -79,6 +79,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 		if (cache != null && !dataReq.getIgnoreCache()) {
 			SummaryDataResponse cachedResponse = null;
 			try {
+				log.log(Level.INFO,dataReq.getCacheKey());
 				cachedResponse = (SummaryDataResponse) cache.get(dataReq
 						.getCacheKey());
 			} catch (Throwable t) {

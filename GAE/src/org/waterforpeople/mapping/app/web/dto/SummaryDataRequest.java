@@ -169,12 +169,10 @@ public class SummaryDataRequest extends RestRequest {
 
 	public String getCacheKey() {
 		String key = getAction();
-		if (key == null) {
-			key = GET_AP_METRIC_SUMMARY_ACTION;
+//			key = GET_AP_METRIC_SUMMARY_ACTION;
 			key = key + "/" + country + "/" + subLevel + "/" + metricName + "/"
 					+ accessPointType
 					+ (getCursor() != null ? getCursor() : "");
-		}
 		return key;
 	}
 
