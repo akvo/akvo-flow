@@ -342,7 +342,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 
 	public List<AccessPoint> listAccessPointsByBoundingBox(
 			AccessPointType pointType, Double lat1, Double lat2, Double long1,
-			Double long2, String cursorString) {
+			Double long2, String cursorString,Integer maxResults) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		Map<String, Object> paramMap = null;
@@ -359,7 +359,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				lat2, paramMap, GTE_OP);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
-		prepareCursor(cursorString, query);
+		prepareCursor(cursorString,maxResults, query);
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
 //		List<AccessPoint> resultsInBox = new ArrayList<AccessPoint>();

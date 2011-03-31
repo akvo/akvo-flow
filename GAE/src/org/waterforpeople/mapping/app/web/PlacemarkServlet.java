@@ -98,11 +98,15 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			if (piReq.getAction().equals(
 					PlacemarkRestRequest.LIST_BOUNDING_BOX_ACTION)
 					&& piReq.getLat1() != null) {
+				Integer maxResults = 20;
+				if(piReq.getDesiredResults()>20&&piReq.getDesiredResults()<500){
+					maxResults = piReq.getDesiredResults();
+				}
 				List<AccessPoint> results = apDao
 						.listAccessPointsByBoundingBox(piReq.getPointType(),
 								piReq.getLat1(), piReq.getLat2(),
 								piReq.getLong1(), piReq.getLong2(),
-								piReq.getCursor());
+								piReq.getCursor(),maxResults);
 				response = (PlacemarkRestResponse) convertToResponse(results,
 						true, AccessPointDao.getCursor(results),
 						piReq.getCursor(), piReq.getDisplay());
