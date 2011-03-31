@@ -64,6 +64,8 @@ public class KMLGenerator {
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilBlack36.png";
 	public static final Boolean useScore = Boolean.parseBoolean(PropertyUtil
 			.getProperty("scoreAPFlag"));
+	public static final String ORGANIZATION_KEY="organization";
+	public static final String ORGANIZATION = PropertyUtil.getProperty("organization");
 
 	public KMLGenerator() {
 		engine = new VelocityEngine();
@@ -455,11 +457,13 @@ public class KMLGenerator {
 			throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
+		
 		if (ap.getCountryCode() == null)
 			ap.setCountryCode("Unknown");
 		if (ap.getCountryCode() != null) {
 
 			VelocityContext context = new VelocityContext();
+			context.put("organization",ORGANIZATION);
 			if (display != null) {
 				context.put("display", display);
 			}

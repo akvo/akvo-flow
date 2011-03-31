@@ -191,7 +191,7 @@ a {
 </style>
 <div id="wrap">
     <div id="headerBalloon"><img src="http://watermapmonitordev.appspot.com/images/brandGreySmall.png">
-      <div id="WFPcredit">This FLOW data is provided by <a href="http://www.waterforpeople.org/FLOW">Water For People</a></div>
+      <div id="WFPcredit">This FLOW data is provided by <a href="http://www.waterforpeople.org/FLOW">$organization</a></div>
     </div>
     <div id="communityDesc">
       <div id="communityDef">
