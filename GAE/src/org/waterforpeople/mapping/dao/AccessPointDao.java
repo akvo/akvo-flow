@@ -139,7 +139,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	}
 
 	public List<AccessPoint> listBySubLevel(String countryCode, Integer level,
-			String subValue, String cursor, AccessPoint.AccessPointType type) {
+			String subValue, String cursor, AccessPoint.AccessPointType type, Integer desiredResults) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		StringBuilder filterString = new StringBuilder();
@@ -155,7 +155,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 				subValue, paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, 50, query);
+		prepareCursor(cursor, desiredResults, query);
 		@SuppressWarnings("unchecked")
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);

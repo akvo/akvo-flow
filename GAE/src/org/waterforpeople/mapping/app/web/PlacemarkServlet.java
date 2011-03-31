@@ -70,7 +70,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		if (cache != null && !piReq.getIgnoreCache()) {
 			PlacemarkRestResponse cachedResponse = null;
 			try {
-				log.log(Level.INFO,"Checking Cache for: " + piReq.getCacheKey());
+				log.log(Level.INFO,
+						"Checking Cache for: " + piReq.getCacheKey());
 				cachedResponse = (PlacemarkRestResponse) cache.get(piReq
 						.getCacheKey());
 			} catch (Throwable t) {
@@ -96,35 +97,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 
 		} else {
 			// ListPlacemarks Action
-			if (piReq.getAction().equals(
-					PlacemarkRestRequest.LIST_BOUNDING_BOX_ACTION)
-					&& piReq.getLat1() != null) {
-				Integer maxResults = 20;
-				if(piReq.getDesiredResults()>20&&piReq.getDesiredResults()<=500){
-					maxResults = piReq.getDesiredResults();
-				}
-				List<AccessPoint> results = apDao
-						.listAccessPointsByBoundingBox(piReq.getPointType(),
-								piReq.getLat1(), piReq.getLat2(),
-								piReq.getLong1(), piReq.getLong2(),
-								piReq.getCursor(),maxResults);
-				response = (PlacemarkRestResponse) convertToResponse(results,
-						piReq.getNeedDetailsFlag(), AccessPointDao.getCursor(results),
-						piReq.getCursor(), piReq.getDisplay());
-			} else if (piReq.getSubLevel() != null) {
-				List<AccessPoint> results = apDao.listBySubLevel(
-						piReq.getCountry(), piReq.getSubLevel(),
-						piReq.getSubLevelValue(), piReq.getCursor(),
-						AccessPointType.WATER_POINT);
-				String display = null;
-				if (piReq.getDisplay() != null) {
-					display = piReq.getDisplay();
-				}
-				response = (PlacemarkRestResponse) convertToResponse(results,
-						piReq.getNeedDetailsFlag(),
-						AccessPointDao.getCursor(results), piReq.getCursor(),
-						display);
-			} else {
+			if (piReq.getAction() == null) {
+
 				int desiredResults = 20;
 				if (piReq.getDesiredResults() > 20) {
 					if (piReq.getDesiredResults() > 500) {
@@ -134,18 +108,54 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					}
 				}
 
-				List<AccessPoint> results = apDao.searchAccessPoints(
-						piReq.getCountry(), null, null, null, null, null, null,
-						null, null, null, desiredResults, piReq.getCursor());
-				String display = null;
-				if (piReq.getDisplay() != null) {
-					display = piReq.getDisplay();
+				if (piReq.getSubLevel() != null) {
+					List<AccessPoint> results = apDao.listBySubLevel(
+							piReq.getCountry(), piReq.getSubLevel(),
+							piReq.getSubLevelValue(), piReq.getCursor(),
+							AccessPointType.WATER_POINT, desiredResults);
+					String display = null;
+					if (piReq.getDisplay() != null) {
+						display = piReq.getDisplay();
+					}
+					response = (PlacemarkRestResponse) convertToResponse(
+							results, piReq.getNeedDetailsFlag(),
+							AccessPointDao.getCursor(results),
+							piReq.getCursor(), display);
+				} else {
+
+					List<AccessPoint> results = apDao.searchAccessPoints(
+							piReq.getCountry(), null, null, null, null, null,
+							null, null, null, null, desiredResults,
+							piReq.getCursor());
+					String display = null;
+					if (piReq.getDisplay() != null) {
+						display = piReq.getDisplay();
+					}
+					response = (PlacemarkRestResponse) convertToResponse(
+							results, piReq.getNeedDetailsFlag(),
+							AccessPointDao.getCursor(results),
+							piReq.getCursor(), display);
 				}
+
+			} else if (piReq.getAction().equals(
+					PlacemarkRestRequest.LIST_BOUNDING_BOX_ACTION)
+					&& piReq.getLat1() != null) {
+				Integer maxResults = 20;
+				if (piReq.getDesiredResults() > 20
+						&& piReq.getDesiredResults() <= 500) {
+					maxResults = piReq.getDesiredResults();
+				}
+				List<AccessPoint> results = apDao
+						.listAccessPointsByBoundingBox(piReq.getPointType(),
+								piReq.getLat1(), piReq.getLat2(),
+								piReq.getLong1(), piReq.getLong2(),
+								piReq.getCursor(), maxResults);
 				response = (PlacemarkRestResponse) convertToResponse(results,
 						piReq.getNeedDetailsFlag(),
 						AccessPointDao.getCursor(results), piReq.getCursor(),
-						display);
+						piReq.getDisplay());
 			}
+
 		}
 		if (response != null && cache != null) {
 			try {
