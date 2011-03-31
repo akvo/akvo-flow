@@ -11,6 +11,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class PlacemarkRestRequest extends RestRequest {
 	public static final String GET_AP_DETAILS_ACTION = "getAPDetails";
+	public static final String LIST_BOUNDING_BOX_ACTION="listByBoundingBox";
 	public static final String LIST_PLACEMARK = "listPlacemarks";
 	private static final String COUNTRY_PARAM = "country";
 	private static final String NEED_DETAILS_PARM = "needDetailsFlag";
@@ -228,6 +229,8 @@ public class PlacemarkRestRequest extends RestRequest {
 		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
 			key += "-" + communityCode + (display != null ? display : "")
 					+ (pointType != null ? pointType : "");
+		}else if(LIST_BOUNDING_BOX_ACTION.equals(key)){
+			key+="/"+getLat1()+"/"+getLat2()+"/"+getPointType();
 		}
 		return key;
 	}
