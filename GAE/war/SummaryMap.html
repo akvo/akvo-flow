@@ -227,6 +227,7 @@ a {
 	var country;
 	var countryLatLon;
 	var openWindow = null;
+	var fetchingApStatus = false;
 	function getCountry() {
 		if ($.jqURL.get('country')) {
 			country = $.jqURL.get('country').toUpperCase();
@@ -286,12 +287,16 @@ a {
 			if (map.getZoom() > 10) {
 				var NE = map.getBounds().getNorthEast();
 				var SW = map.getBounds().getSouthWest();
-				var lat1 = NE.lat();
-				var lat2 = SW.lat();
+				var lat1 = Math.round(NE.lat() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
+				var lat2 = Math.round(SW.lat() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
 				var long1 = NE.lng();
 				var long2 = SW.lng();
-				getAccessPointPlacemarkInfo('LR', null, null, null, lat1, lat2,
-						long1, long2);
+				if (!fetchingApStatus) {
+					getAccessPointPlacemarkInfo('LR', null, null, null, lat1,
+							lat2, long1, long2);
+				}
 			}
 		});
 
@@ -305,12 +310,16 @@ a {
 			} else if (map.getZoom() > 10) {
 				var NE = map.getBounds().getNorthEast();
 				var SW = map.getBounds().getSouthWest();
-				var lat1 = NE.lat();
-				var lat2 = SW.lat();
+				var lat1 = Math.round(NE.lat() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
+				var lat2 = Math.round(SW.lat() * Math.pow(10, 2))
+						/ Math.pow(10, 2);
 				var long1 = NE.lng();
 				var long2 = SW.lng();
-				getAccessPointPlacemarkInfo('LR', null, null, null, lat1, lat2,
-						long1, long2);
+				if (!fetchingApStatus) {
+					getAccessPointPlacemarkInfo('LR', null, null, null, lat1,
+							lat2, long1, long2);
+				}
 			}
 
 		});
@@ -370,10 +379,7 @@ a {
 			});
 		});
 	}
- var countiesLoadPlacemarkFlag; 
- function genArray(n){
-	 this.length=n;
- }	 
+
 	function getPlacemarkInfo(countryCode, cursor, level, parentSubPath) {
 		var url = 'summarydatarestapi?action=getAPMetricSummary&country='
 				+ country
@@ -389,20 +395,12 @@ a {
 		}
 		$.getJSON(url, function(jd) {
 			var count = 0;
-			countiesLoadPlacemarkFlag=genArray(60);
-			
 			$.each(jd.dtoList, function(i, item) {
 				makeMarker(item.latitude, item.longitude, item.iconUrl,
 						item.subValue, 'WATER_POINT', item.placemarkContents,
 						item.parentSubName);
-				countiesLoadPlacemarkFlag[count]=item.subValue+"=false";
 				count++;
 			});
-			var status;
-			for(i=0;i<60;i++){
-				status=status + countiesLoadPlacemarkFlag;
-			}
-			alert(status);
 			if (count > 0 && jd.cursor != null) {
 				getPlacemarkInfo(countryCode, jd.cursor);
 			}
@@ -411,10 +409,11 @@ a {
 
 	function getAccessPointPlacemarkInfo(countryCode, subLevelValue, subLevel,
 			cursor, lat1, lat2, long1, long2) {
-		var url = '/placemarkrestapi?country=' + country
-				+ '&needDetailsFlag=true' + '&ignoreCache=true' + '&lat1='
-				+ lat1 + '&lat2=' + lat2 + '&long1=' + long1 + '&long2='
-				+ long2 + '&pointType=WATER_POINT&maxResults=100';
+		fetchingApStatus = true;
+		var url = '/placemarkrestapi?action=listByBoundingBox&country='
+				+ country + '&needDetailsFlag=true' + '&lat1=' + lat1
+				+ '&lat2=' + lat2 + '&long1=' + long1 + '&long2=' + long2
+				+ '&pointType=WATER_POINT&maxResults=100';
 		if (cursor != null) {
 			url += '&cursor=' + cursor;
 		}
@@ -431,6 +430,7 @@ a {
 						subLevel, jd.cursor, lat1, lat2, long1, long2);
 			}
 		});
+		fetchingApStatus = false;
 	};
 
 	function createCountryControl() {
@@ -572,7 +572,7 @@ a {
 <body onload="initialize()">
 <div id="header" style="width: 100%; height: 150px"><a
 	href="http://www.waterforpeople.org"><img
-	src="/images/wfp_flow_header.jpg"></a></div>
+	src="/images/wfp_flow_header.jpg" height="150px"></a></div>
 
 <div id="map_canvas"></div>
 
