@@ -20,6 +20,7 @@ public class DataExportAppletImpl extends JApplet {
 	private static final String EXPORT_TYPE_PARAM = "exportType";
 	private static final String CRITERIA_PARAM = "criteria";
 	private static final String FACTORY_PARAM = "factoryClass";
+	private static final String SERVER_BASE_OVERRIDE_PARAM = "serverOverride";
 	private JLabel statusLabel;
 	private DataImportExportFactory dataExporterFactory;
 
@@ -29,6 +30,10 @@ public class DataExportAppletImpl extends JApplet {
 		String type = getParameter(EXPORT_TYPE_PARAM);
 		Map<String, String> criteria = parseCriteria(getParameter(CRITERIA_PARAM));
 		String factoryClass = getParameter(FACTORY_PARAM);
+		String serverBase = getParameter(SERVER_BASE_OVERRIDE_PARAM);
+		if(serverBase == null || serverBase.trim().length()==0){
+			serverBase = getCodeBase().toString();
+		}
 		if (factoryClass != null) {
 			try {
 				dataExporterFactory = (DataImportExportFactory) Class.forName(
@@ -39,7 +44,7 @@ public class DataExportAppletImpl extends JApplet {
 				e.printStackTrace(System.err);
 			}
 		}
-		doExport(type, criteria, getCodeBase().toString());
+		doExport(type, criteria, serverBase);
 	}
 
 	private Map<String, String> parseCriteria(String source) {

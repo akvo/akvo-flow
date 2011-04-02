@@ -26,6 +26,7 @@ public class DataImportAppletImpl extends JApplet {
 	private static final long serialVersionUID = -545153291195490725L;
 	private static final String IMPORT_TYPE_PARAM = "importType";	
 	private static final String FACTORY_PARAM = "factoryClass";
+	private static final String SERVER_BASE_OVERRIDE_PARAM = "serverOverride";
 	private DataImportExportFactory dataImporterFactory;
 	private JLabel statusLabel;
 
@@ -34,6 +35,10 @@ public class DataImportAppletImpl extends JApplet {
 		getContentPane().add(statusLabel);
 		String type = getParameter(IMPORT_TYPE_PARAM);	
 		String factoryClass = getParameter(FACTORY_PARAM);
+		String serverBase = getParameter(SERVER_BASE_OVERRIDE_PARAM);
+		if(serverBase == null || serverBase.trim().length()==0){
+			serverBase = getCodeBase().toString();
+		}
 		if (factoryClass != null) {
 			try {
 				dataImporterFactory = (DataImportExportFactory) Class.forName(
@@ -46,7 +51,7 @@ public class DataImportAppletImpl extends JApplet {
 		}else{
 			System.err.println("Factory must be specified");
 		}
-		doImport(type, getCodeBase().toString());
+		doImport(type, serverBase);
 	}
 
 	public void doImport(String type, String serverBase) {

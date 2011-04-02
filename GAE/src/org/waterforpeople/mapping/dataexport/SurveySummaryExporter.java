@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,10 +121,10 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	private void writeHeader(PrintWriter pw, boolean isRolledUp) {
 		if (isRolledUp) {
 			pw
-					.println("Question Group\tQuestion\tSector\tResponse\tFrequency\tPercent");
+					.println("Question Group\tQuestion\tSector\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
 		} else {
 			pw
-					.println("Question Group\tQuestion\tResponse\tFrequency\tPercent");
+					.println("Question Group\tQuestion\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
 		}
 	}
 
@@ -264,6 +265,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		private Map<String, Long> sectorTotalMap;
 		private Map<String, Long> responseCountMap;
 		private Map<String, Long> responseTotalMap;
+		// map of question to stats value
+		private Map<String, DescriptiveStats> statMap;
 
 		public SummaryModel() {
 			responseMap = new HashMap<String, List<String>>();
@@ -272,6 +275,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			sectorTotalMap = new HashMap<String, Long>();
 			responseCountMap = new HashMap<String, Long>();
 			responseTotalMap = new HashMap<String, Long>();
+			statMap = new HashMap<String, DescriptiveStats>();
 
 		}
 
@@ -280,6 +284,17 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			addResponse(questionId, response);
 			addSector(sector);
 			incrementCount(questionId, sector, response);
+			updateStats(questionId, response);
+		}
+
+		private void updateStats(String questionId, String response) {
+			if (statMap.get(questionId) == null) {
+				DescriptiveStats stats = new DescriptiveStats();
+				stats.addSample(response);
+				statMap.put(questionId, stats);
+			} else {
+				statMap.get(questionId).addSample(response);
+			}
 		}
 
 		private void incrementCount(String questionId, String sector,
@@ -342,7 +357,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 				for (String response : responseMap.get(questionId)) {
 					Long count = null;
 					if (isRolledUp) {
-						count = sectorCountMap.get(questionId + sector + response);
+						count = sectorCountMap.get(questionId + sector
+								+ response);
 					} else {
 						count = responseCountMap.get(questionId + response);
 					}
@@ -365,11 +381,139 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 						buffer.append(sector).append("\t");
 					}
 					buffer.append(response).append("\t").append(countString)
-							.append("\t").append(pctString).append("\n");
+							.append("\t").append(pctString).append("\t").append(
+									statMap.get(questionId).getStatsString())
+							.append("\n");
 				}
 			}
 			return buffer.toString();
 		}
 	}
 
+	private class DescriptiveStats {
+		private double total;
+		private double max;
+		private double min;
+		private double mean;
+		private double sumSqMean;
+		private int sampleCount;
+		private List<Double> valueList;
+		private boolean isSorted;
+
+		public DescriptiveStats() {
+			total = 0d;
+			mean = 0d;
+			sampleCount = 0;
+			sumSqMean = 0d;
+			isSorted = false;
+			valueList = new ArrayList<Double>();
+			max = Double.MIN_VALUE;
+			min = Double.MAX_VALUE;
+		}
+
+		public void addSample(String stringVal) {
+			double val = Double.MIN_VALUE;
+			try {
+				val = Double.parseDouble(stringVal);
+			} catch (Exception e) {
+				return;
+			}
+			sampleCount++;
+			total += val;
+			if (val > max) {
+				max = val;
+			}
+			if (val < min) {
+				min = val;
+			}
+			double delta = val - mean;
+			mean = mean + (delta / (double) sampleCount);
+			// the sumSqMean calc uses the newly updated value for mean
+			sumSqMean = sumSqMean + delta * (val - mean);
+			isSorted = false;
+			valueList.add(val);			
+		}
+
+		public double getMean() {
+			return mean;
+		}
+
+		public double getRange() {
+			return max - min;
+		}
+
+		public double getVariance() {
+			return sumSqMean / (double) (sampleCount - 1d);
+		}
+
+		public double getMedian() {
+			if (!isSorted) {
+				Collections.sort(valueList);
+				isSorted = true;
+			}
+			if (valueList.size() % 2 == 1) {
+				return valueList.get((int) Math.floor(valueList.size() / 2));
+			} else {
+				Double lowerVal = valueList.get(valueList.size() / 2);
+				Double upperVal = valueList.get(valueList.size() / 2 - 1);
+				return (lowerVal + upperVal) / 2;
+			}
+		}
+
+		public double getMode() {
+			if (!isSorted) {
+				Collections.sort(valueList);
+				isSorted = true;
+			}
+			int maxOccur = 0;
+			int curOccur = 0;
+			Double maxOccurValue = null;
+			Double lastValue = null;
+			for (Double val : valueList) {
+				if (lastValue == null || !val.equals(lastValue)) {
+					if (curOccur > maxOccur) {
+						maxOccur = curOccur;
+						maxOccurValue = lastValue;
+					}
+					lastValue = val;
+					curOccur = 1;
+				} else if (val.equals(lastValue)) {
+					curOccur++;
+				}
+			}
+			if(maxOccurValue == null){
+				maxOccurValue = lastValue;
+			}
+			return maxOccurValue;
+		}
+
+		public double getStandardDeviation() {
+			return Math.sqrt(getVariance());
+		}
+
+		public double getStandardError() {
+			return Math.sqrt(getVariance() / (double) sampleCount);
+		}
+
+		/**
+		 * outputs stats in the following order (tab delimited): Mean, Median,
+		 * Mode, Std Dev, Std Err, Range
+		 * 
+		 * @return
+		 */
+		public String getStatsString() {
+			StringBuilder builder = new StringBuilder();
+			if (sampleCount > 0) {
+				builder.append(getMean()).append("\t").append(getMedian())
+						.append("\t").append(getMode()).append("\t").append(
+								getStandardDeviation()).append("\t").append(
+								getStandardError()).append("\t").append(
+								getRange());
+			} else {
+				builder.append("\t\t\t\t\t");
+			}
+			return builder.toString();
+		}
+
+	}
 }
