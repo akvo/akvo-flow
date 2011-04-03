@@ -14,11 +14,7 @@ import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
-import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
-import com.gallatinsystems.gis.location.GeoPlace;
-import com.gallatinsystems.gis.map.domain.OGRFeature;
 
 /**
  * updates access points based on the old/new values passed in via the logical
@@ -100,11 +96,9 @@ public class AccessPointUpdater implements DataSummarizer {
 							try {
 								AccessPointHelper.setAccessPointField(point,
 										changedAnswer, questionMapping, apmh);
-								logger.info("Extimated pop is: "
+								logger.info("Estimated pop is: "
 										+ point.getExtimatedPopulation());
-								apDao.save(point);
-								logger.info("Post Save Extimated pop is: "
-										+ point.getExtimatedPopulation());
+								apDao.save(point);								
 							} catch (Exception e) {
 								logger.log(Level.SEVERE,
 										"Could not update AP field", e);
