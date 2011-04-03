@@ -56,9 +56,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		CompletionListener {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static final int MAX_LEN = 500;
 	private static final String REORDER_BUTTON_CSS = "reorder-button";
 	private static final String DEFAULT_BOX_WIDTH = "300px";
-	private static final String SELECT_TXT = TEXT_CONSTANTS.select()+"...";
+	private static final String SELECT_TXT = TEXT_CONSTANTS.select() + "...";
 	private static final String EDIT_TRANS_OP = "Edit Translation";
 	private static final String EDIT_HELP_OP = "Edit Help";
 	private VerticalPanel panel;
@@ -158,10 +159,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		dependencyPanel.add(dependencyGrid);
 		ViewUtil.installGridRow(null, dependencyPanel, grid, 6, 1, null);
 		dependencyPanel.setVisible(false);
-		ViewUtil.installGridRow(TEXT_CONSTANTS.question(), dependentQuestionSelector,
-				dependencyGrid, 0);
-		ViewUtil.installGridRow(TEXT_CONSTANTS.response(), dependentAnswerSelector,
-				dependencyGrid, 1);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.question(),
+				dependentQuestionSelector, dependencyGrid, 0);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.response(),
+				dependentAnswerSelector, dependencyGrid, 1);
 
 		panel.add(basePanel);
 
@@ -292,6 +293,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		int row = optionTable.getRowCount();
 		optionTable.insertRow(row);
 		TextBox optText = new TextBox();
+		optText.setMaxLength(MAX_LEN);
 		optionTable.setWidget(row, 0, optText);
 		HorizontalPanel bp = new HorizontalPanel();
 		final Image moveUp = new Image("/images/greenuparrow.png");
@@ -618,7 +620,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				builder.append("<li>").append(err).append("</li>");
 			}
 			builder.append("</ul>");
-			MessageDialog errorDialog = new MessageDialog(TEXT_CONSTANTS.inputError(),TEXT_CONSTANTS.pleaseCorrect()+builder.toString());
+			MessageDialog errorDialog = new MessageDialog(TEXT_CONSTANTS
+					.inputError(), TEXT_CONSTANTS.pleaseCorrect()
+					+ builder.toString());
 			errorDialog.showCentered();
 			listener.operationComplete(false, getContextBundle(true));
 		}
@@ -633,11 +637,22 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private List<String> updateCurrentQuestion() {
 		List<String> validationMessages = new ArrayList<String>();
 		if (ViewUtil.isTextPopulated(questionTextArea)) {
-			currentQuestion.setText(questionTextArea.getText());
+			if (questionTextArea.getText().trim().length() > MAX_LEN) {
+				validationMessages.add(TEXT_CONSTANTS.question() + ": "
+						+ TEXT_CONSTANTS.textMustBeLessThan500Chars());
+			} else {
+				currentQuestion.setText(questionTextArea.getText().trim());
+			}
 		} else {
 			validationMessages.add(TEXT_CONSTANTS.questionTextMandatory());
 		}
 		currentQuestion.setTip(tooltipArea.getText());
+		if (tooltipArea.getText() != null) {
+			if (tooltipArea.getText().length() > MAX_LEN) {
+				validationMessages.add(TEXT_CONSTANTS.tooltip() + ": "
+						+ TEXT_CONSTANTS.textMustBeLessThan500Chars());
+			}
+		}
 		if (mandatoryBox.getValue()) {
 			currentQuestion.setMandatoryFlag(true);
 		} else {
@@ -655,16 +670,15 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				currentQuestion.setQuestionDependency(depDto);
 			}
 			if (dependentQuestionSelector.getSelectedIndex() == 0) {
-				validationMessages
-						.add(TEXT_CONSTANTS.dependentMandatory());
+				validationMessages.add(TEXT_CONSTANTS.dependentMandatory());
 			} else {
 				depDto.setQuestionId(Long
 						.parseLong(dependentQuestionSelector
 								.getValue(dependentQuestionSelector
 										.getSelectedIndex())));
 				if (dependentAnswerSelector.getSelectedIndex() == 0) {
-					validationMessages
-							.add(TEXT_CONSTANTS.dependentResponseMandatory());
+					validationMessages.add(TEXT_CONSTANTS
+							.dependentResponseMandatory());
 				} else {
 					depDto.setAnswerValue(dependentAnswerSelector
 							.getValue(dependentAnswerSelector
@@ -692,13 +706,21 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				for (int i = 0; i < container.getOptionsList().size(); i++) {
 					TextBox box = (TextBox) optionTable.getWidget(i, 0);
 					if (ViewUtil.isTextPopulated(box)) {
-						container.getOptionsList().get(i)
-								.setText(box.getText());
-						container.getOptionsList().get(i).setOrder(i + 1);
+						if (box.getText().trim().length() > MAX_LEN) {
+							validationMessages.add(TEXT_CONSTANTS.option()
+									+ " "
+									+ i
+									+ ": "
+									+ TEXT_CONSTANTS
+											.textMustBeLessThan500Chars());
+						} else {
+							container.getOptionsList().get(i).setText(
+									box.getText().trim());
+							container.getOptionsList().get(i).setOrder(i + 1);
+						}
 					} else {
-						validationMessages
-								.add(TEXT_CONSTANTS.optionNotBlank() + " "
-										+ i);
+						validationMessages.add(TEXT_CONSTANTS.optionNotBlank()
+								+ " " + i);
 					}
 				}
 			}
@@ -713,7 +735,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setContextBundle(Map<String, Object> bundle) {
-		this.bundle = bundle;		
+		this.bundle = bundle;
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
 		questionGroup = (QuestionGroupDto) bundle

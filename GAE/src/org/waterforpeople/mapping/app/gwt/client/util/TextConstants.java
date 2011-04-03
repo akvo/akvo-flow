@@ -480,5 +480,5 @@ public interface TextConstants extends Constants{
 	public String authFailed();
 	public String thankYou();
 	public String thankYouMessage();
-	
+	public String textMustBeLessThan500Chars();	
 }

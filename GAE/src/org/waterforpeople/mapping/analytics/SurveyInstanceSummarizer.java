@@ -81,7 +81,7 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 						} else {
 							logger
 									.log(Level.SEVERE,
-											"Couldn't find community for instance. Was the community saved correctly?");
+											"Couldn't find community for instance. Was the community saved correctly? Instance id: "+key);
 						}
 					}
 				}
