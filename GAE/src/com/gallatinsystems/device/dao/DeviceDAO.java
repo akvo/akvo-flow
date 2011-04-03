@@ -48,6 +48,9 @@ public class DeviceDAO extends BaseDAO<Device> {
 		d.setDeviceIdentifier(deviceIdentifier);
 		d.setLastLocationBeaconTime(new Date());
 		d.setGallatinSoftwareManifest(version);
-		save(d);
+		// only save if d isn't already a persistent object
+		if (d.getKey() == null) {
+			save(d);
+		}
 	}
 }
