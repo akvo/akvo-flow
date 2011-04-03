@@ -70,8 +70,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		if (cache != null && !piReq.getIgnoreCache()) {
 			PlacemarkRestResponse cachedResponse = null;
 			try {
-				log.log(Level.INFO,
-						"Checking Cache for: " + piReq.getCacheKey());
+				log.log(Level.INFO, "Checking Cache for: "
+						+ piReq.getCacheKey());
 				cachedResponse = (PlacemarkRestResponse) cache.get(piReq
 						.getCacheKey());
 			} catch (Throwable t) {
@@ -87,11 +87,13 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		if (piReq.getAction() != null
 				&& PlacemarkRestRequest.GET_AP_DETAILS_ACTION.equals(piReq
 						.getAction())) {
-
-			AccessPoint ap = (AccessPoint) apDao.findAccessPoint(
-					piReq.getCommunityCode(), piReq.getPointType());
 			List<AccessPoint> apList = new ArrayList<AccessPoint>();
-			apList.add(ap);
+			if (piReq.getCommunityCode() != null
+					&& piReq.getCommunityCode().trim().length() > 0) {
+				AccessPoint ap = (AccessPoint) apDao.findAccessPoint(piReq
+						.getCommunityCode(), piReq.getPointType());
+				apList.add(ap);
+			}
 			response = (PlacemarkRestResponse) convertToResponse(apList, true,
 					null, null, piReq.getDisplay());
 
@@ -109,32 +111,32 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 				}
 
 				if (piReq.getSubLevel() != null) {
-					List<AccessPoint> results = apDao.listBySubLevel(
-							piReq.getCountry(), piReq.getSubLevel(),
-							piReq.getSubLevelValue(), piReq.getCursor(),
+					List<AccessPoint> results = apDao.listBySubLevel(piReq
+							.getCountry(), piReq.getSubLevel(), piReq
+							.getSubLevelValue(), piReq.getCursor(),
 							AccessPointType.WATER_POINT, desiredResults);
 					String display = null;
 					if (piReq.getDisplay() != null) {
 						display = piReq.getDisplay();
 					}
 					response = (PlacemarkRestResponse) convertToResponse(
-							results, piReq.getNeedDetailsFlag(),
-							AccessPointDao.getCursor(results),
-							piReq.getCursor(), display);
+							results, piReq.getNeedDetailsFlag(), AccessPointDao
+									.getCursor(results), piReq.getCursor(),
+							display);
 				} else {
 
-					List<AccessPoint> results = apDao.searchAccessPoints(
-							piReq.getCountry(), null, null, null, null, null,
-							null, null, null, null, desiredResults,
-							piReq.getCursor());
+					List<AccessPoint> results = apDao
+							.searchAccessPoints(piReq.getCountry(), null, null,
+									null, null, null, null, null, null, null,
+									desiredResults, piReq.getCursor());
 					String display = null;
 					if (piReq.getDisplay() != null) {
 						display = piReq.getDisplay();
 					}
 					response = (PlacemarkRestResponse) convertToResponse(
-							results, piReq.getNeedDetailsFlag(),
-							AccessPointDao.getCursor(results),
-							piReq.getCursor(), display);
+							results, piReq.getNeedDetailsFlag(), AccessPointDao
+									.getCursor(results), piReq.getCursor(),
+							display);
 				}
 
 			} else if (piReq.getAction().equals(
@@ -147,13 +149,13 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 				}
 				List<AccessPoint> results = apDao
 						.listAccessPointsByBoundingBox(piReq.getPointType(),
-								piReq.getLat1(), piReq.getLat2(),
-								piReq.getLong1(), piReq.getLong2(),
-								piReq.getCursor(), maxResults);
+								piReq.getLat1(), piReq.getLat2(), piReq
+										.getLong1(), piReq.getLong2(), piReq
+										.getCursor(), maxResults);
 				response = (PlacemarkRestResponse) convertToResponse(results,
-						piReq.getNeedDetailsFlag(),
-						AccessPointDao.getCursor(results), piReq.getCursor(),
-						piReq.getDisplay());
+						piReq.getNeedDetailsFlag(), AccessPointDao
+								.getCursor(results), piReq.getCursor(), piReq
+								.getDisplay());
 			}
 
 		}
@@ -197,11 +199,13 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private PlacemarkDto marshallDomainToDto(AccessPoint ap,
 			Boolean needDetailsFlag, String display) {
 		PlacemarkDto pdto = new PlacemarkDto();
-		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(),
-				ap.getPointStatus()));
+		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(), ap
+				.getPointStatus()));
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
-		pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
+		pdto
+				.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap
+						.getPointType()));
 		pdto.setCommunityCode(ap.getCommunityCode());
 		pdto.setMarkType(ap.getPointType().toString());
 		pdto.setCollectionDate(ap.getCollectionDate());
