@@ -60,6 +60,8 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.flushpointsdesc)));
 		list.add(createMap(resources.getString(R.string.downloadsurveylabel),
 				resources.getString(R.string.downloadsurveydesc)));
+		list.add(createMap(resources.getString(R.string.resetall), resources
+				.getString(R.string.resetalldesc)));
 		list.add(createMap(resources.getString(R.string.aboutlabel), resources
 				.getString(R.string.aboutdesc)));
 
@@ -262,6 +264,18 @@ public class SettingsActivity extends ListActivity {
 										SettingsActivity.this);
 								database.open();
 								database.deleteAllPoints();
+								database.close();
+							}
+						});
+			} else if (resources.getString(R.string.resetall).equals(val)) {
+				ViewUtil.showAdminAuthDialog(this,
+						new ViewUtil.AdminAuthDialogListener() {
+							@Override
+							public void onAuthenticated() {
+								SurveyDbAdapter database = new SurveyDbAdapter(
+										SettingsActivity.this);
+								database.open();
+								database.clearAllData();
 								database.close();
 							}
 						});

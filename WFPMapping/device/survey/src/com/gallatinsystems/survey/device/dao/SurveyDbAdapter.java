@@ -1364,11 +1364,25 @@ public class SurveyDbAdapter {
 	public void executeSql(String sql) {
 		database.execSQL(sql);
 	}
-	
+
 	/**
-	 * reinserts the test survey into the database. For debugging purposes only. The survey xml must exist in the APK
+	 * reinserts the test survey into the database. For debugging purposes only.
+	 * The survey xml must exist in the APK
 	 */
-	public void reinstallTestSurvey(){
+	public void reinstallTestSurvey() {
 		executeSql("insert into survey values(999991,'Sample Survey', 1.0,'Survey','res','testsurvey','english','N','N')");
+	}
+
+	/**
+	 * permanently deletes all surveys, responses, users and transmission
+	 * history from the database
+	 */
+	public void clearAllData() {
+		executeSql("delete from survey");
+		executeSql("delete from survey_respondent");
+		executeSql("delete from survey_response");
+		executeSql("delete from user");
+		executeSql("delete from transmission_history");
+		executeSql("update preferences set value = '' where key = 'user.lastuser.id'");
 	}
 }

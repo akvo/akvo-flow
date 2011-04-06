@@ -178,6 +178,8 @@
 	<string name="confirmchangetitle">Change response?</string>
 	<string name="confirmchangetext">Do you want to change your response?</string>
 	<string name="uploaderror">Error while uploading</string>
-	<string name="captureheading">Capture Heading</string>	
-	<string name="appversion">1.9.3</string>	
+	<string name="captureheading">Capture Heading</string>
+	<string name="resetall">Delete All Data</string>
+	<string name="resetalldesc">Permanently deletes all surveys, responses and users</string>	
+	<string name="appversion">1.9.4</string>	
 </resources>
