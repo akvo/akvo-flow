@@ -195,24 +195,45 @@ public class SurveyDbAdapter {
 						.execSQL("DROP TABLE IF EXISTS "
 								+ TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
-			} else if (oldVersion == 57) {
+			} else {
+				// changes made in version 57
 				try {
-					// just add the changes made in version 58
 					db.execSQL(TRANSMISSION_HISTORY_TABLE_CREATE);
 				} catch (Exception e) {
 					// swallow since this fails if the update is already applied
 				}
-			} else if (oldVersion == 58) {
-				db
-						.execSQL("insert into preferences values('survey.textsize','LARGE')");
-			} else if (oldVersion <= 63) {
+				// changes made in version 58
+				try {
+					String value = null;
+					Cursor cursor = database.query(PREFERENCES_TABLE,
+							new String[] { KEY_COL, VALUE_COL }, KEY_COL
+									+ " = ?",
+							new String[] { "survey.textsize" }, null, null,
+							null);
+					if (cursor != null) {
+						if (cursor.getCount() > 0) {
+							cursor.moveToFirst();
+							value = cursor.getString(cursor
+									.getColumnIndexOrThrow(VALUE_COL));
+						}
+						cursor.close();
+					}
+					if (value == null) {
+						db
+								.execSQL("insert into preferences values('survey.textsize','LARGE')");
+					}
+				} catch (Exception e) {
+					// swallow
+				}
+
+				// changes in version 63
 				try {
 					db
 							.execSQL("alter table survey_respondent add column exported_flag text");
 				} catch (Exception e) {
 					// swallow
 				}
-			} else if (oldVersion <= 68) {
+				// changes in version 68
 				try {
 					db
 							.execSQL("alter table survey_respondent add column uuid text");
@@ -235,7 +256,7 @@ public class SurveyDbAdapter {
 						} while (cursor.moveToNext());
 					}
 				} catch (Exception e) {
-					Log.e("ERRR", "COULD NOT UPGRADE UUID", e);
+					//swallow
 				}
 			}
 		}
