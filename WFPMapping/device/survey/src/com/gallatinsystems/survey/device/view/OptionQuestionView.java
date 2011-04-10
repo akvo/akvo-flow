@@ -85,7 +85,7 @@ public class OptionQuestionView extends QuestionView {
 				spinner.setSelection(0);
 
 				spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings("rawtypes")
 					public void onItemSelected(AdapterView parent, View view,
 							int position, long id) {
 						if (!suppressListeners) {
@@ -118,7 +118,7 @@ public class OptionQuestionView extends QuestionView {
 						}
 					}
 
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings("rawtypes")
 					public void onNothingSelected(AdapterView parent) {
 						if (!suppressListeners) {
 							setResponse(new QuestionResponse("",

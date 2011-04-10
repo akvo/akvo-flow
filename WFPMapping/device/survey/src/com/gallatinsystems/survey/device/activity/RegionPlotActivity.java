@@ -34,7 +34,9 @@ import com.google.android.maps.Overlay;
 
 /**
  * Activity to handle display of a MapView that allows the user to map a region
- * by recording GPS way-points.
+ * by recording GPS way-points. This activity can run in "auto" mode in which it
+ * will record a point on a fixed interval or "manual" mode where the user taps
+ * a button to add a waypoint.
  * 
  * @author Christopher Fagiani
  * 
@@ -239,9 +241,9 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 					mapController.animateTo(point);
 					regionPlot.addLocation(point);
 					mapView.invalidate();
-					dbAdaptor.savePlotPoint(plotId, GeoUtil
-							.decodeLocation(point.getLatitudeE6()), GeoUtil
-							.decodeLocation(point.getLongitudeE6()),
+					dbAdaptor.savePlotPoint(plotId,
+							GeoUtil.decodeLocation(point.getLatitudeE6()),
+							GeoUtil.decodeLocation(point.getLongitudeE6()),
 							currentElevation);
 				}
 			} else {
@@ -327,8 +329,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		case INTERVAL_ID:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.plotinterval);
-			final CharSequence[] items = { "30 Seconds", "60 Seconds",
-					"2 Minutes", "5 Minutes", "10 Minutes" };
+			final CharSequence[] items = getResources().getStringArray(R.array.plotintervals);
 			final int[] vals = { 30000, 60000, 120000, 300000, 600000 };
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int item) {

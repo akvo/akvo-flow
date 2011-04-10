@@ -87,8 +87,7 @@ public class NearbyItemDetailActivity extends Activity implements
 				R.drawable.uparrow);
 
 		pointOfInterest = savedInstanceState != null ? (PointOfInterest) savedInstanceState
-				.getSerializable(ConstantUtil.AP_KEY)
-				: null;
+				.getSerializable(ConstantUtil.AP_KEY) : null;
 		if (pointOfInterest == null) {
 			Bundle extras = getIntent().getExtras();
 			pointOfInterest = extras != null ? (PointOfInterest) extras
@@ -128,8 +127,7 @@ public class NearbyItemDetailActivity extends Activity implements
 							l.setOrientation(LinearLayout.HORIZONTAL);
 							TextView labelView = new TextView(this);
 							labelView.setText(pointOfInterest
-									.getPropertyNames().get(i)
-									+ ": ");
+									.getPropertyNames().get(i) + ": ");
 							l.addView(labelView);
 							TextView valView = new TextView(this);
 							valView.setText(val);
@@ -165,6 +163,9 @@ public class NearbyItemDetailActivity extends Activity implements
 		return super.onMenuItemSelected(featureId, item);
 	}
 
+	/**
+	 * sets the selected point (if there is one) in the Bundle
+	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -173,6 +174,12 @@ public class NearbyItemDetailActivity extends Activity implements
 		}
 	}
 
+	/**
+	 * when the location is updated, update the distance field and change the
+	 * rotation of the directional arrow. The units of the distance may change
+	 * based on the distance (i.e. the point is more than 1 KM away, the
+	 * distance will be shown in kilometers. Otherwise, meters are used.
+	 */
 	@Override
 	public void onLocationChanged(Location loc) {
 		// set the distance value
@@ -182,7 +189,7 @@ public class NearbyItemDetailActivity extends Activity implements
 			distance /= 1000;
 			unitsIdx = 1;
 		}
-		distanceField.setText(" "+distanceFormat.format(distance) + " "
+		distanceField.setText(" " + distanceFormat.format(distance) + " "
 				+ units[unitsIdx]);
 		// only update the bearing and the corresponding image representation of
 		// it if it changed more than MIN_CHANGE degrees
@@ -239,6 +246,9 @@ public class NearbyItemDetailActivity extends Activity implements
 		// no-op
 	}
 
+	/**
+	 * update the directional arrow since we detected a change in orientation
+	 */
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if (event.sensor == orientSensor) {

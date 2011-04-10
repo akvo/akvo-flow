@@ -58,7 +58,7 @@ public class StrengthQuestionView extends OptionQuestionView {
 		strengthSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("rawtypes")
 			public void onItemSelected(AdapterView parent, View view,
 					int position, long id) {
 				if (!suppressListeners) {
@@ -73,7 +73,7 @@ public class StrengthQuestionView extends OptionQuestionView {
 			}
 
 			@Override
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("rawtypes")
 			public void onNothingSelected(AdapterView parent) {
 				// no-op
 			}

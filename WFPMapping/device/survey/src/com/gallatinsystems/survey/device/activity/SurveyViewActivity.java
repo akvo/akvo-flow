@@ -96,7 +96,6 @@ public class SurveyViewActivity extends TabActivity implements
 	private String eventSourceQuestionId;
 	private PropertyUtil props;
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

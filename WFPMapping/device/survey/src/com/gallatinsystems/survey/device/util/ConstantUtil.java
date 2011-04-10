@@ -265,7 +265,7 @@ public class ConstantUtil {
 	/**
 	 * recognized help activities
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static final HashMap<String, Class> HELP_ACTIVITIES = new HashMap<String, Class>() {
 		private static final long serialVersionUID = -6196886832065440000L;
 		{

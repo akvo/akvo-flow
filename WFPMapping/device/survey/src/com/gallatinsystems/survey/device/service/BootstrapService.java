@@ -104,8 +104,7 @@ public class BootstrapService extends Service {
 							rollback(zipFiles.get(i));
 							String newFilename = zipFiles.get(i)
 									.getAbsolutePath();
-							zipFiles
-									.get(i)
+							zipFiles.get(i)
 									.renameTo(
 											new File(
 													newFilename
@@ -147,8 +146,12 @@ public class BootstrapService extends Service {
 			String fileName = parts[parts.length - 1];
 			// make sure we're not processing a hidden file
 			if (!fileName.startsWith(".")) {
-				if (entry.getName().toLowerCase().endsWith(
-						ConstantUtil.BOOTSTRAP_ROLLBACK_FILE.toLowerCase())) {
+				if (entry
+						.getName()
+						.toLowerCase()
+						.endsWith(
+								ConstantUtil.BOOTSTRAP_ROLLBACK_FILE
+										.toLowerCase())) {
 					processDbInstructions(FileUtil.readTextFromZip(zis), false);
 				}
 			}
@@ -170,20 +173,20 @@ public class BootstrapService extends Service {
 			String fileName = parts[parts.length - 1];
 			// make sure we're not processing a hidden file
 			if (!fileName.startsWith(".")) {
-				if (entry.getName().toLowerCase().endsWith(
-						ConstantUtil.BOOTSTRAP_DB_FILE.toLowerCase())) {
+				if (entry.getName().toLowerCase()
+						.endsWith(ConstantUtil.BOOTSTRAP_DB_FILE.toLowerCase())) {
 					processDbInstructions(FileUtil.readTextFromZip(zis), true);
 
 				} else if (!entry.isDirectory()
 						&& !ConstantUtil.BOOTSTRAP_ROLLBACK_FILE
 								.equalsIgnoreCase(fileName)) {
 					String id = parts[parts.length - 2];
-					if (entry.getName().toLowerCase().endsWith(
-							ConstantUtil.XML_SUFFIX.toLowerCase())) {
+					if (entry.getName().toLowerCase()
+							.endsWith(ConstantUtil.XML_SUFFIX.toLowerCase())) {
 						String surveyName = fileName;
 						if (surveyName.contains(".")) {
-							surveyName = surveyName.substring(0, surveyName
-									.indexOf("."));
+							surveyName = surveyName.substring(0,
+									surveyName.indexOf("."));
 						}
 						Survey survey = databaseAdapter.findSurvey(id);
 						if (survey == null) {
@@ -191,8 +194,7 @@ public class BootstrapService extends Service {
 							survey.setId(id);
 							survey.setName(surveyName);
 							survey.setHelpDownloaded(false);
-							survey
-									.setLanguage(ConstantUtil.SURVEY_DEFAULT_LANG);
+							survey.setLanguage(ConstantUtil.SURVEY_DEFAULT_LANG);
 							survey.setType(ConstantUtil.SURVEY_TYPE);
 						}
 						survey.setLocation(ConstantUtil.FILE_LOCATION);
@@ -200,16 +202,13 @@ public class BootstrapService extends Service {
 
 						// in both cases (new survey and existing), we need to
 						// update the xml
-						FileUtil
-								.extractAndSaveFile(
-										zis,
-										FileUtil
-												.getFileOutputStream(
-														fileName,
-														ConstantUtil.DATA_DIR,
-														props
-																.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
-														this));
+						FileUtil.extractAndSaveFile(
+								zis,
+								FileUtil.getFileOutputStream(
+										fileName,
+										ConstantUtil.DATA_DIR,
+										props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+										this));
 						// now read the survey XML back into memory to see if
 						// there is a version
 						Survey loadedSurvey = null;
@@ -218,8 +217,7 @@ public class BootstrapService extends Service {
 									.getFileInputStream(
 											survey.getFileName(),
 											ConstantUtil.DATA_DIR,
-											props
-													.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+											props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
 											this);
 							loadedSurvey = SurveyDao.loadSurvey(survey, in);
 
@@ -237,18 +235,14 @@ public class BootstrapService extends Service {
 					} else {
 						// if it's not a sql file and its not a survey, it must
 						// be help media
-						FileUtil
-								.extractAndSaveFile(
-										zis,
-										FileUtil
-												.getFileOutputStream(
-														fileName,
-														ConstantUtil.DATA_DIR
-																+ id
-																+ File.separator,
-														props
-																.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
-														this));
+						FileUtil.extractAndSaveFile(
+								zis,
+								FileUtil.getFileOutputStream(
+										fileName,
+										ConstantUtil.DATA_DIR + id
+												+ File.separator,
+										props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+										this));
 
 						// record the fact that this survey had media
 						surveysWithImages.add(id);
@@ -313,7 +307,9 @@ public class BootstrapService extends Service {
 				if (fileList != null) {
 					for (int i = 0; i < fileList.length; i++) {
 						if (fileList[i].isFile()
-								&& fileList[i].getName().toLowerCase()
+								&& fileList[i]
+										.getName()
+										.toLowerCase()
 										.endsWith(
 												ConstantUtil.ARCHIVE_SUFFIX
 														.toLowerCase())) {
@@ -327,12 +323,15 @@ public class BootstrapService extends Service {
 		return zipFiles;
 	}
 
+	/**
+	 * sets up the uncaught exeption handler for this thread so we can report
+	 * errors to the server.
+	 */
 	public void onCreate() {
 		super.onCreate();
 		props = new PropertyUtil(getResources());
-		Thread
-				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
-						.getInstance());
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+				.getInstance());
 	}
 
 }

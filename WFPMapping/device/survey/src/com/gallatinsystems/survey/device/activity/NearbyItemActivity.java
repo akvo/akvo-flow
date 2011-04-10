@@ -34,7 +34,7 @@ import com.gallatinsystems.survey.device.util.PropertyUtil;
 
 /**
  * Activity to list all "nearby" access points
- *
+ * 
  * @author Christopher Fagiani
  */
 public class NearbyItemActivity extends ListActivity implements
@@ -60,7 +60,7 @@ public class NearbyItemActivity extends ListActivity implements
 	private Thread dataThread;
 	private SurveyDbAdapter databaseAdapter;
 	private String serverBase;
-	private PointOfInterest loadMorePlaceholder;	
+	private PointOfInterest loadMorePlaceholder;
 	private Double lastLat;
 	private Double lastLon;
 	private String mode;
@@ -70,23 +70,27 @@ public class NearbyItemActivity extends ListActivity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		useServer = true;
+		// set up a dummy PointOfInterest to serve as a placeholder. This will
+		// be used to show a "loading" message when the user scrolls to the
+		// bottom of the list.
 		loadMorePlaceholder = new PointOfInterest();
 		loadMorePlaceholder.setName(getString(R.string.loadmore));
 		additive = false;
 
 		Bundle extras = getIntent().getExtras();
 
-		if(extras != null){
+		if (extras != null) {
 			mode = extras.getString(ConstantUtil.MODE_KEY);
 		}
 
-		if(mode == null && savedInstanceState != null){
+		if (mode == null && savedInstanceState != null) {
 			mode = savedInstanceState.getString(ConstantUtil.MODE_KEY);
 		}
 
 		databaseAdapter = new SurveyDbAdapter(this);
 		databaseAdapter.open();
-		serverBase = databaseAdapter.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+		serverBase = databaseAdapter
+				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 		if (serverBase != null && serverBase.trim().length() > 0) {
 			serverBase = getResources().getStringArray(R.array.servers)[Integer
 					.parseInt(serverBase)];
@@ -94,7 +98,6 @@ public class NearbyItemActivity extends ListActivity implements
 			serverBase = new PropertyUtil(getResources())
 					.getProperty(ConstantUtil.SERVER_BASE);
 		}
-		
 
 		setContentView(R.layout.nearbyitem);
 		Resources resources = getResources();
@@ -163,7 +166,7 @@ public class NearbyItemActivity extends ListActivity implements
 	/**
 	 * loads the data from the server. TODO: make this work if offline too by
 	 * loading from db
-	 *
+	 * 
 	 * @param lat
 	 * @param lon
 	 */
@@ -175,11 +178,12 @@ public class NearbyItemActivity extends ListActivity implements
 		progressDialog.show();
 
 		// Fire off a thread to do some work that we shouldn't do directly in
-		// the UI thread
+		// the UI thread. Specifically, loading the points from the server
 		dataThread = new Thread() {
 			public void run() {
 				if (useServer) {
-					PointOfInterestService pointOfInterestService = new PointOfInterestService(serverBase);
+					PointOfInterestService pointOfInterestService = new PointOfInterestService(
+							serverBase);
 					ArrayList<PointOfInterest> newPoints = pointOfInterestService
 							.getNearbyAccessPoints(lat, lon, country,
 									serverBase, additive);
@@ -209,7 +213,7 @@ public class NearbyItemActivity extends ListActivity implements
 
 	/**
 	 * saves points of interest to the db
-	 *
+	 * 
 	 * @param points
 	 */
 	private void savePoints(ArrayList<PointOfInterest> points) {
@@ -234,12 +238,12 @@ public class NearbyItemActivity extends ListActivity implements
 			additive = true;
 			loadData(lastLat, lastLon, country, null);
 		} else {
-			if(ConstantUtil.SURVEY_RESULT_MODE.equals(mode)){
+			if (ConstantUtil.SURVEY_RESULT_MODE.equals(mode)) {
 				Intent i = new Intent();
-				i.putExtra(ConstantUtil.CALC_RESULT_KEY,dto.getName());
-				setResult(RESULT_OK,i);
+				i.putExtra(ConstantUtil.CALC_RESULT_KEY, dto.getName());
+				setResult(RESULT_OK, i);
 				finish();
-			}else{
+			} else {
 				Intent i = new Intent(this, NearbyItemDetailActivity.class);
 				i.putExtra(ConstantUtil.AP_KEY, pointsOfInterest.get(position));
 				startActivityForResult(i, NEARBY_DETAIL_ACTIVITY);
@@ -318,18 +322,21 @@ public class NearbyItemActivity extends ListActivity implements
 	 * displays country selection dialog box
 	 */
 	private void displayCountrySelection() {
-		AlertDialog dia = new AlertDialog.Builder(this).setTitle(
+		AlertDialog dia = new AlertDialog.Builder(this)
+				.setTitle(
 
-		R.string.countryselection).setItems(R.array.countries,
-				new DialogInterface.OnClickListener() {
+				R.string.countryselection)
+				.setItems(R.array.countries,
+						new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						country = countries[which];
-						additive = false;
-						loadData(null, null, country, null);
-					}
-				}).create();
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								country = countries[which];
+								additive = false;
+								loadData(null, null, country, null);
+							}
+						}).create();
 		dia.show();
 	}
 
@@ -348,9 +355,10 @@ public class NearbyItemActivity extends ListActivity implements
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(label);
 		layout.addView(nameText);
-		AlertDialog dia = new AlertDialog.Builder(this).setView(layout)
-				.setTitle(R.string.searchpoints).setPositiveButton(
-						R.string.okbutton,
+		AlertDialog dia = new AlertDialog.Builder(this)
+				.setView(layout)
+				.setTitle(R.string.searchpoints)
+				.setPositiveButton(R.string.okbutton,
 						new DialogInterface.OnClickListener() {
 
 							@Override
@@ -360,7 +368,8 @@ public class NearbyItemActivity extends ListActivity implements
 								loadData(null, null, country, nameText
 										.getText().toString());
 							}
-						}).setNegativeButton(R.string.cancelbutton,
+						})
+				.setNegativeButton(R.string.cancelbutton,
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,
@@ -400,12 +409,11 @@ public class NearbyItemActivity extends ListActivity implements
 	}
 
 	@Override
-		protected void onSaveInstanceState(Bundle outState) {
-			super.onSaveInstanceState(outState);
-			if (outState != null && mode != null) {
-				outState.putString(ConstantUtil.MODE_KEY, mode);
-			}
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		if (outState != null && mode != null) {
+			outState.putString(ConstantUtil.MODE_KEY, mode);
 		}
-
+	}
 
 }

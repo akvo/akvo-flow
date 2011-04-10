@@ -13,7 +13,8 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 
 /**
- * create or edit a new Plot record
+ * create or edit a new Plot record. This activity just allows editing of the
+ * plot metadata fields (i.e. name & description), not the points within that plot.
  * 
  * TODO: include current userID?
  * 
@@ -44,8 +45,8 @@ public class PlotEditActivity extends Activity {
 				.getLong(ConstantUtil.ID_KEY) : null;
 		if (plotId == null || plotId == 0L) {
 			Bundle extras = getIntent().getExtras();
-			plotId = extras != null ? new Long(extras
-					.getString(ConstantUtil.ID_KEY)) : null;
+			plotId = extras != null ? new Long(
+					extras.getString(ConstantUtil.ID_KEY)) : null;
 		}
 		populateFields();
 
@@ -71,6 +72,9 @@ public class PlotEditActivity extends Activity {
 		}
 	}
 
+	/**
+	 * sets the id of the selected plot (if there is one) in the bundle
+	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);

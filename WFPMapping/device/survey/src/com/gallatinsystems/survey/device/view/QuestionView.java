@@ -189,7 +189,7 @@ public class QuestionView extends TableLayout implements
 	 * displays a dialog box with options for each of the help types that have
 	 * been initialized for this particular question.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private void displayHelpChoices() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(R.string.helpheading);

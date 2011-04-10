@@ -28,7 +28,8 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
  * Displays user editable preferences and takes care of persisting them to the
- * database;
+ * database. Some options require the user to enter an administrator passcode
+ * via a dialog box before the operation can be performed.
  * 
  * @author Christopher Fagiani
  * 
@@ -188,11 +189,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			ViewUtil.displayLanguageSelector(this, selectedLanguages,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
-							database
-									.savePreference(
-											ConstantUtil.SURVEY_LANG_SETTING_KEY,
-											ArrayPreferenceUtil
-													.formPreferenceString(selectedLanguages));
+							database.savePreference(
+									ConstantUtil.SURVEY_LANG_SETTING_KEY,
+									ArrayPreferenceUtil
+											.formPreferenceString(selectedLanguages));
 							languageTextView.setText(ArrayPreferenceUtil
 									.formSelectedItemString(languageArray,
 											selectedLanguages));
@@ -223,11 +223,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			ViewUtil.displayCountrySelector(this, selectedPrecacheCountries,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
-							database
-									.savePreference(
-											ConstantUtil.PRECACHE_POINT_COUNTRY_KEY,
-											ArrayPreferenceUtil
-													.formPreferenceString(selectedPrecacheCountries));
+							database.savePreference(
+									ConstantUtil.PRECACHE_POINT_COUNTRY_KEY,
+									ArrayPreferenceUtil
+											.formPreferenceString(selectedPrecacheCountries));
 							precachePointsTextView.setText(ArrayPreferenceUtil
 									.formSelectedItemString(
 											precacheCountryArray,
@@ -253,11 +252,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 												int which) {
 											identTextView.setText(inputView
 													.getText());
-											database
-													.savePreference(
-															ConstantUtil.DEVICE_IDENT_KEY,
-															inputView.getText()
-																	.toString());
+											database.savePreference(
+													ConstantUtil.DEVICE_IDENT_KEY,
+													inputView.getText()
+															.toString());
 										}
 									});
 						}

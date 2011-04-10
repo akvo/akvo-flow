@@ -63,6 +63,11 @@ public class SurveyReviewActivity extends ListActivity {
 		getData();
 	}
 
+	/**
+	 * loads the survey instances from the database. By default this will load
+	 * only unsubmitted saved surveys, but if the user changes the mode to view
+	 * submitted, it will list the submitted surveys.
+	 */
 	private void getData() {
 		String label = null;
 		if (ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
@@ -104,7 +109,8 @@ public class SurveyReviewActivity extends ListActivity {
 		switch (item.getItemId()) {
 		case DELETE_ONE:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.deleteonewarning).setCancelable(true)
+			builder.setMessage(R.string.deleteonewarning)
+					.setCancelable(true)
 					.setPositiveButton(R.string.okbutton,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -114,7 +120,8 @@ public class SurveyReviewActivity extends ListActivity {
 													.toString());
 									getData();
 								}
-							}).setNegativeButton(R.string.cancelbutton,
+							})
+					.setNegativeButton(R.string.cancelbutton,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
@@ -194,7 +201,8 @@ public class SurveyReviewActivity extends ListActivity {
 			return true;
 		case DELETE_ALL:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.deleteallwarning).setCancelable(true)
+			builder.setMessage(R.string.deleteallwarning)
+					.setCancelable(true)
 					.setPositiveButton(R.string.okbutton,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -202,7 +210,8 @@ public class SurveyReviewActivity extends ListActivity {
 									databaseAdapter.deleteAllResponses();
 									getData();
 								}
-							}).setNegativeButton(R.string.cancelbutton,
+							})
+					.setNegativeButton(R.string.cancelbutton,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
@@ -248,8 +257,8 @@ public class SurveyReviewActivity extends ListActivity {
 				.getTag(SurveyReviewCursorAdaptor.USER_ID_KEY)).toString());
 		i.putExtra(ConstantUtil.SURVEY_ID_KEY, ((Long) view
 				.getTag(SurveyReviewCursorAdaptor.SURVEY_ID_KEY)).toString());
-		i.putExtra(ConstantUtil.RESPONDENT_ID_KEY, (Long) view
-				.getTag(SurveyReviewCursorAdaptor.RESP_ID_KEY));
+		i.putExtra(ConstantUtil.RESPONDENT_ID_KEY,
+				(Long) view.getTag(SurveyReviewCursorAdaptor.RESP_ID_KEY));
 		if (ConstantUtil.SUBMITTED_STATUS.equals(currentStatusMode)) {
 			i.putExtra(ConstantUtil.READONLY_KEY, true);
 		}

@@ -45,6 +45,9 @@ public class ListUserActivity extends AbstractListEditActivity {
 		finish();
 	}
 
+	/**
+	 * fetches the data for this view (users) from the database. This method assumes that the database has been opened.
+	 */
 	@Override
 	protected Cursor getData() {
 		return databaseAdaptor.listUsers();

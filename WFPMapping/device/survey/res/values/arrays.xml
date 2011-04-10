@@ -28,10 +28,10 @@
 		<item>WiFi Only</item>
 		<item>Never</item>
 	</string-array>
-	<string-array name="servers">		  
+	<string-array name="servers">
+		<item>http://watermapmonitordev.appspot.com</item>
 		<item>http://flowliberia.appspot.com</item>
-		<item>http://watermapmonitordev.appspot.com</item>				
-		<item>http://watermappingmonitoring.appspot.com</item>		
+		<item>http://watermappingmonitoring.appspot.com</item>
 		<item>http://192.168.0.100:8888</item>
 	</string-array>
 	<string-array name="lengthmetric">
@@ -67,9 +67,16 @@
 		<item>MW</item>
 		<item>RW</item>
 		<item>US</item>
-	</string-array>	
+	</string-array>
 	<string-array name="distancemesures">
 		<item>meters</item>
 		<item>kilometers</item>
+	</string-array>
+	<string-array name="plotintervals">
+		<item>30 Seconds</item>
+		<item>60 Seconds</item>
+		<item>2 Minutes</item>
+		<item>5 Minutes</item>
+		<item>10 Minutes</item>
 	</string-array>
 </resources>

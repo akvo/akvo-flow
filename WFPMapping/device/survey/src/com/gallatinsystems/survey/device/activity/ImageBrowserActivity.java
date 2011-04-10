@@ -77,9 +77,9 @@ public class ImageBrowserActivity extends Activity implements
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
-	public void onItemClick(AdapterView parent, View v, int position, long id) {
+	public void onItemClick( AdapterView parent, View v, int position, long id) {
 		mainImageView.setImageBitmap(imageAdapter.getImageBitmap(position));
 		captionTextView.setText(captions.get(position));
 	}
