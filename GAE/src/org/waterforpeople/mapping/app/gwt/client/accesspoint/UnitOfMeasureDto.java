@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
-import java.io.Serializable;
-
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 

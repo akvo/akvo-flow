@@ -14,7 +14,7 @@ public class ClassAttributeUtil {
 	private static final Logger logger = Logger
 			.getLogger(ClassAttributeUtil.class.getName());
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static TreeMap<String, String> listObjectAttributes(String className) {
 		TreeMap<String, String> attributesList = classAttributeMap
 				.get(className);

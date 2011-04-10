@@ -28,6 +28,10 @@ import com.google.gdata.data.spreadsheet.Worksheet;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
 
+/**
+ * Wrapper class for interacting with a Google Docs Spreadsheet
+ * 
+ */
 public class GoogleSpreadsheetAdapter {
 	private static final Logger log = Logger
 			.getLogger(GoogleSpreadsheetAdapter.class.getName());
@@ -39,8 +43,7 @@ public class GoogleSpreadsheetAdapter {
 
 	public GoogleSpreadsheetAdapter(String sessionToken, PrivateKey privateKey)
 			throws IOException, ServiceException {
-		google_spreadsheet_url = new PropertyUtil()
-				.getProperty("google_spreadsheet_url");
+		google_spreadsheet_url = PropertyUtil.getProperty("google_spreadsheet_url");
 		if (service == null) {
 			service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
 			service.setAuthSubToken(sessionToken, privateKey);

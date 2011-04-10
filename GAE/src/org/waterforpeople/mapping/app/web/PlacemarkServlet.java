@@ -39,7 +39,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private Cache cache;
 	private AccessPointDao apDao;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked","rawtypes"})
 	public PlacemarkServlet() {
 		super();
 		apDao = new AccessPointDao();

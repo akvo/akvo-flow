@@ -11,11 +11,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetColumnToAttribute;
 import org.waterforpeople.mapping.domain.MappingSpreadsheetDefinition;
 import org.waterforpeople.mapping.domain.TechnologyType;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.Status;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 import org.waterforpeople.mapping.helper.TechnologyTypeHelper;
@@ -75,7 +74,7 @@ public class SpreadsheetAccessPointAdapter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked","rawtypes"})
 	private AccessPoint processRow(RowContainer row, String spreadsheetName) {
 		AccessPoint ap = new AccessPoint();
 		// Structure of string from GoogleSpreadsheet

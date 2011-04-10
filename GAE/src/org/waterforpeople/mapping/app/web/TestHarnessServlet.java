@@ -107,7 +107,6 @@ import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
-import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -1694,7 +1693,7 @@ public class TestHarnessServlet extends HttpServlet {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked","rawtypes"})
 	private <T extends BaseDomain> void deleteAll(Class<T> type) {
 		BaseDAO<T> baseDao = new BaseDAO(type);
 		List<T> items = baseDao.list("all");

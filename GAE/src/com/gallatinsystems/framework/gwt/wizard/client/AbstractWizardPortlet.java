@@ -343,6 +343,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * that doesn't directly correspond to a back/forward/breadcrumb click
 	 * 
 	 */
+	@SuppressWarnings("rawtypes")
 	public void openPage(Class clazz, Map<String, Object> bundle) {
 		if (!working) {
 			if (clazz != null) {
@@ -414,6 +415,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			return allNodes.get(name);
 		}
 
+		@SuppressWarnings("rawtypes")
 		public WizardNode findNode(Class className) {
 			if (allNodes != null) {
 				for (WizardNode n : allNodes.values()) {
@@ -434,6 +436,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * 
 	 * 
 	 */
+	@SuppressWarnings("rawtypes")
 	public class WizardNode {
 		private Class widgetClass;
 		private String name;

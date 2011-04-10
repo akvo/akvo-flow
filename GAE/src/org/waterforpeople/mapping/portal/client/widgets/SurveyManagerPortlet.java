@@ -52,9 +52,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		ClickHandler, SurveyTreeListener, TranslationChangeListener {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
-	public static final String NAME = TEXT_CONSTANTS.surveyManagerPortletTitle();
-	public static final String DESCRIPTION = TEXT_CONSTANTS.surveyManagerPortletDescription();
+			.create(TextConstants.class);
+	public static final String NAME = TEXT_CONSTANTS
+			.surveyManagerPortletTitle();
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.surveyManagerPortletDescription();
 	private static final int MAX_Q_LENGTH = 50;
 	private static String title = "";
 	private static Boolean scrollable = true;
@@ -177,22 +179,25 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 	 * constructs all the buttons and sets their initial visibility
 	 */
 	private void configureButtonPanel() {
-		addSurveyGroupButton = constructAndInstallButton(TEXT_CONSTANTS.createSurveyGroup(),
-				true);
+		addSurveyGroupButton = constructAndInstallButton(
+				TEXT_CONSTANTS.createSurveyGroup(), true);
 		deleteSurveyGroupButton = constructAndInstallButton(
 				"Delete Survey Group", false);
 
-		addSurveyButton = constructAndInstallButton(TEXT_CONSTANTS.createSurvey(), true);
-		deleteSurveyButton = constructAndInstallButton(TEXT_CONSTANTS.deleteSurvey(), false);
+		addSurveyButton = constructAndInstallButton(
+				TEXT_CONSTANTS.createSurvey(), true);
+		deleteSurveyButton = constructAndInstallButton(
+				TEXT_CONSTANTS.deleteSurvey(), false);
 
 		addQuestionGroupButton = constructAndInstallButton(
 				"Add Question Group", true);
 		deleteQuestionGroupButton = constructAndInstallButton(
 				"Delete Question Group", false);
 
-		addQuestionButton = constructAndInstallButton(TEXT_CONSTANTS.createQuestion(), true);
-		deleteQuestionButton = constructAndInstallButton(TEXT_CONSTANTS.deleteQuestion(),
-				false);
+		addQuestionButton = constructAndInstallButton(
+				TEXT_CONSTANTS.createQuestion(), true);
+		deleteQuestionButton = constructAndInstallButton(
+				TEXT_CONSTANTS.deleteQuestion(), false);
 
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			addSurveyGroupButton.setEnabled(false);
@@ -262,7 +267,9 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());								
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
 
 					}
@@ -282,7 +289,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		svc.deleteSurveyGroup(getSurveyGroupDto(), new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());								
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " "
+								+ caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -294,7 +305,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					surveyGroupDetail.setVisible(false);
 
 				} else {
-					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.error());
+					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+							.error(), TEXT_CONSTANTS.error());
 					errDia.showCentered();
 				}
 			}
@@ -431,9 +443,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		// Fix this section so that multiple buttons aren't created
 
 		Button saveQuestionButton = new Button(TEXT_CONSTANTS.saveQuestion());
-		Button deleteQuestionButton = new Button(TEXT_CONSTANTS.deleteQuestion());
+		Button deleteQuestionButton = new Button(
+				TEXT_CONSTANTS.deleteQuestion());
 		Button viewResponsesButton = new Button(TEXT_CONSTANTS.viewResponses());
-		Button editTranslationButton = new Button(TEXT_CONSTANTS.editTranslations());
+		Button editTranslationButton = new Button(
+				TEXT_CONSTANTS.editTranslations());
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			saveQuestionButton.setVisible(false);
 			deleteQuestionButton.setVisible(false);
@@ -443,20 +457,26 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		questionId.setVisible(false);
 
 		questionDetailPanel.setWidget(0, 0, questionId);
-		questionDetailPanel.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.questionText()));
+		questionDetailPanel.setWidget(1, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.questionText()));
 		questionDetailPanel.setWidget(1, 1, questionText);
-		questionDetailPanel.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.questionType()));
+		questionDetailPanel.setWidget(2, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.questionType()));
 		questionDetailPanel.setWidget(2, 1, questionTypeLB);
-		questionDetailPanel.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.questionToolTip()));
+		questionDetailPanel.setWidget(3, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.questionToolTip()));
 		questionDetailPanel.setWidget(3, 1, tip);
-		questionDetailPanel.setWidget(4, 0, ViewUtil.initLabel(TEXT_CONSTANTS.validationRule()));
+		questionDetailPanel.setWidget(4, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.validationRule()));
 		questionDetailPanel.setWidget(4, 1, validationRule);
-		questionDetailPanel.setWidget(5, 0, ViewUtil.initLabel(TEXT_CONSTANTS.mandatory()));
+		questionDetailPanel.setWidget(5, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.mandatory()));
 		questionDetailPanel.setWidget(5, 1, mandatoryQuestion);
-		questionDetailPanel
-				.setWidget(6, 0, ViewUtil.initLabel(TEXT_CONSTANTS.order()));
+		questionDetailPanel.setWidget(6, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.order()));
 		questionDetailPanel.setWidget(6, 1, lbOrder);
-		questionDetailPanel.setWidget(7, 0, ViewUtil.initLabel(TEXT_CONSTANTS.dependent()));
+		questionDetailPanel.setWidget(7, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.dependent()));
 		questionDetailPanel.setWidget(7, 1, dependentQuestion);
 
 		if (item != null && item.getQuestionDependency() != null
@@ -474,13 +494,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					if (message == null) {
 						saveQuestion();
 					} else {
-						Window
-								.alert(TEXT_CONSTANTS.pleaseCorrect()+" "
-										+ message);
+						Window.alert(TEXT_CONSTANTS.pleaseCorrect() + " "
+								+ message);
 					}
 				} catch (Exception e) {
-					Window
-							.alert(TEXT_CONSTANTS.noQuestionGroupSelected());
+					Window.alert(TEXT_CONSTANTS.noQuestionGroupSelected());
 				}
 			}
 
@@ -488,19 +506,20 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				String message = null;
 				QuestionDto qDto = getQuestionDto();
 				if (qDto.getText() == null)
-					message = TEXT_CONSTANTS.questionTextMandatory()+"\n";
+					message = TEXT_CONSTANTS.questionTextMandatory() + "\n";
 				if (qDto.getType().equals(QuestionType.OPTION)) {
 					ArrayList<QuestionOptionDto> qoList = qDto
 							.getOptionContainerDto().getOptionsList();
 					if (qoList == null) {
-						message = message
-								+ " "+TEXT_CONSTANTS.optionMandatory()+"\n";
+						message = message + " "
+								+ TEXT_CONSTANTS.optionMandatory() + "\n";
 					} else {
 						for (QuestionOptionDto qoDto : qoList) {
 							if (qoDto.getText() == null
 									|| qoDto.getText().trim().equals("")) {
-								message = message
-										+ " "+TEXT_CONSTANTS.optionNotBlank()+"\n";
+								message = message + " "
+										+ TEXT_CONSTANTS.optionNotBlank()
+										+ "\n";
 							}
 						}
 					}
@@ -554,8 +573,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				} else {
 					// Likely have the QG selected because this is a new
 					// question need to figure out how to get QuestionDto
-					Window
-							.alert(TEXT_CONSTANTS.saveQuestionFirst());
+					Window.alert(TEXT_CONSTANTS.saveQuestionFirst());
 				}
 			}
 		});
@@ -593,7 +611,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			}
 			final QuestionDto currentQuestion = tempQuestion;
 
-			final MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.loading(),TEXT_CONSTANTS.pleaseWait(),true);					
+			final MessageDialog dia = new MessageDialog(
+					TEXT_CONSTANTS.loading(), TEXT_CONSTANTS.pleaseWait(), true);
 			dia.showCentered();
 			if (surveyOptionQuestionMap.get(currentQuestion.getSurveyId()) == null) {
 				// if we haven't loaded the Option questions for this survey, do
@@ -605,14 +624,18 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 							@Override
 							public void onFailure(Throwable caught) {
 								dia.hide();
-								MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());										
+								MessageDialog errDia = new MessageDialog(
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
 								errDia.showCentered();
 							}
 
 							@Override
 							public void onSuccess(QuestionDto[] result) {
-								surveyOptionQuestionMap.put(currentQuestion
-										.getSurveyId(), result);
+								surveyOptionQuestionMap.put(
+										currentQuestion.getSurveyId(), result);
 								populateDependencySelection(currentQuestion,
 										result);
 								dia.hide();
@@ -631,7 +654,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 	private void populateDependencySelection(QuestionDto currentQuestion,
 			final QuestionDto[] optionQuestions) {
-		questionDetailPanel.setWidget(8, 0, ViewUtil.initLabel(TEXT_CONSTANTS.dependentOnQuestion()));
+		questionDetailPanel.setWidget(8, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.dependentOnQuestion()));
 		ListBox questionLB = new ListBox();
 		ListBox answerLB = new ListBox();
 		QuestionDependencyDto item = null;
@@ -723,7 +747,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+								Window.alert(TEXT_CONSTANTS.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
 							}
 						});
 			}
@@ -779,9 +804,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 
-		questionOptionDetail.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.allowOther()));
+		questionOptionDetail.setWidget(row, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.allowOther()));
 		questionOptionDetail.setWidget(row, 1, allowOther);
-		questionOptionDetail.setWidget(row, 2, ViewUtil.initLabel(TEXT_CONSTANTS.allowMultiple()));
+		questionOptionDetail.setWidget(row, 2,
+				ViewUtil.initLabel(TEXT_CONSTANTS.allowMultiple()));
 		questionOptionDetail.setWidget(row, 3, allowMultiple);
 		questionOptionDetail.setWidget(row, 4, ocId);
 
@@ -812,8 +839,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onClick(ClickEvent event) {
 
-				loadQuestionOptionRowDetail(null, questionOptionDetail
-						.getRowCount() - 1);
+				loadQuestionOptionRowDetail(null,
+						questionOptionDetail.getRowCount() - 1);
 			}
 
 		});
@@ -854,9 +881,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 		questionOptionDetail.insertRow(row);
 
-		questionOptionDetail.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.order()));
+		questionOptionDetail.setWidget(row, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.order()));
 		questionOptionDetail.setWidget(row, 1, lbOptOrder);
-		questionOptionDetail.setWidget(row, 2, ViewUtil.initLabel(TEXT_CONSTANTS.optionText()));
+		questionOptionDetail.setWidget(row, 2,
+				ViewUtil.initLabel(TEXT_CONSTANTS.optionText()));
 		questionOptionDetail.setWidget(row, 3, optionText);
 		questionOptionDetail.setWidget(row, 4, optionId);
 		questionOptionDetail.setWidget(row, 5, deleteOptionButton);
@@ -907,7 +936,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix() + " "
+						+ caught.getLocalizedMessage());
 			}
 
 			@Override
@@ -1065,7 +1095,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix() + " "
+						+ caught.getLocalizedMessage());
 
 			}
 
@@ -1096,14 +1127,17 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		}
 
 		surveyGroupId.setVisible(false);
-		Button saveSurveyGroupButton = new Button(TEXT_CONSTANTS.saveSurveyGroup());
-		Button deleteSurveyGroupButton = new Button(TEXT_CONSTANTS.deleteSurveyGroup());
+		Button saveSurveyGroupButton = new Button(
+				TEXT_CONSTANTS.saveSurveyGroup());
+		Button deleteSurveyGroupButton = new Button(
+				TEXT_CONSTANTS.deleteSurveyGroup());
 
 		surveyGroupDetail.setWidget(0, 1, surveyGroupId);
-		surveyGroupDetail.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.code()));
+		surveyGroupDetail.setWidget(1, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.code()));
 		surveyGroupDetail.setWidget(1, 1, surveyGroupCode);
-		surveyGroupDetail
-				.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.description()));
+		surveyGroupDetail.setWidget(2, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.description()));
 		surveyGroupDetail.setWidget(2, 1, surveyGroupDesc);
 		surveyGroupDetail.setWidget(3, 0, saveSurveyGroupButton);
 		surveyGroupDetail.setWidget(3, 1, deleteSurveyGroupButton);
@@ -1114,8 +1148,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				if (validateSurveyGroup())
 					saveSurveyGroup();
 				else
-					Window
-							.alert(TEXT_CONSTANTS.cannotSaveSurveyGroup());
+					Window.alert(TEXT_CONSTANTS.cannotSaveSurveyGroup());
 			}
 
 		});
@@ -1163,7 +1196,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		Button exportSummaryButton = new Button(TEXT_CONSTANTS.exportSummary());
 		Button exportRawDataButton = new Button(TEXT_CONSTANTS.exportRawData());
 		Button exportFormButton = new Button(TEXT_CONSTANTS.exportSurveyForm());
-		Button remapSurveyFormButton = new Button(TEXT_CONSTANTS.remapToAccessPoint());
+		Button remapSurveyFormButton = new Button(
+				TEXT_CONSTANTS.remapToAccessPoint());
 		Button importRawDataButton = new Button(TEXT_CONSTANTS.importRawData());
 		Button genKMLButton = new Button(TEXT_CONSTANTS.generateKml());
 
@@ -1199,23 +1233,21 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		removeAllWidgetsLoadThisWidget(surveyDetail);
 
 		remapSurveyFormButton.addClickHandler(new ClickHandler() {
-
-			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(ClickEvent event) {
 				Long surveyId = new Long(((TextBox) surveyDetail
 						.getWidget(0, 0)).getText());
-				svc.rerunAPMappings(surveyId, new AsyncCallback() {
+				svc.rerunAPMappings(surveyId, new AsyncCallback<Void>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert(TEXT_CONSTANTS.couldNotProcessRemap()+" "+caught.getLocalizedMessage());
+						Window.alert(TEXT_CONSTANTS.couldNotProcessRemap()
+								+ " " + caught.getLocalizedMessage());
 					}
 
 					@Override
-					public void onSuccess(Object result) {
-						Window
-								.alert(TEXT_CONSTANTS.remapSubmitted());
+					public void onSuccess(Void result) {
+						Window.alert(TEXT_CONSTANTS.remapSubmitted());
 					}
 
 				});
@@ -1239,12 +1271,10 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					if (validateSurvey()) {
 						saveSurvey();
 					} else {
-						Window
-								.alert(TEXT_CONSTANTS.cannotSaveSurvey());
+						Window.alert(TEXT_CONSTANTS.cannotSaveSurvey());
 					}
 				} catch (Exception e) {
-					Window
-							.alert(TEXT_CONSTANTS.noSurveyGroupSelected());					
+					Window.alert(TEXT_CONSTANTS.noSurveyGroupSelected());
 				}
 			}
 
@@ -1412,11 +1442,14 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 		questionGroupDetail.setWidget(0, 0, questionGroupId);
 
-		questionGroupDetail.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.name()));
+		questionGroupDetail.setWidget(1, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.name()));
 		questionGroupDetail.setWidget(1, 1, name);
-		questionGroupDetail.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.description()));
+		questionGroupDetail.setWidget(2, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.description()));
 		questionGroupDetail.setWidget(2, 1, description);
-		questionGroupDetail.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.order()));
+		questionGroupDetail.setWidget(3, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.order()));
 		questionGroupDetail.setWidget(3, 1, order);
 		questionGroupDetail.setWidget(4, 0, saveQuestionGroupButton);
 		questionGroupDetail.setWidget(4, 1, deleteQuestionGroupButton);
@@ -1429,11 +1462,9 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					if (validateQuestionGroup())
 						saveQuestionGroup();
 					else
-						Window
-								.alert(TEXT_CONSTANTS.cannotSaveQuestionGroup());
+						Window.alert(TEXT_CONSTANTS.cannotSaveQuestionGroup());
 				} catch (Exception ex) {
-					Window
-							.alert(TEXT_CONSTANTS.noParentSurvey());
+					Window.alert(TEXT_CONSTANTS.noParentSurvey());
 				}
 			}
 
@@ -1450,8 +1481,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (Window
-						.confirm(TEXT_CONSTANTS.deleteQuestionGroupWarning())) {
+				if (Window.confirm(TEXT_CONSTANTS.deleteQuestionGroupWarning())) {
 					final TreeItem selectedItem = surveyTree
 							.getCurrentlySelectedItem();
 					QuestionGroupDto dto = getQuestionGroupDto();
@@ -1462,7 +1492,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 									@Override
 									public void onFailure(Throwable caught) {
 										MessageDialog errDia = new MessageDialog(
-												TEXT_CONSTANTS.error(), TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+												TEXT_CONSTANTS.error(),
+												TEXT_CONSTANTS
+														.errorTracePrefix()
+														+ " "
+														+ caught.getLocalizedMessage());
 										errDia.showCentered();
 									}
 
@@ -1543,7 +1577,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+						Window.alert(TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 					}
 
 					@Override
@@ -1590,7 +1625,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix() + " "
+						+ caught.getLocalizedMessage());
 			}
 
 			@Override
@@ -1675,7 +1711,8 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+				Window.alert(TEXT_CONSTANTS.errorTracePrefix() + " "
+						+ caught.getLocalizedMessage());
 
 			}
 

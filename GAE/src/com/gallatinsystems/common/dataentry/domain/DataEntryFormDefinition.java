@@ -10,9 +10,6 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DataEntryFormDefinition extends BaseDomain implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4788217560598651899L;
 	private String name = null;
 

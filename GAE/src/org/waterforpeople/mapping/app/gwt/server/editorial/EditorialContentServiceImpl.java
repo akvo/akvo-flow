@@ -30,6 +30,9 @@ public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 		editorialDao = new EditorialPageDao();
 	}
 
+	/**
+	 * lists all the EditorialPageContent itms for a given page
+	 */
 	@Override
 	public List<EditorialPageContentDto> listContentByPage(Long pageId) {
 		List<EditorialPageContent> content = editorialDao
@@ -46,6 +49,9 @@ public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 		return dtoList;
 	}
 
+	/**
+	 * paginated list of all editorial pages
+	 */
 	@Override
 	public List<EditorialPageDto> listEditorialPage(String cursor) {
 		List<EditorialPage> pages = editorialDao.list(cursor);
@@ -63,7 +69,7 @@ public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public EditorialPageDto saveEditorialPage(EditorialPageDto content) {
-		// TODO Auto-generated method stub
+		// TODO implement saveEditorialPage
 		return null;
 	}
 

@@ -52,7 +52,7 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 	 * in the list, it updates the action on the request with the next value and
 	 * puts the request back on the queue.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected RestResponse handleRequest(RestRequest request) throws Exception {
 		RestResponse response = new RestResponse();

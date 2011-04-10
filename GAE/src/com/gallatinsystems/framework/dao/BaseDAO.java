@@ -394,7 +394,7 @@ public class BaseDAO<T extends BaseDomain> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static String getCursor(List results) {
 		if (results != null && results.size() > 0) {
 			Cursor cursor = JDOCursorHelper.getCursor(results);

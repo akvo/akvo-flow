@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.DisplayTemplateManagerService;
 import org.waterforpeople.mapping.app.gwt.client.displaytemplate.MapBalloonDefinitionDto;
-import org.waterforpeople.mapping.dao.DisplayTemplateMappingDAO;
 import org.waterforpeople.mapping.helper.SpreadsheetMappingAttributeHelper;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -12,11 +11,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class DisplayTemplateMappingServiceImpl extends RemoteServiceServlet
 		implements DisplayTemplateManagerService {
 
-	DisplayTemplateMappingDAO dao = new DisplayTemplateMappingDAO();
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4261694426321368183L;
 
 	@Override

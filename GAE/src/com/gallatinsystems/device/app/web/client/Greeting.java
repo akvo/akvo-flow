@@ -39,7 +39,7 @@ public class Greeting implements EntryPoint {
 	/**
 	 * Entry point classes define <code>onModuleLoad()</code>.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked","rawtypes"})
 	public void onModuleLoad() {
 
 		final GreetingServiceAsync svc = (GreetingServiceAsync) GWT

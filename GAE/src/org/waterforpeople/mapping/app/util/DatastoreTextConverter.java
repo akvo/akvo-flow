@@ -10,7 +10,7 @@ import com.google.appengine.api.datastore.Text;
  * @author Christopher Fagiani
  * 
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class DatastoreTextConverter extends AbstractConverter {
 
 	@Override

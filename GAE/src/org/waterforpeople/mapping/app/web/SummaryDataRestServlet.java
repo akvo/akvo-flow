@@ -46,6 +46,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	private AccessPointMetricSummaryDao apMetricSummaryDao;
 	private static String imageRoot;
 
+	@SuppressWarnings("rawtypes")
 	public SummaryDataRestServlet() {
 		setMode(JSON_MODE);
 		apMetricSummaryDao = new AccessPointMetricSummaryDao();

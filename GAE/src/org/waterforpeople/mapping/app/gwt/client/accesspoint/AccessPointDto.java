@@ -3,7 +3,6 @@ package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 import java.util.Date;
 import java.util.List;
 
-import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class AccessPointDto extends BaseDto {

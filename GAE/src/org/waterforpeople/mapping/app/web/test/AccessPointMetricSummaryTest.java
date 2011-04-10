@@ -5,7 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.analytics.AccessPointMetricSummarizer;
-import org.waterforpeople.mapping.analytics.CommunityLocationSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.dao.AccessPointDao;

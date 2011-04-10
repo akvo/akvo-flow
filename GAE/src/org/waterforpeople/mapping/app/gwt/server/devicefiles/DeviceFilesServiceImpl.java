@@ -30,7 +30,7 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public String reprocessDeviceFile(String uri) {
-		final String DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil()
+		final String DEVICE_FILE_PATH = com.gallatinsystems.common.util.PropertyUtil
 				.getProperty("deviceZipPath");
 		String reprocessingMessage = null;
 		Queue queue = QueueFactory.getDefaultQueue();

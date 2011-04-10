@@ -1,18 +1,9 @@
 package org.waterforpeople.mapping.analytics;
 
-import java.util.Date;
-
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.waterforpeople.mapping.app.web.KMLGenerator;
-import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
-import com.gallatinsystems.gis.map.domain.MapFragment;
-import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
-import com.google.appengine.api.datastore.Text;
 
 public class MapSummarizer implements DataSummarizer {
 	private static Logger log = Logger.getLogger(AbstractRestApiServlet.class

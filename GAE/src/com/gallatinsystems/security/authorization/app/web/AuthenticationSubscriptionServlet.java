@@ -46,10 +46,9 @@ public class AuthenticationSubscriptionServlet extends HttpServlet {
 	public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 
 	private void getToken(HttpServletResponse resp) {
-		PropertyUtil propUtil = new PropertyUtil();
-		String nextUrl = propUtil.getProperty(FORWARD_URL_PROP);
+		String nextUrl = PropertyUtil.getProperty(FORWARD_URL_PROP);
 
-		String scope = propUtil.getProperty(GOOGLE_REQUEST_SCOPE);
+		String scope = PropertyUtil.getProperty(GOOGLE_REQUEST_SCOPE);
 
 		boolean secure = false; // set secure=true to request secure AuthSub
 		// tokens

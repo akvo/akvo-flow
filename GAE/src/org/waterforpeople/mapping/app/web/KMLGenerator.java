@@ -78,7 +78,7 @@ public class KMLGenerator {
 		}
 	}
 
-	public static final String defaultPhotoCaption = new PropertyUtil()
+	public static final String defaultPhotoCaption =  PropertyUtil
 			.getProperty("defaultPhotoCaption");
 
 	public String generateRegionDocumentString(String regionVMName) {

@@ -357,8 +357,6 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 								+ fileName);
 
 				Image i = ((Image) accessPointDetail.getWidget(11, 1));
-				i.setHeight("200px");
-
 				if (i == null) {
 					Image photo = new Image();
 					photo
@@ -367,6 +365,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					photo.setHeight("200px");
 					accessPointDetail.setWidget(11, 1, photo);
 				} else {
+					i.setHeight("200px");
 					i.setUrl("http://waterforpeople.s3.amazonaws.com/images/"
 							+ fileName);
 				}

@@ -55,9 +55,9 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private TreeMap<String, String> recepientList = null;
 
 	public TaskServlet() {
-		DEVICE_FILE_PATH = new com.gallatinsystems.common.util.PropertyUtil()
+		DEVICE_FILE_PATH = com.gallatinsystems.common.util.PropertyUtil
 				.getProperty("deviceZipPath");
-		FROM_ADDRESS = new com.gallatinsystems.common.util.PropertyUtil()
+		FROM_ADDRESS = com.gallatinsystems.common.util.PropertyUtil
 				.getProperty(EMAIL_FROM_ADDRESS_KEY);
 		aph = new AccessPointHelper();
 		siDao = new SurveyInstanceDAO();
@@ -144,8 +144,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 					Long userID = 1L;
 					dfDao.save(deviceFile);
 					SurveyInstance inst = siDao.save(collectionDate,
-							deviceFile, userID, unparsedLines.subList(offset,
-									lineNum));
+							deviceFile, userID,
+							unparsedLines.subList(offset, lineNum));
 					if (inst != null) {
 						surveyInstances.add(inst);
 						// TODO: HACK because we were saving so many duplicate
@@ -178,8 +178,9 @@ public class TaskServlet extends AbstractRestApiServlet {
 						// if we haven't processed everything yet, invoke a
 						// new service
 						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task").param("action",
-								"processFile").param("fileName", fileName)
+						queue.add(url("/app_worker/task")
+								.param("action", "processFile")
+								.param("fileName", fileName)
 								.param("offset", lineNum + ""));
 					}
 				}
@@ -197,10 +198,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 			zis.close();
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
-			MailUtil
-					.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-							"Device File Processing Error: " + fileName, e
-									.getMessage());
+			MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
+					"Device File Processing Error: " + fileName, e.getMessage());
 		}
 
 		return surveyInstances;
@@ -322,12 +321,12 @@ public class TaskServlet extends AbstractRestApiServlet {
 	 * 
 	 * @param req
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private void ingestFile(TaskRequest req) {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
-			ArrayList<SurveyInstance> surveyInstances = processFile(req
-					.getFileName(), req.getPhoneNumber(), req.getChecksum(),
+			ArrayList<SurveyInstance> surveyInstances = processFile(
+					req.getFileName(), req.getPhoneNumber(), req.getChecksum(),
 					req.getOffset());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			for (SurveyInstance instance : surveyInstances) {

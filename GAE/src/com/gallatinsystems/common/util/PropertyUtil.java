@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Properties;
 
 /**
+ * Singleton for accessing system properties.
+ * 
  * @author Dru Borden
  *
  */
@@ -12,7 +14,7 @@ public class PropertyUtil {
 
 	private static Properties props = null;
 
-	public PropertyUtil() {
+	private PropertyUtil() {
 		initProperty();
 	}
 	

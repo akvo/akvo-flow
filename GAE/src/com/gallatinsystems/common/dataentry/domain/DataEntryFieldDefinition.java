@@ -7,9 +7,6 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 public class DataEntryFieldDefinition extends BaseDomain implements
 		Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4074880336364905854L;
 
 	public enum DISPLAY_FIELD_TYPE {

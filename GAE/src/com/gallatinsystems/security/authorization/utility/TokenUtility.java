@@ -7,8 +7,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.waterforpeople.mapping.app.web.ProcessorServlet;
-
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.google.gdata.client.http.AuthSubUtil;
 import com.google.gdata.util.AuthenticationException;

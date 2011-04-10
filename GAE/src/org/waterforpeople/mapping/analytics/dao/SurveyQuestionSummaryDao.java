@@ -30,7 +30,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 	 * 
 	 * @param answer
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static synchronized void incrementCount(QuestionAnswerStore answer,
 			int unit) {
 		PersistenceManager pm = PersistenceFilter.getManager();

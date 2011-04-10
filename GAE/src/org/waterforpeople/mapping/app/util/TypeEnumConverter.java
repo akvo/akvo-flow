@@ -20,7 +20,7 @@ import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
  * @author Christopher Fagiani
  * 
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class TypeEnumConverter extends AbstractConverter {
 
 	@Override

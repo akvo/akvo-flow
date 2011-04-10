@@ -228,13 +228,12 @@ public class MappingAttributeManager extends Portlet {
 		colMapTable.removeAllRows();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void retrieveSpreadsheetCols() {
 		svc.listSpreadsheetColumns(spreadSheetTextBox.getText().trim(),
-				new AsyncCallback() {
+				new AsyncCallback<ArrayList<String>>() {
 
 					@Override
-					public void onSuccess(Object result) {
+					public void onSuccess(ArrayList<String> result) {
 						spreadsheetCols = (ArrayList<String>) result;
 						loadColumnsAndAttributes((ArrayList<String>) result,
 								null);

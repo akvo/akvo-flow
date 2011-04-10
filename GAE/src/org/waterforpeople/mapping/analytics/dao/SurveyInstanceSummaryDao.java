@@ -34,7 +34,7 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 	 * 
 	 * @param answer
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static synchronized void incrementCount(String community,
 			String country, Date collectionDate) {
 		PersistenceManager pm = PersistenceFilter.getManager();

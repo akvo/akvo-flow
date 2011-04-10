@@ -42,7 +42,7 @@ public abstract class NotificationProcessor extends AbstractRestApiServlet {
 	 * looks up the appropriate notification handler in the type map (using the
 	 * Type passed in on the request) and invokes it
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected RestResponse handleRequest(RestRequest request) throws Exception {
 		RestResponse response = new RestResponse();

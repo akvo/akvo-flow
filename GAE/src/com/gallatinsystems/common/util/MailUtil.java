@@ -18,6 +18,13 @@ import javax.mail.internet.MimeMessage;
 import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailServiceFactory;
 
+/**
+ * utility class for using the Google email service to send system-generated
+ * emails
+ * 
+ * 
+ * 
+ */
 public class MailUtil {
 	private static final String RECIPIENT_LIST_STRING = "recipientListString";
 	private static final Logger log = Logger
@@ -75,6 +82,12 @@ public class MailUtil {
 		}
 	}
 
+	/**
+	 * loads the recipient list configured in the application properties
+	 * (appengine-web.xml)
+	 * 
+	 * @return
+	 */
 	public static TreeMap<String, String> loadRecipientList() {
 		TreeMap<String, String> recipientList = new TreeMap<String, String>();
 		String recipientListString = com.gallatinsystems.common.util.PropertyUtil

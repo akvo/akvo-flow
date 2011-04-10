@@ -2,17 +2,10 @@ package org.waterforpeople.mapping.app.gwt.client.devicefiles;
 
 import java.util.Date;
 
-import javax.jdo.annotations.Persistent;
-
-import org.waterforpeople.mapping.domain.Status;
-
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class DeviceFilesDto extends BaseDto {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6922312748824010890L;
 	private String URI = null;
 	private Date uploadDateTime = null;

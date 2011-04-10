@@ -38,7 +38,7 @@ public class AccessPointStatusSummaryDao extends
 	 * 
 	 * @param answer
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static synchronized void incrementCount(AccessPoint ap, Country c,
 			int unit) {
 		PersistenceManager pm = PersistenceFilter.getManager();
