@@ -209,8 +209,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 		if (currentQuestion.getType() != null) {
 			for (int i = 0; i < questionTypeSelector.getItemCount(); i++) {
-				if (currentQuestion.getType().toString().equals(
-						questionTypeSelector.getValue(i))) {
+				if (currentQuestion.getType().toString()
+						.equals(questionTypeSelector.getValue(i))) {
 					questionTypeSelector.setSelectedIndex(i);
 					break;
 				}
@@ -244,8 +244,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 						@Override
 						public void onFailure(Throwable caught) {
-							showContent(optionPanel, new Label(TEXT_CONSTANTS
-									.error()));
+							showContent(optionPanel,
+									new Label(TEXT_CONSTANTS.error()));
 						}
 
 						@Override
@@ -321,8 +321,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					}
 					if (increment != 0) {
 						QuestionOptionDto targetOpt = optList.get(cell
-								.getRowIndex()
-								+ increment);
+								.getRowIndex() + increment);
 						QuestionOptionDto movingOpt = optList.get(cell
 								.getRowIndex());
 						optList.set(cell.getRowIndex() + increment, movingOpt);
@@ -397,18 +396,18 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	/**
 	 * loads the list of possible values for the dependent question list box. If
-	 * this has already been loade,d it may be returend from cache.
+	 * this has already been loaded it may be returend from cache.
 	 */
 	private void loadDependencyList() {
 		dependencyPanel.setVisible(true);
 		if (optionQuestions != null
 				&& optionQuestions.get(currentQuestion.getSurveyId()) != null) {
-			populateDependencySelection(currentQuestion, optionQuestions
-					.get(currentQuestion.getSurveyId()));
+			populateDependencySelection(currentQuestion,
+					optionQuestions.get(currentQuestion.getSurveyId()));
 		} else {
 			showLoading(dependencyPanel, TEXT_CONSTANTS.loading());
-			surveyService.listSurveyQuestionByType(currentQuestion
-					.getSurveyId(), QuestionType.OPTION,
+			surveyService.listSurveyQuestionByType(
+					currentQuestion.getSurveyId(), QuestionType.OPTION,
 					new AsyncCallback<QuestionDto[]>() {
 
 						@Override
@@ -422,11 +421,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 							if (result != null) {
 								List<QuestionDto> questionList = Arrays
 										.asList(result);
-								optionQuestions.put(currentQuestion
-										.getSurveyId(), questionList);
+								optionQuestions.put(
+										currentQuestion.getSurveyId(),
+										questionList);
 								getContextBundle(true)
-										.put(
-												BundleConstants.OPTION_QUESTION_LIST_KEY,
+										.put(BundleConstants.OPTION_QUESTION_LIST_KEY,
 												optionQuestions);
 
 								populateDependencySelection(currentQuestion,
@@ -513,8 +512,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 										questionList
 												.get(idx)
 												.setOptionContainerDto(
-														result
-																.getOptionContainerDto());
+														result.getOptionContainerDto());
 									}
 								}
 								if (result.getOptionContainerDto() != null) {
@@ -555,8 +553,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						options.get(i).getText());
 				if (currentQuestion != null
 						&& currentQuestion.getQuestionDependency() != null
-						&& options.get(i).getText().equals(
-								currentQuestion.getQuestionDependency()
+						&& options
+								.get(i)
+								.getText()
+								.equals(currentQuestion.getQuestionDependency()
 										.getAnswerValue())) {
 					dependentAnswerSelector.setSelectedIndex(i + 1);
 				}
@@ -592,37 +592,61 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	public void persistContext(final CompletionListener listener) {
 		List<String> validationErrors = updateCurrentQuestion();
 		if (validationErrors == null || validationErrors.size() == 0) {
-			surveyService.saveQuestion(currentQuestion, currentQuestion
-					.getQuestionGroupId(), new AsyncCallback<QuestionDto>() {
+			surveyService.saveQuestion(currentQuestion,
+					currentQuestion.getQuestionGroupId(),
+					new AsyncCallback<QuestionDto>() {
 
-				@Override
-				public void onSuccess(QuestionDto result) {
-					currentQuestion = result;
-					questionGroup.addQuestion(currentQuestion, currentQuestion
-							.getOrder());
-					if (listener != null) {
-						listener
-								.operationComplete(true, getContextBundle(true));
-					}
-				}
+						@Override
+						public void onSuccess(QuestionDto result) {
+							currentQuestion = result;
+							questionGroup.addQuestion(currentQuestion,
+									currentQuestion.getOrder());
+							if (currentQuestion.getType() == QuestionDto.QuestionType.OPTION
+									&& optionQuestions != null) {
+								if (optionQuestions.containsKey(currentQuestion
+										.getSurveyId())) {
+									boolean found = false;
+									for (QuestionDto q : optionQuestions
+											.get(currentQuestion.getSurveyId())) {
+										if (q.getKeyId().equals(
+												currentQuestion.getKeyId())) {
+											found = true;
+										}
+									}
+									if (!found) {
+										optionQuestions.get(
+												currentQuestion.getSurveyId())
+												.add(currentQuestion);
+									}
+								}else {
+									List<QuestionDto> qList = new ArrayList<QuestionDto>();
+									qList.add(currentQuestion);
+									optionQuestions.put(currentQuestion.getSurveyId(), qList);
+								}
+							}
+							if (listener != null) {
+								listener.operationComplete(true,
+										getContextBundle(true));
+							}
+						}
 
-				@Override
-				public void onFailure(Throwable caught) {
-					if (listener != null) {
-						listener.operationComplete(false,
-								getContextBundle(true));
-					}
-				}
-			});
+						@Override
+						public void onFailure(Throwable caught) {
+							if (listener != null) {
+								listener.operationComplete(false,
+										getContextBundle(true));
+							}
+						}
+					});
 		} else {
 			StringBuilder builder = new StringBuilder("<br><ul>");
 			for (String err : validationErrors) {
 				builder.append("<li>").append(err).append("</li>");
 			}
 			builder.append("</ul>");
-			MessageDialog errorDialog = new MessageDialog(TEXT_CONSTANTS
-					.inputError(), TEXT_CONSTANTS.pleaseCorrect()
-					+ builder.toString());
+			MessageDialog errorDialog = new MessageDialog(
+					TEXT_CONSTANTS.inputError(), TEXT_CONSTANTS.pleaseCorrect()
+							+ builder.toString());
 			errorDialog.showCentered();
 			listener.operationComplete(false, getContextBundle(true));
 		}
@@ -672,10 +696,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			if (dependentQuestionSelector.getSelectedIndex() == 0) {
 				validationMessages.add(TEXT_CONSTANTS.dependentMandatory());
 			} else {
-				depDto.setQuestionId(Long
-						.parseLong(dependentQuestionSelector
-								.getValue(dependentQuestionSelector
-										.getSelectedIndex())));
+				depDto.setQuestionId(Long.parseLong(dependentQuestionSelector
+						.getValue(dependentQuestionSelector.getSelectedIndex())));
 				if (dependentAnswerSelector.getSelectedIndex() == 0) {
 					validationMessages.add(TEXT_CONSTANTS
 							.dependentResponseMandatory());
@@ -714,8 +736,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 									+ TEXT_CONSTANTS
 											.textMustBeLessThan500Chars());
 						} else {
-							container.getOptionsList().get(i).setText(
-									box.getText().trim());
+							container.getOptionsList().get(i)
+									.setText(box.getText().trim());
 							container.getOptionsList().get(i).setOrder(i + 1);
 						}
 					} else {
