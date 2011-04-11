@@ -314,4 +314,8 @@
 		<property name="approvedFlag" direction="asc" />
 		<property name="collectionDate" direction="desc" />
 	</datastore-index>
+	<datastore-index kind="AccessPointScoreDetail" ancestor="false" source="manual">
+        <property name="accessPointId" direction="asc"/>
+        <property name="computationDate" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>
