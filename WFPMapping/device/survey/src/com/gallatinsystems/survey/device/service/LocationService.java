@@ -91,8 +91,8 @@ public class LocationService extends Service {
 						String provider = locMgr.getBestProvider(
 								locationCriteria, true);
 						if (provider != null) {
-							sendLocation(server, locMgr
-									.getLastKnownLocation(provider));
+							sendLocation(server,
+									locMgr.getLastKnownLocation(provider));
 						}
 					}
 				}
@@ -103,9 +103,8 @@ public class LocationService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
-		Thread
-				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
-						.getInstance());
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+				.getInstance());
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
@@ -132,12 +131,13 @@ public class LocationService extends Service {
 					HttpUtil.httpGet(url);
 				}
 			} else {
-				// if location is null, send an update anyway, just without
-				// lat/lon
-				HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
-						+ URLEncoder.encode(phoneNumber, "UTF-8") + VER
-						+ version);
-
+				if (phoneNumber != null) {
+					// if location is null, send an update anyway, just without
+					// lat/lon
+					HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
+							+ URLEncoder.encode(phoneNumber, "UTF-8") + VER
+							+ version);
+				}
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send location beacon", e);
