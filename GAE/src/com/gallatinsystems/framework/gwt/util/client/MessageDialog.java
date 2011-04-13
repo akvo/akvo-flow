@@ -79,8 +79,8 @@ public class MessageDialog extends DialogBox {
 	public void showCentered() {
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 			public void setPosition(int offsetWidth, int offsetHeight) {
-				int left = ((Window.getClientWidth() - offsetWidth) / 2) >> 0;
-				int top = ((Window.getClientHeight() - offsetHeight) / 2) >> 0;
+				int left = ((Window.getScrollLeft()+Window.getClientWidth() - offsetWidth) / 2) >> 0;
+				int top = ((Window.getScrollTop()+Window.getClientHeight() - offsetHeight) / 2) >> 0;
 				setPopupPosition(left, top);
 			}
 		});
