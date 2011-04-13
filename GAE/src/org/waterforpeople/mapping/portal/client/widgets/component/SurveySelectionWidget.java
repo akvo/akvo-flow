@@ -62,7 +62,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		questionGroups = new HashMap<String, List<QuestionGroupDto>>();
 
 		loadingDialog = new MessageDialog(TEXT_CONSTANTS.loading(),
-				TEXT_CONSTANTS.pleaseWait());
+				TEXT_CONSTANTS.pleaseWait(),true);
 		surveyService = GWT.create(SurveyService.class);
 		surveyGroupListbox = new ListBox();
 		surveyGroupListbox.addChangeHandler(this);
