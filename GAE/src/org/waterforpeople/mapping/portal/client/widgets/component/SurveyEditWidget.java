@@ -102,6 +102,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 				currentDto.setSurveyGroupId(groupDto.getKeyId());
 			}
 			currentDto.setName(nameBox.getText().trim());
+			currentDto.setCode(nameBox.getText().trim());
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
 							.getText().trim()
