@@ -40,6 +40,7 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 	private static final String CHART_TITLE = "chtt=";
 	private static final String CHART_LEGEND = "chdl=";
 	private static final String CHART_LEGEND_OPTS = "chdlp=r";
+	private static final String CHART_LEGEND_VALS = "chl=";
 	// color key: functioning, func with problems, broken, no system
 	private static final String CHART_COLORS = "chco=bed73d%2Cfcba63%2Ce54046%2C231f20";
 	private static final String CHART_DATA = "chd=t%3A";
@@ -96,6 +97,7 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 					.append(CHART_LEGEND_OPTS).append(AMP).append(CHART_COLORS)
 					.append(AMP);
 			StringBuilder labels = new StringBuilder(CHART_LEGEND);
+			StringBuilder labelVals = new StringBuilder(CHART_LEGEND_VALS);
 			StringBuilder data = new StringBuilder(CHART_DATA);
 			// we need to add the data in a specific order (and collapse some
 			// outdated status values) so the chart colors match the legend
@@ -113,19 +115,36 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 					nullSafeAdd(
 							countMap.get(AccessPoint.Status.FUNCTIONING_HIGH
 									.toString()), 0L)).append(COMMA);
+			labelVals.append(
+					nullSafeAdd(
+							countMap.get(AccessPoint.Status.FUNCTIONING_HIGH
+									.toString()), 0L)).append(PIPE);
+			
 			data.append(
 					nullSafeAdd(countMap.get(AccessPoint.Status.FUNCTIONING_OK
 							.toString()), countMap
 							.get(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS
 									.toString()))).append(COMMA);
+			labelVals.append(
+					nullSafeAdd(countMap.get(AccessPoint.Status.FUNCTIONING_OK
+							.toString()), countMap
+							.get(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS
+									.toString()))).append(PIPE);
 			data.append(
 					nullSafeAdd(countMap.get(AccessPoint.Status.BROKEN_DOWN
 							.toString()), 0L)).append(COMMA);
+			labelVals.append(
+					nullSafeAdd(countMap.get(AccessPoint.Status.BROKEN_DOWN
+							.toString()), 0L)).append(PIPE);
+			
 			data.append(nullSafeAdd(countMap
 					.get(AccessPoint.Status.NO_IMPROVED_SYSTEM.toString()),
 					countMap.get(AccessPoint.Status.OTHER.toString())));
+			labelVals.append(nullSafeAdd(countMap
+					.get(AccessPoint.Status.NO_IMPROVED_SYSTEM.toString()),
+					countMap.get(AccessPoint.Status.OTHER.toString())));
 
-			chartUrl.append(labels).append(AMP).append(data);
+			chartUrl.append(labels).append(AMP).append(labelVals).append(AMP).append(data);
 		}
 		return chartUrl.toString();
 	}
