@@ -109,7 +109,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("Attribute Assignment",
 				TEXT_CONSTANTS.attributeAssignment(),
 				AttributeAssignmentWidget.class, new WizardButton(
-						"Device Assignment", TEXT_CONSTANTS
+						"Assignment List", TEXT_CONSTANTS
 								.assignSurveysToDevices()), new WizardButton(
 						"Administration", TEXT_CONSTANTS.backToAdminHome())));
 		wf.addInternalNode(new WizardNode("User Management", null,

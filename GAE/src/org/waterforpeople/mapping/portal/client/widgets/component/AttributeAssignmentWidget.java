@@ -130,7 +130,7 @@ public class AttributeAssignmentWidget extends Composite implements
 
 	@Override
 	public void persistContext(CompletionListener listener) {
-		saveMapping();
+		saveMapping(false, listener);
 	}
 
 	@Override
@@ -214,9 +214,8 @@ public class AttributeAssignmentWidget extends Composite implements
 					AsyncCallback<ArrayList<SurveyDto>> surveyCallback = new AsyncCallback<ArrayList<SurveyDto>>() {
 						public void onFailure(Throwable caught) {
 							MessageDialog errDia = new MessageDialog(
-									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-											.errorTracePrefix()
-											+ " "
+									TEXT_CONSTANTS.error(),
+									TEXT_CONSTANTS.errorTracePrefix() + " "
 											+ caught.getLocalizedMessage());
 							errDia.showCentered();
 						}
@@ -232,8 +231,9 @@ public class AttributeAssignmentWidget extends Composite implements
 							surveyCallback);
 				}
 			} else {
-				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
-						.inputError(), TEXT_CONSTANTS.mustSelectSurveyGroup());
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.inputError(),
+						TEXT_CONSTANTS.mustSelectSurveyGroup());
 				errDia.showCentered();
 			}
 		} else {
@@ -254,9 +254,9 @@ public class AttributeAssignmentWidget extends Composite implements
 			public void onFailure(Throwable caught) {
 				statusLabel.setVisible(false);
 				MessageDialog errDia = new MessageDialog(
-						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-								.errorTracePrefix()
-								+ " " + caught.getLocalizedMessage());
+						TEXT_CONSTANTS.error(),
+						TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -278,9 +278,9 @@ public class AttributeAssignmentWidget extends Composite implements
 			public void onFailure(Throwable caught) {
 				statusLabel.setVisible(false);
 				MessageDialog errDia = new MessageDialog(
-						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-								.errorTracePrefix()
-								+ " " + caught.getLocalizedMessage());
+						TEXT_CONSTANTS.error(),
+						TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -378,9 +378,10 @@ public class AttributeAssignmentWidget extends Composite implements
 			surveyListbox.addItem("", "");
 			int i = 0;
 			for (SurveyDto survey : surveyItems) {
-				surveyListbox.addItem(survey.getName() != null ? survey
-						.getName() : "Survey " + survey.getKeyId().toString(),
-						survey.getKeyId().toString());
+				surveyListbox.addItem(
+						survey.getName() != null ? survey.getName() : "Survey "
+								+ survey.getKeyId().toString(), survey
+								.getKeyId().toString());
 				if (currentSurveySelection != null
 						&& survey.getKeyId().equals(
 								currentSurveySelection.getKeyId())) {
@@ -437,16 +438,15 @@ public class AttributeAssignmentWidget extends Composite implements
 	 * populates a dto using the values currently set in the UI widgets and
 	 * persists it to the server
 	 */
-	private void saveMapping() {
+	private void saveMapping(final boolean isGroupChange,
+			final CompletionListener listener) {
 
 		if (currentSurveySelection != null && currentQuestionList != null) {
 			ArrayList<SurveyAttributeMappingDto> mappingDtoList = new ArrayList<SurveyAttributeMappingDto>();
 
 			for (QuestionDto q : currentQuestionList) {
 				SurveyAttributeMappingDto dto = new SurveyAttributeMappingDto();
-				dto
-						.setQuestionGroupId(currentQuestionGroupSelection
-								.getKeyId());
+				dto.setQuestionGroupId(currentQuestionGroupSelection.getKeyId());
 				dto.setSurveyId(currentSurveySelection.getKeyId());
 				dto.setSurveyQuestionId(q.getKeyId().toString());
 				ListBox attrBox = findListBox(dto, attributeListboxes);
@@ -471,8 +471,8 @@ public class AttributeAssignmentWidget extends Composite implements
 				}
 			}
 
-			mappingService.saveMappings(currentQuestionGroupSelection
-					.getKeyId(), mappingDtoList,
+			mappingService.saveMappings(
+					currentQuestionGroupSelection.getKeyId(), mappingDtoList,
 					new AsyncCallback<ArrayList<SurveyAttributeMappingDto>>() {
 
 						@Override
@@ -480,13 +480,24 @@ public class AttributeAssignmentWidget extends Composite implements
 								ArrayList<SurveyAttributeMappingDto> result) {
 							statusLabel.setText(TEXT_CONSTANTS.saveComplete());
 							statusLabel.setVisible(true);
+							if (isGroupChange) {
+								currentQuestionGroupSelection = currentQuestionGroupDtoList
+										.get(questionGroupListbox
+												.getSelectedIndex() - 1);
+								loadQuestions(currentQuestionGroupSelection
+										.getKeyId());
+							}
+							if (listener != null) {
+								listener.operationComplete(true, getContextBundle(true));
+							}
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
 							statusLabel.setText(TEXT_CONSTANTS
 									.errorTracePrefix()
-									+ " " + caught.getLocalizedMessage());
+									+ " "
+									+ caught.getLocalizedMessage());
 							statusLabel.setVisible(true);
 						}
 					});
@@ -514,9 +525,14 @@ public class AttributeAssignmentWidget extends Composite implements
 					.getSelectedIndex() - 1);
 			loadSurveyQuestionGroups(currentSurveySelection.getKeyId());
 		} else if (event.getSource() == questionGroupListbox) {
-			currentQuestionGroupSelection = currentQuestionGroupDtoList
-					.get(questionGroupListbox.getSelectedIndex() - 1);
-			loadQuestions(currentQuestionGroupSelection.getKeyId());
+			if (currentQuestionGroupSelection != null) {
+				saveMapping(true,null);
+			} else {
+				currentQuestionGroupSelection = currentQuestionGroupDtoList
+						.get(questionGroupListbox.getSelectedIndex() - 1);
+				loadQuestions(currentQuestionGroupSelection.getKeyId());
+			}
+
 		} /*
 		 * else if (event.getSource() == saveButton) { saveMapping(); } else if
 		 * (event.getSource() == resetButton) { reset(); }
