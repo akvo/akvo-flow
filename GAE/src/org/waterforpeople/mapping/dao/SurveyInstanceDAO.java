@@ -84,7 +84,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			if (si.getSurveyId() == null) {
 				try {
-					si.setCollectionDate(collDate);
+					if(collDate != null){
+						si.setCollectionDate(collDate);
+					}
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
 					if (parts.length >= 12) {
 						String uuid = parts[parts.length - 1];
