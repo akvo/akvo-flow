@@ -148,14 +148,12 @@ public class RawDataSpreadsheetImportApplet extends JApplet implements Runnable 
 			boolean isValid = true;
 			if (e.getSource() == cancelButton) {
 				cancelled = true;
+				setVisible(false);
 			} else if (e.getSource() == selectFileButton) {
 				int returnVal = fc.showOpenDialog(InputDialog.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					file = fc.getSelectedFile();
-				} else {
-
-				}
-
+				} 
 			} else if (e.getSource() == okButton) {
 				processFile();
 			}
