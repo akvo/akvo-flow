@@ -1,3 +1,4 @@
+
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
@@ -32,10 +33,11 @@ public class AdminHomeWidget extends MenuBasedWidget {
 	private Button editWebAuthButton;
 	private Button reportButton;
 	private Button importButton;
+	private Button importGISButton;
 	private PageController controller;
 
 	public AdminHomeWidget(PageController controller, UserDto user) {
-		Grid widget = new Grid(9, 2);
+		Grid widget = new Grid(10, 2);
 		this.controller = controller;
 		userMgmtButton = initButton(TEXT_CONSTANTS.manageUsers());
 
@@ -127,7 +129,12 @@ public class AdminHomeWidget extends MenuBasedWidget {
 		widget.setWidget(8, 0, importButton);
 		widget.setWidget(8, 1,
 				createDescription(TEXT_CONSTANTS.importDataDescription()));
-
+		importGISButton = initButton(TEXT_CONSTANTS.importGISData());
+		if (!user.hasPermission(PermissionConstants.IMPORT_DATA)) {
+			importGISButton.setEnabled(false);
+		}
+		widget.setWidget(9,0,importGISButton);
+		widget.setWidget(9,1,createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
 		initWidget(widget);
 	}
 
@@ -151,6 +158,8 @@ public class AdminHomeWidget extends MenuBasedWidget {
 			controller.openPage(RunReportWidget.class, null);
 		} else if (event.getSource() == importButton) {
 			controller.openPage(DataImportWidget.class, null);
+		}else if(event.getSource()==importGISButton){
+			controller.openPage(GISImportWidget.class, null);
 		}
 	}
 

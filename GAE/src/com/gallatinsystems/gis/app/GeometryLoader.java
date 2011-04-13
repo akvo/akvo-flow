@@ -12,6 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.JApplet;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
 import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
@@ -30,7 +38,21 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 
-public class GeometryLoader {
+public class GeometryLoader extends JApplet implements Runnable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private JLabel statusLabel;
+	private String serverBase;
+	private JComboBox coordianteTypeBC = null;
+	private JComboBox utmZoneChooser = null;
+	private JComboBox countryChoice = null;
+	private JTextField centralMeridian = null;
+	private JPanel panel = null;
+	
+
 	private TreeMap<String, String> attributeIdentifierMapping = new TreeMap<String, String>();
 	private static final String GEOMETRY_STRING_PARAM = "geometryString";
 	private static final String RECIPROCAL_OF_FLATTENING_PARAM = "reciprocalOfFlattening";
@@ -55,6 +77,71 @@ public class GeometryLoader {
 	private static final String SUBDIVISION_4_PARAM = "sub4";
 	private static final String SUBDIVISION_5_PARAM = "sub5";
 	private static final String SUBDIVISION_6_PARAM = "sub6";
+	
+	private void configureComponents(){
+		coordianteTypeBC.addItem("Lat/Lng");
+		coordianteTypeBC.addItem("UTM");
+		for(int i=1;i<60;i++){
+			utmZoneChooser.addItem(i);
+		}
+	}
+
+	@Override
+	public void run() {
+
+		try {
+			SwingUtilities.invokeLater(new StatusUpdater("Prompting for File"));
+			panel.add(new JLabel("Coordinate Type"));
+			panel.add(coordianteTypeBC);
+			getContentPane().add(panel);
+			panel.setVisible(true);
+			String filePath = promptForFile();
+			if (filePath != null) {
+				System.out.println(filePath);
+				SwingUtilities.invokeLater(new StatusUpdater("Running export"));
+				executeImport(filePath);
+				SwingUtilities
+						.invokeLater(new StatusUpdater("Export Complete"));
+			} else {
+				SwingUtilities.invokeLater(new StatusUpdater("Cancelled"));
+			}
+		} catch (Exception e) {
+			SwingUtilities
+					.invokeLater(new StatusUpdater("Backout Failed: " + e));
+		}
+	}
+
+	private void executeImport(String filePath) {
+
+	}
+
+	private String promptForFile() {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showSaveDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			return fc.getSelectedFile().getAbsolutePath();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Private class to handle updating of the UI thread from our worker thread
+	 */
+	private class StatusUpdater implements Runnable {
+
+		private String status;
+
+		public StatusUpdater(String val) {
+			status = val;
+		}
+
+		public void run() {
+			statusLabel.setText(status);
+		}
+	}
+
+	ClassLoader cl = null;
 
 	public enum CoordinateType {
 		LATLONG, UTM
