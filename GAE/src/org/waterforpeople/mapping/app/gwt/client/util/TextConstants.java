@@ -81,6 +81,10 @@ public interface TextConstants extends Constants{
 	public String spanish();
 	public String text();
 	public String selectSurvey();
+	public String selectCoordinateSystem();
+	public String selectUtmZone();
+	public String selectCountry();
+	public String setCentralMeridian();
 	public String ok();
 	public String selectSurveyFirst();
 	public String expires();
@@ -480,6 +484,8 @@ public interface TextConstants extends Constants{
 	public String authFailed();
 	public String thankYou();
 	public String thankYouMessage();
-	public String textMustBeLessThan500Chars();	
+	public String textMustBeLessThan500Chars();
+	public String importGISData();	
+	public String importGISDataDescriptions();
 	public String accessPointManager();
 }
