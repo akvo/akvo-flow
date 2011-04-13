@@ -59,6 +59,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto> {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	
+	public static final String NAME = TEXT_CONSTANTS.accessPointManager();
 
 	private static final String DEFAULT_SORT_FIELD = "key";
 	private static final Integer PAGE_SIZE = 20;
