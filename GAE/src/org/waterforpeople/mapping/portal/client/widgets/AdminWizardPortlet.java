@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWi
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupListWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionListWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.RerunMappingWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.RunReportWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentListWidget;
@@ -160,8 +161,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				.importData(), DataImportWidget.class, null, new WizardButton(
 				"Administration", TEXT_CONSTANTS.backToAdminHome())));
 		wf.addInternalNode(new WizardNode("Import GIS Data", TEXT_CONSTANTS
-				.importGISData(), GISImportWidget.class, null, new WizardButton(
-				"Administration", TEXT_CONSTANTS.backToAdminHome())));
+				.importGISData(), GISImportWidget.class, null,
+				new WizardButton("Administration", TEXT_CONSTANTS
+						.backToAdminHome())));
+		wf.addInternalNode(new WizardNode("Rerun AP Mapping", null,
+				RerunMappingWidget.class, null, new WizardButton(
+						"Administration", TEXT_CONSTANTS.backToAdminHome())));
 		return wf;
 	}
 
@@ -218,8 +223,10 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new RunReportWidget();
 		} else if (node.getWidgetClass().equals(DataImportWidget.class)) {
 			return new DataImportWidget();
-		}else if (node.getWidgetClass().equals(GISImportWidget.class)){
+		} else if (node.getWidgetClass().equals(GISImportWidget.class)) {
 			return new GISImportWidget();
+		} else if (node.getWidgetClass().equals(RerunMappingWidget.class)) {
+			return new RerunMappingWidget();
 		}
 
 		return null;

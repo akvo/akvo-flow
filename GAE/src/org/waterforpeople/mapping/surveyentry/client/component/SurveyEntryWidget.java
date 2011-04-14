@@ -58,10 +58,12 @@ public class SurveyEntryWidget extends Composite implements
 	private Map<String, QuestionAnswerStoreDto> existingAnswers;
 	private Long existingInstanceId;
 	private CompletionListener listener;
+	private String submitter;
 
 	public SurveyEntryWidget(String surveyId,
-			List<QuestionAnswerStoreDto> answers) {
+			List<QuestionAnswerStoreDto> answers, String submitter) {
 		this.surveyId = surveyId;
+		this.submitter = submitter;
 		existingAnswers = new HashMap<String, QuestionAnswerStoreDto>();
 		if (answers != null) {
 			for (QuestionAnswerStoreDto a : answers) {
@@ -81,8 +83,8 @@ public class SurveyEntryWidget extends Composite implements
 		initWidget(containerPanel);
 	}
 
-	public SurveyEntryWidget(String surveyId) {
-		this(surveyId, null);
+	public SurveyEntryWidget(String surveyId, String submitter) {
+		this(surveyId, null,submitter);
 	}
 
 	public void initialize() {
@@ -233,7 +235,9 @@ public class SurveyEntryWidget extends Composite implements
 					instance.setSurveyId(new Long(surveyId));
 					instance.setCollectionDate(new Date());
 					instance.setDeviceIdentifier("WEB FORM");
+					instance.setSubmitterName(submitter);
 					instance.setQuestionAnswersStore(answers);
+					
 					if (existingAnswers.size() == 0) {
 						surveyInstanceService.submitSurveyInstance(instance,
 								new AsyncCallback<SurveyInstanceDto>() {

@@ -29,6 +29,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
@@ -53,14 +54,15 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		DataTableListener<SurveyInstanceDto> {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
-	
+
 	public static final String NAME = TEXT_CONSTANTS.rawDataViewPortletName();
 	private static final String EDITED_ROW_CSS = "gridCell-edited";
 
 	private static Integer width = 1024;
 	private static Integer height = 768;
 	private static final DataTableHeader TABLE_HEADERS[] = {
-			new DataTableHeader(TEXT_CONSTANTS.submission()), new DataTableHeader(TEXT_CONSTANTS.survey()),
+			new DataTableHeader(TEXT_CONSTANTS.submission()),
+			new DataTableHeader(TEXT_CONSTANTS.survey()),
 			new DataTableHeader(TEXT_CONSTANTS.surveyCode()),
 			new DataTableHeader(TEXT_CONSTANTS.collectionDate()),
 			new DataTableHeader(TEXT_CONSTANTS.approx()) };
@@ -77,14 +79,15 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private HorizontalPanel contentPanel;
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 	private Long selectedInstance;
+	private SurveyInstanceDto selectedInstanceDto;
 	private RadioButton showAllButton;
 	private RadioButton showUnapprovedButton;
 	private DateBox dateFromBox;
 	private DateBox dateToBox;
-	
 
 	public RawDataViewPortlet(UserDto user) {
-		super(TEXT_CONSTANTS.rawDataViewPortletName(), true, false, false, width, height, user, false, null);
+		super(TEXT_CONSTANTS.rawDataViewPortletName(), true, false, false,
+				width, height, user, false, null);
 		svc = GWT.create(SurveyInstanceService.class);
 		loadContentPanel();
 	}
@@ -96,31 +99,34 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private void loadContentPanel() {
 		finderPanel = new VerticalPanel();
 		instanceIdBox = new TextBox();
-		ViewUtil.installFieldRow(finderPanel, TEXT_CONSTANTS.instanceId(), instanceIdBox, ViewUtil.DEFAULT_INPUT_LABEL_CSS);
-		
-	
+		ViewUtil.installFieldRow(finderPanel, TEXT_CONSTANTS.instanceId(),
+				instanceIdBox, ViewUtil.DEFAULT_INPUT_LABEL_CSS);
+
 		Panel tempPanel = new HorizontalPanel();
 		dateFromBox = new DateBox();
-		dateFromBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
+		dateFromBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getFormat(PredefinedFormat.DATE_SHORT)));
+
 		dateToBox = new DateBox();
-		dateToBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
+		dateToBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getFormat(PredefinedFormat.DATE_SHORT)));
 		tempPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.collectionDateFrom()));
 		tempPanel.add(dateFromBox);
 		tempPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.to()));
 		tempPanel.add(dateToBox);
 		finderPanel.add(tempPanel);
 		tempPanel = new HorizontalPanel();
-		showAllButton = new RadioButton("approvedFlag", TEXT_CONSTANTS
-				.showAll());
-		showUnapprovedButton = new RadioButton("approvedFlag", TEXT_CONSTANTS
-				.showUnapproved());
+		showAllButton = new RadioButton("approvedFlag",
+				TEXT_CONSTANTS.showAll());
+		showUnapprovedButton = new RadioButton("approvedFlag",
+				TEXT_CONSTANTS.showUnapproved());
 		showAllButton.setValue(true);
 		tempPanel.add(showAllButton);
 		tempPanel.add(showUnapprovedButton);
 		finderPanel.add(tempPanel);
 		Button findButton = new Button(TEXT_CONSTANTS.find());
 		finderPanel.add(findButton);
-		
+
 		findButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -129,8 +135,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 						&& instanceIdBox.getText().trim().length() > 0) {
 					loadInstanceResponses(new Long(instanceIdBox.getText()
 							.trim()));
-				}else{
-					requestData(null,false);
+				} else {
+					requestData(null, false);
 				}
 			}
 		});
@@ -169,17 +175,17 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		changedAnswers = new HashMap<Long, QuestionAnswerStoreDto>();
 		if (questions != null) {
 			qasDetailGrid.resize(questions.size() + 2, 5);
-			qasDetailGrid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-					.questionId()));
-			qasDetailGrid.setWidget(0, 1, ViewUtil.initLabel(TEXT_CONSTANTS
-					.questionType()));
-			qasDetailGrid.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS
-					.questionText()));
-			qasDetailGrid.setWidget(0, 3, ViewUtil.initLabel(TEXT_CONSTANTS
-					.answerValue()));
-			qasDetailGrid.setWidget(0, 4, ViewUtil.initLabel(TEXT_CONSTANTS
-					.collectionDate()));
-			
+			qasDetailGrid.setWidget(0, 0,
+					ViewUtil.initLabel(TEXT_CONSTANTS.questionId()));
+			qasDetailGrid.setWidget(0, 1,
+					ViewUtil.initLabel(TEXT_CONSTANTS.questionType()));
+			qasDetailGrid.setWidget(0, 2,
+					ViewUtil.initLabel(TEXT_CONSTANTS.questionText()));
+			qasDetailGrid.setWidget(0, 3,
+					ViewUtil.initLabel(TEXT_CONSTANTS.answerValue()));
+			qasDetailGrid.setWidget(0, 4,
+					ViewUtil.initLabel(TEXT_CONSTANTS.collectionDate()));
+
 			Integer iRow = 0;
 			for (QuestionAnswerStoreDto qasDto : questions) {
 				bindQASRow(qasDto, ++iRow);
@@ -192,58 +198,52 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 					if (changedAnswers != null && changedAnswers.size() > 0) {
 						statusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 						statusLabel.setVisible(true);
-						svc
-								.updateQuestions(
-										new ArrayList<QuestionAnswerStoreDto>(
-												changedAnswers.values()),
-										true,
-										new AsyncCallback<List<QuestionAnswerStoreDto>>() {
+						svc.updateQuestions(
+								new ArrayList<QuestionAnswerStoreDto>(
+										changedAnswers.values()),
+								true,
+								new AsyncCallback<List<QuestionAnswerStoreDto>>() {
 
-											@Override
-											public void onFailure(
-													Throwable caught) {
-												MessageDialog errDia = new MessageDialog(
-														TEXT_CONSTANTS.error(),
-														TEXT_CONSTANTS
-																.errorTracePrefix()
-																+ " "
-																+ caught
-																		.getLocalizedMessage());
-												errDia
-														.showRelativeTo(saveButton);
-												statusLabel.setVisible(false);
-											}
+									@Override
+									public void onFailure(Throwable caught) {
+										MessageDialog errDia = new MessageDialog(
+												TEXT_CONSTANTS.error(),
+												TEXT_CONSTANTS
+														.errorTracePrefix()
+														+ " "
+														+ caught.getLocalizedMessage());
+										errDia.showRelativeTo(saveButton);
+										statusLabel.setVisible(false);
+									}
 
-											@Override
-											public void onSuccess(
-													List<QuestionAnswerStoreDto> result) {
-												statusLabel.setVisible(false);
-												if (result != null) {
-													// update the value in the
-													// questionsList so we can
-													// keep the data consistent
-													// if the user presses clear
-													for (QuestionAnswerStoreDto dto : result) {
-														for (int i = 0; i < questions
-																.size(); i++) {
-															if (questions
-																	.get(i)
-																	.getKeyId()
-																	.equals(
-																			dto
-																					.getKeyId())) {
-																questions
-																		.get(i)
-																		.setValue(
-																				dto
-																						.getValue());
-															}
-														}
+									@Override
+									public void onSuccess(
+											List<QuestionAnswerStoreDto> result) {
+										statusLabel.setVisible(false);
+										if (result != null) {
+											// update the value in the
+											// questionsList so we can
+											// keep the data consistent
+											// if the user presses clear
+											for (QuestionAnswerStoreDto dto : result) {
+												for (int i = 0; i < questions
+														.size(); i++) {
+													if (questions
+															.get(i)
+															.getKeyId()
+															.equals(dto
+																	.getKeyId())) {
+														questions
+																.get(i)
+																.setValue(
+																		dto.getValue());
 													}
 												}
-												populateQuestions(questions);
 											}
-										});
+										}
+										populateQuestions(questions);
+									}
+								});
 					}
 				}
 			});
@@ -270,8 +270,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 											TEXT_CONSTANTS.error(),
 											TEXT_CONSTANTS.errorTracePrefix()
 													+ " "
-													+ caught
-															.getLocalizedMessage());
+													+ caught.getLocalizedMessage());
 									errDia.showRelativeTo(qasDetailGrid);
 
 								}
@@ -288,14 +287,19 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 				}
 			});
-			Button viewAsSurveyButton = new Button(TEXT_CONSTANTS
-					.viewAsSurvey());
+			Button viewAsSurveyButton = new Button(
+					TEXT_CONSTANTS.viewAsSurvey());
 			viewAsSurveyButton.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					if (questions != null && questions.size() > 0) {
+						String submitter = null;
+						if (selectedInstanceDto != null) {
+							submitter = selectedInstanceDto.getSubmitterName();
+						}
 						SurveyEntryWidget c = new SurveyEntryWidget(questions
-								.get(0).getSurveyId().toString(), questions);
+								.get(0).getSurveyId().toString(), questions,
+								submitter);
 						WidgetDialog wd = new WidgetDialog(TEXT_CONSTANTS
 								.surveySubmission(), c);
 						wd.showCentered();
@@ -322,8 +326,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 											TEXT_CONSTANTS.error(),
 											TEXT_CONSTANTS.errorTracePrefix()
 													+ " "
-													+ caught
-															.getLocalizedMessage());
+													+ caught.getLocalizedMessage());
 									errDia.showCentered();
 								}
 
@@ -415,8 +418,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			if (qasDto.getType() != null)
 				qType.setText(qasDto.getType());
 			if (qasDto.getCollectionDate() != null)
-				qCollectionDate.setText(DateTimeFormat.getMediumDateFormat()
-						.format(qasDto.getCollectionDate()));
+				qCollectionDate.setText(DateTimeFormat.getFormat(
+						PredefinedFormat.DATE_MEDIUM).format(
+						qasDto.getCollectionDate()));
 			if (qasDto.getQuestionText() != null)
 				qText.setText(qasDto.getQuestionText());
 		}
@@ -425,7 +429,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		qasDetailGrid.setWidget(iRow, 2, qText);
 		qasDetailGrid.setWidget(iRow, 3, qValue);
 		qasDetailGrid.setWidget(iRow, 4, qCollectionDate);
-		
+
 		for (int j = 0; j < qasDetailGrid.getCellCount(iRow); j++) {
 			qasDetailGrid.getCellFormatter().setStyleName(iRow, j, "");
 		}
@@ -462,11 +466,15 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	@Override
 	public void bindRow(Grid grid, SurveyInstanceDto item, int row) {
 		grid.setWidget(row, 0, ViewUtil.initLabel(item.getKeyId().toString()));
-		grid.setWidget(row, 1, ViewUtil
-				.initLabel(item.getSurveyId().toString()));
+		grid.setWidget(row, 1,
+				ViewUtil.initLabel(item.getSurveyId().toString()));
 		grid.setWidget(row, 2, ViewUtil.initLabel(item.getSurveyCode()));
-		grid.setWidget(row, 3, ViewUtil.initLabel(DateTimeFormat
-				.getMediumDateTimeFormat().format(item.getCollectionDate())));
+		grid.setWidget(
+				row,
+				3,
+				ViewUtil.initLabel(DateTimeFormat.getFormat(
+						PredefinedFormat.DATE_MEDIUM).format(
+						item.getCollectionDate())));
 		grid.setWidget(row, 4, ViewUtil.initLabel(item
 				.getApproximateLocationFlag() != null ? item
 				.getApproximateLocationFlag() : "False"));
@@ -480,6 +488,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 
 	@Override
 	public void onItemSelected(SurveyInstanceDto item) {
+		selectedInstanceDto = item;
 		loadInstanceResponses(item.getKeyId());
 	}
 
@@ -493,15 +502,15 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		final boolean isNew = (cursor == null);
 		Date fromDate = dateFromBox.getValue();
 		Date toDate = dateToBox.getValue();
-		
+
 		if (fromDate == null && toDate == null && isNew) {
 			// create a date object that is 90 days earlier than now.
 			// jumping through hoops to avoid deprecated APIs
 			dateForQuery = new Date((new Date()).getTime() - (86400000L * 90L));
 			fromDate = dateForQuery;
 		}
-		svc.listSurveyInstance(fromDate,toDate, showUnapprovedButton.getValue(),
-				cursor,
+		svc.listSurveyInstance(fromDate, toDate,
+				showUnapprovedButton.getValue(), cursor,
 				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
 					@Override
 					public void onFailure(Throwable caught) {

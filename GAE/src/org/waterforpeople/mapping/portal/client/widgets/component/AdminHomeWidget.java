@@ -1,4 +1,3 @@
-
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
@@ -29,6 +28,7 @@ public class AdminHomeWidget extends MenuBasedWidget {
 	private Button assignmentButton;
 	private Button mappingButton;
 	private Button editorialButton;
+	private Button rerunMappingButton;
 	private Button generateBootstrapButton;
 	private Button editWebAuthButton;
 	private Button reportButton;
@@ -37,105 +37,109 @@ public class AdminHomeWidget extends MenuBasedWidget {
 	private PageController controller;
 
 	public AdminHomeWidget(PageController controller, UserDto user) {
-		Grid widget = new Grid(10, 2);
+		Grid widget = new Grid(11, 2);
 		this.controller = controller;
 		userMgmtButton = initButton(TEXT_CONSTANTS.manageUsers());
 
-		widget.setWidget(0, 0, userMgmtButton);
-		widget.setWidget(0, 1, createDescription(TEXT_CONSTANTS
-				.manageUsersDescription()));
+		int count = 0;
+		widget.setWidget(count, 0, userMgmtButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.manageUsersDescription()));
 		if (!user.hasPermission(PermissionConstants.EDIT_USER)) {
 			userMgmtButton.setEnabled(false);
 		}
-
+		count++;
 		surveyMgmtButton = initButton(TEXT_CONSTANTS.manageSurveys());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			surveyMgmtButton.setEnabled(false);
 		}
-		widget.setWidget(1, 0, surveyMgmtButton);
-		widget
-				.setWidget(1, 1,
-						createDescription(TEXT_CONSTANTS.manageSurveysDescription()));
+		widget.setWidget(count, 0, surveyMgmtButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.manageSurveysDescription()));
 		assignmentButton = initButton(TEXT_CONSTANTS.assignSurveys());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			assignmentButton.setEnabled(false);
 		}
-
-		widget.setWidget(2, 0, assignmentButton);
-		widget
-				.setWidget(
-						2,
-						1,
-						createDescription(TEXT_CONSTANTS.assignSurveysDescription()));
+		count++;
+		widget.setWidget(count, 0, assignmentButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.assignSurveysDescription()));
 		mappingButton = initButton(TEXT_CONSTANTS.mapAPAttributes());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			mappingButton.setEnabled(false);
 		}
-		widget.setWidget(3, 0, mappingButton);
-		widget
-				.setWidget(
-						3,
-						1,
-						createDescription(TEXT_CONSTANTS.mapAPAttributesDescription()));
-
+		count++;
+		widget.setWidget(count, 0, mappingButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.mapAPAttributesDescription()));
+		count++;
+		
+		rerunMappingButton = initButton(TEXT_CONSTANTS.remapToAccessPoint());
+		
+		widget.setWidget(count, 0, rerunMappingButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.remapToAPDescription()));
+		count++;
+		
+		
 		editorialButton = initButton(TEXT_CONSTANTS.editEditorial());
 		if (!user.hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
 			editorialButton.setEnabled(false);
 		}
-		widget.setWidget(4, 0, editorialButton);
-		widget
-				.setWidget(
-						4,
-						1,
-						createDescription(TEXT_CONSTANTS.editEditorialDescription()));
-
+		widget.setWidget(count, 0, editorialButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.editEditorialDescription()));
+		count++;
+		
 		generateBootstrapButton = initButton(TEXT_CONSTANTS.generateBootstrap());
 		if (!user.hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			generateBootstrapButton.setEnabled(false);
 		}
-		widget.setWidget(5, 0, generateBootstrapButton);
-		widget
-				.setWidget(
-						5,
-						1,
-						createDescription(TEXT_CONSTANTS.generateBootstrapDescription()));
-
+		widget.setWidget(count, 0, generateBootstrapButton);
+		widget.setWidget(
+				count,
+				1,
+				createDescription(TEXT_CONSTANTS.generateBootstrapDescription()));
+		count++;
+		
 		editWebAuthButton = initButton(TEXT_CONSTANTS.editWebAuth());
 		if (!user.hasPermission(PermissionConstants.EDIT_TOKENS)) {
 			editWebAuthButton.setEnabled(false);
 		}
-		widget.setWidget(6, 0, editWebAuthButton);
-		widget
-				.setWidget(
-						6,
-						1,
-						createDescription(TEXT_CONSTANTS.editWebAuthDescription()));
-
+		widget.setWidget(count, 0, editWebAuthButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.editWebAuthDescription()));
+		count++;
+		
 		reportButton = initButton(TEXT_CONSTANTS.runReports());
 		if (!user.hasPermission(PermissionConstants.RUN_REPORTS)) {
 			reportButton.setEnabled(false);
 		}
-		widget.setWidget(7, 0, reportButton);
-		widget
-				.setWidget(
-						7,
-						1,
-						createDescription(TEXT_CONSTANTS.runReportsDescription()));
-
+		widget.setWidget(count, 0, reportButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.runReportsDescription()));
+		count++;
+		
 		importButton = initButton(TEXT_CONSTANTS.importData());
 		if (!user.hasPermission(PermissionConstants.IMPORT_DATA)) {
 			importButton.setEnabled(false);
 		}
-		widget.setWidget(8, 0, importButton);
-		widget.setWidget(8, 1,
+		widget.setWidget(count, 0, importButton);
+		widget.setWidget(count, 1,
 				createDescription(TEXT_CONSTANTS.importDataDescription()));
+		count++;
+		
 		importGISButton = initButton(TEXT_CONSTANTS.importGISData());
 		if (!user.hasPermission(PermissionConstants.IMPORT_DATA)) {
 			importGISButton.setEnabled(false);
 		}
-		widget.setWidget(9,0,importGISButton);
-		widget.setWidget(9,1,createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
+		widget.setWidget(count, 0, importGISButton);
+		widget.setWidget(count, 1,
+				createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
 		initWidget(widget);
+		count++;
+		
+		
 	}
 
 	@Override
@@ -158,8 +162,10 @@ public class AdminHomeWidget extends MenuBasedWidget {
 			controller.openPage(RunReportWidget.class, null);
 		} else if (event.getSource() == importButton) {
 			controller.openPage(DataImportWidget.class, null);
-		}else if(event.getSource()==importGISButton){
+		} else if (event.getSource() == importGISButton) {
 			controller.openPage(GISImportWidget.class, null);
+		}else if (event.getSource() == rerunMappingButton){
+			controller.openPage(RerunMappingWidget.class,null);
 		}
 	}
 

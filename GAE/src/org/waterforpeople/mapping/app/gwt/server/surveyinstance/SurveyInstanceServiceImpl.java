@@ -42,7 +42,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
-			Date beginDate, Date toDate, boolean unapprovedOnlyFlag, String cursorString) {
+			Date beginDate, Date toDate, boolean unapprovedOnlyFlag,
+			String cursorString) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
 		List<Survey> surveyList = surveyDao.list("all");
@@ -82,7 +83,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				instanceId, null);
 		QuestionDao qDao = new QuestionDao();
 
-		if (questions != null && questions.size()>0) {
+		if (questions != null && questions.size() > 0) {
 			List<Question> qList = qDao.listQuestionInOrder(questions.get(0)
 					.getSurveyId());
 			Map<Integer, QuestionAnswerStoreDto> orderedResults = new TreeMap<Integer, QuestionAnswerStoreDto>();
@@ -109,7 +110,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 					orderedResults.put(idx, qasDto);
 				}
 			}
-			questionDtos = new ArrayList<QuestionAnswerStoreDto>(orderedResults.values());
+			questionDtos = new ArrayList<QuestionAnswerStoreDto>(
+					orderedResults.values());
 		}
 		return questionDtos;
 	}
@@ -143,6 +145,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		for (QuestionAnswerStoreDto dto : dtoList) {
 			QuestionAnswerStore answer = new QuestionAnswerStore();
 			DtoMarshaller.copyToCanonical(answer, dto);
+			if (answer.getValue() != null) {
+				answer.setValue(answer.getValue().replaceAll("\t", ""));
+			}
 			domainList.add(answer);
 		}
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
@@ -153,16 +158,15 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			Queue queue = QueueFactory.getQueue("dataUpdate");
 			for (QuestionAnswerStoreDto item : dtoList) {
 				DataChangeRecord value = new DataChangeRecord(
-						QuestionAnswerStore.class.getName(), item
-								.getQuestionID(), item.getOldValue(), item
-								.getValue());
-				queue
-						.add(url("/app_worker/dataupdate").param(
-								DataSummarizationRequest.OBJECT_KEY,
-								item.getQuestionID()).param(
-								DataSummarizationRequest.OBJECT_TYPE,
-								"QuestionDataChange").param(
-								DataSummarizationRequest.VALUE_KEY,
+						QuestionAnswerStore.class.getName(),
+						item.getQuestionID(), item.getOldValue(),
+						item.getValue());
+				queue.add(url("/app_worker/dataupdate")
+						.param(DataSummarizationRequest.OBJECT_KEY,
+								item.getQuestionID())
+						.param(DataSummarizationRequest.OBJECT_TYPE,
+								"QuestionDataChange")
+						.param(DataSummarizationRequest.VALUE_KEY,
 								value.packString()));
 				// see if the question is mapped. And if it is, send an Access
 				// Point
@@ -174,15 +178,15 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 							"AcessPointUpdate", mapping.getSurveyId() + "|"
 									+ mapping.getSurveyQuestionId() + "|"
 									+ item.getSurveyInstanceId() + "|"
-									+ mapping.getKey().getId(), item
-									.getOldValue(), item.getValue());
-					queue.add(url("/app_worker/dataupdate").param(
-							DataSummarizationRequest.OBJECT_KEY,
-							item.getQuestionID()).param(
-							DataSummarizationRequest.OBJECT_TYPE,
-							"AccessPointChange").param(
-							DataSummarizationRequest.VALUE_KEY,
-							apValue.packString()));
+									+ mapping.getKey().getId(),
+							item.getOldValue(), item.getValue());
+					queue.add(url("/app_worker/dataupdate")
+							.param(DataSummarizationRequest.OBJECT_KEY,
+									item.getQuestionID())
+							.param(DataSummarizationRequest.OBJECT_TYPE,
+									"AccessPointChange")
+							.param(DataSummarizationRequest.VALUE_KEY,
+									apValue.packString()));
 				}
 			}
 		}
@@ -227,15 +231,15 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				Queue queue = QueueFactory.getQueue("dataUpdate");
 				for (QuestionAnswerStore ans : answers) {
 					DataChangeRecord value = new DataChangeRecord(
-							QuestionAnswerStore.class.getName(), ans
-									.getQuestionID(), ans.getValue(), "");
-					queue.add(url("/app_worker/dataupdate").param(
-							DataSummarizationRequest.OBJECT_KEY,
-							ans.getQuestionID()).param(
-							DataSummarizationRequest.OBJECT_TYPE,
-							"QuestionDataChange").param(
-							DataSummarizationRequest.VALUE_KEY,
-							value.packString()));
+							QuestionAnswerStore.class.getName(),
+							ans.getQuestionID(), ans.getValue(), "");
+					queue.add(url("/app_worker/dataupdate")
+							.param(DataSummarizationRequest.OBJECT_KEY,
+									ans.getQuestionID())
+							.param(DataSummarizationRequest.OBJECT_TYPE,
+									"QuestionDataChange")
+							.param(DataSummarizationRequest.VALUE_KEY,
+									value.packString()));
 				}
 				dao.delete(answers);
 			}
@@ -265,6 +269,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 					.getQuestionAnswersStore()) {
 				QuestionAnswerStore store = new QuestionAnswerStore();
 				DtoMarshaller.copyToCanonical(store, ans);
+				if (ans.getValue() != null) {
+					ans.setValue(ans.getValue().replaceAll("\t", ""));
+				}
 				store.setSurveyInstanceId(domain.getKey().getId());
 				answerList.add(store);
 			}

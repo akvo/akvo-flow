@@ -489,4 +489,5 @@ public interface TextConstants extends Constants{
 	public String importGISData();	
 	public String importGISDataDescriptions();
 	public String accessPointManager();
+	public String remapToAPDescription();
 }

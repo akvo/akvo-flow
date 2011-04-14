@@ -47,11 +47,12 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 		authService = GWT.create(WebActivityAuthorizationService.class);
 		String token = Window.Location.getParameter(TOKEN_PARAM);
 		RootPanel.get().setPixelSize(1024, 768);
-		RootPanel.get().getElement().getStyle().setProperty("position",
-				"relative");
+		RootPanel.get().getElement().getStyle()
+				.setProperty("position", "relative");
 		RootPanel.get().add(new Image("images/wfp-logo.gif"));
-		final MessageDialog authDia = new MessageDialog(TEXT_CONSTANTS
-				.authenticating(), TEXT_CONSTANTS.validatingAuth(), true);
+		final MessageDialog authDia = new MessageDialog(
+				TEXT_CONSTANTS.authenticating(),
+				TEXT_CONSTANTS.validatingAuth(), true);
 		authDia.showCentered();
 		if (token != null) {
 			authService.isAuthorized(token, ACTIVITY_NAME,
@@ -91,8 +92,7 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 											TEXT_CONSTANTS.error(),
 											TEXT_CONSTANTS.errorTracePrefix()
 													+ " "
-													+ caught
-															.getLocalizedMessage());
+													+ caught.getLocalizedMessage());
 									dia.showCentered();
 								}
 
@@ -152,7 +152,16 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 
 	private void authorizationComplete(WebActivityAuthorizationDto auth) {
 		currentAuth = auth;
-		entryWidget = new SurveyEntryWidget(auth.getPayload());
+
+		String submitter = null;
+		if (currentAuth != null) {
+			submitter = currentAuth.getUserName();
+			if (submitter == null) {
+				submitter = currentAuth.getToken();
+			}
+		}
+
+		entryWidget = new SurveyEntryWidget(auth.getPayload(), submitter);
 		entryWidget.setListener(this);
 		RootPanel.get().add(entryWidget);
 		entryWidget.initialize();

@@ -44,6 +44,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	private MessageDialog loadingDialog;
 	private TerminalType termType;
 	private Long pendingId;
+	
 
 	private Map<String, List<SurveyDto>> surveys;
 	private Map<String, List<QuestionGroupDto>> questionGroups;
@@ -56,19 +57,28 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		SURVEY, QUESTIONGROUP
 	};
 
-	public SurveySelectionWidget(Orientation orient, TerminalType type) {
+	public enum SelectionMode {
+		MULTI, SINGLE
+	}
+
+	public SurveySelectionWidget(Orientation orient, TerminalType type,
+			SelectionMode mode) {
 		termType = type;
 		surveys = new HashMap<String, List<SurveyDto>>();
 		questionGroups = new HashMap<String, List<QuestionGroupDto>>();
 
 		loadingDialog = new MessageDialog(TEXT_CONSTANTS.loading(),
-				TEXT_CONSTANTS.pleaseWait(),true);
+				TEXT_CONSTANTS.pleaseWait(), true);
 		surveyService = GWT.create(SurveyService.class);
 		surveyGroupListbox = new ListBox();
 		surveyGroupListbox.addChangeHandler(this);
 		if (TerminalType.SURVEY == type) {
-			surveyListbox = new ListBox(true);
-			surveyListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
+			if(SelectionMode.MULTI == mode){
+				surveyListbox = new ListBox(true);
+				surveyListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
+			}else{
+				surveyListbox = new ListBox();
+			}
 		} else {
 			surveyListbox = new ListBox();
 			questionGroupListbox = new ListBox();
@@ -83,11 +93,23 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.survey(),
 				surveyListbox, LABEL_STYLE);
 		if (TerminalType.QUESTIONGROUP == type) {
-			ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS
-					.questionGroup(), questionGroupListbox, LABEL_STYLE);
+			ViewUtil.installFieldRow(contentPanel,
+					TEXT_CONSTANTS.questionGroup(), questionGroupListbox,
+					LABEL_STYLE);
 		}
 		initWidget(contentPanel);
 		loadSurveyGroups();
+	}
+
+	/**
+	 * initializes the survey selector such that it allows multiple selection in
+	 * the terminal selector
+	 * 
+	 * @param orient
+	 * @param type
+	 */
+	public SurveySelectionWidget(Orientation orient, TerminalType type) {
+		this(orient, type, SelectionMode.MULTI);
 	}
 
 	/**
@@ -135,9 +157,8 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 						public void onFailure(Throwable caught) {
 							toggleLoading(false);
 							MessageDialog errDia = new MessageDialog(
-									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-											.errorTracePrefix()
-											+ " "
+									TEXT_CONSTANTS.error(),
+									TEXT_CONSTANTS.errorTracePrefix() + " "
 											+ caught.getLocalizedMessage());
 							errDia.showCentered();
 						}
@@ -157,8 +178,9 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 				}
 			} else {
 				toggleLoading(false);
-				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
-						.inputError(), TEXT_CONSTANTS.selectGroupFirst());
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.inputError(),
+						TEXT_CONSTANTS.selectGroupFirst());
 				errDia.showCentered();
 			}
 		} else {
@@ -184,10 +206,11 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		if (surveyItems != null) {
 			int i = 0;
 			for (SurveyDto survey : surveyItems) {
-				surveyListbox.addItem(survey.getName() != null ? survey
-						.getName() : TEXT_CONSTANTS.survey() + " "
-						+ survey.getKeyId().toString(), survey.getKeyId()
-						.toString());
+				surveyListbox.addItem(
+						survey.getName() != null ? survey.getName()
+								: TEXT_CONSTANTS.survey() + " "
+										+ survey.getKeyId().toString(), survey
+								.getKeyId().toString());
 
 				i++;
 			}
@@ -211,9 +234,8 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 						public void onFailure(Throwable caught) {
 							toggleLoading(false);
 							MessageDialog errDia = new MessageDialog(
-									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-											.errorTracePrefix()
-											+ " "
+									TEXT_CONSTANTS.error(),
+									TEXT_CONSTANTS.errorTracePrefix() + " "
 											+ caught.getLocalizedMessage());
 							errDia.showCentered();
 						}

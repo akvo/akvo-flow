@@ -258,7 +258,6 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			currentPage = (Widget) pendingPage;
 			widgetPanel.add(currentPage);
 		}
-
 	}
 
 	/**
