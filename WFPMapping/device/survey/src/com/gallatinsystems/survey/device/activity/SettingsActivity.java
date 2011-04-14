@@ -1,5 +1,6 @@
 package com.gallatinsystems.survey.device.activity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,6 +11,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
+import android.text.Html;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.Window;
@@ -17,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.TextView.BufferType;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -60,10 +65,12 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.flushpointsdesc)));
 		list.add(createMap(resources.getString(R.string.downloadsurveylabel),
 				resources.getString(R.string.downloadsurveydesc)));
-		list.add(createMap(resources.getString(R.string.resetall), resources
-				.getString(R.string.resetalldesc)));
-		list.add(createMap(resources.getString(R.string.aboutlabel), resources
-				.getString(R.string.aboutdesc)));
+		list.add(createMap(resources.getString(R.string.resetall),
+				resources.getString(R.string.resetalldesc)));
+		list.add(createMap(resources.getString(R.string.checksd),
+				resources.getString(R.string.checksddesc)));
+		list.add(createMap(resources.getString(R.string.aboutlabel),
+				resources.getString(R.string.aboutdesc)));
 
 		String[] fromKeys = { LABEL, DESC };
 		int[] toIds = { R.id.optionLabel, R.id.optionDesc };
@@ -221,8 +228,7 @@ public class SettingsActivity extends ListActivity {
 														SurveyDbAdapter database = new SurveyDbAdapter(
 																SettingsActivity.this);
 														database.open();
-														database
-																.reinstallTestSurvey();
+														database.reinstallTestSurvey();
 														database.close();
 													} else {
 														Intent downloadIntent = new Intent(
@@ -279,6 +285,44 @@ public class SettingsActivity extends ListActivity {
 								database.close();
 							}
 						});
+			} else if (resources.getString(R.string.checksd).equals(val)) {
+				String state = Environment.getExternalStorageState();
+				StringBuilder builder = new StringBuilder();
+				if (state == null || !Environment.MEDIA_MOUNTED.equals(state)) {
+					builder.append("<b>")
+							.append(resources.getString(R.string.sdmissing))
+							.append("</b><br>");
+				} else {
+					builder.append(resources.getString(R.string.sdmounted))
+							.append("<br>");
+					File f = Environment.getExternalStorageDirectory();
+					if (f != null) {
+						// normally, we could just do f.getFreeSpace() but that
+						// would tie us to later versions of Android. So for
+						// maximum compatibility, just use StatFS
+						StatFs fs = new StatFs(f.getAbsolutePath());
+						if (fs != null) {
+							long space = fs.getFreeBlocks() * fs.getBlockSize();
+							builder.append(
+									resources.getString(R.string.sdcardspace))
+									.append(String.format(" %.2f", (double)space/(double)(1024*1024)));
+						}
+					}
+				}
+				AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+				TextView tipText = new TextView(this);
+				tipText.setText(Html.fromHtml(builder.toString()),
+						BufferType.SPANNABLE);
+				dialog.setTitle(R.string.checksd);
+				dialog.setView(tipText);
+				dialog.setPositiveButton(R.string.okbutton,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+				dialog.show();
+
 			} else {
 				Intent i = new Intent(view.getContext(), DataSyncService.class);
 				if (resources.getString(R.string.sendoptlabel).equals(val)) {
