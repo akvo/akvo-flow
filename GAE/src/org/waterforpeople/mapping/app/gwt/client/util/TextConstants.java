@@ -82,6 +82,7 @@ public interface TextConstants extends Constants{
 	public String text();
 	public String selectSurvey();
 	public String selectCoordinateSystem();
+	public String selectGISFeatureType();
 	public String selectUtmZone();
 	public String selectCountry();
 	public String setCentralMeridian();

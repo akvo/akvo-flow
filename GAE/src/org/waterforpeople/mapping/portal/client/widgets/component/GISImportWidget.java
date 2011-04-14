@@ -6,6 +6,7 @@ import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.gallatinsystems.gis.app.gwt.client.GISSupportConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -47,10 +48,14 @@ public class GISImportWidget extends MenuBasedWidget {
 							if (wasSuccessful
 									&& payload != null
 									&& payload
-											.get(GISSetupDialog.COORDINATE_KEY) != null) {
+											.get(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM) != null) {
 								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.gis.app.GeometryLoader width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
-								appletString += "<PARAM name='coordinateSystem' value='" + coordinateSystem + "'>";
+								appletString += "<PARAM name='"+GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM+"' value='" + payload.get(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM) + "'>";
+								appletString += "<PARAM name='"+GISSupportConstants.CENTRAL_MERIDIAN_PARAM+"' value='" + payload.get(GISSupportConstants.CENTRAL_MERIDIAN_PARAM)+ "'>";
+								appletString += "<PARAM name='"+GISSupportConstants.COUNTRY_CODE_PARAM+"' value='" + payload.get(GISSupportConstants.COUNTRY_CODE_PARAM) + "'>";
+								appletString += "<PARAM name='"+GISSupportConstants.GIS_FEATURE_TYPE_PARAM+"' value='" + payload.get(GISSupportConstants.GIS_FEATURE_TYPE_PARAM) + "'>";
+								appletString += "<PARAM name='"+GISSupportConstants.UTM_ZONE_PARAM+"' value='" + payload.get(GISSupportConstants.UTM_ZONE_PARAM) + "'>";
 								appletString += "</applet>";
 								HTML html = new HTML();
 								html.setHTML(appletString);
