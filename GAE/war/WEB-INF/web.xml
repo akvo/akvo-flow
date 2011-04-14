@@ -182,6 +182,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>EditorialContentService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/editorialcontentrpcservice</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>GISSupportService</servlet-name>
+		<servlet-class>com.gallatinsystems.gis.app.gwt.server.GISSupportServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GISSupportService</servlet-name>
+		<url-pattern> /org.waterforpeople.mapping.portal.portal/gissupportrpcservice</url-pattern>
+	</servlet-mapping>
 <servlet>
 		<servlet-name>NotificationSubscriptionService</servlet-name>
 		<servlet-class>com.gallatinsystems.notification.app.gwt.server.NotificationSubscriptionServiceImpl</servlet-class>
