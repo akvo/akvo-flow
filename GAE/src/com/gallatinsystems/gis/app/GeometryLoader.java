@@ -86,32 +86,39 @@ public class GeometryLoader extends JApplet implements Runnable {
 	private static final String SUBDIVISION_6_PARAM = "sub6";
 	private static String coordinateSystemType;
 
+	public void init() {
+		serverBase = getCodeBase().toString();
+		if (serverBase.trim().endsWith("/")) {
+			serverBase = serverBase.trim().substring(0,
+					serverBase.lastIndexOf("/"));
+		}
+		System.out.println("ServerBase: " + serverBase);
+
+		Thread worker = new Thread(this);
+		worker.start();
+
+	}
+
 	@Override
 	public void run() {
 
 		try {
 			statusLabel = new JLabel();
 			getContentPane().add(statusLabel);
-			// TODO: hack for testing only
-			serverBase = getCodeBase().toString();
-			if (serverBase.trim().endsWith("/")) {
-				serverBase = serverBase.trim().substring(0,
-						serverBase.lastIndexOf("/"));
-			}
-
-			System.out.println("ServerBase: " + serverBase);
-
 			coordinateSystemType = getParameter(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM);
 			if (coordinateSystemType.equals(GISSupportConstants.UTM)) {
 				utmZone = Integer
 						.parseInt(getParameter(GISSupportConstants.UTM_ZONE_PARAM));
+				ct = CoordinateType.UTM;
+			} else {
+				ct = CoordinateType.LATLONG;
 			}
 			centralMeridian = Double
 					.parseDouble(getParameter(GISSupportConstants.CENTRAL_MERIDIAN_PARAM));
 			countryCodeOverride = getParameter(COUNTRY_CODE_PARAM);
 			featureType = getParameter(GISSupportConstants.GIS_FEATURE_TYPE_PARAM);
 
-			Window.alert("CT: " + coordinateSystemType + " CM:"
+			System.out.println("CT: " + coordinateSystemType + " CM:"
 					+ centralMeridian + " countryCode:" + countryCodeOverride
 					+ " featureType:" + featureType);
 			if (coordinateSystemType != null) {
@@ -137,7 +144,16 @@ public class GeometryLoader extends JApplet implements Runnable {
 	}
 
 	private void executeImport(String filePath) {
-
+		try {
+			System.out.println("About to call serverbase: " + serverBase
+					+ " filepath: " + filePath + " ct: " + ct + " utmzone: "
+					+ utmZone + " cm: " + centralMeridian + " cc:"
+					+ countryCodeOverride + " featureType:" + featureType);
+			formURL(serverBase, filePath, ct, utmZone, centralMeridian,
+					countryCodeOverride, featureType);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String promptForFile() {
@@ -281,6 +297,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("name=");
+		System.out.println("FileName: " + fileName);
 		FileDataStore store = FileDataStoreFinder.getDataStore(new File(
 				fileName));
 		@SuppressWarnings("unused")
@@ -448,6 +465,8 @@ public class GeometryLoader extends JApplet implements Runnable {
 
 	private void sendRequest(String serverBase, String urlString)
 			throws IOException {
+		if (!serverBase.trim().endsWith("/"))
+			serverBase = serverBase + "/";
 		URL url = new URL(serverBase + "externalgisdatarestapi?");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("POST");
@@ -499,7 +518,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 			okButton.addActionListener(this);
 			selectFileButton.addActionListener(this);
 			setSize(300, 200);
-			setTitle("Choose Raw Data File");
+			setTitle("Choose shapefile");
 			setModal(true);
 			setVisible(true);
 			String filePath = promptForFile();
@@ -519,8 +538,6 @@ public class GeometryLoader extends JApplet implements Runnable {
 				String countryCodeOverride, String serverBase,
 				String featureType) {
 			okButton.setEnabled(false);
-			// args[i],
-			// CoordinateType.UTM, 29, 0.0
 			try {
 				formURL(serverBase, fileName, ct, utmZone, centralMeridian,
 						countryCodeOverride, featureType);
@@ -540,9 +557,15 @@ public class GeometryLoader extends JApplet implements Runnable {
 				int returnVal = fc.showOpenDialog(InputDialog.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					file = fc.getSelectedFile();
+					System.out.println("File Name: " + file.getPath());
 				}
 			} else if (e.getSource() == okButton) {
-				processFile(fileName, ct, utmZone, centralMeridian,
+				System.out.println("Inside actionPerformed for okButton - FilePath: " + file.getPath() + " ct:"
+						+ ct.toString() + " utmZone:" + utmZone + " CM:"
+						+ centralMeridian + " CountryCode: "
+						+ countryCodeOverride + " serverBase: " + serverBase
+						+ " featureType:" + featureType);
+				processFile(file.getPath(), ct, utmZone, centralMeridian,
 						countryCodeOverride, serverBase, featureType);
 			}
 			if (isValid) {
