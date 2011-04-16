@@ -97,6 +97,7 @@ import com.gallatinsystems.editorial.domain.MapBalloonDefinition.BalloonType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
@@ -1216,7 +1217,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 			// sasi.deleteSurveyAssignment(dto);
 		} else if ("populateAssignmentId".equalsIgnoreCase(action)) {
-			populateAssignmentId(Long.parseLong(req
+			populateAssignmentId(Long.parseLong(req 
 					.getParameter("assignmentId")));
 		} else if ("testDSJQDelete".equals(action)) {
 			DeviceSurveyJobQueueDAO dsjDAO = new DeviceSurveyJobQueueDAO();
@@ -1405,6 +1406,12 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setResponse("GWAR");
 			sum.setQuestionId("2166031");
 			dao.save(sum);
+		}else if ("createCountry".equals(action)){
+			Country country = new Country();
+			country.setIsoAlpha2Code("LR");
+			country.setName("Liberia");
+			CountryDao dao = new CountryDao();
+			dao.save(country);
 		}
 	}
 

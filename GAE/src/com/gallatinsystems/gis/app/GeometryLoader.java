@@ -1,8 +1,5 @@
 package com.gallatinsystems.gis.app;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,16 +8,12 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.geotools.data.FeatureReader;
@@ -30,10 +23,8 @@ import org.geotools.data.FileDataStoreFinder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Property;
-import org.opengis.feature.type.AttributeDescriptor;
 
 import com.gallatinsystems.gis.app.gwt.client.GISSupportConstants;
-import com.google.gwt.user.client.Window;
 import com.ibm.util.CoordinateConversion;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -41,13 +32,9 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
 
 public class GeometryLoader extends JApplet implements Runnable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private JLabel statusLabel;
@@ -92,11 +79,9 @@ public class GeometryLoader extends JApplet implements Runnable {
 			serverBase = serverBase.trim().substring(0,
 					serverBase.lastIndexOf("/"));
 		}
-		System.out.println("ServerBase: " + serverBase);
 
 		Thread worker = new Thread(this);
 		worker.start();
-
 	}
 
 	@Override
@@ -124,11 +109,12 @@ public class GeometryLoader extends JApplet implements Runnable {
 			if (coordinateSystemType != null) {
 
 				{
-					InputDialog dia = new InputDialog();
-					if (!dia.isCancelled()) {
+					String fileName = promptForFile();
+					if (fileName != null) {
 						if (coordinateSystemType != null) {
-							Thread worker = new Thread(this);
-							worker.start();
+							SwingUtilities.invokeLater(new StatusUpdater("Importing data"));
+							executeImport(fileName);
+							SwingUtilities.invokeLater(new StatusUpdater("Import Complete"));
 						} else {
 							statusLabel.setText("Applet misconfigured");
 						}
@@ -150,7 +136,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 					+ utmZone + " cm: " + centralMeridian + " cc:"
 					+ countryCodeOverride + " featureType:" + featureType);
 			formURL(serverBase, filePath, ct, utmZone, centralMeridian,
-					countryCodeOverride, featureType);
+					countryCodeOverride, featureType);			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -158,7 +144,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 
 	private String promptForFile() {
 		JFileChooser fc = new JFileChooser();
-		int returnVal = fc.showSaveDialog(this);
+		int returnVal = fc.showOpenDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			return fc.getSelectedFile().getAbsolutePath();
 		} else {
@@ -300,7 +286,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 		System.out.println("FileName: " + fileName);
 		FileDataStore store = FileDataStoreFinder.getDataStore(new File(
 				fileName));
-		@SuppressWarnings("unused")
+		@SuppressWarnings("rawtypes")
 		FeatureSource featureSource = store.getFeatureSource();
 		ReferencedEnvelope re = featureSource.getBounds();
 		Double maxX = null;
@@ -336,10 +322,9 @@ public class GeometryLoader extends JApplet implements Runnable {
 			i++;
 			System.out.println("Feature " + i);
 			org.opengis.feature.simple.SimpleFeature sf = fr.next();
-			List<AttributeDescriptor> arD = fr.getFeatureType()
-					.getAttributeDescriptors();
 			org.opengis.feature.simple.SimpleFeatureType sft = fr
-					.getFeatureType();
+			.getFeatureType();
+			
 			System.out.println("   FeatureType: " + sft.getName().toString());
 			if (featureType.equals("SUB_COUNTRY_OTHER"))
 				ogrFeatureType = "SUB_COUNTRY_OTHER";
@@ -362,12 +347,10 @@ public class GeometryLoader extends JApplet implements Runnable {
 								.equalsIgnoreCase("the_geom")
 								&& coordType.equals(CoordinateType.UTM)) {
 							CoordinateConversion cc = new CoordinateConversion();
-							StringBuilder sbGeom = new StringBuilder();
 							GeometryFactory geometryFactory = JTSFactoryFinder
 									.getGeometryFactory(null);
 							WKTReader reader = new WKTReader(geometryFactory);
 							com.vividsolutions.jts.geom.Geometry shape = null;
-							WKTWriter writer = new WKTWriter();
 
 							try {
 
@@ -485,97 +468,6 @@ public class GeometryLoader extends JApplet implements Runnable {
 		}
 		wr.close();
 		rd.close();
-	}
-
-	private class InputDialog extends JDialog implements ActionListener {
-
-		private static final long serialVersionUID = -2875321125734363515L;
-		private JButton selectFileButton;
-		private JButton okButton;
-		private final JFileChooser fc = new JFileChooser();
-		private JButton cancelButton;
-		private JLabel status;
-		private boolean cancelled;
-		private TreeMap<String, Long> surveyMap = null;
-		private File file;
-
-		public InputDialog() {
-			super();
-			System.out.println("Inside InputDialog");
-			SwingUtilities.invokeLater(new StatusUpdater("Prompting for File"));
-			selectFileButton = new JButton("Select shapefile");
-			okButton = new JButton("Ok");
-			cancelButton = new JButton("Cancel");
-			status = new JLabel();
-
-			JPanel contentPane = new JPanel(new GridLayout(5, 2, 10, 10));
-			contentPane.add(selectFileButton);
-			contentPane.add(okButton);
-			contentPane.add(cancelButton);
-			contentPane.add(status);
-			setContentPane(contentPane);
-			cancelButton.addActionListener(this);
-			okButton.addActionListener(this);
-			selectFileButton.addActionListener(this);
-			setSize(300, 200);
-			setTitle("Choose shapefile");
-			setModal(true);
-			setVisible(true);
-			String filePath = promptForFile();
-			if (filePath != null) {
-				System.out.println(filePath);
-				SwingUtilities.invokeLater(new StatusUpdater("Running export"));
-				executeImport(filePath);
-				SwingUtilities
-						.invokeLater(new StatusUpdater("Export Complete"));
-			} else {
-				SwingUtilities.invokeLater(new StatusUpdater("Cancelled"));
-			}
-		}
-
-		private void processFile(String fileName, CoordinateType ct,
-				Integer utmZone, Double centralMeridian,
-				String countryCodeOverride, String serverBase,
-				String featureType) {
-			okButton.setEnabled(false);
-			try {
-				formURL(serverBase, fileName, ct, utmZone, centralMeridian,
-						countryCodeOverride, featureType);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			status.setText("Completed Import of shapefile data.");
-			okButton.setEnabled(true);
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			boolean isValid = true;
-			if (e.getSource() == cancelButton) {
-				cancelled = true;
-				setVisible(false);
-			} else if (e.getSource() == selectFileButton) {
-				int returnVal = fc.showOpenDialog(InputDialog.this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					file = fc.getSelectedFile();
-					System.out.println("File Name: " + file.getPath());
-				}
-			} else if (e.getSource() == okButton) {
-				System.out.println("Inside actionPerformed for okButton - FilePath: " + file.getPath() + " ct:"
-						+ ct.toString() + " utmZone:" + utmZone + " CM:"
-						+ centralMeridian + " CountryCode: "
-						+ countryCodeOverride + " serverBase: " + serverBase
-						+ " featureType:" + featureType);
-				processFile(file.getPath(), ct, utmZone, centralMeridian,
-						countryCodeOverride, serverBase, featureType);
-			}
-			if (isValid) {
-				// setVisible(false);
-			}
-		}
-
-		public boolean isCancelled() {
-			return cancelled;
-		}
 	}
 
 }
