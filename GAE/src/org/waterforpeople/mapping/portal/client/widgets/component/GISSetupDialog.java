@@ -1,11 +1,9 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
-import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;

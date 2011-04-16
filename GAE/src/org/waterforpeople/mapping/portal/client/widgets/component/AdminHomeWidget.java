@@ -33,11 +33,11 @@ public class AdminHomeWidget extends MenuBasedWidget {
 	private Button editWebAuthButton;
 	private Button reportButton;
 	private Button importButton;
-	private Button importGISButton;
+	
 	private PageController controller;
 
 	public AdminHomeWidget(PageController controller, UserDto user) {
-		Grid widget = new Grid(11, 2);
+		Grid widget = new Grid(10, 2);
 		this.controller = controller;
 		userMgmtButton = initButton(TEXT_CONSTANTS.manageUsers());
 
@@ -129,13 +129,6 @@ public class AdminHomeWidget extends MenuBasedWidget {
 				createDescription(TEXT_CONSTANTS.importDataDescription()));
 		count++;
 		
-		importGISButton = initButton(TEXT_CONSTANTS.importGISData());
-		if (!user.hasPermission(PermissionConstants.IMPORT_DATA)) {
-			importGISButton.setEnabled(false);
-		}
-		widget.setWidget(count, 0, importGISButton);
-		widget.setWidget(count, 1,
-				createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
 		initWidget(widget);
 		count++;
 		
@@ -162,8 +155,6 @@ public class AdminHomeWidget extends MenuBasedWidget {
 			controller.openPage(RunReportWidget.class, null);
 		} else if (event.getSource() == importButton) {
 			controller.openPage(DataImportWidget.class, null);
-		} else if (event.getSource() == importGISButton) {
-			controller.openPage(GISImportWidget.class, null);
 		}else if (event.getSource() == rerunMappingButton){
 			controller.openPage(RerunMappingWidget.class,null);
 		}
