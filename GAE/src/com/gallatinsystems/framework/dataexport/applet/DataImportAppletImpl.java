@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
-
 /**
  * applet wrapper for data import utilities
  * 
@@ -24,19 +23,33 @@ import javax.swing.JTextPane;
 public class DataImportAppletImpl extends JApplet {
 
 	private static final long serialVersionUID = -545153291195490725L;
-	private static final String IMPORT_TYPE_PARAM = "importType";	
+	private static final String IMPORT_TYPE_PARAM = "importType";
 	private static final String FACTORY_PARAM = "factoryClass";
 	private static final String SERVER_BASE_OVERRIDE_PARAM = "serverOverride";
 	private DataImportExportFactory dataImporterFactory;
 	private JLabel statusLabel;
 
+	/**
+	 * initializes the applet by reading in the configuration parameters
+	 * configured in the Applet tag. This applet expects to be passed the
+	 * following:
+	 * <ul>
+	 * <li>factoryClass - fully qualified class name of a
+	 * DataImportExportFactory instance</li>
+	 * <li>importType - the type of importer to run. This value will be passed
+	 * to the importer factory</li>
+	 * <li>serverOverride (optional) - server base to use for remote api calls.
+	 * This is only used for testing or for calling a server other than the one
+	 * hosting the html page that loaded the applet</li>
+	 * </ul>
+	 */
 	public void init() {
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
-		String type = getParameter(IMPORT_TYPE_PARAM);	
+		String type = getParameter(IMPORT_TYPE_PARAM);
 		String factoryClass = getParameter(FACTORY_PARAM);
 		String serverBase = getParameter(SERVER_BASE_OVERRIDE_PARAM);
-		if(serverBase == null || serverBase.trim().length()==0){
+		if (serverBase == null || serverBase.trim().length() == 0) {
 			serverBase = getCodeBase().toString();
 		}
 		if (factoryClass != null) {
@@ -48,12 +61,21 @@ public class DataImportAppletImpl extends JApplet {
 						+ factoryClass);
 				e.printStackTrace(System.err);
 			}
-		}else{
+		} else {
 			System.err.println("Factory must be specified");
 		}
 		doImport(type, serverBase);
 	}
 
+	/**
+	 * exectues the import. This will launch a fileChooser dialog box and allow
+	 * the user to specify a file for import. Once a file has been chosen, the
+	 * file will be passed to the dataImporter returned by the factory and the
+	 * executeImport method will be called on the DataImporter instance.
+	 * 
+	 * @param type
+	 * @param serverBase
+	 */
 	public void doImport(String type, String serverBase) {
 		JFileChooser chooser = new JFileChooser();
 
@@ -93,7 +115,7 @@ public class DataImportAppletImpl extends JApplet {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						dia.setVisible(false);
-						text.setText("");						
+						text.setText("");
 					}
 				});
 				dia.getContentPane().add(okButton, BorderLayout.SOUTH);
