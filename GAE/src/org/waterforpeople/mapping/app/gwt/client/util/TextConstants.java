@@ -490,4 +490,6 @@ public interface TextConstants extends Constants{
 	public String importGISDataDescriptions();
 	public String accessPointManager();
 	public String remapToAPDescription();
+	public String surveyPublishOkMessage();
+	public String surveyPublishErrorMessage();
 }
