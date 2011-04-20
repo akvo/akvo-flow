@@ -318,4 +318,9 @@
         <property name="accessPointId" direction="asc"/>
         <property name="computationDate" direction="desc"/>
     </datastore-index>
+     <datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="communityCode" direction="asc"/>
+        <property name="pointType" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>
