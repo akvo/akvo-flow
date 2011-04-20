@@ -64,9 +64,9 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 			ogrFeature.setPop2005(importReq.getPop2005());
 			ogrFeature.setCentroidLat(importReq.getCentroidLat());
 			ogrFeature.setCentroidLon(importReq.getCentroidLon());
-			Double[] boundingBox = new Double[] { importReq.getX1(),
-					importReq.getY1(), importReq.getX2(), importReq.getY2() };
-			ogrFeature.setBoundingBox(boundingBox);
+			// Double[] boundingBox = new Double[] { importReq.getX1(),
+			// importReq.getY1(), importReq.getX2(), importReq.getY2() };
+			// ogrFeature.setBoundingBox(boundingBox);
 			ogrFeature.setFeatureType(importReq.getOgrFeatureType());
 			ogrFeature.setSub1(importReq.getSub1());
 			ogrFeature.setSub2(importReq.getSub2());
@@ -90,12 +90,24 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 						ogrFeature.setCentroidLat(geometry.getCentroidLat());
 						ogrFeature.setCentroidLon(geometry.getCentroidLon());
 					}
+					Double x1;
+					Double y1;
+					Double x2;
+					Double y2;
+					int length = geometry.getBoundingBox().length;
+					x1 = geometry.getBoundingBox()[1].x;
+					y1 = geometry.getBoundingBox()[1].y;
+					x2 = geometry.getBoundingBox()[3].x;
+					y2 = geometry.getBoundingBox()[4].y;
+					Double[] boundingBox = new Double[]{x1,y1,x2,y2};
+					ogrFeature.setBoundingBox(boundingBox);
 				} catch (ParseException pe) {
 					log.log(Level.SEVERE, pe.getMessage());
 				}
 			}
+
 			ogrFeatureDao.save(ogrFeature);
-			resp = convertToResponse(null,null,null);
+			resp = convertToResponse(null, null, null);
 		} else if (req.getAction().equals(
 				ExternalGISRequest.LIST_MATCHING_OGRFEATURE_ACTION)) {
 			OGRFeatureDao ogrFeatDao = new OGRFeatureDao();
@@ -122,7 +134,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 			}
 			List<OGRFeature> ogrFeatureList = ogrFeatDao
 					.listBySubLevelCountryName(importReq.getCountryCode(),
-							level, subLevelValue, null,null);
+							level, subLevelValue, null, null);
 			resp = convertToResponse(ogrFeatureList,
 					OGRFeatureDao.getCursor(ogrFeatureList),
 					importReq.getCursor());
@@ -168,6 +180,9 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 				geo.setType(GeometryType.MULITPOLYGON);
 				MultiPolygon mp = (MultiPolygon) reader.read(geometryString);
 				centroid = mp.getCentroid();
+				com.vividsolutions.jts.geom.Geometry e = mp.getEnvelope();
+				Coordinate[] boundingBox = e.getCoordinates();
+				geo.setBoundingBox(boundingBox);
 			}
 			if (centroid != null) {
 				geo.setCentroidLat(centroid.getY());
