@@ -21,6 +21,7 @@ import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.RawDataViewPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.RemoteExceptionPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.RunReportsPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
@@ -68,12 +69,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public class Dashboard extends PortalContainer implements EntryPoint {
-	
+
 	private static final int COLUMNS = 3;
 	private static final String CONFIG_GROUP = "DASHBOARD";
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
-	
+			.create(TextConstants.class);
+
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
 	private static final String ADD_TOOLTIP = TEXT_CONSTANTS.addToDashboard();
@@ -81,9 +82,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
 	private Image confImage;
-	private Panel menuPanel;	
+	private Panel menuPanel;
 
-	
 	public Dashboard() {
 		super(COLUMNS);
 	}
@@ -111,7 +111,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			public void onSuccess(UserDto result) {
 				if (result != null && result.hasAccess()) {
-				
+
 					setCurrentUser(result);
 					populateMenuPanel(true);
 					menuPanel.setVisible(true);
@@ -120,11 +120,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					containerPanel.clear();
 					containerPanel.add(new Image("images/wfp-logo.gif"));
 					if (result != null) {
-						Anchor logoutAnchor = new Anchor(TEXT_CONSTANTS.logOnAsDifferentUser(), result
-										.getLogoutUrl());
+						Anchor logoutAnchor = new Anchor(TEXT_CONSTANTS
+								.logOnAsDifferentUser(), result.getLogoutUrl());
 						containerPanel.add(logoutAnchor);
 					}
-					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.unknownUser(),TEXT_CONSTANTS.noFlowAccess());							
+					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+							.unknownUser(), TEXT_CONSTANTS.noFlowAccess());
 					errDia.show();
 				}
 			}
@@ -132,15 +133,16 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		userService.getCurrentUserConfig(false, userCallback);
 	}
 
-	protected void hideMenuItems(){
-		
+	protected void hideMenuItems() {
+
 	}
-	
+
 	/**
 	 * populates menu optiosn and binds click listeners for addWidget button
+	 * 
 	 * @param isConfigurable
 	 */
-	protected void populateMenuPanel(boolean isConfigurable){
+	protected void populateMenuPanel(boolean isConfigurable) {
 		DockPanel menuDock = new DockPanel();
 		menuDock.setPixelSize(1024, 20);
 		menuDock.setStyleName(CSS_SYSTEM_HEAD);
@@ -165,44 +167,51 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		});
 
 		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
-			mgrMenu.addItem(TEXT_CONSTANTS.surveyAssignmentPortletTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(SurveyAssignmentPortlet.NAME);
-				}
-			});
-			mgrMenu.addItem(TEXT_CONSTANTS.surveyAttributeMappingPortletTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(SurveyAttributeMappingPortlet.NAME);
+			mgrMenu.addItem(TEXT_CONSTANTS.surveyAssignmentPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(SurveyAssignmentPortlet.NAME);
+						}
+					});
+			mgrMenu.addItem(
+					TEXT_CONSTANTS.surveyAttributeMappingPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(SurveyAttributeMappingPortlet.NAME);
 
-				}
-			});
-			mgrMenu.addItem(TEXT_CONSTANTS.surveyLoaderPortletTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(SurveyLoaderPortlet.NAME);
-				}
-			});
+						}
+					});
+			mgrMenu.addItem(TEXT_CONSTANTS.surveyLoaderPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(SurveyLoaderPortlet.NAME);
+						}
+					});
 
-			mgrMenu.addItem(TEXT_CONSTANTS.technologyTypeManagerPortletTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(TechnologyTypeManagerPortlet.NAME);
-				}
-			});
+			mgrMenu.addItem(TEXT_CONSTANTS.technologyTypeManagerPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(TechnologyTypeManagerPortlet.NAME);
+						}
+					});
 		}
 		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
-			mgrMenu.addItem(TEXT_CONSTANTS.displayContentManagerTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(DisplayContentManager.NAME);
+			mgrMenu.addItem(TEXT_CONSTANTS.displayContentManagerTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(DisplayContentManager.NAME);
 
-				}
-			});
+						}
+					});
 		}
 
-		mgrMenu.addItem(TEXT_CONSTANTS.surveyManagerPortletTitle(), new Command() {
-			public void execute() {
-				launchFullscreen(SurveyManagerPortlet.NAME);
+		mgrMenu.addItem(TEXT_CONSTANTS.surveyManagerPortletTitle(),
+				new Command() {
+					public void execute() {
+						launchFullscreen(SurveyManagerPortlet.NAME);
 
-			}
-		});
+					}
+				});
 		if (getCurrentUser().hasPermission(
 				PermissionConstants.UPLOAD_SURVEY_DATA)) {
 			mgrMenu.addItem(TEXT_CONSTANTS.uploadPortletTitle(), new Command() {
@@ -218,40 +227,55 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			}
 		});
 		if (getCurrentUser().hasPermission(PermissionConstants.IMPORT_AP_DATA)) {
-			mgrMenu.addItem(TEXT_CONSTANTS.mappingAttributeManagerTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(MappingAttributeManager.NAME);
-				}
-			});
+			mgrMenu.addItem(TEXT_CONSTANTS.mappingAttributeManagerTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(MappingAttributeManager.NAME);
+						}
+					});
 		}
 		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_USER)) {
-			mgrMenu.addItem(TEXT_CONSTANTS.userManagerPortletTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(UserManagerPortlet.NAME);
-				}
-			});
+			mgrMenu.addItem(TEXT_CONSTANTS.userManagerPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(UserManagerPortlet.NAME);
+						}
+					});
 		}
 		if (getCurrentUser().isAdmin()) {
-			mgrMenu.addItem(TEXT_CONSTANTS.adminWizardPortletTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(AdminWizardPortlet.NAME);
+			mgrMenu.addItem(TEXT_CONSTANTS.adminWizardPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(AdminWizardPortlet.NAME);
 
-				}
-			});
-			mgrMenu.addItem(TEXT_CONSTANTS.remoteExceptionPortletTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(RemoteExceptionPortlet.NAME);
-				}
-			});
-			mgrMenu.addItem(TEXT_CONSTANTS.deviceFileManagerTitle(), new Command() {
-				public void execute() {
-					launchFullscreen(DeviceFileManagerPortlet.NAME);
+						}
+					});
+			mgrMenu.addItem(TEXT_CONSTANTS.remoteExceptionPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(RemoteExceptionPortlet.NAME);
+						}
+					});
+			mgrMenu.addItem(TEXT_CONSTANTS.deviceFileManagerTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(DeviceFileManagerPortlet.NAME);
 
-				}
-			});
+						}
+					});
 		}
 
 		menu.addItem(TEXT_CONSTANTS.dataManagers(), mgrMenu);
+		if (getCurrentUser().hasPermission(PermissionConstants.RUN_REPORTS)) {
+			menu.addItem(TEXT_CONSTANTS.runReports(), new Command() {
+
+				@Override
+				public void execute() {
+					launchFullscreen(RunReportsPortlet.NAME);
+
+				}
+			});
+		}
 
 		menuDock.add(menu, DockPanel.WEST);
 		menuDock.add(new SimplePanel(), DockPanel.CENTER);
@@ -270,7 +294,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		}
 		menuPanel.add(menuDock);
 	}
-	
+
 	/**
 	 * constructs the header menu bar
 	 * 
@@ -278,7 +302,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	 */
 	protected Panel constructMenu() {
 		VerticalPanel menuPanel = new VerticalPanel();
-		menuPanel.add(new Image("images/wfp-logo.gif"));		
+		menuPanel.add(new Image("images/wfp-logo.gif"));
 		return menuPanel;
 	}
 
@@ -438,8 +462,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			setGlassEnabled(true);
 
 			VerticalPanel contentPane = new VerticalPanel();
-			contentPane
-					.add(new Label(TEXT_CONSTANTS.selectPortlets()));
+			contentPane.add(new Label(TEXT_CONSTANTS.selectPortlets()));
 			setPopupPosition(Window.getClientWidth() / 4, Window
 					.getClientHeight() / 4);
 			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);

@@ -74,7 +74,9 @@ public class PortletFactory {
 			return new DeviceFileManagerPortlet(user);
 		}else if (name.equals(AdminWizardPortlet.NAME)){
 			return new AdminWizardPortlet(user);
-		}	else {
+		}else if (name.equals(RunReportsPortlet.NAME)){
+			return new RunReportsPortlet();
+		}else {
 		
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
