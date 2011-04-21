@@ -49,11 +49,13 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 		if (key != null) {
 
 			SurveyInstance instance = instanceDao.getByKey(new Long(key));
+			boolean useAlt = false;
 			if (instance != null) {
 				List<SurveyAttributeMapping> mappings = mappingDao
 						.findMappingsForAttribute(instance.getSurveyId(),
 								COMMUNITY_QUESTION_ATTRIBUTE);
 				if (mappings == null || mappings.size() ==0) {
+					useAlt = true;
 					mappings = mappingDao.findMappingsForAttribute(instance
 							.getSurveyId(), ALT_COMMUNITY_QUESTION_ATTRIBUTE);
 				}
@@ -71,8 +73,13 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 					}
 					if (qas != null && qas.getValue() != null) {
 						CommunityDao commDao = new CommunityDao();
-						Community community = commDao.findCommunityByCode(qas
+						Community community = null;
+						if(!useAlt){
+						community = commDao.findCommunityByCode(qas
 								.getValue());
+						}else{
+							community = commDao.findCommunityByName(qas.getValue());
+						}
 						if (community != null) {
 							SurveyInstanceSummaryDao.incrementCount(community
 									.getCommunityCode(), community

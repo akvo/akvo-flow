@@ -82,6 +82,9 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 										+ " using the geonames service");
 					}
 				}
+				if(community != null && community.getName() == null){
+					community.setName(ap.getCommunityName());
+				}
 				if (ap.getCountryCode() == null && community != null) {
 					ap.setCountryCode(community.getCountryCode());
 				}

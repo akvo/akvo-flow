@@ -20,6 +20,16 @@ public class CommunityDao extends BaseDAO<Community> {
 	}
 
 	/**
+	 * looks up a community using the name
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Community findCommunityByName(String name) {
+		return findByProperty("name", name, "String");
+	}
+
+	/**
 	 * finds a single country that is attached to the community identified by
 	 * the code
 	 * 
