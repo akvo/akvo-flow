@@ -6,6 +6,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
@@ -32,7 +36,9 @@ import org.waterforpeople.mapping.helper.GeoRegionHelper;
 import services.S3Driver;
 
 import com.gallatinsystems.common.util.MailUtil;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.framework.exceptions.SignedDataException;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -43,6 +49,9 @@ import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 public class TaskServlet extends AbstractRestApiServlet {
 
+	private static final String ALLOW_UNSIGNED = "allowUnsignedData";
+	private static final String SIGNING_KEY = "signingKey";
+	private static final String SIGNING_ALGORITHM = "HmacSHA1";
 	private static String DEVICE_FILE_PATH;
 	private static String FROM_ADDRESS;
 	private static final String REGION_FLAG = "regionFlag=true";
@@ -144,8 +153,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 					Long userID = 1L;
 					dfDao.save(deviceFile);
 					SurveyInstance inst = siDao.save(collectionDate,
-							deviceFile, userID,
-							unparsedLines.subList(offset, lineNum));
+							deviceFile, userID, unparsedLines.subList(offset,
+									lineNum));
 					if (inst != null) {
 						surveyInstances.add(inst);
 						// TODO: HACK because we were saving so many duplicate
@@ -178,9 +187,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 						// if we haven't processed everything yet, invoke a
 						// new service
 						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task")
-								.param("action", "processFile")
-								.param("fileName", fileName)
+						queue.add(url("/app_worker/task").param("action",
+								"processFile").param("fileName", fileName)
 								.param("offset", lineNum + ""));
 					}
 				}
@@ -198,17 +206,21 @@ public class TaskServlet extends AbstractRestApiServlet {
 			zis.close();
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
-			MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-					"Device File Processing Error: " + fileName, e.getMessage());
+			MailUtil
+					.sendMail(FROM_ADDRESS, "FLOW", recepientList,
+							"Device File Processing Error: " + fileName, e
+									.getMessage());
 		}
 
 		return surveyInstances;
 	}
 
 	private ArrayList<String> extractDataFromZip(ZipInputStream zis)
-			throws IOException {
+			throws IOException, SignedDataException {
 		ArrayList<String> lines = new ArrayList<String>();
 		String line = null;
+		String surveyDataOnly = null;
+		String dataSig = null;
 		ZipEntry entry;
 		while ((entry = zis.getNextEntry()) != null) {
 			log.info("Unzipping: " + entry.getName());
@@ -223,6 +235,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 			if (entry.getName().endsWith("txt")) {
 				if (entry.getName().equals("regions.txt")) {
 					lines.add("regionFlag=true");
+				} else {
+					surveyDataOnly = line;
 				}
 				String[] linesSplit = line.split("\n");
 				for (String s : linesSplit) {
@@ -231,6 +245,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 					}
 					lines.add(s);
 				}
+			} else if (entry.getName().endsWith(".sig")) {
+				dataSig = line.trim();
 			} else {
 				S3Driver s3 = new S3Driver();
 				String[] imageParts = entry.getName().split("/");
@@ -257,6 +273,40 @@ public class TaskServlet extends AbstractRestApiServlet {
 				out.close();
 			}
 			zis.closeEntry();
+		}
+		// check the signature if we have it
+		if (surveyDataOnly != null && dataSig != null) {
+			try {
+				MessageDigest sha1Digest = MessageDigest.getInstance("SHA1");
+				byte[] digest = sha1Digest.digest(surveyDataOnly
+						.getBytes("UTF-8"));
+				SecretKeySpec signingKey = new SecretKeySpec(PropertyUtil
+						.getProperty(SIGNING_KEY).getBytes("UTF-8"),
+						SIGNING_ALGORITHM);
+				Mac mac = Mac.getInstance(SIGNING_ALGORITHM);
+				mac.init(signingKey);
+				byte[] hmac = mac.doFinal(digest);
+
+				String encodedHmac = com.google.gdata.util.common.util.Base64
+						.encode(hmac);
+				if (!encodedHmac.trim().equals(dataSig.trim())) {
+					throw new SignedDataException(
+							"Computed signature does not match the one submitted with the data");
+				}
+			} catch (GeneralSecurityException e) {
+				throw new SignedDataException("Could not calculate signature",
+						e);
+			}
+
+		} else if (surveyDataOnly != null) {
+			// if there is no signature, check the configuration to see if we
+			// are allowed to proceed
+			String allowUnsigned = PropertyUtil.getProperty(ALLOW_UNSIGNED);
+			if (allowUnsigned != null
+					&& allowUnsigned.trim().equalsIgnoreCase("false")) {
+				throw new SignedDataException(
+						"Datafile does not have a signature");
+			}
 		}
 
 		return lines;
@@ -325,8 +375,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private void ingestFile(TaskRequest req) {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
-			ArrayList<SurveyInstance> surveyInstances = processFile(
-					req.getFileName(), req.getPhoneNumber(), req.getChecksum(),
+			ArrayList<SurveyInstance> surveyInstances = processFile(req
+					.getFileName(), req.getPhoneNumber(), req.getChecksum(),
 					req.getOffset());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			for (SurveyInstance instance : surveyInstances) {
