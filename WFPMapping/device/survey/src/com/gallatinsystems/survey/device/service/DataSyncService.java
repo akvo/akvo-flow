@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,9 @@ import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import android.app.Service;
 import android.content.Intent;
@@ -28,11 +32,13 @@ import android.util.Log;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
+import com.gallatinsystems.survey.device.util.Base64;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.MultipartStream;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
+import com.gallatinsystems.survey.device.util.StringUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -55,6 +61,9 @@ public class DataSyncService extends Service {
 	private static final String NOTHING = "NADA";
 	private static final String DELIMITER = "\t";
 
+	private static final String SIGNING_KEY_PROP = "signingKey";
+	private static final String SIGNING_ALGORITHM = "HmacSHA1";
+
 	private static final int COMPLETE_ID = 1;
 
 	private static final boolean INCLUDE_IMAGES_IN_ZIP = false;
@@ -76,6 +85,7 @@ public class DataSyncService extends Service {
 	private static final String TEMP_FILE_NAME = "/wfp";
 	private static final String ZIP_IMAGE_DIR = "images/";
 	private static final String SURVEY_DATA_FILE = "data.txt";
+	private static final String SIG_FILE_NAME = ".sig";
 	private static final String REGION_DATA_FILE = "regions.txt";
 	private Thread thread;
 	private static final int REDIRECT_CODE = 303;
@@ -116,8 +126,9 @@ public class DataSyncService extends Service {
 	 */
 	public void onCreate() {
 		super.onCreate();
-		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
-				.getInstance());
+		Thread
+				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+						.getInstance());
 		props = new PropertyUtil(getResources());
 	}
 
@@ -212,8 +223,10 @@ public class DataSyncService extends Service {
 								}
 								fireNotification(ConstantUtil.SEND, destName);
 							} else {
-								Log.e(TAG,
-										"Could not update send status of data in the database. It will be resent on next execution of the service");
+								Log
+										.e(
+												TAG,
+												"Could not update send status of data in the database. It will be resent on next execution of the service");
 							}
 						}
 					} else {
@@ -328,6 +341,22 @@ public class DataSyncService extends Service {
 				// write the survey data
 				if (idsToUpdate[0].size() > 0) {
 					writeTextToZip(zos, surveyBuf.toString(), SURVEY_DATA_FILE);
+					String signingKeyString = props
+							.getProperty(SIGNING_KEY_PROP);
+					if (!StringUtil.isNullOrEmpty(signingKeyString)) {
+						MessageDigest sha1Digest = MessageDigest
+								.getInstance("SHA1");
+						byte[] digest = sha1Digest.digest(surveyBuf.toString()
+								.getBytes("UTF-8"));
+						SecretKeySpec signingKey = new SecretKeySpec(
+								signingKeyString.getBytes("UTF-8"),
+								SIGNING_ALGORITHM);
+						Mac mac = Mac.getInstance(SIGNING_ALGORITHM);
+						mac.init(signingKey);
+						byte[] hmac = mac.doFinal(digest);
+						String encodedHmac = Base64.encodeBytes(hmac);
+						writeTextToZip(zos, encodedHmac, SIG_FILE_NAME);
+					}
 					for (String id : idsToUpdate[0]) {
 						databaseAdaptor.createTransmissionHistory(new Long(id),
 								fileName, null);
@@ -352,10 +381,12 @@ public class DataSyncService extends Service {
 									String name = ZIP_IMAGE_DIR;
 									if (imagePaths.get(i).contains("/")) {
 										name = name
-												+ paths.getValue()
+												+ paths
+														.getValue()
 														.get(i)
 														.substring(
-																paths.getValue()
+																paths
+																		.getValue()
 																		.get(i)
 																		.lastIndexOf(
 																				"/") + 1);
@@ -384,8 +415,10 @@ public class DataSyncService extends Service {
 									boolean isOk = sendFile(
 											paths.getValue().get(i),
 											S3_IMAGE_FILE_PATH,
-											props.getProperty(ConstantUtil.IMAGE_S3_POLICY),
-											props.getProperty(ConstantUtil.IMAGE_S3_SIG),
+											props
+													.getProperty(ConstantUtil.IMAGE_S3_POLICY),
+											props
+													.getProperty(ConstantUtil.IMAGE_S3_SIG),
 											IMAGE_CONTENT_TYPE);
 									if (isOk) {
 										databaseAdaptor
@@ -478,20 +511,34 @@ public class DataSyncService extends Service {
 					buf.append(plotId).append(",");
 					plotIds.add(plotId);
 					buf.append(plotPointId).append(",");
-					buf.append(data.getString(data
-							.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-					buf.append(",")
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)));
-					buf.append(",")
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.LON_COL)));
-					buf.append(",")
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.ELEVATION_COL)));
-					buf.append(",")
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.CREATED_DATE_COL)));
+					buf
+							.append(data
+									.getString(data
+											.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.LON_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.ELEVATION_COL)));
+					buf
+							.append(",")
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.CREATED_DATE_COL)));
 					buf.append("\n");
 				} while (data.moveToNext());
 			}
@@ -555,9 +602,11 @@ public class DataSyncService extends Service {
 						continue;
 					}
 
-					buf.append(
-							data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
+					buf
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
 							.append(DELIMITER);
 
 					String type = data
@@ -565,20 +614,32 @@ public class DataSyncService extends Service {
 									.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL));
 					buf.append(data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
+					buf
+							.append(DELIMITER)
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
 					buf.append(DELIMITER).append(type);
 					buf.append(DELIMITER).append(value);
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
+					buf
+							.append(DELIMITER)
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+					buf
+							.append(DELIMITER)
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+					buf
+							.append(DELIMITER)
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
 					buf.append(DELIMITER).append(deviceIdentifier);
 					String scoredVal = data
 							.getString(data
@@ -590,9 +651,12 @@ public class DataSyncService extends Service {
 									.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL));
 					buf.append(DELIMITER).append(
 							strength != null ? strength : "");
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
+					buf
+							.append(DELIMITER)
+							.append(
+									data
+											.getString(data
+													.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
 					buf.append("\n");
 
 					String respId = data.getString(data
@@ -638,12 +702,12 @@ public class DataSyncService extends Service {
 			final String fileNameForNotification = fileName;
 			fireNotification(ConstantUtil.PROGRESS, fileName);
 
-			MultipartStream stream = new MultipartStream(new URL(
-					props.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
+			MultipartStream stream = new MultipartStream(new URL(props
+					.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
 
 			stream.addFormField("key", dir + "/${filename}");
-			stream.addFormField("AWSAccessKeyId",
-					props.getProperty(ConstantUtil.S3_ID));
+			stream.addFormField("AWSAccessKeyId", props
+					.getProperty(ConstantUtil.S3_ID));
 			stream.addFormField("acl", "public-read");
 			stream.addFormField("success_action_redirect",
 					"http://www.gallatinsystems.com/SuccessUpload.html");
@@ -664,9 +728,9 @@ public class DataSyncService extends Service {
 							if (percentComplete >= 1) {
 								percentComplete = 0.99d;
 							}
-							fireNotification(ConstantUtil.PROGRESS,
-									PCT_FORMAT.format(percentComplete) + " - "
-											+ fileNameForNotification);
+							fireNotification(ConstantUtil.PROGRESS, PCT_FORMAT
+									.format(percentComplete)
+									+ " - " + fileNameForNotification);
 
 						}
 					});
