@@ -44,7 +44,6 @@ public class OGRFeature extends BaseDomain {
 	private Integer femalePopulation = null;
 	private Integer malePopulation = null;
 	private Integer numberHouseholds = null;
-	
 
 	public Integer getDensity() {
 		return density;
@@ -300,12 +299,20 @@ public class OGRFeature extends BaseDomain {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CountryCode: " + countryCode + " ");
 		sb.append("FeatureType: " + featureType + " ");
+		sb.append("Centroid Lat: " + this.centroidLat + " ");
+		sb.append("CentroidLon: " + this.centroidLon + " ");
+		sb.append("Extent: ((" + this.x1 + ","+ this.y1+"),("+this.x2+","+this.y2+"))");
 		sb.append("Sub1: " + sub1 + " ");
 		sb.append("Sub2: " + sub2 + " ");
 		sb.append("Sub3: " + sub3 + " ");
 		sb.append("Sub4: " + sub4 + " ");
 		sb.append("Sub5: " + sub5 + " ");
 		sb.append("Sub6: " + sub6 + " ");
+		if (this.getGeometry().getWktText() != null)
+			sb.append("Geometry: "
+					+ this.getGeometry().getWktText().substring(0, 20) + "...");
+		else
+			sb.append("Geometry is null");
 		return sb.toString();
 	}
 }

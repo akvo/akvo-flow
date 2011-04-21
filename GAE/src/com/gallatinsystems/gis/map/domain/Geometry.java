@@ -2,6 +2,7 @@ package com.gallatinsystems.gis.map.domain;
 
 import java.util.ArrayList;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -19,7 +20,8 @@ public class Geometry extends BaseDomain {
 	private Text wktText = null;
 	private Double centroidLat = null;
 	private Double centroidLon = null;
-	
+	@NotPersistent
+	private com.vividsolutions.jts.geom.Coordinate[] boundingBox = null;
 
 	public Double getCentroidLat() {
 		return centroidLat;
@@ -65,10 +67,25 @@ public class Geometry extends BaseDomain {
 	}
 
 	public String getWktText() {
-		return wktText.getValue();
+		if (wktText != null)
+			return wktText.getValue();
+		else
+			return null;
 	}
 
-	public enum GeometryType{
-		MULITPOLYGON,POLYGON, POINT,RECTANGLE
+	
+
+	public void setBoundingBox(com.vividsolutions.jts.geom.Coordinate[] boundingBox) {
+		this.boundingBox = boundingBox;
+	}
+
+	public com.vividsolutions.jts.geom.Coordinate[] getBoundingBox() {
+		return boundingBox;
+	}
+
+
+
+	public enum GeometryType {
+		MULITPOLYGON, POLYGON, POINT, RECTANGLE
 	}
 }

@@ -248,7 +248,8 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 
 	public GeoPlace manualLookup(String latStr, String lonStr,
 			OGRFeature.FeatureType type) {
-		log.log(Level.INFO,"Inside Manaual Lookup for " + latStr + ":"+lonStr+":"+type.toString());
+		log.log(Level.INFO, "Inside Manaual Lookup for " + latStr + ":"
+				+ lonStr + ":" + type.toString());
 		GeoPlace place = null;
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
@@ -270,8 +271,8 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				} catch (ParseException e) {
 					log.log(Level.SEVERE, e.getMessage());
 				}
-				Coordinate coord = new Coordinate(Double.parseDouble(lonStr),
-						Double.parseDouble(latStr));
+				Coordinate coord = new Coordinate(
+						Double.parseDouble(lonStr),Double.parseDouble(latStr));
 				Point point = geometryFactory.createPoint(coord);
 				if (shape != null && shape.contains(point)) {
 					place = new GeoPlace();
@@ -284,11 +285,67 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 					place.setSub4(item.getSub4());
 					place.setSub5(item.getSub5());
 					place.setSub6(item.getSub6());
-					log.log(Level.INFO,"Found point inside " + item.getCountryCode() + " " +  item.toString());
+					log.log(Level.INFO,
+							"Found point inside " + item.getCountryCode() + " "
+									+ item.toString());
 				}
 			} else {
 				log.log(Level.INFO, item.getCountryCode()
 						+ " has a null geometry");
+			}
+		}
+		return place;
+	}
+
+	public GeoPlace resolveSubCountry(String latStr, String lonStr,
+			String countryCode) {
+		GeoPlace place = null;
+		if (countryCode != null && latStr != null && lonStr != null) {
+
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+			List<OGRFeature> ogrList = ogrFeatureDao.listByExtentTypeCountry(
+					Double.parseDouble(lonStr), Double.parseDouble(latStr),
+					countryCode, "x1", "asc", "all");
+			for (OGRFeature item : ogrList) {
+				Geometry geo = item.getGeometry();
+				GeometryFactory geometryFactory = new GeometryFactory();
+				WKTReader reader = new WKTReader(geometryFactory);
+				com.vividsolutions.jts.geom.Geometry shape = null;
+				if (geo != null && geo.getType() != null) {
+					try {
+						if (geo.getType().equals(GeometryType.POLYGON)) {
+							shape = (Polygon) reader.read(geo.getWktText());
+						} else if (geo.getType().equals(
+								GeometryType.MULITPOLYGON)) {
+							shape = (MultiPolygon) reader
+									.read(geo.getWktText());
+						}
+					} catch (ParseException e) {
+						log.log(Level.SEVERE, e.getMessage());
+					}
+					Coordinate coord = new Coordinate(
+							Double.parseDouble(lonStr),
+							Double.parseDouble(latStr));
+					Point point = geometryFactory.createPoint(coord);
+					if (shape != null && shape.contains(point)) {
+						place = new GeoPlace();
+						countryCode = item.getCountryCode();
+						place.setCountryCode(countryCode);
+						place.setCountryName(item.getName());
+						place.setSub1(item.getSub1());
+						place.setSub2(item.getSub2());
+						place.setSub3(item.getSub3());
+						place.setSub4(item.getSub4());
+						place.setSub5(item.getSub5());
+						place.setSub6(item.getSub6());
+						log.log(Level.INFO,
+								"Found point inside " + item.getCountryCode()
+										+ " " + item.toString());
+					}
+				} else {
+					log.log(Level.INFO, item.getCountryCode()
+							+ " has a null geometry");
+				}
 			}
 		}
 		return place;

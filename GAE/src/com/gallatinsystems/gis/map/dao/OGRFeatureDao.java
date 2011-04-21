@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 
@@ -69,6 +70,46 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				paramMap, LTE_OP);
 		appendNonNullParam("featureType", filterString, paramString, "String",
 				featureType, paramMap, EQ_OP);
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		if (orderByCol != null && orderByDirection != null)
+			query.setOrdering(orderByCol + " " + orderByDirection);
+
+		prepareCursor(cursorString, query);
+		@SuppressWarnings("unchecked")
+		List<OGRFeature> resultsGTE = (List<OGRFeature>) query
+				.executeWithMap(paramMap);
+		List<OGRFeature> results = new ArrayList<OGRFeature>();
+		for (OGRFeature item : resultsGTE) {
+			log.log(Level.INFO,item.getCountryCode());
+			Double[] boundingBox = item.getBoundingBox();
+			if (y1 < boundingBox[1] && x1 < boundingBox[2]
+					&& y1 > boundingBox[3]) {
+				results.add(item);
+			}
+		}
+
+		return results;
+	}
+
+	public List<OGRFeature> listByExtentTypeCountry(Double x1, Double y1,
+			String countryCode, String orderByCol, String orderByDirection,
+			String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("x1", filterString, paramString, "Double", x1,
+				paramMap, LTE_OP);
+		appendNonNullParam("featureType", filterString, paramString, "String",
+				FeatureType.SUB_COUNTRY_OTHER, paramMap, EQ_OP);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap, EQ_OP);
 
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
