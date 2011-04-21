@@ -265,13 +265,13 @@
 	</datastore-index>
 	<datastore-index kind="Question" ancestor="false"
 		source="manual">
-		<property name="surveyId" direction="asc"/>
+		<property name="surveyId" direction="asc" />
 		<property name="questionGroupId" direction="asc" />
 		<property name="order" direction="asc" />
 	</datastore-index>
 	<datastore-index kind="QuestionGroup" ancestor="false"
 		source="manual">
-		<property name="surveyId" direction="asc"/>
+		<property name="surveyId" direction="asc" />
 		<property name="order" direction="asc" />
 	</datastore-index>
 	<datastore-index kind="DeviceFiles" ancestor="false"
@@ -299,7 +299,21 @@
 		<property name="countryCode" direction="asc" />
 		<property name="featureType" direction="asc" />
 		<property name="sub1" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="OGRFeature" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="featureType" direction="asc" />
+		<property name="sub1" direction="asc" />
 		<property name="sub2" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="OGRFeature" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="featureType" direction="asc" />
+		<property name="sub1" direction="asc" />
+		<property name="sub2" direction="asc" />
+		<property name="sub3" direction="asc" />
 	</datastore-index>
 	<datastore-index kind="GeoMeasure" ancestor="true"
 		source="manual">
@@ -314,13 +328,15 @@
 		<property name="approvedFlag" direction="asc" />
 		<property name="collectionDate" direction="desc" />
 	</datastore-index>
-	<datastore-index kind="AccessPointScoreDetail" ancestor="false" source="manual">
-        <property name="accessPointId" direction="asc"/>
-        <property name="computationDate" direction="desc"/>
-    </datastore-index>
-     <datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="communityCode" direction="asc"/>
-        <property name="pointType" direction="asc"/>
-        <property name="collectionDate" direction="desc"/>
-    </datastore-index>
+	<datastore-index kind="AccessPointScoreDetail"
+		ancestor="false" source="manual">
+		<property name="accessPointId" direction="asc" />
+		<property name="computationDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="communityCode" direction="asc" />
+		<property name="pointType" direction="asc" />
+		<property name="collectionDate" direction="desc" />
+	</datastore-index>
 </datastore-indexes>
