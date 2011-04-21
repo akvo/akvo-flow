@@ -52,6 +52,9 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		if (req.getAction().equals(ExternalGISRequest.IMPORT_ACTION)) {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			OGRFeature ogrFeature = new OGRFeature();
+			if(importReq.getCountryCode().equals("US")){
+				log.log(Level.INFO,"US");
+			}
 			ogrFeature.setCountryCode(importReq.getCountryCode());
 			ogrFeature.setName(importReq.getName());
 			ogrFeature.setProjectCoordinateSystemIdentifier(importReq
@@ -98,7 +101,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 					x1 = geometry.getBoundingBox()[1].x;
 					y1 = geometry.getBoundingBox()[1].y;
 					x2 = geometry.getBoundingBox()[3].x;
-					y2 = geometry.getBoundingBox()[4].y;
+					y2 = geometry.getBoundingBox()[3].y;
 					Double[] boundingBox = new Double[]{x1,y1,x2,y2};
 					ogrFeature.setBoundingBox(boundingBox);
 				} catch (ParseException pe) {

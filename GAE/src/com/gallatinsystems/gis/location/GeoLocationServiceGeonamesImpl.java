@@ -271,23 +271,32 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				} catch (ParseException e) {
 					log.log(Level.SEVERE, e.getMessage());
 				}
-				Coordinate coord = new Coordinate(
-						Double.parseDouble(lonStr),Double.parseDouble(latStr));
+				Coordinate coord = new Coordinate(Double.parseDouble(lonStr),
+						Double.parseDouble(latStr));
 				Point point = geometryFactory.createPoint(coord);
-				if (shape != null && shape.contains(point)) {
-					place = new GeoPlace();
-					countryCode = item.getCountryCode();
-					place.setCountryCode(countryCode);
-					place.setCountryName(item.getName());
-					place.setSub1(item.getSub1());
-					place.setSub2(item.getSub2());
-					place.setSub3(item.getSub3());
-					place.setSub4(item.getSub4());
-					place.setSub5(item.getSub5());
-					place.setSub6(item.getSub6());
-					log.log(Level.INFO,
-							"Found point inside " + item.getCountryCode() + " "
-									+ item.toString());
+				Boolean containsFlag = false;
+				if (shape != null) {
+
+					for (int i = 0; i < shape.getNumGeometries(); i++) {
+						if (shape.getGeometryN(i).contains(point)) {
+							containsFlag = true;
+						}
+					}
+					if (containsFlag) {
+						place = new GeoPlace();
+						countryCode = item.getCountryCode();
+						place.setCountryCode(countryCode);
+						place.setCountryName(item.getName());
+						place.setSub1(item.getSub1());
+						place.setSub2(item.getSub2());
+						place.setSub3(item.getSub3());
+						place.setSub4(item.getSub4());
+						place.setSub5(item.getSub5());
+						place.setSub6(item.getSub6());
+						log.log(Level.INFO,
+								"Found point inside " + item.getCountryCode()
+										+ " " + item.toString());
+					}
 				}
 			} else {
 				log.log(Level.INFO, item.getCountryCode()

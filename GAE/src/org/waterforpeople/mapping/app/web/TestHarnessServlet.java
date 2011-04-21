@@ -108,6 +108,7 @@ import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
+import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -225,13 +226,14 @@ public class TestHarnessServlet extends HttpServlet {
 			String lon = req.getParameter("lon");
 			GeoPlace geoPlace = gs.manualLookup(lat, lon);
 			try {
-				if (geoPlace != null)
+				if (geoPlace != null) {
 					resp.getWriter().println(
 							"Found: " + geoPlace.getCountryName() + ":"
 									+ geoPlace.getCountryCode() + " for " + lat
 									+ ", " + lon);
-				geoPlace = gs.manualLookup(lat, lon,
-						OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+					geoPlace = gs.resolveSubCountry(lat, lon,
+							geoPlace.getCountryCode());
+				}
 				if (geoPlace != null)
 					resp.getWriter().println(
 							"Found: " + geoPlace.getCountryCode() + ":"
@@ -282,6 +284,29 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
+		} else if ("printOGRFeature".equals(action)) {
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+			FeatureType featureType = FeatureType.valueOf(req
+					.getParameter("featureType"));
+			List<OGRFeature> ogrFeatureList = ogrFeatureDao
+					.listByCountryAndType(req.getParameter("countryCode"),
+							featureType);
+			try {
+				int i = 1;
+				if (ogrFeatureList != null && !ogrFeatureList.isEmpty()) {
+					for (OGRFeature item : ogrFeatureList) {
+						resp.getWriter().println(
+								"i: " + i + " sub1" + item.getSub1()
+										+ " sub2: " + item.getSub2());
+						resp.getWriter().println(
+								"        OGRFeature: " + item.toString());
+					}
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		} else if ("resetLRAP".equals(action)) {
 			try {
 
@@ -320,20 +345,21 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("populateAccessPointMetricSummary".equals(action)) {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			AccessPointMetricSummaryDao apmsDao = new AccessPointMetricSummaryDao();
-			//List<OGRFeature> ogrList = ogrFeatureDao.listByCountryAndType("LR",
-			//		FeatureType.SUB_COUNTRY_OTHER);
+			// List<OGRFeature> ogrList =
+			// ogrFeatureDao.listByCountryAndType("LR",
+			// FeatureType.SUB_COUNTRY_OTHER);
 			Boolean firstTimeFlag = false;
-//			for (OGRFeature item : ogrList) {
-//				AccessPointMetricSummary apms = new AccessPointMetricSummary();
-//				apms.setCount(1L);
-//				apms.setCountry("LR");
-//				apms.setSubLevel(1);
-//				apms.setSubValue(item.getSub1());
-//				apms.setShardNum(1);
-//				apms.setParentSubName("LR");
-//				apms.setMetricName("WATER_POINT");
-//				apmsDao.save(apms);
-//			}
+			// for (OGRFeature item : ogrList) {
+			// AccessPointMetricSummary apms = new AccessPointMetricSummary();
+			// apms.setCount(1L);
+			// apms.setCountry("LR");
+			// apms.setSubLevel(1);
+			// apms.setSubValue(item.getSub1());
+			// apms.setShardNum(1);
+			// apms.setParentSubName("LR");
+			// apms.setMetricName("WATER_POINT");
+			// apmsDao.save(apms);
+			// }
 		} else if ("clearSurveyInstanceQAS".equals(action)) {
 			// QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 			// for (QuestionAnswerStore qas : qasDao.list("all")) {
@@ -1217,7 +1243,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 			// sasi.deleteSurveyAssignment(dto);
 		} else if ("populateAssignmentId".equalsIgnoreCase(action)) {
-			populateAssignmentId(Long.parseLong(req 
+			populateAssignmentId(Long.parseLong(req
 					.getParameter("assignmentId")));
 		} else if ("testDSJQDelete".equals(action)) {
 			DeviceSurveyJobQueueDAO dsjDAO = new DeviceSurveyJobQueueDAO();
@@ -1406,7 +1432,7 @@ public class TestHarnessServlet extends HttpServlet {
 			sum.setResponse("GWAR");
 			sum.setQuestionId("2166031");
 			dao.save(sum);
-		}else if ("createCountry".equals(action)){
+		} else if ("createCountry".equals(action)) {
 			Country country = new Country();
 			country.setIsoAlpha2Code("LR");
 			country.setName("Liberia");
@@ -1670,7 +1696,8 @@ public class TestHarnessServlet extends HttpServlet {
 
 			startDate = sdf.parse(date);
 
-			List<SurveyInstance> instances = dao.listByDateRange(startDate,null);
+			List<SurveyInstance> instances = dao.listByDateRange(startDate,
+					null);
 			if (instances != null) {
 				AccessPointHelper aph = new AccessPointHelper();
 				for (SurveyInstance instance : instances) {
@@ -1700,7 +1727,7 @@ public class TestHarnessServlet extends HttpServlet {
 		}
 	}
 
-	@SuppressWarnings({"unchecked","rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <T extends BaseDomain> void deleteAll(Class<T> type) {
 		BaseDAO<T> baseDao = new BaseDAO(type);
 		List<T> items = baseDao.list("all");

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.JApplet;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -112,9 +113,15 @@ public class GeometryLoader extends JApplet implements Runnable {
 					String fileName = promptForFile();
 					if (fileName != null) {
 						if (coordinateSystemType != null) {
-							SwingUtilities.invokeLater(new StatusUpdater("Importing data"));
-							executeImport(fileName);
-							SwingUtilities.invokeLater(new StatusUpdater("Import Complete"));
+							SwingUtilities.invokeLater(new StatusUpdater(
+									"Importing data"));
+							ArrayList<String> shapefileFields = readShapefileMetadata(fileName);
+							Boolean configured = configureFields(shapefileFields);
+							if (configured) {
+								executeImport(fileName);
+							}
+							SwingUtilities.invokeLater(new StatusUpdater(
+									"Import Complete"));
 						} else {
 							statusLabel.setText("Applet misconfigured");
 						}
@@ -129,6 +136,48 @@ public class GeometryLoader extends JApplet implements Runnable {
 		}
 	}
 
+	private Boolean configureFields(ArrayList<String> shapefileFields) {
+		JComboBox fieldToMapCB = new JComboBox();
+
+		for (String field : shapefileFields) {
+			fieldToMapCB.addItem(field);
+		}
+		for (Integer i = 0; i < shapefileFields.size(); i++) {
+			getContentPane().add(new JLabel("Field " + i));
+			getContentPane().add(fieldToMapCB);
+		}
+		return false;
+	}
+
+	private ArrayList<String> readShapefileMetadata(String fileName2)
+			throws IOException {
+		ArrayList<String> properties = new ArrayList<String>();
+		FileDataStore store = FileDataStoreFinder.getDataStore(new File(
+				fileName));
+		@SuppressWarnings("rawtypes")
+		FeatureSource featureSource = store.getFeatureSource();
+		ReferencedEnvelope re = featureSource.getBounds();
+
+		FeatureReader<org.opengis.feature.simple.SimpleFeatureType, org.opengis.feature.simple.SimpleFeature> fr = store
+				.getFeatureReader();
+		Integer i = 0;
+		while (fr.hasNext()) {
+			i++;
+			System.out.println("Feature " + i);
+			org.opengis.feature.simple.SimpleFeature sf = fr.next();
+			org.opengis.feature.simple.SimpleFeatureType sft = fr
+					.getFeatureType();
+
+			System.out.println("   FeatureType: " + sft.getName().toString());
+
+			for (Property prop : sf.getProperties()) {
+				properties.add(prop.getName() + "(" + prop.getType() + ")");
+			}
+		}
+
+		return properties;
+	}
+
 	private void executeImport(String filePath) {
 		try {
 			System.out.println("About to call serverbase: " + serverBase
@@ -136,7 +185,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 					+ utmZone + " cm: " + centralMeridian + " cc:"
 					+ countryCodeOverride + " featureType:" + featureType);
 			formURL(serverBase, filePath, ct, utmZone, centralMeridian,
-					countryCodeOverride, featureType);			
+					countryCodeOverride, featureType);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -323,8 +372,8 @@ public class GeometryLoader extends JApplet implements Runnable {
 			System.out.println("Feature " + i);
 			org.opengis.feature.simple.SimpleFeature sf = fr.next();
 			org.opengis.feature.simple.SimpleFeatureType sft = fr
-			.getFeatureType();
-			
+					.getFeatureType();
+
 			System.out.println("   FeatureType: " + sft.getName().toString());
 			if (featureType.equals("SUB_COUNTRY_OTHER"))
 				ogrFeatureType = "SUB_COUNTRY_OTHER";

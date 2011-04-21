@@ -83,10 +83,9 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				.executeWithMap(paramMap);
 		List<OGRFeature> results = new ArrayList<OGRFeature>();
 		for (OGRFeature item : resultsGTE) {
-			log.log(Level.INFO,item.getCountryCode());
 			Double[] boundingBox = item.getBoundingBox();
-			if (y1 < boundingBox[1] && x1 < boundingBox[2]
-					&& y1 > boundingBox[3]) {
+			if (boundingBox[0] < x1 && boundingBox[1] > y1
+					&& boundingBox[2] > x1 && boundingBox[3] < y1) {
 				results.add(item);
 			}
 		}
@@ -124,7 +123,8 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		List<OGRFeature> results = new ArrayList<OGRFeature>();
 		for (OGRFeature item : resultsGTE) {
 			Double[] boundingBox = item.getBoundingBox();
-			if (y1 < boundingBox[3]) {
+			if (boundingBox[0] < x1 && boundingBox[1] > y1
+					&& boundingBox[2] > x1 && boundingBox[3] < y1) {
 				results.add(item);
 			}
 		}
