@@ -11,7 +11,9 @@ public class ImageUtils {
 	public static String[] parseImageParts(String url) {
 		String[] parts = new String[3];
 		url = url.replace("http://", "");
-		url = url.substring(0, url.indexOf("?"));
+		if(url.contains("?")){
+			url = url.substring(0, url.indexOf("?"));
+		}
 		String[] items = url.split("/");
 		if (items.length == 3) {
 			// no country in path
