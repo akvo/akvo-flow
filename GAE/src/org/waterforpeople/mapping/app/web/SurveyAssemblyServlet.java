@@ -277,7 +277,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				count++;
 			}
 		}
-		return sb.toString();
+		return sb.toString()+"</questionGroup>";
 	}
 
 	private void assembleSurvey(Long surveyId) {
