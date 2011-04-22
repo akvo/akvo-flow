@@ -21,6 +21,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -30,6 +31,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		implements AccessPointManagerService {
+	
+	private static final String S3_BUCKET = "s3bucket";
 
 	private static final Logger log = Logger
 			.getLogger(AccessPointManagerService.class.getName());
@@ -146,7 +149,6 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	@Override
 	public byte[] rotateImage(String fileName) {
 		String[] imageURLParts = ImageUtils.parseImageParts(fileName);
-		String bucket = "waterforpeople";
 		Random rand = new Random();
 		InputStream in;
 		ByteArrayOutputStream out = null;
@@ -172,7 +174,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		if (this.getUploadS3Flag()) {
 			try {
 
-				s3.uploadFile(bucket, imageURLParts[1] + imageURLParts[2],
+				s3.uploadFile(PropertyUtil.getProperty(S3_BUCKET), imageURLParts[1] + imageURLParts[2],
 						newImage);
 			} catch (Exception ex) {
 				// This is here for dev env where you can't make S3 puts
