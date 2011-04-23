@@ -55,4 +55,5 @@ public class GISSupportServiceImpl extends RemoteServiceServlet implements
 		return featureTypes;
 	}
 
+
 }

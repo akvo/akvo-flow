@@ -1,9 +1,13 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.community.SubCountryDto;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -32,12 +36,14 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 
 	private boolean useCommunity;
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
+			.create(TextConstants.class);
 	public static final String ANY_OPT = TEXT_CONSTANTS.any();
 	public static final String ALL_OPT = TEXT_CONSTANTS.all();
 	private ListBox countryListbox;
 	private ListBox communityListbox;
+	private List<ListBox> subLevelListboxes;
 	private String specialOption;
+	private int maxSubLevel;
 	private CommunityServiceAsync communityService;
 
 	/**
@@ -58,13 +64,28 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 	 *            will return null.
 	 */
 	public LocationDrivenPortlet(String title, boolean scrollable,
-			boolean configurable, boolean snapable, int width, int height, UserDto user,
-			boolean useCommunity, String specialOption) {
+			boolean configurable, boolean snapable, int width, int height,
+			UserDto user, boolean useCommunity, String specialOption) {
+		this(title, scrollable, configurable, snapable, width, height, user,
+				useCommunity, 0, specialOption);
+	}
+
+	public LocationDrivenPortlet(String title, boolean scrollable,
+			boolean configurable, boolean snapable, int width, int height,
+			UserDto user, boolean useCommunity, int maxSubLevel,
+			String specialOption) {
 		super(title, scrollable, configurable, snapable, width, height, user);
 		communityListbox = new ListBox();
 		countryListbox = new ListBox();
 		this.specialOption = specialOption;
 		this.useCommunity = useCommunity;
+		if (maxSubLevel > 0) {
+			this.maxSubLevel = maxSubLevel;
+			subLevelListboxes = new ArrayList<ListBox>();
+			for (int i = 0; i < maxSubLevel; i++) {
+				subLevelListboxes.add(new ListBox());
+			}
+		}
 		communityService = GWT.create(CommunityService.class);
 		loadCountries();
 		installChangeHandlers();
@@ -86,6 +107,10 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 	 */
 	protected Widget getCountryControl() {
 		return countryListbox;
+	}
+
+	protected List<ListBox> getSubLevelControls() {
+		return subLevelListboxes;
 	}
 
 	/**
@@ -111,6 +136,13 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 									specialOption);
 						}
 					}
+				} else if (maxSubLevel > 0) {
+					for (ListBox box : subLevelListboxes) {
+						box.clear();
+						if (country != null) {
+							loadSubLevel(1, country, null);
+						}
+					}
 				}
 				// now notify subclasses
 				countrySelected(country);
@@ -125,6 +157,59 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 				communitySelected(commmunity);
 			}
 		});
+		
+		if(maxSubLevel>0){
+			//for (ListBox box : subLevelListboxes) {
+			for(int i = 0; i < subLevelListboxes.size(); i++){
+				final int level = i+1;
+				subLevelListboxes.get(i).addChangeHandler(new ChangeHandler(){
+					@Override
+					public void onChange(ChangeEvent event) {
+						String selectedSubLevel = getSelectedValue(subLevelListboxes.get(level-1));						
+						if(level < maxSubLevel){
+							//if this isn't the terminal level, load the next set
+							loadSubLevel(level+1, null, new Long(selectedSubLevel));
+						}
+						subLevelSelected(level, new Long(selectedSubLevel));
+						
+					}});
+			}
+		}
+	}
+
+	/**
+	 * loads the SubCountry box identified by the level
+	 * 
+	 * @param level
+	 * @param key
+	 */
+	private void loadSubLevel(int level, String country, Long parentId) {
+		if (level <= subLevelListboxes.size()) {
+			final ListBox boxToLoad = subLevelListboxes.get(level);
+			AsyncCallback<List<SubCountryDto>> sublevelCallback = new AsyncCallback<List<SubCountryDto>>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					// no-op
+				}
+
+				@Override
+				public void onSuccess(List<SubCountryDto> result) {
+					if (specialOption != null) {
+						boxToLoad.addItem(specialOption, specialOption);
+					}
+					if (result != null) {
+						for (SubCountryDto dto : result) {
+							boxToLoad.addItem(dto.getName(), dto.getKeyId()
+									.toString());
+						}
+					}
+				}
+			};
+
+			communityService.listChildSubCountries(country, parentId,
+					sublevelCallback);
+
+		}
 	}
 
 	/**
@@ -271,5 +356,16 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 	 * loaded.
 	 */
 	protected void initialLoadComplete() {
+	}
+
+	/**
+	 * called when a sub level selection is made. Subclasses should override
+	 * this if they want to handle this event.
+	 * 
+	 * @param level
+	 * @param keyId
+	 */
+	protected void subLevelSelected(int level, Long keyId) {
+
 	}
 }
