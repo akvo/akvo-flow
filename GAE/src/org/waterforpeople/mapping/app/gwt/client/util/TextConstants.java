@@ -491,5 +491,7 @@ public interface TextConstants extends Constants{
 	public String accessPointManager();
 	public String remapToAPDescription();
 	public String surveyPublishOkMessage();
-	public String surveyPublishErrorMessage();
+	public String surveyPublishErrorMessage();				
+	public String accessPointMetricChartDescription();
+	public String accessPointMetricChartTitle();
 }

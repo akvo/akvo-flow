@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 
@@ -23,6 +22,8 @@ public class PortletFactory {
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
 					AccessPointPerformancePortlet.DESCRIPTION },
+	/*		{ AccessPointMetricChartPortlet.NAME,
+					AccessPointMetricChartPortlet.DESCRIPTION },*/
 			{ RecentPointsPortlet.NAME, RecentPointsPortlet.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name, UserDto user) {
@@ -70,14 +71,15 @@ public class PortletFactory {
 			return new UserManagerPortlet(user);
 		} else if (name.equals(RemoteExceptionPortlet.NAME)) {
 			return new RemoteExceptionPortlet();
-		}else if(name.equals(DeviceFileManagerPortlet.NAME)){
+		} else if (name.equals(DeviceFileManagerPortlet.NAME)) {
 			return new DeviceFileManagerPortlet(user);
-		}else if (name.equals(AdminWizardPortlet.NAME)){
+		} else if (name.equals(AdminWizardPortlet.NAME)) {
 			return new AdminWizardPortlet(user);
-		}else if (name.equals(RunReportsPortlet.NAME)){
+		} else if (name.equals(RunReportsPortlet.NAME)) {
 			return new RunReportsPortlet();
-		}else {
-		
+		} else if (name.equals(AccessPointMetricChartPortlet.NAME)) {
+			return new AccessPointMetricChartPortlet(user);
+		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
 	}

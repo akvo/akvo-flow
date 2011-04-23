@@ -62,4 +62,11 @@ public class SubCountry extends BaseDomain {
 		this.countryCode = countryCode;
 	}
 
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		b.append(key.getId()).append(": ").append(countryCode).append(",")
+				.append(level).append(",").append(name);
+		return b.toString();
+	}
+
 }

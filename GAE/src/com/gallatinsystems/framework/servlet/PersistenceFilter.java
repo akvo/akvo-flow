@@ -55,7 +55,7 @@ public final class PersistenceFilter implements Filter {
 		PersistenceManager manager = null;
 		try {
 			manager = getManager();
-			chain.doFilter(req, res);
+			chain.doFilter(req, res);			
 		} finally {
 			if (manager != null) {
 				manager.flush();

@@ -139,9 +139,9 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 				} else if (maxSubLevel > 0) {
 					for (ListBox box : subLevelListboxes) {
 						box.clear();
-						if (country != null) {
-							loadSubLevel(1, country, null);
-						}
+					}
+					if (country != null) {
+						loadSubLevel(1, country, null);
 					}
 				}
 				// now notify subclasses
@@ -157,22 +157,34 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 				communitySelected(commmunity);
 			}
 		});
-		
-		if(maxSubLevel>0){
-			//for (ListBox box : subLevelListboxes) {
-			for(int i = 0; i < subLevelListboxes.size(); i++){
-				final int level = i+1;
-				subLevelListboxes.get(i).addChangeHandler(new ChangeHandler(){
+
+		if (maxSubLevel > 0) {
+			for (int i = 0; i < subLevelListboxes.size(); i++) {
+				final int level = i + 1;
+				subLevelListboxes.get(i).addChangeHandler(new ChangeHandler() {
 					@Override
 					public void onChange(ChangeEvent event) {
-						String selectedSubLevel = getSelectedValue(subLevelListboxes.get(level-1));						
-						if(level < maxSubLevel){
-							//if this isn't the terminal level, load the next set
-							loadSubLevel(level+1, null, new Long(selectedSubLevel));
+						String selectedSubLevel = getSelectedValue(subLevelListboxes
+								.get(level - 1));
+						if (selectedSubLevel == null) {
+							// if they selected the "special option", clear the
+							// subsequent sub level boxes
+							for (int j = level; j < subLevelListboxes.size(); j++) {
+								subLevelListboxes.get(j).clear();
+							}
+							subLevelSelected(level, null);
+						} else {
+							if (level < maxSubLevel) {
+								// if this isn't the terminal level, load the
+								// next set
+								loadSubLevel(level + 1, null, new Long(
+										selectedSubLevel));
+
+							}
+							subLevelSelected(level, new Long(selectedSubLevel));
 						}
-						subLevelSelected(level, new Long(selectedSubLevel));
-						
-					}});
+					}
+				});
 			}
 		}
 	}
@@ -185,7 +197,7 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 	 */
 	private void loadSubLevel(int level, String country, Long parentId) {
 		if (level <= subLevelListboxes.size()) {
-			final ListBox boxToLoad = subLevelListboxes.get(level);
+			final ListBox boxToLoad = subLevelListboxes.get(level - 1);
 			AsyncCallback<List<SubCountryDto>> sublevelCallback = new AsyncCallback<List<SubCountryDto>>() {
 				@Override
 				public void onFailure(Throwable caught) {

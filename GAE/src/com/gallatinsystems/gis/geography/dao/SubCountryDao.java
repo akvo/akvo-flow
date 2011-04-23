@@ -77,7 +77,7 @@ public class SubCountryDao extends BaseDAO<SubCountry> {
 				countryCode, paramMap);
 		appendNonNullParam("level", filterString, paramString, "Integer",
 				level, paramMap);
-		appendNonNullParam("name", filterString, paramString, "String", level,
+		appendNonNullParam("name", filterString, paramString, "String", name,
 				paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());

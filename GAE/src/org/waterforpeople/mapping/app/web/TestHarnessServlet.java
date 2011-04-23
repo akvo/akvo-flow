@@ -98,7 +98,9 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
+import com.gallatinsystems.gis.geography.dao.SubCountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.gallatinsystems.gis.geography.domain.SubCountry;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
@@ -1453,6 +1455,25 @@ public class TestHarnessServlet extends HttpServlet {
 							.getQueue("dataSummarization");
 					summQueue.add(url("/app_worker/datasummarization").param(
 							"objectKey", country).param("type", "OGRFeature"));
+				} else {
+					resp.getWriter()
+							.println("country is a mandatory parameter");
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else if("listSubCountry".equals(action)){
+			try {
+				String country = req.getParameter("country");
+				if (country != null) {
+					SubCountryDao subDao = new SubCountryDao();
+					List<SubCountry> results = subDao.list(null);
+					if(results != null){
+						for(SubCountry c: results){
+							resp.getWriter().println(c.toString());
+						}
+					}
 				} else {
 					resp.getWriter()
 							.println("country is a mandatory parameter");
