@@ -147,7 +147,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	}
 
 	@Override
-	public byte[] rotateImage(String fileName) {
+	public void rotateImage(String fileName) {
 		String[] imageURLParts = ImageUtils.parseImageParts(fileName);
 		Random rand = new Random();
 		InputStream in;
@@ -181,18 +181,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				log.info(ex.getMessage());
 
 			}
-		}
-		return newImage;
-
-		/*
-		 * resp.getWriter() .print( "<html><body><img src=\"" + totalURL +
-		 * "\"/></body></html>");
-		 */
-		// serve the first image
-		// resp.setHeader("Cache-Control",
-		// "no-store, no-cache, must-revalidate");
-		// resp.setContentType("image/jpeg");
-		// resp.getOutputStream().write(newImage);
+		}		
 	}
 
 	/**

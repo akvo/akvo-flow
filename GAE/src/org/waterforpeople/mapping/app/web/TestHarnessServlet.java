@@ -406,8 +406,7 @@ public class TestHarnessServlet extends HttpServlet {
 			// String test2 =
 			// "http://waterforpeople.s3.amazonaws.com/images/hn/ch003[1].jpg";
 			writeImageToResponse(resp, test1);
-			apmI.setUploadS3Flag(false);
-			writeImageToResponse(resp, apmI.rotateImage(test1));
+			apmI.setUploadS3Flag(false);		
 			// apmI.rotateImage(test2);
 		} else if ("clearSurveyGroupGraph".equals(action)) {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();

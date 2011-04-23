@@ -3,13 +3,13 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDetailDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
@@ -38,10 +38,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -53,13 +49,17 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto> {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
-	
+
 	public static final String NAME = TEXT_CONSTANTS.accessPointManager();
 
 	private static final String DEFAULT_SORT_FIELD = "key";
@@ -399,14 +399,19 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					accessPointDetail.setWidget(10, 4, new Label(TEXT_CONSTANTS
 							.waitForRotate()));
 					svc.rotateImage(((TextBox) accessPointDetail.getWidget(10,
-							1)).getText(), new AsyncCallback<byte[]>() {
+							1)).getText(), new AsyncCallback<Void>() {
 						@Override
 						public void onFailure(Throwable caught) {
-							// no-op
+							MessageDialog dia = new MessageDialog(
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ ": "
+											+ caught.getLocalizedMessage());
+							dia.showCentered();
 						}
 
 						@Override
-						public void onSuccess(byte[] result) {
+						public void onSuccess(Void v) {
 							Integer random = Random.nextInt();
 							Image photo = ((Image) accessPointDetail.getWidget(
 									11, 1));
@@ -796,7 +801,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		// extimatedPopulation
 		TextBox estimatedPopulation = new TextBox();
-		accessPointDetail.setWidget(27, 0, ViewUtil.initLabel(TEXT_CONSTANTS.estPopulation()));
+		accessPointDetail.setWidget(27, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.estPopulation()));
 		if (accessPointDto != null
 				&& accessPointDto.getEstimatedPopulation() != null)
 			estimatedPopulation.setText(accessPointDto.getEstimatedPopulation()
@@ -804,7 +810,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		accessPointDetail.setWidget(27, 1, estimatedPopulation);
 
 		// hasSystemBeenDown1DayFlag
-		accessPointDetail.setWidget(29, 0, ViewUtil.initLabel(TEXT_CONSTANTS.hasSysBeenDown()));
+		accessPointDetail.setWidget(29, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.hasSysBeenDown()));
 		accessPointDetail
 				.setWidget(
 						29,
@@ -815,7 +822,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 								.getHasSystemBeenDown1DayFlag().toString()
 								: null));
 
-		accessPointDetail.setWidget(30, 0, ViewUtil.initLabel(TEXT_CONSTANTS.wfpSupported()));
+		accessPointDetail.setWidget(30, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.wfpSupported()));
 		accessPointDetail
 				.setWidget(
 						30,
@@ -825,7 +833,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 										.getWaterForPeopleProjectFlag() != null ? accessPointDto
 								.getWaterForPeopleProjectFlag().toString()
 								: null));
-		accessPointDetail.setWidget(31, 0,ViewUtil.initLabel(TEXT_CONSTANTS.wfpRole()));
+		accessPointDetail.setWidget(31, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.wfpRole()));
 		TextBox roleTextBox = new TextBox();
 		if (accessPointDto != null
 				&& accessPointDto.getWaterForPeopleRole() != null)
@@ -833,7 +842,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		accessPointDetail.setWidget(31, 1, roleTextBox);
 
 		TextBox currentScoreCompDate = new TextBox();
-		accessPointDetail.setWidget(32, 0, ViewUtil.initLabel(TEXT_CONSTANTS.scoreDate()));
+		accessPointDetail.setWidget(32, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.scoreDate()));
 		if (accessPointDto != null
 				&& accessPointDto.getScoreComputationDate() != null) {
 			currentScoreCompDate.setText(accessPointDto
@@ -844,7 +854,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		}
 
 		TextBox currentScore = new TextBox();
-		accessPointDetail.setWidget(33, 0, ViewUtil.initLabel(TEXT_CONSTANTS.score()));
+		accessPointDetail.setWidget(33, 0, ViewUtil.initLabel(TEXT_CONSTANTS
+				.score()));
 		if (accessPointDto != null && accessPointDto.getScore() != null) {
 			currentScore.setText(accessPointDto.getScore().toString());
 		} else {
@@ -887,14 +898,16 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 								public void onFailure(Throwable caught) {
 									MessageDialog errDialog = new MessageDialog(
 											TEXT_CONSTANTS.error(),
-											TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+											TEXT_CONSTANTS.errorTracePrefix()
+													+ " "
+													+ caught
+															.getLocalizedMessage());
 									errDialog.showCentered();
 								}
 
 								@Override
 								public void onSuccess(AccessPointDto result) {
-									Window
-											.alert(TEXT_CONSTANTS.saveComplete());
+									Window.alert(TEXT_CONSTANTS.saveComplete());
 								}
 							});
 					accessPointDetail.setVisible(false);
@@ -1111,7 +1124,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		apDto.setMeetGovtQualityStandards(getValueFromWidget(accessPointDetail,
 				18, 1).equals(TEXT_CONSTANTS.yes()) ? true : false);
 		apDto.setMeetGovtQunatityStandardsFlag(getValueFromWidget(
-				accessPointDetail, 19, 1).equals(TEXT_CONSTANTS.yes()) ? true : false);
+				accessPointDetail, 19, 1).equals(TEXT_CONSTANTS.yes()) ? true
+				: false);
 		apDto.setProvideAdequateQuantity(getValueFromWidget(accessPointDetail,
 				21, 1).equals(TEXT_CONSTANTS.yes()) ? true : false);
 		apDto.setTypeTechnologyString(getValueFromWidget(accessPointDetail, 22,
@@ -1126,9 +1140,11 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		apDto.setEstimatedPopulation(getLongValueFromWidget(accessPointDetail,
 				27, 1));
 		apDto.setHasSystemBeenDown1DayFlag(getValueFromWidget(
-				accessPointDetail, 29, 1).equals(TEXT_CONSTANTS.yes()) ? true : false);
+				accessPointDetail, 29, 1).equals(TEXT_CONSTANTS.yes()) ? true
+				: false);
 		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
-				accessPointDetail, 30, 1).equals(TEXT_CONSTANTS.yes()) ? true : false);
+				accessPointDetail, 30, 1).equals(TEXT_CONSTANTS.yes()) ? true
+				: false);
 		apDto
 				.setWaterForPeopleRole(getValueFromWidget(accessPointDetail,
 						31, 1));
@@ -1198,7 +1214,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert(TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());
+						Window.alert(TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 					}
 
 					@Override
@@ -1250,7 +1267,10 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>> dataCallback = new AsyncCallback<ResponseDto<ArrayList<AccessPointDto>>>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught.getLocalizedMessage());						
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 				errDia.showCentered();
 
 			}
@@ -1265,7 +1285,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					apTable.setVisible(true);
 					if (!errorMode) {
 
-						Button exportButton = new Button(TEXT_CONSTANTS.exportToExcel());
+						Button exportButton = new Button(TEXT_CONSTANTS
+								.exportToExcel());
 						apTable.appendRow(exportButton);
 						exportButton.addClickHandler(new ClickHandler() {
 							@Override
@@ -1295,8 +1316,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 						|| searchDto.getCollectionDateTo() != null) {
 					if (searchDto.getConstructionDateFrom() != null
 							|| searchDto.getConstructionDateTo() != null) {
-						MessageDialog errDia = new MessageDialog(
-								TEXT_CONSTANTS.inputError(),TEXT_CONSTANTS.onlyOneDateRange());								
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.inputError(), TEXT_CONSTANTS
+								.onlyOneDateRange());
 						errDia.showCentered();
 						isOkay = false;
 					}
@@ -1325,7 +1347,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 										.getCurrentSortField())) {
 									MessageDialog errDia = new MessageDialog(
 											TEXT_CONSTANTS.inputError(),
-											TEXT_CONSTANTS.dateSortErrorConstruction());
+											TEXT_CONSTANTS
+													.dateSortErrorConstruction());
 									errDia.showCentered();
 									isOkay = false;
 								}
@@ -1350,10 +1373,10 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private ListBox addListBox(String value) {
 		ListBox xLB = new ListBox();
-		xLB.addItem(TEXT_CONSTANTS.unknown(),"unknown");
-		xLB.addItem(TEXT_CONSTANTS.yes(),"yes");
-		xLB.addItem(TEXT_CONSTANTS.no(),"no");
-		xLB.addItem(TEXT_CONSTANTS.notApplicable(),"N/A");
+		xLB.addItem(TEXT_CONSTANTS.unknown(), "unknown");
+		xLB.addItem(TEXT_CONSTANTS.yes(), "yes");
+		xLB.addItem(TEXT_CONSTANTS.no(), "no");
+		xLB.addItem(TEXT_CONSTANTS.notApplicable(), "N/A");
 		if (value == null)
 			xLB.setSelectedIndex(0);
 		else if (value.equalsIgnoreCase("true")
