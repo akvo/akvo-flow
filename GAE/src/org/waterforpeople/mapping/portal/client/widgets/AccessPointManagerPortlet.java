@@ -415,6 +415,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 							photo.setUrl(((TextBox) accessPointDetail
 									.getWidget(11, 1)).getText()
 									+ "?random=" + random);
+							accessPointDetail.setWidget(11,1,photo);
 							photo.setVisible(true);
 						}
 					});
