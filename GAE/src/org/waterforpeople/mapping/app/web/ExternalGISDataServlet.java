@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
+import org.waterforpeople.mapping.analytics.SubCountrySummarizer;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.ExternalGISRequest;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
@@ -52,8 +53,8 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		if (req.getAction().equals(ExternalGISRequest.IMPORT_ACTION)) {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			OGRFeature ogrFeature = new OGRFeature();
-			if(importReq.getCountryCode().equals("US")){
-				log.log(Level.INFO,"US");
+			if (importReq.getCountryCode().equals("US")) {
+				log.log(Level.INFO, "US");
 			}
 			ogrFeature.setCountryCode(importReq.getCountryCode());
 			ogrFeature.setName(importReq.getName());
@@ -102,7 +103,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 					y1 = geometry.getBoundingBox()[1].y;
 					x2 = geometry.getBoundingBox()[3].x;
 					y2 = geometry.getBoundingBox()[3].y;
-					Double[] boundingBox = new Double[]{x1,y1,x2,y2};
+					Double[] boundingBox = new Double[] { x1, y1, x2, y2 };
 					ogrFeature.setBoundingBox(boundingBox);
 				} catch (ParseException pe) {
 					log.log(Level.SEVERE, pe.getMessage());
@@ -110,6 +111,12 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 			}
 
 			ogrFeatureDao.save(ogrFeature);
+			SubCountrySummarizer summarizer = new SubCountrySummarizer();
+			summarizer.performSummarization(ogrFeature.getCountryCode(), null,
+					ogrFeature.getSub1() + "|" + ogrFeature.getSub2() + "|"
+							+ ogrFeature.getSub3() + "|" + ogrFeature.getSub4()
+							+ "|" + ogrFeature.getSub5() + "|"
+							+ ogrFeature.getSub6(), null, null);
 			resp = convertToResponse(null, null, null);
 		} else if (req.getAction().equals(
 				ExternalGISRequest.LIST_MATCHING_OGRFEATURE_ACTION)) {
@@ -138,9 +145,8 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 			List<OGRFeature> ogrFeatureList = ogrFeatDao
 					.listBySubLevelCountryName(importReq.getCountryCode(),
 							level, subLevelValue, null, null);
-			resp = convertToResponse(ogrFeatureList,
-					OGRFeatureDao.getCursor(ogrFeatureList),
-					importReq.getCursor());
+			resp = convertToResponse(ogrFeatureList, OGRFeatureDao
+					.getCursor(ogrFeatureList), importReq.getCursor());
 
 		}
 		return resp;

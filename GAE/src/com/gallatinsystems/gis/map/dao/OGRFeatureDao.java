@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
@@ -132,6 +132,7 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		return results;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<OGRFeature> listBySubLevelCountry(String countryCode,
 			Integer subLevel, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -152,43 +153,42 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		query.declareParameters(paramString.toString());
 
 		prepareCursor(cursorString, query);
-		@SuppressWarnings("unchecked")
+
 		List<OGRFeature> resultsGTE = (List<OGRFeature>) query
 				.executeWithMap(paramMap);
-		List<OGRFeature> results = new ArrayList<OGRFeature>();
 
-		return results;
+		return resultsGTE;
 
 	}
 
 	public OGRFeature findByCountryAndType(String countryCode,
 			FeatureType featureType) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = null;
-		paramMap = new HashMap<String, Object>();
-
-		appendNonNullParam("featureType", filterString, paramString, "String",
-				featureType, paramMap, EQ_OP);
-		appendNonNullParam("countryCode", filterString, paramString, "String",
-				countryCode, paramMap, EQ_OP);
-
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-
-		@SuppressWarnings("unchecked")
-		List<OGRFeature> results = (List<OGRFeature>) query
-				.executeWithMap(paramMap);
+		List<OGRFeature> results = listByCountryAndType(countryCode,
+				featureType, null);
 		if (results != null && results.size() > 0)
 			return results.get(0);
 		else
 			return null;
 	}
 
+	/**
+	 * included for backward compatibility. Use version that takes cursor
+	 * instead.
+	 * 
+	 * @param countryCode
+	 * @param featureType
+	 * @return
+	 */
+	@Deprecated
 	public List<OGRFeature> listByCountryAndType(String countryCode,
 			FeatureType featureType) {
+		return listByCountryAndType(countryCode, featureType,
+				Constants.ALL_RESULTS);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<OGRFeature> listByCountryAndType(String countryCode,
+			FeatureType featureType, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(OGRFeature.class);
 		StringBuilder filterString = new StringBuilder();
@@ -204,14 +204,15 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
-		@SuppressWarnings("unchecked")
+		prepareCursor(cursorString, query);
 		List<OGRFeature> results = (List<OGRFeature>) query
 				.executeWithMap(paramMap);
 
-		if (results != null && results.size() > 0)
+		if (results != null && results.size() > 0) {
 			return results;
-		else
+		} else {
 			return null;
+		}
 	}
 
 	public OGRFeature findByCountryTypeAndSub(String countryCode, String name,
@@ -249,8 +250,8 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 	public OGRFeature save(OGRFeature item) {
 		// If type == country then must update can't have 2 shapes for 1 country
 		if (item.getFeatureType().equals(FeatureType.COUNTRY)) {
-			OGRFeature existingItem = findByCountryAndType(
-					item.getCountryCode(), FeatureType.COUNTRY);
+			OGRFeature existingItem = findByCountryAndType(item
+					.getCountryCode(), FeatureType.COUNTRY);
 			if (existingItem != null) {
 				existingItem.setGeometry(item.getGeometry());
 				existingItem.setBoundingBox(item.getBoundingBox());
@@ -281,8 +282,8 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				subList.add(item.getSub6());
 			}
 
-			OGRFeature existingItem = findByCountryTypeAndSub(
-					item.getCountryCode(), item.getName(),
+			OGRFeature existingItem = findByCountryTypeAndSub(item
+					.getCountryCode(), item.getName(),
 					FeatureType.SUB_COUNTRY_OTHER, subList);
 			if (existingItem != null) {
 				boolean isSame = true;

@@ -42,5 +42,10 @@ public class SurveyDataSummarizationHandler extends DataSummarizationHandler {
 		apSummarizers.add("org.waterforpeople.mapping.analytics.MapSummarizer");
 
 		summarizers.put("AccessPoint", apSummarizers);
+
+		List<String> featureSummarizers = new ArrayList<String>();
+		featureSummarizers
+				.add("org.waterforpeople.mapping.analytics.SubCountrySummarizer");
+		summarizers.put("OGRFeature", featureSummarizers);
 	}
 }

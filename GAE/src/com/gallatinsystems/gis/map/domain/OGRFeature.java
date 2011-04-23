@@ -10,13 +10,9 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class OGRFeature extends BaseDomain {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
-	/**
-	 * 
-	 */
+
 	private String name = null;
 	private String projectCoordinateSystemIdentifier = null;
 	private String geoCoordinateSystemIdentifier = null;
@@ -301,7 +297,8 @@ public class OGRFeature extends BaseDomain {
 		sb.append("FeatureType: " + featureType + " ");
 		sb.append("Centroid Lat: " + this.centroidLat + " ");
 		sb.append("CentroidLon: " + this.centroidLon + " ");
-		sb.append("Extent: ((" + this.x1 + ","+ this.y1+"),("+this.x2+","+this.y2+"))");
+		sb.append("Extent: ((" + this.x1 + "," + this.y1 + "),(" + this.x2
+				+ "," + this.y2 + "))");
 		sb.append("Sub1: " + sub1 + " ");
 		sb.append("Sub2: " + sub2 + " ");
 		sb.append("Sub3: " + sub3 + " ");
@@ -314,5 +311,13 @@ public class OGRFeature extends BaseDomain {
 		else
 			sb.append("Geometry is null");
 		return sb.toString();
+	}
+
+	public String packSublevelString(String delim) {
+		StringBuilder b = new StringBuilder();
+		b.append(sub1).append(delim).append(sub2).append(delim).append(sub3)
+				.append(delim).append(sub4).append(delim).append(sub5).append(
+						delim).append(sub6);
+		return b.toString();
 	}
 }
