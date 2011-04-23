@@ -90,7 +90,7 @@ public class SubCountrySummarizer implements DataSummarizer {
 				if (values[i] != null
 						&& !"null".equalsIgnoreCase(values[i].trim())) {
 					boolean cacheHit = true;
-					SubCountry sub = countryCache.get(countryCode + "|" + value
+					SubCountry sub = countryCache.get(countryCode + "|" + values[i]
 							+ "" + (i + 1));
 					if (sub == null) {
 						sub = subCountryDao.findSubCountry(countryCode,
@@ -114,7 +114,7 @@ public class SubCountrySummarizer implements DataSummarizer {
 					// if it was a cache miss or we just created the object,
 					// stick it in the cache
 					if (!cacheHit) {
-						countryCache.put(countryCode + "|" + value + "|"
+						countryCache.put(countryCode + "|" + values[i] + "|"
 								+ (i + 1), sub);
 					}
 				}
