@@ -244,8 +244,8 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 			public void onSuccess(CountryDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
-						countryListbox.addItem(result[i].getName(), result[i]
-								.getIsoAlpha2Code());
+						countryListbox.addItem(result[i].getName(),
+								result[i].getIsoAlpha2Code());
 					}
 				}
 				initialLoadComplete();
@@ -290,7 +290,7 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 	 * @param lb
 	 * @return
 	 */
-	private String getSelectedValue(ListBox lb) {
+	protected String getSelectedValue(ListBox lb) {
 		if (lb.getSelectedIndex() >= 0) {
 			String val = lb.getValue(lb.getSelectedIndex());
 			if (specialOption != null && specialOption.equals(val)) {
@@ -329,6 +329,24 @@ public abstract class LocationDrivenPortlet extends UserAwarePortlet {
 	 */
 	protected String getSelectedCountry() {
 		return getSelectedValue(countryListbox);
+	}
+
+	/**
+	 * returns a list of selected sub-levels. The list may contain nulls if
+	 * there are gaps in the selection. There will be no more than maxSubLevel
+	 * items in the list returned. If sublevel selection is not enabled on this
+	 * instance, or if no sub levels are selected, the list will be empty.
+	 * 
+	 * @return
+	 */
+	protected List<String> getSelectedSubLevels() {
+		List<String> levelList = new ArrayList<String>();
+		if (maxSubLevel > 0) {
+			for (int i = 0; i < subLevelListboxes.size(); i++) {
+				levelList.add(getSelectedValue(subLevelListboxes.get(i)));
+			}
+		}
+		return levelList;
 	}
 
 	/**

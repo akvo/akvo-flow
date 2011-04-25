@@ -22,7 +22,7 @@ public class PortletFactory {
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointPerformancePortlet.NAME,
 					AccessPointPerformancePortlet.DESCRIPTION },
-	/*		{ AccessPointMetricChartPortlet.NAME,
+			/*{ AccessPointMetricChartPortlet.NAME,
 					AccessPointMetricChartPortlet.DESCRIPTION },*/
 			{ RecentPointsPortlet.NAME, RecentPointsPortlet.DESCRIPTION } };
 

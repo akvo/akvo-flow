@@ -183,6 +183,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/editorialcontentrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
+	<servlet-name>AccessPointMetricSummaryService</servlet-name>
+	<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointMetricSummaryServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	<servlet-name>AccessPointMetricSummaryService</servlet-name>
+	<url-pattern>org.waterforpeople.mapping.portal.portal/apmetricsummaryrpcservice</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>GISSupportService</servlet-name>
 		<servlet-class>com.gallatinsystems.gis.app.gwt.server.GISSupportServiceImpl</servlet-class>
 	</servlet>

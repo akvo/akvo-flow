@@ -108,27 +108,7 @@ public class AccessPointStatusPortlet extends LocationDrivenPortlet implements
 		updateChart();
 	}
 
-	/**
-	 * helper method to get value out of a listbox. If "All" is selected, it's
-	 * translated to null since the service expects null to be passed in rather
-	 * than "all" if you don't want to filter by that param
-	 * 
-	 * @param lb
-	 * @return
-	 */
-	private String getSelectedValue(ListBox lb) {
-		if (lb.getSelectedIndex() >= 0) {
-			String val = lb.getValue(lb.getSelectedIndex());
-			if (ALL_OPT.equals(val)) {
-				return null;
-			} else {
-				return val;
-			}
-		} else {
-			return null;
-		}
-	}
-
+	
 	/**
 	 * gets the currently selected values from the list box and then updates the
 	 * chart

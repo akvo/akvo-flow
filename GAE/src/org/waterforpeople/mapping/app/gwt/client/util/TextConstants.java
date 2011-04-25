@@ -494,4 +494,6 @@ public interface TextConstants extends Constants{
 	public String surveyPublishErrorMessage();				
 	public String accessPointMetricChartDescription();
 	public String accessPointMetricChartTitle();
+	public String pointTypeMetric();
+	public String technologyTypeMetric();
 }

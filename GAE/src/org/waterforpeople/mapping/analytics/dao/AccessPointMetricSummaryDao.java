@@ -42,6 +42,28 @@ public class AccessPointMetricSummaryDao extends
 	 */
 	public List<AccessPointMetricSummary> listMetrics(
 			AccessPointMetricSummary prototype) {
+		return listMetrics(prototype, true);
+	}
+
+	/**
+	 * lists metrics that match the prototype passed in. The object passed in
+	 * must have at least 1 field populated (besides count). In practice,
+	 * callers should populate as many fields as possible to narrow results.
+	 * 
+	 * This will collapse any shards and objects returned will not have any keys
+	 * (since they are transient roll-up objects)
+	 * 
+	 * if fetchCentroid is true, the summaries returned will have their centroid
+	 * lat/lon popuated using the OGRFeature that corresponds to the sublevel.
+	 * Setting this to true will degrade performance when listing a large number
+	 * of summaries.
+	 * 
+	 * @param prototype
+	 * @param fetchCentroid
+	 * @return
+	 */
+	public List<AccessPointMetricSummary> listMetrics(
+			AccessPointMetricSummary prototype, boolean fetchCentroid) {
 		List<AccessPointMetricSummary> summaries = listMetrics(prototype, null);
 		Map<String, AccessPointMetricSummary> rollups = new HashMap<String, AccessPointMetricSummary>();
 		if (summaries != null) {
@@ -72,14 +94,21 @@ public class AccessPointMetricSummaryDao extends
 		}
 		List<AccessPointMetricSummary> rollupList = new ArrayList<AccessPointMetricSummary>();
 		rollupList.addAll(rollups.values());
-		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
-		
-		for (AccessPointMetricSummary item : rollupList) {
-			if (item.getSubValue() != null) {
-				List<OGRFeature> ogr = ogrFeatureDao.listBySubLevelCountryName(item.getCountry(), prototype.getSubLevel(), item.getSubValue(), "all",item.getParentSubName());
-				for(OGRFeature ogrItem:ogr){
-					item.setLatitude(ogrItem.getCentroidLat());
-					item.setLongitude(ogrItem.getCentroidLon());
+		if (fetchCentroid) {
+			//TODO: this shouldn't be in the Dao. Ask dru why he needs this
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+
+			for (AccessPointMetricSummary item : rollupList) {
+				if (item.getSubValue() != null) {
+					List<OGRFeature> ogr = ogrFeatureDao
+							.listBySubLevelCountryName(item.getCountry(),
+									prototype.getSubLevel(),
+									item.getSubValue(), "all",
+									item.getParentSubName());
+					for (OGRFeature ogrItem : ogr) {
+						item.setLatitude(ogrItem.getCentroidLat());
+						item.setLongitude(ogrItem.getCentroidLon());
+					}
 				}
 			}
 		}
