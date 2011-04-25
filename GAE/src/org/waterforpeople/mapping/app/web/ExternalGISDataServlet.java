@@ -53,9 +53,6 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		if (req.getAction().equals(ExternalGISRequest.IMPORT_ACTION)) {
 			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 			OGRFeature ogrFeature = new OGRFeature();
-			if (importReq.getCountryCode().equals("US")) {
-				log.log(Level.INFO, "US");
-			}
 			ogrFeature.setCountryCode(importReq.getCountryCode());
 			ogrFeature.setName(importReq.getName());
 			ogrFeature.setProjectCoordinateSystemIdentifier(importReq
