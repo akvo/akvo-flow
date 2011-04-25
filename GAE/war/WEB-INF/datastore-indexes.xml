@@ -296,6 +296,11 @@
 	</datastore-index>
 	<datastore-index kind="OGRFeature" ancestor="false"
 		source="manual">
+		<property name="featureType" direction="asc" />
+		<property name="countryCode" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="OGRFeature" ancestor="false"
+		source="manual">
 		<property name="countryCode" direction="asc" />
 		<property name="featureType" direction="asc" />
 		<property name="sub1" direction="asc" />
