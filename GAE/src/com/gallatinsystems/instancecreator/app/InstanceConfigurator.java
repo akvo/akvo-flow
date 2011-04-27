@@ -44,6 +44,7 @@ public class InstanceConfigurator {
 		ic.addAttribute("defaultPhotoCaption", args[13]);
 		ic.addAttribute("scoreAPFlag", args[14]);
 		ic.addAttribute("organization", args[15]);
+		ic.addAttribute("s3url","http://"+args[3]+".s3.amazonaws.com");
 
 		TreeMap<String, String[]> policyFiles = new TreeMap<String, String[]>();
 		S3PolicySigner s3PolicySigner = new S3PolicySigner();
@@ -57,14 +58,14 @@ public class InstanceConfigurator {
 						+ directory + "\nsig: " + documents[0] + "\nkey:"
 						+ documents[1] + "\n" + policyFile);
 				if (directory.equals("reports")) {
-					ic.addAttribute("reportS3Sig", documents[0]);
-					ic.addAttribute("reportsS3Policy", documents[1]);
+					ic.addAttribute("reportSig", documents[0]);
+					ic.addAttribute("reportsPolicy", documents[1]);
 				} else if (directory.equals("devicezip")) {
 					ic.addAttribute("reportS3Sig", documents[0]);
 					ic.addAttribute("reportsS3Policy", documents[1]);
 				} else if (directory.equals("bootstrap")) {
-					ic.addAttribute("bootstrapS3Sig", documents[0]);
-					ic.addAttribute("bootstrapS3Policy", documents[1]);
+					ic.addAttribute("bootstrapSig", documents[0]);
+					ic.addAttribute("bootstrapPolicy", documents[1]);
 				} else if (directory.equals("helpcontent")) {
 					ic.addAttribute("helpcontentS3Sig", documents[0]);
 					ic.addAttribute("helpcontentS3Policy", documents[1]);
@@ -73,11 +74,12 @@ public class InstanceConfigurator {
 					ic.addAttribute("imagesS3Policy", documents[1]);
 				} else if (directory.equals("surveys")) {
 					ic.addAttribute("surveyS3Sig", documents[0]);
-					ic.addAttribute("surveyS3Policy", documents[1]);
+					ic.addAttribute("surveyPolicy", documents[1]);
 				}
 				policyFiles.put(directory, documents);
 			}
 			String appenginexml = ic.buildAppengineString();
+			log.log(Level.INFO,appenginexml);
 
 		} catch (Exception e) {
 			e.printStackTrace();
