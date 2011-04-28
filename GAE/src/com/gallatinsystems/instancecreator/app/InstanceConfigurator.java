@@ -1,9 +1,14 @@
 package com.gallatinsystems.instancecreator.app;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +48,12 @@ public class InstanceConfigurator {
 		ic.addAttribute("defaultPhotoCaption", args[13]);
 		ic.addAttribute("scoreAPFlag", args[14]);
 		ic.addAttribute("organization", args[15]);
-		ic.addAttribute("s3url","http://"+args[3]+".s3.amazonaws.com");
+		ic.addAttribute("s3url",args[8]);
+		String localLocation = args[16];
+		ic.addAttribute("keystore",args[17]);
+		ic.addAttribute("mapsApiKey",args[18]);
+		
+		localLocation = ic.createLocalDeployDir(localLocation, args[2]);
 
 		TreeMap<String, String[]> policyFiles = new TreeMap<String, String[]>();
 		S3PolicySigner s3PolicySigner = new S3PolicySigner();
@@ -57,14 +67,14 @@ public class InstanceConfigurator {
 						+ directory + "\nsig: " + documents[0] + "\nkey:"
 						+ documents[1] + "\n" + policyFile);
 				if (directory.equals("reports")) {
-					ic.addAttribute("reportSig", documents[0]);
-					ic.addAttribute("reportsPolicy", documents[1]);
+					ic.addAttribute("reportS3Sig", documents[0]);
+					ic.addAttribute("reportsS3Policy", documents[1]);
 				} else if (directory.equals("devicezip")) {
 					ic.addAttribute("reportS3Sig", documents[0]);
 					ic.addAttribute("reportsS3Policy", documents[1]);
 				} else if (directory.equals("bootstrap")) {
-					ic.addAttribute("bootstrapSig", documents[0]);
-					ic.addAttribute("bootstrapPolicy", documents[1]);
+					ic.addAttribute("bootstrapS3Sig", documents[0]);
+					ic.addAttribute("bootstrapS3Policy", documents[1]);
 				} else if (directory.equals("helpcontent")) {
 					ic.addAttribute("helpcontentS3Sig", documents[0]);
 					ic.addAttribute("helpcontentS3Policy", documents[1]);
@@ -73,25 +83,62 @@ public class InstanceConfigurator {
 					ic.addAttribute("imagesS3Policy", documents[1]);
 				} else if (directory.equals("surveys")) {
 					ic.addAttribute("surveyS3Sig", documents[0]);
-					ic.addAttribute("surveyPolicy", documents[1]);
+					ic.addAttribute("surveyS3Policy", documents[1]);
 				}
 				policyFiles.put(directory, documents);
 			}
-			String appenginexml = ic.buildAppengineString();
-			log.log(Level.INFO,appenginexml);
-
+			String appenginexml = ic.buildfile("war/appengine-web.vm");
+			ic.writeFile(localLocation, "appengine-web.xml", appenginexml);
+			String portalgwtxml = ic.buildfile("war/portalgwt.vm");
+			ic.writeFile(localLocation, "portal.gwt.xml", portalgwtxml);
+			String surveyentrygwtxml = ic.buildfile("war/surveyentrygwtxml.vm");
+			ic.writeFile(localLocation, "surveyEntry.gwt.xml", surveyentrygwtxml);
+			String uploadconstantproperties = ic.buildfile("war/UploadConstants.vm");
+			ic.writeFile(localLocation, "UploadConstants.properties", uploadconstantproperties);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private String buildAppengineString() throws Exception {
+	private void writeFile(String location, String name, String contents)
+			throws IOException {
+		File file = new File(location + System.getProperty("file.separator")
+				+ name);
+		if (file.exists()) {
+			if (file.delete()) {
+				file.createNewFile();
+			}
+		}
+		Writer output = new BufferedWriter(new FileWriter(file));
+		try {
+			output.write(contents);
+		} finally {
+			output.close();
+		}
+
+	}
+
+	private String createLocalDeployDir(String dir, String instanceName) {
+		File f = new File(dir + instanceName);
+		if (!f.exists()) {
+			if (f.mkdir()) {
+				return f.getAbsolutePath();
+			}
+		} else {
+			return f.getAbsolutePath();
+		}
+		return null;
+	}
+
+	private String buildfile(String vmName) throws Exception {
 		VelocityContext context = new VelocityContext();
 		for (Entry<String, String> item : attributeMap.entrySet()) {
 			context.put(item.getKey(), item.getValue());
 		}
-		return mergeContext(context, "war/appengine-web.vm");
+		return mergeContext(context,vmName);
 	}
+	
+	
 
 	private HashMap<String, String> attributeMap = new HashMap<String, String>();
 
