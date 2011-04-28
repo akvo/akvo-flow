@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.mortbay.util.AttributesMap;
 
 import com.gallatinsystems.instancecreator.util.S3PolicySigner;
 

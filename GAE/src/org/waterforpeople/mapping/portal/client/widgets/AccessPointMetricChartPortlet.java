@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -22,8 +23,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.ImagePieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart.Options;
 
@@ -59,7 +62,7 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 	private String selectedMetric;
 
 	public AccessPointMetricChartPortlet(UserDto user) {
-		super(NAME, false, false, true, WIDTH, HEIGHT, user, false, 3,
+		super(NAME, false, false, false, WIDTH, HEIGHT, user, false, 3,
 				LocationDrivenPortlet.ALL_OPT);
 		apMetricService = GWT.create(AccessPointMetricSummaryService.class);
 		contentPane = new VerticalPanel();
@@ -82,6 +85,7 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 	private Widget buildHeader() {
 
 		metricListbox = new ListBox();
+		metricListbox.addItem(TEXT_CONSTANTS.select(),TEXT_CONSTANTS.select());
 		metricListbox.addItem(TEXT_CONSTANTS.technologyTypeMetric(),
 				TECH_METRIC);
 		metricListbox.addItem(TEXT_CONSTANTS.pointTypeMetric(), TYPE_METRIC);
@@ -89,23 +93,21 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 		metricListbox.addChangeHandler(this);
 
 		VerticalPanel headerPanel = new VerticalPanel();
-
-		HorizontalPanel controlPanel = new HorizontalPanel();
-
-		controlPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.type()));
-
-		controlPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.metric()));
-		controlPanel.add(metricListbox);
-
-		headerPanel.add(getCountryControl());
+		
+		HorizontalPanel topRow = new HorizontalPanel();		
+		topRow.add(ViewUtil.initLabel(TEXT_CONSTANTS.country()));
+		topRow.add(getCountryControl());
+		topRow.add(ViewUtil.initLabel(TEXT_CONSTANTS.metric()));
+		topRow.add(metricListbox);
+		
+		headerPanel.add(topRow);
 		List<ListBox> boxes = getSubLevelControls();
-		if (boxes != null) {
+		if (boxes != null && boxes.size()>0) {
+			headerPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.subdivision()));
 			for (ListBox box : boxes) {
 				headerPanel.add(box);
 			}
-		}
-
-		headerPanel.add(controlPanel);
+		}		
 
 		return headerPanel;
 	}
@@ -113,7 +115,7 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 	@Override
 	public void onChange(ChangeEvent event) {
 		selectedMetric = getSelectedValue(metricListbox);
-		if (getSelectedCountry() != null && selectedMetric != null) {
+		if (selectedMetric != null && !TEXT_CONSTANTS.select().equals(selectedMetric)) {
 			loadData();
 		}
 	}
@@ -188,6 +190,26 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 					}
 				});
 	}
+	
+	@Override
+	public void handleExportClick() {
+		Runnable onLoadCallback = new Runnable() {
+			public void run() {
+				ImagePieChart.Options options = ImagePieChart.Options.create();
+				options.setHeight(HEIGHT - 60);
+				options.setWidth(WIDTH + 60);
+				options.setLabels("value");
+				options.setLegend(LegendPosition.RIGHT);
+				ImagePieChart ipc = new ImagePieChart(currentTable, options);
+				WidgetDialog dia = new WidgetDialog(NAME, ipc);
+				dia.showRelativeTo(getHeaderWidget());
+			}
+		};
+		if (currentTable != null) {
+			VisualizationUtils.loadVisualizationApi(onLoadCallback,
+					ImagePieChart.PACKAGE);
+		}
+	}
 
 	/**
 	 * configures the Options to initialize the visualization
@@ -201,4 +223,10 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 		options.setWidth(WIDTH);
 		return options;
 	}
+	
+	@Override
+	protected String getConfigItemName() {
+		return CONFIG_ITEM_NAME;
+	}
+
 }
