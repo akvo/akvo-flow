@@ -35,8 +35,8 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
-import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.xml.AltText;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Help;
@@ -166,17 +166,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		TreeMap<Integer, QuestionGroup> qgList = qgDao
 				.listQuestionGroupsBySurvey(surveyId);
-		if (qgList != null) {
-			ArrayList<Long> questionGroupIdList = new ArrayList<Long>();
-			StringBuilder builder = new StringBuilder();
-			int count = 1;
+		if (qgList != null) {					
 			StringBuilder surveyXML = new StringBuilder();
 			surveyXML.append(surveyHeader);
 			for (QuestionGroup item : qgList.values()) {
-				surveyXML.append(buildQuestionGroupXML(item));
-				count++;
+				surveyXML.append(buildQuestionGroupXML(item));			
 			}
-			count = 0;
+			
 			surveyXML.append(surveyFooter);
 			UploadStatusContainer uc = uploadSurveyXML(surveyId,
 					surveyXML.toString());
