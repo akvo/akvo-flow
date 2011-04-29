@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBException;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
+import com.gallatinsystems.common.domain.UploadStatusContainer;
 import com.gallatinsystems.common.util.UploadUtil;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -35,8 +36,8 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
-import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
+import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.xml.AltText;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Help;
@@ -132,7 +133,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				props.getProperty(SURVEY_UPLOAD_DIR),
 				props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
 				props.getProperty(SURVEY_UPLOAD_POLICY),
-				props.getProperty(SURVEY_UPLOAD_SIG), "application/zip");
+				props.getProperty(SURVEY_UPLOAD_SIG), "application/zip",null);
 
 		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,
 				transactionId);
@@ -190,7 +191,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			} else {
 				// String messageText =
 				// CONSTANTS.surveyPublishErrorMessage();
-				String messageText = "Failed to publish: " + surveyId;
+				String messageText = "Failed to publish: " + surveyId + "\n"+ uc.getMessage();
 				message.setTransactionUUID(transactionId.toString());
 				message.setMessage(messageText);
 				MessageDao messageDao = new MessageDao();
@@ -199,37 +200,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		}
 	}
 
-	class UploadStatusContainer {
-		private Boolean uploadedFile = null;
-		private Boolean uploadedZip = null;
-
-		public Boolean getUploadedFile() {
-			return uploadedFile;
-		}
-
-		public void setUploadedFile(Boolean uploadedFile) {
-			this.uploadedFile = uploadedFile;
-		}
-
-		public Boolean getUploadedZip() {
-			return uploadedZip;
-		}
-
-		public void setUploadedZip(Boolean uploadedZip) {
-			this.uploadedZip = uploadedZip;
-		}
-
-		private String url = null;
-
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
-	}
-
+	
 	public UploadStatusContainer uploadSurveyXML(Long surveyId, String surveyXML) {
 		Properties props = System.getProperties();
 		String document = surveyXML;
@@ -241,13 +212,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		ByteArrayOutputStream os = ZipUtil.generateZip(document, surveyId
 				+ ".xml");
-
+		UploadStatusContainer uc = new UploadStatusContainer();
 		Boolean uploadedZip = UploadUtil.upload(os, surveyId + ".zip",
 				props.getProperty(SURVEY_UPLOAD_DIR),
 				props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
 				props.getProperty(SURVEY_UPLOAD_POLICY),
-				props.getProperty(SURVEY_UPLOAD_SIG), "application/zip");
-		UploadStatusContainer uc = new UploadStatusContainer();
+				props.getProperty(SURVEY_UPLOAD_SIG), "application/zip", uc);
 		uc.setUploadedFile(uploadedFile);
 		uc.setUploadedZip(uploadedZip);
 		uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)

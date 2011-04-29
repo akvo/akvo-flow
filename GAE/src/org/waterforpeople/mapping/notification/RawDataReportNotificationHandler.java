@@ -108,7 +108,7 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 							.getProperty(SURVEY_UPLOAD_URL), PropertyUtil
 							.getProperty(AWS_IDENTIFIER), PropertyUtil
 							.getProperty(REPORT_S3_POLICY), PropertyUtil
-							.getProperty(REPORT_S3_SIG), "text/plain");
+							.getProperty(REPORT_S3_SIG), "text/plain",null);
 
 					MailUtil.sendMail(FROM_ADDRESS, "FLOW", linkAddrList,
 							emailTitle, emailBody

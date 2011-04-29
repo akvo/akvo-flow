@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.gallatinsystems.common.domain.UploadStatusContainer;
+
 public class UploadUtil {
 	private static final String BOUNDRY = "***xxx";
 	private static final String PREFIX = "--";
@@ -148,7 +150,8 @@ public class UploadUtil {
 	 */
 	public static boolean upload(ByteArrayOutputStream outputStream,
 			String fileName, String dir, String uploadUrl, String s3ID,
-			String policy, String sig, String contentType) {
+			String policy, String sig, String contentType,
+			UploadStatusContainer uc) {
 
 		try {
 			HttpURLConnection conn = UploadUtil.createConnection(new URL(
@@ -169,11 +172,19 @@ public class UploadUtil {
 			if (code != REDIRECT_CODE && code != OK_CODE) {
 				logger.log(Level.SEVERE,
 						"Server returned a bad code after upload: " + code);
+				if (uc != null) {
+					uc.setMessage("Server returned a bad code after upload: "
+							+ code);
+				}
 				return false;
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Could not send upload" + e.getMessage(),
 					e);
+			if (uc != null) {
+				uc.setMessage("Could not send upload" + e.getMessage() + " "
+						+ e.getStackTrace());
+			}
 			return false;
 		}
 		return true;
@@ -182,7 +193,7 @@ public class UploadUtil {
 	public static boolean sendStringAsFileMultiPart(String fileName,
 			String fileContents, String dir, String uploadUrl, String s3ID,
 			String policy, String sig, String contentType) {
-		
+
 		return false;
 	}
 }

@@ -114,7 +114,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
 				.getProperty(SURVEY_UPLOAD_URL), PropertyUtil
 				.getProperty(AWS_IDENTIFIER), PropertyUtil
 				.getProperty(BOOTSTRAP_UPLOAD_POLICY), PropertyUtil
-				.getProperty(BOOTSTRAP_UPLOAD_SIG), "application/zip");
+				.getProperty(BOOTSTRAP_UPLOAD_SIG), "application/zip",null);
 
 		String body = EMAIL_BODY;
 		if (errors.toString().trim().length() > 0) {
