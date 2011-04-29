@@ -71,7 +71,7 @@ public class InstanceConfigurator {
 					ic.addAttribute("reportsS3Policy", documents[1]);
 				} else if (directory.equals("devicezip")) {
 					ic.addAttribute("reportS3Sig", documents[0]);
-					ic.addAttribute("reportsS3Policy", documents[1]);
+					ic.addAttribute("reportS3Policy", documents[1]);
 				} else if (directory.equals("bootstrap")) {
 					ic.addAttribute("bootstrapS3Sig", documents[0]);
 					ic.addAttribute("bootstrapS3Policy", documents[1]);
@@ -82,8 +82,8 @@ public class InstanceConfigurator {
 					ic.addAttribute("imagesS3Sig", documents[0]);
 					ic.addAttribute("imagesS3Policy", documents[1]);
 				} else if (directory.equals("surveys")) {
-					ic.addAttribute("surveyS3Sig", documents[0]);
-					ic.addAttribute("surveyS3Policy", documents[1]);
+					ic.addAttribute("surveySig", documents[0]);
+					ic.addAttribute("surveyPolicy", documents[1]);
 				}
 				policyFiles.put(directory, documents);
 			}
