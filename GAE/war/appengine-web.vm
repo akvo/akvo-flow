@@ -25,7 +25,7 @@
 		<property name="google_scope"
 			value="http://spreadsheets.google.com/feeds/ https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com" />
 		<property name="s3bucket" value="$s3bucket" />
-		<property name="surveyuploadurl" value="/" />
+		<property name="surveyuploadurl" value="$s3url/" />
 		<property name="surveyuploaddir" value="surveys" />
 		<property name="deviceZipPath"
 			value="$s3url/devicezip/" />
@@ -37,13 +37,13 @@
 		<property name="surveyS3policy"
 			value="$surveyPolicy"/>
 		<property name="reportS3Policy"
-			value="$reportPolicy" />
-		<property name="reportS3Sig" value="$reportSig" />
+			value="$reportS3Policy" />
+		<property name="reportS3Sig" value="$reportS3Sig" />
 		<property name="reportS3Path" value="reports" />
 		<property name="attachreport" value="true" />
 		<property name="bootstrapdir" value="bootstrap"/>
-		<property name="bootstraps3policy" value="$bootstrapPolicy"/>
-		<property name="bootstraps3sig" value="$bootstrapSig"/>
+		<property name="bootstraps3policy" value="$bootstrapS3Policy"/>
+		<property name="bootstraps3sig" value="$bootstrapS3Sig"/>
 		<property name="imageroot" value="$s3Url/images"/>
 		<property name="scoreAPFlag" value="$scoreAPFlag"/>
 		<property name="organization" value="$organization"/>
