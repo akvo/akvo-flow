@@ -38,17 +38,19 @@ public class InstanceConfigurator {
 		s3policyFileTemplateName = args[5];
 		ic.addAttribute("s3Id", args[1]);
 		ic.addAttribute("signingKey", args[6]);
-		ic.addAttribute("dataUploadUrl", args[7]);
+		ic.addAttribute("dataUploadUrl", args[7]+"/surveys");
 		ic.addAttribute("serverBase", args[8]);
-		ic.addAttribute("surveyS3Url", args[8] + "/surveys");
+		ic.addAttribute("surveyS3Url", args[7] );
 		ic.addAttribute("storepass", args[9]);
 		ic.addAttribute("keypass", args[10]);
 		ic.addAttribute("alias", args[11]);
+		ic.addAttribute("alais",args[11]);
 		ic.addAttribute("reportsEmailAddress", args[12]);
 		ic.addAttribute("defaultPhotoCaption", args[13]);
 		ic.addAttribute("scoreAPFlag", args[14]);
 		ic.addAttribute("organization", args[15]);
-		ic.addAttribute("s3url",args[8]);
+		ic.addAttribute("s3Url",args[7]);
+		ic.addAttribute("s3url",args[7]);
 		String localLocation = args[16];
 		ic.addAttribute("keystore",args[17]);
 		ic.addAttribute("mapsApiKey",args[18]);
@@ -82,7 +84,7 @@ public class InstanceConfigurator {
 					ic.addAttribute("imagesS3Sig", documents[0]);
 					ic.addAttribute("imagesS3Policy", documents[1]);
 				} else if (directory.equals("surveys")) {
-					ic.addAttribute("surveySig", documents[0]);
+					ic.addAttribute("surveyS3Sig", documents[0]);
 					ic.addAttribute("surveyPolicy", documents[1]);
 				}
 				policyFiles.put(directory, documents);
