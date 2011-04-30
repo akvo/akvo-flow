@@ -78,7 +78,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 									surveyMap.put(copy, result.get(i));
 									Button del = createButton(ClickMode.DELETE,
 											TEXT_CONSTANTS.delete());
-									dataGrid.setWidget(i, 2, del);
+									dataGrid.setWidget(i, 3, del);
 									surveyMap.put(del, result.get(i));
 								}
 								addWidget(dataGrid);
