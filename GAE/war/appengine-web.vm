@@ -28,13 +28,13 @@
 		<property name="surveyuploadurl" value="$s3url" />
 		<property name="surveyuploaddir" value="surveys" />
 		<property name="deviceZipPath"
-			value="$s3url/devicezip/" />
+			value="$s3urldevicezip/" />
 		<property name="emailFromAddress" value="$reportsEmailAddress" />
 		<property name="recipientListString"
 			value="dru.borden@gmail.com;Dru Borden|christopher.fagiani@gmail.com;Chris Fagiani" />
 		<property name="defaultPhotoCaption" value="$defaultPhotoCaption" />
 		<property name="surveyuploadsig" value="$surveyS3Sig" />
-		<property name="surveyS3policy"
+		<property name="surveyuploadpolicy"
 			value="$surveyPolicy"/>
 		<property name="reportS3Policy"
 			value="$reportS3Policy" />
