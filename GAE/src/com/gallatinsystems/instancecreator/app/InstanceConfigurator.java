@@ -38,7 +38,7 @@ public class InstanceConfigurator {
 		s3policyFileTemplateName = args[5];
 		ic.addAttribute("s3Id", args[1]);
 		ic.addAttribute("signingKey", args[6]);
-		ic.addAttribute("dataUploadUrl", args[7]+"/surveys");
+		ic.addAttribute("dataUploadUrl", args[7]);
 		ic.addAttribute("serverBase", args[8]);
 		ic.addAttribute("surveyS3Url", args[7] );
 		ic.addAttribute("storepass", args[9]);
