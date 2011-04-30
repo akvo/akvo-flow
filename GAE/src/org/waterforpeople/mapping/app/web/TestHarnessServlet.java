@@ -646,7 +646,7 @@ public class TestHarnessServlet extends HttpServlet {
 			kmlHelper.buildMap();
 
 			List<MapFragment> mfList = mfDao.searchMapFragments("ALL", null,
-					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",
+					null,  FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",
 					null, null);
 			try {
 

@@ -83,7 +83,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 		} else if ("getLatestMap".equals(action)) {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			List<MapFragment> mfList = mfDao.searchMapFragments(null, null,
-					null, null, FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",
+					null,  FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS, "all",
 					"createdDateTime", "desc");
 			Blob map = mfList.get(0).getBlob();
 			resp.setContentType("application/vnd.google-earth.kmz+xml");

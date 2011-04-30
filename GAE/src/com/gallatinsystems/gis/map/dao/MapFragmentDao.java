@@ -32,7 +32,7 @@ public class MapFragmentDao extends BaseDAO<MapFragment> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<MapFragment> searchMapFragments(String country,
-			String community, String techType, AccessPointType pointType,
+			String community, String techType,
 			FRAGMENTTYPE fragmentType, String cursorString, String orderByCol,
 			String orderByDirection) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -43,9 +43,7 @@ public class MapFragmentDao extends BaseDAO<MapFragment> {
 		paramMap = new HashMap<String, Object>();
 
 		appendNonNullParam("countryCode", filterString, paramString, "String",
-				country, paramMap);
-		appendNonNullParam("pointType", filterString, paramString, "String",
-				pointType, paramMap);
+				country, paramMap);	
 		appendNonNullParam("technologyType", filterString, paramString,
 				"String", techType, paramMap);
 		appendNonNullParam("fragmentType", filterString, paramString, "String",
@@ -66,12 +64,12 @@ public class MapFragmentDao extends BaseDAO<MapFragment> {
 
 	public List<MapFragment> listFragmentsByCountryAndTechType(
 			String countryCode, String techType) {
-		return searchMapFragments(countryCode, null, techType, null,
+		return searchMapFragments(countryCode, null, techType, 
 				FRAGMENTTYPE.COUNTRY_INDIVIDUAL_PLACEMARK, "all", "countryCode", "asc");
 	}
 
 	public List<MapFragment> listAllFragments() {
-		return searchMapFragments(null, null, null, null,
+		return searchMapFragments(null, null, null, 
 				FRAGMENTTYPE.COUNTRY_ALL_PLACEMARKS, "all", null,null);
 	}
 }

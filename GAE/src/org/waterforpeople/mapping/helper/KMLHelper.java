@@ -461,7 +461,7 @@ public class KMLHelper {
 		MapFragmentDao mfDao = new MapFragmentDao();
 		StringBuilder kml = new StringBuilder();
 		List<MapFragment> mfList = mfDao.searchMapFragments(countryCode, null,
-				null, null, FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST, "all",
+				null, FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST, "all",
 				null, null);
 		StringBuilder sbAllCountryPlacemark = new StringBuilder();
 

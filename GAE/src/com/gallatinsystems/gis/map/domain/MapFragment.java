@@ -18,8 +18,7 @@ public class MapFragment extends BaseDomain {
 	private String code = null;
 	private String displayName=null;
 	private String displayDesc = null;
-	private String countryCode = null;
-	private AccessPointType pointType = null;
+	private String countryCode = null;	
 	private Blob blob = null;
 	public Blob getBlob() {
 		return blob;
@@ -94,15 +93,7 @@ public class MapFragment extends BaseDomain {
 	public String getCode() {
 		return code;
 	}
-
-	public void setPointType(AccessPointType pointType) {
-		this.pointType = pointType;
-	}
-
-	public AccessPointType getPointType() {
-		return pointType;
-	}
-
+	
 	private FRAGMENTTYPE fragmentType=null;
 	private Text fragmentValue = null;
 	private Long parentId = null;
