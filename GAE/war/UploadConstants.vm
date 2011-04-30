@@ -1,5 +1,5 @@
-uploadUrl = http://flowakvo.s3.amazonaws.com/
-s3Id = 1JZZVDSNFFQYF23ZYJ02
+uploadUrl = $s3url
+s3Id = $awsIdentifier
 
 #NOTE: the S3 policies expire on 10/2/2013
 surveyDataS3Policy = $surveyPolicy
