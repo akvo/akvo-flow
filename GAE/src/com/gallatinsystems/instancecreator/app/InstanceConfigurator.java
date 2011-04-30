@@ -41,6 +41,7 @@ public class InstanceConfigurator {
 		ic.addAttribute("dataUploadUrl", args[7]);
 		ic.addAttribute("serverBase", args[8]);
 		ic.addAttribute("surveyS3Url", args[7] + "surveys" );
+		ic.addAttribute("s3urldevicezip",args[7]+"devicezip");
 		ic.addAttribute("storepass", args[9]);
 		ic.addAttribute("keypass", args[10]);
 		ic.addAttribute("alias", args[11]);
