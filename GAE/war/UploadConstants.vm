@@ -2,7 +2,7 @@ uploadUrl = http://flowakvo.s3.amazonaws.com/
 s3Id = 1JZZVDSNFFQYF23ZYJ02
 
 #NOTE: the S3 policies expire on 10/2/2013
-surveyDataS3Policy = $surveyS3Policy
+surveyDataS3Policy = $surveyPolicy
 surveyDataS3Sig = $surveyS3Sig
 surveyDataS3Path = devicezip 
 surveyDataContentType = application/zip
