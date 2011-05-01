@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<servlet>
+		<servlet-name>FlowInstanceRPCService</servlet-name>
+		<servlet-class>com.gallatinsystems.flow.foundry.client.app.gwt.server.FlowInstanceServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FlowInstanceRPCService</servlet-name>
+		<url-pattern>/com.gallatinsystems.flow.foundry.client.client.FlowFoundry/flowinstancerpcservice</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>persistenceFilter</filter-name>
+		<filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>persistenceFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/index.html</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+</web-app>

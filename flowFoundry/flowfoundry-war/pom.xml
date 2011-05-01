@@ -3,20 +3,28 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<parent>
-		<groupId>com.gallatinsystems</groupId>
+		<groupId>com.gallatinsystems.flow</groupId>
 		<artifactId>flowfoundry</artifactId>
-		<version>${release}</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.gallatinsystems</groupId>
+	<groupId>com.gallatinsystems.flow</groupId>
 	<artifactId>flowfoundry-webapp</artifactId>
 
 	<packaging>war</packaging>
 	<name>Gallatin Systems Flow Foundry Appengine War</name>
 
-	<dependencies>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.gallatinsystems.flow</groupId>
+			<artifactId>flowfoundry-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.gallatinsystems.flow</groupId>
+			<artifactId>flowfoundry-server</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

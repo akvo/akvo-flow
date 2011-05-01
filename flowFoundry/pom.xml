@@ -3,17 +3,16 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.gallatinsystems</groupId>
+	<groupId>com.gallatinsystems.flow</groupId>
 	<artifactId>flowfoundry</artifactId>
-	<version>${release}</version>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Gallatin Systems Flow Foundry</name>
 
 
 	<properties>
 		<gwtVersion>2.2.0</gwtVersion>
-		<gaeVersion>1.4.3</gaeVersion>
-		<release>1.0-SNAPSHOT</release>
+		<gaeVersion>1.4.3</gaeVersion>		
 		<gallatinCommonVersion>1.0-SNAPSHOT</gallatinCommonVersion>
 	</properties>
 
@@ -21,22 +20,22 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.gallatinsystems</groupId>
+				<groupId>com.gallatinsystems.flow</groupId>
 				<artifactId>flowfoundry-client</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.gallatinsystems</groupId>
+				<groupId>com.gallatinsystems.flow</groupId>
 				<artifactId>flowfoundry-server</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.gallatinsystems</groupId>
+				<groupId>com.gallatinsystems.flow</groupId>
 				<artifactId>flowfoundry-service</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.gallatinsystems</groupId>
+				<groupId>com.gallatinsystems.flow</groupId>
 				<artifactId>flowfoundry-war</artifactId>
 				<version>${project.version}</version>
 			</dependency>
