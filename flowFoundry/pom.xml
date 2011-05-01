@@ -20,19 +20,25 @@
 
 	<dependencyManagement>
 		<dependencies>
-		<dependency>
-						<groupId>com.gallatinsystems</groupId>
-						<artifactId>flowfoundry-client</artifactId>
-						<version>${project.version}</version>
+			<dependency>
+				<groupId>com.gallatinsystems</groupId>
+				<artifactId>flowfoundry-client</artifactId>
+				<version>${project.version}</version>
 			</dependency>
-		<dependency>
-								<groupId>com.gallatinsystems</groupId>
-								<artifactId>flowfoundry-server</artifactId>
-								<version>${project.version}</version>
-			</dependency><dependency>
-						<groupId>com.gallatinsystems</groupId>
-						<artifactId>flowfoundry-service</artifactId>
-						<version>${project.version}</version>
+			<dependency>
+				<groupId>com.gallatinsystems</groupId>
+				<artifactId>flowfoundry-server</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gallatinsystems</groupId>
+				<artifactId>flowfoundry-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.gallatinsystems</groupId>
+				<artifactId>flowfoundry-war</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.gallatinsystems</groupId>
@@ -167,7 +173,8 @@
 	<modules>
 		<module>flowfoundry-server</module>
 		<module>flowfoundry-client</module>
-		<module>flowfoundry-service</module>		
+		<module>flowfoundry-service</module>
+		<module>flowfoundry-war</module>
 	</modules>
 
 	<developers>
@@ -182,6 +189,6 @@
 				<role>architect</role>
 				<role>developer</role>
 			</roles>
-		</developer>		
+		</developer>
 	</developers>
 </project>
