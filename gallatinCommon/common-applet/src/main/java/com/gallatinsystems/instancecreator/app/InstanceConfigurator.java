@@ -89,13 +89,13 @@ public class InstanceConfigurator {
 				}
 				policyFiles.put(directory, documents);
 			}
-			String appenginexml = ic.buildfile("war/appengine-web.vm");
+			String appenginexml = ic.buildfile("/src/main/resources/appengine-web.vm");
 			ic.writeFile(localLocation, "appengine-web.xml", appenginexml);
-			String portalgwtxml = ic.buildfile("war/portalgwt.vm");
+			String portalgwtxml = ic.buildfile("/src/main/resources/portalgwt.vm");
 			ic.writeFile(localLocation, "portal.gwt.xml", portalgwtxml);
-			String surveyentrygwtxml = ic.buildfile("war/surveyentrygwtxml.vm");
+			String surveyentrygwtxml = ic.buildfile("/src/main/resources/surveyentrygwtxml.vm");
 			ic.writeFile(localLocation, "surveyEntry.gwt.xml", surveyentrygwtxml);
-			String uploadconstantproperties = ic.buildfile("war/UploadConstants.vm");
+			String uploadconstantproperties = ic.buildfile("/src/main/resources/UploadConstants.vm");
 			ic.writeFile(localLocation, "UploadConstants.properties", uploadconstantproperties);
 		} catch (Exception e) {
 			e.printStackTrace();
