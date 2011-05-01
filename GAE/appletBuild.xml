@@ -25,6 +25,7 @@
 			<include name="gt-metadata-2.6.5.jar" />
 			<include name="jts-1.11-serializable-indexes.jar" />
 			<include name="gt-api-2.6.5.jar"/>
+			<include name="common-applet-1.0-SNAPSHOT.jar"/>
 		</fileset>
 		<pathelement location="build" />
 		<pathelement location="src" />
