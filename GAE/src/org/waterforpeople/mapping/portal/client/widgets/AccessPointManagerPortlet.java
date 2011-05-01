@@ -1291,7 +1291,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 						exportButton.addClickHandler(new ClickHandler() {
 							@Override
 							public void onClick(ClickEvent event) {
-								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,common-applet-1.0-SNAPSHOT.jar'>";
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 								appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";

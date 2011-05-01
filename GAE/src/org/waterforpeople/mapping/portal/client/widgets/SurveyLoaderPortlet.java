@@ -91,7 +91,7 @@ public class SurveyLoaderPortlet extends Portlet implements ClickHandler {
 						});
 			}
 		} else if (event.getSource() == importLocalButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,poi-3.5-signed.jar,common-applet-1.0-SNAPSHOT.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,poi-3.5-signed.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";			
