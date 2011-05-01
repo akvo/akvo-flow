@@ -22,6 +22,10 @@
 			<version>2.2.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-servlet</artifactId>
+		</dependency>
 
 	</dependencies>
 	<build>
