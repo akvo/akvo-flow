@@ -19,7 +19,7 @@
 
 	<dependencyManagement>
 		<dependencies>
-		<dependency>
+			<dependency>
 				<groupId>com.gallatinsystems</groupId>
 				<artifactId>common-applet</artifactId>
 				<version>${project.version}</version>
@@ -50,7 +50,7 @@
 				<version>${project.version}</version>
 			</dependency>
 
-			<!-- GAE Dependencies -->			
+			<!-- GAE Dependencies -->
 			<dependency>
 				<groupId>com.google.appengine.orm</groupId>
 				<artifactId>jdo2-api</artifactId>
@@ -75,19 +75,19 @@
 				<version>${gaeVersion}</version>
 				<scope>test</scope>
 			</dependency>
-			<!-- GWT Dependencies -->			
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-      <version>2.2.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>2.2.0</version>
-      <scope>provided</scope>
-    </dependency>
+			<!-- GWT Dependencies -->
+			<dependency>
+				<groupId>com.google.gwt</groupId>
+				<artifactId>gwt-servlet</artifactId>
+				<version>2.2.0</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.gwt</groupId>
+				<artifactId>gwt-user</artifactId>
+				<version>2.2.0</version>
+				<scope>provided</scope>
+			</dependency>
 		</dependencies>
 
 	</dependencyManagement>
@@ -96,7 +96,7 @@
 		<name>Gallatin Systems</name>
 		<url>http://www.gallatinsystems.com</url>
 	</organization>
-	<build>	
+	<build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -145,8 +145,8 @@
 			<url>http://maven-gae-plugin.googlecode.com/svn/repository</url>
 			<snapshots>
 				<enabled>false</enabled>
-			</snapshots>			
-		</repository>		
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<modules>
@@ -157,4 +157,31 @@
 		<module>common-service</module>
 		<module>common-applet</module>
 	</modules>
+
+	<developers>
+		<developer>
+			<name>Christopher Fagiani</name>
+			<id>cfagiani</id>
+			<email>christopher.fagiani@gmail.com</email>
+			<organization>Gallatin Systems</organization>
+			<organizationUrl>http://www.gallatinsystems.com</organizationUrl>
+			<timezone>-5</timezone>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Dru Borden</name>
+			<id>dkborden</id>
+			<email>dru.borden@gmail.com</email>
+			<organization>Gallatin Systems</organization>
+			<organizationUrl>http://www.gallatinsystems.com</organizationUrl>
+			<timezone>-7</timezone>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
 </project>
