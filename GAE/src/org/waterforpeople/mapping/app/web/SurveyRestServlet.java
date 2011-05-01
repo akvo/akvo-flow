@@ -208,7 +208,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		if (groups != null) {
 			for (Survey s : groups) {
 				SurveyDto dto = new SurveyDto();
-				DtoMarshaller.copyToDto(s, dto);
+				DtoMarshaller.getInstance().copyToDto(s, dto);
 				dtoList.add(dto);
 			}
 		}
@@ -220,14 +220,14 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	private SurveyGroupDto getSurveyGroup(Long surveyGroupId) {
 		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 		SurveyGroupDto dto = new SurveyGroupDto();
-		DtoMarshaller.copyToDto(surveyGroupDao.getByKey(surveyGroupId), dto);
+		DtoMarshaller.getInstance().copyToDto(surveyGroupDao.getByKey(surveyGroupId), dto);
 		return dto;
 	}
 
 	private SurveyDto getSurvey(Long surveyId) {
 		SurveyDAO surveyDao = new SurveyDAO();
 		SurveyDto dto = new SurveyDto();
-		DtoMarshaller.copyToDto(surveyDao.getById(surveyId), dto);
+		DtoMarshaller.getInstance().copyToDto(surveyDao.getById(surveyId), dto);
 		return dto;
 	}
 
@@ -255,7 +255,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		if (groups != null) {
 			for (QuestionGroup q : groups.values()) {
 				QuestionGroupDto dto = new QuestionGroupDto();
-				DtoMarshaller.copyToDto(q, dto);
+				DtoMarshaller.getInstance().copyToDto(q, dto);
 				dtoList.add(dto);
 			}
 		}
@@ -277,7 +277,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		if (groups != null) {
 			for (SurveyGroup sg : groups) {
 				SurveyGroupDto dto = new SurveyGroupDto();
-				DtoMarshaller.copyToDto(sg, dto);
+				DtoMarshaller.getInstance().copyToDto(sg, dto);
 				dtoList.add(dto);
 			}
 		}
@@ -297,7 +297,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		SurveyInstanceDto dto = null;
 		if (instance != null) {
 			dto = new SurveyInstanceDto();
-			DtoMarshaller.copyToDto(instance, dto);
+			DtoMarshaller.getInstance().copyToDto(instance, dto);
 		}
 		return dto;
 	}
@@ -315,7 +315,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		if (questions != null) {
 			for (Question q : questions.values()) {
 				QuestionDto dto = new QuestionDto();
-				DtoMarshaller.copyToDto(q, dto);
+				DtoMarshaller.getInstance().copyToDto(q, dto);
 				dtoList.add(dto);
 			}
 		}

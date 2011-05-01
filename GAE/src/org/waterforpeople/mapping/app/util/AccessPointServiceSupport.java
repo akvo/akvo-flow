@@ -141,10 +141,10 @@ public class AccessPointServiceSupport {
 		// Check to see if it is an update or insert
 		UnitOfMeasureDto measDto = apDto.getCostPerUnitOfMeasure();
 		apDto.setCostPerUnitOfMeasure(null);
-		DtoMarshaller.copyToCanonical(accessPoint, apDto);
+		DtoMarshaller.getInstance().copyToCanonical(accessPoint, apDto);
 		if (measDto != null) {
 			UnitOfMeasure measDomain = new UnitOfMeasure();
-			DtoMarshaller.copyToCanonical(measDomain, measDto);
+			DtoMarshaller.getInstance().copyToCanonical(measDomain, measDto);
 			accessPoint.setCostPerUnitOfMeasure(measDomain);
 
 		}

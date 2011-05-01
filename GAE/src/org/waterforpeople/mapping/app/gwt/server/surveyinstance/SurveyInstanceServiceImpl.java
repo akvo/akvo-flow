@@ -91,7 +91,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			if (qList != null) {
 				for (QuestionAnswerStore qas : questions) {
 					QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-					DtoMarshaller.copyToDto(qas, qasDto);
+					DtoMarshaller.getInstance().copyToDto(qas, qasDto);
 					int idx = -1 - notFoundCount;
 					for (int i = 0; i < qList.size(); i++) {
 						if (Long.parseLong(qas.getQuestionID()) == qList.get(i)
@@ -118,7 +118,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 	private SurveyInstanceDto marshalToDto(SurveyInstance si) {
 		SurveyInstanceDto siDto = new SurveyInstanceDto();
-		DtoMarshaller.copyToDto(si, siDto);
+		DtoMarshaller.getInstance().copyToDto(si, siDto);
 		siDto.setQuestionAnswersStore(null);
 		if (si.getQuestionAnswersStore() != null) {
 			for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
@@ -130,7 +130,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 	private QuestionAnswerStoreDto marshalToDto(QuestionAnswerStore qas) {
 		QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-		DtoMarshaller.copyToDto(qas, qasDto);
+		DtoMarshaller.getInstance().copyToDto(qas, qasDto);
 		return qasDto;
 	}
 
@@ -144,7 +144,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		List<QuestionAnswerStore> domainList = new ArrayList<QuestionAnswerStore>();
 		for (QuestionAnswerStoreDto dto : dtoList) {
 			QuestionAnswerStore answer = new QuestionAnswerStore();
-			DtoMarshaller.copyToCanonical(answer, dto);
+			DtoMarshaller.getInstance().copyToCanonical(answer, dto);
 			if (answer.getValue() != null) {
 				answer.setValue(answer.getValue().replaceAll("\t", ""));
 			}
@@ -260,7 +260,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	public SurveyInstanceDto submitSurveyInstance(SurveyInstanceDto instance) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyInstance domain = new SurveyInstance();
-		DtoMarshaller.copyToCanonical(domain, instance);
+		DtoMarshaller.getInstance().copyToCanonical(domain, instance);
 		domain = dao.save(domain);
 		instance.setKeyId(domain.getKey().getId());
 		if (instance.getQuestionAnswersStore() != null) {
@@ -268,7 +268,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			for (QuestionAnswerStoreDto ans : instance
 					.getQuestionAnswersStore()) {
 				QuestionAnswerStore store = new QuestionAnswerStore();
-				DtoMarshaller.copyToCanonical(store, ans);
+				DtoMarshaller.getInstance().copyToCanonical(store, ans);
 				if (ans.getValue() != null) {
 					ans.setValue(ans.getValue().replaceAll("\t", ""));
 				}

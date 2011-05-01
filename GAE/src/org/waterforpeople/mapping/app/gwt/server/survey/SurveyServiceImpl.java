@@ -136,20 +136,20 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		for (SurveyGroup canonical : surveyGroupDao.list(cursorString,
 				loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag)) {
 			SurveyGroupDto dto = new SurveyGroupDto();
-			DtoMarshaller.copyToDto(canonical, dto);
+			DtoMarshaller.getInstance().copyToDto(canonical, dto);
 			dto.setSurveyList(null);
 			if (canonical.getSurveyList() != null
 					&& canonical.getSurveyList().size() > 0) {
 				for (Survey survey : canonical.getSurveyList()) {
 					SurveyDto surveyDto = new SurveyDto();
-					DtoMarshaller.copyToDto(survey, surveyDto);
+					DtoMarshaller.getInstance().copyToDto(survey, surveyDto);
 					surveyDto.setQuestionGroupList(null);
 					if (survey.getQuestionGroupMap() != null
 							&& survey.getQuestionGroupMap().size() > 0) {
 						for (QuestionGroup questionGroup : survey
 								.getQuestionGroupMap().values()) {
 							QuestionGroupDto questionGroupDto = new QuestionGroupDto();
-							DtoMarshaller.copyToDto(questionGroup,
+							DtoMarshaller.getInstance().copyToDto(questionGroup,
 									questionGroupDto);
 							if (questionGroup.getQuestionMap() != null
 									&& questionGroup.getQuestionMap().size() > 0) {
@@ -159,7 +159,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 											.getValue();
 									Integer order = questionEntry.getKey();
 									QuestionDto questionDto = new QuestionDto();
-									DtoMarshaller.copyToDto(question,
+									DtoMarshaller.getInstance().copyToDto(question,
 											questionDto);
 									questionGroupDto.addQuestion(questionDto,
 											order);
@@ -226,17 +226,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public SurveyGroupDto save(SurveyGroupDto value) {
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyGroup surveyGroup = new SurveyGroup();
-		DtoMarshaller.copyToCanonical(surveyGroup, value);
+		DtoMarshaller.getInstance().copyToCanonical(surveyGroup, value);
 		surveyGroup.setSurveyList(null);
 		for (SurveyDto item : value.getSurveyList()) {
 			// SurveyDto item = value.getSurveyList().get(0);
 			Survey survey = new Survey();
-			DtoMarshaller.copyToCanonical(survey, item);
+			DtoMarshaller.getInstance().copyToCanonical(survey, item);
 			survey.setQuestionGroupMap(null);
 			int order = 1;
 			for (QuestionGroupDto qgDto : item.getQuestionGroupList()) {
 				QuestionGroup qg = new QuestionGroup();
-				DtoMarshaller.copyToCanonical(qg, qgDto);
+				DtoMarshaller.getInstance().copyToCanonical(qg, qgDto);
 				survey.addQuestionGroup(order++, qg);
 				int qOrder = 1;
 				for (Entry<Integer, QuestionDto> qDto : qgDto.getQuestionMap()
@@ -248,7 +248,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			surveyGroup.addSurvey(survey);
 		}
 
-		DtoMarshaller.copyToDto(sgDao.save(surveyGroup), value);
+		DtoMarshaller.getInstance().copyToDto(sgDao.save(surveyGroup), value);
 		return value;
 	}
 
@@ -282,7 +282,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				QuestionHelpDto dto = new QuestionHelpDto();
 				Map<String, Translation> transMap = help.getTranslationMap();
 				help.setTranslationMap(null);
-				DtoMarshaller.copyToDto(help, dto);
+				DtoMarshaller.getInstance().copyToDto(help, dto);
 				if (transMap != null) {
 					dto.setTranslationMap(marshalTranslations(transMap));
 				}
@@ -397,7 +397,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			List<QuestionHelpDto> qHListDto = qdto.getQuestionHelpList();
 			for (QuestionHelpDto qhDto : qHListDto) {
 				QuestionHelpMedia qh = new QuestionHelpMedia();
-				DtoMarshaller.copyToCanonical(qh, qhDto);
+				DtoMarshaller.getInstance().copyToCanonical(qh, qhDto);
 			}
 		}
 
@@ -462,7 +462,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				QuestionHelpMedia helpDomain = new QuestionHelpMedia();
 				Map<String, TranslationDto> transMap = help.getTranslationMap();
 				help.setTranslationMap(null);
-				DtoMarshaller.copyToCanonical(helpDomain, help);
+				DtoMarshaller.getInstance().copyToCanonical(helpDomain, help);
 				if (transMap != null) {
 					helpDomain
 							.setTranslationMap(marshalFromDtoTranslations(transMap));
@@ -482,13 +482,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyDto dto = null;
 		if (survey != null) {
 			dto = new SurveyDto();
-			DtoMarshaller.copyToDto(survey, dto);
+			DtoMarshaller.getInstance().copyToDto(survey, dto);
 			dto.setQuestionGroupList(null);
 			if (survey.getQuestionGroupMap() != null) {
 				ArrayList<QuestionGroupDto> qGroupDtoList = new ArrayList<QuestionGroupDto>();
 				for (QuestionGroup qg : survey.getQuestionGroupMap().values()) {
 					QuestionGroupDto qgDto = new QuestionGroupDto();
-					DtoMarshaller.copyToDto(qg, qgDto);
+					DtoMarshaller.getInstance().copyToDto(qg, qgDto);
 					qgDto.setQuestionMap(null);
 					qGroupDtoList.add(qgDto);
 					if (qg.getQuestionMap() != null) {
@@ -516,7 +516,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		List<SurveyDto> surveyDtoList = new ArrayList<SurveyDto>();
 		for (Survey canonical : surveyList) {
 			SurveyDto dto = new SurveyDto();
-			DtoMarshaller.copyToDto(canonical, dto);
+			DtoMarshaller.getInstance().copyToDto(canonical, dto);
 			surveyDtoList.add(dto);
 		}
 		return surveyDtoList;
@@ -531,7 +531,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		ArrayList<QuestionGroupDto> questionGroupDtoList = new ArrayList<QuestionGroupDto>();
 		for (QuestionGroup canonical : questionGroupList.values()) {
 			QuestionGroupDto dto = new QuestionGroupDto();
-			DtoMarshaller.copyToDto(canonical, dto);
+			DtoMarshaller.getInstance().copyToDto(canonical, dto);
 			questionGroupDtoList.add(dto);
 		}
 		return questionGroupDtoList;
@@ -560,7 +560,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public String deleteQuestion(QuestionDto value, Long questionGroupId) {
 		QuestionDao questionDao = new QuestionDao();
 		Question canonical = new Question();
-		DtoMarshaller.copyToCanonical(canonical, value);
+		DtoMarshaller.getInstance().copyToCanonical(canonical, value);
 		try {
 			questionDao.delete(canonical);
 		} catch (IllegalDeletionException e) {
@@ -584,7 +584,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public QuestionGroupDto saveQuestionGroup(QuestionGroupDto dto,
 			Long surveyId) {
 		QuestionGroup questionGroup = new QuestionGroup();
-		DtoMarshaller.copyToCanonical(questionGroup, dto);
+		DtoMarshaller.getInstance().copyToCanonical(questionGroup, dto);
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 		if (questionGroup.getOrder() == null || questionGroup.getOrder() == 0) {
 			Map<Integer, QuestionGroup> items = questionGroupDao
@@ -596,7 +596,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		questionGroup = questionGroupDao.save(questionGroup, surveyId, null);
-		DtoMarshaller.copyToDto(questionGroup, dto);
+		DtoMarshaller.getInstance().copyToDto(questionGroup, dto);
 		return dto;
 	}
 
@@ -609,7 +609,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			int i = 0;
 			for (QuestionGroupDto dto : dtoList) {
 				QuestionGroup questionGroup = new QuestionGroup();
-				DtoMarshaller.copyToCanonical(questionGroup, dto);
+				DtoMarshaller.getInstance().copyToCanonical(questionGroup, dto);
 				if (questionGroup.getOrder() == null
 						|| questionGroup.getOrder() == 0) {
 					questionGroup.setOrder(i);
@@ -628,7 +628,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId) {
 		Survey canonical = new Survey();
-		DtoMarshaller.copyToCanonical(canonical, surveyDto);
+		DtoMarshaller.getInstance().copyToCanonical(canonical, surveyDto);
 		canonical.setStatus(Survey.Status.NOT_PUBLISHED);
 		SurveyDAO surveyDao = new SurveyDAO();
 		if (canonical.getKey() != null && canonical.getSurveyGroupId() == 0) {
@@ -638,7 +638,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			canonical.setPath(sTemp.getPath());
 		}
 		canonical = surveyDao.save(canonical);
-		DtoMarshaller.copyToDto(canonical, surveyDto);
+		DtoMarshaller.getInstance().copyToDto(canonical, surveyDto);
 
 		return surveyDto;
 
@@ -648,9 +648,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto) {
 		SurveyGroup canonical = new SurveyGroup();
 		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-		DtoMarshaller.copyToCanonical(canonical, dto);
+		DtoMarshaller.getInstance().copyToCanonical(canonical, dto);
 		canonical = surveyGroupDao.save(canonical);
-		DtoMarshaller.copyToDto(canonical, dto);
+		DtoMarshaller.getInstance().copyToDto(canonical, dto);
 		return dto;
 	}
 
@@ -670,7 +670,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			// enumeration values. We need to set it back after the copy call
 			String parentType = t.getParentType();
 			t.setParentType(null);
-			DtoMarshaller.copyToCanonical(transDomain, t);
+			DtoMarshaller.getInstance().copyToCanonical(transDomain, t);
 			t.setParentType(parentType);
 			transDomain.setParentType(ParentType.valueOf(parentType));
 			transDomain.setLanguageCode(t.getLangCode());
@@ -911,7 +911,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			SurveyDAO surveyDao = new SurveyDAO();
 			try {
 				Survey s = new Survey();
-				DtoMarshaller.copyToCanonical(s, value);
+				DtoMarshaller.getInstance().copyToCanonical(s, value);
 				surveyDao.delete(s);
 			} catch (IllegalDeletionException e) {
 				log.log(Level.SEVERE, "Could not delete survey", e);
@@ -973,7 +973,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				QuestionHelpDto dto = new QuestionHelpDto();
 				Map<String, Translation> transMap = help.getTranslationMap();
 				help.setTranslationMap(null);
-				DtoMarshaller.copyToDto(help, dto);
+				DtoMarshaller.getInstance().copyToDto(help, dto);
 				if (transMap != null) {
 					dto.setTranslationMap(marshalTranslations(transMap));
 				}
@@ -990,14 +990,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Collection<QuestionHelpMedia> domainList = new ArrayList<QuestionHelpMedia>();
 			for (QuestionHelpDto dto : helpList) {
 				QuestionHelpMedia canonical = new QuestionHelpMedia();
-				DtoMarshaller.copyToCanonical(canonical, dto);
+				DtoMarshaller.getInstance().copyToCanonical(canonical, dto);
 				domainList.add(canonical);
 			}
 			domainList = helpDao.save(domainList);
 			helpList.clear();
 			for (QuestionHelpMedia domain : domainList) {
 				QuestionHelpDto dto = new QuestionHelpDto();
-				DtoMarshaller.copyToDto(domain, dto);
+				DtoMarshaller.getInstance().copyToDto(domain, dto);
 				helpList.add(dto);
 			}
 		}
@@ -1216,7 +1216,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			Survey s = surveyDao.getById(id);
 			if (s != null) {
 				dto = new SurveyDto();
-				DtoMarshaller.copyToDto(s, dto);
+				DtoMarshaller.getInstance().copyToDto(s, dto);
 				dto.setQuestionGroupList(null);
 			}
 		}

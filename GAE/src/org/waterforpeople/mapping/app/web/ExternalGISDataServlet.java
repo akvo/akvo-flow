@@ -164,7 +164,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 
 	private OGRFeatureDto marshallDomainToDto(OGRFeature item) {
 		OGRFeatureDto dto = new OGRFeatureDto();
-		DtoMarshaller.copyToDto(item, dto);
+		DtoMarshaller.getInstance().copyToDto(item, dto);
 		return dto;
 	}
 

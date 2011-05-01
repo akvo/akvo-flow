@@ -1320,7 +1320,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onClick(ClickEvent event) {
 
-				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.KMLApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,velocity-1.6.2-dep.jar'>";
+				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.KMLApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,velocity-1.6.2-dep.jar,common-applet-1.0-SNAPSHOT.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar, velocity-1.6.2-dep.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 				appletString += "<PARAM name='surveyId' value='"
@@ -1336,7 +1336,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		exportSummaryButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,common-applet-1.0-SNAPSHOT.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -1352,7 +1352,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		exportRawDataButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,common-applet-1.0-SNAPSHOT.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 				appletString += "<PARAM name='exportType' value='RAW_DATA'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -1368,7 +1368,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		exportFormButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,common-applet-1.0-SNAPSHOT.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -1384,7 +1384,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImportApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImportApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,common-applet-1.0-SNAPSHOT.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 				appletString += "<PARAM name='surveyId' value='"

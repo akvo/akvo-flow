@@ -151,7 +151,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 		if (summaryList != null) {
 			for (AccessPointMetricSummary summary : summaryList) {
 				AccessPointMetricSummaryDto dto = new AccessPointMetricSummaryDto();
-				DtoMarshaller.copyToDto(summary, dto);
+				DtoMarshaller.getInstance().copyToDto(summary, dto);
 				if (includePlacemark) {
 					dto.setIconUrl(getIconUrl(dto));
 					try {

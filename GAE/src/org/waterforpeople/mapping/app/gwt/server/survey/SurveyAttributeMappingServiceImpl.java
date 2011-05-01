@@ -48,7 +48,7 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 			dtoList = new ArrayList<SurveyAttributeMappingDto>();
 			for (SurveyAttributeMapping mapping : mappingList) {
 				SurveyAttributeMappingDto dto = new SurveyAttributeMappingDto();
-				DtoMarshaller.copyToDto(mapping, dto);
+				DtoMarshaller.getInstance().copyToDto(mapping, dto);
 				dto.setApTypes(null);
 				if (mapping.getApTypes() != null) {
 					List<String> newList = new ArrayList<String>();
@@ -83,7 +83,7 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 			for (SurveyAttributeMappingDto dto : mappings) {
 				try {
 					SurveyAttributeMapping domain = new SurveyAttributeMapping();
-					DtoMarshaller.copyToCanonical(domain, dto);
+					DtoMarshaller.getInstance().copyToCanonical(domain, dto);
 					domain = mappingDao.save(domain);
 					dto.setKeyId(domain.getKey().getId());
 				} catch (Exception e) {
@@ -107,7 +107,7 @@ public class SurveyAttributeMappingServiceImpl extends RemoteServiceServlet
 			for (SurveyAttributeMappingDto dto : mappings) {
 				try {
 					SurveyAttributeMapping domain = new SurveyAttributeMapping();
-					DtoMarshaller.copyToCanonical(domain, dto);
+					DtoMarshaller.getInstance().copyToCanonical(domain, dto);
 					domain = mappingDao.save(domain);
 					dto.setKeyId(domain.getKey().getId());
 				} catch (Exception e) {

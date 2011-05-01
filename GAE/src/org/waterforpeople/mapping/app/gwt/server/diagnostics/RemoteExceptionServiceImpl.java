@@ -44,7 +44,7 @@ public class RemoteExceptionServiceImpl extends RemoteServiceServlet implements
 		if (traceList != null) {
 			for (RemoteStacktrace trace : traceList) {
 				RemoteStacktraceDto dto = new RemoteStacktraceDto();
-				DtoMarshaller.copyToDto(trace, dto);
+				DtoMarshaller.getInstance().copyToDto(trace, dto);
 				if (trace.getStackTrace() != null) {
 					dto.setStackTrace(trace.getStackTrace().getValue());
 				}

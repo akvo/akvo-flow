@@ -44,7 +44,7 @@ public class AccessPointMetricSummaryServiceImpl extends RemoteServiceServlet
 		if (summaryList != null) {
 			for (AccessPointMetricSummary sum : summaryList) {
 				AccessPointMetricSummaryDto dto = new AccessPointMetricSummaryDto();
-				DtoMarshaller.copyToDto(sum, dto);
+				DtoMarshaller.getInstance().copyToDto(sum, dto);
 				dtoList.add(dto);
 			}
 		}

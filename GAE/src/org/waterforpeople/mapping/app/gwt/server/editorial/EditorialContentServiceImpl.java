@@ -42,7 +42,7 @@ public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 			dtoList = new ArrayList<EditorialPageContentDto>();
 			for (EditorialPageContent contentItem : content) {
 				EditorialPageContentDto dto = new EditorialPageContentDto();
-				DtoMarshaller.copyToDto(contentItem, dto);
+				DtoMarshaller.getInstance().copyToDto(contentItem, dto);
 				dtoList.add(dto);
 			}
 		}
@@ -60,7 +60,7 @@ public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 			dtoList = new ArrayList<EditorialPageDto>();
 			for (EditorialPage page : pages) {
 				EditorialPageDto dto = new EditorialPageDto();
-				DtoMarshaller.copyToDto(page, dto);
+				DtoMarshaller.getInstance().copyToDto(page, dto);
 				dtoList.add(dto);
 			}
 		}

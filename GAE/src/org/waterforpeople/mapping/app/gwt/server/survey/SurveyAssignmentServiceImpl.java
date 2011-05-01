@@ -59,7 +59,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public SurveyAssignmentDto saveSurveyAssignment(SurveyAssignmentDto dto) {
 		SurveyAssignment assignment = new SurveyAssignment();
-		DtoMarshaller.copyToCanonical(assignment, dto);
+		DtoMarshaller.getInstance().copyToCanonical(assignment, dto);
 		if (dto.getDevices() != null) {
 			List<Long> devIds = new ArrayList<Long>();
 			for (DeviceDto dev : dto.getDevices()) {

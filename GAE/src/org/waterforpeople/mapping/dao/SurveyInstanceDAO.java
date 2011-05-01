@@ -13,9 +13,9 @@ import javax.jdo.Query;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.device.domain.Status.StatusCode;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
