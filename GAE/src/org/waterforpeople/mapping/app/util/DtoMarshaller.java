@@ -2,6 +2,7 @@ package org.waterforpeople.mapping.app.util;
 
 import java.util.Locale;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
@@ -11,14 +12,54 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 
-public class DtoMarshaller extends com.gallatinsystems.util.DtoMarshaller {
+public class DtoMarshaller {
+	private static DtoMarshaller instance;
 
+	public static synchronized DtoMarshaller getInstance() {
+		if (instance == null) {
+			instance = new DtoMarshaller();
+			instance.configureConverters();
+		}
+		return instance;
+	}
+
+	public <T extends BaseDomain, U extends BaseDto> void copyToCanonical(
+			T canonical, U dto) {
+		try {
+			configureConverters();
+			BeanUtils.copyProperties(canonical, dto);
+			if (dto.getKeyId() != null) {
+				// by default, the JDO key kind uses the Simple name
+				canonical.setKey(KeyFactory.createKey(canonical.getClass()
+						.getSimpleName(), dto.getKeyId()));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public <T extends BaseDomain, U extends BaseDto> void copyToDto(
+			T canonical, U dto) {
+		try {
+			configureConverters();
+			BeanUtils.copyProperties(dto, canonical);
+			if (canonical.getKey() != null) {
+				dto.setKeyId(canonical.getKey().getId());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * sets up the converters that this marshaller should use
