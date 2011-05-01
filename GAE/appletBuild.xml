@@ -62,6 +62,7 @@
 
 	<target name="signjar" depends="package">
 		<signjar jar="${dist}/exporterapplet.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+		<signjar jar="war/common-applet-1.0-SNAPSHOT.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 	</target>
 	<target name="sign3rdjar" depends="">
 		<signjar jar="war/velocity-1.6.2-dep.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
@@ -75,7 +76,6 @@
 		<signjar jar="war/commons-beanutils-1.7.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 		<signjar jar="war/commons-logging-1.1.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 		<signjar jar="war/gt-shapefile-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/common-applet-1.0-SNAPSHOT.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 	</target>
 
 
