@@ -1,0 +1,20 @@
+uploadUrl = $s3url
+s3Id = $awsIdentifier
+
+#NOTE: the S3 policies expire on 10/2/2013
+surveyDataS3Policy = $surveyPolicy
+surveyDataS3Sig = $surveyS3Sig
+surveyDataS3Path = devicezip 
+surveyDataContentType = application/zip
+
+imageS3Policy = $imagesS3Policy
+imageS3Sig = $imagesS3Sig
+imageS3Path = images
+imageContentType = image/jpeg
+
+helpS3Policy = $helpcontentS3Policy
+helpS3Sig =  $helpcontentS3Sig
+helpS3Path = helpcontent
+videoContentType = video/mpeg
+
+
