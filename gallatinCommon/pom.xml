@@ -12,7 +12,7 @@
 
 	<properties>
 		<gwtVersion>2.2.0</gwtVersion>
-		<gaeVersion>1.4.3</gaeVersion>	
+		<gaeVersion>1.4.2</gaeVersion>	
 	</properties>
 
 
