@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='FlowFoundry'>
+	<!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name="com.gallatinsystems.framework.gwt.PortletFramework" />
+
+	<inherits name='com.google.gwt.user.theme.dark.Dark' />
+
+	<!-- Other module inherits -->
+
+	<!-- Specify the app entry point class. -->
+	<entry-point class='com.gallatinsystems.flowfoundry.client.FlowFoundry' />
+
+	<!-- Specify the paths for translatable code -->
+	<source path='client' />
+	<source path='shared' />
+
+</module>
