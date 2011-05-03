@@ -2,13 +2,10 @@ package com.gallatinsystems.editorial.dao;
 
 import java.util.List;
 
-import javax.jdo.annotations.PersistenceCapable;
-
 import com.gallatinsystems.editorial.domain.MapBalloonItemDefinition;
 import com.gallatinsystems.editorial.domain.MapBalloonRowDefinition;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
-@PersistenceCapable
 public class MapBalloonItemDefinitionDao extends
 		BaseDAO<MapBalloonItemDefinition> {
 	public MapBalloonItemDefinitionDao() {
