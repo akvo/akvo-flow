@@ -42,7 +42,6 @@
 		</java>
 	</target>
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
-	<echo message="${os.family}"/>
 <exec dir="${gallatinCommon.dir}" executable="mvn" osfamily="mac">
 <arg line="-DskipTests clean package"/>
 </exec>
