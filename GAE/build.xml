@@ -42,7 +42,7 @@
 	</target>
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
 	
-<exec dir="${gallatinCommon.dir}" executable="mvn">
+<exec dir="${gallatinCommon.dir}" executable="mvn" searchpath="true">
 <arg line="-DskipTests clean package"/>
 </exec>	
 	<mkdir dir="war/WEB-INF/classes" />
