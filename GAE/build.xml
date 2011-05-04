@@ -1,6 +1,5 @@
 <project>
-	<property file="build.properties" />
-<property environment="env"/>
+	<property file="build.properties"/>
 
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
@@ -43,10 +42,18 @@
 		</java>
 	</target>
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
-	
-<exec dir="${gallatinCommon.dir}" executable="${env.M2_HOME}/bin/mvn" searchpath="true">
+	<echo message="${os.family}"/>
+<exec dir="${gallatinCommon.dir}" executable="mvn" osfamily="mac">
 <arg line="-DskipTests clean package"/>
-</exec>	
+</exec>
+<exec dir="${gallatinCommon.dir}" executable="mvn" osfamily="unix">
+<arg line="-DskipTests clean package"/>
+</exec>
+<exec dir="${gallatinCommon.dir}" executable="cmd" osfamily="windows">
+<arg line="/C mvn.bat -DskipTests clean package"/>
+</exec>
+
+
 	<mkdir dir="war/WEB-INF/classes" />
 		<copy todir="war/WEB-INF/classes">
 			<fileset dir="src">
