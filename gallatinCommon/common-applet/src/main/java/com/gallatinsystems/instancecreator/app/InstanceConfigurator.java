@@ -72,8 +72,8 @@ public class InstanceConfigurator {
 					ic.addAttribute("reportS3Sig", documents[0]);
 					ic.addAttribute("reportsS3Policy", documents[1]);
 				} else if (directory.equals("devicezip")) {
-					ic.addAttribute("reportS3Sig", documents[0]);
-					ic.addAttribute("reportS3Policy", documents[1]);
+					ic.addAttribute("deviceZipS3Sig", documents[0]);
+					ic.addAttribute("deviceZipS3Policy", documents[1]);
 				} else if (directory.equals("bootstrap")) {
 					ic.addAttribute("bootstrapS3Sig", documents[0]);
 					ic.addAttribute("bootstrapS3Policy", documents[1]);
@@ -97,6 +97,8 @@ public class InstanceConfigurator {
 			ic.writeFile(localLocation, "surveyEntry.gwt.xml", surveyentrygwtxml);
 			String uploadconstantproperties = ic.buildfile("/src/main/resources/UploadConstants.vm");
 			ic.writeFile(localLocation, "UploadConstants.properties", uploadconstantproperties);
+			String surveyproperties = ic.buildfile("src/main/resources/surveyproperties.vm");
+			ic.writeFile(localLocation, "survey.properties", surveyproperties);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
