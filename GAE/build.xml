@@ -1,5 +1,7 @@
 <project>
 	<property file="build.properties" />
+<property environment="env"/>
+
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
 	<path id="project.classpath">
@@ -42,7 +44,7 @@
 	</target>
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
 	
-<exec dir="${gallatinCommon.dir}" executable="mvn" searchpath="true">
+<exec dir="${gallatinCommon.dir}" executable="${env.M2_HOME}/bin/mvn" searchpath="true">
 <arg line="-DskipTests clean package"/>
 </exec>	
 	<mkdir dir="war/WEB-INF/classes" />
