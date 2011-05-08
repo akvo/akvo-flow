@@ -82,6 +82,7 @@
 	
 	
 		</enhance>
+		</target>
 
 	<target name="runserver" depends="datanucleusenhance" description="Starts the development server.">
 		<dev_appserver war="war" />
