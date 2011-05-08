@@ -9,8 +9,9 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
+import org.waterforpeople.mapping.domain.Status;
+
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.device.domain.Status;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 

@@ -82,7 +82,7 @@ public class RunReportWidget extends MenuBasedWidget {
 	public void onClick(ClickEvent event) {
 		appletPanel.clear();
 		if (event.getSource() == kmlButton) {
-			String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.KMLApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,velocity-1.6.2-dep.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar'>";
+			String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.KMLApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,velocity-1.6.2-dep.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar, velocity-1.6.2-dep.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
@@ -98,7 +98,7 @@ public class RunReportWidget extends MenuBasedWidget {
 							if (wasSuccessful
 									&& payload
 											.get(AccessPointFilterDialog.CRITERIA_KEY) != null) {
-								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar'>";
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 								appletString += "<PARAM name='exportType' value='ACCESS_POINT'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -140,7 +140,7 @@ public class RunReportWidget extends MenuBasedWidget {
 
 	private void handleSurveySelection(Object eventSource, Long surveyId) {
 		if (eventSource == rawDataReportButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='RAW_DATA'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -151,7 +151,7 @@ public class RunReportWidget extends MenuBasedWidget {
 			html.setHTML(appletString);
 			appletPanel.add(html);
 		} else if (eventSource == surveyFormButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 			appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -162,7 +162,7 @@ public class RunReportWidget extends MenuBasedWidget {
 			html.setHTML(appletString);
 			appletPanel.add(html);
 		} else if (eventSource == summaryReportButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";

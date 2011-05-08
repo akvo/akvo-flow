@@ -299,7 +299,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 			List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
 			for (QuestionAnswerStore ans : answerList) {
 				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-				DtoMarshaller.getInstance().copyToDto(ans, qasDto);
+				DtoMarshaller.copyToDto(ans, qasDto);
 				dtoList.add(qasDto);
 			}
 			resp.setAnswers(dtoList);

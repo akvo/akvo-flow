@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module>
-  <!-- Inherit our applications main module.                      -->
-  <inherits name='com.gallatinsystems.flow.flowfoundry'/>
-
-  <!-- Specify the path to any remote services.                   -->
-  <servlet path="/FlowFoundry/greet" class="com.gallatinsystems.flowfoundry.server.GreetingServiceImpl" />
-
-</module>

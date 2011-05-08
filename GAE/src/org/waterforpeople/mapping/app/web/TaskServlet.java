@@ -29,6 +29,7 @@ import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
@@ -37,7 +38,6 @@ import services.S3Driver;
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.device.domain.Status.StatusCode;
 import com.gallatinsystems.framework.exceptions.SignedDataException;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;

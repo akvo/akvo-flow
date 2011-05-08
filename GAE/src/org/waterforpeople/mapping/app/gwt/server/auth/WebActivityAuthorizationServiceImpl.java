@@ -155,7 +155,7 @@ public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
 		WebActivityAuthorizationDto dto = null;
 		if (auth != null) {
 			dto = new WebActivityAuthorizationDto();
-			DtoMarshaller.getInstance().copyToDto(auth, dto);
+			DtoMarshaller.copyToDto(auth, dto);
 			if (auth.getMaxUses() == null) {
 				dto.setMaxUses(null);
 			}
@@ -175,7 +175,7 @@ public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
 		WebActivityAuthorization auth = null;
 		if (dto != null) {
 			auth = new WebActivityAuthorization();
-			DtoMarshaller.getInstance().copyToCanonical(auth, dto);
+			DtoMarshaller.copyToCanonical(auth, dto);
 			if (dto.getMaxUses() == null) {
 				auth.setMaxUses(null);
 			}

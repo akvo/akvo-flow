@@ -25,8 +25,6 @@
 			<include name="gt-metadata-2.6.5.jar" />
 			<include name="jts-1.11-serializable-indexes.jar" />
 			<include name="gt-api-2.6.5.jar"/>
-			<include name="common-applet-1.0-SNAPSHOT.jar"/>			
-			<include name="common-service-1.0-SNAPSHOT.jar"/>
 		</fileset>
 		<pathelement location="build" />
 		<pathelement location="src" />
@@ -63,8 +61,6 @@
 
 	<target name="signjar" depends="package">
 		<signjar jar="${dist}/exporterapplet.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/common-applet-1.0-SNAPSHOT.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/common-service-1.0-SNAPSHOT.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 	</target>
 	<target name="sign3rdjar" depends="">
 		<signjar jar="war/velocity-1.6.2-dep.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />

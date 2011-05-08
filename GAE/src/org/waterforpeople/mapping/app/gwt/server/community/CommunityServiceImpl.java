@@ -89,7 +89,7 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 			results = new ArrayList<SubCountryDto>();
 			for (SubCountry c : subCountries) {
 				SubCountryDto dto = new SubCountryDto();
-				DtoMarshaller.getInstance().copyToDto(c, dto);
+				DtoMarshaller.copyToDto(c, dto);
 				results.add(dto);
 			}
 		}

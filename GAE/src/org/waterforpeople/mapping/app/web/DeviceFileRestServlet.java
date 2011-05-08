@@ -12,9 +12,9 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestResponse;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.device.domain.Status.StatusCode;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -56,7 +56,7 @@ public class DeviceFileRestServlet extends AbstractRestApiServlet {
 					StatusCode.valueOf(importReq.getProcessedStatus()), cursor);
 			for (DeviceFiles instance : dfList) {
 				DeviceFilesDto dto = new DeviceFilesDto();
-				DtoMarshaller.getInstance().copyToDto(instance, dto);
+				DtoMarshaller.copyToDto(instance, dto);
 				dtoList.add(dto);
 			}
 			cursor = BaseDAO.getCursor(dfList);

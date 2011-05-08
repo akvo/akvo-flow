@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.device.domain.Status.StatusCode;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.google.appengine.api.datastore.Text;
 

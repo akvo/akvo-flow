@@ -147,7 +147,7 @@ public class SurveyReplicationImporter implements DataImporter {
 				surveyDtoStatus = ((SurveyDto) dto).getStatus();
 				((SurveyDto) dto).setStatus(null);
 			}
-			DtoMarshaller.getInstance().copyToCanonical(canonical, dto);
+			DtoMarshaller.copyToCanonical(canonical, dto);
 			if (canonical instanceof Survey) {
 				if (surveyDtoStatus.equals(Survey.Status.IMPORTED)) {
 					((Survey) canonical).setStatus(Survey.Status.IMPORTED);

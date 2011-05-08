@@ -10,8 +10,9 @@ import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
-import com.gallatinsystems.device.domain.Status;
-import com.gallatinsystems.device.domain.Status.StatusCode;
+import org.waterforpeople.mapping.domain.Status;
+import org.waterforpeople.mapping.domain.Status.StatusCode;
+
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.appengine.api.datastore.Text;
@@ -81,7 +82,7 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 				message = canonical.getProcessingMessageText();
 				canonical.setProcessingMessageText(null);
 			}
-			DtoMarshaller.getInstance().copyToDto(canonical, dto);
+			DtoMarshaller.copyToDto(canonical, dto);
 			if (message != null)
 				dto.setProcessingMessage(message.getValue());
 			dfDtoList.add(dto);

@@ -43,8 +43,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	private static final String SERVLET_URL = "/surveyrestapi?action=";
 	private static final NumberFormat PCT_FMT = new DecimalFormat("0.00");
 	private static final String SECTOR_TXT = "Sector/Cell";
-	protected List<QuestionGroupDto> orderedGroupList;
-	protected QuestionDto sectorQuestion;
+	private List<QuestionGroupDto> orderedGroupList;
+	private QuestionDto sectorQuestion;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -57,9 +57,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
 					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
 			if (questionMap.size() > 0) {
-				SummaryModel model = buildDataModel(
-						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-						serverBase);
+				SummaryModel model = buildDataModel(criteria
+						.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
 				for (QuestionGroupDto group : orderedGroupList) {
 					for (QuestionDto question : questionMap.get(group)) {
 						pw.print(model.outputQuestion(group.getDisplayName()
@@ -80,7 +79,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		}
 	}
 
-	protected SummaryModel buildDataModel(String surveyId, String serverBase)
+	private SummaryModel buildDataModel(String surveyId, String serverBase)
 			throws Exception {
 		SummaryModel model = new SummaryModel();
 		Map<String, String> instanceMap = BulkDataServiceClient
@@ -99,13 +98,13 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		return model;
 	}
 
-	protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
+	private Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
 			String surveyId, String serverBase) throws Exception {
 		Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
 		orderedGroupList = fetchQuestionGroups(serverBase, surveyId);
 		for (QuestionGroupDto group : orderedGroupList) {
-			List<QuestionDto> questions = fetchQuestions(serverBase,
-					group.getKeyId());
+			List<QuestionDto> questions = fetchQuestions(serverBase, group
+					.getKeyId());
 			if (questions != null) {
 				for (QuestionDto q : questions) {
 					if (SECTOR_TXT.equalsIgnoreCase(q.getText())) {
@@ -121,27 +120,29 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
 	private void writeHeader(PrintWriter pw, boolean isRolledUp) {
 		if (isRolledUp) {
-			pw.println("Question Group\tQuestion\tSector\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
+			pw
+					.println("Question Group\tQuestion\tSector\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
 		} else {
-			pw.println("Question Group\tQuestion\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
+			pw
+					.println("Question Group\tQuestion\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
 		}
 	}
 
-	protected List<QuestionDto> fetchQuestions(String serverBase, Long groupId)
+	private List<QuestionDto> fetchQuestions(String serverBase, Long groupId)
 			throws Exception {
 		return parseQuestions(fetchDataFromServer(serverBase + SERVLET_URL
 				+ SurveyRestRequest.LIST_QUESTION_ACTION + "&"
 				+ SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId));
 	}
 
-	protected List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
+	private List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
 			String surveyId) throws Exception {
 		return parseQuestionGroups(fetchDataFromServer(serverBase + SERVLET_URL
 				+ SurveyRestRequest.LIST_GROUP_ACTION + "&"
 				+ SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId));
 	}
 
-	protected List<QuestionGroupDto> parseQuestionGroups(String response)
+	private List<QuestionGroupDto> parseQuestionGroups(String response)
 			throws Exception {
 		List<QuestionGroupDto> dtoList = new ArrayList<QuestionGroupDto>();
 		JSONArray arr = getJsonArray(response);
@@ -168,8 +169,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		return dtoList;
 	}
 
-	protected List<QuestionDto> parseQuestions(String response)
-			throws Exception {
+	private List<QuestionDto> parseQuestions(String response) throws Exception {
 		List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
 		JSONArray arr = getJsonArray(response);
 		if (arr != null) {
@@ -198,7 +198,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	/**
 	 * converts the string into a JSON array object.
 	 */
-	protected JSONArray getJsonArray(String response) throws Exception {
+	private JSONArray getJsonArray(String response) throws Exception {
 		System.out.println("response: " + response);
 		if (response != null) {
 			JSONObject json = new JSONObject(response);
@@ -209,7 +209,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		return null;
 	}
 
-	protected class InputDialog extends JDialog implements ActionListener {
+	private class InputDialog extends JDialog implements ActionListener {
 
 		private static final long serialVersionUID = -2875321125734363515L;
 
@@ -253,7 +253,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		}
 	}
 
-	protected class SummaryModel {
+	private class SummaryModel {
 		// contains the map of questionIds to all valid responses
 		private Map<String, List<String>> responseMap;
 		// list of all sectors encountered
@@ -381,32 +381,16 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 						buffer.append(sector).append("\t");
 					}
 					buffer.append(response).append("\t").append(countString)
-							.append("\t").append(pctString).append("\t")
-							.append(statMap.get(questionId).getStatsString())
+							.append("\t").append(pctString).append("\t").append(
+									statMap.get(questionId).getStatsString())
 							.append("\n");
 				}
 			}
 			return buffer.toString();
 		}
-
-		public Map<String, Long> getResponseCountsForQuestion(Long questionId) {
-			List<String> responses = responseMap.get(questionId.toString());
-			Map<String, Long> countMap = new HashMap<String, Long>();
-			if (responses != null) {
-				for (String resp : responses) {
-					Long count = responseCountMap.get(questionId + resp);
-					countMap.put(resp, count != null ? count : new Long(0));
-				}
-			}
-			return countMap;
-		}
-
-		public DescriptiveStats getDescriptiveStatsForQuestion(Long questionId) {
-			return statMap.get(questionId.toString());
-		}
 	}
 
-	protected class DescriptiveStats {
+	private class DescriptiveStats {
 		private double total;
 		private double max;
 		private double min;
@@ -425,10 +409,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			valueList = new ArrayList<Double>();
 			max = Double.MIN_VALUE;
 			min = Double.MAX_VALUE;
-		}
-
-		public int getSampleCount() {
-			return sampleCount;
 		}
 
 		public void addSample(String stringVal) {
@@ -451,7 +431,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			// the sumSqMean calc uses the newly updated value for mean
 			sumSqMean = sumSqMean + delta * (val - mean);
 			isSorted = false;
-			valueList.add(val);
+			valueList.add(val);			
 		}
 
 		public double getMean() {
@@ -501,7 +481,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 					curOccur++;
 				}
 			}
-			if (maxOccurValue == null) {
+			if(maxOccurValue == null){
 				maxOccurValue = lastValue;
 			}
 			return maxOccurValue;
@@ -525,22 +505,14 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			StringBuilder builder = new StringBuilder();
 			if (sampleCount > 0) {
 				builder.append(getMean()).append("\t").append(getMedian())
-						.append("\t").append(getMode()).append("\t")
-						.append(getStandardDeviation()).append("\t")
-						.append(getStandardError()).append("\t")
-						.append(getRange());
+						.append("\t").append(getMode()).append("\t").append(
+								getStandardDeviation()).append("\t").append(
+								getStandardError()).append("\t").append(
+								getRange());
 			} else {
 				builder.append("\t\t\t\t\t");
 			}
 			return builder.toString();
-		}
-
-		public double getMax() {
-			return max;
-		}
-
-		public double getMin() {
-			return min;
 		}
 
 	}

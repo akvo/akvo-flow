@@ -22,17 +22,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 
 public class DtoMarshaller {
-	private static DtoMarshaller instance;
 
-	public static synchronized DtoMarshaller getInstance() {
-		if (instance == null) {
-			instance = new DtoMarshaller();
-			instance.configureConverters();
-		}
-		return instance;
-	}
-
-	public <T extends BaseDomain, U extends BaseDto> void copyToCanonical(
+	public static <T extends BaseDomain, U extends BaseDto> void copyToCanonical(
 			T canonical, U dto) {
 		try {
 			configureConverters();
@@ -48,7 +39,7 @@ public class DtoMarshaller {
 		}
 	}
 
-	public <T extends BaseDomain, U extends BaseDto> void copyToDto(
+	public static <T extends BaseDomain, U extends BaseDto> void copyToDto(
 			T canonical, U dto) {
 		try {
 			configureConverters();
@@ -60,11 +51,11 @@ public class DtoMarshaller {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * sets up the converters that this marshaller should use
 	 */
-	protected void configureConverters() {		
+	private static void configureConverters() {
 		String pattern = "MM/dd/yy";
 		Locale locale = Locale.getDefault();
 		DateLocaleConverter converter = new DateLocaleConverter(locale, pattern);
