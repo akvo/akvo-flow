@@ -14,6 +14,17 @@
 		<fileset dir="${sdk.dir}/lib">
 			<include name="shared/**/*.jar" />
 		</fileset>
+		<fileset dir="war">
+					<include name="poi-3.5-signed.jar" />
+					<include name="velocity-1.6.2-dep.jar" />
+					<include name="geoapi-2.3-M1.jar" />
+					<include name="geoapi-pending-2.3-M1.jar" />
+					<include name="gt-api-2.6.5.jar" />
+					<include name="gt-main-2.6.5.jar" />
+					<include name="gt-metadata-2.6.5.jar" />
+					<include name="jts-1.11-serializable-indexes.jar" />
+					<include name="gt-api-2.6.5.jar"/>
+		</fileset>
 		<pathelement location="build" />
 		
 	</path>
