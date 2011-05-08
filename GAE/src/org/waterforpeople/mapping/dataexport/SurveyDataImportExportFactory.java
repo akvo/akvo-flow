@@ -23,6 +23,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
 			put("SURVEY_SUMMARY", SurveySummaryExporter.class);
 			put("RAW_DATA", RawDataExporter.class);
 			put("SURVEY_FORM", SurveyFormExporter.class);
+			put("GRAPHICAL_SURVEY_SUMMARY",GraphicalSurveySummaryExporter.class);
 		}
 	};
 	
