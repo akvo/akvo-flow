@@ -79,8 +79,7 @@
 				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/data/spreadsheet/domain/*.class" />
 				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/standards/domain/*.class"/>
 				<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/analytics/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/standards/domain/*.class"/>
+				<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/domain/*.class" />				
 	
 	
 		</enhance>
