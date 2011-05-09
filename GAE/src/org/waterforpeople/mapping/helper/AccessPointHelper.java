@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.helper;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -18,12 +20,12 @@ import org.waterforpeople.mapping.dao.AccessPointScoreDetailDao;
 import org.waterforpeople.mapping.dao.SurveyAttributeMappingDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPointMappingHistory;
 import org.waterforpeople.mapping.domain.AccessPointScoreDetail;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
@@ -34,6 +36,8 @@ import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
+import com.gallatinsystems.standards.dao.StandardScoringDao;
+import com.gallatinsystems.standards.domain.StandardScoring;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.labs.taskqueue.Queue;
@@ -697,6 +701,115 @@ public class AccessPointHelper {
 			}
 		}
 		return point;
+	}
+
+	public AccessPoint scoreAccessPointDynamic(AccessPoint ap)
+			throws NoSuchFieldException, SecurityException,
+			ClassNotFoundException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException {
+		AccessPointScoreDetail apss = new AccessPointScoreDetail();
+		logger.log(Level.INFO,
+				"About to compute score for: " + ap.getCommunityCode());
+		StandardScoringDao ssDao = new StandardScoringDao();
+		List<StandardScoring> ssList = ssDao.listStandardScoring(ap);
+		if (ssList != null && !ssList.isEmpty()) {
+			Integer score = 0;
+			for (StandardScoring item : ssList) {
+				String criteriaType = item.getCriteriaType();
+				if (criteriaType.equals("String")) {
+					Method m = AccessPoint.class.getMethod(
+							"get" + item.getEvaluateField(), null);
+					String value = (String) m.invoke(ap, null);
+					if (item.getPositiveOperand().equals("==")) {
+						if (item.getPositiveCriteria().equals(value)) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getPositiveOperand().equals("!=")) {
+						if (!item.getPositiveCriteria().equals(value)) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getNegativeOperand().equals("==")) {
+						if (item.getNegativeCriteria().equals(value)) {
+							score = score + item.getNegativeScore();
+						}
+					} else if (item.getNegativeOperand().equals("!=")) {
+						if (!item.getNegativeCriteria().equals(value)) {
+							score = score + item.getNegativeScore();
+						}
+					}
+				} else if (criteriaType.equals("Integer")) {
+					Method m = AccessPoint.class.getMethod(
+							"get" + item.getEvaluateField(), null);
+					Float value = null;
+					String type = m.getReturnType().toString();
+					if (m.getReturnType().toString().equals("class java.lang.Long"))
+						value = Float.parseFloat(((Long) m.invoke(ap, null))
+								.toString());
+					else if (m.getReturnType().toString().equals("class java.lang.Integer"))
+						value = Float.parseFloat(((Integer) m.invoke(ap, null))
+								.toString());
+					else if (m.getReturnType().toString().equals("class java.lang.Double"))
+						value = Float.parseFloat(((Double) m.invoke(ap, null))
+								.toString());
+					if (item.getPositiveOperand().equals("<=")) {
+						if (Integer.parseInt(item.getPositiveCriteria()) <= value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getPositiveOperand().equals("<")) {
+						if (Integer.parseInt(item.getPositiveCriteria()) < value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getPositiveOperand().equals("==")) {
+						if (Integer.parseInt(item.getPositiveCriteria()) == value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getPositiveOperand().equals("!=")) {
+						if (Integer.parseInt(item.getPositiveCriteria()) != value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getPositiveOperand().equals(">=")) {
+						if (Integer.parseInt(item.getPositiveCriteria()) >= value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getPositiveOperand().equals(">")) {
+						if (Integer.parseInt(item.getPositiveCriteria()) > value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getNegativeOperand().equals("<=")) {
+						if (Integer.parseInt(item.getNegativeCriteria()) <= value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getNegativeOperand().equals("<")) {
+						if (Integer.parseInt(item.getNegativeCriteria()) < value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getNegativeOperand().equals("==")) {
+						if (Integer.parseInt(item.getNegativeCriteria()) == value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getNegativeOperand().equals("!=")) {
+						if (Integer.parseInt(item.getNegativeCriteria()) != value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getNegativeOperand().equals(">=")) {
+						if (Integer.parseInt(item.getNegativeCriteria()) >= value) {
+							score = score + item.getPositiveScore();
+						}
+					} else if (item.getNegativeOperand().equals(">")) {
+						if (Integer.parseInt(item.getNegativeCriteria()) > value) {
+							score = score + item.getPositiveScore();
+						}
+					}
+				}
+			}
+			apss.setScore(score);
+			ap.setScore(score);
+			ap.setScoreComputationDate(new Date());
+			apss.setComputationDate(ap.getScoreComputationDate());
+		}
+
+		return ap;
 	}
 
 	public static AccessPoint scoreAccessPoint(AccessPoint ap) {

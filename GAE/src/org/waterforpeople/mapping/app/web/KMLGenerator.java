@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -882,8 +883,26 @@ public class KMLGenerator {
 		}
 	}
 
-	public String encodeStatusUsingScore(AccessPoint ap) {
+	public String encodeStatusUsingScore(AccessPoint ap) throws InvocationTargetException, NoSuchMethodException {
 		Integer score = AccessPointHelper.scoreAccessPoint(ap).getScore();
+		try {
+			Integer score2 = new AccessPointHelper().scoreAccessPointDynamic(ap).getScore();
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (score == 0) {
 			return "No Improved System";
 		} else if (score >= 1 && score <= 2) {

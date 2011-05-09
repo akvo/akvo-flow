@@ -23,12 +23,11 @@ public class StandardScoring extends BaseDomain {
 	private String mapToObject = null;
 	private String evaluateField = null;
 	private String positiveCriteria = null;
-	private String positiveOperand =null;
-	private String positiveCriteriaType = null;
+	private String positiveOperand = null;
+	private String criteriaType = null;
 	private Integer positiveScore = null;
 	private String negativeCriteria = null;
 	private String negativeOperand = null;
-	private String negativeCriteriaType=null;
 	private Integer negativeScore = null;
 	private String neutralCriteria = null;
 	private Integer neutralScore = null;
@@ -47,28 +46,12 @@ public class StandardScoring extends BaseDomain {
 		this.positiveOperand = positiveOperand;
 	}
 
-	public String getPositiveCriteriaType() {
-		return positiveCriteriaType;
-	}
-
-	public void setPositiveCriteriaType(String positiveCriteriaType) {
-		this.positiveCriteriaType = positiveCriteriaType;
-	}
-
 	public String getNegativeOperand() {
 		return negativeOperand;
 	}
 
 	public void setNegativeOperand(String negativeOperand) {
 		this.negativeOperand = negativeOperand;
-	}
-
-	public String getNegativeCriteriaType() {
-		return negativeCriteriaType;
-	}
-
-	public void setNegativeCriteriaType(String negativeCriteriaType) {
-		this.negativeCriteriaType = negativeCriteriaType;
 	}
 
 	public void setGlobalStandard(Boolean globalStandard) {
@@ -185,5 +168,13 @@ public class StandardScoring extends BaseDomain {
 
 	public void setEffectiveEndDate(Date effectiveEndDate) {
 		this.effectiveEndDate = effectiveEndDate;
+	}
+
+	public void setCriteriaType(String criteriaType) {
+		this.criteriaType = criteriaType;
+	}
+
+	public String getCriteriaType() {
+		return criteriaType;
 	}
 }
