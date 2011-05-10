@@ -38,13 +38,14 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
-	private static final String FORM_LABEL_CSS = "form-label";
+	private static final String FORM_LABEL_CSS = "input-label-padded";
 	private static final String TXT_BOX_CSS = "txt-box";
 	private VerticalPanel panel;
 	private Map<String, Object> bundle;
 	private TextBox nameBox;
 	private TextBox descriptionBox;
 	private TextBox versionBox;
+	private Label surveyIdLabel;
 	private SurveyServiceAsync surveyService;
 	private SurveyDto currentDto;
 	private SurveyGroupDto groupDto;
@@ -61,23 +62,28 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		panel.add(buildRow(TEXT_CONSTANTS.name(), nameBox));
 		panel.add(buildRow(TEXT_CONSTANTS.description(), descriptionBox));
 		panel.add(buildRow(TEXT_CONSTANTS.version(), versionBox));
-		editNotificationButton = new Button(TEXT_CONSTANTS
-				.manageNotifications());
+		surveyIdLabel = new Label();
+		surveyIdLabel.setStylePrimaryName(FORM_LABEL_CSS);
+		panel.add(buildRow(TEXT_CONSTANTS.surveyId(), surveyIdLabel));
+		editNotificationButton = new Button(
+				TEXT_CONSTANTS.manageNotifications());
 		editNotificationButton.addClickHandler(this);
 		panel.add(editNotificationButton);
 		currentDto = null;
 		initWidget(panel);
 	}
 
-	private Widget buildRow(String label, TextBox box) {
+	private Widget buildRow(String label, Widget widget) {
 		Label l = new Label();
 		l.setText(label);
 		l.setStylePrimaryName(FORM_LABEL_CSS);
-		box.setStylePrimaryName(TXT_BOX_CSS);
-		box.addChangeHandler(this);
+		if (widget instanceof TextBox) {
+			((TextBox) widget).setStylePrimaryName(TXT_BOX_CSS);
+			((TextBox) widget).addChangeHandler(this);
+		}
 		HorizontalPanel row = new HorizontalPanel();
 		row.add(l);
-		row.add(box);
+		row.add(widget);
 		return row;
 	}
 
@@ -87,6 +93,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			nameBox.setText(currentDto.getName());
 			descriptionBox.setText(currentDto.getDescription());
 			versionBox.setText(currentDto.getVersion());
+			surveyIdLabel.setText(currentDto.getKeyId().toString());
 		}
 	}
 
@@ -105,8 +112,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			currentDto.setCode(nameBox.getText().trim());
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
-							.getText().trim()
-							: null);
+							.getText().trim() : null);
 
 			surveyService.saveSurvey(currentDto, groupDto.getKeyId(),
 					new AsyncCallback<SurveyDto>() {
@@ -136,7 +142,8 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 						}
 					});
 		} else {
-			MessageDialog validationDialog = new MessageDialog(TEXT_CONSTANTS.inputError(),TEXT_CONSTANTS.invalidSurvey());
+			MessageDialog validationDialog = new MessageDialog(
+					TEXT_CONSTANTS.inputError(), TEXT_CONSTANTS.invalidSurvey());
 			validationDialog.showRelativeTo(panel);
 		}
 	}

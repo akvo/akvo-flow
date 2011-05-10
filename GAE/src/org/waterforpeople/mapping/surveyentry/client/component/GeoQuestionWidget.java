@@ -13,20 +13,21 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.event.MapClickHandler;
+import com.google.gwt.maps.client.control.SmallMapControl;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * 
+ *
  * handles geo questions
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 		CompletionListener {
-	
+
 	private static final String TYPE = "GEO";
 	private static final String DELIM = "|";
 	private static final String DELIM_REGEX = "\\|";
@@ -119,6 +120,7 @@ public class GeoQuestionWidget extends QuestionWidget implements ClickHandler,
 			MapWidget map = new MapWidget(point, 10);
 			map.setWidth("400px");
 			map.setHeight("400px");
+			map.addControl(new SmallMapControl());
 			map.addMapClickHandler(new MapClickHandler() {
 				@Override
 				public void onClick(MapClickEvent event) {

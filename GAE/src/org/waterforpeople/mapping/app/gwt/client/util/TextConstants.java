@@ -5,9 +5,9 @@ import com.google.gwt.i18n.client.Constants;
 
 /**
  * holds all strings displayed in the UI
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public interface TextConstants extends Constants{
 	public String addItemToDashboard();
@@ -115,7 +115,7 @@ public interface TextConstants extends Constants{
 	public String id();
 	public String communityCode();
 	public String latitude();
-	public String longitude();	
+	public String longitude();
 	public String collectionDate();
 	public String editDelete();
 	public String showErrors();
@@ -378,8 +378,8 @@ public interface TextConstants extends Constants{
 	public String editAuth();
 	public String backToAuthorizationList();
 	public String assignmentList();
-	public String deviceLocationPortletDescription(); 
-	public String deviceLocatoinPortletTitle(); 
+	public String deviceLocationPortletDescription();
+	public String deviceLocatoinPortletTitle();
 	public String phoneNum();
 	public String lastUpdated();
 	public String displayContentManagerDescription();
@@ -486,14 +486,15 @@ public interface TextConstants extends Constants{
 	public String thankYou();
 	public String thankYouMessage();
 	public String textMustBeLessThan500Chars();
-	public String importGISData();	
+	public String importGISData();
 	public String importGISDataDescriptions();
 	public String accessPointManager();
 	public String remapToAPDescription();
 	public String surveyPublishOkMessage();
-	public String surveyPublishErrorMessage();				
+	public String surveyPublishErrorMessage();
 	public String accessPointMetricChartDescription();
 	public String accessPointMetricChartTitle();
 	public String pointTypeMetric();
 	public String technologyTypeMetric();
+	public String surveyId();
 }
