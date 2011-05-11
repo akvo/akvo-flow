@@ -282,7 +282,7 @@ public class BulkDataServiceClient {
 					instanceId = instanceId.substring(0, instanceId
 							.indexOf("|"));
 				}
-				values.put(instanceId, dateString.replaceAll("/n", " ").trim());
+				values.put(instanceId, dateString.replaceAll("\n", " ").trim());
 			}
 		}
 		return values;
