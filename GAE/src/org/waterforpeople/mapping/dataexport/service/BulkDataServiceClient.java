@@ -282,10 +282,20 @@ public class BulkDataServiceClient {
 					instanceId = instanceId.substring(0, instanceId
 							.indexOf("|"));
 				}
-				values.put(instanceId, dateString);
+				values.put(instanceId, dateString.replaceAll("/n", " ").trim());
 			}
 		}
 		return values;
+	}
+	
+	public static void main(String[] args){
+		BulkDataServiceClient bds = new BulkDataServiceClient();
+		try {
+			bds.fetchInstanceIds(args[1], args[0]);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
