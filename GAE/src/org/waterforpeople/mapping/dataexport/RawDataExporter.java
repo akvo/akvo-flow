@@ -81,7 +81,7 @@ public class RawDataExporter extends AbstractDataExporter {
 		if (keyList != null) {
 			for (String key : keyList) {
 				pw.print("\t");
-				pw.write(key + "|" + questions.get(key));
+				pw.write(key + "|" + questions.get(key).replace("\n", " "));
 			}
 		}
 		pw.print("\n");
@@ -127,6 +127,7 @@ public class RawDataExporter extends AbstractDataExporter {
 														+ SDCARD_PREFIX
 																.length());
 									}
+									val = val.replaceAll(",", " ");
 									pw.print(val.replaceAll("\n", " ").trim());
 								}
 							}
