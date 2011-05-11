@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.TextBox;
 public class TextQuestionWidget extends QuestionWidget {
 	private TextBox textBox;
 	private boolean isNumeric;
+	static final String MAX_WIDTH="300px";
 
 	public TextQuestionWidget(QuestionDto q, QuestionAnswerStoreDto a,
 			boolean numericOnly) {
@@ -51,6 +52,7 @@ public class TextQuestionWidget extends QuestionWidget {
 	@Override
 	protected void constructResponseUi() {
 		textBox = new TextBox();
+		textBox.setWidth(MAX_WIDTH);
 		getPanel().add(textBox);
 		if (getAnswer().getKeyId() != null) {
 			textBox.setText(getAnswer().getValue());
@@ -60,7 +62,11 @@ public class TextQuestionWidget extends QuestionWidget {
 	@Override
 	protected void captureAnswer() {
 		if (ViewUtil.isTextPopulated(textBox)) {
-			getAnswer().setValue(textBox.getText().trim());
+			String answerTextValue = textBox.getText().trim();
+			if(answerTextValue.contains(",")){
+				
+			}
+			getAnswer().setValue(answerTextValue);
 		}
 	}
 
