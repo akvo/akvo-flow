@@ -144,7 +144,7 @@ public class SurveyEntryWidget extends Composite implements
 		}
 	}
 
-	protected void installQuestions(int idx) {
+	protected void installQuestions(final int idx) {
 		Panel tabContent = (Panel) tabPanel.getWidget(idx);
 		Collection<QuestionDto> questions = surveyDto.getQuestionGroupList()
 				.get(idx).getQuestionMap().values();
@@ -157,9 +157,17 @@ public class SurveyEntryWidget extends Composite implements
 				tabContent.add(w);
 				if (q.getQuestionDependency() != null && !w.isAnswered()) {
 					w.setVisible(false);
-				}
+				}				
 			}
 		}
+		Button nextButton = new Button(TEXT_CONSTANTS.next());
+		tabContent.add(nextButton);
+		nextButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {	
+				tabPanel.selectTab(idx+1);				
+			}});
 	}
 
 	/**
