@@ -129,7 +129,6 @@ public class RawDataExporter extends AbstractDataExporter {
 														+ SDCARD_PREFIX
 																.length());
 									}
-									val = val.replaceAll(",", " ");
 									pw.print(val.replaceAll("\n", " ").trim());
 								}
 							}
@@ -139,12 +138,12 @@ public class RawDataExporter extends AbstractDataExporter {
 							System.out.println("Row: " + i);
 						}
 					} catch (Exception ex) {
-						System.out.println("Swallow the exception for now and continue");
+						System.out
+								.println("Swallow the exception for now and continue");
 					}
 
 				}
 			}
 		}
 	}
-
 }
