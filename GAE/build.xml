@@ -76,6 +76,8 @@
 				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/editorial/domain/*.class" />
 				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/notification/domain/*.class" />
 				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/auth/domain/*.class" />
+				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/domain/*.class" />
+				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/messaging/domain/*.class" />
 				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/data/spreadsheet/domain/*.class" />
 				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/standards/domain/*.class"/>
 				<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/analytics/domain/*.class" />
