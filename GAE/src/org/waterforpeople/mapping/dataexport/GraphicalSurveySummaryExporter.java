@@ -30,6 +30,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String REPORT_HEADER = "Survey Summary Report";
 	private static final String FREQ_LABEL = "Frequency";
 	private static final String PCT_LABEL = "Percent";
+	private static final String IMAGE_CHART_API = "http://chart.googleapis.com/chart?cht=p&chs=300x300&chtt=";//title value is next
+	private static final String DATA_LBL_PARAM = "&chdl=";
+	private static final String DATA_PARAM="chd=t";
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -81,9 +84,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		for (Entry<QuestionGroupDto, List<QuestionDto>> mapEntry : questionMap
 				.entrySet()) {
 			if (mapEntry.getValue() != null) {
-				for (QuestionDto question : mapEntry.getValue()) {
-					// TODO: remove println
-					System.out.println("Question type: " + question.getType());
+				for (QuestionDto question : mapEntry.getValue()) {					
 					// for both options and numeric, we want a pie chart and
 					// data table for numeric, we also want descriptive
 					// statistics
