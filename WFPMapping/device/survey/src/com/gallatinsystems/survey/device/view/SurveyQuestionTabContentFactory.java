@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 import android.database.Cursor;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -118,6 +118,9 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 			} else if (ConstantUtil.HEADING_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new CompassQuestionView(context, q, languageCodes, readOnly);
+			}else if (ConstantUtil.DATE_QUESTION_TYPE.equalsIgnoreCase(q
+					.getType())) {
+				questionView = new DateQuestionView(context, q, languageCodes, readOnly);
 			} else {
 				questionView = new QuestionView(context, q, languageCodes,
 						readOnly);

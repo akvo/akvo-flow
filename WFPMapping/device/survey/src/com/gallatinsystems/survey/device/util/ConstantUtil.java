@@ -66,6 +66,7 @@ public class ConstantUtil {
 	public static final String TRACK_QUESTION_TYPE = "track";
 	public static final String STRENGTH_QUESTION_TYPE = "strength";
 	public static final String HEADING_QUESTION_TYPE = "heading";
+	public static final String DATE_QUESTION_TYPE = "date";
 
 	/**
 	 * help types
@@ -89,6 +90,7 @@ public class ConstantUtil {
 	public static final String VIDEO_RESPONSE_TYPE = "VIDEO";
 	public static final String GEO_RESPONSE_TYPE = "GEO";
 	public static final String TRACK_RESPONSE_TYPE = "TRACK";
+	public static final String DATE_RESPONSE_TYPE = "DATE";
 	public static final String OTHER_RESPONSE_TYPE = "OTHER";
 
 	/**

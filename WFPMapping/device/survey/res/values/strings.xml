@@ -186,5 +186,6 @@
 	<string name="sdmissing">SD card missing or unmounted. Ensure that you have turned off "USB File Copying"</string>
 	<string name="sdmounted">SD card is mounted properly.</string>
 	<string name="sdcardspace">Free Space (MB):</string>
-	<string name="appversion">1.9.6</string>	
+	<string name="pickdate">Select Date</string>
+	<string name="appversion">1.9.7</string>	
 </resources>
