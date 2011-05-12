@@ -81,8 +81,8 @@ public class RawDataExporter extends AbstractDataExporter {
 		if (keyList != null) {
 			for (String key : keyList) {
 				pw.print("\t");
-				String questionText = questions.get(key).replaceAll("\n", " ");
-				questionText = questions.get(key).replaceAll("\r", " ").trim();
+				String questionText = questions.get(key).replaceAll("\n", " ").trim();
+				questionText = questionText.replaceAll("\r", " ").trim();
 				pw.write(key + "|" + questionText);
 			}
 		}
