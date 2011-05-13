@@ -298,8 +298,8 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 
 	private void populateDeviceControl(List<DeviceDto> deviceList) {
 		if (deviceList == null && currentDeviceList != null) {
-			for (DeviceDto dto : currentDeviceList) {
-				deviceSourceBox.clear();
+			deviceSourceBox.clear();
+			for (DeviceDto dto : currentDeviceList) {				
 				deviceSourceBox.addItem(dto.getPhoneNumber()
 						+ (dto.getDeviceIdentifier() != null ? " ("
 								+ dto.getDeviceIdentifier() + ")" : ""));

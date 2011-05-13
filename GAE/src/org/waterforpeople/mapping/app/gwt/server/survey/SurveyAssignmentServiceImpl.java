@@ -15,12 +15,14 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
@@ -94,24 +96,24 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	 */
 	private void generateDeviceJobQueueItems(SurveyAssignment assignment,
 			SurveyAssignment oldAssignment) {
-		List<Long> surveyIdsToSave = new ArrayList<Long>(assignment
-				.getSurveyIds());
-		List<Long> deviceIdsToSave = new ArrayList<Long>(assignment
-				.getDeviceIds());
+		List<Long> surveyIdsToSave = new ArrayList<Long>(
+				assignment.getSurveyIds());
+		List<Long> deviceIdsToSave = new ArrayList<Long>(
+				assignment.getDeviceIds());
 		List<Long> surveyIdsToDelete = new ArrayList<Long>();
 		List<Long> deviceIdsToDelete = new ArrayList<Long>();
 
 		if (oldAssignment != null) {
 			if (oldAssignment.getSurveyIds() != null) {
 				surveyIdsToSave.removeAll(oldAssignment.getSurveyIds());
-				surveyIdsToDelete = new ArrayList<Long>(oldAssignment
-						.getSurveyIds());
+				surveyIdsToDelete = new ArrayList<Long>(
+						oldAssignment.getSurveyIds());
 				surveyIdsToDelete.removeAll(assignment.getSurveyIds());
 			}
 			if (oldAssignment.getDeviceIds() != null) {
 				deviceIdsToSave.removeAll(oldAssignment.getDeviceIds());
-				deviceIdsToDelete = new ArrayList<Long>(oldAssignment
-						.getDeviceIds());
+				deviceIdsToDelete = new ArrayList<Long>(
+						oldAssignment.getDeviceIds());
 				deviceIdsToDelete.removeAll(assignment.getDeviceIds());
 			}
 		}
@@ -187,15 +189,15 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 
 			DataChangeRecord change = new DataChangeRecord(
 					SurveyAssignment.class.getName(), assignment.getKey()
-							.getId()
-							+ "", builder.toString(), "n/");
+							.getId() + "", builder.toString(), "n/");
 			Queue queue = QueueFactory.getQueue("dataUpdate");
-			queue.add(url("/app_worker/dataupdate").param(
-					DataSummarizationRequest.OBJECT_KEY,
-					assignment.getKey().getId() + "").param(
-					DataSummarizationRequest.OBJECT_TYPE,
-					"DeviceSurveyJobQueueChange").param(
-					DataSummarizationRequest.VALUE_KEY, change.packString()));
+			queue.add(url("/app_worker/dataupdate")
+					.param(DataSummarizationRequest.OBJECT_KEY,
+							assignment.getKey().getId() + "")
+					.param(DataSummarizationRequest.OBJECT_TYPE,
+							"DeviceSurveyJobQueueChange")
+					.param(DataSummarizationRequest.VALUE_KEY,
+							change.packString()));
 		}
 	}
 
@@ -215,14 +217,56 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * lists all assignments TODO: move dto/domain conversion out
+	 * lists all assignments
 	 */
 	@Override
 	public SurveyAssignmentDto[] listSurveyAssignments() {
-		List<SurveyAssignment> assignments = surveyAssignmentDao.list(null);
+		List<SurveyAssignment> assignments = surveyAssignmentDao
+				.list(Constants.ALL_RESULTS);
+		ArrayList<SurveyAssignmentDto> dtoList = convertToDto(assignments);
 		SurveyAssignmentDto[] results = null;
+		if (dtoList != null) {
+			results = new SurveyAssignmentDto[dtoList.size()];
+			results = (SurveyAssignmentDto[]) dtoList.toArray(results);
+		}
+
+		return results;
+	}
+
+	/**
+	 * deletes an assignment from the datastore
+	 */
+	@Override
+	public void deleteSurveyAssignment(SurveyAssignmentDto dto) {
+		if (dto != null) {
+			SurveyAssignment assignment = surveyAssignmentDao.getByKey(dto
+					.getKeyId());
+			if (assignment != null) {
+				deviceSurveyJobQueueDAO.deleteJob(assignment.getKey().getId());
+				surveyAssignmentDao.delete(assignment);
+			}
+		}
+	}
+
+	/**
+	 * return all survey assignments paginated
+	 */
+	@Override
+	public ResponseDto<ArrayList<SurveyAssignmentDto>> listSurveyAssignments(
+			String cursor) {
+		List<SurveyAssignment> assignments = surveyAssignmentDao.list(cursor);
+		ArrayList<SurveyAssignmentDto> dtoList = convertToDto(assignments);
+		ResponseDto<ArrayList<SurveyAssignmentDto>> response = new ResponseDto<ArrayList<SurveyAssignmentDto>>();
+		response.setCursorString(BaseDAO.getCursor(assignments));
+		response.setPayload(dtoList);
+		return response;
+	}
+
+	private ArrayList<SurveyAssignmentDto> convertToDto(
+			List<SurveyAssignment> assignments) {
+		ArrayList<SurveyAssignmentDto> results = null;
 		if (assignments != null) {
-			results = new SurveyAssignmentDto[assignments.size()];
+			results = new ArrayList<SurveyAssignmentDto>();
 			for (int i = 0; i < assignments.size(); i++) {
 				SurveyAssignmentDto dto = new SurveyAssignmentDto();
 				dto.setKeyId(assignments.get(i).getKey().getId());
@@ -258,24 +302,9 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 					}
 					dto.setSurveys(surveys);
 				}
-				results[i] = dto;
+				results.add(dto);
 			}
 		}
 		return results;
-	}
-
-	/**
-	 * deletes an assignment from the datastore
-	 */
-	@Override
-	public void deleteSurveyAssignment(SurveyAssignmentDto dto) {
-		if (dto != null) {
-			SurveyAssignment assignment = surveyAssignmentDao.getByKey(dto
-					.getKeyId());
-			if (assignment != null) {
-				deviceSurveyJobQueueDAO.deleteJob(assignment.getKey().getId());
-				surveyAssignmentDao.delete(assignment);
-			}
-		}
 	}
 }

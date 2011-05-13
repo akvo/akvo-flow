@@ -1,5 +1,8 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import java.util.ArrayList;
+
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyAssignmentServiceAsync {
@@ -11,5 +14,8 @@ public interface SurveyAssignmentServiceAsync {
 
 	void deleteSurveyAssignment(SurveyAssignmentDto dto,
 			AsyncCallback<Void> callback);
+
+	void listSurveyAssignments(String cursor,
+			AsyncCallback<ResponseDto<ArrayList<SurveyAssignmentDto>>> callback);
 
 }
