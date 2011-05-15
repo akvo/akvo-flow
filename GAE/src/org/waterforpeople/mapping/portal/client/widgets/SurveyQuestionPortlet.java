@@ -1,8 +1,11 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
@@ -10,7 +13,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
@@ -25,10 +27,10 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.ImagePieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart;
 import com.google.gwt.visualization.client.visualizations.PieChart.Options;
@@ -54,6 +56,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	private VerticalPanel contentPane;
 	private PieChart pieChart;
 	private ListBox questionListbox;
+	private Map<Long,String> fullQuestionMap;
 	private ListBox surveyGroupListbox;
 	private ListBox surveyListbox;
 	private AbstractDataTable currentTable;
@@ -65,6 +68,7 @@ public class SurveyQuestionPortlet extends Portlet {
 		questionListbox = new ListBox();
 		surveyGroupListbox = new ListBox();
 		surveyListbox = new ListBox();
+		fullQuestionMap = new HashMap<Long,String>();
 		
 		VerticalPanel header = new VerticalPanel();
 		HorizontalPanel line = new HorizontalPanel();
@@ -158,6 +162,7 @@ public class SurveyQuestionPortlet extends Portlet {
 
 	private void loadSurveyQuestion(Long surveyId) {
 		questionListbox.clear();
+		fullQuestionMap.clear();
 		// Set up the callback object.
 		AsyncCallback<QuestionDto[]> surveyQuestionCallback = new AsyncCallback<QuestionDto[]>() {
 			public void onFailure(Throwable caught) {
@@ -167,6 +172,7 @@ public class SurveyQuestionPortlet extends Portlet {
 			public void onSuccess(QuestionDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
+						fullQuestionMap.put(result[i].getKeyId(), result[i].getText());
 						String text = result[i].getText();
 						if (text != null && text.length() > MAX_LEN) {
 							text = text.substring(0, MAX_LEN) + "...";
@@ -199,15 +205,18 @@ public class SurveyQuestionPortlet extends Portlet {
 	 * 
 	 * @return
 	 */
-	private Options createOptions() {
+	private Options createOptions(String title) {
 		Options options = Options.create();
 		// this is needed so we can display html pop-ups over the flash content
 		options.setHeight(HEIGHT - 60);
 		options.setWidth(WIDTH);
+		if(title != null){
+			options.setTitle(title);
+		}
 		return options;
 	}
 
-	private void buildChart(String question) {
+	private void buildChart(final String question) {
 		// fetch list of responses for a question
 		SurveySummaryServiceAsync surveyService = GWT
 				.create(SurveySummaryService.class);
@@ -240,7 +249,7 @@ public class SurveyQuestionPortlet extends Portlet {
 							}
 							if (result.length > 0) {
 								pieChart = new PieChart(dataTable,
-										createOptions());
+										createOptions(fullQuestionMap.get(new Long(question))));
 								contentPane.add(pieChart);
 								currentTable = dataTable;
 							}else{
