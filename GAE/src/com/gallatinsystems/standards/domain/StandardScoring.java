@@ -13,7 +13,6 @@ public class StandardScoring extends BaseDomain {
 	 * 
 	 */
 	private static final long serialVersionUID = 2361133441074173260L;
-
 	private Boolean globalStandard = null;
 	private String countryCode = null;
 	private String subValue = null;
@@ -23,35 +22,44 @@ public class StandardScoring extends BaseDomain {
 	private String mapToObject = null;
 	private String evaluateField = null;
 	private String positiveCriteria = null;
-	private String positiveOperand = null;
+	private String positiveOperator = null;
 	private String criteriaType = null;
 	private Integer positiveScore = null;
 	private String negativeCriteria = null;
-	private String negativeOperand = null;
+	private String negativeOperator = null;
 	private Integer negativeScore = null;
 	private String neutralCriteria = null;
 	private Integer neutralScore = null;
 	private Date effectiveStartDate = null;
 	private Date effectiveEndDate = null;
+	private String scoreBucket = null;
+
+	public String getScoreBucket() {
+		return scoreBucket;
+	}
+
+	public void setScoreBucket(String scoreBucket) {
+		this.scoreBucket = scoreBucket;
+	}
 
 	public Boolean getGlobalStandard() {
 		return globalStandard;
 	}
 
-	public String getPositiveOperand() {
-		return positiveOperand;
+	public String getPositiveOperator() {
+		return positiveOperator;
 	}
 
-	public void setPositiveOperand(String positiveOperand) {
-		this.positiveOperand = positiveOperand;
+	public void setPositiveOperator(String positiveOperator) {
+		this.positiveOperator = positiveOperator;
 	}
 
-	public String getNegativeOperand() {
-		return negativeOperand;
+	public String getNegativeOperator() {
+		return negativeOperator;
 	}
 
-	public void setNegativeOperand(String negativeOperand) {
-		this.negativeOperand = negativeOperand;
+	public void setNegativeOperator(String negativeOperator) {
+		this.negativeOperator = negativeOperator;
 	}
 
 	public void setGlobalStandard(Boolean globalStandard) {

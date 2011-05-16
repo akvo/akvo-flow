@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -703,12 +704,10 @@ public class AccessPointHelper {
 		return point;
 	}
 
-	public AccessPoint scoreAccessPointDynamic(AccessPoint ap)
-			throws NoSuchFieldException, SecurityException,
-			ClassNotFoundException, IllegalArgumentException,
-			IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
+	public AccessPoint scoreAccessPointDynamic(AccessPoint ap) {
 		AccessPointScoreDetail apss = new AccessPointScoreDetail();
+		HashMap<String, Integer> scoreBucketMap = new HashMap<String, Integer>();
+
 		logger.log(Level.INFO,
 				"About to compute score for: " + ap.getCommunityCode());
 		StandardScoringDao ssDao = new StandardScoringDao();
@@ -716,100 +715,165 @@ public class AccessPointHelper {
 		if (ssList != null && !ssList.isEmpty()) {
 			Integer score = 0;
 			for (StandardScoring item : ssList) {
-				String criteriaType = item.getCriteriaType();
-				if (criteriaType.equals("String")) {
-					Method m = AccessPoint.class.getMethod(
-							"get" + item.getEvaluateField(), null);
-					String value = (String) m.invoke(ap, null);
-					if (item.getPositiveOperand().equals("==")) {
-						if (item.getPositiveCriteria().equals(value)) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getPositiveOperand().equals("!=")) {
-						if (!item.getPositiveCriteria().equals(value)) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getNegativeOperand().equals("==")) {
-						if (item.getNegativeCriteria().equals(value)) {
-							score = score + item.getNegativeScore();
-						}
-					} else if (item.getNegativeOperand().equals("!=")) {
-						if (!item.getNegativeCriteria().equals(value)) {
-							score = score + item.getNegativeScore();
-						}
-					}
-				} else if (criteriaType.equals("Integer")) {
-					Method m = AccessPoint.class.getMethod(
-							"get" + item.getEvaluateField(), null);
-					Float value = null;
-					String type = m.getReturnType().toString();
-					if (m.getReturnType().toString().equals("class java.lang.Long"))
-						value = Float.parseFloat(((Long) m.invoke(ap, null))
-								.toString());
-					else if (m.getReturnType().toString().equals("class java.lang.Integer"))
-						value = Float.parseFloat(((Integer) m.invoke(ap, null))
-								.toString());
-					else if (m.getReturnType().toString().equals("class java.lang.Double"))
-						value = Float.parseFloat(((Double) m.invoke(ap, null))
-								.toString());
-					if (item.getPositiveOperand().equals("<=")) {
-						if (Integer.parseInt(item.getPositiveCriteria()) <= value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getPositiveOperand().equals("<")) {
-						if (Integer.parseInt(item.getPositiveCriteria()) < value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getPositiveOperand().equals("==")) {
-						if (Integer.parseInt(item.getPositiveCriteria()) == value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getPositiveOperand().equals("!=")) {
-						if (Integer.parseInt(item.getPositiveCriteria()) != value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getPositiveOperand().equals(">=")) {
-						if (Integer.parseInt(item.getPositiveCriteria()) >= value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getPositiveOperand().equals(">")) {
-						if (Integer.parseInt(item.getPositiveCriteria()) > value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getNegativeOperand().equals("<=")) {
-						if (Integer.parseInt(item.getNegativeCriteria()) <= value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getNegativeOperand().equals("<")) {
-						if (Integer.parseInt(item.getNegativeCriteria()) < value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getNegativeOperand().equals("==")) {
-						if (Integer.parseInt(item.getNegativeCriteria()) == value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getNegativeOperand().equals("!=")) {
-						if (Integer.parseInt(item.getNegativeCriteria()) != value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getNegativeOperand().equals(">=")) {
-						if (Integer.parseInt(item.getNegativeCriteria()) >= value) {
-							score = score + item.getPositiveScore();
-						}
-					} else if (item.getNegativeOperand().equals(">")) {
-						if (Integer.parseInt(item.getNegativeCriteria()) > value) {
-							score = score + item.getPositiveScore();
-						}
-					}
+				if (scoreBucketMap.containsKey(item.getScoreBucket())) {
+					score = scoreBucketMap.get(item.getScoreBucket());
+				} else {
+					scoreBucketMap.put(item.getScoreBucket(), 0);
 				}
+				try {
+					score = executeItemScore(ap, score, item);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				scoreBucketMap.put(item.getScoreBucket(), score);
 			}
-			apss.setScore(score);
-			ap.setScore(score);
-			ap.setScoreComputationDate(new Date());
-			apss.setComputationDate(ap.getScoreComputationDate());
+			for (Entry<String, Integer> item : scoreBucketMap.entrySet()) {
+				apss.setScoreBucket(item.getKey());
+				apss.setScore(item.getValue());
+				ap.setScore(score);
+				ap.setScoreComputationDate(new Date());
+				apss.setComputationDate(ap.getScoreComputationDate());
+				ap.setApScoreDetail(apss);
+			}
 		}
 
 		return ap;
+	}
+
+	private Integer executeItemScore(AccessPoint ap, Integer score,
+			StandardScoring item) throws IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
+		String criteriaType = item.getCriteriaType();
+		if (criteriaType.equals("String")) {
+			Method m = AccessPoint.class.getMethod(
+					"get" + item.getEvaluateField(), null);
+			String value = (String) m.invoke(ap, null);
+			if (item.getPositiveOperator().equals("==")) {
+				if (item.getPositiveCriteria().equals(value)) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getPositiveOperator().equals("!=")) {
+				if (!item.getPositiveCriteria().equals(value)) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getNegativeOperator().equals("==")) {
+				if (item.getNegativeCriteria().equals(value)) {
+					score = score + item.getNegativeScore();
+				}
+			} else if (item.getNegativeOperator().equals("!=")) {
+				if (!item.getNegativeCriteria().equals(value)) {
+					score = score + item.getNegativeScore();
+				}
+			}
+		} else if (criteriaType.equals("Boolean")) {
+			Method m = AccessPoint.class.getMethod(
+					"get" + item.getEvaluateField(), null);
+			Boolean value = null;
+			String type = m.getReturnType().toString();
+			if (type.equals("class java.lang.Boolean")) {
+				value = Boolean.parseBoolean(m.invoke(ap, null).toString());
+				if (item.getPositiveOperator().equals("==")) {
+					if (Boolean.parseBoolean(item.getPositiveCriteria()) == value) {
+						score = score + item.getPositiveScore();
+					}
+				} else if (item.getPositiveOperator().equals("!=")) {
+					if (Boolean.parseBoolean(item.getPositiveCriteria()) != value) {
+						score = score + item.getPositiveScore();
+					}
+				}
+				if (item.getNegativeOperator().equals("==")) {
+					if(Boolean.parseBoolean(item.getNegativeCriteria())==value){
+						score = score +item.getNegativeScore();
+					}
+				}else if(item.getNegativeOperator().equals("!=")){
+					if(Boolean.parseBoolean(item.getNegativeCriteria())!=value){
+						score = score +item.getNegativeScore();
+					}
+					
+				}
+			}
+		} else if (criteriaType.equals("Integer")) {
+			Method m = AccessPoint.class.getMethod(
+					"get" + item.getEvaluateField(), null);
+			Float value = null;
+			String type = m.getReturnType().toString();
+			if (m.getReturnType().toString().equals("class java.lang.Long"))
+				value = Float
+						.parseFloat(((Long) m.invoke(ap, null)).toString());
+			else if (m.getReturnType().toString()
+					.equals("class java.lang.Integer"))
+				value = Float.parseFloat(((Integer) m.invoke(ap, null))
+						.toString());
+			else if (m.getReturnType().toString()
+					.equals("class java.lang.Double"))
+				value = Float.parseFloat(((Double) m.invoke(ap, null))
+						.toString());
+			if (item.getPositiveOperator().equals("<=")) {
+				if (Integer.parseInt(item.getPositiveCriteria()) <= value) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getPositiveOperator().equals("<")) {
+				if (Integer.parseInt(item.getPositiveCriteria()) < value) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getPositiveOperator().equals("==")) {
+				if (Integer.parseInt(item.getPositiveCriteria()) == value) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getPositiveOperator().equals("!=")) {
+				if (Integer.parseInt(item.getPositiveCriteria()) != value) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getPositiveOperator().equals(">=")) {
+				if (Integer.parseInt(item.getPositiveCriteria()) >= value) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getPositiveOperator().equals(">")) {
+				if (Integer.parseInt(item.getPositiveCriteria()) > value) {
+					score = score + item.getPositiveScore();
+				}
+			} else if (item.getNegativeOperator().equals("<=")) {
+				if (Integer.parseInt(item.getNegativeCriteria()) <= value) {
+					score = score + item.getNegativeScore();
+				}
+			} else if (item.getNegativeOperator().equals("<")) {
+				if (Integer.parseInt(item.getNegativeCriteria()) < value) {
+					score = score + item.getNegativeScore();
+				}
+			} else if (item.getNegativeOperator().equals("==")) {
+				if (Integer.parseInt(item.getNegativeCriteria()) == value) {
+					score = score + item.getNegativeScore();
+				}
+			} else if (item.getNegativeOperator().equals("!=")) {
+				if (Integer.parseInt(item.getNegativeCriteria()) != value) {
+					score = score + item.getNegativeScore();
+				}
+			} else if (item.getNegativeOperator().equals(">=")) {
+				if (Integer.parseInt(item.getNegativeCriteria()) >= value) {
+					score = score + item.getNegativeScore();
+				}
+			} else if (item.getNegativeOperator().equals(">")) {
+				if (Integer.parseInt(item.getNegativeCriteria()) > value) {
+					score = score + item.getNegativeScore();
+				}
+			}
+		}
+		return score;
 	}
 
 	public static AccessPoint scoreAccessPoint(AccessPoint ap) {

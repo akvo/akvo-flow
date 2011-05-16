@@ -27,8 +27,4 @@ public class CSVUtil {
 		}
 		return s;
 	}
-
-	public static void main(String[] args) {
-		System.out.println(Escape("this is a test, how did I do"));
-	}
 }

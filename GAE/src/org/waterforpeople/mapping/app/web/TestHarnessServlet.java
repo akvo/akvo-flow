@@ -54,6 +54,7 @@ import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceI
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
+import org.waterforpeople.mapping.app.web.test.StandardScoringTest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.AccessPointMetricMappingDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
@@ -113,8 +114,6 @@ import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
-import com.gallatinsystems.standards.dao.StandardScoringDao;
-import com.gallatinsystems.standards.domain.StandardScoring;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
@@ -365,47 +364,8 @@ public class TestHarnessServlet extends HttpServlet {
 			// apmsDao.save(apms);
 			// }
 		} else if ("populateStandardScoring".equals(action)) {
-			Calendar calendar = new GregorianCalendar(2010, Calendar.JANUARY, 1);
-			Date effectiveStartDate = calendar.getTime();
-			calendar.add(Calendar.MONTH, 5000);
-			Date effectiveEndDate = calendar.getTime();
-
-			StandardScoringDao ssDao = new StandardScoringDao();
-			StandardScoring ss = new StandardScoring();
-			ss.setGlobalStandard(true);
-			ss.setDisplayName("Improved Water Point Evalutation");
-			ss.setPointType("WATER_POINT");
-			ss.setEvaluateField("TypeTechnologyString");
-			ss.setPositiveOperand("!=");
-			ss.setPositiveCriteria("NO_IMPROVED");
-			ss.setCriteriaType("String");
-			ss.setPositiveScore(1);
-			ss.setNegativeOperand("==");
-			ss.setNegativeCriteria("NO_IMPROVED");
-			ss.setNegativeScore(-1);
-			ss.setMapToObject("AccessPoint");
-			ss.setEffectiveStartDate(effectiveStartDate);
-			ss.setEffectiveEndDate(effectiveEndDate);
-			ssDao.save(ss);
-
-			StandardScoring ss2 = new StandardScoring();
-			ss2.setGlobalStandard(false);
-			ss2.setCountryCode("LR");
-			ss2.setDisplayName("Number of Users Per Water Point");
-			ss2.setPointType("WATER_POINT");
-			ss2.setEvaluateField("NumberOfHouseholdsUsingPoint");
-			ss2.setPositiveOperand("<");
-			ss2.setPositiveCriteria("100");
-			ss2.setCriteriaType("Integer");
-			ss2.setPositiveScore(1);
-			ss2.setNegativeOperand(">=");
-			ss2.setNegativeCriteria("100");
-			ss2.setNegativeScore(-1);
-			ss2.setMapToObject("AccessPoint");
-			ss2.setEffectiveStartDate(effectiveStartDate);
-			ss2.setEffectiveEndDate(effectiveEndDate);
-			ssDao.save(ss2);
-
+			StandardScoringTest sst = new StandardScoringTest();
+			sst.populateData();
 		} else if ("clearSurveyInstanceQAS".equals(action)) {
 			// QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 			// for (QuestionAnswerStore qas : qasDao.list("all")) {

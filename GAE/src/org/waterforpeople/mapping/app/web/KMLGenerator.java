@@ -39,21 +39,21 @@ public class KMLGenerator {
 	private VelocityEngine engine;
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
-//	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
-//			.getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
-//	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
-//			.getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
-//	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
-//			.getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
-	 public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
-	 PropertyUtil
-	 .getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
-	 public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL =
-	 PropertyUtil
-	 .getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
-	 public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL =
-	 PropertyUtil
-	 .getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
+	// public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
+	// PropertyUtil
+	// .getProperty(IMAGE_ROOT) + "/images/iconGreen36.png";
+	// public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL =
+	// PropertyUtil
+	// .getProperty(IMAGE_ROOT) + "/images/iconYellow36.png";
+	// public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL =
+	// PropertyUtil
+	// .getProperty(IMAGE_ROOT) + "/images/iconRed36.png";
+	public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL = PropertyUtil
+			.getProperty(IMAGE_ROOT) + "/images/glassGreen32.png";
+	public static final String WATER_POINT_FUNCTIONING_YELLOW_ICON_URL = PropertyUtil
+			.getProperty(IMAGE_ROOT) + "/images/glassOrange32.png";
+	public static final String WATER_POINT_FUNCTIONING_RED_ICON_URL = PropertyUtil
+			.getProperty(IMAGE_ROOT) + "/images/glassRed32.png";
 	public static final String WATER_POINT_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseGreen36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
@@ -65,8 +65,9 @@ public class KMLGenerator {
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilBlack36.png";
 	public static final Boolean useScore = Boolean.parseBoolean(PropertyUtil
 			.getProperty("scoreAPFlag"));
-	public static final String ORGANIZATION_KEY="organization";
-	public static final String ORGANIZATION = PropertyUtil.getProperty("organization");
+	public static final String ORGANIZATION_KEY = "organization";
+	public static final String ORGANIZATION = PropertyUtil
+			.getProperty("organization");
 
 	public KMLGenerator() {
 		engine = new VelocityEngine();
@@ -79,7 +80,7 @@ public class KMLGenerator {
 		}
 	}
 
-	public static final String defaultPhotoCaption =  PropertyUtil
+	public static final String defaultPhotoCaption = PropertyUtil
 			.getProperty("defaultPhotoCaption");
 
 	public String generateRegionDocumentString(String regionVMName) {
@@ -458,13 +459,13 @@ public class KMLGenerator {
 			throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
-		
+
 		if (ap.getCountryCode() == null)
 			ap.setCountryCode("Unknown");
 		if (ap.getCountryCode() != null) {
 
 			VelocityContext context = new VelocityContext();
-			context.put("organization",ORGANIZATION);
+			context.put("organization", ORGANIZATION);
 			if (display != null) {
 				context.put("display", display);
 			}
@@ -481,7 +482,8 @@ public class KMLGenerator {
 						.getCollectionDate());
 				context.put("collectionYear", collectionYear);
 			} else {
-				String timestamp = DateFormatUtils.formatUTC(ap.getCreatedDateTime(),
+				String timestamp = DateFormatUtils.formatUTC(
+						ap.getCreatedDateTime(),
 						DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 				String formattedDate = DateFormat.getDateInstance(
 						DateFormat.SHORT).format(ap.getCreatedDateTime());
@@ -858,7 +860,8 @@ public class KMLGenerator {
 				statusString = "Unknown";
 			}
 			context.put("waterSystemStatus", statusString);
-			//will remove soon not necessary now that APs are getting scored on save
+			// will remove soon not necessary now that APs are getting scored on
+			// save
 			AccessPointDao apDao = new AccessPointDao();
 			apDao.save(ap);
 			return statusString;
@@ -883,26 +886,13 @@ public class KMLGenerator {
 		}
 	}
 
-	public String encodeStatusUsingScore(AccessPoint ap) throws InvocationTargetException, NoSuchMethodException {
+	public String encodeStatusUsingScore(AccessPoint ap)
+			throws InvocationTargetException, NoSuchMethodException {
 		Integer score = AccessPointHelper.scoreAccessPoint(ap).getScore();
-		try {
-			Integer score2 = new AccessPointHelper().scoreAccessPointDynamic(ap).getScore();
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		Integer score2 = new AccessPointHelper().scoreAccessPointDynamic(ap)
+				.getScore();
+
 		if (score == 0) {
 			return "No Improved System";
 		} else if (score >= 1 && score <= 2) {

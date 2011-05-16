@@ -20,6 +20,7 @@ public class AccessPointScoreDetail extends BaseDomain {
 	private ArrayList<String> scoreComputationItems = null;
 	private String status = null;
 	private Date computationDate = null;
+	private String scoreBucket = null;
 
 	public Long getAccessPointId() {
 		return accessPointId;
@@ -67,5 +68,13 @@ public class AccessPointScoreDetail extends BaseDomain {
 
 	public Date getComputationDate() {
 		return computationDate;
+	}
+
+	public void setScoreBucket(String scoreBucket) {
+		this.scoreBucket = scoreBucket;
+	}
+
+	public String getScoreBucket() {
+		return scoreBucket;
 	}
 }

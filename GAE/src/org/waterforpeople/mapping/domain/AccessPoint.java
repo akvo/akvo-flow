@@ -79,6 +79,14 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String pointPhotoCaption = null;
 	@MappableField(displayName = "Point Description")
 	private String description = null;
+	@MappableField(displayName = "Local Spare Parts on Hand")
+	private Boolean localSparePartsFlag = null;
+	@MappableField(displayName = "Nearby Spare Parts on Hand")
+	private Boolean nearbySparePartsFlag = null;
+	@MappableField(displayName = "Supports new Users since Construction/Rehabilitation")
+	private Boolean supportNewUsers = null;
+	@MappableField(displayName = "Positive Financial Balance")
+	private Boolean positiveBalance=null;
 
 	@MappableField(displayName = "Point Type")
 	@Persistent
@@ -145,6 +153,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@MappableField(displayName = "collectTariff")
 	private Boolean collectTariffFlag = null;
 	private Integer score = null;
+	private Integer sustainabilityScore = null;
+	private Integer levelOfServiceScore = null;
 	private Date scoreComputationDate = null;
 	private String sub1 = null;
 	private String sub2 = null;
@@ -157,7 +167,30 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@NotPersistent
 	private List<AccessPointScoreDetail> apScoreDetailList = null;
 
-	
+	public Boolean getLocalSparePartsFlag() {
+		return localSparePartsFlag;
+	}
+
+	public void setLocalSparePartsFlag(Boolean localSparePartsFlag) {
+		this.localSparePartsFlag = localSparePartsFlag;
+	}
+
+	public Boolean getNearbySparePartsFlag() {
+		return nearbySparePartsFlag;
+	}
+
+	public void setNearbySparePartsFlag(Boolean nearbySparePartsFlag) {
+		this.nearbySparePartsFlag = nearbySparePartsFlag;
+	}
+
+	public Boolean getSupportNewUsers() {
+		return supportNewUsers;
+	}
+
+	public void setSupportNewUsers(Boolean supportNewUsers) {
+		this.supportNewUsers = supportNewUsers;
+	}
+
 
 	public Boolean getImprovedWaterPointFlag() {
 		return improvedWaterPointFlag;
@@ -811,6 +844,30 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public List<AccessPointScoreDetail> getApScoreDetailList() {
 		return apScoreDetailList;
+	}
+
+	public void setSustainabilityScore(Integer sustainabilityScore) {
+		this.sustainabilityScore = sustainabilityScore;
+	}
+
+	public Integer getSustainabilityScore() {
+		return sustainabilityScore;
+	}
+
+	public void setLevelOfServiceScore(Integer levelOfServiceScore) {
+		this.levelOfServiceScore = levelOfServiceScore;
+	}
+
+	public Integer getLevelOfServiceScore() {
+		return levelOfServiceScore;
+	}
+
+	public void setPositiveBalance(Boolean positiveBalance) {
+		this.positiveBalance = positiveBalance;
+	}
+
+	public Boolean getPositiveBalance() {
+		return positiveBalance;
 	}
 
 }
