@@ -12,6 +12,7 @@ import com.gallatinsystems.framework.gwt.portlet.client.WizardBundleConstants;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.FrameworkTextConstants;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -44,7 +45,6 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author Christopher Fagiani
  */
-@SuppressWarnings("unchecked")
 public abstract class AbstractWizardPortlet extends Portlet implements
 		ClickHandler, PageController, CompletionListener {
 
@@ -73,10 +73,12 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private MessageDialog waitDialog;
 	private Map<String, String> buttonMapping;
 	private boolean working;
+	private UserDto currentUser;
 
-	protected AbstractWizardPortlet(String name, int width, int height) {
+	protected AbstractWizardPortlet(String name, int width, int height, UserDto currentUser) {
 		super(name, true, false, false, width, height);
 		working = false;
+		this.currentUser = currentUser;
 		contentPane = new VerticalPanel();
 		breadcrumbPanel = new HorizontalPanel();
 		breadcrumbPanel.setStylePrimaryName(BREADCRUMB_PANEL_STYLE);
@@ -130,6 +132,11 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			WizardButton[] buttonDefinitions, String style) {
 		if (buttonDefinitions != null) {
 			for (int i = 0; i < buttonDefinitions.length; i++) {
+				if(buttonDefinitions[i].getRequiredPermission()!= null){
+					if(currentUser== null|| !currentUser.hasPermission(buttonDefinitions[i].getRequiredPermission())){
+						continue;
+					}
+				}
 				Button button = new Button();
 				if (style == null) {
 					button.setStylePrimaryName(NAV_BUTTON_STYLE);
@@ -495,15 +502,20 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	public class WizardButton {
 		private String nodeName;
 		private String label;
+		private String requiredPermission;
 
 		public WizardButton(String node) {
-			nodeName = node;
-			label = node;
+			this(node,node);			
 		}
 
 		public WizardButton(String node, String label) {
 			nodeName = node;
 			this.label = label;
+		}
+		
+		public WizardButton(String node, String label, String requiredPermission){
+			this(node,label);
+			this.requiredPermission = requiredPermission;
 		}
 
 		public String getNodeName() {
@@ -521,6 +533,11 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		public void setLabel(String label) {
 			this.label = label;
 		}
+
+		public String getRequiredPermission() {
+			return requiredPermission;
+		}
+		
 
 	}
 }

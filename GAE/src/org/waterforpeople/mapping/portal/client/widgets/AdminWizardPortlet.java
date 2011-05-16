@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
@@ -46,7 +47,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	private UserDto user;
 
 	public AdminWizardPortlet(UserDto user) {
-		super(NAME, WIDTH, HEIGHT);
+		super(NAME, WIDTH, HEIGHT,user);
 		this.user = user;
 		init();
 	}
@@ -81,7 +82,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 						new WizardButton("QuestionGroupCreate", TEXT_CONSTANTS
 								.createQuestionGroup()),
 						new WizardButton("Publish", TEXT_CONSTANTS
-								.publishSurvey()) },
+								.publishSurvey(), PermissionConstants.PUBLISH_SURVEY)},
 				new WizardButton[] { new WizardButton("SurveyList",
 						TEXT_CONSTANTS.backToSurveyList()) }));
 		wf.addInternalNode(new WizardNode("QuestionGroupCreate", null,
@@ -93,7 +94,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				.questions(), QuestionListWidget.class, new WizardButton[] {
 				new WizardButton("QuestionCreate", TEXT_CONSTANTS
 						.createQuestion()),
-				new WizardButton("Publish", TEXT_CONSTANTS.publishSurvey()) },
+				new WizardButton("Publish", TEXT_CONSTANTS.publishSurvey(), PermissionConstants.PUBLISH_SURVEY) },
 				new WizardButton[] { new WizardButton("QuestionGroupList",
 						TEXT_CONSTANTS.backToQuestionGroupList()) }));
 		wf.addInternalNode(new WizardNode("QuestionCreate", null,

@@ -1203,10 +1203,13 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 		if (!getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			saveSurveyButton.setVisible(false);
-			deleteSurveyButton.setVisible(false);
-			publishSurveyButton.setVisible(false);
+			deleteSurveyButton.setVisible(false);						
 			remapSurveyFormButton.setVisible(false);
-
+		}
+		if (getCurrentUser().hasPermission(PermissionConstants.PUBLISH_SURVEY)) {
+			publishSurveyButton.setVisible(true);
+		}else{
+			publishSurveyButton.setVisible(false);
 		}
 		if (!getCurrentUser().hasPermission(
 				PermissionConstants.IMPORT_SURVEY_DATA)) {
