@@ -240,6 +240,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/surveygroup</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>StandardScoringServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.standardscoring.StandardScoringServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>StandardScoringServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/standardscoring</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>SpreadsheetProcessor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SpreadsheetProcessorServlet</servlet-class>
 	</servlet>
