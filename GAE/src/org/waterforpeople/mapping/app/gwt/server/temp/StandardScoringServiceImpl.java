@@ -1,10 +1,10 @@
-package org.waterforpeople.mapping.app.gwt.server.StandardScoring;
+package org.waterforpeople.mapping.app.gwt.server.temp;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.waterforpeople.mapping.app.gwt.client.StandardScoring.StandardScoringDto;
-import org.waterforpeople.mapping.app.gwt.client.StandardScoring.StandardScoringManagerService;
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.standards.dao.StandardScoringDao;

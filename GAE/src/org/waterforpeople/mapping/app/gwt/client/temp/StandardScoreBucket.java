@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.gwt.client.StandardScoring;
+package org.waterforpeople.mapping.app.gwt.client.temp;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
