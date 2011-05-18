@@ -3,7 +3,6 @@ package com.gallatinsystems.user.app.gwt.client;
 import java.util.Map;
 import java.util.Set;
 
-import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 

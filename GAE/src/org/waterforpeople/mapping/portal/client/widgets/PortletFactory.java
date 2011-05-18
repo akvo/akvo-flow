@@ -79,6 +79,8 @@ public class PortletFactory {
 			return new RunReportsPortlet();
 		} else if (name.equals(AccessPointMetricChartPortlet.NAME)) {
 			return new AccessPointMetricChartPortlet(user);
+		} else if (name.equals(StandardScoringManagerPortlet.NAME)) {
+			return new StandardScoringManagerPortlet(user);
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

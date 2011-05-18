@@ -706,7 +706,7 @@ public class AccessPointHelper {
 
 	public AccessPoint scoreAccessPointDynamic(AccessPoint ap) {
 		AccessPointScoreDetail apss = new AccessPointScoreDetail();
-		HashMap<String, Integer> scoreBucketMap = new HashMap<String, Integer>();
+		HashMap<Long, Integer> scoreBucketMap = new HashMap<Long, Integer>();
 
 		logger.log(Level.INFO,
 				"About to compute score for: " + ap.getCommunityCode());
@@ -715,10 +715,10 @@ public class AccessPointHelper {
 		if (ssList != null && !ssList.isEmpty()) {
 			Integer score = 0;
 			for (StandardScoring item : ssList) {
-				if (scoreBucketMap.containsKey(item.getScoreBucket())) {
-					score = scoreBucketMap.get(item.getScoreBucket());
+				if (scoreBucketMap.containsKey(item.getScoreBucketId())) {
+					score = scoreBucketMap.get(item.getScoreBucketId());
 				} else {
-					scoreBucketMap.put(item.getScoreBucket(), 0);
+					scoreBucketMap.put(item.getScoreBucketId(), 0);
 				}
 				try {
 					score = executeItemScore(ap, score, item);
@@ -739,10 +739,10 @@ public class AccessPointHelper {
 					e.printStackTrace();
 				}
 
-				scoreBucketMap.put(item.getScoreBucket(), score);
+				scoreBucketMap.put(item.getScoreBucketId(), score);
 			}
-			for (Entry<String, Integer> item : scoreBucketMap.entrySet()) {
-				apss.setScoreBucket(item.getKey());
+			for (Entry<Long, Integer> item : scoreBucketMap.entrySet()) {
+				apss.setScoreBucketId(item.getKey());
 				apss.setScore(item.getValue());
 				ap.setScore(score);
 				ap.setScoreComputationDate(new Date());

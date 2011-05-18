@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
@@ -26,6 +25,7 @@ import org.waterforpeople.mapping.portal.client.widgets.component.UserManagerWid
 import org.waterforpeople.mapping.portal.client.widgets.component.WebActivityAuthorizationListWidget;
 
 import com.gallatinsystems.framework.gwt.wizard.client.AbstractWizardPortlet;
+import com.gallatinsystems.user.app.gwt.client.PermissionConstants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;

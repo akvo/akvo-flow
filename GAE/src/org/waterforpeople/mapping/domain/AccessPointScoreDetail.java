@@ -21,6 +21,7 @@ public class AccessPointScoreDetail extends BaseDomain {
 	private String status = null;
 	private Date computationDate = null;
 	private String scoreBucket = null;
+	private Long scoreBucketId = null;
 
 	public Long getAccessPointId() {
 		return accessPointId;
@@ -77,4 +78,14 @@ public class AccessPointScoreDetail extends BaseDomain {
 	public String getScoreBucket() {
 		return scoreBucket;
 	}
+
+	public void setScoreBucketId(Long scoreBucketId) {
+		this.scoreBucketId = scoreBucketId;
+	}
+
+	public Long getScoreBucketId() {
+		return scoreBucketId;
+	}
+
+	
 }

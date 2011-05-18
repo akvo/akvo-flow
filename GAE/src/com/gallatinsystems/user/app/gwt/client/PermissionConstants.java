@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.gwt.client.util;
+package com.gallatinsystems.user.app.gwt.client;
 
 public class PermissionConstants {
 

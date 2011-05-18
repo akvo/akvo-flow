@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.util;
 
 import com.google.gwt.i18n.client.Constants;
+import com.google.gwt.safehtml.shared.SafeHtml;
 
 
 /**
@@ -497,4 +498,14 @@ public interface TextConstants extends Constants{
 	public String pointTypeMetric();
 	public String technologyTypeMetric();
 	public String surveyId();
+public String standardScoringManagerPortletTitle();
+//	public String scoringGlobalStandard();
+//	public String scoringEffectiveStartDate();
+//	public String scoringEffectiveEndDate();
+//	public String scoringAPField();
+//	public String scoringCriteriaType();
+//	public String scoringPositiveCriteria();
+//	public String scoringPositiveOperator();
+//	public String scoringPosutiveScore();
+//	public String scoringNegativeCriteria();
 }

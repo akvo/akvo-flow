@@ -31,7 +31,6 @@ public class StandardScoringTest {
 		ss.setMapToObject("AccessPoint");
 		ss.setEffectiveStartDate(effectiveStartDate);
 		ss.setEffectiveEndDate(effectiveEndDate);
-		ss.setScoreBucket("LevelOfService");
 		ssDao.save(ss);
 
 		StandardScoring ssWaterAvail = new StandardScoring();
@@ -62,8 +61,25 @@ public class StandardScoringTest {
 		ss2.setMapToObject("AccessPoint");
 		ss2.setEffectiveStartDate(effectiveStartDate);
 		ss2.setEffectiveEndDate(effectiveEndDate);
-		ss2.setScoreBucket("LevelOfService");
 		ssDao.save(ss2);
+		
+		StandardScoring ss4 = new StandardScoring();
+		ss4.setGlobalStandard(false);
+		ss4.setCountryCode("BO");
+		ss4.setDisplayName("Number of Users Per Water Point");
+		ss4.setPointType("WATER_POINT");
+		ss4.setEvaluateField("NumberOfHouseholdsUsingPoint");
+		ss4.setPositiveOperator("<");
+		ss4.setPositiveCriteria("100");
+		ss4.setCriteriaType("Integer");
+		ss4.setPositiveScore(1);
+		ss4.setNegativeOperator(">=");
+		ss4.setNegativeCriteria("100");
+		ss4.setNegativeScore(-1);
+		ss4.setMapToObject("AccessPoint");
+		ss4.setEffectiveStartDate(effectiveStartDate);
+		ss4.setEffectiveEndDate(effectiveEndDate);
+		ssDao.save(ss4);
 	}
 
 }

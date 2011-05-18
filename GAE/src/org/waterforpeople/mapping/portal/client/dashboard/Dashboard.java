@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.waterforpeople.mapping.app.gwt.client.util.PermissionConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
@@ -22,6 +21,7 @@ import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.RawDataViewPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.RemoteExceptionPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.RunReportsPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.StandardScoringManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
@@ -34,6 +34,7 @@ import org.waterforpeople.mapping.portal.client.widgets.UserManagerPortlet;
 import com.gallatinsystems.framework.gwt.portlet.client.PortalContainer;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.user.app.gwt.client.PermissionConstants;
 import com.gallatinsystems.user.app.gwt.client.UserConfigDto;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.app.gwt.client.UserService;
@@ -90,8 +91,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 	public void onModuleLoad() {
 		RootPanel.get().setPixelSize(1024, 768);
-		RootPanel.get().getElement().getStyle().setProperty("position",
-				"relative");
+		RootPanel.get().getElement().getStyle()
+				.setProperty("position", "relative");
 
 		containerPanel = new VerticalPanel();
 
@@ -120,12 +121,14 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					containerPanel.clear();
 					containerPanel.add(new Image("images/wfp-logo.gif"));
 					if (result != null) {
-						Anchor logoutAnchor = new Anchor(TEXT_CONSTANTS
-								.logOnAsDifferentUser(), result.getLogoutUrl());
+						Anchor logoutAnchor = new Anchor(
+								TEXT_CONSTANTS.logOnAsDifferentUser(),
+								result.getLogoutUrl());
 						containerPanel.add(logoutAnchor);
 					}
-					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
-							.unknownUser(), TEXT_CONSTANTS.noFlowAccess());
+					MessageDialog errDia = new MessageDialog(
+							TEXT_CONSTANTS.unknownUser(),
+							TEXT_CONSTANTS.noFlowAccess());
 					errDia.show();
 				}
 			}
@@ -192,6 +195,13 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					new Command() {
 						public void execute() {
 							launchFullscreen(TechnologyTypeManagerPortlet.NAME);
+						}
+					});
+			mgrMenu.addItem(
+					TEXT_CONSTANTS.standardScoringManagerPortletTitle(),
+					new Command() {
+						public void execute() {
+							launchFullscreen(StandardScoringManagerPortlet.NAME);
 						}
 					});
 		}
@@ -375,8 +385,10 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					Arrays.sort(key);
 					for (int j = 0; j < key.length; j++) {
 						try {
-							addPortlet(PortletFactory.createPortlet(colMap.get(
-									i).get(key[j]), getCurrentUser()), i, true);
+							addPortlet(
+									PortletFactory.createPortlet(colMap.get(i)
+											.get(key[j]), getCurrentUser()), i,
+									true);
 						} catch (IllegalArgumentException e) {
 							// swallow in case we change portlet names and don't
 							// update the DB
@@ -463,8 +475,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 			VerticalPanel contentPane = new VerticalPanel();
 			contentPane.add(new Label(TEXT_CONSTANTS.selectPortlets()));
-			setPopupPosition(Window.getClientWidth() / 4, Window
-					.getClientHeight() / 4);
+			setPopupPosition(Window.getClientWidth() / 4,
+					Window.getClientHeight() / 4);
 			Grid g = new Grid(PortletFactory.AVAILABLE_PORTLETS.length + 1, 3);
 			g.setStyleName(DIALOG_CONTENT_CSS);
 
