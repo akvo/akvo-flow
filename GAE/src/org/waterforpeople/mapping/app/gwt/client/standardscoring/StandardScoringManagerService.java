@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.gwt.client.temp;
+package org.waterforpeople.mapping.app.gwt.client.standardscoring;
 
 import java.util.List;
 
