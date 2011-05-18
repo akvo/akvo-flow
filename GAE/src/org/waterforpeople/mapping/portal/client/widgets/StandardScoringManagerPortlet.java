@@ -1,17 +1,21 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
-import org.waterforpeople.mapping.app.gwt.client.StandardScoring.StandardScoringDto;
-import org.waterforpeople.mapping.app.gwt.client.StandardScoring.StandardScoringManagerService;
-import org.waterforpeople.mapping.app.gwt.client.StandardScoring.StandardScoringManagerServiceAsync;
+import java.util.ArrayList;
+
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
 import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -28,8 +32,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private static Boolean snapable = false;
 	private static Integer width = 800;
 	private static Integer height = 1024;
-	private DateTimeFormat dateFormat =null;
-	private static Boolean errorMode =null;
+	private DateTimeFormat dateFormat = null;
+	private static Boolean errorMode = null;
 	private StandardScoringManagerServiceAsync svc;
 
 	PaginatedDataTable<StandardScoringDto> scoringTable;
@@ -55,8 +59,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		super(title, scrollable, configurable, snapable, width, height, user);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
-		scoringTable = new PaginatedDataTable<StandardScoringDto>(DEFAULT_SORT_FIELD,
-				this, this, true);
+		scoringTable = new PaginatedDataTable<StandardScoringDto>(
+				DEFAULT_SORT_FIELD, this, this, true);
 		dateFormat = DateTimeFormat.getShortDateFormat();
 		contentPane.add(header);
 		setContent(contentPane);
@@ -64,15 +68,30 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		svc = GWT.create(StandardScoringManagerService.class);
 		scoringTable.setVisible(false);
 		mainVPanel.add(scoringTable);
+		requestScoringData();
 	}
 
 	private Widget buildHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		Grid grid = new Grid(2, 2);
+		//configureSearchRibbon();
+		grid.setWidget(0, 0, mainVPanel);
+		return grid;
 	}
 
 	public StandardScoringManagerPortlet(UserDto user) {
 		super(title, scrollable, configurable, snapable, width, height, user);
+		contentPane = new VerticalPanel();
+		Widget header = buildHeader();
+		scoringTable = new PaginatedDataTable<StandardScoringDto>(
+				DEFAULT_SORT_FIELD, this, this, true);
+		dateFormat = DateTimeFormat.getShortDateFormat();
+		contentPane.add(header);
+		setContent(contentPane);
+		errorMode = false;
+		svc = GWT.create(StandardScoringManagerService.class);
+		scoringTable.setVisible(false);
+		mainVPanel.add(scoringTable);
+		requestScoringData();
 	}
 
 	@Override
@@ -111,8 +130,23 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		return null;
 	}
 
-	private void loadTable() {
+	private String cursorString = "all";
+	private void requestScoringData() {
+		svc.listStandardScoring(cursorString, new AsyncCallback<ResponseDto<ArrayList<StandardScoringDto>>>() {
+			Boolean isNew = false;
+			Boolean isResort = false;
 
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onSuccess(ResponseDto<ArrayList<StandardScoringDto>> result) {
+				scoringTable.bindData(result.getPayload(), result.getCursorString(), isNew, isResort);
+			}
+		});
+		
 	}
-
 }

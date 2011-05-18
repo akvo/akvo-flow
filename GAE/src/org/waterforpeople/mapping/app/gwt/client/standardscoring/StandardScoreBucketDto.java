@@ -2,7 +2,7 @@ package org.waterforpeople.mapping.app.gwt.client.standardscoring;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class StandardScoreBucket extends BaseDto {
+public class StandardScoreBucketDto extends BaseDto {
 
 	/**
 	 * 
