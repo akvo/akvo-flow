@@ -341,24 +341,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		if (user == null || user.getConfig() == null
 				|| user.getConfig().get(CONFIG_GROUP) == null
 				|| user.getConfig().get(CONFIG_GROUP).size() == 0) {
-			Map<String, String> posMap = new HashMap<String, String>();
-
-			addPortlet(new SummaryPortlet(), 0, true);
-			posMap.put(SummaryPortlet.NAME, "0,0");
-
-			addPortlet(new ActivityChartPortlet(getCurrentUser()), 1, true);
-			posMap.put(ActivityChartPortlet.NAME, "1,0");
-
-			addPortlet(new ActivityMapPortlet(getCurrentUser()), 1, true);
-			posMap.put(ActivityMapPortlet.NAME, "1,1");
-
-			addPortlet(new SurveyQuestionPortlet(), 2, true);
-			posMap.put(SummaryPortlet.NAME, "2,0");
-
-			// if this is the first time the user logged in, create a config for
-			// him with the default portlet set
-			updateUserConfig(posMap);
-
+			installDefaultPortlets();
 		} else {
 			List<Map<Integer, String>> colMap = new ArrayList<Map<Integer, String>>();
 			for (int i = 0; i < COLUMNS; i++) {
@@ -379,6 +362,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				}
 			}
 			// now install the portlets in the right order
+			int count = 0;
 			for (int i = 0; i < COLUMNS; i++) {
 				Object[] key = colMap.get(i).keySet().toArray();
 				if (key.length > 0) {
@@ -389,6 +373,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 									PortletFactory.createPortlet(colMap.get(i)
 											.get(key[j]), getCurrentUser()), i,
 									true);
+							count++;
 						} catch (IllegalArgumentException e) {
 							// swallow in case we change portlet names and don't
 							// update the DB
@@ -396,7 +381,31 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					}
 				}
 			}
+			if(count == 0){
+				installDefaultPortlets();
+			}
 		}
+	}
+
+	private void installDefaultPortlets() {
+		Map<String, String> posMap = new HashMap<String, String>();
+
+		addPortlet(new SummaryPortlet(), 0, true);
+		posMap.put(SummaryPortlet.NAME, "0,0");
+
+		addPortlet(new ActivityChartPortlet(getCurrentUser()), 1, true);
+		posMap.put(ActivityChartPortlet.NAME, "1,0");
+
+		addPortlet(new ActivityMapPortlet(getCurrentUser()), 1, true);
+		posMap.put(ActivityMapPortlet.NAME, "1,1");
+
+		addPortlet(new SurveyQuestionPortlet(), 2, true);
+		posMap.put(SummaryPortlet.NAME, "2,0");
+
+		// if this is the first time the user logged in, create a config for
+		// him with the default portlet set
+		updateUserConfig(posMap);
+
 	}
 
 	public UserDto getCurrentUser() {
