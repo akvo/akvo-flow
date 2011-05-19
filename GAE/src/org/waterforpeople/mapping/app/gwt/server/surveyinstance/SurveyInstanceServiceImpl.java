@@ -271,6 +271,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				DtoMarshaller.copyToCanonical(store, ans);
 				if (ans.getValue() != null) {
 					ans.setValue(ans.getValue().replaceAll("\t", ""));
+					if(ans.getValue().length()>500){
+						ans.setValue(ans.getValue().substring(0,499));
+					}
 				}
 				store.setSurveyInstanceId(domain.getKey().getId());
 				answerList.add(store);
