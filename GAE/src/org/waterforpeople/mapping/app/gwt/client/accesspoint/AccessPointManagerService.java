@@ -38,4 +38,5 @@ public interface AccessPointManagerService extends RemoteService {
 	List<String> listCountryCodes();
 
 	void deleteAccessPoints(AccessPointSearchCriteriaDto searchCriteria);
+	String returnS3Path();
 }

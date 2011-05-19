@@ -253,4 +253,9 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	public Boolean getUploadS3Flag() {
 		return uploadS3Flag;
 	}
+
+	@Override
+	public String returnS3Path() {
+		return PropertyUtil.getProperty("surveyuploadurl");
+	}
 }

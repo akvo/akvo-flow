@@ -46,4 +46,6 @@ public interface AccessPointManagerServiceAsync {
 	void deleteAccessPoints(AccessPointSearchCriteriaDto searchCriteria,
 			AsyncCallback<Void> callback);
 
+	void returnS3Path(AsyncCallback<String> callback);
+
 }

@@ -78,6 +78,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	private static final int WIDTH = 1600;
 	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
+	private String S3_PATH;
 
 	private boolean errorMode;
 
@@ -107,6 +108,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	public AccessPointManagerPortlet(UserDto user) {
 		super(NAME, true, false, false, WIDTH, HEIGHT, user);
 		contentPane = new VerticalPanel();
+		svc = GWT.create(AccessPointManagerService.class);
+		configureS3Path();
 		Widget header = buildHeader();
 		apTable = new PaginatedDataTable<AccessPointDto>(DEFAULT_SORT_FIELD,
 				this, this, true);
@@ -114,7 +117,6 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		contentPane.add(header);
 		setContent(contentPane);
 		errorMode = false;
-		svc = GWT.create(AccessPointManagerService.class);
 		apTable.setVisible(false);
 		mainVPanel.add(apTable);
 	}
@@ -122,6 +124,20 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	@Override
 	public String getName() {
 		return TEXT_CONSTANTS.apManagerTitle();
+	}
+
+	private void configureS3Path() {
+		svc.returnS3Path(new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				S3_PATH = result;
+			}
+		});
 	}
 
 	/**
@@ -192,8 +208,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 														TEXT_CONSTANTS
 																.errorTracePrefix()
 																+ " "
-																+ caught
-																		.getLocalizedMessage());
+																+ caught.getLocalizedMessage());
 												errDia.showCentered();
 											}
 										});
@@ -246,7 +261,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				MessageDialog errDia = new MessageDialog(
 						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
 								.errorTracePrefix()
-								+ " " + caught.getLocalizedMessage());
+								+ " "
+								+ caught.getLocalizedMessage());
 				errDia.showCentered();
 			}
 
@@ -297,17 +313,17 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					scoreItems.setWidth("30em");
 					scoreItems.setHeight("10em");
 				}
-				accessPointDetail.setWidget(0, 0, ViewUtil
-						.initLabel(TEXT_CONSTANTS.scoreDate()));
+				accessPointDetail.setWidget(0, 0,
+						ViewUtil.initLabel(TEXT_CONSTANTS.scoreDate()));
 				accessPointDetail.setWidget(0, 1, scoreCompDate);
-				accessPointDetail.setWidget(1, 0, ViewUtil
-						.initLabel(TEXT_CONSTANTS.score()));
+				accessPointDetail.setWidget(1, 0,
+						ViewUtil.initLabel(TEXT_CONSTANTS.score()));
 				accessPointDetail.setWidget(1, 1, score);
-				accessPointDetail.setWidget(2, 0, ViewUtil
-						.initLabel(TEXT_CONSTANTS.status()));
+				accessPointDetail.setWidget(2, 0,
+						ViewUtil.initLabel(TEXT_CONSTANTS.status()));
 				accessPointDetail.setWidget(2, 1, status);
-				accessPointDetail.setWidget(3, 0, ViewUtil
-						.initLabel(TEXT_CONSTANTS.scoreMakeup()));
+				accessPointDetail.setWidget(3, 0,
+						ViewUtil.initLabel(TEXT_CONSTANTS.scoreMakeup()));
 				accessPointDetail.setWidget(3, 1, scoreItems);
 			}
 		}
@@ -316,8 +332,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private FlexTable loadMediaTab(AccessPointDto accessPointDto) {
 		final FlexTable accessPointDetail = new FlexTable();
-		accessPointDetail.setWidget(10, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.photoUrl()));
+		accessPointDetail.setWidget(10, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.photoUrl()));
 		TextBox photoURLTB = new TextBox();
 		photoURLTB.setWidth("500px");
 		FormPanel form = new FormPanel();
@@ -346,30 +362,24 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 						.getWidget(10, 3)).getWidget()).getFilename();
 
 				if (fileName.contains("/")) {
-					fileName = fileName
-							.substring(fileName.lastIndexOf("/") + 1);
+					fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 				}
 				if (fileName.contains("\\")) {
-					fileName = fileName
-							.substring(fileName.lastIndexOf("\\") + 1);
+					fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
 				}
 
-				((TextBox) accessPointDetail.getWidget(10, 1))
-						.setText("http://flowcommunitysciences.s3.amazonaws.com/images/"
-								+ fileName);
+				((TextBox) accessPointDetail.getWidget(10, 1)).setText(S3_PATH
+						+ "images/" + fileName);
 
 				Image i = ((Image) accessPointDetail.getWidget(11, 1));
 				if (i == null) {
 					Image photo = new Image();
-					photo
-							.setUrl("http://flowcommunitysciences.s3.amazonaws.com/images/"
-									+ fileName);
+					photo.setUrl(S3_PATH + "/images/" + fileName);
 					photo.setHeight("200px");
 					accessPointDetail.setWidget(11, 1, photo);
 				} else {
 					i.setHeight("200px");
-					i.setUrl("http://flowcommunitysciences.s3.amazonaws.com/images/"
-							+ fileName);
+					i.setUrl(S3_PATH + "/images/" + fileName);
 				}
 			}
 		});
@@ -396,8 +406,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				public void onClick(ClickEvent event) {
 					((Image) accessPointDetail.getWidget(11, 1))
 							.setVisible(false);
-					accessPointDetail.setWidget(10, 4, new Label(TEXT_CONSTANTS
-							.waitForRotate()));
+					accessPointDetail.setWidget(10, 4,
+							new Label(TEXT_CONSTANTS.waitForRotate()));
 					svc.rotateImage(((TextBox) accessPointDetail.getWidget(10,
 							1)).getText(), new AsyncCallback<Void>() {
 						@Override
@@ -419,8 +429,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 									.setVisible(false);
 							photo.setUrl(((TextBox) accessPointDetail
 									.getWidget(11, 1)).getText()
-									+ "?random=" + random);
-							accessPointDetail.setWidget(11,1,photo);
+									+ "?random="
+									+ random);
+							accessPointDetail.setWidget(11, 1, photo);
 							photo.setVisible(true);
 						}
 					});
@@ -429,8 +440,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		}
 		accessPointDetail.setWidget(10, 1, photoURLTB);
 
-		accessPointDetail.setWidget(12, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.photoCaption()));
+		accessPointDetail.setWidget(12, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.photoCaption()));
 		TextArea captionTB = new TextArea();
 		captionTB.setWidth("500px");
 		captionTB.setHeight("200px");
@@ -450,8 +461,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private FlexTable loadGeneralTab(AccessPointDto accessPointDto) {
 		FlexTable accessPointDetail = new FlexTable();
-		accessPointDetail.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.communityCode()));
+		accessPointDetail.setWidget(0, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.communityCode()));
 		TextBox communityCodeTB = new TextBox();
 		if (accessPointDto != null) {
 			communityCodeTB.setText(accessPointDto.getCommunityCode());
@@ -459,8 +470,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail.setWidget(0, 1, communityCodeTB);
 
-		accessPointDetail.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.countryCode()));
+		accessPointDetail.setWidget(1, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.countryCode()));
 		TextBox countryCodeTB = new TextBox();
 		if (accessPointDto != null) {
 			countryCodeTB.setText(accessPointDto.getCountryCode());
@@ -468,15 +479,15 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail.setWidget(1, 1, countryCodeTB);
 
-		accessPointDetail.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.latitude()));
+		accessPointDetail.setWidget(2, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.latitude()));
 		TextBox latitudeTB = new TextBox();
 		if (accessPointDto != null)
 			latitudeTB.setText(accessPointDto.getLatitude().toString());
 		accessPointDetail.setWidget(2, 1, latitudeTB);
 
-		accessPointDetail.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.longitude()));
+		accessPointDetail.setWidget(3, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.longitude()));
 		TextBox longitudeTB = new TextBox();
 		if (accessPointDto != null)
 			longitudeTB.setText(accessPointDto.getLongitude().toString());
@@ -500,64 +511,58 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			accessPointDetail.getFlexCellFormatter().setRowSpan(0, 2, 5);
 		}
 
-		accessPointDetail.setWidget(4, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.collectionDate()));
+		accessPointDetail.setWidget(4, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.collectionDate()));
 		DateBox pickerCollectionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerCollectionDate.setValue(accessPointDto.getCollectionDate());
 		accessPointDetail.setWidget(4, 1, pickerCollectionDate);
 
-		accessPointDetail.setWidget(5, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.constructionDate()));
+		accessPointDetail.setWidget(5, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.constructionDate()));
 		DateBox pickerConstructionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerConstructionDate.setValue(accessPointDto
 					.getConstructionDate());
 		accessPointDetail.setWidget(5, 1, pickerConstructionDate);
 
-		accessPointDetail.setWidget(6, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.subdivision()
-				+ " " + 1));
+		accessPointDetail.setWidget(6, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 1));
 		TextBox sub1 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub1() != null)
 			sub1.setText(accessPointDto.getSub1());
 		accessPointDetail.setWidget(6, 1, sub1);
 
-		accessPointDetail.setWidget(7, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.subdivision()
-				+ " " + 2));
+		accessPointDetail.setWidget(7, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 2));
 		TextBox sub2 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub2() != null)
 			sub2.setText(accessPointDto.getSub2());
 		accessPointDetail.setWidget(7, 1, sub2);
 
-		accessPointDetail.setWidget(8, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.subdivision()
-				+ " " + 3));
+		accessPointDetail.setWidget(8, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 3));
 		TextBox sub3 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub3() != null)
 			sub3.setText(accessPointDto.getSub3());
 		accessPointDetail.setWidget(8, 1, sub3);
 
-		accessPointDetail.setWidget(9, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.subdivision()
-				+ " " + 4));
+		accessPointDetail.setWidget(9, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 4));
 		TextBox sub4 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub4() != null)
 			sub1.setText(accessPointDto.getSub4());
 		accessPointDetail.setWidget(9, 1, sub4);
 
-		accessPointDetail.setWidget(10, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.subdivision()
-				+ " " + 5));
+		accessPointDetail.setWidget(10, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 5));
 		TextBox sub5 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub5() != null)
 			sub5.setText(accessPointDto.getSub5());
 		accessPointDetail.setWidget(10, 1, sub5);
 
-		accessPointDetail.setWidget(11, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.subdivision()
-				+ " " + 6));
+		accessPointDetail.setWidget(11, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 6));
 		TextBox sub6 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub6() != null)
 			sub6.setText(accessPointDto.getSub6());
@@ -578,8 +583,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private FlexTable loadAttributeTab(AccessPointDto accessPointDto) {
 		FlexTable accessPointDetail = new FlexTable();
-		accessPointDetail.setWidget(6, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.costPer()));
+		accessPointDetail.setWidget(6, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.costPer()));
 		TextBox costPerTB = new TextBox();
 		if (accessPointDto != null && accessPointDto.getCostPer() != null)
 			costPerTB.setText(accessPointDto.getCostPer().toString());
@@ -592,31 +597,31 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		unitOfMeasureLB.addItem(TEXT_CONSTANTS.gallons());
 		accessPointDetail.setWidget(6, 2, unitOfMeasureLB);
 
-		accessPointDetail.setWidget(7, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.currentMgmtStructure()));
+		accessPointDetail.setWidget(7, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.currentMgmtStructure()));
 		TextBox currentMgmtStructureTB = new TextBox();
 		if (accessPointDto != null)
 			currentMgmtStructureTB.setText(accessPointDto
 					.getCurrentManagementStructurePoint());
 		accessPointDetail.setWidget(7, 1, currentMgmtStructureTB);
 
-		accessPointDetail.setWidget(8, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.description()));
+		accessPointDetail.setWidget(8, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.description()));
 		TextBox descTB = new TextBox();
 		if (accessPointDto != null)
 			descTB.setText(accessPointDto.getDescription());
 		accessPointDetail.setWidget(8, 1, descTB);
 
-		accessPointDetail.setWidget(9, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.numHouseholdsUsing()));
+		accessPointDetail.setWidget(9, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.numHouseholdsUsing()));
 		TextBox numHouseholdsTB = new TextBox();
 		if (accessPointDto != null
 				&& accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
 			numHouseholdsTB.setText(accessPointDto
 					.getNumberOfHouseholdsUsingPoint().toString());
 		accessPointDetail.setWidget(9, 1, numHouseholdsTB);
-		accessPointDetail.setWidget(12, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.pointStatus()));
+		accessPointDetail.setWidget(12, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.pointStatus()));
 		statusLB = new ListBox();
 		statusLB.addItem(TEXT_CONSTANTS.funcHigh());
 		statusLB.addItem(TEXT_CONSTANTS.funcOk());
@@ -642,8 +647,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		}
 		accessPointDetail.setWidget(12, 1, statusLB);
 
-		accessPointDetail.setWidget(13, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.pointType()));
+		accessPointDetail.setWidget(13, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.pointType()));
 
 		ListBox pointType = new ListBox();
 		pointType.addItem(TEXT_CONSTANTS.waterPoint(),
@@ -652,8 +657,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				AccessPointType.SANITATION_POINT.toString());
 		pointType.addItem(TEXT_CONSTANTS.publicInst(),
 				AccessPointType.PUBLIC_INSTITUTION.toString());
-		pointType.addItem(TEXT_CONSTANTS.school(), AccessPointType.SCHOOL
-				.toString());
+		pointType.addItem(TEXT_CONSTANTS.school(),
+				AccessPointType.SCHOOL.toString());
 		if (accessPointDto != null) {
 			AccessPointType apType = accessPointDto.getPointType();
 			if (apType.equals(AccessPointType.WATER_POINT)) {
@@ -671,8 +676,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		}
 		accessPointDetail.setWidget(13, 1, pointType);
 
-		accessPointDetail.setWidget(14, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.farthestPointFrom()));
+		accessPointDetail.setWidget(14, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.farthestPointFrom()));
 		TextBox farthestPointFromTB = new TextBox();
 		if (accessPointDto != null)
 			farthestPointFromTB.setText(accessPointDto
@@ -687,8 +692,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		apId.setVisible(false);
 		accessPointDetail.setWidget(15, 1, apId);
 
-		accessPointDetail.setWidget(16, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.smsCode()));
+		accessPointDetail.setWidget(16, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.smsCode()));
 		TextBox smsCode = new TextBox();
 		if (accessPointDto != null)
 			smsCode.setText(accessPointDto.getSmsCode());
@@ -710,15 +715,17 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail.setWidget(17, 0, ViewUtil.initLabel(TEXT_CONSTANTS
 				.farthestHouseholdAcceptable()));
-		accessPointDetail.setWidget(17, 1,
+		accessPointDetail.setWidget(
+				17,
+				1,
 				addListBox(accessPointDto != null ? accessPointDto
 						.getFarthestHouseholdfromPoint() : null));
 
 		// footer
 		// header
 		// meetGovtQualtiyStandardFlag
-		accessPointDetail.setWidget(18, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.meetQualityStandards()));
+		accessPointDetail.setWidget(18, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.meetQualityStandards()));
 		accessPointDetail
 				.setWidget(
 						18,
@@ -729,8 +736,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 								: null));
 
 		// meetGovtQuantityStandardFlag
-		accessPointDetail.setWidget(19, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.meetQuantityStandards()));
+		accessPointDetail.setWidget(19, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.meetQuantityStandards()));
 		accessPointDetail
 				.setWidget(
 						19,
@@ -742,29 +749,28 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 								: null));
 		// numberOfHouseholdsUsingPoint
 		// provideAdequateQuantity
-		accessPointDetail.setWidget(21, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.adequateQuantity()));
+		accessPointDetail.setWidget(21, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.adequateQuantity()));
 		accessPointDetail
 				.setWidget(
 						21,
 						1,
 						addListBox(accessPointDto != null
 								&& accessPointDto.getProvideAdequateQuantity() != null ? accessPointDto
-								.getProvideAdequateQuantity().toString()
-								: null));
+								.getProvideAdequateQuantity().toString() : null));
 		// SecondaryTechnologyString
 		// typeTechnologyString
 		TextBox techTypeString = new TextBox();
 		if (accessPointDto != null
 				&& accessPointDto.getTypeTechnologyString() != null)
 			techTypeString.setText(accessPointDto.getTypeTechnologyString());
-		accessPointDetail.setWidget(22, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.techTypeString()));
+		accessPointDetail.setWidget(22, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.techTypeString()));
 		accessPointDetail.setWidget(22, 1, techTypeString);
 
 		TextBox secondaryTechTypeString = new TextBox();
-		accessPointDetail.setWidget(23, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.secondaryTechTypeString()));
+		accessPointDetail.setWidget(23, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.secondaryTechTypeString()));
 		if (accessPointDto != null
 				&& accessPointDto.getSecondaryTechnologyString() != null)
 			secondaryTechTypeString.setText(accessPointDto
@@ -772,8 +778,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		accessPointDetail.setWidget(23, 1, secondaryTechTypeString);
 		// whoRepairsPoint
 		TextBox whoRepairsPoint = new TextBox();
-		accessPointDetail.setWidget(24, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.whoRepairs()));
+		accessPointDetail.setWidget(24, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.whoRepairs()));
 		if (accessPointDto != null
 				&& accessPointDto.getWhoRepairsPoint() != null)
 			whoRepairsPoint.setText(accessPointDto.getWhoRepairsPoint());
@@ -781,8 +787,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		// estimatedHouseholds
 		TextBox estHouseholds = new TextBox();
-		accessPointDetail.setWidget(25, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.estHouseholdsUsing()));
+		accessPointDetail.setWidget(25, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.estHouseholdsUsing()));
 		if (accessPointDto != null
 				&& accessPointDto.getNumberOfHouseholdsUsingPoint() != null)
 			estHouseholds.setText(accessPointDto
@@ -791,8 +797,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		// estimatedPeoplePerHouse
 		TextBox estPeoplePerHouse = new TextBox();
-		accessPointDetail.setWidget(26, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.estPeoplePerHouse()));
+		accessPointDetail.setWidget(26, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.estPeoplePerHouse()));
 		if (accessPointDto != null
 				&& accessPointDto.getEstimatedPeoplePerHouse() != null)
 			estPeoplePerHouse.setText(accessPointDto
@@ -801,8 +807,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		// extimatedPopulation
 		TextBox estimatedPopulation = new TextBox();
-		accessPointDetail.setWidget(27, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.estPopulation()));
+		accessPointDetail.setWidget(27, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.estPopulation()));
 		if (accessPointDto != null
 				&& accessPointDto.getEstimatedPopulation() != null)
 			estimatedPopulation.setText(accessPointDto.getEstimatedPopulation()
@@ -810,8 +816,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		accessPointDetail.setWidget(27, 1, estimatedPopulation);
 
 		// hasSystemBeenDown1DayFlag
-		accessPointDetail.setWidget(29, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.hasSysBeenDown()));
+		accessPointDetail.setWidget(29, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.hasSysBeenDown()));
 		accessPointDetail
 				.setWidget(
 						29,
@@ -822,8 +828,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 								.getHasSystemBeenDown1DayFlag().toString()
 								: null));
 
-		accessPointDetail.setWidget(30, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.wfpSupported()));
+		accessPointDetail.setWidget(30, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.wfpSupported()));
 		accessPointDetail
 				.setWidget(
 						30,
@@ -833,8 +839,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 										.getWaterForPeopleProjectFlag() != null ? accessPointDto
 								.getWaterForPeopleProjectFlag().toString()
 								: null));
-		accessPointDetail.setWidget(31, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.wfpRole()));
+		accessPointDetail.setWidget(31, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.wfpRole()));
 		TextBox roleTextBox = new TextBox();
 		if (accessPointDto != null
 				&& accessPointDto.getWaterForPeopleRole() != null)
@@ -842,8 +848,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		accessPointDetail.setWidget(31, 1, roleTextBox);
 
 		TextBox currentScoreCompDate = new TextBox();
-		accessPointDetail.setWidget(32, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.scoreDate()));
+		accessPointDetail.setWidget(32, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.scoreDate()));
 		if (accessPointDto != null
 				&& accessPointDto.getScoreComputationDate() != null) {
 			currentScoreCompDate.setText(accessPointDto
@@ -854,8 +860,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		}
 
 		TextBox currentScore = new TextBox();
-		accessPointDetail.setWidget(33, 0, ViewUtil.initLabel(TEXT_CONSTANTS
-				.score()));
+		accessPointDetail.setWidget(33, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.score()));
 		if (accessPointDto != null && accessPointDto.getScore() != null) {
 			currentScore.setText(accessPointDto.getScore().toString());
 		} else {
@@ -900,8 +906,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 											TEXT_CONSTANTS.error(),
 											TEXT_CONSTANTS.errorTracePrefix()
 													+ " "
-													+ caught
-															.getLocalizedMessage());
+													+ caught.getLocalizedMessage());
 									errDialog.showCentered();
 								}
 
@@ -1145,9 +1150,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		apDto.setWaterForPeopleProjectFlag(getValueFromWidget(
 				accessPointDetail, 30, 1).equals(TEXT_CONSTANTS.yes()) ? true
 				: false);
-		apDto
-				.setWaterForPeopleRole(getValueFromWidget(accessPointDetail,
-						31, 1));
+		apDto.setWaterForPeopleRole(getValueFromWidget(accessPointDetail, 31, 1));
 		return apDto;
 	}
 
@@ -1174,8 +1177,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			grid.setWidget(row, 4, new Label(apDto.getPointType().name()));
 		}
 		if (apDto.getCollectionDate() != null) {
-			grid.setWidget(row, 5, new Label(dateFormat.format(apDto
-					.getCollectionDate())));
+			grid.setWidget(row, 5,
+					new Label(dateFormat.format(apDto.getCollectionDate())));
 		}
 
 		Button editAccessPoint = new Button(TEXT_CONSTANTS.edit());
@@ -1268,9 +1271,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onFailure(Throwable caught) {
 				MessageDialog errDia = new MessageDialog(
-						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-								.errorTracePrefix()
-								+ " " + caught.getLocalizedMessage());
+						TEXT_CONSTANTS.error(),
+						TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
 				errDia.showCentered();
 
 			}
@@ -1285,8 +1288,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					apTable.setVisible(true);
 					if (!errorMode) {
 
-						Button exportButton = new Button(TEXT_CONSTANTS
-								.exportToExcel());
+						Button exportButton = new Button(
+								TEXT_CONSTANTS.exportToExcel());
 						apTable.appendRow(exportButton);
 						exportButton.addClickHandler(new ClickHandler() {
 							@Override
@@ -1316,9 +1319,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 						|| searchDto.getCollectionDateTo() != null) {
 					if (searchDto.getConstructionDateFrom() != null
 							|| searchDto.getConstructionDateTo() != null) {
-						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
-								.inputError(), TEXT_CONSTANTS
-								.onlyOneDateRange());
+						MessageDialog errDia = new MessageDialog(
+								TEXT_CONSTANTS.inputError(),
+								TEXT_CONSTANTS.onlyOneDateRange());
 						errDia.showCentered();
 						isOkay = false;
 					}
