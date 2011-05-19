@@ -509,4 +509,5 @@ public interface TextConstants extends Constants{
 	public String negativeOperator();
 	public String effectiveStartDate();
 	public String effectiveEndDate();
+	
 }
