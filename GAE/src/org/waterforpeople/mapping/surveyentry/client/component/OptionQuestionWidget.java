@@ -128,37 +128,40 @@ public class OptionQuestionWidget extends QuestionWidget implements
 	}
 
 	protected String getSelectionAsString() {
-		StringBuilder buf = new StringBuilder();
-		int count = 0;
-		for (int i = 0; i < listBox.getItemCount(); i++) {
-			if (listBox.isItemSelected(i)) {
-				if (!listBox.getValue(i).equals(OTHER_TEXT)) {
-					if (count > 0) {
-						buf.append(DELIM);
-					}
-					buf.append(listBox.getValue(i));
-					count++;
-				}
-			}
-			if (otherIsSelected) {
-				if (count > 0) {
-					buf.append(DELIM);
-				}
-				if (ViewUtil.isTextPopulated(otherBox)) {
-					buf.append(otherBox.getText());
-				} else {
-					buf.append(OTHER_TEXT);
-				}
-			}
-		}
-		String result = buf.toString().trim();
-		if (count > 0 && result.length() > 0) {
-			return result;
-		} else {
-			return null;
-		}
-	}
+        StringBuilder buf = new StringBuilder();
+        int count = 0;
+        for (int i = 0; i < listBox.getItemCount(); i++) {
+            if (listBox.isItemSelected(i)) {
+                if (!listBox.getValue(i).equals(OTHER_TEXT)) {
 
+                    if (count > 0) {
+                        buf.append(DELIM);
+                    }
+                    buf.append(listBox.getValue(i));
+                    count++;
+
+                }
+            }            
+        }
+        
+        if (otherIsSelected) {
+                        if (count > 0) {
+                            buf.append(DELIM);
+                        }
+                        if (ViewUtil.isTextPopulated(otherBox)) {
+                            buf.append(otherBox.getText());
+                        } else {
+                            buf.append(OTHER_TEXT);
+                        }
+                        count++;
+            }
+        String result = buf.toString().trim();
+        if (count > 0 && result.length() > 0) {
+            return result;
+        } else {
+            return null;
+        }
+    }
 	@Override
 	protected void resetUi() {
 		for (int i = 0; i < listBox.getItemCount(); i++) {
