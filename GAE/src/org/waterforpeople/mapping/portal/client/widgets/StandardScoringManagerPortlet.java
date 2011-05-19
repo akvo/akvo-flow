@@ -171,9 +171,15 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 			//ToDo complete
 		}
-		
+		//evalField
 		ListBox fields = new ListBox();
-		
+//		criteriatype
+//		positivecriteria
+//		positiveoperator
+//		negativecriteria
+//		negativeoperator
+//		effectivestartdate
+//		effectiveenddate
 		
 	}
 
