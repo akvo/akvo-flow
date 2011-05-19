@@ -30,7 +30,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			DtoMarshaller.copyToDto(item, dto);
 			ssDtoList.add(dto);
 		}
-		ResponseDto<ArrayList<StandardScoringDto>> response = new ResponseDto();
+		ResponseDto<ArrayList<StandardScoringDto>> response = new ResponseDto<ArrayList<StandardScoringDto>>();
 		response.setCursorString(StandardScoringDao.getCursor(ssList));
 		response.setPayload(ssDtoList);
 		return response;

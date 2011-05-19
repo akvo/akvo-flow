@@ -498,14 +498,15 @@ public interface TextConstants extends Constants{
 	public String pointTypeMetric();
 	public String technologyTypeMetric();
 	public String surveyId();
-public String standardScoringManagerPortletTitle();
-//	public String scoringGlobalStandard();
-//	public String scoringEffectiveStartDate();
-//	public String scoringEffectiveEndDate();
-//	public String scoringAPField();
-//	public String scoringCriteriaType();
-//	public String scoringPositiveCriteria();
-//	public String scoringPositiveOperator();
-//	public String scoringPosutiveScore();
-//	public String scoringNegativeCriteria();
+	public String standardScoringManagerPortletTitle();
+	public String globalStandard();
+	public String evaluateField();
+	public String subValue();
+	public String criteriaType();
+	public String positiveCriteria();
+	public String positiveOperator();
+	public String negativeCriteria();
+	public String negativeOperator();
+	public String effectiveStartDate();
+	public String effectiveEndDate();
 }
