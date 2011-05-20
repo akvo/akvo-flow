@@ -1565,6 +1565,7 @@ public class TestHarnessServlet extends HttpServlet {
 		savePerm("Edit Raw Data", permList, userDao);
 		savePerm("Admin", permList, userDao);
 		savePerm("Publish Survey", permList,userDao);
+		savePerm("Run Reports", permList,userDao);
 	}
 
 	private void savePerm(String name, List<Permission> permList,
