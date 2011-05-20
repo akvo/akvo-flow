@@ -1,7 +1,10 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
 import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
@@ -16,21 +19,25 @@ import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.google.appengine.repackaged.com.google.common.base.StringUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DatePicker;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		DataTableBinder<StandardScoringDto>,
@@ -53,6 +60,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private VerticalPanel mainVPanel = new VerticalPanel();
 	SpreadsheetMappingAttributeServiceAsync svcAP;
 	ScrollPanel scrollP = new ScrollPanel();
+	private AccessPointManagerServiceAsync apSvc = null;
+	private ArrayList<String> countryCodesList = null;
 
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader(TEXT_CONSTANTS.globalStandard(),
@@ -122,12 +131,31 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		setContent(contentPane);
 		errorMode = false;
 		svc = GWT.create(StandardScoringManagerService.class);
+		apSvc = GWT.create(AccessPointManagerService.class);
+		loadCountries();
 		scoringTable.setVisible(false);
 		scrollP.add(scoringTable);
 		scrollP.setAlwaysShowScrollBars(true);
 		scrollP.setWidth("1800px");
 		mainVPanel.add(scrollP);
 		requestScoringData();
+	}
+
+	private void loadCountries() {
+		apSvc.listCountryCodes(new AsyncCallback<List<String>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onSuccess(List<String> result) {
+				countryCodesList = (ArrayList) result;
+
+			}
+		});
 	}
 
 	@Override
@@ -161,10 +189,20 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		}
 		grid.setWidget(row, 0, global);
 
-		TextBox country = new TextBox();
-		if (item.getCountryCode() != null) {
-			country.setText(item.getCountryCode());
+		ListBox country = new ListBox();
+		int i = 1;
+		country.addItem(" ");
+		country.setSelectedIndex(0);
+		for (String countryCode : countryCodesList) {
+			country.addItem(countryCode);
+			if (item.getCountryCode() != null) {
+				if (countryCode.equals(item.getCountryCode())) {
+					country.setSelectedIndex(i);
+				}
+			}
+			i++;
 		}
+
 		grid.setWidget(row, 1, country);
 
 		TextBox subValue = new TextBox();
@@ -212,17 +250,145 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		grid.setWidget(row, 8, negativeCriteria);
 
 		// effectivestartdate
-		DatePicker effectiveStartDate = new DatePicker();
+		DateBox effectiveStartDate = new DateBox();
 		if (item.getEffectiveStartDate() != null) {
-			// set date
+			effectiveStartDate.setValue(item.getEffectiveStartDate());
 		}
 		grid.setWidget(row, 10, effectiveStartDate);
 		// effectiveenddate
-		DatePicker effectiveEndDate = new DatePicker();
+		DateBox effectiveEndDate = new DateBox();
 		if (item.getEffectiveEndDate() != null) {
-			// set date
+			effectiveEndDate.setValue(item.getEffectiveEndDate());
 		}
 		grid.setWidget(row, 11, effectiveEndDate);
+		HorizontalPanel hpanel = new HorizontalPanel();
+		Button saveButton = new Button();
+		saveButton.setText(TEXT_CONSTANTS.save());
+		saveButton.setTitle(String.valueOf(row));
+		Button deleteButton = new Button();
+		deleteButton.setText(TEXT_CONSTANTS.delete());
+		deleteButton.setTitle(String.valueOf(row) + "|" + item.getKeyId());
+		hpanel.add(saveButton);
+		hpanel.add(deleteButton);
+		grid.setWidget(row, 2, hpanel);
+
+		saveButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Integer row = Integer.parseInt(((Button) event.getSource())
+						.getTitle());
+				StandardScoringDto ssDto = formStandardScoringDto(row);
+				svc.save(ssDto, new AsyncCallback<StandardScoringDto>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert(TEXT_CONSTANTS.saveFailed());
+					}
+
+					@Override
+					public void onSuccess(StandardScoringDto result) {
+
+					}
+				});
+			}
+
+		});
+		
+		deleteButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Button deleteButton = (Button)event.getSource();
+				String title = deleteButton.getTitle();
+				Integer row = Integer.parseInt(title.split("\\|")[0]);
+				Long keyId = Long.parseLong(title.split("\\|")[1]);
+				svc.delete(keyId, new AsyncCallback(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(Object result) {
+						Grid grid = scoringTable.getGrid();
+						//ToDo:  Fix this
+						//grid.removeRow(row);
+					}});
+			}});
+	}
+
+	private StandardScoringDto formStandardScoringDto(Integer row) {
+		StandardScoringDto item = new StandardScoringDto();
+		Grid grid = scoringTable.getGrid();
+		ListBox global = (ListBox) grid.getWidget(row, 0);
+		if (global.getSelectedIndex() > 0) {
+			item.setGlobalStandard(false);
+		} else {
+			item.setGlobalStandard(true);
+		}
+
+		
+		ListBox country = (ListBox) grid.getWidget(row, 1);
+		if(country.getSelectedIndex()>0){
+			item.setCountryCode(country.getItemText(country.getSelectedIndex()));
+		}
+		
+		TextBox subValue = (TextBox) grid.getWidget(row, 2);
+		if(subValue.getText().trim().length()>0){
+			item.setSubValue(subValue.getText());
+		}
+		ListBox pointType = (ListBox) grid.getWidget(row, 3);
+		if(pointType.getSelectedIndex()==1){
+			item.setPointType("WATER_POINT");
+		}
+		
+		ListBox fields = (ListBox) grid.getWidget(row, 4);
+		if(fields.getSelectedIndex()>0){
+			item.setEvaluateField(StringUtil.capitalize(fields.getItemText(fields.getSelectedIndex())));
+		}
+		ListBox criteriaType = (ListBox) grid.getWidget(row, 5);
+		if(criteriaType.getSelectedIndex()>0){
+			if(criteriaType.getSelectedIndex()==1){
+				//text
+				item.setCriteriaType("String");
+			}else if(criteriaType.getSelectedIndex()==2){
+				//number
+				item.setCriteriaType("Number");
+			}else if(criteriaType.getSelectedIndex()==3){
+				//true/false
+				item.setCriteriaType("Boolean");
+			}
+		}
+		TextBox positiveCriteria = (TextBox) grid.getWidget(row, 6);
+		if(positiveCriteria.getText().trim().length()>0){
+			item.setPositiveCriteria(positiveCriteria.getText().trim());
+		}
+		ListBox positiveOp = (ListBox) grid.getWidget(row, 7);
+		if(positiveOp.getSelectedIndex()>0){
+			String op = positiveOp.getItemText(positiveOp.getSelectedIndex());
+			item.setPositiveOperator(op);
+		}
+		TextBox negativeCriteria = (TextBox) grid.getWidget(row, 8);
+		if(negativeCriteria.getText().trim().length()>0){
+			item.setNegativeCriteria(negativeCriteria.getText());
+		}
+		ListBox negativeOp = (ListBox) grid.getWidget(row, 9);
+		if(negativeOp.getSelectedIndex()>0){
+			item.setNegativeOperator(negativeOp.getItemText(negativeOp.getSelectedIndex()));
+		}
+		// effectivestartdate
+		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 10);
+		if(effectiveStartDate.getValue()!=null){
+			item.setEffectiveStartDate(effectiveStartDate.getValue());
+		}
+		// effectiveenddate
+		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 11);
+		if(effectiveEndDate.getValue() != null){
+			item.setEffectiveEndDate(effectiveEndDate.getValue());
+		}
+		return item;
 	}
 
 	private void loadCriteriaOperators(Grid grid, Integer row, Integer column,
@@ -272,8 +438,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			} else if (item.getCriteriaType().equals("Boolean")) {
 				criteriaType.setSelectedIndex(2);
 			}
-			
-			
+
 		}
 
 		criteriaType.addChangeHandler(new ChangeHandler() {
