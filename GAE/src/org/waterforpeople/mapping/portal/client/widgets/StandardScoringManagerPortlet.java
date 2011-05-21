@@ -19,7 +19,6 @@ import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
-import com.google.appengine.repackaged.com.google.common.base.StringUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -212,22 +211,39 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		grid.setWidget(row, 2, subValue);
 
 		ListBox pointType = new ListBox();
+		pointType.addItem(" ");
 		pointType.addItem("Water Point");
 		pointType.addItem("Sanitation");
-		pointType.addItem("House Hold");
+		pointType.addItem("Household");
 		pointType.addItem("Public Institution");
+		pointType.setSelectedIndex(0);
 		if (item.getPointType() != null) {
 			if (item.getPointType().equals("WATER_POINT")) {
-				pointType.setSelectedIndex(0);
+				pointType.setSelectedIndex(1);
+			}else if(item.getPointType().equals("Sanitation")){
+				pointType.setSelectedIndex(2);
+			}else if(item.getPointType().equals("Household")){
+				pointType.setSelectedIndex(3);
+			}else{
+				pointType.setSelectedIndex(4);
 			}
 			// ToDo complete
 		}
 		grid.setWidget(row, 3, pointType);
 		// evalField
 		ListBox fields = new ListBox();
+		fields.addItem(" ");
+		fields.setSelectedIndex(0);
+		int ifield=1;
 		if (objectAttributes.size() > 0) {
 			for (String field : objectAttributes) {
 				fields.addItem(field);
+				if(item.getEvaluateField()!=null){
+					if(item.getEvaluateField().toLowerCase().trim().equals(field.toLowerCase())){
+						fields.setSelectedIndex(i);
+					}
+				}
+				++ifield;
 			}
 		}
 		grid.setWidget(row, 4, fields);
@@ -270,7 +286,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		deleteButton.setTitle(String.valueOf(row) + "|" + item.getKeyId());
 		hpanel.add(saveButton);
 		hpanel.add(deleteButton);
-		grid.setWidget(row, 2, hpanel);
+		grid.setWidget(row, 12, hpanel);
 
 		saveButton.addClickHandler(new ClickHandler() {
 
@@ -346,7 +362,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		
 		ListBox fields = (ListBox) grid.getWidget(row, 4);
 		if(fields.getSelectedIndex()>0){
-			item.setEvaluateField(StringUtil.capitalize(fields.getItemText(fields.getSelectedIndex())));
+			item.setEvaluateField(fields.getItemText(fields.getSelectedIndex()));
 		}
 		ListBox criteriaType = (ListBox) grid.getWidget(row, 5);
 		if(criteriaType.getSelectedIndex()>0){
@@ -394,6 +410,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private void loadCriteriaOperators(Grid grid, Integer row, Integer column,
 			String type, String currentSelection) {
 		ListBox operators = new ListBox();
+		operators.addItem(" ");
 		if (type.equals("Number")) {
 			operators.addItem("<=");
 			operators.addItem("<");
@@ -405,8 +422,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			operators.addItem("!=");
 			operators.addItem("==");
 		}
+		operators.setSelectedIndex(0);
 		if (currentSelection != null) {
-			for (int i = 0; i < operators.getItemCount(); i++) {
+			for (int i = 1; i < operators.getItemCount(); i++) {
 				if (operators.getItemText(i).equals(currentSelection)) {
 					operators.setSelectedIndex(i);
 					break;
@@ -414,7 +432,6 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 		grid.setWidget(row, column, operators);
-		scrollP.setWidth("1600px");
 	}
 
 	@Override
@@ -426,19 +443,21 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private void configureCriteriaTypeBox(StandardScoringDto item, Grid grid,
 			Integer row, Integer col) {
 		ListBox criteriaType = new ListBox();
+		criteriaType.addItem(" ");
 		criteriaType.addItem("Text");
 		criteriaType.addItem("Number");
 		criteriaType.addItem("True/False");
+		criteriaType.setSelectedIndex(0);
 		criteriaType.setTitle(row + "|" + 5);
 		if (item.getCriteriaType() != null) {
 			if (item.getCriteriaType().equals("String")) {
-				criteriaType.setSelectedIndex(0);
-			} else if (item.getCriteriaType().equals("Number")) {
 				criteriaType.setSelectedIndex(1);
-			} else if (item.getCriteriaType().equals("Boolean")) {
+			} else if (item.getCriteriaType().equals("Number")) {
 				criteriaType.setSelectedIndex(2);
+			} else if (item.getCriteriaType().equals("Boolean")) {
+				criteriaType.setSelectedIndex(3);
 			}
-
+			setupOperatorListBox(item, grid, row, col);
 		}
 
 		criteriaType.addChangeHandler(new ChangeHandler() {
@@ -472,6 +491,23 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		grid.setWidget(row, col, criteriaType);
 	}
 
+	private void setupOperatorListBox(StandardScoringDto item, Grid grid, Integer row, Integer column){
+		if (item.getCriteriaType()!=null) {
+			if (item.getCriteriaType().equals("Number")) {
+				loadCriteriaOperators(grid, row, column + 2, "Number",
+						currentItem.getPositiveOperator());
+				loadCriteriaOperators(grid, row, column + 4, "Number",
+						currentItem.getNegativeOperator());
+			} else {
+				loadCriteriaOperators(grid, row, column + 2,
+						"NotNumber", currentItem.getPositiveOperator());
+				loadCriteriaOperators(grid, row, column + 4,
+						"NotNumber", currentItem.getNegativeOperator());
+			}
+		}
+	}
+
+	
 	private static StandardScoringDto currentItem;
 
 	private String cursorString = "all";

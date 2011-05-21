@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.web.test;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,25 +22,31 @@ import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 public class AccessPointTest {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
 			.getName());
-	public void loadLots(HttpServletResponse resp){
+
+	public void loadLots(HttpServletResponse resp) {
 		MapFragmentDao mfDao = new MapFragmentDao();
 		AccessPointDao apDao = new AccessPointDao();
 		for (int j = 0; j < 1; j++) {
 			double lat = 6.6 + (new Random().nextDouble() / 10);
 			double lon = -10.8 + (new Random().nextDouble() / 10);
 			for (int i = 0; i < 700; i++) {
+				Calendar calendar = new GregorianCalendar(2010,
+						Calendar.JANUARY, 1);
+				Integer sign = null;
+				if (new Random().nextInt(2) % 2 == 0) {
+					sign = -1;
+				} else {
+					sign = 1;
+				}
+				calendar.add(Calendar.MONTH, sign * new Random().nextInt(100));
 				log.info(i + ":");
 				AccessPoint ap = new AccessPoint();
-				ap.setLatitude(lat);
-				ap.setLongitude(lon);
-				Calendar calendar = Calendar.getInstance();
+				ap.setLatitude(lat + new Random().nextInt(100) / 100);
+				ap.setLongitude(lon + new Random().nextInt(100) / 100);
+
 				Date today = new Date();
-				calendar.setTime(today);
-				calendar.add(Calendar.YEAR, -1 * i);
-				System.out
-						.println("AP: " + ap.getLatitude() + "/"
-								+ ap.getLongitude() + "Date: "
-								+ calendar.getTime());
+				System.out.println("AP: " + ap.getLatitude() + "/"
+						+ ap.getLongitude() + "Date: " + calendar.getTime());
 				// ap.setCollectionDate(calendar.getTime());
 				ap.setAltitude(0.0);
 				ap.setCommunityCode("test" + new Date());
@@ -59,31 +66,22 @@ public class AccessPointTest {
 				ap.setConstructionDateYear("2001");
 				ap.setCostPer(1.0);
 				ap.setCountryCode("LR");
-				ap.setConstructionDate(new Date());
-				ap.setCollectionDate(new Date());
+				ap.setCollectionDate(calendar.getTime());
+				calendar.add(Calendar.YEAR, -5);
+				ap.setConstructionDate(calendar.getTime());
 				ap.setPhotoName("Water point");
 				if (i % 2 == 0)
 					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-				else if (i % 3 == 0)
-					ap.setPointType(AccessPoint.AccessPointType.SANITATION_POINT);
 				else
 					ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
-				if (i == 0)
-					ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-				else if (i == 1)
-					ap.setPointStatus(AccessPoint.Status.FUNCTIONING_OK);
-				else if (i == 2)
-					ap.setPointStatus(Status.FUNCTIONING_WITH_PROBLEMS);
-				else
-					ap.setPointStatus(Status.NO_IMPROVED_SYSTEM);
-
 				if (i % 2 == 0)
 					ap.setTypeTechnologyString("Kiosk");
 				else
 					ap.setTypeTechnologyString("Afridev Handpump");
 				apDao.save(ap);
 				CommunityLocationSummarizer cls = new CommunityLocationSummarizer();
-				cls.performSummarization(String.valueOf(ap.getKey().getId()), null, null, null, null);
+				cls.performSummarization(String.valueOf(ap.getKey().getId()),
+						null, null, null, null);
 				MapSummarizer ms = new MapSummarizer();
 				// ms.performSummarization("" + ap.getKey().getId(), "");
 				if (i % 50 == 0)

@@ -890,8 +890,8 @@ public class KMLGenerator {
 			throws InvocationTargetException, NoSuchMethodException {
 		Integer score = AccessPointHelper.scoreAccessPoint(ap).getScore();
 
-//		Integer score2 = new AccessPointHelper().scoreAccessPointDynamic(ap)
-//				.getScore();
+		Integer score2 = new AccessPointHelper().scoreAccessPointDynamic(ap)
+				.getScore();
 
 		if (score == 0) {
 			return "No Improved System";
