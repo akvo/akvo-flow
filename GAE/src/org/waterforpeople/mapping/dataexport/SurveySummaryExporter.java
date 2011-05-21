@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -183,6 +184,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 						}
 						if (json.has("keyId")) {
 							dto.setKeyId(json.getLong("keyId"));
+						}
+						if(json.has("questionTypeString")){
+							dto.setType(QuestionType.valueOf(json.getString("questionTypeString")));
 						}
 						dtoList.add(dto);
 					} catch (Exception e) {
