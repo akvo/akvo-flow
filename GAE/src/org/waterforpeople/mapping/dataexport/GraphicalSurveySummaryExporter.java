@@ -22,6 +22,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
 import com.gallatinsystems.common.util.ImageChartUtil;
+import com.gallatinsystems.common.util.JFreechartChartUtil;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and
@@ -175,8 +176,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					curRow = tableBottomRow;
 					if(labels.size()>0){
 						//now insert the graph
-						int indx = wb.addPicture(ImageChartUtil.getPieChart(labels,values,question.getText(), CHART_WIDTH, CHART_HEIGHT),HSSFWorkbook.PICTURE_TYPE_PNG);
-						
+						//int indx = wb.addPicture(ImageChartUtil.getPieChart(labels,values,"", CHART_WIDTH, CHART_HEIGHT),HSSFWorkbook.PICTURE_TYPE_PNG);
+						int indx = wb.addPicture(JFreechartChartUtil.getPieChart(labels,values,"", CHART_WIDTH, CHART_HEIGHT),HSSFWorkbook.PICTURE_TYPE_PNG);
 						HSSFClientAnchor anchor;
 						anchor=new HSSFClientAnchor(0,0,0,255,(short)6,tableTopRow,(short)(6+CHART_CELL_WIDTH),tableTopRow+CHART_CELL_HEIGHT);
 						anchor.setAnchorType(2);
