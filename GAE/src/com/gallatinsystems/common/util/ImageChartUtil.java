@@ -81,6 +81,10 @@ public class ImageChartUtil {
 			urlParameters.append(DATA_PARAM).append(dataString.toString());
 			urlParameters.append(LABEL_PARAM).append(labelString.toString());
 			urlParameters.append(LEGEND_PARAM).append(legendString.toString());
+			if(min == max){
+				//to ensure the chart renders properly if all values are the same
+				min--;
+			}
 			urlParameters.append(SCALE_PARAM).append(min + "," + max);
 		}
 		return HttpUtil.doPost(CHART_API_URL, urlParameters.toString());

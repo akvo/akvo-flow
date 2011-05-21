@@ -3,13 +3,16 @@ package org.waterforpeople.mapping.dataexport;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,6 +20,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
+
+import com.gallatinsystems.common.util.ImageChartUtil;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and
@@ -30,10 +35,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String REPORT_HEADER = "Survey Summary Report";
 	private static final String FREQ_LABEL = "Frequency";
 	private static final String PCT_LABEL = "Percent";
-	private static final String IMAGE_CHART_API = "http://chart.googleapis.com/chart?cht=p&chs=300x300&chtt=";//title value is next
-	private static final String DATA_LBL_PARAM = "&chdl=";
-	private static final String DATA_PARAM="chd=t";
-
+	private static final int CHART_WIDTH = 600;
+	private static final int CHART_HEIGHT = 400;
+	private static final int CHART_CELL_WIDTH = 10;
+	private static final int CHART_CELL_HEIGHT = 22;
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase) {
@@ -78,6 +83,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		HSSFFont headerFont = wb.createFont();
 		headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 		headerStyle.setFont(headerFont);
+		
+		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+		
 		int curRow = 0;
 		HSSFRow row = getRow(curRow++, sheet);
 		createCell(row, 0, REPORT_HEADER, headerStyle);
@@ -111,10 +119,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					Map<String, Long> counts = summaryModel
 							.getResponseCountsForQuestion(question.getKeyId());
 					int sampleTotal = 0;
+					List<String> labels = new ArrayList<String>(); 
+					List<String> values = new ArrayList<String>();
 					for (Entry<String, Long> count : counts.entrySet()) {
 						row = getRow(curRow++, sheet);
 						createCell(row, 0, count.getKey(), null);
 						createCell(row, 1, count.getValue().toString(), null);
+						labels.add(count.getKey());
+						values.add(count.getValue().toString());
 						sampleTotal += count.getValue();
 					}
 					row = getRow(curRow++, sheet);
@@ -161,6 +173,19 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 						}
 					}
 					curRow = tableBottomRow;
+					if(labels.size()>0){
+						//now insert the graph
+						int indx = wb.addPicture(ImageChartUtil.getPieChart(labels,values,question.getText(), CHART_WIDTH, CHART_HEIGHT),HSSFWorkbook.PICTURE_TYPE_PNG);
+						
+						HSSFClientAnchor anchor;
+						anchor=new HSSFClientAnchor(0,0,0,255,(short)6,tableTopRow,(short)(6+CHART_CELL_WIDTH),tableTopRow+CHART_CELL_HEIGHT);
+						anchor.setAnchorType(2);
+						patriarch.createPicture(anchor, indx);
+						if(tableTopRow +CHART_CELL_HEIGHT > tableBottomRow){
+							curRow = tableTopRow+CHART_CELL_HEIGHT;
+						}
+					}
+					
 					// add a blank row between questions
 					getRow(curRow++, sheet);
 
