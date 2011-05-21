@@ -5,7 +5,7 @@
 	<path id="project.classpath">
 		<pathelement location="src" />
 		<pathelement path="war/WEB-INF/classes" />
-		<pathelement path="war/WEB-INF/lib/gwt-visualization.jar"/>
+		<pathelement path="war/WEB-INF/lib/gwt-visualization.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
 		<fileset dir="war/WEB-INF/lib">
@@ -15,18 +15,20 @@
 			<include name="shared/**/*.jar" />
 		</fileset>
 		<fileset dir="war">
-					<include name="poi-3.5-signed.jar" />
-					<include name="velocity-1.6.2-dep.jar" />
-					<include name="geoapi-2.3-M1.jar" />
-					<include name="geoapi-pending-2.3-M1.jar" />
-					<include name="gt-api-2.6.5.jar" />
-					<include name="gt-main-2.6.5.jar" />
-					<include name="gt-metadata-2.6.5.jar" />
-					<include name="jts-1.11-serializable-indexes.jar" />
-					<include name="gt-api-2.6.5.jar"/>
+			<include name="poi-3.5-signed.jar" />
+			<include name="velocity-1.6.2-dep.jar" />
+			<include name="geoapi-2.3-M1.jar" />
+			<include name="geoapi-pending-2.3-M1.jar" />
+			<include name="gt-api-2.6.5.jar" />
+			<include name="gt-main-2.6.5.jar" />
+			<include name="gt-metadata-2.6.5.jar" />
+			<include name="jts-1.11-serializable-indexes.jar" />
+			<include name="gt-api-2.6.5.jar" />
+			<include name="jcommon-1.0.16.jar" />
+			<include name="jfreechart-1.0.13.jar" />
 		</fileset>
 		<pathelement location="build" />
-		
+
 	</path>
 
 	<target name="copyjars" description="Copies the App Engine JARs to the WAR.">
@@ -53,39 +55,39 @@
 		</copy>
 		<javac srcdir="src" destdir="war/WEB-INF/classes" classpathref="project.classpath" debug="on" />
 	</target>
-	
-	<target name="datanucleusenhance" depends="compile" description="Performs JDO enhancement on compiled data classes.">			
-			<enhance failonerror="true" api="JDO">
-				<classpath>
-					<pathelement path="${sdk.dir}/lib/appengine-tools-api.jar" />
-					<pathelement path="war/WEB-INF/classes" />
-					<fileset dir="war/WEB-INF/lib" includes="*.jar" />
-				</classpath>
-				<!--<fileset dir="war/WEB-INF/classes" includes="**/*.class" />-->
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/device/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/framework/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/gis/geography/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/survey/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/task/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/user/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/weightsmeasures/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/dataentry/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/gis/map/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/sms/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/diagnostics/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/editorial/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/notification/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/auth/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/messaging/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/data/spreadsheet/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/standards/domain/*.class"/>
-				<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/analytics/domain/*.class" />
-				<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/domain/*.class" />				
-	
-	
+
+	<target name="datanucleusenhance" depends="compile" description="Performs JDO enhancement on compiled data classes.">
+		<enhance failonerror="true" api="JDO">
+			<classpath>
+				<pathelement path="${sdk.dir}/lib/appengine-tools-api.jar" />
+				<pathelement path="war/WEB-INF/classes" />
+				<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+			</classpath>
+			<!--<fileset dir="war/WEB-INF/classes" includes="**/*.class" />-->
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/device/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/framework/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/gis/geography/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/survey/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/task/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/user/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/weightsmeasures/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/dataentry/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/gis/map/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/sms/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/diagnostics/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/editorial/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/notification/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/auth/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/messaging/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/data/spreadsheet/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/standards/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/analytics/domain/*.class" />
+			<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/domain/*.class" />
+
+
 		</enhance>
-		</target>
+	</target>
 
 	<target name="runserver" depends="datanucleusenhance" description="Starts the development server.">
 		<dev_appserver war="war" />
