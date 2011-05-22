@@ -24,57 +24,51 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class RunReportWidget extends MenuBasedWidget {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
+			.create(TextConstants.class);
 	private Grid grid;
 	private Panel appletPanel;
 	private Panel contentPanel;
 	private Button apReportButton;
 	private Button rawDataReportButton;
 	private Button summaryReportButton;
+	private Button comprehensiveReportButton;
 	private Button kmlButton;
 	private Button surveyFormButton;
 
 	public RunReportWidget() {
 		contentPanel = new VerticalPanel();
-		grid = new Grid(5, 2);
+		grid = new Grid(7, 2);
 		appletPanel = new VerticalPanel();
-		contentPanel.add(grid);
-		contentPanel.add(appletPanel);
+		contentPanel.add(grid);	
 		apReportButton = initButton(TEXT_CONSTANTS.accessPointReport());
 		grid.setWidget(0, 0, apReportButton);
-		grid
-				.setWidget(
-						0,
-						1,
-						createDescription(TEXT_CONSTANTS.accessPointReportDescription()));
+		grid.setWidget(
+				0,
+				1,
+				createDescription(TEXT_CONSTANTS.accessPointReportDescription()));
 		kmlButton = initButton(TEXT_CONSTANTS.googleEarthFile());
 		grid.setWidget(1, 0, kmlButton);
-		grid
-				.setWidget(
-						1,
-						1,
-						createDescription(TEXT_CONSTANTS.googleEarthFileDescription()));
+		grid.setWidget(1, 1,
+				createDescription(TEXT_CONSTANTS.googleEarthFileDescription()));
 		rawDataReportButton = initButton(TEXT_CONSTANTS.rawDataReport());
 		grid.setWidget(2, 0, rawDataReportButton);
-		grid
-				.setWidget(
-						2,
-						1,
-						createDescription(TEXT_CONSTANTS.rawDataReportDescription()));
+		grid.setWidget(2, 1,
+				createDescription(TEXT_CONSTANTS.rawDataReportDescription()));
 		summaryReportButton = initButton(TEXT_CONSTANTS.surveySummaryReport());
 		grid.setWidget(3, 0, summaryReportButton);
-		grid
-				.setWidget(
-						3,
-						1,
-						createDescription(TEXT_CONSTANTS.surveySummaryReportDescription()));
+		grid.setWidget(3, 1, createDescription(TEXT_CONSTANTS
+				.surveySummaryReportDescription()));
+		comprehensiveReportButton = initButton(TEXT_CONSTANTS
+				.comprehensiveReport());
+		grid.setWidget(4, 0, comprehensiveReportButton);
+		grid.setWidget(4, 1, createDescription(TEXT_CONSTANTS
+				.comprehensiveReportDescription()));
+
 		surveyFormButton = initButton(TEXT_CONSTANTS.surveyForm());
-		grid.setWidget(4, 0, surveyFormButton);
-		grid
-				.setWidget(
-						4,
-						1,
-						createDescription(TEXT_CONSTANTS.surveyFormDescription()));
+		grid.setWidget(5, 0, surveyFormButton);
+		grid.setWidget(5, 1,
+				createDescription(TEXT_CONSTANTS.surveyFormDescription()));
+		grid.setWidget(6,0,appletPanel);
 		initWidget(contentPanel);
 	}
 
@@ -116,7 +110,7 @@ public class RunReportWidget extends MenuBasedWidget {
 						}
 					});
 			filterDia.showCentered();
-		} else {
+		}  else {
 			final Object eventSource = event.getSource();
 			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
 					new CompletionListener() {
@@ -165,6 +159,17 @@ public class RunReportWidget extends MenuBasedWidget {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
+			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
+					+ ">";
+			appletString += "</applet>";
+			HTML html = new HTML();
+			html.setHTML(appletString);
+			appletPanel.add(html);
+		}else if (eventSource == comprehensiveReportButton) {
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar,poi-3.5-signed.jar'>";
+			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
+			appletString += "<PARAM name='exportType' value='GRAPHICAL_SURVEY_SUMMARY'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
 					+ ">";

@@ -512,5 +512,6 @@ public interface TextConstants extends Constants{
 	public String saveFailed();
 	public String positiveScore();
 	public String negativeScore();
-	
+	public String comprehensiveReportDescription();
+	public String comprehensiveReport();
 }
