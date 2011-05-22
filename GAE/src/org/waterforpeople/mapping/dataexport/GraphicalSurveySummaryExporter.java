@@ -3,6 +3,8 @@ package org.waterforpeople.mapping.dataexport;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,20 +52,36 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int CHART_CELL_WIDTH = 10;
 	private static final int CHART_CELL_HEIGHT = 22;
 
+	private static final NumberFormat PCT_FMT = DecimalFormat
+			.getPercentInstance();
+
+	private HSSFCellStyle headerStyle;
+
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase) {
-		InputDialog dia = new InputDialog();
 		PrintWriter pw = null;
 		try {
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
 					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
 			if (questionMap.size() > 0) {
 				HSSFWorkbook wb = new HSSFWorkbook();
+				headerStyle = wb.createCellStyle();
+				headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+				HSSFFont headerFont = wb.createFont();
+				headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+				headerStyle.setFont(headerFont);
+
 				SummaryModel model = fetchAndWriteRawData(
 						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
 						serverBase, questionMap, wb);
-				writeSummaryReport(questionMap, model, dia.getDoRollup(), wb);
+				writeSummaryReport(questionMap, model, null, wb);
+				if (model.getSectorList() != null
+						&& model.getSectorList().size() > 0) {
+					for (String sector : model.getSectorList()) {
+						writeSummaryReport(questionMap, model, sector, wb);
+					}
+				}
 				FileOutputStream fileOut = new FileOutputStream(fileName);
 				wb.setActiveSheet(1);
 				wb.write(fileOut);
@@ -163,11 +181,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 */
 	private Object[] createRawDataHeader(HSSFWorkbook wb, HSSFSheet sheet,
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
-		HSSFCellStyle headerStyle = wb.createCellStyle();
-		headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-		HSSFFont headerFont = wb.createFont();
-		headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		headerStyle.setFont(headerFont);
 		HSSFRow row = getRow(0, sheet);
 		createCell(row, 0, INSTANCE_LABEL, headerStyle);
 		createCell(row, 1, SUB_DATE_LABEL, headerStyle);
@@ -204,26 +217,25 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 */
 	private void writeSummaryReport(
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-			SummaryModel summaryModel, boolean rollUp, HSSFWorkbook wb)
+			SummaryModel summaryModel, String sector, HSSFWorkbook wb)
 			throws Exception {
 
-		HSSFSheet sheet = wb.createSheet(SUMMARY_LABEL);
-		HSSFCellStyle headerStyle = wb.createCellStyle();
-		headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-		HSSFFont headerFont = wb.createFont();
-		headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		headerStyle.setFont(headerFont);
-
+		HSSFSheet sheet = wb.createSheet(sector == null ? SUMMARY_LABEL
+				: sector);
 		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-
 		int curRow = 0;
 		HSSFRow row = getRow(curRow++, sheet);
-		createCell(row, 0, REPORT_HEADER, headerStyle);
+		if (sector == null) {
+			createCell(row, 0, REPORT_HEADER, headerStyle);
+		} else {
+			createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
+		}
 		for (Entry<QuestionGroupDto, List<QuestionDto>> mapEntry : questionMap
 				.entrySet()) {
 			if (mapEntry.getValue() != null) {
 				for (QuestionDto question : mapEntry.getValue()) {
-					if(!(QuestionType.OPTION == question.getType() || QuestionType.NUMBER == question.getType())){
+					if (!(QuestionType.OPTION == question.getType() || QuestionType.NUMBER == question
+							.getType())) {
 						continue;
 					}
 					// for both options and numeric, we want a pie chart and
@@ -237,7 +249,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 							curRow - 1, 0, 2));
 					createCell(row, 0, question.getText(), headerStyle);
 					DescriptiveStats stats = summaryModel
-							.getDescriptiveStatsForQuestion(question.getKeyId());
+							.getDescriptiveStatsForQuestion(
+									question.getKeyId(), sector);
 					if (stats != null && stats.getSampleCount() > 0) {
 						sheet.addMergedRegion(new CellRangeAddress(curRow - 1,
 								curRow - 1, 4, 5));
@@ -250,10 +263,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 					// now create the data table for the option count
 					Map<String, Long> counts = summaryModel
-							.getResponseCountsForQuestion(question.getKeyId());
+							.getResponseCountsForQuestion(question.getKeyId(),sector);
 					int sampleTotal = 0;
 					List<String> labels = new ArrayList<String>();
 					List<String> values = new ArrayList<String>();
+					int firstOptRow = curRow;
 					for (Entry<String, Long> count : counts.entrySet()) {
 						row = getRow(curRow++, sheet);
 						createCell(row, 0, count.getKey(), null);
@@ -265,11 +279,22 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					row = getRow(curRow++, sheet);
 					createCell(row, 0, "Total", null);
 					createCell(row, 1, sampleTotal + "", null);
+					for (int i = 0; i < values.size(); i++) {
+						row = getRow(firstOptRow + i, sheet);
+						if (sampleTotal > 0) {
+							createCell(row, 2,
+									PCT_FMT.format((Double.parseDouble(values
+											.get(i)) / (double) sampleTotal)),
+									null);
+						} else {
+							createCell(row, 2, PCT_FMT.format(0), null);
+						}
+					}
 
 					tableBottomRow = curRow;
 
 					if (stats != null && stats.getSampleCount() > 0) {
-						int tempRow = tableTopRow;
+						int tempRow = tableTopRow+1;
 						row = getRow(tempRow++, sheet);
 						createCell(row, 4, "N", null);
 						createCell(row, 5, sampleTotal + "", null);
@@ -308,12 +333,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					curRow = tableBottomRow;
 					if (labels.size() > 0) {
 						// now insert the graph
-						// int indx =
-						// wb.addPicture(ImageChartUtil.getPieChart(labels,values,"",
-						// CHART_WIDTH,
-						// CHART_HEIGHT),HSSFWorkbook.PICTURE_TYPE_PNG);
 						int indx = wb.addPicture(JFreechartChartUtil
-								.getPieChart(labels, values, "", CHART_WIDTH,
+								.getPieChart(labels, values, question.getText(), CHART_WIDTH,
 										CHART_HEIGHT),
 								HSSFWorkbook.PICTURE_TYPE_PNG);
 						HSSFClientAnchor anchor;

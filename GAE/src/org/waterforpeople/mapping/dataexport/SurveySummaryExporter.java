@@ -43,7 +43,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	public static final String RESPONSE_KEY = "dtoList";
 	private static final String SERVLET_URL = "/surveyrestapi?action=";
 	private static final NumberFormat PCT_FMT = new DecimalFormat("0.00");
-	private static final String SECTOR_TXT = "Sector/Cell";
+	private static final String[] ROLLUP_QUESTIONS = { "Sector/Cell",
+			"Municipality" };
 	protected List<QuestionGroupDto> orderedGroupList;
 	protected QuestionDto sectorQuestion;
 
@@ -109,9 +110,11 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 					group.getKeyId());
 			if (questions != null) {
 				for (QuestionDto q : questions) {
-					if (SECTOR_TXT.equalsIgnoreCase(q.getText())) {
-						sectorQuestion = q;
-						break;
+					for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
+						if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(q.getText())) {
+							sectorQuestion = q;
+							break;
+						}
 					}
 				}
 			}
@@ -185,8 +188,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 						if (json.has("keyId")) {
 							dto.setKeyId(json.getLong("keyId"));
 						}
-						if(json.has("questionTypeString")){
-							dto.setType(QuestionType.valueOf(json.getString("questionTypeString")));
+						if (json.has("questionTypeString")) {
+							dto.setType(QuestionType.valueOf(json
+									.getString("questionTypeString")));
 						}
 						dtoList.add(dto);
 					} catch (Exception e) {
@@ -271,6 +275,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		private Map<String, Long> responseTotalMap;
 		// map of question to stats value
 		private Map<String, DescriptiveStats> statMap;
+		private Map<String, Map<String, DescriptiveStats>> sectorStatMap;
 
 		public SummaryModel() {
 			responseMap = new HashMap<String, List<String>>();
@@ -280,7 +285,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			responseCountMap = new HashMap<String, Long>();
 			responseTotalMap = new HashMap<String, Long>();
 			statMap = new HashMap<String, DescriptiveStats>();
-
+			sectorStatMap = new HashMap<String, Map<String, DescriptiveStats>>();
 		}
 
 		public void tallyResponse(String questionId, String sector,
@@ -288,16 +293,36 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			addResponse(questionId, response);
 			addSector(sector);
 			incrementCount(questionId, sector, response);
-			updateStats(questionId, response);
+			updateStats(questionId, sector, response);
 		}
 
-		private void updateStats(String questionId, String response) {
+		private void updateStats(String questionId, String sector,
+				String response) {
 			if (statMap.get(questionId) == null) {
 				DescriptiveStats stats = new DescriptiveStats();
 				stats.addSample(response);
 				statMap.put(questionId, stats);
 			} else {
 				statMap.get(questionId).addSample(response);
+			}
+
+			if (sector != null) {
+				if (sectorStatMap.get(sector) == null) {
+					Map<String, DescriptiveStats> secStats = new HashMap<String, DescriptiveStats>();
+					sectorStatMap.put(sector, secStats);
+					DescriptiveStats stats = new DescriptiveStats();
+					stats.addSample(response);
+					secStats.put(questionId, stats);
+				} else {
+					if (sectorStatMap.get(sector).get(questionId) == null) {
+						DescriptiveStats stats = new DescriptiveStats();
+						stats.addSample(response);
+						sectorStatMap.get(sector).put(questionId, stats);
+					} else {
+						sectorStatMap.get(sector).get(questionId)
+								.addSample(response);
+					}
+				}
 			}
 		}
 
@@ -320,8 +345,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		}
 
 		private void addSector(String sector) {
-			if (!sectorList.contains(sector)) {
-				sectorList.add(sector);
+			if (sector != null && sector.trim().length()>0 && !sectorList.contains(sector.trim())) {
+				sectorList.add(sector.trim());
 			}
 		}
 
@@ -393,21 +418,40 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			return buffer.toString();
 		}
 
-		public Map<String, Long> getResponseCountsForQuestion(Long questionId) {
+		public Map<String, Long> getResponseCountsForQuestion(Long questionId, String sector) {			
 			List<String> responses = responseMap.get(questionId.toString());
 			Map<String, Long> countMap = new HashMap<String, Long>();
 			if (responses != null) {
 				for (String resp : responses) {
-					Long count = responseCountMap.get(questionId + resp);
+					Long count = null;
+					if(sector == null){
+						count =responseCountMap.get(questionId + resp);
+					}else{
+						count = sectorCountMap.get(questionId+sector+resp);
+					}
 					countMap.put(resp, count != null ? count : new Long(0));
 				}
 			}
 			return countMap;
 		}
 
-		public DescriptiveStats getDescriptiveStatsForQuestion(Long questionId) {
-			return statMap.get(questionId.toString());
+		public DescriptiveStats getDescriptiveStatsForQuestion(Long questionId,
+				String sector) {
+			if (sector == null) {
+				return statMap.get(questionId.toString());
+			} else {
+				if (sectorStatMap.get(sector) != null) {
+					return sectorStatMap.get(sector).get(questionId.toString());
+				} else {
+					return null;
+				}
+			}
 		}
+
+		public List<String> getSectorList() {
+			return sectorList;
+		}
+
 	}
 
 	protected class DescriptiveStats {
