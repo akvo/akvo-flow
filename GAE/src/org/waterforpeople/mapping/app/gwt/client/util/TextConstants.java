@@ -510,5 +510,7 @@ public interface TextConstants extends Constants{
 	public String effectiveStartDate();
 	public String effectiveEndDate();
 	public String saveFailed();
+	public String positiveScore();
+	public String negativeScore();
 	
 }

@@ -42,6 +42,7 @@ public class StandardScoringTest {
 		ssWaterAvail.setPositiveCriteria("true");
 		ssWaterAvail.setNegativeOperator("!=");
 		ssWaterAvail.setNegativeCriteria("true");
+		ssWaterAvail.setCriteriaType("Boolean");
 		ssDao.save(ssWaterAvail);
 		
 		
@@ -53,7 +54,7 @@ public class StandardScoringTest {
 		ss2.setEvaluateField("NumberOfHouseholdsUsingPoint");
 		ss2.setPositiveOperator("<");
 		ss2.setPositiveCriteria("100");
-		ss2.setCriteriaType("Integer");
+		ss2.setCriteriaType("Number");
 		ss2.setPositiveScore(1);
 		ss2.setNegativeOperator(">=");
 		ss2.setNegativeCriteria("100");
@@ -71,7 +72,7 @@ public class StandardScoringTest {
 		ss4.setEvaluateField("NumberOfHouseholdsUsingPoint");
 		ss4.setPositiveOperator("<");
 		ss4.setPositiveCriteria("100");
-		ss4.setCriteriaType("Integer");
+		ss4.setCriteriaType("Number");
 		ss4.setPositiveScore(1);
 		ss4.setNegativeOperator(">=");
 		ss4.setNegativeCriteria("100");

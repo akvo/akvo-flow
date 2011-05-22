@@ -38,8 +38,12 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public StandardScoringDto save(StandardScoringDto item) {
-		// TODO Auto-generated method stub
-		return null;
+		StandardScoringDao ssDao = new StandardScoringDao();
+		StandardScoring canonical = new StandardScoring();
+		DtoMarshaller.copyToCanonical(canonical, item);
+		ssDao.save(canonical);
+		DtoMarshaller.copyToDto(canonical,item);
+		return item;
 	}
 
 	@Override

@@ -69,6 +69,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					true),
 			new DataTableHeader(TEXT_CONSTANTS.subValue(), "subValue", true),
 			new DataTableHeader(TEXT_CONSTANTS.pointType(), "pointType", true),
+			new DataTableHeader(TEXT_CONSTANTS.description(), "displayName",
+					true),
 			new DataTableHeader(TEXT_CONSTANTS.evaluateField(),
 					"evaluateField", true),
 			new DataTableHeader(TEXT_CONSTANTS.criteriaType(), "criteriaType",
@@ -77,10 +79,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					"positiveCriteria", true),
 			new DataTableHeader(TEXT_CONSTANTS.positiveOperator(),
 					"positiveOperator", true),
+			new DataTableHeader(TEXT_CONSTANTS.positiveScore(),
+					"positiveCriteria", true),
 			new DataTableHeader(TEXT_CONSTANTS.negativeCriteria(),
 					"negativeCriteria", true),
 			new DataTableHeader(TEXT_CONSTANTS.negativeOperator(),
 					"negativeOperator", true),
+			new DataTableHeader(TEXT_CONSTANTS.negativeScore(),
+					"negativeScore", true),
 			new DataTableHeader(TEXT_CONSTANTS.effectiveStartDate(),
 					"effectiveStartDate", true),
 			new DataTableHeader(TEXT_CONSTANTS.effectiveEndDate(),
@@ -90,7 +96,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private static final String DEFAULT_SORT_FIELD = "globalStandard";
 
 	private VerticalPanel contentPane;
-
+	private Button addNewButton = new Button(TEXT_CONSTANTS.add());
+	private VerticalPanel tablePanel = new VerticalPanel();
 	@Override
 	public DataTableHeader[] getHeaders() {
 		return HEADERS;
@@ -133,13 +140,31 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		apSvc = GWT.create(AccessPointManagerService.class);
 		loadCountries();
 		scoringTable.setVisible(false);
-		scrollP.add(scoringTable);
+		tablePanel.add(scoringTable);
+		tablePanel.add(addNewButton);
+		addNewButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				addNewRow();
+			}
+
+		});
+		scrollP.add(tablePanel);
 		scrollP.setAlwaysShowScrollBars(true);
 		scrollP.setWidth("1800px");
 		mainVPanel.add(scrollP);
 		requestScoringData();
 	}
 
+	private void addNewRow() {
+		Grid grid = scoringTable.getGrid();
+		if(grid!=null){
+			Integer rowCount=grid.getRowCount();
+			bindRow(grid,null,rowCount);
+		}
+	}
+	
 	private void loadCountries() {
 		apSvc.listCountryCodes(new AsyncCallback<List<String>>() {
 
@@ -220,63 +245,85 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (item.getPointType() != null) {
 			if (item.getPointType().equals("WATER_POINT")) {
 				pointType.setSelectedIndex(1);
-			}else if(item.getPointType().equals("Sanitation")){
+			} else if (item.getPointType().equals("Sanitation")) {
 				pointType.setSelectedIndex(2);
-			}else if(item.getPointType().equals("Household")){
+			} else if (item.getPointType().equals("Household")) {
 				pointType.setSelectedIndex(3);
-			}else{
+			} else {
 				pointType.setSelectedIndex(4);
 			}
 			// ToDo complete
 		}
 		grid.setWidget(row, 3, pointType);
+
+		// DisplayName
+		TextBox displayName = new TextBox();
+		if (item.getDisplayName() != null) {
+			displayName.setText(item.getDisplayName());
+		}
+		grid.setWidget(row, 4, displayName);
+
 		// evalField
 		ListBox fields = new ListBox();
 		fields.addItem(" ");
 		fields.setSelectedIndex(0);
-		int ifield=1;
+		int ifield = 1;
 		if (objectAttributes.size() > 0) {
 			for (String field : objectAttributes) {
 				fields.addItem(field);
-				if(item.getEvaluateField()!=null){
-					if(item.getEvaluateField().toLowerCase().trim().equals(field.toLowerCase())){
+				if (item.getEvaluateField() != null) {
+					if (item.getEvaluateField().toLowerCase().trim()
+							.equals(field.toLowerCase())) {
 						fields.setSelectedIndex(i);
 					}
 				}
 				++ifield;
 			}
 		}
-		grid.setWidget(row, 4, fields);
+		grid.setWidget(row, 5, fields);
 		// criteriatype
 
-		configureCriteriaTypeBox(item, grid, row, 5);
+		configureCriteriaTypeBox(item, grid, row, 6);
 
 		// positivecriteria
 		TextBox positiveCriteria = new TextBox();
 		if (item.getPositiveCriteria() != null) {
 			positiveCriteria.setText(item.getPositiveCriteria());
 		}
-		grid.setWidget(row, 6, positiveCriteria);
+		grid.setWidget(row, 7, positiveCriteria);
 		// positiveoperator
+
+		TextBox positiveScore = new TextBox();
+		if (item.getPositiveScore() != null) {
+			positiveScore.setText(item.getPositiveScore().toString());
+		}
+		grid.setWidget(row, 9, positiveScore);
+
 		// negativecriteria
 		TextBox negativeCriteria = new TextBox();
 		if (item.getNegativeCriteria() != null) {
 			negativeCriteria.setText(item.getNegativeCriteria());
 		}
-		grid.setWidget(row, 8, negativeCriteria);
+		grid.setWidget(row, 10, negativeCriteria);
+
+		TextBox negativeScore = new TextBox();
+		if (item.getNegativeScore() != null) {
+			negativeScore.setText(item.getNegativeScore().toString());
+		}
+		grid.setWidget(row, 12, negativeScore);
 
 		// effectivestartdate
 		DateBox effectiveStartDate = new DateBox();
 		if (item.getEffectiveStartDate() != null) {
 			effectiveStartDate.setValue(item.getEffectiveStartDate());
 		}
-		grid.setWidget(row, 10, effectiveStartDate);
+		grid.setWidget(row, 13, effectiveStartDate);
 		// effectiveenddate
 		DateBox effectiveEndDate = new DateBox();
 		if (item.getEffectiveEndDate() != null) {
 			effectiveEndDate.setValue(item.getEffectiveEndDate());
 		}
-		grid.setWidget(row, 11, effectiveEndDate);
+		grid.setWidget(row, 14, effectiveEndDate);
 		HorizontalPanel hpanel = new HorizontalPanel();
 		Button saveButton = new Button();
 		saveButton.setText(TEXT_CONSTANTS.save());
@@ -286,7 +333,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		deleteButton.setTitle(String.valueOf(row) + "|" + item.getKeyId());
 		hpanel.add(saveButton);
 		hpanel.add(deleteButton);
-		grid.setWidget(row, 12, hpanel);
+		grid.setWidget(row, 15, hpanel);
 
 		saveButton.addClickHandler(new ClickHandler() {
 
@@ -309,30 +356,32 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 
 		});
-		
-		deleteButton.addClickHandler(new ClickHandler(){
+
+		deleteButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Button deleteButton = (Button)event.getSource();
+				Button deleteButton = (Button) event.getSource();
 				String title = deleteButton.getTitle();
 				Integer row = Integer.parseInt(title.split("\\|")[0]);
 				Long keyId = Long.parseLong(title.split("\\|")[1]);
-				svc.delete(keyId, new AsyncCallback(){
+				svc.delete(keyId, new AsyncCallback() {
 
 					@Override
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
-						
+
 					}
 
 					@Override
 					public void onSuccess(Object result) {
 						Grid grid = scoringTable.getGrid();
-						//ToDo:  Fix this
-						//grid.removeRow(row);
-					}});
-			}});
+						// ToDo: Fix this
+						// grid.removeRow(row);
+					}
+				});
+			}
+		});
 	}
 
 	private StandardScoringDto formStandardScoringDto(Integer row) {
@@ -345,63 +394,79 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			item.setGlobalStandard(true);
 		}
 
-		
 		ListBox country = (ListBox) grid.getWidget(row, 1);
-		if(country.getSelectedIndex()>0){
+		if (country.getSelectedIndex() > 0) {
 			item.setCountryCode(country.getItemText(country.getSelectedIndex()));
 		}
-		
+
 		TextBox subValue = (TextBox) grid.getWidget(row, 2);
-		if(subValue.getText().trim().length()>0){
+		if (subValue.getText().trim().length() > 0) {
 			item.setSubValue(subValue.getText());
 		}
 		ListBox pointType = (ListBox) grid.getWidget(row, 3);
-		if(pointType.getSelectedIndex()==1){
+		if (pointType.getSelectedIndex() == 1) {
 			item.setPointType("WATER_POINT");
 		}
-		
-		ListBox fields = (ListBox) grid.getWidget(row, 4);
-		if(fields.getSelectedIndex()>0){
+
+		TextBox displayName = (TextBox) grid.getWidget(row, 4);
+		if (displayName.getText().trim().length() > 0) {
+			item.setDisplayName(displayName.getText().trim());
+		}
+
+		ListBox fields = (ListBox) grid.getWidget(row, 5);
+		if (fields.getSelectedIndex() > 0) {
 			item.setEvaluateField(fields.getItemText(fields.getSelectedIndex()));
 		}
-		ListBox criteriaType = (ListBox) grid.getWidget(row, 5);
-		if(criteriaType.getSelectedIndex()>0){
-			if(criteriaType.getSelectedIndex()==1){
-				//text
+		ListBox criteriaType = (ListBox) grid.getWidget(row, 6);
+		if (criteriaType.getSelectedIndex() > 0) {
+			if (criteriaType.getSelectedIndex() == 1) {
+				// text
 				item.setCriteriaType("String");
-			}else if(criteriaType.getSelectedIndex()==2){
-				//number
+			} else if (criteriaType.getSelectedIndex() == 2) {
+				// number
 				item.setCriteriaType("Number");
-			}else if(criteriaType.getSelectedIndex()==3){
-				//true/false
+			} else if (criteriaType.getSelectedIndex() == 3) {
+				// true/false
 				item.setCriteriaType("Boolean");
 			}
 		}
-		TextBox positiveCriteria = (TextBox) grid.getWidget(row, 6);
-		if(positiveCriteria.getText().trim().length()>0){
+		TextBox positiveCriteria = (TextBox) grid.getWidget(row, 7);
+		if (positiveCriteria.getText().trim().length() > 0) {
 			item.setPositiveCriteria(positiveCriteria.getText().trim());
 		}
-		ListBox positiveOp = (ListBox) grid.getWidget(row, 7);
-		if(positiveOp.getSelectedIndex()>0){
+		ListBox positiveOp = (ListBox) grid.getWidget(row, 8);
+		if (positiveOp.getSelectedIndex() > 0) {
 			String op = positiveOp.getItemText(positiveOp.getSelectedIndex());
 			item.setPositiveOperator(op);
 		}
-		TextBox negativeCriteria = (TextBox) grid.getWidget(row, 8);
-		if(negativeCriteria.getText().trim().length()>0){
+		TextBox positiveScore = (TextBox) grid.getWidget(row, 9);
+		if (positiveScore.getText().trim().length() > 0) {
+			Integer score = Integer.parseInt(positiveScore.getText().trim());
+			item.setPositiveScore(score);
+		}
+		TextBox negativeCriteria = (TextBox) grid.getWidget(row, 10);
+		if (negativeCriteria.getText().trim().length() > 0) {
 			item.setNegativeCriteria(negativeCriteria.getText());
 		}
-		ListBox negativeOp = (ListBox) grid.getWidget(row, 9);
-		if(negativeOp.getSelectedIndex()>0){
-			item.setNegativeOperator(negativeOp.getItemText(negativeOp.getSelectedIndex()));
+		ListBox negativeOp = (ListBox) grid.getWidget(row, 11);
+		if (negativeOp.getSelectedIndex() > 0) {
+			item.setNegativeOperator(negativeOp.getItemText(negativeOp
+					.getSelectedIndex()));
+		}
+
+		TextBox negativeScore = (TextBox) grid.getWidget(row, 12);
+		if (negativeScore.getText().trim().length() > 0) {
+			Integer score = Integer.parseInt(negativeScore.getText().trim());
+			item.setNegativeScore(score);
 		}
 		// effectivestartdate
-		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 10);
-		if(effectiveStartDate.getValue()!=null){
+		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 13);
+		if (effectiveStartDate.getValue() != null) {
 			item.setEffectiveStartDate(effectiveStartDate.getValue());
 		}
 		// effectiveenddate
-		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 11);
-		if(effectiveEndDate.getValue() != null){
+		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 14);
+		if (effectiveEndDate.getValue() != null) {
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
 		return item;
@@ -448,7 +513,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		criteriaType.addItem("Number");
 		criteriaType.addItem("True/False");
 		criteriaType.setSelectedIndex(0);
-		criteriaType.setTitle(row + "|" + 5);
+		criteriaType.setTitle(row + "|" + 6);
 		if (item.getCriteriaType() != null) {
 			if (item.getCriteriaType().equals("String")) {
 				criteriaType.setSelectedIndex(1);
@@ -476,12 +541,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					if (target.getSelectedIndex() == 1) {
 						loadCriteriaOperators(grid, row, column + 2, "Number",
 								currentItem.getPositiveOperator());
-						loadCriteriaOperators(grid, row, column + 4, "Number",
+						loadCriteriaOperators(grid, row, column + 5, "Number",
 								currentItem.getNegativeOperator());
 					} else {
 						loadCriteriaOperators(grid, row, column + 2,
 								"NotNumber", currentItem.getPositiveOperator());
-						loadCriteriaOperators(grid, row, column + 4,
+						loadCriteriaOperators(grid, row, column + 5,
 								"NotNumber", currentItem.getNegativeOperator());
 					}
 				}
@@ -491,23 +556,23 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		grid.setWidget(row, col, criteriaType);
 	}
 
-	private void setupOperatorListBox(StandardScoringDto item, Grid grid, Integer row, Integer column){
-		if (item.getCriteriaType()!=null) {
+	private void setupOperatorListBox(StandardScoringDto item, Grid grid,
+			Integer row, Integer column) {
+		if (item.getCriteriaType() != null) {
 			if (item.getCriteriaType().equals("Number")) {
 				loadCriteriaOperators(grid, row, column + 2, "Number",
 						currentItem.getPositiveOperator());
-				loadCriteriaOperators(grid, row, column + 4, "Number",
+				loadCriteriaOperators(grid, row, column + 5, "Number",
 						currentItem.getNegativeOperator());
 			} else {
-				loadCriteriaOperators(grid, row, column + 2,
-						"NotNumber", currentItem.getPositiveOperator());
-				loadCriteriaOperators(grid, row, column + 4,
-						"NotNumber", currentItem.getNegativeOperator());
+				loadCriteriaOperators(grid, row, column + 2, "NotNumber",
+						currentItem.getPositiveOperator());
+				loadCriteriaOperators(grid, row, column + 5, "NotNumber",
+						currentItem.getNegativeOperator());
 			}
 		}
 	}
 
-	
 	private static StandardScoringDto currentItem;
 
 	private String cursorString = "all";
