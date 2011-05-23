@@ -13,9 +13,16 @@ public class Message extends BaseDomain {
 	private String actionAbout;
 	private Long objectId; 
 	private Text message;
+	private String objectTitle;
 	private String shortMessage;
 	private String transactionUUID;
 	
+	public String getObjectTitle() {
+		return objectTitle;
+	}
+	public void setObjectTitle(String objectTitle) {
+		this.objectTitle = objectTitle;
+	}
 	public String getActionAbout() {
 		return actionAbout;
 	}

@@ -688,11 +688,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			String parentType = t.getParentType();
 			t.setParentType(null);
 			DtoMarshaller.copyToCanonical(transDomain, t);
-			t.setParentType(parentType);			
+			t.setParentType(parentType);
 			transDomain.setParentType(ParentType.valueOf(parentType));
-			if(ParentType.QUESTION_TEXT == transDomain.getParentType()){
+			if (ParentType.QUESTION_TEXT == transDomain.getParentType()) {
 				questionIdSet.add(t.getParentId());
-			}else if (ParentType.QUESTION_OPTION == transDomain.getParentType()){
+			} else if (ParentType.QUESTION_OPTION == transDomain
+					.getParentType()) {
 				questionOptionIdSet.add(t.getParentId());
 			}
 			transDomain.setLanguageCode(t.getLangCode());
@@ -711,11 +712,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			t.setKeyId(transDomain.getKey().getId());
 		}
 		translations.removeAll(deletedItems);
-		
+
 		QuestionDao questionDao = new QuestionDao();
-		for(Long optId: questionOptionIdSet){
-			QuestionOption opt = questionDao.getByKey(optId, QuestionOption.class);
-			if(opt != null){
+		for (Long optId : questionOptionIdSet) {
+			QuestionOption opt = questionDao.getByKey(optId,
+					QuestionOption.class);
+			if (opt != null) {
 				questionIdSet.add(opt.getQuestionId());
 			}
 		}
@@ -724,7 +726,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			if (question != null) {
 				saveSurveyUpdateMessage(question.getSurveyId());
 			}
-		}	
+		}
 		return translations;
 	}
 
@@ -1280,14 +1282,18 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		Message m = null;
 		List<Message> messages = messageDao.listBySubject(
 				SURVEY_UPDATE_MESSAGE_ACTION, surveyId, null);
+		Survey s = surveyDao.getByKey(surveyId);
 		if (messages != null && messages.size() > 0) {
 			m = messages.get(0);
 			m.setLastUpdateDateTime(new Date());
 		} else {
 			m = new Message();
 			m.setActionAbout(SURVEY_UPDATE_MESSAGE_ACTION);
-			m.setObjectId(surveyId);			
-			m.setShortMessage(SURVEY_UPDATE_MESSAGE);			
+			m.setObjectId(surveyId);
+			m.setShortMessage(SURVEY_UPDATE_MESSAGE);
+		}
+		if (s != null) {
+			m.setObjectTitle(s.getPath() + "/" + s.getName());
 		}
 		messageDao.save(m);
 	}
