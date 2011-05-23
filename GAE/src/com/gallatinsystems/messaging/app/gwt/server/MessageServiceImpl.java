@@ -47,4 +47,15 @@ public class MessageServiceImpl implements MessageService {
 		return response;
 	}
 
+	/**
+	 * deletes a message identified by the key passed in.
+	 * 
+	 * @param keyId
+	 */
+	public void deleteMessage(Long keyId) {
+		Message m = messageDao.getByKey(keyId);
+		if (m != null) {
+			messageDao.delete(m);
+		}
+	}
 }

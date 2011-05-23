@@ -1,5 +1,7 @@
 package com.gallatinsystems.messaging.app.gwt.client;
 
+import java.util.Date;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
@@ -17,6 +19,15 @@ public class MessageDto extends BaseDto {
 	private String objectTitle;
 	private String shortMessage;
 	private String transactionUUID;
+	private Date lastUpdateDateTime;
+
+	public Date getLastUpdateDateTime() {
+		return lastUpdateDateTime;
+	}
+
+	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+		this.lastUpdateDateTime = lastUpdateDateTime;
+	}
 
 	public String getActionAbout() {
 		return actionAbout;

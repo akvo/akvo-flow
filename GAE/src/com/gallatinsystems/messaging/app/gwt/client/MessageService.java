@@ -21,4 +21,11 @@ public interface MessageService extends RemoteService {
 	 */
 	public ResponseDto<ArrayList<MessageDto>> listMessages(String actionType,
 			Long id, String cursor);
+
+	/**
+	 * deletes a message identified by the key passed in.
+	 * 
+	 * @param keyId
+	 */
+	public void deleteMessage(Long keyId);
 }

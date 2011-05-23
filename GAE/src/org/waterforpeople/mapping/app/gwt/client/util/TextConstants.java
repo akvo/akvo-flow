@@ -514,4 +514,9 @@ public interface TextConstants extends Constants{
 	public String negativeScore();
 	public String comprehensiveReportDescription();
 	public String comprehensiveReport();
+	public String message();
+	public String surveyUpdate();
+	public String surveyAssembly();
+	public String title();
+	public String surveyChangeMessage();
 }

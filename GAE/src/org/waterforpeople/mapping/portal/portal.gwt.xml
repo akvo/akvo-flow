@@ -7,9 +7,11 @@
 	<inherits name="com.gallatinsystems.user.app.gwt.User" />
 	<inherits name="com.gallatinsystems.notification.app.gwt.NotificationSubscription" />
 	<inherits name="com.gallatinsystems.gis.app.gwt.GISSupportServices"/>
+	<inherits name="com.gallatinsystems.messaging.app.gwt.MessagingService"/>
 	<inherits name="org.waterforpeople.mapping.app.gwt.WFPServices" />
 	<inherits name="org.waterforpeople.mapping.surveyentry.surveyentrywidgets" />
 	<inherits name="com.google.gwt.visualization.Visualization" />
+	
 	<inherits name="com.google.gwt.i18n.I18N" />
 	<source path="client" />
 	<script

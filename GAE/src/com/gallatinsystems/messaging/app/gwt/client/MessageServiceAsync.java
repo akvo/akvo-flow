@@ -10,4 +10,6 @@ public interface MessageServiceAsync {
 	void listMessages(String actionType, Long id, String cursor,
 			AsyncCallback<ResponseDto<ArrayList<MessageDto>>> callback);
 
+	void deleteMessage(Long keyId, AsyncCallback<Void> callback);
+
 }
