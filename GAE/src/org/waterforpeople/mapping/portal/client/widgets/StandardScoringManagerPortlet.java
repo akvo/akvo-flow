@@ -98,6 +98,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private VerticalPanel contentPane;
 	private Button addNewButton = new Button(TEXT_CONSTANTS.add());
 	private VerticalPanel tablePanel = new VerticalPanel();
+
 	@Override
 	public DataTableHeader[] getHeaders() {
 		return HEADERS;
@@ -142,7 +143,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		scoringTable.setVisible(false);
 		tablePanel.add(scoringTable);
 		tablePanel.add(addNewButton);
-		addNewButton.addClickHandler(new ClickHandler(){
+		addNewButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -159,12 +160,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	private void addNewRow() {
 		Grid grid = scoringTable.getGrid();
-		if(grid!=null){
-			Integer rowCount=grid.getRowCount();
-			bindRow(grid,null,rowCount);
+		if (grid != null) {
+			Integer rowCount = grid.getRowCount();
+			grid.insertRow(rowCount);
+			bindRow(grid, null, rowCount);
 		}
 	}
-	
+
 	private void loadCountries() {
 		apSvc.listCountryCodes(new AsyncCallback<List<String>>() {
 
@@ -202,11 +204,15 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	@Override
 	public void bindRow(Grid grid, StandardScoringDto item, int row) {
-		currentItem = item;
+		if (item != null) {
+			currentItem = item;
+		} else {
+
+		}
 		ListBox global = new ListBox();
 		global.addItem("Global");
 		global.addItem("Local");
-		if (item.getGlobalStandard()) {
+		if (item != null && item.getGlobalStandard()) {
 			global.setSelectedIndex(0);
 		} else {
 			global.setSelectedIndex(1);
@@ -219,7 +225,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		country.setSelectedIndex(0);
 		for (String countryCode : countryCodesList) {
 			country.addItem(countryCode);
-			if (item.getCountryCode() != null) {
+			if (item != null && item.getCountryCode() != null) {
 				if (countryCode.equals(item.getCountryCode())) {
 					country.setSelectedIndex(i);
 				}
@@ -230,7 +236,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		grid.setWidget(row, 1, country);
 
 		TextBox subValue = new TextBox();
-		if (item.getSubValue() != null) {
+		if (item != null && item.getSubValue() != null) {
 			subValue.setText(item.getSubValue());
 		}
 		grid.setWidget(row, 2, subValue);
@@ -242,12 +248,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		pointType.addItem("Household");
 		pointType.addItem("Public Institution");
 		pointType.setSelectedIndex(0);
-		if (item.getPointType() != null) {
+		if (item != null && item.getPointType() != null) {
 			if (item.getPointType().equals("WATER_POINT")) {
 				pointType.setSelectedIndex(1);
-			} else if (item.getPointType().equals("Sanitation")) {
+			} else if (item.getPointType().equals("SANITATION")) {
 				pointType.setSelectedIndex(2);
-			} else if (item.getPointType().equals("Household")) {
+			} else if (item.getPointType().equals("HOUSEHOLD")) {
 				pointType.setSelectedIndex(3);
 			} else {
 				pointType.setSelectedIndex(4);
@@ -258,7 +264,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		// DisplayName
 		TextBox displayName = new TextBox();
-		if (item.getDisplayName() != null) {
+		if (item != null && item.getDisplayName() != null) {
 			displayName.setText(item.getDisplayName());
 		}
 		grid.setWidget(row, 4, displayName);
@@ -271,7 +277,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (objectAttributes.size() > 0) {
 			for (String field : objectAttributes) {
 				fields.addItem(field);
-				if (item.getEvaluateField() != null) {
+				if (item != null && item.getEvaluateField() != null) {
 					if (item.getEvaluateField().toLowerCase().trim()
 							.equals(field.toLowerCase())) {
 						fields.setSelectedIndex(i);
@@ -287,40 +293,40 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		// positivecriteria
 		TextBox positiveCriteria = new TextBox();
-		if (item.getPositiveCriteria() != null) {
+		if (item != null && item.getPositiveCriteria() != null) {
 			positiveCriteria.setText(item.getPositiveCriteria());
 		}
 		grid.setWidget(row, 7, positiveCriteria);
 		// positiveoperator
 
 		TextBox positiveScore = new TextBox();
-		if (item.getPositiveScore() != null) {
+		if (item != null && item.getPositiveScore() != null) {
 			positiveScore.setText(item.getPositiveScore().toString());
 		}
 		grid.setWidget(row, 9, positiveScore);
 
 		// negativecriteria
 		TextBox negativeCriteria = new TextBox();
-		if (item.getNegativeCriteria() != null) {
+		if (item != null && item.getNegativeCriteria() != null) {
 			negativeCriteria.setText(item.getNegativeCriteria());
 		}
 		grid.setWidget(row, 10, negativeCriteria);
 
 		TextBox negativeScore = new TextBox();
-		if (item.getNegativeScore() != null) {
+		if (item != null && item.getNegativeScore() != null) {
 			negativeScore.setText(item.getNegativeScore().toString());
 		}
 		grid.setWidget(row, 12, negativeScore);
 
 		// effectivestartdate
 		DateBox effectiveStartDate = new DateBox();
-		if (item.getEffectiveStartDate() != null) {
+		if (item != null && item.getEffectiveStartDate() != null) {
 			effectiveStartDate.setValue(item.getEffectiveStartDate());
 		}
 		grid.setWidget(row, 13, effectiveStartDate);
 		// effectiveenddate
 		DateBox effectiveEndDate = new DateBox();
-		if (item.getEffectiveEndDate() != null) {
+		if (item != null && item.getEffectiveEndDate() != null) {
 			effectiveEndDate.setValue(item.getEffectiveEndDate());
 		}
 		grid.setWidget(row, 14, effectiveEndDate);
@@ -330,7 +336,15 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		saveButton.setTitle(String.valueOf(row));
 		Button deleteButton = new Button();
 		deleteButton.setText(TEXT_CONSTANTS.delete());
-		deleteButton.setTitle(String.valueOf(row) + "|" + item.getKeyId());
+
+		Long buttonKey = null;
+		if (item != null) {
+			buttonKey = item.getKeyId();
+		} else {
+			buttonKey = -1L;
+		}
+
+		deleteButton.setTitle(String.valueOf(row) + "|" + buttonKey);
 		hpanel.add(saveButton);
 		hpanel.add(deleteButton);
 		grid.setWidget(row, 15, hpanel);
@@ -514,7 +528,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		criteriaType.addItem("True/False");
 		criteriaType.setSelectedIndex(0);
 		criteriaType.setTitle(row + "|" + 6);
-		if (item.getCriteriaType() != null) {
+		if (item != null && item.getCriteriaType() != null) {
 			if (item.getCriteriaType().equals("String")) {
 				criteriaType.setSelectedIndex(1);
 			} else if (item.getCriteriaType().equals("Number")) {
@@ -539,11 +553,16 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 				if (target.getSelectedIndex() > -1) {
 					if (target.getSelectedIndex() == 1) {
+						loadCriteriaOperators(grid, row, column + 2, "String",
+								currentItem.getPositiveOperator());
+						loadCriteriaOperators(grid, row, column + 5, "String",
+								currentItem.getNegativeOperator());
+					} else if(target.getSelectedIndex()==2){
 						loadCriteriaOperators(grid, row, column + 2, "Number",
 								currentItem.getPositiveOperator());
 						loadCriteriaOperators(grid, row, column + 5, "Number",
 								currentItem.getNegativeOperator());
-					} else {
+					}else {
 						loadCriteriaOperators(grid, row, column + 2,
 								"NotNumber", currentItem.getPositiveOperator());
 						loadCriteriaOperators(grid, row, column + 5,
