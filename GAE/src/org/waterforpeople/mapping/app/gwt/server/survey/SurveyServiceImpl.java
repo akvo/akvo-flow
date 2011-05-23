@@ -8,10 +8,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +47,8 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.messaging.dao.MessageDao;
+import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
@@ -87,6 +92,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private static final String SURVEY_S3_PROP = "surveyuploadurl";
 	private static final String SURVEY_DIR_PROP = "surveyuploaddir";
 	private static final String PUB_CACHE_PREFIX = "pubsrv";
+	private static final String SURVEY_UPDATE_MESSAGE_ACTION = "surveyUpdate";
+	private static final String SURVEY_UPDATE_MESSAGE = "Survey has been updated. Please publish it to release it to devices.";
 
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
@@ -94,10 +101,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private static final long serialVersionUID = 5557965649047558451L;
 	private SurveyDAO surveyDao;
 	private Cache cache;
+	private MessageDao messageDao;
 
 	public SurveyServiceImpl() {
 		surveyDao = new SurveyDAO();
-
+		messageDao = new MessageDao();
 		try {
 			CacheFactory cacheFactory = CacheManager.getInstance()
 					.getCacheFactory();
@@ -576,7 +584,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		QuestionDao questionDao = new QuestionDao();
 		Question question = marshalQuestion(value);
 		question = questionDao.save(question, questionGroupId);
-
+		saveSurveyUpdateMessage(question.getSurveyId());
 		return marshalQuestionDto(question);
 	}
 
@@ -596,6 +604,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		questionGroup = questionGroupDao.save(questionGroup, surveyId, null);
+		saveSurveyUpdateMessage(questionGroup.getSurveyId());
 		DtoMarshaller.copyToDto(questionGroup, dto);
 		return dto;
 	}
@@ -604,6 +613,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public List<QuestionGroupDto> saveQuestionGroups(
 			List<QuestionGroupDto> dtoList) {
 		QuestionGroupDao questionGroupDao = new QuestionGroupDao();
+		Set<Long> surveyIds = new HashSet<Long>();
 		if (dtoList != null) {
 			List<QuestionGroup> groupList = new ArrayList<QuestionGroup>();
 			int i = 0;
@@ -615,11 +625,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					questionGroup.setOrder(i);
 				}
 				groupList.add(questionGroup);
+				surveyIds.add(questionGroup.getSurveyId());
 				i++;
 			}
 			questionGroupDao.save(groupList);
 			for (int j = 0; j < groupList.size(); j++) {
 				dtoList.get(j).setKeyId(groupList.get(j).getKey().getId());
+			}
+			for (Long surveyId : surveyIds) {
+				saveSurveyUpdateMessage(surveyId);
 			}
 		}
 		return dtoList;
@@ -639,6 +653,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		canonical = surveyDao.save(canonical);
 		DtoMarshaller.copyToDto(canonical, surveyDto);
+		saveSurveyUpdateMessage(canonical.getKey().getId());
 
 		return surveyDto;
 
@@ -664,6 +679,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			List<TranslationDto> translations) {
 		TranslationDao translationDao = new TranslationDao();
 		List<TranslationDto> deletedItems = new ArrayList<TranslationDto>();
+		Set<Long> questionIdSet = new HashSet<Long>();
+		Set<Long> questionOptionIdSet = new HashSet<Long>();
 		for (TranslationDto t : translations) {
 			Translation transDomain = new Translation();
 			// need to work around marshaller's inability to translate string to
@@ -671,8 +688,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			String parentType = t.getParentType();
 			t.setParentType(null);
 			DtoMarshaller.copyToCanonical(transDomain, t);
-			t.setParentType(parentType);
+			t.setParentType(parentType);			
 			transDomain.setParentType(ParentType.valueOf(parentType));
+			if(ParentType.QUESTION_TEXT == transDomain.getParentType()){
+				questionIdSet.add(t.getParentId());
+			}else if (ParentType.QUESTION_OPTION == transDomain.getParentType()){
+				questionOptionIdSet.add(t.getParentId());
+			}
 			transDomain.setLanguageCode(t.getLangCode());
 			if (transDomain.getKey() != null
 					&& (transDomain.getText() == null || transDomain.getText()
@@ -689,6 +711,20 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			t.setKeyId(transDomain.getKey().getId());
 		}
 		translations.removeAll(deletedItems);
+		
+		QuestionDao questionDao = new QuestionDao();
+		for(Long optId: questionOptionIdSet){
+			QuestionOption opt = questionDao.getByKey(optId, QuestionOption.class);
+			if(opt != null){
+				questionIdSet.add(opt.getQuestionId());
+			}
+		}
+		for (Long questionId : questionIdSet) {
+			Question question = questionDao.getByKey(questionId);
+			if (question != null) {
+				saveSurveyUpdateMessage(question.getSurveyId());
+			}
+		}	
 		return translations;
 	}
 
@@ -986,12 +1022,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList) {
 		QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
+		Set<Long> questionIdSet = new HashSet<Long>();
 		if (helpList != null && helpList.size() > 0) {
 			Collection<QuestionHelpMedia> domainList = new ArrayList<QuestionHelpMedia>();
 			for (QuestionHelpDto dto : helpList) {
 				QuestionHelpMedia canonical = new QuestionHelpMedia();
 				DtoMarshaller.copyToCanonical(canonical, dto);
 				domainList.add(canonical);
+				questionIdSet.add(dto.getQuestionId());
 			}
 			domainList = helpDao.save(domainList);
 			helpList.clear();
@@ -999,6 +1037,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				QuestionHelpDto dto = new QuestionHelpDto();
 				DtoMarshaller.copyToDto(domain, dto);
 				helpList.add(dto);
+			}
+		}
+		QuestionDao questionDao = new QuestionDao();
+		for (Long questionId : questionIdSet) {
+			Question question = questionDao.getByKey(questionId);
+			if (question != null) {
+				saveSurveyUpdateMessage(question.getSurveyId());
 			}
 		}
 		return helpList;
@@ -1221,5 +1266,29 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		return dto;
+	}
+
+	/**
+	 * saves a Message indicating that the survey has been updated and needs to
+	 * be republished. If there is already a message of this type for the
+	 * surveyId passed in, the last update time stamp of the message is updated
+	 * instead of creating a duplicate message.
+	 * 
+	 * @param surveyId
+	 */
+	private void saveSurveyUpdateMessage(Long surveyId) {
+		Message m = null;
+		List<Message> messages = messageDao.listBySubject(
+				SURVEY_UPDATE_MESSAGE_ACTION, surveyId, null);
+		if (messages != null && messages.size() > 0) {
+			m = messages.get(0);
+			m.setLastUpdateDateTime(new Date());
+		} else {
+			m = new Message();
+			m.setActionAbout(SURVEY_UPDATE_MESSAGE_ACTION);
+			m.setObjectId(surveyId);			
+			m.setShortMessage(SURVEY_UPDATE_MESSAGE);			
+		}
+		messageDao.save(m);
 	}
 }

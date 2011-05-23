@@ -4,18 +4,17 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
+
 @PersistenceCapable
 public class Message extends BaseDomain {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7829182245275723095L;
 
-	private String actionAbout = null;
-	private Long objectId = null; 
-	private Text message = null;
-	private String transactionUUID = null;
+	private String actionAbout;
+	private Long objectId; 
+	private Text message;
+	private String shortMessage;
+	private String transactionUUID;
 	
 	public String getActionAbout() {
 		return actionAbout;
@@ -40,5 +39,13 @@ public class Message extends BaseDomain {
 	}
 	public String getTransactionUUID() {
 		return transactionUUID;
-	}	
+	}
+	
+	public String getShortMessage() {
+		return shortMessage;
+	}
+	public void setShortMessage(String shortMessage) {
+		this.shortMessage = shortMessage;
+	}
+
 }
