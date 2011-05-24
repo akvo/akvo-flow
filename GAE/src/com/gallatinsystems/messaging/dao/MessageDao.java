@@ -47,8 +47,11 @@ public class MessageDao extends BaseDAO<Message> {
 		appendNonNullParam("objectId", filterString, paramString, "Long", id,
 				paramMap);
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+		if(filterString.toString().trim().length()>0){
+			query.setFilter(filterString.toString());
+			query.declareParameters(paramString.toString());
+		}
+		query.setOrdering("lastUpdateDateTime desc");
 		prepareCursor(cursor, query);
 		List<Message> results = (List<Message>) query.executeWithMap(paramMap);
 		return results;

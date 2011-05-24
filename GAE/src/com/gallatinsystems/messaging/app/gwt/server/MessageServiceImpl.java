@@ -10,9 +10,10 @@ import com.gallatinsystems.messaging.app.gwt.client.MessageDto;
 import com.gallatinsystems.messaging.app.gwt.client.MessageService;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class MessageServiceImpl implements MessageService {
-
+public class MessageServiceImpl extends RemoteServiceServlet implements MessageService {
+	private static final long serialVersionUID = 2231511038552768648L;
 	private MessageDao messageDao;
 
 	public MessageServiceImpl() {

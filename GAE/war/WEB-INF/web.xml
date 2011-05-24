@@ -405,6 +405,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 
 
+<servlet>
+		<servlet-name>MessageRpcService</servlet-name>
+		<servlet-class>com.gallatinsystems.messaging.app.gwt.server.MessageServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MessageRpcService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/messagerpcservice</url-pattern>
+	</servlet-mapping>
+
 
 	<servlet>
 		<servlet-name>TechnologyTypeRpcService</servlet-name>

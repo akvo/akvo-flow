@@ -72,12 +72,14 @@ public class MessageViewWidget extends Composite implements
 		filterListBox.addItem("", "");
 		filterListBox.addItem(TEXT_CONSTANTS.surveyUpdate(), SURVEY_CHANGE);
 		filterListBox.addItem(TEXT_CONSTANTS.surveyAssembly(), SURVEY_ASSEMBLY);
+		filterListBox.addChangeHandler(this);
 		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.filterResults(),
 				filterListBox, null);
 		dataTable = new PaginatedDataTable<MessageDto>(DEFAULT_SORT_FIELD,
 				this, this, false);
-		contentPanel.add(dataTable);
+		contentPanel.add(dataTable);				
 		initWidget(contentPanel);
+		requestData(null,false);		
 	}
 
 	@Override
@@ -189,11 +191,11 @@ public class MessageViewWidget extends Composite implements
 	}
 
 	@Override
-	public void requestData(String cursor, final boolean isResort) {
+	public void requestData(String cursor, final boolean isResort) {		
 		final boolean isNew = (cursor == null);
 		String filter = null;
 		if (filterListBox.getSelectedIndex() > 0) {
-			filterListBox.getValue(filterListBox.getSelectedIndex());
+			filter = filterListBox.getValue(filterListBox.getSelectedIndex());
 		}
 
 		messageService.listMessages(filter, null, cursor,

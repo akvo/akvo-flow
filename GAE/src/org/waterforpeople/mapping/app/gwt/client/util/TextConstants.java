@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.util;
 
 import com.google.gwt.i18n.client.Constants;
-import com.google.gwt.safehtml.shared.SafeHtml;
 
 
 /**
@@ -519,4 +518,6 @@ public interface TextConstants extends Constants{
 	public String surveyAssembly();
 	public String title();
 	public String surveyChangeMessage();
+	public String messageViewPortletTitle();
+	public String viewMessages();
 }

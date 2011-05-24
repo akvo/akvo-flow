@@ -348,5 +348,15 @@
 		<property name="communityCode" direction="asc" />
 		<property name="pointType" direction="asc" />
 		<property name="collectionDate" direction="desc" />
-	</datastore-index>
+	</datastore-index>	
+	 <datastore-index kind="Message" ancestor="false" source="manual">
+        <property name="actionAbout" direction="asc"/>
+        <property name="objectId" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="Message" ancestor="false" source="manual">
+        <property name="actionAbout" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
+	
 </datastore-indexes>

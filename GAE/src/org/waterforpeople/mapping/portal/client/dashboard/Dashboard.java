@@ -17,6 +17,7 @@ import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DeviceFileManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
 import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
+import org.waterforpeople.mapping.portal.client.widgets.MessageViewPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.RawDataViewPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.RemoteExceptionPortlet;
@@ -286,6 +287,17 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				}
 			});
 		}
+		
+		if (getCurrentUser().hasPermission(PermissionConstants.VIEW_MESSAGES)) {
+			menu.addItem(TEXT_CONSTANTS.viewMessages(), new Command() {
+				@Override
+				public void execute() {
+					launchFullscreen(MessageViewPortlet.NAME);
+
+				}
+			});
+		}
+
 
 		menuDock.add(menu, DockPanel.WEST);
 		menuDock.add(new SimplePanel(), DockPanel.CENTER);

@@ -14,5 +14,6 @@ public class PermissionConstants {
 	public static final String RUN_REPORTS = "RUN REPORTS";
 	public static final String IMPORT_DATA = "IMPORT DATA";
 	public static final String EDIT_TOKENS = "EDIT TOKENS";
+	public static final String VIEW_MESSAGES = "VIEW MESSAGES";
 	public static final String ADMIN = "ADMIN";	
 }
