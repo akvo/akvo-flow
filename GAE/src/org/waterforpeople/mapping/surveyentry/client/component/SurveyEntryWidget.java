@@ -331,6 +331,7 @@ public class SurveyEntryWidget extends Composite implements
 		for (QuestionWidget w : questionWidgetMap.values()) {
 			w.reset();
 		}
+		existingAnswers.clear();
 		tabPanel.getTabBar().selectTab(0);
 	}
 

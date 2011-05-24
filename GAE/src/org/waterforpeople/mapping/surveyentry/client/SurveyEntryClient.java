@@ -19,11 +19,16 @@ import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Web-based client for responding to surveys. This page expects the surveyId as
@@ -35,16 +40,35 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class SurveyEntryClient implements EntryPoint, CompletionListener {
 	protected static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static final String MESSAGE_STYLE = "message";
 	private static final String TOKEN_PARAM = "token";
 	private static final String ACTIVITY_NAME = "WebSurvey";
 	private SurveyEntryWidget entryWidget;
 	private WebActivityAuthorizationServiceAsync authService;
 	private WebActivityAuthorizationDto currentAuth;
+	private Panel thankYouPanel;
+	private Button submitAnotherButton;
 
 	@Override
 	public void onModuleLoad() {
 
 		authService = GWT.create(WebActivityAuthorizationService.class);
+		thankYouPanel = new VerticalPanel();
+		Label thanks = new Label(TEXT_CONSTANTS.thankYouMessage());
+		thanks.setStylePrimaryName(MESSAGE_STYLE);
+		thankYouPanel.add(thanks);
+		submitAnotherButton = new Button(TEXT_CONSTANTS.submitAnother());
+		submitAnotherButton.setVisible(false);
+		thankYouPanel.add(submitAnotherButton);
+		submitAnotherButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				thankYouPanel.removeFromParent();
+				entryWidget.setVisible(true);
+				submitAnotherButton.setVisible(false);
+				RootPanel.get().add(entryWidget);				
+			}
+		});
 		String token = Window.Location.getParameter(TOKEN_PARAM);
 		RootPanel.get().setPixelSize(1024, 768);
 		RootPanel.get().getElement().getStyle()
@@ -175,6 +199,9 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 	@Override
 	public void operationComplete(boolean wasSuccessful,
 			Map<String, Object> payload) {
+		entryWidget.setVisible(false);
+		entryWidget.removeFromParent();
+		RootPanel.get().add(thankYouPanel);
 		if (currentAuth != null) {
 			Long count = currentAuth.getUsageCount();
 			if (count == null) {
@@ -193,13 +220,9 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 
 						@Override
 						public void onSuccess(WebActivityAuthorizationDto result) {
-							if (result != null) {
-								if (!result.isValidForAuth()) {
-									entryWidget.setVisible(false);
-									MessageDialog dia = new MessageDialog(
-											TEXT_CONSTANTS.thankYou(),
-											TEXT_CONSTANTS.thankYouMessage());
-									dia.showCentered();
+							if (result != null) {								
+								if (result.isValidForAuth()) {
+									submitAnotherButton.setVisible(true);
 								}
 							}
 						}

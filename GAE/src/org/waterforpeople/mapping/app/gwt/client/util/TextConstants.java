@@ -520,4 +520,5 @@ public interface TextConstants extends Constants{
 	public String surveyChangeMessage();
 	public String messageViewPortletTitle();
 	public String viewMessages();
+	public String submitAnother();
 }
