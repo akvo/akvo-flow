@@ -54,7 +54,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private static Boolean errorMode = null;
 	private StandardScoringManagerServiceAsync svc;
 	private static final Integer PAGE_SIZE = 40;
-	private TreeMap<String,String> objectAttributes =null;
+	private TreeMap<String, String> objectAttributes = null;
 	PaginatedDataTable<StandardScoringDto> scoringTable;
 	private VerticalPanel mainVPanel = new VerticalPanel();
 	ScrollPanel scrollP = new ScrollPanel();
@@ -190,8 +190,6 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			}
 		});
-		
-		
 
 	}
 
@@ -199,8 +197,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		Grid grid = scoringTable.getGrid();
 		if (grid != null) {
 			Integer rowCount = grid.getRowCount();
-			grid.insertRow(rowCount);
-			bindRow(grid, null, rowCount-1);
+			if (rowCount > 0) {
+				grid.insertRow(rowCount);
+			} else {
+				grid.resize(1, getHeaders().length);
+			}
+			bindRow(grid, null, rowCount);
 		}
 	}
 
@@ -312,8 +314,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		fields.setSelectedIndex(0);
 		int ifield = 1;
 		if (objectAttributes.size() > 0) {
-			for (Entry<String, String> field: objectAttributes.entrySet()) {
-				fields.addItem(field.getKey(),field.getValue());
+			for (Entry<String, String> field : objectAttributes.entrySet()) {
+				fields.addItem(field.getKey(), field.getValue());
 				if (item != null && item.getEvaluateField() != null) {
 					if (item.getEvaluateField().toLowerCase().trim()
 							.equals(field.getKey().toLowerCase())) {
@@ -441,12 +443,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private StandardScoringDto formStandardScoringDto(Integer row) {
 		StandardScoringDto item = new StandardScoringDto();
 		Grid grid = scoringTable.getGrid();
-	
-		Long scoreBucketKey = Long.parseLong(scoreBucketsBox.getValue(scoreBucketsBox.getSelectedIndex()));
-		if(scoreBucketKey!=null){
+
+		Long scoreBucketKey = Long.parseLong(scoreBucketsBox
+				.getValue(scoreBucketsBox.getSelectedIndex()));
+		if (scoreBucketKey != null) {
 			item.setScoreBucketId(scoreBucketKey);
 		}
-	
+
 		ListBox global = (ListBox) grid.getWidget(row, 0);
 		if (global.getSelectedIndex() > 0) {
 			item.setGlobalStandard(false);
@@ -668,25 +671,27 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	private ArrayList<String> loadAttributes() {
-		svc.listObjectAttributes("org.waterforpeople.mapping.domain.AccessPoint", new AsyncCallback<TreeMap<String,String>>(){
+		svc.listObjectAttributes(
+				"org.waterforpeople.mapping.domain.AccessPoint",
+				new AsyncCallback<TreeMap<String, String>>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				MessageDialog errDialog = new MessageDialog(
-						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-								.errorTracePrefix()
-								+ " "
-								+ caught.getLocalizedMessage());
-				errDialog.showCentered();
-			}
+					@Override
+					public void onFailure(Throwable caught) {
+						MessageDialog errDialog = new MessageDialog(
+								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+										.errorTracePrefix()
+										+ " "
+										+ caught.getLocalizedMessage());
+						errDialog.showCentered();
+					}
 
-			@Override
-			public void onSuccess(TreeMap<String, String> result) {
-				objectAttributes = result;
-				
-			}});
-		
-		
+					@Override
+					public void onSuccess(TreeMap<String, String> result) {
+						objectAttributes = result;
+
+					}
+				});
+
 		return null;
 	}
 
