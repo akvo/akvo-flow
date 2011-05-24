@@ -12,6 +12,12 @@ public class StandardScoreBucket extends BaseDomain {
 	private static final long serialVersionUID = 6108005961412862995L;
 	
 	private String name = null;
-	
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
 }

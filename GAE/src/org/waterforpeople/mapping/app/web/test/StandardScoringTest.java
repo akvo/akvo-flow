@@ -31,6 +31,7 @@ public class StandardScoringTest {
 		ss.setMapToObject("AccessPoint");
 		ss.setEffectiveStartDate(effectiveStartDate);
 		ss.setEffectiveEndDate(effectiveEndDate);
+		ss.setScoreBucketId(15730L);
 		ssDao.save(ss);
 
 		StandardScoring ssWaterAvail = new StandardScoring();
@@ -43,6 +44,7 @@ public class StandardScoringTest {
 		ssWaterAvail.setNegativeOperator("!=");
 		ssWaterAvail.setNegativeCriteria("true");
 		ssWaterAvail.setCriteriaType("Boolean");
+		ssWaterAvail.setScoreBucketId(15730L);
 		ssDao.save(ssWaterAvail);
 		
 		
@@ -62,6 +64,7 @@ public class StandardScoringTest {
 		ss2.setMapToObject("AccessPoint");
 		ss2.setEffectiveStartDate(effectiveStartDate);
 		ss2.setEffectiveEndDate(effectiveEndDate);
+		ss2.setScoreBucketId(15731L);
 		ssDao.save(ss2);
 		
 		StandardScoring ss4 = new StandardScoring();
@@ -80,6 +83,7 @@ public class StandardScoringTest {
 		ss4.setMapToObject("AccessPoint");
 		ss4.setEffectiveStartDate(effectiveStartDate);
 		ss4.setEffectiveEndDate(effectiveEndDate);
+		ss4.setScoreBucketId(15731L);
 		ssDao.save(ss4);
 	}
 

@@ -2,13 +2,18 @@ package org.waterforpeople.mapping.app.gwt.server.standardscoring;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoreBucketDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
+import com.gallatinsystems.common.util.ClassAttributeUtil;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.standards.dao.StandardScoringDao;
+import com.gallatinsystems.standards.domain.StandardScoreBucket;
 import com.gallatinsystems.standards.domain.StandardScoring;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -21,9 +26,14 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 	private static final long serialVersionUID = 6828550495789554024L;
 
 	@Override
-	public ResponseDto<ArrayList<StandardScoringDto>> listStandardScoring(String cursorString) {
+	public ResponseDto<ArrayList<StandardScoringDto>> listStandardScoring(Long scoreBucketId,String cursorString) {
 		StandardScoringDao ssDao = new StandardScoringDao();
-		List<StandardScoring> ssList = ssDao.list(cursorString);
+		List<StandardScoring> ssList = null;
+		if(scoreBucketId!=null){
+			ssList = ssDao.listStandardScoring(scoreBucketId);
+		}else{
+			ssList= ssDao.list(cursorString);
+		}
 		ArrayList<StandardScoringDto> ssDtoList = new ArrayList<StandardScoringDto>();
 		for(StandardScoring item: ssList){
 			StandardScoringDto dto = new StandardScoringDto();
@@ -52,4 +62,21 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 	}
 
+	@Override
+	public ArrayList<StandardScoreBucketDto> listStandardScoreBuckets() {
+		BaseDAO<StandardScoreBucket> sbDao = new BaseDAO<StandardScoreBucket>(StandardScoreBucket.class);
+		List<StandardScoreBucket> sbList = sbDao.list("all");
+		ArrayList<StandardScoreBucketDto> sbDtoList = new ArrayList<StandardScoreBucketDto>();
+		for(StandardScoreBucket canonical:sbList){
+			StandardScoreBucketDto dto = new StandardScoreBucketDto();
+			DtoMarshaller.copyToDto(canonical, dto);
+			sbDtoList.add(dto);
+		}
+		return sbDtoList;
+	}
+	@Override
+	public TreeMap<String, String> listObjectAttributes(String objectName) {
+		return ClassAttributeUtil.listObjectAttributes(objectName);
+
+	}
 }

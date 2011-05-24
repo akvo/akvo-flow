@@ -2,11 +2,12 @@ package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeService;
-import org.waterforpeople.mapping.app.gwt.client.spreadsheetmapper.SpreadsheetMappingAttributeServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoreBucketDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerServiceAsync;
@@ -27,7 +28,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -54,13 +54,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private static Boolean errorMode = null;
 	private StandardScoringManagerServiceAsync svc;
 	private static final Integer PAGE_SIZE = 40;
-	private ArrayList<String> objectAttributes = new ArrayList<String>();
+	private TreeMap<String,String> objectAttributes =null;
 	PaginatedDataTable<StandardScoringDto> scoringTable;
 	private VerticalPanel mainVPanel = new VerticalPanel();
-	SpreadsheetMappingAttributeServiceAsync svcAP;
 	ScrollPanel scrollP = new ScrollPanel();
 	private AccessPointManagerServiceAsync apSvc = null;
 	private ArrayList<String> countryCodesList = null;
+	private ListBox scoreBucketsBox = new ListBox();
 
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader(TEXT_CONSTANTS.globalStandard(),
@@ -124,11 +124,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	private void init() {
-		svcAP = (SpreadsheetMappingAttributeServiceAsync) GWT
-				.create(SpreadsheetMappingAttributeService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) svcAP;
-		endpoint.setServiceEntryPoint("/org.waterforpeople.mapping.portal.portal/spreadsheetattributemapperrpc");
-		loadAttributes();
+		svc = GWT.create(StandardScoringManagerService.class);
+		apSvc = GWT.create(AccessPointManagerService.class);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		scoringTable = new PaginatedDataTable<StandardScoringDto>(
@@ -137,10 +134,11 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		contentPane.add(header);
 		setContent(contentPane);
 		errorMode = false;
-		svc = GWT.create(StandardScoringManagerService.class);
-		apSvc = GWT.create(AccessPointManagerService.class);
+		loadAttributes();
+		loadStandardScoreBuckets();
 		loadCountries();
 		scoringTable.setVisible(false);
+		tablePanel.add(scoreBucketsBox);
 		tablePanel.add(scoringTable);
 		tablePanel.add(addNewButton);
 		addNewButton.addClickHandler(new ClickHandler() {
@@ -155,7 +153,46 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		scrollP.setAlwaysShowScrollBars(true);
 		scrollP.setWidth("1800px");
 		mainVPanel.add(scrollP);
-		requestScoringData();
+
+	}
+
+	private void loadStandardScoreBuckets() {
+		svc.listStandardScoreBuckets(new AsyncCallback<ArrayList<StandardScoreBucketDto>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onSuccess(ArrayList<StandardScoreBucketDto> result) {
+				if (result != null) {
+					for (StandardScoreBucketDto item : result) {
+						scoreBucketsBox.addItem(item.getName(), item.getKeyId()
+								.toString());
+					}
+					scoreBucketsBox.setSelectedIndex(0);
+					Long scoreBucketKey = Long.parseLong(scoreBucketsBox
+							.getValue(scoreBucketsBox.getSelectedIndex()));
+					requestScoringData(scoreBucketKey);
+				}
+			}
+		});
+		scoreBucketsBox.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				ListBox scoreBuckets = (ListBox) event.getSource();
+				Long scoreBucketKey = Long.parseLong(scoreBuckets
+						.getValue(scoreBuckets.getSelectedIndex()));
+				requestScoringData(scoreBucketKey);
+
+			}
+		});
+		
+		
+
 	}
 
 	private void addNewRow() {
@@ -163,7 +200,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (grid != null) {
 			Integer rowCount = grid.getRowCount();
 			grid.insertRow(rowCount);
-			bindRow(grid, null, rowCount);
+			bindRow(grid, null, rowCount-1);
 		}
 	}
 
@@ -275,11 +312,11 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		fields.setSelectedIndex(0);
 		int ifield = 1;
 		if (objectAttributes.size() > 0) {
-			for (String field : objectAttributes) {
-				fields.addItem(field);
+			for (Entry<String, String> field: objectAttributes.entrySet()) {
+				fields.addItem(field.getKey(),field.getValue());
 				if (item != null && item.getEvaluateField() != null) {
 					if (item.getEvaluateField().toLowerCase().trim()
-							.equals(field.toLowerCase())) {
+							.equals(field.getKey().toLowerCase())) {
 						fields.setSelectedIndex(i);
 					}
 				}
@@ -379,6 +416,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				String title = deleteButton.getTitle();
 				Integer row = Integer.parseInt(title.split("\\|")[0]);
 				Long keyId = Long.parseLong(title.split("\\|")[1]);
+				selectedRow = row;
 				svc.delete(keyId, new AsyncCallback() {
 
 					@Override
@@ -390,17 +428,25 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					@Override
 					public void onSuccess(Object result) {
 						Grid grid = scoringTable.getGrid();
-						// ToDo: Fix this
-						// grid.removeRow(row);
+						grid.removeRow(selectedRow);
+						selectedRow = null;
 					}
 				});
 			}
 		});
 	}
 
+	private static Integer selectedRow = null;
+
 	private StandardScoringDto formStandardScoringDto(Integer row) {
 		StandardScoringDto item = new StandardScoringDto();
 		Grid grid = scoringTable.getGrid();
+	
+		Long scoreBucketKey = Long.parseLong(scoreBucketsBox.getValue(scoreBucketsBox.getSelectedIndex()));
+		if(scoreBucketKey!=null){
+			item.setScoreBucketId(scoreBucketKey);
+		}
+	
 		ListBox global = (ListBox) grid.getWidget(row, 0);
 		if (global.getSelectedIndex() > 0) {
 			item.setGlobalStandard(false);
@@ -429,7 +475,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		ListBox fields = (ListBox) grid.getWidget(row, 5);
 		if (fields.getSelectedIndex() > 0) {
-			item.setEvaluateField(fields.getItemText(fields.getSelectedIndex()));
+			item.setEvaluateField(fields.getValue(fields.getSelectedIndex()));
 		}
 		ListBox criteriaType = (ListBox) grid.getWidget(row, 6);
 		if (criteriaType.getSelectedIndex() > 0) {
@@ -557,12 +603,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 								currentItem.getPositiveOperator());
 						loadCriteriaOperators(grid, row, column + 5, "String",
 								currentItem.getNegativeOperator());
-					} else if(target.getSelectedIndex()==2){
+					} else if (target.getSelectedIndex() == 2) {
 						loadCriteriaOperators(grid, row, column + 2, "Number",
 								currentItem.getPositiveOperator());
 						loadCriteriaOperators(grid, row, column + 5, "Number",
 								currentItem.getNegativeOperator());
-					}else {
+					} else {
 						loadCriteriaOperators(grid, row, column + 2,
 								"NotNumber", currentItem.getPositiveOperator());
 						loadCriteriaOperators(grid, row, column + 5,
@@ -596,8 +642,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	private String cursorString = "all";
 
-	private void requestScoringData() {
+	private void requestScoringData(Long scoreBucketKey) {
 		svc.listStandardScoring(
+				scoreBucketKey,
 				cursorString,
 				new AsyncCallback<ResponseDto<ArrayList<StandardScoringDto>>>() {
 					Boolean isNew = false;
@@ -621,25 +668,25 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	private ArrayList<String> loadAttributes() {
-		svcAP.listObjectAttributes(null,
-				new AsyncCallback<ArrayList<String>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						MessageDialog errDialog = new MessageDialog(
-								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-										.errorTracePrefix()
-										+ " "
-										+ caught.getLocalizedMessage());
-						errDialog.showCentered();
-					}
+		svc.listObjectAttributes("org.waterforpeople.mapping.domain.AccessPoint", new AsyncCallback<TreeMap<String,String>>(){
 
-					@Override
-					public void onSuccess(ArrayList<String> result) {
-						objectAttributes = result;
+			@Override
+			public void onFailure(Throwable caught) {
+				MessageDialog errDialog = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " "
+								+ caught.getLocalizedMessage());
+				errDialog.showCentered();
+			}
 
-					}
-
-				});
+			@Override
+			public void onSuccess(TreeMap<String, String> result) {
+				objectAttributes = result;
+				
+			}});
+		
+		
 		return null;
 	}
 

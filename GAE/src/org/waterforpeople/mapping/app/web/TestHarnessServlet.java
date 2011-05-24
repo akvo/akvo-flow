@@ -114,6 +114,7 @@ import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
+import com.gallatinsystems.standards.domain.StandardScoreBucket;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
@@ -513,6 +514,19 @@ public class TestHarnessServlet extends HttpServlet {
 				resp.getWriter().print(outString);
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "Could not execute test", e);
+			}
+		} else if ("populateScoreBuckets".equals(action)) {
+			BaseDAO<StandardScoreBucket> scDao = new BaseDAO<StandardScoreBucket>(
+					StandardScoreBucket.class);
+			ArrayList<String> scoreBuckets = new ArrayList<String>();
+			scoreBuckets.add("WATERPOINTLEVELOFSERVICE");
+			scoreBuckets.add("WATERPOINTSUSTAINABILITY");
+			scoreBuckets.add("PUBLICINSTITUTIONLEVELOFSERVICE");
+			scoreBuckets.add("PUBLICINSTITUTIONSUSTAINABILITY");
+			for(String item:scoreBuckets){
+				StandardScoreBucket sbucket = new StandardScoreBucket();
+				sbucket.setName(item);
+				scDao.save(sbucket);
 			}
 		} else if ("testSaveRegion".equals(action)) {
 			GeoRegionHelper geoHelp = new GeoRegionHelper();
@@ -1564,8 +1578,8 @@ public class TestHarnessServlet extends HttpServlet {
 		savePerm("Upload Survey Data", permList, userDao);
 		savePerm("Edit Raw Data", permList, userDao);
 		savePerm("Admin", permList, userDao);
-		savePerm("Publish Survey", permList,userDao);
-		savePerm("Run Reports", permList,userDao);
+		savePerm("Publish Survey", permList, userDao);
+		savePerm("Run Reports", permList, userDao);
 		savePerm("View Messages",permList,userDao);
 	}
 

@@ -20,6 +20,12 @@ public class StandardScoringDao extends BaseDAO<StandardScoring> {
 		ssList = super.listByProperty("pointType", ap.getPointType(), "String");
 		return ssList;
 	}
+	
+	public List<StandardScoring> listStandardScoring(Long scoreBucketId){
+		List<StandardScoring> ssList = new ArrayList<StandardScoring>();
+		ssList = super.listByProperty("scoreBucketId", scoreBucketId, "Long");
+		return ssList;
+	}
 
 	public StandardScoring save(StandardScoring item) {
 		return super.saveOrUpdate(item);
