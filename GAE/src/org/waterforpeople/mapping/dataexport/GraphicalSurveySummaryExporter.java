@@ -23,6 +23,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
@@ -110,7 +112,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		TOTAL_LABEL = new HashMap<String, String>();
 		TOTAL_LABEL.put("en", "Total");
 		TOTAL_LABEL.put("es", "Suma");
-		
 
 		REPORT_HEADER = new HashMap<String, String>();
 		REPORT_HEADER.put("en", "Survey Summary Report");
@@ -152,16 +153,22 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private HSSFCellStyle headerStyle;
 	private String locale;
 	private String imagePrefix;
+	private String serverBase;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase, Map<String, String> options) {
 		processOptions(options);
-
+		this.serverBase = serverBase;
 		PrintWriter pw = null;
 		try {
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
 					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
+			if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
+				// if we are using some other locale, we need to check for
+				// translations
+				loadFullQuestions(questionMap);
+			}
 			if (questionMap.size() > 0) {
 				HSSFWorkbook wb = new HSSFWorkbook();
 				headerStyle = wb.createCellStyle();
@@ -292,8 +299,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (entry.getValue() != null) {
 					for (QuestionDto q : entry.getValue()) {
 						questionIdList.add(q.getKeyId().toString());
-						createCell(row, offset++, q.getKeyId().toString() + "|"
-								+ q.getText().replaceAll("\n", "").trim(),
+						createCell(
+								row,
+								offset++,
+								q.getKeyId().toString()
+										+ "|"
+										+ getLocalizedText(q.getText(),
+												q.getTranslationMap())
+												.replaceAll("\n", "").trim(),
 								headerStyle);
 						if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
 								.getType())) {
@@ -346,15 +359,23 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					// span the question heading over the data table
 					sheet.addMergedRegion(new CellRangeAddress(curRow - 1,
 							curRow - 1, 0, 2));
-					createCell(row, 0, question.getText(), headerStyle);
+					createCell(
+							row,
+							0,
+							getLocalizedText(question.getText(),
+									question.getTranslationMap()), headerStyle);
 					DescriptiveStats stats = summaryModel
 							.getDescriptiveStatsForQuestion(
 									question.getKeyId(), sector);
 					if (stats != null && stats.getSampleCount() > 0) {
 						sheet.addMergedRegion(new CellRangeAddress(curRow - 1,
 								curRow - 1, 4, 5));
-						createCell(row, 4, question.getText(), headerStyle);
-						createCell(row, 5, question.getText(), headerStyle);
+						createCell(
+								row,
+								4,
+								getLocalizedText(question.getText(),
+										question.getTranslationMap()),
+								headerStyle);
 					}
 					row = getRow(curRow++, sheet);
 					createCell(row, 1, FREQ_LABEL.get(locale), headerStyle);
@@ -370,9 +391,22 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					int firstOptRow = curRow;
 					for (Entry<String, Long> count : counts.entrySet()) {
 						row = getRow(curRow++, sheet);
-						createCell(row, 0, count.getKey(), null);
+						String labelText = count.getKey();
+						if (QuestionType.OPTION == question.getType() && !DEFAULT_LOCALE.equals(locale)){							
+							//see if we have a translation for this option
+							if(question.getOptionContainerDto()!=null && question.getOptionContainerDto().getOptionsList()!=null){
+								for(QuestionOptionDto opt: question.getOptionContainerDto().getOptionsList()){
+									if(opt.getText()!=null && opt.getText().trim().equalsIgnoreCase(labelText)){
+										labelText = getLocalizedText(labelText, opt.getTranslationMap());
+										break;
+									}
+								}							
+							}
+						}
+						createCell(row, 0, labelText, null);						
 						createCell(row, 1, count.getValue().toString(), null);
-						labels.add(count.getKey());
+						
+						labels.add(labelText);
 						values.add(count.getValue().toString());
 						sampleTotal += count.getValue();
 					}
@@ -434,9 +468,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					if (labels.size() > 0) {
 						// now insert the graph
 						int indx = wb.addPicture(JFreechartChartUtil
-								.getPieChart(labels, values,
-										question.getText(), CHART_WIDTH,
-										CHART_HEIGHT),
+								.getPieChart(
+										labels,
+										values,
+										getLocalizedText(question.getText(),
+												question.getTranslationMap()),
+										CHART_WIDTH, CHART_HEIGHT),
 								HSSFWorkbook.PICTURE_TYPE_PNG);
 						HSSFClientAnchor anchor;
 						anchor = new HSSFClientAnchor(0, 0, 0, 255, (short) 6,
@@ -471,7 +508,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		if (value != null) {
 			cell.setCellValue(value);
 		}
-
+		
 		return cell;
 	}
 
@@ -507,10 +544,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 		if (locale != null) {
 			locale = locale.trim().toLowerCase();
-			if(DEFAULT.equalsIgnoreCase(locale)){
+			if (DEFAULT.equalsIgnoreCase(locale)) {
 				locale = DEFAULT_LOCALE;
 			}
-			
+
 		} else {
 			locale = DEFAULT_LOCALE;
 		}
@@ -519,6 +556,53 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		} else {
 			imagePrefix = DEFAULT_IMAGE_PREFIX;
 		}
-		System.out.println("Using Options:\n\t"+locale+"\n\t"+imagePrefix);
+	}
+
+	/**
+	 * call the server to augment the data already loaded in each QuestionDto in
+	 * the map passed in.
+	 * 
+	 * @param questionMap
+	 */
+	private void loadFullQuestions(
+			Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
+		for (List<QuestionDto> questionList : questionMap.values()) {
+			for (int i = 0; i < questionList.size(); i++) {
+				try {
+					QuestionDto newQ = BulkDataServiceClient
+							.loadQuestionDetails(serverBase, questionList
+									.get(i).getKeyId());
+					if (newQ != null) {
+						questionList.set(i, newQ);
+					}
+				} catch (Exception e) {
+					System.err.println("Could not fetch question details");
+					e.printStackTrace(System.err);
+				}
+			}
+		}
+	}
+
+	/**
+	 * uses the locale and the translation map passed in to determine what value
+	 * to use for the string
+	 * 
+	 * @param text
+	 * @param translationMap
+	 * @return
+	 */
+	private String getLocalizedText(String text,
+			Map<String, TranslationDto> translationMap) {
+		TranslationDto trans = null;
+		if (translationMap != null) {
+			trans = translationMap.get(locale);
+		}
+		if (trans != null && trans.getText() != null
+				&& trans.getText().trim().length() > 0) {
+			return trans.getText();
+		} else {
+			return text;
+
+		}
 	}
 }
