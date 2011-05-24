@@ -271,7 +271,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 				instanceGrid.resize(2, binder.getHeaders().length);
 				loadHeaderRow();
 			}
-			binder.bindRow(instanceGrid, null, rowCount);
+			binder.bindRow(instanceGrid, null, instanceGrid.getRowCount()-1);
 		}
 	}
 
