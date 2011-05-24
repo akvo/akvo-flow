@@ -145,9 +145,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				addNewRow();
+				scoringTable.addNewRow();
 			}
-
 		});
 		scrollP.add(tablePanel);
 		scrollP.setAlwaysShowScrollBars(true);
@@ -191,19 +190,6 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 		});
 
-	}
-
-	private void addNewRow() {
-		Grid grid = scoringTable.getGrid();
-		if (grid != null) {
-			Integer rowCount = grid.getRowCount();
-			if (rowCount > 0) {
-				grid.insertRow(rowCount);
-			} else {
-				grid.resize(1, getHeaders().length);
-			}
-			bindRow(grid, null, rowCount);
-		}
 	}
 
 	private void loadCountries() {

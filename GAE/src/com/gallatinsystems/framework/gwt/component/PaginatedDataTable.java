@@ -30,9 +30,9 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		ClickHandler {
 	private static FrameworkTextConstants TEXT_CONSTANTS = GWT
-	.create(FrameworkTextConstants.class);
+			.create(FrameworkTextConstants.class);
 
-	public static final String ASC_SORT = "asc";	
+	public static final String ASC_SORT = "asc";
 	public static final String DSC_SORT = "desc";
 	private static final String HEADER_CSS = "datatable-header";
 	private static final String DOWN_IMG = "images/downarrow.gif";
@@ -44,6 +44,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private String currentSortField;
 	private String defaultSortField;
 	private int currentSelection;
+
 	public int getCurrentSelection() {
 		return currentSelection;
 	}
@@ -51,6 +52,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	public void setCurrentSelection(int currentSelection) {
 		this.currentSelection = currentSelection;
 	}
+
 	private List<String> cursorArray;
 	private Grid instanceGrid;
 	private int currentPage;
@@ -63,8 +65,8 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private VerticalPanel contentPanel;
 	private boolean rowClickable;
 	private boolean sortOverriden;
-	
-	public Grid getGrid(){
+
+	public Grid getGrid() {
 		return instanceGrid;
 	}
 
@@ -255,6 +257,25 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	}
 
 	/**
+	 * adds a new row to the bottom of this grid and calls bindData on the new
+	 * row, passing null for the instance value. This method can be used to
+	 * support in-table editors where the user can click "add" to create a new
+	 * item in-place.
+	 */
+	public void addNewRow() {
+		if (instanceGrid != null) {
+			Integer rowCount = instanceGrid.getRowCount();
+			if (rowCount > 0) {
+				instanceGrid.insertRow(rowCount);
+			} else {
+				instanceGrid.resize(2, binder.getHeaders().length);
+				loadHeaderRow();
+			}
+			binder.bindRow(instanceGrid, null, rowCount);
+		}
+	}
+
+	/**
 	 * populates the data grid with the dtos passed in
 	 * 
 	 * @param dtoList
@@ -288,7 +309,8 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 			statusLabel.setText(TEXT_CONSTANTS.noMatches());
 			statusLabel.setVisible(true);
 		}
-		if (currentDtoList != null && currentDtoList.size() >= binder.getPageSize()) {
+		if (currentDtoList != null
+				&& currentDtoList.size() >= binder.getPageSize()) {
 			nextButton.setVisible(true);
 		} else {
 			nextButton.setVisible(false);
@@ -363,7 +385,8 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		instanceGrid.setWidget(rowCount, 0, w);
 
 	}
-	public void removeRow(Integer row){
+
+	public void removeRow(Integer row) {
 		instanceGrid.removeRow(row);
 	}
 }
