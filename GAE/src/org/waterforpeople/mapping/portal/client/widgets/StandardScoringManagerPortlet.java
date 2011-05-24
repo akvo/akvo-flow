@@ -19,6 +19,7 @@ import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -232,7 +233,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (item != null) {
 			currentItem = item;
 		} else {
-
+			currentItem = new StandardScoringDto();
 		}
 		ListBox global = new ListBox();
 		global.addItem("Global");
@@ -558,19 +559,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			Integer row, Integer col) {
 		ListBox criteriaType = new ListBox();
 		criteriaType.addItem(" ");
-		criteriaType.addItem("Text");
-		criteriaType.addItem("Number");
-		criteriaType.addItem("True/False");
+		criteriaType.addItem("Text","String");
+		criteriaType.addItem("Number","Number");
+		criteriaType.addItem("True/False","Boolean");
 		criteriaType.setSelectedIndex(0);
 		criteriaType.setTitle(row + "|" + 6);
 		if (item != null && item.getCriteriaType() != null) {
-			if (item.getCriteriaType().equals("String")) {
-				criteriaType.setSelectedIndex(1);
-			} else if (item.getCriteriaType().equals("Number")) {
-				criteriaType.setSelectedIndex(2);
-			} else if (item.getCriteriaType().equals("Boolean")) {
-				criteriaType.setSelectedIndex(3);
-			}
+			ViewUtil.setListboxSelection(criteriaType,  item.getCriteriaType());			
 			setupOperatorListBox(item, grid, row, col);
 		}
 

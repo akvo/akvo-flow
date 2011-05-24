@@ -268,6 +268,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 			if (rowCount > 0) {
 				instanceGrid.insertRow(rowCount);
 			} else {
+				statusLabel.setVisible(false);
 				instanceGrid.resize(2, binder.getHeaders().length);
 				loadHeaderRow();
 			}
