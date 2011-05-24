@@ -44,7 +44,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 	 */
 	@Override
 	public void export(Map<String, String> criteria, File file,
-			String serverBase) {
+			String serverBase, Map<String,String> options) {
 
 		PrintWriter pw = null;
 		try {

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
@@ -25,6 +26,7 @@ public class RunReportWidget extends MenuBasedWidget {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static UploadConstants UPLOAD_CONSTANTS = GWT.create(UploadConstants.class);
 	private Grid grid;
 	private Panel appletPanel;
 	private Panel contentPanel;
@@ -167,12 +169,13 @@ public class RunReportWidget extends MenuBasedWidget {
 			html.setHTML(appletString);
 			appletPanel.add(html);
 		}else if (eventSource == comprehensiveReportButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,common-applet-1.0-SNAPSHOT.jar,common-service-1.0-SNAPSHOT.jar,poi-3.5-signed.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.5-signed.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='GRAPHICAL_SURVEY_SUMMARY'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
 					+ ">";
+			appletString+= "<PARAM name='options' value='locale="+com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().getLocaleName()+";imgPrefix="+UPLOAD_CONSTANTS.uploadUrl()+UPLOAD_CONSTANTS.imageS3Path()+"/'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);

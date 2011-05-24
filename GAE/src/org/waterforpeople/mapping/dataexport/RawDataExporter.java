@@ -30,7 +30,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void export(Map<String, String> criteria, File fileName,
-			String serverBase) {
+			String serverBase, Map<String,String> options) {
 		this.serverBase = serverBase;
 		surveyId = criteria.get(SURVEY_ID);
 		PrintWriter pw = null;

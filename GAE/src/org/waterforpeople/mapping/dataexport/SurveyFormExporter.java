@@ -48,7 +48,7 @@ public class SurveyFormExporter implements DataExporter {
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
-			String serverBase) {
+			String serverBase, Map<String,String> options) {
 		try {
 			populateQuestionMap(criteria.get(SURVEY_ID_KEY), serverBase);
 			writeSurvey(surveyTitle, fileName, groupList, questionMap);

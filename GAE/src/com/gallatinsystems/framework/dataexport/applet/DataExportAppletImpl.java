@@ -21,6 +21,7 @@ public class DataExportAppletImpl extends JApplet {
 	private static final String CRITERIA_PARAM = "criteria";
 	private static final String FACTORY_PARAM = "factoryClass";
 	private static final String SERVER_BASE_OVERRIDE_PARAM = "serverOverride";
+	private static final String OPTIONS_PARAM = "options";
 	private JLabel statusLabel;
 	private DataImportExportFactory dataExporterFactory;
 
@@ -29,6 +30,7 @@ public class DataExportAppletImpl extends JApplet {
 		getContentPane().add(statusLabel);
 		String type = getParameter(EXPORT_TYPE_PARAM);
 		Map<String, String> criteria = parseCriteria(getParameter(CRITERIA_PARAM));
+		Map<String,String> options = parseCriteria(getParameter(OPTIONS_PARAM));
 		String factoryClass = getParameter(FACTORY_PARAM);
 		String serverBase = getParameter(SERVER_BASE_OVERRIDE_PARAM);
 		if(serverBase == null || serverBase.trim().length()==0){
@@ -44,7 +46,7 @@ public class DataExportAppletImpl extends JApplet {
 				e.printStackTrace(System.err);
 			}
 		}
-		doExport(type, criteria, serverBase);
+		doExport(type, criteria, serverBase, options);
 	}
 
 	private Map<String, String> parseCriteria(String source) {
@@ -62,7 +64,7 @@ public class DataExportAppletImpl extends JApplet {
 	}
 
 	public void doExport(String type, Map<String, String> criteriaMap,
-			String serverBase) {
+			String serverBase, Map<String,String> options) {
 		JFileChooser chooser = new JFileChooser();
 
 		chooser.showSaveDialog(this);
@@ -73,7 +75,7 @@ public class DataExportAppletImpl extends JApplet {
 				serverBase = serverBase.trim().substring(0,
 						serverBase.lastIndexOf("/"));
 			}
-			exporter.export(criteriaMap, chooser.getSelectedFile(), serverBase);
+			exporter.export(criteriaMap, chooser.getSelectedFile(), serverBase, options);
 			statusLabel.setText("Export Complete");
 		}
 

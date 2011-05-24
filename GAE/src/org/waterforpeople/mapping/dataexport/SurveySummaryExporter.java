@@ -50,7 +50,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
-			String serverBase) {
+			String serverBase, Map<String,String> options) {
 		InputDialog dia = new InputDialog();
 		PrintWriter pw = null;
 		try {
