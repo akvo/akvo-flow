@@ -288,10 +288,9 @@ public class BulkDataServiceClient {
 		return values;
 	}
 	
-	public static void main(String[] args){
-		BulkDataServiceClient bds = new BulkDataServiceClient();
+	public static void main(String[] args){		
 		try {
-			bds.fetchInstanceIds(args[1], args[0]);
+			BulkDataServiceClient.fetchInstanceIds(args[1], args[0]);			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
