@@ -392,20 +392,45 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					for (Entry<String, Long> count : counts.entrySet()) {
 						row = getRow(curRow++, sheet);
 						String labelText = count.getKey();
-						if (QuestionType.OPTION == question.getType() && !DEFAULT_LOCALE.equals(locale)){							
-							//see if we have a translation for this option
-							if(question.getOptionContainerDto()!=null && question.getOptionContainerDto().getOptionsList()!=null){
-								for(QuestionOptionDto opt: question.getOptionContainerDto().getOptionsList()){
-									if(opt.getText()!=null && opt.getText().trim().equalsIgnoreCase(labelText)){
-										labelText = getLocalizedText(labelText, opt.getTranslationMap());
-										break;
+						StringBuilder builder = new StringBuilder();
+						if (QuestionType.OPTION == question.getType()
+								&& !DEFAULT_LOCALE.equals(locale)) {
+							String[] tokens = labelText.split("\\|");
+							// see if we have a translation for this option							
+							for (int i = 0; i < tokens.length; i++) {
+								if(i>0){
+									builder.append("|");
+								}
+								if (question.getOptionContainerDto() != null
+										&& question.getOptionContainerDto()
+												.getOptionsList() != null) {
+									boolean found = false;
+									for (QuestionOptionDto opt : question
+											.getOptionContainerDto()
+											.getOptionsList()) {
+										if (opt.getText() != null
+												&& opt.getText()
+														.trim()
+														.equalsIgnoreCase(
+																tokens[i])) {
+											builder.append(getLocalizedText(
+													tokens[i],
+													opt.getTranslationMap()));
+											found = true;
+											break;
+										}
 									}
-								}							
+									if(!found){
+										builder.append(tokens[i]);
+									}
+								}
 							}
+						}else{
+							builder.append(labelText);
 						}
-						createCell(row, 0, labelText, null);						
+						createCell(row, 0, builder.toString(), null);
 						createCell(row, 1, count.getValue().toString(), null);
-						
+
 						labels.add(labelText);
 						values.add(count.getValue().toString());
 						sampleTotal += count.getValue();
@@ -508,7 +533,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		if (value != null) {
 			cell.setCellValue(value);
 		}
-		
+
 		return cell;
 	}
 
