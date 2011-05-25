@@ -909,7 +909,7 @@ public class BulkDataServiceClient {
 			conn.setDoOutput(true);
 
 			reader = new BufferedReader(new InputStreamReader(conn
-					.getInputStream()));
+					.getInputStream(), "UTF-8"));
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 

@@ -123,7 +123,7 @@ public class SurveyEntryWidget extends Composite implements
 
 	private void displayErrorMessage(Throwable caught) {
 		loadingDialog.hide();
-		MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+caught!=null?caught.getLocalizedMessage():"");				
+		MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS.error(),TEXT_CONSTANTS.errorTracePrefix()+" "+(caught!=null?caught.getLocalizedMessage():""));				
 		errDia.showCentered();
 	}
 

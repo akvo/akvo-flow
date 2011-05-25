@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
@@ -234,7 +235,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				.listQuestionsByQuestionGroup(item.getKey().getId(), true);
 
 		StringBuilder sb = new StringBuilder("<questionGroup><heading>")
-				.append(group.getCode()).append("</heading>");
+				.append(StringEscapeUtils.escapeXml(group.getCode())).append("</heading>");
 		int count = 0;
 
 		if (questionList != null) {
