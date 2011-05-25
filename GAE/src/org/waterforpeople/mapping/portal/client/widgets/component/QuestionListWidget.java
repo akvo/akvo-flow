@@ -44,6 +44,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	private QuestionGroupDto questionGroup;
 	private Map<String, Object> bundle;
 	private Map<Widget, Integer> widgetRowMap;
+	private Map<Long, Integer> questionRowMap;
 	private Grid dataGrid;
 
 	public QuestionListWidget(PageController controller) {
@@ -95,6 +96,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	private void populateQuestionList(Collection<QuestionDto> questionList) {
 		toggleLoading(false);
 		widgetRowMap = new HashMap<Widget, Integer>();
+		questionRowMap = new HashMap<Long, Integer>();
 		if (dataGrid != null) {
 			dataGrid.removeFromParent();
 		}
@@ -115,8 +117,8 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				}
 				Button deleteButton = createButton(ClickMode.DELETE,
 						TEXT_CONSTANTS.delete());
-				Button editButton = createButton(ClickMode.EDIT, TEXT_CONSTANTS
-						.edit());
+				Button editButton = createButton(ClickMode.EDIT,
+						TEXT_CONSTANTS.edit());
 
 				bp.add(moveUp);
 				bp.add(moveDown);
@@ -131,6 +133,8 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				widgetRowMap.put(deleteButton, i);
 				widgetRowMap.put(moveUp, i);
 				widgetRowMap.put(moveDown, i);
+
+				questionRowMap.put(q.getKeyId(), i);
 
 				i++;
 			}
@@ -171,8 +175,8 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 
 	private void moveQuestion(int increment, QuestionDto question) {
 		setWorking(true);
-		final MessageDialog savingDialog = new MessageDialog(TEXT_CONSTANTS
-				.saving(), TEXT_CONSTANTS.pleaseWait(), true);
+		final MessageDialog savingDialog = new MessageDialog(
+				TEXT_CONSTANTS.saving(), TEXT_CONSTANTS.pleaseWait(), true);
 		savingDialog.showCentered();
 		Integer prevIdx = null;
 		Integer nextIdx = null;
@@ -208,13 +212,15 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		questionsToUpdate.add(targetQuestion);
 		Label widgetToMove = null;
 		Label targetWidget = null;
+		int rowToMove = questionRowMap.get(qToMove.getKeyId());
+		int targetRow = questionRowMap.get(targetQuestion.getKeyId());
+
 		for (Entry<Widget, Integer> entry : widgetRowMap.entrySet()) {
 			if (entry.getKey() instanceof Label) {
-				if (((Label) entry.getKey()).getText()
-						.equals(qToMove.getText())) {
+				if (rowToMove == entry.getValue()) {
 					widgetToMove = (Label) entry.getKey();
-				} else if (((Label) entry.getKey()).getText().equals(
-						targetQuestion.getText())) {
+				}
+				if (targetRow == entry.getValue()) {
 					targetWidget = (Label) entry.getKey();
 				}
 			}
@@ -225,6 +231,8 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		}
 		widgetToMove.setText(targetQuestion.getText());
 		targetWidget.setText(qToMove.getText());
+		questionRowMap.put(qToMove.getKeyId(), targetRow);
+		questionRowMap.put(targetQuestion.getKeyId(), rowToMove);
 
 		surveyService.updateQuestionOrder(questionsToUpdate,
 				new AsyncCallback<Void>() {
@@ -273,26 +281,28 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		Integer key = findKeyForQuestion(question);
 		if (key != null) {
 			questionGroup.getQuestionMap().remove(key);
-			surveyService.deleteQuestion(question, question
-					.getQuestionGroupId(), new AsyncCallback<String>() {
+			surveyService.deleteQuestion(question,
+					question.getQuestionGroupId(), new AsyncCallback<String>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					setWorking(false);
-					selectedQuestion = null;
-					MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
-							.error(), TEXT_CONSTANTS.errorTracePrefix()
-							+ " " + caught.getLocalizedMessage());
-					errDia.showCentered();
-				}
+						@Override
+						public void onFailure(Throwable caught) {
+							setWorking(false);
+							selectedQuestion = null;
+							MessageDialog errDia = new MessageDialog(
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
+											+ caught.getLocalizedMessage());
+							errDia.showCentered();
+						}
 
-				@Override
-				public void onSuccess(String result) {
-					setWorking(false);
-					selectedQuestion = null;
-					loadData(questionGroup);
-				}
-			});
+						@Override
+						public void onSuccess(String result) {
+							setWorking(false);
+							selectedQuestion = null;
+							loadData(questionGroup);
+						}
+					});
 		}
 	}
 
