@@ -134,7 +134,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				props.getProperty(SURVEY_UPLOAD_DIR),
 				props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
 				props.getProperty(SURVEY_UPLOAD_POLICY),
-				props.getProperty(SURVEY_UPLOAD_SIG), "application/zip",null);
+				props.getProperty(SURVEY_UPLOAD_SIG), "application/zip", null);
 
 		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,
 				transactionId);
@@ -168,13 +168,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		TreeMap<Integer, QuestionGroup> qgList = qgDao
 				.listQuestionGroupsBySurvey(surveyId);
-		if (qgList != null) {					
+		if (qgList != null) {
 			StringBuilder surveyXML = new StringBuilder();
 			surveyXML.append(surveyHeader);
 			for (QuestionGroup item : qgList.values()) {
-				surveyXML.append(buildQuestionGroupXML(item));			
+				surveyXML.append(buildQuestionGroupXML(item));
 			}
-			
+
 			surveyXML.append(surveyFooter);
 			UploadStatusContainer uc = uploadSurveyXML(surveyId,
 					surveyXML.toString());
@@ -185,14 +185,18 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
 				String messageText = "Published.  Please check: " + uc.getUrl();
-				message.setMessage(messageText);
+				message.setShortMessage(messageText);
+				if (qgList != null && qgList.size() > 0) {
+					message.setObjectTitle(qgList.get(0).getPath());
+				}
 				message.setTransactionUUID(transactionId.toString());
 				MessageDao messageDao = new MessageDao();
 				messageDao.save(message);
 			} else {
 				// String messageText =
 				// CONSTANTS.surveyPublishErrorMessage();
-				String messageText = "Failed to publish: " + surveyId + "\n"+ uc.getMessage();
+				String messageText = "Failed to publish: " + surveyId + "\n"
+						+ uc.getMessage();
 				message.setTransactionUUID(transactionId.toString());
 				message.setMessage(messageText);
 				MessageDao messageDao = new MessageDao();
@@ -201,7 +205,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		}
 	}
 
-	
 	public UploadStatusContainer uploadSurveyXML(Long surveyId, String surveyXML) {
 		Properties props = System.getProperties();
 		String document = surveyXML;
@@ -235,7 +238,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				.listQuestionsByQuestionGroup(item.getKey().getId(), true);
 
 		StringBuilder sb = new StringBuilder("<questionGroup><heading>")
-				.append(StringEscapeUtils.escapeXml(group.getCode())).append("</heading>");
+				.append(StringEscapeUtils.escapeXml(group.getCode())).append(
+						"</heading>");
 		int count = 0;
 
 		if (questionList != null) {
@@ -244,7 +248,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				count++;
 			}
 		}
-		return sb.toString()+"</questionGroup>";
+		return sb.toString() + "</questionGroup>";
 	}
 
 	private void assembleSurvey(Long surveyId) {
