@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
@@ -30,6 +32,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
+import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and
@@ -63,6 +66,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final Map<String, String> STD_D_LABEL;
 	private static final Map<String, String> TOTAL_LABEL;
 	private static final Map<String, String> RANGE_LABEL;
+	private static final Map<String, String> LOADING_QUESTIONS;
+	private static final Map<String, String> LOADING_DETAILS;
+	private static final Map<String, String> LOADING_INSTANCES;
+	private static final Map<String, String> LOADING_INSTANCE_DETAILS;
+	private static final Map<String, String> WRITING_SUMMARY;
+	private static final Map<String, String> WRITING_RAW_DATA;
+	private static final Map<String, String> WRITING_ROLLUPS;
+	private static final Map<String, String> COMPLETE;
 
 	private static final int CHART_WIDTH = 600;
 	private static final int CHART_HEIGHT = 400;
@@ -70,6 +81,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int CHART_CELL_HEIGHT = 22;
 	private static final String DEFAULT_LOCALE = "en";
 	private static final String DEFAULT = "default";
+	private static final int STEPS = 7;
+	private static final NumberFormat PCT_FMT = DecimalFormat
+			.getPercentInstance();
 
 	static {
 		// populate all translations
@@ -145,29 +159,69 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		SUB_DATE_LABEL.put("en", "Submitter");
 		SUB_DATE_LABEL.put("es", "Peticionario");
 
+		LOADING_QUESTIONS = new HashMap<String, String>();
+		LOADING_QUESTIONS.put("en","Loading Questions");
+		LOADING_QUESTIONS.put("es","Cargando de preguntas");
+		
+		LOADING_DETAILS = new HashMap<String, String>();
+		LOADING_DETAILS.put("en","Loading Question Details");
+		LOADING_DETAILS.put("es","Cargando Detalles Pregunta");
+		
+		LOADING_INSTANCES = new HashMap<String, String>();
+		LOADING_INSTANCES.put("en","Loading Instances");
+		LOADING_INSTANCES.put("es","Cargando instancias");
+		
+		LOADING_INSTANCE_DETAILS = new HashMap<String, String>();
+		LOADING_INSTANCE_DETAILS.put("en","Loading Instance Details");
+		LOADING_INSTANCE_DETAILS.put("es","Cargando Datos Instancia");
+		
+		WRITING_SUMMARY = new HashMap<String, String>();
+		WRITING_SUMMARY.put("en","Writing Summary");
+		WRITING_SUMMARY.put("es","Escribiendo Resumen");
+		
+		WRITING_RAW_DATA = new HashMap<String, String>();
+		WRITING_RAW_DATA.put("en","Writing Raw Data");
+		WRITING_RAW_DATA.put("es","Escribiendo Primas de Datos");
+		
+		WRITING_ROLLUPS = new HashMap<String, String>();
+		WRITING_ROLLUPS.put("en","Writing Rollups");
+		WRITING_ROLLUPS.put("es","Escribiendo Resumen Municipales");
+		
+		COMPLETE = new HashMap<String, String>();
+		COMPLETE.put("en","Export Complete");
+		COMPLETE.put("es","Exportación Completa");				
+		
 	}
-
-	private static final NumberFormat PCT_FMT = DecimalFormat
-			.getPercentInstance();
 
 	private HSSFCellStyle headerStyle;
 	private String locale;
 	private String imagePrefix;
 	private String serverBase;
+	private ProgressDialog progressDialog;
+	private int currentStep;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase, Map<String, String> options) {
 		processOptions(options);
+		progressDialog = new ProgressDialog(STEPS, locale);
+		progressDialog.setVisible(true);
+		currentStep = 1;
 		this.serverBase = serverBase;
 		PrintWriter pw = null;
 		try {
+			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+					LOADING_QUESTIONS.get(locale)));
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
+					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);	
 			if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
 				// if we are using some other locale, we need to check for
 				// translations
+				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+						LOADING_DETAILS.get(locale)));
 				loadFullQuestions(questionMap);
+			}else{
+				currentStep++;
 			}
 			if (questionMap.size() > 0) {
 				HSSFWorkbook wb = new HSSFWorkbook();
@@ -180,7 +234,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				SummaryModel model = fetchAndWriteRawData(
 						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
 						serverBase, questionMap, wb);
+				
+				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+						WRITING_SUMMARY.get(locale)));
 				writeSummaryReport(questionMap, model, null, wb);
+				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+						WRITING_ROLLUPS.get(locale)));
 				if (model.getSectorList() != null
 						&& model.getSectorList().size() > 0) {
 					for (String sector : model.getSectorList()) {
@@ -191,6 +250,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				wb.setActiveSheet(1);
 				wb.write(fileOut);
 				fileOut.close();
+				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+						COMPLETE.get(locale)));
 			} else {
 				System.out.println("No questions for survey");
 			}
@@ -216,10 +277,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		List<String> questionIdList = (List<String>) results[0];
 		List<String> unsummarizable = (List<String>) results[1];
 		int curRow = 1;
-
+		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+				LOADING_INSTANCES.get(locale)));
 		Map<String, String> instanceMap = BulkDataServiceClient
 				.fetchInstanceIds(surveyId, serverBase);
-
+		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+				LOADING_INSTANCE_DETAILS.get(locale)));
 		for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
 			String instanceId = instanceEntry.getKey();
 			String dateString = instanceEntry.getValue();
@@ -271,6 +334,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				}
 			}
 		}
+		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+				WRITING_RAW_DATA.get(locale)));
 		return model;
 	}
 
@@ -330,7 +395,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
 			SummaryModel summaryModel, String sector, HSSFWorkbook wb)
 			throws Exception {
-
+		
 		HSSFSheet sheet = wb.createSheet(sector == null ? SUMMARY_LABEL
 				.get(locale) : sector);
 		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
@@ -396,9 +461,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 						if (QuestionType.OPTION == question.getType()
 								&& !DEFAULT_LOCALE.equals(locale)) {
 							String[] tokens = labelText.split("\\|");
-							// see if we have a translation for this option							
+							// see if we have a translation for this option
 							for (int i = 0; i < tokens.length; i++) {
-								if(i>0){
+								if (i > 0) {
 									builder.append("|");
 								}
 								if (question.getOptionContainerDto() != null
@@ -420,12 +485,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 											break;
 										}
 									}
-									if(!found){
+									if (!found) {
 										builder.append(tokens[i]);
 									}
 								}
 							}
-						}else{
+						} else {
 							builder.append(labelText);
 						}
 						createCell(row, 0, builder.toString(), null);
@@ -630,4 +695,23 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		}
 	}
+
+	/**
+	 * Private class to handle updating of the UI thread from our worker thread
+	 */
+	private class StatusUpdater implements Runnable {
+
+		private int step;
+		private String msg;
+
+		public StatusUpdater(int step, String message) {
+			msg = message;
+			this.step = step;
+		}
+
+		public void run() {
+			progressDialog.update(step, msg);
+		}
+	}
+
 }
