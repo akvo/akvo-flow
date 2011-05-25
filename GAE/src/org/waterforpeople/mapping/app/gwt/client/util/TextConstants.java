@@ -521,4 +521,5 @@ public interface TextConstants extends Constants{
 	public String messageViewPortletTitle();
 	public String viewMessages();
 	public String submitAnother();
+	public String remaining();
 }

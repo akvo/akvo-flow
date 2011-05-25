@@ -565,3 +565,16 @@ button {
 	font-style: bold;
 	vertical-align: top;
 }
+
+.message{
+	font:18px/20px Veranda, Helvetica, sans-serif;
+	font-style: bold;	
+	text-align: center;
+}
+
+.char-remaining{
+	font:10px/12px Veranda, Helvetica, sans-serif;
+	font-style: italic;	
+	text-align: left;
+	padding-left: 3px;
+}
