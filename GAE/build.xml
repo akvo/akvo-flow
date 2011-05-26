@@ -8,6 +8,8 @@
 		<pathelement path="war/WEB-INF/lib/gwt-visualization.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
+		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA-sources.jar" />
+			<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA.jar" />	
 		<fileset dir="war/WEB-INF/lib">
 			<include name="**/*.jar" />
 		</fileset>
