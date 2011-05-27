@@ -496,7 +496,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 						createCell(row, 0, builder.toString(), null);
 						createCell(row, 1, count.getValue().toString(), null);
 
-						labels.add(labelText);
+						labels.add(builder.toString());
 						values.add(count.getValue().toString());
 						sampleTotal += count.getValue();
 					}

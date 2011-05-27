@@ -50,8 +50,8 @@ public class ProgressDialog extends JDialog implements ActionListener {
 
 	static {
 		STEP = new HashMap<String, String>();
-		STEP.put("en", "Step N of X");
-		STEP.put("es", "Paso N de X");
+		STEP.put("en", "Step X of N");
+		STEP.put("es", "Paso X de N");
 
 		OVERALL = new HashMap<String, String>();
 		OVERALL.put("en", "Overall Progress");
