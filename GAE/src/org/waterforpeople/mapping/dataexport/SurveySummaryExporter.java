@@ -44,7 +44,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	private static final String SERVLET_URL = "/surveyrestapi?action=";
 	private static final NumberFormat PCT_FMT = new DecimalFormat("0.00");
 	private static final String[] ROLLUP_QUESTIONS = { "Sector/Cell",
-			"Municipality" };
+			"Municipality", "Region","District", "Traditional Authority", "Sector","Cell","Gan Planchayat", "Block", "State" };
 	protected List<QuestionGroupDto> orderedGroupList;
 	protected QuestionDto sectorQuestion;
 
