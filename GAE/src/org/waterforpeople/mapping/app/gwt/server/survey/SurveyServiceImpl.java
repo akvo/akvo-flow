@@ -77,6 +77,9 @@ import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyServiceImpl extends RemoteServiceServlet implements
@@ -1294,6 +1297,19 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		if (s != null) {
 			m.setObjectTitle(s.getPath() + "/" + s.getName());
+
+		}
+		try {
+			UserService userService = UserServiceFactory.getUserService();
+			if (userService != null && userService.isUserLoggedIn()) {
+				User u = userService.getCurrentUser();
+				if (u != null) {
+					m.setUserName(u.getEmail());
+				}
+			}
+		} catch (Exception e) {
+			log.log(Level.WARNING,
+					"Could not get current user when publishing message");
 		}
 		messageDao.save(m);
 	}
