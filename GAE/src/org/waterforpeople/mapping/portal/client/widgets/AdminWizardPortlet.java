@@ -4,6 +4,7 @@ import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.BootstrapGeneratorWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.ChangeCompleteWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.DataImportWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageListWidget;
@@ -80,7 +81,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				.questionGroups(), QuestionGroupListWidget.class,
 				new WizardButton[] {
 						new WizardButton("QuestionGroupCreate", TEXT_CONSTANTS
-								.createQuestionGroup()),
+								.createQuestionGroup()),new WizardButton("Changes Complete", TEXT_CONSTANTS
+										.markChangesComplete()),
 						new WizardButton("Publish", TEXT_CONSTANTS
 								.publishSurvey(), PermissionConstants.PUBLISH_SURVEY)},
 				new WizardButton[] { new WizardButton("SurveyList",
@@ -93,7 +95,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("QuestionList", TEXT_CONSTANTS
 				.questions(), QuestionListWidget.class, new WizardButton[] {
 				new WizardButton("QuestionCreate", TEXT_CONSTANTS
-						.createQuestion()),
+						.createQuestion()),new WizardButton("Changes Complete", TEXT_CONSTANTS
+								.markChangesComplete()),
 				new WizardButton("Publish", TEXT_CONSTANTS.publishSurvey(), PermissionConstants.PUBLISH_SURVEY) },
 				new WizardButton[] { new WizardButton("QuestionGroupList",
 						TEXT_CONSTANTS.backToQuestionGroupList()) }));
@@ -105,6 +108,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				PublicationWidget.class, new WizardButton[] { new WizardButton(
 						"Attribute Assignment", TEXT_CONSTANTS
 								.assignQuestionsToAttributes()) },
+				new WizardButton[] { new WizardButton("QuestionList",
+						TEXT_CONSTANTS.backToQuestionList()) }));
+		wf.addInternalNode(new WizardNode("Changes Complete", null,
+				ChangeCompleteWidget.class, new WizardButton[] { new WizardButton(
+						"Administration", TEXT_CONSTANTS
+								.adminHome()) },
 				new WizardButton[] { new WizardButton("QuestionList",
 						TEXT_CONSTANTS.backToQuestionList()) }));
 		wf.addInternalNode(new WizardNode("Attribute Assignment",
@@ -221,6 +230,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new DataImportWidget();
 		} else if (node.getWidgetClass().equals(RerunMappingWidget.class)) {
 			return new RerunMappingWidget();
+		}else if (node.getWidgetClass().equals(ChangeCompleteWidget.class)){
+			return new ChangeCompleteWidget();
 		}
 
 		return null;

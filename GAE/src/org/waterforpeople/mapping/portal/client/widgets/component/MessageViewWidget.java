@@ -58,6 +58,7 @@ public class MessageViewWidget extends Composite implements
 	private static final int PAGE_SIZE = 20;
 	private static final String SURVEY_CHANGE = "surveyUpdate";
 	private static final String SURVEY_ASSEMBLY = "surveyAssembly";
+	private static final String SURVEY_CHANGE_COMPLETE = "surveyChangeComplete";
 
 	private PaginatedDataTable<MessageDto> dataTable;
 	private Panel contentPanel;
@@ -73,6 +74,9 @@ public class MessageViewWidget extends Composite implements
 		filterListBox.addItem("", "");
 		filterListBox.addItem(TEXT_CONSTANTS.surveyUpdate(), SURVEY_CHANGE);
 		filterListBox.addItem(TEXT_CONSTANTS.surveyAssembly(), SURVEY_ASSEMBLY);
+		filterListBox.addItem(TEXT_CONSTANTS.changesComplete(),
+				SURVEY_CHANGE_COMPLETE);
+
 		filterListBox.addChangeHandler(this);
 		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.filterResults(),
 				filterListBox, null);
@@ -113,6 +117,9 @@ public class MessageViewWidget extends Composite implements
 		}
 		if (SURVEY_CHANGE.equalsIgnoreCase(item.getActionAbout())) {
 			message = TEXT_CONSTANTS.surveyChangeMessage();
+		} else if (SURVEY_CHANGE_COMPLETE.equalsIgnoreCase(item
+				.getActionAbout())) {
+			message = TEXT_CONSTANTS.surveyChangeCompleteMessage();
 		}
 		if (message == null) {
 			message = "";
@@ -155,7 +162,9 @@ public class MessageViewWidget extends Composite implements
 
 		publishButton.addClickHandler(handler);
 		delButton.addClickHandler(handler);
-		if (SURVEY_CHANGE.equalsIgnoreCase(item.getActionAbout())) {
+		if (SURVEY_CHANGE.equalsIgnoreCase(item.getActionAbout())
+				|| SURVEY_CHANGE_COMPLETE.equalsIgnoreCase(item
+						.getActionAbout())) {
 			hp.add(publishButton);
 		}
 		hp.add(delButton);

@@ -101,4 +101,6 @@ public interface SurveyServiceAsync {
 
 	void findSurvey(Long id, AsyncCallback<SurveyDto> callback);
 
+	void markSurveyChangesComplete(Long id, AsyncCallback<Void> callback);
+
 }

@@ -96,7 +96,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private static final String SURVEY_DIR_PROP = "surveyuploaddir";
 	private static final String PUB_CACHE_PREFIX = "pubsrv";
 	private static final String SURVEY_UPDATE_MESSAGE_ACTION = "surveyUpdate";
+	private static final String SURVEY_CHANGE_COMPLTE_MESSAGE_ACTION = "surveyChangeComplete";
 	private static final String SURVEY_UPDATE_MESSAGE = "Survey has been updated. Please publish it to release it to devices.";
+	private static final String SURVEY_CHANGE_COMPLETE_MESSAGE = "Survey changes have been marked as complete. Please publish it to release it to devices.";
 
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
@@ -1298,6 +1300,37 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (s != null) {
 			m.setObjectTitle(s.getPath() + "/" + s.getName());
 
+		}
+		try {
+			UserService userService = UserServiceFactory.getUserService();
+			if (userService != null && userService.isUserLoggedIn()) {
+				User u = userService.getCurrentUser();
+				if (u != null) {
+					m.setUserName(u.getEmail());
+				}
+			}
+		} catch (Exception e) {
+			log.log(Level.WARNING,
+					"Could not get current user when publishing message");
+		}
+		messageDao.save(m);
+	}
+
+	/**
+	 * marks that a set of changes to a survey are done so we can publish a
+	 * notification
+	 * 
+	 * @param id
+	 */
+	public void markSurveyChangesComplete(Long surveyId) {
+		Message m = null;
+		Survey s = surveyDao.getByKey(surveyId);
+		m = new Message();
+		m.setActionAbout(SURVEY_CHANGE_COMPLTE_MESSAGE_ACTION);
+		m.setObjectId(surveyId);
+		m.setShortMessage(SURVEY_CHANGE_COMPLETE_MESSAGE);
+		if (s != null) {
+			m.setObjectTitle(s.getPath() + "/" + s.getName());
 		}
 		try {
 			UserService userService = UserServiceFactory.getUserService();

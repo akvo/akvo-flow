@@ -518,8 +518,11 @@ public interface TextConstants extends Constants{
 	public String surveyAssembly();
 	public String title();
 	public String surveyChangeMessage();
+	public String surveyChangeCompleteMessage();
 	public String messageViewPortletTitle();
 	public String viewMessages();
 	public String submitAnother();
 	public String remaining();
+	public String markChangesComplete();
+	public String changesComplete();
 }

@@ -125,4 +125,12 @@ public interface SurveyService extends RemoteService {
 	 */
 	public SurveyDto findSurvey(Long id);
 
+	/**
+	 * marks that a set of changes to a survey are done so we can publish a
+	 * notification
+	 * 
+	 * @param id
+	 */
+	public void markSurveyChangesComplete(Long id);
+
 }
