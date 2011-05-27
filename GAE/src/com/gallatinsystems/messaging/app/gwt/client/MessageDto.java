@@ -5,13 +5,13 @@ import java.util.Date;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
- * transfer object for Messages. 
+ * transfer object for Messages.
  * 
  * @author Christopher Fagiani
  * 
  */
 public class MessageDto extends BaseDto {
-	
+
 	private static final long serialVersionUID = -7560107313339712237L;
 	private String actionAbout;
 	private Long objectId;
@@ -20,6 +20,15 @@ public class MessageDto extends BaseDto {
 	private String shortMessage;
 	private String transactionUUID;
 	private Date lastUpdateDateTime;
+	private String userName;
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
 	public Date getLastUpdateDateTime() {
 		return lastUpdateDateTime;

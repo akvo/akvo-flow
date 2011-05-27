@@ -16,6 +16,15 @@ public class Message extends BaseDomain {
 	private String objectTitle;
 	private String shortMessage;
 	private String transactionUUID;
+	private String userName;
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
 	public String getObjectTitle() {
 		return objectTitle;

@@ -10,7 +10,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
-public class SurveyGroup extends BaseDomain { 
+public class SurveyGroup extends BaseDomain {  
 
 	private static final long serialVersionUID = 8941584684617286776L;
 	private String name = null;

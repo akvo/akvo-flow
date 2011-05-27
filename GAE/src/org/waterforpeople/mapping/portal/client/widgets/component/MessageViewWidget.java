@@ -52,6 +52,7 @@ public class MessageViewWidget extends Composite implements
 			new DataTableHeader(TEXT_CONSTANTS.id()),
 			new DataTableHeader(TEXT_CONSTANTS.lastUpdated()),
 			new DataTableHeader(TEXT_CONSTANTS.title()),
+			new DataTableHeader(TEXT_CONSTANTS.user()),
 			new DataTableHeader(TEXT_CONSTANTS.message()),
 			new DataTableHeader("") };
 	private static final int PAGE_SIZE = 20;
@@ -77,9 +78,9 @@ public class MessageViewWidget extends Composite implements
 				filterListBox, null);
 		dataTable = new PaginatedDataTable<MessageDto>(DEFAULT_SORT_FIELD,
 				this, this, false);
-		contentPanel.add(dataTable);				
+		contentPanel.add(dataTable);
 		initWidget(contentPanel);
-		requestData(null,false);		
+		requestData(null, false);
 	}
 
 	@Override
@@ -116,14 +117,16 @@ public class MessageViewWidget extends Composite implements
 		if (message == null) {
 			message = "";
 		}
-		grid.setWidget(row, 3, new Label(message));
+		grid.setWidget(row, 3,
+				new Label(item.getUserName() != null ? item.getUserName() : ""));
+		grid.setWidget(row, 4, new Label(message));
 		HorizontalPanel hp = new HorizontalPanel();
 
 		final Button publishButton = new Button(TEXT_CONSTANTS.publishSurvey());
 		final Button delButton = new Button(TEXT_CONSTANTS.delete());
 		ClickHandler handler = new ClickHandler() {
 			@Override
-			public void onClick(ClickEvent event) {			
+			public void onClick(ClickEvent event) {
 				if (event.getSource() == publishButton) {
 					surveyService.publishSurvey(item.getObjectId(),
 							new AsyncCallback<String>() {
@@ -156,7 +159,7 @@ public class MessageViewWidget extends Composite implements
 			hp.add(publishButton);
 		}
 		hp.add(delButton);
-		grid.setWidget(row, 4, hp);
+		grid.setWidget(row, 5, hp);
 	}
 
 	private void deleteItem(Long key) {
@@ -191,7 +194,7 @@ public class MessageViewWidget extends Composite implements
 	}
 
 	@Override
-	public void requestData(String cursor, final boolean isResort) {		
+	public void requestData(String cursor, final boolean isResort) {
 		final boolean isNew = (cursor == null);
 		String filter = null;
 		if (filterListBox.getSelectedIndex() > 0) {
