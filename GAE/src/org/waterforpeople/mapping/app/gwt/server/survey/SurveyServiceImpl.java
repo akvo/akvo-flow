@@ -1203,7 +1203,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					+ PropertyUtil.getProperty(SURVEY_DIR_PROP) + "/"
 					+ surveyId + ".xml");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					url.openStream()));
+					url.openStream(),"UTF-8"));
 			StringBuffer buff = new StringBuffer();
 			String line;
 			while ((line = reader.readLine()) != null) {

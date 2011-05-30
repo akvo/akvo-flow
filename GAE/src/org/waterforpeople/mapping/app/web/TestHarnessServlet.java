@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -26,6 +27,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -1507,6 +1513,16 @@ public class TestHarnessServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}else if ("clearcache".equals(action)){
+			CacheFactory cacheFactory;
+			try {
+				cacheFactory = CacheManager.getInstance()
+				.getCacheFactory();
+				Cache cache = cacheFactory.createCache(Collections.emptyMap());
+				cache.clear();
+			} catch (CacheException e) {			
+				e.printStackTrace();
+			}			
 		}
 
 	}
