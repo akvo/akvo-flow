@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import javax.swing.JApplet;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
@@ -48,7 +49,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 	private String countryCodeOverride;
 	private String featureType;
 
-	private TreeMap<String, String> attributeIdentifierMapping = new TreeMap<String, String>();
+	private static TreeMap<String, String> attributeIdentifierMapping;
 	private static final String GEOMETRY_STRING_PARAM = "geometryString";
 	private static final String RECIPROCAL_OF_FLATTENING_PARAM = "reciprocalOfFlattening";
 	private static final String Y2_PARAM = "y2";
@@ -76,13 +77,16 @@ public class GeometryLoader extends JApplet implements Runnable {
 
 	public void init() {
 		serverBase = getCodeBase().toString();
-		if (serverBase.trim().endsWith("/")) {
+		if (serverBase.trim().startsWith("file:/")) {
+			serverBase = "http://localhost:8888";
+		} else if (serverBase.trim().endsWith("/")) {
 			serverBase = serverBase.trim().substring(0,
 					serverBase.lastIndexOf("/"));
 		}
-
 		Thread worker = new Thread(this);
 		worker.start();
+		loadCountryMap();
+		configureFileIdentifier();
 	}
 
 	@Override
@@ -92,17 +96,29 @@ public class GeometryLoader extends JApplet implements Runnable {
 			statusLabel = new JLabel();
 			getContentPane().add(statusLabel);
 			coordinateSystemType = getParameter(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM);
-			if (coordinateSystemType.equals(GISSupportConstants.UTM)) {
+			if (coordinateSystemType != null
+					&& coordinateSystemType.equals(GISSupportConstants.UTM)) {
 				utmZone = Integer
 						.parseInt(getParameter(GISSupportConstants.UTM_ZONE_PARAM));
 				ct = CoordinateType.UTM;
 			} else {
+				coordinateSystemType = CoordinateType.LATLONG.toString();
 				ct = CoordinateType.LATLONG;
 			}
-			centralMeridian = Double
-					.parseDouble(getParameter(GISSupportConstants.CENTRAL_MERIDIAN_PARAM));
-			countryCodeOverride = getParameter(COUNTRY_CODE_PARAM);
-			featureType = getParameter(GISSupportConstants.GIS_FEATURE_TYPE_PARAM);
+			if (getParameter(GISSupportConstants.CENTRAL_MERIDIAN_PARAM) != null) {
+				centralMeridian = Double
+						.parseDouble(getParameter(GISSupportConstants.CENTRAL_MERIDIAN_PARAM));
+			} else {
+				centralMeridian = 0.0D;
+			}
+			if (getParameter(GISSupportConstants.COUNTRY_CODE_PARAM) != null) {
+				countryCodeOverride = getParameter(COUNTRY_CODE_PARAM);
+			}
+			if (getParameter(GISSupportConstants.GIS_FEATURE_TYPE_PARAM) != null) {
+				featureType = getParameter(GISSupportConstants.GIS_FEATURE_TYPE_PARAM);
+			} else {
+				featureType = "COUNTRY";
+			}
 
 			System.out.println("CT: " + coordinateSystemType + " CM:"
 					+ centralMeridian + " countryCode:" + countryCodeOverride
@@ -116,10 +132,11 @@ public class GeometryLoader extends JApplet implements Runnable {
 							SwingUtilities.invokeLater(new StatusUpdater(
 									"Importing data"));
 							ArrayList<String> shapefileFields = readShapefileMetadata(fileName);
-							Boolean configured = configureFields(shapefileFields);
-							if (configured) {
-								executeImport(fileName);
-							}
+							// Boolean configured =
+							// configureFields(shapefileFields);
+							// if (configured) {
+							executeImport(fileName);
+							// }
 							SwingUtilities.invokeLater(new StatusUpdater(
 									"Import Complete"));
 						} else {
@@ -131,6 +148,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			SwingUtilities
 					.invokeLater(new StatusUpdater("Backout Failed: " + e));
 		}
@@ -153,7 +171,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 			throws IOException {
 		ArrayList<String> properties = new ArrayList<String>();
 		FileDataStore store = FileDataStoreFinder.getDataStore(new File(
-				fileName));
+				fileName2));
 		@SuppressWarnings("rawtypes")
 		FeatureSource featureSource = store.getFeatureSource();
 		ReferencedEnvelope re = featureSource.getBounds();
@@ -228,8 +246,19 @@ public class GeometryLoader extends JApplet implements Runnable {
 	 */
 	public static void main(String[] args) {
 		GeometryLoader gl = new GeometryLoader();
-		String baseUrl = args[0];
+		JFrame frame = new JFrame();
+		gl.init();
+		frame.setContentPane(gl.getContentPane());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(400, 400);
 
+		// Set the location of the frame.
+		frame.setLocation(100, 100);
+
+		// Show the frame.
+		frame.setVisible(true);
+		gl.start();
+		String baseUrl = args[0];
 		for (int i = 1; i < args.length; i++) {
 			// args[i],
 			// CoordinateType.UTM, 29, 0.0
@@ -254,13 +283,8 @@ public class GeometryLoader extends JApplet implements Runnable {
 		}
 	}
 
-	public GeometryLoader() {
-		loadCountryMap();
-		configureFileIdentifier();
-	}
-
 	private static final String actionParam = "importOgrFeature";
-	private TreeMap<String, String> countryMap = new TreeMap<String, String>();
+	private static TreeMap<String, String> countryMap = new TreeMap<String, String>();
 
 	private void loadCountryMap() {
 		countryMap.put("Liberia", "LR");
@@ -275,6 +299,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 	TreeMap<String, String> attributeURLMapping = new TreeMap<String, String>();
 
 	public void configureFileIdentifier() {
+		attributeIdentifierMapping = new TreeMap<String, String>();
 		attributeIdentifierMapping.put("ISO2", COUNTRY_CODE_PARAM);
 		attributeIdentifierMapping.put("POP2005", POP_2005_PARAM);
 		attributeIdentifierMapping.put("LAT", CENTROID_LAT_PARAM);

@@ -42,71 +42,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		DeleteTaskRequest dtReq = (DeleteTaskRequest) convertRequest();
 		if (dtReq.getKey().equals("secret")) {
-			final String kind = dtReq.getObjectName();
-
-			int deleted_count = 0;
-			boolean is_finished = false;
-
-			final DatastoreService dss = DatastoreServiceFactory
-					.getDatastoreService();
-			final long start = System.currentTimeMillis();
-			while (System.currentTimeMillis() - start < 16384) {
-
-				final Query query = new Query(kind);
-
-				query.setKeysOnly();
-
-				final ArrayList<Key> keys = new ArrayList<Key>();
-
-				for (final Entity entity : dss.prepare(query).asIterable(
-						FetchOptions.Builder.withLimit(128))) {
-					keys.add(entity.getKey());
-				}
-
-				keys.trimToSize();
-
-				if (keys.size() == 0) {
-					is_finished = true;
-					break;
-				}
-
-				while (System.currentTimeMillis() - start < 16384) {
-
-					try {
-						dss.delete(keys);
-						deleted_count += keys.size();
-						break;
-					} catch (Throwable ignore) {
-						continue;
-					}
-				}
-			}
-			System.err.println("*** deleted " + deleted_count
-					+ " entities form " + kind);
-
-			if (is_finished) {
-				System.err.println("*** deletion job for " + kind
-						+ " is completed.");
-			} else {
-				final Integer taskcount;
-				final String tcs = dtReq.getTaskCount();
-				if (tcs == null) {
-					taskcount = 0;
-				} else {
-					taskcount = Integer.parseInt(tcs) + 1;
-				}
-
-				Queue deleteQueue = QueueFactory.getQueue(DELETE_QUEUE_NAME);
-				deleteQueue.add(url(DELETE_OBJECT_TASK_URL)
-						.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
-						.param(DeleteTaskRequest.KEY_PARAM, dtReq.getKey())
-						.param(DeleteTaskRequest.TASK_COUNT_PARAM,
-								taskcount.toString()));
-
-				System.err.println("*** deletion task # " + taskcount + " for "
-						+ kind + " is queued.");
-
-			}
+			deleteObject(dtReq.getObjectName(), dtReq.getTaskCount(), dtReq.getApiKey());
 		}
 
 		return null;
@@ -117,6 +53,74 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 		getResponse().setStatus(200);
 		if (resp != null) {
 			getResponse().getWriter().println("ok");
+		}
+	}
+
+	private void deleteObject(String objectName, String taskCount, String key) {
+		final String kind = objectName;
+
+		int deleted_count = 0;
+		boolean is_finished = false;
+
+		final DatastoreService dss = DatastoreServiceFactory
+				.getDatastoreService();
+		final long start = System.currentTimeMillis();
+		while (System.currentTimeMillis() - start < 16384) {
+
+			final Query query = new Query(kind);
+
+			query.setKeysOnly();
+
+			final ArrayList<Key> keys = new ArrayList<Key>();
+
+			for (final Entity entity : dss.prepare(query).asIterable(
+					FetchOptions.Builder.withLimit(128))) {
+				keys.add(entity.getKey());
+			}
+
+			keys.trimToSize();
+
+			if (keys.size() == 0) {
+				is_finished = true;
+				break;
+			}
+
+			while (System.currentTimeMillis() - start < 16384) {
+
+				try {
+					dss.delete(keys);
+					deleted_count += keys.size();
+					break;
+				} catch (Throwable ignore) {
+					continue;
+				}
+			}
+		}
+		System.err.println("*** deleted " + deleted_count + " entities form "
+				+ kind);
+
+		if (is_finished) {
+			System.err.println("*** deletion job for " + kind
+					+ " is completed.");
+		} else {
+			final Integer taskcount;
+			final String tcs = taskCount;
+			if (tcs == null) {
+				taskcount = 0;
+			} else {
+				taskcount = Integer.parseInt(tcs) + 1;
+			}
+
+			Queue deleteQueue = QueueFactory.getQueue(DELETE_QUEUE_NAME);
+			deleteQueue.add(url(DELETE_OBJECT_TASK_URL)
+					.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
+					.param(DeleteTaskRequest.KEY_PARAM, key)
+					.param(DeleteTaskRequest.TASK_COUNT_PARAM,
+							taskcount.toString()));
+
+			System.err.println("*** deletion task # " + taskcount + " for "
+					+ kind + " is queued.");
+
 		}
 	}
 

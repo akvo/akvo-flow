@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -47,5 +48,9 @@ public interface AccessPointManagerServiceAsync {
 			AsyncCallback<Void> callback);
 
 	void returnS3Path(AsyncCallback<String> callback);
+
+	void scorePoint(
+			AccessPointDto accessPointDto,
+			AsyncCallback<ArrayList<AccessPointScoreComputationItemDto>> callback);
 
 }

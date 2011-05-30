@@ -10,14 +10,14 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class AccessPointScoreDetail extends BaseDomain {
-
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8688043975799269589L;
 	private Long accessPointId = null;
 	private Integer score = null;
-	private ArrayList<String> scoreComputationItems = null;
+	private ArrayList<AccessPointScoreComputationItem> scoreComputationItems = null;
 	private String status = null;
 	private Date computationDate = null;
 	private String scoreBucket = null;
@@ -39,19 +39,21 @@ public class AccessPointScoreDetail extends BaseDomain {
 		this.score = score;
 	}
 
-	public ArrayList<String> getScoreComputationItems() {
+	public ArrayList<AccessPointScoreComputationItem> getScoreComputationItems() {
 		return scoreComputationItems;
 	}
 
-	public void setScoreComputationItems(ArrayList<String> scoreComputationItems) {
+	public void setScoreComputationItems(
+			ArrayList<AccessPointScoreComputationItem> scoreComputationItems) {
 		this.scoreComputationItems = scoreComputationItems;
 	}
 
-	public void addScoreComputationItem(String item) {
+	public void addScoreComputationItem(Integer score, String item) {
 		if (scoreComputationItems == null) {
-			scoreComputationItems = new ArrayList<String>();
+			scoreComputationItems = new ArrayList<AccessPointScoreComputationItem>();
 		}
-		scoreComputationItems.add(item);
+		AccessPointScoreComputationItem apsi =new AccessPointScoreComputationItem(score,item);
+		scoreComputationItems.add(apsi);
 
 	}
 
@@ -87,5 +89,4 @@ public class AccessPointScoreDetail extends BaseDomain {
 		return scoreBucketId;
 	}
 
-	
 }

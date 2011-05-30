@@ -59,8 +59,8 @@ public class GISSetupWidget extends Composite implements ChangeHandler {
 		populateFeatureType();
 		installChangeHandler();
 		ViewUtil.installFieldRow(contentPanel,
-				TEXT_CONSTANTS.setCentralMeridian(),
-				centralMeridian, LABEL_STYLE);
+				TEXT_CONSTANTS.setCentralMeridian(), centralMeridian,
+				LABEL_STYLE);
 		initWidget(contentPanel);
 	}
 
@@ -210,6 +210,7 @@ public class GISSetupWidget extends Composite implements ChangeHandler {
 
 	public Double getCentralMeridian() {
 		if (centralMeridian.getText() != null
+				&& centralMeridian.getText().trim().length() > 0
 				&& centralMeridian.getText().trim() != "")
 			return Double.parseDouble(centralMeridian.getText());
 		else

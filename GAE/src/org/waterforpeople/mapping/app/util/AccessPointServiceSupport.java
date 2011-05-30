@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreComputationItemDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDetailDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
+import org.waterforpeople.mapping.domain.AccessPointScoreComputationItem;
 import org.waterforpeople.mapping.domain.AccessPointScoreDetail;
 
 import com.gallatinsystems.common.util.DateUtil;
@@ -121,9 +123,15 @@ public class AccessPointServiceSupport {
 				dtoItem.setKeyId(item.getKey().getId());
 				dtoItem.setAccessPointId(item.getAccessPointId());
 				dtoItem.setScore(item.getScore());
-				ArrayList<String> scoreItems = new ArrayList<String>();
-				for (String scoreCompItem : item.getScoreComputationItems()) {
-					scoreItems.add(scoreCompItem);
+				ArrayList<AccessPointScoreComputationItemDto> scoreItems = new ArrayList<AccessPointScoreComputationItemDto>();
+				for (AccessPointScoreComputationItem scoreCompItem : item
+						.getScoreComputationItems()) {
+					Integer score = scoreCompItem.getScoreItem();
+					String detailMessage = scoreCompItem
+							.getScoreDetailMessage();
+					AccessPointScoreComputationItemDto apsiDto = new AccessPointScoreComputationItemDto(
+							score, detailMessage);
+					scoreItems.add(apsiDto);
 				}
 				dtoItem.setScoreComputationItems(scoreItems);
 				dtoItem.setStatus(item.getStatus());

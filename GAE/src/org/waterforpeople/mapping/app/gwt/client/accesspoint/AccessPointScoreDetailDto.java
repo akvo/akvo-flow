@@ -5,7 +5,9 @@ import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class AccessPointScoreDetailDto extends BaseDto{
+public class AccessPointScoreDetailDto extends BaseDto {
+
+	
 
 	/**
 	 * 
@@ -13,7 +15,7 @@ public class AccessPointScoreDetailDto extends BaseDto{
 	private static final long serialVersionUID = -3858867918094001048L;
 	private Long accessPointId = null;
 	private Integer score = null;
-	private ArrayList<String> scoreComputationItems = null;
+	private ArrayList<AccessPointScoreComputationItemDto> scoreComputationItems = null;
 	private String status = null;
 	private Date computationDate = null;
 
@@ -33,19 +35,21 @@ public class AccessPointScoreDetailDto extends BaseDto{
 		this.score = score;
 	}
 
-	public ArrayList<String> getScoreComputationItems() {
+	public ArrayList<AccessPointScoreComputationItemDto> getScoreComputationItems() {
 		return scoreComputationItems;
 	}
 
-	public void setScoreComputationItems(ArrayList<String> scoreComputationItems) {
+	public void setScoreComputationItems(
+			ArrayList<AccessPointScoreComputationItemDto> scoreComputationItems) {
 		this.scoreComputationItems = scoreComputationItems;
 	}
 
-	public void addScoreComputationItem(String item) {
+	public void addScoreComputationItem(Integer score, String item) {
 		if (scoreComputationItems == null) {
-			scoreComputationItems = new ArrayList<String>();
+			scoreComputationItems = new ArrayList<AccessPointScoreComputationItemDto>();
 		}
-		scoreComputationItems.add(item);
+		AccessPointScoreComputationItemDto apsi = new AccessPointScoreComputationItemDto(score,item);
+		scoreComputationItems.add(apsi);
 
 	}
 

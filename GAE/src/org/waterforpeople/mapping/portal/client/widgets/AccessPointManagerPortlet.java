@@ -3,13 +3,14 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreComputationItemDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDetailDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.Status;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AccessPointSearchControl;
@@ -38,6 +39,10 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -49,10 +54,6 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public class AccessPointManagerPortlet extends UserAwarePortlet implements
@@ -306,8 +307,10 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				}
 				if (item.getScoreComputationItems() != null) {
 					StringBuilder sb = new StringBuilder();
-					for (String scoreitem : item.getScoreComputationItems()) {
-						sb.append(scoreitem + "\n");
+					for (AccessPointScoreComputationItemDto scoreitem : item
+							.getScoreComputationItems()) {
+						sb.append(scoreitem.getScoreItem() + ":"
+								+ scoreitem.getScoreDetailMessage() + "\n");
 					}
 					scoreItems.setText(sb.toString());
 					scoreItems.setWidth("30em");
@@ -325,6 +328,37 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				accessPointDetail.setWidget(3, 0,
 						ViewUtil.initLabel(TEXT_CONSTANTS.scoreMakeup()));
 				accessPointDetail.setWidget(3, 1, scoreItems);
+				Button scoreAccessPoint = new Button();
+				accessPointDetail.setWidget(4, 1, scoreAccessPoint);
+				scoreAccessPoint.addClickHandler(new ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						svc.scorePoint(
+								buildAccessPointDto(),
+								new AsyncCallback<ArrayList<AccessPointScoreComputationItemDto>>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										// TODO Auto-generated method stub
+
+									}
+
+									@Override
+									public void onSuccess(
+											ArrayList<AccessPointScoreComputationItemDto> result) {
+										TextArea scoreItems = (TextArea)accessPointDetail.getWidget(3, 1);
+										StringBuilder sb = new StringBuilder();
+										for (AccessPointScoreComputationItemDto scoreitem : result) {
+											sb.append(scoreitem.getScoreItem() + ":"
+													+ scoreitem.getScoreDetailMessage() + "\n");
+										}
+										scoreItems.setText(sb.toString());
+
+									}
+								});
+					}
+				});
 			}
 		}
 		return accessPointDetail;

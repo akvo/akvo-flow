@@ -525,4 +525,5 @@ public interface TextConstants extends Constants{
 	public String remaining();
 	public String markChangesComplete();
 	public String changesComplete();
+	public String negativeOverride();
 }

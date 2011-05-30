@@ -39,4 +39,6 @@ public interface AccessPointManagerService extends RemoteService {
 
 	void deleteAccessPoints(AccessPointSearchCriteriaDto searchCriteria);
 	String returnS3Path();
+	
+	ArrayList<AccessPointScoreComputationItemDto> scorePoint(AccessPointDto accessPointDto);
 }

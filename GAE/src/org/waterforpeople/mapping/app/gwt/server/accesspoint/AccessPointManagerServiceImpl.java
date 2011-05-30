@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -12,11 +14,14 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreComputationItemDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.app.util.AccessPointServiceSupport;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPointScoreComputationItem;
+import org.waterforpeople.mapping.domain.AccessPointScoreDetail;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
@@ -31,7 +36,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		implements AccessPointManagerService {
-	
+
 	private static final String S3_BUCKET = "s3bucket";
 
 	private static final Logger log = Logger
@@ -52,14 +57,16 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			AccessPointSearchCriteriaDto searchCriteria, String cursorString) {
 		AccessPointDao dao = new AccessPointDao();
 
-		List<AccessPoint> pointList = dao.searchAccessPoints(searchCriteria
-				.getCountryCode(), searchCriteria.getCommunityCode(),
-				searchCriteria.getCollectionDateFrom(), searchCriteria
-						.getCollectionDateTo(), searchCriteria.getPointType(),
-				searchCriteria.getTechType(), searchCriteria
-						.getConstructionDateFrom(), searchCriteria
-						.getConstructionDateTo(), searchCriteria.getOrderBy(),
-				searchCriteria.getOrderByDir(), searchCriteria.getPageSize(),cursorString);
+		List<AccessPoint> pointList = dao.searchAccessPoints(
+				searchCriteria.getCountryCode(),
+				searchCriteria.getCommunityCode(),
+				searchCriteria.getCollectionDateFrom(),
+				searchCriteria.getCollectionDateTo(),
+				searchCriteria.getPointType(), searchCriteria.getTechType(),
+				searchCriteria.getConstructionDateFrom(),
+				searchCriteria.getConstructionDateTo(),
+				searchCriteria.getOrderBy(), searchCriteria.getOrderByDir(),
+				searchCriteria.getPageSize(), cursorString);
 		ArrayList<AccessPointDto> apDtoList = new ArrayList<AccessPointDto>();
 		for (AccessPoint apItem : pointList) {
 			AccessPointDto apDto = AccessPointServiceSupport
@@ -93,26 +100,26 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		apDao.delete(apDao.getByKey(id));
 		return 1;
 	}
-	
+
 	@Override
-	public void deleteAccessPoints(AccessPointSearchCriteriaDto searchCriteria){
+	public void deleteAccessPoints(AccessPointSearchCriteriaDto searchCriteria) {
 		AccessPointDao apDao = new AccessPointDao();
-		apDao.deleteByQuery(searchCriteria
-				.getCountryCode(), searchCriteria.getCommunityCode(),
-				searchCriteria.getCollectionDateFrom(), searchCriteria
-						.getCollectionDateTo(), searchCriteria.getPointType(),
-				searchCriteria.getTechType(), searchCriteria
-						.getConstructionDateFrom(), searchCriteria
-						.getConstructionDateTo());	
+		apDao.deleteByQuery(searchCriteria.getCountryCode(),
+				searchCriteria.getCommunityCode(),
+				searchCriteria.getCollectionDateFrom(),
+				searchCriteria.getCollectionDateTo(),
+				searchCriteria.getPointType(), searchCriteria.getTechType(),
+				searchCriteria.getConstructionDateFrom(),
+				searchCriteria.getConstructionDateTo());
 	}
 
 	@Override
 	public AccessPointDto getAccessPoint(Long id) {
 
-		AccessPoint canonicalItem = aph.getAccessPoint(id,true);
+		AccessPoint canonicalItem = aph.getAccessPoint(id, true);
 		AccessPointDto apDto = AccessPointServiceSupport
 				.copyCanonicalToDto(canonicalItem);
-		
+
 		return apDto;
 	}
 
@@ -174,14 +181,14 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		if (this.getUploadS3Flag()) {
 			try {
 
-				s3.uploadFile(PropertyUtil.getProperty(S3_BUCKET), imageURLParts[1] + imageURLParts[2],
-						newImage);
+				s3.uploadFile(PropertyUtil.getProperty(S3_BUCKET),
+						imageURLParts[1] + imageURLParts[2], newImage);
 			} catch (Exception ex) {
 				// This is here for dev env where you can't make S3 puts
 				log.info(ex.getMessage());
 
 			}
-		}		
+		}
 	}
 
 	/**
@@ -257,5 +264,38 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	@Override
 	public String returnS3Path() {
 		return PropertyUtil.getProperty("surveyuploadurl");
+	}
+
+	@Override
+	public ArrayList<AccessPointScoreComputationItemDto> scorePoint(AccessPointDto accessPointDto) {
+		HashMap<Integer, String> scoreDetails = new HashMap<Integer, String>();
+		AccessPointHelper aph = new AccessPointHelper();
+		AccessPoint ap = new AccessPoint();
+		AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
+		ap = aph.scoreAccessPointDynamic(ap);
+		List<AccessPointScoreDetail> apsdList = ap.getApScoreDetailList();
+		Date latestDate = null;
+		AccessPointScoreDetail selectedItem = null;
+		for (AccessPointScoreDetail item : apsdList) {
+			if (selectedItem != null && latestDate != null) {
+				if (latestDate.before(item.getComputationDate())) {
+					selectedItem = item;
+				}
+			}
+			if (item.getComputationDate() != null) {
+				latestDate = item.getComputationDate();
+				selectedItem = item;
+			}
+
+		}
+		if (selectedItem != null) {
+			ArrayList<AccessPointScoreComputationItemDto> apscDtoList = new ArrayList<AccessPointScoreComputationItemDto>();
+			for(AccessPointScoreComputationItem item: selectedItem.getScoreComputationItems()){
+				AccessPointScoreComputationItemDto dtoItem = new AccessPointScoreComputationItemDto(item.getScoreItem(), item.getScoreDetailMessage());
+				apscDtoList.add(dtoItem);
+			}
+			return apscDtoList;
+		}
+		return null;
 	}
 }

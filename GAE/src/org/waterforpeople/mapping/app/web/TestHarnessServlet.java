@@ -173,6 +173,20 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("setupTestUser".equals(action)) {
 			setupTestUser();
+		} else if ("setupDevEnv".equals(action)) {
+			try {
+				resp.getWriter().println(
+						"About to configure development environment");
+				setupTestUser();
+				resp.getWriter().println("Completed setting up test user");
+				this.populatePermissions();
+				resp.getWriter().println("Completed setting up permissions");
+				AccessPointTest apt = new AccessPointTest();
+				apt.loadLots(resp);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if ("populateAccessPointMetric".equals(action)) {
 			AccessPointMetricSummaryTest apMST = new AccessPointMetricSummaryTest();
 			apMST.runTest(resp);
@@ -523,7 +537,7 @@ public class TestHarnessServlet extends HttpServlet {
 			scoreBuckets.add("WATERPOINTSUSTAINABILITY");
 			scoreBuckets.add("PUBLICINSTITUTIONLEVELOFSERVICE");
 			scoreBuckets.add("PUBLICINSTITUTIONSUSTAINABILITY");
-			for(String item:scoreBuckets){
+			for (String item : scoreBuckets) {
 				StandardScoreBucket sbucket = new StandardScoreBucket();
 				sbucket.setName(item);
 				scDao.save(sbucket);
@@ -1580,7 +1594,7 @@ public class TestHarnessServlet extends HttpServlet {
 		savePerm("Admin", permList, userDao);
 		savePerm("Publish Survey", permList, userDao);
 		savePerm("Run Reports", permList, userDao);
-		savePerm("View Messages",permList,userDao);
+		savePerm("View Messages", permList, userDao);
 	}
 
 	private void savePerm(String name, List<Permission> permList,

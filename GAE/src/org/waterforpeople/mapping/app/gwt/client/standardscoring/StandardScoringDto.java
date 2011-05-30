@@ -30,6 +30,8 @@ public class StandardScoringDto extends BaseDto {
 	private Date effectiveStartDate = null;
 	private Date effectiveEndDate = null;
 	private Long scoreBucketId = null;
+	private Boolean negativeOverride = null;
+	
 	public Boolean getGlobalStandard() {
 		return globalStandard;
 	}
@@ -143,5 +145,11 @@ public class StandardScoringDto extends BaseDto {
 	}
 	public void setScoreBucketId(Long scoreBucketId) {
 		this.scoreBucketId = scoreBucketId;
+	}
+	public void setNegativeOverride(Boolean negativeOverride) {
+		this.negativeOverride = negativeOverride;
+	}
+	public Boolean getNegativeOverride() {
+		return negativeOverride;
 	}
 }

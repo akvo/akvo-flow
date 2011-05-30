@@ -88,6 +88,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					"negativeOperator", true),
 			new DataTableHeader(TEXT_CONSTANTS.negativeScore(),
 					"negativeScore", true),
+			new DataTableHeader(TEXT_CONSTANTS.negativeOverride(),
+					"negativeOverride", true),
 			new DataTableHeader(TEXT_CONSTANTS.effectiveStartDate(),
 					"effectiveStartDate", true),
 			new DataTableHeader(TEXT_CONSTANTS.effectiveEndDate(),
@@ -343,19 +345,31 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			negativeScore.setText(item.getNegativeScore().toString());
 		}
 		grid.setWidget(row, 12, negativeScore);
+		
+		//negativeOverride
+		ListBox negativeOverride = new ListBox();
+		negativeOverride.addItem("No");
+		negativeOverride.addItem("Yes");
+		negativeOverride.setSelectedIndex(0);
+		if(item!=null && item.getNegativeOverride()!=null){
+			if(item.getNegativeOverride()){
+				negativeOverride.setSelectedIndex(1);
+			}
+		}
+		grid.setWidget(row, 13, negativeOverride);
 
 		// effectivestartdate
 		DateBox effectiveStartDate = new DateBox();
 		if (item != null && item.getEffectiveStartDate() != null) {
 			effectiveStartDate.setValue(item.getEffectiveStartDate());
 		}
-		grid.setWidget(row, 13, effectiveStartDate);
+		grid.setWidget(row, 14, effectiveStartDate);
 		// effectiveenddate
 		DateBox effectiveEndDate = new DateBox();
 		if (item != null && item.getEffectiveEndDate() != null) {
 			effectiveEndDate.setValue(item.getEffectiveEndDate());
 		}
-		grid.setWidget(row, 14, effectiveEndDate);
+		grid.setWidget(row, 15, effectiveEndDate);
 		HorizontalPanel hpanel = new HorizontalPanel();
 		Button saveButton = new Button();
 		saveButton.setText(TEXT_CONSTANTS.save());
@@ -509,13 +523,21 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			Integer score = Integer.parseInt(negativeScore.getText().trim());
 			item.setNegativeScore(score);
 		}
+		
+		ListBox negativeOverride = (ListBox)grid.getWidget(row,13);
+		if(negativeOverride.getSelectedIndex()==0){
+			item.setNegativeOverride(false);
+		}else{
+			item.setNegativeOverride(true);
+		}
+		
 		// effectivestartdate
-		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 13);
+		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 14);
 		if (effectiveStartDate.getValue() != null) {
 			item.setEffectiveStartDate(effectiveStartDate.getValue());
 		}
 		// effectiveenddate
-		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 14);
+		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 15);
 		if (effectiveEndDate.getValue() != null) {
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
@@ -559,13 +581,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			Integer row, Integer col) {
 		ListBox criteriaType = new ListBox();
 		criteriaType.addItem(" ");
-		criteriaType.addItem("Text","String");
-		criteriaType.addItem("Number","Number");
-		criteriaType.addItem("True/False","Boolean");
+		criteriaType.addItem("Text", "String");
+		criteriaType.addItem("Number", "Number");
+		criteriaType.addItem("True/False", "Boolean");
 		criteriaType.setSelectedIndex(0);
 		criteriaType.setTitle(row + "|" + 6);
 		if (item != null && item.getCriteriaType() != null) {
-			ViewUtil.setListboxSelection(criteriaType,  item.getCriteriaType());			
+			ViewUtil.setListboxSelection(criteriaType, item.getCriteriaType());
 			setupOperatorListBox(item, grid, row, col);
 		}
 

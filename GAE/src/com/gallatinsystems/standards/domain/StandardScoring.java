@@ -33,6 +33,8 @@ public class StandardScoring extends BaseDomain {
 	private Date effectiveStartDate = null;
 	private Date effectiveEndDate = null;
 	private Long scoreBucketId = null;
+	private Boolean negativeOverride = null;
+	
 
 	public Boolean getGlobalStandard() {
 		return globalStandard;
@@ -184,5 +186,13 @@ public class StandardScoring extends BaseDomain {
 
 	public Long getScoreBucketId() {
 		return scoreBucketId;
+	}
+
+	public void setNegativeOverride(Boolean negativeOverride) {
+		this.negativeOverride = negativeOverride;
+	}
+
+	public Boolean getNegativeOverride() {
+		return negativeOverride;
 	}
 }
