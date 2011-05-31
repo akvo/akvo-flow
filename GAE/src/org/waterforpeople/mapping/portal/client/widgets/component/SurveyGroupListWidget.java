@@ -34,7 +34,8 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 	.create(TextConstants.class);
 	private SurveyServiceAsync surveyService;
 	private Map<Widget, SurveyGroupDto> groupMap;
-	Map<String, Object> bundle;
+	private Map<String, Object> bundle;
+	private String currentCursor;
 
 	public SurveyGroupListWidget(PageController controller) {
 		super(controller);
@@ -45,7 +46,8 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 	}
 
 	public void loadData() {
-		surveyService.listSurveyGroups(null, false, false, false,
+		//TODO: remove "All"
+		surveyService.listSurveyGroups("all", false, false, false,
 				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
 
 					@Override
