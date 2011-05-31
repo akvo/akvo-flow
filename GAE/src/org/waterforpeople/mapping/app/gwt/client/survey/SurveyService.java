@@ -19,7 +19,7 @@ public interface SurveyService extends RemoteService {
 	public SurveyDto[] listSurvey();
 
 	public QuestionDto[] listSurveyQuestionByType(Long surveyId,
-			QuestionType type);
+			QuestionType type, boolean loadTranslations);
 
 	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,
 			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,

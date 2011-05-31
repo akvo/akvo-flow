@@ -194,14 +194,18 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	 * type code
 	 */
 	public QuestionDto[] listSurveyQuestionByType(Long surveyId,
-			QuestionType type) {
+			QuestionType type, boolean loadTranslations) {
 
 		QuestionDao questionDao = new QuestionDao();
 		List<Question> qList = questionDao.listQuestionByType(surveyId,
 				Question.Type.valueOf(type.toString()));
 		QuestionDto[] dtoArr = new QuestionDto[qList.size()];
 		int i = 0;
+		TranslationDao transDao = new TranslationDao();
 		for (Question q : qList) {
+			if(loadTranslations){
+				q.setTranslationMap(transDao.findTranslations(ParentType.QUESTION_TEXT, q.getKey().getId()));
+			}
 			dtoArr[i] = marshalQuestionDto(q);
 			i++;
 		}

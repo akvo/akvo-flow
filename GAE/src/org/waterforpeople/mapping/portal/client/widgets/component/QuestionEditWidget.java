@@ -90,10 +90,19 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	private QuestionGroupDto questionGroup;
 	private String operation;
+	private boolean needTranslations;
+	private String locale;
 
 	public QuestionEditWidget() {
 		surveyService = GWT.create(SurveyService.class);
 		optionQuestions = new HashMap<Long, List<QuestionDto>>();
+		locale = com.google.gwt.i18n.client.LocaleInfo
+				.getCurrentLocale().getLocaleName();
+		if ("Default".equalsIgnoreCase(locale) || "en".equalsIgnoreCase(locale)) {
+			needTranslations = false;
+		} else {
+			needTranslations = true;
+		}
 		installWidgets();
 		initWidget(panel);
 	}
@@ -396,7 +405,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	/**
 	 * loads the list of possible values for the dependent question list box. If
-	 * this has already been loaded it may be returend from cache.
+	 * this has already been loaded it may be returned from cache.
 	 */
 	private void loadDependencyList() {
 		dependencyPanel.setVisible(true);
@@ -407,7 +416,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		} else {
 			showLoading(dependencyPanel, TEXT_CONSTANTS.loading());
 			surveyService.listSurveyQuestionByType(
-					currentQuestion.getSurveyId(), QuestionType.OPTION,
+					currentQuestion.getSurveyId(), QuestionType.OPTION,needTranslations,
 					new AsyncCallback<QuestionDto[]>() {
 
 						@Override
@@ -618,10 +627,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 												currentQuestion.getSurveyId())
 												.add(currentQuestion);
 									}
-								}else {
+								} else {
 									List<QuestionDto> qList = new ArrayList<QuestionDto>();
 									qList.add(currentQuestion);
-									optionQuestions.put(currentQuestion.getSurveyId(), qList);
+									optionQuestions.put(
+											currentQuestion.getSurveyId(),
+											qList);
 								}
 							}
 							if (listener != null) {

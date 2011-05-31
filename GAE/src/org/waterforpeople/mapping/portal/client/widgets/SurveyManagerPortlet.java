@@ -618,7 +618,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				// if we haven't loaded the Option questions for this survey, do
 				// it now
 				svc.listSurveyQuestionByType(currentQuestion.getSurveyId(),
-						QuestionType.OPTION,
+						QuestionType.OPTION,false,
 						new AsyncCallback<QuestionDto[]>() {
 
 							@Override

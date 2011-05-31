@@ -12,7 +12,7 @@ public interface SurveyServiceAsync {
 
 	public void listSurvey(AsyncCallback<SurveyDto[]> callback);
 
-	public void listSurveyQuestionByType(Long surveyId, QuestionType type,
+	public void listSurveyQuestionByType(Long surveyId, QuestionType type, boolean loadTranslations,
 			AsyncCallback<QuestionDto[]> callback);
 
 	void listSurveysByGroup(String selectedGroupId,
