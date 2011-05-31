@@ -187,15 +187,14 @@ public class SurveyQuestionPortlet extends Portlet {
 			public void onSuccess(QuestionDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
+						String textToUse =getLocalizedText(result[i].getText(),
+								result[i].getTranslationMap()); 
 						fullQuestionMap.put(
-								result[i].getKeyId(),
-								getLocalizedText(result[i].getText(),
-										result[i].getTranslationMap()));
-						String text = result[i].getText();
-						if (text != null && text.length() > MAX_LEN) {
-							text = text.substring(0, MAX_LEN) + "...";
+								result[i].getKeyId(),textToUse);														
+						if (textToUse != null && textToUse.length() > MAX_LEN) {
+							textToUse = textToUse.substring(0, MAX_LEN) + "...";
 						}
-						questionListbox.addItem(text, result[i].getKeyId()
+						questionListbox.addItem(textToUse, result[i].getKeyId()
 								.toString());
 
 					}
@@ -368,7 +367,7 @@ public class SurveyQuestionPortlet extends Portlet {
 				for (QuestionOptionDto opt : q.getOptionContainerDto()
 						.getOptionsList()) {
 					if (opt.getText() != null
-							&& opt.getText().trim().equalsIgnoreCase(tokens[i])) {
+							&& opt.getText().trim().equalsIgnoreCase(tokens[i].trim())) {
 						builder.append(getLocalizedText(tokens[i],
 								opt.getTranslationMap()));
 						found = true;
