@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -19,6 +19,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
@@ -164,7 +165,7 @@ public class AttributeAssignmentWidget extends Composite implements
 	 */
 	private void loadSurveyGroups() {
 		surveyService.listSurveyGroups("all", false, false, false,
-				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
+				new AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -175,7 +176,8 @@ public class AttributeAssignmentWidget extends Composite implements
 					}
 
 					@Override
-					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+					public void onSuccess(ResponseDto<ArrayList<SurveyGroupDto>> response) {
+						ArrayList<SurveyGroupDto> result = response.getPayload();
 						surveyGroup.addItem("", "");
 						boolean done = true;
 						if (result != null) {

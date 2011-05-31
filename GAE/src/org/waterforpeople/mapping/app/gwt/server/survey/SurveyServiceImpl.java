@@ -47,6 +47,7 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -141,13 +142,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		return surveyDtos;
 	}
 
-	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,
-			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
-			Boolean loadQuestionFlag) {
+	public ResponseDto<ArrayList<SurveyGroupDto>> listSurveyGroups(
+			String cursorString, Boolean loadSurveyFlag,
+			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
+		ResponseDto<ArrayList<SurveyGroupDto>> response = new ResponseDto<ArrayList<SurveyGroupDto>>();
 		ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
 		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-		for (SurveyGroup canonical : surveyGroupDao.list(cursorString,
-				loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag)) {
+		List<SurveyGroup> groupList = surveyGroupDao.list(cursorString,
+				loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag);
+		for (SurveyGroup canonical : groupList) {
 			SurveyGroupDto dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(canonical, dto);
 			dto.setSurveyList(null);
@@ -186,7 +189,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 			surveyGroupDtoList.add(dto);
 		}
-		return surveyGroupDtoList;
+		response.setPayload(surveyGroupDtoList);		
+		response.setCursorString(SurveyGroupDAO.getCursor(groupList));		
+		return response;
 	}
 
 	/**
@@ -203,8 +208,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		int i = 0;
 		TranslationDao transDao = new TranslationDao();
 		for (Question q : qList) {
-			if(loadTranslations){
-				q.setTranslationMap(transDao.findTranslations(ParentType.QUESTION_TEXT, q.getKey().getId()));
+			if (loadTranslations) {
+				q.setTranslationMap(transDao.findTranslations(
+						ParentType.QUESTION_TEXT, q.getKey().getId()));
 			}
 			dtoArr[i] = marshalQuestionDto(q);
 			i++;
@@ -1207,7 +1213,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					+ PropertyUtil.getProperty(SURVEY_DIR_PROP) + "/"
 					+ surveyId + ".xml");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					url.openStream(),"UTF-8"));
+					url.openStream(), "UTF-8"));
 			StringBuffer buff = new StringBuffer();
 			String line;
 			while ((line = reader.readLine()) != null) {

@@ -3,8 +3,8 @@ package org.waterforpeople.mapping.portal.client.widgets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -18,6 +18,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -148,12 +149,12 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 	}
 
 	/**
-	 * loads the survey gruops
+	 * loads the survey groups
 	 */
 	private void loadSurveyGroups() {
 		loadingDialog.showCentered();
 		surveyService.listSurveyGroups("all", false, false, false,
-				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
+				new AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -165,7 +166,8 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 					}
 
 					@Override
-					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+					public void onSuccess(ResponseDto<ArrayList<SurveyGroupDto>> response) {
+						ArrayList<SurveyGroupDto> result = response.getPayload();
 						loadingDialog.hide(true);
 						surveyGroup.addItem("", "");
 						if (result != null) {

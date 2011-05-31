@@ -15,6 +15,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
@@ -114,10 +115,11 @@ public class SurveyCopyDialog extends DialogBox {
 
 	private void loadData() {
 		surveyService.listSurveyGroups(null, false, false, false,
-				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
+				new AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>>() {
 
 					@Override
-					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+					public void onSuccess(ResponseDto<ArrayList<SurveyGroupDto>> response) {
+						ArrayList<SurveyGroupDto> result = response.getPayload();
 						if (result != null) {
 							for (SurveyGroupDto group : result) {
 								surveyGroupList.addItem(group.getDisplayName(),

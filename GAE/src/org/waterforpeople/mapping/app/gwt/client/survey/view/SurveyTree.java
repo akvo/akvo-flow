@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.TreeDragController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.OpenEvent;
@@ -103,7 +104,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 			surveyRootTree.addSelectionHandler(this);
 		}
 		surveyService.listSurveyGroups("all", false, false, false,
-				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
+				new AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -111,7 +112,8 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 					}
 
 					@Override
-					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+					public void onSuccess(ResponseDto<ArrayList<SurveyGroupDto>> response) {
+						ArrayList<SurveyGroupDto> result = response.getPayload();
 						if (result != null) {
 							for (int i = 0; i < result.size(); i++) {
 								surveys.put(result.get(i), null);

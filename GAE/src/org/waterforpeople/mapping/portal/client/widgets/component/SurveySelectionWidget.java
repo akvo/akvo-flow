@@ -12,6 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
@@ -44,7 +45,6 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	private MessageDialog loadingDialog;
 	private TerminalType termType;
 	private Long pendingId;
-	
 
 	private Map<String, List<SurveyDto>> surveys;
 	private Map<String, List<QuestionGroupDto>> questionGroups;
@@ -73,10 +73,10 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		surveyGroupListbox = new ListBox();
 		surveyGroupListbox.addChangeHandler(this);
 		if (TerminalType.SURVEY == type) {
-			if(SelectionMode.MULTI == mode){
+			if (SelectionMode.MULTI == mode) {
 				surveyListbox = new ListBox(true);
 				surveyListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
-			}else{
+			} else {
 				surveyListbox = new ListBox();
 			}
 		} else {
@@ -117,7 +117,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	 */
 	private void loadSurveyGroups() {
 		surveyService.listSurveyGroups("all", false, false, false,
-				new AsyncCallback<ArrayList<SurveyGroupDto>>() {
+				new AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -128,7 +128,10 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 					}
 
 					@Override
-					public void onSuccess(ArrayList<SurveyGroupDto> result) {
+					public void onSuccess(
+							ResponseDto<ArrayList<SurveyGroupDto>> response) {
+						ArrayList<SurveyGroupDto> result = response
+								.getPayload();
 						surveyGroupListbox.addItem("", "");
 						if (result != null) {
 							int i = 0;

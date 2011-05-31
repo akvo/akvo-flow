@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -21,9 +22,9 @@ public interface SurveyService extends RemoteService {
 	public QuestionDto[] listSurveyQuestionByType(Long surveyId,
 			QuestionType type, boolean loadTranslations);
 
-	public ArrayList<SurveyGroupDto> listSurveyGroups(String cursorString,
-			Boolean loadSurveyFlag, Boolean loadQuestionGroupFlag,
-			Boolean loadQuestionFlag);
+	public ResponseDto<ArrayList<SurveyGroupDto>> listSurveyGroups(
+			String cursorString, Boolean loadSurveyFlag,
+			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag);
 
 	/**
 	 * lists all surveys for a group

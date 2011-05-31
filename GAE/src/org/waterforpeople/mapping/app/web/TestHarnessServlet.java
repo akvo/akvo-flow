@@ -1148,7 +1148,7 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("testPublishSurvey".equals(action)) {
 			try {
 				SurveyGroupDto sgDto = new SurveyServiceImpl()
-						.listSurveyGroups(null, true, false, false).get(0);
+						.listSurveyGroups(null, true, false, false).getPayload().get(0);
 				resp.getWriter().println(
 						"Got Survey Group: " + sgDto.getCode() + " Survey: "
 								+ sgDto.getSurveyList().get(0).getKeyId());

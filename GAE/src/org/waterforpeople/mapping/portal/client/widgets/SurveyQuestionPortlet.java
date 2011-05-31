@@ -17,6 +17,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryServiceAsyn
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
@@ -107,12 +108,14 @@ public class SurveyQuestionPortlet extends Portlet {
 	private void loadSurveyGroups() {
 
 		// Set up the callback object.
-		AsyncCallback<ArrayList<SurveyGroupDto>> surveyGroupCallback = new AsyncCallback<ArrayList<SurveyGroupDto>>() {
+		AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>> surveyGroupCallback = new AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>>() {
 			public void onFailure(Throwable caught) {
 				// no-op
 			}
 
-			public void onSuccess(ArrayList<SurveyGroupDto> result) {
+			public void onSuccess(
+					ResponseDto<ArrayList<SurveyGroupDto>> response) {
+				ArrayList<SurveyGroupDto> result = response.getPayload();
 				surveyGroupListbox.addItem("", "");
 				if (result != null) {
 					for (int i = 0; i < result.size(); i++) {
@@ -136,7 +139,7 @@ public class SurveyQuestionPortlet extends Portlet {
 				}
 			}
 		};
-		surveyService.listSurveyGroups(null, false, false, false,
+		surveyService.listSurveyGroups("all", false, false, false,
 				surveyGroupCallback);
 	}
 
@@ -187,10 +190,10 @@ public class SurveyQuestionPortlet extends Portlet {
 			public void onSuccess(QuestionDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
-						String textToUse =getLocalizedText(result[i].getText(),
-								result[i].getTranslationMap()); 
-						fullQuestionMap.put(
-								result[i].getKeyId(),textToUse);														
+						String textToUse = getLocalizedText(
+								result[i].getText(),
+								result[i].getTranslationMap());
+						fullQuestionMap.put(result[i].getKeyId(), textToUse);
 						if (textToUse != null && textToUse.length() > MAX_LEN) {
 							textToUse = textToUse.substring(0, MAX_LEN) + "...";
 						}
@@ -367,12 +370,13 @@ public class SurveyQuestionPortlet extends Portlet {
 				for (QuestionOptionDto opt : q.getOptionContainerDto()
 						.getOptionsList()) {
 					if (opt.getText() != null
-							&& opt.getText().trim().equalsIgnoreCase(tokens[i].trim())) {
+							&& opt.getText().trim()
+									.equalsIgnoreCase(tokens[i].trim())) {
 						builder.append(getLocalizedText(tokens[i],
 								opt.getTranslationMap()));
 						found = true;
 						break;
-					}				
+					}
 				}
 				if (!found) {
 					builder.append(tokens[i]);

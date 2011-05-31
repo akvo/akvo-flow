@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyServiceAsync {
@@ -24,7 +25,7 @@ public interface SurveyServiceAsync {
 
 	void listSurveyGroups(String cursorString, Boolean loadSurveyFlag,
 			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag,
-			AsyncCallback<ArrayList<SurveyGroupDto>> callback);
+			AsyncCallback<ResponseDto<ArrayList<SurveyGroupDto>>> callback);
 
 	void listSurveysForSurveyGroup(String surveyGroupCode,
 			AsyncCallback<List<SurveyDto>> callback);
