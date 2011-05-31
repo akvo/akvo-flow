@@ -372,11 +372,10 @@ public class SurveyQuestionPortlet extends Portlet {
 								opt.getTranslationMap()));
 						found = true;
 						break;
-					}
-
-					if (!found) {
-						builder.append(tokens[i]);
-					}
+					}				
+				}
+				if (!found) {
+					builder.append(tokens[i]);
 				}
 			}
 			processedText = builder.toString();
