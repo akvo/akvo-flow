@@ -37,6 +37,17 @@ public class SurveyInstance extends BaseDomain {
 	private String approvedFlag;
 	private String uuid;
 	private String approximateLocationFlag;
+	private Long surveyedLocaleId;
+	
+	
+
+	public Long getSurveyedLocaleId() {
+		return surveyedLocaleId;
+	}
+
+	public void setSurveyedLocaleId(Long surveyedLocaleId) {
+		this.surveyedLocaleId = surveyedLocaleId;
+	}
 
 	public String getApproximateLocationFlag() {
 		return approximateLocationFlag;

@@ -43,6 +43,7 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.image.GAEImageAdapter;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
@@ -153,8 +154,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 					Long userID = 1L;
 					dfDao.save(deviceFile);
 					SurveyInstance inst = siDao.save(collectionDate,
-							deviceFile, userID, unparsedLines.subList(offset,
-									lineNum));
+							deviceFile, userID,
+							unparsedLines.subList(offset, lineNum));
 					if (inst != null) {
 						surveyInstances.add(inst);
 						// TODO: HACK because we were saving so many duplicate
@@ -187,8 +188,9 @@ public class TaskServlet extends AbstractRestApiServlet {
 						// if we haven't processed everything yet, invoke a
 						// new service
 						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task").param("action",
-								"processFile").param("fileName", fileName)
+						queue.add(url("/app_worker/task")
+								.param("action", "processFile")
+								.param("fileName", fileName)
 								.param("offset", lineNum + ""));
 					}
 				}
@@ -206,10 +208,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 			zis.close();
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
-			MailUtil
-					.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-							"Device File Processing Error: " + fileName, e
-									.getMessage());
+			MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
+					"Device File Processing Error: " + fileName, e.getMessage());
 		}
 
 		return surveyInstances;
@@ -375,10 +375,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private void ingestFile(TaskRequest req) {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
-			ArrayList<SurveyInstance> surveyInstances = processFile(req
-					.getFileName(), req.getPhoneNumber(), req.getChecksum(),
+			ArrayList<SurveyInstance> surveyInstances = processFile(
+					req.getFileName(), req.getPhoneNumber(), req.getChecksum(),
 					req.getOffset());
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
+			Queue defaultQueue = QueueFactory.getDefaultQueue();
 			for (SurveyInstance instance : surveyInstances) {
 				ProcessingAction pa = dispatch(instance.getKey().getId() + "");
 				TaskOptions options = url(pa.getDispatchURL());
@@ -392,6 +393,14 @@ public class TaskServlet extends AbstractRestApiServlet {
 				summQueue.add(url("/app_worker/datasummarization").param(
 						"objectKey", instance.getKey().getId() + "").param(
 						"type", "SurveyInstance"));
+				//process the "new" domain structure
+				
+		/*		defaultQueue.add(url("/app_worker/surveyalservlet").param(
+						SurveyalRestRequest.ACTION_PARAM,
+						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
+						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+						instance.getKey().getId() + ""));*/
+
 			}
 		}
 	}
