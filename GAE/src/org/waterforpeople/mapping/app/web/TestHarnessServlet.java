@@ -60,6 +60,7 @@ import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceI
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
+import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
 import org.waterforpeople.mapping.app.web.test.StandardScoringTest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.AccessPointMetricMappingDao;
@@ -181,6 +182,10 @@ public class TestHarnessServlet extends HttpServlet {
 			setupTestUser();
 		} else if ("setupDevEnv".equals(action)) {
 			try {
+				DeleteObjectUtil dou = new DeleteObjectUtil();
+				dou.deleteAllObjects("AccessPoint");
+				dou.deleteAllObjects("StandardScoreBucket");
+				dou.deleteAllObjects("StandardScoring");
 				resp.getWriter().println(
 						"About to configure development environment");
 				setupTestUser();
@@ -189,6 +194,9 @@ public class TestHarnessServlet extends HttpServlet {
 				resp.getWriter().println("Completed setting up permissions");
 				AccessPointTest apt = new AccessPointTest();
 				apt.loadLots(resp);
+				StandardScoringTest sct = new StandardScoringTest();
+				sct.populateData();
+				resp.getWriter().println("Completed setting scorebuckets");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1148,7 +1156,8 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("testPublishSurvey".equals(action)) {
 			try {
 				SurveyGroupDto sgDto = new SurveyServiceImpl()
-						.listSurveyGroups(null, true, false, false).getPayload().get(0);
+						.listSurveyGroups(null, true, false, false)
+						.getPayload().get(0);
 				resp.getWriter().println(
 						"Got Survey Group: " + sgDto.getCode() + " Survey: "
 								+ sgDto.getSurveyList().get(0).getKeyId());
@@ -1513,16 +1522,15 @@ public class TestHarnessServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else if ("clearcache".equals(action)){
+		} else if ("clearcache".equals(action)) {
 			CacheFactory cacheFactory;
 			try {
-				cacheFactory = CacheManager.getInstance()
-				.getCacheFactory();
+				cacheFactory = CacheManager.getInstance().getCacheFactory();
 				Cache cache = cacheFactory.createCache(Collections.emptyMap());
 				cache.clear();
-			} catch (CacheException e) {			
+			} catch (CacheException e) {
 				e.printStackTrace();
-			}			
+			}
 		}
 
 	}

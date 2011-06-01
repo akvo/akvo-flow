@@ -1,15 +1,20 @@
 package org.waterforpeople.mapping.app.web.test;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.standards.dao.StandardScoringDao;
+import com.gallatinsystems.standards.domain.StandardScoreBucket;
 import com.gallatinsystems.standards.domain.StandardScoring;
 
 public class StandardScoringTest {
-	
-	public void populateData(){
+
+	public void populateData() {
+		ArrayList<StandardScoreBucket> sbucketlist = populateScoreBuckets();
+		
 		Calendar calendar = new GregorianCalendar(2010, Calendar.JANUARY, 1);
 		Date effectiveStartDate = calendar.getTime();
 		calendar.add(Calendar.MONTH, 5000);
@@ -31,7 +36,7 @@ public class StandardScoringTest {
 		ss.setMapToObject("AccessPoint");
 		ss.setEffectiveStartDate(effectiveStartDate);
 		ss.setEffectiveEndDate(effectiveEndDate);
-		ss.setScoreBucketId(15730L);
+		ss.setScoreBucketId(sbucketlist.get(0).getKey().getId());
 		ssDao.save(ss);
 
 		StandardScoring ssWaterAvail = new StandardScoring();
@@ -44,10 +49,9 @@ public class StandardScoringTest {
 		ssWaterAvail.setNegativeOperator("!=");
 		ssWaterAvail.setNegativeCriteria("true");
 		ssWaterAvail.setCriteriaType("Boolean");
-		ssWaterAvail.setScoreBucketId(15730L);
+		ssWaterAvail.setScoreBucketId(sbucketlist.get(0).getKey().getId());
 		ssDao.save(ssWaterAvail);
-		
-		
+
 		StandardScoring ss2 = new StandardScoring();
 		ss2.setGlobalStandard(false);
 		ss2.setCountryCode("LR");
@@ -64,9 +68,9 @@ public class StandardScoringTest {
 		ss2.setMapToObject("AccessPoint");
 		ss2.setEffectiveStartDate(effectiveStartDate);
 		ss2.setEffectiveEndDate(effectiveEndDate);
-		ss2.setScoreBucketId(15731L);
+		ss2.setScoreBucketId(sbucketlist.get(0).getKey().getId());
 		ssDao.save(ss2);
-		
+
 		StandardScoring ss4 = new StandardScoring();
 		ss4.setGlobalStandard(false);
 		ss4.setCountryCode("BO");
@@ -83,8 +87,26 @@ public class StandardScoringTest {
 		ss4.setMapToObject("AccessPoint");
 		ss4.setEffectiveStartDate(effectiveStartDate);
 		ss4.setEffectiveEndDate(effectiveEndDate);
-		ss4.setScoreBucketId(15731L);
+		ss4.setScoreBucketId(sbucketlist.get(1).getKey().getId());
 		ssDao.save(ss4);
+	}
+
+	public ArrayList<StandardScoreBucket> populateScoreBuckets() {
+		ArrayList<StandardScoreBucket> scoreBucketsList = new ArrayList<StandardScoreBucket>();
+		BaseDAO<StandardScoreBucket> scDao = new BaseDAO<StandardScoreBucket>(
+				StandardScoreBucket.class);
+		ArrayList<String> scoreBuckets = new ArrayList<String>();
+		scoreBuckets.add("WATERPOINTLEVELOFSERVICE");
+		scoreBuckets.add("WATERPOINTSUSTAINABILITY");
+		scoreBuckets.add("PUBLICINSTITUTIONLEVELOFSERVICE");
+		scoreBuckets.add("PUBLICINSTITUTIONSUSTAINABILITY");
+		for (String item : scoreBuckets) {
+			StandardScoreBucket sbucket = new StandardScoreBucket();
+			sbucket.setName(item);
+			scDao.save(sbucket);
+			scoreBucketsList.add(sbucket);
+		}
+		return scoreBucketsList;
 	}
 
 }
