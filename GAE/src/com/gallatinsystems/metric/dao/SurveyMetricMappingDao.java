@@ -29,8 +29,7 @@ public class SurveyMetricMappingDao extends BaseDAO<SurveyMetricMapping> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SurveyMetricMapping> listMappingsBySurvey(Long surveyId,
-			String organization) {
+	public List<SurveyMetricMapping> listMappingsBySurvey(Long surveyId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyMetricMapping.class);
 		Map<String, Object> paramMap = null;
@@ -39,15 +38,37 @@ public class SurveyMetricMappingDao extends BaseDAO<SurveyMetricMapping> {
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("organization", filterString, paramString, "String",
-				organization, paramMap);
 		appendNonNullParam("surveyId", filterString, paramString, "Long",
 				surveyId, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-
-		return (List<SurveyMetricMapping>) query.executeWithMap(paramMap);
-
+		if (surveyId != null) {
+			query.setFilter(filterString.toString());
+			query.declareParameters(paramString.toString());
+			return (List<SurveyMetricMapping>) query.executeWithMap(paramMap);
+		} else {
+			return list(CURSOR_TYPE.all.toString());
+		}
 	}
 
+	/**
+	 * returns all SurveyMetricMappings for the given questionGroupId
+	 * 
+	 * @param questionGroupId
+	 * @return
+	 */
+	public List<SurveyMetricMapping> listMappingsByQuestionGroup(
+			Long questionGroupId) {
+		return listByProperty("questionGroupId", questionGroupId, "Long");
+	}
+
+	/**
+	 * deletes all mappings for a given questionGroupId
+	 * 
+	 * @param surveyId
+	 */
+	public void deleteMappingsForQuestionGroup(Long questionGroupId) {
+		List<SurveyMetricMapping> mappings = listMappingsByQuestionGroup(questionGroupId);
+		if (mappings != null && mappings.size() > 0) {
+			delete(mappings);
+		}
+	}
 }

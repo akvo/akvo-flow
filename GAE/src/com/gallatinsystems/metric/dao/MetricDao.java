@@ -44,10 +44,14 @@ public class MetricDao extends BaseDAO<Metric> {
 				organization, paramMap);
 		appendNonNullParam("group", filterString, paramString, "String", group,
 				paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursorString, query);
-		return (List<Metric>) query.executeWithMap(paramMap);
+		if (filterString.toString().trim().length() > 0) {
+			query.setFilter(filterString.toString());
+			query.declareParameters(paramString.toString());
+			prepareCursor(cursorString, query);
+			return (List<Metric>) query.executeWithMap(paramMap);
+		} else {
+			return list(cursorString);
+		}
 	}
 
 }

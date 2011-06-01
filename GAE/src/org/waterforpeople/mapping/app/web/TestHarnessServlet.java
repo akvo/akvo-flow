@@ -119,6 +119,8 @@ import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
+import com.gallatinsystems.metric.dao.MetricDao;
+import com.gallatinsystems.metric.domain.Metric;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.standards.domain.StandardScoreBucket;
@@ -196,6 +198,7 @@ public class TestHarnessServlet extends HttpServlet {
 				apt.loadLots(resp);
 				StandardScoringTest sct = new StandardScoringTest();
 				sct.populateData();
+				setupMetrics();
 				resp.getWriter().println("Completed setting scorebuckets");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -2028,5 +2031,23 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 			log.log(Level.INFO, "Finished Saving sg: " + sg.getKey().toString());
 		}
+	}
+
+	private void setupMetrics() {
+		MetricDao metricDao = new MetricDao();
+		List<Metric> metrics = metricDao.listMetricByOrg("test", null, null);
+		if (metrics != null) {
+			metricDao.delete(metrics);
+		}
+		List<Metric> newMetrics = new ArrayList<Metric>();
+		Metric m = new Metric();
+		m.setName("Status");
+		m.setOrganization("test");
+		newMetrics.add(m);
+		m = new Metric();
+		m.setName("Households Served");
+		m.setOrganization("test");
+		newMetrics.add(m);
+		metricDao.save(newMetrics);
 	}
 }

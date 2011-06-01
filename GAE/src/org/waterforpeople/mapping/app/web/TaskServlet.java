@@ -28,8 +28,8 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
 
@@ -395,12 +395,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 						"type", "SurveyInstance"));
 				//process the "new" domain structure
 				
-		/*		defaultQueue.add(url("/app_worker/surveyalservlet").param(
+				defaultQueue.add(url("/app_worker/surveyalservlet").param(
 						SurveyalRestRequest.ACTION_PARAM,
 						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
 						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-						instance.getKey().getId() + ""));*/
-
+						instance.getKey().getId() + ""));
 			}
 		}
 	}

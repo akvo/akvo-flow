@@ -1,18 +1,15 @@
-package com.gallatinsystems.metric.domain;
+package org.waterforpeople.mapping.app.gwt.client.survey;
 
-import javax.jdo.annotations.PersistenceCapable;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
- * maps survey questions to metrics
+ * transfer object for use with SurveyMetricMapping domain
  * 
  * @author Christopher Fagiani
  * 
  */
-@PersistenceCapable
-public class SurveyMetricMapping extends BaseDomain {
-	private static final long serialVersionUID = -8714047945077756907L;
+public class SurveyMetricMappingDto extends BaseDto {
+	private static final long serialVersionUID = -5717392381938379059L;
 	private Long surveyId;
 	private Long surveyQuestionId;
 	private Long questionGroupId;
@@ -49,4 +46,5 @@ public class SurveyMetricMapping extends BaseDomain {
 	public void setMetricId(Long metricId) {
 		this.metricId = metricId;
 	}
+
 }

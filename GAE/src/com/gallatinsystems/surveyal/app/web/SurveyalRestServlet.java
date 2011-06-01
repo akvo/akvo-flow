@@ -14,6 +14,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -44,6 +45,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 5923399458369692813L;
 	private static final double TOLERANCE = 0.1;
 	private static final double UNSET_VAL = -9999.9;
+	private static final String DEFAULT_ORG_PROP = "defaultOrg";
 	private static final Logger log = Logger
 			.getLogger(SurveyalRestServlet.class.getName());
 
@@ -137,7 +139,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 							.listLocalesByCoordinates(lat, lon, TOLERANCE);
 					if (candidates != null && candidates.size() == 1) {
 						locale = candidates.get(0);
-					} else if (candidates != null && candidates.size()>1) {
+					} else if (candidates != null && candidates.size() > 1) {
 						log.log(Level.WARNING,
 								"Geo based lookup of surveyed locale returned more than one candidate so we are creating a new one");
 						ambiguousFlag = true;
@@ -152,6 +154,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					// TODO: figure out how to find identifier
 					// TODO: figure out how to find localeType
 					// TODO: figure out how to set organization
+					if (locale.getOrganization() == null) {
+						locale.setOrganization(PropertyUtil
+								.getProperty(DEFAULT_ORG_PROP));
+					}
 					locale = surveyedLocaleDao.save(locale);
 				}
 				if (locale != null && locale.getKey() != null
@@ -220,8 +226,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					qDao.listQuestionsBySurvey(ans.getSurveyId());
 					metrics = metricDao.listMetricByOrg(l.getOrganization(),
 							null, null);
-					mappings = metricMappingDao.listMappingsBySurvey(
-							ans.getSurveyId(), l.getOrganization());
+					mappings = metricMappingDao.listMappingsBySurvey(ans
+							.getSurveyId());
 					loadedItems = true;
 				}
 				SurveyalValue val = new SurveyalValue();

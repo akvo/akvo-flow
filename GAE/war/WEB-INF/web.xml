@@ -182,6 +182,16 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>RemoteExceptionServlet</servlet-name>
 		<url-pattern>/remoteexception</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>SurveyMetricMappingRpcService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyMetricMappingServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SurveyMetricMappingRpcService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveymetricmaprpcservice</url-pattern>
+	</servlet-mapping>
+	
 	<servlet>
 		<servlet-name>EditorialContentService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.editorial.EditorialContentServiceImpl</servlet-class>

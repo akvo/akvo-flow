@@ -8,6 +8,7 @@ import org.waterforpeople.mapping.portal.client.widgets.component.ChangeComplete
 import org.waterforpeople.mapping.portal.client.widgets.component.DataImportWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.EditorialPageListWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.MetricMappingWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.PublicationWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionEditWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.QuestionGroupEditWidget;
@@ -48,7 +49,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	private UserDto user;
 
 	public AdminWizardPortlet(UserDto user) {
-		super(NAME, WIDTH, HEIGHT,user);
+		super(NAME, WIDTH, HEIGHT, user);
 		this.user = user;
 		init();
 	}
@@ -81,10 +82,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				.questionGroups(), QuestionGroupListWidget.class,
 				new WizardButton[] {
 						new WizardButton("QuestionGroupCreate", TEXT_CONSTANTS
-								.createQuestionGroup()),new WizardButton("Changes Complete", TEXT_CONSTANTS
-										.markChangesComplete()),
+								.createQuestionGroup()),
+						new WizardButton("Changes Complete", TEXT_CONSTANTS
+								.markChangesComplete()),
 						new WizardButton("Publish", TEXT_CONSTANTS
-								.publishSurvey(), PermissionConstants.PUBLISH_SURVEY)},
+								.publishSurvey(),
+								PermissionConstants.PUBLISH_SURVEY) },
 				new WizardButton[] { new WizardButton("SurveyList",
 						TEXT_CONSTANTS.backToSurveyList()) }));
 		wf.addInternalNode(new WizardNode("QuestionGroupCreate", null,
@@ -95,9 +98,11 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("QuestionList", TEXT_CONSTANTS
 				.questions(), QuestionListWidget.class, new WizardButton[] {
 				new WizardButton("QuestionCreate", TEXT_CONSTANTS
-						.createQuestion()),new WizardButton("Changes Complete", TEXT_CONSTANTS
-								.markChangesComplete()),
-				new WizardButton("Publish", TEXT_CONSTANTS.publishSurvey(), PermissionConstants.PUBLISH_SURVEY) },
+						.createQuestion()),
+				new WizardButton("Changes Complete", TEXT_CONSTANTS
+						.markChangesComplete()),
+				new WizardButton("Publish", TEXT_CONSTANTS.publishSurvey(),
+						PermissionConstants.PUBLISH_SURVEY) },
 				new WizardButton[] { new WizardButton("QuestionGroupList",
 						TEXT_CONSTANTS.backToQuestionGroupList()) }));
 		wf.addInternalNode(new WizardNode("QuestionCreate", null,
@@ -111,9 +116,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				new WizardButton[] { new WizardButton("QuestionList",
 						TEXT_CONSTANTS.backToQuestionList()) }));
 		wf.addInternalNode(new WizardNode("Changes Complete", null,
-				ChangeCompleteWidget.class, new WizardButton[] { new WizardButton(
-						"Administration", TEXT_CONSTANTS
-								.adminHome()) },
+				ChangeCompleteWidget.class,
+				new WizardButton[] { new WizardButton("Administration",
+						TEXT_CONSTANTS.adminHome()) },
 				new WizardButton[] { new WizardButton("QuestionList",
 						TEXT_CONSTANTS.backToQuestionList()) }));
 		wf.addInternalNode(new WizardNode("Attribute Assignment",
@@ -172,6 +177,11 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		wf.addInternalNode(new WizardNode("Rerun AP Mapping", null,
 				RerunMappingWidget.class, null, new WizardButton(
 						"Administration", TEXT_CONSTANTS.backToAdminHome())));
+		wf.addInternalNode(new WizardNode("Map Metrics", null,
+				MetricMappingWidget.class, new WizardButton("Assignment List",
+						TEXT_CONSTANTS.assignSurveysToDevices()),
+				new WizardButton("Administration", TEXT_CONSTANTS
+						.backToAdminHome())));
 		return wf;
 	}
 
@@ -230,8 +240,10 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new DataImportWidget();
 		} else if (node.getWidgetClass().equals(RerunMappingWidget.class)) {
 			return new RerunMappingWidget();
-		}else if (node.getWidgetClass().equals(ChangeCompleteWidget.class)){
+		} else if (node.getWidgetClass().equals(ChangeCompleteWidget.class)) {
 			return new ChangeCompleteWidget();
+		} else if (node.getWidgetClass().equals(MetricMappingWidget.class)) {
+			return new MetricMappingWidget();
 		}
 
 		return null;
