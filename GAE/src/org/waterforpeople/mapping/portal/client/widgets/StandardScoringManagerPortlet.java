@@ -94,7 +94,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					"effectiveStartDate", true),
 			new DataTableHeader(TEXT_CONSTANTS.effectiveEndDate(),
 					"effectiveEndDate", true),
-
+			new DataTableHeader("ID", "key", false),
 			new DataTableHeader(TEXT_CONSTANTS.editDelete()) };
 	private static final String DEFAULT_SORT_FIELD = "globalStandard";
 
@@ -345,14 +345,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			negativeScore.setText(item.getNegativeScore().toString());
 		}
 		grid.setWidget(row, 12, negativeScore);
-		
-		//negativeOverride
+
+		// negativeOverride
 		ListBox negativeOverride = new ListBox();
 		negativeOverride.addItem("No");
 		negativeOverride.addItem("Yes");
 		negativeOverride.setSelectedIndex(0);
-		if(item!=null && item.getNegativeOverride()!=null){
-			if(item.getNegativeOverride()){
+		if (item != null && item.getNegativeOverride() != null) {
+			if (item.getNegativeOverride()) {
 				negativeOverride.setSelectedIndex(1);
 			}
 		}
@@ -369,7 +369,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (item != null && item.getEffectiveEndDate() != null) {
 			effectiveEndDate.setValue(item.getEffectiveEndDate());
 		}
+		
 		grid.setWidget(row, 15, effectiveEndDate);
+		
+		TextBox keyBox = new TextBox();
+		if(item!=null&&item.getKeyId()!=null){
+			keyBox.setText(item.getKeyId().toString());
+		}
+		grid.setWidget(row, 16, keyBox);
 		HorizontalPanel hpanel = new HorizontalPanel();
 		Button saveButton = new Button();
 		saveButton.setText(TEXT_CONSTANTS.save());
@@ -387,7 +394,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		deleteButton.setTitle(String.valueOf(row) + "|" + buttonKey);
 		hpanel.add(saveButton);
 		hpanel.add(deleteButton);
-		grid.setWidget(row, 15, hpanel);
+		grid.setWidget(row, 17, hpanel);
 
 		saveButton.addClickHandler(new ClickHandler() {
 
@@ -404,7 +411,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onSuccess(StandardScoringDto result) {
-
+						
 					}
 				});
 			}
@@ -523,14 +530,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			Integer score = Integer.parseInt(negativeScore.getText().trim());
 			item.setNegativeScore(score);
 		}
-		
-		ListBox negativeOverride = (ListBox)grid.getWidget(row,13);
-		if(negativeOverride.getSelectedIndex()==0){
+
+		ListBox negativeOverride = (ListBox) grid.getWidget(row, 13);
+		if (negativeOverride.getSelectedIndex() == 0) {
 			item.setNegativeOverride(false);
-		}else{
+		} else {
 			item.setNegativeOverride(true);
 		}
-		
+
 		// effectivestartdate
 		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 14);
 		if (effectiveStartDate.getValue() != null) {
@@ -540,6 +547,10 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 15);
 		if (effectiveEndDate.getValue() != null) {
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
+		}
+		TextBox keyBox = (TextBox)grid.getWidget(row,16);
+		if(keyBox.getValue()!=null){
+			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
 		return item;
 	}
