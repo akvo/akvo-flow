@@ -1,7 +1,11 @@
 package org.waterforpeople.mapping.dataexport;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,10 +34,10 @@ public class RawDataExporter extends AbstractDataExporter {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void export(Map<String, String> criteria, File fileName,
-			String serverBase, Map<String,String> options) {
+			String serverBase, Map<String, String> options) {
 		this.serverBase = serverBase;
 		surveyId = criteria.get(SURVEY_ID);
-		PrintWriter pw = null;
+		Writer pw = null;
 
 		try {
 			Object[] results = BulkDataServiceClient.loadQuestions(surveyId,
@@ -41,7 +45,8 @@ public class RawDataExporter extends AbstractDataExporter {
 			if (results != null) {
 				keyList = (List<String>) results[0];
 				questionMap = (Map<String, String>) results[1];
-				pw = new PrintWriter(fileName);
+				pw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName),
+						"UTF8"));				
 				writeHeader(pw, questionMap);
 				exportInstances(pw, keyList);
 			} else {
@@ -51,13 +56,17 @@ public class RawDataExporter extends AbstractDataExporter {
 			e.printStackTrace();
 		} finally {
 			if (pw != null) {
-				pw.close();
+				try {
+					pw.close();
+				} catch (IOException e) {
+					System.err.println("Could not close writer: "+e);
+				}
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void export(String serverBase, Long surveyIdentifier, PrintWriter pw) {
+	public void export(String serverBase, Long surveyIdentifier, Writer pw) {
 		try {
 			this.surveyId = surveyIdentifier.toString();
 			this.serverBase = serverBase;
@@ -76,20 +85,22 @@ public class RawDataExporter extends AbstractDataExporter {
 		}
 	}
 
-	private void writeHeader(PrintWriter pw, Map<String, String> questions) {
-		pw.print("Instance\tSubmission Date\tSubmitter");
+	private void writeHeader(Writer pw, Map<String, String> questions)
+			throws Exception {
+		pw.write("Instance\tSubmission Date\tSubmitter");
 		if (keyList != null) {
 			for (String key : keyList) {
-				pw.print("\t");
-				String questionText = questions.get(key).replaceAll("\n", " ").trim();
+				pw.write("\t");
+				String questionText = questions.get(key).replaceAll("\n", " ")
+						.trim();
 				questionText = questionText.replaceAll("\r", " ").trim();
 				pw.write(key + "|" + questionText);
 			}
 		}
-		pw.print("\n");
+		pw.write("\n");
 	}
 
-	private void exportInstances(PrintWriter pw, List<String> idList)
+	private void exportInstances(Writer pw, List<String> idList)
 			throws Exception {
 		Map<String, String> instances = BulkDataServiceClient.fetchInstanceIds(
 				surveyId, serverBase);
@@ -103,10 +114,10 @@ public class RawDataExporter extends AbstractDataExporter {
 						Map<String, String> responses = BulkDataServiceClient
 								.fetchQuestionResponses(instanceId, serverBase);
 						if (responses != null) {
-							pw.print(instanceId);
-							pw.print("\t");
-							pw.print(dateString);
-							pw.print("\t");
+							pw.write(instanceId);
+							pw.write("\t");
+							pw.write(dateString);
+							pw.write("\t");
 							SurveyInstanceDto dto = BulkDataServiceClient
 									.findSurveyInstance(
 											Long.parseLong(instanceId.trim()),
@@ -114,13 +125,13 @@ public class RawDataExporter extends AbstractDataExporter {
 							if (dto != null) {
 								String name = dto.getSubmitterName();
 								if (name != null) {
-									pw.print(dto.getSubmitterName()
+									pw.write(dto.getSubmitterName()
 											.replaceAll("\n", " ").trim());
 								}
 							}
 							for (String key : idList) {
 								String val = responses.get(key);
-								pw.print("\t");
+								pw.write("\t");
 								if (val != null) {
 									if (val.contains(SDCARD_PREFIX)) {
 										val = IMAGE_PREFIX
@@ -129,11 +140,11 @@ public class RawDataExporter extends AbstractDataExporter {
 														+ SDCARD_PREFIX
 																.length());
 									}
-									pw.print(val.replaceAll("\n", " ").trim());
+									pw.write(val.replaceAll("\n", " ").trim());
 								}
 							}
 
-							pw.print("\n");
+							pw.write("\n");
 							i++;
 							System.out.println("Row: " + i);
 						}

@@ -51,6 +51,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	private void executeRequest(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			checkThreadLocal();
+			resp.setCharacterEncoding("UTF-8");
 			requests.set(req);
 			responses.set(resp);
 			setContentType(resp);
