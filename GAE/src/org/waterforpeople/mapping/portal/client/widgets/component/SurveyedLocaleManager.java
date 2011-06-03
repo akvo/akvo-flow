@@ -1,6 +1,11 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import java.util.ArrayList;
+
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleService;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AccessPointSearchControl.Mode;
 
@@ -8,13 +13,23 @@ import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
 import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.user.app.gwt.client.PermissionConstants;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -47,13 +62,19 @@ public class SurveyedLocaleManager extends Composite implements
 	private PaginatedDataTable<SurveyedLocaleDto> dataTable;
 	private AccessPointSearchControl searchControl;
 	private Button searchButton;
+	private DateTimeFormat dateFormat;
+	private UserDto currentUser;
+	private SurveyedLocaleServiceAsync surveyedLocaleService;
 
-	public SurveyedLocaleManager() {
+	public SurveyedLocaleManager(UserDto user) {
+		surveyedLocaleService = GWT.create(SurveyedLocaleService.class);
+		currentUser = user;
 		contentPanel = new VerticalPanel();
 		contentPanel.add(constructSearchPanel());
 		dataTable = new PaginatedDataTable<SurveyedLocaleDto>(
 				DEFAULT_SORT_FIELD, this, this, false);
 		contentPanel.add(dataTable);
+		dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
 	}
 
 	/**
@@ -80,10 +101,48 @@ public class SurveyedLocaleManager extends Composite implements
 
 	}
 
-	@Override
-	public void requestData(String cursor, boolean isResort) {
-		// TODO Auto-generated method stub
+	/**
+	 * constructs a search criteria object using values from the form
+	 * 
+	 * @return
+	 */
+	private AccessPointSearchCriteriaDto formSearchCriteria() {
+		AccessPointSearchCriteriaDto dto = searchControl.getSearchCriteria();
+		dto.setOrderBy(dataTable.getCurrentSortField());
+		dto.setOrderByDir(dataTable.getCurrentSortDirection());
+		return dto;
+	}
 
+	@Override
+	public void requestData(String cursor, final boolean isResort) {
+		final boolean isNew = (cursor == null);
+		final AccessPointSearchCriteriaDto searchDto = formSearchCriteria();
+
+		AsyncCallback<ResponseDto<ArrayList<SurveyedLocaleDto>>> dataCallback = new AsyncCallback<ResponseDto<ArrayList<SurveyedLocaleDto>>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(),
+						TEXT_CONSTANTS.errorTracePrefix() + " "
+								+ caught.getLocalizedMessage());
+				errDia.showCentered();
+
+			}
+
+			@Override
+			public void onSuccess(
+					ResponseDto<ArrayList<SurveyedLocaleDto>> result) {
+				dataTable.bindData(result.getPayload(),
+						result.getCursorString(), isNew, isResort);
+
+				if (result.getPayload() != null
+						&& result.getPayload().size() > 0) {
+					dataTable.setVisible(true);
+
+				}
+			}
+		};
+		surveyedLocaleService.listLocales(searchDto, cursor, dataCallback);
 	}
 
 	@Override
@@ -93,7 +152,97 @@ public class SurveyedLocaleManager extends Composite implements
 
 	@Override
 	public void bindRow(Grid grid, SurveyedLocaleDto item, int row) {
-		// TODO Auto-generated method stub
+		Label keyIdLabel = new Label(item.getKeyId().toString());
+		grid.setWidget(row, 0, keyIdLabel);
+		if (item.getIdentifier() != null) {
+			String communityCode = item.getIdentifier();
+			if (communityCode.length() > 10)
+				communityCode = communityCode.substring(0, 10);
+			grid.setWidget(row, 1, new Label(communityCode));
+		}
+
+		if (item.getLatitude() != null && item.getLongitude() != null) {
+			grid.setWidget(row, 2, new Label(item.getLatitude().toString()));
+			grid.setWidget(row, 3, new Label(item.getLongitude().toString()));
+		}
+		if (item.getLocaleType() != null) {
+			grid.setWidget(row, 4, new Label(item.getLocaleType()));
+		}
+		if (item.getLastSurveyedDate() != null) {
+			grid.setWidget(row, 5,
+					new Label(dateFormat.format(item.getLastSurveyedDate())));
+		}
+
+		Button editLocale = new Button(TEXT_CONSTANTS.edit());
+		editLocale.setTitle(keyIdLabel.getText());
+		Button deleteLocale = new Button(TEXT_CONSTANTS.delete());
+		deleteLocale.setTitle(new Integer(row).toString() + "|"
+				+ keyIdLabel.getText());
+		HorizontalPanel buttonHPanel = new HorizontalPanel();
+		buttonHPanel.add(editLocale);
+		buttonHPanel.add(deleteLocale);
+		if (!currentUser.hasPermission(PermissionConstants.EDIT_AP)) {
+			buttonHPanel.setVisible(false);
+		}
+
+		editLocale.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Button pressedButton = (Button) event.getSource();
+				Long itemId = Long.parseLong(pressedButton.getTitle());
+				// TODO: handle edit dialog click
+				// loadAccessPointDetailTable(itemId);
+			}
+
+		});
+
+		deleteLocale.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				final Button pressedButton = (Button) event.getSource();
+				String[] titleParts = pressedButton.getTitle().split("\\|");
+				final Integer row = Integer.parseInt(titleParts[0]);
+				final Long itemId = Long.parseLong(titleParts[1]);
+
+				surveyedLocaleService.deleteLocale(itemId,
+						new AsyncCallback<Void>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert(TEXT_CONSTANTS.errorTracePrefix()
+										+ " " + caught.getLocalizedMessage());
+							}
+
+							@Override
+							public void onSuccess(Void result) {
+								int rowSelected = row;
+								dataTable.removeRow(rowSelected);
+								Grid grid = dataTable.getGrid();
+								for (int i = rowSelected; i < grid
+										.getRowCount() - 1; i++) {
+									HorizontalPanel hPanel = (HorizontalPanel) grid
+											.getWidget(i, 6);
+									Button deleteButton = (Button) hPanel
+											.getWidget(1);
+									String[] buttonTitleParts = deleteButton
+											.getTitle().split("\\|");
+									Integer newRowNum = Integer
+											.parseInt(buttonTitleParts[0]);
+									newRowNum = newRowNum - 1;
+									deleteButton.setTitle(newRowNum + "|"
+											+ buttonTitleParts[1]);
+								}
+								Window.alert(TEXT_CONSTANTS.deleteComplete());
+							}
+
+						});
+
+			}
+
+		});
+		grid.setWidget(row, 6, buttonHPanel);
 
 	}
 
@@ -105,7 +254,7 @@ public class SurveyedLocaleManager extends Composite implements
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == searchButton) {
-			// TODO: perform search
+			requestData(null, false);
 		}
 
 	}

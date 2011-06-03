@@ -234,6 +234,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					loadedItems = true;
 				}
 				SurveyalValue val = new SurveyalValue();
+				val.setSurveyedLocaleId(l.getKey().getId());
 				val.setCollectionDate(ans.getCollectionDate());
 				val.setCountryCode(l.getCountryCode());
 				

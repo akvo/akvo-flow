@@ -27,6 +27,7 @@ public class SurveyalValue extends BaseDomain {
 	private Integer day;
 	private Integer month;
 	private Date collectionDate;
+	private Long surveyedLocaleId;
 	private Long surveyInstanceId;
 	private String questionText;
 	private Long surveyQuestionId;
@@ -47,6 +48,14 @@ public class SurveyalValue extends BaseDomain {
 	private String sublevel6;
 	private String localeType;
 	private String systemIdentifier;
+
+	public Long getSurveyedLocaleId() {
+		return surveyedLocaleId;
+	}
+
+	public void setSurveyedLocaleId(Long surveyedLocaleId) {
+		this.surveyedLocaleId = surveyedLocaleId;
+	}
 
 	public String getMetricGroup() {
 		return metricGroup;
