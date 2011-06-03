@@ -44,6 +44,8 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String IMAGE_PREFIX_OPT = "imgPrefix";
 	private static final String LOCALE_OPT = "locale";
+	private static final String TYPE_OPT = "exportMode";
+	private static final String RAW_ONLY_TYPE = "RAW_DATA";
 
 	private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 	private static final String SDCARD_PREFIX = "/sdcard/";
@@ -81,7 +83,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int CHART_CELL_HEIGHT = 22;
 	private static final String DEFAULT_LOCALE = "en";
 	private static final String DEFAULT = "default";
-	private static final int STEPS = 7;
+	private static final int FULL_STEPS = 7;
+	private static final int RAW_STEPS = 5;
 	private static final NumberFormat PCT_FMT = DecimalFormat
 			.getPercentInstance();
 
@@ -160,37 +163,37 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		SUB_DATE_LABEL.put("es", "Peticionario");
 
 		LOADING_QUESTIONS = new HashMap<String, String>();
-		LOADING_QUESTIONS.put("en","Loading Questions");
-		LOADING_QUESTIONS.put("es","Cargando de preguntas");
-		
+		LOADING_QUESTIONS.put("en", "Loading Questions");
+		LOADING_QUESTIONS.put("es", "Cargando de preguntas");
+
 		LOADING_DETAILS = new HashMap<String, String>();
-		LOADING_DETAILS.put("en","Loading Question Details");
-		LOADING_DETAILS.put("es","Cargando Detalles Pregunta");
-		
+		LOADING_DETAILS.put("en", "Loading Question Details");
+		LOADING_DETAILS.put("es", "Cargando Detalles Pregunta");
+
 		LOADING_INSTANCES = new HashMap<String, String>();
-		LOADING_INSTANCES.put("en","Loading Instances");
-		LOADING_INSTANCES.put("es","Cargando instancias");
-		
+		LOADING_INSTANCES.put("en", "Loading Instances");
+		LOADING_INSTANCES.put("es", "Cargando instancias");
+
 		LOADING_INSTANCE_DETAILS = new HashMap<String, String>();
-		LOADING_INSTANCE_DETAILS.put("en","Loading Instance Details");
-		LOADING_INSTANCE_DETAILS.put("es","Cargando Datos Instancia");
-		
+		LOADING_INSTANCE_DETAILS.put("en", "Loading Instance Details");
+		LOADING_INSTANCE_DETAILS.put("es", "Cargando Datos Instancia");
+
 		WRITING_SUMMARY = new HashMap<String, String>();
-		WRITING_SUMMARY.put("en","Writing Summary");
-		WRITING_SUMMARY.put("es","Escribiendo Resumen");
-		
+		WRITING_SUMMARY.put("en", "Writing Summary");
+		WRITING_SUMMARY.put("es", "Escribiendo Resumen");
+
 		WRITING_RAW_DATA = new HashMap<String, String>();
-		WRITING_RAW_DATA.put("en","Writing Raw Data");
-		WRITING_RAW_DATA.put("es","Escribiendo Primas de Datos");
-		
+		WRITING_RAW_DATA.put("en", "Writing Raw Data");
+		WRITING_RAW_DATA.put("es", "Escribiendo Primas de Datos");
+
 		WRITING_ROLLUPS = new HashMap<String, String>();
-		WRITING_ROLLUPS.put("en","Writing Rollups");
-		WRITING_ROLLUPS.put("es","Escribiendo Resumen Municipales");
-		
+		WRITING_ROLLUPS.put("en", "Writing Rollups");
+		WRITING_ROLLUPS.put("es", "Escribiendo Resumen Municipales");
+
 		COMPLETE = new HashMap<String, String>();
-		COMPLETE.put("en","Export Complete");
-		COMPLETE.put("es","Exportación Completa");				
-		
+		COMPLETE.put("en", "Export Complete");
+		COMPLETE.put("es", "Exportación Completa");
+
 	}
 
 	private HSSFCellStyle headerStyle;
@@ -199,12 +202,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private String serverBase;
 	private ProgressDialog progressDialog;
 	private int currentStep;
+	private int maxSteps;
+	private boolean isFullReport;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase, Map<String, String> options) {
 		processOptions(options);
-		progressDialog = new ProgressDialog(STEPS, locale);
+		progressDialog = new ProgressDialog(maxSteps, locale);
 		progressDialog.setVisible(true);
 		currentStep = 1;
 		this.serverBase = serverBase;
@@ -213,14 +218,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					LOADING_QUESTIONS.get(locale)));
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);	
+					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
 			if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
 				// if we are using some other locale, we need to check for
 				// translations
 				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 						LOADING_DETAILS.get(locale)));
 				loadFullQuestions(questionMap);
-			}else{
+			} else {
 				currentStep++;
 			}
 			if (questionMap.size() > 0) {
@@ -233,13 +238,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 				SummaryModel model = fetchAndWriteRawData(
 						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-						serverBase, questionMap, wb);
-				
-				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-						WRITING_SUMMARY.get(locale)));
-				writeSummaryReport(questionMap, model, null, wb);
-				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-						WRITING_ROLLUPS.get(locale)));
+						serverBase, questionMap, wb, isFullReport);
+				if (isFullReport) {
+					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+							WRITING_SUMMARY.get(locale)));
+					writeSummaryReport(questionMap, model, null, wb);
+					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+							WRITING_ROLLUPS.get(locale)));
+				}
 				if (model.getSectorList() != null
 						&& model.getSectorList().size() > 0) {
 					for (String sector : model.getSectorList()) {
@@ -247,7 +253,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					}
 				}
 				FileOutputStream fileOut = new FileOutputStream(fileName);
-				wb.setActiveSheet(1);
+				wb.setActiveSheet(isFullReport?1:0);
 				wb.write(fileOut);
 				fileOut.close();
 				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
@@ -269,7 +275,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	protected SummaryModel fetchAndWriteRawData(String surveyId,
 			String serverBase,
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-			HSSFWorkbook wb) throws Exception {
+			HSSFWorkbook wb, boolean generateSummary) throws Exception {
 		SummaryModel model = new SummaryModel();
 
 		HSSFSheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
@@ -326,10 +332,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					sector = responseMap.get(sectorQuestion.getKeyId()
 							.toString());
 				}
-				for (Entry<String, String> entry : responseMap.entrySet()) {
-					if (!unsummarizable.contains(entry.getKey())) {
-						model.tallyResponse(entry.getKey(), sector,
-								entry.getValue());
+				if (generateSummary) {
+					for (Entry<String, String> entry : responseMap.entrySet()) {
+						if (!unsummarizable.contains(entry.getKey())) {
+							model.tallyResponse(entry.getKey(), sector,
+									entry.getValue());
+						}
 					}
 				}
 			}
@@ -395,7 +403,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
 			SummaryModel summaryModel, String sector, HSSFWorkbook wb)
 			throws Exception {
-		
+
 		HSSFSheet sheet = wb.createSheet(sector == null ? SUMMARY_LABEL
 				.get(locale) : sector);
 		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
@@ -628,9 +636,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 * @param options
 	 */
 	private void processOptions(Map<String, String> options) {
+		isFullReport = true;
+		maxSteps = FULL_STEPS;
 		if (options != null) {
 			locale = options.get(LOCALE_OPT);
 			imagePrefix = options.get(IMAGE_PREFIX_OPT);
+			if (RAW_ONLY_TYPE.equalsIgnoreCase(options.get(TYPE_OPT))) {
+				isFullReport = false;
+				maxSteps = RAW_STEPS;
+			}
 		}
 		if (locale != null) {
 			locale = locale.trim().toLowerCase();

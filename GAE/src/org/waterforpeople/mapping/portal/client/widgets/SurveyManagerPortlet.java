@@ -8,6 +8,7 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -15,10 +16,10 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTree;
 import org.waterforpeople.mapping.app.gwt.client.survey.view.SurveyTreeListener;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyQuestionTranslationDialog;
 import org.waterforpeople.mapping.portal.client.widgets.component.TranslationChangeListener;
 
@@ -53,10 +54,13 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static UploadConstants UPLOAD_CONSTANTS = GWT
+	.create(UploadConstants.class);
+
 	public static final String NAME = TEXT_CONSTANTS
 			.surveyManagerPortletTitle();
 	public static final String DESCRIPTION = TEXT_CONSTANTS
-			.surveyManagerPortletDescription();
+			.surveyManagerPortletDescription();	
 	private static final int MAX_Q_LENGTH = 50;
 	private static String title = "";
 	private static Boolean scrollable = true;
@@ -1355,15 +1359,20 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		exportRawDataButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.5-signed.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 				appletString += "<PARAM name='exportType' value='RAW_DATA'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-				appletString += "<PARAM name='criteria' value=surveyId="
-						+ item.getKeyId() + ">";
+				appletString += "<PARAM name='criteria' value=surveyId=" + item.getKeyId()
+						+ ">";
+				appletString += "<PARAM name='options' value='exportMode=RAW_DATA;locale="
+						+ com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
+								.getLocaleName() + ";imgPrefix="
+						+ UPLOAD_CONSTANTS.uploadUrl()
+						+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 				appletString += "</applet>";
 				HTML html = new HTML();
-				html.setHTML(appletString);
+				html.setHTML(appletString);								
 				surveyDetail.setWidget(5, 0, html);
 			}
 		});

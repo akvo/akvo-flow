@@ -26,7 +26,8 @@ public class RunReportWidget extends MenuBasedWidget {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
-	private static UploadConstants UPLOAD_CONSTANTS = GWT.create(UploadConstants.class);
+	private static UploadConstants UPLOAD_CONSTANTS = GWT
+			.create(UploadConstants.class);
 	private Grid grid;
 	private Panel appletPanel;
 	private Panel contentPanel;
@@ -41,7 +42,7 @@ public class RunReportWidget extends MenuBasedWidget {
 		contentPanel = new VerticalPanel();
 		grid = new Grid(7, 2);
 		appletPanel = new VerticalPanel();
-		contentPanel.add(grid);	
+		contentPanel.add(grid);
 		apReportButton = initButton(TEXT_CONSTANTS.accessPointReport());
 		grid.setWidget(0, 0, apReportButton);
 		grid.setWidget(
@@ -70,7 +71,7 @@ public class RunReportWidget extends MenuBasedWidget {
 		grid.setWidget(5, 0, surveyFormButton);
 		grid.setWidget(5, 1,
 				createDescription(TEXT_CONSTANTS.surveyFormDescription()));
-		grid.setWidget(6,0,appletPanel);
+		grid.setWidget(6, 0, appletPanel);
 		initWidget(contentPanel);
 	}
 
@@ -112,7 +113,7 @@ public class RunReportWidget extends MenuBasedWidget {
 						}
 					});
 			filterDia.showCentered();
-		}  else {
+		} else {
 			final Object eventSource = event.getSource();
 			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
 					new CompletionListener() {
@@ -136,12 +137,17 @@ public class RunReportWidget extends MenuBasedWidget {
 
 	private void handleSurveySelection(Object eventSource, Long surveyId) {
 		if (eventSource == rawDataReportButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.5-signed.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='RAW_DATA'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
 					+ ">";
+			appletString += "<PARAM name='options' value='exportMode=RAW_DATA;locale="
+					+ com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
+							.getLocaleName() + ";imgPrefix="
+					+ UPLOAD_CONSTANTS.uploadUrl()
+					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
@@ -168,14 +174,18 @@ public class RunReportWidget extends MenuBasedWidget {
 			HTML html = new HTML();
 			html.setHTML(appletString);
 			appletPanel.add(html);
-		}else if (eventSource == comprehensiveReportButton) {
+		} else if (eventSource == comprehensiveReportButton) {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.5-signed.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='GRAPHICAL_SURVEY_SUMMARY'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
 					+ ">";
-			appletString+= "<PARAM name='options' value='locale="+com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale().getLocaleName()+";imgPrefix="+UPLOAD_CONSTANTS.uploadUrl()+UPLOAD_CONSTANTS.imageS3Path()+"/'>";
+			appletString += "<PARAM name='options' value='locale="
+					+ com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
+							.getLocaleName() + ";imgPrefix="
+					+ UPLOAD_CONSTANTS.uploadUrl()
+					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);

@@ -21,7 +21,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
 		{
 			put("ACCESS_POINT", AccessPointExporter.class);
 			put("SURVEY_SUMMARY", SurveySummaryExporter.class);
-			put("RAW_DATA", RawDataExporter.class);
+			put("RAW_DATA", GraphicalSurveySummaryExporter.class);
 			put("SURVEY_FORM", SurveyFormExporter.class);
 			put("GRAPHICAL_SURVEY_SUMMARY",GraphicalSurveySummaryExporter.class);
 		}
