@@ -1,5 +1,7 @@
 package com.gallatinsystems.surveyal.domain;
 
+import java.util.Date;
+
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -33,11 +35,21 @@ public class SurveyedLocale extends BaseDomain {
 	private Double latitude;
 	private Double longitude;
 	private boolean ambiguous;
+	private Date lastSurveyedDate;
 	
 	public SurveyedLocale(){
 		ambiguous = false;
+	}	
+	
+	public Date getLastSurveyedDate() {
+		return lastSurveyedDate;
 	}
 
+	public void setLastSurveyedDate(Date lastSurveyedDate) {
+		this.lastSurveyedDate = lastSurveyedDate;
+	}
+
+	
 	public boolean isAmbiguous() {
 		return ambiguous;
 	}

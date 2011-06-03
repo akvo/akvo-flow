@@ -18,6 +18,24 @@ public class AccessPointSearchCriteriaDto implements Serializable {
 	private String orderBy;
 	private String orderByDir;
 	private Integer pageSize;
+	private String metricId;
+	private String metricValue;
+
+	public String getMetricId() {
+		return metricId;
+	}
+
+	public void setMetricId(String metricId) {
+		this.metricId = metricId;
+	}
+
+	public String getMetricValue() {
+		return metricValue;
+	}
+
+	public void setMetricValue(String metricValue) {
+		this.metricValue = metricValue;
+	}
 
 	public Integer getPageSize() {
 		return pageSize;

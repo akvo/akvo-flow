@@ -1,11 +1,16 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import java.util.List;
+
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingService;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -16,6 +21,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
@@ -27,8 +33,12 @@ import com.google.gwt.user.datepicker.client.DateBox;
  */
 public class AccessPointSearchControl extends Composite {
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
-	
+			.create(TextConstants.class);
+
+	public enum Mode {
+		ACCESS_POINT, LOCALE
+	};
+
 	private ListBox apTypeBox;
 	public static final String ANY_OPT = TEXT_CONSTANTS.any();
 	public static final String ALL_OPT = TEXT_CONSTANTS.all();
@@ -36,52 +46,78 @@ public class AccessPointSearchControl extends Composite {
 	private ListBox communityListbox;
 	private String specialOption;
 	private CommunityServiceAsync communityService;
+	private SurveyMetricMappingServiceAsync metricService;
 	private DateBox collectionDateFrom;
 	private DateBox collectionDateTo;
 	private DateBox constructionDateFrom;
 	private DateBox constructionDateTo;
+	private TextBox metricValue;
+	private ListBox metricListbox;
 
 	public AccessPointSearchControl() {
+		this(Mode.ACCESS_POINT);
+	}
+
+	public AccessPointSearchControl(Mode m) {
 		countryListbox = new ListBox();
 		communityListbox = new ListBox();
+		metricListbox = new ListBox();
 		apTypeBox = new ListBox();
 		collectionDateFrom = new DateBox();
 		collectionDateTo = new DateBox();
 		constructionDateFrom = new DateBox();
 		constructionDateTo = new DateBox();
+		metricValue = new TextBox();
 		specialOption = ANY_OPT;
 		Grid grid = new Grid(4, 4);
 		configureAccessPointListBox();
 		grid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 		grid.setWidget(0, 1, countryListbox);
-		grid.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS.community()));
-		grid.setWidget(0, 3, communityListbox);
-		grid.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.collectionDateFrom()));
+		if (Mode.ACCESS_POINT == m) {
+			grid.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS.community()));
+			grid.setWidget(0, 3, communityListbox);
+		}
+		grid.setWidget(1, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.collectionDateFrom()));
 		grid.setWidget(1, 1, collectionDateFrom);
 		grid.setWidget(1, 2, ViewUtil.initLabel(TEXT_CONSTANTS.to()));
 		grid.setWidget(1, 3, collectionDateTo);
 		grid.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.pointType()));
 		grid.setWidget(2, 1, apTypeBox);
-		grid.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.constructionDateFrom()));
-		grid.setWidget(3, 1, constructionDateFrom);
-		grid.setWidget(3, 2, ViewUtil.initLabel(TEXT_CONSTANTS.to()));
-		grid.setWidget(3, 3, constructionDateTo);
+		if (Mode.ACCESS_POINT == m) {
+			grid.setWidget(3, 0,
+					ViewUtil.initLabel(TEXT_CONSTANTS.constructionDateFrom()));
+			grid.setWidget(3, 1, constructionDateFrom);
+			grid.setWidget(3, 2, ViewUtil.initLabel(TEXT_CONSTANTS.to()));
+			grid.setWidget(3, 3, constructionDateTo);
+		} else {
+			grid.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.metric()));
+			grid.setWidget(3, 1, metricListbox);
+			grid.setWidget(3, 2, ViewUtil.initLabel(TEXT_CONSTANTS.value()));
+			grid.setWidget(3, 3, metricValue);
+		}
 
 		communityService = GWT.create(CommunityService.class);
+		metricService = GWT.create(SurveyMetricMappingService.class);
 		loadCountries();
-		installChangeHandlers();
+		if (Mode.ACCESS_POINT == m) {
+			installChangeHandlers();
+		} else {
+			loadMetrics();
+		}
 
 		initWidget(grid);
 	}
 
 	private void configureAccessPointListBox() {
-		apTypeBox
-				.addItem(TEXT_CONSTANTS.waterPoint(), AccessPointType.WATER_POINT.toString());
-		apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(), AccessPointType.SANITATION_POINT
-				.toString());
+		apTypeBox.addItem(TEXT_CONSTANTS.waterPoint(),
+				AccessPointType.WATER_POINT.toString());
+		apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(),
+				AccessPointType.SANITATION_POINT.toString());
 		apTypeBox.addItem(TEXT_CONSTANTS.publicInst(),
 				AccessPointType.PUBLIC_INSTITUTION.toString());
-		apTypeBox.addItem(TEXT_CONSTANTS.school(), AccessPointType.SCHOOL.toString());
+		apTypeBox.addItem(TEXT_CONSTANTS.school(),
+				AccessPointType.SCHOOL.toString());
 
 	}
 
@@ -98,7 +134,9 @@ public class AccessPointSearchControl extends Composite {
 		dto.setCollectionDateTo(collectionDateTo.getValue());
 		dto.setConstructionDateFrom(constructionDateFrom.getValue());
 		dto.setConstructionDateTo(constructionDateTo.getValue());
-		dto.setPointType(getSelectedValue(apTypeBox));
+		dto.setPointType(getSelectedValue(apTypeBox));		
+		dto.setMetricId(getSelectedValue(metricListbox));
+		dto.setMetricValue(metricValue.getText());
 		return dto;
 	}
 
@@ -143,13 +181,33 @@ public class AccessPointSearchControl extends Composite {
 			public void onSuccess(CountryDto[] result) {
 				if (result != null) {
 					for (int i = 0; i < result.length; i++) {
-						countryListbox.addItem(result[i].getName(), result[i]
-								.getIsoAlpha2Code());
+						countryListbox.addItem(result[i].getName(),
+								result[i].getIsoAlpha2Code());
 					}
 				}
 			}
 		};
 		communityService.listCountries(countryCallback);
+	}
+
+	/**
+	 * loads the metrics into the control
+	 */
+	private void loadMetrics() {
+		// TODO: parameterize with Organization name
+		metricService.listMetrics(null, new AsyncCallback<List<MetricDto>>() {
+			public void onFailure(Throwable caught) {
+				// no-op
+			}
+
+			public void onSuccess(List<MetricDto> result) {
+				if (result != null) {
+					for (MetricDto metric : result)
+						metricListbox.addItem(metric.getName(), metric
+								.getKeyId().toString());
+				}
+			}
+		});
 	}
 
 	protected void loadCommunities(String country) {
@@ -184,7 +242,7 @@ public class AccessPointSearchControl extends Composite {
 	 * @return
 	 */
 	private String getSelectedValue(ListBox lb) {
-		if (lb.getSelectedIndex() >= 0) {
+		if (lb != null && lb.getSelectedIndex() >= 0) {
 			String val = lb.getValue(lb.getSelectedIndex());
 			if (specialOption != null && specialOption.equals(val)) {
 				return null;

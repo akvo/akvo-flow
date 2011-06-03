@@ -162,6 +162,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				}
 				if (locale != null && locale.getKey() != null
 						&& answers != null) {
+					locale.setLastSurveyedDate(instance.getCollectionDate());
 					instance.setSurveyedLocaleId(locale.getKey().getId());
 					List<SurveyalValue> values = constructValues(locale,
 							answers);
