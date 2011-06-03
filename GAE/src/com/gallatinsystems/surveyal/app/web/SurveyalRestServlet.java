@@ -43,7 +43,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
  */
 public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 5923399458369692813L;
-	private static final double TOLERANCE = 0.1;
+	private static final double TOLERANCE = 0.01;
 	private static final double UNSET_VAL = -9999.9;
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
 	private static final Logger log = Logger
@@ -119,7 +119,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				double lon = UNSET_VAL;
 				boolean ambiguousFlag = false;
 				String[] tokens = geoQ.getValue().split("\\|");
-				if (tokens.length > 2) {
+				if (tokens.length >= 2) {
 					lat = Double.parseDouble(tokens[0]);
 					lon = Double.parseDouble(tokens[1]);
 				}
@@ -220,10 +220,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			List<Metric> metrics = null;
 			boolean loadedItems = false;
 			List<Question> questionList = null;
+			//initialize outside the loop so all answers get same collection date value
+			Calendar cal = new GregorianCalendar();
 			for (QuestionAnswerStore ans : answers) {
 				if (!loadedItems && ans.getSurveyId() != null) {
 
-					qDao.listQuestionsBySurvey(ans.getSurveyId());
+					questionList = qDao.listQuestionsBySurvey(ans.getSurveyId());
 					metrics = metricDao.listMetricByOrg(l.getOrganization(),
 							null, null);
 					mappings = metricMappingDao.listMappingsBySurvey(ans
@@ -233,12 +235,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				SurveyalValue val = new SurveyalValue();
 				val.setCollectionDate(ans.getCollectionDate());
 				val.setCountryCode(l.getCountryCode());
-
-				Calendar cal = new GregorianCalendar();
-				cal.setTime(ans.getCollectionDate());
-				// TODO: verify if zero or 1 based
+				
+				if(ans.getCollectionDate()!=null){
+					cal.setTime(ans.getCollectionDate());
+				}
 				val.setDay(cal.get(Calendar.DAY_OF_MONTH));
-				val.setMonth(cal.get(Calendar.MONTH));
+				val.setMonth(cal.get(Calendar.MONTH)+1);
 				val.setYear(cal.get(Calendar.YEAR));
 				val.setLocaleType(l.getLocaleType());
 				val.setStringValue(ans.getValue());

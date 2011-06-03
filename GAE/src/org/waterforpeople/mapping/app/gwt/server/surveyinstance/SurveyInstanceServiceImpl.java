@@ -29,6 +29,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -261,6 +262,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyInstance domain = new SurveyInstance();
 		DtoMarshaller.copyToCanonical(domain, instance);
+		if(domain.getCollectionDate()== null){
+			domain.setCollectionDate(new Date());
+		}
 		domain = dao.save(domain);
 		instance.setKeyId(domain.getKey().getId());
 		if (instance.getQuestionAnswersStore() != null) {
@@ -269,6 +273,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 					.getQuestionAnswersStore()) {
 				QuestionAnswerStore store = new QuestionAnswerStore();
 				DtoMarshaller.copyToCanonical(store, ans);
+				if(ans.getCollectionDate()==null){
+					ans.setCollectionDate(domain.getCollectionDate());
+				}
 				if (ans.getValue() != null) {
 					ans.setValue(ans.getValue().replaceAll("\t", ""));
 					if(ans.getValue().length()>500){
@@ -314,6 +321,11 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				url("/app_worker/datasummarization").param("objectKey",
 						domain.getKey().getId() + "").param("type",
 						"SurveyInstance"));
+		QueueFactory.getDefaultQueue().add(url("/app_worker/surveyalservlet").param(
+				SurveyalRestRequest.ACTION_PARAM,
+				SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
+				SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+				domain.getKey().getId() + ""));
 	}
 
 }

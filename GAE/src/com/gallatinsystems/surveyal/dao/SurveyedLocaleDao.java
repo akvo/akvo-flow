@@ -68,4 +68,45 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		return results;
 	}
 
+	/**
+	 * lists all locales that match the geo constraints passed in
+	 * 
+	 * @param countryCode
+	 * @param level
+	 * @param subValue
+	 * @param type
+	 * @param org
+	 * @param cursor
+	 * @param desiredResults
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyedLocale> listBySubLevel(String countryCode,
+			Integer level, String subValue, String type, String org,
+			String cursor, Integer desiredResults) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("localeType", filterString, paramString, "String",
+				type, paramMap);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap);
+		appendNonNullParam("organization", filterString, paramString, "String",
+				org, paramMap);
+		if (level != null && level > 0 && level <= 6) {
+			appendNonNullParam("sublevel" + level, filterString, paramString,
+					"String", subValue, paramMap);
+		}
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		prepareCursor(cursor, desiredResults, query);
+		List<SurveyedLocale> results = (List<SurveyedLocale>) query
+				.executeWithMap(paramMap);
+		return results;
+	}
+
 }

@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -216,31 +217,37 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		return places;
 	}
 
-	// private GeoPlace manualLookup(String latStr, String lonStr) {
-	// GeoPlace place = null;
-	// try {
-	// if (latStr != null && lonStr != null) {
-	// double lat = Double.parseDouble(latStr);
-	// double lon = Double.parseDouble(lonStr);
-	// for (Entry<String, Double[]> entry : COUNTRY_MBR.entrySet()) {
-	// if (lat <= entry.getValue()[0]
-	// && lat >= entry.getValue()[2]
-	// && lon >= entry.getValue()[1]
-	// && lon <= entry.getValue()[3]) {
-	// place = new GeoPlace();
-	// place.setCountryCode(entry.getKey());
-	// place.setCountryName(COUNTRY_NAME.get(entry.getKey()));
-	// break;
-	// }
-	// }
-	// } else {
-	// log.log(Level.SEVERE, "Lat or lon is null");
-	// }
-	// } catch (Exception e) {
-	// log.log(Level.SEVERE, "Lat/Lon are non numeric: ", e);
-	// }
-	// return place;
-	// }
+	/**
+	 * absolute fall-back lookup for geo places that uses a statically intialized bounding box
+	 * @param latStr
+	 * @param lonStr
+	 * @return
+	 */
+	private GeoPlace primitiveLookup(String latStr, String lonStr) {
+		GeoPlace place = null;
+		try {
+			if (latStr != null && lonStr != null) {
+				double lat = Double.parseDouble(latStr);
+				double lon = Double.parseDouble(lonStr);
+				for (Entry<String, Double[]> entry : COUNTRY_MBR.entrySet()) {
+					if (lat <= entry.getValue()[0]
+							&& lat >= entry.getValue()[2]
+							&& lon >= entry.getValue()[1]
+							&& lon <= entry.getValue()[3]) {
+						place = new GeoPlace();
+						place.setCountryCode(entry.getKey());
+						place.setCountryName(COUNTRY_NAME.get(entry.getKey()));
+						break;
+					}
+				}
+			} else {
+				log.log(Level.SEVERE, "Lat or lon is null");
+			}
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Lat/Lon are non numeric: ", e);
+		}
+		return place;
+	}
 
 	public GeoPlace manualLookup(String latStr, String lonStr) {
 		return manualLookup(latStr, lonStr, FeatureType.COUNTRY);
@@ -302,6 +309,9 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				log.log(Level.INFO, item.getCountryCode()
 						+ " has a null geometry");
 			}
+		}
+		if(place == null){
+			place =primitiveLookup(latStr,lonStr);
 		}
 		return place;
 	}

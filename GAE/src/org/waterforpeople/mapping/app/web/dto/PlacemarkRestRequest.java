@@ -11,20 +11,21 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class PlacemarkRestRequest extends RestRequest {
 	public static final String GET_AP_DETAILS_ACTION = "getAPDetails";
-	public static final String LIST_BOUNDING_BOX_ACTION="listByBoundingBox";
+	public static final String LIST_BOUNDING_BOX_ACTION = "listByBoundingBox";
 	public static final String LIST_PLACEMARK = "listPlacemarks";
 	private static final String COUNTRY_PARAM = "country";
 	private static final String NEED_DETAILS_PARM = "needDetailsFlag";
 	private static final String COMMUNITY_CODE_PARAM = "communityCode";
 	private static final String POINT_TYPE_PARAM = "pointType";
 	private static final String DISPLAY_TYPE_PARAM = "display";
-	private static final String IGNORE_CACHE_PARAM ="ignoreCache";
+	private static final String IGNORE_CACHE_PARAM = "ignoreCache";
 	private static final String SUB_LEVEL_PARAM = "subLevel";
 	private static final String SUB_LEVEL_VALUE = "subLevelValue";
 	private static final String LAT1_PARAM = "lat1";
 	private static final String LONG1_PARAM = "long1";
 	private static final String LAT2_PARAM = "lat2";
 	private static final String LONG2_PARAM = "long2";
+	private static final String DOMAIN_PARAM = "domain";
 	private String country;
 	private Boolean needDetailsFlag = null;
 	private String communityCode = null;
@@ -37,7 +38,16 @@ public class PlacemarkRestRequest extends RestRequest {
 	private Double lat2 = null;
 	private Double long1 = null;
 	private Double long2 = null;
-	
+	private String domain;
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
 	public Double getLat1() {
 		return lat1;
 	}
@@ -69,6 +79,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	public void setLong2(Double long2) {
 		this.long2 = long2;
 	}
+
 	public String getSubLevelValue() {
 		return subLevelValue;
 	}
@@ -97,6 +108,7 @@ public class PlacemarkRestRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
+		domain = req.getParameter(DOMAIN_PARAM);
 		country = req.getParameter(COUNTRY_PARAM);
 		if (country != null) {
 			country = country.trim().toUpperCase();
@@ -104,32 +116,33 @@ public class PlacemarkRestRequest extends RestRequest {
 				country = null;
 			}
 		}
-		if(req.getParameter(SUB_LEVEL_PARAM)!=null){
+		if (req.getParameter(SUB_LEVEL_PARAM) != null) {
 			setSubLevel(Integer.parseInt(req.getParameter(SUB_LEVEL_PARAM)));
 		}
-		if(req.getParameter(SUB_LEVEL_VALUE)!=null){
+		if (req.getParameter(SUB_LEVEL_VALUE) != null) {
 			setSubLevelValue(req.getParameter(SUB_LEVEL_VALUE));
 		}
 		if (req.getParameter(COMMUNITY_CODE_PARAM) != null) {
 			setCommunityCode(req.getParameter(COMMUNITY_CODE_PARAM));
 		}
 		display = req.getParameter(DISPLAY_TYPE_PARAM);
-		if(req.getParameter(IGNORE_CACHE_PARAM)!=null){
-			setIgnoreCache(Boolean.parseBoolean(req.getParameter(IGNORE_CACHE_PARAM)));
+		if (req.getParameter(IGNORE_CACHE_PARAM) != null) {
+			setIgnoreCache(Boolean.parseBoolean(req
+					.getParameter(IGNORE_CACHE_PARAM)));
 		}
-		if(req.getParameter(LAT1_PARAM)!=null){
+		if (req.getParameter(LAT1_PARAM) != null) {
 			setLat1(Double.parseDouble(req.getParameter(LAT1_PARAM)));
 		}
-		if(req.getParameter(LAT2_PARAM)!=null){
+		if (req.getParameter(LAT2_PARAM) != null) {
 			setLat2(Double.parseDouble(req.getParameter(LAT2_PARAM)));
 		}
-		if(req.getParameter(LONG1_PARAM)!=null){
+		if (req.getParameter(LONG1_PARAM) != null) {
 			setLong1(Double.parseDouble(req.getParameter(LONG1_PARAM)));
 		}
-		if(req.getParameter(LONG2_PARAM)!=null){
+		if (req.getParameter(LONG2_PARAM) != null) {
 			setLong2(Double.parseDouble(req.getParameter(LONG2_PARAM)));
 		}
-		
+
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
 			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
 			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeValue))
@@ -229,10 +242,10 @@ public class PlacemarkRestRequest extends RestRequest {
 		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
 			key += "-" + communityCode + (display != null ? display : "")
 					+ (pointType != null ? pointType : "");
-		}else if(LIST_BOUNDING_BOX_ACTION.equals(key)){
-			key+="/"+getLat1()+"/"+getLat2()+"/"+getPointType();
-			if(getCursor()!=null){
-				key+="/"+getCursor();
+		} else if (LIST_BOUNDING_BOX_ACTION.equals(key)) {
+			key += "/" + getLat1() + "/" + getLat2() + "/" + getPointType();
+			if (getCursor() != null) {
+				key += "/" + getCursor();
 			}
 		}
 		return key;
