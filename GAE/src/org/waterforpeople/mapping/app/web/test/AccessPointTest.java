@@ -27,9 +27,10 @@ public class AccessPointTest {
 			AccessPointDao apDao = new AccessPointDao();
 			ArrayList<AccessPoint> apList = new ArrayList<AccessPoint>();
 			for (int j = 0; j < 1; j++) {
-				double lat = 6.6 + (new Random().nextDouble() / 10);
-				double lon = -10.8 + (new Random().nextDouble() / 10);
+				
 				for (int i = 0; i < 700; i++) {
+					double lon = 35.0 + (new Random().nextDouble() / 10);
+					double lat = -15.7 + (new Random().nextDouble() / 10);
 					Calendar calendar = new GregorianCalendar(2010,
 							Calendar.JANUARY, 1);
 					Integer sign = null;
@@ -42,8 +43,8 @@ public class AccessPointTest {
 							sign * new Random().nextInt(100));
 					log.info(i + ":");
 					AccessPoint ap = new AccessPoint();
-					ap.setLatitude(lat + new Random().nextInt(100) / 100);
-					ap.setLongitude(lon + new Random().nextInt(100) / 100);
+					ap.setLatitude(lat );
+					ap.setLongitude(lon);
 
 					Date today = new Date();
 					System.out
@@ -68,6 +69,7 @@ public class AccessPointTest {
 					ap.setNumberOfHouseholdsUsingPoint(100L);
 					ap.setConstructionDateYear("2001");
 					ap.setCostPer(1.0);
+					ap.setCountryCode("MW");
 					ap.setCollectionDate(calendar.getTime());
 					calendar.add(Calendar.YEAR, -5);
 					ap.setConstructionDate(calendar.getTime());

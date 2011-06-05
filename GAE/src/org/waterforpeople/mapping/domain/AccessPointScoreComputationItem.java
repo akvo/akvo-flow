@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.domain;
 
-import com.gallatinsystems.framework.domain.BaseDomain;
+import javax.jdo.annotations.PersistenceCapable;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
+@PersistenceCapable
 public class AccessPointScoreComputationItem extends BaseDomain {
 	/**
 	 * 

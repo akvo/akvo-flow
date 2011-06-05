@@ -313,7 +313,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private String getUrlFromStatus(Status status,
 			AccessPoint.AccessPointType pointType) {
 		if (status == null) {
-			return "Unknown";
+			return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
 		}
 		if (AccessPointType.WATER_POINT.equals(pointType)) {
 			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
