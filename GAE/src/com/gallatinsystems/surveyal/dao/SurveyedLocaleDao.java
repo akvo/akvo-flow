@@ -158,11 +158,16 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 			}
 			query.setOrdering(orderByField + " " + ordering);
 		}
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+		if(filterString.length()>0){
+			query.setFilter(filterString.toString());
+			query.declareParameters(paramString.toString());
+		}
 		prepareCursor(cursorString, pageSize, query);
 		if (collDateFrom != null || collDateTo != null) {
 			query.declareImports("import java.util.Date");
+			if(orderByField != null && !orderByField.trim().equals("lastSurveyedDate")){
+				query.setOrdering("lastSurveyedDate " + (orderByDir!=null?orderByDir:"asc"));
+			}
 		}
 		return (List<SurveyedLocale>) query.executeWithMap(paramMap);
 	}

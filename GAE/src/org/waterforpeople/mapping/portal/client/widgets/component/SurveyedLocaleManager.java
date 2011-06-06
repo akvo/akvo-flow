@@ -72,9 +72,10 @@ public class SurveyedLocaleManager extends Composite implements
 		contentPanel = new VerticalPanel();
 		contentPanel.add(constructSearchPanel());
 		dataTable = new PaginatedDataTable<SurveyedLocaleDto>(
-				DEFAULT_SORT_FIELD, this, this, false);
+				DEFAULT_SORT_FIELD, this, this, false,false);
 		contentPanel.add(dataTable);
 		dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
+		initWidget(contentPanel);
 	}
 
 	/**

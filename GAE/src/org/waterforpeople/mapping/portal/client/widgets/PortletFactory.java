@@ -83,6 +83,8 @@ public class PortletFactory {
 			return new StandardScoringManagerPortlet(user);
 		} else if (name.equals(MessageViewPortlet.NAME)) {
 			return new MessageViewPortlet(user);
+		} else if (name.equals(SurveyedLocaleManagerPortlet.NAME)) {
+			return new SurveyedLocaleManagerPortlet(user);
 		}else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

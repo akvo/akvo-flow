@@ -73,7 +73,9 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	/**
 	 * constructs a data table with rows that will be populated by a
 	 * DataTableBinder. The DataTableListener will be notified when the user
-	 * selects a specific item.
+	 * selects a specific item. This constructor expects that the client code
+	 * will be populating the table immediately and thus will display the
+	 * "loading" label until bindData is called.
 	 * 
 	 * @param defaultSortField
 	 * @param l
@@ -82,6 +84,22 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	 */
 	public PaginatedDataTable(String defaultSortField, DataTableListener<T> l,
 			DataTableBinder<T> b, boolean isRowClickable) {
+		this(defaultSortField, l, b, isRowClickable, true);
+	}
+
+	/**
+	 * constructs a data table with rows that will be populated by a
+	 * DataTableBinder. The DataTableListener will be notified when the user
+	 * selects a specific item.
+	 * 
+	 * @param defaultSortField
+	 * @param l
+	 * @param b
+	 * @param isRowClickable
+	 * @param displayLoading
+	 */
+	public PaginatedDataTable(String defaultSortField, DataTableListener<T> l,
+			DataTableBinder<T> b, boolean isRowClickable, boolean displayLoading) {
 		contentPanel = new VerticalPanel();
 		instanceGrid = new Grid();
 		this.rowClickable = isRowClickable;
@@ -120,10 +138,10 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		buttonPanel.add(nextButton);
 		statusLabel = new Label();
 		statusLabel.setText(TEXT_CONSTANTS.loading());
+		statusLabel.setVisible(displayLoading);
 		contentPanel.add(statusLabel);
 		contentPanel.add(instanceGrid);
 		contentPanel.add(buttonPanel);
-
 		initWidget(contentPanel);
 	}
 
@@ -272,7 +290,7 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 				instanceGrid.resize(2, binder.getHeaders().length);
 				loadHeaderRow();
 			}
-			binder.bindRow(instanceGrid, null, instanceGrid.getRowCount()-1);
+			binder.bindRow(instanceGrid, null, instanceGrid.getRowCount() - 1);
 		}
 	}
 

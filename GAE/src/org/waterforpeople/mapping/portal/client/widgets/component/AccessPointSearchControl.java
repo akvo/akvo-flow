@@ -53,12 +53,14 @@ public class AccessPointSearchControl extends Composite {
 	private DateBox constructionDateTo;
 	private TextBox metricValue;
 	private ListBox metricListbox;
+	private Mode mode;
 
 	public AccessPointSearchControl() {
 		this(Mode.ACCESS_POINT);
 	}
 
 	public AccessPointSearchControl(Mode m) {
+		mode = m;
 		countryListbox = new ListBox();
 		communityListbox = new ListBox();
 		metricListbox = new ListBox();
@@ -73,7 +75,7 @@ public class AccessPointSearchControl extends Composite {
 		configureAccessPointListBox();
 		grid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 		grid.setWidget(0, 1, countryListbox);
-		if (Mode.ACCESS_POINT == m) {
+		if (Mode.ACCESS_POINT == mode) {
 			grid.setWidget(0, 2, ViewUtil.initLabel(TEXT_CONSTANTS.community()));
 			grid.setWidget(0, 3, communityListbox);
 		}
@@ -84,7 +86,7 @@ public class AccessPointSearchControl extends Composite {
 		grid.setWidget(1, 3, collectionDateTo);
 		grid.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.pointType()));
 		grid.setWidget(2, 1, apTypeBox);
-		if (Mode.ACCESS_POINT == m) {
+		if (Mode.ACCESS_POINT == mode) {
 			grid.setWidget(3, 0,
 					ViewUtil.initLabel(TEXT_CONSTANTS.constructionDateFrom()));
 			grid.setWidget(3, 1, constructionDateFrom);
@@ -110,6 +112,9 @@ public class AccessPointSearchControl extends Composite {
 	}
 
 	private void configureAccessPointListBox() {
+		if (Mode.LOCALE == mode) {
+			apTypeBox.addItem(ANY_OPT, ANY_OPT);
+		}
 		apTypeBox.addItem(TEXT_CONSTANTS.waterPoint(),
 				AccessPointType.WATER_POINT.toString());
 		apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(),
@@ -134,8 +139,11 @@ public class AccessPointSearchControl extends Composite {
 		dto.setCollectionDateTo(collectionDateTo.getValue());
 		dto.setConstructionDateFrom(constructionDateFrom.getValue());
 		dto.setConstructionDateTo(constructionDateTo.getValue());
-		dto.setPointType(getSelectedValue(apTypeBox));		
-		dto.setMetricId(getSelectedValue(metricListbox));
+		dto.setPointType(getSelectedValue(apTypeBox));
+		String id = getSelectedValue(metricListbox);
+		if (id != null && id.trim().length() > 0) {
+			dto.setMetricId(id);
+		}
 		dto.setMetricValue(metricValue.getText());
 		return dto;
 	}
@@ -201,6 +209,7 @@ public class AccessPointSearchControl extends Composite {
 			}
 
 			public void onSuccess(List<MetricDto> result) {
+				metricListbox.addItem("", "");
 				if (result != null) {
 					for (MetricDto metric : result)
 						metricListbox.addItem(metric.getName(), metric
