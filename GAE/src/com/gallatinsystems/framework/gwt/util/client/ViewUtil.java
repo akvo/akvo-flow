@@ -1,10 +1,14 @@
 package com.gallatinsystems.framework.gwt.util.client;
 
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -16,6 +20,9 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ViewUtil {
 
+	private static final int KEY_PERIOD = 190;
+	private static final int KEY_MINUS = 109;
+	private static final int KEY_DECIMAL = 110;
 	public static final String DEFAULT_INPUT_LABEL_CSS = "input-label";
 
 	/**
@@ -51,14 +58,15 @@ public class ViewUtil {
 		}
 		return l;
 	}
-	
+
 	/**
 	 * constructs a new label using the default style
+	 * 
 	 * @param text
 	 * @return
 	 */
-	public static Label initLabel(String text){
-		return initLabel(text,null);
+	public static Label initLabel(String text) {
+		return initLabel(text, null);
 	}
 
 	/**
@@ -136,5 +144,37 @@ public class ViewUtil {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * returns a new TextBox that only accepts numeric input (including negative
+	 * sign and decimal point)
+	 * 
+	 * @return
+	 */
+	public static TextBox constructNumericTextBox() {
+		TextBox tb = new TextBox();
+		tb.addKeyPressHandler(new KeyPressHandler() {
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				int keyCode = event.getNativeEvent().getKeyCode();								
+				if ((!Character.isDigit(event.getCharCode()))
+						&& (keyCode !=  KeyCodes.KEY_TAB)
+						&& (keyCode !=  KeyCodes.KEY_BACKSPACE)
+						&& (keyCode !=  KeyCodes.KEY_DELETE)
+						&& (keyCode !=  KeyCodes.KEY_HOME)
+						&& (keyCode !=  KeyCodes.KEY_END)
+						&& (keyCode !=  KeyCodes.KEY_LEFT)
+						&& (keyCode !=  KeyCodes.KEY_UP)
+						&& (keyCode !=  KeyCodes.KEY_RIGHT)
+						&& (keyCode !=  KeyCodes.KEY_DOWN)
+						&& (event.getCharCode() != '.') 
+						&& (event.getCharCode() != '-')) {
+					((TextBox) event.getSource()).cancelKey();
+				}
+			}
+
+		});
+		return tb;
 	}
 }

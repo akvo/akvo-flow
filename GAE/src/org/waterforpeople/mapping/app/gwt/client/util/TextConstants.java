@@ -527,4 +527,8 @@ public interface TextConstants extends Constants{
 	public String changesComplete();
 	public String negativeOverride();
 	public String surveyedLocaleManager();
+	public String instance();
+	public String selectInstance();
+	public String identifier();
+	public String surveyedLocaleEditor();
 }

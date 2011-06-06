@@ -130,9 +130,8 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<SurveyedLocale> search(String country, Date collDateFrom,
-			Date collDateTo, String type,
-			String orderByField, String orderByDir, Integer pageSize,
-			String cursorString) {
+			Date collDateTo, String type, String orderByField,
+			String orderByDir, Integer pageSize, String cursorString) {
 
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
@@ -158,15 +157,17 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 			}
 			query.setOrdering(orderByField + " " + ordering);
 		}
-		if(filterString.length()>0){
+		if (filterString.length() > 0) {
 			query.setFilter(filterString.toString());
 			query.declareParameters(paramString.toString());
 		}
 		prepareCursor(cursorString, pageSize, query);
 		if (collDateFrom != null || collDateTo != null) {
 			query.declareImports("import java.util.Date");
-			if(orderByField != null && !orderByField.trim().equals("lastSurveyedDate")){
-				query.setOrdering("lastSurveyedDate " + (orderByDir!=null?orderByDir:"asc"));
+			if (orderByField != null
+					&& !orderByField.trim().equals("lastSurveyedDate")) {
+				query.setOrdering("lastSurveyedDate "
+						+ (orderByDir != null ? orderByDir : "asc"));
 			}
 		}
 		return (List<SurveyedLocale>) query.executeWithMap(paramMap);
@@ -181,7 +182,8 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SurveyalValue> listSurveyalValueByMetric(Long metricId, String metricValue, Integer pageSize, String cursor) {
+	public List<SurveyalValue> listSurveyalValueByMetric(Long metricId,
+			String metricValue, Integer pageSize, String cursor) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
 		StringBuilder filterString = new StringBuilder();
@@ -198,5 +200,17 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		prepareCursor(cursor, pageSize, query);
 		return (List<SurveyalValue>) query.executeWithMap(paramMap);
 
+	}
+
+	/**
+	 * lists all values for a given survey instance
+	 * 
+	 * @param surveyInstanceId
+	 * @return
+	 */
+	public List<SurveyalValue> listSurveyalValuesByInstance(
+			Long surveyInstanceId) {
+		return listByProperty("surveyInstanceId", surveyInstanceId, "Long",
+				"questionText, metricName asc", SurveyalValue.class);
 	}
 }

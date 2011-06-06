@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 
@@ -21,5 +22,12 @@ public interface SurveyedLocaleService extends RemoteService {
 	public ResponseDto<ArrayList<SurveyedLocaleDto>> listLocales(
 			AccessPointSearchCriteriaDto searchCriteria, String cursorString);
 
-	
+	/**
+	 * lists all the surveyalValue objects for a single surveyinstance
+	 * 
+	 * @param surveyInstanceId
+	 * @return
+	 */
+	public List<SurveyalValueDto> listSurveyalValuesByInstance(
+			Long surveyInstanceId);	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyalValueDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -43,6 +44,28 @@ public class SurveyedLocaleServiceImpl extends RemoteServiceServlet implements
 	}
 
 	/**
+	 * lists all the surveyalValue objects for a single surveyinstance
+	 * 
+	 * @param surveyInstanceId
+	 * @return
+	 */
+	@Override
+	public List<SurveyalValueDto> listSurveyalValuesByInstance(
+			Long surveyInstanceId) {
+		List<SurveyalValue> valList = localeDao
+				.listSurveyalValuesByInstance(surveyInstanceId);
+		List<SurveyalValueDto> dtoList = new ArrayList<SurveyalValueDto>();
+		if (valList != null) {
+			for (SurveyalValue val : valList) {
+				SurveyalValueDto dto = new SurveyalValueDto();
+				DtoMarshaller.copyToDto(val, dto);
+				dtoList.add(dto);
+			}
+		}
+		return dtoList;
+	}
+
+	/**
 	 * performs a search to find surveyedLocale records that match the critieria
 	 * passed in
 	 */
@@ -59,10 +82,11 @@ public class SurveyedLocaleServiceImpl extends RemoteServiceServlet implements
 			if (vals != null) {
 				// TODO: get items matching id in a more efficient manner
 				pointList = new ArrayList<SurveyedLocale>();
-				for(SurveyalValue v: vals){
-					SurveyedLocale l = localeDao.getByKey(v.getSurveyedLocaleId());
-					//have to check for null since delete can produce orphans
-					if(l != null){
+				for (SurveyalValue v : vals) {
+					SurveyedLocale l = localeDao.getByKey(v
+							.getSurveyedLocaleId());
+					// have to check for null since delete can produce orphans
+					if (l != null) {
 						pointList.add(l);
 					}
 				}

@@ -262,7 +262,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyInstance domain = new SurveyInstance();
 		DtoMarshaller.copyToCanonical(domain, instance);
-		if(domain.getCollectionDate()== null){
+		if (domain.getCollectionDate() == null) {
 			domain.setCollectionDate(new Date());
 		}
 		domain = dao.save(domain);
@@ -273,13 +273,13 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 					.getQuestionAnswersStore()) {
 				QuestionAnswerStore store = new QuestionAnswerStore();
 				DtoMarshaller.copyToCanonical(store, ans);
-				if(ans.getCollectionDate()==null){
+				if (ans.getCollectionDate() == null) {
 					ans.setCollectionDate(domain.getCollectionDate());
 				}
 				if (ans.getValue() != null) {
 					ans.setValue(ans.getValue().replaceAll("\t", ""));
-					if(ans.getValue().length()>500){
-						ans.setValue(ans.getValue().substring(0,499));
+					if (ans.getValue().length() > 500) {
+						ans.setValue(ans.getValue().substring(0, 499));
 					}
 				}
 				store.setSurveyInstanceId(domain.getKey().getId());
@@ -295,6 +295,11 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		return instance;
 	}
 
+	/**
+	 * marks the survey instance as approved, updating any changed answers as it
+	 * does so and then sends a processing message to the task queue so the
+	 * instance can be summarized.
+	 */
 	public void approveSurveyInstance(Long surveyInstanceId,
 			List<QuestionAnswerStoreDto> changedAnswers) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
@@ -311,6 +316,26 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * lists all surveyInstances associated with the surveyedLocaleId passed in.
+	 * 
+	 * @param localeId
+	 * @return
+	 */
+	public List<SurveyInstanceDto> listInstancesByLocale(Long localeId) {
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		List<SurveyInstanceDto> dtoList = new ArrayList<SurveyInstanceDto>();
+		List<SurveyInstance> instances = dao.listInstancesByLocale(localeId);
+		if (instances != null) {
+			for (SurveyInstance inst : instances) {
+				SurveyInstanceDto dto = new SurveyInstanceDto();
+				DtoMarshaller.copyToDto(inst, dto);
+				dtoList.add(dto);
+			}
+		}
+		return dtoList;
+	}
+
 	private void sendProcessingMessages(SurveyInstance domain) {
 		// send async request to populate the AccessPoint using the mapping
 		QueueFactory.getDefaultQueue().add(
@@ -321,11 +346,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				url("/app_worker/datasummarization").param("objectKey",
 						domain.getKey().getId() + "").param("type",
 						"SurveyInstance"));
-		QueueFactory.getDefaultQueue().add(url("/app_worker/surveyalservlet").param(
-				SurveyalRestRequest.ACTION_PARAM,
-				SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
-				SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-				domain.getKey().getId() + ""));
+		QueueFactory.getDefaultQueue().add(
+				url("/app_worker/surveyalservlet").param(
+						SurveyalRestRequest.ACTION_PARAM,
+						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
+						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+						domain.getKey().getId() + ""));
 	}
 
 }

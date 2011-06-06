@@ -152,7 +152,7 @@ public class SurveyedLocaleManager extends Composite implements
 	}
 
 	@Override
-	public void bindRow(Grid grid, SurveyedLocaleDto item, int row) {
+	public void bindRow(Grid grid, final SurveyedLocaleDto item, int row) {
 		Label keyIdLabel = new Label(item.getKeyId().toString());
 		grid.setWidget(row, 0, keyIdLabel);
 		if (item.getIdentifier() != null) {
@@ -174,11 +174,8 @@ public class SurveyedLocaleManager extends Composite implements
 					new Label(dateFormat.format(item.getLastSurveyedDate())));
 		}
 
-		Button editLocale = new Button(TEXT_CONSTANTS.edit());
-		editLocale.setTitle(keyIdLabel.getText());
-		Button deleteLocale = new Button(TEXT_CONSTANTS.delete());
-		deleteLocale.setTitle(new Integer(row).toString() + "|"
-				+ keyIdLabel.getText());
+		Button editLocale = new Button(TEXT_CONSTANTS.edit());		
+		Button deleteLocale = new Button(TEXT_CONSTANTS.delete());		
 		HorizontalPanel buttonHPanel = new HorizontalPanel();
 		buttonHPanel.add(editLocale);
 		buttonHPanel.add(deleteLocale);
@@ -187,13 +184,10 @@ public class SurveyedLocaleManager extends Composite implements
 		}
 
 		editLocale.addClickHandler(new ClickHandler() {
-
 			@Override
-			public void onClick(ClickEvent event) {
-				Button pressedButton = (Button) event.getSource();
-				Long itemId = Long.parseLong(pressedButton.getTitle());
-				// TODO: handle edit dialog click
-				// loadAccessPointDetailTable(itemId);
+			public void onClick(ClickEvent event) {								
+				SurveyedLocaleEditorDialog dia = new SurveyedLocaleEditorDialog(null, item, currentUser.hasPermission(PermissionConstants.EDIT_AP));
+				dia.show();
 			}
 
 		});

@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 
@@ -14,5 +15,8 @@ public interface SurveyedLocaleServiceAsync {
 	void listLocales(AccessPointSearchCriteriaDto searchCriteria,
 			String cursorString,
 			AsyncCallback<ResponseDto<ArrayList<SurveyedLocaleDto>>> callback);
+
+	void listSurveyalValuesByInstance(Long surveyInstanceId,
+			AsyncCallback<List<SurveyalValueDto>> callback);
 
 }

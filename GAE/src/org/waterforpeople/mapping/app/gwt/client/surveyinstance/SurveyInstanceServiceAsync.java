@@ -35,4 +35,9 @@ public interface SurveyInstanceServiceAsync {
 			List<QuestionAnswerStoreDto> changedQuestions,
 			AsyncCallback<Void> callback);
 
+
+
+	void listInstancesByLocale(Long localeId,
+			AsyncCallback<List<SurveyInstanceDto>> callback);
+
 }

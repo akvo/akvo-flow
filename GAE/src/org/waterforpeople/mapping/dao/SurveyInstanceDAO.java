@@ -59,8 +59,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				while ((startIndex = line.indexOf(",", startIndex + 1)) != -1) {
 					if (iCount == 4) {
 						String firstPart = line.substring(0, startIndex);
-						String secondPart = line.substring(startIndex + 1, line
-								.length());
+						String secondPart = line.substring(startIndex + 1,
+								line.length());
 						line = firstPart + secondPart;
 						break;
 					}
@@ -84,7 +84,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			if (si.getSurveyId() == null) {
 				try {
-					if(collDate != null){
+					if (collDate != null) {
 						si.setCollectionDate(collDate);
 					}
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
@@ -221,10 +221,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			Long surveyInstanceId, String questionId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(QuestionAnswerStore.class);
-		q
-				.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
-		q
-				.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+		q.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
+		q.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
 		List<QuestionAnswerStore> result = (List<QuestionAnswerStore>) q
 				.execute(surveyInstanceId, questionId);
 		if (result != null && result.size() > 0) {
@@ -314,6 +312,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				.execute(surveyId);
 
 		return siList;
+	}
+
+	/**
+	 * lists all instances for the given surveyedLocale
+	 * 
+	 * @param surveyedLocaleId
+	 * @return
+	 */
+	public List<SurveyInstance> listInstancesByLocale(Long surveyedLocaleId) {
+		return listByProperty("surveyedLocaleId", surveyedLocaleId, "Long");
 	}
 
 	/**
