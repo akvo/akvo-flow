@@ -114,33 +114,38 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						desiredResults = piReq.getDesiredResults();
 					}
 				}
-
-				if (piReq.getSubLevel() != null) {
+				String display = null;
+				if (piReq.getDisplay() != null) {
+					display = piReq.getDisplay();
+				}
+				if (piReq.getOrg() != null) {
+					List<AccessPoint> results = apDao.searchAccessPoints(
+							piReq.getCountry(), null, null, null, null, null,
+							null, null,piReq.getOrg(), "collectionDate", "asc",
+							desiredResults, piReq.getCursor());
+					response = (PlacemarkRestResponse) convertToResponse(
+							results, piReq.getNeedDetailsFlag(),
+							AccessPointDao.getCursor(results),
+							piReq.getCursor(), display);
+				} else if (piReq.getSubLevel() != null) {
 					if (piReq.getDomain() == null
 							|| AP_DOMAIN.equalsIgnoreCase(piReq.getDomain())) {
 						List<AccessPoint> results = apDao.listBySubLevel(
 								piReq.getCountry(), piReq.getSubLevel(),
 								piReq.getSubLevelValue(), piReq.getCursor(),
 								AccessPointType.WATER_POINT, desiredResults);
-						String display = null;
-						if (piReq.getDisplay() != null) {
-							display = piReq.getDisplay();
-						}
 						response = (PlacemarkRestResponse) convertToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
 								piReq.getCursor(), display);
-					}else{
-						//TODO: add localeType to param
-						//TODO: add organization to param
-						List<SurveyedLocale> results = localeDao.listBySubLevel(
-								piReq.getCountry(), piReq.getSubLevel(),
-								piReq.getSubLevelValue(), null,null,piReq.getCursor(),
-								desiredResults);
-						String display = null;
-						if (piReq.getDisplay() != null) {
-							display = piReq.getDisplay();
-						}
+					} else {
+						// TODO: add localeType to param
+						// TODO: add organization to param
+						List<SurveyedLocale> results = localeDao
+								.listBySubLevel(piReq.getCountry(),
+										piReq.getSubLevel(),
+										piReq.getSubLevelValue(), null, null,
+										piReq.getCursor(), desiredResults);
 						response = (PlacemarkRestResponse) convertLocaleToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
@@ -149,26 +154,22 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 				} else {
 					if (piReq.getDomain() == null
 							|| AP_DOMAIN.equalsIgnoreCase(piReq.getDomain())) {
-					List<AccessPoint> results = apDao.searchAccessPoints(
-							piReq.getCountry(), null, null, null, null, null,
-							null, null, null, null, desiredResults,
-							piReq.getCursor());
-					String display = null;
-					if (piReq.getDisplay() != null) {
-						display = piReq.getDisplay();
-					}
-					response = (PlacemarkRestResponse) convertToResponse(
-							results, piReq.getNeedDetailsFlag(),
-							AccessPointDao.getCursor(results),
-							piReq.getCursor(), display);
-					}else{
-						List<SurveyedLocale> results = localeDao.listBySubLevel(
-								piReq.getCountry(), null,null, null,null,piReq.getCursor(),
-								desiredResults);
-						String display = null;
+						List<AccessPoint> results = apDao.searchAccessPoints(
+								piReq.getCountry(), null, null, null, null,
+								null, null, null, null, null, desiredResults,
+								piReq.getCursor());
 						if (piReq.getDisplay() != null) {
 							display = piReq.getDisplay();
 						}
+						response = (PlacemarkRestResponse) convertToResponse(
+								results, piReq.getNeedDetailsFlag(),
+								AccessPointDao.getCursor(results),
+								piReq.getCursor(), display);
+					} else {
+						List<SurveyedLocale> results = localeDao
+								.listBySubLevel(piReq.getCountry(), null, null,
+										null, null, piReq.getCursor(),
+										desiredResults);
 						response = (PlacemarkRestResponse) convertLocaleToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
@@ -232,18 +233,17 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		}
 		return resp;
 	}
-	
-	private RestResponse convertLocaleToResponse(List<SurveyedLocale> localeList,
-			Boolean needDetailsFlag, String cursor, String oldCursor,
-			String display) {
+
+	private RestResponse convertLocaleToResponse(
+			List<SurveyedLocale> localeList, Boolean needDetailsFlag,
+			String cursor, String oldCursor, String display) {
 		PlacemarkRestResponse resp = new PlacemarkRestResponse();
 		if (needDetailsFlag == null)
 			needDetailsFlag = true;
 		if (localeList != null) {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
-			for (SurveyedLocale ap : localeList) {				
-					dtoList.add(marshallDomainToDto(ap, needDetailsFlag,
-							display));				
+			for (SurveyedLocale ap : localeList) {
+				dtoList.add(marshallDomainToDto(ap, needDetailsFlag, display));
 				resp.setPlacemarks(dtoList);
 			}
 		}
@@ -256,27 +256,30 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		}
 		return resp;
 	}
-	
 
 	private PlacemarkDto marshallDomainToDto(SurveyedLocale ap,
 			Boolean needDetailsFlag, String display) {
 		PlacemarkDto pdto = new PlacemarkDto();
-		//TODO: encode type and status properly
-		pdto.setPinStyle(KMLGenerator.encodePinStyle(AccessPointType.WATER_POINT,
+		// TODO: encode type and status properly
+		pdto.setPinStyle(KMLGenerator.encodePinStyle(
+				AccessPointType.WATER_POINT,
 				AccessPoint.Status.FUNCTIONING_HIGH));
-		pdto.setIconUrl(getUrlFromStatus(AccessPoint.Status.FUNCTIONING_HIGH, AccessPointType.WATER_POINT));
+		pdto.setIconUrl(getUrlFromStatus(AccessPoint.Status.FUNCTIONING_HIGH,
+				AccessPointType.WATER_POINT));
 		pdto.setMarkType(AccessPointType.WATER_POINT.toString());
-		
+
 		pdto.setLatitude(ap.getLatitude());
-		pdto.setLongitude(ap.getLongitude());		
-		pdto.setCommunityCode(ap.getIdentifier());		
+		pdto.setLongitude(ap.getLongitude());
+		pdto.setCommunityCode(ap.getIdentifier());
 		pdto.setCollectionDate(ap.getLastUpdateDateTime());
-		//TODO: implement details
+		// TODO: implement details
 		if (needDetailsFlag) {
 			String placemarkString = null;
 			try {
-				/*placemarkString = kmlGen.bindPlacemark(ap,
-						"placemarkExternalMap.vm", display);*/
+				/*
+				 * placemarkString = kmlGen.bindPlacemark(ap,
+				 * "placemarkExternalMap.vm", display);
+				 */
 				placemarkString = "<div><h3>Coming Soon</h3></div>";
 				pdto.setPlacemarkContents(placemarkString);
 			} catch (Exception e) {

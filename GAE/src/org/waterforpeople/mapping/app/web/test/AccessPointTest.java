@@ -27,7 +27,7 @@ public class AccessPointTest {
 			AccessPointDao apDao = new AccessPointDao();
 			ArrayList<AccessPoint> apList = new ArrayList<AccessPoint>();
 			for (int j = 0; j < 1; j++) {
-				
+
 				for (int i = 0; i < 700; i++) {
 					double lon = 35.0 + (new Random().nextDouble() / 10);
 					double lat = -15.7 + (new Random().nextDouble() / 10);
@@ -43,7 +43,7 @@ public class AccessPointTest {
 							sign * new Random().nextInt(100));
 					log.info(i + ":");
 					AccessPoint ap = new AccessPoint();
-					ap.setLatitude(lat );
+					ap.setLatitude(lat);
 					ap.setLongitude(lon);
 
 					Date today = new Date();
@@ -74,6 +74,11 @@ public class AccessPointTest {
 					calendar.add(Calendar.YEAR, -5);
 					ap.setConstructionDate(calendar.getTime());
 					ap.setPhotoName("Water point");
+
+					if (i % 2 == 0)
+						ap.setWaterForPeopleProjectFlag(true);
+					else
+						ap.setWaterForPeopleProjectFlag(false);
 					if (i % 2 == 0)
 						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
 					else
@@ -89,7 +94,7 @@ public class AccessPointTest {
 				resp.getWriter().println("About to save APs");
 				apDao.save(apList);
 				resp.getWriter().println("Finished saving APs");
-				
+
 				// for(AccessPoint ap :apList){
 				// CommunityLocationSummarizer cls = new
 				// CommunityLocationSummarizer();

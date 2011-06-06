@@ -26,6 +26,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String LAT2_PARAM = "lat2";
 	private static final String LONG2_PARAM = "long2";
 	private static final String DOMAIN_PARAM = "domain";
+	private static final String ORG_PARAM = "org";
 	private String country;
 	private Boolean needDetailsFlag = null;
 	private String communityCode = null;
@@ -39,6 +40,15 @@ public class PlacemarkRestRequest extends RestRequest {
 	private Double long1 = null;
 	private Double long2 = null;
 	private String domain;
+	private String org = null;
+
+	public String getOrg() {
+		return org;
+	}
+
+	public void setOrg(String org) {
+		this.org = org;
+	}
 
 	public String getDomain() {
 		return domain;
@@ -142,6 +152,9 @@ public class PlacemarkRestRequest extends RestRequest {
 		if (req.getParameter(LONG2_PARAM) != null) {
 			setLong2(Double.parseDouble(req.getParameter(LONG2_PARAM)));
 		}
+		if (req.getParameter(ORG_PARAM) != null) {
+			this.setOrg(req.getParameter(ORG_PARAM));
+		}
 
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
 			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
@@ -239,6 +252,9 @@ public class PlacemarkRestRequest extends RestRequest {
 			key = LIST_PLACEMARK;
 			key += country + (display != null ? display : "")
 					+ (getCursor() != null ? getCursor() : "");
+			if (getOrg() != null) {
+				key += key + ":" + "org=" + getOrg();
+			}
 		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
 			key += "-" + communityCode + (display != null ? display : "")
 					+ (pointType != null ? pointType : "");
