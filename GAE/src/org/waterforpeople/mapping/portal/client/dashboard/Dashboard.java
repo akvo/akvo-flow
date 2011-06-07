@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationItemDto;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationService;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
@@ -29,6 +32,7 @@ import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPo
 import org.waterforpeople.mapping.portal.client.widgets.SurveyLoaderPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.SurveyedLocaleManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.UserManagerPortlet;
 
@@ -80,17 +84,45 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
 	private static final String ADD_TOOLTIP = TEXT_CONSTANTS.addToDashboard();
+	private static final String DEFAULT_DOMAIN_TYPE = "accessPoint";
+	private static final String DOMAIN_CONFIG_KEY = "domainType";
+	private static final String LOCALE_DOMAIN_TYPE = "locale";
 
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
 	private Image confImage;
 	private Panel menuPanel;
+	private String domainType;
 
 	public Dashboard() {
 		super(COLUMNS);
 	}
 
 	public void onModuleLoad() {
+		ConfigurationServiceAsync cfgService = GWT
+				.create(ConfigurationService.class);
+		cfgService.getConfigurationItem(DOMAIN_CONFIG_KEY,
+				new AsyncCallback<ConfigurationItemDto>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						domainType = DEFAULT_DOMAIN_TYPE;
+						completeInitialization();
+					}
+
+					@Override
+					public void onSuccess(ConfigurationItemDto result) {
+						if (result == null || result.getValue() == null) {
+							domainType = DEFAULT_DOMAIN_TYPE;
+						} else {
+							domainType = result.getValue();
+						}
+						completeInitialization();
+					}
+				});
+	}
+
+	public void completeInitialization() {
 		RootPanel.get().setPixelSize(1024, 768);
 		RootPanel.get().getElement().getStyle()
 				.setProperty("position", "relative");
@@ -165,7 +197,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.setAnimationEnabled(true);
 		mgrMenu.addItem(TEXT_CONSTANTS.accessPoint(), new Command() {
 			public void execute() {
-				launchFullscreen(AccessPointManagerPortlet.NAME);
+				if(LOCALE_DOMAIN_TYPE.equalsIgnoreCase(domainType)){
+					launchFullscreen(SurveyedLocaleManagerPortlet.NAME);	
+				}else{
+					launchFullscreen(AccessPointManagerPortlet.NAME);
+				}
+				
 
 			}
 		});
@@ -287,7 +324,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				}
 			});
 		}
-		
+
 		if (getCurrentUser().hasPermission(PermissionConstants.VIEW_MESSAGES)) {
 			menu.addItem(TEXT_CONSTANTS.viewMessages(), new Command() {
 				@Override
@@ -297,7 +334,6 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				}
 			});
 		}
-
 
 		menuDock.add(menu, DockPanel.WEST);
 		menuDock.add(new SimplePanel(), DockPanel.CENTER);
@@ -393,7 +429,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					}
 				}
 			}
-			if(count == 0){
+			if (count == 0) {
 				installDefaultPortlets();
 			}
 		}

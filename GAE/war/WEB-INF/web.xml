@@ -182,6 +182,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>RemoteExceptionServlet</servlet-name>
 		<url-pattern>/remoteexception</url-pattern>
 	</servlet-mapping>
+						
+	<servlet>
+		<servlet-name>ConfigRpcService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.config.ConfigurationServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ConfigRpcService</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/configrpcservice</url-pattern>
+	</servlet-mapping>
 		
 	<servlet>
 		<servlet-name>SurveyedLocaleRpcService</servlet-name>
