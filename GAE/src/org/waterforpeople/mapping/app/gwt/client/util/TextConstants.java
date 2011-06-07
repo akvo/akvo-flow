@@ -531,4 +531,8 @@ public interface TextConstants extends Constants{
 	public String selectInstance();
 	public String identifier();
 	public String surveyedLocaleEditor();
+	public String latLonMandatory();
+	public String latLonNumeric();
+	public String organization();
+	public String system();
 }

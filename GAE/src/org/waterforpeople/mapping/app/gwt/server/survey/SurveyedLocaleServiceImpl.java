@@ -1,6 +1,9 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
@@ -115,6 +118,81 @@ public class SurveyedLocaleServiceImpl extends RemoteServiceServlet implements
 		result.setPayload(dtoList);
 
 		return result;
+	}
+
+	/**
+	 * saves a surveyedLocale to the database, including any nested
+	 * surveyalValues
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public SurveyedLocaleDto saveSurveyedLocale(SurveyedLocaleDto locale) {
+		if (locale != null) {
+			SurveyedLocale localeDomain = new SurveyedLocale();
+			DtoMarshaller.copyToCanonical(localeDomain, locale);
+			localeDao.save(localeDomain);
+			if (locale.getValues() != null) {
+				List<SurveyalValue> valueList = new ArrayList<SurveyalValue>();
+				for (SurveyalValueDto val : locale.getValues()) {
+					SurveyalValue valDomain = new SurveyalValue();
+					DtoMarshaller.copyToCanonical(valDomain, val);
+					valDomain
+							.setSurveyedLocaleId(localeDomain.getKey().getId());
+					if (valDomain.getCountryCode() == null) {
+						valDomain.setCountryCode(localeDomain.getCountryCode());
+					}
+					if (valDomain.getSublevel1() == null) {
+						valDomain.setSublevel1(localeDomain.getSublevel1());
+					}
+					if (valDomain.getSublevel2() == null) {
+						valDomain.setSublevel2(localeDomain.getSublevel2());
+					}
+					if (valDomain.getSublevel3() == null) {
+						valDomain.setSublevel3(localeDomain.getSublevel3());
+					}
+					if (valDomain.getSublevel4() == null) {
+						valDomain.setSublevel4(localeDomain.getSublevel4());
+					}
+					if (valDomain.getSublevel5() == null) {
+						valDomain.setSublevel5(localeDomain.getSublevel5());
+					}
+					if (valDomain.getSublevel6() == null) {
+						valDomain.setSublevel6(localeDomain.getSublevel6());
+					}
+					if (valDomain.getCollectionDate() == null) {
+						valDomain.setCollectionDate(localeDomain
+								.getLastSurveyedDate());
+						if (valDomain.getCollectionDate() == null) {
+							valDomain.setCollectionDate(new Date());
+						}
+					}
+					Calendar cal = new GregorianCalendar();
+					cal.setTime(valDomain.getCollectionDate());
+					valDomain.setDay(cal.get(Calendar.DAY_OF_MONTH));
+					valDomain.setMonth(cal.get(Calendar.MONTH) + 1);
+					valDomain.setYear(cal.get(Calendar.YEAR));
+					if (valDomain.getLocaleType() == null) {
+						valDomain.setLocaleType(localeDomain.getLocaleType());
+					}
+					if (valDomain.getOrganization() == null) {
+						valDomain.setOrganization(localeDomain
+								.getOrganization());
+					}
+					if (valDomain.getSystemIdentifier() != null) {
+						valDomain.setSystemIdentifier(localeDomain
+								.getSystemIdentifier());
+					}
+					valueList.add(valDomain);
+				}
+				if (valueList.size() > 0) {
+					localeDao.save(valueList);
+				}
+			}
+			// populate the key so the UI can see it			
+			locale.setKeyId(localeDomain.getKey().getId());
+		}
+		return locale;
 	}
 
 }

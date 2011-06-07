@@ -17,8 +17,9 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("surveyedlocalerpcservice")
 public interface SurveyedLocaleService extends RemoteService {
-	
+
 	public void deleteLocale(Long localeId);
+
 	public ResponseDto<ArrayList<SurveyedLocaleDto>> listLocales(
 			AccessPointSearchCriteriaDto searchCriteria, String cursorString);
 
@@ -29,5 +30,14 @@ public interface SurveyedLocaleService extends RemoteService {
 	 * @return
 	 */
 	public List<SurveyalValueDto> listSurveyalValuesByInstance(
-			Long surveyInstanceId);	
+			Long surveyInstanceId);
+
+	/**
+	 * saves a surveyedLocale to the database, including any nested
+	 * surveyalValues
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public SurveyedLocaleDto saveSurveyedLocale(SurveyedLocaleDto locale);
 }

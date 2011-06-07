@@ -24,23 +24,23 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  */
 public class SurveyedLocaleEditorDialog extends WidgetDialog implements
-		ClickHandler {
+		ClickHandler, CompletionListener {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	public static final String CRITERIA_KEY = "APcriteria";
 	private SurveyedLocaleEditorWidget editWidget;
-	private Button okButton;	
+	private Button okButton;
 
 	public SurveyedLocaleEditorDialog(CompletionListener listener,
 			SurveyedLocaleDto dto, boolean allowEdit) {
 		super(TEXT_CONSTANTS.surveyedLocaleManager(), null, true, listener);
 		Panel panel = new VerticalPanel();
-		editWidget = new SurveyedLocaleEditorWidget(allowEdit, dto);
+		editWidget = new SurveyedLocaleEditorWidget(allowEdit, dto, this);
 		panel.add(editWidget);
 		Panel buttonPanel = new HorizontalPanel();
 		okButton = new Button(TEXT_CONSTANTS.close());
-		okButton.addClickHandler(this);		
-		buttonPanel.add(okButton);		
+		okButton.addClickHandler(this);
+		buttonPanel.add(okButton);
 		panel.add(buttonPanel);
 		setContentWidget(panel);
 	}
@@ -51,6 +51,15 @@ public class SurveyedLocaleEditorDialog extends WidgetDialog implements
 			hide(true);
 			Map<String, Object> payload = new HashMap<String, Object>();
 			notifyListener(true, payload);
+		}
+	}
+
+	@Override
+	public void operationComplete(boolean wasSuccessful,
+			Map<String, Object> payload) {
+		if (wasSuccessful) {
+			hide(true);
+			notifyListener(wasSuccessful, payload);
 		}
 	}
 }

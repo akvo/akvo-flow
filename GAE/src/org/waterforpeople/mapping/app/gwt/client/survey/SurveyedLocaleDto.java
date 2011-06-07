@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.Date;
+import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
@@ -27,6 +28,15 @@ public class SurveyedLocaleDto extends BaseDto {
 	private Double longitude;
 	private boolean ambiguous;
 	private Date lastSurveyedDate;
+	private List<SurveyalValueDto> values;
+
+	public List<SurveyalValueDto> getValues() {
+		return values;
+	}
+
+	public void setValues(List<SurveyalValueDto> values) {
+		this.values = values;
+	}
 
 	public String getOrganization() {
 		return organization;

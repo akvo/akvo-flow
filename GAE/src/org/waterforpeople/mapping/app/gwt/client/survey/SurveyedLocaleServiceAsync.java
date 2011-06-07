@@ -19,4 +19,7 @@ public interface SurveyedLocaleServiceAsync {
 	void listSurveyalValuesByInstance(Long surveyInstanceId,
 			AsyncCallback<List<SurveyalValueDto>> callback);
 
+	void saveSurveyedLocale(SurveyedLocaleDto locale,
+			AsyncCallback<SurveyedLocaleDto> callback);
+
 }

@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleDto;
@@ -14,6 +15,7 @@ import com.gallatinsystems.framework.gwt.component.DataTableHeader;
 import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.user.app.gwt.client.PermissionConstants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -152,7 +154,7 @@ public class SurveyedLocaleManager extends Composite implements
 	}
 
 	@Override
-	public void bindRow(Grid grid, final SurveyedLocaleDto item, int row) {
+	public void bindRow(final Grid grid, final SurveyedLocaleDto item,final int row) {
 		Label keyIdLabel = new Label(item.getKeyId().toString());
 		grid.setWidget(row, 0, keyIdLabel);
 		if (item.getIdentifier() != null) {
@@ -186,7 +188,17 @@ public class SurveyedLocaleManager extends Composite implements
 		editLocale.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {								
-				SurveyedLocaleEditorDialog dia = new SurveyedLocaleEditorDialog(null, item, currentUser.hasPermission(PermissionConstants.EDIT_AP));
+				SurveyedLocaleEditorDialog dia = new SurveyedLocaleEditorDialog(new CompletionListener() {
+					
+					@Override
+					public void operationComplete(boolean wasSuccessful,
+							Map<String, Object> payload) {					
+						if(payload != null && payload.containsKey(SurveyedLocaleEditorWidget.LOCALE_KEY)){
+							SurveyedLocaleDto dto = (SurveyedLocaleDto)payload.get(SurveyedLocaleEditorWidget.LOCALE_KEY);
+							bindRow(grid,dto,row);							
+						}
+					}
+				},item, currentUser.hasPermission(PermissionConstants.EDIT_AP));
 				dia.show();
 			}
 

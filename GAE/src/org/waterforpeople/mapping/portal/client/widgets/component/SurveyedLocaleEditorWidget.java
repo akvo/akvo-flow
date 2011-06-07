@@ -1,9 +1,14 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingService;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyalValueDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleService;
@@ -13,11 +18,14 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceSe
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -48,15 +56,18 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * 
  */
 public class SurveyedLocaleEditorWidget extends Composite implements
-		ChangeHandler {
+		ChangeHandler, ClickHandler {
+	public static final String LOCALE_KEY = "locale";
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private CompletionListener saveCompleteListener;
 	private Panel contentPanel;
 	private Label statusLabel;
 	private boolean readWriteMode;
 	private Button saveButton;
 	private SurveyInstanceServiceAsync surveyInstanceService;
 	private SurveyedLocaleServiceAsync surveyedLocaleService;
+	private SurveyMetricMappingServiceAsync metricService;
 	private List<SurveyInstanceDto> surveyInstances;
 	private Map<Long, List<SurveyalValueDto>> surveyalValueMap;
 	private SurveyedLocaleDto localeDto;
@@ -74,17 +85,22 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private TextBox sub4Box;
 	private TextBox sub5Box;
 	private TextBox sub6Box;
+	private TextBox organizationBox;
+	private TextBox systemBox;
 	private MapWidget localeMap;
 	private FlexTable instanceTable;
-	private Map<Widget, Long> widgetToIdMap;
+	private Map<Widget, SurveyalValueDto> widgetToValueMap;
 
 	public SurveyedLocaleEditorWidget(boolean allowEdit,
-			SurveyedLocaleDto surveyedLocale) {
+			SurveyedLocaleDto surveyedLocale,
+			CompletionListener saveCompleteListener) {
 		readWriteMode = allowEdit;
+		this.saveCompleteListener = saveCompleteListener;
 		surveyalValueMap = new HashMap<Long, List<SurveyalValueDto>>();
 		localeDto = surveyedLocale;
 		surveyInstanceService = GWT.create(SurveyInstanceService.class);
 		surveyedLocaleService = GWT.create(SurveyedLocaleService.class);
+		metricService = GWT.create(SurveyMetricMappingService.class);
 
 		dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
 		initializeUi();
@@ -95,6 +111,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		statusLabel = ViewUtil.initLabel(TEXT_CONSTANTS.pleaseWait());
 
 		saveButton = new Button(TEXT_CONSTANTS.save());
+		saveButton.addClickHandler(this);
 		instanceTable = new FlexTable();
 		TabPanel tp = new TabPanel();
 		tp.add(constructGeneralTab(localeDto), TEXT_CONSTANTS.general());
@@ -112,6 +129,9 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		});
 		tp.selectTab(0);
 		contentPanel.add(tp);
+		if (readWriteMode) {
+			contentPanel.add(saveButton);
+		}
 		initWidget(contentPanel);
 	}
 
@@ -197,7 +217,8 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private void populateValueUi(List<SurveyalValueDto> valList) {
 		statusLabel.setVisible(false);
 		if (valList != null) {
-			widgetToIdMap = new HashMap<Widget, Long>();
+			widgetToValueMap = new HashMap<Widget, SurveyalValueDto>();
+
 			int count = 0;
 			for (SurveyalValueDto val : valList) {
 				String label = val.getMetricName();
@@ -213,7 +234,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 				if (val.getStringValue() != null) {
 					input.setValue(val.getStringValue());
 				}
-				widgetToIdMap.put(input, val.getKeyId());
+				widgetToValueMap.put(input, val);
 				instanceTable.setWidget(count, 1, input);
 				count++;
 			}
@@ -311,6 +332,14 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		sub6Box = new TextBox();
 		grid.setWidget(10, 1, sub6Box);
 
+		grid.setWidget(11, 0, ViewUtil.initLabel(TEXT_CONSTANTS.organization()));
+		organizationBox = new TextBox();
+		grid.setWidget(11, 1, organizationBox);
+
+		grid.setWidget(11, 0, ViewUtil.initLabel(TEXT_CONSTANTS.system()));
+		systemBox = new TextBox();
+		grid.setWidget(11, 1, systemBox);
+
 		if (dto != null) {
 			if (dto.getIdentifier() != null) {
 				identifierTextBox.setText(dto.getIdentifier());
@@ -336,8 +365,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 			if (dto.getSublevel6() != null) {
 				sub6Box.setText(dto.getSublevel6());
 			}
-			if (dto != null && dto.getLatitude() != null
-					&& dto.getLongitude() != null) {
+			if (dto.getLatitude() != null && dto.getLongitude() != null) {
 				latTextBox.setText(dto.getLatitude().toString());
 				lonTextBox.setText(dto.getLongitude().toString());
 				try {
@@ -350,6 +378,12 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 					// swallow
 				}
 			}
+			if (dto.getOrganization() != null) {
+				organizationBox.setText(dto.getOrganization());
+			}
+			if (dto.getSystemIdentifier() != null) {
+				systemBox.setText(dto.getSystemIdentifier());
+			}
 		}
 		return grid;
 	}
@@ -357,7 +391,114 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	@Override
 	public void onChange(ChangeEvent event) {
 		if (event.getSource() == instanceListBox) {
+			loadInstanceValues(new Long(
+					instanceListBox.getValue(instanceListBox.getSelectedIndex())));
+		}
+	}
 
+	@Override
+	public void onClick(ClickEvent event) {
+		if (event.getSource() == saveButton) {
+			if (updateDtoValues()) {
+				surveyedLocaleService.saveSurveyedLocale(localeDto,
+						new AsyncCallback<SurveyedLocaleDto>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								MessageDialog dia = new MessageDialog(
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
+								dia.showCentered();
+							}
+
+							@Override
+							public void onSuccess(SurveyedLocaleDto result) {
+								if (saveCompleteListener != null) {
+									Map<String, Object> payload = new HashMap<String, Object>();
+									payload.put(LOCALE_KEY, result);
+									saveCompleteListener.operationComplete(
+											true, payload);
+								}
+							}
+						});
+			}
+		}
+	}
+
+	private boolean updateDtoValues() {
+		if (localeDto == null) {
+			localeDto = new SurveyedLocaleDto();
+		}
+		if (ViewUtil.isTextPopulated(latTextBox)
+				&& ViewUtil.isTextPopulated(lonTextBox)) {
+
+			localeDto.setCountryCode(countryTextBox.getText());
+			localeDto.setSublevel1(sub1Box.getText());
+			localeDto.setSublevel2(sub2Box.getText());
+			localeDto.setSublevel3(sub3Box.getText());
+			localeDto.setSublevel4(sub4Box.getText());
+			localeDto.setSublevel5(sub5Box.getText());
+			localeDto.setSublevel6(sub6Box.getText());
+			localeDto.setIdentifier(identifierTextBox.getText());
+			if (lastSurveyedDateBox.getValue() == null
+					&& localeDto.getLastSurveyedDate() == null) {
+				localeDto.setLastSurveyedDate(new Date());
+			} else if (lastSurveyedDateBox.getValue() != null) {
+				localeDto.setLastSurveyedDate(lastSurveyedDateBox.getValue());
+			}
+			localeDto.setAmbiguous(false);
+			// even though we have numeric only text fields, people can bypass
+			// the checks via copy/paste so we still need to treat the input as
+			// potentially wrong
+			try {
+				localeDto.setLatitude(new Double(latTextBox.getValue()));
+				localeDto.setLongitude(new Double(lonTextBox.getValue()));
+			} catch (NumberFormatException e) {
+				MessageDialog dia = new MessageDialog(
+						TEXT_CONSTANTS.inputError(),
+						TEXT_CONSTANTS.latLonNumeric());
+				dia.showCentered();
+				// stop processing
+				return false;
+			}
+			localeDto.setOrganization(organizationBox.getText());
+			localeDto.setSystemIdentifier(systemBox.getText());
+			if (widgetToValueMap != null) {
+				List<SurveyalValueDto> valueList = new ArrayList<SurveyalValueDto>();
+				for (Entry<Widget, SurveyalValueDto> valEntry : widgetToValueMap
+						.entrySet()) {
+					if (valEntry.getKey() instanceof TextBox) {
+						String newVal = ((TextBox) valEntry.getKey()).getText();
+						String oldVal = valEntry.getValue().getStringValue();
+						// if they're both the same object (or null) we don't
+						// want them
+						if (newVal != oldVal) {
+							if (newVal == null || !newVal.equals(oldVal)) {
+								valEntry.getValue().setStringValue(newVal);
+								try {
+									valEntry.getValue().setNumericValue(
+											new Double(newVal));
+
+								} catch (Exception e) {
+									// swallow
+								}
+								// since the value has changed, add it to the
+								// list to be saved
+								valueList.add(valEntry.getValue());
+							}
+						}
+					}
+				}
+				localeDto.setValues(valueList);
+			}
+			return true;
+		} else {
+			MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.inputError(),
+					TEXT_CONSTANTS.latLonMandatory());
+			dia.showCentered();
+			return false;
 		}
 
 	}
