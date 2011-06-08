@@ -76,7 +76,7 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 	private HashMap<String, ArrayList<SurveyDto>> surveys;
 	private SurveyMetricMappingServiceAsync mappingService;
 
-	public MetricMappingWidget() {
+	public MetricMappingWidget(){
 		contentPanel = new VerticalPanel();
 
 		selectorPanel = new CaptionPanel();
@@ -130,7 +130,6 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 
 	@Override
 	public void setContextBundle(Map<String, Object> bundle) {
-
 		this.bundle = bundle;
 		currentSurveySelection = (SurveyDto) bundle
 				.get(BundleConstants.SURVEY_KEY);
@@ -138,7 +137,7 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 
 	}
 
-	protected void renderInitialState() {
+	public void renderInitialState() {
 		toggleLoading(true);
 		loadSurveyGroups();
 

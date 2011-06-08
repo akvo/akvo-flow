@@ -12,6 +12,9 @@ import com.gallatinsystems.user.app.gwt.client.UserDto;
  * 
  */
 public class PortletFactory {
+	
+	private static final String LOCALE_DOMAIN_TYPE = "locale";
+	
 	public static final Object[][] AVAILABLE_PORTLETS = {
 			{ SummaryPortlet.NAME, SummaryPortlet.DESCRIPTION },
 			{ ActivityChartPortlet.NAME, ActivityChartPortlet.DESCRIPTION },
@@ -27,7 +30,7 @@ public class PortletFactory {
 			/*{ RecentPointsPortlet.NAME, RecentPointsPortlet.DESCRIPTION } */
 					};
 
-	public static Portlet createPortlet(String name, UserDto user) {
+	public static Portlet createPortlet(String name, UserDto user, String domainType) {
 		if (name == null) {
 			throw new IllegalArgumentException(
 					"Name cannot be null when invoking PortletFactory.createPortlet");
@@ -43,7 +46,11 @@ public class PortletFactory {
 		} else if (name.equals(AccessPointStatusPortlet.NAME)) {
 			return new AccessPointStatusPortlet(user);
 		} else if (name.equals(AccessPointManagerPortlet.NAME)) {
-			return new AccessPointManagerPortlet(user);
+			if(LOCALE_DOMAIN_TYPE.equalsIgnoreCase(domainType)){
+				return new SurveyedLocaleManagerPortlet(user);
+			}else{
+				return new AccessPointManagerPortlet(user);
+			}
 		} else if (name.equals(DeviceLocationPortlet.NAME)) {
 			return new DeviceLocationPortlet();
 		} else if (name.equals(AccessPointPerformancePortlet.NAME)) {
@@ -55,7 +62,11 @@ public class PortletFactory {
 		} else if (name.equals(DisplayContentManager.NAME)) {
 			return new DisplayContentManager();
 		} else if (name.equals(SurveyAttributeMappingPortlet.NAME)) {
-			return new SurveyAttributeMappingPortlet();
+			if(LOCALE_DOMAIN_TYPE.equalsIgnoreCase(domainType)){
+				return new MetricMappingPortlet();
+			}else{
+				return new SurveyAttributeMappingPortlet();
+			}
 		} else if (name.equals(SurveyManagerPortlet.NAME)) {
 			return new SurveyManagerPortlet(user);
 		} else if (name.equals(DataUploadPortlet.NAME)) {
@@ -75,7 +86,7 @@ public class PortletFactory {
 		} else if (name.equals(DeviceFileManagerPortlet.NAME)) {
 			return new DeviceFileManagerPortlet(user);
 		} else if (name.equals(AdminWizardPortlet.NAME)) {
-			return new AdminWizardPortlet(user);
+			return new AdminWizardPortlet(user,domainType);
 		} else if (name.equals(RunReportsPortlet.NAME)) {
 			return new RunReportsPortlet();
 		} else if (name.equals(AccessPointMetricChartPortlet.NAME)) {

@@ -535,4 +535,5 @@ public interface TextConstants extends Constants{
 	public String latLonNumeric();
 	public String organization();
 	public String system();
+	public String metricMapping();
 }

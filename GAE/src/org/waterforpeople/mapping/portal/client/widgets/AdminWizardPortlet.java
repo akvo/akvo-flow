@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class AdminWizardPortlet extends AbstractWizardPortlet {
+	private static final String LOCALE_DOMAIN = "locale";
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	public static final String DESCRIPTION = TEXT_CONSTANTS
@@ -47,10 +48,12 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 800;
 	private UserDto user;
+	private String domainType;
 
-	public AdminWizardPortlet(UserDto user) {
+	public AdminWizardPortlet(UserDto user, String domainType) {
 		super(NAME, WIDTH, HEIGHT, user);
 		this.user = user;
+		this.domainType = domainType;
 		init();
 	}
 
@@ -215,7 +218,11 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new UserManagerWidget();
 		} else if (node.getWidgetClass()
 				.equals(AttributeAssignmentWidget.class)) {
-			return new AttributeAssignmentWidget();
+			if(LOCALE_DOMAIN.equalsIgnoreCase(domainType)){
+				return new MetricMappingWidget();
+			}else{
+				return new AttributeAssignmentWidget();
+			}
 		} else if (node.getWidgetClass().equals(EditorialPageEditWidget.class)) {
 			return new EditorialPageEditWidget();
 		} else if (node.getWidgetClass().equals(EditorialPageListWidget.class)) {

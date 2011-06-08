@@ -86,7 +86,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String ADD_TOOLTIP = TEXT_CONSTANTS.addToDashboard();
 	private static final String DEFAULT_DOMAIN_TYPE = "accessPoint";
 	private static final String DOMAIN_CONFIG_KEY = "domainType";
-	private static final String LOCALE_DOMAIN_TYPE = "locale";
+	
 
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
@@ -197,13 +197,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		mgrMenu.setAnimationEnabled(true);
 		mgrMenu.addItem(TEXT_CONSTANTS.accessPoint(), new Command() {
 			public void execute() {
-				if(LOCALE_DOMAIN_TYPE.equalsIgnoreCase(domainType)){
-					launchFullscreen(SurveyedLocaleManagerPortlet.NAME);	
-				}else{
-					launchFullscreen(AccessPointManagerPortlet.NAME);
-				}
-				
-
+				launchFullscreen(AccessPointManagerPortlet.NAME);
 			}
 		});
 
@@ -370,7 +364,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	 * @param portletName
 	 */
 	private void launchFullscreen(String portletName) {
-		Portlet p = PortletFactory.createPortlet(portletName, getCurrentUser());
+		Portlet p = PortletFactory.createPortlet(portletName, getCurrentUser(),
+				domainType);
 		p.setShowFullscreen(true);
 		if (confImage != null) {
 			confImage.setVisible(false);
@@ -417,10 +412,9 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					Arrays.sort(key);
 					for (int j = 0; j < key.length; j++) {
 						try {
-							addPortlet(
-									PortletFactory.createPortlet(colMap.get(i)
-											.get(key[j]), getCurrentUser()), i,
-									true);
+							addPortlet(PortletFactory.createPortlet(
+									colMap.get(i).get(key[j]),
+									getCurrentUser(), domainType), i, true);
 							count++;
 						} catch (IllegalArgumentException e) {
 							// swallow in case we change portlet names and don't
@@ -575,8 +569,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			if (event.getSource() instanceof Image) {
 				Image img = (Image) event.getSource();
 				String name = img.getTitle();
-				addPortlet(PortletFactory.createPortlet(name, currentUser), 0,
-						true);
+				addPortlet(PortletFactory.createPortlet(name, currentUser,
+						domainType), 0, true);
 				updateLayout();
 			}
 		}
