@@ -15,16 +15,17 @@ public class PortletFactory {
 	public static final Object[][] AVAILABLE_PORTLETS = {
 			{ SummaryPortlet.NAME, SummaryPortlet.DESCRIPTION },
 			{ ActivityChartPortlet.NAME, ActivityChartPortlet.DESCRIPTION },
-			{ ActivityMapPortlet.NAME, ActivityMapPortlet.DESCRIPTION },
+			//{ ActivityMapPortlet.NAME, ActivityMapPortlet.DESCRIPTION },
 			{ SurveyQuestionPortlet.NAME, SurveyQuestionPortlet.DESCRIPTION },
-			{ AccessPointStatusPortlet.NAME,
-					AccessPointStatusPortlet.DESCRIPTION },
+			/*{ AccessPointStatusPortlet.NAME,
+					AccessPointStatusPortlet.DESCRIPTION },*/
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
-			{ AccessPointPerformancePortlet.NAME,
-					AccessPointPerformancePortlet.DESCRIPTION },
+			/*{ AccessPointPerformancePortlet.NAME,
+					AccessPointPerformancePortlet.DESCRIPTION },*/
 			{ AccessPointMetricChartPortlet.NAME,
 					AccessPointMetricChartPortlet.DESCRIPTION },
-			{ RecentPointsPortlet.NAME, RecentPointsPortlet.DESCRIPTION } };
+			/*{ RecentPointsPortlet.NAME, RecentPointsPortlet.DESCRIPTION } */
+					};
 
 	public static Portlet createPortlet(String name, UserDto user) {
 		if (name == null) {
