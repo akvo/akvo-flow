@@ -6,10 +6,12 @@ import org.waterforpeople.mapping.app.web.KMLGenerator;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class PlacemarkRestRequest extends RestRequest {
+	private static final String DOMAIN_CONFIG_KEY = "domainType";
 	public static final String GET_AP_DETAILS_ACTION = "getAPDetails";
 	public static final String LIST_BOUNDING_BOX_ACTION = "listByBoundingBox";
 	public static final String LIST_PLACEMARK = "listPlacemarks";
@@ -119,6 +121,9 @@ public class PlacemarkRestRequest extends RestRequest {
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		domain = req.getParameter(DOMAIN_PARAM);
+		if(domain == null){
+			domain = PropertyUtil.getProperty(DOMAIN_CONFIG_KEY);
+		}
 		country = req.getParameter(COUNTRY_PARAM);
 		if (country != null) {
 			country = country.trim().toUpperCase();

@@ -36,7 +36,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = -9031594440737716966L;
 	private static final Logger log = Logger.getLogger(PlacemarkServlet.class
 			.getName());
-	private static final String AP_DOMAIN = "AccessPoint";
+	private static final String AP_DOMAIN = "accessPoint";
 
 	private KMLGenerator kmlGen = new KMLGenerator();
 	private Cache cache;
