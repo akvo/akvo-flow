@@ -40,13 +40,31 @@ $(document).ready(function() {
 
 $(document).ready(function() {
     $("#accordion1").accordion({autoHeight: false, active: false, collapsible: true});
-	$("h3").click(function() {
-		var countryIndex2 = $("h3").index(this);
-		var countryList2 = ["latlngBO","latlngSV","latlngGT","latlngHN","latlngIN","latlngMW","latlngNI","latlngPE","latlngRW","latlngDO"];
-		//alert(countryList[countryIndex]);
-       	map.setCenter(countryList2[countryIndex2]);
+	$("h2").click(function() {
+		var countryIndex = $("h2").index(this);
+		if (countryIndex == 0) {
+			map.setCenter(latlngBO);
+		} else if (countryIndex == 1) {
+			map.setCenter(latlngSV);
+		} else if (countryIndex == 2) {
+			map.setCenter(latlngGT);
+		} else if (countryIndex == 3) {
+			map.setCenter(latlngHN);
+		} else if (countryIndex == 4) {
+			map.setCenter(latlngIN);
+		} else if (countryIndex == 5) {
+			map.setCenter(latlngMW);
+		} else if (countryIndex == 6) {
+			map.setCenter(latlngNI);
+		} else if (countryIndex == 7) {
+			map.setCenter(latlngPE);
+		} else if (countryIndex == 8) {
+			map.setCenter(latlngRW);
+		}else if (countryIndex == 9) {
+			map.setCenter(latlngDO);
+		}
 		map.setZoom(10);
-    }); 
+    });
   });
 
 $(document).ready(function() {
@@ -54,11 +72,24 @@ $(document).ready(function() {
   });
 
 $(document).ready(function() {
-		$( "#draggable" ).draggable();
+	$( "#draggable" ).draggable();
 	});
 
 $(document).ready(function() {
-		$( "#info-tabs" ).tabs();
+	$( "#info-tabs" ).tabs();
+	});
+$(document).ready(function() {
+	$( "#toggle-nav" ).tabs();
+	/*$("a").click(function() {
+	var projectIndex = $("a").index(this);
+		if (projectIndex == 0) {
+			
+		} else if (projectIndex == 0) {
+		
+		} else if (projectIndex == 0) {
+		
+		}
+	});*/
 	});
 </script>
 <link rel="stylesheet" href="/css/mainstyle.css"> 
@@ -69,8 +100,9 @@ $(document).ready(function() {
 <div id="header">
     <div id="header-right">
     	<ul id="toggle-nav">
-        	<li class="toggle-wfp"><a href="" class="on">Water For People Project</a></li>
-    		<li class="toggle-non"><a href="" class="off">Non-Water For People Project</a></li>
+        	<li><a href="#top-toggle-1">All Projects</a></li>
+            <li><a href="#top-toggle-2">Water For People Projects</a></li>
+    		<li><a href="#top-toggle-3">Non-Water For People Projects</a></li>
         </ul>
     </div>
 </div> 
@@ -85,7 +117,7 @@ $(document).ready(function() {
             <ul id="tab-nav">
                 <li class="tab-left"><a href="#fragment-1"><span>Overview</span></a></li>
                 <li class="tab-middle"><a href="#fragment-2"><span>Country</span></a></li>
-                <li class="tab-right"><a href="#fragment-3"><span>Analysis</span></a></li>
+                <!--<li class="tab-right"><a href="#fragment-3"><span>Analysis</span></a></li>-->
             </ul>
             
             
@@ -105,7 +137,7 @@ $(document).ready(function() {
             <div class="info-window">
 
             <div id="accordion1">
-                <h3 id="cSelect-0"><a href="#">Bolivia</a></h3>
+                <h2 id="cSelect-0"><a href="#">Bolivia</a></h2>
                 <div>
                     <p>A diverse country, Bolivia is home to almost 9 million people who live in three distinct regions: the high Altiplano, the fertile valleys, and the tropical lowlands. In Bolivia, Water For People works in the regions of Cuchumuela, Tiraque, San Pedro, Arani, San Benito, Villa Rivero, and peri-urban Cochabamba.</p>
                     
@@ -115,37 +147,37 @@ $(document).ready(function() {
                     
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                 </div>
-                <h3 id="cSelect-1"><a href="#">El Salvador</a></h3>
+                <h2 id="cSelect-1"><a href="#">El Salvador</a></h2>
                 <div>
                     <p>Water For People partners, CRS and CARE, are using FLOW to monitor their SWASH+ (School Water, Sanitation, and Hygiene Education Plus Community Impact) work in El Salvador.</p>
                     
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                 </div>
-                <h3 id="cSelect-2"><a href="#">Guatamala</a></h3>
+                <h2 id="cSelect-2"><a href="#">Guatamala</a></h2>
                 <div>
                     <p>This country of proud Mayan heritage marries modern buildings and practices with ancient, time-honored ways. Guatemala still struggles to recover from a 36-year civil war that just ended in 1996 and displaced a million people.</p>
                     
-                    <p>Water For People concentrates almost all its efforts in the department of Quich&eacute;, northwest of Guatemala City. In addition, we work in the regions of San Antonio Ilotenango, San Bartolom&eacute; Jocotenango, San Pedro Jocopilas, and San Andres Sajcabaj&aacute;.</p>
+                    <p>Water For People concentrates almost all its efforts in the department of Quich&eacute;, northwest of Guatemala City. In addition, we work in the regions of San Antonio Ilotenango, San Bartolom&eacute; Jocotenango, San Pedro Jocopilas, and San Andres Sajcabaj&aacute;.</p>
                     
                     <p>Water and sanitation problems are significant in Guatemala. Old water systems function only intermittently, and people must often obtain expensive water from tanker trucks or from unprotected sources.</p>
                     
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                     
                 </div>
-                <h3 id="cSelect-3"><a href="#">Honduras</a></h3>
+                <h2 id="cSelect-3"><a href="#">Honduras</a></h2>
                 <div>
                     <p>Daunting challenges have spurred our work on in Honduras, where one-fifth of the rural population has no access to safe drinking water and almost half have no proper sanitation facilities. Honduras is the poorest and least developed country in Central America.</p>
                     
                     <p>Water For People works in the municipalities of Chinda, San Antonio de Cortes, Ilama and El Negrito. Four years ago, none of the local water systems in Chinda met government standards for quality or quantity, and only 37 percent of residents had access to proper sanitation.</p>
                     
-                    <p>Despite insufficient water and sanitation infrastructure, torrential rains that often engulf roads and access routes, earthquakes, political instability, and Hurricane Mitch's devastation in 1998, 14 communities with about 5,000 people in Chinda are on track to achieve full coverage of safe water access within the year. </p>
+                    <p>Despite insufficient water and sanitation infrastructure, torrential rains that often engulf roads and access routes, earthquakes, political instability, and Hurricane Mitch's devastation in 1998, 14 communities with about 5,000 people in Chinda are on track to achieve full coverage of safe water access within the year. </p>
                     
                     <p>These data points, as well as data for the other regions in Honduras mapped within FLOW, will be reflected on the map as they are verified.</p>
                     
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                     
                 </div>
-                <h3 id="cSelect-4"><a href="#">India</a></h3>
+                <h2 id="cSelect-4"><a href="#">India</a></h2>
                 <div>
                     <p>The need for safe water and sanitation are extremely critical in one of the most densely populated areas of the world: West Bengal, India. As our FLOW map shows, Water For People is monitoring the viability of water and sanitation points in West Bengal, situated between the Himalayas and the Bay of Bengal.</p>
                     
@@ -156,7 +188,7 @@ $(document).ready(function() {
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.s</p>
                     
                 </div>
-                <h3 id="cSelect-5"><a href="#">Malawi</a></h3>
+                <h2 id="cSelect-5"><a href="#">Malawi</a></h2>
                 <div>
                     <p>Landlocked Malawi is among the world's poorest countries. Of its 11 million Africans, only 16 percent live in urban areas, mainly in the cities of Lilongwe, Blantyre and a handful of smaller towns.</p>
                     
@@ -167,18 +199,18 @@ $(document).ready(function() {
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                     
                 </div>
-                <h3 id="cSelect-6"><a href="#">Nicaragua</a></h3>
+                <h2 id="cSelect-6"><a href="#">Nicaragua</a></h2>
                 <div>
-                    <p>Working in alliance with nonprofit El Porvenir, Water For People works to secure water and sanitation coverage for impoverished people in the northern department of Jinotega, Nicaragua. The third poorest country in the western hemisphere after Haiti and Guatemala, Nicaragua boasts Central America's largest freshwater lakes and river systems—but safe drinking water is all too scarce.</p>
+                    <p>Working in alliance with nonprofit El Porvenir, Water For People works to secure water and sanitation coverage for impoverished people in the northern department of Jinotega, Nicaragua. The third poorest country in the western hemisphere after Haiti and Guatemala, Nicaragua boasts Central America's largest freshwater lakes and river systems&mdash;but safe drinking water is all too scarce.</p>
                     
                     <p>53% of rural Nicaraguans lack access to clean drinking water. 63 percent of the rural population has access to improved drinking water sources and less than 40 percent of the rural population has access to improved sanitation. </p>
                     
-                    <p>Like far too many developing world countries, water‐related diseases are a leading cause of death for children under five in Nicaragua. And water poverty keeps children from attending school—the average educational level in rural Nicaragua is 3.6 years of schooling.</p>
+                    <p>Like far too many developing world countries, water-related diseases are a leading cause of death for children under five in Nicaragua. And water poverty keeps children from attending school&mdash;the average educational level in rural Nicaragua is 3.6 years of schooling.</p>
                     
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                     
                 </div>
-                <h3 id="cSelect-7"><a href="#">Peru</a></h3>
+                <h2 id="cSelect-7"><a href="#">Peru</a></h2>
                 <div>
                     <p>The awe-inspiring Andes, a coastal desert, stunning volcanoes, and the lush Amazon rainforest with all its dazzling diversity. Peru is renowned for its beautiful, wild landscape and ancient traditions that live on today.</p>
                     
@@ -189,7 +221,7 @@ $(document).ready(function() {
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                     
                 </div>
-                <h3 id="cSelect-8"><a href="#">Rwanda</a></h3>
+                <h2 id="cSelect-8"><a href="#">Rwanda</a></h2>
                 <div>
                     <p>The densest country in Africa, Rwanda has one of the fastest growing economies in Africa and boasts more female leaders than any country in the world. Knowing its economic recovery depends on clean water and sanitation, Rwanda leaders have pledged to make sustaining their environment a national priority to reverse the degradation of its land, soil, water and forests. </p>
                     
@@ -200,7 +232,7 @@ $(document).ready(function() {
                     <p>Working to improve access to safe water for "Everyone," FLOW will help us to see what working, what's in disrepair, and what's broken.</p>
                     
                 </div>
-                <h3 id="cSelect-10"><a href="#">Dominican Republic</a></h3>
+                <h2 id="cSelect-10"><a href="#">Dominican Republic</a></h2>
                 <div>
                     <p>Water For People has just begun to work in the Dominican Republic region of Miches, where it is doing a baseline assessment of water and sanitation.</p>
                     
@@ -211,61 +243,64 @@ $(document).ready(function() {
                 </div>
             </div>
             </div>
+            <!--
             <div id="fragment-3">
             <div class="info-window">
             <div id="accordion2">
-                <h3><a href="#">Bolivia</a></h3>
+                <h2><a href="#">Bolivia</a></h2>
                 <div>
                     <p></p>
                 </div>
-                <h3><a href="#">El Salvador</a></h3>
+                <h2><a href="#">El Salvador</a></h2>
                 <div>
                     <p></p>
                 </div>
-                <h3><a href="#">Guatamala</a></h3>
-                <div>
-                    <p></p>
-                    
-                </div>
-                <h3><a href="#">Honduras</a></h3>
+                <h2><a href="#">Guatamala</a></h2>
                 <div>
                     <p></p>
                     
                 </div>
-                <h3><a href="#">India</a></h3>
+                <h2><a href="#">Honduras</a></h2>
                 <div>
                     <p></p>
                     
                 </div>
-                <h3><a href="#">Malawi</a></h3>
+                <h2><a href="#">India</a></h2>
                 <div>
                     <p></p>
                     
                 </div>
-                <h3><a href="#">Nicaragua</a></h3>
+                <h2><a href="#">Malawi</a></h2>
                 <div>
                     <p></p>
                     
                 </div>
-                <h3><a href="#">Peru</a></h3>
+                <h2><a href="#">Nicaragua</a></h2>
                 <div>
                     <p></p>
                     
                 </div>
-                <h3><a href="#">Rwanda</a></h3>
+                <h2><a href="#">Peru</a></h2>
                 <div>
                     <p></p>
                     
                 </div>
-                <h3><a href="#">Dominican Republic</a></h3>
+                <h2><a href="#">Rwanda</a></h2>
+                <div>
+                    <p></p>
+                    
+                </div>
+                <h2><a href="#">Dominican Republic</a></h2>
                 <div>
                     <p></p>
                     
                 </div>
                 </div>
+             
             </div>
             
             </div>
+            -->
             </div>
             <script src="/js/activatables.js" type="text/javascript"></script> 
 <script type="text/javascript"> 
@@ -290,7 +325,7 @@ activatables('page', ['overview', 'country', 'analysis']);
     <div id="draggable" class="ui-widget-content">
     <ul class="acc" id="acc"> 
         <li> 
-            <h3>Legend</h3> 
+            <h3 class="legendHead">Legend</h3> 
             <div class="acc-section"> 
                 <div class="acc-content"> 
                     <ul class="acc" id="nested"> 
