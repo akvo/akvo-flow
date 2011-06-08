@@ -7,7 +7,7 @@ function SmartInfoWindow(opts) {
   this.latlng_ = opts.position;
   this.content_ = opts.content;
   this.map_ = opts.map;
-  this.height_ = 550;
+  this.height_ = 320;
   this.width_ = 550;
   this.size_ = new google.maps.Size(this.height_, this.width_);
   this.offsetVertical_ = -this.height_;
@@ -50,6 +50,7 @@ SmartInfoWindow.prototype.onAdd = function() {
 /**
  * Redraw based on the current projection and zoom level.
  */
+
 SmartInfoWindow.prototype.draw = function() {
   // Since we use bounds changed listener, projection is sometimes null
   if (!this.getProjection()) {
@@ -73,21 +74,21 @@ SmartInfoWindow.prototype.draw = function() {
   switch (alignment) {
     case SmartInfoWindow.Align.ABOVE:
       this.width_ = 550;
-      this.height_ = 550;
+      this.height_ = 320;
       image = 'infobox_above.gif';
       this.offsetX_ = -(this.width_ / 2 - 17);
       this.offsetY_ = -(this.height_ + 12);
       break;
     case SmartInfoWindow.Align.BELOW:
       this.width_ = 550;
-      this.height_ = 550;
+      this.height_ = 320;
       image = 'infobox_below.gif';
       this.offsetX_ = -(this.width_ / 2 - 17);
       this.offsetY_ = -15;      
       break;
     case SmartInfoWindow.Align.LEFT:
       this.width_ = 550;
-      this.height_ = 550;
+      this.height_ = 320;
       image = 'infobox_left.gif';
       this.offsetX_ = -(this.width_) + 10;
       this.offsetY_ = -(this.height_ / 2 + 33);      
@@ -95,7 +96,7 @@ SmartInfoWindow.prototype.draw = function() {
     case SmartInfoWindow.Align.RIGHT:
       image = 'infobox_right.gif';
       this.width_ = 550;
-      this.height_ = 550;
+      this.height_ = 320;
       this.offsetX_ = 6;
       this.offsetY_ = -(this.height_ / 2 + 33);      
       break;
@@ -108,7 +109,7 @@ SmartInfoWindow.prototype.draw = function() {
   //this.div_.style.paddingTop = paddingTop + 'px';
   //this.div_.style.paddingLeft = paddingLeft + 'px';
   //this.div_.style.background = 'url("images/' + image + '")';
-   this.div_.style.background = '#e6e6e6';
+   this.div_.style.background = '#231f20';
   this.div_.style.display = 'block';
   
   this.wrapperDiv_.style.width = (this.width_- widthLess) + 'px';
