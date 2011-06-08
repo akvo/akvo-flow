@@ -13,7 +13,7 @@ body {background: #1a1a1a; font-family: "Trebuchet MS", Verdana, sans-serif;}
 #nested .acc-section {overflow:hidden; background:#414141;}
 #nested .acc-content { width:146px; padding:10px; background:#414141; font-size:.9em;}
 #nested .acc-selected {background: #939598 url(../../images/legend/legend-arrow-on-2.png) 166px 6px no-repeat;}
-
+ul {margin:0;padding:0;list-style-type:none;}
 ul.legendLists li { padding: 7px 0 7px 25px; border-bottom: 1px dotted #eee; }
 
 li.legendListIcon-1 {background: url(../../images/legend/legend-icon-waterpoint.png) 0 4px no-repeat;}
