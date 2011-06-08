@@ -38,22 +38,26 @@ public class GeoCoordinates {
 		this.code = code;
 	}
 
-	public GeoCoordinates extractGeoCoordinate(String line) {
+	public static GeoCoordinates extractGeoCoordinate(String line) {
+		GeoCoordinates gc = null;
 		if (line != null && line.trim().length() > 0
 				&& !line.trim().equals("||") && !line.startsWith("||")) {
+			gc = new GeoCoordinates();
 			String[] coordinates = line.split("\\|");
 			if (coordinates.length > 1) {
-				setLatitude(new Double(coordinates[0]));
-				setLongitude(new Double(coordinates[1]));
+				gc.setLatitude(new Double(coordinates[0]));
+				gc.setLongitude(new Double(coordinates[1]));
+			}else{
+				return null;
 			}
 			if (coordinates.length > 2) {
-				setAltitude(new Double(coordinates[2]));
+				gc.setAltitude(new Double(coordinates[2]));
 			}
 			if (coordinates.length > 3) {
-				setCode(coordinates[3]);
+				gc.setCode(coordinates[3]);
 			}
 		}
-		return this;
+		return gc;
 	}
 
 	public String toString() {

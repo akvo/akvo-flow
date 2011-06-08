@@ -233,6 +233,44 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	/**
+	 * lists all questionAnswerStore objects for a single surveyInstance,
+	 * optionally filtered by type
+	 * 
+	 * @param surveyInstanceId
+	 *            - mandatory
+	 * @param type
+	 *            - optional
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<QuestionAnswerStore> listQuestionAnswerStoreByType(
+			Long surveyInstanceId, String type) {
+		if (surveyInstanceId != null) {
+			PersistenceManager pm = PersistenceFilter.getManager();
+			javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+
+			Map<String, Object> paramMap = null;
+
+			StringBuilder filterString = new StringBuilder();
+			StringBuilder paramString = new StringBuilder();
+			paramMap = new HashMap<String, Object>();
+
+			appendNonNullParam("surveyInstanceId", filterString, paramString,
+					"Long", surveyInstanceId, paramMap);
+			appendNonNullParam("type", filterString, paramString, "String",
+					type, paramMap);
+
+			query.setFilter(filterString.toString());
+			query.declareParameters(paramString.toString());
+
+			return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+		} else {
+			throw new IllegalArgumentException("surveyInstanceId may not be null");
+		}
+
+	}
+
+	/**
 	 * lists all questionAnswerStore objects for a survey instance
 	 * 
 	 * @param instanceId
@@ -251,18 +289,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		return (List<QuestionAnswerStore>) q.execute(instanceId);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listQuestionAnswerStoreGeoQuestions(
-			Long instanceId) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		Query q = pm.newQuery(QuestionAnswerStore.class);
-		q.setFilter("surveyInstanceId == surveyInstanceIdParam");
-		q.declareParameters("Long surveyInstanceIdParam");
-		q.setFilter("type=typeParam");
-		q.setFilter("String typeParam");
-
-		return (List<QuestionAnswerStore>) q.execute(instanceId, "GEO");
-	}
 
 	/**
 	 * lists all questionAnswerStore objects for a specific question

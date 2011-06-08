@@ -218,7 +218,9 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 	}
 
 	/**
-	 * absolute fall-back lookup for geo places that uses a statically intialized bounding box
+	 * absolute fall-back lookup for geo places that uses a statically
+	 * intialized bounding box
+	 * 
 	 * @param latStr
 	 * @param lonStr
 	 * @return
@@ -310,8 +312,8 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 						+ " has a null geometry");
 			}
 		}
-		if(place == null){
-			place =primitiveLookup(latStr,lonStr);
+		if (place == null) {
+			place = primitiveLookup(latStr, lonStr);
 		}
 		return place;
 	}
@@ -368,6 +370,33 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 			}
 		}
 		return place;
+	}
+
+	/**
+	 * tries 4 different things to resolve the lat/lon to a geo place (as soon
+	 * as a method returns a non-null place, execution short-circuits:
+	 * <ul>
+	 * <li>Look in the shapefile for a sub_country feature</li>
+	 * <li>try to resolve the country using the statically configured bounding
+	 * boxes</li>
+	 * <li>Look in the shapefiles for a country feature</li>
+	 * <li>invoke the geonames service to find a place</li>
+	 * </ul>
+	 */
+	@Override
+	public GeoPlace findDetailedGeoPlace(String lat, String lon) {
+		// first, check the shape files
+		GeoPlace gp = manualLookup(lat, lon,
+				OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+		// if we don't find the sub_country, try the country
+		if (gp == null) {
+			gp = manualLookup(lat, lon);
+		}
+		// if it's still null, then try calling the geonames service
+		if (gp == null) {
+			gp = findGeoPlace(lat, lon);
+		}
+		return gp;
 	}
 
 }

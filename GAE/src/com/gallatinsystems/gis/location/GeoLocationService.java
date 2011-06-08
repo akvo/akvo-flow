@@ -16,4 +16,14 @@ public interface GeoLocationService {
 	 * returns a geo place object that is closest to the lat/lon passed in.
 	 */
 	public GeoPlace findGeoPlace(String lat, String lon);
+
+	/**
+	 * tries to find the most detailed geoPlace possible given the lat/lon
+	 * provided.
+	 * 
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
+	public GeoPlace findDetailedGeoPlace(String lat, String lon);
 }
