@@ -69,6 +69,7 @@ public class SurveyQuestionPortlet extends Portlet {
 	private Label noDataLabel;
 	private boolean needTranslations;
 	private String locale;
+	private String selectedQuestionText;
 
 	public SurveyQuestionPortlet() {
 		super(NAME, false, false, true, WIDTH, HEIGHT);
@@ -203,14 +204,16 @@ public class SurveyQuestionPortlet extends Portlet {
 					}
 					questionListbox.setVisibleItemCount(1);
 					if (result.length > 0) {
-						buildChart(result[0].getKeyId().toString());
+						buildChart(result[0].getKeyId().toString(),
+								questionListbox.getItemText(0));
 					}
 					questionListbox.addChangeHandler(new ChangeHandler() {
 
 						@Override
 						public void onChange(ChangeEvent event) {
 							ListBox lb = (ListBox) event.getSource();
-							buildChart(lb.getValue(lb.getSelectedIndex()));
+							buildChart(lb.getValue(lb.getSelectedIndex()),
+									lb.getItemText(lb.getSelectedIndex()));
 						}
 					});
 				}
@@ -236,10 +239,11 @@ public class SurveyQuestionPortlet extends Portlet {
 		return options;
 	}
 
-	private void buildChart(final String question) {
+	private void buildChart(final String questionId, final String questionText) {
+		selectedQuestionText = questionText;
 		// fetch list of responses for a question
-		if (needTranslations && questionsForTrans.get(question) == null) {
-			surveyService.loadQuestionDetails(Long.parseLong(question),
+		if (needTranslations && questionsForTrans.get(questionId) == null) {
+			surveyService.loadQuestionDetails(Long.parseLong(questionId),
 					new AsyncCallback<QuestionDto>() {
 
 						@Override
@@ -250,11 +254,11 @@ public class SurveyQuestionPortlet extends Portlet {
 
 						@Override
 						public void onSuccess(QuestionDto result) {
-							questionsForTrans.put(question, result);
+							questionsForTrans.put(questionId, result);
 							// call build chart, but this time, the check for
 							// the details will not be null so we won't hit the
 							// service call again
-							buildChart(question);
+							buildChart(questionId, questionText);
 
 						}
 					});
@@ -293,14 +297,14 @@ public class SurveyQuestionPortlet extends Portlet {
 													handleResponseText(
 															result[i]
 																	.getResponseText(),
-															question));
+															questionId));
 									dataTable.setValue(i, 1,
 											result[i].getCount());
 								}
 								if (result.length > 0) {
 									pieChart = new PieChart(dataTable,
 											createOptions(fullQuestionMap
-													.get(new Long(question))));
+													.get(new Long(questionId))));
 									contentPane.add(pieChart);
 									currentTable = dataTable;
 								} else {
@@ -316,7 +320,7 @@ public class SurveyQuestionPortlet extends Portlet {
 					}
 				}
 			};
-			surveyService.listResponses(question, surveyCallback);
+			surveyService.listResponses(questionId, surveyCallback);
 		}
 	}
 
@@ -333,6 +337,9 @@ public class SurveyQuestionPortlet extends Portlet {
 				options.setWidth(WIDTH + 60);
 				options.setLabels("value");
 				options.setLegend(LegendPosition.RIGHT);
+				if (selectedQuestionText != null) {
+					options.setTitle(selectedQuestionText);
+				}
 				ImagePieChart ipc = new ImagePieChart(currentTable, options);
 				WidgetDialog dia = new WidgetDialog(NAME, ipc);
 				dia.showRelativeTo(getHeaderWidget());
