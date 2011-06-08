@@ -25,7 +25,7 @@
 		<property name="google_scope"
 			value="http://spreadsheets.google.com/feeds/ https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com" />
 		<property name="s3bucket" value="$s3bucket" />
-		<property name="surveyuploadurl" value="$s3url" />
+		<property name="surveyuploadurl" value="$s3url/" />
 		<property name="surveyuploaddir" value="surveys" />
 		<property name="deviceZipPath"
 			value="$s3url/devicezip/" />
@@ -34,7 +34,7 @@
 			value="dru.borden@gmail.com;Dru Borden|christopher.fagiani@gmail.com;Chris Fagiani" />
 		<property name="defaultPhotoCaption" value="$defaultPhotoCaption" />
 		<property name="surveyuploadsig" value="$surveyS3Sig" />
-		<property name="surveyS3policy"
+		<property name="surveyuploadpolicy"
 			value="$surveyPolicy"/>
 		<property name="reportS3Policy"
 			value="$reportS3Policy" />
