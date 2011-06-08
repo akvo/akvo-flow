@@ -37,7 +37,9 @@
 $(document).ready(function() {
 	$('.scroll-pane').jScrollPane({showArrows: true});
   });
-
+$(document).ready(function() {
+	$('.scroll-pane-info').jScrollPane({showArrows: true});
+  });
 $(document).ready(function() {
     $("#accordion1").accordion({autoHeight: false, active: false, collapsible: true});
 	$("h2").click(function() {
@@ -100,9 +102,9 @@ $(document).ready(function() {
 <div id="header">
     <div id="header-right">
     	<ul id="toggle-nav">
-        	<li><a href="#top-toggle-1">All Projects</a></li>
-            <li><a href="#top-toggle-2">Water For People Projects</a></li>
-    		<li><a href="#top-toggle-3">Non-Water For People Projects</a></li>
+        	<li class="toggle-both"><a href="#top-toggle-1" class="on">All Projects</a></li>
+            <li class="toggle-wfp"><a href="#top-toggle-2" class="off">Water For People Projects</a></li>
+    		<li class="toggle-non"><a href="#top-toggle-3" class="off">Non-Water For People Projects</a></li>
         </ul>
     </div>
 </div> 
@@ -350,19 +352,6 @@ activatables('page', ['overview', 'country', 'analysis']);
                                         <li class="legendListIcon-5">Medium-Level of Service</li>
                                         <li class="legendListIcon-6">Basic Service</li>
                                         <li class="legendListIcon-7">No Service</li>
-                                    </ul>
-                                </div> 
-                            </div> 
-                        </li> 
-                        <li> 
-                            <h3 class="nestedH3">Sustainability Indicators</h3> 
-                            <div class="acc-section"> 
-                                <div class="acc-content"> 
-                                    <ul class="legendLists">
-                                        <li class="legendListIcon-8">High Potential for Sustainability</li>
-                                        <li class="legendListIcon-9">Medium Potential for Sustainability</li>
-                                        <li class="legendListIcon-10">Low Potential for Sustainability</li>
-                                        <li class="legendListIcon-11">No Potential for Sustainability</li>
                                     </ul>
                                 </div> 
                             </div> 
