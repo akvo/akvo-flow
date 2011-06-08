@@ -30,8 +30,7 @@ public class MetricDao extends BaseDAO<Metric> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Metric> listMetricByOrg(String organization, String group,
-			String cursorString) {
+	public List<Metric> listMetrics(String name, String group, String valueType, String organization, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Metric.class);
 		Map<String, Object> paramMap = null;
@@ -43,6 +42,10 @@ public class MetricDao extends BaseDAO<Metric> {
 		appendNonNullParam("organization", filterString, paramString, "String",
 				organization, paramMap);
 		appendNonNullParam("group", filterString, paramString, "String", group,
+				paramMap);
+		appendNonNullParam("name", filterString, paramString, "String", name,
+				paramMap);
+		appendNonNullParam("valueType", filterString, paramString, "String", valueType,
 				paramMap);
 		if (filterString.toString().trim().length() > 0) {
 			query.setFilter(filterString.toString());

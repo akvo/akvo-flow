@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricService;
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -63,6 +65,7 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 	private ListBox surveyListbox;
 
 	private SurveyServiceAsync surveyService;
+	private MetricServiceAsync metricService;
 
 	private Label statusLabel;
 
@@ -76,7 +79,7 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 	private HashMap<String, ArrayList<SurveyDto>> surveys;
 	private SurveyMetricMappingServiceAsync mappingService;
 
-	public MetricMappingWidget(){
+	public MetricMappingWidget() {
 		contentPanel = new VerticalPanel();
 
 		selectorPanel = new CaptionPanel();
@@ -95,6 +98,7 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 		selectorPanel.add(tempPanel);
 		mappingService = GWT.create(SurveyMetricMappingService.class);
 		surveyService = GWT.create(SurveyService.class);
+		metricService = GWT.create(MetricService.class);
 		surveys = new HashMap<String, ArrayList<SurveyDto>>();
 		contentPanel.add(gridPanel);
 
@@ -334,26 +338,26 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 
 	private void loadMetrics() {
 		// TODO: must send in organization here
-		mappingService.listMetrics(null, new AsyncCallback<List<MetricDto>>() {
+		metricService.listMetrics(null, null, null, null, "all",
+				new AsyncCallback<ResponseDto<ArrayList<MetricDto>>>() {
 
-			@Override
-			public void onSuccess(List<MetricDto> result) {
-				if (result != null) {
-					metrics = result;
-				}
-			}
+					@Override
+					public void onSuccess(
+							ResponseDto<ArrayList<MetricDto>> result) {
+						if (result != null && result.getPayload() != null) {
+							metrics = result.getPayload();
+						}
+					}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				MessageDialog errDia = new MessageDialog(
-						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-								.errorTracePrefix()
-								+ " "
-								+ caught.getLocalizedMessage());
-				errDia.showCentered();
+					@Override
+					public void onFailure(Throwable caught) {
+						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
+						errDia.showCentered();
 
-			}
-		});
+					}
+				});
 	}
 
 	private void populateSurveyList(ArrayList<SurveyDto> surveyItems) {

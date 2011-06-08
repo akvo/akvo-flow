@@ -17,6 +17,15 @@ public class Metric extends BaseDomain {
 	private String organization;
 	private String name;
 	private String group;
+	private String valueType;
+
+	public String getValueType() {
+		return valueType;
+	}
+
+	public void setValueType(String valueType) {
+		this.valueType = valueType;
+	}
 
 	public String getOrganization() {
 		return organization;

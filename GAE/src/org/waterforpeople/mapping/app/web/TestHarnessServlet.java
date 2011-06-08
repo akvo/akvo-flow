@@ -2035,7 +2035,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 	private void setupMetrics() {
 		MetricDao metricDao = new MetricDao();
-		List<Metric> metrics = metricDao.listMetricByOrg("test", null, null);
+		List<Metric> metrics = metricDao.listMetrics(null,null,null,"test",null);
 		if (metrics != null) {
 			metricDao.delete(metrics);
 		}

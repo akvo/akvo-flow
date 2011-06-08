@@ -19,13 +19,6 @@ public interface SurveyMetricMappingService extends RemoteService {
 	 */
 	public List<SurveyMetricMappingDto> listMappingsBySurvey(Long surveyId);
 
-	/**
-	 * lists all metrics, optionally filtered by organization
-	 * 
-	 * @param organizationName
-	 * @return
-	 */
-	public List<MetricDto> listMetrics(String organizationName);
 
 	/**
 	 * saves all mappings within a single quesiton group. Existing mappings for

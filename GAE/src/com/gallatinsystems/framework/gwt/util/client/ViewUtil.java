@@ -20,9 +20,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ViewUtil {
 
-	private static final int KEY_PERIOD = 190;
-	private static final int KEY_MINUS = 109;
-	private static final int KEY_DECIMAL = 110;
 	public static final String DEFAULT_INPUT_LABEL_CSS = "input-label";
 
 	/**
@@ -39,6 +36,21 @@ public class ViewUtil {
 			populated = false;
 		}
 		return populated;
+	}
+
+	/**
+	 * returns the value of the textBox or null, if the value is whitespace or
+	 * blank
+	 * 
+	 * @param box
+	 * @return
+	 */
+	public static String getNonBlankValue(TextBox box) {
+		if (isTextPopulated(box)) {
+			return box.getValue();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -147,6 +159,25 @@ public class ViewUtil {
 	}
 
 	/**
+	 * returns the selected value of the listbox. If suppressFirstEntry is set
+	 * to true, this method will return null if the first item in the list box
+	 * is selected. This method is only applicable for single-selection listboxes.
+	 * 
+	 * @param list
+	 * @param suppressFirstEntry
+	 * @return
+	 */
+	public static String getListBoxSelection(ListBox list,
+			boolean suppressFirstEntry) {
+		int idx = list.getSelectedIndex();
+		if ((suppressFirstEntry && idx > 0) || idx >= 0) {
+			return list.getValue(idx);
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * returns a new TextBox that only accepts numeric input (including negative
 	 * sign and decimal point)
 	 * 
@@ -157,18 +188,18 @@ public class ViewUtil {
 		tb.addKeyPressHandler(new KeyPressHandler() {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
-				int keyCode = event.getNativeEvent().getKeyCode();								
+				int keyCode = event.getNativeEvent().getKeyCode();
 				if ((!Character.isDigit(event.getCharCode()))
-						&& (keyCode !=  KeyCodes.KEY_TAB)
-						&& (keyCode !=  KeyCodes.KEY_BACKSPACE)
-						&& (keyCode !=  KeyCodes.KEY_DELETE)
-						&& (keyCode !=  KeyCodes.KEY_HOME)
-						&& (keyCode !=  KeyCodes.KEY_END)
-						&& (keyCode !=  KeyCodes.KEY_LEFT)
-						&& (keyCode !=  KeyCodes.KEY_UP)
-						&& (keyCode !=  KeyCodes.KEY_RIGHT)
-						&& (keyCode !=  KeyCodes.KEY_DOWN)
-						&& (event.getCharCode() != '.') 
+						&& (keyCode != KeyCodes.KEY_TAB)
+						&& (keyCode != KeyCodes.KEY_BACKSPACE)
+						&& (keyCode != KeyCodes.KEY_DELETE)
+						&& (keyCode != KeyCodes.KEY_HOME)
+						&& (keyCode != KeyCodes.KEY_END)
+						&& (keyCode != KeyCodes.KEY_LEFT)
+						&& (keyCode != KeyCodes.KEY_UP)
+						&& (keyCode != KeyCodes.KEY_RIGHT)
+						&& (keyCode != KeyCodes.KEY_DOWN)
+						&& (event.getCharCode() != '.')
 						&& (event.getCharCode() != '-')) {
 					((TextBox) event.getSource()).cancelKey();
 				}

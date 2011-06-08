@@ -227,8 +227,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				if (!loadedItems && ans.getSurveyId() != null) {
 
 					questionList = qDao.listQuestionsBySurvey(ans.getSurveyId());
-					metrics = metricDao.listMetricByOrg(l.getOrganization(),
-							null, null);
+					metrics = metricDao.listMetrics(null,null,null,l.getOrganization(),"all");
 					mappings = metricMappingDao.listMappingsBySurvey(ans
 							.getSurveyId());
 					loadedItems = true;

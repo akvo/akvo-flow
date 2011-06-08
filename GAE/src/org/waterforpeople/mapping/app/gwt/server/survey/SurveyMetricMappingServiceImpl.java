@@ -56,28 +56,6 @@ public class SurveyMetricMappingServiceImpl extends RemoteServiceServlet
 		return dtoList;
 	}
 
-	/**
-	 * lists all metrics, optionally filtered by organization
-	 * 
-	 * TODO: if needed, implement pagination and group filter
-	 * 
-	 * @param organizationName
-	 * @return
-	 */
-	@Override
-	public List<MetricDto> listMetrics(String organizationName) {
-		List<Metric> metrics = metricDao.listMetricByOrg(organizationName,
-				null, BaseDAO.CURSOR_TYPE.all.toString());
-		List<MetricDto> dtoList = new ArrayList<MetricDto>();
-		if (metrics != null) {
-			for (Metric m : metrics) {
-				MetricDto dto = new MetricDto();
-				DtoMarshaller.copyToDto(m, dto);
-				dtoList.add(dto);
-			}
-		}
-		return dtoList;
-	}
 
 	/**
 	 * saves all mappings within a single question group. Existing mappings for

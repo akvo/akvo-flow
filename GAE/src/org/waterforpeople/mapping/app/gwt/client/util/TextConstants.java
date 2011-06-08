@@ -536,4 +536,7 @@ public interface TextConstants extends Constants{
 	public String organization();
 	public String system();
 	public String metricMapping();
+	public String valueType();
+	public String metricManager();
+	public String group();
 }

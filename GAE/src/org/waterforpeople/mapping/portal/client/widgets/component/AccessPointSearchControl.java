@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets.component;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
@@ -9,10 +9,11 @@ import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingService;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricService;
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -46,7 +47,7 @@ public class AccessPointSearchControl extends Composite {
 	private ListBox communityListbox;
 	private String specialOption;
 	private CommunityServiceAsync communityService;
-	private SurveyMetricMappingServiceAsync metricService;
+	private MetricServiceAsync metricService;
 	private DateBox collectionDateFrom;
 	private DateBox collectionDateTo;
 	private DateBox constructionDateFrom;
@@ -100,7 +101,7 @@ public class AccessPointSearchControl extends Composite {
 		}
 
 		communityService = GWT.create(CommunityService.class);
-		metricService = GWT.create(SurveyMetricMappingService.class);
+		metricService = GWT.create(MetricService.class);
 		loadCountries();
 		if (Mode.ACCESS_POINT == m) {
 			installChangeHandlers();
@@ -203,20 +204,23 @@ public class AccessPointSearchControl extends Composite {
 	 */
 	private void loadMetrics() {
 		// TODO: parameterize with Organization name
-		metricService.listMetrics(null, new AsyncCallback<List<MetricDto>>() {
-			public void onFailure(Throwable caught) {
-				// no-op
-			}
+		// TODO: see if we need to progressively load the list or paginate or something if this gets to be too big
+		metricService.listMetrics(null, null, null, null, "all",
+				new AsyncCallback<ResponseDto<ArrayList<MetricDto>>>() {
+					public void onFailure(Throwable caught) {
+						// no-op
+					}
 
-			public void onSuccess(List<MetricDto> result) {
-				metricListbox.addItem("", "");
-				if (result != null) {
-					for (MetricDto metric : result)
-						metricListbox.addItem(metric.getName(), metric
-								.getKeyId().toString());
-				}
-			}
-		});
+					public void onSuccess(
+							ResponseDto<ArrayList<MetricDto>> result) {
+						metricListbox.addItem("", "");
+						if (result != null && result.getPayload() != null) {
+							for (MetricDto metric : result.getPayload())
+								metricListbox.addItem(metric.getName(), metric
+										.getKeyId().toString());
+						}
+					}
+				});
 	}
 
 	protected void loadCommunities(String country) {
