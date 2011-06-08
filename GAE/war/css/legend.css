@@ -1,0 +1,31 @@
+body {background: #1a1a1a; font-family: "Trebuchet MS", Verdana, sans-serif;}
+
+* {margin:0; padding:0; font: 12px "Trebuchet MS", Verdana, sans-serif;}
+
+#acc {width:200px; list-style:none; color:#f1f1f2; margin:0 0 0 10px;}
+#acc h3 {width:197px; padding:3px 0 3px 3px; cursor:pointer; font-size:1.1em; background:url(../../images/legend/legend-arrow-off-1.png) 166px 5px no-repeat;}
+#acc .acc-section {overflow:hidden;}
+#acc .acc-content {width:197px; padding:0px; }
+#acc .acc-selected {background:url(../../images/legend/legend-arrow-on-1.png) 166px 5px no-repeat;}
+
+#nested {width:180px; list-style:none; color:#ffffff; font-size:.8em; margin:0 0 10px 0;}
+#nested h3 { border-top: 1px solid #666; width:176px; padding:1px 1px 1px 3px; cursor:pointer; background:#6d6f71 url(../../images/legend/legend-arrow-off-2.png) 166px 3px no-repeat;}
+#nested .acc-section {overflow:hidden; background:#414141;}
+#nested .acc-content { width:146px; padding:10px; background:#414141; font-size:.9em;}
+#nested .acc-selected {background: #939598 url(../../images/legend/legend-arrow-on-2.png) 166px 6px no-repeat;}
+
+ul.legendLists li { padding: 7px 0 7px 25px; border-bottom: 1px dotted #eee; }
+
+li.legendListIcon-1 {background: url(../../images/legend/legend-icon-waterpoint.png) 0 4px no-repeat;}
+li.legendListIcon-2 {background: url(../../images/legend/legend-icon-public.png) 0 4px no-repeat;}
+li.legendListIcon-3 {background: url(../../images/legend/legend-icon-school.png) 0 4px no-repeat;}
+li.legendListIcon-4 {background: url(../../images/legend/legend-icon-service-1.png) 0 4px no-repeat;}
+li.legendListIcon-5 {background: url(../../images/legend/legend-icon-service-2.png) 0 4px no-repeat;}
+li.legendListIcon-6 {background: url(../../images/legend/legend-icon-service-3.png) 0 4px no-repeat;}
+li.legendListIcon-7 {background: url(../../images/legend/legend-icon-service-4.png) 0 4px no-repeat;}
+li.legendListIcon-8 {background: url(../../images/legend/legend-icon-sustain-1.png) 0 12px no-repeat;}
+li.legendListIcon-9 {background: url(../../images/legend/legend-icon-sustain-2.png) 0 12px no-repeat;}
+li.legendListIcon-10 {background: url(../../images/legend/legend-icon-sustain-3.png) 0 12px no-repeat;}
+li.legendListIcon-11 {background: url(../../images/legend/legend-icon-sustain-4.png) 0 12px no-repeat;}
+
+#draggable { position:absolute; top:85px; left:425px;}
