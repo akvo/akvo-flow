@@ -47,5 +47,10 @@
 		<property name="imageroot" value="$s3Url/images"/>
 		<property name="scoreAPFlag" value="$scoreAPFlag"/>
 		<property name="organization" value="$organization"/>
+		<property name="signingKey" value="$signingKey" />
+		<property name="allowUnsignedData" value="true" />
+		<property name="defaultOrg" value="$defaultOrg" />
+		<property name="domainType" value="accessPoint" />
+		<property name="exportedProperties" value="defaultOrg,domainType" />
 	</system-properties>
 </appengine-web-app>
