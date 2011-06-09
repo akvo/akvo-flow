@@ -291,6 +291,9 @@ public class AccessPointHelper {
 					newURL = photo_url_root + photoParts[2];
 				} else if (qas.getValue().startsWith("/mnt")) {
 					newURL = photo_url_root + photoParts[3];
+				}else if(photoParts.length==1){
+					//handle the case where we only have the filename (no paths)
+					newURL = photo_url_root+photoParts[0];
 				}
 				f.set(ap, newURL);
 				apmh.setQuestionAnswerType("PHOTO");
