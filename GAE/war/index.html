@@ -94,19 +94,6 @@
 	$(document).ready(function() {
 		$("#info-tabs").tabs();
 	});
-	$(document).ready(function() {
-		$("#toggle-nav").tabs();
-		/*$("a").click(function() {
-		var projectIndex = $("a").index(this);
-			if (projectIndex == 0) {
-				
-			} else if (projectIndex == 0) {
-			
-			} else if (projectIndex == 0) {
-			
-			}
-		});*/
-	});
 </script>
 <script>
 	var currSelectedOrg;
@@ -548,10 +535,10 @@ FOR PEOPLE&ndash;CANADA</a>&nbsp;&nbsp;|&nbsp;&nbsp; <a
 
 <script type="text/javascript">
 	var parentAccordion = new TINY.accordion.slider("parentAccordion");
-	parentAccordion.init("acc", "h3", 1, 1, "acc-selected");
+	parentAccordion.init("acc", "h3", 0, 0, "acc-selected");
 
 	var nestedAccordion = new TINY.accordion.slider("nestedAccordion");
-	nestedAccordion.init("nested", "h3", 1, -1, "acc-selected");
+	nestedAccordion.init("nested", "h3", 0, 1, "acc-selected");
 </script>
 </body>
 </html>
