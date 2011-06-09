@@ -134,7 +134,9 @@ public class MediaQuestionWidget extends QuestionWidget implements
 			} else if (!(upload.getFilename().toLowerCase().endsWith(".mpeg")
 					|| upload.getFilename().toLowerCase().endsWith(".jpg")
 					|| upload.getFilename().toLowerCase().endsWith(".jpeg") || upload
-					.getFilename().toLowerCase().endsWith(".mp4"))) {
+					.getFilename().toLowerCase().endsWith(".mp4") || upload
+					.getFilename().toLowerCase().endsWith(".flv") || upload
+					.getFilename().toLowerCase().endsWith(".3gp"))) {
 				valid = false;
 			}
 			if (valid) {
