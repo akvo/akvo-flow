@@ -102,13 +102,15 @@ public class MetricManagerWidget extends Composite implements
 		searchControls.add(groupTextBox);
 		searchControls.add(ViewUtil.initLabel(TEXT_CONSTANTS.valueType()));
 		searchControls.add(valueTypeListBox);
+		HorizontalPanel buttonPanel = new HorizontalPanel();
 		searchButton = new Button(TEXT_CONSTANTS.search());
 		content.add(searchControls);
-		content.add(searchButton);
+		buttonPanel.add(searchButton);
 		cap.add(content);
 		searchButton.addClickHandler(this);
 		createButton = new Button(TEXT_CONSTANTS.createNew());
-		content.add(createButton);
+		buttonPanel.add(createButton);
+		content.add(buttonPanel);
 		createButton.addClickHandler(this);
 		return cap;
 	}
