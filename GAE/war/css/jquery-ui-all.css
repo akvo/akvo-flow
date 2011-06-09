@@ -481,7 +481,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-slider-vertical .ui-slider-handle { left: -.3em; margin-left: 0; margin-bottom: -.6em; }
 .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
 .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
-.ui-slider-vertical .ui-slider-range-max { top: 0; }/*
+.ui-slider-vertical .ui-slider-range-max { top: 0; }
+/*
  * jQuery UI Tabs 1.8.13
  *
  * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
@@ -499,13 +500,3 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
 .ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
 .ui-tabs .ui-tabs-hide { display: none !important; }
-
-#toggle-nav .ui-tabs { position: relative; padding: .2em; zoom: 1; } /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav { margin: 0; padding: .2em .2em 0; }
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav li { list-style: none; float: left; position: relative; top: 1px; margin: 0 .2em 1px 0; border-bottom: 0 !important; padding: 0; white-space: nowrap; }
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav li a { float: left; padding: 3px 20px; text-decoration: none; }
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav li#toggle-nav .ui-tabs-selected { margin-bottom: 0; padding:0; }
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav li#toggle-nav .ui-tabs-selected a, #toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav li.ui-state-disabled a, #toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav li.ui-state-processing a { cursor: text; }
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-nav li a, #toggle-nav .ui-tabs#toggle-nav .ui-tabs-collapsible #toggle-nav .ui-tabs-nav li#toggle-nav .ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
-#toggle-nav .ui-tabs #toggle-nav .ui-tabs-hide { display: none !important; }
