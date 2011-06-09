@@ -164,7 +164,14 @@ public class MediaQuestionWidget extends QuestionWidget implements
 		getAnswer().setType(type);
 		if (completeIcon.isVisible() && upload.getFilename() != null
 				&& upload.getFilename().trim().length() > 0) {
-			getAnswer().setValue(upload.getFilename().trim());
+			//we only want the filename (not the path)
+			String name = upload.getFilename().trim();
+			if(name.contains("/")){
+				name = name.substring(name.lastIndexOf("/")+1);
+			}if(name.contains("\\")){
+				name = name.substring(name.lastIndexOf("\\")+1);
+			}
+			getAnswer().setValue(name);
 		}
 	}
 
