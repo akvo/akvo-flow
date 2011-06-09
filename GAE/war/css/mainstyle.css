@@ -36,10 +36,7 @@ html {
 	background: url(../images/new/toggle-dark-bg.gif) no-repeat;
 }
 
-#header-right ul#toggle-nav li  a.on {
-	background: url(../images/new/toggle-light-bg.gif) no-repeat;
-}
-#header-right ul#toggle-nav a.active {
+ul#toggle-nav .ui-tabs .ui-tabs-nav li a.ui-tabs-selected { 
 	background: url(../images/new/toggle-light-bg.gif) no-repeat;
 }
 #outerContainer {
