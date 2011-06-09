@@ -365,12 +365,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
 		List<String> questionIdList = new ArrayList<String>();
 		List<String> nonSummarizableList = new ArrayList<String>();
+		
 		if (questionMap != null) {
 			int offset = 3;
-			for (Entry<QuestionGroupDto, List<QuestionDto>> entry : questionMap
-					.entrySet()) {
-				if (entry.getValue() != null) {
-					for (QuestionDto q : entry.getValue()) {
+			for(QuestionGroupDto group: orderedGroupList){
+				if(questionMap.get(group)!=null){
+					for (QuestionDto q : questionMap.get(group)) {
 						questionIdList.add(q.getKeyId().toString());
 						createCell(
 								row,
