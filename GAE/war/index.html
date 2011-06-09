@@ -100,7 +100,7 @@
 	$(function() {
 		$('#header-right').tabs();
 		$('#header-right').bind('tabsselect', function(event, ui) {
-
+		
 			var loadedCountries = new Array();
 			var j = 0;
 			if (loadedMW) {
@@ -157,7 +157,6 @@
 			for(var i=0;i<loadedCountries.length;i++){
 				getPlacemarkInfo(loadedCountries[i], null);
 			}
-			
 		});
 	});
 </script>
@@ -170,7 +169,7 @@
 <div id="header">
 <div id="header-right">
 <ul id="toggle-nav">
-	<li><a href="#projects-all" class="on">All Projects</a></li>
+	<li><a href="#projects-all">All Projects</a></li>
 	<li><a href="#projects-wfp">Water For People Projects</a></li>
 	<li><a href="#projects-other">Non-Water For People Projects</a></li>
 </ul>
