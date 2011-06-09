@@ -8,51 +8,40 @@ html {
 #header-right {
 	float:right;
 	height:36px;
-	padding:15px 20px 0 0;
+	padding:15px 20px 0 15px;
 }
 
 #header-right ul#toggle-nav {
-	list-style: none;
+	list-style-type: none;
 	margin:0;
 	padding:0;
+	background: #1a1a1a;
+	width: 510px;
 }
 
 #header-right ul#toggle-nav li {
-	float:left;
+	display:inline;
 	width:160px;
 	margin: 0;
-	padding:0;
-	display: inline;
-	list-style-type: none;
+	padding:0 0 0 10px;
+	background:#1a1a1a;
+}
+#header-right ul#toggle-nav li a {
+	color:#fff;
+	font-size: 9px;
 	text-align:center;
-}
-#header-right ul#toggle-nav li.toggle-both  a {
-	color:#fff;
-	font-size: 9px;
 	width:160px;
-	padding:6px 55px 18px 55px;
-}
-#header-right ul#toggle-nav li.toggle-wfp  a {
-	color:#fff;
-	font-size: 9px;
-	width:160px;
-	padding:6px 20px 18px 20px;
-}
-#header-right ul#toggle-nav li.toggle-non  a {
-	color:#fff;
-	font-size: 9px;
-	width:160px;
-	padding:6px 10px 18px 10px;
-}
-
-#header-right ul#toggle-nav li  a.off {
+	padding:7px 0 19px 0;
+	cursor:pointer;
 	background: url(../images/new/toggle-dark-bg.gif) no-repeat;
 }
 
 #header-right ul#toggle-nav li  a.on {
 	background: url(../images/new/toggle-light-bg.gif) no-repeat;
 }
-
+#header-right ul#toggle-nav a.active {
+	background: url(../images/new/toggle-light-bg.gif) no-repeat;
+}
 #outerContainer {
 	height: 86%;
 	width: 100%;
