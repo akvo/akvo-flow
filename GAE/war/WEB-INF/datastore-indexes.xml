@@ -358,5 +358,9 @@
         <property name="actionAbout" direction="asc"/>
         <property name="lastUpdateDateTime" direction="desc"/>
     </datastore-index>
-	
+	<datastore-index kind="SurveyalValue" ancestor="false" source="manual">
+        <property name="surveyInstanceId" direction="asc"/>
+        <property name="questionText" direction="asc"/>
+        <property name="metricName" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>

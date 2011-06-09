@@ -85,6 +85,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private TextBox sub4Box;
 	private TextBox sub5Box;
 	private TextBox sub6Box;
+	private TextBox pointTypeBox;
 	private TextBox organizationBox;
 	private TextBox systemBox;
 	private MapWidget localeMap;
@@ -274,22 +275,32 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	 */
 	private Widget constructGeneralTab(SurveyedLocaleDto dto) {
 		FlexTable grid = new FlexTable();
+		int row = 0;
 
-		grid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.id()));
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.id()));
 		identifierTextBox = new TextBox();
-		grid.setWidget(0, 1, identifierTextBox);
+		grid.setWidget(row, 1, identifierTextBox);
+		row++;
 
-		grid.setWidget(1, 0, ViewUtil.initLabel(TEXT_CONSTANTS.countryCode()));
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.countryCode()));
 		countryTextBox = new TextBox();
-		grid.setWidget(1, 1, countryTextBox);
+		grid.setWidget(row, 1, countryTextBox);
+		row++;
 
-		grid.setWidget(2, 0, ViewUtil.initLabel(TEXT_CONSTANTS.latitude()));
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.pointType()));
+		pointTypeBox = new TextBox();
+		grid.setWidget(row, 1, pointTypeBox);
+		row++;
+
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.latitude()));
 		latTextBox = ViewUtil.constructNumericTextBox();
-		grid.setWidget(2, 1, latTextBox);
+		grid.setWidget(row, 1, latTextBox);
+		row++;
 
-		grid.setWidget(3, 0, ViewUtil.initLabel(TEXT_CONSTANTS.longitude()));
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.longitude()));
 		lonTextBox = ViewUtil.constructNumericTextBox();
-		grid.setWidget(3, 1, lonTextBox);
+		grid.setWidget(row, 1, lonTextBox);
+		row++;
 
 		localeMap = new MapWidget();
 		localeMap.setSize("180px", "180px");
@@ -297,48 +308,56 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		grid.setWidget(0, 2, localeMap);
 		grid.getFlexCellFormatter().setRowSpan(0, 2, 5);
 
-		grid.setWidget(4, 0, ViewUtil.initLabel(TEXT_CONSTANTS.lastUpdated()));
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.lastUpdated()));
 		lastSurveyedDateBox = new DateBox();
-		grid.setWidget(4, 1, lastSurveyedDateBox);
+		grid.setWidget(row, 1, lastSurveyedDateBox);
+		row++;
 
-		grid.setWidget(5, 0,
+		grid.setWidget(row, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 1));
 		sub1Box = new TextBox();
+		grid.setWidget(row, 1, sub1Box);
+		row++;
 
-		grid.setWidget(5, 1, sub1Box);
-
-		grid.setWidget(6, 0,
+		grid.setWidget(row, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 2));
 		sub2Box = new TextBox();
-		grid.setWidget(6, 1, sub2Box);
+		grid.setWidget(row, 1, sub2Box);
+		row++;
 
-		grid.setWidget(7, 0,
+		grid.setWidget(row, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 3));
 		sub3Box = new TextBox();
-		grid.setWidget(7, 1, sub3Box);
+		grid.setWidget(row, 1, sub3Box);
+		row++;
 
-		grid.setWidget(8, 0,
+		grid.setWidget(row, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 4));
 		sub4Box = new TextBox();
-		grid.setWidget(8, 1, sub4Box);
+		grid.setWidget(row, 1, sub4Box);
+		row++;
 
-		grid.setWidget(9, 0,
+		grid.setWidget(row, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 5));
 		sub5Box = new TextBox();
-		grid.setWidget(9, 1, sub5Box);
+		grid.setWidget(row, 1, sub5Box);
+		row++;
 
-		grid.setWidget(10, 0,
+		grid.setWidget(row, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 6));
 		sub6Box = new TextBox();
-		grid.setWidget(10, 1, sub6Box);
+		grid.setWidget(row, 1, sub6Box);
+		row++;
 
-		grid.setWidget(11, 0, ViewUtil.initLabel(TEXT_CONSTANTS.organization()));
+		grid.setWidget(row, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.organization()));
 		organizationBox = new TextBox();
-		grid.setWidget(11, 1, organizationBox);
+		grid.setWidget(row, 1, organizationBox);
+		row++;
 
-		grid.setWidget(11, 0, ViewUtil.initLabel(TEXT_CONSTANTS.system()));
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.system()));
 		systemBox = new TextBox();
-		grid.setWidget(11, 1, systemBox);
+		grid.setWidget(row, 1, systemBox);
 
 		if (dto != null) {
 			if (dto.getIdentifier() != null) {
@@ -383,6 +402,9 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 			}
 			if (dto.getSystemIdentifier() != null) {
 				systemBox.setText(dto.getSystemIdentifier());
+			}
+			if (dto.getLocaleType() != null) {
+				pointTypeBox.setText(dto.getLocaleType());
 			}
 		}
 		return grid;
