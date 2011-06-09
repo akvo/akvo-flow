@@ -35,6 +35,7 @@
 	src="js/jscrollpane/jquery.jscrollpane.min.js"></script>
 <!-- scripts specific to this demo site -->
 <script src="js/ui/jquery.ui.draggable.js"></script>
+<script src="js/ui/jquery.ui.button.js"></script> 
 <script type="text/javascript" id="sourcecode">
 	$(document).ready(function() {
 		$('.scroll-pane').jScrollPane({
@@ -94,12 +95,11 @@
 	$(document).ready(function() {
 		$("#info-tabs").tabs();
 	});
+	</script> 
 </script>
 <script>
 	var currSelectedOrg;
-	$(function() {
-		$('#header-right').tabs();
-		$('#header-right').bind('tabsselect', function(event, ui) {
+		$('#button-container').bind('click', function(event, ui) {
 		
 			var loadedCountries = new Array();
 			var j = 0;
@@ -158,6 +158,88 @@
 				getPlacemarkInfo(loadedCountries[i], null);
 			}
 		});
+</script>
+<script type="text/javascript">
+	$(function(){
+		//all hover and click logic for buttons
+		$(".fg-button:not(.ui-state-disabled)")
+		.hover(
+			function(){ 
+				$(this).addClass("ui-state-hover"); 
+			},
+			function(){ 
+				$(this).removeClass("ui-state-hover"); 
+			}
+		)
+		.mousedown(function(){
+			var loadedCountries = new Array();
+			var j = 0;
+			if (loadedMW) {
+				loadedCountries[j] = "MW";
+				j=j+1;
+			}
+			if (loadedHN) {
+				loadedCountries[j] = "HN";
+				j=j+1;
+			}
+			if (loadedPE) {
+				loadedCountries[j] = "PE";
+				j=j+1;
+			}
+			if (loadedRW) {
+				loadedCountries[j] = "RW";
+				j=j+1;
+			}
+			if (loadedGT) {
+				loadedCountries[j] = "GT";
+				j=j+1;
+			}
+			if (loadedIN) {
+				loadedCountries[j] = "IN";
+				j=j+1;
+			}
+			if (loadedSV) {
+				loadedCountries[j] = "SV";
+				j=j+1;
+			}
+			if (loadedNI) {
+				loadedCountries[j] = "NI";
+				j=j+1;
+			}
+			if (loadedBO) {
+				loadedCountries[j] = "BO";
+				j=j+1;
+			}
+			if (loadedDO) {
+				loadedCountries[j] = "DO";
+				j=j+1;
+			}
+			if (this.id == 1) {
+				currSelectedOrg = "all";
+				clearOverlays();
+			} else if (this.id == 2) {
+				currSelectedOrg = "wfp";
+				clearOverlays();
+			} else if (this.id == 3) {
+				currSelectedOrg = "other";
+				clearOverlays();
+			}
+			for(var i=0;i<loadedCountries.length;i++){
+				getPlacemarkInfo(loadedCountries[i], null);
+			}
+				$(this).parents('.fg-buttonset-single:first').find(".fg-button.ui-state-active").removeClass("ui-state-active");
+				if( $(this).is('.ui-state-active.fg-button-toggleable, .fg-buttonset-multi .ui-state-active') ){ $(this).removeClass("ui-state-active"); }
+				else { $(this).addClass("ui-state-active");; 
+				
+				
+				}	
+		})
+		.mouseup(function(){
+			if(! $(this).is('.fg-button-toggleable, .fg-buttonset-single .fg-button,  .fg-buttonset-multi .fg-button') ){
+				$(this).removeClass("ui-state-active");
+				
+			}
+		});
 	});
 </script>
 
@@ -167,13 +249,43 @@
 </head>
 <body onLoad="initialize()">
 <div id="header">
-<div id="header-right">
-<ul id="toggle-nav">
-	<li><a href="#projects-all">All Projects</a></li>
-	<li><a href="#projects-wfp">Water For People Projects</a></li>
-	<li><a href="#projects-other">Non-Water For People Projects</a></li>
-</ul>
+<form>
+<style type="text/css">	
+	.fg-button { outline: 0; margin:0 4px 0 0; padding: .4em 1em; text-decoration:none !important; cursor:pointer; position: relative; text-align: center; zoom: 1; }
+	.fg-button .ui-icon { position: absolute; top: 50%; margin-top: -8px; left: 50%; margin-left: -8px; }
+	
+	a.fg-button { float:left; }
+	
+	/* remove extra button width in IE */
+	button.fg-button { width:auto; overflow:visible; }
+	
+	.fg-button-icon-left { padding-left: 2.1em; }
+	.fg-button-icon-right { padding-right: 2.1em; }
+	.fg-button-icon-left .ui-icon { right: auto; left: .2em; margin-left: 0; }
+	.fg-button-icon-right .ui-icon { left: auto; right: .2em; margin-left: 0; }
+	
+	.fg-button-icon-solo { display:block; width:8px; text-indent: -9999px; }	 /* solo icon buttons must have block properties for the text-indent to work */	
+	
+	.fg-buttonset { float:right; padding: 15px 20px 15px 0; }
+	.fg-buttonset .fg-button { float: left; }
+	.fg-buttonset-single .fg-button, 
+	.fg-buttonset-multi .fg-button { margin-right: -1px;}
+	
+	.fg-toolbar { padding: .5em; margin: 0;  }
+	.fg-toolbar .fg-buttonset { margin-right:1.5em; padding-left: 1px; }
+	.fg-toolbar .fg-button { font-size: 1em;  }
+
+	/*demo page css*/
+	h2 { clear: both; padding-top:1.5em; margin-top:0; } 
+	.strike { text-decoration: line-through; }
+</style>
+<div id="button-container" class="fg-buttonset fg-buttonset-single">
+	<button class="fg-button ui-state-default ui-priority-primary ui-state-active" id="button1">All Projects</button>
+	<button class="fg-button ui-state-default ui-priority-primary" id="button2">Water For People Projects</button>
+	<button class="fg-button ui-state-default ui-priority-primary" id="button3">Non-Water For People Projects</button>
 </div>
+
+
 </div>
 <div id="outerContainer">
 <div id="info_canvas">
