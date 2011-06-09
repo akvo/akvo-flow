@@ -272,7 +272,6 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			for (QuestionAnswerStoreDto ans : instance
 					.getQuestionAnswersStore()) {
 				QuestionAnswerStore store = new QuestionAnswerStore();
-				DtoMarshaller.copyToCanonical(store, ans);
 				if (ans.getCollectionDate() == null) {
 					ans.setCollectionDate(domain.getCollectionDate());
 				}
@@ -280,8 +279,10 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 					ans.setValue(ans.getValue().replaceAll("\t", ""));
 					if (ans.getValue().length() > 500) {
 						ans.setValue(ans.getValue().substring(0, 499));
+
 					}
 				}
+				DtoMarshaller.copyToCanonical(store, ans);	
 				store.setSurveyInstanceId(domain.getKey().getId());
 				answerList.add(store);
 			}
