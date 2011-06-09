@@ -148,7 +148,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				scoringTable.addNewRow();
+				scoringTable.addNewRow(null);
 			}
 		});
 		scrollP.add(tablePanel);

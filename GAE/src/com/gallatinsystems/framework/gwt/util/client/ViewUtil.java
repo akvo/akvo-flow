@@ -170,7 +170,7 @@ public class ViewUtil {
 	public static String getListBoxSelection(ListBox list,
 			boolean suppressFirstEntry) {
 		int idx = list.getSelectedIndex();
-		if ((suppressFirstEntry && idx > 0) || idx >= 0) {
+		if ((suppressFirstEntry && idx > 0) || (suppressFirstEntry == false &&idx >= 0)) {
 			return list.getValue(idx);
 		} else {
 			return null;

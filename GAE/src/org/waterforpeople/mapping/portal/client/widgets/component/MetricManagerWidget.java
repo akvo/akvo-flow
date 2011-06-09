@@ -6,7 +6,6 @@ import java.util.Map;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricService;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
@@ -60,6 +59,7 @@ public class MetricManagerWidget extends Composite implements
 	private Panel contentPanel;
 	private PaginatedDataTable<MetricDto> dataTable;
 	private Button searchButton;
+	private Button createButton;
 	private ListBox valueTypeListBox;
 	private TextBox nameTextBox;
 	private TextBox groupTextBox;
@@ -77,6 +77,7 @@ public class MetricManagerWidget extends Composite implements
 		contentPanel.add(dataTable);
 
 		initWidget(contentPanel);
+		requestData(null, false);
 	}
 
 	/**
@@ -93,12 +94,22 @@ public class MetricManagerWidget extends Composite implements
 		valueTypeListBox.addItem("", "");
 		valueTypeListBox.addItem(TEXT_CONSTANTS.text(), STRING_TYPE);
 		valueTypeListBox.addItem(TEXT_CONSTANTS.number(), DOUBLE_TYPE);
-
+		nameTextBox = new TextBox();
+		groupTextBox = new TextBox();
+		searchControls.add(ViewUtil.initLabel(TEXT_CONSTANTS.name()));
+		searchControls.add(nameTextBox);
+		searchControls.add(ViewUtil.initLabel(TEXT_CONSTANTS.group()));
+		searchControls.add(groupTextBox);
+		searchControls.add(ViewUtil.initLabel(TEXT_CONSTANTS.valueType()));
+		searchControls.add(valueTypeListBox);
 		searchButton = new Button(TEXT_CONSTANTS.search());
 		content.add(searchControls);
 		content.add(searchButton);
 		cap.add(content);
 		searchButton.addClickHandler(this);
+		createButton = new Button(TEXT_CONSTANTS.createNew());
+		content.add(createButton);
+		createButton.addClickHandler(this);
 		return cap;
 	}
 
@@ -173,23 +184,7 @@ public class MetricManagerWidget extends Composite implements
 		editButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-
-				// TODO: handle edit click
-
-				/*
-				 * SurveyedLocaleEditorDialog dia = new
-				 * SurveyedLocaleEditorDialog(new CompletionListener() {
-				 * 
-				 * @Override public void operationComplete(boolean
-				 * wasSuccessful, Map<String, Object> payload) { if(payload !=
-				 * null &&
-				 * payload.containsKey(SurveyedLocaleEditorWidget.LOCALE_KEY)){
-				 * SurveyedLocaleDto dto =
-				 * (SurveyedLocaleDto)payload.get(SurveyedLocaleEditorWidget
-				 * .LOCALE_KEY); bindRow(grid,dto,row); } } },item,
-				 * currentUser.hasPermission(PermissionConstants.EDIT_AP));
-				 * dia.show();
-				 */
+				openEditDialog(item, row);
 			}
 
 		});
@@ -198,45 +193,47 @@ public class MetricManagerWidget extends Composite implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				final Button pressedButton = (Button) event.getSource();
-				String[] titleParts = pressedButton.getTitle().split("\\|");
-				final Integer row = Integer.parseInt(titleParts[0]);
-				final Long itemId = Long.parseLong(titleParts[1]);
+				metricService.deleteMetric(item.getKeyId(),
+						new AsyncCallback<Void>() {
 
-				metricService.deleteMetric(itemId, new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								MessageDialog dia = new MessageDialog(
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ caught.getLocalizedMessage());
+								dia.showCentered();
+							}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						Window.alert(TEXT_CONSTANTS.errorTracePrefix() + " "
-								+ caught.getLocalizedMessage());
-					}
+							@Override
+							public void onSuccess(Void result) {
+								int rowSelected = row;
+								dataTable.removeRow(rowSelected);
+								Grid grid = dataTable.getGrid();
+								for (int i = rowSelected; i < grid
+										.getRowCount() - 1; i++) {
+									HorizontalPanel hPanel = (HorizontalPanel) grid
+											.getWidget(i, 6);
+									Button deleteButton = (Button) hPanel
+											.getWidget(1);
+									String[] buttonTitleParts = deleteButton
+											.getTitle().split("\\|");
+									Integer newRowNum = Integer
+											.parseInt(buttonTitleParts[0]);
+									newRowNum = newRowNum - 1;
+									deleteButton.setTitle(newRowNum + "|"
+											+ buttonTitleParts[1]);
+								}
+								Window.alert(TEXT_CONSTANTS.deleteComplete());
+							}
 
-					@Override
-					public void onSuccess(Void result) {
-						int rowSelected = row;
-						dataTable.removeRow(rowSelected);
-						Grid grid = dataTable.getGrid();
-						for (int i = rowSelected; i < grid.getRowCount() - 1; i++) {
-							HorizontalPanel hPanel = (HorizontalPanel) grid
-									.getWidget(i, 6);
-							Button deleteButton = (Button) hPanel.getWidget(1);
-							String[] buttonTitleParts = deleteButton.getTitle()
-									.split("\\|");
-							Integer newRowNum = Integer
-									.parseInt(buttonTitleParts[0]);
-							newRowNum = newRowNum - 1;
-							deleteButton.setTitle(newRowNum + "|"
-									+ buttonTitleParts[1]);
-						}
-						Window.alert(TEXT_CONSTANTS.deleteComplete());
-					}
-
-				});
+						});
 
 			}
 
 		});
-		grid.setWidget(row, 6, buttonHPanel);
+		grid.setWidget(row, 4, buttonHPanel);
 
 	}
 
@@ -249,7 +246,39 @@ public class MetricManagerWidget extends Composite implements
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == searchButton) {
 			requestData(null, false);
+		} else if (event.getSource() == createButton) {
+			MetricDto metric = new MetricDto();
+			metric.setName(nameTextBox.getValue());
+			metric.setGroup(groupTextBox.getValue());
+			metric.setValueType(ViewUtil.getListBoxSelection(valueTypeListBox,
+					true));
+			openEditDialog(metric, -1);
 		}
+	}
 
+	/**
+	 * displays the editor in a dialog
+	 * 
+	 * @param metric
+	 * @param row
+	 */
+	private void openEditDialog(MetricDto metric, final int row) {
+		MetricEditDialog dia = new MetricEditDialog(new CompletionListener() {
+			@Override
+			public void operationComplete(boolean wasSuccessful,
+					Map<String, Object> payload) {
+				if (payload != null
+						&& payload.containsKey(MetricEditWidget.METRIC_PAYLOAD_KEY)) {
+					MetricDto m = (MetricDto) payload
+							.get(MetricEditWidget.METRIC_PAYLOAD_KEY);
+					if (row >= 0) {
+						bindRow(dataTable.getGrid(), m, row);
+					} else {
+						dataTable.addNewRow(m);
+					}
+				}
+			}
+		}, metric);
+		dia.showCentered();
 	}
 }

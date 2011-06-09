@@ -21,6 +21,7 @@ import org.waterforpeople.mapping.portal.client.widgets.DeviceFileManagerPortlet
 import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
 import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
 import org.waterforpeople.mapping.portal.client.widgets.MessageViewPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.MetricManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.PortletFactory;
 import org.waterforpeople.mapping.portal.client.widgets.RawDataViewPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.RemoteExceptionPortlet;
@@ -32,7 +33,6 @@ import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPo
 import org.waterforpeople.mapping.portal.client.widgets.SurveyLoaderPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
-import org.waterforpeople.mapping.portal.client.widgets.SurveyedLocaleManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.UserManagerPortlet;
 
@@ -86,8 +86,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String ADD_TOOLTIP = TEXT_CONSTANTS.addToDashboard();
 	private static final String DEFAULT_DOMAIN_TYPE = "accessPoint";
 	private static final String DOMAIN_CONFIG_KEY = "domainType";
-	
 
+	private static final String LOCALE_DOMAIN = "locale";
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
 	private Image confImage;
@@ -305,6 +305,13 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 						}
 					});
+			if (LOCALE_DOMAIN.equalsIgnoreCase(domainType)) {
+				mgrMenu.addItem(TEXT_CONSTANTS.metricManager(), new Command() {
+					public void execute() {
+						launchFullscreen(MetricManagerPortlet.NAME);
+					}
+				});
+			}
 		}
 
 		menu.addItem(TEXT_CONSTANTS.dataManagers(), mgrMenu);

@@ -13,4 +13,6 @@ public interface MetricServiceAsync {
 
 	void deleteMetric(Long id, AsyncCallback<Void> callback);
 
+	void saveMetric(MetricDto metric, AsyncCallback<MetricDto> callback);
+
 }

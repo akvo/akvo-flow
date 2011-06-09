@@ -276,11 +276,13 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 
 	/**
 	 * adds a new row to the bottom of this grid and calls bindData on the new
-	 * row, passing null for the instance value. This method can be used to
+	 * row, passing the item passed in for the instance value. This method can be used to
 	 * support in-table editors where the user can click "add" to create a new
-	 * item in-place.
+	 * item in-place by passing null as the item.
+	 * 
+	 * @param item - item to bind to the new row (can be null)
 	 */
-	public void addNewRow() {
+	public void addNewRow(T item) {
 		if (instanceGrid != null) {
 			Integer rowCount = instanceGrid.getRowCount();
 			if (rowCount > 0) {
@@ -290,9 +292,11 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 				instanceGrid.resize(2, binder.getHeaders().length);
 				loadHeaderRow();
 			}
-			binder.bindRow(instanceGrid, null, instanceGrid.getRowCount() - 1);
+			binder.bindRow(instanceGrid, item, instanceGrid.getRowCount() - 1);
 		}
 	}
+	
+	
 
 	/**
 	 * populates the data grid with the dtos passed in
