@@ -102,35 +102,46 @@
 		$('#header-right').bind('tabsselect', function(event, ui) {
 
 			var loadedCountries = new Array();
+			var j = 0;
 			if (loadedMW) {
-				loadedCountries[0] = "MW";
+				loadedCountries[j] = "MW";
+				j=j+1;
 			}
 			if (loadedHN) {
-				loadedCountries[1] = "HN";
+				loadedCountries[j] = "HN";
+				j=j+1;
 			}
 			if (loadedPE) {
-				loadedCountries[2] = "PE";
+				loadedCountries[j] = "PE";
+				j=j+1;
 			}
 			if (loadedRW) {
-				loadedCountries[3] = "RW";
+				loadedCountries[j] = "RW";
+				j=j+1;
 			}
 			if (loadedGT) {
-				loadedCountries[4] = "GT";
+				loadedCountries[j] = "GT";
+				j=j+1;
 			}
 			if (loadedIN) {
-				loadedCountries[5] = "IN";
+				loadedCountries[j] = "IN";
+				j=j+1;
 			}
 			if (loadedSV) {
-				loadedCountries[6] = "SV";
+				loadedCountries[j] = "SV";
+				j=j+1;
 			}
 			if (loadedNI) {
-				loadedCountries[7] = "NI";
+				loadedCountries[j] = "NI";
+				j=j+1;
 			}
 			if (loadedBO) {
-				loadedCountries[8] = "BO";
+				loadedCountries[j] = "BO";
+				j=j+1;
 			}
 			if (loadedDO) {
-				loadedCountries[9] = "DO";
+				loadedCountries[j] = "DO";
+				j=j+1;
 			}
 			
 			if (ui.index == 0) {
