@@ -244,9 +244,24 @@ function makeMarker(latitude, longitude, iconUrl, communityCode, pointType,
 					});
 }
 
+function clearOverlays() {
+	  if (markers) {
+	    for (i in markers) {
+	      markers[i].setMap(null);
+	    }
+	  }
+	}
+
+
 function getPlacemarkInfo(countryCode, cursor) {
 	var url = '/placemarkrestapi?country=' + countryCode
 			+ '&needDetailsFlag=false';
+	if(currSelectedOrg == "wfp"){
+		url += '&org=wfp';
+	}else if(currSelectedOrg == 'other'){
+		url += '&org=other';
+	}
+	
 	if (cursor != null) {
 		url += '&cursor=' + cursor;
 	}
