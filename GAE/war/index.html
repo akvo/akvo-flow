@@ -109,23 +109,57 @@
 	});
 </script>
 <script>
-var currSelectedOrg;
+	var currSelectedOrg;
 	$(function() {
 		$('#header-right').tabs();
 		$('#header-right').bind('tabsselect', function(event, ui) {
-			if (ui.index == 0) {
-				currSelectedOrg="all";
-				clearOverlays();
-				getPlacemarkInfo("MW", null);
-			} else if (ui.index == 1) {
-				currSelectedOrg="wfp";
-				clearOverlays();
-				getPlacemarkInfo('MW',null);
-			} else if (ui.index == 2) {
-				currSelectedOrg="other";
-				clearOverlays();
-				getPlacemarkInfo('MW',null);
+
+			var loadedCountries = new Array();
+			if (loadedMW) {
+				loadedCountries[0] = "MW";
 			}
+			if (loadedHN) {
+				loadedCountries[1] = "HN";
+			}
+			if (loadedPE) {
+				loadedCountries[2] = "PE";
+			}
+			if (loadedRW) {
+				loadedCountries[3] = "RW";
+			}
+			if (loadedGT) {
+				loadedCountries[4] = "GT";
+			}
+			if (loadedIN) {
+				loadedCountries[5] = "IN";
+			}
+			if (loadedSV) {
+				loadedCountries[6] = "SV";
+			}
+			if (loadedNI) {
+				loadedCountries[7] = "NI";
+			}
+			if (loadedBO) {
+				loadedCountries[8] = "BO";
+			}
+			if (loadedDO) {
+				loadedCountries[9] = "DO";
+			}
+			
+			if (ui.index == 0) {
+				currSelectedOrg = "all";
+				clearOverlays();
+			} else if (ui.index == 1) {
+				currSelectedOrg = "wfp";
+				clearOverlays();
+			} else if (ui.index == 2) {
+				currSelectedOrg = "other";
+				clearOverlays();
+			}
+			for(var i=0;i.loadedCountries.length;i++){
+				getPlacemarkInfo(loadedCountries[i], null);
+			}
+			
 		});
 	});
 </script>

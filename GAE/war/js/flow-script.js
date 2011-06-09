@@ -245,19 +245,6 @@ function makeMarker(latitude, longitude, iconUrl, communityCode, pointType,
 }
 
 function clearOverlays() {
-	
-	loadedMW = new Boolean(false);
-	loadedHN = new Boolean(false);
-	loadedPE = new Boolean(false);
-	loadedRW = new Boolean(false);
-	loadedGT = new Boolean(false);
-	loadedIN = new Boolean(false);
-	loadedSV = new Boolean(false);
-	loadedNI = new Boolean(false);
-	loadedBO = new Boolean(false);
-	loadedDO = new Boolean(false);
-	
-	
 	  if (markers) {
 	    for (i in markers) {
 	      markers[i].setMap(null);
