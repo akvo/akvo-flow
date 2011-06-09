@@ -9,31 +9,32 @@ html {
 	float:right;
 	height:36px;
 	padding:15px 20px 0 15px;
+	width:510px;
 }
 
-#header-right ul#toggle-nav {
-	list-style-type: none;
-	margin:0;
-	padding:0;
-	background: #1a1a1a;
-	width: 510px;
-}
-
-#header-right ul#toggle-nav li {
+#header-right input {
 	display:inline;
 	width:160px;
 	margin: 0;
 	padding:0 0 0 10px;
 	background:#1a1a1a;
 }
-#header-right ul#toggle-nav li a {
+#header-right label {
 	color:#fff;
 	font-size: 9px;
 	text-align:center;
 	width:160px;
-	padding:7px 0 19px 0;
 	cursor:pointer;
 	background: url(../images/new/toggle-dark-bg.gif) no-repeat;
+}
+#header-right .radio1 {
+	padding:7px 55px 19px;
+}
+#header-right .radio2 {
+	padding:7px 0 19px 0;
+}
+#header-right .radio3 {
+	padding:7px 0 19px 0;
 }
 
 ul#toggle-nav .ui-tabs .ui-tabs-nav li a.ui-tabs-selected { 
