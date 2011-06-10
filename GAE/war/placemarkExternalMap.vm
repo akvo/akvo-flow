@@ -67,7 +67,7 @@
   <div id="mainContent">
       <div id="leftContent">
       <div class="scroll-pane-info">
-      <table width="100%" height="205">
+      <table width="300" height="205">
 			 #if($type=="water")
 	    					<tr valign="bottom"><td class="QandA">Water System Status</td><td>$waterSystemStatus</td></tr>
 	    					<tr valign="bottom"><td class="QandA">Type of Technology</td><td>$primaryTypeTechnology</td></tr>
