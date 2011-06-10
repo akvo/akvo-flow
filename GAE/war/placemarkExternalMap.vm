@@ -42,7 +42,7 @@
 	margin-left: auto;
 	font-size:.9em;
 }
-#wrap #leftContent {
+#wrap #mainContent #leftContent {
 	float:left;
 	width: 281px;
 	background: #58505b;
@@ -141,12 +141,12 @@
 	margin: 0 -3px 0 0;
 }
 
-#wrap #leftContent .scroll-pane-info tr td {
+#wrap #mainContent #leftContent .scroll-pane-info tr td {
 	padding:5px;
 	width:150px;
 	font-size:10px;
 }
-#wrap #leftContent .scroll-pane-info tr td.QandA {
+#wrap #mainContent #leftContent .scroll-pane-info tr td.QandA {
 	border-bottom: 1px dotted #eee;
 	text-align:right;
 	font-weight:bold;
@@ -156,7 +156,7 @@
 	position: relative;
 }
 
-#wrap #rightContent {
+#wrap #mainContent #rightContent {
 	float: right;
 	width: 191px;
 	background: #58505b;
