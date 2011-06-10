@@ -97,13 +97,7 @@ function updateProjectFilter(orgSelected) {
 		$('.scroll-pane').jScrollPane({
 			showArrows : true
 		});
-	});
-	$(document).ready(function() {
-		$('.scroll-pane-info').jScrollPane({
-			showArrows : true
-		});
-	});
-	$(document).ready(function() {
+		
 		$("#accordion1").accordion({
 			autoHeight : false,
 			active : false,
@@ -134,28 +128,26 @@ function updateProjectFilter(orgSelected) {
 			}
 			map.setZoom(10);
 		});
-	});
-
-	$(document).ready(function() {
+		
 		$("#accordion2").accordion({
 			autoHeight : false,
 			active : false,
 			collapsible : true
 		});
-	});
-
-	$(document).ready(function() {
+		
 		$("#draggable").draggable();
-	});
-
-	$(document).ready(function() {
 		$("#info-tabs").tabs();
 		$("#button1").click(function(){updateProjectFilter("all");});
 		$("#button2").click(function(){updateProjectFilter("wfp");});
 		$("#button3").click(function(){updateProjectFilter("other");});
 	});
-
+	$(document).ready(function() {
+		$('.scroll-pane-info').jScrollPane({
+			showArrows : true
+		});
+	});
 	
+		
 	$(function(){
 		//all hover and click logic for buttons
 		$(".fg-button:not(.ui-state-disabled)")
