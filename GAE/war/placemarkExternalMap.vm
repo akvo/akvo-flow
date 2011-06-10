@@ -5,7 +5,7 @@
 	width: 550px;
 	height: 312px;
 }
-#headerBalloon {
+#wrap #headerBalloon {
 	height: 60px;
 	background: #58505b;
 	color:#fff;
@@ -15,12 +15,12 @@
 	border-radius:20px;
 	border:2px solid #939598;
 }
-#headerBalloon .headerBalloonContent {
+#wrap #headerBalloon .headerBalloonContent {
 	float:left;
 	padding:0 0 10px 10px;
 	width:400px;
 }
-#headerBalloon .mapIcon {
+#wrap #headerBalloon .mapIcon {
 	float: right;
 	padding:0 10px 0 0;
 	margin:0;
@@ -35,14 +35,14 @@
 	right:35px;
 }
 
-#mainContent {
+#wrap #mainContent {
 	width: 530px;
 	margin-top: 0px;
 	margin-right: auto;
 	margin-left: auto;
 	font-size:.9em;
 }
-#leftContent {
+#wrap #leftContent {
 	float:left;
 	width: 281px;
 	background: #58505b;
@@ -141,22 +141,22 @@
 	margin: 0 -3px 0 0;
 }
 
-#leftContent .scroll-pane-info tr td {
+#wrap #leftContent .scroll-pane-info tr td {
 	padding:5px;
 	width:150px;
 	font-size:10px;
 }
-#leftContent .scroll-pane-info tr td.QandA {
+#wrap #leftContent .scroll-pane-info tr td.QandA {
 	border-bottom: 1px dotted #eee;
 	text-align:right;
 	font-weight:bold;
 }
-.answer img {
+#wrap .answer img {
 	top: 2px;
 	position: relative;
 }
 
-#rightContent {
+#wrap #rightContent {
 	float: right;
 	width: 191px;
 	background: #58505b;
@@ -167,13 +167,13 @@
 	border-radius:20px;
 	border:2px solid #939598;
 }
-.infoPhoto {
+#wrap .infoPhoto {
 	width:175px;
 	height:150px;
 	margin:0;
 	padding:0;
 }
-p.photoCaption {
+#wrap p.photoCaption {
 	color: #ffffff;
 	text-align: center;
 	padding:0;
