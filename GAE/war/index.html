@@ -160,61 +160,6 @@ function updateProjectFilter(orgSelected) {
 			}
 		)
 		.mousedown(function(){
-			var loadedCountries = new Array();
-			var j = 0;
-			if (loadedMW) {
-				loadedCountries[j] = "MW";
-				j=j+1;
-			}
-			if (loadedHN) {
-				loadedCountries[j] = "HN";
-				j=j+1;
-			}
-			if (loadedPE) {
-				loadedCountries[j] = "PE";
-				j=j+1;
-			}
-			if (loadedRW) {
-				loadedCountries[j] = "RW";
-				j=j+1;
-			}
-			if (loadedGT) {
-				loadedCountries[j] = "GT";
-				j=j+1;
-			}
-			if (loadedIN) {
-				loadedCountries[j] = "IN";
-				j=j+1;
-			}
-			if (loadedSV) {
-				loadedCountries[j] = "SV";
-				j=j+1;
-			}
-			if (loadedNI) {
-				loadedCountries[j] = "NI";
-				j=j+1;
-			}
-			if (loadedBO) {
-				loadedCountries[j] = "BO";
-				j=j+1;
-			}
-			if (loadedDO) {
-				loadedCountries[j] = "DO";
-				j=j+1;
-			}
-			if (this.id == 1) {
-				currSelectedOrg = "all";
-				clearOverlays();
-			} else if (this.id == 2) {
-				currSelectedOrg = "wfp";
-				clearOverlays();
-			} else if (this.id == 3) {
-				currSelectedOrg = "other";
-				clearOverlays();
-			}
-			for(var i=0;i<loadedCountries.length;i++){
-				getPlacemarkInfo(loadedCountries[i], null);
-			}
 				$(this).parents('.fg-buttonset-single:first').find(".fg-button.ui-state-active").removeClass("ui-state-active");
 				if( $(this).is('.ui-state-active.fg-button-toggleable, .fg-buttonset-multi .ui-state-active') ){ $(this).removeClass("ui-state-active"); }
 				else { $(this).addClass("ui-state-active");; 
