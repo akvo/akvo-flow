@@ -234,12 +234,6 @@ function makeMarker(latitude, longitude, iconUrl, communityCode, pointType,
 									map : map,
 									content : item.placemarkContents
 								});
-								infobox.onAdd = function() {
-								    this.createElement();
-								    $('.scroll-pane-info').jScrollPane({
-										showArrows : true
-									});
-								};
 								openWindow = infobox;
 								count++;
 							});
