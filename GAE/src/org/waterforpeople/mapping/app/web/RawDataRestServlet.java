@@ -44,6 +44,24 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
 			List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
+			if (importReq.getSurveyInstanceId() == null
+					&& importReq.getSurveyId() != null) {
+				// if the instanceID is null, we need to create one
+				SurveyInstance inst = new SurveyInstance();
+				inst.setSurveyId(importReq.getSurveyId());
+				inst.setCollectionDate(importReq.getCollectionDate() != null ? importReq
+						.getCollectionDate() : new Date());
+				inst.setApproximateLocationFlag("False");
+				inst.setDeviceIdentifier("IMPORTER");
+				SurveyInstanceDAO instDao = new SurveyInstanceDAO();
+				inst = instDao.save(inst);
+				// set the key so the subsequent logic can populate it in the
+				// QuestionAnswerStore objects
+				importReq.setSurveyInstanceId(inst.getKey().getId());
+				if (importReq.getCollectionDate() == null) {
+					importReq.setCollectionDate(inst.getCollectionDate());
+				}
+			}
 			for (Map.Entry<Long, String[]> item : importReq
 					.getQuestionAnswerMap().entrySet()) {
 				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
@@ -55,7 +73,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				qasDto.setCollectionDate(importReq.getCollectionDate());
 				dtoList.add(qasDto);
 			}
-			sisi.updateQuestions(dtoList,true);
+			sisi.updateQuestions(dtoList, true);
 		} else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				.equals(importReq.getAction())) {
 			SurveyInstance instance = instanceDao.getByKey(importReq

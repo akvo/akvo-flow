@@ -89,9 +89,14 @@ public class RawDataImportRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
-		if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null)
-			setSurveyInstanceId(new Long(req
-					.getParameter(SURVEY_INSTANCE_ID_PARAM)));
+		if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
+			try {
+				setSurveyInstanceId(new Long(
+						req.getParameter(SURVEY_INSTANCE_ID_PARAM)));
+			} catch (Exception e) {
+				// swallow
+			}
+		}
 		if (req.getParameter(QUESTION_ID_PARAM) != null) {
 			String[] answers = req.getParameterValues(QUESTION_ID_PARAM);
 			if (answers != null) {
@@ -124,6 +129,9 @@ public class RawDataImportRequest extends RestRequest {
 							if (type.startsWith(TYPE)) {
 								type = type.substring(TYPE.length());
 							}
+							if (val != null && val.contains("^^")) {
+								val = val.replaceAll("\\^\\^", "|");
+							}
 							putQuestionAnswer(new Long(qId), val, type);
 						}
 					}
@@ -138,10 +146,11 @@ public class RawDataImportRequest extends RestRequest {
 			collectionDate = IN_FMT.parse(req.getParameter(
 					COLLECTION_DATE_PARAM).trim());
 		}
-		if(req.getParameter(SUBMITTER_PARAM)!=null){
+		if (req.getParameter(SUBMITTER_PARAM) != null) {
 			setSubmitter(req.getParameter(SUBMITTER_PARAM));
 		}
 	}
+
 	public void setSubmitter(String submitter) {
 		this.submitter = submitter;
 	}

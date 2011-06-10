@@ -95,6 +95,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 											.getColumnIndex()) + "|value=");
 
 							value = cell.getStringCellValue().trim();
+							if(value.contains("|"));{
+								value = value.replaceAll("\\|", "^^");
+							}
 							if (value.endsWith(".jpg")) {
 								type = "PHOTO";
 								value = value.substring(value.lastIndexOf("/"));
@@ -134,7 +137,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 				}
 				if (row.getRowNum() > 0) {
-					if (instanceId != null) {
+					
 						invokeUrl(
 								serverBase,
 								"action="
@@ -142,7 +145,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 										+ "&"
 										+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
 										+ "="
-										+ instanceId
+										+ (instanceId!=null?instanceId:"")
 										+ "&"
 										+ RawDataImportRequest.SURVEY_ID_PARAM
 										+ "="
@@ -158,7 +161,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 										+ URLEncoder.encode(submitter, "UTF-8"));
 						System.out.print(i++ + " : ");
 						invokeUrl(serverBase, sb.toString());
-					}
+					
 				}
 
 			}
