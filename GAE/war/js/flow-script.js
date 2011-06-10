@@ -295,11 +295,7 @@ function createCountryControl() {
 
 	// Set CSS for the control border
 	var controlUI = document.createElement('DIV');
-	controlUI.style.backgroundColor = '#333333';
-	controlUI.style.borderStyle = 'solid';
-	controlUI.style.borderWidth = '2px';
-	controlUI.style.cursor = 'pointer';
-	controlUI.style.textAlign = 'center';
+
 	controlUI.title = 'Jumps to a specific country';
 	controlDiv.appendChild(controlUI);
 
@@ -309,7 +305,7 @@ function createCountryControl() {
 	controlText.style.fontSize = '12px';
 	controlText.style.paddingLeft = '4px';
 	controlText.style.paddingRight = '4px';
-	controlText.innerHTML = 'Jump to: <select id=countrySel><option></option><option value="BO">Bolivia</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option><option value="DO">Dominican Republic</option></select>';
+	controlText.innerHTML = '<select id=countrySel><option value="">Select Country</option><option value="BO">Bolivia</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option><option value="DO">Dominican Republic</option></select>';
 	controlUI.appendChild(controlText);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 	google.maps.event
@@ -374,11 +370,6 @@ function createChartControl() {
 
 	// Set CSS for the control border
 	var controlUI = document.createElement('DIV');
-	controlUI.style.backgroundColor = '#333333';
-	controlUI.style.borderStyle = 'solid';
-	controlUI.style.borderWidth = '2px';
-	controlUI.style.cursor = 'pointer';
-	controlUI.style.textAlign = 'center';
 	controlUI.title = 'Jumps to a specific country';
 	controlDiv.appendChild(controlUI);
 
@@ -388,7 +379,7 @@ function createChartControl() {
 	controlText.style.fontSize = '12px';
 	controlText.style.paddingLeft = '4px';
 	controlText.style.paddingRight = '4px';
-	controlText.innerHTML = 'See summary for: <select id=chartSel name=chartSel><option></option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
+	controlText.innerHTML = 'See summary for: <select id=chartSel name=chartSel><option value="">Select Country</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option></select>';
 	controlUI.appendChild(controlText);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 	google.maps.event.addDomListener(controlUI, 'click', function() {
