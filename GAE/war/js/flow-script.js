@@ -295,7 +295,7 @@ function createCountryControl() {
 
 	// Set CSS for the control border
 	var controlUI = document.createElement('DIV');
-	controlUI.style.backgroundColor = 'white';
+	controlUI.style.backgroundColor = '#333333';
 	controlUI.style.borderStyle = 'solid';
 	controlUI.style.borderWidth = '2px';
 	controlUI.style.cursor = 'pointer';
@@ -374,7 +374,7 @@ function createChartControl() {
 
 	// Set CSS for the control border
 	var controlUI = document.createElement('DIV');
-	controlUI.style.backgroundColor = 'white';
+	controlUI.style.backgroundColor = '#333333';
 	controlUI.style.borderStyle = 'solid';
 	controlUI.style.borderWidth = '2px';
 	controlUI.style.cursor = 'pointer';
