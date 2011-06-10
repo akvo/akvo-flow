@@ -236,10 +236,15 @@ function makeMarker(latitude, longitude, iconUrl, communityCode, pointType,
 								});
 								openWindow = infobox;
 								count++;
+								infobox.onAdd = function() {
+								    this.createElement();
+								    $('.scroll-pane-info').jScrollPane({autoReinitialise: true, showArrows : true});
+								};
 							});
 							if (count > 0 && jd.cursor != null) {
 								getPlacemarkInfo(countryCode, jd.cursor);
 							}
+							
 						});
 					});
 }
