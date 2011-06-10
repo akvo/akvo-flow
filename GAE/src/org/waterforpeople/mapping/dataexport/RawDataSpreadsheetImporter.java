@@ -72,10 +72,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							dateString = cell.getStringCellValue();
-							sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
-									+ "="
-									+ URLEncoder.encode(dateString, "UTF-8")
-									+ "&");
+							if (dateString != null) {
+								sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
+										+ "="
+										+ URLEncoder
+												.encode(dateString, "UTF-8")
+										+ "&");
+							}
 						}
 					}
 					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
@@ -95,7 +98,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 											.getColumnIndex()) + "|value=");
 
 							value = cell.getStringCellValue().trim();
-							if(value.contains("|"));{
+							if (value.contains("|"))
+								;
+							{
 								value = value.replaceAll("\\|", "^^");
 							}
 							if (value.endsWith(".jpg")) {
@@ -137,31 +142,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 				}
 				if (row.getRowNum() > 0) {
-					
-						invokeUrl(
-								serverBase,
-								"action="
-										+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
-										+ "&"
-										+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-										+ "="
-										+ (instanceId!=null?instanceId:"")
-										+ "&"
-										+ RawDataImportRequest.SURVEY_ID_PARAM
-										+ "="
-										+ getSurveyId()
-										+ "&"
-										+ RawDataImportRequest.COLLECTION_DATE_PARAM
-										+ "="
-										+ URLEncoder
-												.encode(dateString, "UTF-8")
-										+ "&"
-										+ RawDataImportRequest.SUBMITTER_PARAM
-										+ "="
-										+ URLEncoder.encode(submitter, "UTF-8"));
-						System.out.print(i++ + " : ");
-						invokeUrl(serverBase, sb.toString());
-					
+
+					invokeUrl(serverBase, "action="
+							+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
+							+ "&"
+							+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
+							+ "=" + (instanceId != null ? instanceId : "")
+							+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
+							+ getSurveyId() + "&"
+							+ RawDataImportRequest.COLLECTION_DATE_PARAM + "="
+							+ URLEncoder.encode(dateString, "UTF-8") + "&"
+							+ RawDataImportRequest.SUBMITTER_PARAM + "="
+							+ URLEncoder.encode(submitter, "UTF-8"));
+					System.out.print(i++ + " : ");
+					invokeUrl(serverBase, sb.toString());
+
 				}
 
 			}
