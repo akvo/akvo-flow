@@ -255,7 +255,7 @@ function clearOverlays() {
 
 function getPlacemarkInfo(countryCode, cursor) {
 	var url = '/placemarkrestapi?country=' + countryCode
-			+ '&needDetailsFlag=false';
+			+ '&needDetailsFlag=false&maxResults=200';
 	if(currSelectedOrg == "wfp"){
 		url += '&org=wfp';
 	}else if(currSelectedOrg == 'other'){
