@@ -133,6 +133,82 @@ ul#toggle-nav .ui-tabs .ui-tabs-nav li a.ui-tabs-selected {
 	margin:0;
 }
 
+.jspContainer{
+	overflow: hidden;
+	position: relative;
+}
+
+.jspPane{
+	position: absolute;
+}
+.jspCap{
+	display: block;
+	background: #eeeef4;
+}
+
+.jspVerticalBar .jspCap{
+	height: 20px;
+}
+.jspVerticalBar{
+	position: absolute;
+	top: 0px;
+	right: 0;
+	width: 6px;
+	height: 100%;
+}
+.jspVerticalBar *{
+	margin: 0;
+	padding: 0;
+}
+
+.jspCap{
+	display: none;
+}
+
+.jspTrack{
+	background: #333;
+	position: relative;
+}
+
+.jspDrag{
+	background: #939598;
+	position: relative;
+	top: 0;
+	left: 0;
+	cursor: pointer;
+}
+
+.jspArrow{
+	background: #fff;
+	text-indent: -20000px;
+	display: block;
+	cursor: pointer;
+}
+
+.jspArrow  .jspDisabled{
+	cursor: default;
+	background: #80808d;
+}
+
+.jspVerticalBar .jspArrow{
+	height: 8px;
+}
+
+.jspVerticalBar  .jspArrow:focus{
+	outline: none;
+}
+
+.jspCorner{
+	background: #eeeef4;
+	float: left;
+	height: 100%;
+}
+
+/* Yuk! CSS Hack for IE6 3 pixel bug :( */
+* html .jspCorner{
+	margin: 0 -3px 0 0;
+}
+
 #info_canvas p {
 	padding:0 6px 8px 3px;
 }
@@ -368,82 +444,6 @@ button.fg-button { width:auto; overflow:visible; }
 	overflow: auto;
 	padding:0;
 	margin:0;
-}
-
-.jspContainer{
-	overflow: hidden;
-	position: relative;
-}
-
-.jspPane{
-	position: absolute;
-}
-.jspCap{
-	display: block;
-	background: #eeeef4;
-}
-
-.jspVerticalBar .jspCap{
-	height: 20px;
-}
-.jspVerticalBar{
-	position: absolute;
-	top: 0px;
-	right: 0;
-	width: 6px;
-	height: 100%;
-}
-.jspVerticalBar *{
-	margin: 0;
-	padding: 0;
-}
-
-.jspCap{
-	display: none;
-}
-
-.jspTrack{
-	background: #333;
-	position: relative;
-}
-
-.jspDrag{
-	background: #939598;
-	position: relative;
-	top: 0;
-	left: 0;
-	cursor: pointer;
-}
-
-.jspArrow{
-	background: #fff;
-	text-indent: -20000px;
-	display: block;
-	cursor: pointer;
-}
-
-.jspArrow  .jspDisabled{
-	cursor: default;
-	background: #80808d;
-}
-
-.jspVerticalBar .jspArrow{
-	height: 8px;
-}
-
-.jspVerticalBar  .jspArrow:focus{
-	outline: none;
-}
-
-.jspCorner{
-	background: #eeeef4;
-	float: left;
-	height: 100%;
-}
-
-/* Yuk! CSS Hack for IE6 3 pixel bug :( */
-* html .jspCorner{
-	margin: 0 -3px 0 0;
 }
 
 #wrap #mainContent #leftContent .scroll-pane-info tr td {
