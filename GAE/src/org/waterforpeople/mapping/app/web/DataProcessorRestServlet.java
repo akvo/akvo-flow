@@ -36,8 +36,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		DataProcessorRequest dpReq = (DataProcessorRequest)req;
-		if(DataProcessorRequest.PROJECT_FLAG_UPDATE_ACTION.equalsIgnoreCase(dpReq.getAction())){
+		DataProcessorRequest dpReq = (DataProcessorRequest) req;
+		if (DataProcessorRequest.PROJECT_FLAG_UPDATE_ACTION
+				.equalsIgnoreCase(dpReq.getAction())) {
 			updateAccessPointProjectFlag(dpReq.getCountry(), dpReq.getCursor());
 		}
 		return new RestResponse();
@@ -47,9 +48,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
 	}
-	
+
 	/**
-	 * iterates over all AccessPoints in a country and applies a static set of rules to determine the proper value of the WFPProjectFlag
+	 * iterates over all AccessPoints in a country and applies a static set of
+	 * rules to determine the proper value of the WFPProjectFlag
+	 * 
 	 * @param country
 	 * @param cursor
 	 */
@@ -76,16 +79,22 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						ap.setWaterForPeopleProjectFlag(false);
 					}
 				} else if ("HN".equalsIgnoreCase(ap.getCountryCode())) {
-					if (ap.getWaterForPeopleProjectFlag() == null) {
-						if (ap.getCommunityCode() != null
-								&& ap.getCommunityCode().startsWith("IL")) {
-							ap.setWaterForPeopleProjectFlag(true);
-						} else {
-							ap.setWaterForPeopleProjectFlag(false);
-						}
+					if(ap.getCommunityCode().startsWith("IL")){
+						ap.setWaterForPeopleProjectFlag(false);
+					}else{
+						ap.setWaterForPeopleProjectFlag(true);
 					}
-				} else {
-					// handles IN, BO, DO, ES, GT
+					
+				} else if ("IN".equalsIgnoreCase(ap.getCountryCode())){
+					if(ap.getWaterForPeopleProjectFlag() == null){
+						ap.setWaterForPeopleProjectFlag(true);
+					}
+				}else if ("GT".equalsIgnoreCase(ap.getCountryCode())){
+					if(ap.getWaterForPeopleProjectFlag()==null){
+						ap.setWaterAvailableDayVisitFlag(true);
+					}
+				}else {
+					// handles  BO, DO, SV
 					if (ap.getWaterForPeopleProjectFlag() == null) {
 						ap.setWaterForPeopleProjectFlag(false);
 					}
@@ -100,7 +109,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	}
 
 	/**
-	 * Sends a message to a task queue to start or continue the processing of the AP Project Flag
+	 * Sends a message to a task queue to start or continue the processing of
+	 * the AP Project Flag
+	 * 
 	 * @param country
 	 * @param cursor
 	 */
@@ -108,10 +119,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		Queue queue = QueueFactory.getDefaultQueue();
 
 		queue.add(url("/app_worker/dataprocessor")
-				.param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.PROJECT_FLAG_UPDATE_ACTION)
+				.param(DataProcessorRequest.ACTION_PARAM,
+						DataProcessorRequest.PROJECT_FLAG_UPDATE_ACTION)
 				.param(DataProcessorRequest.COUNTRY_PARAM, country)
-				.param(DataProcessorRequest.CURSOR_PARAM, cursor != null ? cursor : ""));
+				.param(DataProcessorRequest.CURSOR_PARAM,
+						cursor != null ? cursor : ""));
 	}
-
 
 }
