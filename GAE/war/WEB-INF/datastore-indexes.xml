@@ -363,4 +363,9 @@
         <property name="questionText" direction="asc"/>
         <property name="metricName" direction="asc"/>
     </datastore-index>
+      <datastore-index kind="AccessPoint" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="waterForPeopleProjectFlag" direction="asc"/>
+        <property name="collectionDate" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>
