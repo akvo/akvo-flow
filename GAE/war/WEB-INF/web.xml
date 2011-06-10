@@ -45,6 +45,15 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>BootstrapGenerator</servlet-name>
 		<url-pattern>/app_worker/bootstrapgen</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DataProcessorServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DataProcessorRestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DataProcessorServlet</servlet-name>
+		<url-pattern>/app_worker/dataprocessor</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyalServlet</servlet-name>
 		<servlet-class>com.gallatinsystems.surveyal.app.web.SurveyalRestServlet</servlet-class>

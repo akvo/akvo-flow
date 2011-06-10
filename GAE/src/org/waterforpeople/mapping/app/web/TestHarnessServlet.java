@@ -1534,9 +1534,11 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (CacheException e) {
 				e.printStackTrace();
 			}
-		}
-
+		} else if ("startProjectFlagUpdate".equals(action)) {
+			DataProcessorRestServlet.sendProjectUpdateTask(req.getParameter("country"), null);
+		} 
 	}
+
 
 	private void deleteMetricSummaries(Integer level, String name) {
 		AccessPointMetricSummaryDao sumDao = new AccessPointMetricSummaryDao();
@@ -2035,7 +2037,8 @@ public class TestHarnessServlet extends HttpServlet {
 
 	private void setupMetrics() {
 		MetricDao metricDao = new MetricDao();
-		List<Metric> metrics = metricDao.listMetrics(null,null,null,"test",null);
+		List<Metric> metrics = metricDao.listMetrics(null, null, null, "test",
+				null);
 		if (metrics != null) {
 			metricDao.delete(metrics);
 		}

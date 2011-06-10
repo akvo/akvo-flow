@@ -64,10 +64,25 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	 * @param type
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointByLocation(String country,
 			String community, String type, Date updatedSinceDate,
 			String cursorString) {
+		return listAccessPointByLocation(country, community, type,
+				updatedSinceDate, cursorString, DEFAULT_RESULT_COUNT);
+	}
+
+	/**
+	 * lists all the access points for the country/community/type passed in
+	 * 
+	 * @param country
+	 * @param community
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<AccessPoint> listAccessPointByLocation(String country,
+			String community, String type, Date updatedSinceDate,
+			String cursorString, Integer pageSize) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
 		Map<String, Object> paramMap = null;
@@ -91,7 +106,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
-		prepareCursor(cursorString, query);
+		prepareCursor(cursorString, pageSize,query);
 
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
