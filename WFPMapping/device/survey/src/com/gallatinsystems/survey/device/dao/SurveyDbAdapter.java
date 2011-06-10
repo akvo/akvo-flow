@@ -89,7 +89,7 @@ public class SurveyDbAdapter {
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
 			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null, include_flag text not null, scored_val text, strength text);";
 
-	private static final String USER_TABLE_CREATE = "create table user (_id integer primary key autoincrement, display_name text not null, email text not null);";
+	private static final String USER_TABLE_CREATE = "create table user (_id integer primary key autoincrement, display_name text not null, email text not null, deleted_flag text);";
 
 	private static final String PLOT_TABLE_CREATE = "create table plot (_id integer primary key autoincrement, display_name text, description text, created_date text, user_id integer, status text);";
 
@@ -140,7 +140,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 69;
+	private static final int DATABASE_VERSION = 70;
 
 	private final Context context;
 
@@ -191,11 +191,10 @@ public class SurveyDbAdapter {
 				db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + PREFERENCES_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
-				db
-						.execSQL("DROP TABLE IF EXISTS "
-								+ TRANSMISSION_HISTORY_TABLE);
+				db.execSQL("DROP TABLE IF EXISTS " + TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
 			} else {
+
 				// changes made in version 57
 				try {
 					db.execSQL(TRANSMISSION_HISTORY_TABLE_CREATE);
@@ -219,8 +218,7 @@ public class SurveyDbAdapter {
 						cursor.close();
 					}
 					if (value == null) {
-						db
-								.execSQL("insert into preferences values('survey.textsize','LARGE')");
+						db.execSQL("insert into preferences values('survey.textsize','LARGE')");
 					}
 				} catch (Exception e) {
 					// swallow
@@ -228,15 +226,13 @@ public class SurveyDbAdapter {
 
 				// changes in version 63
 				try {
-					db
-							.execSQL("alter table survey_respondent add column exported_flag text");
+					db.execSQL("alter table survey_respondent add column exported_flag text");
 				} catch (Exception e) {
 					// swallow
 				}
 				// changes in version 68
 				try {
-					db
-							.execSQL("alter table survey_respondent add column uuid text");
+					db.execSQL("alter table survey_respondent add column uuid text");
 					// also generate a uuid for all in-flight responses
 					Cursor cursor = db.query(RESPONDENT_JOIN, new String[] {
 							RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
@@ -256,8 +252,16 @@ public class SurveyDbAdapter {
 						} while (cursor.moveToNext());
 					}
 				} catch (Exception e) {
-					//swallow
+					// swallow
 				}
+				// changes made in version 69
+				try {
+					db.execSQL("alter table user add column deleted_flag text");
+					db.execSQL("update user set deleted_flag = 'N'");
+				} catch (Exception e) {
+					// swallow
+				}
+
 			}
 		}
 
@@ -458,7 +462,7 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor listUsers() {
 		Cursor cursor = database.query(USER_TABLE, new String[] { PK_ID_COL,
-				DISP_NAME_COL, EMAIL_COL }, null, null, null, null, null);
+				DISP_NAME_COL, EMAIL_COL }, DELETED_COL +" <> ?", new String[]{ConstantUtil.IS_DELETED}, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -473,8 +477,8 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor findUser(Long id) {
 		Cursor cursor = database.query(USER_TABLE, new String[] { PK_ID_COL,
-				DISP_NAME_COL, EMAIL_COL }, PK_ID_COL + "=?", new String[] { id
-				.toString() }, null, null, null);
+				DISP_NAME_COL, EMAIL_COL }, PK_ID_COL + "=?",
+				new String[] { id.toString() }, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -495,6 +499,7 @@ public class SurveyDbAdapter {
 		Long idVal = id;
 		initialValues.put(DISP_NAME_COL, name);
 		initialValues.put(EMAIL_COL, email);
+		initialValues.put(DELETED_COL, ConstantUtil.NOT_DELETED);
 
 		if (idVal == null) {
 			idVal = database.insert(USER_TABLE, null, initialValues);
@@ -534,8 +539,9 @@ public class SurveyDbAdapter {
 				RESP_ID_COL, QUESTION_FK_COL, ANSWER_COL, ANSWER_TYPE_COL,
 				SURVEY_RESPONDENT_ID_COL, INCLUDE_FLAG_COL, SCORED_VAL_COL,
 				STRENGTH_COL }, SURVEY_RESPONDENT_ID_COL + "=? and "
-				+ QUESTION_FK_COL + "=?", new String[] {
-				respondentId.toString(), questionId }, null, null, null);
+				+ QUESTION_FK_COL + "=?",
+				new String[] { respondentId.toString(), questionId }, null,
+				null, null);
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
@@ -568,8 +574,8 @@ public class SurveyDbAdapter {
 	 * @return
 	 */
 	public QuestionResponse createOrUpdateSurveyResponse(QuestionResponse resp) {
-		QuestionResponse responseToSave = findSingleResponse(resp
-				.getRespondentId(), resp.getQuestionId());
+		QuestionResponse responseToSave = findSingleResponse(
+				resp.getRespondentId(), resp.getQuestionId());
 		if (responseToSave != null) {
 			responseToSave.setValue(resp.getValue());
 			responseToSave.setStrength(resp.getStrength());
@@ -582,8 +588,8 @@ public class SurveyDbAdapter {
 		initialValues.put(ANSWER_COL, responseToSave.getValue());
 		initialValues.put(ANSWER_TYPE_COL, responseToSave.getType());
 		initialValues.put(QUESTION_FK_COL, responseToSave.getQuestionId());
-		initialValues.put(SURVEY_RESPONDENT_ID_COL, responseToSave
-				.getRespondentId());
+		initialValues.put(SURVEY_RESPONDENT_ID_COL,
+				responseToSave.getRespondentId());
 		initialValues.put(SCORED_VAL_COL, responseToSave.getScoredValue());
 		initialValues.put(INCLUDE_FLAG_COL, resp.getIncludeFlag());
 		initialValues.put(STRENGTH_COL, responseToSave.getStrength());
@@ -1036,11 +1042,9 @@ public class SurveyDbAdapter {
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
 				do {
-					settings
-							.put(cursor.getString(cursor
-									.getColumnIndexOrThrow(KEY_COL)), cursor
-									.getString(cursor
-											.getColumnIndexOrThrow(VALUE_COL)));
+					settings.put(cursor.getString(cursor
+							.getColumnIndexOrThrow(KEY_COL)), cursor
+							.getString(cursor.getColumnIndexOrThrow(VALUE_COL)));
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
@@ -1137,10 +1141,10 @@ public class SurveyDbAdapter {
 		}
 		ContentValues updatedValues = new ContentValues();
 		updatedValues.put(PK_ID_COL, point.getId());
-		updatedValues.put(COUNTRY_COL, point.getCountry() != null ? point
-				.getCountry() : "unknown");
-		updatedValues.put(DISP_NAME_COL, point.getName() != null ? point
-				.getName() : "unknown");
+		updatedValues.put(COUNTRY_COL,
+				point.getCountry() != null ? point.getCountry() : "unknown");
+		updatedValues.put(DISP_NAME_COL,
+				point.getName() != null ? point.getName() : "unknown");
 		updatedValues.put(TYPE_COL, point.getType() != null ? point.getType()
 				: "unknown");
 		updatedValues.put(UPDATED_DATE_COL, System.currentTimeMillis());
@@ -1405,5 +1409,17 @@ public class SurveyDbAdapter {
 		executeSql("delete from user");
 		executeSql("delete from transmission_history");
 		executeSql("update preferences set value = '' where key = 'user.lastuser.id'");
+	}
+
+	/**
+	 * performs a soft-delete on a user
+	 * 
+	 * @param id
+	 */
+	public void deleteUser(Long id) {
+		ContentValues updatedValues = new ContentValues();
+		updatedValues.put(DELETED_COL, "Y");
+		database.update(USER_TABLE, updatedValues, PK_ID_COL + " = ?",
+				new String[] { id.toString() });
 	}
 }

@@ -6,15 +6,15 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -33,8 +33,8 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 public abstract class AbstractListEditActivity extends ListActivity {
 	private static final int ACTIVITY_CREATE = 0;
 
-	private static final int INSERT_ID = Menu.FIRST;
-	private static final int EDIT_ID = Menu.FIRST + 1;
+	protected static final int INSERT_ID = Menu.FIRST;
+	protected static final int EDIT_ID = Menu.FIRST + 1;
 
 	protected SurveyDbAdapter databaseAdaptor;
 
@@ -80,7 +80,7 @@ public abstract class AbstractListEditActivity extends ListActivity {
 	 * loads all users from the database and binds it to the listView via a
 	 * SimpleCursorAdaptor
 	 */
-	private void fillData() {
+	protected void fillData() {
 		// Get all of the rows from the database and create the item list
 		Cursor dataCursor = getData();
 		startManagingCursor(dataCursor);
