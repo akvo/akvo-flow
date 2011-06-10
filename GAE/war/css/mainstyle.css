@@ -383,7 +383,6 @@ button.fg-button { width:auto; overflow:visible; }
 	background: #231f20;
 	width: 550px;
 	height: 312px;
-	display:inline;
 }
 #wrap #headerBalloon {
 	height: 60px;
