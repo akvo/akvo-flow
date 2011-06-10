@@ -461,17 +461,14 @@ button.fg-button { width:auto; overflow:visible; }
 }
 
 #footer {
-	clear:both;
 	margin: 0;
-	padding: 20px 0 0 40px;
+	padding: 10px 0 0 20px;
 	font: 12px/14px Verdana, Helvetica, sans-serif;
 }
 
-#footer a {
-	color: #e7e8e9;
-	text-decoration: none;
-}
-
-#footer .devBy {
+.devBy, .devBy a {
+	padding-top:10px;
 	font-size: 10px;
+	color: #e7e8e9;
+	text-align:center;
 }
