@@ -20,6 +20,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
 import com.gallatinsystems.common.domain.UploadStatusContainer;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.UploadUtil;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -60,6 +61,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	// private static TextConstants CONSTANTS = ;
 
 	private static final long serialVersionUID = -6044156962558183224L;
+	private static final String OPTION_RENDER_MODE_PROP = "optionRenderMode";
 	public static final String FREE_QUESTION_TYPE = "free";
 	public static final String OPTION_QUESTION_TYPE = "option";
 	public static final String GEO_QUESTION_TYPE = "geo";
@@ -187,8 +189,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				String messageText = "Published.  Please check: " + uc.getUrl();
 				message.setShortMessage(messageText);
 				if (qgList != null && qgList.size() > 0) {
-					for(QuestionGroup g: qgList.values()){
-						if(g.getPath()!=null){
+					for (QuestionGroup g : qgList.values()) {
+						if (g.getPath() != null) {
 							message.setObjectTitle(g.getPath());
 							break;
 						}
@@ -473,6 +475,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			}
 			if (q.getAllowMultipleFlag() != null) {
 				options.setAllowMultiple(q.getAllowMultipleFlag().toString());
+			}
+			if (options.getAllowMultiple() == null
+					|| "false".equals(options.getAllowMultiple())) {
+				options.setRenderType(PropertyUtil
+						.getProperty(OPTION_RENDER_MODE_PROP));
 			}
 
 			ArrayList<Option> optionList = new ArrayList<Option>();

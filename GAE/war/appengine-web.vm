@@ -53,5 +53,6 @@
 		<property name="domainType" value="accessPoint" />
 		<property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
 		<property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
+		<property name="optionRenderMode" value="radio"/>
 	</system-properties>
 </appengine-web-app>
