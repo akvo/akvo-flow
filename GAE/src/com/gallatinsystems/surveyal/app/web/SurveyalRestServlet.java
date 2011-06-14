@@ -26,7 +26,9 @@ import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.Metric;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -105,6 +107,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			List<QuestionAnswerStore> answers = surveyInstanceDao
 					.listQuestionAnswerStore(surveyInstanceId, null);
 			QuestionAnswerStore geoQ = null;
+			SurveyDAO surveyDao = new SurveyDAO();
+			Survey survey = surveyDao.getByKey(instance.getSurveyId());
 			if (answers != null) {
 				for (QuestionAnswerStore q : answers) {
 					if (QuestionType.GEO.toString().equals(q.getType())) {
@@ -137,6 +141,17 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					// find one based on lat/lon
 					List<SurveyedLocale> candidates = surveyedLocaleDao
 							.listLocalesByCoordinates(lat, lon, TOLERANCE);
+					
+					if(candidates!=null && survey!=null && survey.getPointType()!=null){
+						List<SurveyedLocale> victimList = new ArrayList<SurveyedLocale>();
+						//filter by localeType
+						for(SurveyedLocale l: candidates){
+							if(!survey.getPointType().equals(l.getLocaleType())){
+								victimList.add(l);
+							}
+						}
+						candidates.removeAll(victimList);
+					}
 					if (candidates != null && candidates.size() == 1) {
 						locale = candidates.get(0);
 					} else if (candidates != null && candidates.size() > 1) {
@@ -148,11 +163,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				if (locale == null) {
 					locale = new SurveyedLocale();
 					locale.setAmbiguous(ambiguousFlag);
-					locale.setLatitude(lat);
+					locale.setLatitude(lat);					
 					locale.setLongitude(lon);
 					setGeoData(locale);
+					if(survey!=null){
+						locale.setLocaleType(survey.getPointType());
+					}
 					// TODO: figure out how to find identifier
-					// TODO: figure out how to find localeType
 					// TODO: figure out how to set organization
 					if (locale.getOrganization() == null) {
 						locale.setOrganization(PropertyUtil
