@@ -1543,19 +1543,26 @@ public class TestHarnessServlet extends HttpServlet {
 					req.getParameter("country"), null);
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equals(action)) {
-			// invoke the backend
-			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-					.getDefaultQueue();
-			BackendService svc = BackendServiceFactory.getBackendService();
 			TaskOptions options = TaskOptions.Builder.withUrl(
 					"/app_worker/dataprocessor").param(
 					DataProcessorRequest.ACTION_PARAM,
 					DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
-			options = options.header("Host", BackendServiceFactory
-					.getBackendService().getBackendAddress("dataprocessor"));
+			
+			if (req.getParameter("bypassBackend") == null
+					|| !req.getParameter("bypassBackend").equals("true")) {
+				// change the host so the queue invokes the backend
+				options = options
+						.header("Host",
+								BackendServiceFactory.getBackendService()
+										.getBackendAddress("dataprocessor"));
+			}
+			
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
 			queue.add(options);
-		}else if("deleteallqsum".equals(action)){
-			DeleteObjectUtil dou = new DeleteObjectUtil();			
+
+		} else if ("deleteallqsum".equals(action)) {
+			DeleteObjectUtil dou = new DeleteObjectUtil();
 			dou.deleteAllObjects("SurveyQuestionSummary");
 		}
 	}
