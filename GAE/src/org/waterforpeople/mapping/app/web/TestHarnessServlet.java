@@ -58,6 +58,7 @@ import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerS
 import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
@@ -147,12 +148,15 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
+import com.google.appengine.api.backends.BackendService;
+import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TestHarnessServlet extends HttpServlet {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
@@ -1535,10 +1539,26 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		} else if ("startProjectFlagUpdate".equals(action)) {
-			DataProcessorRestServlet.sendProjectUpdateTask(req.getParameter("country"), null);
-		} 
+			DataProcessorRestServlet.sendProjectUpdateTask(
+					req.getParameter("country"), null);
+		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
+				.equals(action)) {
+			// invoke the backend
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			BackendService svc = BackendServiceFactory.getBackendService();
+			TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor").param(
+					DataProcessorRequest.ACTION_PARAM,
+					DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
+			options = options.header("Host", BackendServiceFactory
+					.getBackendService().getBackendAddress("dataprocessor"));
+			queue.add(options);
+		}else if("deleteallqsum".equals(action)){
+			DeleteObjectUtil dou = new DeleteObjectUtil();			
+			dou.deleteAllObjects("SurveyQuestionSummary");
+		}
 	}
-
 
 	private void deleteMetricSummaries(Integer level, String name) {
 		AccessPointMetricSummaryDao sumDao = new AccessPointMetricSummaryDao();

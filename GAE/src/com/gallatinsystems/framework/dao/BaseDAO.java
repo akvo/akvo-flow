@@ -23,7 +23,7 @@ public class BaseDAO<T extends BaseDomain> {
 	public static final int DEFAULT_RESULT_COUNT = 20;
 	protected static final int RETRY_INTERVAL_MILLIS = 200;
 	protected static final String STRING_TYPE = "String";
-	protected static final String NOT_EQ_OP="!=";
+	protected static final String NOT_EQ_OP = "!=";
 	protected static final String EQ_OP = " == ";
 	protected static final String GTE_OP = " >= ";
 	protected static final String LTE_OP = " <= ";
@@ -194,8 +194,8 @@ public class BaseDAO<T extends BaseDomain> {
 		javax.jdo.Query query = pm.newQuery(c);
 
 		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(
-						Constants.ALL_RESULTS)) {
+				&& !cursorString.trim().toLowerCase()
+						.equals(Constants.ALL_RESULTS)) {
 			Cursor cursor = Cursor.fromWebSafeString(cursorString);
 			Map<String, Object> extensionMap = new HashMap<String, Object>();
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
@@ -419,20 +419,31 @@ public class BaseDAO<T extends BaseDomain> {
 	protected void prepareCursor(String cursorString, Integer pageSize,
 			javax.jdo.Query query) {
 		if (cursorString != null
-				&& !cursorString.trim().toLowerCase().equals(
-						Constants.ALL_RESULTS)) {
+				&& !cursorString.trim().toLowerCase()
+						.equals(Constants.ALL_RESULTS)) {
 			Cursor cursor = Cursor.fromWebSafeString(cursorString);
 			Map<String, Object> extensionMap = new HashMap<String, Object>();
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
 			query.setExtensions(extensionMap);
 		}
 		if (cursorString == null || !cursorString.equals(Constants.ALL_RESULTS)) {
-			if(pageSize == null){
+			if (pageSize == null) {
 				query.setRange(0, DEFAULT_RESULT_COUNT);
-			}else{
+			} else {
 				query.setRange(0, pageSize);
 			}
 		}
+	}
+
+	/**
+	 * this method should only be used when running a lot of datastore
+	 * operations in a single request to a task queue and or backend (regular
+	 * online requests can't accumulate enough data to require a flush without
+	 * timing out).
+	 */
+	public void flushBatch() {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		pm.flush();
 	}
 
 	/**

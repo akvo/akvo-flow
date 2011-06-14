@@ -1,0 +1,9 @@
+<backends>
+	<backend name="dataprocessor">
+		<class>B2</class>
+		<instances>1</instances>
+		<options>
+			<dynamic>true</dynamic>
+		</options>
+	</backend>
+</backends>

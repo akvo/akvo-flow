@@ -13,6 +13,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 public class DataProcessorRequest extends RestRequest {
 	private static final long serialVersionUID = -4553663867954174523L;
 	public static final String PROJECT_FLAG_UPDATE_ACTION = "projectFlagUpdate";
+	public static final String REBUILD_QUESTION_SUMMARY_ACTION="rebuildQuestionSummary";
 	public static final String COUNTRY_PARAM = "country";
 	private String country;
 
