@@ -16,6 +16,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private List<QuestionGroupDto> questionGroupList;
 	private String path;
 	private Long surveyGroupId = null;
+	private String pointType;
 
 	public String getPath() {
 		return path;
@@ -36,8 +37,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 		return questionGroupList;
 	}
 
-	public void setQuestionGroupList(
-			List<QuestionGroupDto> questionGroupList) {
+	public void setQuestionGroupList(List<QuestionGroupDto> questionGroupList) {
 		this.questionGroupList = questionGroupList;
 	}
 
@@ -98,4 +98,13 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	public String getCode() {
 		return code;
 	}
+
+	public String getPointType() {
+		return pointType;
+	}
+
+	public void setPointType(String pointType) {
+		this.pointType = pointType;
+	}
+
 }

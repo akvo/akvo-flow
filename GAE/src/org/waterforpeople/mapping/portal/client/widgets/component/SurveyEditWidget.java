@@ -3,6 +3,9 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationItemDto;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationService;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
@@ -23,6 +26,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -38,13 +42,20 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static final String POINT_TYPES_CONFIG = "pointTypes";
 	private static final String FORM_LABEL_CSS = "input-label-padded";
 	private static final String TXT_BOX_CSS = "txt-box";
+	private static final String WP_TYPE = "WaterPoint";
+	private static final String SP_TYPE = "SanitationPoint";
+	private static final String PI_TYPE = "PublicInstitution";
+	private static final String TRAWLER_TYPE = "Trawler";
+
 	private VerticalPanel panel;
 	private Map<String, Object> bundle;
 	private TextBox nameBox;
 	private TextBox descriptionBox;
 	private TextBox versionBox;
+	private ListBox pointTypeBox;
 	private Label surveyIdLabel;
 	private SurveyServiceAsync surveyService;
 	private SurveyDto currentDto;
@@ -59,8 +70,30 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		descriptionBox = new TextBox();
 		versionBox = new TextBox();
 		versionBox.setReadOnly(true);
+		pointTypeBox = new ListBox(false);
+		ConfigurationServiceAsync configService = GWT
+				.create(ConfigurationService.class);
+		configService.getConfigurationItem(POINT_TYPES_CONFIG,
+				new AsyncCallback<ConfigurationItemDto>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						// add default set of points
+						installPointTypes(null);
+					}
+
+					@Override
+					public void onSuccess(ConfigurationItemDto result) {
+						if (result != null) {
+							installPointTypes(result.getValue().split(","));
+						} else {
+							installPointTypes(null);
+						}
+					}
+				});
+
 		panel.add(buildRow(TEXT_CONSTANTS.name(), nameBox));
 		panel.add(buildRow(TEXT_CONSTANTS.description(), descriptionBox));
+		panel.add(buildRow(TEXT_CONSTANTS.pointType(), pointTypeBox));
 		panel.add(buildRow(TEXT_CONSTANTS.version(), versionBox));
 		surveyIdLabel = new Label();
 		surveyIdLabel.setStylePrimaryName(FORM_LABEL_CSS);
@@ -73,6 +106,35 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		initWidget(panel);
 	}
 
+	private void installPointTypes(String[] pointTypes) {
+		if (pointTypes == null || pointTypes.length == 0) {
+			pointTypeBox.addItem(TEXT_CONSTANTS.waterPoint(), WP_TYPE);
+			pointTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(), SP_TYPE);
+			pointTypeBox.addItem(TEXT_CONSTANTS.publicInst(), PI_TYPE);
+		} else {
+			for (int i = 0; i < pointTypes.length; i++) {
+				if (WP_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+					pointTypeBox.addItem(TEXT_CONSTANTS.waterPoint(), WP_TYPE);
+				} else if (SP_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+					pointTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(),
+							SP_TYPE);
+				} else if (PI_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+					pointTypeBox.addItem(TEXT_CONSTANTS.publicInst(), PI_TYPE);
+				} else if (TRAWLER_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+					pointTypeBox
+							.addItem(TEXT_CONSTANTS.trawler(), TRAWLER_TYPE);
+				}
+			}
+		}
+
+		if (currentDto != null) {
+			// just in case the box wasn't loaded when we bound the currentDTO
+			// to the controls, do it again.
+			ViewUtil.setListboxSelection(pointTypeBox,
+					currentDto.getPointType());
+		}
+	}
+
 	private Widget buildRow(String label, Widget widget) {
 		Label l = new Label();
 		l.setText(label);
@@ -80,6 +142,9 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		if (widget instanceof TextBox) {
 			((TextBox) widget).setStylePrimaryName(TXT_BOX_CSS);
 			((TextBox) widget).addChangeHandler(this);
+		}
+		if (widget instanceof ListBox) {
+			((ListBox) widget).addChangeHandler(this);
 		}
 		HorizontalPanel row = new HorizontalPanel();
 		row.add(l);
@@ -94,6 +159,8 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			descriptionBox.setText(currentDto.getDescription());
 			versionBox.setText(currentDto.getVersion());
 			surveyIdLabel.setText(currentDto.getKeyId().toString());
+			ViewUtil.setListboxSelection(pointTypeBox,
+					currentDto.getPointType());
 		}
 	}
 
@@ -113,7 +180,8 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
 							.getText().trim() : null);
-
+			currentDto.setPointType(ViewUtil.getListBoxSelection(pointTypeBox,
+					false));
 			surveyService.saveSurvey(currentDto, groupDto.getKeyId(),
 					new AsyncCallback<SurveyDto>() {
 
@@ -128,7 +196,6 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 							if (listener != null) {
 								listener.operationComplete(false, null);
 							}
-
 						}
 
 						@Override
@@ -197,7 +264,9 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 					|| (ViewUtil.isTextPopulated(descriptionBox) && currentDto
 							.getDescription() == null)) {
 				isChanged = true;
-			} else {
+			} else if(!ViewUtil.getListBoxSelection(pointTypeBox, false).equals(currentDto.getPointType())){
+				isChanged = true;
+			}else {
 				isChanged = false;
 			}
 		} else {

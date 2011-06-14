@@ -10,9 +10,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 
 @PersistenceCapable
 public class Survey extends BaseDomain {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -8638039212962768687L;
 	@NotPersistent
 	private HashMap<String, Translation> translationMap;
@@ -25,6 +23,7 @@ public class Survey extends BaseDomain {
 	private Double version = null;
 	private String path = null;
 	private Long surveyGroupId;
+	private String pointType;
 
 	public enum Status {
 		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED
@@ -105,8 +104,9 @@ public class Survey extends BaseDomain {
 	}
 
 	public void addQuestionGroup(QuestionGroup questionGroup) {
-		addQuestionGroup(questionGroup.getOrder() != null ? questionGroup
-				.getOrder() : getQuestionGroupMap().size() + 1, questionGroup);
+		addQuestionGroup(
+				questionGroup.getOrder() != null ? questionGroup.getOrder()
+						: getQuestionGroupMap().size() + 1, questionGroup);
 	}
 
 	public void setPath(String path) {
@@ -122,6 +122,14 @@ public class Survey extends BaseDomain {
 			translationMap = new HashMap<String, Translation>();
 		}
 		translationMap.put(t.getLanguageCode(), t);
+	}
+
+	public String getPointType() {
+		return pointType;
+	}
+
+	public void setPointType(String pointType) {
+		this.pointType = pointType;
 	}
 
 }
