@@ -542,4 +542,5 @@ public interface TextConstants extends Constants{
 	public String createNew();
 	public String editMetric();
 	public String trawler();
+	public String procedure();
 }

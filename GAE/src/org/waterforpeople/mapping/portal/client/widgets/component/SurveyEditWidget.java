@@ -49,6 +49,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	private static final String SP_TYPE = "SanitationPoint";
 	private static final String PI_TYPE = "PublicInstitution";
 	private static final String TRAWLER_TYPE = "Trawler";
+	private static final String PROCEDURE_TYPE = "Procedure";
 
 	private VerticalPanel panel;
 	private Map<String, Object> bundle;
@@ -123,6 +124,8 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 				} else if (TRAWLER_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
 					pointTypeBox
 							.addItem(TEXT_CONSTANTS.trawler(), TRAWLER_TYPE);
+				}else if (PROCEDURE_TYPE.equalsIgnoreCase(pointTypes[i].trim())){
+					pointTypeBox.addItem(TEXT_CONSTANTS.procedure(),PROCEDURE_TYPE);
 				}
 			}
 		}
