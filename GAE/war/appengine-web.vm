@@ -51,6 +51,7 @@
 		<property name="allowUnsignedData" value="true" />
 		<property name="defaultOrg" value="$defaultOrg" />
 		<property name="domainType" value="accessPoint" />
-		<property name="exportedProperties" value="defaultOrg,domainType" />
+		<property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
+		<property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
 	</system-properties>
 </appengine-web-app>
