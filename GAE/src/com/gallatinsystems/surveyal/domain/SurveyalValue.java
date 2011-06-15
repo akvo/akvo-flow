@@ -48,6 +48,15 @@ public class SurveyalValue extends BaseDomain {
 	private String sublevel6;
 	private String localeType;
 	private String systemIdentifier;
+	private String questionType;
+
+	public String getQuestionType() {
+		return questionType;
+	}
+
+	public void setQuestionType(String questionType) {
+		this.questionType = questionType;
+	}
 
 	public Long getSurveyedLocaleId() {
 		return surveyedLocaleId;

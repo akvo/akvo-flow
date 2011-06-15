@@ -504,6 +504,13 @@ public class KMLGenerator {
 			List<SurveyalValue> valuesToBind = new ArrayList<SurveyalValue>(
 					ap.getSurveyalValues());
 			for (SurveyalValue val : ap.getSurveyalValues()) {
+				if (val.getQuestionType() != null) {
+					if (!"free_text".equalsIgnoreCase(val.getQuestionType())
+							|| !"option"
+									.equalsIgnoreCase(val.getQuestionType())) {
+						valuesToBind.remove(val);
+					}
+				}
 				if (val.getStringValue() == null) {
 					valuesToBind.remove(val);
 				} else if (val.getStringValue().trim().toLowerCase()
@@ -511,8 +518,10 @@ public class KMLGenerator {
 					context.put("photoUrl", val.getStringValue());
 					foundPhoto = true;
 					valuesToBind.remove(val);
-				}else{
-					if(val.getMetricName()!=null && val.getMetricName().trim().toLowerCase().contains("status")){
+				} else {
+					if (val.getMetricName() != null
+							&& val.getMetricName().trim().toLowerCase()
+									.contains("status")) {
 						context.put("waterSystemStatus", val.getStringValue());
 						foundStatus = true;
 					}
@@ -521,7 +530,7 @@ public class KMLGenerator {
 			context.put("surveyalValues", valuesToBind);
 		}
 
-		if(!foundStatus){
+		if (!foundStatus) {
 			context.put("waterSystemStatus", "Unknown");
 		}
 		// TODO: parameterize the default logo

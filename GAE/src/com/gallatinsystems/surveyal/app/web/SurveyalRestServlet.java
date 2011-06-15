@@ -309,6 +309,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 										.getKey().getId()) {
 							val.setQuestionText(q.getText());
 							val.setSurveyQuestionId(q.getKey().getId());
+							val.setQuestionType(q.getType().toString());
 							break;
 						}
 					}
