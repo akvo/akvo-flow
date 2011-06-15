@@ -253,7 +253,7 @@ public class PlacemarkRestRequest extends RestRequest {
 		String key = getAction();
 		if (key == null) {
 			key = LIST_PLACEMARK;
-			key += country + (display != null ? display : "")
+			key += country + (display != null ? display : "")+(pointTypeString!=null?pointTypeString:"")
 					+ (getCursor() != null ? getCursor() : "");
 			if (getOrg() != null) {
 				key += key + ":" + "org=" + getOrg();

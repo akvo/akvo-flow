@@ -191,7 +191,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			} else {
 				// ListPlacemarks Action
 				List<SurveyedLocale> results = localeDao.listBySubLevel(
-						piReq.getCountry(), null, null, null, null,
+						piReq.getCountry(), null, null, piReq.getPointTypeString(), null,
 						piReq.getCursor(), desiredResults);
 				response = (PlacemarkRestResponse) convertLocaleToResponse(
 						results, piReq.getNeedDetailsFlag(),
