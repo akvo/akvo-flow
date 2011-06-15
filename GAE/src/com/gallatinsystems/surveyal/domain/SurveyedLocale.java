@@ -1,7 +1,9 @@
 package com.gallatinsystems.surveyal.domain;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -13,7 +15,8 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * what each level corresponds to depends on the country in which the point is
  * located.
  * 
- * Details about SurveyedLocales are stored using SurveyalValue which has a loose association with this object.
+ * Details about SurveyedLocales are stored using SurveyalValue which has a
+ * loose association with this object.
  * 
  * @author Christopher Fagiani
  * 
@@ -36,11 +39,13 @@ public class SurveyedLocale extends BaseDomain {
 	private Double longitude;
 	private boolean ambiguous;
 	private Date lastSurveyedDate;
-	
-	public SurveyedLocale(){
+	@NotPersistent
+	private List<SurveyalValue> surveyalValues;
+
+	public SurveyedLocale() {
 		ambiguous = false;
-	}	
-	
+	}
+
 	public Date getLastSurveyedDate() {
 		return lastSurveyedDate;
 	}
@@ -49,7 +54,6 @@ public class SurveyedLocale extends BaseDomain {
 		this.lastSurveyedDate = lastSurveyedDate;
 	}
 
-	
 	public boolean isAmbiguous() {
 		return ambiguous;
 	}
@@ -161,6 +165,13 @@ public class SurveyedLocale extends BaseDomain {
 	public void setSystemIdentifier(String systemIdentifier) {
 		this.systemIdentifier = systemIdentifier;
 	}
-	
+
+	public List<SurveyalValue> getSurveyalValues() {
+		return surveyalValues;
+	}
+
+	public void setSurveyalValues(List<SurveyalValue> surveyalValues) {
+		this.surveyalValues = surveyalValues;
+	}
 
 }

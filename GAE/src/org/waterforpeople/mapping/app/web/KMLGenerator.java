@@ -29,6 +29,8 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 public class KMLGenerator {
 	private static final String IMAGE_ROOT = "imageroot";
@@ -453,6 +455,90 @@ public class KMLGenerator {
 					+ entries.get(i + 1).toString());
 		}
 		return sb.toString();
+	}
+
+	public String bindPlacemark(SurveyedLocale ap, String vmName, String display)
+			throws Exception {
+		if (ap.getCountryCode() == null) {
+			ap.setCountryCode("Unknown");
+		}
+
+		VelocityContext context = new VelocityContext();
+		context.put("organization", ORGANIZATION);
+		if (display != null) {
+			context.put("display", display);
+		}
+		context.put("countryCode", ap.getCountryCode());
+		if (ap.getLastSurveyedDate() != null) {
+			String timestamp = DateFormatUtils.formatUTC(
+					ap.getLastSurveyedDate(),
+					DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+			String formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
+					.format(ap.getLastSurveyedDate());
+			context.put("collectionDate", formattedDate);
+			context.put("timestamp", timestamp);
+			String collectionYear = new SimpleDateFormat("yyyy").format(ap
+					.getLastSurveyedDate());
+			context.put("collectionYear", collectionYear);
+		} else {
+			String timestamp = DateFormatUtils.formatUTC(
+					ap.getCreatedDateTime(),
+					DateFormatUtils.ISO_DATE_FORMAT.getPattern());
+			String formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
+					.format(ap.getCreatedDateTime());
+			context.put("collectionDate", formattedDate);
+			context.put("timestamp", timestamp);
+		}
+
+		if (ap.getIdentifier() != null) {
+			context.put("identifier", ap.getIdentifier());
+		} else {
+			context.put("identifier", "Unknown" + new Date());
+		}
+
+		boolean foundPhoto = false;
+		boolean foundStatus = false;
+		if (ap.getSurveyalValues() != null) {
+			// TODO: handle case where we have multiple values (with different
+			// dates) for same question/metric
+			List<SurveyalValue> valuesToBind = new ArrayList<SurveyalValue>(
+					ap.getSurveyalValues());
+			for (SurveyalValue val : ap.getSurveyalValues()) {
+				if (val.getStringValue() == null) {
+					valuesToBind.remove(val);
+				} else if (val.getStringValue().trim().toLowerCase()
+						.equals(".jpg")) {
+					context.put("photoUrl", val.getStringValue());
+					foundPhoto = true;
+					valuesToBind.remove(val);
+				}else{
+					if(val.getMetricName()!=null && val.getMetricName().trim().toLowerCase().contains("status")){
+						context.put("waterSystemStatus", val.getStringValue());
+						foundStatus = true;
+					}
+				}
+			}
+			context.put("surveyalValues", valuesToBind);
+		}
+
+		if(!foundStatus){
+			context.put("waterSystemStatus", "Unknown");
+		}
+		// TODO: parameterize the default logo
+		if (!foundPhoto) {
+			context.put("photoUrl",
+					"http://waterforpeople.s3.amazonaws.com/images/wfplogo.jpg");
+		}
+
+		if (ap.getLocaleType() != null) {
+			context.put("type", ap.getLocaleType());
+		} else {
+			context.put("type", "water");
+		}
+
+		String output = mergeContext(context, vmName);
+		context = null;
+		return output;
 	}
 
 	public String bindPlacemark(AccessPoint ap, String vmName, String display)

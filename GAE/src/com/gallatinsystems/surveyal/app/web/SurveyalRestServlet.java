@@ -109,6 +109,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			QuestionAnswerStore geoQ = null;
 			SurveyDAO surveyDao = new SurveyDAO();
 			Survey survey = surveyDao.getByKey(instance.getSurveyId());
+			String pointType =null;
+			if(survey!=null){
+				pointType = survey.getPointType();
+			}
 			if (answers != null) {
 				for (QuestionAnswerStore q : answers) {
 					if (QuestionType.GEO.toString().equals(q.getType())) {
@@ -122,10 +126,19 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				double lat = UNSET_VAL;
 				double lon = UNSET_VAL;
 				boolean ambiguousFlag = false;
+				String code = null;
 				String[] tokens = geoQ.getValue().split("\\|");
 				if (tokens.length >= 2) {
 					lat = Double.parseDouble(tokens[0]);
 					lon = Double.parseDouble(tokens[1]);
+					if(tokens.length>=4){
+						code = tokens[tokens.length-1];
+					}
+				}
+				if(code == null){
+					Long codeNum = Long.parseLong((int) ((Math.abs(lat) * 10000d)) + ""
+							+ (int) ((Math.abs(lon) * 10000d)));
+					code = Long.toString(codeNum, 36);
 				}
 				if (lat == UNSET_VAL || lon == UNSET_VAL) {
 					throw new RuntimeException(
@@ -140,18 +153,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					// if we have a geo question but no locale id, see if we can
 					// find one based on lat/lon
 					List<SurveyedLocale> candidates = surveyedLocaleDao
-							.listLocalesByCoordinates(lat, lon, TOLERANCE);
-					
-					if(candidates!=null && survey!=null && survey.getPointType()!=null){
-						List<SurveyedLocale> victimList = new ArrayList<SurveyedLocale>();
-						//filter by localeType
-						for(SurveyedLocale l: candidates){
-							if(!survey.getPointType().equals(l.getLocaleType())){
-								victimList.add(l);
-							}
-						}
-						candidates.removeAll(victimList);
-					}
+							.listLocalesByCoordinates(pointType,lat, lon, TOLERANCE);									
 					if (candidates != null && candidates.size() == 1) {
 						locale = candidates.get(0);
 					} else if (candidates != null && candidates.size() > 1) {
@@ -169,7 +171,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					if(survey!=null){
 						locale.setLocaleType(survey.getPointType());
 					}
-					// TODO: figure out how to find identifier
+					locale.setIdentifier(code);
 					// TODO: figure out how to set organization
 					if (locale.getOrganization() == null) {
 						locale.setOrganization(PropertyUtil

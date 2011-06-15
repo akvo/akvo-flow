@@ -34,6 +34,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private String communityCode = null;
 	private String display;
 	private AccessPoint.AccessPointType pointType = null;
+	private String pointTypeString;
 	private Boolean ignoreCache = false;
 	private Integer subLevel = null;
 	private String subLevelValue = null;
@@ -162,43 +163,40 @@ public class PlacemarkRestRequest extends RestRequest {
 		}
 
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
-			String pointTypeValue = req.getParameter(POINT_TYPE_PARAM);
-			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeValue))
+			pointTypeString = req.getParameter(POINT_TYPE_PARAM);
+			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeString))
 				setPointType(AccessPointType.HEALTH_POSTS);
-			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeValue)
+			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL
-							.equals(pointTypeValue))
+							.equals(pointTypeString))
 				setPointType(AccessPointType.PUBLIC_INSTITUTION);
-			else if (AccessPointType.SCHOOL.equals(pointTypeValue)
+			else if (AccessPointType.SCHOOL.equals(pointTypeString)
 					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL
-							.equals(pointTypeValue))
+							.equals(pointTypeString))
 				setPointType(AccessPointType.SCHOOL);
-			else if (pointTypeValue.equals(AccessPointType.WATER_POINT
+			else if (pointTypeString.equals(AccessPointType.WATER_POINT
 					.toString())
 					|| KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.WATER_POINT_FUNCTIONING_GREEN_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.WATER_POINT_FUNCTIONING_RED_ICON_URL
-							.equals(pointTypeValue)
+							.equals(pointTypeString)
 					|| KMLGenerator.WATER_POINT_FUNCTIONING_YELLOW_ICON_URL
-							.equals(pointTypeValue))
-				setPointType(AccessPointType.WATER_POINT);
-			else
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, POINT_TYPE_PARAM));
+							.equals(pointTypeString))
+				setPointType(AccessPointType.WATER_POINT);			
 		}
 		try {
 			if (req.getParameter(NEED_DETAILS_PARM) != null) {
@@ -262,9 +260,9 @@ public class PlacemarkRestRequest extends RestRequest {
 			}
 		} else if (GET_AP_DETAILS_ACTION.equals(key)) {
 			key += "-" + communityCode + (display != null ? display : "")
-					+ (pointType != null ? pointType : "");
+					+ (pointTypeString != null ? pointTypeString : "");
 		} else if (LIST_BOUNDING_BOX_ACTION.equals(key)) {
-			key += "/" + getLat1() + "/" + getLat2() + "/" + getPointType();
+			key += "/" + getLat1() + "/" + getLat2() + "/" + getPointTypeString();
 			if (getCursor() != null) {
 				key += "/" + getCursor();
 			}
@@ -279,4 +277,13 @@ public class PlacemarkRestRequest extends RestRequest {
 	public Boolean getIgnoreCache() {
 		return ignoreCache;
 	}
+
+	public String getPointTypeString() {
+		return pointTypeString;
+	}
+
+	public void setPointTypeString(String pointTypeString) {
+		this.pointTypeString = pointTypeString;
+	}
+	
 }
