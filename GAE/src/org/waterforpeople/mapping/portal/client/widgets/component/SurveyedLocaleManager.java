@@ -64,6 +64,7 @@ public class SurveyedLocaleManager extends Composite implements
 	private PaginatedDataTable<SurveyedLocaleDto> dataTable;
 	private AccessPointSearchControl searchControl;
 	private Button searchButton;
+	private Button createButton;
 	private DateTimeFormat dateFormat;
 	private UserDto currentUser;
 	private SurveyedLocaleServiceAsync surveyedLocaleService;
@@ -91,10 +92,17 @@ public class SurveyedLocaleManager extends Composite implements
 		Panel content = new VerticalPanel();
 		searchControl = new AccessPointSearchControl(Mode.LOCALE);
 		searchButton = new Button(TEXT_CONSTANTS.search());
+		createButton = new Button(TEXT_CONSTANTS.createNew());
+		Panel buttonPanel = new HorizontalPanel();
+		buttonPanel.add(searchButton);
+		if(currentUser.hasPermission(PermissionConstants.EDIT_AP)){
+			buttonPanel.add(createButton);
+		}
 		content.add(searchControl);
-		content.add(searchButton);
+		content.add(buttonPanel);
 		cap.add(content);
 		searchButton.addClickHandler(this);
+		createButton.addClickHandler(this);
 		return cap;
 	}
 
@@ -187,7 +195,7 @@ public class SurveyedLocaleManager extends Composite implements
 
 		editLocale.addClickHandler(new ClickHandler() {
 			@Override
-			public void onClick(ClickEvent event) {								
+			public void onClick(ClickEvent event) {				
 				SurveyedLocaleEditorDialog dia = new SurveyedLocaleEditorDialog(new CompletionListener() {
 					
 					@Override
@@ -262,6 +270,18 @@ public class SurveyedLocaleManager extends Composite implements
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == searchButton) {
 			requestData(null, false);
+		}else if (event.getSource() == createButton){
+			SurveyedLocaleEditorDialog dia = new SurveyedLocaleEditorDialog(new CompletionListener() {				
+				@Override
+				public void operationComplete(boolean wasSuccessful,
+						Map<String, Object> payload) {					
+					if(payload != null && payload.containsKey(SurveyedLocaleEditorWidget.LOCALE_KEY)){
+						SurveyedLocaleDto dto = (SurveyedLocaleDto)payload.get(SurveyedLocaleEditorWidget.LOCALE_KEY);
+						dataTable.addNewRow(dto);											
+					}
+				}
+			},null, currentUser.hasPermission(PermissionConstants.EDIT_AP));
+			dia.show();
 		}
 
 	}

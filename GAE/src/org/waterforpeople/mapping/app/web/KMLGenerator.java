@@ -109,16 +109,7 @@ public class KMLGenerator {
 	}
 
 	public String generateDocument(String placemarksVMName) {
-		try {
-			VelocityContext context = new VelocityContext();
-			context.put("folderContents",
-					generatePlacemarks(placemarksVMName, Constants.ALL_RESULTS));
-			context.put("regionPlacemark", generateRegionOutlines("Regions.vm"));
-			return mergeContext(context, "Document.vm");
-		} catch (Exception ex) {
-			log.log(Level.SEVERE, "Could create kml", ex);
-		}
-		return null;
+		return generateDocument(placemarksVMName, Constants.ALL_RESULTS);
 	}
 
 	public String generateDocument(String placemarksVMName, String countryCode) {
