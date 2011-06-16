@@ -461,6 +461,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 
 	public AccessPoint save(AccessPoint point) {
 		point = AccessPointHelper.scoreAccessPoint(point);
+		
 		point = super.save(point);
 		if (point.getApScoreDetailList() != null) {
 			for (AccessPointScoreDetail item : point.getApScoreDetailList()) {
