@@ -1,11 +1,12 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class AccessPointScoreDetailDto extends BaseDto {
+public class AccessPointScoreDetailDto extends BaseDto implements Serializable  {
 
 	
 

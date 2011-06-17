@@ -120,18 +120,23 @@ public class AccessPointServiceSupport {
 			for (AccessPointScoreDetail item : apCanonical
 					.getApScoreDetailList()) {
 				AccessPointScoreDetailDto dtoItem = new AccessPointScoreDetailDto();
-				dtoItem.setKeyId(item.getKey().getId());
-				dtoItem.setAccessPointId(item.getAccessPointId());
-				dtoItem.setScore(item.getScore());
+				if (item.getKey() != null)
+					dtoItem.setKeyId(item.getKey().getId());
+				if (item.getAccessPointId() != null)
+					dtoItem.setAccessPointId(item.getAccessPointId());
+				if (item.getScore() != null)
+					dtoItem.setScore(item.getScore());
 				ArrayList<AccessPointScoreComputationItemDto> scoreItems = new ArrayList<AccessPointScoreComputationItemDto>();
 				for (AccessPointScoreComputationItem scoreCompItem : item
 						.getScoreComputationItems()) {
 					Integer score = scoreCompItem.getScoreItem();
 					String detailMessage = scoreCompItem
 							.getScoreDetailMessage();
-					AccessPointScoreComputationItemDto apsiDto = new AccessPointScoreComputationItemDto(
-							score, detailMessage);
-					scoreItems.add(apsiDto);
+					if (score != null && detailMessage != null) {
+						AccessPointScoreComputationItemDto apsiDto = new AccessPointScoreComputationItemDto(
+								score, detailMessage);
+						scoreItems.add(apsiDto);
+					}
 				}
 				dtoItem.setScoreComputationItems(scoreItems);
 				dtoItem.setStatus(item.getStatus());

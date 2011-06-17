@@ -766,6 +766,10 @@ public class AccessPointHelper {
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException {
 		String criteriaType = item.getCriteriaType();
+		
+
+		item.setEvaluateField(StringUtil.capitalizeFirstCharacterString(item.getEvaluateField()));
+		
 		if (criteriaType.equals("String")) {
 			Method m = AccessPoint.class.getMethod(
 					"get" + item.getEvaluateField(), null);
@@ -814,7 +818,7 @@ public class AccessPointHelper {
 
 				}
 			}
-		} else if (criteriaType.equals("Integer")) {
+		} else if (criteriaType.equals("Integer")||criteriaType.equals("Number")) {
 			Method m = AccessPoint.class.getMethod(
 					"get" + item.getEvaluateField(), null);
 			Float value = null;

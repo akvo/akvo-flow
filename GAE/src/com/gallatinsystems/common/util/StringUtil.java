@@ -52,4 +52,11 @@ public class StringUtil {
 		}
 		return yearString;
 	}
+
+	public static String capitalizeFirstCharacterString(String item) {
+		String attributeField = item;
+		String firstChar = attributeField.substring(0, 1);
+		firstChar = firstChar.toUpperCase();
+		return firstChar + attributeField.substring(1);
+	}
 }

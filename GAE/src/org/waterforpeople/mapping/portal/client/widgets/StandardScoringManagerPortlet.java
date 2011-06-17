@@ -304,7 +304,10 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		int ifield = 1;
 		if (objectAttributes.size() > 0) {
 			for (Entry<String, String> field : objectAttributes.entrySet()) {
-				fields.addItem(field.getKey(), field.getValue());
+				if (field.getValue() != null)
+					fields.addItem(field.getValue(), field.getKey());
+				else
+					fields.addItem(field.getKey(),field.getKey());
 				if (item != null && item.getEvaluateField() != null) {
 					if (item.getEvaluateField().toLowerCase().trim()
 							.equals(field.getKey().toLowerCase())) {
@@ -369,11 +372,11 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (item != null && item.getEffectiveEndDate() != null) {
 			effectiveEndDate.setValue(item.getEffectiveEndDate());
 		}
-		
+
 		grid.setWidget(row, 15, effectiveEndDate);
-		
+
 		TextBox keyBox = new TextBox();
-		if(item!=null&&item.getKeyId()!=null){
+		if (item != null && item.getKeyId() != null) {
 			keyBox.setText(item.getKeyId().toString());
 		}
 		grid.setWidget(row, 16, keyBox);
@@ -411,7 +414,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onSuccess(StandardScoringDto result) {
-						
+
 					}
 				});
 			}
@@ -548,8 +551,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (effectiveEndDate.getValue() != null) {
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
-		TextBox keyBox = (TextBox)grid.getWidget(row,16);
-		if(keyBox.getValue()!=null){
+		TextBox keyBox = (TextBox) grid.getWidget(row, 16);
+		if (keyBox.getValue() != null) {
 			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
 		return item;
