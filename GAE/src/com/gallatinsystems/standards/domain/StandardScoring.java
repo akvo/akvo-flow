@@ -23,13 +23,40 @@ public class StandardScoring extends BaseDomain {
 	private String evaluateField = null;
 	private String positiveCriteria = null;
 	private String positiveOperator = null;
+	private String positiveMessage = null;
 	private String criteriaType = null;
 	private Integer positiveScore = null;
 	private String negativeCriteria = null;
 	private String negativeOperator = null;
 	private Integer negativeScore = null;
 	private String neutralCriteria = null;
+	private String negativeMessage = null;
 	private Integer neutralScore = null;
+	private String neutralMessage = null;
+	public String getPositiveMessage() {
+		return positiveMessage;
+	}
+
+	public void setPositiveMessage(String positiveMessage) {
+		this.positiveMessage = positiveMessage;
+	}
+
+	public String getNegativeMessage() {
+		return negativeMessage;
+	}
+
+	public void setNegativeMessage(String negativeMessage) {
+		this.negativeMessage = negativeMessage;
+	}
+
+	public String getNeutralMessage() {
+		return neutralMessage;
+	}
+
+	public void setNeutralMessage(String neutralMessage) {
+		this.neutralMessage = neutralMessage;
+	}
+
 	private Date effectiveStartDate = null;
 	private Date effectiveEndDate = null;
 	private Long scoreBucketId = null;

@@ -82,6 +82,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					"positiveOperator", true),
 			new DataTableHeader(TEXT_CONSTANTS.positiveScore(),
 					"positiveCriteria", true),
+			new DataTableHeader(TEXT_CONSTANTS.positiveMessage(),
+					"positiveMessage", true),
 			new DataTableHeader(TEXT_CONSTANTS.negativeCriteria(),
 					"negativeCriteria", true),
 			new DataTableHeader(TEXT_CONSTANTS.negativeOperator(),
@@ -90,6 +92,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					"negativeScore", true),
 			new DataTableHeader(TEXT_CONSTANTS.negativeOverride(),
 					"negativeOverride", true),
+			new DataTableHeader(TEXT_CONSTANTS.negativeMessage(),
+					"negativeMessage", true),
 			new DataTableHeader(TEXT_CONSTANTS.effectiveStartDate(),
 					"effectiveStartDate", true),
 			new DataTableHeader(TEXT_CONSTANTS.effectiveEndDate(),
@@ -307,7 +311,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				if (field.getValue() != null)
 					fields.addItem(field.getValue(), field.getKey());
 				else
-					fields.addItem(field.getKey(),field.getKey());
+					fields.addItem(field.getKey(), field.getKey());
 				if (item != null && item.getEvaluateField() != null) {
 					if (item.getEvaluateField().toLowerCase().trim()
 							.equals(field.getKey().toLowerCase())) {
@@ -328,7 +332,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			positiveCriteria.setText(item.getPositiveCriteria());
 		}
 		grid.setWidget(row, 7, positiveCriteria);
-		// positiveoperator
+		// positiveoperator 8
 
 		TextBox positiveScore = new TextBox();
 		if (item != null && item.getPositiveScore() != null) {
@@ -336,18 +340,26 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		}
 		grid.setWidget(row, 9, positiveScore);
 
+		TextBox positiveMessage = new TextBox();
+		if (item != null && item.getPositiveMessage() != null) {
+			positiveMessage.setText(item.getPositiveMessage());
+		}
+		grid.setWidget(row, 10, positiveMessage);
+
 		// negativecriteria
 		TextBox negativeCriteria = new TextBox();
 		if (item != null && item.getNegativeCriteria() != null) {
 			negativeCriteria.setText(item.getNegativeCriteria());
 		}
-		grid.setWidget(row, 10, negativeCriteria);
-
+		grid.setWidget(row, 11, negativeCriteria);
+		
+		//negativeoperator 12
+		
 		TextBox negativeScore = new TextBox();
 		if (item != null && item.getNegativeScore() != null) {
 			negativeScore.setText(item.getNegativeScore().toString());
 		}
-		grid.setWidget(row, 12, negativeScore);
+		grid.setWidget(row, 13, negativeScore);
 
 		// negativeOverride
 		ListBox negativeOverride = new ListBox();
@@ -359,27 +371,33 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				negativeOverride.setSelectedIndex(1);
 			}
 		}
-		grid.setWidget(row, 13, negativeOverride);
+		grid.setWidget(row, 14, negativeOverride);
+
+		TextBox negativeMessage = new TextBox();
+		if (item != null && item.getNegativeMessage() != null) {
+			negativeMessage.setText(item.getNegativeMessage());
+		}
+		grid.setWidget(row, 15, negativeMessage);
 
 		// effectivestartdate
 		DateBox effectiveStartDate = new DateBox();
 		if (item != null && item.getEffectiveStartDate() != null) {
 			effectiveStartDate.setValue(item.getEffectiveStartDate());
 		}
-		grid.setWidget(row, 14, effectiveStartDate);
+		grid.setWidget(row, 16, effectiveStartDate);
 		// effectiveenddate
 		DateBox effectiveEndDate = new DateBox();
 		if (item != null && item.getEffectiveEndDate() != null) {
 			effectiveEndDate.setValue(item.getEffectiveEndDate());
 		}
 
-		grid.setWidget(row, 15, effectiveEndDate);
+		grid.setWidget(row, 17, effectiveEndDate);
 
 		TextBox keyBox = new TextBox();
 		if (item != null && item.getKeyId() != null) {
 			keyBox.setText(item.getKeyId().toString());
 		}
-		grid.setWidget(row, 16, keyBox);
+		grid.setWidget(row, 18, keyBox);
 		HorizontalPanel hpanel = new HorizontalPanel();
 		Button saveButton = new Button();
 		saveButton.setText(TEXT_CONSTANTS.save());
@@ -397,7 +415,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		deleteButton.setTitle(String.valueOf(row) + "|" + buttonKey);
 		hpanel.add(saveButton);
 		hpanel.add(deleteButton);
-		grid.setWidget(row, 17, hpanel);
+		grid.setWidget(row, 19, hpanel);
 
 		saveButton.addClickHandler(new ClickHandler() {
 
@@ -518,40 +536,58 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			Integer score = Integer.parseInt(positiveScore.getText().trim());
 			item.setPositiveScore(score);
 		}
-		TextBox negativeCriteria = (TextBox) grid.getWidget(row, 10);
+		TextBox positiveMessage = (TextBox) grid.getWidget(row, 10);
+		if (positiveMessage.getText().trim().length() > 0) {
+			if (positiveMessage.getText().trim().length() < 500)
+				item.setPositiveMessage(positiveMessage.getText().trim());
+			else
+				item.setPositiveMessage(positiveMessage.getText().trim()
+						.substring(0, 498));
+		}
+		TextBox negativeCriteria = (TextBox) grid.getWidget(row, 11);
 		if (negativeCriteria.getText().trim().length() > 0) {
 			item.setNegativeCriteria(negativeCriteria.getText());
 		}
-		ListBox negativeOp = (ListBox) grid.getWidget(row, 11);
+		ListBox negativeOp = (ListBox) grid.getWidget(row, 12);
 		if (negativeOp.getSelectedIndex() > 0) {
 			item.setNegativeOperator(negativeOp.getItemText(negativeOp
 					.getSelectedIndex()));
 		}
 
-		TextBox negativeScore = (TextBox) grid.getWidget(row, 12);
+		TextBox negativeScore = (TextBox) grid.getWidget(row, 13);
 		if (negativeScore.getText().trim().length() > 0) {
 			Integer score = Integer.parseInt(negativeScore.getText().trim());
 			item.setNegativeScore(score);
 		}
 
-		ListBox negativeOverride = (ListBox) grid.getWidget(row, 13);
+		ListBox negativeOverride = (ListBox) grid.getWidget(row, 14);
 		if (negativeOverride.getSelectedIndex() == 0) {
 			item.setNegativeOverride(false);
 		} else {
 			item.setNegativeOverride(true);
 		}
 
+		TextBox negativeMessage = (TextBox) grid.getWidget(row, 15);
+		if (negativeMessage.getText().trim().length() > 0) {
+			if (negativeMessage.getText().trim().length() < 500) {
+				item.setNegativeMessage(negativeMessage.getText().trim());
+			} else {
+				item.setNegativeMessage(negativeMessage.getText().trim()
+						.substring(0, 498));
+			}
+		}
+
 		// effectivestartdate
-		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 14);
+		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 16);
 		if (effectiveStartDate.getValue() != null) {
 			item.setEffectiveStartDate(effectiveStartDate.getValue());
 		}
 		// effectiveenddate
-		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 15);
+		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 17);
 		if (effectiveEndDate.getValue() != null) {
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
-		TextBox keyBox = (TextBox) grid.getWidget(row, 16);
+		TextBox keyBox = (TextBox) grid.getWidget(row, 18);
 		if (keyBox.getValue() != null) {
 			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
@@ -599,7 +635,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		criteriaType.addItem("Number", "Number");
 		criteriaType.addItem("True/False", "Boolean");
 		criteriaType.setSelectedIndex(0);
-		criteriaType.setTitle(row + "|" + 6);
+		criteriaType.setTitle(row + "|" + col);
 		if (item != null && item.getCriteriaType() != null) {
 			ViewUtil.setListboxSelection(criteriaType, item.getCriteriaType());
 			setupOperatorListBox(item, grid, row, col);
@@ -621,17 +657,17 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					if (target.getSelectedIndex() == 1) {
 						loadCriteriaOperators(grid, row, column + 2, "String",
 								currentItem.getPositiveOperator());
-						loadCriteriaOperators(grid, row, column + 5, "String",
+						loadCriteriaOperators(grid, row, column + 6, "String",
 								currentItem.getNegativeOperator());
 					} else if (target.getSelectedIndex() == 2) {
 						loadCriteriaOperators(grid, row, column + 2, "Number",
 								currentItem.getPositiveOperator());
-						loadCriteriaOperators(grid, row, column + 5, "Number",
+						loadCriteriaOperators(grid, row, column + 6, "Number",
 								currentItem.getNegativeOperator());
 					} else {
 						loadCriteriaOperators(grid, row, column + 2,
 								"NotNumber", currentItem.getPositiveOperator());
-						loadCriteriaOperators(grid, row, column + 5,
+						loadCriteriaOperators(grid, row, column + 6,
 								"NotNumber", currentItem.getNegativeOperator());
 					}
 				}
@@ -647,12 +683,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			if (item.getCriteriaType().equals("Number")) {
 				loadCriteriaOperators(grid, row, column + 2, "Number",
 						currentItem.getPositiveOperator());
-				loadCriteriaOperators(grid, row, column + 5, "Number",
+				loadCriteriaOperators(grid, row, column + 6, "Number",
 						currentItem.getNegativeOperator());
 			} else {
 				loadCriteriaOperators(grid, row, column + 2, "NotNumber",
 						currentItem.getPositiveOperator());
-				loadCriteriaOperators(grid, row, column + 5, "NotNumber",
+				loadCriteriaOperators(grid, row, column + 6, "NotNumber",
 						currentItem.getNegativeOperator());
 			}
 		}

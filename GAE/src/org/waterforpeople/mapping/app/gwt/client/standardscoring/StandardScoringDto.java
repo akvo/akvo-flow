@@ -22,11 +22,14 @@ public class StandardScoringDto extends BaseDto {
 	private String positiveOperator = null;
 	private String criteriaType = null;
 	private Integer positiveScore = null;
+	private String positiveMessage = null;
 	private String negativeCriteria = null;
 	private String negativeOperator = null;
 	private Integer negativeScore = null;
+	private String negativeMessage = null;
 	private String neutralCriteria = null;
 	private Integer neutralScore = null;
+	private String neutralMessage = null;
 	private Date effectiveStartDate = null;
 	private Date effectiveEndDate = null;
 	private Long scoreBucketId = null;
@@ -151,5 +154,23 @@ public class StandardScoringDto extends BaseDto {
 	}
 	public Boolean getNegativeOverride() {
 		return negativeOverride;
+	}
+	public String getPositiveMessage() {
+		return positiveMessage;
+	}
+	public void setPositiveMessage(String positiveMessage) {
+		this.positiveMessage = positiveMessage;
+	}
+	public String getNegativeMessage() {
+		return negativeMessage;
+	}
+	public void setNegativeMessage(String negativeMessage) {
+		this.negativeMessage = negativeMessage;
+	}
+	public String getNeutralMessage() {
+		return neutralMessage;
+	}
+	public void setNeutralMessage(String neutralMessage) {
+		this.neutralMessage = neutralMessage;
 	}
 }

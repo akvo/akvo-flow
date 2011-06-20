@@ -545,5 +545,7 @@ public interface TextConstants extends Constants{
 	public String procedure();
 	public String showingMostRecent();
 	public String dateMandatory();
+	public String positiveMessage();
+	public String negativeMessage();
 }
 

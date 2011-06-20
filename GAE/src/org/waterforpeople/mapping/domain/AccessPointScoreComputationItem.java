@@ -10,7 +10,8 @@ public class AccessPointScoreComputationItem extends BaseDomain {
 	 */
 	private static final long serialVersionUID = -5969112417112456855L;
 	public AccessPointScoreComputationItem(Integer score, String item) {
-		// TODO Auto-generated constructor stub
+		scoreItem = score;
+		scoreDetailMessage = item;
 	}
 
 	private Integer scoreItem = null;

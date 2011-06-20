@@ -23,6 +23,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPointMappingHistory;
+import org.waterforpeople.mapping.domain.AccessPointScoreComputationItem;
 import org.waterforpeople.mapping.domain.AccessPointScoreDetail;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -291,9 +292,10 @@ public class AccessPointHelper {
 					newURL = photo_url_root + photoParts[2];
 				} else if (qas.getValue().startsWith("/mnt")) {
 					newURL = photo_url_root + photoParts[3];
-				}else if(photoParts.length==1){
-					//handle the case where we only have the filename (no paths)
-					newURL = photo_url_root+photoParts[0];
+				} else if (photoParts.length == 1) {
+					// handle the case where we only have the filename (no
+					// paths)
+					newURL = photo_url_root + photoParts[0];
 				}
 				f.set(ap, newURL);
 				apmh.setQuestionAnswerType("PHOTO");
@@ -553,9 +555,9 @@ public class AccessPointHelper {
 				}
 			}
 		}
-		
+
 		if (ap != null) {
-			ap=this.scoreAccessPointDynamic(ap);
+			ap = this.scoreAccessPointDynamic(ap);
 			return ap;
 		} else
 			return null;
@@ -719,6 +721,7 @@ public class AccessPointHelper {
 				"About to compute score for: " + ap.getCommunityCode());
 		StandardScoringDao ssDao = new StandardScoringDao();
 		List<StandardScoring> ssList = ssDao.listStandardScoring(ap);
+		ArrayList<AccessPointScoreComputationItem> apsciList = new ArrayList<AccessPointScoreComputationItem>();
 		if (ssList != null && !ssList.isEmpty()) {
 			Integer score = 0;
 			for (StandardScoring item : ssList) {
@@ -728,7 +731,9 @@ public class AccessPointHelper {
 					scoreBucketMap.put(item.getScoreBucketId(), 0);
 				}
 				try {
-					score = executeItemScore(ap, score, item);
+					AccessPointScoreComputationItem apsi = executeItemScore(ap, score, item);
+					score = apsi.getScoreItem();
+					apsciList.add(apsi);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -751,6 +756,7 @@ public class AccessPointHelper {
 			for (Entry<Long, Integer> item : scoreBucketMap.entrySet()) {
 				apss.setScoreBucketId(item.getKey());
 				apss.setScore(item.getValue());
+				apss.setScoreComputationItems(apsciList);
 				ap.setScore(score);
 				ap.setScoreComputationDate(new Date());
 				apss.setComputationDate(ap.getScoreComputationDate());
@@ -761,15 +767,16 @@ public class AccessPointHelper {
 		return ap;
 	}
 
-	private Integer executeItemScore(AccessPoint ap, Integer score,
-			StandardScoring item) throws IllegalAccessException,
+	private AccessPointScoreComputationItem executeItemScore(AccessPoint ap,
+			Integer score, StandardScoring item) throws IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException {
 		String criteriaType = item.getCriteriaType();
-		
+		String scoreItemMessage = null;
 
-		item.setEvaluateField(StringUtil.capitalizeFirstCharacterString(item.getEvaluateField()));
-		
+		item.setEvaluateField(StringUtil.capitalizeFirstCharacterString(item
+				.getEvaluateField()));
+
 		if (criteriaType.equals("String")) {
 			Method m = AccessPoint.class.getMethod(
 					"get" + item.getEvaluateField(), null);
@@ -777,18 +784,22 @@ public class AccessPointHelper {
 			if (item.getPositiveOperator().equals("==")) {
 				if (item.getPositiveCriteria().equals(value)) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getPositiveOperator().equals("!=")) {
 				if (!item.getPositiveCriteria().equals(value)) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getNegativeOperator().equals("==")) {
 				if (item.getNegativeCriteria().equals(value)) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			} else if (item.getNegativeOperator().equals("!=")) {
 				if (!item.getNegativeCriteria().equals(value)) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			}
 		} else if (criteriaType.equals("Boolean")) {
@@ -801,24 +812,29 @@ public class AccessPointHelper {
 				if (item.getPositiveOperator().equals("==")) {
 					if (Boolean.parseBoolean(item.getPositiveCriteria()) == value) {
 						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
 					}
 				} else if (item.getPositiveOperator().equals("!=")) {
 					if (Boolean.parseBoolean(item.getPositiveCriteria()) != value) {
 						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
 					}
 				}
 				if (item.getNegativeOperator().equals("==")) {
 					if (Boolean.parseBoolean(item.getNegativeCriteria()) == value) {
 						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
 					}
 				} else if (item.getNegativeOperator().equals("!=")) {
 					if (Boolean.parseBoolean(item.getNegativeCriteria()) != value) {
 						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
 					}
 
 				}
 			}
-		} else if (criteriaType.equals("Integer")||criteriaType.equals("Number")) {
+		} else if (criteriaType.equals("Integer")
+				|| criteriaType.equals("Number")) {
 			Method m = AccessPoint.class.getMethod(
 					"get" + item.getEvaluateField(), null);
 			Float value = null;
@@ -837,54 +853,66 @@ public class AccessPointHelper {
 			if (item.getPositiveOperator().equals("<=")) {
 				if (Integer.parseInt(item.getPositiveCriteria()) <= value) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getPositiveOperator().equals("<")) {
 				if (Integer.parseInt(item.getPositiveCriteria()) < value) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getPositiveOperator().equals("==")) {
 				if (Integer.parseInt(item.getPositiveCriteria()) == value) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getPositiveOperator().equals("!=")) {
 				if (Integer.parseInt(item.getPositiveCriteria()) != value) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getPositiveOperator().equals(">=")) {
 				if (Integer.parseInt(item.getPositiveCriteria()) >= value) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getPositiveOperator().equals(">")) {
 				if (Integer.parseInt(item.getPositiveCriteria()) > value) {
 					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
 				}
 			} else if (item.getNegativeOperator().equals("<=")) {
 				if (Integer.parseInt(item.getNegativeCriteria()) <= value) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			} else if (item.getNegativeOperator().equals("<")) {
 				if (Integer.parseInt(item.getNegativeCriteria()) < value) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			} else if (item.getNegativeOperator().equals("==")) {
 				if (Integer.parseInt(item.getNegativeCriteria()) == value) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			} else if (item.getNegativeOperator().equals("!=")) {
 				if (Integer.parseInt(item.getNegativeCriteria()) != value) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			} else if (item.getNegativeOperator().equals(">=")) {
 				if (Integer.parseInt(item.getNegativeCriteria()) >= value) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			} else if (item.getNegativeOperator().equals(">")) {
 				if (Integer.parseInt(item.getNegativeCriteria()) > value) {
 					score = score + item.getNegativeScore();
+					scoreItemMessage = item.getNegativeMessage();
 				}
 			}
 		}
-		return score;
+		return new AccessPointScoreComputationItem(score, scoreItemMessage);
 	}
 
 	public static AccessPoint scoreAccessPoint(AccessPoint ap) {
