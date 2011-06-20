@@ -337,7 +337,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		return dtoList;
 	}
 
-	private void sendProcessingMessages(SurveyInstance domain) {
+	public void sendProcessingMessages(SurveyInstance domain) {
 		// send async request to populate the AccessPoint using the mapping
 		QueueFactory.getDefaultQueue().add(
 				url("/app_worker/task").param("action", "addAccessPoint")

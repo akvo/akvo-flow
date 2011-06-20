@@ -2,8 +2,10 @@ package org.waterforpeople.mapping.app.web.dto;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,15 +24,29 @@ public class RawDataImportRequest extends RestRequest {
 	public static final String QUESTION_ID_PARAM = "questionId";
 	public static final String SURVEY_ID_PARAM = "surveyId";
 	public static final String SUBMITTER_PARAM = "submitter";
+	public static final String FIXED_FIELD_VALUE_PARAM = "values";
+	public static final String LOCALE_ID_PARAM = "surveyedLocale";
 
 	public static final String SAVE_SURVEY_INSTANCE_ACTION = "saveSurveyInstance";
 	public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
+	public static final String SAVE_FIXED_FIELD_SURVEY_INSTANCE_ACTION = "ingestFixedFormat";
 
 	private Long surveyId;
+	private Long surveyedLocaleId;
 	private Long surveyInstanceId = null;
 	private Date collectionDate = null;
 	private String submitter = null;
 	private HashMap<Long, String[]> questionAnswerMap = null;
+	private List<String> fixedFieldValues;
+
+	public List<String> getFixedFieldValues() {
+		return fixedFieldValues;
+	}
+
+	public void setFixedFieldValues(List<String> fixedFieldValues) {
+		this.fixedFieldValues = fixedFieldValues;
+	}
+
 	private String type;
 
 	public String getType() {
@@ -89,12 +105,27 @@ public class RawDataImportRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
+		if (req.getParameter(LOCALE_ID_PARAM) != null) {
+			try {
+				setSurveyedLocaleId(new Long(req.getParameter(LOCALE_ID_PARAM)));
+			} catch (Exception e) {
+				// swallow
+			}
+		}
 		if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
 			try {
 				setSurveyInstanceId(new Long(
 						req.getParameter(SURVEY_INSTANCE_ID_PARAM)));
 			} catch (Exception e) {
 				// swallow
+			}
+		}
+		if (req.getParameter(FIXED_FIELD_VALUE_PARAM) != null) {
+			fixedFieldValues = new ArrayList<String>();
+			String[] vals = req.getParameter(FIXED_FIELD_VALUE_PARAM).split(
+					"\\|");
+			for (int i = 0; i < vals.length; i++) {
+				fixedFieldValues.add(vals[i]);
 			}
 		}
 		if (req.getParameter(QUESTION_ID_PARAM) != null) {
@@ -157,6 +188,14 @@ public class RawDataImportRequest extends RestRequest {
 
 	public String getSubmitter() {
 		return submitter;
+	}
+
+	public Long getSurveyedLocaleId() {
+		return surveyedLocaleId;
+	}
+
+	public void setSurveyedLocaleId(Long surveyedLocaleId) {
+		this.surveyedLocaleId = surveyedLocaleId;
 	}
 
 }

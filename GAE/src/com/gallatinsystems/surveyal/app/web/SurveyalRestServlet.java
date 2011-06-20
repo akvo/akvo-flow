@@ -109,8 +109,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			QuestionAnswerStore geoQ = null;
 			SurveyDAO surveyDao = new SurveyDAO();
 			Survey survey = surveyDao.getByKey(instance.getSurveyId());
-			String pointType =null;
-			if(survey!=null){
+			String pointType = null;
+			if (survey != null) {
 				pointType = survey.getPointType();
 			}
 			if (answers != null) {
@@ -121,8 +121,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					}
 				}
 			}
+
+			if (instance.getSurveyedLocaleId() != null) {
+				locale = surveyedLocaleDao.getByKey(instance
+						.getSurveyedLocaleId());
+			}
+
 			// only create a "locale" if we have a geographic question
-			if (geoQ != null && geoQ.getValue() != null) {
+			if (locale == null && geoQ != null && geoQ.getValue() != null) {
 				double lat = UNSET_VAL;
 				double lon = UNSET_VAL;
 				boolean ambiguousFlag = false;
@@ -131,29 +137,26 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				if (tokens.length >= 2) {
 					lat = Double.parseDouble(tokens[0]);
 					lon = Double.parseDouble(tokens[1]);
-					if(tokens.length>=4){
-						code = tokens[tokens.length-1];
+					if (tokens.length >= 4) {
+						code = tokens[tokens.length - 1];
 					}
 				}
-				if(code == null){
-					Long codeNum = Long.parseLong((int) ((Math.abs(lat) * 10000d)) + ""
-							+ (int) ((Math.abs(lon) * 10000d)));
+				if (code == null) {
+					Long codeNum = Long
+							.parseLong((int) ((Math.abs(lat) * 10000d)) + ""
+									+ (int) ((Math.abs(lon) * 10000d)));
 					code = Long.toString(codeNum, 36);
 				}
 				if (lat == UNSET_VAL || lon == UNSET_VAL) {
 					throw new RuntimeException(
 							"Could not parse lat/lon from Geo Question "
 									+ geoQ.getQuestionID());
-				}
-
-				if (instance.getSurveyedLocaleId() != null) {
-					locale = surveyedLocaleDao.getByKey(instance
-							.getSurveyedLocaleId());
 				} else {
 					// if we have a geo question but no locale id, see if we can
 					// find one based on lat/lon
 					List<SurveyedLocale> candidates = surveyedLocaleDao
-							.listLocalesByCoordinates(pointType,lat, lon, TOLERANCE);									
+							.listLocalesByCoordinates(pointType, lat, lon,
+									TOLERANCE);
 					if (candidates != null && candidates.size() == 1) {
 						locale = candidates.get(0);
 					} else if (candidates != null && candidates.size() > 1) {
@@ -165,10 +168,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				if (locale == null) {
 					locale = new SurveyedLocale();
 					locale.setAmbiguous(ambiguousFlag);
-					locale.setLatitude(lat);					
+					locale.setLatitude(lat);
 					locale.setLongitude(lon);
 					setGeoData(locale);
-					if(survey!=null){
+					if (survey != null) {
 						locale.setLocaleType(survey.getPointType());
 					}
 					locale.setIdentifier(code);
@@ -179,15 +182,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					}
 					locale = surveyedLocaleDao.save(locale);
 				}
-				if (locale != null && locale.getKey() != null
-						&& answers != null) {
-					locale.setLastSurveyedDate(instance.getCollectionDate());
-					instance.setSurveyedLocaleId(locale.getKey().getId());
-					List<SurveyalValue> values = constructValues(locale,
-							answers);
-					if (values != null) {
-						surveyedLocaleDao.save(values);
-					}
+			}
+			if (locale != null && locale.getKey() != null && answers != null) {
+				locale.setLastSurveyedDate(instance.getCollectionDate());
+				instance.setSurveyedLocaleId(locale.getKey().getId());
+				List<SurveyalValue> values = constructValues(locale, answers);
+				if (values != null) {
+					surveyedLocaleDao.save(values);
 				}
 			}
 		}
@@ -240,13 +241,16 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			List<Metric> metrics = null;
 			boolean loadedItems = false;
 			List<Question> questionList = null;
-			//initialize outside the loop so all answers get same collection date value
+			// initialize outside the loop so all answers get same collection
+			// date value
 			Calendar cal = new GregorianCalendar();
 			for (QuestionAnswerStore ans : answers) {
 				if (!loadedItems && ans.getSurveyId() != null) {
 
-					questionList = qDao.listQuestionsBySurvey(ans.getSurveyId());
-					metrics = metricDao.listMetrics(null,null,null,l.getOrganization(),"all");
+					questionList = qDao
+							.listQuestionsBySurvey(ans.getSurveyId());
+					metrics = metricDao.listMetrics(null, null, null,
+							l.getOrganization(), "all");
 					mappings = metricMappingDao.listMappingsBySurvey(ans
 							.getSurveyId());
 					loadedItems = true;
@@ -255,12 +259,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				val.setSurveyedLocaleId(l.getKey().getId());
 				val.setCollectionDate(ans.getCollectionDate());
 				val.setCountryCode(l.getCountryCode());
-				
-				if(ans.getCollectionDate()!=null){
+
+				if (ans.getCollectionDate() != null) {
 					cal.setTime(ans.getCollectionDate());
 				}
 				val.setDay(cal.get(Calendar.DAY_OF_MONTH));
-				val.setMonth(cal.get(Calendar.MONTH)+1);
+				val.setMonth(cal.get(Calendar.MONTH) + 1);
 				val.setYear(cal.get(Calendar.YEAR));
 				val.setLocaleType(l.getLocaleType());
 				val.setStringValue(ans.getValue());

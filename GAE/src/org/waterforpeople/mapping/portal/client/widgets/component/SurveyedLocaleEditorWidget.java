@@ -485,6 +485,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 				// stop processing
 				return false;
 			}
+			localeDto.setLocaleType(pointTypeBox.getText());
 			localeDto.setOrganization(organizationBox.getText());
 			localeDto.setSystemIdentifier(systemBox.getText());
 			if (widgetToValueMap != null) {
