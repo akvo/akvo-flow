@@ -323,18 +323,23 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	 * @param localeId
 	 * @return
 	 */
-	public List<SurveyInstanceDto> listInstancesByLocale(Long localeId) {
+	public ResponseDto<ArrayList<SurveyInstanceDto>> listInstancesByLocale(Long localeId, Date dateFrom, Date dateTo, String cursor) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		List<SurveyInstanceDto> dtoList = new ArrayList<SurveyInstanceDto>();
-		List<SurveyInstance> instances = dao.listInstancesByLocale(localeId);
+		ResponseDto<ArrayList<SurveyInstanceDto>> response = new ResponseDto<ArrayList<SurveyInstanceDto>>();
+		ArrayList<SurveyInstanceDto> dtoList = new ArrayList<SurveyInstanceDto>();
+		List<SurveyInstance> instances = dao.listInstancesByLocale(localeId, dateFrom, dateTo, cursor);
 		if (instances != null) {
 			for (SurveyInstance inst : instances) {
 				SurveyInstanceDto dto = new SurveyInstanceDto();
 				DtoMarshaller.copyToDto(inst, dto);
 				dtoList.add(dto);
 			}
+			response.setPayload(dtoList);
+			if(dtoList.size() == SurveyInstanceDAO.DEFAULT_RESULT_COUNT){
+				response.setCursorString(SurveyInstanceDAO.getCursor(instances));
+			}
 		}
-		return dtoList;
+		return response;
 	}
 
 	public void sendProcessingMessages(SurveyInstance domain) {

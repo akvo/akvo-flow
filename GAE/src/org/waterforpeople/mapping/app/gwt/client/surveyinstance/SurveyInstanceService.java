@@ -47,5 +47,5 @@ public interface SurveyInstanceService extends RemoteService {
 	 * @param localeId
 	 * @return
 	 */
-	public List<SurveyInstanceDto> listInstancesByLocale(Long localeId);
+	public ResponseDto<ArrayList<SurveyInstanceDto>> listInstancesByLocale(Long localeId, Date dateFrom, Date dateTo, String cursor);
 }

@@ -37,7 +37,8 @@ public interface SurveyInstanceServiceAsync {
 
 
 
-	void listInstancesByLocale(Long localeId,
-			AsyncCallback<List<SurveyInstanceDto>> callback);
+	void listInstancesByLocale(Long localeId, Date dateFrom, Date dateTo,
+			String cursor,
+			AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>> callback);
 
 }

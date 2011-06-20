@@ -368,4 +368,8 @@
         <property name="waterForPeopleProjectFlag" direction="asc"/>
         <property name="collectionDate" direction="asc"/>
     </datastore-index>
+  <datastore-index kind="SurveyInstance" ancestor="false" source="auto">
+        <property name="surveyedLocaleId" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>

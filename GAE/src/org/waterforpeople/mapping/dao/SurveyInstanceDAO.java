@@ -12,8 +12,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -265,7 +265,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 		} else {
-			throw new IllegalArgumentException("surveyInstanceId may not be null");
+			throw new IllegalArgumentException(
+					"surveyInstanceId may not be null");
 		}
 
 	}
@@ -288,7 +289,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		}
 		return (List<QuestionAnswerStore>) q.execute(instanceId);
 	}
-
 
 	/**
 	 * lists all questionAnswerStore objects for a specific question
@@ -346,8 +346,36 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	 * @param surveyedLocaleId
 	 * @return
 	 */
-	public List<SurveyInstance> listInstancesByLocale(Long surveyedLocaleId) {
-		return listByProperty("surveyedLocaleId", surveyedLocaleId, "Long");
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstance> listInstancesByLocale(Long surveyedLocaleId,
+			Date dateFrom, Date dateTo, String cursor) {
+
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
+
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("surveyedLocaleId", filterString, paramString,
+				"Long", surveyedLocaleId, paramMap);
+
+		if (dateFrom != null || dateTo != null) {
+			appendNonNullParam("collectionDate", filterString, paramString,
+					"Date", dateFrom, paramMap, GTE_OP);
+			appendNonNullParam("collectionDate", filterString, paramString,
+					"Date", dateTo, paramMap, LTE_OP);
+			query.declareImports("import java.util.Date");
+		}
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		query.setOrdering("collectionDate desc");
+		prepareCursor(cursor, query);
+		return (List<SurveyInstance>) query.executeWithMap(paramMap);
+
 	}
 
 	/**

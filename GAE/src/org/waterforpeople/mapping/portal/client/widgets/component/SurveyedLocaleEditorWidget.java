@@ -18,6 +18,7 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceSe
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -38,7 +39,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
@@ -73,6 +76,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private SurveyedLocaleDto localeDto;
 	private ListBox instanceListBox;
 	private DateTimeFormat dateFormat;
+	private DisclosurePanel filterPanel;
 
 	private TextBox countryTextBox;
 	private TextBox identifierTextBox;
@@ -123,7 +127,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 			public void onSelection(SelectionEvent<Integer> event) {
 				if (event.getSelectedItem() == 1) {
 					if (surveyInstances == null && localeDto != null) {
-						loadInstances(localeDto.getKeyId());
+						loadInstances(localeDto.getKeyId(), null, null);
 					}
 				}
 			}
@@ -142,9 +146,11 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	 * 
 	 * @param localeId
 	 */
-	protected void loadInstances(Long localeId) {
-		surveyInstanceService.listInstancesByLocale(localeId,
-				new AsyncCallback<List<SurveyInstanceDto>>() {
+	protected void loadInstances(Long localeId, Date from, Date to) {
+		instanceListBox.clear();
+		instanceTable.clear(true);
+		surveyInstanceService.listInstancesByLocale(localeId, from, to, null,
+				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
@@ -154,9 +160,17 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 					}
 
 					@Override
-					public void onSuccess(List<SurveyInstanceDto> result) {
-						surveyInstances = result;
+					public void onSuccess(
+							ResponseDto<ArrayList<SurveyInstanceDto>> result) {
+						surveyInstances = result.getPayload();
 						statusLabel.setVisible(false);
+						if (result.getPayload() != null
+								&& result.getPayload().size() > 0
+								&& result.getCursorString() != null) {
+							filterPanel.setVisible(true);
+						} else {
+							filterPanel.setVisible(false);
+						}
 						if (surveyInstances != null) {
 							for (SurveyInstanceDto d : surveyInstances) {
 								instanceListBox.addItem(dateFormat.format(d
@@ -254,11 +268,47 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		instanceTable = new FlexTable();
 		instanceListBox = new ListBox(false);
 		CaptionPanel cap = new CaptionPanel(TEXT_CONSTANTS.selectInstance());
-		ViewUtil.installFieldRow(cap, TEXT_CONSTANTS.instance(),
+		Panel controlPanel = new VerticalPanel();
+
+		ViewUtil.installFieldRow(controlPanel, TEXT_CONSTANTS.instance(),
 				instanceListBox, null);
+		filterPanel = new DisclosurePanel(TEXT_CONSTANTS.showingMostRecent());
+		final DateBox dateFrom = new DateBox();
+		final DateBox dateTo = new DateBox();
+
+		Button filterButton = new Button(TEXT_CONSTANTS.filterResults());
+		filterButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (dateFrom.getValue() != null || dateTo.getValue() != null) {
+					loadInstances(localeDto.getKeyId(), dateFrom.getValue(),
+							dateTo.getValue());
+				} else {
+					MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
+							.inputError(), TEXT_CONSTANTS.dateMandatory());
+					dia.showCentered();
+				}
+			}
+		});
+		filterPanel.setVisible(false);
+		HorizontalPanel dateContainer = new HorizontalPanel();
+		dateContainer.add(ViewUtil.initLabel(TEXT_CONSTANTS
+				.collectionDateFrom()));
+		dateContainer.add(dateFrom);
+		dateContainer.add(ViewUtil.initLabel(TEXT_CONSTANTS.to()));
+		dateContainer.add(dateTo);
+		VerticalPanel filterControl = new VerticalPanel();
+		filterControl.add(dateContainer);
+		filterControl.add(filterButton);
+		filterPanel.add(filterControl);
+		controlPanel.add(filterPanel);
+		cap.add(controlPanel);
 		tabContent.add(cap);
+
 		tabContent.add(statusLabel);
 		tabContent.add(instanceTable);
+
 		return tabContent;
 	}
 
