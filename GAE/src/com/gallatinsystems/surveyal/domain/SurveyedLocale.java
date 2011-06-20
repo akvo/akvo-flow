@@ -39,8 +39,17 @@ public class SurveyedLocale extends BaseDomain {
 	private Double longitude;
 	private boolean ambiguous;
 	private Date lastSurveyedDate;
+	private Long lastSurveyalInstanceId;
 	@NotPersistent
 	private List<SurveyalValue> surveyalValues;
+
+	public Long getLastSurveyalInstanceId() {
+		return lastSurveyalInstanceId;
+	}
+
+	public void setLastSurveyalInstanceId(Long lastSurveyalInstanceId) {
+		this.lastSurveyalInstanceId = lastSurveyalInstanceId;
+	}
 
 	public SurveyedLocale() {
 		ambiguous = false;

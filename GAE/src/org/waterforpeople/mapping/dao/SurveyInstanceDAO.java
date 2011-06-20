@@ -341,14 +341,28 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	/**
-	 * lists all instances for the given surveyedLocale
+	 * lists instances for the given surveyedLocale optionally filtered by the
+	 * dates passed in
+	 * 
+	 * @param surveyedLocaleId
+	 * @return
+	 */
+	public List<SurveyInstance> listInstancesByLocale(Long surveyedLocaleId,
+			Date dateFrom, Date dateTo, String cursor) {
+		return listInstancesByLocale(surveyedLocaleId, dateFrom, dateTo,
+				DEFAULT_RESULT_COUNT, cursor);
+	}
+
+	/**
+	 * lists instances for the given surveyedLocale optionally filtered by the
+	 * dates passed in
 	 * 
 	 * @param surveyedLocaleId
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public List<SurveyInstance> listInstancesByLocale(Long surveyedLocaleId,
-			Date dateFrom, Date dateTo, String cursor) {
+			Date dateFrom, Date dateTo, Integer pageSize, String cursor) {
 
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
@@ -373,7 +387,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		query.setOrdering("collectionDate desc");
-		prepareCursor(cursor, query);
+		prepareCursor(cursor, pageSize, query);
 		return (List<SurveyInstance>) query.executeWithMap(paramMap);
 
 	}

@@ -28,6 +28,16 @@ public class SurveyedLocaleDto extends BaseDto {
 	private Double longitude;
 	private boolean ambiguous;
 	private Date lastSurveyedDate;
+	private Long lastSurveyalInstanceId;
+
+	public Long getLastSurveyalInstanceId() {
+		return lastSurveyalInstanceId;
+	}
+
+	public void setLastSurveyalInstanceId(Long lastSurveyalInstanceId) {
+		this.lastSurveyalInstanceId = lastSurveyalInstanceId;
+	}
+
 	private List<SurveyalValueDto> values;
 
 	public List<SurveyalValueDto> getValues() {

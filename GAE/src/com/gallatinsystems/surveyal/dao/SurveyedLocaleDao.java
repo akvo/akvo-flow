@@ -8,6 +8,9 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -34,13 +37,16 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	 * @param tolerance
 	 * @return
 	 */
-	public List<SurveyedLocale> listLocalesByCoordinates(String pointType, double lat,
-			double lon, double tolerance) {
-		return listLocalesByCoordinates(pointType, lat-tolerance, lon-tolerance, lat+tolerance, lon+tolerance,CURSOR_TYPE.all.toString(),null);
+	public List<SurveyedLocale> listLocalesByCoordinates(String pointType,
+			double lat, double lon, double tolerance) {
+		return listLocalesByCoordinates(pointType, lat - tolerance, lon
+				- tolerance, lat + tolerance, lon + tolerance,
+				CURSOR_TYPE.all.toString(), null);
 	}
-	
+
 	/**
 	 * lists locales that fit within the bounding box passed in
+	 * 
 	 * @param pointType
 	 * @param lat1
 	 * @param lon1
@@ -48,9 +54,10 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	 * @param lon2
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")	
-	public List<SurveyedLocale> listLocalesByCoordinates(String pointType, Double lat1,
-			Double lon1, Double lat2,Double lon2, String cursor,Integer pageSize) {
+	@SuppressWarnings("unchecked")
+	public List<SurveyedLocale> listLocalesByCoordinates(String pointType,
+			Double lat1, Double lon1, Double lat2, Double lon2, String cursor,
+			Integer pageSize) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
 		Map<String, Object> paramMap = null;
@@ -59,13 +66,16 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("localeType",filterString,paramString,"String",pointType,paramMap);
-		appendNonNullParam("latitude", filterString, paramString, "Double", lat1, paramMap, GTE_OP);
-		appendNonNullParam("latitude", filterString, paramString, "Double", lat2,paramMap, LTE_OP);
+		appendNonNullParam("localeType", filterString, paramString, "String",
+				pointType, paramMap);
+		appendNonNullParam("latitude", filterString, paramString, "Double",
+				lat1, paramMap, GTE_OP);
+		appendNonNullParam("latitude", filterString, paramString, "Double",
+				lat2, paramMap, LTE_OP);
 
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
-		prepareCursor(cursor,pageSize, query);
+		prepareCursor(cursor, pageSize, query);
 		List<SurveyedLocale> candidates = (List<SurveyedLocale>) query
 				.executeWithMap(paramMap);
 		// since the datastore only supports an inequality check on a single
@@ -74,15 +84,14 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		List<SurveyedLocale> results = new ArrayList<SurveyedLocale>();
 		if (candidates != null) {
 			for (SurveyedLocale l : candidates) {
-				if (l.getLongitude() > (lon1)
-						&& l.getLongitude() < (lon2)) {
+				if (l.getLongitude() > (lon1) && l.getLongitude() < (lon2)) {
 					results.add(l);
 				}
 			}
 		}
 		return results;
 	}
-	
+
 	/**
 	 * lists all locales that match the geo constraints passed in
 	 * 
@@ -229,7 +238,8 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
 	/**
 	 * returns all the locales with the identifier passed in. If needDetails is
-	 * true, it will list the surveyalValues for the locale
+	 * true, it will list the surveyalValues for the locale from the most recent
+	 * survey instance only.
 	 * 
 	 * @param identifier
 	 * @param needDetails
@@ -241,10 +251,22 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 				"String");
 		if (locales != null && needDetails) {
 			for (SurveyedLocale l : locales) {
-				l.setSurveyalValues(listByProperty("surveyedLocaleId", l
-						.getKey().getId(), "Long", SurveyalValue.class));
+				if (l.getLastSurveyalInstanceId() != null) {
+					l.setSurveyalValues(listSurveyalValuesByInstance(l
+							.getLastSurveyalInstanceId()));
+				} else {
+					// get the most recent instance and use its id
+					SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
+					List<SurveyInstance> instList = instanceDao
+							.listInstancesByLocale(l.getKey().getId(), null,
+									null, 1, null);
+					if (instList != null && instList.size() > 0) {
+						l.setSurveyalValues(listSurveyalValuesByInstance(instList
+								.get(0).getKey().getId()));
+					}
+				}
 			}
 		}
 		return locales;
-	}	
+	}
 }

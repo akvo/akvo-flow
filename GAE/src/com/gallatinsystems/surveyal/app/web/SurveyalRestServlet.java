@@ -169,7 +169,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale = new SurveyedLocale();
 					locale.setAmbiguous(ambiguousFlag);
 					locale.setLatitude(lat);
-					locale.setLongitude(lon);
+					locale.setLongitude(lon);					
 					setGeoData(locale);
 					if (survey != null) {
 						locale.setLocaleType(survey.getPointType());
@@ -184,8 +184,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				}
 			}
 			if (locale != null && locale.getKey() != null && answers != null) {
-				locale.setLastSurveyedDate(instance.getCollectionDate());
-				instance.setSurveyedLocaleId(locale.getKey().getId());
+				locale.setLastSurveyedDate(instance.getCollectionDate());				
+				locale.setLastSurveyalInstanceId(instance.getKey().getId());
+				instance.setSurveyedLocaleId(locale.getKey().getId());				
 				List<SurveyalValue> values = constructValues(locale, answers);
 				if (values != null) {
 					surveyedLocaleDao.save(values);
