@@ -1,10 +1,8 @@
 package org.waterforpeople.mapping.dataexport;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -14,7 +12,6 @@ import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
-import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -26,28 +23,13 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
-public class SurveyReplicationImporter implements DataImporter {
-
-	@Override
-	public Map<Integer, String> validate(File file) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void executeImport(File file, String serverBase) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * @param args
-	 */
+public class SurveyReplicationImporter {
+	
 	public static void main(String[] args) {
 		SurveyReplicationImporter sri = new SurveyReplicationImporter();
 	}
 
-	@Override
+	
 	public void executeImport(String sourceBase, String serverBase) {
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyDAO sDao = new SurveyDAO();

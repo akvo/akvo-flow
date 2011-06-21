@@ -215,12 +215,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		r.executeImport(file, serverBaseArg);
 	}
 
-	@Override
-	public void executeImport(String sourceBase, String serverBase) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
 	}

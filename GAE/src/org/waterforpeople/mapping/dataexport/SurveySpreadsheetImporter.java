@@ -339,10 +339,5 @@ public class SurveySpreadsheetImporter implements DataImporter {
 		return true;
 	}
 
-	@Override
-	public void executeImport(String sourceBase, String serverBase) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

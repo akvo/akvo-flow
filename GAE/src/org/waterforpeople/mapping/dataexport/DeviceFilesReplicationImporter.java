@@ -1,10 +1,8 @@
 package org.waterforpeople.mapping.dataexport;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,24 +12,13 @@ import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.google.appengine.api.datastore.Text;
 
-public class DeviceFilesReplicationImporter implements DataImporter {
+public class DeviceFilesReplicationImporter {
 	private final static Logger log = Logger.getLogger(DeviceFilesReplicationImporter.class.getName());
 	
-	@Override
-	public Map<Integer, String> validate(File file) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public void executeImport(File file, String serverBase) {
-
-	}
-
-	@Override
+	
 	public void executeImport(String sourceBase, String serverBase) {
 		DeviceFilesDao dfDao = new DeviceFilesDao();
 		int i =0;

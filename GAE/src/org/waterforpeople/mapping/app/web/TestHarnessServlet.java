@@ -148,7 +148,6 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.backends.BackendService;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;

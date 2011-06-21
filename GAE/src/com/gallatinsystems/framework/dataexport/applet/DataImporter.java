@@ -15,5 +15,4 @@ public interface DataImporter {
 
 	public void executeImport(File file, String serverBase);
 	
-	public void executeImport(String sourceBase, String serverBase);
 }
