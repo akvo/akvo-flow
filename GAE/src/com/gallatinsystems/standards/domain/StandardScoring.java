@@ -33,6 +33,10 @@ public class StandardScoring extends BaseDomain {
 	private String negativeMessage = null;
 	private Integer neutralScore = null;
 	private String neutralMessage = null;
+	private Scope scoreScope  = null;
+	
+	public enum Scope {GLOBAL,COUNTRY,SUB_COUNTRY};
+	
 	public String getPositiveMessage() {
 		return positiveMessage;
 	}
@@ -221,5 +225,13 @@ public class StandardScoring extends BaseDomain {
 
 	public Boolean getNegativeOverride() {
 		return negativeOverride;
+	}
+
+	public void setScoreScope(Scope scoreScope) {
+		this.scoreScope = scoreScope;
+	}
+
+	public Scope getScoreScope() {
+		return scoreScope;
 	}
 }
