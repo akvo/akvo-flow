@@ -31,6 +31,8 @@ public class RawDataImportRequest extends RestRequest {
 	public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
 	public static final String SAVE_FIXED_FIELD_SURVEY_INSTANCE_ACTION = "ingestFixedFormat";
 
+	public static final String FIELD_VAL_DELIMITER = ";;";
+	
 	private Long surveyId;
 	private Long surveyedLocaleId;
 	private Long surveyInstanceId = null;
@@ -123,7 +125,7 @@ public class RawDataImportRequest extends RestRequest {
 		if (req.getParameter(FIXED_FIELD_VALUE_PARAM) != null) {
 			fixedFieldValues = new ArrayList<String>();
 			String[] vals = req.getParameter(FIXED_FIELD_VALUE_PARAM).split(
-					";;");
+					FIELD_VAL_DELIMITER);
 			for (int i = 0; i < vals.length; i++) {
 				fixedFieldValues.add(vals[i]);
 			}

@@ -8,9 +8,13 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,19 +26,53 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
+	public static final String SURVEY_CONFIG_KEY = "surveyId";
 	private Long surveyId;
+	private InputStream stream;
 
+	/**
+	 * opens a file input stream using the file passed in and tries to return
+	 * the first worksheet in that file
+	 * 
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	protected Sheet getDataSheet(File file) throws Exception {
+		stream = new FileInputStream(file);
+		HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(stream));
+		return wb.getSheetAt(0);
+
+	}
+
+	/**
+	 * closes open input streams
+	 */
+	protected void cleanup() {
+		if (stream != null) {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	protected void setSurveyId(Map<String,String> criteria){
+		if(criteria != null && criteria.get(SURVEY_CONFIG_KEY)!=null){
+			setSurveyId(new Long(criteria.get(SURVEY_CONFIG_KEY).trim()));
+		}
+	}
+	
 	@Override
-	public void executeImport(File file, String serverBase) {
-		InputStream inp = null;
-
-		Sheet sheet1 = null;
-
+	public void executeImport(File file, String serverBase,
+			Map<String, String> criteria) {
 		try {
-			inp = new FileInputStream(file);
-			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
+			DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+			setSurveyId(criteria);
 			int i = 0;
-			sheet1 = wb.getSheetAt(0);
+			Sheet sheet1 = getDataSheet(file);
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			Map<String, String> typeMap = new HashMap<String, String>();
 			for (Row row : sheet1) {
@@ -64,21 +102,29 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
-									.intValue() + "";
+									.intValue() + "";							
+						}else if (cell.getCellType() == Cell.CELL_TYPE_STRING){
+							instanceId = cell.getStringCellValue();
+							
+						}
+						if(instanceId != null){
 							sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
 									+ "=" + instanceId + "&");
 						}
 					}
 					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-							dateString = cell.getStringCellValue();
-							if (dateString != null) {
-								sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
-										+ "="
-										+ URLEncoder
-												.encode(dateString, "UTF-8")
-										+ "&");
-							}
+							dateString = cell.getStringCellValue();							
+						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+							Date date=HSSFDateUtil.getJavaDate(cell.getNumericCellValue());
+							dateString = df.format(date);
+						}
+						if (dateString != null) {
+							sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
+									+ "="
+									+ URLEncoder
+											.encode(dateString, "UTF-8")
+									+ "&");
 						}
 					}
 					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
@@ -98,9 +144,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 											.getColumnIndex()) + "|value=");
 
 							value = cell.getStringCellValue().trim();
-							if (value.contains("|"))
-								;
-							{
+							if (value.contains("|")) {
 								value = value.replaceAll("\\|", "^^");
 							}
 							if (value.endsWith(".jpg")) {
@@ -163,17 +207,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (inp != null) {
-				try {
-					inp.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			cleanup();
 		}
 	}
 
-	private void invokeUrl(String serverBase, String urlString)
+	/**
+	 * calls a remote api by posting to the url passed in.
+	 * 
+	 * @param serverBase
+	 * @param urlString
+	 * @throws Exception
+	 */
+	protected void invokeUrl(String serverBase, String urlString)
 			throws Exception {
 		URL url = new URL(serverBase + SERVLET_URL);
 		System.out.println(serverBase + SERVLET_URL + urlString);
@@ -198,8 +243,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 	@Override
 	public Map<Integer, String> validate(File file) {
-		// TODO implement validation
-		return null;
+		Map<Integer,String> errorMap = new HashMap<Integer,String>();
+		return errorMap;		
 	}
 
 	public static void main(String[] args) {
@@ -211,15 +256,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		File file = new File(args[0].trim());
 		String serverBaseArg = args[1].trim();
 		RawDataSpreadsheetImporter r = new RawDataSpreadsheetImporter();
-		r.setSurveyId(Long.parseLong(args[2].trim()));
-		r.executeImport(file, serverBaseArg);
+		Map<String, String> configMap = new HashMap<String, String>();
+		configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
+		r.executeImport(file, serverBaseArg, configMap);
+	}
+
+	public Long getSurveyId() {
+		return surveyId;
 	}
 
 	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
 	}
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
 }

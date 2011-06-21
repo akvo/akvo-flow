@@ -1396,10 +1396,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImportApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
-				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
-				appletString += "<PARAM name='surveyId' value='"
+				appletString += "<PARAM name='importType' value='RAW_DATA'>";
+				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+				appletString += "<PARAM name='criteria' value='surveyId="
 						+ item.getKeyId() + "'>";
 				appletString += "</applet>";
 				HTML html = new HTML();

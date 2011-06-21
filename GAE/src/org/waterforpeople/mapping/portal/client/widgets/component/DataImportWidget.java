@@ -29,10 +29,11 @@ public class DataImportWidget extends MenuBasedWidget {
 	private Button surveyImportButton;
 	private Button rawDataImportButton;
 	private Button importGISButton;
+	private Button fixedFormatImportButton;
 
 	public DataImportWidget() {
 		Panel contentPanel = new VerticalPanel();
-		Grid grid = new Grid(3, 2);
+		Grid grid = new Grid(4, 2);
 		contentPanel.add(grid);
 		appletPanel = new VerticalPanel();
 		contentPanel.add(appletPanel);
@@ -44,11 +45,17 @@ public class DataImportWidget extends MenuBasedWidget {
 		grid.setWidget(1, 0, rawDataImportButton);
 		grid.setWidget(1, 1,
 				createDescription(TEXT_CONSTANTS.rawDataImportDescription()));
-		
+
 		importGISButton = initButton(TEXT_CONSTANTS.importGISData());
 		grid.setWidget(2, 0, importGISButton);
 		grid.setWidget(2, 1,
 				createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
+
+		fixedFormatImportButton = initButton(TEXT_CONSTANTS
+				.importFixedFormatFile());
+		grid.setWidget(3, 0, fixedFormatImportButton);
+		grid.setWidget(3, 1, createDescription(TEXT_CONSTANTS
+				.importFixedFormatFileDescription()));
 		initWidget(contentPanel);
 	}
 
@@ -74,13 +81,14 @@ public class DataImportWidget extends MenuBasedWidget {
 									&& payload != null
 									&& payload
 											.get(SurveySelectionDialog.SURVEY_KEY) != null) {
-								String appletString = "<applet width='100' height='30' code=org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImportApplet width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
-								appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
-								appletString += "<PARAM name='surveyId' value='"
+								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+								appletString += "<PARAM name='importType' value='RAW_DATA'>";
+								appletString += "<PARAM name='criteria' value=surveyId="
 										+ payload
 												.get(SurveySelectionDialog.SURVEY_KEY)
-										+ "'>";
+										+ ">";
 								appletString += "</applet>";
 								HTML html = new HTML();
 								html.setHTML(appletString);
@@ -139,6 +147,32 @@ public class DataImportWidget extends MenuBasedWidget {
 						}
 					});
 			gisDia.showCentered();
+		} else if (event.getSource() == fixedFormatImportButton) {
+			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
+					new CompletionListener() {
+						@Override
+						public void operationComplete(boolean wasSuccessful,
+								Map<String, Object> payload) {
+							if (wasSuccessful
+									&& payload != null
+									&& payload
+											.get(SurveySelectionDialog.SURVEY_KEY) != null) {
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
+								appletString += "<PARAM name='importType' value='FIXED_FORMAT'>";
+								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+								appletString += "<PARAM name='criteria' value=surveyId="
+										+ payload
+												.get(SurveySelectionDialog.SURVEY_KEY)
+										+ ">";
+								appletString += "</applet>";
+								HTML html = new HTML();
+								html.setHTML(appletString);
+								appletPanel.add(html);
+							}
+						}
+					});
+			surveyDia.showCentered();
 		}
 	}
 

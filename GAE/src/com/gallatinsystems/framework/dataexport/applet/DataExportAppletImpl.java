@@ -1,10 +1,7 @@
 package com.gallatinsystems.framework.dataexport.applet;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
-import javax.swing.JApplet;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 
@@ -14,13 +11,10 @@ import javax.swing.JLabel;
  * @author Christopher Fagiani
  * 
  */
-public class DataExportAppletImpl extends JApplet {
+public class DataExportAppletImpl extends AbstractDataImportExportApplet {
 
 	private static final long serialVersionUID = 944163825066341210L;
 	private static final String EXPORT_TYPE_PARAM = "exportType";
-	private static final String CRITERIA_PARAM = "criteria";
-	private static final String FACTORY_PARAM = "factoryClass";
-	private static final String SERVER_BASE_OVERRIDE_PARAM = "serverOverride";
 	private static final String OPTIONS_PARAM = "options";
 	private JLabel statusLabel;
 	private DataImportExportFactory dataExporterFactory;
@@ -29,42 +23,12 @@ public class DataExportAppletImpl extends JApplet {
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
 		String type = getParameter(EXPORT_TYPE_PARAM);
-		Map<String, String> criteria = parseCriteria(getParameter(CRITERIA_PARAM));
-		Map<String,String> options = parseCriteria(getParameter(OPTIONS_PARAM));
-		String factoryClass = getParameter(FACTORY_PARAM);
-		String serverBase = getParameter(SERVER_BASE_OVERRIDE_PARAM);
-		if(serverBase == null || serverBase.trim().length()==0){
-			serverBase = getCodeBase().toString();
-		}
-		if (factoryClass != null) {
-			try {
-				dataExporterFactory = (DataImportExportFactory) Class.forName(
-						factoryClass).newInstance();
-			} catch (Exception e) {
-				System.err.println("Could not instantiate factory: "
-						+ factoryClass);
-				e.printStackTrace(System.err);
-			}
-		}
-		doExport(type, criteria, serverBase, options);
+		dataExporterFactory = getDataImportExportFactory();
+		doExport(type, getConfigCriteria(), getServerBase(), parseCriteria(getParameter(OPTIONS_PARAM)));
 	}
-
-	private Map<String, String> parseCriteria(String source) {
-		Map<String, String> crit = new HashMap<String, String>();
-		if (source != null) {
-			StringTokenizer strTok = new StringTokenizer(source, ";");
-			while (strTok.hasMoreTokens()) {
-				String[] parts = strTok.nextToken().split("=");
-				if (parts.length == 2) {
-					crit.put(parts[0], parts[1]);
-				}
-			}
-		}
-		return crit;
-	}
-
+	
 	public void doExport(String type, Map<String, String> criteriaMap,
-			String serverBase, Map<String,String> options) {
+			String serverBase, Map<String, String> options) {
 		JFileChooser chooser = new JFileChooser();
 
 		chooser.showSaveDialog(this);
@@ -75,10 +39,9 @@ public class DataExportAppletImpl extends JApplet {
 				serverBase = serverBase.trim().substring(0,
 						serverBase.lastIndexOf("/"));
 			}
-			exporter.export(criteriaMap, chooser.getSelectedFile(), serverBase, options);
+			exporter.export(criteriaMap, chooser.getSelectedFile(), serverBase,
+					options);
 			statusLabel.setText("Export Complete");
 		}
-
 	}
-
 }

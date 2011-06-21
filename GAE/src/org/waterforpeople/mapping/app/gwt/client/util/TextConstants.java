@@ -547,5 +547,7 @@ public interface TextConstants extends Constants{
 	public String dateMandatory();
 	public String positiveMessage();
 	public String negativeMessage();
+	public String importFixedFormatFile();
+	public String importFixedFormatFileDescription();
 }
 

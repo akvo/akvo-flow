@@ -32,11 +32,11 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 public class SurveySpreadsheetImporter implements DataImporter {
 
 	private static final String SERVLET_URL = "/surveyrestapi";
+	
 
 	@Override
-	public void executeImport(File file, String serverBase) {
+	public void executeImport(File file, String serverBase, Map<String,String> criteria) {
 		InputStream inp = null;
-
 		Sheet sheet1 = null;
 
 		try {
