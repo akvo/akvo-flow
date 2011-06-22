@@ -290,8 +290,15 @@ public class TaskServlet extends AbstractRestApiServlet {
 				String encodedHmac = com.google.gdata.util.common.util.Base64
 						.encode(hmac);
 				if (!encodedHmac.trim().equals(dataSig.trim())) {
-					throw new SignedDataException(
-							"Computed signature does not match the one submitted with the data");
+					String allowUnsigned = PropertyUtil
+							.getProperty(ALLOW_UNSIGNED);
+					if (allowUnsigned != null
+							&& allowUnsigned.trim().equalsIgnoreCase("false")) {
+						throw new SignedDataException(
+								"Computed signature does not match the one submitted with the data");
+					}else{
+						log.warning("Signatures don't match. Processing anyway since allow unsigned is true");
+					}
 				}
 			} catch (GeneralSecurityException e) {
 				throw new SignedDataException("Could not calculate signature",
@@ -393,8 +400,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 				summQueue.add(url("/app_worker/datasummarization").param(
 						"objectKey", instance.getKey().getId() + "").param(
 						"type", "SurveyInstance"));
-				//process the "new" domain structure
-				
+				// process the "new" domain structure
+
 				defaultQueue.add(url("/app_worker/surveyalservlet").param(
 						SurveyalRestRequest.ACTION_PARAM,
 						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
