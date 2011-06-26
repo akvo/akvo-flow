@@ -73,20 +73,28 @@ public class ZipUtil {
 	}
 
 	public static String unZip(byte[] contents) throws IOException {
+		return unZip(contents, null);
+	}
+
+	public static String unZip(byte[] contents, String entryName)
+			throws IOException {
 		ByteArrayInputStream zipContents = new ByteArrayInputStream(contents);
 		ZipInputStream zis = new ZipInputStream(zipContents);
 		ZipEntry entry;
 		StringBuilder line = new StringBuilder();
 		while ((entry = zis.getNextEntry()) != null) {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			byte[] buffer = new byte[2048];
-			int size;
-			while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
-				out.write(buffer, 0, size);
-			}
-			line.append(out.toString());
+			if (entryName == null
+					|| entryName.equalsIgnoreCase(entry.getName())) {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				byte[] buffer = new byte[2048];
+				int size;
+				while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+					out.write(buffer, 0, size);
+				}
+				line.append(out.toString());
 
-			out.close();
+				out.close();
+			}
 		}
 		zis.closeEntry();
 
