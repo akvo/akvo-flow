@@ -557,7 +557,7 @@ public class AccessPointHelper {
 		}
 
 		if (ap != null) {
-			ap = this.scoreAccessPointDynamic(ap);
+			//ap = this.scoreAccessPointDynamic(ap);
 			return ap;
 		} else
 			return null;
