@@ -192,6 +192,7 @@ public class KMLApplet extends JApplet implements Runnable {
 						vc.put("latitude", pm.getLatitude());
 						vc.put("altitude", pm.getAltitude());
 						vc.put("communityCode", pm.getCommunityCode());
+						vc.put("communityName",pm.getCommunityCode());
 						String placemark = mergeContext(vc,
 								"template/PlacemarksNewLook.vm");
 						zipOut.write(placemark.getBytes("UTF-8"));

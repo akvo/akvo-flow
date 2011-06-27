@@ -381,8 +381,11 @@ public class KMLGenerator {
 						AccessPoint.AccessPointType.SANITATION_POINT)) {
 					try {
 						VelocityContext context = new VelocityContext();
-						String pmContents = bindPlacemark(ap,
-								"placemarkExternalMap.vm", display);
+						String pmContents = bindPlacemark(
+								ap,
+								display.equalsIgnoreCase(GOOGLE_EARTH_DISPLAY) ? "placemarkGoogleEarth.vm"
+										: "placemarkExternalMap.vm", display);
+
 						if (ap.getCollectionDate() != null) {
 							String timestamp = DateFormatUtils.formatUTC(ap
 									.getCollectionDate(),
@@ -545,7 +548,9 @@ public class KMLGenerator {
 			throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
-
+if(display != null && display.trim().equalsIgnoreCase(GOOGLE_EARTH_DISPLAY)){
+	vmName = "placemarkGoogleEarth.vm";
+}
 		if (ap.getCountryCode() == null)
 			ap.setCountryCode("Unknown");
 		if (ap.getCountryCode() != null) {

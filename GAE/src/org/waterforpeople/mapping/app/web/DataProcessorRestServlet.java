@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
@@ -57,6 +58,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			rebuildQuestionSummary();
+		} else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
+				.equalsIgnoreCase(dpReq.getAction())) {
+			SurveyReplicationImporter sri = new SurveyReplicationImporter();
+			sri.executeImport(dpReq.getSource(), dpReq.getSurveyId());
+		} else if (DataProcessorRequest.RESCORE_AP_ACTION
+				.equalsIgnoreCase(dpReq.getAction())) {
+			rescoreAp(dpReq.getCountry());
 		}
 		return new RestResponse();
 	}
@@ -64,6 +72,27 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
+	}
+
+	/**
+	 * this method re-runs scoring on all access points for a country
+	 * 
+	 * @param country
+	 */
+	private void rescoreAp(String country) {
+		AccessPointDao apDao = new AccessPointDao();
+		String cursor = null;
+		List<AccessPoint> apList = null;
+		do {
+			apList = apDao.listAccessPointByLocation(country, null, null, null,
+					cursor, new Integer(200));
+			if (apList != null) {
+				cursor = AccessPointDao.getCursor(apList);
+			}
+			for(AccessPoint ap:apList){
+				apDao.save(ap);
+			}
+		} while (apList != null && apList.size() == 200);
 	}
 
 	/**
@@ -87,7 +116,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 		status.setInError(false);
 		status.setLastEventDate(new Date());
-		statusDao.save(status);	
+		statusDao.save(status);
 	}
 
 	/**
@@ -114,7 +143,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					.entrySet()) {
 				String val = valueEntry.getKey();
 				boolean found = false;
-				for (SurveyQuestionSummary sum : summaryList) {				
+				for (SurveyQuestionSummary sum : summaryList) {
 					if (sum.getResponse() != null
 							&& sum.getResponse().equals(val)) {
 						// since it's still valid, remove it from toDeleteList
@@ -125,7 +154,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						// save
 						sum.setCount(valueEntry.getValue());
 						found = true;
-					}					
+					}
 				}
 				if (!found) {
 					// need to create it

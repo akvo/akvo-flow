@@ -1221,14 +1221,33 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("importallsurveys".equals(action)) {
 			// Only run in dev hence hardcoding
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			sri.executeImport("http://watermapmonitordev.appspot.com",null);
+			sri.executeImport("http://watermapmonitordev.appspot.com", null);
 			// sri.executeImport("http://localhost:8888",
 			// "http://localhost:8888");
 
-		} else if("importsinglesurvey".equals(action)){
-			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			sri.executeImport(req.getParameter("source"),new Long(req.getParameter("surveyId")));
-		}else if ("deleteSurveyResponses".equals(action)) {
+		} else if ("importsinglesurvey".equals(action)) {
+			TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION)
+					.param(DataProcessorRequest.SOURCE_PARAM,
+							req.getParameter("source"))
+					.param(DataProcessorRequest.SURVEY_ID_PARAM,
+							req.getParameter("surveyId"));
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
+		} else if ("rescoreap".equals(action)) {
+			TaskOptions options = TaskOptions.Builder
+			.withUrl("/app_worker/dataprocessor")
+			.param(DataProcessorRequest.ACTION_PARAM,
+					DataProcessorRequest.RESCORE_AP_ACTION)
+			.param(DataProcessorRequest.COUNTRY_PARAM,
+					req.getParameter("country"));
+	com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+			.getDefaultQueue();
+	queue.add(options);
+		} else if ("deleteSurveyResponses".equals(action)) {
 			if (req.getParameter("surveyId") == null) {
 				try {
 					resp.getWriter()
@@ -1548,7 +1567,7 @@ public class TestHarnessServlet extends HttpServlet {
 					"/app_worker/dataprocessor").param(
 					DataProcessorRequest.ACTION_PARAM,
 					DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
-			
+
 			if (req.getParameter("bypassBackend") == null
 					|| !req.getParameter("bypassBackend").equals("true")) {
 				// change the host so the queue invokes the backend
@@ -1557,7 +1576,7 @@ public class TestHarnessServlet extends HttpServlet {
 								BackendServiceFactory.getBackendService()
 										.getBackendAddress("dataprocessor"));
 			}
-			
+
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);

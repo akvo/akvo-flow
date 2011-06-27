@@ -557,7 +557,7 @@ public class AccessPointHelper {
 		}
 
 		if (ap != null) {
-			//ap = this.scoreAccessPointDynamic(ap);
+			// ap = this.scoreAccessPointDynamic(ap);
 			return ap;
 		} else
 			return null;
@@ -731,7 +731,8 @@ public class AccessPointHelper {
 					scoreBucketMap.put(item.getScoreBucketId(), 0);
 				}
 				try {
-					AccessPointScoreComputationItem apsi = executeItemScore(ap, score, item);
+					AccessPointScoreComputationItem apsi = executeItemScore(ap,
+							score, item);
 					score = apsi.getScoreItem();
 					apsciList.add(apsi);
 				} catch (IllegalAccessException e) {
@@ -928,8 +929,15 @@ public class AccessPointHelper {
 				"About to compute score for: " + ap.getCommunityCode());
 		Integer score = 0;
 
-		if (ap.isImprovedWaterPointFlag() != null
-				&& ap.isImprovedWaterPointFlag()) {
+		//added other conditions to guess if it's an improved point or not since the scoring seems like it's flawed
+		if ((ap.isImprovedWaterPointFlag() != null && ap
+				.isImprovedWaterPointFlag())
+				|| (ap.getConstructionDateYear() != null && !ap
+						.getConstructionDateYear().trim()
+						.equalsIgnoreCase("na"))
+				|| (ap.getConstructionDateYear() != null && !ap
+						.getConstructionDateYear().trim()
+						.equalsIgnoreCase("n/a"))) {
 			score++;
 			apss.addScoreComputationItem(1,
 					"Plus 1 for Improved Water System = true: ");
