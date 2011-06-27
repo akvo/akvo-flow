@@ -893,7 +893,7 @@ if(display != null && display.trim().equalsIgnoreCase(GOOGLE_EARTH_DISPLAY)){
 			prefix = "sani";
 		} else if (AccessPointType.SCHOOL == type) {
 			prefix = "schwater";
-		} else if (AccessPointType.PUBLIC_INSTITUTION == type) {
+		} else if (AccessPointType.PUBLIC_INSTITUTION == type || AccessPointType.HEALTH_POSTS == type) {
 			prefix = "pubwater";
 		}
 		if (AccessPoint.Status.FUNCTIONING_HIGH == status) {
