@@ -372,4 +372,8 @@
         <property name="surveyedLocaleId" direction="asc"/>
         <property name="collectionDate" direction="desc"/>
     </datastore-index>
+    <datastore-index kind="AccessPointScoreComputationItem" ancestor="true" source="manual">
+        <property name="scoreComputationItems_INTEGER_IDX" direction="asc"/>
+    </datastore-index>
+    
 </datastore-indexes>
