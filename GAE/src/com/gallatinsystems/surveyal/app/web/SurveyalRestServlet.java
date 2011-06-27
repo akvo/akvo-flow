@@ -215,7 +215,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			l.setSublevel4(geoPlace.getSub4());
 			l.setSublevel5(geoPlace.getSub5());
 			l.setSublevel6(geoPlace.getSub6());
-		} else if (geoPlace == null && l.getCountryCode() == null) {
+		} else if (geoPlace == null || l.getCountryCode() == null) {
 			GeoPlace geoPlaceCountry = gs.findGeoPlace(l.getLatitude()
 					.toString(), l.getLongitude().toString());
 			if (geoPlaceCountry != null) {
