@@ -1221,12 +1221,14 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("importallsurveys".equals(action)) {
 			// Only run in dev hence hardcoding
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			sri.executeImport("http://watermapmonitordev.appspot.com",
-					"http://localhost:8888");
+			sri.executeImport("http://watermapmonitordev.appspot.com",null);
 			// sri.executeImport("http://localhost:8888",
 			// "http://localhost:8888");
 
-		} else if ("deleteSurveyResponses".equals(action)) {
+		} else if("importsinglesurvey".equals(action)){
+			SurveyReplicationImporter sri = new SurveyReplicationImporter();
+			sri.executeImport(req.getParameter("source"),new Long(req.getParameter("surveyId")));
+		}else if ("deleteSurveyResponses".equals(action)) {
 			if (req.getParameter("surveyId") == null) {
 				try {
 					resp.getWriter()

@@ -24,26 +24,38 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyReplicationImporter {
-	
+
 	public static void main(String[] args) {
 		SurveyReplicationImporter sri = new SurveyReplicationImporter();
 	}
 
-	
-	public void executeImport(String sourceBase, String serverBase) {
+	public void executeImport(String sourceBase, Long surveyId) {
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyDAO sDao = new SurveyDAO();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		QuestionDao qDao = new QuestionDao();
-
+		boolean hasFoundSurvey = false;
 		try {
 			for (SurveyGroup sg : fetchSurveyGroups(sourceBase)) {
 				System.out.println("surveygroup: " + sg.getName() + ":"
 						+ sg.getCode());
-				sgDao.save(sg);
+				if (surveyId == null) {
+					sgDao.save(sg);
+				}
 				for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase)) {
 					System.out.println("  survey:" + s.getCode());
-					sDao.save(s);
+					if (surveyId != null && surveyId.equals(s.getKey().getId())) {
+						sgDao.save(sg);
+						sDao.save(s);
+						hasFoundSurvey = true;
+					} else if (surveyId != null) {
+						// if survey ID is not null but isn't matching, skip to
+						// next survey
+						continue;
+					} else {
+						sDao.save(s);
+					}
+
 					for (QuestionGroup qg : fetchQuestionGroups(s.getKey()
 							.getId(), sourceBase)) {
 						System.out.println("     qg:" + qg.getCode());
@@ -53,6 +65,11 @@ public class SurveyReplicationImporter {
 							System.out.println("       q" + q.getText());
 							qDao.save(q, qg.getKey().getId());
 						}
+					}
+					if (hasFoundSurvey) {
+						// if we've saved the survey we're looking for, we're
+						// done
+						return;
 					}
 				}
 			}
