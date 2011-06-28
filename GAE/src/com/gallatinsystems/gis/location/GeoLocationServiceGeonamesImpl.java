@@ -294,8 +294,10 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 					if (containsFlag) {
 						place = new GeoPlace();
 						countryCode = item.getCountryCode();
-						place.setCountryCode(countryCode);
-						place.setCountryName(item.getName());
+						if (countryCode != null) {
+							place.setCountryCode(countryCode);
+							place.setCountryName(item.getName());
+						}
 						place.setSub1(item.getSub1());
 						place.setSub2(item.getSub2());
 						place.setSub3(item.getSub3());
