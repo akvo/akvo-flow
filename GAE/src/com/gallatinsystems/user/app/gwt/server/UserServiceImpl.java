@@ -133,12 +133,12 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 						dtoList.add(confDto);
 					}
 					userDto.setConfig(configMap);
-					userDto.setUserName(u.getUserName());
-					userDto.setEmailAddress(u.getEmailAddress());
-					userDto.setPermissionList(u.getPermissionList());
-					userDto.setAdmin(userService.isUserAdmin());
-					userDto.setKeyId(u.getKey().getId());					
 				}
+				userDto.setUserName(u.getUserName());
+				userDto.setEmailAddress(u.getEmailAddress());
+				userDto.setPermissionList(u.getPermissionList());
+				userDto.setAdmin(userService.isUserAdmin());
+				userDto.setKeyId(u.getKey().getId());
 			} else {
 				userDto.setHasAccess(false);
 				userDto.setLogoutUrl(userService
@@ -161,7 +161,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 		if (user.getUserName() != null) {
 			newUser.setUserName(user.getUserName());
 		}
-		if(user.getPermissionList() != null){
+		if (user.getPermissionList() != null) {
 			newUser.setPermissionList(user.getPermissionList());
 		}
 		if (user.getConfig() != null) {
@@ -194,8 +194,8 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 * @param emailAddress
 	 */
 	public void deletePortletConfig(UserConfigDto dto, String emailAddress) {
-		UserConfig c = findUserConfig(emailAddress, dto.getGroup(), dto
-				.getName(), false);
+		UserConfig c = findUserConfig(emailAddress, dto.getGroup(),
+				dto.getName(), false);
 		if (c != null) {
 			userDao.delete(c);
 		}
@@ -211,8 +211,8 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	 */
 	public void updateUserConfigItem(String emailAddress, String configGroup,
 			UserConfigDto confDto) {
-		UserConfig conf = findUserConfig(emailAddress, configGroup, confDto
-				.getName(), true);
+		UserConfig conf = findUserConfig(emailAddress, configGroup,
+				confDto.getName(), true);
 		if (conf != null) {
 			// update the value and persist
 			conf.setValue(confDto.getValue());
@@ -292,18 +292,19 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 			userDao.delete(u);
 		}
 	}
-	
+
 	/**
 	 * lists all permissions
+	 * 
 	 * @return
 	 */
-	public List<PermissionDto> listPermissions(){
-		List<Permission> permissionList =userDao.listPermissions();
+	public List<PermissionDto> listPermissions() {
+		List<Permission> permissionList = userDao.listPermissions();
 		List<PermissionDto> dtoList = new ArrayList<PermissionDto>();
-		if(permissionList!= null){
-			for(Permission p: permissionList){
+		if (permissionList != null) {
+			for (Permission p : permissionList) {
 				PermissionDto pd = new PermissionDto();
-				DtoMarshaller.copyToDto(p,pd);
+				DtoMarshaller.copyToDto(p, pd);
 				dtoList.add(pd);
 			}
 		}
