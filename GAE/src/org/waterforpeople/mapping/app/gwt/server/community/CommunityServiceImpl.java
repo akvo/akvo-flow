@@ -11,6 +11,7 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.domain.Community;
 
+import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.dao.SubCountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.geography.domain.SubCountry;
@@ -53,7 +54,8 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 	public CountryDto[] listCountries() {
 		CommunityDao commDao = new CommunityDao();
 		CountryDto[] dtoList = null;
-		List<Country> cList = commDao.list(Country.class, "all");
+		CountryDao countryDao = new CountryDao();
+		List<Country> cList= countryDao.list("displayName", "asc", "all");
 		if (cList != null) {
 			dtoList = new CountryDto[cList.size()];
 			for (int i = 0; i < cList.size(); i++) {
@@ -77,6 +79,11 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<SubCountryDto> listChildSubCountries(String country,
 			Long parentId) {
+		if(parentId==null){
+			CountryDao countryDao = new CountryDao();
+			parentId = countryDao.findByCode(country).getKey().getId();
+		}
+		
 		SubCountryDao subDao = new SubCountryDao();
 		List<SubCountryDto> results = null;
 		List<SubCountry> subCountries = null;

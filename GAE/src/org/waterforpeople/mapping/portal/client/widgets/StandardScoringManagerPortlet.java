@@ -7,6 +7,11 @@ import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
+import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
+import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.community.SubCountryDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoreBucketDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
@@ -54,13 +59,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private DateTimeFormat dateFormat = null;
 	private static Boolean errorMode = null;
 	private StandardScoringManagerServiceAsync svc;
+	private CommunityServiceAsync communitySvc;
 	private static final Integer PAGE_SIZE = 40;
 	private TreeMap<String, String> objectAttributes = null;
 	PaginatedDataTable<StandardScoringDto> scoringTable;
 	private VerticalPanel mainVPanel = new VerticalPanel();
 	ScrollPanel scrollP = new ScrollPanel();
 	private AccessPointManagerServiceAsync apSvc = null;
-	private ArrayList<String> countryCodesList = null;
+	private ArrayList<CountryDto> countryCodesList = null;
 	private ListBox scoreBucketsBox = new ListBox();
 
 	private static final DataTableHeader HEADERS[] = {
@@ -133,6 +139,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private void init() {
 		svc = GWT.create(StandardScoringManagerService.class);
 		apSvc = GWT.create(AccessPointManagerService.class);
+		communitySvc = GWT.create(CommunityService.class);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		scoringTable = new PaginatedDataTable<StandardScoringDto>(
@@ -141,8 +148,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		contentPane.add(header);
 		setContent(contentPane);
 		errorMode = false;
-		loadAttributes();
-		loadStandardScoreBuckets();
+
 		loadCountries();
 		scoringTable.setVisible(false);
 		tablePanel.add(scoreBucketsBox);
@@ -200,7 +206,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	private void loadCountries() {
-		apSvc.listCountryCodes(new AsyncCallback<List<String>>() {
+		communitySvc.listCountries(new AsyncCallback<CountryDto[]>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -209,8 +215,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 
 			@Override
-			public void onSuccess(List<String> result) {
-				countryCodesList = (ArrayList) result;
+			public void onSuccess(CountryDto[] result) {
+				if (countryCodesList == null)
+					countryCodesList = new ArrayList<CountryDto>();
+				for (CountryDto item : result) {
+					countryCodesList.add(item);
+				}
+				loadAttributes();
 
 			}
 		});
@@ -235,7 +246,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	@Override
-	public void bindRow(Grid grid, StandardScoringDto item, int row) {
+	public void bindRow(Grid grid, StandardScoringDto item, final int row) {
 		if (item != null) {
 			currentItem = item;
 		} else {
@@ -250,26 +261,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			global.setSelectedIndex(1);
 		}
 		grid.setWidget(row, 0, global);
-
-		ListBox country = new ListBox();
-		int i = 1;
-		country.addItem(" ");
-		country.setSelectedIndex(0);
-		for (String countryCode : countryCodesList) {
-			country.addItem(countryCode);
-			if (item != null && item.getCountryCode() != null) {
-				if (countryCode.equals(item.getCountryCode())) {
-					country.setSelectedIndex(i);
-				}
-			}
-			i++;
-		}
-
-		grid.setWidget(row, 1, country);
-
-		TextBox subValue = new TextBox();
+		String selectedCountry = null;
+		if (item.getCountryCode() != null)
+			selectedCountry = item.getCountryCode();
+		populateCountryCodeControl(grid, selectedCountry, row);
+		ListBox subValue = new ListBox();
 		if (item != null && item.getSubValue() != null) {
-			subValue.setText(item.getSubValue());
+			// ToDo fix the sub value loading
+			// subValue.setText(item.getSubValue());
 		}
 		grid.setWidget(row, 2, subValue);
 
@@ -306,6 +305,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		fields.addItem(" ");
 		fields.setSelectedIndex(0);
 		int ifield = 1;
+		int i = 0;
 		if (objectAttributes.size() > 0) {
 			for (Entry<String, String> field : objectAttributes.entrySet()) {
 				if (field.getValue() != null)
@@ -352,9 +352,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			negativeCriteria.setText(item.getNegativeCriteria());
 		}
 		grid.setWidget(row, 11, negativeCriteria);
-		
-		//negativeoperator 12
-		
+
+		// negativeoperator 12
+
 		TextBox negativeScore = new TextBox();
 		if (item != null && item.getNegativeScore() != null) {
 			negativeScore.setText(item.getNegativeScore().toString());
@@ -465,6 +465,70 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				});
 			}
 		});
+	}
+
+	private void populateCountryCodeControl(Grid grid, String selectedCountry,
+			final Integer row) {
+		ListBox country = new ListBox();
+		int i = 1;
+		country.addItem(" ");
+		country.setSelectedIndex(0);
+		for (CountryDto countryCode : countryCodesList) {
+			country.addItem(countryCode.getDisplayName(),
+					countryCode.getIsoAlpha2Code());
+			if (selectedCountry != null) {
+				if (countryCode.equals(selectedCountry)) {
+					country.setSelectedIndex(i);
+				}
+			}
+			i++;
+		}
+
+		grid.setWidget(row, 1, country);
+		country.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				ListBox country = (ListBox) scoringTable.getGrid().getWidget(
+						row, 1);
+				String countryCode = country.getValue(country
+						.getSelectedIndex());
+				Long id = null;
+				communitySvc.listChildSubCountries(countryCode,id,
+						new AsyncCallback<List<SubCountryDto>>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+							}
+
+							@Override
+							public void onSuccess(List<SubCountryDto> result) {
+								populateSubLevelControl(scoringTable.getGrid(),null,row,result);
+							}
+						});
+			}
+		});
+	}
+
+	private void populateSubLevelControl(Grid grid, String selectedCountry,
+			final Integer row, List<SubCountryDto> subCountryDtoList) {
+		ListBox country = new ListBox();
+		int i = 1;
+		country.addItem(" ");
+		country.setSelectedIndex(0);
+		for (SubCountryDto countryCode : subCountryDtoList) {
+			country.addItem(countryCode.getName(),
+					countryCode.getKeyId().toString());
+			if (selectedCountry != null) {
+				if (countryCode.equals(selectedCountry)) {
+					country.setSelectedIndex(i);
+				}
+			}
+			i++;
+		}
+
+		grid.setWidget(row, 2, country);
 	}
 
 	private static Integer selectedRow = null;
@@ -741,7 +805,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					@Override
 					public void onSuccess(TreeMap<String, String> result) {
 						objectAttributes = result;
-
+						loadStandardScoreBuckets();
 					}
 				});
 

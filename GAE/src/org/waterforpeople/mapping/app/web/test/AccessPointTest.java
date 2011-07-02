@@ -36,8 +36,12 @@ public class AccessPointTest {
 					// Random().nextInt(10));
 					// double lat = -15 + (new Random().nextDouble() / new
 					// Random().nextInt(10));
-					double lon = -106;
-
+					
+					//ghana 7.9596438809,-1.20704621427
+//					double lon = -106;
+//					double lat = 39.1;
+					double lon = -1.1;
+					double lat = 7.0;
 					if (getRandomBoolean()) {
 						lon = lon
 								+ (new Random().nextDouble() * new Random()
@@ -48,7 +52,7 @@ public class AccessPointTest {
 										.nextInt(10));
 
 					}
-					double lat = 39.1;
+					
 					if (getRandomBoolean()) {
 						lat = lat
 								+ (new Random().nextDouble() * new Random()
@@ -71,7 +75,7 @@ public class AccessPointTest {
 					AccessPoint ap = new AccessPoint();
 					ap.setLatitude(lat);
 					ap.setLongitude(lon);
-
+					ap.setCountryCode("GH");
 					Date today = new Date();
 					System.out
 							.println("AP: " + ap.getLatitude() + "/"

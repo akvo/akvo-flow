@@ -28,4 +28,22 @@ public class CountryDao extends BaseDAO<Country> {
 
 	}
 
+	public Country findByCode(String code){
+		String propertyName = null;
+		String propertyType = null;
+		//Todo create a scanner and test for number
+		
+		if(code.trim().length()==2){
+			propertyName = "isoAlpha2Code";
+			propertyType = "String";
+		}else if(code.trim().length()==3){
+			propertyName = "isoAlpha3Code";
+			propertyType = "String";
+		}
+		Country country = super.findByProperty(propertyName, code, propertyType);
+		if (country!=null)
+			return country;
+		else
+			return null;
+	}
 }

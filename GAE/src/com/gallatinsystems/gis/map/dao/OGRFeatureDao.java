@@ -10,6 +10,8 @@ import javax.jdo.PersistenceManager;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.gis.geography.dao.CountryDao;
+import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
 
@@ -250,17 +252,31 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 	public OGRFeature save(OGRFeature item) {
 		// If type == country then must update can't have 2 shapes for 1 country
 		if (item.getFeatureType().equals(FeatureType.COUNTRY)) {
-			OGRFeature existingItem = findByCountryAndType(item
-					.getCountryCode(), FeatureType.COUNTRY);
+			OGRFeature existingItem = findByCountryAndType(
+					item.getCountryCode(), FeatureType.COUNTRY);
 			if (existingItem != null) {
 				existingItem.setGeometry(item.getGeometry());
 				existingItem.setBoundingBox(item.getBoundingBox());
 				super.save(existingItem);
-				return existingItem;
+				item = existingItem;
 			} else {
 				super.save(item);
-				return item;
 			}
+			// Save to country table as well so that we have populated it
+			CountryDao countryDao = new CountryDao();
+			Country country = countryDao.findByCode(item.getCountryCode());
+			if (country == null) {
+				country = new Country();
+				country.setName(item.getName());
+				country.setDisplayName(item.getName());
+				country.setIsoAlpha2Code(item.getCountryCode());
+				countryDao.save(country);
+			}else if(country.getName()==null || country.getDisplayName()==null){
+				country.setName(item.getName());
+				country.setDisplayName(item.getName());
+				countryDao.save(country);
+			}
+			return item;
 		} else {
 			ArrayList<String> subList = new ArrayList<String>();
 			if (item.getSub1() != null) {
@@ -282,8 +298,8 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				subList.add(item.getSub6());
 			}
 
-			OGRFeature existingItem = findByCountryTypeAndSub(item
-					.getCountryCode(), item.getName(),
+			OGRFeature existingItem = findByCountryTypeAndSub(
+					item.getCountryCode(), item.getName(),
 					FeatureType.SUB_COUNTRY_OTHER, subList);
 			if (existingItem != null) {
 				boolean isSame = true;
