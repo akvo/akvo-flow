@@ -64,9 +64,9 @@ public class NotificationSubscriptionWidget extends Composite {
 						.getNotificationOption());
 			} else {
 				optionSelector.setSelectedIndex(0);
-			}
-			subscription = new NotificationSubscriptionDto();
+			}	
 		} else {
+			subscription = new NotificationSubscriptionDto();
 			subscription.setNotificationMethod("EMAIL");
 		}
 	}

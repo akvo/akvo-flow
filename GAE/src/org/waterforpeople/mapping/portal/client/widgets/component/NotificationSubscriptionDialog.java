@@ -177,6 +177,7 @@ public class NotificationSubscriptionDialog extends DialogBox {
 
 		if (subscriptionTable != null) {
 			subscriptionTable.clear(true);
+			subscriptionTable.removeAllRows();
 		} else {
 			subscriptionTable = new FlexTable();
 		}
