@@ -283,6 +283,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		List<String> questionIdList = (List<String>) results[0];
 		List<String> unsummarizable = (List<String>) results[1];
 		int curRow = 1;
+		Map<String, String> collapseIdMap = new HashMap<String, String>();
+		Map<String, String> nameToIdMap = new HashMap<String, String>();
+		for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
+				.entrySet()) {
+			for (QuestionDto q : groupEntry.getValue()) {
+				if (q.getCollapseable()!=null && q.getCollapseable()) {
+					if (collapseIdMap.get(q.getText()) == null) {
+						collapseIdMap.put(q.getText(), q.getKeyId().toString());
+					}
+					nameToIdMap.put(q.getKeyId().toString(), q.getText());
+				}
+			}
+		}
+
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCES.get(locale)));
 		Map<String, String> instanceMap = BulkDataServiceClient
@@ -335,9 +349,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (generateSummary) {
 					for (Entry<String, String> entry : responseMap.entrySet()) {
 						if (!unsummarizable.contains(entry.getKey())) {
+							String effectiveId = entry.getKey();
+							if (nameToIdMap.get(effectiveId) != null) {
+								effectiveId = collapseIdMap.get(nameToIdMap
+										.get(effectiveId));
+							}
 							String[] vals = entry.getValue().split("\\|");
 							for (int i = 0; i < vals.length; i++) {
-								model.tallyResponse(entry.getKey(), sector,
+								model.tallyResponse(effectiveId, sector,
 										vals[i]);
 							}
 						}
@@ -425,6 +444,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					if (!(QuestionType.OPTION == question.getType() || QuestionType.NUMBER == question
 							.getType())) {
 						continue;
+					} else {
+						if (summaryModel.getResponseCountsForQuestion(
+								question.getKeyId(), sector).size() == 0) {
+							//if there is no data, skip the question
+							continue;
+						}
 					}
 					// for both options and numeric, we want a pie chart and
 					// data table for numeric, we also want descriptive
