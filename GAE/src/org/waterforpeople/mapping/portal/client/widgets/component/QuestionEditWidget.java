@@ -70,6 +70,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private TextBox validationRuleBox;
 	private CheckBox mandatoryBox;
 	private CheckBox dependentBox;
+	private CheckBox collapseableBox;
 	private ListBox dependentQuestionSelector;
 	private ListBox dependentAnswerSelector;
 	private CaptionPanel dependencyPanel;
@@ -96,8 +97,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	public QuestionEditWidget() {
 		surveyService = GWT.create(SurveyService.class);
 		optionQuestions = new HashMap<Long, List<QuestionDto>>();
-		locale = com.google.gwt.i18n.client.LocaleInfo
-				.getCurrentLocale().getLocaleName();
+		locale = com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
+				.getLocaleName();
 		if ("Default".equalsIgnoreCase(locale) || "en".equalsIgnoreCase(locale)) {
 			needTranslations = false;
 		} else {
@@ -119,6 +120,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		tooltipArea.setWidth(DEFAULT_BOX_WIDTH);
 		validationRuleBox = new TextBox();
 		mandatoryBox = new CheckBox();
+		collapseableBox = new CheckBox();
 		dependentBox = new CheckBox();
 		dependentBox.addClickHandler(this);
 		questionTypeSelector = new ListBox();
@@ -139,7 +141,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		questionTypeSelector.addChangeHandler(this);
 		basePanel = new CaptionPanel(TEXT_CONSTANTS.questionBasics());
 
-		Grid grid = new Grid(7, 2);
+		Grid grid = new Grid(8, 2);
 		basePanel.add(grid);
 
 		ViewUtil.installGridRow(TEXT_CONSTANTS.questionText(),
@@ -149,10 +151,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		ViewUtil.installGridRow(TEXT_CONSTANTS.tooltip(), tooltipArea, grid, 2);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.validationRule(),
 				validationRuleBox, grid, 3);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.collapseable(), collapseableBox,
+				grid, 4);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.mandatory(), mandatoryBox, grid,
-				4);
-		ViewUtil.installGridRow(TEXT_CONSTANTS.dependent(), dependentBox, grid,
 				5);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.dependent(), dependentBox, grid,
+				6);
 
 		dependencyPanel = new CaptionPanel(TEXT_CONSTANTS.dependencyDetails());
 		dependentQuestionSelector = new ListBox();
@@ -224,6 +228,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					break;
 				}
 			}
+		}
+		if (currentQuestion.getCollapseable() != null) {
+			collapseableBox.setValue(currentQuestion.getCollapseable());
+		} else {
+			collapseableBox.setValue(false);
 		}
 		if (currentQuestion.getMandatoryFlag() != null) {
 			mandatoryBox.setValue(currentQuestion.getMandatoryFlag());
@@ -416,8 +425,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		} else {
 			showLoading(dependencyPanel, TEXT_CONSTANTS.loading());
 			surveyService.listSurveyQuestionByType(
-					currentQuestion.getSurveyId(), QuestionType.OPTION,needTranslations,
-					new AsyncCallback<QuestionDto[]>() {
+					currentQuestion.getSurveyId(), QuestionType.OPTION,
+					needTranslations, new AsyncCallback<QuestionDto[]>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
@@ -428,8 +437,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						@Override
 						public void onSuccess(QuestionDto[] result) {
 							if (result != null) {
-								List<QuestionDto> questionList = new ArrayList<QuestionDto>(Arrays
-										.asList(result));
+								List<QuestionDto> questionList = new ArrayList<QuestionDto>(
+										Arrays.asList(result));
 								optionQuestions.put(
 										currentQuestion.getSurveyId(),
 										questionList);
@@ -682,6 +691,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			validationMessages.add(TEXT_CONSTANTS.questionTextMandatory());
 		}
 		currentQuestion.setTip(tooltipArea.getText());
+		currentQuestion.setCollapseable(collapseableBox.getValue());
 		if (tooltipArea.getText() != null) {
 			if (tooltipArea.getText().length() > MAX_LEN) {
 				validationMessages.add(TEXT_CONSTANTS.tooltip() + ": "

@@ -23,6 +23,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
 	private Long questionGroupId;
+	private Boolean collapseable;
 	private Map<String, TranslationDto> translationMap;
 	private String path;
 	private Integer order;
@@ -207,5 +208,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		}else{
 			return 0; 
 		}
+	}
+
+	public void setCollapseable(Boolean collapseable) {
+		this.collapseable = collapseable;
+	}
+
+	public Boolean getCollapseable() {
+		return collapseable;
 	}
 }

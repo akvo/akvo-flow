@@ -28,6 +28,7 @@ public class Question extends BaseDomain {
 	private Boolean dependentFlag = null;
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
+	private Boolean collapseable = false;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
 	@NotPersistent
@@ -91,10 +92,10 @@ public class Question extends BaseDomain {
 	public void setTranslationMap(Map<String, Translation> translationMap) {
 		this.translationMap = translationMap;
 	}
-	
-	public void setTranslationMap(HashMap<String,Translation> transMap){
-		if(transMap != null){
-			translationMap = new TreeMap<String,Translation>(transMap);
+
+	public void setTranslationMap(HashMap<String, Translation> transMap) {
+		if (transMap != null) {
+			translationMap = new TreeMap<String, Translation>(transMap);
 		}
 	}
 
@@ -200,6 +201,7 @@ public class Question extends BaseDomain {
 
 	/**
 	 * use helpMedia instead
+	 * 
 	 * @return
 	 */
 	@Deprecated
@@ -235,5 +237,13 @@ public class Question extends BaseDomain {
 
 	public void setScoringRules(List<ScoringRule> scoringRules) {
 		this.scoringRules = scoringRules;
+	}
+
+	public void setCollapseable(Boolean collapseable) {
+		this.collapseable = collapseable;
+	}
+
+	public Boolean getCollapseable() {
+		return collapseable;
 	}
 }

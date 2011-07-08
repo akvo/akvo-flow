@@ -189,8 +189,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 			surveyGroupDtoList.add(dto);
 		}
-		response.setPayload(surveyGroupDtoList);		
-		response.setCursorString(SurveyGroupDAO.getCursor(groupList));		
+		response.setPayload(surveyGroupDtoList);
+		response.setCursorString(SurveyGroupDAO.getCursor(groupList));
 		return response;
 	}
 
@@ -238,7 +238,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				dto.setKeyId(s.getKey().getId());
 				dto.setPath(s.getPath());
 				dto.setCode(s.getCode());
-				dto.setPointType(s.getPointType());				
+				dto.setPointType(s.getPointType());
 				if (s.getStatus() != null) {
 					dto.setStatus(s.getStatus().toString());
 				}
@@ -293,6 +293,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		} else {
 			qDto.setMandatoryFlag(false);
 		}
+		qDto.setCollapseable(q.getCollapseable());
 		if (q.getText() != null)
 			qDto.setText(q.getText());
 		if (q.getTip() != null)
@@ -475,6 +476,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					.getAnswerValue());
 			q.setDependentFlag(true);
 		}
+		q.setCollapseable(qdto.getCollapseable());
 
 		if (qdto.getTranslationMap() != null) {
 			TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto

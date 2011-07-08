@@ -549,5 +549,6 @@ public interface TextConstants extends Constants{
 	public String negativeMessage();
 	public String importFixedFormatFile();
 	public String importFixedFormatFileDescription();
+	public String collapseable();
 }
 
