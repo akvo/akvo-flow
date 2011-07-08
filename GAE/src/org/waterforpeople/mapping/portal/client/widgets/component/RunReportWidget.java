@@ -130,7 +130,7 @@ public class RunReportWidget extends MenuBasedWidget {
 												.get(SurveySelectionDialog.SURVEY_KEY));
 							}
 						}
-					});
+					},false);
 			surveyDia.showCentered();
 		}
 	}

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.SelectionMode;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
@@ -28,20 +29,22 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class SurveySelectionDialog extends WidgetDialog implements ClickHandler {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);	
+			.create(TextConstants.class);
 	public static final String SURVEY_KEY = "survey";
 	private SurveySelectionWidget selector;
 	private Button okButton;
-	private Button cancelButton;	
+	private Button cancelButton;
 	private Label messageLabel;
 
-	public SurveySelectionDialog(CompletionListener listener) {
+	public SurveySelectionDialog(CompletionListener listener,
+			boolean allowMultiple) {
 		super(TEXT_CONSTANTS.selectSurvey(), null, true, listener);
 		Panel panel = new VerticalPanel();
 		messageLabel = new Label();
 		Panel buttonPanel = new HorizontalPanel();
+		
 		selector = new SurveySelectionWidget(Orientation.HORIZONTAL,
-				TerminalType.SURVEY);
+				TerminalType.SURVEY,allowMultiple?SelectionMode.MULTI:SelectionMode.SINGLE);
 		panel.add(selector);
 		panel.add(messageLabel);
 		messageLabel.setVisible(false);
@@ -55,6 +58,10 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 		setContentWidget(panel);
 	}
 
+	public SurveySelectionDialog(CompletionListener listener) {
+		this(listener, true);
+	}
+
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == cancelButton) {
@@ -62,8 +69,7 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 		} else if (event.getSource() == okButton) {
 			if (selector.getSelectedSurveyIds() == null
 					|| selector.getSelectedSurveyIds().size() == 0) {
-				messageLabel
-						.setText(TEXT_CONSTANTS.selectSurveyFirst());
+				messageLabel.setText(TEXT_CONSTANTS.selectSurveyFirst());
 				messageLabel.setVisible(true);
 			} else {
 				hide(true);
