@@ -25,6 +25,8 @@ import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -58,6 +60,7 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	private ListBox selectedDevicesListbox;
 	private ListBox selectedSurveyListbox;
 	private TextBox eventName;
+	private TextBox deviceFilter;
 	private DateBox effectiveStartDate;
 	private DateBox effectiveEndDate;
 	private Button addSelectedButton;
@@ -80,14 +83,37 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	private Composite constructSelectorPanel() {
 		Panel mainPanel = new VerticalPanel();
 		Panel selectorPanel = new HorizontalPanel();
-		CaptionPanel selectorPanelCap = new CaptionPanel(TEXT_CONSTANTS
-				.selectionCriteria());
+		CaptionPanel selectorPanelCap = new CaptionPanel(
+				TEXT_CONSTANTS.selectionCriteria());
 		selectorPanelCap.add(mainPanel);
 		surveySelectWidget = new SurveySelectionWidget(Orientation.VERTICAL,
 				TerminalType.SURVEY);
 		selectorPanel.add(surveySelectWidget);
 		VerticalPanel devPanel = new VerticalPanel();
 		devPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.devices(), LABEL_STYLE));
+		deviceFilter = new TextBox();
+		devPanel.add(deviceFilter);
+		deviceFilter.addKeyUpHandler(new KeyUpHandler() {
+
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
+				String text = deviceFilter.getText();
+				if (text != null) {
+					List<DeviceDto> filteredDevices = new ArrayList<DeviceDto>();
+					for (DeviceDto dto : allDevices) {
+						if (dto.getPhoneNumber().startsWith(text)) {
+							filteredDevices.add(dto);
+						} else if (dto.getDeviceIdentifier() != null
+								&& dto.getDeviceIdentifier().startsWith(text)) {
+							filteredDevices.add(dto);
+						}
+
+					}
+					populateDeviceControl(filteredDevices);
+				}
+
+			}
+		});
 		devicePickerListbox = new ListBox(true);
 		devicePickerListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
 		devPanel.add(devicePickerListbox);
@@ -100,8 +126,8 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	}
 
 	private Composite constructDetailsPanel() {
-		CaptionPanel detailPanelCap = new CaptionPanel(TEXT_CONSTANTS
-				.assignmentDetails());
+		CaptionPanel detailPanelCap = new CaptionPanel(
+				TEXT_CONSTANTS.assignmentDetails());
 		selectedDevicesListbox = new ListBox(true);
 		selectedDevicesListbox.setVisibleItemCount(DEFAULT_ITEM_COUNT);
 		selectedSurveyListbox = new ListBox(true);
@@ -124,11 +150,11 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		VerticalPanel main = new VerticalPanel();
 		main.add(labelPanel);
 		HorizontalPanel selectedItemPanel = new HorizontalPanel();
-		selectedItemPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
-				.selectedSurveys(), LABEL_STYLE));
+		selectedItemPanel.add(ViewUtil.initLabel(
+				TEXT_CONSTANTS.selectedSurveys(), LABEL_STYLE));
 		selectedItemPanel.add(selectedSurveyListbox);
-		selectedItemPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
-				.selectedDevices(), LABEL_STYLE));
+		selectedItemPanel.add(ViewUtil.initLabel(
+				TEXT_CONSTANTS.selectedDevices(), LABEL_STYLE));
 		selectedItemPanel.add(selectedDevicesListbox);
 		main.add(selectedItemPanel);
 		Panel buttonPanel = new HorizontalPanel();
@@ -167,7 +193,7 @@ public class SurveyAssignmentEditWidget extends Composite implements
 									}
 								}
 							}
-							populateDeviceControl();
+							populateDeviceControl(null);
 						}
 					}
 				});
@@ -176,14 +202,34 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	/**
 	 * installs the devices into the selection listbox
 	 */
-	private void populateDeviceControl() {
-		devicePickerListbox.clear();
-		for (DeviceDto dto : allDevices) {
-			devicePickerListbox.addItem(dto.getPhoneNumber()
-					+ (dto.getDeviceIdentifier() != null ? " ("
-							+ dto.getDeviceIdentifier() + ")" : ""), dto
-					.getKeyId().toString());
+	private void populateDeviceControl(List<DeviceDto> deviceList) {
+
+		if (deviceList == null && allDevices != null) {
+			devicePickerListbox.clear();
+			for (DeviceDto dto : allDevices) {
+				devicePickerListbox
+						.addItem(
+								dto.getPhoneNumber()
+										+ (dto.getDeviceIdentifier() != null ? " ("
+												+ dto.getDeviceIdentifier()
+												+ ")"
+												: ""), dto.getKeyId()
+										.toString());
+			}
+		} else if (deviceList != null) {
+			devicePickerListbox.clear();
+			for (DeviceDto dto : deviceList) {
+				devicePickerListbox
+						.addItem(
+								dto.getPhoneNumber()
+										+ (dto.getDeviceIdentifier() != null ? " ("
+												+ dto.getDeviceIdentifier()
+												+ ")"
+												: ""), dto.getKeyId()
+										.toString());
+			}
 		}
+
 	}
 
 	@Override
@@ -251,15 +297,14 @@ public class SurveyAssignmentEditWidget extends Composite implements
 						}
 					});
 		} else {
-			StringBuilder buf = new StringBuilder(TEXT_CONSTANTS
-					.pleaseCorrect()
-					+ "<br><ul>");
+			StringBuilder buf = new StringBuilder(
+					TEXT_CONSTANTS.pleaseCorrect() + "<br><ul>");
 			for (String e : errors) {
 				buf.append("<li>").append(e).append("</li>");
 			}
 			buf.append("</ul>");
-			MessageDialog validDia = new MessageDialog(TEXT_CONSTANTS
-					.inputError(), buf.toString());
+			MessageDialog validDia = new MessageDialog(
+					TEXT_CONSTANTS.inputError(), buf.toString());
 			validDia.showCentered();
 			listener.operationComplete(false, getContextBundle(true));
 		}
@@ -333,10 +378,11 @@ public class SurveyAssignmentEditWidget extends Composite implements
 			}
 			if (dto.getDevices() != null) {
 				for (DeviceDto d : dto.getDevices()) {
-					selectedDevicesListbox.addItem(d.getPhoneNumber()
-							+ (d.getDeviceIdentifier() != null ? " ("
-									+ d.getDeviceIdentifier() + ")" : ""), d
-							.getKeyId().toString());
+					selectedDevicesListbox.addItem(
+							d.getPhoneNumber()
+									+ (d.getDeviceIdentifier() != null ? " ("
+											+ d.getDeviceIdentifier() + ")"
+											: ""), d.getKeyId().toString());
 				}
 			}
 		}
@@ -347,6 +393,7 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	 */
 	private void resetUI() {
 		surveySelectWidget.reset();
+		populateDeviceControl(null);
 		eventName.setText("");
 		effectiveEndDate.setValue(null);
 		effectiveStartDate.setValue(null);
@@ -426,8 +473,9 @@ public class SurveyAssignmentEditWidget extends Composite implements
 					}
 				}
 				if (!alreadyThere) {
-					selectedDevicesListbox.addItem(devicePickerListbox
-							.getItemText(i), devicePickerListbox.getValue(i));
+					selectedDevicesListbox.addItem(
+							devicePickerListbox.getItemText(i),
+							devicePickerListbox.getValue(i));
 				}
 			}
 		}
