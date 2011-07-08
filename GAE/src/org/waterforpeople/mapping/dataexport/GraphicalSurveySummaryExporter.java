@@ -253,7 +253,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					}
 				}
 				FileOutputStream fileOut = new FileOutputStream(fileName);
-				wb.setActiveSheet(isFullReport?1:0);
+				wb.setActiveSheet(isFullReport ? 1 : 0);
 				wb.write(fileOut);
 				fileOut.close();
 				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
@@ -335,8 +335,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (generateSummary) {
 					for (Entry<String, String> entry : responseMap.entrySet()) {
 						if (!unsummarizable.contains(entry.getKey())) {
-							model.tallyResponse(entry.getKey(), sector,
-									entry.getValue());
+							String[] vals = entry.getValue().split("\\|");
+							for (int i = 0; i < vals.length; i++) {
+								model.tallyResponse(entry.getKey(), sector,
+										vals[i]);
+							}
 						}
 					}
 				}
@@ -365,11 +368,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
 		List<String> questionIdList = new ArrayList<String>();
 		List<String> nonSummarizableList = new ArrayList<String>();
-		
+
 		if (questionMap != null) {
 			int offset = 3;
-			for(QuestionGroupDto group: orderedGroupList){
-				if(questionMap.get(group)!=null){
+			for (QuestionGroupDto group : orderedGroupList) {
+				if (questionMap.get(group) != null) {
 					for (QuestionDto q : questionMap.get(group)) {
 						questionIdList.add(q.getKeyId().toString());
 						createCell(
