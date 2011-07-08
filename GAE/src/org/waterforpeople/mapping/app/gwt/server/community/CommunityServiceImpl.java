@@ -79,10 +79,6 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<SubCountryDto> listChildSubCountries(String country,
 			Long parentId) {
-		if(parentId==null){
-			CountryDao countryDao = new CountryDao();
-			parentId = countryDao.findByCode(country).getKey().getId();
-		}
 		
 		SubCountryDao subDao = new SubCountryDao();
 		List<SubCountryDto> results = null;
