@@ -555,10 +555,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			item.setCountryCode(country.getItemText(country.getSelectedIndex()));
 		}
 
-		TextBox subValue = (TextBox) grid.getWidget(row, 2);
-		if (subValue.getText().trim().length() > 0) {
-			item.setSubValue(subValue.getText());
+		ListBox subValue = (ListBox) grid.getWidget(row, 2);
+		if(subValue.getSelectedIndex()>0){
+			item.setSubValue(subValue.getValue(subValue.getSelectedIndex()));
 		}
+		
+		
 		ListBox pointType = (ListBox) grid.getWidget(row, 3);
 		if (pointType.getSelectedIndex() == 1) {
 			item.setPointType("WATER_POINT");
