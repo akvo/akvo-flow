@@ -30,12 +30,14 @@ import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.ScoringRule;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
@@ -90,8 +92,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyAssemblyRequest importReq = (SurveyAssemblyRequest) req;
 		if (SurveyAssemblyRequest.ASSEMBLE_SURVEY.equalsIgnoreCase(importReq
 				.getAction())) {
-			// assembleSurvey(importReq.getSurveyId());
-			assembleSurveyOnePass(importReq.getSurveyId());
+			assembleSurvey(importReq.getSurveyId());
+			// assembleSurveyOnePass(importReq.getSurveyId());
 		} else if (SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
 			this.dispatchAssembleQuestionGroup(importReq.getSurveyId(),
@@ -123,8 +125,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyContainer sc = scDao.findBySurveyId(surveyId);
 		Properties props = System.getProperties();
 		String document = sc.getSurveyDocument().getValue();
-		UploadUtil.sendStringAsFile(sc.getSurveyId() + ".xml", document,
-				props.getProperty(SURVEY_UPLOAD_DIR),
+		boolean uploadedFile = UploadUtil.sendStringAsFile(sc.getSurveyId()
+				+ ".xml", document, props.getProperty(SURVEY_UPLOAD_DIR),
 				props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
 				props.getProperty(SURVEY_UPLOAD_POLICY),
 				props.getProperty(SURVEY_UPLOAD_SIG), "text/xml");
@@ -132,7 +134,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		ByteArrayOutputStream os = ZipUtil.generateZip(document,
 				sc.getSurveyId() + ".xml");
 
-		UploadUtil.upload(os, sc.getSurveyId() + ".zip",
+		boolean uploadedZip = UploadUtil.upload(os, sc.getSurveyId() + ".zip",
 				props.getProperty(SURVEY_UPLOAD_DIR),
 				props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
 				props.getProperty(SURVEY_UPLOAD_POLICY),
@@ -140,6 +142,37 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,
 				transactionId);
+
+		Message message = new Message();
+		message.setActionAbout("surveyAssembly");
+		message.setObjectId(surveyId);
+		// String messageText = CONSTANTS.surveyPublishOkMessage() + " "
+		// + url;
+
+		if (uploadedFile && uploadedZip) {
+			String messageText = "Published.  Please check: "
+					+ props.getProperty(SURVEY_UPLOAD_URL)
+					+ props.getProperty(SURVEY_UPLOAD_DIR) + "/" + surveyId
+					+ ".xml";
+			message.setShortMessage(messageText);
+			SurveyDAO sdao = new SurveyDAO();
+			Survey s = sdao.getById(surveyId);
+			if (s != null) {
+				message.setObjectTitle(s.getPath() + "/" + s.getName());
+			}
+
+			message.setTransactionUUID(transactionId.toString());
+			MessageDao messageDao = new MessageDao();
+			messageDao.save(message);
+		} else {
+			// String messageText =
+			// CONSTANTS.surveyPublishErrorMessage();
+			String messageText = "Failed to publish: " + surveyId + "\n";
+			message.setTransactionUUID(transactionId.toString());
+			message.setMessage(messageText);
+			MessageDao messageDao = new MessageDao();
+			messageDao.save(message);
+		}
 	}
 
 	/**
