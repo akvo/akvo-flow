@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.GeocellQuery;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
@@ -26,6 +27,7 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
  * 
  */
 public class AccessPointDao extends BaseDAO<AccessPoint> {
+	private static final String SCORE_AP_FLAG = "scoreAPFlag";
 	private static final int MAX_RESULTS = 40;
 
 	public AccessPointDao() {
@@ -106,7 +108,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 
-		prepareCursor(cursorString, pageSize,query);
+		prepareCursor(cursorString, pageSize, query);
 
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
@@ -460,8 +462,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	}
 
 	public AccessPoint save(AccessPoint point) {
-		point = AccessPointHelper.scoreAccessPoint(point);
-		
+		if (Boolean.parseBoolean(PropertyUtil.getProperty(SCORE_AP_FLAG)))
+			point = AccessPointHelper.scoreAccessPoint(point);
+
 		point = super.save(point);
 		if (point.getApScoreDetailList() != null) {
 			for (AccessPointScoreDetail item : point.getApScoreDetailList()) {
