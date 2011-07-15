@@ -170,7 +170,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 		dependencyGrid = new Grid(2, 2);
 		dependencyPanel.add(dependencyGrid);
-		ViewUtil.installGridRow(null, dependencyPanel, grid, 6, 1, null);
+		ViewUtil.installGridRow(null, dependencyPanel, grid, 7, 1, null);
 		dependencyPanel.setVisible(false);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.question(),
 				dependentQuestionSelector, dependencyGrid, 0);
