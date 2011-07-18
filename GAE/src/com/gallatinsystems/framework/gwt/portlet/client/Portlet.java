@@ -38,8 +38,8 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	private static final int HEADER_HEIGHT = 20;
 	private static final int DEFAULT_WIDTH = 100;
 	private static final int DEFAULT_HEIGHT = 100;
-	private static final int FULLSCREEN_WIDTH = 1024;
-	private static final int FULLSCREEN_HEIGHT = 1000;
+	protected static final int FULLSCREEN_WIDTH = 1600;
+	protected static final int FULLSCREEN_HEIGHT = 1200;
 	private static final String CONF_TOOLTIP = "Save current portlet configuration";
 	private static final String CLOSE_TOOLTIP = "Remove portlet";
 	private static final String SNAP_TOOLTIP = "Export Snapshot Image";

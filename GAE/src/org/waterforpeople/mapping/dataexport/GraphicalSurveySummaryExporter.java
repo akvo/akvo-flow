@@ -50,7 +50,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 	private static final String SDCARD_PREFIX = "/sdcard/";
 
-	private static final Map<String, String> REPORT_HEADER;
+	private static final Map<String, String> REPORT_HEADER;	
 	private static final Map<String, String> FREQ_LABEL;
 	private static final Map<String, String> PCT_LABEL;
 	private static final Map<String, String> SUMMARY_LABEL;

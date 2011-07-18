@@ -52,10 +52,6 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			.create(TextConstants.class);
 	private static String title = "Scoring Manager";
 	private static Boolean scrollable = true;
-	private static Boolean configurable = false;
-	private static Boolean snapable = true;
-	private static Integer width = 1024;
-	private static Integer height = 768;
 	private DateTimeFormat dateFormat = null;
 	private static Boolean errorMode = null;
 	private StandardScoringManagerServiceAsync svc;
@@ -117,13 +113,6 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		return HEADERS;
 	}
 
-	public StandardScoringManagerPortlet(String title, boolean scrollable,
-			boolean configurable, boolean snapable, int width, int height,
-			UserDto user) {
-		super(title, scrollable, configurable, snapable, width, height, user);
-		init();
-	}
-
 	private Widget buildHeader() {
 		Grid grid = new Grid(2, 2);
 		// configureSearchRibbon();
@@ -132,7 +121,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	public StandardScoringManagerPortlet(UserDto user) {
-		super(title, scrollable, configurable, snapable, width, height, user);
+		super(title, true, false, false, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT,
+				user);
 		init();
 	}
 
@@ -494,7 +484,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				String countryCode = country.getValue(country
 						.getSelectedIndex());
 				Long id = null;
-				communitySvc.listChildSubCountries(countryCode,id,
+				communitySvc.listChildSubCountries(countryCode, id,
 						new AsyncCallback<List<SubCountryDto>>() {
 
 							@Override
@@ -504,7 +494,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 							@Override
 							public void onSuccess(List<SubCountryDto> result) {
-								populateSubLevelControl(scoringTable.getGrid(),null,row,result);
+								populateSubLevelControl(scoringTable.getGrid(),
+										null, row, result);
 							}
 						});
 			}
@@ -518,8 +509,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		country.addItem(" ");
 		country.setSelectedIndex(0);
 		for (SubCountryDto countryCode : subCountryDtoList) {
-			country.addItem(countryCode.getName(),
-					countryCode.getKeyId().toString());
+			country.addItem(countryCode.getName(), countryCode.getKeyId()
+					.toString());
 			if (selectedCountry != null) {
 				if (countryCode.equals(selectedCountry)) {
 					country.setSelectedIndex(i);
@@ -556,11 +547,10 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		}
 
 		ListBox subValue = (ListBox) grid.getWidget(row, 2);
-		if(subValue.getSelectedIndex()>0){
+		if (subValue.getSelectedIndex() > 0) {
 			item.setSubValue(subValue.getValue(subValue.getSelectedIndex()));
 		}
-		
-		
+
 		ListBox pointType = (ListBox) grid.getWidget(row, 3);
 		if (pointType.getSelectedIndex() == 1) {
 			item.setPointType("WATER_POINT");

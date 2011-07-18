@@ -76,8 +76,6 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					"collectionDate", true),
 			new DataTableHeader(TEXT_CONSTANTS.editDelete()) };
 
-	private static final int WIDTH = 1600;
-	private static final int HEIGHT = 800;
 	private VerticalPanel contentPane;
 	private String S3_PATH;
 
@@ -107,7 +105,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	private AccessPointSearchControl apSearchControl;
 
 	public AccessPointManagerPortlet(UserDto user) {
-		super(NAME, true, false, false, WIDTH, HEIGHT, user);
+		super(NAME, true, false, false, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, user);
 		contentPane = new VerticalPanel();
 		svc = GWT.create(AccessPointManagerService.class);
 		configureS3Path();
