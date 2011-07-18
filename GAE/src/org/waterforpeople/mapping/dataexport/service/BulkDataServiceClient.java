@@ -905,6 +905,7 @@ public class BulkDataServiceClient {
 			URL url = new URL(fullUrl);
 			System.out.println("Calling: " + url.toString());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(30000);
 			conn.setRequestMethod("GET");
 			conn.setDoOutput(true);
 
