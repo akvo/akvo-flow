@@ -755,7 +755,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void publishSurveyAsync(Long surveyId) {
-		surveyDao.incrementVersion(surveyId);
 		TaskOptions options = TaskOptions.Builder
 				.withUrl("/app_worker/surveyassembly")
 				.param("action", SurveyAssemblyRequest.ASSEMBLE_SURVEY)

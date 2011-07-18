@@ -151,13 +151,17 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		// + url;
 
 		if (uploadedFile && uploadedZip) {
+			//increment the version so devices know to pick up the changes
+			SurveyDAO surveyDao = new SurveyDAO();
+			surveyDao.incrementVersion(surveyId);
+
 			String messageText = "Published.  Please check: "
 					+ props.getProperty(SURVEY_UPLOAD_URL)
 					+ props.getProperty(SURVEY_UPLOAD_DIR) + "/" + surveyId
 					+ ".xml";
 			message.setShortMessage(messageText);
-			SurveyDAO sdao = new SurveyDAO();
-			Survey s = sdao.getById(surveyId);
+		
+			Survey s = surveyDao.getById(surveyId);
 			if (s != null) {
 				message.setObjectTitle(s.getPath() + "/" + s.getName());
 			}
@@ -220,6 +224,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// String messageText = CONSTANTS.surveyPublishOkMessage() + " "
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
+				//increment the version so devices know to pick up the changes
+				SurveyDAO surveyDao = new SurveyDAO();
+				surveyDao.incrementVersion(surveyId);
 				String messageText = "Published.  Please check: " + uc.getUrl();
 				message.setShortMessage(messageText);
 				if (qgList != null && qgList.size() > 0) {
