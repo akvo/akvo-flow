@@ -45,7 +45,9 @@ public class QuestionWidgetFactory {
 			q = new MediaQuestionWidget(question,answerCopy, question.getType().toString());
 		} else if (QuestionDto.QuestionType.OPTION == question.getType()) {
 			q = new OptionQuestionWidget(question, answerCopy,listener);
-		}		
+		}else if (QuestionDto.QuestionType.DATE == question.getType()){
+			q = new DateQuestionWidget(question, answerCopy);
+		}
 		return q;
 	}
 }

@@ -71,6 +71,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
 	public static final String STRENGTH_QUESTION_TYPE = "strength";
+	public static final String DATE_QUESTION_TYPE = "date";
 
 	private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
 	private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -187,7 +188,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// no-op
+		getResponse().setStatus(200);
 
 	}
 
@@ -485,6 +486,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			qXML.setValidationRule(vrule);
 		} else if (q.getType().equals(Question.Type.STRENGTH)) {
 			qXML.setType(STRENGTH_QUESTION_TYPE);
+		} else if (q.getType().equals(Question.Type.DATE)) {
+			qXML.setType(DATE_QUESTION_TYPE);
 		}
 
 		if (q.getOrder() != null) {

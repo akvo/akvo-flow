@@ -36,6 +36,7 @@ public class SurveyXmlDtoHelper {
 	public static final String PHOTO_QUESTION_TYPE = "photo";
 	public static final String SCAN_QUESTION_TYPE = "scan";
 	public static final String STRENGTH_QUESTION_TYPE = "strength";
+	public static final String DATE_QUESTION_TYPE = "date";
 
 	/**
 	 * parses the xml and then converts the xml objects to DTOs
@@ -130,6 +131,8 @@ public class SurveyXmlDtoHelper {
 						qDto.setType(QuestionType.SCAN);
 					} else if (STRENGTH_QUESTION_TYPE.equals(type)) {
 						qDto.setType(QuestionType.STRENGTH);
+					}else if (DATE_QUESTION_TYPE.equals(type)){
+						qDto.setType(QuestionType.DATE);
 					}
 					for (AltText alt : q.getAltText()) {
 						qDto.addTranslation(parseTranslation(alt));

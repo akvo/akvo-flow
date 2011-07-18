@@ -296,7 +296,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 							&& allowUnsigned.trim().equalsIgnoreCase("false")) {
 						throw new SignedDataException(
 								"Computed signature does not match the one submitted with the data");
-					}else{
+					} else {
 						log.warning("Signatures don't match. Processing anyway since allow unsigned is true");
 					}
 				}
@@ -359,7 +359,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// no-op
+		getResponse().setStatus(200);
 	}
 
 	private void addAccessPoint(TaskRequest req) {

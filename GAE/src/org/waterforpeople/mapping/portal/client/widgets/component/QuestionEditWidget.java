@@ -138,6 +138,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				QuestionDto.QuestionType.VIDEO.toString());
 		questionTypeSelector.addItem(TEXT_CONSTANTS.strength(),
 				QuestionDto.QuestionType.STRENGTH.toString());
+		questionTypeSelector.addItem(TEXT_CONSTANTS.date(),
+				QuestionDto.QuestionType.DATE.toString());
 		questionTypeSelector.addChangeHandler(this);
 		basePanel = new CaptionPanel(TEXT_CONSTANTS.questionBasics());
 
