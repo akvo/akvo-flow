@@ -54,5 +54,6 @@
 		<property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
 		<property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
 		<property name="optionRenderMode" value="radio"/>
+		<property name="backendpublish" value="false"/>
 	</system-properties>
 </appengine-web-app>

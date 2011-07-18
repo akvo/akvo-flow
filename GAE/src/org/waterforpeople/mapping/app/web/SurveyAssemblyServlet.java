@@ -93,8 +93,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyAssemblyRequest importReq = (SurveyAssemblyRequest) req;
 		if (SurveyAssemblyRequest.ASSEMBLE_SURVEY.equalsIgnoreCase(importReq
 				.getAction())) {
-			assembleSurvey(importReq.getSurveyId());
-			// assembleSurveyOnePass(importReq.getSurveyId());
+			// assembleSurvey(importReq.getSurveyId());
+			assembleSurveyOnePass(importReq.getSurveyId());
 		} else if (SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
 			this.dispatchAssembleQuestionGroup(importReq.getSurveyId(),

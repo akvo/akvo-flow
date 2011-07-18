@@ -75,9 +75,11 @@ import com.gallatinsystems.survey.domain.xml.Options;
 import com.gallatinsystems.survey.domain.xml.Text;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
+import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -86,6 +88,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyService {
 
+	private static final String BACKEND_PUBLISH_PROP = "backendpublish";
 	public static final String FREE_QUESTION_TYPE = "free";
 	public static final String OPTION_QUESTION_TYPE = "option";
 	public static final String GEO_QUESTION_TYPE = "geo";
@@ -753,10 +756,20 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void publishSurveyAsync(Long surveyId) {
 		surveyDao.incrementVersion(surveyId);
-		Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
-		surveyAssemblyQueue.add(url("/app_worker/surveyassembly").param(
-				"action", SurveyAssemblyRequest.ASSEMBLE_SURVEY).param(
-				"surveyId", surveyId.toString()));
+		TaskOptions options = TaskOptions.Builder
+				.withUrl("/app_worker/surveyassembly")
+				.param("action", SurveyAssemblyRequest.ASSEMBLE_SURVEY)
+				.param("surveyId", surveyId.toString());
+		if ("true".equalsIgnoreCase(PropertyUtil
+				.getProperty(BACKEND_PUBLISH_PROP))) {
+			// change the host so the queue invokes the backend
+			options = options.header("Host", BackendServiceFactory
+					.getBackendService().getBackendAddress("dataprocessor"));
+		}
+
+		com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+				.getQueue("surveyAssembly");
+		queue.add(options);
 	}
 
 	@Override
