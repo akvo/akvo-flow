@@ -437,10 +437,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			createCell(row, 0, sector + " " + REPORT_HEADER.get(locale),
 					headerStyle);
 		}
-		for (Entry<QuestionGroupDto, List<QuestionDto>> mapEntry : questionMap
-				.entrySet()) {
-			if (mapEntry.getValue() != null) {
-				for (QuestionDto question : mapEntry.getValue()) {
+		for(QuestionGroupDto group: orderedGroupList){
+			if (questionMap.get(group) != null) {
+				for (QuestionDto question : questionMap.get(group)) {
 					if (!(QuestionType.OPTION == question.getType() || QuestionType.NUMBER == question
 							.getType())) {
 						continue;
