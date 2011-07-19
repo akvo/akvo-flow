@@ -633,7 +633,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			bundle = new HashMap<String, Object>();
 		}
 		if (doPopulation) {
-			bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);
+			bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);			
 		}
 		return bundle;
 	}
@@ -675,6 +675,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 														.getSurveyId())) {
 											if (q.getKeyId().equals(
 													currentQuestion.getKeyId())) {
+												//update the text in case it was changed
+												q.setText(currentQuestion.getText());
+												q.setTranslationMap(currentQuestion.getTranslationMap());											
 												found = true;
 											}
 										}
