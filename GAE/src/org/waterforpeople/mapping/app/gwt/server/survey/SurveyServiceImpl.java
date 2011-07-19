@@ -297,6 +297,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			qDto.setMandatoryFlag(false);
 		}
 		qDto.setCollapseable(q.getCollapseable());
+		qDto.setImmutable(q.getImmutable());
 		if (q.getText() != null)
 			qDto.setText(q.getText());
 		if (q.getTip() != null)
@@ -480,6 +481,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			q.setDependentFlag(true);
 		}
 		q.setCollapseable(qdto.getCollapseable());
+		q.setImmutable(qdto.getImmutable());
 
 		if (qdto.getTranslationMap() != null) {
 			TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto

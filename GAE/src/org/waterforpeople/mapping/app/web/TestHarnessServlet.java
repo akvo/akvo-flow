@@ -1670,6 +1670,7 @@ public class TestHarnessServlet extends HttpServlet {
 		savePerm("Admin", permList, userDao);
 		savePerm("Publish Survey", permList, userDao);
 		savePerm("Run Reports", permList, userDao);
+		savePerm("Edit Immutability", permList, userDao);
 		savePerm("View Messages", permList, userDao);
 	}
 

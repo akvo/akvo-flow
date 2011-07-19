@@ -21,6 +21,8 @@ import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
+import com.gallatinsystems.user.app.gwt.client.PermissionConstants;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -71,6 +73,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private CheckBox mandatoryBox;
 	private CheckBox dependentBox;
 	private CheckBox collapseableBox;
+	private CheckBox immutableBox;
 	private ListBox dependentQuestionSelector;
 	private ListBox dependentAnswerSelector;
 	private CaptionPanel dependencyPanel;
@@ -93,9 +96,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private String operation;
 	private boolean needTranslations;
 	private String locale;
+	private UserDto currentUser;
 
-	public QuestionEditWidget() {
+	public QuestionEditWidget(UserDto user) {
 		surveyService = GWT.create(SurveyService.class);
+		currentUser = user;
 		optionQuestions = new HashMap<Long, List<QuestionDto>>();
 		locale = com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
 				.getLocaleName();
@@ -121,6 +126,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		validationRuleBox = new TextBox();
 		mandatoryBox = new CheckBox();
 		collapseableBox = new CheckBox();
+		immutableBox = new CheckBox();
 		dependentBox = new CheckBox();
 		dependentBox.addClickHandler(this);
 		questionTypeSelector = new ListBox();
@@ -143,7 +149,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		questionTypeSelector.addChangeHandler(this);
 		basePanel = new CaptionPanel(TEXT_CONSTANTS.questionBasics());
 
-		Grid grid = new Grid(8, 2);
+		Grid grid = new Grid(9, 2);
 		basePanel.add(grid);
 
 		ViewUtil.installGridRow(TEXT_CONSTANTS.questionText(),
@@ -155,10 +161,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				validationRuleBox, grid, 3);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.collapseable(), collapseableBox,
 				grid, 4);
-		ViewUtil.installGridRow(TEXT_CONSTANTS.mandatory(), mandatoryBox, grid,
+		ViewUtil.installGridRow(TEXT_CONSTANTS.immutable(), immutableBox, grid,
 				5);
-		ViewUtil.installGridRow(TEXT_CONSTANTS.dependent(), dependentBox, grid,
+		ViewUtil.installGridRow(TEXT_CONSTANTS.mandatory(), mandatoryBox, grid,
 				6);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.dependent(), dependentBox, grid,
+				7);
 
 		dependencyPanel = new CaptionPanel(TEXT_CONSTANTS.dependencyDetails());
 		dependentQuestionSelector = new ListBox();
@@ -172,7 +180,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 		dependencyGrid = new Grid(2, 2);
 		dependencyPanel.add(dependencyGrid);
-		ViewUtil.installGridRow(null, dependencyPanel, grid, 7, 1, null);
+		ViewUtil.installGridRow(null, dependencyPanel, grid, 8, 1, null);
 		dependencyPanel.setVisible(false);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.question(),
 				dependentQuestionSelector, dependencyGrid, 0);
@@ -185,6 +193,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		allowOtherBox = new CheckBox();
 		addOptionButton = new Button(TEXT_CONSTANTS.addOption());
 		addOptionButton.addClickHandler(this);
+
 		optionPanel = new CaptionPanel(TEXT_CONSTANTS.optionDetails());
 		optionContent = new VerticalPanel();
 		optionPanel.add(optionContent);
@@ -216,11 +225,20 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * populates the UI based on the values in the loaded QuestionDto
 	 */
 	private void populateFields() {
+
+		boolean isEditable = currentQuestion.getImmutable() == null
+				|| (!currentQuestion.getImmutable() || currentUser
+						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY));
+		addOptionButton.setEnabled(isEditable);
+		editTranslationButton.setEnabled(isEditable);
+		editHelpButton.setEnabled(isEditable);
 		questionTextArea.setText(currentQuestion.getText());
+		questionTextArea.setEnabled(isEditable);
 		if (currentQuestion.getTip() != null
 				&& currentQuestion.getTip().trim().length() > 0
 				&& !"null".equals(currentQuestion.getTip())) {
 			tooltipArea.setText(currentQuestion.getTip());
+			tooltipArea.setEnabled(isEditable);
 		}
 		if (currentQuestion.getType() != null) {
 			for (int i = 0; i < questionTypeSelector.getItemCount(); i++) {
@@ -230,22 +248,35 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					break;
 				}
 			}
+			questionTypeSelector.setEnabled(isEditable);
 		}
 		if (currentQuestion.getCollapseable() != null) {
 			collapseableBox.setValue(currentQuestion.getCollapseable());
 		} else {
 			collapseableBox.setValue(false);
 		}
+		collapseableBox.setEnabled(isEditable);
+
+		if (currentQuestion.getImmutable() != null) {
+			immutableBox.setValue(currentQuestion.getImmutable());
+		} else {
+			immutableBox.setValue(false);
+		}
+		if (!currentUser.hasPermission(PermissionConstants.EDIT_IMMUTABLITY)) {
+			immutableBox.setEnabled(false);
+		}
 		if (currentQuestion.getMandatoryFlag() != null) {
 			mandatoryBox.setValue(currentQuestion.getMandatoryFlag());
 		}
+		mandatoryBox.setEnabled(isEditable);
 		if (currentQuestion.getQuestionDependency() != null
 				&& currentQuestion.getQuestionDependency().getQuestionId() != null) {
 			dependentBox.setValue(true);
-			loadDependencyList();
+			loadDependencyList(isEditable);
 		}
+		dependentBox.setEnabled(isEditable);
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
-			loadOptions();
+			loadOptions(isEditable);
 		}
 	}
 
@@ -253,7 +284,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * fetches the QuestionOptions from the server if they haven't already been
 	 * retrieved
 	 */
-	private void loadOptions() {
+	private void loadOptions(final boolean isEditable) {
 		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()
 				&& (currentQuestion.getOptionContainerDto() == null || currentQuestion
 						.getOptionContainerDto().getOptionsList() == null)) {
@@ -272,12 +303,13 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						public void onSuccess(QuestionDto result) {
 							showContent(optionPanel, optionContent);
 							currentQuestion = result;
-							populateOptions(currentQuestion
-									.getOptionContainerDto());
+							populateOptions(
+									currentQuestion.getOptionContainerDto(),
+									isEditable);
 						}
 					});
 		} else {
-			populateOptions(currentQuestion.getOptionContainerDto());
+			populateOptions(currentQuestion.getOptionContainerDto(), isEditable);
 		}
 	}
 
@@ -287,17 +319,20 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * 
 	 * @param optionContainer
 	 */
-	private void populateOptions(OptionContainerDto optionContainer) {
+	private void populateOptions(OptionContainerDto optionContainer,
+			boolean isEditable) {
 		if (optionContainer != null) {
 			optionPanel.setVisible(true);
 			// wipe out any old values
 			optionTable.clear(true);
 			allowMultipleBox.setValue(optionContainer.getAllowMultipleFlag());
+			allowMultipleBox.setEnabled(isEditable);
 			allowOtherBox.setValue(optionContainer.getAllowOtherFlag());
+			allowOtherBox.setEnabled(isEditable);
 			if (optionContainer != null
 					&& optionContainer.getOptionsList() != null) {
 				for (QuestionOptionDto opt : optionContainer.getOptionsList()) {
-					installOptionRow(opt);
+					installOptionRow(opt, isEditable);
 				}
 			}
 		}
@@ -309,11 +344,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * 
 	 * @param opt
 	 */
-	private void installOptionRow(QuestionOptionDto opt) {
+	private void installOptionRow(QuestionOptionDto opt, boolean isEditable) {
 		int row = optionTable.getRowCount();
 		optionTable.insertRow(row);
 		TextBox optText = new TextBox();
 		optText.setMaxLength(MAX_LEN);
+		optText.setEnabled(isEditable);
 		optionTable.setWidget(row, 0, optText);
 		HorizontalPanel bp = new HorizontalPanel();
 		final Image moveUp = new Image("/images/greenuparrow.png");
@@ -364,12 +400,14 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 		moveDown.setStylePrimaryName(REORDER_BUTTON_CSS);
 		moveDown.addClickHandler(optionClickHandler);
-		bp.add(moveUp);
-		bp.add(moveDown);
+		if (isEditable) {
+			bp.add(moveUp);
+			bp.add(moveDown);
+			optionTable.setWidget(row, 2, deleteButton);
+		}
 		optionTable.setWidget(row, 1, bp);
 
 		deleteButton.addClickHandler(optionClickHandler);
-		optionTable.setWidget(row, 2, deleteButton);
 		if (opt != null) {
 			optText.setText(opt.getText());
 			if (opt.getOrder() == null) {
@@ -418,8 +456,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * loads the list of possible values for the dependent question list box. If
 	 * this has already been loaded it may be returned from cache.
 	 */
-	private void loadDependencyList() {
+	private void loadDependencyList(final boolean isEditable) {
 		dependencyPanel.setVisible(true);
+		dependentQuestionSelector.setEnabled(isEditable);
+		dependentAnswerSelector.setEnabled(isEditable);
 		if (optionQuestions != null
 				&& optionQuestions.get(currentQuestion.getSurveyId()) != null) {
 			populateDependencySelection(currentQuestion,
@@ -610,67 +650,78 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 */
 	@Override
 	public void persistContext(final CompletionListener listener) {
-		List<String> validationErrors = updateCurrentQuestion();
-		if (validationErrors == null || validationErrors.size() == 0) {
-			surveyService.saveQuestion(currentQuestion,
-					currentQuestion.getQuestionGroupId(),
-					new AsyncCallback<QuestionDto>() {
+		if (currentQuestion.getImmutable() == null
+				|| (!currentQuestion.getImmutable() || currentUser
+						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY))) {
+			List<String> validationErrors = updateCurrentQuestion();
+			if (validationErrors == null || validationErrors.size() == 0) {
+				surveyService.saveQuestion(currentQuestion,
+						currentQuestion.getQuestionGroupId(),
+						new AsyncCallback<QuestionDto>() {
 
-						@Override
-						public void onSuccess(QuestionDto result) {
-							currentQuestion = result;
-							questionGroup.addQuestion(currentQuestion,
-									currentQuestion.getOrder());
-							if (currentQuestion.getType() == QuestionDto.QuestionType.OPTION
-									&& optionQuestions != null) {
-								if (optionQuestions.containsKey(currentQuestion
-										.getSurveyId())) {
-									boolean found = false;
-									for (QuestionDto q : optionQuestions
-											.get(currentQuestion.getSurveyId())) {
-										if (q.getKeyId().equals(
-												currentQuestion.getKeyId())) {
-											found = true;
+							@Override
+							public void onSuccess(QuestionDto result) {
+								currentQuestion = result;
+								questionGroup.addQuestion(currentQuestion,
+										currentQuestion.getOrder());
+								if (currentQuestion.getType() == QuestionDto.QuestionType.OPTION
+										&& optionQuestions != null) {
+									if (optionQuestions
+											.containsKey(currentQuestion
+													.getSurveyId())) {
+										boolean found = false;
+										for (QuestionDto q : optionQuestions
+												.get(currentQuestion
+														.getSurveyId())) {
+											if (q.getKeyId().equals(
+													currentQuestion.getKeyId())) {
+												found = true;
+											}
 										}
+										if (!found) {
+											optionQuestions.get(
+													currentQuestion
+															.getSurveyId())
+													.add(currentQuestion);
+										}
+									} else {
+										List<QuestionDto> qList = new ArrayList<QuestionDto>();
+										qList.add(currentQuestion);
+										optionQuestions.put(
+												currentQuestion.getSurveyId(),
+												qList);
 									}
-									if (!found) {
-										optionQuestions.get(
-												currentQuestion.getSurveyId())
-												.add(currentQuestion);
-									}
-								} else {
-									List<QuestionDto> qList = new ArrayList<QuestionDto>();
-									qList.add(currentQuestion);
-									optionQuestions.put(
-											currentQuestion.getSurveyId(),
-											qList);
+								}
+								if (listener != null) {
+									listener.operationComplete(true,
+											getContextBundle(true));
 								}
 							}
-							if (listener != null) {
-								listener.operationComplete(true,
-										getContextBundle(true));
-							}
-						}
 
-						@Override
-						public void onFailure(Throwable caught) {
-							if (listener != null) {
-								listener.operationComplete(false,
-										getContextBundle(true));
+							@Override
+							public void onFailure(Throwable caught) {
+								if (listener != null) {
+									listener.operationComplete(false,
+											getContextBundle(true));
+								}
 							}
-						}
-					});
-		} else {
-			StringBuilder builder = new StringBuilder("<br><ul>");
-			for (String err : validationErrors) {
-				builder.append("<li>").append(err).append("</li>");
+						});
+			} else {
+				StringBuilder builder = new StringBuilder("<br><ul>");
+				for (String err : validationErrors) {
+					builder.append("<li>").append(err).append("</li>");
+				}
+				builder.append("</ul>");
+				MessageDialog errorDialog = new MessageDialog(
+						TEXT_CONSTANTS.inputError(),
+						TEXT_CONSTANTS.pleaseCorrect() + builder.toString());
+				errorDialog.showCentered();
+				listener.operationComplete(false, getContextBundle(true));
 			}
-			builder.append("</ul>");
-			MessageDialog errorDialog = new MessageDialog(
-					TEXT_CONSTANTS.inputError(), TEXT_CONSTANTS.pleaseCorrect()
-							+ builder.toString());
-			errorDialog.showCentered();
-			listener.operationComplete(false, getContextBundle(true));
+		} else {
+			if (listener != null) {
+				listener.operationComplete(true, getContextBundle(true));
+			}
 		}
 	}
 
@@ -682,90 +733,99 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 */
 	private List<String> updateCurrentQuestion() {
 		List<String> validationMessages = new ArrayList<String>();
-		if (ViewUtil.isTextPopulated(questionTextArea)) {
-			if (questionTextArea.getText().trim().length() > MAX_LEN) {
-				validationMessages.add(TEXT_CONSTANTS.question() + ": "
-						+ TEXT_CONSTANTS.textMustBeLessThan500Chars());
-			} else {
-				currentQuestion.setText(questionTextArea.getText().trim());
-			}
-		} else {
-			validationMessages.add(TEXT_CONSTANTS.questionTextMandatory());
-		}
-		currentQuestion.setTip(tooltipArea.getText());
-		currentQuestion.setCollapseable(collapseableBox.getValue());
-		if (tooltipArea.getText() != null) {
-			if (tooltipArea.getText().length() > MAX_LEN) {
-				validationMessages.add(TEXT_CONSTANTS.tooltip() + ": "
-						+ TEXT_CONSTANTS.textMustBeLessThan500Chars());
-			}
-		}
-		if (mandatoryBox.getValue()) {
-			currentQuestion.setMandatoryFlag(true);
-		} else {
-			currentQuestion.setMandatoryFlag(false);
-		}
-		currentQuestion.setType(QuestionDto.QuestionType
-				.valueOf(questionTypeSelector.getValue(questionTypeSelector
-						.getSelectedIndex())));
-		currentQuestion.setValidationRule(validationRuleBox.getText());
-		if (dependentBox.getValue()) {
-			QuestionDependencyDto depDto = currentQuestion
-					.getQuestionDependency();
-			if (depDto == null) {
-				depDto = new QuestionDependencyDto();
-				currentQuestion.setQuestionDependency(depDto);
-			}
-			if (dependentQuestionSelector.getSelectedIndex() == 0) {
-				validationMessages.add(TEXT_CONSTANTS.dependentMandatory());
-			} else {
-				depDto.setQuestionId(Long.parseLong(dependentQuestionSelector
-						.getValue(dependentQuestionSelector.getSelectedIndex())));
-				if (dependentAnswerSelector.getSelectedIndex() == 0) {
-					validationMessages.add(TEXT_CONSTANTS
-							.dependentResponseMandatory());
+		if (currentQuestion.getImmutable() == null
+				|| (!currentQuestion.getImmutable() || currentUser
+						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY))) {
+			if (ViewUtil.isTextPopulated(questionTextArea)) {
+				if (questionTextArea.getText().trim().length() > MAX_LEN) {
+					validationMessages.add(TEXT_CONSTANTS.question() + ": "
+							+ TEXT_CONSTANTS.textMustBeLessThan500Chars());
 				} else {
-					depDto.setAnswerValue(dependentAnswerSelector
-							.getValue(dependentAnswerSelector
-									.getSelectedIndex()));
+					currentQuestion.setText(questionTextArea.getText().trim());
+				}
+			} else {
+				validationMessages.add(TEXT_CONSTANTS.questionTextMandatory());
+			}
+			currentQuestion.setTip(tooltipArea.getText());
+			currentQuestion.setCollapseable(collapseableBox.getValue());
+			currentQuestion.setImmutable(immutableBox.getValue());
+			if (tooltipArea.getText() != null) {
+				if (tooltipArea.getText().length() > MAX_LEN) {
+					validationMessages.add(TEXT_CONSTANTS.tooltip() + ": "
+							+ TEXT_CONSTANTS.textMustBeLessThan500Chars());
 				}
 			}
-		} else {
-			currentQuestion.setQuestionDependency(null);
-		}
-		if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
-			currentQuestion.setAllowMultipleFlag(allowMultipleBox.getValue());
-			currentQuestion.setAllowOtherFlag(allowOtherBox.getValue());
-			OptionContainerDto container = currentQuestion
-					.getOptionContainerDto();
-			if (container == null) {
-				container = new OptionContainerDto();
-				currentQuestion.setOptionContainerDto(container);
-			}
-			container.setAllowMultipleFlag(allowMultipleBox.getValue());
-			container.setAllowOtherFlag(allowOtherBox.getValue());
-			if (container.getOptionsList() == null
-					|| container.getOptionsList().size() == 0) {
-				validationMessages.add(TEXT_CONSTANTS.optionMandatory());
+			if (mandatoryBox.getValue()) {
+				currentQuestion.setMandatoryFlag(true);
 			} else {
-				for (int i = 0; i < container.getOptionsList().size(); i++) {
-					TextBox box = (TextBox) optionTable.getWidget(i, 0);
-					if (ViewUtil.isTextPopulated(box)) {
-						if (box.getText().trim().length() > MAX_LEN) {
-							validationMessages.add(TEXT_CONSTANTS.option()
-									+ " "
-									+ i
-									+ ": "
-									+ TEXT_CONSTANTS
-											.textMustBeLessThan500Chars());
-						} else {
-							container.getOptionsList().get(i)
-									.setText(box.getText().trim());
-							container.getOptionsList().get(i).setOrder(i + 1);
-						}
+				currentQuestion.setMandatoryFlag(false);
+			}
+			currentQuestion.setType(QuestionDto.QuestionType
+					.valueOf(questionTypeSelector.getValue(questionTypeSelector
+							.getSelectedIndex())));
+			currentQuestion.setValidationRule(validationRuleBox.getText());
+			if (dependentBox.getValue()) {
+				QuestionDependencyDto depDto = currentQuestion
+						.getQuestionDependency();
+				if (depDto == null) {
+					depDto = new QuestionDependencyDto();
+					currentQuestion.setQuestionDependency(depDto);
+				}
+				if (dependentQuestionSelector.getSelectedIndex() == 0) {
+					validationMessages.add(TEXT_CONSTANTS.dependentMandatory());
+				} else {
+					depDto.setQuestionId(Long
+							.parseLong(dependentQuestionSelector
+									.getValue(dependentQuestionSelector
+											.getSelectedIndex())));
+					if (dependentAnswerSelector.getSelectedIndex() == 0) {
+						validationMessages.add(TEXT_CONSTANTS
+								.dependentResponseMandatory());
 					} else {
-						validationMessages.add(TEXT_CONSTANTS.optionNotBlank()
-								+ " " + i);
+						depDto.setAnswerValue(dependentAnswerSelector
+								.getValue(dependentAnswerSelector
+										.getSelectedIndex()));
+					}
+				}
+			} else {
+				currentQuestion.setQuestionDependency(null);
+			}
+			if (QuestionDto.QuestionType.OPTION == currentQuestion.getType()) {
+				currentQuestion.setAllowMultipleFlag(allowMultipleBox
+						.getValue());
+				currentQuestion.setAllowOtherFlag(allowOtherBox.getValue());
+				OptionContainerDto container = currentQuestion
+						.getOptionContainerDto();
+				if (container == null) {
+					container = new OptionContainerDto();
+					currentQuestion.setOptionContainerDto(container);
+				}
+				container.setAllowMultipleFlag(allowMultipleBox.getValue());
+				container.setAllowOtherFlag(allowOtherBox.getValue());
+				if (container.getOptionsList() == null
+						|| container.getOptionsList().size() == 0) {
+					validationMessages.add(TEXT_CONSTANTS.optionMandatory());
+				} else {
+					for (int i = 0; i < container.getOptionsList().size(); i++) {
+						TextBox box = (TextBox) optionTable.getWidget(i, 0);
+						if (ViewUtil.isTextPopulated(box)) {
+							if (box.getText().trim().length() > MAX_LEN) {
+								validationMessages.add(TEXT_CONSTANTS.option()
+										+ " "
+										+ i
+										+ ": "
+										+ TEXT_CONSTANTS
+												.textMustBeLessThan500Chars());
+							} else {
+								container.getOptionsList().get(i)
+										.setText(box.getText().trim());
+								container.getOptionsList().get(i)
+										.setOrder(i + 1);
+							}
+						} else {
+							validationMessages.add(TEXT_CONSTANTS
+									.optionNotBlank() + " " + i);
+						}
 					}
 				}
 			}
@@ -837,7 +897,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					questionTypeSelector.getValue(questionTypeSelector
 							.getSelectedIndex()))) {
 				optionPanel.setVisible(true);
-				loadOptions();
+				loadOptions(true);
 			} else {
 				optionPanel.setVisible(false);
 			}
@@ -862,12 +922,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (event.getSource() == dependentBox) {
 			if (dependentBox.getValue()) {
 				dependencyPanel.setVisible(true);
-				loadDependencyList();
+				loadDependencyList(true);
 			} else {
 				dependencyPanel.setVisible(false);
 			}
 		} else if (event.getSource() == addOptionButton) {
-			installOptionRow(null);
+			installOptionRow(null, true);
 		} else if (event.getSource() == editTranslationButton) {
 			operation = EDIT_TRANS_OP;
 			persistContext(this);

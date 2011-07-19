@@ -24,6 +24,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Long surveyId;
 	private Long questionGroupId;
 	private Boolean collapseable;
+	private Boolean immutable;
 	private Map<String, TranslationDto> translationMap;
 	private String path;
 	private Integer order;
@@ -216,5 +217,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public Boolean getCollapseable() {
 		return collapseable;
+	}
+
+	public void setImmutable(Boolean immutable) {
+		this.immutable = immutable;
+	}
+
+	public Boolean getImmutable() {
+		return immutable;
 	}
 }

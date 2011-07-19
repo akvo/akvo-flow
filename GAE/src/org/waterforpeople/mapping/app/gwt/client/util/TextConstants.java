@@ -550,5 +550,6 @@ public interface TextConstants extends Constants{
 	public String importFixedFormatFile();
 	public String importFixedFormatFileDescription();
 	public String collapseable();
+	public String immutable();
 }
 

@@ -29,6 +29,7 @@ public class Question extends BaseDomain {
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
 	private Boolean collapseable = false;
+	private Boolean immutable = false;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
 	@NotPersistent
@@ -245,5 +246,13 @@ public class Question extends BaseDomain {
 
 	public Boolean getCollapseable() {
 		return collapseable;
+	}
+
+	public void setImmutable(Boolean immutable) {
+		this.immutable = immutable;
+	}
+
+	public Boolean getImmutable() {
+		return immutable;
 	}
 }

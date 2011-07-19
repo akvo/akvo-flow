@@ -284,7 +284,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						}
 					});
 		}
-		if (getCurrentUser().isAdmin()) {
+		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
 			mgrMenu.addItem(TEXT_CONSTANTS.adminWizardPortletTitle(),
 					new Command() {
 						public void execute() {
@@ -292,6 +292,9 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 						}
 					});
+
+		}
+		if (getCurrentUser().isAdmin()) {
 			mgrMenu.addItem(TEXT_CONSTANTS.remoteExceptionPortletTitle(),
 					new Command() {
 						public void execute() {
