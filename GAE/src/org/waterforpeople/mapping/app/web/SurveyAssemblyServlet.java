@@ -52,6 +52,7 @@ import com.gallatinsystems.survey.domain.xml.Score;
 import com.gallatinsystems.survey.domain.xml.Scoring;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
+import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -60,8 +61,9 @@ import com.google.appengine.api.labs.taskqueue.TaskOptions;
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
 			.getLogger(SurveyAssemblyServlet.class.getName());
-	// private static TextConstants CONSTANTS = ;
 
+	private static final int BACKEND_QUESTION_THRESHOLD = 85;
+	private static final String BACKEND_PUBLISH_PROP = "backendpublish";
 	private static final long serialVersionUID = -6044156962558183224L;
 	private static final String OPTION_RENDER_MODE_PROP = "optionRenderMode";
 	public static final String FREE_QUESTION_TYPE = "free";
@@ -93,8 +95,43 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyAssemblyRequest importReq = (SurveyAssemblyRequest) req;
 		if (SurveyAssemblyRequest.ASSEMBLE_SURVEY.equalsIgnoreCase(importReq
 				.getAction())) {
-			// assembleSurvey(importReq.getSurveyId());
-			assembleSurveyOnePass(importReq.getSurveyId());
+
+			QuestionDao questionDao = new QuestionDao();
+			boolean useBackend = false;
+			// make sure we're not already running on a backend and that we are
+			// allowed to use one
+			if (!importReq.getIsForwarded()
+					&& "true".equalsIgnoreCase(PropertyUtil
+							.getProperty(BACKEND_PUBLISH_PROP))) {
+				// if we're allowed to use a backend, then check to see if we
+				// need to (based on survey size)
+				List<Question> questionList = questionDao
+						.listQuestionsBySurvey(importReq.getSurveyId());
+				if (questionList != null
+						&& questionList.size() > BACKEND_QUESTION_THRESHOLD) {
+					useBackend = true;
+				}
+			}
+			if (useBackend) {
+				com.google.appengine.api.taskqueue.TaskOptions options = com.google.appengine.api.taskqueue.TaskOptions.Builder
+						.withUrl("/app_worker/surveyassembly")
+						.param(SurveyAssemblyRequest.ACTION_PARAM,
+								SurveyAssemblyRequest.ASSEMBLE_SURVEY)
+						.param(SurveyAssemblyRequest.IS_FWD_PARAM, "true")
+						.param(SurveyAssemblyRequest.SURVEY_ID_PARAM,
+								importReq.getSurveyId().toString());
+				// change the host so the queue invokes the backend
+				options = options
+						.header("Host",
+								BackendServiceFactory.getBackendService()
+										.getBackendAddress("dataprocessor"));
+				com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+						.getQueue("surveyAssembly");
+				queue.add(options);
+			} else {
+				// assembleSurvey(importReq.getSurveyId());
+				assembleSurveyOnePass(importReq.getSurveyId());
+			}
 		} else if (SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
 			this.dispatchAssembleQuestionGroup(importReq.getSurveyId(),
@@ -151,7 +188,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		// + url;
 
 		if (uploadedFile && uploadedZip) {
-			//increment the version so devices know to pick up the changes
+			// increment the version so devices know to pick up the changes
 			SurveyDAO surveyDao = new SurveyDAO();
 			surveyDao.incrementVersion(surveyId);
 
@@ -160,7 +197,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 					+ props.getProperty(SURVEY_UPLOAD_DIR) + "/" + surveyId
 					+ ".xml";
 			message.setShortMessage(messageText);
-		
+
 			Survey s = surveyDao.getById(surveyId);
 			if (s != null) {
 				message.setObjectTitle(s.getPath() + "/" + s.getName());
@@ -224,7 +261,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// String messageText = CONSTANTS.surveyPublishOkMessage() + " "
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
-				//increment the version so devices know to pick up the changes
+				// increment the version so devices know to pick up the changes
 				SurveyDAO surveyDao = new SurveyDAO();
 				surveyDao.incrementVersion(surveyId);
 				String messageText = "Published.  Please check: " + uc.getUrl();

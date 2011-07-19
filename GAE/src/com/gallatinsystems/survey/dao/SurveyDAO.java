@@ -161,7 +161,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 				v++;
 			}
 			s.setVersion(v);
-			save(s);
+			save(s);					
 		}
 	}
 

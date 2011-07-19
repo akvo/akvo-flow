@@ -20,8 +20,8 @@ public class SurveyAssemblyRequest extends RestRequest {
 	public static final String DISTRIBUTE_SURVEY = "distributeSurvey";
 	public static final String CLEANUP = "cleanup";
 
-	private static final String SURVEY_ID_PARAM = "surveyId";
-
+	public static final String SURVEY_ID_PARAM = "surveyId";
+	public static final String IS_FWD_PARAM = "isFwd";
 	private static final String START_ROW_PARAM = "startRow";
 	private static final String GROUP_ID_PARAM = "questionGroupId";
 	private static final String TRANSACTION_ID_PARAM = "transactionId";
@@ -33,6 +33,7 @@ public class SurveyAssemblyRequest extends RestRequest {
 	private int startRow = 0;
 	private String questionGroupId = null;
 	private Long transactionId = null;
+	private Boolean isForwarded = false;
 
 	public Long getTransactionId() {
 		return transactionId;
@@ -79,7 +80,11 @@ public class SurveyAssemblyRequest extends RestRequest {
 			setLastGroupFlag(Boolean.parseBoolean(req
 					.getParameter(LAST_GROUP_FLAG_PARAM)));
 		if (req.getParameter(TRANSACTION_ID_PARAM) != null)
-			setTransactionId(Long.parseLong(req.getParameter(TRANSACTION_ID_PARAM)));
+			setTransactionId(Long.parseLong(req
+					.getParameter(TRANSACTION_ID_PARAM)));
+		if (req.getParameter(IS_FWD_PARAM) != null) {
+			setIsForwarded(Boolean.parseBoolean(req.getParameter(IS_FWD_PARAM)));
+		}
 	}
 
 	public void setQuestionGroupId(String questionGroupId) {
@@ -96,6 +101,14 @@ public class SurveyAssemblyRequest extends RestRequest {
 
 	public Boolean getLastGroupFlag() {
 		return lastGroupFlag;
+	}
+
+	public void setIsForwarded(Boolean isForwarded) {
+		this.isForwarded = isForwarded;
+	}
+
+	public Boolean getIsForwarded() {
+		return isForwarded;
 	}
 
 }
