@@ -144,6 +144,13 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			}
 
 			public void onSuccess(UserDto result) {
+
+				if (result != null) {
+					Anchor logoutAnchor = new Anchor(
+							TEXT_CONSTANTS.logOnAsDifferentUser(),
+							result.getLogoutUrl());
+					containerPanel.add(logoutAnchor);
+				}
 				if (result != null && result.hasAccess()) {
 
 					setCurrentUser(result);
@@ -153,12 +160,6 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				} else if (result == null || !result.hasAccess()) {
 					containerPanel.clear();
 					containerPanel.add(new Image("images/wfp-logo.gif"));
-					if (result != null) {
-						Anchor logoutAnchor = new Anchor(
-								TEXT_CONSTANTS.logOnAsDifferentUser(),
-								result.getLogoutUrl());
-						containerPanel.add(logoutAnchor);
-					}
 					MessageDialog errDia = new MessageDialog(
 							TEXT_CONSTANTS.unknownUser(),
 							TEXT_CONSTANTS.noFlowAccess());

@@ -140,10 +140,10 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				userDto.setAdmin(userService.isUserAdmin());
 				userDto.setKeyId(u.getKey().getId());
 			} else {
-				userDto.setHasAccess(false);
-				userDto.setLogoutUrl(userService
-						.createLogoutURL("/logout.html"));
+				userDto.setHasAccess(false);				
 			}
+			userDto.setLogoutUrl(userService
+					.createLogoutURL("/logout.html"));
 		}
 		return userDto;
 	}
