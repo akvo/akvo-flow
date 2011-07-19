@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -23,12 +25,26 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
+import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
+	private static final String DEFAULT_LOCALE = "en";
 	public static final String SURVEY_CONFIG_KEY = "surveyId";
+	private static final Map<String, String> SAVING_DATA;
+	private static final Map<String, String> COMPLETE;
 	private Long surveyId;
 	private InputStream stream;
+	private ProgressDialog progressDialog;
+	private String locale = DEFAULT_LOCALE;
+
+	static {
+		SAVING_DATA = new HashMap<String, String>();
+		SAVING_DATA.put("en", "Saving Data");
+
+		COMPLETE = new HashMap<String, String>();
+		COMPLETE.put("en", "Complete");
+	}
 
 	/**
 	 * opens a file input stream using the file passed in and tries to return
@@ -59,23 +75,29 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		}
 	}
 
-	protected void setSurveyId(Map<String,String> criteria){
-		if(criteria != null && criteria.get(SURVEY_CONFIG_KEY)!=null){
+	protected void setSurveyId(Map<String, String> criteria) {
+		if (criteria != null && criteria.get(SURVEY_CONFIG_KEY) != null) {
 			setSurveyId(new Long(criteria.get(SURVEY_CONFIG_KEY).trim()));
 		}
 	}
-	
+
 	@Override
 	public void executeImport(File file, String serverBase,
 			Map<String, String> criteria) {
 		try {
+
 			DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
 			setSurveyId(criteria);
 			int i = 0;
 			Sheet sheet1 = getDataSheet(file);
+			progressDialog = new ProgressDialog(sheet1.getLastRowNum(), locale);
+			progressDialog.setVisible(true);
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			Map<String, String> typeMap = new HashMap<String, String>();
+			int currentStep = 0;
 			for (Row row : sheet1) {
+				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+						SAVING_DATA.get(locale)));
 				String instanceId = null;
 				String dateString = null;
 				String submitter = null;
@@ -102,28 +124,28 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
-									.intValue() + "";							
-						}else if (cell.getCellType() == Cell.CELL_TYPE_STRING){
+									.intValue() + "";
+						} else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							instanceId = cell.getStringCellValue();
-							
+
 						}
-						if(instanceId != null){
+						if (instanceId != null) {
 							sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
 									+ "=" + instanceId + "&");
 						}
 					}
 					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-							dateString = cell.getStringCellValue();							
-						}else if(cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-							Date date=HSSFDateUtil.getJavaDate(cell.getNumericCellValue());
+							dateString = cell.getStringCellValue();
+						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+							Date date = HSSFDateUtil.getJavaDate(cell
+									.getNumericCellValue());
 							dateString = df.format(date);
 						}
 						if (dateString != null) {
 							sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
 									+ "="
-									+ URLEncoder
-											.encode(dateString, "UTF-8")
+									+ URLEncoder.encode(dateString, "UTF-8")
 									+ "&");
 						}
 					}
@@ -204,6 +226,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				}
 
 			}
+			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+					COMPLETE.get(locale)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -243,8 +267,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 	@Override
 	public Map<Integer, String> validate(File file) {
-		Map<Integer,String> errorMap = new HashMap<Integer,String>();
-		return errorMap;		
+		Map<Integer, String> errorMap = new HashMap<Integer, String>();
+		return errorMap;
 	}
 
 	public static void main(String[] args) {
@@ -269,4 +293,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		this.surveyId = surveyId;
 	}
 
+	/**
+	 * Private class to handle updating of the UI thread from our worker thread
+	 */
+	private class StatusUpdater implements Runnable {
+
+		private int step;
+		private String msg;
+
+		public StatusUpdater(int step, String message) {
+			msg = message;
+			this.step = step;
+		}
+
+		public void run() {
+			progressDialog.update(step, msg);
+		}
+	}
 }
