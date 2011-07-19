@@ -62,7 +62,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
 			.getLogger(SurveyAssemblyServlet.class.getName());
 
-	private static final int BACKEND_QUESTION_THRESHOLD = 85;
+	private static final int BACKEND_QUESTION_THRESHOLD = 60;
 	private static final String BACKEND_PUBLISH_PROP = "backendpublish";
 	private static final long serialVersionUID = -6044156962558183224L;
 	private static final String OPTION_RENDER_MODE_PROP = "optionRenderMode";
