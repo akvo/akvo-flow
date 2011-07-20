@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -55,6 +56,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	private Sensor orientSensor;
 	private NumberFormat distanceFormat;
 	private String[] units;
+	private Resources res;
 
 	private static final float MIN_CHANGE = 2f;
 
@@ -73,7 +75,8 @@ public class NearbyItemDetailActivity extends Activity implements
 		orientSensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 		sensorMgr.registerListener(this, orientSensor,
 				SensorManager.SENSOR_DELAY_NORMAL);
-		units = getResources().getStringArray(R.array.distancemesures);
+		res = getResources();
+		units = res.getStringArray(R.array.distancemesures);
 		locationCriteria = new Criteria();
 		locationCriteria.setAccuracy(Criteria.NO_REQUIREMENT);
 		setContentView(R.layout.nearbydetail);
@@ -83,8 +86,7 @@ public class NearbyItemDetailActivity extends Activity implements
 		typeField = (TextView) findViewById(R.id.pointTypeField);
 		scrollView = (ScrollView) findViewById(R.id.pointscroll);
 		arrowView = (ImageView) findViewById(R.id.arrowView);
-		arrowBitmap = BitmapFactory.decodeResource(getResources(),
-				R.drawable.uparrow);
+		arrowBitmap = BitmapFactory.decodeResource(res, R.drawable.uparrow);
 
 		pointOfInterest = savedInstanceState != null ? (PointOfInterest) savedInstanceState
 				.getSerializable(ConstantUtil.AP_KEY) : null;
@@ -209,7 +211,7 @@ public class NearbyItemDetailActivity extends Activity implements
 		matrix.postRotate(lastBearing + lastOrientation);
 		Bitmap resizedBitmap = Bitmap.createBitmap(arrowBitmap, 0, 0, 30, 30,
 				matrix, true);
-		arrowView.setImageDrawable(new BitmapDrawable(resizedBitmap));
+		arrowView.setImageDrawable(new BitmapDrawable(res, resizedBitmap));
 	}
 
 	/**
