@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
@@ -633,7 +634,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			bundle = new HashMap<String, Object>();
 		}
 		if (doPopulation) {
-			bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);			
+			bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);
 		}
 		return bundle;
 	}
@@ -655,60 +656,55 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY))) {
 			List<String> validationErrors = updateCurrentQuestion();
 			if (validationErrors == null || validationErrors.size() == 0) {
-				surveyService.saveQuestion(currentQuestion,
-						currentQuestion.getQuestionGroupId(),
-						new AsyncCallback<QuestionDto>() {
+				if (currentQuestion.getKeyId() == null) {
+					// reload list and update order
+					surveyService.listQuestionsByQuestionGroup(currentQuestion
+							.getQuestionGroupId().toString(), false,
+							new AsyncCallback<ArrayList<QuestionDto>>() {
 
-							@Override
-							public void onSuccess(QuestionDto result) {
-								currentQuestion = result;
-								questionGroup.addQuestion(currentQuestion,
-										currentQuestion.getOrder());
-								if (currentQuestion.getType() == QuestionDto.QuestionType.OPTION
-										&& optionQuestions != null) {
-									if (optionQuestions
-											.containsKey(currentQuestion
-													.getSurveyId())) {
-										boolean found = false;
-										for (QuestionDto q : optionQuestions
-												.get(currentQuestion
-														.getSurveyId())) {
-											if (q.getKeyId().equals(
-													currentQuestion.getKeyId())) {
-												//update the text in case it was changed
-												q.setText(currentQuestion.getText());
-												q.setTranslationMap(currentQuestion.getTranslationMap());											
-												found = true;
+								@Override
+								public void onFailure(Throwable caught) {
+									MessageDialog dia = new MessageDialog(
+											TEXT_CONSTANTS.error(),
+											TEXT_CONSTANTS.errorTracePrefix()
+													+ " "
+													+ caught.getLocalizedMessage());
+									dia.showCentered();
+								}
+
+								@Override
+								public void onSuccess(
+										ArrayList<QuestionDto> result) {
+									if (result != null && result.size() > 0) {
+
+										TreeMap<Integer, QuestionDto> questionTree = new TreeMap<Integer, QuestionDto>();
+										int maxOrder = 0;
+										for (int i = 0; i < result.size(); i++) {
+											questionTree.put(result.get(i)
+													.getOrder(), result.get(i));
+											if (result.get(i).getOrder() != null
+													&& maxOrder < result.get(i)
+															.getOrder()) {
+												maxOrder = i;
 											}
 										}
-										if (!found) {
-											optionQuestions.get(
-													currentQuestion
-															.getSurveyId())
-													.add(currentQuestion);
+										if (maxOrder < result.size()) {
+											maxOrder = result.size();
 										}
-									} else {
-										List<QuestionDto> qList = new ArrayList<QuestionDto>();
-										qList.add(currentQuestion);
-										optionQuestions.put(
-												currentQuestion.getSurveyId(),
-												qList);
+										currentQuestion.setOrder(maxOrder + 1);
+										QuestionGroupDto currentGroup = (QuestionGroupDto) bundle
+												.get(BundleConstants.QUESTION_GROUP_KEY);
+										if (currentGroup != null) {
+											currentGroup
+													.setQuestionMap(questionTree);
+										}
 									}
+									performSave(listener);
 								}
-								if (listener != null) {
-									listener.operationComplete(true,
-											getContextBundle(true));
-								}
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								if (listener != null) {
-									listener.operationComplete(false,
-											getContextBundle(true));
-								}
-							}
-						});
+							});
+				} else {
+					performSave(listener);
+				}
 			} else {
 				StringBuilder builder = new StringBuilder("<br><ul>");
 				for (String err : validationErrors) {
@@ -726,6 +722,61 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				listener.operationComplete(true, getContextBundle(true));
 			}
 		}
+	}
+
+	private void performSave(final CompletionListener listener) {
+		surveyService.saveQuestion(currentQuestion,
+				currentQuestion.getQuestionGroupId(),
+				new AsyncCallback<QuestionDto>() {
+
+					@Override
+					public void onSuccess(QuestionDto result) {
+						currentQuestion = result;
+						questionGroup.addQuestion(currentQuestion,
+								currentQuestion.getOrder());
+						if (currentQuestion.getType() == QuestionDto.QuestionType.OPTION
+								&& optionQuestions != null) {
+							if (optionQuestions.containsKey(currentQuestion
+									.getSurveyId())) {
+								boolean found = false;
+								for (QuestionDto q : optionQuestions
+										.get(currentQuestion.getSurveyId())) {
+									if (q.getKeyId().equals(
+											currentQuestion.getKeyId())) {
+										// update the text in case it was
+										// changed
+										q.setText(currentQuestion.getText());
+										q.setTranslationMap(currentQuestion
+												.getTranslationMap());
+										found = true;
+									}
+								}
+								if (!found) {
+									optionQuestions.get(
+											currentQuestion.getSurveyId()).add(
+											currentQuestion);
+								}
+							} else {
+								List<QuestionDto> qList = new ArrayList<QuestionDto>();
+								qList.add(currentQuestion);
+								optionQuestions.put(
+										currentQuestion.getSurveyId(), qList);
+							}
+						}
+						if (listener != null) {
+							listener.operationComplete(true,
+									getContextBundle(true));
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						if (listener != null) {
+							listener.operationComplete(false,
+									getContextBundle(true));
+						}
+					}
+				});
 	}
 
 	/**
