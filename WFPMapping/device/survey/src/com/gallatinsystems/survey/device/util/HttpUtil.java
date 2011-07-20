@@ -51,7 +51,7 @@ public class HttpUtil {
 		HttpUriRequest request = new HttpGet(url);
 		request.setHeader("Accept-Encoding", "gzip");
 		request.setHeader("User-Agent", "gzip");
-		response = client.execute(new HttpGet(url));
+		response = client.execute(request);
 		if (response.getStatusLine().getStatusCode() != 200) {
 			throw new HttpException("Server error: "
 					+ response.getStatusLine().getStatusCode());
