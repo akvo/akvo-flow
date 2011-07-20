@@ -79,4 +79,14 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		return ClassAttributeUtil.listObjectAttributes(objectName);
 
 	}
+
+	@Override
+	public StandardScoreBucketDto save(StandardScoreBucketDto item) {
+		StandardScoreBucket ssb = new StandardScoreBucket();
+		ssb.setName(item.getName());
+		BaseDAO<StandardScoreBucket> ssbDao = new BaseDAO<StandardScoreBucket>(StandardScoreBucket.class);
+		ssbDao.save(ssb);
+		item.setKeyId(ssb.getKey().getId());
+		return item;
+	}
 }

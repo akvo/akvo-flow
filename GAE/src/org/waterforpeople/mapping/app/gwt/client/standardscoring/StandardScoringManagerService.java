@@ -15,4 +15,5 @@ public interface StandardScoringManagerService extends RemoteService {
 	void delete(Long id);
 	ArrayList<StandardScoreBucketDto> listStandardScoreBuckets();
 	TreeMap<String, String> listObjectAttributes(String objectName);
+	StandardScoreBucketDto save(StandardScoreBucketDto item);
 }

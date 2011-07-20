@@ -7,7 +7,6 @@ import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
-import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
@@ -31,12 +30,15 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -107,6 +109,11 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private VerticalPanel contentPane;
 	private Button addNewButton = new Button(TEXT_CONSTANTS.add());
 	private VerticalPanel tablePanel = new VerticalPanel();
+	private HorizontalPanel bucketsHPanel = new HorizontalPanel();
+	private Button addScoringBucket = new Button();
+	private Label bucketsBoxLbl = new Label("Enter new bucket name");
+	private TextBox bucketsEntryBox = new TextBox();
+	private Button saveBucket = new Button("Save New Bucket");
 
 	@Override
 	public DataTableHeader[] getHeaders() {
@@ -141,7 +148,40 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		loadCountries();
 		scoringTable.setVisible(false);
-		tablePanel.add(scoreBucketsBox);
+		bucketsHPanel.add(scoreBucketsBox);
+		addScoringBucket.setText("Add Bucket");
+		addScoringBucket.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				scoreBucketsBox.setEnabled(false);
+				addScoringBucket.setEnabled(false);
+
+				bucketsEntryBox.addKeyPressHandler(new KeyPressHandler() {
+					@Override
+					public void onKeyPress(KeyPressEvent event) {
+						TextBox bucketEntryBox = (TextBox) event.getSource();
+						if (bucketEntryBox.getText().trim().length() > 0) {
+							saveBucket.setEnabled(true);
+						} else {
+							saveBucket.setEnabled(false);
+						}
+					}
+				});
+				saveBucket.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						saveScoreBucket(bucketsEntryBox.getText().trim());
+					}
+
+				});
+				bucketsHPanel.add(bucketsBoxLbl);
+				bucketsHPanel.add(bucketsEntryBox);
+				bucketsHPanel.add(saveBucket);
+			}
+		});
+		bucketsHPanel.add(addScoringBucket);
+		tablePanel.add(bucketsHPanel);
+
 		tablePanel.add(scoringTable);
 		tablePanel.add(addNewButton);
 		addNewButton.addClickHandler(new ClickHandler() {
@@ -158,6 +198,27 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	}
 
+	private void saveScoreBucket(String trim) {
+		StandardScoreBucketDto ssbDto = new StandardScoreBucketDto();
+		ssbDto.setName(bucketsEntryBox.getText().trim());
+		svc.save(ssbDto, new AsyncCallback<StandardScoreBucketDto>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(StandardScoreBucketDto result) {
+				scoreBucketsBox.setEnabled(true);
+				scoreBucketsBox.addItem(result.getName(),result.getKeyId().toString());
+				bucketsBoxLbl.setVisible(false);
+				bucketsEntryBox.setVisible(false);
+				saveBucket.setVisible(false);
+			}});
+		
+	}
 	private void loadStandardScoreBuckets() {
 		svc.listStandardScoreBuckets(new AsyncCallback<ArrayList<StandardScoreBucketDto>>() {
 
@@ -249,18 +310,37 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			global.setSelectedIndex(0);
 		} else {
 			global.setSelectedIndex(1);
+			String selectedCountry = null;
+			if (item.getCountryCode() != null)
+				selectedCountry = item.getCountryCode();
+			populateCountryCodeControl(grid, selectedCountry, row);
+			ListBox subValue = new ListBox();
+			if (item != null && item.getSubValue() != null) {
+				// ToDo fix the sub value loading
+				// subValue.setText(item.getSubValue());
+			}
+			grid.setWidget(row, 2, subValue);
 		}
 		grid.setWidget(row, 0, global);
-		String selectedCountry = null;
-		if (item.getCountryCode() != null)
-			selectedCountry = item.getCountryCode();
-		populateCountryCodeControl(grid, selectedCountry, row);
-		ListBox subValue = new ListBox();
-		if (item != null && item.getSubValue() != null) {
-			// ToDo fix the sub value loading
-			// subValue.setText(item.getSubValue());
-		}
-		grid.setWidget(row, 2, subValue);
+
+		global.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				ListBox global = (ListBox) event.getSource();
+				if (global.getSelectedIndex() == 1) {
+					populateCountryCodeControl(scoringTable.getGrid(), null,
+							row);
+				} else {
+					Grid grid = scoringTable.getGrid();
+					ListBox country = (ListBox) grid.getWidget(row, 1);
+					if (country != null)
+						grid.remove(country);
+					ListBox subValue = (ListBox) grid.getWidget(row, 2);
+					if (subValue != null)
+						grid.remove(subValue);
+				}
+			}
+		});
 
 		ListBox pointType = new ListBox();
 		pointType.addItem(" ");
@@ -536,19 +616,24 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		ListBox global = (ListBox) grid.getWidget(row, 0);
 		if (global.getSelectedIndex() > 0) {
-			item.setGlobalStandard(false);
-		} else {
 			item.setGlobalStandard(true);
+		} else {
+			item.setGlobalStandard(false);
 		}
 
 		ListBox country = (ListBox) grid.getWidget(row, 1);
-		if (country.getSelectedIndex() > 0) {
-			item.setCountryCode(country.getItemText(country.getSelectedIndex()));
+		if (country != null) {
+			if (country.getSelectedIndex() > 0) {
+				item.setCountryCode(country.getItemText(country
+						.getSelectedIndex()));
+			}
 		}
 
 		ListBox subValue = (ListBox) grid.getWidget(row, 2);
-		if (subValue.getSelectedIndex() > 0) {
-			item.setSubValue(subValue.getValue(subValue.getSelectedIndex()));
+		if (subValue != null) {
+			if (subValue.getSelectedIndex() > 0) {
+				item.setSubValue(subValue.getValue(subValue.getSelectedIndex()));
+			}
 		}
 
 		ListBox pointType = (ListBox) grid.getWidget(row, 3);

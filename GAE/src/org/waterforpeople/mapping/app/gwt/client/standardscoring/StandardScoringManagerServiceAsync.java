@@ -22,4 +22,7 @@ public interface StandardScoringManagerServiceAsync {
 	void listObjectAttributes(String objectName,
 			AsyncCallback<TreeMap<String, String>> callback);
 
+	void save(StandardScoreBucketDto item,
+			AsyncCallback<StandardScoreBucketDto> callback);
+
 }
