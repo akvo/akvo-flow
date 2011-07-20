@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.dataexport.service;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,8 +11,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,9 +37,9 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
 /**
  * client code for calling the apis for data processing on the server
- *
+ * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class BulkDataServiceClient {
 	private static final String DATA_SERVLET_PATH = "/databackout?action=";
@@ -48,7 +51,7 @@ public class BulkDataServiceClient {
 	/**
 	 * lists all responses from the server for a surveyInstance submission as a
 	 * map of values keyed on questionId
-	 *
+	 * 
 	 * @param instanceId
 	 * @param serverBase
 	 * @return
@@ -75,11 +78,10 @@ public class BulkDataServiceClient {
 		if (jsonOuter.has("cursor")) {
 			cursor = jsonOuter.getString("cursor");
 		}
-		List<AccessPointDto> apDtoList = RestAccessPointParser.parseAccessPoint(response);
+		List<AccessPointDto> apDtoList = RestAccessPointParser
+				.parseAccessPoint(response);
 		return apDtoList;
 	}
-
-
 
 	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
 			String serverBase) throws Exception {
@@ -133,7 +135,8 @@ public class BulkDataServiceClient {
 		String response = null;
 		ArrayList<PlacemarkDto> pmDto = new ArrayList<PlacemarkDto>();
 		queryString = serverBase + "/placemarkrestapi?"
-				+ "needDetailsFlag=true" + "&country=" + countryCode + "&display=googleearth&ignoreCache=true";
+				+ "needDetailsFlag=true" + "&country=" + countryCode
+				+ "&display=googleearth&ignoreCache=true";
 		if (cursor != null) {
 			queryString = queryString + "&cursor=" + cursor;
 		}
@@ -157,7 +160,7 @@ public class BulkDataServiceClient {
 		if (jsonOuter.has("cursor")) {
 			cursor = jsonOuter.getString("cursor");
 			pdr.setCursor(cursor);
-		}else{
+		} else {
 			pdr.setCursor(null);
 		}
 		return pdr;
@@ -258,7 +261,7 @@ public class BulkDataServiceClient {
 	/**
 	 * survey instance ids and their submission dates. Map keys are the
 	 * instances and values are the dates.
-	 *
+	 * 
 	 * @param surveyId
 	 * @param serverBase
 	 * @return
@@ -279,18 +282,25 @@ public class BulkDataServiceClient {
 				if (instanceId.contains("|")) {
 					dateString = instanceId
 							.substring(instanceId.indexOf("|") + 1);
-					instanceId = instanceId.substring(0, instanceId
-							.indexOf("|"));
+					instanceId = instanceId.substring(0,
+							instanceId.indexOf("|"));
 				}
 				values.put(instanceId, dateString.replaceAll("\n", " ").trim());
 			}
 		}
 		return values;
 	}
-	
-	public static void main(String[] args){		
+
+	public static void main(String[] args) {
 		try {
-			BulkDataServiceClient.fetchInstanceIds(args[1], args[0]);			
+			Map<String, String> results = BulkDataServiceClient
+					.fetchInstanceIds(args[1], args[0]);
+			if (results != null) {
+				for (Entry<String, String> entry : results.entrySet()) {
+					System.out
+							.println(entry.getKey() + ", " + entry.getValue());
+				}
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -299,7 +309,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * method to parse SurveyInstance response values
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -309,18 +319,18 @@ public class BulkDataServiceClient {
 			StringTokenizer lines = new StringTokenizer(data, "\n");
 			if (lines != null) {
 				while (lines.hasMoreTokens()) {
-					StringTokenizer strTok = new StringTokenizer(lines
-							.nextToken(), ",");
+					StringTokenizer strTok = new StringTokenizer(
+							lines.nextToken(), ",");
 					String key = null;
 					String val = "";
 					if (strTok.hasMoreTokens()) {
 						key = strTok.nextToken();
 					}
-					while (strTok.hasMoreTokens()){
-					 if(val.length()>0){
-					 	val += ",";
-					 }
-					 val += strTok.nextToken();
+					while (strTok.hasMoreTokens()) {
+						if (val.length() > 0) {
+							val += ",";
+						}
+						val += strTok.nextToken();
 					}
 					if (key != null && key.trim().length() > 0) {
 						String oldVal = responseMap.get(key);
@@ -343,7 +353,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * loads full details for a single question (options, translations, etc)
-	 *
+	 * 
 	 * @param serverBase
 	 * @param questionId
 	 * @return
@@ -370,7 +380,7 @@ public class BulkDataServiceClient {
 	 * returns an array containing 2 elements: the first is an ordered list of
 	 * questionIds (in the order they appear in the survey) and the second
 	 * element is a map of questions (keyed on id)
-	 *
+	 * 
 	 * @param surveyId
 	 * @param serverBase
 	 * @return
@@ -390,8 +400,8 @@ public class BulkDataServiceClient {
 				if (questionDtos != null) {
 					for (QuestionDto question : questionDtos) {
 						keyList.add(question.getKeyId().toString());
-						questions.put(question.getKeyId().toString(), question
-								.getText());
+						questions.put(question.getKeyId().toString(),
+								question.getText());
 					}
 				}
 			}
@@ -403,7 +413,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets questions from the server for a specific question group
-	 *
+	 * 
 	 * @param serverBase
 	 * @param groupId
 	 * @return
@@ -419,7 +429,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets a surveyInstance from the server for a specific id
-	 *
+	 * 
 	 * @param id
 	 * @param serverBase
 	 * @return
@@ -435,7 +445,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets question groups from the server for a specific survey
-	 *
+	 * 
 	 * @param serverBase
 	 * @param surveyId
 	 * @return
@@ -450,7 +460,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets question groups from the server for a specific survey
-	 *
+	 * 
 	 * @param serverBase
 	 * @param surveyId
 	 * @return
@@ -465,7 +475,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets survey list from the server for a specific survey
-	 *
+	 * 
 	 * @param serverBase
 	 * @param surveyId
 	 * @return
@@ -481,7 +491,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses a single SurveyInstanceDto from a json response string
-	 *
+	 * 
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -522,7 +532,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses the question group response and forms DTOs
-	 *
+	 * 
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -572,7 +582,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses the survey group response and forms DTOs
-	 *
+	 * 
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -612,7 +622,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses the survey group response and forms DTOs
-	 *
+	 * 
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -710,7 +720,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses question responses into QuesitonDto objects
-	 *
+	 * 
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -730,9 +740,7 @@ public class BulkDataServiceClient {
 								if (json.getString("surveyId") != null) {
 									String numberC = json.getString("surveyId");
 									try {
-										dto
-												.setSurveyId(Long
-														.parseLong(numberC));
+										dto.setSurveyId(Long.parseLong(numberC));
 									} catch (NumberFormatException nex) {
 										dto.setSurveyId(null);
 									}
@@ -741,28 +749,22 @@ public class BulkDataServiceClient {
 
 							if (json.has("mandatoryFlag")) {
 								if (json.getString("mandatoryFlag") != null)
-									dto
-											.setMandatoryFlag(Boolean
-													.parseBoolean(json
-															.getString("mandatoryFlag")));
+									dto.setMandatoryFlag(Boolean.parseBoolean(json
+											.getString("mandatoryFlag")));
 								else
 									dto.setMandatoryFlag(false);
 							}
 							if (json.has("allowMultipleFlag")) {
 								if (json.getString("allowMultipleFlag") != null)
-									dto
-											.setAllowMultipleFlag(Boolean
-													.parseBoolean(json
-															.getString("allowMultipleFlag")));
+									dto.setAllowMultipleFlag(Boolean.parseBoolean(json
+											.getString("allowMultipleFlag")));
 								else
 									dto.setAllowMultipleFlag(false);
 							}
 							if (json.has("allowOtherFlag")) {
 								if (json.getString("allowOtherFlag") != null)
-									dto
-											.setAllowOtherFlag(Boolean
-													.parseBoolean(json
-															.getString("allowOtherFlag")));
+									dto.setAllowOtherFlag(Boolean.parseBoolean(json
+											.getString("allowOtherFlag")));
 								else
 									dto.setAllowOtherFlag(null);
 							}
@@ -801,10 +803,8 @@ public class BulkDataServiceClient {
 							}
 							if (json.has("questionTypeString")
 									&& json.getString("questionTypeString") != null) {
-								dto
-										.setType(QuestionDto.QuestionType
-												.valueOf(json
-														.getString("questionTypeString")));
+								dto.setType(QuestionDto.QuestionType.valueOf(json
+										.getString("questionTypeString")));
 							}
 
 							if (json.has("optionContainerDto")
@@ -833,9 +833,8 @@ public class BulkDataServiceClient {
 													&& !JSONObject.NULL
 															.equals(optJson
 																	.get("translationMap"))) {
-												opt
-														.setTranslationMap(parseTranslations(optJson
-																.getJSONObject("translationMap")));
+												opt.setTranslationMap(parseTranslations(optJson
+														.getJSONObject("translationMap")));
 											}
 											container.addQuestionOption(opt);
 										}
@@ -892,7 +891,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * invokes a remote REST api
-	 *
+	 * 
 	 * @param fullUrl
 	 * @return
 	 * @throws Exception
@@ -905,13 +904,24 @@ public class BulkDataServiceClient {
 			URL url = new URL(fullUrl);
 			System.out.println("Calling: " + url.toString());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			
+
 			conn.setConnectTimeout(30000);
 			conn.setRequestMethod("GET");
 			conn.setDoOutput(true);
+			conn.addRequestProperty("Accept-Encoding", "gzip");
+			conn.addRequestProperty("User-Agent", "gzip");
+			InputStream instream = conn.getInputStream();
+			String contentEncoding = conn.getHeaderField("Content-Encoding");
 
-			reader = new BufferedReader(new InputStreamReader(conn
-					.getInputStream(), "UTF-8"));
+			if (contentEncoding != null
+					&& contentEncoding.equalsIgnoreCase("gzip")) {
+				reader = new BufferedReader(new InputStreamReader(
+						new GZIPInputStream(instream), "UTF-8"));
+			} else {
+				reader = new BufferedReader(new InputStreamReader(instream,
+						"UTF-8"));
+			}
+
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 
