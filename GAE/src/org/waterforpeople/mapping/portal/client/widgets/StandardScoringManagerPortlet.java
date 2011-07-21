@@ -128,8 +128,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	public StandardScoringManagerPortlet(UserDto user) {
-		super(title, true, false, false, 1900, FULLSCREEN_HEIGHT,
-				user);
+		super(title, true, false, false, 1900, FULLSCREEN_HEIGHT, user);
 		init();
 	}
 
@@ -332,8 +331,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			populateCountryCodeControl(grid, selectedCountry, row);
 			ListBox subValue = new ListBox();
 			if (item != null && item.getSubValue() != null) {
-				populateSubLevelControl(grid, selectedCountry,
-						row, null);
+				fetchSubCountries(item.getSubValue(), row);
 			}
 			grid.setWidget(row, 2, subValue);
 		}
@@ -553,8 +551,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		});
 	}
 
-	private void populateCountryCodeControl(Grid grid, String selectedCountry,
-			final Integer row) {
+	private void populateCountryCodeControl(Grid grid,
+			final String selectedCountry, final Integer row) {
 		ListBox country = new ListBox();
 		int i = 1;
 		country.addItem(" ");
@@ -575,27 +573,30 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				ListBox country = (ListBox) scoringTable.getGrid().getWidget(
-						row, 1);
-				String countryCode = country.getValue(country
-						.getSelectedIndex());
-				Long id = null;
-				communitySvc.listChildSubCountries(countryCode, id,
-						new AsyncCallback<List<SubCountryDto>>() {
-
-							@Override
-							public void onFailure(Throwable caught) {
-								// TODO Auto-generated method stub
-							}
-
-							@Override
-							public void onSuccess(List<SubCountryDto> result) {
-								populateSubLevelControl(scoringTable.getGrid(),
-										null, row, result);
-							}
-						});
+				fetchSubCountries(selectedCountry, row);
 			}
 		});
+	}
+
+	private void fetchSubCountries(String selectedCountry, final Integer row) {
+		ListBox country = (ListBox) scoringTable.getGrid().getWidget(row, 1);
+		String countryCode = country.getValue(country.getSelectedIndex());
+		Long id = null;
+		communitySvc.listChildSubCountries(countryCode, id,
+				new AsyncCallback<List<SubCountryDto>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+					}
+
+					@Override
+					public void onSuccess(List<SubCountryDto> result) {
+						populateSubLevelControl(scoringTable.getGrid(), null,
+								row, result);
+					}
+				});
+
 	}
 
 	private void populateSubLevelControl(Grid grid, String selectedCountry,
@@ -640,15 +641,15 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		ListBox country = (ListBox) grid.getWidget(row, 1);
 		if (country != null) {
 			if (country.getSelectedIndex() > 0) {
-				item.setCountryCode(country.getValue(country
-						.getSelectedIndex()));
+				item.setCountryCode(country.getValue(country.getSelectedIndex()));
 			}
 		}
 
 		ListBox subValue = (ListBox) grid.getWidget(row, 2);
 		if (subValue != null) {
 			if (subValue.getSelectedIndex() > 0) {
-				item.setSubValue(subValue.getItemText(subValue.getSelectedIndex()));
+				item.setSubValue(subValue.getItemText(subValue
+						.getSelectedIndex()));
 			}
 		}
 
@@ -745,7 +746,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
 		TextBox keyBox = (TextBox) grid.getWidget(row, 18);
-		if (keyBox.getValue().trim()!="" && keyBox.getValue() != null) {
+		if (keyBox.getValue().trim() != "" && keyBox.getValue() != null) {
 			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
 		return item;
