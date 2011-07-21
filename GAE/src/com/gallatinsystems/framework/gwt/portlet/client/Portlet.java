@@ -33,8 +33,8 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	private static final String CONF_IMAGE = "images/configure-32.png";
 	private static final String SNAP_IMAGE = "images/camera_icon.png";
 	private static final String CSS_PANEL = "portlet-panel";
-	private static final String CSS_HEADER = "portlet-header";	
-	private static final String PORTLET_TITLE_CSS ="portlet-title";
+	private static final String CSS_HEADER = "portlet-header";
+	private static final String PORTLET_TITLE_CSS = "portlet-title";
 	private static final int HEADER_HEIGHT = 20;
 	private static final int DEFAULT_WIDTH = 100;
 	private static final int DEFAULT_HEIGHT = 100;
@@ -256,8 +256,8 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 			isLoaded = true;
 			headerWidget.setPixelSize(headerWidget.getOffsetWidth(),
 					HEADER_HEIGHT);
-			setContentSize(internalContent.getOffsetWidth(), internalContent
-					.getOffsetHeight());
+			setContentSize(internalContent.getOffsetWidth(),
+					internalContent.getOffsetHeight());
 		}
 	}
 
@@ -352,7 +352,7 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	public void setShowFullscreen(boolean showFullscreen) {
 		if (showFullscreen) {
 			closeImg.setVisible(false);
-			setPixelSize(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+			setPixelSize(getFullscreenWidth(), getFullscreenHeight());
 
 		}
 	}
@@ -395,6 +395,14 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 	 */
 	protected void handleExportClick() {
 
+	}
+
+	public int getFullscreenHeight() {
+		return FULLSCREEN_HEIGHT;
+	}
+
+	public int getFullscreenWidth() {
+		return FULLSCREEN_WIDTH;
 	}
 
 	public abstract String getName();
