@@ -75,6 +75,7 @@ import com.gallatinsystems.survey.domain.xml.Options;
 import com.gallatinsystems.survey.domain.xml.Text;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -1016,6 +1017,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					buffer.append(",");
 				}
 				buffer.append(siList.get(i).getKey().getId());
+				queue.add(url("/app_worker/surveyalservlet").param(
+						SurveyalRestRequest.ACTION_PARAM,
+						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
+						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+						siList.get(i).getKey().getId() + ""));
 			}
 			queue.add(url("/app_worker/surveytask")
 					.param("action", "reprocessMapSurveyInstance")
@@ -1023,6 +1029,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
 					.param(SurveyTaskRequest.CURSOR_PARAM,
 							SurveyInstanceDAO.getCursor(siList)));
+			
 		}
 	}
 
