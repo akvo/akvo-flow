@@ -116,6 +116,11 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private Button saveBucket = new Button("Save New Bucket");
 
 	@Override
+	public int getFullscreenWidth(){
+		return 1900;
+	}
+	
+	@Override
 	public DataTableHeader[] getHeaders() {
 		return HEADERS;
 	}
@@ -204,7 +209,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		});
 		scrollP.add(tablePanel);
 		scrollP.setAlwaysShowScrollBars(true);
-		scrollP.setWidth("1800px");
+		scrollP.setWidth("1900px");
 		mainVPanel.add(scrollP);
 
 	}
