@@ -33,6 +33,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 
 	private QuestionGroup questionGroup;
+
 	private HashMap<String, QuestionView> questionMap;
 	private HashMap<String, QuestionResponse> responseMap;
 
@@ -50,8 +51,8 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 	 */
 	public SurveyQuestionTabContentFactory(SurveyViewActivity c,
 			QuestionGroup qg, SurveyDbAdapter dbAdaptor, float textSize,
-			String[] languageCodes, boolean readOnly) {
-		super(c, dbAdaptor, textSize, languageCodes);
+			String defaultLang, String[] languageCodes, boolean readOnly) {
+		super(c, dbAdaptor, textSize, defaultLang, languageCodes);
 		responseMap = null;
 		questionGroup = qg;
 		questionMap = new HashMap<String, QuestionView>();
@@ -83,47 +84,49 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 
 			if (ConstantUtil.OPTION_QUESTION_TYPE.equalsIgnoreCase(q.getType())) {
 				questionView = new OptionQuestionView(context, q,
-						languageCodes, readOnly);
+						getDefaultLang(), languageCodes, readOnly);
 
 			} else if (ConstantUtil.FREE_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new FreetextQuestionView(context, q,
-						languageCodes, readOnly);
+						getDefaultLang(), languageCodes, readOnly);
 			} else if (ConstantUtil.PHOTO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.PHOTO_QUESTION_TYPE, languageCodes,
-						readOnly);
+						ConstantUtil.PHOTO_QUESTION_TYPE, getDefaultLang(),
+						languageCodes, readOnly);
 			} else if (ConstantUtil.VIDEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new MediaQuestionView(context, q,
-						ConstantUtil.VIDEO_QUESTION_TYPE, languageCodes,
-						readOnly);
+						ConstantUtil.VIDEO_QUESTION_TYPE, getDefaultLang(),
+						languageCodes, readOnly);
 			} else if (ConstantUtil.GEO_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new GeoQuestionView(context, q, languageCodes,
-						readOnly);
+				questionView = new GeoQuestionView(context, q,
+						getDefaultLang(), languageCodes, readOnly);
 			} else if (ConstantUtil.SCAN_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new BarcodeQuestionView(context, q,
-						languageCodes, readOnly);
+						getDefaultLang(), languageCodes, readOnly);
 			} else if (ConstantUtil.TRACK_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new GeoTrackQuestionView(context, q,
-						languageCodes, readOnly);
+						getDefaultLang(), languageCodes, readOnly);
 			} else if (ConstantUtil.STRENGTH_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
 				questionView = new StrengthQuestionView(context, q,
-						languageCodes, readOnly);
+						getDefaultLang(), languageCodes, readOnly);
 			} else if (ConstantUtil.HEADING_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new CompassQuestionView(context, q, languageCodes, readOnly);
-			}else if (ConstantUtil.DATE_QUESTION_TYPE.equalsIgnoreCase(q
+				questionView = new CompassQuestionView(context, q,
+						getDefaultLang(), languageCodes, readOnly);
+			} else if (ConstantUtil.DATE_QUESTION_TYPE.equalsIgnoreCase(q
 					.getType())) {
-				questionView = new DateQuestionView(context, q, languageCodes, readOnly);
+				questionView = new DateQuestionView(context, q,
+						getDefaultLang(), languageCodes, readOnly);
 			} else {
-				questionView = new QuestionView(context, q, languageCodes,
-						readOnly);
+				questionView = new QuestionView(context, q, getDefaultLang(),
+						languageCodes, readOnly);
 			}
 			questionView.setTextSize(defaultTextSize);
 			questionMap.put(q.getId(), questionView);
@@ -312,8 +315,8 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					q.getResponse(true).setRespondentId(respondentId);
 					databaseAdaptor.createOrUpdateSurveyResponse(q
 							.getResponse(true));
-					responseMap.put(q.getResponse(true).getQuestionId(), q
-							.getResponse(true));
+					responseMap.put(q.getResponse(true).getQuestionId(),
+							q.getResponse(true));
 				} else if (q.getResponse(true) != null
 						&& q.getResponse(true).getId() != null
 						&& q.getResponse(true).getId() > 0) {

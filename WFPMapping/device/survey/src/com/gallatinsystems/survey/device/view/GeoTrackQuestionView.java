@@ -22,7 +22,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
- *This question view handles geographic tracking operations (a stop/start
+ * This question view handles geographic tracking operations (a stop/start
  * button that toggles the recording of way points).
  * 
  * @author Christopher Fagiani
@@ -37,9 +37,9 @@ public class GeoTrackQuestionView extends QuestionView implements
 	private GeoTrackService geoTrackService;
 	private ServiceConnection connection;
 
-	public GeoTrackQuestionView(Context context, Question q, String[] langs,
-			boolean readOnly) {
-		super(context, q, langs, readOnly);
+	public GeoTrackQuestionView(Context context, Question q,
+			String defaultLang, String[] langs, boolean readOnly) {
+		super(context, q, defaultLang, langs, readOnly);
 		trackButton = new Button(context);
 		trackButton.setText(R.string.starttrack);
 		trackButton.setOnClickListener(this);

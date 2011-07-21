@@ -140,7 +140,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 70;
+	private static final int DATABASE_VERSION = 73;
 
 	private final Context context;
 
@@ -193,7 +193,7 @@ public class SurveyDbAdapter {
 				db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
-			} else {
+			} else if (oldVersion < 70){
 
 				// changes made in version 57
 				try {
@@ -261,7 +261,13 @@ public class SurveyDbAdapter {
 				} catch (Exception e) {
 					// swallow
 				}
-
+			}
+			if(oldVersion  < 73){
+				try{
+					db.execSQL("update survey set language = 'en' where language = 'english' or language is null");
+				}catch(Exception e){
+					//no-op
+				}
 			}
 		}
 
@@ -878,7 +884,7 @@ public class SurveyDbAdapter {
 		updatedValues.put(FILENAME_COL, survey.getFileName());
 		updatedValues.put(DISP_NAME_COL, survey.getName());
 		updatedValues.put(LANGUAGE_COL, survey.getLanguage() != null ? survey
-				.getLanguage().toLowerCase() : survey.getLanguage());
+				.getLanguage().toLowerCase() : ConstantUtil.ENGLISH_CODE);
 		updatedValues.put(HELP_DOWNLOADED_COL, survey.isHelpDownloaded() ? "Y"
 				: "N");
 		updatedValues.put(DELETED_COL, ConstantUtil.NOT_DELETED);

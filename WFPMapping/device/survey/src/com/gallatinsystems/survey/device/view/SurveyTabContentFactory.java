@@ -15,7 +15,7 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 
 	private Button actionButton;
 	private ScrollView scrollView;
-
+	private String defaultLang;
 	protected SurveyViewActivity context;
 	protected SurveyDbAdapter databaseAdaptor;
 
@@ -23,11 +23,12 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 	protected String[] languageCodes;
 
 	protected SurveyTabContentFactory(SurveyViewActivity c,
-			SurveyDbAdapter dbAdaptor, float textSize, String[] languageCodes) {
+			SurveyDbAdapter dbAdaptor, float textSize, String defaultLang, String[] languageCodes) {
 		context = c;
 		databaseAdaptor = dbAdaptor;
 		defaultTextSize = textSize;
 		this.languageCodes = languageCodes;
+		this.defaultLang = defaultLang;		
 
 	}
 
@@ -89,6 +90,14 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 	 */
 	protected void updateSelectedLanguages(String[] langCodes) {
 		languageCodes = langCodes;
+	}
+
+	public void setDefaultLang(String defaultLang) {
+		this.defaultLang = defaultLang;
+	}
+
+	public String getDefaultLang() {
+		return defaultLang;
 	}
 
 }

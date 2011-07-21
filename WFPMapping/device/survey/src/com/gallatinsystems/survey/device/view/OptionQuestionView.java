@@ -58,9 +58,9 @@ public class OptionQuestionView extends QuestionView {
 	private String latestOtherText;
 	public static boolean promptOnChange;
 
-	public OptionQuestionView(Context context, Question q, String[] langCodes,
-			boolean readOnly) {
-		super(context, q, langCodes, readOnly);
+	public OptionQuestionView(Context context, Question q, String defaultLang,
+			String[] langCodes, boolean readOnly) {
+		super(context, q, defaultLang, langCodes, readOnly);
 		OTHER_TEXT = getResources().getString(R.string.othertext);
 		init();
 	}
@@ -99,8 +99,7 @@ public class OptionQuestionView extends QuestionView {
 								if (getResponse() == null
 										|| !getResponse()
 												.getType()
-												.equals(
-														ConstantUtil.OTHER_RESPONSE_TYPE)) {
+												.equals(ConstantUtil.OTHER_RESPONSE_TYPE)) {
 									displayOtherDialog();
 								}
 							} else if (position == 0) {
@@ -131,14 +130,15 @@ public class OptionQuestionView extends QuestionView {
 				if (readOnly) {
 					spinner.setEnabled(false);
 				}
-			} else if (!question.isAllowMultiple()) {				
+			} else if (!question.isAllowMultiple()) {
 				optionGroup = new RadioGroup(context);
 				optionGroup
 						.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 							public void onCheckedChanged(RadioGroup group,
 									int checkedId) {
-								optionGroup.requestChildFocus(optionGroup
-										.findViewById(checkedId), optionGroup);
+								optionGroup.requestChildFocus(
+										optionGroup.findViewById(checkedId),
+										optionGroup);
 								handleSelection(checkedId, true);
 							}
 						});
@@ -189,27 +189,24 @@ public class OptionQuestionView extends QuestionView {
 						optionGroup.getChildAt(j).setEnabled(false);
 					}
 				}
-			} else {				
+			} else {
 				checkBoxes = new ArrayList<CheckBox>();
 				for (int i = 0; i < options.size(); i++) {
 					TableRow boxRow = new TableRow(context);
-					CheckBox box = new CheckBox(context);					
+					CheckBox box = new CheckBox(context);
 					box.setId(i);
 					box.setWidth(getMaxTextWidth());
 					checkBoxes.add(box);
 					box.setText(formOptionText(options.get(i)),
 							BufferType.SPANNABLE);
-					box
-							.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+					box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-								@Override
-								public void onCheckedChanged(
-										CompoundButton buttonView,
-										boolean isChecked) {
-									handleSelection(buttonView.getId(),
-											isChecked);
-								}
-							});
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView,
+								boolean isChecked) {
+							handleSelection(buttonView.getId(), isChecked);
+						}
+					});
 					idToValueMap.put(box.getId(), options.get(i).getText());
 					boxRow.addView(box);
 					addView(boxRow);
@@ -218,16 +215,13 @@ public class OptionQuestionView extends QuestionView {
 					TableRow boxRow = new TableRow(context);
 					CheckBox box = new CheckBox(context);
 					box.setId(options.size());
-					box
-							.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-								@Override
-								public void onCheckedChanged(
-										CompoundButton buttonView,
-										boolean isChecked) {
-									handleSelection(buttonView.getId(),
-											isChecked);
-								}
-							});
+					box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView,
+								boolean isChecked) {
+							handleSelection(buttonView.getId(), isChecked);
+						}
+					});
 					checkBoxes.add(box);
 					box.setText(OTHER_TEXT);
 					idToValueMap.put(box.getId(), OTHER_TEXT);
@@ -320,7 +314,7 @@ public class OptionQuestionView extends QuestionView {
 		boolean isFirst = true;
 		StringBuilder text = new StringBuilder();
 		for (int i = 0; i < langs.length; i++) {
-			if (ConstantUtil.ENGLISH_CODE.equalsIgnoreCase(langs[i])) {
+			if (getDefaultLang().equalsIgnoreCase(langs[i])) {
 				if (!isFirst) {
 					text.append(" / ");
 				} else {
@@ -346,9 +340,9 @@ public class OptionQuestionView extends QuestionView {
 					} else {
 						text.append(colors[i]);
 					}
-					text.append("'>").append(
-							TextUtils.htmlEncode(txt.getText())).append(
-							"</font>");
+					text.append("'>")
+							.append(TextUtils.htmlEncode(txt.getText()))
+							.append("</font>");
 				}
 			}
 		}

@@ -27,6 +27,7 @@ import com.gallatinsystems.survey.device.util.StringUtil;
  **/
 public class SurveyHandler extends DefaultHandler {
 
+	private static final String DEFAULT_LANG = "defaultLanguageCode";
 	private static final String QUESTION_GROUP = "questionGroup";
 	private static final String HEADING = "heading";
 	private static final String QUESTION = "question";
@@ -201,6 +202,11 @@ public class SurveyHandler extends DefaultHandler {
 				survey.setVersion(Double.parseDouble(attributes
 						.getValue(VERSION)));
 			}
+			if (attributes.getValue(DEFAULT_LANG) != null) {
+				survey.setLanguage(attributes.getValue(DEFAULT_LANG));
+			} else {
+				survey.setLanguage(ConstantUtil.ENGLISH_CODE);
+			}
 		} else if (localName.equalsIgnoreCase(QUESTION_GROUP)) {
 			currentQuestionGroup = new QuestionGroup();
 			if (attributes.getValue(ORDER) != null) {
@@ -298,8 +304,8 @@ public class SurveyHandler extends DefaultHandler {
 			}
 			currentDependency = null;
 		} else if (localName.equalsIgnoreCase(VALIDATION_RULE)) {
-			currentValidation = new ValidationRule(attributes
-					.getValue(VALIDATION_TYPE));
+			currentValidation = new ValidationRule(
+					attributes.getValue(VALIDATION_TYPE));
 			currentValidation.setAllowDecimal(attributes.getValue(ALLOW_DEC));
 			currentValidation.setAllowSigned(attributes.getValue(ALLOW_SIGN));
 			currentValidation.setMaxLength(attributes.getValue(MAX_LENGTH));
@@ -316,9 +322,10 @@ public class SurveyHandler extends DefaultHandler {
 		} else if (localName.equalsIgnoreCase(SCORING)) {
 			currentScoringType = attributes.getValue(TYPE);
 		} else if (localName.equalsIgnoreCase(SCORE)) {
-			currentScoringRule = new ScoringRule(currentScoringType, attributes
-					.getValue(RANGE_MIN), attributes.getValue(RANGE_MAX),
-					attributes.getValue(TEXT), attributes.getValue(VALUE));
+			currentScoringRule = new ScoringRule(currentScoringType,
+					attributes.getValue(RANGE_MIN),
+					attributes.getValue(RANGE_MAX), attributes.getValue(TEXT),
+					attributes.getValue(VALUE));
 		}
 	}
 }

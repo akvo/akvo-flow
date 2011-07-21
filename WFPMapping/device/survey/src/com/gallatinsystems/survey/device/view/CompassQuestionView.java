@@ -29,9 +29,9 @@ public class CompassQuestionView extends QuestionView implements
 	private Sensor orientationSensor;
 	private SensorManager sensorMgr;
 
-	public CompassQuestionView(Context context, Question q, String[] langs,
-			boolean readOnly) {
-		super(context, q, langs, readOnly);
+	public CompassQuestionView(Context context, Question q, String defaultLang,
+			String[] langs, boolean readOnly) {
+		super(context, q, defaultLang, langs, readOnly);
 		sensorMgr = (SensorManager) context
 				.getSystemService(Context.SENSOR_SERVICE);
 		if (sensorMgr != null) {
@@ -42,40 +42,39 @@ public class CompassQuestionView extends QuestionView implements
 	}
 
 	protected void init() {
-		Context context = getContext();				
+		Context context = getContext();
 		headingEdit = new EditText(context);
-		headingEdit.setWidth(screenWidth / 2);		
+		headingEdit.setWidth(screenWidth / 2);
 		addView(headingEdit);
 		if (sensorMgr != null) {
 			captureButton = new Button(context);
 			captureButton.setText(R.string.captureheading);
 			captureButton.setOnClickListener(this);
-			captureButton.setWidth(screenWidth-50);		
-			addView(captureButton);			
-		}		
+			captureButton.setWidth(screenWidth - 50);
+			addView(captureButton);
+		}
 	}
 
 	@Override
 	public void onClick(View v) {
-		if(v == captureButton){
-			if(sensorMgr!= null){
-				sensorMgr.registerListener(new SensorEventListener() {					
+		if (v == captureButton) {
+			if (sensorMgr != null) {
+				sensorMgr.registerListener(new SensorEventListener() {
 					@Override
 					public void onSensorChanged(SensorEvent event) {
 						if (event.sensor == orientationSensor) {
-							headingEdit.setText(""+event.values[0]);
+							headingEdit.setText("" + event.values[0]);
 							sensorMgr.unregisterListener(this);
-						}						
+						}
 					}
-					
+
 					@Override
 					public void onAccuracyChanged(Sensor sensor, int accuracy) {
-						//no-op						
+						// no-op
 					}
-				}, orientationSensor,
-						SensorManager.SENSOR_DELAY_NORMAL);
+				}, orientationSensor, SensorManager.SENSOR_DELAY_NORMAL);
 			}
-		}		
+		}
 	}
 
 }

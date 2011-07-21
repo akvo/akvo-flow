@@ -29,8 +29,8 @@ public class StrengthQuestionView extends OptionQuestionView {
 	private volatile boolean suppressListeners = false;
 
 	public StrengthQuestionView(Context context, Question q,
-			String[] langCodes, boolean readOnly) {
-		super(context, q, langCodes, readOnly);
+			String defaultLang, String[] langCodes, boolean readOnly) {
+		super(context, q, defaultLang, langCodes, readOnly);
 		STRENGTH_TEXT = getResources().getString(R.string.strengthtext);
 		suppressListeners = true;
 		init();
@@ -53,7 +53,7 @@ public class StrengthQuestionView extends OptionQuestionView {
 				getContext(), android.R.layout.simple_spinner_item, optionArray);
 		optionAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		strengthSpinner.setAdapter(optionAdapter);		
+		strengthSpinner.setAdapter(optionAdapter);
 
 		strengthSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 

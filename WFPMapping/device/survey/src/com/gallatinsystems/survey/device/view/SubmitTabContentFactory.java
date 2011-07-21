@@ -36,8 +36,9 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 	private static final String HEADING_COLOR = "red";
 
 	public SubmitTabContentFactory(SurveyViewActivity c,
-			SurveyDbAdapter dbAdaptor, float textSize, String[] languageCodes) {
-		super(c, dbAdaptor, textSize, languageCodes);
+			SurveyDbAdapter dbAdaptor, float textSize, String defaultLang,
+			String[] languageCodes) {
+		super(c, dbAdaptor, textSize, defaultLang, languageCodes);
 
 	}
 
@@ -90,8 +91,9 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 				TableRow tr = new TableRow(context);
 				tr.setLayoutParams(new ViewGroup.LayoutParams(
 						LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-				QuestionView qv = new QuestionView(context, missingQuestions
-						.get(i), languageCodes, true);
+				QuestionView qv = new QuestionView(context,
+						missingQuestions.get(i), getDefaultLang(),
+						languageCodes, true);
 				qv.suppressHelp(true);
 				// force the view to be visible (if the question has
 				// dependencies, it'll be hidden by default)
@@ -126,8 +128,9 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 		TextView heading = new TextView(context);
 		heading.setWidth(DEFAULT_WIDTH);
 		heading.setTextSize(HEADING_TEXT_SIZE);
-		heading.setText(Html.fromHtml("<font color='" + HEADING_COLOR + "'>"
-				+ text + "</font>"), BufferType.SPANNABLE);
+		heading.setText(
+				Html.fromHtml("<font color='" + HEADING_COLOR + "'>" + text
+						+ "</font>"), BufferType.SPANNABLE);
 		tr.addView(heading);
 		return tr;
 	}
@@ -139,8 +142,8 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 	private void startNewSurvey() {
 		// create a new response object so we're ready for the
 		// next instance
-		context.setRespondentId(databaseAdaptor.createSurveyRespondent(context
-				.getSurveyId(), context.getUserId()));
+		context.setRespondentId(databaseAdaptor.createSurveyRespondent(
+				context.getSurveyId(), context.getUserId()));
 		context.resetAllQuestions();
 	}
 

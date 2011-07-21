@@ -194,7 +194,7 @@ public class BootstrapService extends Service {
 							survey.setId(id);
 							survey.setName(surveyName);
 							survey.setHelpDownloaded(false);
-							survey.setLanguage(ConstantUtil.SURVEY_DEFAULT_LANG);
+							survey.setLanguage(ConstantUtil.ENGLISH_CODE);
 							survey.setType(ConstantUtil.SURVEY_TYPE);
 						}
 						survey.setLocation(ConstantUtil.FILE_LOCATION);

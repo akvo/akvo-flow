@@ -181,8 +181,8 @@ public class SurveyViewActivity extends TabActivity implements
 					.getLocation())) {
 				// load from resource
 				Resources res = getResources();
-				in = res.openRawResource(res.getIdentifier(surveyFromDb
-						.getFileName(), ConstantUtil.RAW_RESOURCE,
+				in = res.openRawResource(res.getIdentifier(
+						surveyFromDb.getFileName(), ConstantUtil.RAW_RESOURCE,
 						ConstantUtil.RESOURCE_PACKAGE));
 			} else {
 				// load from file
@@ -220,11 +220,13 @@ public class SurveyViewActivity extends TabActivity implements
 						&& group.getQuestions().size() > 0) {
 					SurveyQuestionTabContentFactory factory = new SurveyQuestionTabContentFactory(
 							this, group, databaseAdapter, currentTextSize,
+							survey.getLanguage() != null ? survey.getLanguage()
+									: ConstantUtil.ENGLISH_CODE,
 							selectedLanguageCodes, readOnly);
 					factoryMap.put(group, factory);
 					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
-							.setIndicator(group.getHeading()).setContent(
-									factory));
+							.setIndicator(group.getHeading())
+							.setContent(factory));
 					tabContentFactories.add(factory);
 					tabCount++;
 				}
@@ -233,20 +235,22 @@ public class SurveyViewActivity extends TabActivity implements
 				// if we're not in read-only mode, we need to add the submission
 				// tab
 				submissionTab = new SubmitTabContentFactory(this,
-						databaseAdapter, currentTextSize, selectedLanguageCodes);
+						databaseAdapter, currentTextSize,
+						survey.getLanguage() != null ? survey.getLanguage()
+								: ConstantUtil.ENGLISH_CODE,
+						selectedLanguageCodes);
 				tabCount++;
-				tabHost.addTab(tabHost.newTabSpec(SUBMIT_TAB_TAG).setIndicator(
-						getString(R.string.submitbutton)).setContent(
-						submissionTab));
-				tabHost
-						.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-							@Override
-							public void onTabChanged(String tabId) {
-								if (SUBMIT_TAB_TAG.equals(tabId)) {
-									submissionTab.refreshView();
-								}
-							}
-						});
+				tabHost.addTab(tabHost.newTabSpec(SUBMIT_TAB_TAG)
+						.setIndicator(getString(R.string.submitbutton))
+						.setContent(submissionTab));
+				tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+					@Override
+					public void onTabChanged(String tabId) {
+						if (SUBMIT_TAB_TAG.equals(tabId)) {
+							submissionTab.refreshView();
+						}
+					}
+				});
 			}
 		}
 	}
@@ -295,8 +299,8 @@ public class SurveyViewActivity extends TabActivity implements
 							// question map for a response and use that to
 							// inform the child
 							QuestionResponse resp = databaseAdapter
-									.findSingleResponse(respondentId, dep
-											.getQuestion());
+									.findSingleResponse(respondentId,
+											dep.getQuestion());
 							if (resp != null) {
 								depQ.handleDependencyParentResponse(dep, resp);
 							}
@@ -384,11 +388,12 @@ public class SurveyViewActivity extends TabActivity implements
 					}
 
 					File f = new File(Environment.getExternalStorageDirectory()
-							.getAbsolutePath()
-							+ filePrefix + fileSuffix);
+							.getAbsolutePath() + filePrefix + fileSuffix);
 					String newName = Environment.getExternalStorageDirectory()
 							.getAbsolutePath()
-							+ filePrefix + System.nanoTime() + fileSuffix;
+							+ filePrefix
+							+ System.nanoTime()
+							+ fileSuffix;
 					f.renameTo(new File(newName));
 					try {
 						Bundle photoData = new Bundle();
@@ -397,9 +402,8 @@ public class SurveyViewActivity extends TabActivity implements
 						if (eventQuestionSource != null) {
 							eventQuestionSource.questionComplete(photoData);
 						} else if (eventSourceQuestionId != null) {
-							Log
-									.e(ACTIVITY_NAME,
-											"eventQuestionSource is somehow null. Manually saving question response."); // 
+							Log.e(ACTIVITY_NAME,
+									"eventQuestionSource is somehow null. Manually saving question response."); //
 							saveQuestionResponse(
 									photoData
 											.getString(ConstantUtil.MEDIA_FILE_KEY),
@@ -408,9 +412,8 @@ public class SurveyViewActivity extends TabActivity implements
 									eventSourceQuestionId);
 
 						} else {
-							Log
-									.e(ACTIVITY_NAME,
-											"Both the source object and source question id are null");
+							Log.e(ACTIVITY_NAME,
+									"Both the source object and source question id are null");
 						}
 					} catch (Exception e) {
 						Log.e(ACTIVITY_NAME, e.getMessage());
@@ -426,18 +429,17 @@ public class SurveyViewActivity extends TabActivity implements
 					if (eventQuestionSource != null) {
 						eventQuestionSource.questionComplete(data.getExtras());
 					} else if (eventSourceQuestionId != null) {
-						Log
-								.e(ACTIVITY_NAME,
-										"eventQuestionSource is somehow null. Manually saving question response."); // 
-						saveQuestionResponse(data.getExtras().getString(
-								ConstantUtil.BARCODE_CONTENT),
+						Log.e(ACTIVITY_NAME,
+								"eventQuestionSource is somehow null. Manually saving question response."); //
+						saveQuestionResponse(
+								data.getExtras().getString(
+										ConstantUtil.BARCODE_CONTENT),
 								ConstantUtil.VALUE_RESPONSE_TYPE,
 								eventSourceQuestionId);
 
 					} else {
-						Log
-								.e(ACTIVITY_NAME,
-										"Both the source object and source question id are null");
+						Log.e(ACTIVITY_NAME,
+								"Both the source object and source question id are null");
 					}
 				}
 			} else if (requestCode == ACTIVITY_HELP_REQ) {
@@ -522,22 +524,21 @@ public class SurveyViewActivity extends TabActivity implements
 				.getEventType())) {
 			Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
 			Uri uri = null;
-			String src = event.getSource().getQuestion().getHelpByType(
-					ConstantUtil.VIDEO_HELP_TYPE).get(0).getValue().trim();
+			String src = event.getSource().getQuestion()
+					.getHelpByType(ConstantUtil.VIDEO_HELP_TYPE).get(0)
+					.getValue().trim();
 			if (src.toLowerCase().startsWith(HTTP_PREFIX)) {
 				String fileName = src.substring(src.lastIndexOf("/") + 1);
 				if (FileUtil.doesFileExist(fileName, ConstantUtil.DATA_DIR
-						+ surveyId + File.separator, props
-						.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this)) {
+						+ surveyId + File.separator,
+						props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+						this)) {
 					uri = Uri
 							.parse(VIDEO_PREFIX
-									+ FileUtil
-											.getStorageDirectory(
-													ConstantUtil.DATA_DIR
-															+ surveyId
-															+ File.separator,
-													props
-															.getProperty(ConstantUtil.USE_INTERNAL_STORAGE))
+									+ FileUtil.getStorageDirectory(
+											ConstantUtil.DATA_DIR + surveyId
+													+ File.separator,
+											props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE))
 									+ fileName);
 				} else {
 					uri = Uri.parse(src);
@@ -575,10 +576,11 @@ public class SurveyViewActivity extends TabActivity implements
 				Log.e(ACTIVITY_NAME, "Question source was null in the event");
 			}
 			try {
-				Intent i = new Intent(this, ConstantUtil.HELP_ACTIVITIES
-						.get(event.getSource().getQuestion().getHelpByType(
-								ConstantUtil.ACTIVITY_HELP_TYPE).get(0)
-								.getValue()));
+				Intent i = new Intent(this,
+						ConstantUtil.HELP_ACTIVITIES.get(event.getSource()
+								.getQuestion()
+								.getHelpByType(ConstantUtil.ACTIVITY_HELP_TYPE)
+								.get(0).getValue()));
 				i.putExtra(ConstantUtil.MODE_KEY,
 						ConstantUtil.SURVEY_RESULT_MODE);
 

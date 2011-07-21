@@ -31,8 +31,8 @@ public class FreetextQuestionView extends QuestionView implements
 	private EditText freetextEdit;
 
 	public FreetextQuestionView(Context context, Question q,
-			String[] langCodes, boolean readOnly) {
-		super(context, q, langCodes, readOnly);
+			String defaultLang, String[] langCodes, boolean readOnly) {
+		super(context, q, defaultLang, langCodes, readOnly);
 		init();
 	}
 
@@ -63,7 +63,7 @@ public class FreetextQuestionView extends QuestionView implements
 			}
 		}
 		freetextEdit.setOnFocusChangeListener(this);
-		freetextEdit.setWidth(screenWidth-50);
+		freetextEdit.setWidth(screenWidth - 50);
 
 		tr.addView(freetextEdit);
 		addView(tr);
@@ -78,13 +78,13 @@ public class FreetextQuestionView extends QuestionView implements
 	}
 
 	@Override
-	public void setResponse(QuestionResponse resp){
-		if(resp != null && freetextEdit != null){
+	public void setResponse(QuestionResponse resp) {
+		if (resp != null && freetextEdit != null) {
 			freetextEdit.setText(resp.getValue());
 		}
 		super.setResponse(resp);
 	}
-	
+
 	/**
 	 * pulls the data out of the fields and saves it as a response object,
 	 * possibly suppressing listeners
@@ -94,7 +94,7 @@ public class FreetextQuestionView extends QuestionView implements
 				ConstantUtil.VALUE_RESPONSE_TYPE, getQuestion().getId()),
 				suppressListeners);
 	}
-	
+
 	@Override
 	public void rehydrate(QuestionResponse resp) {
 		super.rehydrate(resp);

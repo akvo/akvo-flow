@@ -32,29 +32,27 @@ public class MediaQuestionView extends QuestionView implements OnClickListener {
 	private String mediaType;
 
 	public MediaQuestionView(Context context, Question q, String type,
-			String[] langCodes, boolean readOnly) {
-		super(context, q, langCodes, readOnly);
+			String defaultLang, String[] langCodes, boolean readOnly) {
+		super(context, q, defaultLang, langCodes, readOnly);
 		init(type);
 	}
 
 	protected void init(String type) {
 		Context context = getContext();
 		mediaType = type;
-		TableRow tr = new TableRow(context);		
+		TableRow tr = new TableRow(context);
 		mediaButton = new Button(context);
-	
-				
-	
+
 		if (ConstantUtil.PHOTO_QUESTION_TYPE.equals(type)) {
 			mediaButton.setText(R.string.takephoto);
 		} else {
 			mediaButton.setText(R.string.takevideo);
-		}		
+		}
 		mediaButton.setOnClickListener(this);
 		if (readOnly) {
 			mediaButton.setEnabled(false);
 		}
-	
+
 		completeIcon = new ImageView(context);
 		completeIcon.setImageResource(R.drawable.checkmark);
 		completeIcon.setClickable(true);

@@ -54,6 +54,7 @@ public class QuestionView extends TableLayout implements
 	protected static String[] colors = null;
 	protected boolean readOnly;
 	public static int screenWidth;
+	protected String defaultLang;
 
 	/**
 	 * install a single tableRow containing a textView with the question text
@@ -61,11 +62,11 @@ public class QuestionView extends TableLayout implements
 	 * @param context
 	 * @param q
 	 */
-	public QuestionView(final Context context, Question q, String[] langs,
-			boolean readOnly) {
+	public QuestionView(final Context context, Question q,
+			String defaultLangauge, String[] langs, boolean readOnly) {
 		super(context);
 		question = q;
-
+		this.defaultLang = defaultLangauge;
 		this.langs = langs;
 		if (colors == null) {
 			colors = context.getResources().getStringArray(R.array.colors);
@@ -145,11 +146,11 @@ public class QuestionView extends TableLayout implements
 	private Spanned formText() {
 		boolean isFirst = true;
 		StringBuilder text = new StringBuilder();
-		if(question.isMandatory()){
+		if (question.isMandatory()) {
 			text.append("<i><b>");
 		}
 		for (int i = 0; i < langs.length; i++) {
-			if (ConstantUtil.ENGLISH_CODE.equalsIgnoreCase(langs[i])) {
+			if (defaultLang.equalsIgnoreCase(langs[i])) {
 				if (!isFirst) {
 					text.append(" / ");
 				} else {
@@ -170,7 +171,7 @@ public class QuestionView extends TableLayout implements
 			}
 		}
 		if (question.isMandatory()) {
-			text = text.append("*</b></i>");			
+			text = text.append("*</b></i>");
 		}
 		return Html.fromHtml(text.toString());
 	}
@@ -373,8 +374,8 @@ public class QuestionView extends TableLayout implements
 				StringTokenizer strTok = new StringTokenizer(resp.getValue(),
 						"|");
 				while (strTok.hasMoreTokens()) {
-					if (dep.getAnswer().trim().equalsIgnoreCase(
-							strTok.nextToken().trim())) {
+					if (dep.getAnswer().trim()
+							.equalsIgnoreCase(strTok.nextToken().trim())) {
 						isMatch = true;
 					}
 				}
@@ -511,4 +512,13 @@ public class QuestionView extends TableLayout implements
 			return screenWidth;
 		}
 	}
+
+	public String getDefaultLang() {
+		return defaultLang;
+	}
+
+	public void setDefaultLang(String defaultLang) {
+		this.defaultLang = defaultLang;
+	}
+
 }

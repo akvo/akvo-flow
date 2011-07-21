@@ -28,7 +28,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  * saved in the response object will be a timestamp (milliseconds since
  * Midnight, Jan 1, 1970 UTC).
  * 
- * @author Chris
+ * @author Christohper Fagiani
  * 
  */
 public class DateQuestionView extends QuestionView {
@@ -42,9 +42,9 @@ public class DateQuestionView extends QuestionView {
 	private Date selectedDate;
 	private Calendar calendar;
 
-	public DateQuestionView(Context context, Question q, String[] langCodes,
-			boolean readOnly) {
-		super(context, q, langCodes, readOnly);
+	public DateQuestionView(Context context, Question q, String defaultLang,
+			String[] langCodes, boolean readOnly) {
+		super(context, q, defaultLang, langCodes, readOnly);
 		calendar = Calendar.getInstance();
 		curYear = calendar.get(Calendar.YEAR);
 		curMonth = calendar.get(Calendar.MONTH);

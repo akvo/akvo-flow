@@ -36,7 +36,7 @@ public class ConstantUtil {
 	 */
 	public static final String RESOURCE_LOCATION = "res";
 	public static final String FILE_LOCATION = "sdcard";
-	public static final String SURVEY_DEFAULT_LANG = "english";
+	
 
 	/**
 	 * status related constants
