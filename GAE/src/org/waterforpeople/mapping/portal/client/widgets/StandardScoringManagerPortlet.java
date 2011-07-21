@@ -128,7 +128,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	public StandardScoringManagerPortlet(UserDto user) {
-		super(title, true, false, false, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT,
+		super(title, true, false, false, 1900, FULLSCREEN_HEIGHT,
 				user);
 		init();
 	}
@@ -170,7 +170,19 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				saveBucket.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
-						saveScoreBucket(bucketsEntryBox.getText().trim());
+						String newBucketName = bucketsEntryBox.getText().trim();
+						Boolean didnotfindinexisting = true;
+						for (int i = 0; i < scoreBucketsBox.getItemCount(); i++) {
+							if (scoreBucketsBox.getItemText(i).trim()
+									.toLowerCase()
+									.equals(newBucketName.toLowerCase())) {
+								didnotfindinexisting = false;
+							}
+						}
+						if (didnotfindinexisting)
+							saveScoreBucket(newBucketName);
+						else
+							Window.alert("Could not add bucket as a bucket with that name already exists");
 					}
 
 				});
@@ -201,24 +213,27 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private void saveScoreBucket(String trim) {
 		StandardScoreBucketDto ssbDto = new StandardScoreBucketDto();
 		ssbDto.setName(bucketsEntryBox.getText().trim());
-		svc.save(ssbDto, new AsyncCallback<StandardScoreBucketDto>(){
+		svc.save(ssbDto, new AsyncCallback<StandardScoreBucketDto>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void onSuccess(StandardScoreBucketDto result) {
 				scoreBucketsBox.setEnabled(true);
-				scoreBucketsBox.addItem(result.getName(),result.getKeyId().toString());
+				scoreBucketsBox.addItem(result.getName(), result.getKeyId()
+						.toString());
 				bucketsBoxLbl.setVisible(false);
 				bucketsEntryBox.setVisible(false);
 				saveBucket.setVisible(false);
-			}});
-		
+			}
+		});
+
 	}
+
 	private void loadStandardScoreBuckets() {
 		svc.listStandardScoreBuckets(new AsyncCallback<ArrayList<StandardScoreBucketDto>>() {
 
@@ -311,13 +326,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		} else {
 			global.setSelectedIndex(1);
 			String selectedCountry = null;
-			if (item.getCountryCode() != null)
+
+			if (item != null && item.getCountryCode() != null)
 				selectedCountry = item.getCountryCode();
 			populateCountryCodeControl(grid, selectedCountry, row);
 			ListBox subValue = new ListBox();
 			if (item != null && item.getSubValue() != null) {
-				// ToDo fix the sub value loading
-				// subValue.setText(item.getSubValue());
+				populateSubLevelControl(grid, selectedCountry,
+						row, null);
 			}
 			grid.setWidget(row, 2, subValue);
 		}
@@ -385,7 +401,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				if (item != null && item.getEvaluateField() != null) {
 					if (item.getEvaluateField().toLowerCase().trim()
 							.equals(field.getKey().toLowerCase())) {
-						fields.setSelectedIndex(i);
+						fields.setSelectedIndex(ifield);
 					}
 				}
 				++ifield;
@@ -547,7 +563,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			country.addItem(countryCode.getDisplayName(),
 					countryCode.getIsoAlpha2Code());
 			if (selectedCountry != null) {
-				if (countryCode.equals(selectedCountry)) {
+				if (countryCode.getIsoAlpha2Code().equals(selectedCountry)) {
 					country.setSelectedIndex(i);
 				}
 			}
@@ -615,7 +631,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		}
 
 		ListBox global = (ListBox) grid.getWidget(row, 0);
-		if (global.getSelectedIndex() > 0) {
+		if (global.getSelectedIndex() == 0) {
 			item.setGlobalStandard(true);
 		} else {
 			item.setGlobalStandard(false);
@@ -624,7 +640,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		ListBox country = (ListBox) grid.getWidget(row, 1);
 		if (country != null) {
 			if (country.getSelectedIndex() > 0) {
-				item.setCountryCode(country.getItemText(country
+				item.setCountryCode(country.getValue(country
 						.getSelectedIndex()));
 			}
 		}
@@ -632,7 +648,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		ListBox subValue = (ListBox) grid.getWidget(row, 2);
 		if (subValue != null) {
 			if (subValue.getSelectedIndex() > 0) {
-				item.setSubValue(subValue.getValue(subValue.getSelectedIndex()));
+				item.setSubValue(subValue.getItemText(subValue.getSelectedIndex()));
 			}
 		}
 
@@ -729,7 +745,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
 		TextBox keyBox = (TextBox) grid.getWidget(row, 18);
-		if (keyBox.getValue() != null) {
+		if (keyBox.getValue().trim()!="" && keyBox.getValue() != null) {
 			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
 		return item;
