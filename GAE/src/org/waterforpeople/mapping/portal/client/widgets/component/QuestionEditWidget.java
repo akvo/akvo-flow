@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
@@ -89,6 +90,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private SurveyServiceAsync surveyService;
 	private Map<String, Object> bundle;
 	private QuestionDto currentQuestion;
+	private SurveyDto currentSurvey;
 	private Map<Long, List<QuestionDto>> optionQuestions;
 	private Button editTranslationButton;
 	private Button editHelpButton;
@@ -897,6 +899,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		this.bundle = bundle;
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
+		currentSurvey = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 		questionGroup = (QuestionGroupDto) bundle
 				.get(BundleConstants.QUESTION_GROUP_KEY);
 		optionQuestions = (Map<Long, List<QuestionDto>>) bundle
@@ -1028,7 +1031,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (wasSuccessful) {
 			if (EDIT_TRANS_OP.equals(operation)) {
 				SurveyQuestionTranslationDialog dia = new SurveyQuestionTranslationDialog(
-						(QuestionDto) currentQuestion, this);
+						(QuestionDto) currentQuestion,
+						currentSurvey.getDefaultLanguageCode() != null ? currentSurvey
+								.getDefaultLanguageCode() : "en", this);
 				dia.show();
 			} else if (EDIT_HELP_OP.equals(operation)) {
 				operation = null;

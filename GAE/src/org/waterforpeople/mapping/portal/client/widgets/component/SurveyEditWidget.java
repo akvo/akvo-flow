@@ -289,6 +289,9 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			} else if (!ViewUtil.getListBoxSelection(pointTypeBox, false)
 					.equals(currentDto.getPointType())) {
 				isChanged = true;
+			} else if (!ViewUtil.getListBoxSelection(defaultLangBox, false)
+					.equals(currentDto.getDefaultLanguageCode())) {
+				isChanged = true;
 			} else {
 				isChanged = false;
 			}

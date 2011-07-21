@@ -571,7 +571,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			public void onClick(ClickEvent event) {
 				if (currentSelection instanceof QuestionDto) {
 					SurveyQuestionTranslationDialog dia = new SurveyQuestionTranslationDialog(
-							(QuestionDto) currentSelection,
+							(QuestionDto) currentSelection,"en",
 							SurveyManagerPortlet.this);
 					dia.show();
 				} else {
