@@ -9,8 +9,10 @@ package com.gallatinsystems.survey.domain.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -41,6 +43,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = { "questionGroup" })
 @XmlRootElement(name = "survey")
 public class Survey {
+
+	@XmlAttribute(required = false)
+	protected String defaultLanguageCode;
 
 	@XmlElement(required = true)
 	protected List<QuestionGroup> questionGroup;
@@ -77,6 +82,14 @@ public class Survey {
 
 	public void setQuestionGroup(List<QuestionGroup> questionGroup) {
 		this.questionGroup = questionGroup;
+	}
+
+	public String getDefaultLanguageCode() {
+		return defaultLanguageCode;
+	}
+
+	public void setDefaultLanguageCode(String defaultLanguageCode) {
+		this.defaultLanguageCode = defaultLanguageCode;
 	}
 
 }

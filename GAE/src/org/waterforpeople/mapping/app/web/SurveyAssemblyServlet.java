@@ -239,8 +239,15 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		 * fire off queue tasks
 		 */
 		// Swap with proper UUID
+		SurveyDAO surveyDao = new SurveyDAO();
+		Survey s = surveyDao.getById(surveyId);
 		Long transactionId = new Random().nextLong();
-		String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey>";
+		String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey";
+		String lang = "en";
+		if (s != null && s.getDefaultLanguageCode() != null) {
+			lang = s.getDefaultLanguageCode();
+		}
+		surveyHeader += " defaultLanguageCode='" + lang + "'>";
 		String surveyFooter = "</survey>";
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		TreeMap<Integer, QuestionGroup> qgList = qgDao
@@ -262,7 +269,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
 				// increment the version so devices know to pick up the changes
-				SurveyDAO surveyDao = new SurveyDAO();
+
 				surveyDao.incrementVersion(surveyId);
 				String messageText = "Published.  Please check: " + uc.getUrl();
 				message.setShortMessage(messageText);

@@ -58,6 +58,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	private TextBox descriptionBox;
 	private TextBox versionBox;
 	private ListBox pointTypeBox;
+	private ListBox defaultLangBox;
 	private Label surveyIdLabel;
 	private SurveyServiceAsync surveyService;
 	private SurveyDto currentDto;
@@ -73,6 +74,11 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		versionBox = new TextBox();
 		versionBox.setReadOnly(true);
 		pointTypeBox = new ListBox(false);
+		defaultLangBox = new ListBox(false);
+		defaultLangBox.addItem(TEXT_CONSTANTS.english(), "en");
+		defaultLangBox.addItem(TEXT_CONSTANTS.spanish(), "es");
+		defaultLangBox.addItem(TEXT_CONSTANTS.kinyarwanda(), "kw");
+		defaultLangBox.setSelectedIndex(0);
 		ConfigurationServiceAsync configService = GWT
 				.create(ConfigurationService.class);
 		configService.getConfigurationItem(POINT_TYPES_CONFIG,
@@ -97,6 +103,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		panel.add(buildRow(TEXT_CONSTANTS.description(), descriptionBox));
 		panel.add(buildRow(TEXT_CONSTANTS.pointType(), pointTypeBox));
 		panel.add(buildRow(TEXT_CONSTANTS.version(), versionBox));
+		panel.add(buildRow(TEXT_CONSTANTS.language(), defaultLangBox));
 		surveyIdLabel = new Label();
 		surveyIdLabel.setStylePrimaryName(FORM_LABEL_CSS);
 		panel.add(buildRow(TEXT_CONSTANTS.surveyId(), surveyIdLabel));
@@ -128,8 +135,10 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 							.addItem(TEXT_CONSTANTS.trawler(), TRAWLER_TYPE);
 				} else if (SCHOOL_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
 					pointTypeBox.addItem(TEXT_CONSTANTS.school(), SCHOOL_TYPE);
-				}else if (PROCEDURE_TYPE.equalsIgnoreCase(pointTypes[i].trim())){
-					pointTypeBox.addItem(TEXT_CONSTANTS.procedure(),PROCEDURE_TYPE);
+				} else if (PROCEDURE_TYPE
+						.equalsIgnoreCase(pointTypes[i].trim())) {
+					pointTypeBox.addItem(TEXT_CONSTANTS.procedure(),
+							PROCEDURE_TYPE);
 				}
 			}
 		}
@@ -168,6 +177,10 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			surveyIdLabel.setText(currentDto.getKeyId().toString());
 			ViewUtil.setListboxSelection(pointTypeBox,
 					currentDto.getPointType());
+			if (currentDto.getDefaultLanguageCode() != null) {
+				ViewUtil.setListboxSelection(defaultLangBox,
+						currentDto.getDefaultLanguageCode());
+			}
 		}
 	}
 
@@ -189,6 +202,8 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 							.getText().trim() : null);
 			currentDto.setPointType(ViewUtil.getListBoxSelection(pointTypeBox,
 					false));
+			currentDto.setDefaultLanguageCode(ViewUtil.getListBoxSelection(
+					defaultLangBox, false));
 			surveyService.saveSurvey(currentDto, groupDto.getKeyId(),
 					new AsyncCallback<SurveyDto>() {
 

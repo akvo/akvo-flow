@@ -24,6 +24,7 @@ public class Survey extends BaseDomain {
 	private String path = null;
 	private Long surveyGroupId;
 	private String pointType;
+	private String defaultLanguageCode;
 
 	public enum Status {
 		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED
@@ -130,6 +131,14 @@ public class Survey extends BaseDomain {
 
 	public void setPointType(String pointType) {
 		this.pointType = pointType;
+	}
+
+	public void setDefaultLanguageCode(String defaultLanguageCode) {
+		this.defaultLanguageCode = defaultLanguageCode;
+	}
+
+	public String getDefaultLanguageCode() {
+		return defaultLanguageCode;
 	}
 
 }

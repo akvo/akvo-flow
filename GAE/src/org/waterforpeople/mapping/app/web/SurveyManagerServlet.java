@@ -125,7 +125,10 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					sb.append(survey.getKey().getId() + ",")
 							.append(survey.getName() != null ? survey.getName()
 									: "Survey " + survey.getKey().getId())
-							.append(",EN,")
+							.append(",")
+							.append(survey.getDefaultLanguageCode() != null ? survey
+									.getDefaultLanguageCode() : "en")
+							.append(",")
 							.append(survey.getVersion() != null ? survey
 									.getVersion() : "1");
 					resp.setMessage(sb.toString());

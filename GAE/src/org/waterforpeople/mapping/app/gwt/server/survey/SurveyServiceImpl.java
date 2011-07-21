@@ -88,7 +88,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class SurveyServiceImpl extends RemoteServiceServlet implements
 		SurveyService {
 
-	
 	public static final String FREE_QUESTION_TYPE = "free";
 	public static final String OPTION_QUESTION_TYPE = "option";
 	public static final String GEO_QUESTION_TYPE = "geo";
@@ -242,6 +241,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				dto.setPath(s.getPath());
 				dto.setCode(s.getCode());
 				dto.setPointType(s.getPointType());
+				dto.setDefaultLanguageCode(s.getDefaultLanguageCode());
 				if (s.getStatus() != null) {
 					dto.setStatus(s.getStatus().toString());
 				}
@@ -1029,7 +1029,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
 					.param(SurveyTaskRequest.CURSOR_PARAM,
 							SurveyInstanceDAO.getCursor(siList)));
-			
+
 		}
 	}
 

@@ -17,6 +17,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String path;
 	private Long surveyGroupId = null;
 	private String pointType;
+	private String defaultLanguageCode;
 
 	public String getPath() {
 		return path;
@@ -105,6 +106,14 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
 	public void setPointType(String pointType) {
 		this.pointType = pointType;
+	}
+
+	public void setDefaultLanguageCode(String defaultLanguageCode) {
+		this.defaultLanguageCode = defaultLanguageCode;
+	}
+
+	public String getDefaultLanguageCode() {
+		return defaultLanguageCode;
 	}
 
 }
