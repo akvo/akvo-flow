@@ -331,7 +331,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			populateCountryCodeControl(grid, selectedCountry, row);
 			ListBox subValue = new ListBox();
 			if (item != null && item.getSubValue() != null) {
-				fetchSubCountries(item.getSubValue(), row);
+				fetchSubCountries(item.getSubValue(), row, item.getSubValue());
 			}
 			grid.setWidget(row, 2, subValue);
 		}
@@ -573,12 +573,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				fetchSubCountries(selectedCountry, row);
+				fetchSubCountries(selectedCountry, row, null);
 			}
 		});
 	}
 
-	private void fetchSubCountries(String selectedCountry, final Integer row) {
+	private void fetchSubCountries(String selectedCountry, final Integer row, final String selectedSub) {
 		ListBox country = (ListBox) scoringTable.getGrid().getWidget(row, 1);
 		String countryCode = country.getValue(country.getSelectedIndex());
 		Long id = null;
@@ -592,7 +592,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onSuccess(List<SubCountryDto> result) {
-						populateSubLevelControl(scoringTable.getGrid(), null,
+						
+						populateSubLevelControl(scoringTable.getGrid(), selectedSub,
 								row, result);
 					}
 				});
@@ -609,7 +610,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			country.addItem(countryCode.getName(), countryCode.getKeyId()
 					.toString());
 			if (selectedCountry != null) {
-				if (countryCode.equals(selectedCountry)) {
+				if (countryCode.getName().equals(selectedCountry)) {
 					country.setSelectedIndex(i);
 				}
 			}
