@@ -4,7 +4,11 @@ import java.io.Serializable;
 
 public class Row implements Serializable {
 	
-	private static final long serialVersionUID = 7286747363278243558L;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8612537483084149667L;
 	private String fieldName = null;
 	private String fieldDisplayName = null;
 	private Integer order = null;
@@ -20,6 +24,8 @@ public class Row implements Serializable {
 		this.fieldValue = fieldValue;
 	}
 
+	public Row(){}
+	
 	public String getFieldName() {
 		return fieldName;
 	}

@@ -326,6 +326,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 									.getFieldDisplayName());
 							accessPointDetailAll.setWidget(i, 0, lbl);
 							accessPointDetailAll.setWidget(i, 1, item);
+							i++;
 						}
 					}
 				});
