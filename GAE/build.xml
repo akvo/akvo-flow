@@ -5,11 +5,11 @@
 	<path id="project.classpath">
 		<pathelement location="src" />
 		<pathelement path="war/WEB-INF/classes" />
-		<pathelement path="war/WEB-INF/lib/gwt-visualization.jar" />
+		
 		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA-sources.jar" />
-			<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA.jar" />	
+		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA.jar" />
 		<fileset dir="war/WEB-INF/lib">
 			<include name="**/*.jar" />
 		</fileset>
@@ -28,6 +28,9 @@
 			<include name="gt-api-2.6.5.jar" />
 			<include name="jcommon-1.0.16.jar" />
 			<include name="jfreechart-1.0.13.jar" />
+			<include name="gwt-dnd-3.0.1.jar" />
+			<include name="gwt-maps.jar" />
+			<include name="gwt-visualization.jar" />
 		</fileset>
 		<pathelement location="build" />
 
@@ -85,7 +88,7 @@
 			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/messaging/domain/*.class" />
 			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/data/spreadsheet/domain/*.class" />
 			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/standards/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/surveyal/domain/*.class" />			
+			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/surveyal/domain/*.class" />
 			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/metric/domain/*.class" />
 			<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/analytics/domain/*.class" />
 			<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/domain/*.class" />
