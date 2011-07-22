@@ -22,7 +22,7 @@ public class StandardScoringDao extends BaseDAO<StandardScoring> {
 
 	public List<StandardScoring> listStandardScoring(AccessPoint ap) {
 		List<StandardScoring> ssList = new ArrayList<StandardScoring>();
-		ssList = super.listByProperty("pointType", ap.getPointType(), "String");
+		ssList = super.listByProperty("pointType", ap.getPointType().toString(), "String");
 		return ssList;
 	}
 

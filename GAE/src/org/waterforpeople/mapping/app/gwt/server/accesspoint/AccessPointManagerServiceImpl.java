@@ -267,31 +267,36 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	}
 
 	@Override
-	public ArrayList<AccessPointScoreComputationItemDto> scorePoint(AccessPointDto accessPointDto) {
+	public ArrayList<AccessPointScoreComputationItemDto> scorePoint(
+			AccessPointDto accessPointDto) {
 		HashMap<Integer, String> scoreDetails = new HashMap<Integer, String>();
 		AccessPointHelper aph = new AccessPointHelper();
 		AccessPoint ap = new AccessPoint();
-		AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
+		ap = AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
 		ap = aph.scoreAccessPointDynamic(ap);
 		List<AccessPointScoreDetail> apsdList = ap.getApScoreDetailList();
 		Date latestDate = null;
 		AccessPointScoreDetail selectedItem = null;
-		for (AccessPointScoreDetail item : apsdList) {
-			if (selectedItem != null && latestDate != null) {
-				if (latestDate.before(item.getComputationDate())) {
+		if (apsdList != null) {
+			for (AccessPointScoreDetail item : apsdList) {
+				if (selectedItem != null && latestDate != null) {
+					if (latestDate.before(item.getComputationDate())) {
+						selectedItem = item;
+					}
+				}
+				if (item.getComputationDate() != null) {
+					latestDate = item.getComputationDate();
 					selectedItem = item;
 				}
-			}
-			if (item.getComputationDate() != null) {
-				latestDate = item.getComputationDate();
-				selectedItem = item;
-			}
 
+			}
 		}
 		if (selectedItem != null) {
 			ArrayList<AccessPointScoreComputationItemDto> apscDtoList = new ArrayList<AccessPointScoreComputationItemDto>();
-			for(AccessPointScoreComputationItem item: selectedItem.getScoreComputationItems()){
-				AccessPointScoreComputationItemDto dtoItem = new AccessPointScoreComputationItemDto(item.getScoreItem(), item.getScoreDetailMessage());
+			for (AccessPointScoreComputationItem item : selectedItem
+					.getScoreComputationItems()) {
+				AccessPointScoreComputationItemDto dtoItem = new AccessPointScoreComputationItemDto(
+						item.getScoreItem(), item.getScoreDetailMessage());
 				apscDtoList.add(dtoItem);
 			}
 			return apscDtoList;

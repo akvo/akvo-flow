@@ -551,5 +551,6 @@ public interface TextConstants extends Constants{
 	public String importFixedFormatFileDescription();
 	public String collapseable();
 	public String immutable();
+	public String improvedwaterpointflag();
 }
 

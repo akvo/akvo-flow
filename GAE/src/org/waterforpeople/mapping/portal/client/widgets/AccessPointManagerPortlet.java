@@ -326,7 +326,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				accessPointDetail.setWidget(3, 0,
 						ViewUtil.initLabel(TEXT_CONSTANTS.scoreMakeup()));
 				accessPointDetail.setWidget(3, 1, scoreItems);
-				Button scoreAccessPoint = new Button();
+				Button scoreAccessPoint = new Button("Score Access Point");
 				accessPointDetail.setWidget(4, 1, scoreAccessPoint);
 				scoreAccessPoint.addClickHandler(new ClickHandler() {
 
@@ -900,7 +900,22 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			currentScore.setText(TEXT_CONSTANTS.noScore());
 		}
 		accessPointDetail.setWidget(33, 1, currentScore);
-
+		
+		ListBox improvedWaterPoint = new ListBox();
+		improvedWaterPoint.addItem(" ");
+		improvedWaterPoint.addItem("Yes");
+		improvedWaterPoint.addItem("No");
+		
+		if(accessPointDto !=null && accessPointDto.getImprovedWaterPointFlag()!=null){
+			if(accessPointDto.getImprovedWaterPointFlag()){
+				improvedWaterPoint.setSelectedIndex(1);
+			}else{
+				improvedWaterPoint.setSelectedIndex(2);
+			}
+		}
+		accessPointDetail.setWidget(34, 0, ViewUtil.initLabel(TEXT_CONSTANTS.improvedwaterpointflag()));
+		accessPointDetail.setWidget(34, 1, improvedWaterPoint);
+	
 		return accessPointDetail;
 	}
 
