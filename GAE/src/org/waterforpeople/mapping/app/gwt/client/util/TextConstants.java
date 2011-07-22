@@ -552,5 +552,6 @@ public interface TextConstants extends Constants{
 	public String collapseable();
 	public String immutable();
 	public String improvedwaterpointflag();
+	public String requireApproval();
 }
 

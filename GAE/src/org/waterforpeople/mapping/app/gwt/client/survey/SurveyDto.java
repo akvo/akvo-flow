@@ -18,6 +18,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private Long surveyGroupId = null;
 	private String pointType;
 	private String defaultLanguageCode;
+	private Boolean requireApproval;
 
 	public String getPath() {
 		return path;
@@ -114,6 +115,14 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
 	public String getDefaultLanguageCode() {
 		return defaultLanguageCode;
+	}
+
+	public void setRequireApproval(Boolean requireApproval) {
+		this.requireApproval = requireApproval;
+	}
+
+	public Boolean getRequireApproval() {
+		return requireApproval;
 	}
 
 }

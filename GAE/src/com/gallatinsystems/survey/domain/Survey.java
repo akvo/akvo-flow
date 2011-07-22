@@ -25,6 +25,7 @@ public class Survey extends BaseDomain {
 	private Long surveyGroupId;
 	private String pointType;
 	private String defaultLanguageCode;
+	private Boolean requireApproval;
 
 	public enum Status {
 		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED
@@ -32,6 +33,7 @@ public class Survey extends BaseDomain {
 
 	public Survey() {
 		questionGroupMap = new TreeMap<Integer, QuestionGroup>();
+		requireApproval = false;		
 	}
 
 	public Long getSurveyGroupId() {
@@ -139,6 +141,14 @@ public class Survey extends BaseDomain {
 
 	public String getDefaultLanguageCode() {
 		return defaultLanguageCode;
+	}
+
+	public void setRequireApproval(Boolean requireApproval) {
+		this.requireApproval = requireApproval;
+	}
+
+	public Boolean getRequireApproval() {
+		return requireApproval;
 	}
 
 }

@@ -245,6 +245,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				if (s.getStatus() != null) {
 					dto.setStatus(s.getStatus().toString());
 				}
+				dto.setRequireApproval(s.getRequireApproval());
 				surveyDtos.add(dto);
 			}
 		}

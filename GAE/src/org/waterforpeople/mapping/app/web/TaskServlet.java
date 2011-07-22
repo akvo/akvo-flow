@@ -12,8 +12,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +45,8 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.image.GAEImageAdapter;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -385,28 +389,43 @@ public class TaskServlet extends AbstractRestApiServlet {
 			ArrayList<SurveyInstance> surveyInstances = processFile(
 					req.getFileName(), req.getPhoneNumber(), req.getChecksum(),
 					req.getOffset());
+			Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
+			SurveyDAO surveyDao = new SurveyDAO();
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			Queue defaultQueue = QueueFactory.getDefaultQueue();
 			for (SurveyInstance instance : surveyInstances) {
-				ProcessingAction pa = dispatch(instance.getKey().getId() + "");
-				TaskOptions options = url(pa.getDispatchURL());
-				Iterator it = pa.getParams().keySet().iterator();
-				while (it.hasNext()) {
-					options.param("key", (String) it.next());
+				Survey s = surveyMap.get(instance.getSurveyId());
+				if (s == null) {
+					s = surveyDao.getById(instance.getSurveyId());
+					surveyMap.put(instance.getSurveyId(), s);
 				}
-				log.info("Received Task Queue calls for surveyInstanceKey: "
-						+ instance.getKey().getId() + "");
-				aph.processSurveyInstance(instance.getKey().getId() + "");
-				summQueue.add(url("/app_worker/datasummarization").param(
-						"objectKey", instance.getKey().getId() + "").param(
-						"type", "SurveyInstance"));
-				// process the "new" domain structure
+				if (s != null && s.getRequireApproval()) {
+					// if the survey requires approval, don't run any of the
+					// processors
+					instance.setApprovedFlag("False");
+					continue;
+				} else {
+					ProcessingAction pa = dispatch(instance.getKey().getId()
+							+ "");
+					TaskOptions options = url(pa.getDispatchURL());
+					Iterator it = pa.getParams().keySet().iterator();
+					while (it.hasNext()) {
+						options.param("key", (String) it.next());
+					}
+					log.info("Received Task Queue calls for surveyInstanceKey: "
+							+ instance.getKey().getId() + "");
+					aph.processSurveyInstance(instance.getKey().getId() + "");
+					summQueue.add(url("/app_worker/datasummarization").param(
+							"objectKey", instance.getKey().getId() + "").param(
+							"type", "SurveyInstance"));
+					// process the "new" domain structure
 
-				defaultQueue.add(url("/app_worker/surveyalservlet").param(
-						SurveyalRestRequest.ACTION_PARAM,
-						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
-						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-						instance.getKey().getId() + ""));
+					defaultQueue.add(url("/app_worker/surveyalservlet").param(
+							SurveyalRestRequest.ACTION_PARAM,
+							SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
+							SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+							instance.getKey().getId() + ""));
+				}
 			}
 		}
 	}

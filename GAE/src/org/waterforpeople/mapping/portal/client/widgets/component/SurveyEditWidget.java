@@ -23,6 +23,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -59,6 +60,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	private TextBox versionBox;
 	private ListBox pointTypeBox;
 	private ListBox defaultLangBox;
+	private CheckBox requireApproval;
 	private Label surveyIdLabel;
 	private SurveyServiceAsync surveyService;
 	private SurveyDto currentDto;
@@ -73,6 +75,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		descriptionBox = new TextBox();
 		versionBox = new TextBox();
 		versionBox.setReadOnly(true);
+		requireApproval = new CheckBox();
 		pointTypeBox = new ListBox(false);
 		defaultLangBox = new ListBox(false);
 		defaultLangBox.addItem(TEXT_CONSTANTS.english(), "en");
@@ -104,6 +107,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		panel.add(buildRow(TEXT_CONSTANTS.pointType(), pointTypeBox));
 		panel.add(buildRow(TEXT_CONSTANTS.version(), versionBox));
 		panel.add(buildRow(TEXT_CONSTANTS.language(), defaultLangBox));
+		panel.add(buildRow(TEXT_CONSTANTS.requireApproval(), requireApproval));
 		surveyIdLabel = new Label();
 		surveyIdLabel.setStylePrimaryName(FORM_LABEL_CSS);
 		panel.add(buildRow(TEXT_CONSTANTS.surveyId(), surveyIdLabel));
@@ -162,6 +166,15 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		if (widget instanceof ListBox) {
 			((ListBox) widget).addChangeHandler(this);
 		}
+		if(widget instanceof CheckBox){
+			((CheckBox)widget).addClickHandler(new ClickHandler(){
+
+				@Override
+				public void onClick(ClickEvent event) {
+					onChange(null);
+					
+				}});
+		}
 		HorizontalPanel row = new HorizontalPanel();
 		row.add(l);
 		row.add(widget);
@@ -181,6 +194,9 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 				ViewUtil.setListboxSelection(defaultLangBox,
 						currentDto.getDefaultLanguageCode());
 			}
+			if (currentDto.getRequireApproval() != null) {
+				requireApproval.setValue(currentDto.getRequireApproval());
+			}
 		}
 	}
 
@@ -195,6 +211,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 				currentDto.setPath(groupDto.getCode());
 				currentDto.setSurveyGroupId(groupDto.getKeyId());
 			}
+			currentDto.setRequireApproval(requireApproval.getValue());
 			currentDto.setName(nameBox.getText().trim());
 			currentDto.setCode(nameBox.getText().trim());
 			currentDto
@@ -291,6 +308,10 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 				isChanged = true;
 			} else if (!ViewUtil.getListBoxSelection(defaultLangBox, false)
 					.equals(currentDto.getDefaultLanguageCode())) {
+				isChanged = true;
+			} else if (currentDto.getRequireApproval() == null
+					|| currentDto.getRequireApproval() != requireApproval
+							.getValue()) {
 				isChanged = true;
 			} else {
 				isChanged = false;
