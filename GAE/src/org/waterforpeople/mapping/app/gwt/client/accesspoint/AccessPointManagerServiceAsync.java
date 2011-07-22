@@ -55,4 +55,7 @@ public interface AccessPointManagerServiceAsync {
 
 	void getAccessPointDtoInfo(AccessPointDto accessPointDto,
 			AsyncCallback<DtoValueContainer> callback);
+
+	void saveDtoValueContainer(DtoValueContainer dtoValue,
+			AsyncCallback<DtoValueContainer> callback);
 }

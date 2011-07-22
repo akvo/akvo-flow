@@ -28,7 +28,6 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
-import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
@@ -339,6 +338,42 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return dtoVal;
+	}
+
+	@Override
+	public DtoValueContainer saveDtoValueContainer(DtoValueContainer dtoValue) {
+		Class cls = null;
+		DtoValueContainer dtoVal = new DtoValueContainer();
+
+		try {
+			cls = Class.forName(AccessPointDto.class.getName());
+			Integer i = 0;
+			for (Field item : cls.getDeclaredFields()) {
+				item.setAccessible(true);
+				String fieldName = item.getName();
+				// ToDo: Replace with a mappable annotation and read displayName
+				String fieldDisplayName = item.getName();
+				Integer order = i;
+				String fieldType = item.getType().getSimpleName();
+				String fieldValue=null;
+//				if (item.set(dtValue) != null)
+//					fieldValue = item.get(accessPointDto).toString();
+				dtoVal.addRow(fieldName, fieldDisplayName, order, fieldType,
+						fieldValue);
+				i++;
+			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return dtoVal;
 	}
 }

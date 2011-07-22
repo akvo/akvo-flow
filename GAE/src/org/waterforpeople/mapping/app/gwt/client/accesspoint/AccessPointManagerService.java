@@ -42,4 +42,5 @@ public interface AccessPointManagerService extends RemoteService {
 	
 	ArrayList<AccessPointScoreComputationItemDto> scorePoint(AccessPointDto accessPointDto);
 	DtoValueContainer getAccessPointDtoInfo(AccessPointDto accessPointDto);
+	DtoValueContainer saveDtoValueContainer(DtoValueContainer dtoValue);
 }

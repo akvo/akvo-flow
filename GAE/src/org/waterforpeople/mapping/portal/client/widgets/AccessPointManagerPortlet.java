@@ -29,6 +29,8 @@ import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.SmallZoomControl;
@@ -311,21 +313,31 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					public void onSuccess(DtoValueContainer result) {
 						Integer i = 0;
 						for (Row row : result.getRows()) {
-							TextBox item = new TextBox();
+							final TextBox item = new TextBox();
 							item.setName(row.getFieldName());
+							item.setWidth("45em");
 							if (row.getFieldValue() != null) {
 								item.setText(row.getFieldValue());
 							}
 							Label lbl = new Label(row.getFieldDisplayName());
 							accessPointDetailAll.setWidget(i, 0, lbl);
 							accessPointDetailAll.setWidget(i, 1, item);
+							final TextBox dirtyFlag = new TextBox();
+							accessPointDetailAll.setWidget(i, 2, dirtyFlag);
+							item.addKeyPressHandler(new KeyPressHandler() {
+
+								@Override
+								public void onKeyPress(KeyPressEvent event) {
+									if (item.getText().trim().length() > 0) {
+										dirtyFlag.setText("true");
+									}
+								}
+							});
 							i++;
 						}
 					}
 				});
 	}
-
-	
 
 	private Widget loadScoreTab(AccessPointDto accessPointDto) {
 		final FlexTable accessPointDetail = new FlexTable();
@@ -1056,7 +1068,36 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		accessPointDetail = (FlexTable) tp.getWidget(2);
 		apDto = getAttributeAP(apDto, accessPointDetail);
 
+		if (getCurrentUser().isAdmin()) {
+			DtoValueContainer dtoValue = getAllAttributeAP(apDto, accessPointDetail);
+			svc.saveDtoValueContainer(dtoValue, new AsyncCallback<DtoValueContainer>(){
+
+				@Override
+				public void onFailure(Throwable caught) {
+					Window.alert("Failed to Save");	
+				}
+
+				@Override
+				public void onSuccess(DtoValueContainer result) {
+					Window.alert("Saved");
+				}});
+		}
+
 		return apDto;
+	}
+
+	private DtoValueContainer getAllAttributeAP(AccessPointDto apDto,
+			FlexTable accessPointDetail) {
+		DtoValueContainer dtoValue = new DtoValueContainer();
+		for (Integer i = 0; i < accessPointDetail.getRowCount(); i++) {
+			TextBox dirtyFlag = (TextBox)accessPointDetail.getWidget(i, 2);
+			if(dirtyFlag.getText().trim().equals("true")){
+				String textBoxValue = ((TextBox)accessPointDetail.getWidget(i, 1)).getText().trim();
+				String attributeName = ((TextBox)accessPointDetail.getWidget(i, 2)).getName();
+				dtoValue.addRow(attributeName, null, null, null, textBoxValue);
+			}
+		}
+		return dtoValue;
 	}
 
 	private AccessPointDto getGeneralAP(AccessPointDto apDto,
