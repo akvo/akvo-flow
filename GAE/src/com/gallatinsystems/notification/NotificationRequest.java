@@ -16,13 +16,15 @@ public class NotificationRequest extends RestRequest {
 	private static final long serialVersionUID = 5751114948240808962L;
 	public static final String DELIMITER = "||";
 	public static final String DEST_PARAM = "destinations";
-	public static final String ENTITY_PARAM = "entityId";
+	public static final String SUB_ENTITY_PARAM = "subEntityId";
+	public static final String NOTIF_ENTITY_PARAM = "notifEntityId";
 	public static final String TYPE_PARAM = "type";
 	public static final String METHOD_PARAM = "method";
 	public static final String DEST_OPT_PARAM = "destOptions";
 
 	private String destinations;
-	private Long entityId;
+	private Long subEntityId;
+	private Long notifEntityId;
 	private String type;
 	private String method;
 	private String destOptions;
@@ -43,12 +45,12 @@ public class NotificationRequest extends RestRequest {
 		this.destinations = destinations;
 	}
 
-	public Long getEntityId() {
-		return entityId;
+	public Long getSubEntityId() {
+		return subEntityId;
 	}
 
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
+	public void setSubEntityId(Long entityId) {
+		this.subEntityId = entityId;
 	}
 
 	public String getType() {
@@ -69,9 +71,9 @@ public class NotificationRequest extends RestRequest {
 
 	@Override
 	protected void populateErrors() {
-		if (entityId == null) {
+		if (subEntityId == null) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, ENTITY_PARAM
+					RestError.MISSING_PARAM_ERROR_MESSAGE, SUB_ENTITY_PARAM
 							+ " is mandatory"));
 		} else if (type == null || type.length() == 0) {
 			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
@@ -82,9 +84,18 @@ public class NotificationRequest extends RestRequest {
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
-		if (req.getParameter(ENTITY_PARAM) != null) {
+		if (req.getParameter(SUB_ENTITY_PARAM) != null) {
 			try {
-				entityId = Long.parseLong(req.getParameter(ENTITY_PARAM));
+				subEntityId = Long
+						.parseLong(req.getParameter(SUB_ENTITY_PARAM));
+			} catch (NumberFormatException e) {
+				// no-op
+			}
+		}
+		if (req.getParameter(NOTIF_ENTITY_PARAM) != null) {
+			try {
+				notifEntityId = Long.parseLong(req
+						.getParameter(NOTIF_ENTITY_PARAM));
 			} catch (NumberFormatException e) {
 				// no-op
 			}
@@ -92,9 +103,20 @@ public class NotificationRequest extends RestRequest {
 		if (req.getParameter(TYPE_PARAM) != null) {
 			type = req.getParameter(TYPE_PARAM).trim();
 		}
+		if (notifEntityId == null) {
+			notifEntityId = subEntityId;
+		}
 		destinations = req.getParameter(DEST_PARAM);
 		destOptions = req.getParameter(DEST_OPT_PARAM);
 		method = req.getParameter(METHOD_PARAM);
 
+	}
+
+	public void setNotifEntityId(Long notifEntityId) {
+		this.notifEntityId = notifEntityId;
+	}
+
+	public Long getNotifEntityId() {
+		return notifEntityId;
 	}
 }

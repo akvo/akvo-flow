@@ -63,5 +63,6 @@ public class RestError implements Serializable{
 	public String toString() {
 		return errorCode + " - " + errorMessage + ": " + text;
 	}
+	
 
 }

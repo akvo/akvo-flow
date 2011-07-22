@@ -21,6 +21,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.helper.SurveyEventHelper;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
@@ -282,7 +283,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 					}
 				}
-				DtoMarshaller.copyToCanonical(store, ans);	
+				DtoMarshaller.copyToCanonical(store, ans);
 				store.setSurveyInstanceId(domain.getKey().getId());
 				answerList.add(store);
 			}
@@ -313,6 +314,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 					|| !"True".equalsIgnoreCase(instance.getApprovedFlag())) {
 				instance.setApprovedFlag("True");
 				sendProcessingMessages(instance);
+				// fire a survey event
+				SurveyEventHelper.fireEvent(SurveyEventHelper.APPROVAL_EVENT,
+						instance.getSurveyId(), instance.getKey().getId());
 			}
 		}
 	}
@@ -323,11 +327,13 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	 * @param localeId
 	 * @return
 	 */
-	public ResponseDto<ArrayList<SurveyInstanceDto>> listInstancesByLocale(Long localeId, Date dateFrom, Date dateTo, String cursor) {
+	public ResponseDto<ArrayList<SurveyInstanceDto>> listInstancesByLocale(
+			Long localeId, Date dateFrom, Date dateTo, String cursor) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		ResponseDto<ArrayList<SurveyInstanceDto>> response = new ResponseDto<ArrayList<SurveyInstanceDto>>();
 		ArrayList<SurveyInstanceDto> dtoList = new ArrayList<SurveyInstanceDto>();
-		List<SurveyInstance> instances = dao.listInstancesByLocale(localeId, dateFrom, dateTo, cursor);
+		List<SurveyInstance> instances = dao.listInstancesByLocale(localeId,
+				dateFrom, dateTo, cursor);
 		if (instances != null) {
 			for (SurveyInstance inst : instances) {
 				SurveyInstanceDto dto = new SurveyInstanceDto();
@@ -335,7 +341,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				dtoList.add(dto);
 			}
 			response.setPayload(dtoList);
-			if(dtoList.size() == SurveyInstanceDAO.DEFAULT_RESULT_COUNT){
+			if (dtoList.size() == SurveyInstanceDAO.DEFAULT_RESULT_COUNT) {
 				response.setCursorString(SurveyInstanceDAO.getCursor(instances));
 			}
 		}

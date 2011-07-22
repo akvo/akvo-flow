@@ -34,6 +34,7 @@ import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.GeoRegionHelper;
+import org.waterforpeople.mapping.helper.SurveyEventHelper;
 
 import services.S3Driver;
 
@@ -161,6 +162,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 							deviceFile, userID,
 							unparsedLines.subList(offset, lineNum));
 					if (inst != null) {
+						// fire a survey event
+						SurveyEventHelper.fireEvent(
+								SurveyEventHelper.SUBMISSION_EVENT,
+								inst.getSurveyId(), inst.getKey().getId());
 						surveyInstances.add(inst);
 						// TODO: HACK because we were saving so many duplicate
 						// device files this way they all get the same status

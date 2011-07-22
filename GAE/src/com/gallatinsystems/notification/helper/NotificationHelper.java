@@ -27,19 +27,28 @@ public class NotificationHelper {
 	private static final String QUEUE_NAME = "notification";
 	private static final String PROCESSOR_URL = "/notificationprocessor";
 	private String notificationType;
-	private Long entityId;
+	private Long subscriptionEntityId;
+	private Long notificationEntityId;
 	private NotificationSubscriptionDao notificationDao;
 
-	public NotificationHelper(String type, Long entityId) {
+	public NotificationHelper(String type, Long subEntityId) {
+		this(type, subEntityId, subEntityId);
+	}
+
+	public NotificationHelper(String type, Long subEntityId, Long notifEntityId) {
 		notificationDao = new NotificationSubscriptionDao();
 		notificationType = type;
-		this.entityId = entityId;
+		this.subscriptionEntityId = subEntityId;
+		notificationEntityId = subEntityId;
+		if (notificationEntityId == null) {
+			notificationEntityId = subscriptionEntityId;
+		}
 	}
 
 	public void execute() {
 		// find all notifications that have not yet expired
 		List<NotificationSubscription> subs = notificationDao
-				.listSubscriptions(entityId, notificationType, true);
+				.listSubscriptions(subscriptionEntityId, notificationType, true);
 
 		// group the subs by entity id and type
 		Map<String, Map<Long, List<NotificationSubscription>>> subMap = collateSubscriptions(subs);
@@ -74,10 +83,12 @@ public class NotificationHelper {
 										builder.toString())
 								.param(NotificationRequest.DEST_OPT_PARAM,
 										optBuilder.toString())
-								.param(NotificationRequest.ENTITY_PARAM,
+								.param(NotificationRequest.SUB_ENTITY_PARAM,
 										notifEntry.getKey().toString())
 								.param(NotificationRequest.TYPE_PARAM,
-										entry.getKey()));
+										entry.getKey())
+								.param(NotificationRequest.NOTIF_ENTITY_PARAM,
+										notificationEntityId.toString()));
 
 					}
 				}

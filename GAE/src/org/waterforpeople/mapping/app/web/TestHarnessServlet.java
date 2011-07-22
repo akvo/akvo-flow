@@ -1649,7 +1649,7 @@ public class TestHarnessServlet extends HttpServlet {
 				.param(NotificationRequest.DEST_PARAM,
 						"christopher.fagiani@gmail.com||christopher.fagiani@gmail.com")
 				.param(NotificationRequest.DEST_OPT_PARAM, "ATTACHMENT||LINK")
-				.param(NotificationRequest.ENTITY_PARAM, surveyId)
+				.param(NotificationRequest.SUB_ENTITY_PARAM, surveyId)
 				.param(NotificationRequest.TYPE_PARAM, "rawDataReport"));
 	}
 
