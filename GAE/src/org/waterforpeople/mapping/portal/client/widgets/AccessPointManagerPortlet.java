@@ -1,8 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
 import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto.AccessPointType;
@@ -16,8 +14,6 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.DtoValueContainer;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.Row;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto.UnitOfMeasureSystem;
-import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
-import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AccessPointSearchControl;
 
@@ -66,7 +62,6 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto> {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
-	private StandardScoringManagerServiceAsync svcSSM;
 	public static final String NAME = TEXT_CONSTANTS.accessPointManager();
 
 	private static final String DEFAULT_SORT_FIELD = "key";
@@ -84,7 +79,6 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private VerticalPanel contentPane;
 	private String S3_PATH;
-	private TreeMap<String, String> objectAttributes = null;
 	private boolean errorMode;
 
 	// Search UI Elements
@@ -115,8 +109,6 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				user);
 		contentPane = new VerticalPanel();
 		svc = GWT.create(AccessPointManagerService.class);
-		svcSSM = GWT.create(StandardScoringManagerService.class);
-		loadAttributes();
 		configureS3Path();
 		Widget header = buildHeader();
 		apTable = new PaginatedDataTable<AccessPointDto>(DEFAULT_SORT_FIELD,
@@ -289,8 +281,10 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		tp.add(loadMediaTab(accessPointDto), TEXT_CONSTANTS.media());
 		tp.add(loadAttributeTab(accessPointDto), TEXT_CONSTANTS.attributes());
 		tp.add(loadScoreTab(accessPointDto), TEXT_CONSTANTS.scoreDetails());
-		tp.add(loadAllAttributesTab(accessPointDto),
-				TEXT_CONSTANTS.attributes() + "_All");
+		if (getCurrentUser().isAdmin()) {
+			tp.add(loadAllAttributesTab(accessPointDto),
+					TEXT_CONSTANTS.attributes() + " Debug");
+		}
 		tp.selectTab(0);
 		return tp;
 	}
@@ -322,8 +316,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 							if (row.getFieldValue() != null) {
 								item.setText(row.getFieldValue());
 							}
-							Label lbl = new Label(row
-									.getFieldDisplayName());
+							Label lbl = new Label(row.getFieldDisplayName());
 							accessPointDetailAll.setWidget(i, 0, lbl);
 							accessPointDetailAll.setWidget(i, 1, item);
 							i++;
@@ -332,29 +325,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				});
 	}
 
-	private ArrayList<String> loadAttributes() {
-		svcSSM.listObjectAttributes(
-				"org.waterforpeople.mapping.domain.AccessPoint",
-				new AsyncCallback<TreeMap<String, String>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						MessageDialog errDialog = new MessageDialog(
-								TEXT_CONSTANTS.error(), TEXT_CONSTANTS
-										.errorTracePrefix()
-										+ " "
-										+ caught.getLocalizedMessage());
-						errDialog.showCentered();
-					}
-
-					@Override
-					public void onSuccess(TreeMap<String, String> result) {
-						objectAttributes = result;
-					}
-				});
-
-		return null;
-	}
+	
 
 	private Widget loadScoreTab(AccessPointDto accessPointDto) {
 		final FlexTable accessPointDetail = new FlexTable();
