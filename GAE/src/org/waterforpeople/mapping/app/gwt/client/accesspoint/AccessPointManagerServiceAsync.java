@@ -52,4 +52,7 @@ public interface AccessPointManagerServiceAsync {
 	void scorePoint(
 			AccessPointDto accessPointDto,
 			AsyncCallback<ArrayList<AccessPointScoreComputationItemDto>> callback);
+
+	void getAccessPointDtoInfo(AccessPointDto accessPointDto,
+			AsyncCallback<DtoValueContainer> callback);
 }

@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.gwt.server.accesspoint;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +17,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreComputationItemDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.DtoValueContainer;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.app.util.AccessPointServiceSupport;
 import org.waterforpeople.mapping.dao.AccessPointDao;
@@ -26,6 +28,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
@@ -302,5 +305,40 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			return apscDtoList;
 		}
 		return null;
+	}
+
+	@Override
+	public DtoValueContainer getAccessPointDtoInfo(AccessPointDto accessPointDto) {
+		Class cls = null;
+		DtoValueContainer dtoVal = new DtoValueContainer();
+
+		try {
+			cls = Class.forName(AccessPointDto.class.getName());
+			Integer i = 0;
+			for (Field item : cls.getDeclaredFields()) {
+				item.setAccessible(true);
+				String fieldName = item.getName();
+				// ToDo: Replace with a mappable annotation and read displayName
+				String fieldDisplayName = item.getName();
+				Integer order = i;
+				String fieldType = item.getType().getSimpleName();
+				String fieldValue=null;
+				if (item.get(accessPointDto) != null)
+					fieldValue = item.get(accessPointDto).toString();
+				dtoVal.addRow(fieldName, fieldDisplayName, order, fieldType,
+						fieldValue);
+				i++;
+			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dtoVal;
 	}
 }
