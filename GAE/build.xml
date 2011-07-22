@@ -5,7 +5,7 @@
 	<path id="project.classpath">
 		<pathelement location="src" />
 		<pathelement path="war/WEB-INF/classes" />
-		
+
 		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA-sources.jar" />
@@ -28,6 +28,9 @@
 			<include name="gt-api-2.6.5.jar" />
 			<include name="jcommon-1.0.16.jar" />
 			<include name="jfreechart-1.0.13.jar" />
+
+		</fileset>
+		<fileset dir="gwtlibs">
 			<include name="gwt-dnd-3.0.1.jar" />
 			<include name="gwt-maps.jar" />
 			<include name="gwt-visualization.jar" />
