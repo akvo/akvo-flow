@@ -553,5 +553,7 @@ public interface TextConstants extends Constants{
 	public String immutable();
 	public String improvedwaterpointflag();
 	public String requireApproval();
+	public String reportGeneration();
+	public String surveyApproval();
 }
 

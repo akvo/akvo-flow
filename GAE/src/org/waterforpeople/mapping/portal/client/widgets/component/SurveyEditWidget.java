@@ -166,14 +166,15 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		if (widget instanceof ListBox) {
 			((ListBox) widget).addChangeHandler(this);
 		}
-		if(widget instanceof CheckBox){
-			((CheckBox)widget).addClickHandler(new ClickHandler(){
+		if (widget instanceof CheckBox) {
+			((CheckBox) widget).addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
 					onChange(null);
-					
-				}});
+
+				}
+			});
 		}
 		HorizontalPanel row = new HorizontalPanel();
 		row.add(l);
@@ -328,7 +329,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == editNotificationButton) {
 			NotificationSubscriptionDialog dia = new NotificationSubscriptionDialog(
-					currentDto.getKeyId(), "rawDataReport", null);
+					currentDto.getKeyId(), null, null);
 			dia.show();
 		}
 

@@ -34,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class NotificationSubscriptionDialog extends DialogBox {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);	
+			.create(TextConstants.class);
 	private Long entityId;
 	private NotificationSubscriptionServiceAsync notifService;
 	private CompletionListener listener;
@@ -109,9 +109,8 @@ public class NotificationSubscriptionDialog extends DialogBox {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						loadingLabel
-								.setText(TEXT_CONSTANTS.errorTracePrefix()+" "
-										+ caught.getLocalizedMessage());
+						loadingLabel.setText(TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
 					}
 				});
 	}
@@ -128,7 +127,9 @@ public class NotificationSubscriptionDialog extends DialogBox {
 				NotificationSubscriptionDto dto = ((NotificationSubscriptionWidget) subscriptionTable
 						.getWidget(i, 0)).getValue();
 				dto.setEntityId(entityId);
-				dto.setNotificationType(type);
+				if (type != null) {
+					dto.setNotificationType(type);
+				}
 				subDtos.add(dto);
 				if (!dto.validate()) {
 					allValid = false;
@@ -153,7 +154,8 @@ public class NotificationSubscriptionDialog extends DialogBox {
 							}
 						});
 			} else {
-				validationLabel = new Label(TEXT_CONSTANTS.dateAndEmailMandatory());
+				validationLabel = new Label(
+						TEXT_CONSTANTS.dateAndEmailMandatory());
 				mainContent.add(validationLabel);
 			}
 		} else {
@@ -199,7 +201,6 @@ public class NotificationSubscriptionDialog extends DialogBox {
 				NotificationSubscriptionDto dto = new NotificationSubscriptionDto();
 				currentDtoList.add(dto);
 				dto.setEntityId(entityId);
-				dto.setNotificationType("rawDataReport");
 				createRow(idx, dto);
 			}
 		});

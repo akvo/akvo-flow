@@ -50,7 +50,8 @@ public class CronCommanderServlet extends HttpServlet {
 	}
 
 	private void generateNotifications() {
-		NotificationHelper helper = new NotificationHelper();
+		NotificationHelper helper = new NotificationHelper("rawDataReport",
+				null);
 		helper.execute();
 	}
 
@@ -59,8 +60,8 @@ public class CronCommanderServlet extends HttpServlet {
 		List<DeviceSurveyJobQueue> dsjqList = dsjqDao
 				.listAssignmentsWithEarlierExpirationDate(new Date());
 		for (DeviceSurveyJobQueue item : dsjqList) {
-			SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue", item
-					.getAssignmentId());
+			SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue",
+					item.getAssignmentId());
 		}
 	}
 

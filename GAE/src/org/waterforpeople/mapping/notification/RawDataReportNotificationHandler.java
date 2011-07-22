@@ -17,7 +17,6 @@ import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.UploadUtil;
-import com.gallatinsystems.notification.NotificationHandler;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
 import com.gallatinsystems.notification.domain.NotificationHistory;
@@ -31,7 +30,7 @@ import com.gallatinsystems.survey.domain.Survey;
  * @author Christopher Fagiani
  * 
  */
-public class RawDataReportNotificationHandler implements NotificationHandler {
+public class RawDataReportNotificationHandler extends BaseNotificationHandler {
 	private static final String LINK_OPT = "LINK";
 	private static final String EMAIL_BODY = "Please see the latest raw data report here (Recommend you open in Microsoft Excel) for Survey : ";
 	private static final String EMAIL_TITLE = "FLOW Raw Data Report for survey: ";
@@ -43,18 +42,14 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 	private static final String DATE_DISPLAY_FORMAT = "MMddyyyy";
 	private static final String ATTACH_REPORT_FLAG = "attachreport";
 	public static final String TYPE = "rawDataReport";
-	private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
-	private static String FROM_ADDRESS;
+
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(RawDataReportNotificationHandler.class.getName());
 
-	private NotificationSubscriptionDao dao;
-
 	public RawDataReportNotificationHandler() {
 		super();
-		dao = new NotificationSubscriptionDao();
-		FROM_ADDRESS = PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY);
+
 	}
 
 	/**
@@ -62,14 +57,14 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 	 * 
 	 */
 	@Override
-	public void generateNotification(Long entityId, String destinations,
-			String destOptions, String serverBase) {
+	public void generateNotification(String type, Long entityId,
+			String destinations, String destOptions, String serverBase) {
 		RawDataExporter exporter = new RawDataExporter();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PrintWriter pw = new PrintWriter(bos);
 		exporter.export(serverBase, entityId, pw);
 		pw.flush();
-		NotificationHistory hist = getHistory(TYPE, entityId);
+		NotificationHistory hist = getHistory(type, entityId);
 		String newChecksum = MD5Util.generateChecksum(bos.toByteArray());
 		SurveyDAO surveyDao = new SurveyDAO();
 		Survey survey = surveyDao.getById(entityId);
@@ -103,15 +98,18 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 				if (linkAddrList.size() > 0) {
 					String fileName = "rawDataReport-" + entityId + "-"
 							+ df.format(new Date()) + ".txt";
-					UploadUtil.upload(bos, fileName, PropertyUtil
-							.getProperty(REPORT_S3_PATH), PropertyUtil
-							.getProperty(SURVEY_UPLOAD_URL), PropertyUtil
-							.getProperty(AWS_IDENTIFIER), PropertyUtil
-							.getProperty(REPORT_S3_POLICY), PropertyUtil
-							.getProperty(REPORT_S3_SIG), "text/plain",null);
+					UploadUtil.upload(bos, fileName,
+							PropertyUtil.getProperty(REPORT_S3_PATH),
+							PropertyUtil.getProperty(SURVEY_UPLOAD_URL),
+							PropertyUtil.getProperty(AWS_IDENTIFIER),
+							PropertyUtil.getProperty(REPORT_S3_POLICY),
+							PropertyUtil.getProperty(REPORT_S3_SIG),
+							"text/plain", null);
 
-					MailUtil.sendMail(FROM_ADDRESS, "FLOW", linkAddrList,
-							emailTitle, emailBody
+					sendMail(
+							linkAddrList,
+							emailTitle,
+							emailBody
 									+ PropertyUtil
 											.getProperty(SURVEY_UPLOAD_URL)
 									+ PropertyUtil.getProperty(REPORT_S3_PATH)
@@ -120,8 +118,8 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 				if (attachAddrList.size() > 0) {
 					String surveyCodeFormatted = null;
 					if (survey.getCode() != null) {
-						surveyCodeFormatted = survey.getCode().trim().replace(
-								" ", "_");
+						surveyCodeFormatted = survey.getCode().trim()
+								.replace(" ", "_");
 					} else {
 						surveyCodeFormatted = "RawDataReport";
 					}
@@ -135,16 +133,4 @@ public class RawDataReportNotificationHandler implements NotificationHandler {
 		}
 		pw.close();
 	}
-
-	protected NotificationHistory getHistory(String type, Long id) {
-
-		NotificationHistory hist = dao.findNotificationHistory(type, id);
-		if (hist == null) {
-			hist = new NotificationHistory();
-			hist.setType(type);
-			hist.setEntityId(id);
-		}
-		return hist;
-	}
-
 }

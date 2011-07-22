@@ -15,13 +15,15 @@ public class MappingNotificationProcessor extends NotificationProcessor {
 
 	private static final long serialVersionUID = -9055657567284631932L;
 
-	
-
 	@Override
 	protected void initializeTypeMapping() {
-		notificationTypeMap = new HashMap<String,String>();
-		notificationTypeMap.put(RawDataReportNotificationHandler.TYPE, RawDataReportNotificationHandler.class.getCanonicalName());
-
+		notificationTypeMap = new HashMap<String, String>();
+		notificationTypeMap.put(RawDataReportNotificationHandler.TYPE,
+				RawDataReportNotificationHandler.class.getCanonicalName());
+		for (int i = 0; i < SurveyEventNotificationHandler.EVENTS.length; i++) {
+			notificationTypeMap.put(SurveyEventNotificationHandler.EVENTS[i],
+					SurveyEventNotificationHandler.class.getCanonicalName());
+		}
 	}
 
 	@Override

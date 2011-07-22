@@ -1459,7 +1459,7 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 
 		} else if ("testnotifhelper".equals(action)) {
-			NotificationHelper helper = new NotificationHelper();
+			NotificationHelper helper = new NotificationHelper("rawDataReport",null);
 			helper.execute();
 		} else if ("testremotemap".equals(action)) {
 			createDevice("12345", 40.78, -73.95);

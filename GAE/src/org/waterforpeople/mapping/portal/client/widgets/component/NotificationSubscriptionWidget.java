@@ -5,7 +5,10 @@ import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionDto;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
@@ -21,13 +24,15 @@ import com.google.gwt.user.datepicker.client.DateBox;
  * @author Christopher Fagiani
  * 
  */
-public class NotificationSubscriptionWidget extends Composite {
+public class NotificationSubscriptionWidget extends Composite implements
+		ChangeHandler {
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
+			.create(TextConstants.class);
 	private static final String ATTACHMENT_OPTION = "Attachment";
 	private static final String LINK_OPTION = "Link";
 	private HorizontalPanel horizPanel;
 	private NotificationSubscriptionDto subscription;
+	private ListBox typeSel;
 	private TextBox emailBox;
 	private ListBox optionSelector;
 	private DateBox expiryBox;
@@ -37,15 +42,25 @@ public class NotificationSubscriptionWidget extends Composite {
 		horizPanel = new HorizontalPanel();
 		emailBox = new TextBox();
 		optionSelector = new ListBox(false);
-		optionSelector.addItem(TEXT_CONSTANTS.attachment(), ATTACHMENT_OPTION
-				.toUpperCase());
-		optionSelector.addItem(TEXT_CONSTANTS.link(), LINK_OPTION.toUpperCase());
+		typeSel = new ListBox(false);
+
 		expiryBox = new DateBox();
 		expiryBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat
-				.getShortDateFormat()));
-		ViewUtil.installFieldRow(horizPanel,TEXT_CONSTANTS.email(), emailBox, null);
-		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.type(), optionSelector, null);
-		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.expires(), expiryBox, null);
+				.getFormat(PredefinedFormat.DATE_SHORT)));
+
+		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.email(), emailBox,
+				null);
+		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.event(), typeSel,
+				null);
+		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.type(),
+				optionSelector, null);
+		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.expires(),
+				expiryBox, null);
+
+		typeSel.addItem(TEXT_CONSTANTS.reportGeneration(), "rawDataReport");
+		typeSel.addItem(TEXT_CONSTANTS.surveySubmission(), "surveySubmission");
+		typeSel.addItem(TEXT_CONSTANTS.surveyApproval(), "surveyApproval");
+		typeSel.addChangeHandler(this);
 
 		initWidget(horizPanel);
 		bindDataToUi();
@@ -60,15 +75,22 @@ public class NotificationSubscriptionWidget extends Composite {
 				expiryBox.setValue(subscription.getExpiryDate());
 			}
 			if (subscription.getNotificationOption() != null) {
-				ViewUtil.setListboxSelection(optionSelector, subscription
-						.getNotificationOption());
+				ViewUtil.setListboxSelection(optionSelector,
+						subscription.getNotificationOption());
 			} else {
 				optionSelector.setSelectedIndex(0);
-			}	
+			}
+			if (subscription.getNotificationType() != null) {
+				ViewUtil.setListboxSelection(typeSel,
+						subscription.getNotificationType());
+			} else {
+				typeSel.setSelectedIndex(0);
+			}
 		} else {
 			subscription = new NotificationSubscriptionDto();
 			subscription.setNotificationMethod("EMAIL");
 		}
+		updateOptions();
 	}
 
 	public NotificationSubscriptionDto getValue() {
@@ -76,10 +98,34 @@ public class NotificationSubscriptionWidget extends Composite {
 			subscription.setNotificationDestination(emailBox.getText().trim());
 			subscription.setExpiryDate(expiryBox.getValue());
 			subscription.setNotificationMethod("EMAIL");
-			subscription.setNotificationOption(optionSelector
-					.getValue(optionSelector.getSelectedIndex()));
+			subscription.setNotificationOption(ViewUtil.getListBoxSelection(
+					optionSelector, false));
+			subscription.setNotificationType(ViewUtil.getListBoxSelection(
+					typeSel, false));
+
 		}
 		return subscription;
+	}
+
+	@Override
+	public void onChange(ChangeEvent event) {
+		if (event.getSource() == typeSel) {
+			updateOptions();
+		}
+	}
+
+	private void updateOptions() {
+		optionSelector.clear();
+		if (ViewUtil.getListBoxSelection(typeSel, false)
+				.equals("rawDataReport")) {
+			optionSelector.addItem(TEXT_CONSTANTS.attachment(),
+					ATTACHMENT_OPTION.toUpperCase());
+			optionSelector.addItem(TEXT_CONSTANTS.link(),
+					LINK_OPTION.toUpperCase());
+		} else {
+			optionSelector.addItem(TEXT_CONSTANTS.link(),
+					LINK_OPTION.toUpperCase());
+		}
 	}
 
 }

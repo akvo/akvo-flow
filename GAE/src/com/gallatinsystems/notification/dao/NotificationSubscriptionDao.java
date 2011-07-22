@@ -26,13 +26,13 @@ public class NotificationSubscriptionDao extends
 	}
 
 	/**
-	 * lists all unexpired notifications (where expiryDate <= sysdate)
+	 * lists all unexpired notifications (where expiryDate <= sysdate) and
+	 * NotificationSubscriptionType == type
 	 * 
 	 * @return
 	 */
-	public List<NotificationSubscription> listUnexpiredNotifications() {
-		return listByProperty("expiryDate", new Date(), "Date", null, null,
-				GTE_OP, NotificationSubscription.class);
+	public List<NotificationSubscription> listUnexpiredNotifications(String type) {
+		return listSubscriptions(null, type, true);
 	}
 
 	/**
@@ -53,8 +53,8 @@ public class NotificationSubscriptionDao extends
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("notificationType", filterString, paramString, "String", type,
-				paramMap);
+		appendNonNullParam("notificationType", filterString, paramString,
+				"String", type, paramMap);
 		appendNonNullParam("entityId", filterString, paramString, "Long",
 				entityId, paramMap);
 		if (unexpiredOnly) {
