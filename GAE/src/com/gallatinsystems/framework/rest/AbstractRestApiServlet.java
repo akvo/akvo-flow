@@ -61,7 +61,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			writeOkResponse(restResp);
 		} catch (RestException e) {
 			writeErrorResponse(e.getErrors(), resp);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// we get here if we get some unexpected exception that does not
 			// derive from RestException
 			writeErrorResponse(null, resp);
@@ -129,6 +129,7 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 	protected void writeErrorResponse(List<RestError> errs,
 			HttpServletResponse resp) {
 		try {
+			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			// TODO: error should honor content type (i.e. xml, json or text)
 			if (errs != null) {
 				for (RestError err : errs) {
@@ -137,13 +138,11 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 			} else {
 				resp.getWriter().print(new RestError());
 			}
-
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Could not write to servlet response object",
 					e);
 		}
 	}
-
 
 	/**
 	 * gets the thread local request

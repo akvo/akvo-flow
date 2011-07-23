@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -229,8 +230,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-
+		HttpServletResponse httpResp = getResponse();
+		httpResp.setStatus(HttpServletResponse.SC_OK);
+		httpResp.setContentType("text/plain");
+		httpResp.getWriter().print("OK");
 	}
 
 	private void assembleSurveyOnePass(Long surveyId) {
@@ -238,6 +241,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		 * 1, Select survey based on surveyId 2. Retrieve all question groups
 		 * fire off queue tasks
 		 */
+		log.info("Starting assembly of "+surveyId);
 		// Swap with proper UUID
 		SurveyDAO surveyDao = new SurveyDAO();
 		Survey s = surveyDao.getById(surveyId);
@@ -256,10 +260,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			StringBuilder surveyXML = new StringBuilder();
 			surveyXML.append(surveyHeader);
 			for (QuestionGroup item : qgList.values()) {
+				log.info("Assembling group "+item.getKey().getId()+" for survey "+surveyId);
 				surveyXML.append(buildQuestionGroupXML(item));
 			}
 
 			surveyXML.append(surveyFooter);
+			log.info("Uploading "+surveyId);
 			UploadStatusContainer uc = uploadSurveyXML(surveyId,
 					surveyXML.toString());
 			Message message = new Message();
@@ -269,7 +275,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
 				// increment the version so devices know to pick up the changes
-
+				log.info("Finishing assembly of "+surveyId);
 				surveyDao.incrementVersion(surveyId);
 				String messageText = "Published.  Please check: " + uc.getUrl();
 				message.setShortMessage(messageText);
@@ -294,6 +300,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				MessageDao messageDao = new MessageDao();
 				messageDao.save(message);
 			}
+			log.info("Completed onepass aseembly method for "+surveyId);
 		}
 	}
 
