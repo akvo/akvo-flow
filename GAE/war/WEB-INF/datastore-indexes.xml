@@ -375,5 +375,10 @@
     <datastore-index kind="AccessPointScoreComputationItem" ancestor="true" source="manual">
         <property name="scoreComputationItems_INTEGER_IDX" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="NotificationSubscription" ancestor="false" source="manual">
+        <property name="entityId" direction="asc"/>
+        <property name="notificationType" direction="asc"/>
+        <property name="expiryDate" direction="asc"/>
+    </datastore-index>
     
 </datastore-indexes>
