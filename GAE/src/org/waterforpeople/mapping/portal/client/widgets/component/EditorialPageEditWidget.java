@@ -23,12 +23,12 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
  * Edits editorial pages and their corresponding EditorialPageContent items.
@@ -98,6 +98,9 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 		if (bundle == null) {
 			bundle = new HashMap<String, Object>();
 		}
+		if (doPopulation) {
+			bundle.put(BundleConstants.EDITORIAL_PAGE, currentPage);
+		}
 		return bundle;
 	}
 
@@ -107,8 +110,30 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 	}
 
 	@Override
-	public void persistContext(CompletionListener listener) {
-		// TODO Auto-generated method stub
+	public void persistContext(final CompletionListener listener) {
+		currentPage.setTemplate(template.getValue());
+		currentPage.setTargetFileName(targetFileNameBox.getValue());
+		editorialService.saveEditorialPage(currentPage,
+				new AsyncCallback<EditorialPageDto>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						if (listener != null) {
+							listener.operationComplete(false, null);
+						}
+
+					}
+
+					@Override
+					public void onSuccess(EditorialPageDto result) {
+						if (listener != null) {
+							currentPage = result;
+							listener.operationComplete(true,
+									getContextBundle(true));
+						}
+
+					}
+				});
 
 	}
 
@@ -119,6 +144,8 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 				.get(BundleConstants.EDITORIAL_PAGE);
 		if (currentPage != null) {
 			fetchContentItems(currentPage);
+		} else {
+			currentPage = new EditorialPageDto();
 		}
 		flushContext();
 	}
@@ -185,12 +212,10 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 					}
 					if (increment != 0) {
 						EditorialPageContentDto targetItem = itemList.get(cell
-								.getRowIndex()
-								+ increment);
+								.getRowIndex() + increment);
 						EditorialPageContentDto movingItem = itemList.get(cell
 								.getRowIndex());
-						itemList
-								.set(cell.getRowIndex() + increment, movingItem);
+						itemList.set(cell.getRowIndex() + increment, movingItem);
 						itemList.set(cell.getRowIndex(), targetItem);
 						targetItem.setSortOrder(targetItem.getSortOrder()
 								- increment);

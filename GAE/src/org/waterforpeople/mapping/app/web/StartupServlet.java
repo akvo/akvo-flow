@@ -12,7 +12,7 @@ import com.google.appengine.api.LifecycleManager.ShutdownHook;
 /**
  * simple servlet to bind a shutdown hook
  * 
- * @author chris
+ * @author Christopher Fagiani
  * 
  */
 public class StartupServlet extends HttpServlet {

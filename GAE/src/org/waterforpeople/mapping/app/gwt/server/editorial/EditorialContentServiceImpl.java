@@ -69,8 +69,11 @@ public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public EditorialPageDto saveEditorialPage(EditorialPageDto content) {
-		// TODO implement saveEditorialPage
-		return null;
+		EditorialPage page = new EditorialPage();
+		DtoMarshaller.copyToCanonical(page, content);
+		page = editorialDao.save(page);
+		content.setKeyId(page.getKey().getId());
+		return content;
 	}
 
 }
