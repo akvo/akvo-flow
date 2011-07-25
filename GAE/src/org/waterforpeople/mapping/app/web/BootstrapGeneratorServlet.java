@@ -90,7 +90,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
 							+ "/"
 							+ +s.getKey().getId() + ".xml");
 					BufferedReader reader = new BufferedReader(
-							new InputStreamReader(url.openStream()));
+							new InputStreamReader(url.openStream(),"UTF-8"));
 					String line;
 					while ((line = reader.readLine()) != null) {
 						buf.append(line).append("\n");
