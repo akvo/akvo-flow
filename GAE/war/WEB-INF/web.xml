@@ -5,6 +5,15 @@
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 	<servlet>
+		<servlet-name>StartupServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.StartupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>StartupServlet</servlet-name>
+		<url-pattern>/_ah/start</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.WaterForPeopleMappingGoogleServlet</servlet-class>
 	</servlet>
@@ -45,7 +54,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>BootstrapGenerator</servlet-name>
 		<url-pattern>/app_worker/bootstrapgen</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>DataProcessorServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.DataProcessorRestServlet</servlet-class>
@@ -199,7 +208,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>RemoteExceptionServlet</servlet-name>
 		<url-pattern>/remoteexception</url-pattern>
 	</servlet-mapping>
-						
+
 	<servlet>
 		<servlet-name>MetricRpcService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.MetricServiceImpl</servlet-class>
@@ -208,7 +217,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>MetricRpcService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/metricrpcservice</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>ConfigRpcService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.config.ConfigurationServiceImpl</servlet-class>
@@ -217,7 +226,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>ConfigRpcService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/configrpcservice</url-pattern>
 	</servlet-mapping>
-		
+
 	<servlet>
 		<servlet-name>SurveyedLocaleRpcService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyedLocaleServiceImpl</servlet-class>
@@ -226,8 +235,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SurveyedLocaleRpcService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyedlocalerpcservice</url-pattern>
 	</servlet-mapping>
-	
-	
+
+
 	<servlet>
 		<servlet-name>SurveyMetricMappingRpcService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyMetricMappingServiceImpl</servlet-class>
@@ -236,7 +245,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>SurveyMetricMappingRpcService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveymetricmaprpcservice</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>EditorialContentService</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.editorial.EditorialContentServiceImpl</servlet-class>
@@ -246,14 +255,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/editorialcontentrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-	<servlet-name>AccessPointMetricSummaryService</servlet-name>
-	<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointMetricSummaryServiceImpl</servlet-class>
+		<servlet-name>AccessPointMetricSummaryService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointMetricSummaryServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
-	<servlet-name>AccessPointMetricSummaryService</servlet-name>
-	<url-pattern>org.waterforpeople.mapping.portal.portal/apmetricsummaryrpcservice</url-pattern>
+		<servlet-name>AccessPointMetricSummaryService</servlet-name>
+		<url-pattern>org.waterforpeople.mapping.portal.portal/apmetricsummaryrpcservice</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>GISSupportService</servlet-name>
 		<servlet-class>com.gallatinsystems.gis.app.gwt.server.GISSupportServiceImpl</servlet-class>
@@ -262,7 +271,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>GISSupportService</servlet-name>
 		<url-pattern> /org.waterforpeople.mapping.portal.portal/gissupportrpcservice</url-pattern>
 	</servlet-mapping>
-<servlet>
+	<servlet>
 		<servlet-name>NotificationSubscriptionService</servlet-name>
 		<servlet-class>com.gallatinsystems.notification.app.gwt.server.NotificationSubscriptionServiceImpl</servlet-class>
 	</servlet>
@@ -285,7 +294,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>NotificationProcessor</servlet-name>
 		<url-pattern>/notificationprocessor</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>MapingSummarization</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.MappingSummarizationServlet</servlet-class>
@@ -310,7 +319,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>StandardScoringServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/standardscoring</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>SpreadsheetProcessor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SpreadsheetProcessorServlet</servlet-class>
@@ -387,7 +396,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/apmanagerrpcservice</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointSummaryServiceImpl</servlet-class>
@@ -468,7 +477,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	</servlet-mapping>
 
 
-<servlet>
+	<servlet>
 		<servlet-name>MessageRpcService</servlet-name>
 		<servlet-class>com.gallatinsystems.messaging.app.gwt.server.MessageServiceImpl</servlet-class>
 	</servlet>
@@ -526,7 +535,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>PlacemarkRestApi</servlet-name>
 		<url-pattern>/placemarkrestapi</url-pattern>
 	</servlet-mapping>
-		<servlet>
+	<servlet>
 		<servlet-name>SummaryDataRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SummaryDataRestServlet</servlet-class>
 	</servlet>
@@ -542,7 +551,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>GeoRestApi</servlet-name>
 		<url-pattern>/georestapi</url-pattern>
 	</servlet-mapping>
-		<servlet>
+	<servlet>
 		<servlet-name>ExternalGISDataRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.ExternalGISDataServlet</servlet-class>
 	</servlet>
