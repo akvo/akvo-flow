@@ -9,14 +9,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
@@ -241,7 +240,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		 * 1, Select survey based on surveyId 2. Retrieve all question groups
 		 * fire off queue tasks
 		 */
-		log.info("Starting assembly of "+surveyId);
+		log.warn("Starting assembly of "+surveyId);
 		// Swap with proper UUID
 		SurveyDAO surveyDao = new SurveyDAO();
 		Survey s = surveyDao.getById(surveyId);
@@ -260,12 +259,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			StringBuilder surveyXML = new StringBuilder();
 			surveyXML.append(surveyHeader);
 			for (QuestionGroup item : qgList.values()) {
-				log.info("Assembling group "+item.getKey().getId()+" for survey "+surveyId);
+				log.warn("Assembling group "+item.getKey().getId()+" for survey "+surveyId);
 				surveyXML.append(buildQuestionGroupXML(item));
 			}
 
 			surveyXML.append(surveyFooter);
-			log.info("Uploading "+surveyId);
+			log.warn("Uploading "+surveyId);
 			UploadStatusContainer uc = uploadSurveyXML(surveyId,
 					surveyXML.toString());
 			Message message = new Message();
@@ -275,7 +274,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
 				// increment the version so devices know to pick up the changes
-				log.info("Finishing assembly of "+surveyId);
+				log.warn("Finishing assembly of "+surveyId);
 				surveyDao.incrementVersion(surveyId);
 				String messageText = "Published.  Please check: " + uc.getUrl();
 				message.setShortMessage(messageText);
@@ -300,7 +299,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				MessageDao messageDao = new MessageDao();
 				messageDao.save(message);
 			}
-			log.info("Completed onepass aseembly method for "+surveyId);
+			log.warn("Completed onepass aseembly method for "+surveyId);
 		}
 	}
 
@@ -619,7 +618,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		try {
 			questionDocument = sax.marshal(qXML);
 		} catch (JAXBException e) {
-			log.log(Level.SEVERE, "Could not marshal question: " + qXML, e);
+			log.warn("Could not marshal question: " + qXML, e);
 		}
 
 		questionDocument = questionDocument
