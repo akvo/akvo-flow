@@ -68,6 +68,11 @@
 		<property name="countryCode" direction="asc" />
 		<property name="collectionDate" direction="asc" />
 	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="pointType" direction="asc" />
+		<property name="communityName" direction="asc" />
+	</datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false">
 		<property name="countryCode" direction="asc" />
 		<property name="lastUpdateDateTime" direction="desc" />
@@ -289,11 +294,12 @@
 		<property name="uuid" direction="asc" />
 		<property name="order" direction="asc" />
 	</datastore-index>
-	 <datastore-index kind="OGRFeature" ancestor="false" source="manual">
-        <property name="countryCode" direction="asc"/>
-        <property name="featureType" direction="asc"/>
-        <property name="x1" direction="asc"/>
-    </datastore-index>
+	<datastore-index kind="OGRFeature" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="featureType" direction="asc" />
+		<property name="x1" direction="asc" />
+	</datastore-index>
 	<datastore-index kind="OGRFeature" ancestor="false"
 		source="manual">
 		<property name="featureType" direction="asc" />
@@ -348,37 +354,44 @@
 		<property name="communityCode" direction="asc" />
 		<property name="pointType" direction="asc" />
 		<property name="collectionDate" direction="desc" />
-	</datastore-index>	
-	 <datastore-index kind="Message" ancestor="false" source="manual">
-        <property name="actionAbout" direction="asc"/>
-        <property name="objectId" direction="asc"/>
-        <property name="lastUpdateDateTime" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="Message" ancestor="false" source="manual">
-        <property name="actionAbout" direction="asc"/>
-        <property name="lastUpdateDateTime" direction="desc"/>
-    </datastore-index>
-	<datastore-index kind="SurveyalValue" ancestor="false" source="manual">
-        <property name="surveyInstanceId" direction="asc"/>
-        <property name="questionText" direction="asc"/>
-        <property name="metricName" direction="asc"/>
-    </datastore-index>
-      <datastore-index kind="AccessPoint" ancestor="false" source="manual">
-        <property name="countryCode" direction="asc"/>
-        <property name="waterForPeopleProjectFlag" direction="asc"/>
-        <property name="collectionDate" direction="asc"/>
-    </datastore-index>
-  <datastore-index kind="SurveyInstance" ancestor="false" source="auto">
-        <property name="surveyedLocaleId" direction="asc"/>
-        <property name="collectionDate" direction="desc"/>
-    </datastore-index>
-    <datastore-index kind="AccessPointScoreComputationItem" ancestor="true" source="manual">
-        <property name="scoreComputationItems_INTEGER_IDX" direction="asc"/>
-    </datastore-index>
-    <datastore-index kind="NotificationSubscription" ancestor="false" source="manual">
-        <property name="entityId" direction="asc"/>
-        <property name="notificationType" direction="asc"/>
-        <property name="expiryDate" direction="asc"/>
-    </datastore-index>
-    
+	</datastore-index>
+	<datastore-index kind="Message" ancestor="false"
+		source="manual">
+		<property name="actionAbout" direction="asc" />
+		<property name="objectId" direction="asc" />
+		<property name="lastUpdateDateTime" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="Message" ancestor="false"
+		source="manual">
+		<property name="actionAbout" direction="asc" />
+		<property name="lastUpdateDateTime" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="SurveyalValue" ancestor="false"
+		source="manual">
+		<property name="surveyInstanceId" direction="asc" />
+		<property name="questionText" direction="asc" />
+		<property name="metricName" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="AccessPoint" ancestor="false"
+		source="manual">
+		<property name="countryCode" direction="asc" />
+		<property name="waterForPeopleProjectFlag" direction="asc" />
+		<property name="collectionDate" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="SurveyInstance" ancestor="false"
+		source="auto">
+		<property name="surveyedLocaleId" direction="asc" />
+		<property name="collectionDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="AccessPointScoreComputationItem"
+		ancestor="true" source="manual">
+		<property name="scoreComputationItems_INTEGER_IDX" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="NotificationSubscription"
+		ancestor="false" source="manual">
+		<property name="entityId" direction="asc" />
+		<property name="notificationType" direction="asc" />
+		<property name="expiryDate" direction="asc" />
+	</datastore-index>
+
 </datastore-indexes>
