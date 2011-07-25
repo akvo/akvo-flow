@@ -49,6 +49,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 	private static final String WP_TYPE = "WaterPoint";
 	private static final String SP_TYPE = "SanitationPoint";
 	private static final String PI_TYPE = "PublicInstitution";
+	private static final String HH_TYPE = "Household";
 	private static final String SCHOOL_TYPE = "School";
 	private static final String TRAWLER_TYPE = "Trawler";
 	private static final String PROCEDURE_TYPE = "Procedure";
@@ -125,6 +126,7 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 			pointTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(), SP_TYPE);
 			pointTypeBox.addItem(TEXT_CONSTANTS.publicInst(), PI_TYPE);
 			pointTypeBox.addItem(TEXT_CONSTANTS.school(), SCHOOL_TYPE);
+			pointTypeBox.addItem(TEXT_CONSTANTS.household(), HH_TYPE);
 		} else {
 			for (int i = 0; i < pointTypes.length; i++) {
 				if (WP_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
@@ -143,6 +145,8 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 						.equalsIgnoreCase(pointTypes[i].trim())) {
 					pointTypeBox.addItem(TEXT_CONSTANTS.procedure(),
 							PROCEDURE_TYPE);
+				} else if (HH_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+					pointTypeBox.addItem(TEXT_CONSTANTS.household(), HH_TYPE);
 				}
 			}
 		}

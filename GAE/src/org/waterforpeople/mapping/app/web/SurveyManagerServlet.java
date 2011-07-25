@@ -159,6 +159,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	protected void writeOkResponse(RestResponse response) throws Exception {
 		try {
 			HttpServletResponse resp = getResponse();
+			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.getWriter().print(response.getMessage());
 		} catch (IOException e) {
 			log.log(Level.SEVERE,
