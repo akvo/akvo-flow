@@ -155,5 +155,6 @@ public class DateQuestionView extends QuestionView {
 	public void resetQuestion(boolean fireEvent) {
 		super.resetQuestion(fireEvent);
 		dateTextEdit.setText("");
+		selectedDate = null;
 	}
 }
