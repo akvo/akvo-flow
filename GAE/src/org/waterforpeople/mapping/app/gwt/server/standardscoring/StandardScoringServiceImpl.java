@@ -58,8 +58,8 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
-
+		StandardScoringDao ssDao = new StandardScoringDao();
+		ssDao.delete(ssDao.getByKey(id));
 	}
 
 	@Override

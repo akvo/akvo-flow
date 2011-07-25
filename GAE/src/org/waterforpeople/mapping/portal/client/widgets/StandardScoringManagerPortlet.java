@@ -116,10 +116,10 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private Button saveBucket = new Button("Save New Bucket");
 
 	@Override
-	public int getFullscreenWidth(){
+	public int getFullscreenWidth() {
 		return 1900;
 	}
-	
+
 	@Override
 	public DataTableHeader[] getHeaders() {
 		return HEADERS;
@@ -249,7 +249,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onSuccess(ArrayList<StandardScoreBucketDto> result) {
-				if (result != null) {
+				if (result != null && !result.isEmpty()) {
 					for (StandardScoreBucketDto item : result) {
 						scoreBucketsBox.addItem(item.getName(), item.getKeyId()
 								.toString());
@@ -320,7 +320,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (item != null) {
 			currentItem = item;
 		} else {
-			currentItem = new StandardScoringDto();
+			currentItem = null;
 		}
 		ListBox global = new ListBox();
 		global.addItem("Global");
@@ -328,7 +328,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		if (item != null && item.getGlobalStandard()) {
 			global.setSelectedIndex(0);
 		} else {
-			global.setSelectedIndex(1);
+			global.setSelectedIndex(2);
 			String selectedCountry = null;
 
 			if (item != null && item.getCountryCode() != null)
@@ -510,7 +510,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Integer row = Integer.parseInt(((Button) event.getSource())
+				final Integer row = Integer.parseInt(((Button) event.getSource())
 						.getTitle());
 				StandardScoringDto ssDto = formStandardScoringDto(row);
 				svc.save(ssDto, new AsyncCallback<StandardScoringDto>() {
@@ -521,7 +521,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onSuccess(StandardScoringDto result) {
-
+						Grid grid = scoringTable.getGrid();
+						TextBox id = (TextBox)grid.getWidget(row, 18);
+						id.setText(result.getKeyId().toString());
 					}
 				});
 			}
@@ -541,14 +543,23 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
 					}
 
 					@Override
 					public void onSuccess(Object result) {
 						Grid grid = scoringTable.getGrid();
 						grid.removeRow(selectedRow);
+						
+						for(int i=selectedRow;i<grid.getRowCount();i++){
+							HorizontalPanel buttonPanel = (HorizontalPanel)grid.getWidget(i, 19);
+							Button deleteButton = (Button)buttonPanel.getWidget(1);
+							Long keyId = 0L;
+							TextBox keyIdBox = (TextBox)grid.getWidget(i,18);
+							if(keyIdBox!=null&&keyIdBox.getText().trim().length()>0){
+								keyId = Long.parseLong(keyIdBox.getText().trim());
+							}
+							deleteButton.setTitle(String.valueOf(i)+"|"+keyId);
+						}
 						selectedRow = null;
 					}
 				});
@@ -583,7 +594,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		});
 	}
 
-	private void fetchSubCountries(String selectedCountry, final Integer row, final String selectedSub) {
+	private void fetchSubCountries(String selectedCountry, final Integer row,
+			final String selectedSub) {
 		ListBox country = (ListBox) scoringTable.getGrid().getWidget(row, 1);
 		String countryCode = country.getValue(country.getSelectedIndex());
 		Long id = null;
@@ -597,9 +609,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onSuccess(List<SubCountryDto> result) {
-						
-						populateSubLevelControl(scoringTable.getGrid(), selectedSub,
-								row, result);
+
+						populateSubLevelControl(scoringTable.getGrid(),
+								selectedSub, row, result);
 					}
 				});
 
@@ -817,22 +829,30 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				Integer row = Integer.parseInt(pos[0]);
 				Integer column = Integer.parseInt(pos[1]);
 
-				if (target.getSelectedIndex() > -1) {
+				if (target.getSelectedIndex() > 0) {
+					String posOper = null;
+					String negOper = null;
+					if (currentItem != null) {
+						if (currentItem.getPositiveOperator() != null)
+							posOper = currentItem.getPositiveOperator();
+						if (currentItem.getNegativeOperator() != null)
+							negOper = currentItem.getNegativeOperator();
+					}
 					if (target.getSelectedIndex() == 1) {
 						loadCriteriaOperators(grid, row, column + 2, "String",
-								currentItem.getPositiveOperator());
+								posOper);
 						loadCriteriaOperators(grid, row, column + 6, "String",
-								currentItem.getNegativeOperator());
+								negOper);
 					} else if (target.getSelectedIndex() == 2) {
 						loadCriteriaOperators(grid, row, column + 2, "Number",
-								currentItem.getPositiveOperator());
+								posOper);
 						loadCriteriaOperators(grid, row, column + 6, "Number",
-								currentItem.getNegativeOperator());
-					} else {
+								negOper);
+					} else if(target.getSelectedIndex() == 3) {
 						loadCriteriaOperators(grid, row, column + 2,
-								"NotNumber", currentItem.getPositiveOperator());
+								"NotNumber", posOper);
 						loadCriteriaOperators(grid, row, column + 6,
-								"NotNumber", currentItem.getNegativeOperator());
+								"NotNumber", negOper);
 					}
 				}
 			}
