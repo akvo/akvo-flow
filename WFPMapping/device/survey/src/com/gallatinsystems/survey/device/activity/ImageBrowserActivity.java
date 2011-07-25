@@ -50,7 +50,7 @@ public class ImageBrowserActivity extends Activity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.imagebrowser);
 		props = new PropertyUtil(getResources());
-		gallery = (Gallery) findViewById(R.id.imagebrowsergallery);
+		gallery = (Gallery) findViewById(R.id.imagebrowsergallery);		
 		captionTextView = (TextView) findViewById(R.id.captiontextview);
 		mainImageView = (ImageView) findViewById(R.id.mainimageview);
 

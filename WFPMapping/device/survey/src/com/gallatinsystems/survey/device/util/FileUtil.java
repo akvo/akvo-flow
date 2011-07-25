@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
 import android.content.Context;
+import android.os.Environment;
 
 /**
  * utility for manipulating files
@@ -78,7 +79,6 @@ public class FileUtil {
 		return exists;
 	}
 
-
 	/**
 	 * reads the contents of a file into a string.
 	 * 
@@ -124,7 +124,7 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static void extractAndSaveFile(ZipInputStream zip,
-			FileOutputStream destinationFile) throws IOException {		
+			FileOutputStream destinationFile) throws IOException {
 		ByteArrayOutputStream out = readZipEntry(zip);
 		destinationFile.write(out.toByteArray());
 		out.close();
@@ -184,10 +184,16 @@ public class FileUtil {
 		String dir = "";
 		if (useInternalStorage == null
 				|| "false".equalsIgnoreCase(useInternalStorage)) {
-			dir = ConstantUtil.SD_CARD_ROOT;
-			if (subDir != null) {
-				dir += subDir;
-			}
+			dir = Environment.getExternalStorageDirectory().getAbsolutePath();
+
+		} else {
+			dir = Environment.getDataDirectory().getAbsolutePath();
+		}
+		if (!dir.endsWith(File.separator)) {
+			dir += File.separator;
+		}
+		if (subDir != null) {
+			dir += subDir;
 		}
 		return dir;
 	}

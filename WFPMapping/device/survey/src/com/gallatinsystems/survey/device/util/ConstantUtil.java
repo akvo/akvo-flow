@@ -16,8 +16,6 @@ public class ConstantUtil {
 	/**
 	 * filesystem constants
 	 */
-	public static final String SD_CARD_ROOT = "/sdcard/";
-	public static final String INTERNAL_ROOT = "/data/data/";
 	public static final String DATA_DIR = "fieldsurvey/data/";
 	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
 	public static final String ARCHIVE_SUFFIX = ".zip";

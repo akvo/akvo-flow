@@ -281,6 +281,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					}
 				}
 			}
+			responseCursor.close();
 		}
 		return responseMap;
 	}

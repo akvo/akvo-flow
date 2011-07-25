@@ -250,6 +250,7 @@ public class SurveyDbAdapter {
 										+ UUID.randomUUID().toString() + "'");
 							}
 						} while (cursor.moveToNext());
+						cursor.close();
 					}
 				} catch (Exception e) {
 					// swallow

@@ -29,9 +29,9 @@ import android.graphics.BitmapFactory;
 
 /**
  * Simple utility to make http calls and read the responses
- *
+ * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class HttpUtil {
 
@@ -39,7 +39,7 @@ public class HttpUtil {
 
 	/**
 	 * executes an HTTP GET and returns the result as a String
-	 *
+	 * 
 	 * @param url
 	 * @return
 	 * @throws Exception
@@ -64,7 +64,7 @@ public class HttpUtil {
 
 	/**
 	 * does an HTTP Post to the url specified using the params passed in
-	 *
+	 * 
 	 * @param url
 	 * @param params
 	 * @return
@@ -99,7 +99,7 @@ public class HttpUtil {
 	/**
 	 * fetches an image from a remote url and returns it to the caller as a
 	 * bitmap
-	 *
+	 * 
 	 * @param url
 	 * @return
 	 * @throws Exception
@@ -115,17 +115,17 @@ public class HttpUtil {
 			fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
 		}
 		// now check the cache
-		if (cacheDir != null && cacheDir.trim().length()>0) {
+		if (cacheDir != null && cacheDir.trim().length() > 0) {
 			File f = new File(cacheDir + "/" + fileName);
 			if (f.exists()) {
 				// if the file exists, return the local version
 				bitMap = BitmapFactory.decodeFile(f.getAbsolutePath());
 				return bitMap;
-			}
+			} 
 		}
 		// if we get here, then we had a cache miss (or aren't using the cache)
 		try {
-			if (cacheDir == null || cacheDir.trim().length()==0) {
+			if (cacheDir == null || cacheDir.trim().length() == 0) {
 				// if we aren't using the cache, download directly into the
 				// bitmap
 				DefaultHttpClient client = new DefaultHttpClient();
@@ -139,6 +139,7 @@ public class HttpUtil {
 				// compress since
 				// that may not preserve the original file type so subsequent
 				// call will encounter cache misses.
+				FileUtil.findOrCreateDir(cacheDir);
 				httpDownload(url, cacheDir + "/" + fileName);
 				bitMap = BitmapFactory.decodeFile(cacheDir + "/" + fileName);
 			}
@@ -154,20 +155,22 @@ public class HttpUtil {
 
 	/**
 	 * downloads the resource at url and saves the contents to file
-	 *
+	 * 
 	 * @param url
 	 * @param file
 	 * @throws Exception
 	 */
-	public static void httpDownload(String url, FileOutputStream file) throws Exception {
+	public static void httpDownload(String url, FileOutputStream file)
+			throws Exception {
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(new HttpGet(url));
-		if(response.getStatusLine().getStatusCode() < 400){
+		if (response.getStatusLine().getStatusCode() < 400) {
 			BufferedOutputStream writer = null;
 			BufferedInputStream reader = null;
 			try {
 				writer = new BufferedOutputStream(file);
-				reader = new BufferedInputStream(response.getEntity().getContent());
+				reader = new BufferedInputStream(response.getEntity()
+						.getContent());
 
 				byte[] buffer = new byte[BUF_SIZE];
 				int bytesRead = reader.read(buffer);
@@ -189,12 +192,13 @@ public class HttpUtil {
 
 	/**
 	 * downloads the resource at url and saves the contents to file
-	 *
+	 * 
 	 * @param url
 	 * @param file
 	 * @throws Exception
 	 */
-	public static void httpDownload(String url, String destFile) throws Exception {
+	public static void httpDownload(String url, String destFile)
+			throws Exception {
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(destFile);
@@ -209,7 +213,7 @@ public class HttpUtil {
 
 	/**
 	 * parses the response from the HttpResponse
-	 *
+	 * 
 	 * @param response
 	 * @return
 	 * @throws Exception
