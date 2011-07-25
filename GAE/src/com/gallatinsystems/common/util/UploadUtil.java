@@ -13,6 +13,7 @@ import com.gallatinsystems.common.domain.UploadStatusContainer;
 
 public class UploadUtil {
 	private static final String BOUNDRY = "***xxx";
+	private static final int UPLOAD_TIMEOUT_MS = 120000;
 	private static final String PREFIX = "--";
 	private static final String ENDLINE = "\r\n";
 	private static final int REDIRECT_CODE = 303;
@@ -91,6 +92,7 @@ public class UploadUtil {
 		}
 		// connection level settings. This doesn't seem to have any effect with
 		// https!
+		urlConn.setConnectTimeout(UPLOAD_TIMEOUT_MS);
 		urlConn.setDoInput(true);
 		urlConn.setDoOutput(true);
 		urlConn.setUseCaches(false);
@@ -156,6 +158,7 @@ public class UploadUtil {
 		try {
 			HttpURLConnection conn = UploadUtil.createConnection(new URL(
 					uploadUrl));
+			
 			UploadUtil stream = new UploadUtil(conn.getOutputStream());
 			stream.writeFormField("key", dir + "/${filename}");
 			stream.writeFormField("AWSAccessKeyId", s3ID);
