@@ -10,11 +10,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.operation.TransformException;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.AccessPointScoreDetailDao;
@@ -44,6 +51,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.vividsolutions.jts.geom.Coordinate;
 
 public class AccessPointHelper {
 
@@ -929,7 +937,8 @@ public class AccessPointHelper {
 				"About to compute score for: " + ap.getCommunityCode());
 		Integer score = 0;
 
-		//added other conditions to guess if it's an improved point or not since the scoring seems like it's flawed
+		// added other conditions to guess if it's an improved point or not
+		// since the scoring seems like it's flawed
 		if ((ap.isImprovedWaterPointFlag() != null && ap
 				.isImprovedWaterPointFlag())
 				|| (ap.getConstructionDateYear() != null && !ap
@@ -1013,4 +1022,80 @@ public class AccessPointHelper {
 		return ap;
 	}
 
+	public void computeDistanceRule(AccessPoint ap) {
+		AccessPointDao apDao = new AccessPointDao();
+		if (ap != null) {
+			if (ap.getTypeTechnologyString().equals("Gravity Fed System with Household Taps")) {
+				//ToDo: check against tech type of HH, but need to know which question
+				ap.setNumberWithinAcceptableDistance(ap
+						.getNumberWithinAcceptableDistance() + 1);
+			} else if (ap.getPointType().equals(
+					AccessPoint.AccessPointType.WATER_POINT)
+					&& (ap.getCommunityCode() != null)) {
+				List<AccessPoint> apList = apDao.listAccessPointByLocation(
+						ap.getCountryCode(), ap.getCommunityCode(),
+						AccessPointType.HOUSEHOLD.toString(), null, "all");
+				if (apList != null && !apList.isEmpty()) {
+					for (AccessPoint hh : apList) {
+						Double distance = computeDistance(ap, hh);
+						if (distance < 500) {
+							ap.setNumberWithinAcceptableDistance(ap
+									.getNumberWithinAcceptableDistance() + 1);
+						} else {
+							ap.setNumberOutsideAcceptableDistance(ap
+									.getNumberOutsideAcceptableDistance() + 1);
+						}
+					}
+					apDao.save(ap);
+				}
+			} else if (ap.getPointType().equals(AccessPointType.HOUSEHOLD)
+					&& ap.getCommunityCode() != null) {
+				List<AccessPoint> apList = apDao.listAccessPointByLocation(
+						ap.getCountryCode(), ap.getCommunityCode(),
+						AccessPointType.WATER_POINT.toString(), null, "all");
+				AccessPoint minDistanceWaterPoint = null;
+				Double minDistance = null;
+				for (AccessPoint wp : apList) {
+					Double distance = computeDistance(ap, wp);
+					if (distance < minDistance || minDistance == null) {
+						minDistance = computeDistance(ap, wp);
+						minDistanceWaterPoint = wp;
+					}
+				}
+				if (minDistance < 500) {
+					minDistanceWaterPoint
+							.setNumberWithinAcceptableDistance(minDistanceWaterPoint
+									.getNumberWithinAcceptableDistance() + 1);
+				} else {
+					minDistanceWaterPoint
+							.setNumberOutsideAcceptableDistance(minDistanceWaterPoint
+									.getNumberOutsideAcceptableDistance());
+				}
+				apDao.save(minDistanceWaterPoint);
+			}
+
+		}
+	}
+
+	public Double computeDistance(AccessPoint start, AccessPoint end) {
+		Coordinate apWater = new Coordinate(start.getLongitude(),
+				start.getLatitude());
+		Coordinate apHH = new Coordinate(end.getLongitude(), end.getLatitude());
+
+		try {
+			Double distance = JTS.orthodromicDistance(apWater, apHH,
+					CRS.decode("EPSG:4326"));
+			return distance;
+		} catch (NoSuchAuthorityCodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

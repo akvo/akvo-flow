@@ -164,6 +164,9 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String sub6 = null;
 	private Long surveyInstanceId = null;
 	private Long surveyId = null;
+	private Integer numberWithinAcceptableDistance = 0;
+	private Integer numberOutsideAcceptableDistance = 0;
+	
 	@NotPersistent
 	private List<AccessPointScoreDetail> apScoreDetailList = null;
 
@@ -629,7 +632,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	}
 
 	public enum AccessPointType {
-		WATER_POINT, SANITATION_POINT, SCHOOL, HEALTH_POSTS, PUBLIC_INSTITUTION
+		WATER_POINT, SANITATION_POINT, SCHOOL, HEALTH_POSTS, PUBLIC_INSTITUTION, HOUSEHOLD
 	}
 
 	public enum Status {
@@ -868,6 +871,24 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public Boolean getPositiveBalance() {
 		return positiveBalance;
+	}
+
+	public void setNumberWithinAcceptableDistance(
+			Integer numberWithinAcceptableDistance) {
+		this.numberWithinAcceptableDistance = numberWithinAcceptableDistance;
+	}
+
+	public Integer getNumberWithinAcceptableDistance() {
+		return numberWithinAcceptableDistance;
+	}
+
+	public void setNumberOutsideAcceptableDistance(
+			Integer numberOutsideAcceptableDistance) {
+		this.numberOutsideAcceptableDistance = numberOutsideAcceptableDistance;
+	}
+
+	public Integer getNumberOutsideAcceptableDistance() {
+		return numberOutsideAcceptableDistance;
 	}
 
 }

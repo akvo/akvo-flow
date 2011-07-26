@@ -63,7 +63,8 @@ public class AccessPointDto extends BaseDto {
 	private String sub4;
 	private String sub5;
 	private String sub6;
-	
+	private Integer numberWithinAcceptableDistance = null;
+	private Integer numberOutsideAcceptableDistance = null;
 	
 	
 	public Boolean getImprovedWaterPointFlag() {
@@ -570,5 +571,23 @@ public class AccessPointDto extends BaseDto {
 
 	public List<AccessPointScoreDetailDto> getApScoreDetailList() {
 		return apScoreDetailList;
+	}
+
+	public void setNumberWithinAcceptableDistance(
+			Integer numberWithinAcceptableDistance) {
+		this.numberWithinAcceptableDistance = numberWithinAcceptableDistance;
+	}
+
+	public Integer getNumberWithinAcceptableDistance() {
+		return numberWithinAcceptableDistance;
+	}
+
+	public void setNumberOutsideAcceptableDistance(
+			Integer numberOutsideAcceptableDistance) {
+		this.numberOutsideAcceptableDistance = numberOutsideAcceptableDistance;
+	}
+
+	public Integer getNumberOutsideAcceptableDistance() {
+		return numberOutsideAcceptableDistance;
 	}
 }

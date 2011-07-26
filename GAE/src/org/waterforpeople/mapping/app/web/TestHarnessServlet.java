@@ -185,6 +185,23 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("setupTestUser".equals(action)) {
 			setupTestUser();
+		} else if ("testDistanceRule".equals(action)) {
+			DeleteObjectUtil dou = new DeleteObjectUtil();
+			dou.deleteAllObjects("AccessPoint");
+			AccessPointTest apt = new AccessPointTest();
+			apt.loadWPDistanceTestData(resp);
+			apt.loadHHDistanceTestData(resp);
+			AccessPointDao apDao = new AccessPointDao();
+			List<AccessPoint> apList = apDao.list("all");
+			AccessPointHelper aph = new AccessPointHelper();
+			for(AccessPoint ap: apList){
+				aph.computeDistanceRule(ap);
+			}
+			try {
+				resp.getWriter().println("Completed test distance rule");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else if ("setupDevEnv".equals(action)) {
 			try {
 				DeleteObjectUtil dou = new DeleteObjectUtil();
@@ -1239,14 +1256,14 @@ public class TestHarnessServlet extends HttpServlet {
 			queue.add(options);
 		} else if ("rescoreap".equals(action)) {
 			TaskOptions options = TaskOptions.Builder
-			.withUrl("/app_worker/dataprocessor")
-			.param(DataProcessorRequest.ACTION_PARAM,
-					DataProcessorRequest.RESCORE_AP_ACTION)
-			.param(DataProcessorRequest.COUNTRY_PARAM,
-					req.getParameter("country"));
-	com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-			.getDefaultQueue();
-	queue.add(options);
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RESCORE_AP_ACTION)
+					.param(DataProcessorRequest.COUNTRY_PARAM,
+							req.getParameter("country"));
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
 		} else if ("deleteSurveyResponses".equals(action)) {
 			if (req.getParameter("surveyId") == null) {
 				try {
@@ -1459,7 +1476,8 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 
 		} else if ("testnotifhelper".equals(action)) {
-			NotificationHelper helper = new NotificationHelper("rawDataReport",null);
+			NotificationHelper helper = new NotificationHelper("rawDataReport",
+					null);
 			helper.execute();
 		} else if ("testremotemap".equals(action)) {
 			createDevice("12345", 40.78, -73.95);

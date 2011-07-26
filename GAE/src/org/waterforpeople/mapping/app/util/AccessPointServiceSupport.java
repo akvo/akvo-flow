@@ -80,6 +80,8 @@ public class AccessPointServiceSupport {
 		apDto.setSub4(apCanonical.getSub4());
 		apDto.setSub5(apCanonical.getSub5());
 		apDto.setSub6(apCanonical.getSub6());
+		apDto.setNumberWithinAcceptableDistance(apCanonical.getNumberWithinAcceptableDistance());
+		apDto.setNumberOutsideAcceptableDistance(apCanonical.getNumberOutsideAcceptableDistance());
 
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
@@ -207,6 +209,8 @@ public class AccessPointServiceSupport {
 		accessPoint.setWaterForPeopleRole(apDto.getWaterForPeopleRole());
 		accessPoint.setWhoRepairsPoint(apDto.getWhoRepairsPoint());
 		accessPoint.setInstitutionName(apDto.getInstitutionName());
+		accessPoint.setNumberWithinAcceptableDistance(apDto.getNumberWithinAcceptableDistance());
+		accessPoint.setNumberOutsideAcceptableDistance(apDto.getNumberOutsideAcceptableDistance());
 
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
