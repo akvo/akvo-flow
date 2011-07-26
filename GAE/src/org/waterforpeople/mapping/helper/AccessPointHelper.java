@@ -15,11 +15,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.operation.TransformException;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.AccessPointScoreDetailDao;
@@ -49,7 +44,6 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.vividsolutions.jts.geom.Coordinate;
 
 public class AccessPointHelper {
 
