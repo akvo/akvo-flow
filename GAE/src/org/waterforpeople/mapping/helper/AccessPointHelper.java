@@ -1078,15 +1078,6 @@ public class AccessPointHelper {
 	}
 
 	public Double computeDistance(AccessPoint start, AccessPoint end) {
-//		Coordinate apWater = new Coordinate(start.getLongitude(),
-//				start.getLatitude());
-//		Coordinate apHH = new Coordinate(end.getLongitude(), end.getLatitude());
-
-		// Double distance = JTS.orthodromicDistance(apWater, apHH,
-		// CRS.decode("EPSG:4326"));
-		// Double distance = JTS.orthodromicDistance(apWater,
-		// apHH,org.geotools.referencing.crs.DefaultGeocentricCRS.CARTESIAN);
-
 		Double distance = null;
 		final double DEGREES_TO_RADIANS = (Math.PI / 180.0);
 
@@ -1098,8 +1089,10 @@ public class AccessPointHelper {
 		double p2 = Math.cos(start.getLatitude()) * Math.sin(start.getLongitude()) * Math.cos(end.getLatitude())
 				* Math.sin(end.getLongitude());
 		double p3 = Math.sin(start.getLatitude()) * Math.sin(end.getLatitude());
-
+		
 		distance= (Math.acos(p1 + p2 + p3) * EARTH_RADIUS);
+		//Return distance in meters
+		distance = distance *1000;
 		return distance;
 
 	}
