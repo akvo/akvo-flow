@@ -404,7 +404,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 					s = surveyDao.getById(instance.getSurveyId());
 					surveyMap.put(instance.getSurveyId(), s);
 				}
-				if (s != null && s.getRequireApproval()) {
+				if (s != null && s.getRequireApproval()!=null && s.getRequireApproval()) {
 					// if the survey requires approval, don't run any of the
 					// processors
 					instance.setApprovedFlag("False");
