@@ -42,6 +42,7 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
  * 
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
+	private static final int MAX_COL = 255;
 	private static final String IMAGE_PREFIX_OPT = "imgPrefix";
 	private static final String LOCALE_OPT = "locale";
 	private static final String TYPE_OPT = "exportMode";
@@ -50,7 +51,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 	private static final String SDCARD_PREFIX = "/sdcard/";
 
-	private static final Map<String, String> REPORT_HEADER;	
+	private static final Map<String, String> REPORT_HEADER;
 	private static final Map<String, String> FREQ_LABEL;
 	private static final Map<String, String> PCT_LABEL;
 	private static final Map<String, String> SUMMARY_LABEL;
@@ -204,11 +205,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private int currentStep;
 	private int maxSteps;
 	private boolean isFullReport;
+	private boolean hasWrittenOutput;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase, Map<String, String> options) {
 		processOptions(options);
+		hasWrittenOutput = false;
 		progressDialog = new ProgressDialog(maxSteps, locale);
 		progressDialog.setVisible(true);
 		currentStep = 1;
@@ -238,7 +241,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 				SummaryModel model = fetchAndWriteRawData(
 						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-						serverBase, questionMap, wb, isFullReport);
+						serverBase, questionMap, wb, isFullReport, fileName);
 				if (isFullReport) {
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 							WRITING_SUMMARY.get(locale)));
@@ -252,10 +255,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 						writeSummaryReport(questionMap, model, sector, wb);
 					}
 				}
-				FileOutputStream fileOut = new FileOutputStream(fileName);
-				wb.setActiveSheet(isFullReport ? 1 : 0);
-				wb.write(fileOut);
-				fileOut.close();
+				if (!hasWrittenOutput) {
+					FileOutputStream fileOut = new FileOutputStream(fileName);
+					wb.setActiveSheet(isFullReport ? 1 : 0);
+					wb.write(fileOut);
+					fileOut.close();
+				}
 				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 						COMPLETE.get(locale)));
 			} else {
@@ -275,27 +280,34 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	protected SummaryModel fetchAndWriteRawData(String surveyId,
 			String serverBase,
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-			HSSFWorkbook wb, boolean generateSummary) throws Exception {
+			HSSFWorkbook wb, boolean generateSummary, File outputFile)
+			throws Exception {
 		SummaryModel model = new SummaryModel();
 
 		HSSFSheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
-		Object[] results = createRawDataHeader(wb, sheet, questionMap);
-		List<String> questionIdList = (List<String>) results[0];
-		List<String> unsummarizable = (List<String>) results[1];
 		int curRow = 1;
+		int questionCount = 0;
 		Map<String, String> collapseIdMap = new HashMap<String, String>();
 		Map<String, String> nameToIdMap = new HashMap<String, String>();
 		for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
 				.entrySet()) {
 			for (QuestionDto q : groupEntry.getValue()) {
-				if (q.getCollapseable()!=null && q.getCollapseable()) {
+				if (q.getCollapseable() != null && q.getCollapseable()) {
 					if (collapseIdMap.get(q.getText()) == null) {
 						collapseIdMap.put(q.getText(), q.getKeyId().toString());
 					}
 					nameToIdMap.put(q.getKeyId().toString(), q.getText());
 				}
+				questionCount++;
 			}
 		}
+		boolean doWrite = true;
+		if (questionCount > MAX_COL - 3) {
+			doWrite = false;
+		}
+		Object[] results = createRawDataHeader(wb, sheet, questionMap, doWrite);
+		List<String> questionIdList = (List<String>) results[0];
+		List<String> unsummarizable = (List<String>) results[1];
 
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCES.get(locale)));
@@ -306,38 +318,45 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
 			String instanceId = instanceEntry.getKey();
 			String dateString = instanceEntry.getValue();
-			HSSFRow row = getRow(curRow++, sheet);
+			HSSFRow row = null;
+			if (doWrite) {
+				row = getRow(curRow++, sheet);
+			}
 			Map<String, String> responseMap = BulkDataServiceClient
 					.fetchQuestionResponses(instanceId, serverBase);
 			int col = 0;
 
 			if (responseMap != null && responseMap.size() > 0) {
-				createCell(row, col++, instanceId, null);
-				createCell(row, col++, dateString, null);
 				SurveyInstanceDto dto = BulkDataServiceClient
 						.findSurveyInstance(Long.parseLong(instanceId.trim()),
 								serverBase);
-				if (dto != null) {
-					String name = dto.getSubmitterName();
-					if (name != null) {
-						createCell(row, col++, dto.getSubmitterName()
-								.replaceAll("\n", " ").trim(), null);
-					} else {
-						createCell(row, col++, " ", null);
-					}
-				}
-				for (String q : questionIdList) {
-					String val = responseMap.get(q);
-					if (val != null) {
-						if (val.contains(SDCARD_PREFIX)) {
-							val = imagePrefix
-									+ val.substring(val.indexOf(SDCARD_PREFIX)
-											+ SDCARD_PREFIX.length());
+				if (doWrite) {
+					createCell(row, col++, instanceId, null);
+					createCell(row, col++, dateString, null);
+					if (dto != null) {
+						String name = dto.getSubmitterName();
+						if (name != null) {
+							createCell(row, col++, dto.getSubmitterName()
+									.replaceAll("\n", " ").trim(), null);
+						} else {
+							createCell(row, col++, " ", null);
 						}
-						createCell(row, col++,
-								val.replaceAll("\n", " ").trim(), null);
-					} else {
-						createCell(row, col++, "", null);
+					}
+
+					for (String q : questionIdList) {
+						String val = responseMap.get(q);
+						if (val != null) {
+							if (val.contains(SDCARD_PREFIX)) {
+								val = imagePrefix
+										+ val.substring(val
+												.indexOf(SDCARD_PREFIX)
+												+ SDCARD_PREFIX.length());
+							}
+							createCell(row, col++, val.replaceAll("\n", " ")
+									.trim(), null);
+						} else {
+							createCell(row, col++, "", null);
+						}
 					}
 				}
 
@@ -364,6 +383,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				}
 			}
 		}
+
+		if (!doWrite && !isFullReport) {
+			// if this isn't the comprehensive report, then just write a csv
+			RawDataExporter rde = new RawDataExporter();
+			Map<String, String> criteria = new HashMap<String, String>();
+			criteria.put(RawDataExporter.SURVEY_ID, surveyId);
+			rde.export(criteria, outputFile, serverBase, null);
+			hasWrittenOutput = true;
+		}
+
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				WRITING_RAW_DATA.get(locale)));
 		return model;
@@ -380,11 +409,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 *         question Ids (i.e. those that aren't OPTION or NUMBER questions)
 	 */
 	private Object[] createRawDataHeader(HSSFWorkbook wb, HSSFSheet sheet,
-			Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
-		HSSFRow row = getRow(0, sheet);
-		createCell(row, 0, INSTANCE_LABEL.get(locale), headerStyle);
-		createCell(row, 1, SUB_DATE_LABEL.get(locale), headerStyle);
-		createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
+			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+			boolean doWrite) {
+		HSSFRow row = null;
+		if (doWrite) {
+			row = getRow(0, sheet);
+			createCell(row, 0, INSTANCE_LABEL.get(locale), headerStyle);
+			createCell(row, 1, SUB_DATE_LABEL.get(locale), headerStyle);
+			createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
+		}
 		List<String> questionIdList = new ArrayList<String>();
 		List<String> nonSummarizableList = new ArrayList<String>();
 
@@ -394,15 +427,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (questionMap.get(group) != null) {
 					for (QuestionDto q : questionMap.get(group)) {
 						questionIdList.add(q.getKeyId().toString());
-						createCell(
-								row,
-								offset++,
-								q.getKeyId().toString()
-										+ "|"
-										+ getLocalizedText(q.getText(),
-												q.getTranslationMap())
-												.replaceAll("\n", "").trim(),
-								headerStyle);
+						if (doWrite) {
+							createCell(
+									row,
+									offset++,
+									q.getKeyId().toString()
+											+ "|"
+											+ getLocalizedText(q.getText(),
+													q.getTranslationMap())
+													.replaceAll("\n", "")
+													.trim(), headerStyle);
+						}
 						if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
 								.getType())) {
 							nonSummarizableList.add(q.getKeyId().toString());
@@ -437,7 +472,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			createCell(row, 0, sector + " " + REPORT_HEADER.get(locale),
 					headerStyle);
 		}
-		for(QuestionGroupDto group: orderedGroupList){
+		for (QuestionGroupDto group : orderedGroupList) {
 			if (questionMap.get(group) != null) {
 				for (QuestionDto question : questionMap.get(group)) {
 					if (!(QuestionType.OPTION == question.getType() || QuestionType.NUMBER == question
@@ -446,7 +481,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					} else {
 						if (summaryModel.getResponseCountsForQuestion(
 								question.getKeyId(), sector).size() == 0) {
-							//if there is no data, skip the question
+							// if there is no data, skip the question
 							continue;
 						}
 					}
