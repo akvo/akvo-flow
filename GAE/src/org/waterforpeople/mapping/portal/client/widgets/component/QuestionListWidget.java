@@ -104,7 +104,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		int i = 0;
 		if (questionList != null) {
 			for (QuestionDto q : questionList) {
-				Label l = createListEntry(q.getText());
+				Label l = createListEntry((q.getOrder()!=null?q.getOrder():"")+": "+q.getText());
 				HorizontalPanel bp = new HorizontalPanel();
 
 				Image moveUp = new Image("/images/greenuparrow.png");
@@ -229,8 +229,8 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				break;
 			}
 		}
-		widgetToMove.setText(targetQuestion.getText());
-		targetWidget.setText(qToMove.getText());
+		widgetToMove.setText((targetQuestion.getOrder()!=null?targetQuestion.getOrder():"")+": "+targetQuestion.getText());
+		targetWidget.setText((qToMove.getOrder()!=null?qToMove.getOrder():"")+": "+qToMove.getText());
 		questionRowMap.put(qToMove.getKeyId(), targetRow);
 		questionRowMap.put(targetQuestion.getKeyId(), rowToMove);
 
