@@ -46,7 +46,9 @@ public class AccessPointDto extends BaseDto {
 	private String locationTypeString = null;
 	private String waterForPeopleRole = null;
 	private String currentProblem = null;
+	private Boolean currentProblemFlag = null;
 	private String currentTreatment = null;
+	private Boolean currentTreatmentFlag = null;
 	private Boolean waterAvailableDayVisitFlag = null;
 	private Double ppmFecalColiform = null;
 	private String reasonForInadequateWaterSupply=null;
@@ -65,6 +67,8 @@ public class AccessPointDto extends BaseDto {
 	private String sub6;
 	private Integer numberWithinAcceptableDistance = null;
 	private Integer numberOutsideAcceptableDistance = null;
+	private Integer numberOfUsers= null;
+	private Integer numberOfLitersPerPersonPerDay = null;
 	
 	
 	public Boolean getImprovedWaterPointFlag() {
@@ -589,5 +593,38 @@ public class AccessPointDto extends BaseDto {
 
 	public Integer getNumberOutsideAcceptableDistance() {
 		return numberOutsideAcceptableDistance;
+	}
+
+	public void setCurrentProblemFlag(Boolean currentProblemFlag) {
+		this.currentProblemFlag = currentProblemFlag;
+	}
+
+	public Boolean getCurrentProblemFlag() {
+		return currentProblemFlag;
+	}
+
+	public void setCurrentTreatmentFlag(Boolean currentTreatmentFlag) {
+		this.currentTreatmentFlag = currentTreatmentFlag;
+	}
+
+	public Boolean getCurrentTreatmentFlag() {
+		return currentTreatmentFlag;
+	}
+
+	public void setNumberOfUsers(Integer numberOfUsers) {
+		this.numberOfUsers = numberOfUsers;
+	}
+
+	public Integer getNumberOfUsers() {
+		return numberOfUsers;
+	}
+
+	public void setNumberOfLitersPerPersonPerDay(
+			Integer numberOfLitersPerPersonPerDay) {
+		this.numberOfLitersPerPersonPerDay = numberOfLitersPerPersonPerDay;
+	}
+
+	public Integer getNumberOfLitersPerPersonPerDay() {
+		return numberOfLitersPerPersonPerDay;
 	}
 }

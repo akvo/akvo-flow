@@ -87,7 +87,6 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private Boolean supportNewUsers = null;
 	@MappableField(displayName = "Positive Financial Balance")
 	private Boolean positiveBalance=null;
-
 	@MappableField(displayName = "Point Type")
 	@Persistent
 	private AccessPointType pointType;
@@ -128,8 +127,12 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String locationTypeString = null;
 	@MappableField(displayName = "Water For People Role")
 	private String waterForPeopleRole = null;
+	@MappableField(displayName="Current Problem Flag")
+	private Boolean currentProblemFlag = null;
 	@MappableField(displayName = "Current Problem")
 	private String currentProblem = null;
+	@MappableField(displayName="Current Treatment Flag")
+	private Boolean currentTreatmentFlag = null;
 	@MappableField(displayName = "Current Treatment")
 	private String currentTreatment = null;
 	@MappableField(displayName = "Water Available Day of Visit")
@@ -148,9 +151,9 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String qualityDescription = null;
 	@MappableField(displayName = "Access Point Quantity Description")
 	private String quantityDescription = null;
-	@MappableField(displayName = "Is improved waterpoint")
+	@MappableField(displayName = "Is improved Waterpoint Flag")
 	private Boolean improvedWaterPointFlag = null;
-	@MappableField(displayName = "collectTariff")
+	@MappableField(displayName = "Collect Tariff Flag")
 	private Boolean collectTariffFlag = null;
 	private Integer score = null;
 	private Integer sustainabilityScore = null;
@@ -164,8 +167,14 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String sub6 = null;
 	private Long surveyInstanceId = null;
 	private Long surveyId = null;
+	@MappableField(displayName="Number of Households Within Acceptable Distance")
 	private Integer numberWithinAcceptableDistance = 0;
+	@MappableField(displayName="Number of Households Outside Acceptable Distance")
 	private Integer numberOutsideAcceptableDistance = 0;
+	@MappableField(displayName="Number of Users of Point")
+	private Integer numberOfUsers= null;
+	@MappableField(displayName="Number of liters per person per day")
+	private Integer numberOfLitersPerPersonPerDay = null;
 	
 	@NotPersistent
 	private List<AccessPointScoreDetail> apScoreDetailList = null;
@@ -889,6 +898,39 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public Integer getNumberOutsideAcceptableDistance() {
 		return numberOutsideAcceptableDistance;
+	}
+
+	public void setCurrentProblemFlag(Boolean currentProblemFlag) {
+		this.currentProblemFlag = currentProblemFlag;
+	}
+
+	public Boolean getCurrentProblemFlag() {
+		return currentProblemFlag;
+	}
+
+	public void setCurrentTreatmentFlag(Boolean currentTreatmentFlag) {
+		this.currentTreatmentFlag = currentTreatmentFlag;
+	}
+
+	public Boolean getCurrentTreatmentFlag() {
+		return currentTreatmentFlag;
+	}
+
+	public void setNumberOfUsers(Integer numberOfUsers) {
+		this.numberOfUsers = numberOfUsers;
+	}
+
+	public Integer getNumberOfUsers() {
+		return numberOfUsers;
+	}
+
+	public void setNumberOfLitersPerPersonPerDay(
+			Integer numberOfLitersPerPersonPerDay) {
+		this.numberOfLitersPerPersonPerDay = numberOfLitersPerPersonPerDay;
+	}
+
+	public Integer getNumberOfLitersPerPersonPerDay() {
+		return numberOfLitersPerPersonPerDay;
 	}
 
 }

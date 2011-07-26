@@ -80,8 +80,15 @@ public class AccessPointServiceSupport {
 		apDto.setSub4(apCanonical.getSub4());
 		apDto.setSub5(apCanonical.getSub5());
 		apDto.setSub6(apCanonical.getSub6());
-		apDto.setNumberWithinAcceptableDistance(apCanonical.getNumberWithinAcceptableDistance());
-		apDto.setNumberOutsideAcceptableDistance(apCanonical.getNumberOutsideAcceptableDistance());
+		apDto.setNumberWithinAcceptableDistance(apCanonical
+				.getNumberWithinAcceptableDistance());
+		apDto.setNumberOutsideAcceptableDistance(apCanonical
+				.getNumberOutsideAcceptableDistance());
+		apDto.setCurrentProblemFlag(apCanonical.getCurrentProblemFlag());
+		apDto.setCurrentTreatmentFlag(apCanonical.getCurrentTreatmentFlag());
+		apDto.setNumberOfUsers(apCanonical.getNumberOfUsers());
+		apDto.setNumberOfLitersPerPersonPerDay(apCanonical
+				.getNumberOfLitersPerPersonPerDay());
 
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
@@ -209,8 +216,15 @@ public class AccessPointServiceSupport {
 		accessPoint.setWaterForPeopleRole(apDto.getWaterForPeopleRole());
 		accessPoint.setWhoRepairsPoint(apDto.getWhoRepairsPoint());
 		accessPoint.setInstitutionName(apDto.getInstitutionName());
-		accessPoint.setNumberWithinAcceptableDistance(apDto.getNumberWithinAcceptableDistance());
-		accessPoint.setNumberOutsideAcceptableDistance(apDto.getNumberOutsideAcceptableDistance());
+		accessPoint.setNumberWithinAcceptableDistance(apDto
+				.getNumberWithinAcceptableDistance());
+		accessPoint.setNumberOutsideAcceptableDistance(apDto
+				.getNumberOutsideAcceptableDistance());
+		accessPoint.setCurrentProblemFlag(apDto.getCurrentProblemFlag());
+		accessPoint.setCurrentTreatmentFlag(apDto.getCurrentTreatmentFlag());
+		accessPoint.setNumberOfUsers(apDto.getNumberOfUsers());
+		accessPoint.setNumberOfLitersPerPersonPerDay(apDto
+				.getNumberOfLitersPerPersonPerDay());
 
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);

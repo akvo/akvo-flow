@@ -911,6 +911,14 @@ public class AccessPointHelper {
 					score = score + item.getNegativeScore();
 					scoreItemMessage = item.getNegativeMessage();
 				}
+			} else if (criteriaType.equals("Distance")) {
+				// ToDo implement
+				if (ap.getNumberOutsideAcceptableDistance() == 0) {
+					score = score + item.getPositiveScore();
+					scoreItemMessage = item.getPositiveMessage();
+				} else {
+					scoreItemMessage = item.getNegativeMessage();
+				}
 			}
 		}
 		return new AccessPointScoreComputationItem(score, scoreItemMessage);
@@ -1016,7 +1024,18 @@ public class AccessPointHelper {
 
 	public void computeDistanceRule(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
+		Integer targetDistance = null;
 		if (ap != null) {
+			StandardScoringDao ssDao = new StandardScoringDao();
+			List<StandardScoring> ssList = ssDao
+					.listLocalDistanceStandardScoringForAccessPoint(ap);
+
+			if (ssList != null && !ssList.isEmpty()) {
+				StandardScoring ssItem = ssList.get(0);
+				if (ssItem != null && ssItem.getPositiveCriteria() != null)
+					targetDistance = Integer.parseInt(ssItem
+							.getPositiveCriteria());
+			}
 			if (ap.getTypeTechnologyString().equals(
 					"Gravity Fed System with Household Taps")) {
 				// ToDo: check against tech type of HH, but need to know which
@@ -1032,7 +1051,7 @@ public class AccessPointHelper {
 				if (apList != null && !apList.isEmpty()) {
 					for (AccessPoint hh : apList) {
 						Double distance = computeDistance(ap, hh);
-						if (distance !=null && distance < 500) {
+						if (distance != null && distance < 500) {
 							ap.setNumberWithinAcceptableDistance(ap
 									.getNumberWithinAcceptableDistance() + 1);
 						} else {
@@ -1056,7 +1075,7 @@ public class AccessPointHelper {
 						minDistanceWaterPoint = wp;
 					}
 				}
-				if (minDistance!=null && minDistance < 500) {
+				if (minDistance != null && minDistance < 500) {
 					minDistanceWaterPoint
 							.setNumberWithinAcceptableDistance(minDistanceWaterPoint
 									.getNumberWithinAcceptableDistance() + 1);
@@ -1080,13 +1099,14 @@ public class AccessPointHelper {
 		double p1 = Math.cos(start.getLatitude())
 				* Math.cos(start.getLongitude()) * Math.cos(end.getLatitude())
 				* Math.cos(end.getLatitude());
-		double p2 = Math.cos(start.getLatitude()) * Math.sin(start.getLongitude()) * Math.cos(end.getLatitude())
+		double p2 = Math.cos(start.getLatitude())
+				* Math.sin(start.getLongitude()) * Math.cos(end.getLatitude())
 				* Math.sin(end.getLongitude());
 		double p3 = Math.sin(start.getLatitude()) * Math.sin(end.getLatitude());
-		
-		distance= (Math.acos(p1 + p2 + p3) * EARTH_RADIUS);
-		//Return distance in meters
-		distance = distance *1000;
+
+		distance = (Math.acos(p1 + p2 + p3) * EARTH_RADIUS);
+		// Return distance in meters
+		distance = distance * 1000;
 		return distance;
 
 	}

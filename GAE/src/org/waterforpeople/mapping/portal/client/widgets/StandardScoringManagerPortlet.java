@@ -510,8 +510,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				final Integer row = Integer.parseInt(((Button) event.getSource())
-						.getTitle());
+				final Integer row = Integer.parseInt(((Button) event
+						.getSource()).getTitle());
 				StandardScoringDto ssDto = formStandardScoringDto(row);
 				svc.save(ssDto, new AsyncCallback<StandardScoringDto>() {
 					@Override
@@ -522,7 +522,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					@Override
 					public void onSuccess(StandardScoringDto result) {
 						Grid grid = scoringTable.getGrid();
-						TextBox id = (TextBox)grid.getWidget(row, 18);
+						TextBox id = (TextBox) grid.getWidget(row, 18);
 						id.setText(result.getKeyId().toString());
 					}
 				});
@@ -549,16 +549,21 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					public void onSuccess(Object result) {
 						Grid grid = scoringTable.getGrid();
 						grid.removeRow(selectedRow);
-						
-						for(int i=selectedRow;i<grid.getRowCount();i++){
-							HorizontalPanel buttonPanel = (HorizontalPanel)grid.getWidget(i, 19);
-							Button deleteButton = (Button)buttonPanel.getWidget(1);
+
+						for (int i = selectedRow; i < grid.getRowCount(); i++) {
+							HorizontalPanel buttonPanel = (HorizontalPanel) grid
+									.getWidget(i, 19);
+							Button deleteButton = (Button) buttonPanel
+									.getWidget(1);
 							Long keyId = 0L;
-							TextBox keyIdBox = (TextBox)grid.getWidget(i,18);
-							if(keyIdBox!=null&&keyIdBox.getText().trim().length()>0){
-								keyId = Long.parseLong(keyIdBox.getText().trim());
+							TextBox keyIdBox = (TextBox) grid.getWidget(i, 18);
+							if (keyIdBox != null
+									&& keyIdBox.getText().trim().length() > 0) {
+								keyId = Long.parseLong(keyIdBox.getText()
+										.trim());
 							}
-							deleteButton.setTitle(String.valueOf(i)+"|"+keyId);
+							deleteButton.setTitle(String.valueOf(i) + "|"
+									+ keyId);
 						}
 						selectedRow = null;
 					}
@@ -696,6 +701,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			} else if (criteriaType.getSelectedIndex() == 3) {
 				// true/false
 				item.setCriteriaType("Boolean");
+			}else if(criteriaType.getSelectedIndex()==4){
+				item.setCriteriaType("Distance");
 			}
 		}
 		TextBox positiveCriteria = (TextBox) grid.getWidget(row, 7);
@@ -781,6 +788,11 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			operators.addItem("==");
 			operators.addItem(">=");
 			operators.addItem(">");
+		} else if (type.equals("Distance")) {
+			operators.addItem("<=");
+			operators.addItem("<");
+			operators.addItem(">=");
+			operators.addItem(">");
 		} else {
 			operators.addItem("!=");
 			operators.addItem("==");
@@ -810,6 +822,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		criteriaType.addItem("Text", "String");
 		criteriaType.addItem("Number", "Number");
 		criteriaType.addItem("True/False", "Boolean");
+		criteriaType.addItem("Distance", "Distance");
 		criteriaType.setSelectedIndex(0);
 		criteriaType.setTitle(row + "|" + col);
 		if (item != null && item.getCriteriaType() != null) {
@@ -848,11 +861,17 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 								posOper);
 						loadCriteriaOperators(grid, row, column + 6, "Number",
 								negOper);
-					} else if(target.getSelectedIndex() == 3) {
+					} else if (target.getSelectedIndex() == 3
+							) {
 						loadCriteriaOperators(grid, row, column + 2,
 								"NotNumber", posOper);
 						loadCriteriaOperators(grid, row, column + 6,
 								"NotNumber", negOper);
+					}else if(target.getSelectedIndex() == 4){
+						loadCriteriaOperators(grid, row, column + 2,
+								"Distance", posOper);
+						loadCriteriaOperators(grid, row, column + 6,
+								"Distance", negOper);
 					}
 				}
 			}

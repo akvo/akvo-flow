@@ -70,6 +70,38 @@ public class StandardScoringDao extends BaseDAO<StandardScoring> {
 				.executeWithMap(paramMap);
 		return results;
 	}
+	
+	public List<StandardScoring> listLocalDistanceStandardScoringForAccessPoint(
+			AccessPoint ap) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("pointType", filterString, paramString, "String",
+				ap.getPointType(), paramMap);
+		appendNonNullParam("mapToObject", filterString, paramString, "String",
+				"AccessPoint", paramMap);
+		appendNonNullParam("criteriaType", filterString, paramString, "String",
+				"Distance", paramMap);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				ap.getCountryCode(), paramMap);
+//		ToDo: need to think about how to use the subvalue	
+//		appendNonNullParam("subValue", filterString, paramString, "String",
+//				ap.getSub1(), paramMap);
+
+		
+		
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		List<StandardScoring> results = (List<StandardScoring>) query
+				.executeWithMap(paramMap);
+		return results;
+	}
 
 	public List<StandardScoring> listLocalStandardScoringForAccessPoint(
 			Long scoreBucketId, AccessPoint ap) {
