@@ -186,11 +186,11 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("setupTestUser".equals(action)) {
 			setupTestUser();
 		} else if ("testDistanceRule".equals(action)) {
-			DeleteObjectUtil dou = new DeleteObjectUtil();
-			dou.deleteAllObjects("AccessPoint");
-			AccessPointTest apt = new AccessPointTest();
-			apt.loadWPDistanceTestData(resp);
-			apt.loadHHDistanceTestData(resp);
+//			DeleteObjectUtil dou = new DeleteObjectUtil();
+//			dou.deleteAllObjects("AccessPoint");
+//			AccessPointTest apt = new AccessPointTest();
+//			apt.loadWPDistanceTestData(resp);
+//			apt.loadHHDistanceTestData(resp);
 			AccessPointDao apDao = new AccessPointDao();
 			List<AccessPoint> apList = apDao.list("all");
 			AccessPointHelper aph = new AccessPointHelper();

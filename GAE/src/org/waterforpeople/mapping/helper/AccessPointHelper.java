@@ -10,10 +10,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1025,8 +1023,10 @@ public class AccessPointHelper {
 	public void computeDistanceRule(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
 		if (ap != null) {
-			if (ap.getTypeTechnologyString().equals("Gravity Fed System with Household Taps")) {
-				//ToDo: check against tech type of HH, but need to know which question
+			if (ap.getTypeTechnologyString().equals(
+					"Gravity Fed System with Household Taps")) {
+				// ToDo: check against tech type of HH, but need to know which
+				// question
 				ap.setNumberWithinAcceptableDistance(ap
 						.getNumberWithinAcceptableDistance() + 1);
 			} else if (ap.getPointType().equals(
@@ -1038,7 +1038,7 @@ public class AccessPointHelper {
 				if (apList != null && !apList.isEmpty()) {
 					for (AccessPoint hh : apList) {
 						Double distance = computeDistance(ap, hh);
-						if (distance < 500) {
+						if (distance !=null && distance < 500) {
 							ap.setNumberWithinAcceptableDistance(ap
 									.getNumberWithinAcceptableDistance() + 1);
 						} else {
@@ -1062,7 +1062,7 @@ public class AccessPointHelper {
 						minDistanceWaterPoint = wp;
 					}
 				}
-				if (minDistance < 500) {
+				if (minDistance!=null && minDistance < 500) {
 					minDistanceWaterPoint
 							.setNumberWithinAcceptableDistance(minDistanceWaterPoint
 									.getNumberWithinAcceptableDistance() + 1);
@@ -1078,24 +1078,29 @@ public class AccessPointHelper {
 	}
 
 	public Double computeDistance(AccessPoint start, AccessPoint end) {
-		Coordinate apWater = new Coordinate(start.getLongitude(),
-				start.getLatitude());
-		Coordinate apHH = new Coordinate(end.getLongitude(), end.getLatitude());
+//		Coordinate apWater = new Coordinate(start.getLongitude(),
+//				start.getLatitude());
+//		Coordinate apHH = new Coordinate(end.getLongitude(), end.getLatitude());
 
-		try {
-			Double distance = JTS.orthodromicDistance(apWater, apHH,
-					CRS.decode("EPSG:4326"));
-			return distance;
-		} catch (NoSuchAuthorityCodeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		// Double distance = JTS.orthodromicDistance(apWater, apHH,
+		// CRS.decode("EPSG:4326"));
+		// Double distance = JTS.orthodromicDistance(apWater,
+		// apHH,org.geotools.referencing.crs.DefaultGeocentricCRS.CARTESIAN);
+
+		Double distance = null;
+		final double DEGREES_TO_RADIANS = (Math.PI / 180.0);
+
+		// Mean radius in KM
+		final double EARTH_RADIUS = 6371.0;
+		double p1 = Math.cos(start.getLatitude())
+				* Math.cos(start.getLongitude()) * Math.cos(end.getLatitude())
+				* Math.cos(end.getLatitude());
+		double p2 = Math.cos(start.getLatitude()) * Math.sin(start.getLongitude()) * Math.cos(end.getLatitude())
+				* Math.sin(end.getLongitude());
+		double p3 = Math.sin(start.getLatitude()) * Math.sin(end.getLatitude());
+
+		distance= (Math.acos(p1 + p2 + p3) * EARTH_RADIUS);
+		return distance;
+
 	}
 }
