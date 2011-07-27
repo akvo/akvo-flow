@@ -13,15 +13,18 @@ import java.util.Map.Entry;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFPatriarch;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -197,7 +200,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 	}
 
-	private HSSFCellStyle headerStyle;
+	private CellStyle headerStyle;
 	private String locale;
 	private String imagePrefix;
 	private String serverBase;
@@ -205,13 +208,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private int currentStep;
 	private int maxSteps;
 	private boolean isFullReport;
-	private boolean hasWrittenOutput;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase, Map<String, String> options) {
 		processOptions(options);
-		hasWrittenOutput = false;
+
 		progressDialog = new ProgressDialog(maxSteps, locale);
 		progressDialog.setVisible(true);
 		currentStep = 1;
@@ -231,12 +233,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			} else {
 				currentStep++;
 			}
+			Workbook wb = null;
 			if (questionMap.size() > 0) {
-				HSSFWorkbook wb = new HSSFWorkbook();
+				if (questionMap.size() > MAX_COL - 3) {
+					wb = new HSSFWorkbook();
+				} else {
+					wb = new XSSFWorkbook();
+				}
 				headerStyle = wb.createCellStyle();
-				headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-				HSSFFont headerFont = wb.createFont();
-				headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+				headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
+				Font headerFont = wb.createFont();
+				headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
 				headerStyle.setFont(headerFont);
 
 				SummaryModel model = fetchAndWriteRawData(
@@ -255,12 +262,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 						writeSummaryReport(questionMap, model, sector, wb);
 					}
 				}
-				if (!hasWrittenOutput) {
-					FileOutputStream fileOut = new FileOutputStream(fileName);
-					wb.setActiveSheet(isFullReport ? 1 : 0);
-					wb.write(fileOut);
-					fileOut.close();
-				}
+
+				FileOutputStream fileOut = new FileOutputStream(fileName);
+				wb.setActiveSheet(isFullReport ? 1 : 0);
+				wb.write(fileOut);
+				fileOut.close();
+
 				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 						COMPLETE.get(locale)));
 			} else {
@@ -279,14 +286,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	@SuppressWarnings("unchecked")
 	protected SummaryModel fetchAndWriteRawData(String surveyId,
 			String serverBase,
-			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-			HSSFWorkbook wb, boolean generateSummary, File outputFile)
-			throws Exception {
+			Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
+			boolean generateSummary, File outputFile) throws Exception {
 		SummaryModel model = new SummaryModel();
 
-		HSSFSheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
+		Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
 		int curRow = 1;
-		int questionCount = 0;
+
 		Map<String, String> collapseIdMap = new HashMap<String, String>();
 		Map<String, String> nameToIdMap = new HashMap<String, String>();
 		for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
@@ -298,14 +304,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					}
 					nameToIdMap.put(q.getKeyId().toString(), q.getText());
 				}
-				questionCount++;
 			}
 		}
-		boolean doWrite = true;
-		if (questionCount > MAX_COL - 3) {
-			doWrite = false;
-		}
-		Object[] results = createRawDataHeader(wb, sheet, questionMap, doWrite);
+
+		Object[] results = createRawDataHeader(wb, sheet, questionMap);
 		List<String> questionIdList = (List<String>) results[0];
 		List<String> unsummarizable = (List<String>) results[1];
 
@@ -318,10 +320,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
 			String instanceId = instanceEntry.getKey();
 			String dateString = instanceEntry.getValue();
-			HSSFRow row = null;
-			if (doWrite) {
-				row = getRow(curRow++, sheet);
-			}
+			Row row = null;
+
+			row = getRow(curRow++, sheet);
+
 			Map<String, String> responseMap = BulkDataServiceClient
 					.fetchQuestionResponses(instanceId, serverBase);
 			int col = 0;
@@ -330,33 +332,31 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				SurveyInstanceDto dto = BulkDataServiceClient
 						.findSurveyInstance(Long.parseLong(instanceId.trim()),
 								serverBase);
-				if (doWrite) {
-					createCell(row, col++, instanceId, null);
-					createCell(row, col++, dateString, null);
-					if (dto != null) {
-						String name = dto.getSubmitterName();
-						if (name != null) {
-							createCell(row, col++, dto.getSubmitterName()
-									.replaceAll("\n", " ").trim(), null);
-						} else {
-							createCell(row, col++, " ", null);
-						}
-					}
 
-					for (String q : questionIdList) {
-						String val = responseMap.get(q);
-						if (val != null) {
-							if (val.contains(SDCARD_PREFIX)) {
-								val = imagePrefix
-										+ val.substring(val
-												.indexOf(SDCARD_PREFIX)
-												+ SDCARD_PREFIX.length());
-							}
-							createCell(row, col++, val.replaceAll("\n", " ")
-									.trim(), null);
-						} else {
-							createCell(row, col++, "", null);
+				createCell(row, col++, instanceId, null);
+				createCell(row, col++, dateString, null);
+				if (dto != null) {
+					String name = dto.getSubmitterName();
+					if (name != null) {
+						createCell(row, col++, dto.getSubmitterName()
+								.replaceAll("\n", " ").trim(), null);
+					} else {
+						createCell(row, col++, " ", null);
+					}
+				}
+
+				for (String q : questionIdList) {
+					String val = responseMap.get(q);
+					if (val != null) {
+						if (val.contains(SDCARD_PREFIX)) {
+							val = imagePrefix
+									+ val.substring(val.indexOf(SDCARD_PREFIX)
+											+ SDCARD_PREFIX.length());
 						}
+						createCell(row, col++,
+								val.replaceAll("\n", " ").trim(), null);
+					} else {
+						createCell(row, col++, "", null);
 					}
 				}
 
@@ -384,15 +384,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			}
 		}
 
-		if (!doWrite && !isFullReport) {
-			// if this isn't the comprehensive report, then just write a csv
-			RawDataExporter rde = new RawDataExporter();
-			Map<String, String> criteria = new HashMap<String, String>();
-			criteria.put(RawDataExporter.SURVEY_ID, surveyId);
-			rde.export(criteria, outputFile, serverBase, null);
-			hasWrittenOutput = true;
-		}
-
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				WRITING_RAW_DATA.get(locale)));
 		return model;
@@ -408,16 +399,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 *         element is a List of Strings representing all the non-sumarizable
 	 *         question Ids (i.e. those that aren't OPTION or NUMBER questions)
 	 */
-	private Object[] createRawDataHeader(HSSFWorkbook wb, HSSFSheet sheet,
-			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-			boolean doWrite) {
-		HSSFRow row = null;
-		if (doWrite) {
-			row = getRow(0, sheet);
-			createCell(row, 0, INSTANCE_LABEL.get(locale), headerStyle);
-			createCell(row, 1, SUB_DATE_LABEL.get(locale), headerStyle);
-			createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
-		}
+	private Object[] createRawDataHeader(Workbook wb, Sheet sheet,
+			Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
+		Row row = null;
+
+		row = getRow(0, sheet);
+		createCell(row, 0, INSTANCE_LABEL.get(locale), headerStyle);
+		createCell(row, 1, SUB_DATE_LABEL.get(locale), headerStyle);
+		createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
+
 		List<String> questionIdList = new ArrayList<String>();
 		List<String> nonSummarizableList = new ArrayList<String>();
 
@@ -427,17 +417,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (questionMap.get(group) != null) {
 					for (QuestionDto q : questionMap.get(group)) {
 						questionIdList.add(q.getKeyId().toString());
-						if (doWrite) {
-							createCell(
-									row,
-									offset++,
-									q.getKeyId().toString()
-											+ "|"
-											+ getLocalizedText(q.getText(),
-													q.getTranslationMap())
-													.replaceAll("\n", "")
-													.trim(), headerStyle);
-						}
+
+						createCell(
+								row,
+								offset++,
+								q.getKeyId().toString()
+										+ "|"
+										+ getLocalizedText(q.getText(),
+												q.getTranslationMap())
+												.replaceAll("\n", "").trim(),
+								headerStyle);
+
 						if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
 								.getType())) {
 							nonSummarizableList.add(q.getKeyId().toString());
@@ -458,14 +448,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 */
 	private void writeSummaryReport(
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-			SummaryModel summaryModel, String sector, HSSFWorkbook wb)
+			SummaryModel summaryModel, String sector, Workbook wb)
 			throws Exception {
 
-		HSSFSheet sheet = wb.createSheet(sector == null ? SUMMARY_LABEL
-				.get(locale) : sector);
-		HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+		Sheet sheet = wb.createSheet(sector == null ? SUMMARY_LABEL.get(locale)
+				: sector);
+		CreationHelper creationHelper = wb.getCreationHelper();
+		Drawing patriarch = sheet.createDrawingPatriarch();
 		int curRow = 0;
-		HSSFRow row = getRow(curRow++, sheet);
+		Row row = getRow(curRow++, sheet);
 		if (sector == null) {
 			createCell(row, 0, REPORT_HEADER.get(locale), headerStyle);
 		} else {
@@ -634,11 +625,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 										getLocalizedText(question.getText(),
 												question.getTranslationMap()),
 										CHART_WIDTH, CHART_HEIGHT),
-								HSSFWorkbook.PICTURE_TYPE_PNG);
-						HSSFClientAnchor anchor;
-						anchor = new HSSFClientAnchor(0, 0, 0, 255, (short) 6,
-								tableTopRow, (short) (6 + CHART_CELL_WIDTH),
-								tableTopRow + CHART_CELL_HEIGHT);
+								Workbook.PICTURE_TYPE_PNG);
+						ClientAnchor anchor = creationHelper
+								.createClientAnchor();
+						anchor.setDx1(0);
+						anchor.setDy1(0);
+						anchor.setDx2(0);
+						anchor.setDy2(255);
+						anchor.setCol1(6);
+						anchor.setRow1(tableTopRow);
+						anchor.setCol2(6 + CHART_CELL_WIDTH);
+						anchor.setRow2(tableTopRow + CHART_CELL_HEIGHT);
 						anchor.setAnchorType(2);
 						patriarch.createPicture(anchor, indx);
 						if (tableTopRow + CHART_CELL_HEIGHT > tableBottomRow) {
@@ -659,9 +656,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 * non-null)
 	 * 
 	 */
-	private HSSFCell createCell(HSSFRow row, int col, String value,
-			HSSFCellStyle style) {
-		HSSFCell cell = row.createCell(col);
+	private Cell createCell(Row row, int col, String value, CellStyle style) {
+		Cell cell = row.createCell(col);
 		if (style != null) {
 			cell.setCellStyle(style);
 		}
@@ -680,8 +676,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 * @param sheet
 	 * @return
 	 */
-	private HSSFRow getRow(int index, HSSFSheet sheet) {
-		HSSFRow row = null;
+	private Row getRow(int index, Sheet sheet) {
+		Row row = null;
 		if (index < sheet.getLastRowNum()) {
 			row = sheet.getRow(index);
 		} else {
