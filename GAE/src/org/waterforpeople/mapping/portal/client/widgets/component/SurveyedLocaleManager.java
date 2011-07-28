@@ -185,7 +185,8 @@ public class SurveyedLocaleManager extends Composite implements
 		}
 
 		Button editLocale = new Button(TEXT_CONSTANTS.edit());		
-		Button deleteLocale = new Button(TEXT_CONSTANTS.delete());		
+		Button deleteLocale = new Button(TEXT_CONSTANTS.delete());	
+		deleteLocale.setTitle(row+"|"+item.getKeyId());
 		HorizontalPanel buttonHPanel = new HorizontalPanel();
 		buttonHPanel.add(editLocale);
 		buttonHPanel.add(deleteLocale);
