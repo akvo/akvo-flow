@@ -393,9 +393,15 @@
 		<property name="notificationType" direction="asc" />
 		<property name="expiryDate" direction="asc" />
 	</datastore-index>
-	<datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
-        <property name="localeType" direction="asc"/>
-        <property name="latitude" direction="asc"/>
-    </datastore-index>
+	<datastore-index kind="NotificationSubscription"
+		ancestor="false" source="manual">
+		<property name="notificationType" direction="asc" />
+		<property name="expiryDate" direction="asc" />
+	</datastore-index>
+	<datastore-index kind="SurveyedLocale" ancestor="false"
+		source="manual">
+		<property name="localeType" direction="asc" />
+		<property name="latitude" direction="asc" />
+	</datastore-index>
 
 </datastore-indexes>
