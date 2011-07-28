@@ -2,7 +2,6 @@ package com.gallatinsystems.gis.coordinate.utilities;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
 
-
 public class CoordinateUtilities {
 
 	static final Double polarAxis = 6356752.314;
@@ -12,13 +11,14 @@ public class CoordinateUtilities {
 	static final Double k0 = 0.9996;
 	static final Double pi = 3.14159265358979323846264338327950288;
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		Integer x = Integer.parseInt(args[0]);
 		Integer y = Integer.parseInt(args[1]);
 		Integer zone = Integer.parseInt(args[2]);
-		System.out.println("Converted Coordiantes: " + convertUTMtoLatLon(x,y,NSLatitude.SOUTH,zone) );
+		System.out.println("Converted Coordiantes: "
+				+ convertUTMtoLatLon(x, y, NSLatitude.SOUTH, zone));
 	}
-	
+
 	public static final double DEGREES_TO_RADIANS = (Math.PI / 180.0);
 
 	// Mean radius in KM
@@ -42,27 +42,31 @@ public class CoordinateUtilities {
 
 	}
 
-	
-	
 	public Coordinate computePointAlongBearingDistance(
-			Coordinate startingPoint, Double distance, Integer bearing) {
-		Double lat2 = Math.asin(Math.sin(startingPoint.getLatitude())
+			Coordinate startingPoint, Double distance, Double bearing) {
+		Double lat1 = startingPoint.getLatitude()*DEGREES_TO_RADIANS;
+		Double lon1 = startingPoint.getLongitude()*DEGREES_TO_RADIANS;
+		bearing = bearing * DEGREES_TO_RADIANS;
+
+		Double lat2 = Math.asin(Math.sin(lat1)
 				* Math.cos(distance / EARTH_RADIUS)
-				+ Math.cos(startingPoint.getLatitude())
+				+ Math.cos(lat1)
 				* Math.sin(distance / EARTH_RADIUS) * Math.cos(bearing));
-		Double lon2 = startingPoint.getLongitude()
+		Double lon2 = lon1
 				+ Math.atan2(
 						Math.sin(bearing) * Math.sin(distance / EARTH_RADIUS)
-								* Math.cos(startingPoint.getLatitude()),
-						Math.cos(distance / EARTH_RADIUS)
-								- Math.sin(startingPoint.getLatitude())
+								* Math.cos(lat1),
+						Math.cos(distance / EARTH_RADIUS) - Math.sin(lat1)
 								* Math.sin(lat2));
-
+		lon2 = (lon2+3*Math.PI)%(2*Math.PI)-Math.PI;
 		
-		Coordinate newPoint = new Coordinate(lat2,lon2);
+		lat2=lat2/DEGREES_TO_RADIANS;
+		lon2=lon2/DEGREES_TO_RADIANS;
+
+		Coordinate newPoint = new Coordinate(lat2, lon2);
 		return newPoint;
 	}
-	
+
 	/**
 	 * computes the APPROXIMATE distance between 2 points (lat/lon in DEGREES,
 	 * not radians) forumula described here:
@@ -99,8 +103,8 @@ public class CoordinateUtilities {
 		return degrees;
 	}
 
-	public static String convertUTMtoLatLon(Integer eastingCoor, Integer northingCoor,
-			NSLatitude lat, Integer zone) {
+	public static String convertUTMtoLatLon(Integer eastingCoor,
+			Integer northingCoor, NSLatitude lat, Integer zone) {
 		Integer zoneCentralLongitude = computeZoneCentralLongitude(zone);
 
 		Double arcLength = (10000000 - northingCoor) / k0;
@@ -171,8 +175,7 @@ public class CoordinateUtilities {
 		Double Q5 = D;
 		Double Q6 = (1 + 2 * T1 + C1) * Math.pow(D, 3) / 6;
 		Double Q7 = (5 - 2 * C1 + 28 * T1 - 3 * Math.pow(C1, 2) + 8 * e2 + 24 * Math
-				.pow(T1, 2))
-				* Math.pow(D, 5) / 120;
+				.pow(T1, 2)) * Math.pow(D, 5) / 120;
 		// =(_lof1-_lof2+_lof3)/COS(_phi1)
 		Double H20 = Q5 - Q6 + Q7 / Math.cos(footprintLat);
 		Double E22 = H20 * 180 / pi;
@@ -194,6 +197,4 @@ public class CoordinateUtilities {
 		NORTH, SOUTH
 	};
 
-	
-	
 }

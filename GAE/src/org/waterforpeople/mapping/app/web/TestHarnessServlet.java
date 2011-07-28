@@ -192,7 +192,7 @@ public class TestHarnessServlet extends HttpServlet {
 			Coordinate startingPoint = new Coordinate(Double.parseDouble(req.getParameter("lat")),Double.parseDouble(req.getParameter("lon")));
 			
 			Double distance = Double.parseDouble(req.getParameter("distance"));
-			Integer bearing = Integer.parseInt(req.getParameter("bearing"));
+			Double bearing = Double.parseDouble(req.getParameter("bearing"));
 			
 			Coordinate newPoint = cu.computePointAlongBearingDistance(startingPoint, distance, bearing);
 			try {
