@@ -511,6 +511,9 @@ public class KMLGenerator {
 						.endsWith(".jpg") || val.getStringValue().trim().toLowerCase()
 						.endsWith(".jpeg")) {
 					String urlBase = val.getStringValue();
+					if(urlBase.contains("/")){
+						urlBase = urlBase.substring(urlBase.lastIndexOf("/")+1);
+					}
 					if(!urlBase.toLowerCase().startsWith("http")){
 						if(urlBase.endsWith("/")){
 							urlBase = urlBase.substring(0,urlBase.length()-1);
