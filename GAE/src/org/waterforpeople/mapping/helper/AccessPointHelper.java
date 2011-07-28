@@ -35,6 +35,7 @@ import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
+import com.gallatinsystems.gis.coordinate.utilities.CoordinateUtilities;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
@@ -1050,7 +1051,7 @@ public class AccessPointHelper {
 						AccessPointType.HOUSEHOLD.toString(), null, "all");
 				if (apList != null && !apList.isEmpty()) {
 					for (AccessPoint hh : apList) {
-						Double distance = computeDistance(ap, hh);
+						Double distance = CoordinateUtilities.computeDistance(ap, hh);
 						if (distance != null && distance < 500) {
 							ap.setNumberWithinAcceptableDistance(ap
 									.getNumberWithinAcceptableDistance() + 1);
@@ -1069,9 +1070,9 @@ public class AccessPointHelper {
 				AccessPoint minDistanceWaterPoint = null;
 				Double minDistance = null;
 				for (AccessPoint wp : apList) {
-					Double distance = computeDistance(ap, wp);
+					Double distance = CoordinateUtilities.computeDistance(ap, wp);
 					if (distance < minDistance || minDistance == null) {
-						minDistance = computeDistance(ap, wp);
+						minDistance = CoordinateUtilities.computeDistance(ap, wp);
 						minDistanceWaterPoint = wp;
 					}
 				}
@@ -1090,24 +1091,5 @@ public class AccessPointHelper {
 		}
 	}
 
-	public Double computeDistance(AccessPoint start, AccessPoint end) {
-		Double distance = null;
-		final double DEGREES_TO_RADIANS = (Math.PI / 180.0);
-
-		// Mean radius in KM
-		final double EARTH_RADIUS = 6371.0;
-		double p1 = Math.cos(start.getLatitude())
-				* Math.cos(start.getLongitude()) * Math.cos(end.getLatitude())
-				* Math.cos(end.getLatitude());
-		double p2 = Math.cos(start.getLatitude())
-				* Math.sin(start.getLongitude()) * Math.cos(end.getLatitude())
-				* Math.sin(end.getLongitude());
-		double p3 = Math.sin(start.getLatitude()) * Math.sin(end.getLatitude());
-
-		distance = (Math.acos(p1 + p2 + p3) * EARTH_RADIUS);
-		// Return distance in meters
-		distance = distance * 1000;
-		return distance;
-
-	}
+	
 }

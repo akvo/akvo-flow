@@ -106,6 +106,8 @@ import com.gallatinsystems.editorial.domain.MapBalloonDefinition.BalloonType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.gis.coordinate.utilities.Coordinate;
+import com.gallatinsystems.gis.coordinate.utilities.CoordinateUtilities;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.dao.SubCountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -185,16 +187,32 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("setupTestUser".equals(action)) {
 			setupTestUser();
+		} else if ("computeDistanceAlongBearing".equals(action)) {
+			com.gallatinsystems.gis.coordinate.utilities.CoordinateUtilities cu = new CoordinateUtilities();
+			Coordinate startingPoint = new Coordinate(Double.parseDouble(req.getParameter("lat")),Double.parseDouble(req.getParameter("lon")));
+			
+			Double distance = Double.parseDouble(req.getParameter("distance"));
+			Integer bearing = Integer.parseInt(req.getParameter("bearing"));
+			
+			Coordinate newPoint = cu.computePointAlongBearingDistance(startingPoint, distance, bearing);
+			try {
+				resp.getWriter().println("New Point : " + newPoint.toString());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 		} else if ("testDistanceRule".equals(action)) {
-//			DeleteObjectUtil dou = new DeleteObjectUtil();
-//			dou.deleteAllObjects("AccessPoint");
-//			AccessPointTest apt = new AccessPointTest();
-//			apt.loadWPDistanceTestData(resp);
-//			apt.loadHHDistanceTestData(resp);
+			// DeleteObjectUtil dou = new DeleteObjectUtil();
+			// dou.deleteAllObjects("AccessPoint");
+			// AccessPointTest apt = new AccessPointTest();
+			// apt.loadWPDistanceTestData(resp);
+			// apt.loadHHDistanceTestData(resp);
 			AccessPointDao apDao = new AccessPointDao();
 			List<AccessPoint> apList = apDao.list("all");
 			AccessPointHelper aph = new AccessPointHelper();
-			for(AccessPoint ap: apList){
+			for (AccessPoint ap : apList) {
 				aph.computeDistanceRule(ap);
 			}
 			try {

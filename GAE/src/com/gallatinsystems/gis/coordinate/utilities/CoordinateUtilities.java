@@ -1,5 +1,7 @@
 package com.gallatinsystems.gis.coordinate.utilities;
 
+import org.waterforpeople.mapping.domain.AccessPoint;
+
 
 public class CoordinateUtilities {
 
@@ -17,7 +19,49 @@ public class CoordinateUtilities {
 		System.out.println("Converted Coordiantes: " + convertUTMtoLatLon(x,y,NSLatitude.SOUTH,zone) );
 	}
 	
+	public static final double DEGREES_TO_RADIANS = (Math.PI / 180.0);
+
+	// Mean radius in KM
+	public static final double EARTH_RADIUS = 6371.0;
+
+	public static Double computeDistance(AccessPoint start, AccessPoint end) {
+		Double distance = null;
+
+		double p1 = Math.cos(start.getLatitude())
+				* Math.cos(start.getLongitude()) * Math.cos(end.getLatitude())
+				* Math.cos(end.getLatitude());
+		double p2 = Math.cos(start.getLatitude())
+				* Math.sin(start.getLongitude()) * Math.cos(end.getLatitude())
+				* Math.sin(end.getLongitude());
+		double p3 = Math.sin(start.getLatitude()) * Math.sin(end.getLatitude());
+
+		distance = (Math.acos(p1 + p2 + p3) * EARTH_RADIUS);
+		// Return distance in meters
+		distance = distance * 1000;
+		return distance;
+
+	}
+
 	
+	
+	public Coordinate computePointAlongBearingDistance(
+			Coordinate startingPoint, Double distance, Integer bearing) {
+		Double lat2 = Math.asin(Math.sin(startingPoint.getLatitude())
+				* Math.cos(distance / EARTH_RADIUS)
+				+ Math.cos(startingPoint.getLatitude())
+				* Math.sin(distance / EARTH_RADIUS) * Math.cos(bearing));
+		Double lon2 = startingPoint.getLongitude()
+				+ Math.atan2(
+						Math.sin(bearing) * Math.sin(distance / EARTH_RADIUS)
+								* Math.cos(startingPoint.getLatitude()),
+						Math.cos(distance / EARTH_RADIUS)
+								- Math.sin(startingPoint.getLatitude())
+								* Math.sin(lat2));
+
+		
+		Coordinate newPoint = new Coordinate(lat2,lon2);
+		return newPoint;
+	}
 	
 	/**
 	 * computes the APPROXIMATE distance between 2 points (lat/lon in DEGREES,
@@ -150,23 +194,6 @@ public class CoordinateUtilities {
 		NORTH, SOUTH
 	};
 
-	public class Coordinate {
-		
-		private Integer longitude = 0;
-		private Integer latitude = 0;
-
-		public Coordinate(Integer latitude, Integer longitude) {
-			this.latitude = latitude;
-			this.longitude = longitude;
-		}
-
-		public Integer getLatitude() {
-			return latitude;
-		}
-
-		public Integer getLongitude() {
-			return longitude;
-		}
-
-	}
+	
+	
 }
