@@ -500,7 +500,7 @@ public class KMLGenerator {
 			for (SurveyalValue val : ap.getSurveyalValues()) {
 				if (val.getQuestionType() != null) {
 					if (!"free_text".equalsIgnoreCase(val.getQuestionType())
-							|| !"option"
+							&& !"option"
 									.equalsIgnoreCase(val.getQuestionType())) {
 						valuesToBind.remove(val);
 					}
@@ -508,8 +508,16 @@ public class KMLGenerator {
 				if (val.getStringValue() == null) {
 					valuesToBind.remove(val);
 				} else if (val.getStringValue().trim().toLowerCase()
-						.equals(".jpg")) {
-					context.put("photoUrl", val.getStringValue());
+						.endsWith(".jpg") || val.getStringValue().trim().toLowerCase()
+						.endsWith(".jpeg")) {
+					String urlBase = val.getStringValue();
+					if(!urlBase.toLowerCase().startsWith("http")){
+						if(urlBase.endsWith("/")){
+							urlBase = urlBase.substring(0,urlBase.length()-1);
+						}
+						urlBase = PropertyUtil.getProperty("photo_url_root")+urlBase;
+					}
+					context.put("photoUrl", urlBase);
 					foundPhoto = true;
 					valuesToBind.remove(val);
 				} else {
