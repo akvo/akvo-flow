@@ -204,22 +204,23 @@ public class TestHarnessServlet extends HttpServlet {
 			
 			
 		} else if ("testDistanceRule".equals(action)) {
-			// DeleteObjectUtil dou = new DeleteObjectUtil();
-			// dou.deleteAllObjects("AccessPoint");
+			 DeleteObjectUtil dou = new DeleteObjectUtil();
+			 dou.deleteAllObjects("AccessPointScoreComputationItem");
+			 dou.deleteAllObjects("AccessPointScoreDetail");
 			// AccessPointTest apt = new AccessPointTest();
 			// apt.loadWPDistanceTestData(resp);
 			// apt.loadHHDistanceTestData(resp);
-			AccessPointDao apDao = new AccessPointDao();
-			List<AccessPoint> apList = apDao.list("all");
-			AccessPointHelper aph = new AccessPointHelper();
-			for (AccessPoint ap : apList) {
-				aph.computeDistanceRule(ap);
-			}
-			try {
-				resp.getWriter().println("Completed test distance rule");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			AccessPointDao apDao = new AccessPointDao();
+//			List<AccessPoint> apList = apDao.list("all");
+//			AccessPointHelper aph = new AccessPointHelper();
+//			for (AccessPoint ap : apList) {
+//				aph.computeDistanceRule(ap);
+//			}
+//			try {
+//				resp.getWriter().println("Completed test distance rule");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		} else if ("setupDevEnv".equals(action)) {
 			try {
 				DeleteObjectUtil dou = new DeleteObjectUtil();

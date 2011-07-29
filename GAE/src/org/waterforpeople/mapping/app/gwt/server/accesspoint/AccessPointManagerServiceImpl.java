@@ -432,7 +432,9 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		HashMap<Integer, String> scoreDetails = new HashMap<Integer, String>();
 		AccessPointHelper aph = new AccessPointHelper();
 		AccessPoint ap = new AccessPoint();
-		ap = AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
+		//ap = AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
+		AccessPointDao apDao = new AccessPointDao();
+		ap = apDao.getByKey(accessPointDto.getKeyId());
 		ap = aph.scoreAccessPointDynamic(ap);
 		List<AccessPointScoreDetail> apsdList = ap.getApScoreDetailList();
 		Date latestDate = null;

@@ -381,94 +381,97 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				accessPointDetail.setWidget(3, 0,
 						ViewUtil.initLabel(TEXT_CONSTANTS.scoreMakeup()));
 				accessPointDetail.setWidget(3, 1, scoreItems);
-				Button scoreAccessPoint = new Button("Score Access Point");
-				accessPointDetail.setWidget(4, 1, scoreAccessPoint);
-				scoreAccessPoint.addClickHandler(new ClickHandler() {
-
-					@Override
-					public void onClick(ClickEvent event) {
-						svc.scorePointDynamic(
-								buildAccessPointDto(),
-								new AsyncCallback<ArrayList<AccessPointScoreDetailDto>>() {
-
-									@Override
-									public void onFailure(Throwable caught) {
-										// TODO Auto-generated method stub
-
-									}
-
-									@Override
-									public void onSuccess(
-											ArrayList<AccessPointScoreDetailDto> result) {
-										if (result != null && !result.isEmpty()) {
-											Grid scoreTable = new Grid();
-											scoreTable.resizeRows(1);
-											scoreTable.resizeColumns(3);
-											Label scoreBucketName = new Label(
-													"Score Bucket Name");
-											scoreTable.setWidget(0, 0,
-													scoreBucketName);
-											Label score = new Label("Score");
-											scoreTable.setWidget(0, 1, score);
-											Label messagelbl = new Label(
-													"Message");
-											scoreTable.setWidget(0, 2,
-													messagelbl);
-											Integer totalScore = 0;
-
-											for (AccessPointScoreDetailDto item : result) {
-												Label scoreBucket = new Label(
-														item.getScoreBucket());
-												Integer i = 1;
-												scoreTable.resizeRows(i + 1);
-												scoreTable.setWidget(i, 0,
-														scoreBucket);
-												if (item.getScoreComputationItems() != null) {
-													for (AccessPointScoreComputationItemDto scoreitem : item
-															.getScoreComputationItems()) {
-														scoreTable
-																.resizeRows(i + 1);
-														TextBox point = new TextBox();
-														if (scoreitem
-																.getScoreItem() != null) {
-															point.setText(scoreitem
-																	.getScoreItem()
-																	.toString());
-															totalScore = totalScore
-																	+ scoreitem
-																			.getScoreItem();
-														}
-														TextBox message = new TextBox();
-														if (scoreitem
-																.getScoreDetailMessage() != null)
-															message.setText(scoreitem
-																	.getScoreDetailMessage());
-														scoreTable.setWidget(i,
-																0, point);
-														scoreTable.setWidget(i,
-																1, message);
-														i++;
-													}
-												}
-												Label totalScorelbl = new Label(
-														"Total Score");
-												TextBox totalScoreTB = new TextBox();
-												totalScoreTB.setText(totalScore
-														.toString());
-												scoreTable.setWidget(i, 0,
-														totalScorelbl);
-												scoreTable.setWidget(i, 1,
-														totalScoreTB);
-											}
-											accessPointDetail.setWidget(5, 1,
-													scoreTable);
-										}
-									}
-								});
-					}
-				});
+				
+			
 			}
 		}
+		Button scoreAccessPoint = new Button("Score Access Point");
+		accessPointDetail.setWidget(4, 1, scoreAccessPoint);
+		scoreAccessPoint.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				svc.scorePointDynamic(
+						buildAccessPointDto(),
+						new AsyncCallback<ArrayList<AccessPointScoreDetailDto>>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void onSuccess(
+									ArrayList<AccessPointScoreDetailDto> result) {
+								if (result != null && !result.isEmpty()) {
+									Grid scoreTable = new Grid();
+									scoreTable.resizeRows(1);
+									scoreTable.resizeColumns(3);
+									Label scoreBucketName = new Label(
+											"Score Bucket Name");
+									scoreTable.setWidget(0, 0,
+											scoreBucketName);
+									Label score = new Label("Score");
+									scoreTable.setWidget(0, 1, score);
+									Label messagelbl = new Label(
+											"Message");
+									scoreTable.setWidget(0, 2,
+											messagelbl);
+									Integer totalScore = 0;
+
+									for (AccessPointScoreDetailDto item : result) {
+										Label scoreBucket = new Label(
+												item.getScoreBucket());
+										Integer i = 1;
+										scoreTable.resizeRows(i + 1);
+										scoreTable.setWidget(i, 0,
+												scoreBucket);
+										if (item.getScoreComputationItems() != null) {
+											for (AccessPointScoreComputationItemDto scoreitem : item
+													.getScoreComputationItems()) {
+												scoreTable
+														.resizeRows(i + 1);
+												TextBox point = new TextBox();
+												if (scoreitem
+														.getScoreItem() != null) {
+													point.setText(scoreitem
+															.getScoreItem()
+															.toString());
+													totalScore = totalScore
+															+ scoreitem
+																	.getScoreItem();
+												}
+												TextBox message = new TextBox();
+												if (scoreitem
+														.getScoreDetailMessage() != null)
+													message.setText(scoreitem
+															.getScoreDetailMessage());
+												scoreTable.setWidget(i,
+														0, point);
+												scoreTable.setWidget(i,
+														1, message);
+												i++;
+											}
+										}
+										Label totalScorelbl = new Label(
+												"Total Score");
+										TextBox totalScoreTB = new TextBox();
+										totalScoreTB.setText(totalScore
+												.toString());
+										scoreTable.setWidget(i, 0,
+												totalScorelbl);
+										scoreTable.setWidget(i, 1,
+												totalScoreTB);
+									}
+									accessPointDetail.setWidget(5, 1,
+											scoreTable);
+								}
+							}
+						});
+			}
+		});
+
 		return accessPointDetail;
 	}
 

@@ -50,7 +50,7 @@ public class AccessPointServiceSupport {
 		apDto.setPhotoURL(apCanonical.getPhotoURL());
 		apDto.setPointPhotoCaption(apCanonical.getPointPhotoCaption());
 		apDto.setSmsCode(apCanonical.getSmsCode());
-
+		apDto.setImprovedWaterPointFlag(apCanonical.getImprovedWaterPointFlag());
 		apDto.setNumberOfHouseholdsUsingPoint(apCanonical
 				.getNumberOfHouseholdsUsingPoint());
 		apDto.setEstimatedPeoplePerHouse(apCanonical
@@ -86,9 +86,11 @@ public class AccessPointServiceSupport {
 				.getNumberOutsideAcceptableDistance());
 		apDto.setCurrentProblemFlag(apCanonical.getCurrentProblemFlag());
 		apDto.setCurrentTreatmentFlag(apCanonical.getCurrentTreatmentFlag());
+		apDto.setCurrentTreatment(apCanonical.getCurrentTreatment());
 		apDto.setNumberOfUsers(apCanonical.getNumberOfUsers());
 		apDto.setNumberOfLitersPerPersonPerDay(apCanonical
 				.getNumberOfLitersPerPersonPerDay());
+		apDto.setCollectTariffFlag(apCanonical.getCollectTariffFlag());
 
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
@@ -222,10 +224,12 @@ public class AccessPointServiceSupport {
 				.getNumberOutsideAcceptableDistance());
 		accessPoint.setCurrentProblemFlag(apDto.getCurrentProblemFlag());
 		accessPoint.setCurrentTreatmentFlag(apDto.getCurrentTreatmentFlag());
+		accessPoint.setCurrentTreatment(apDto.getCurrentTreatment());
+		accessPoint.setCollectTariffFlag(apDto.getCollectTariffFlag());
 		accessPoint.setNumberOfUsers(apDto.getNumberOfUsers());
 		accessPoint.setNumberOfLitersPerPersonPerDay(apDto
 				.getNumberOfLitersPerPersonPerDay());
-
+		accessPoint.setImprovedWaterPointFlag(apDto.getImprovedWaterPointFlag());
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else if (AccessPointDto.Status.FUNCTIONING_OK == apDto
