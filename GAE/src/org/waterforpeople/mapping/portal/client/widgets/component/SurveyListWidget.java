@@ -37,6 +37,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 	private Map<Widget, SurveyDto> surveyMap;
 	private Map<String, Object> bundle;
 	private SurveyGroupDto surveyGroup;
+	private Grid dataGrid;
 
 	public SurveyListWidget(PageController controller) {
 		super(controller);
@@ -61,8 +62,11 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 						public void onSuccess(ArrayList<SurveyDto> result) {
 							toggleLoading(false);
 							surveyGroup.setSurveyList(result);
+							if (dataGrid != null) {
+								dataGrid.removeFromParent();
+							}
 							if (result != null && result.size() > 0) {
-								Grid dataGrid = new Grid(result.size(), 4);
+								dataGrid = new Grid(result.size(), 4);
 								for (int i = 0; i < result.size(); i++) {
 									Label l = createListEntry(result.get(i)
 											.getName());
@@ -103,18 +107,18 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 		} else if (ClickMode.EDIT == mode) {
 			openPage(SurveyEditWidget.class, bundle);
 		} else if (ClickMode.COPY == mode) {
-			SurveyCopyDialog copyDialog = new SurveyCopyDialog(surveyMap
-					.get(source), new CompletionListener() {
+			SurveyCopyDialog copyDialog = new SurveyCopyDialog(
+					surveyMap.get(source), new CompletionListener() {
 
-				@Override
-				public void operationComplete(boolean wasSuccessful,
-						Map<String, Object> payload) {
-					MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
-							.copyComplete(), TEXT_CONSTANTS
-							.copyCompleteMessage());
-					dia.showCentered();
-				}
-			});
+						@Override
+						public void operationComplete(boolean wasSuccessful,
+								Map<String, Object> payload) {
+							MessageDialog dia = new MessageDialog(
+									TEXT_CONSTANTS.copyComplete(),
+									TEXT_CONSTANTS.copyCompleteMessage());
+							dia.showCentered();
+						}
+					});
 			copyDialog.show();
 		} else if (ClickMode.DELETE == mode) {
 			deleteSurvey(surveyMap.get(source));
@@ -125,15 +129,16 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 		setWorking(true);
 		Integer idx = null;
 		for (int i = 0; i < surveyGroup.getSurveyList().size(); i++) {
-			if (surveyGroup.getSurveyList().get(i).getKeyId().equals(
-					survey.getKeyId())) {
+			if (surveyGroup.getSurveyList().get(i).getKeyId()
+					.equals(survey.getKeyId())) {
 				idx = i;
 			}
 		}
 		if (idx != null && idx >= 0) {
 			surveyGroup.getSurveyList().remove(idx);
-			final MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
-					.deleting(), TEXT_CONSTANTS.pleaseWait(), true);
+			final MessageDialog dia = new MessageDialog(
+					TEXT_CONSTANTS.deleting(), TEXT_CONSTANTS.pleaseWait(),
+					true);
 			dia.showCentered();
 			surveyService.deleteSurvey(survey, surveyGroup.getKeyId(),
 					new AsyncCallback<String>() {
