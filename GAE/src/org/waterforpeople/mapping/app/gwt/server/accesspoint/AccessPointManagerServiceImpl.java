@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +33,7 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import services.S3Driver;
 
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
@@ -358,6 +361,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			for (Row row : dtoValue.getRows()) {
 				String fieldToSet = row.getFieldName();
 				String value = row.getFieldValue();
+				
 				for (Field item : cls.getDeclaredFields()) {
 					item.setAccessible(true);
 					String fieldName = item.getName();
@@ -365,13 +369,39 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 					if (fieldName.equals(fieldToSet)) {
 						log.log(Level.INFO, "setting : " + fieldName);
 						if (fieldType.equals("String")) {
-							item.set(ap, new String(value));
+							Method m = cls
+							.getMethod(
+									"set"
+											+ StringUtil
+													.capitalizeFirstCharacterString(fieldToSet),
+									java.lang.String.class);
+							m.invoke(ap, value);
 						} else if (fieldType.equals("Integer")) {
-							item.setInt(ap, new Integer(value));
+							Method m = cls
+							.getMethod(
+									"set"
+											+ StringUtil
+													.capitalizeFirstCharacterString(fieldToSet),
+									java.lang.Integer.class);
+							m.invoke(ap, new Integer(value));
 						} else if (fieldType.equals("Double")) {
-							item.setDouble(ap, new Double(value));
+							Method m = cls
+							.getMethod(
+									"set"
+											+ StringUtil
+													.capitalizeFirstCharacterString(fieldToSet),
+									java.lang.Double.class);
+							m.invoke(ap, new Double(value));
+							//item.setDouble(ap, new Double(value));\
 						} else if (fieldType.equals("Boolean")) {
-							item.setBoolean(ap, new Boolean(value));
+							// item.setBoolean(ap, new Boolean(value));
+							Method m = cls
+							.getMethod(
+									"set"
+											+ StringUtil
+													.capitalizeFirstCharacterString(fieldToSet),
+									java.lang.Boolean.class);
+							m.invoke(ap, new Boolean(value));
 						}
 					}
 				}
@@ -380,6 +410,15 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

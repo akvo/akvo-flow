@@ -1131,6 +1131,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 				DtoValueContainer dtoValue = getAllAttributeAP(apDto,
 						accessPointDetail);
+				attributeSave=true;
 				svc.saveDtoValueContainer(dtoValue,
 						new AsyncCallback<DtoValueContainer>() {
 
@@ -1142,7 +1143,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 							@Override
 							public void onSuccess(DtoValueContainer result) {
 								Window.alert("Saved");
-								attributeSave=true;
+								
 							}
 						});
 			}
