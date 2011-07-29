@@ -241,15 +241,18 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 					public void onFailure(Throwable caught) {
 						setWorking(false);
 						savingDialog.hide();
+						selectedQuestion = null;
 						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
 								.error(), TEXT_CONSTANTS.errorTracePrefix()
 								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
+					
 					}
 
 					@Override
 					public void onSuccess(Void result) {
 						setWorking(false);
+						selectedQuestion = null;
 						savingDialog.hide();
 					}
 				});
