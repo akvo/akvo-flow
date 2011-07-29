@@ -472,8 +472,14 @@ public class KMLGenerator {
 			String timestamp = DateFormatUtils.formatUTC(
 					ap.getLastSurveyedDate(),
 					DateFormatUtils.ISO_DATE_FORMAT.getPattern());
-			String formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
-					.format(ap.getLastSurveyedDate());
+			String formattedDate = null;
+			if ("true".equals(useLongDates)) {
+				formattedDate = LONG_DATE_FORMAT.format(ap
+						.getLastSurveyedDate());
+			} else {
+				formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
+						.format(ap.getLastSurveyedDate());
+			}
 			context.put("collectionDate", formattedDate);
 			context.put("timestamp", timestamp);
 			String collectionYear = new SimpleDateFormat("yyyy").format(ap
@@ -485,10 +491,11 @@ public class KMLGenerator {
 					DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 			String formattedDate = null;
 			if ("true".equals(useLongDates)) {
-				formattedDate = LONG_DATE_FORMAT.format(ap.getLastSurveyedDate());
+				formattedDate = LONG_DATE_FORMAT
+						.format(ap.getCreatedDateTime());
 			} else {
 				formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
-				.format(ap.getLastSurveyedDate());							
+						.format(ap.getCreatedDateTime());
 			}
 			context.put("collectionDate", formattedDate);
 			context.put("timestamp", timestamp);
