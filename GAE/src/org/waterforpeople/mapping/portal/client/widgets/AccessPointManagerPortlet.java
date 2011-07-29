@@ -65,7 +65,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	public static final String NAME = TEXT_CONSTANTS.accessPointManager();
-
+	private static boolean attributeSave = false;
 	private static final String DEFAULT_SORT_FIELD = "key";
 	private static final Integer PAGE_SIZE = 20;
 	private static final DataTableHeader HEADERS[] = {
@@ -1057,23 +1057,29 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 					statusLabel.setText(TEXT_CONSTANTS.pleaseWait());
 					mainVPanel.add(statusLabel);
 					AccessPointDto apDto = buildAccessPointDto();
-					svc.saveAccessPoint(apDto,
-							new AsyncCallback<AccessPointDto>() {
-								@Override
-								public void onFailure(Throwable caught) {
-									MessageDialog errDialog = new MessageDialog(
-											TEXT_CONSTANTS.error(),
-											TEXT_CONSTANTS.errorTracePrefix()
-													+ " "
-													+ caught.getLocalizedMessage());
-									errDialog.showCentered();
-								}
+					if (!attributeSave) {
+						svc.saveAccessPoint(apDto,
+								new AsyncCallback<AccessPointDto>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										MessageDialog errDialog = new MessageDialog(
+												TEXT_CONSTANTS.error(),
+												TEXT_CONSTANTS
+														.errorTracePrefix()
+														+ " "
+														+ caught.getLocalizedMessage());
+										errDialog.showCentered();
+									}
 
-								@Override
-								public void onSuccess(AccessPointDto result) {
-									Window.alert(TEXT_CONSTANTS.saveComplete());
-								}
-							});
+									@Override
+									public void onSuccess(AccessPointDto result) {
+										Window.alert(TEXT_CONSTANTS
+												.saveComplete());
+									}
+								});
+					}else{
+						attributeSave=false;
+					}
 					accessPointDetail.setVisible(false);
 					statusLabel.setVisible(false);
 					mainVPanel.remove(statusLabel);
@@ -1118,11 +1124,11 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail = (FlexTable) tp.getWidget(2);
 		apDto = getAttributeAP(apDto, accessPointDetail);
-
 		if (getCurrentUser().isAdmin()) {
-			if (tp.getWidgetCount() == 4) {
-				accessPointDetail = (FlexTable) tp.getWidget(4);
+			if (tp.getWidgetCount() == 5) {
 				
+				accessPointDetail = (FlexTable) tp.getWidget(4);
+
 				DtoValueContainer dtoValue = getAllAttributeAP(apDto,
 						accessPointDetail);
 				svc.saveDtoValueContainer(dtoValue,
@@ -1136,6 +1142,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 							@Override
 							public void onSuccess(DtoValueContainer result) {
 								Window.alert("Saved");
+								attributeSave=true;
 							}
 						});
 			}
@@ -1148,13 +1155,13 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			FlexTable accessPointDetail) {
 		DtoValueContainer dtoValue = new DtoValueContainer();
 		dtoValue.setKeyId(apDto.getKeyId());
-		for (Integer i=0;i < accessPointDetail.getRowCount(); i++) {
+		for (Integer i = 0; i < accessPointDetail.getRowCount(); i++) {
 			TextBox dirtyFlag = (TextBox) accessPointDetail.getWidget(i, 2);
 			if (dirtyFlag.getText().trim().equals("true")) {
 				String textBoxValue = ((TextBox) accessPointDetail.getWidget(i,
 						1)).getText().trim();
-				String attributeName = ((TextBox) accessPointDetail.getWidget(
-						i, 2)).getName();
+				String attributeName = ((Label) accessPointDetail.getWidget(
+						i, 0)).getText();
 				dtoValue.addRow(attributeName, null, null, null, textBoxValue);
 			}
 		}

@@ -348,16 +348,16 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	@SuppressWarnings("unchecked")
 	@Override
 	public DtoValueContainer saveDtoValueContainer(DtoValueContainer dtoValue) {
-		Class<AccessPoint> cls = null;
+		Class<?> cls = null;
 		DtoValueContainer dtoVal = new DtoValueContainer();
 		AccessPointDao apDao = new AccessPointDao();
 		AccessPoint ap = apDao.getByKey(dtoValue.getKeyId());
 		try {
-			cls = (Class<AccessPoint>) Class.forName(AccessPointDto.class.getName());
+			cls = ap.getClass();
 			Integer i = 0;
 			for (Row row : dtoValue.getRows()) {
 				String fieldToSet = row.getFieldName();
-				String value = row.getFieldDisplayName();
+				String value = row.getFieldValue();
 				for (Field item : cls.getDeclaredFields()) {
 					item.setAccessible(true);
 					String fieldName = item.getName();
@@ -365,19 +365,17 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 					if (fieldName.equals(fieldToSet)) {
 						log.log(Level.INFO, "setting : " + fieldName);
 						if (fieldType.equals("String")) {
-							item.set(ap, value);
+							item.set(ap, new String(value));
 						} else if (fieldType.equals("Integer")) {
-							item.setInt(ap, Integer.parseInt(value));
+							item.setInt(ap, new Integer(value));
 						} else if (fieldType.equals("Double")) {
-							item.setDouble(ap,Double.parseDouble(value));
+							item.setDouble(ap, new Double(value));
 						} else if (fieldType.equals("Boolean")) {
-							item.setBoolean(ap, Boolean.parseBoolean(value));
+							item.setBoolean(ap, new Boolean(value));
 						}
 					}
 				}
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
