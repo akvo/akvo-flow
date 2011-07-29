@@ -24,6 +24,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.Status;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -37,11 +38,13 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(PlacemarkServlet.class
 			.getName());
 	private static final String AP_DOMAIN = "accessPoint";
-
+	private static final int CACHE_EXPIRY_DEFAULT = 3600;
+	private static final String CACHE_EXP_PROP = "cacheExpirySeconds";
 	private KMLGenerator kmlGen = new KMLGenerator();
 	private Cache cache;
 	private AccessPointDao apDao;
 	private SurveyedLocaleDao localeDao;
+	private int cacheExpirySec = CACHE_EXPIRY_DEFAULT;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public PlacemarkServlet() {
@@ -52,7 +55,18 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		try {
 			cacheFactory = CacheManager.getInstance().getCacheFactory();
 			Map configMap = new HashMap();
-			configMap.put(GCacheFactory.EXPIRATION_DELTA, 3600);
+			String cacheExpString = PropertyUtil.getProperty(CACHE_EXP_PROP);
+			if (cacheExpString != null) {
+				try {
+					cacheExpirySec = Integer.parseInt(cacheExpString);
+				} catch (Exception e) {
+					// no-op
+				}
+			}
+			if (cacheExpirySec <= 0) {
+				cacheExpirySec = CACHE_EXPIRY_DEFAULT;
+			}
+			configMap.put(GCacheFactory.EXPIRATION_DELTA, cacheExpirySec);
 			configMap.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
 			cache = cacheFactory.createCache(Collections.emptyMap());
 		} catch (CacheException e) {
@@ -184,15 +198,16 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 								piReq.getLat1(), piReq.getLat2(),
 								piReq.getLong1(), piReq.getLong2(),
 								piReq.getCursor(), desiredResults);
-				response = (PlacemarkRestResponse) convertLocaleToResponse(results,
-						piReq.getNeedDetailsFlag(),
-						SurveyedLocaleDao.getCursor(results), piReq.getCursor(),
-						piReq.getDisplay());
+				response = (PlacemarkRestResponse) convertLocaleToResponse(
+						results, piReq.getNeedDetailsFlag(),
+						SurveyedLocaleDao.getCursor(results),
+						piReq.getCursor(), piReq.getDisplay());
 			} else {
 				// ListPlacemarks Action
 				List<SurveyedLocale> results = localeDao.listBySubLevel(
-						piReq.getCountry(), null, null, piReq.getPointTypeString(), null,
-						piReq.getCursor(), desiredResults);
+						piReq.getCountry(), null, null,
+						piReq.getPointTypeString(), null, piReq.getCursor(),
+						desiredResults);
 				response = (PlacemarkRestResponse) convertLocaleToResponse(
 						results, piReq.getNeedDetailsFlag(),
 						SurveyedLocaleDao.getCursor(results),
@@ -240,7 +255,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<SurveyedLocale> localeList, Boolean needDetailsFlag,
 			String cursor, String oldCursor, String display) {
 		PlacemarkRestResponse resp = new PlacemarkRestResponse();
-		if (needDetailsFlag == null){
+		if (needDetailsFlag == null) {
 			needDetailsFlag = true;
 		}
 		if (localeList != null) {
@@ -278,9 +293,9 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		if (needDetailsFlag) {
 			String placemarkString = null;
 			try {
-				
-				 placemarkString = kmlGen.bindPlacemark(ap,
-				 "localePlacemarkExternal.vm", display);							
+
+				placemarkString = kmlGen.bindPlacemark(ap,
+						"localePlacemarkExternal.vm", display);
 				pdto.setPlacemarkContents(placemarkString);
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "Could not bind placemarks", e);

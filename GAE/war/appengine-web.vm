@@ -55,5 +55,6 @@
 		<property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
 		<property name="optionRenderMode" value="radio"/>
 		<property name="backendpublish" value="false"/>
+		<property name="cacheExpirySeconds" value="3600"/>
 	</system-properties>
 </appengine-web-app>
