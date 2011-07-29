@@ -1122,6 +1122,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		if (getCurrentUser().isAdmin()) {
 			if (tp.getWidgetCount() == 4) {
 				accessPointDetail = (FlexTable) tp.getWidget(4);
+				
 				DtoValueContainer dtoValue = getAllAttributeAP(apDto,
 						accessPointDetail);
 				svc.saveDtoValueContainer(dtoValue,
@@ -1146,7 +1147,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	private DtoValueContainer getAllAttributeAP(AccessPointDto apDto,
 			FlexTable accessPointDetail) {
 		DtoValueContainer dtoValue = new DtoValueContainer();
-		for (Integer i = 0; i < accessPointDetail.getRowCount(); i++) {
+		dtoValue.setKeyId(apDto.getKeyId());
+		for (Integer i=0;i < accessPointDetail.getRowCount(); i++) {
 			TextBox dirtyFlag = (TextBox) accessPointDetail.getWidget(i, 2);
 			if (dirtyFlag.getText().trim().equals("true")) {
 				String textBoxValue = ((TextBox) accessPointDetail.getWidget(i,

@@ -1097,5 +1097,4 @@ public class AccessPointHelper {
 
 		}
 	}
-
 }

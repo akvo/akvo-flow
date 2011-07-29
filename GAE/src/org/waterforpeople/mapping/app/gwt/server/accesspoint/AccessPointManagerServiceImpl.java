@@ -19,6 +19,7 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreCom
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDetailDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.DtoValueContainer;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.Row;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.app.util.AccessPointServiceSupport;
 import org.waterforpeople.mapping.dao.AccessPointDao;
@@ -344,39 +345,47 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		return dtoVal;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public DtoValueContainer saveDtoValueContainer(DtoValueContainer dtoValue) {
-		Class cls = null;
+		Class<AccessPoint> cls = null;
 		DtoValueContainer dtoVal = new DtoValueContainer();
-
+		AccessPointDao apDao = new AccessPointDao();
+		AccessPoint ap = apDao.getByKey(dtoValue.getKeyId());
 		try {
-			cls = Class.forName(AccessPointDto.class.getName());
+			cls = (Class<AccessPoint>) Class.forName(AccessPointDto.class.getName());
 			Integer i = 0;
-			for (Field item : cls.getDeclaredFields()) {
-				item.setAccessible(true);
-				String fieldName = item.getName();
-				// ToDo: Replace with a mappable annotation and read displayName
-				String fieldDisplayName = item.getName();
-				Integer order = i;
-				String fieldType = item.getType().getSimpleName();
-				String fieldValue = null;
-				// if (item.set(dtValue) != null)
-				// fieldValue = item.get(accessPointDto).toString();
-				dtoVal.addRow(fieldName, fieldDisplayName, order, fieldType,
-						fieldValue);
-				i++;
+			for (Row row : dtoValue.getRows()) {
+				String fieldToSet = row.getFieldName();
+				String value = row.getFieldDisplayName();
+				for (Field item : cls.getDeclaredFields()) {
+					item.setAccessible(true);
+					String fieldName = item.getName();
+					String fieldType = item.getType().getSimpleName();
+					if (fieldName.equals(fieldToSet)) {
+						log.log(Level.INFO, "setting : " + fieldName);
+						if (fieldType.equals("String")) {
+							item.set(ap, value);
+						} else if (fieldType.equals("Integer")) {
+							item.setInt(ap, Integer.parseInt(value));
+						} else if (fieldType.equals("Double")) {
+							item.setDouble(ap,Double.parseDouble(value));
+						} else if (fieldType.equals("Boolean")) {
+							item.setBoolean(ap, Boolean.parseBoolean(value));
+						}
+					}
+				}
 			}
-
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		// } catch (IllegalAccessException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		apDao.save(ap);
 		return dtoVal;
 	}
 
@@ -398,8 +407,10 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			apsdto.setAccessPointId(item.getAccessPointId());
 			apsdto.setComputationDate(item.getComputationDate());
 			apsdto.setScore(item.getScore());
-			BaseDAO<StandardScoreBucket> standardScoreBucketDao= new BaseDAO<StandardScoreBucket>(StandardScoreBucket.class);
-			StandardScoreBucket ssb = standardScoreBucketDao.getByKey(item.getScoreBucketId());
+			BaseDAO<StandardScoreBucket> standardScoreBucketDao = new BaseDAO<StandardScoreBucket>(
+					StandardScoreBucket.class);
+			StandardScoreBucket ssb = standardScoreBucketDao.getByKey(item
+					.getScoreBucketId());
 			apsdto.setScoreBucket(ssb.getName());
 			for (AccessPointScoreComputationItem apsci : item
 					.getScoreComputationItems()) {
