@@ -358,7 +358,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		final Image moveUp = new Image("/images/greenuparrow.png");
 		final Image moveDown = new Image("/images/greendownarrow.png");
 		final Button deleteButton = new Button(TEXT_CONSTANTS.remove());
-
+		if(isEditable){
+			optText.setFocus(true);
+		}
 		ClickHandler optionClickHandler = new ClickHandler() {
 
 			@Override
