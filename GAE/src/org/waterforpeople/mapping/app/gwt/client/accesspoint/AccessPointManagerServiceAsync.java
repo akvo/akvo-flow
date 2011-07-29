@@ -58,4 +58,7 @@ public interface AccessPointManagerServiceAsync {
 
 	void saveDtoValueContainer(DtoValueContainer dtoValue,
 			AsyncCallback<DtoValueContainer> callback);
+
+	void scorePointDynamic(AccessPointDto accessPointDto,
+			AsyncCallback<ArrayList<AccessPointScoreDetailDto>> callback);
 }

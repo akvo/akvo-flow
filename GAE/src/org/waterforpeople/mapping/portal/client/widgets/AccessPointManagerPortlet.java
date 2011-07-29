@@ -387,9 +387,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 					@Override
 					public void onClick(ClickEvent event) {
-						svc.scorePoint(
+						svc.scorePointDynamic(
 								buildAccessPointDto(),
-								new AsyncCallback<ArrayList<AccessPointScoreComputationItemDto>>() {
+								new AsyncCallback<ArrayList<AccessPointScoreDetailDto>>() {
 
 									@Override
 									public void onFailure(Throwable caught) {
@@ -399,19 +399,70 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 									@Override
 									public void onSuccess(
-											ArrayList<AccessPointScoreComputationItemDto> result) {
-										TextArea scoreItems = (TextArea) accessPointDetail
-												.getWidget(3, 1);
-										StringBuilder sb = new StringBuilder();
-										for (AccessPointScoreComputationItemDto scoreitem : result) {
-											sb.append(scoreitem.getScoreItem()
-													+ ":"
-													+ scoreitem
-															.getScoreDetailMessage()
-													+ "\n");
-										}
-										scoreItems.setText(sb.toString());
+											ArrayList<AccessPointScoreDetailDto> result) {
+										if (result != null && !result.isEmpty()) {
+											Grid scoreTable = new Grid();
+											scoreTable.resizeRows(1);
+											scoreTable.resizeColumns(3);
+											Label scoreBucketName = new Label(
+													"Score Bucket Name");
+											scoreTable.setWidget(0, 0,
+													scoreBucketName);
+											Label score = new Label("Score");
+											scoreTable.setWidget(0, 1, score);
+											Label messagelbl = new Label(
+													"Message");
+											scoreTable.setWidget(0, 2,
+													messagelbl);
+											Integer totalScore = 0;
 
+											for (AccessPointScoreDetailDto item : result) {
+												Label scoreBucket = new Label(
+														item.getScoreBucket());
+												Integer i = 1;
+												scoreTable.resizeRows(i + 1);
+												scoreTable.setWidget(i, 0,
+														scoreBucket);
+												if (item.getScoreComputationItems() != null) {
+													for (AccessPointScoreComputationItemDto scoreitem : item
+															.getScoreComputationItems()) {
+														scoreTable
+																.resizeRows(i + 1);
+														TextBox point = new TextBox();
+														if (scoreitem
+																.getScoreItem() != null) {
+															point.setText(scoreitem
+																	.getScoreItem()
+																	.toString());
+															totalScore = totalScore
+																	+ scoreitem
+																			.getScoreItem();
+														}
+														TextBox message = new TextBox();
+														if (scoreitem
+																.getScoreDetailMessage() != null)
+															message.setText(scoreitem
+																	.getScoreDetailMessage());
+														scoreTable.setWidget(i,
+																0, point);
+														scoreTable.setWidget(i,
+																1, message);
+														i++;
+													}
+												}
+												Label totalScorelbl = new Label(
+														"Total Score");
+												TextBox totalScoreTB = new TextBox();
+												totalScoreTB.setText(totalScore
+														.toString());
+												scoreTable.setWidget(i, 0,
+														totalScorelbl);
+												scoreTable.setWidget(i, 1,
+														totalScoreTB);
+											}
+											accessPointDetail.setWidget(5, 1,
+													scoreTable);
+										}
 									}
 								});
 					}
@@ -1069,18 +1120,24 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		apDto = getAttributeAP(apDto, accessPointDetail);
 
 		if (getCurrentUser().isAdmin()) {
-			DtoValueContainer dtoValue = getAllAttributeAP(apDto, accessPointDetail);
-			svc.saveDtoValueContainer(dtoValue, new AsyncCallback<DtoValueContainer>(){
+			if (tp.getWidgetCount() == 4) {
+				accessPointDetail = (FlexTable) tp.getWidget(4);
+				DtoValueContainer dtoValue = getAllAttributeAP(apDto,
+						accessPointDetail);
+				svc.saveDtoValueContainer(dtoValue,
+						new AsyncCallback<DtoValueContainer>() {
 
-				@Override
-				public void onFailure(Throwable caught) {
-					Window.alert("Failed to Save");	
-				}
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("Failed to Save");
+							}
 
-				@Override
-				public void onSuccess(DtoValueContainer result) {
-					Window.alert("Saved");
-				}});
+							@Override
+							public void onSuccess(DtoValueContainer result) {
+								Window.alert("Saved");
+							}
+						});
+			}
 		}
 
 		return apDto;
@@ -1090,10 +1147,12 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			FlexTable accessPointDetail) {
 		DtoValueContainer dtoValue = new DtoValueContainer();
 		for (Integer i = 0; i < accessPointDetail.getRowCount(); i++) {
-			TextBox dirtyFlag = (TextBox)accessPointDetail.getWidget(i, 2);
-			if(dirtyFlag.getText().trim().equals("true")){
-				String textBoxValue = ((TextBox)accessPointDetail.getWidget(i, 1)).getText().trim();
-				String attributeName = ((TextBox)accessPointDetail.getWidget(i, 2)).getName();
+			TextBox dirtyFlag = (TextBox) accessPointDetail.getWidget(i, 2);
+			if (dirtyFlag.getText().trim().equals("true")) {
+				String textBoxValue = ((TextBox) accessPointDetail.getWidget(i,
+						1)).getText().trim();
+				String attributeName = ((TextBox) accessPointDetail.getWidget(
+						i, 2)).getName();
 				dtoValue.addRow(attributeName, null, null, null, textBoxValue);
 			}
 		}

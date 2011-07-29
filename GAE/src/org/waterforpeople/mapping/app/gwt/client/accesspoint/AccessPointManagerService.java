@@ -41,6 +41,7 @@ public interface AccessPointManagerService extends RemoteService {
 	String returnS3Path();
 	
 	ArrayList<AccessPointScoreComputationItemDto> scorePoint(AccessPointDto accessPointDto);
+	ArrayList<AccessPointScoreDetailDto> scorePointDynamic(AccessPointDto accessPointDto); 
 	DtoValueContainer getAccessPointDtoInfo(AccessPointDto accessPointDto);
 	DtoValueContainer saveDtoValueContainer(DtoValueContainer dtoValue);
 }

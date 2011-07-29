@@ -19,7 +19,7 @@ public class AccessPointScoreDetailDto extends BaseDto implements Serializable  
 	private ArrayList<AccessPointScoreComputationItemDto> scoreComputationItems = null;
 	private String status = null;
 	private Date computationDate = null;
-
+	private String scoreBucket = null;
 	public Long getAccessPointId() {
 		return accessPointId;
 	}
@@ -68,6 +68,14 @@ public class AccessPointScoreDetailDto extends BaseDto implements Serializable  
 
 	public Date getComputationDate() {
 		return computationDate;
+	}
+
+	public void setScoreBucket(String scoreBucket) {
+		this.scoreBucket = scoreBucket;
+	}
+
+	public String getScoreBucket() {
+		return scoreBucket;
 	}
 
 }

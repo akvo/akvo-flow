@@ -776,153 +776,157 @@ public class AccessPointHelper {
 		String criteriaType = item.getCriteriaType();
 		String scoreItemMessage = null;
 
-		item.setEvaluateField(StringUtil.capitalizeFirstCharacterString(item
-				.getEvaluateField()));
-
-		if (criteriaType.equals("String")) {
-			Method m = AccessPoint.class.getMethod(
-					"get" + item.getEvaluateField(), null);
-			String value = (String) m.invoke(ap, null);
-			if (item.getPositiveOperator().equals("==")) {
-				if (item.getPositiveCriteria().equals(value)) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getPositiveOperator().equals("!=")) {
-				if (!item.getPositiveCriteria().equals(value)) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getNegativeOperator().equals("==")) {
-				if (item.getNegativeCriteria().equals(value)) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
-			} else if (item.getNegativeOperator().equals("!=")) {
-				if (!item.getNegativeCriteria().equals(value)) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
+		if (item.getCriteriaType().equals("Distance")) {
+			if (ap.getNumberOutsideAcceptableDistance() != null
+					&& ap.getNumberOutsideAcceptableDistance() == 0) {
+				score = score + item.getPositiveScore();
+				scoreItemMessage = item.getPositiveMessage();
+			} else {
+				scoreItemMessage = item.getNegativeMessage();
 			}
-		} else if (criteriaType.equals("Boolean")) {
-			Method m = AccessPoint.class.getMethod(
-					"get" + item.getEvaluateField(), null);
-			Boolean value = null;
-			String type = m.getReturnType().toString();
-			if (type.equals("class java.lang.Boolean")) {
-				value = Boolean.parseBoolean(m.invoke(ap, null).toString());
+		} else {
+			item.setEvaluateField(StringUtil
+					.capitalizeFirstCharacterString(item.getEvaluateField()));
+			if (criteriaType.equals("String")) {
+				Method m = AccessPoint.class.getMethod(
+						"get" + item.getEvaluateField(), null);
+				String value = (String) m.invoke(ap, null);
 				if (item.getPositiveOperator().equals("==")) {
-					if (Boolean.parseBoolean(item.getPositiveCriteria()) == value) {
+					if (item.getPositiveCriteria().equals(value)) {
 						score = score + item.getPositiveScore();
 						scoreItemMessage = item.getPositiveMessage();
 					}
 				} else if (item.getPositiveOperator().equals("!=")) {
-					if (Boolean.parseBoolean(item.getPositiveCriteria()) != value) {
+					if (!item.getPositiveCriteria().equals(value)) {
 						score = score + item.getPositiveScore();
 						scoreItemMessage = item.getPositiveMessage();
 					}
-				}
-				if (item.getNegativeOperator().equals("==")) {
-					if (Boolean.parseBoolean(item.getNegativeCriteria()) == value) {
+				} else if (item.getNegativeOperator().equals("==")) {
+					if (item.getNegativeCriteria().equals(value)) {
 						score = score + item.getNegativeScore();
 						scoreItemMessage = item.getNegativeMessage();
 					}
 				} else if (item.getNegativeOperator().equals("!=")) {
-					if (Boolean.parseBoolean(item.getNegativeCriteria()) != value) {
+					if (!item.getNegativeCriteria().equals(value)) {
 						score = score + item.getNegativeScore();
 						scoreItemMessage = item.getNegativeMessage();
 					}
+				}
+			} else if (criteriaType.equals("Boolean")) {
+				Method m = AccessPoint.class.getMethod(
+						"get" + item.getEvaluateField(), null);
+				Boolean value = null;
+				String type = m.getReturnType().toString();
+				if (type.equals("class java.lang.Boolean")) {
+					value = Boolean.parseBoolean(m.invoke(ap, null).toString());
+					if (item.getPositiveOperator().equals("==")) {
+						if (Boolean.parseBoolean(item.getPositiveCriteria()) == value) {
+							score = score + item.getPositiveScore();
+							scoreItemMessage = item.getPositiveMessage();
+						}
+					} else if (item.getPositiveOperator().equals("!=")) {
+						if (Boolean.parseBoolean(item.getPositiveCriteria()) != value) {
+							score = score + item.getPositiveScore();
+							scoreItemMessage = item.getPositiveMessage();
+						}
+					}
+					if (item.getNegativeOperator() != null
+							&& item.getNegativeOperator().equals("==")) {
+						if (Boolean.parseBoolean(item.getNegativeCriteria()) == value) {
+							score = score + item.getNegativeScore();
+							scoreItemMessage = item.getNegativeMessage();
+						}
+					} else if (item.getNegativeOperator() != null
+							&& item.getNegativeOperator().equals("!=")) {
+						if (Boolean.parseBoolean(item.getNegativeCriteria()) != value) {
+							score = score + item.getNegativeScore();
+							scoreItemMessage = item.getNegativeMessage();
+						}
 
+					}
 				}
-			}
-		} else if (criteriaType.equals("Integer")
-				|| criteriaType.equals("Number")) {
-			Method m = AccessPoint.class.getMethod(
-					"get" + item.getEvaluateField(), null);
-			Float value = null;
-			String type = m.getReturnType().toString();
-			if (m.getReturnType().toString().equals("class java.lang.Long"))
-				value = Float
-						.parseFloat(((Long) m.invoke(ap, null)).toString());
-			else if (m.getReturnType().toString()
-					.equals("class java.lang.Integer"))
-				value = Float.parseFloat(((Integer) m.invoke(ap, null))
-						.toString());
-			else if (m.getReturnType().toString()
-					.equals("class java.lang.Double"))
-				value = Float.parseFloat(((Double) m.invoke(ap, null))
-						.toString());
-			if (item.getPositiveOperator().equals("<=")) {
-				if (Integer.parseInt(item.getPositiveCriteria()) <= value) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getPositiveOperator().equals("<")) {
-				if (Integer.parseInt(item.getPositiveCriteria()) < value) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getPositiveOperator().equals("==")) {
-				if (Integer.parseInt(item.getPositiveCriteria()) == value) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getPositiveOperator().equals("!=")) {
-				if (Integer.parseInt(item.getPositiveCriteria()) != value) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getPositiveOperator().equals(">=")) {
-				if (Integer.parseInt(item.getPositiveCriteria()) >= value) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getPositiveOperator().equals(">")) {
-				if (Integer.parseInt(item.getPositiveCriteria()) > value) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				}
-			} else if (item.getNegativeOperator().equals("<=")) {
-				if (Integer.parseInt(item.getNegativeCriteria()) <= value) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
-			} else if (item.getNegativeOperator().equals("<")) {
-				if (Integer.parseInt(item.getNegativeCriteria()) < value) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
-			} else if (item.getNegativeOperator().equals("==")) {
-				if (Integer.parseInt(item.getNegativeCriteria()) == value) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
-			} else if (item.getNegativeOperator().equals("!=")) {
-				if (Integer.parseInt(item.getNegativeCriteria()) != value) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
-			} else if (item.getNegativeOperator().equals(">=")) {
-				if (Integer.parseInt(item.getNegativeCriteria()) >= value) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
-			} else if (item.getNegativeOperator().equals(">")) {
-				if (Integer.parseInt(item.getNegativeCriteria()) > value) {
-					score = score + item.getNegativeScore();
-					scoreItemMessage = item.getNegativeMessage();
-				}
-			} else if (criteriaType.equals("Distance")) {
-				// ToDo implement
-				if (ap.getNumberOutsideAcceptableDistance() == 0) {
-					score = score + item.getPositiveScore();
-					scoreItemMessage = item.getPositiveMessage();
-				} else {
-					scoreItemMessage = item.getNegativeMessage();
+			} else if (criteriaType.equals("Integer")
+					|| criteriaType.equals("Number")) {
+				Method m = AccessPoint.class.getMethod(
+						"get" + item.getEvaluateField(), null);
+				Float value = null;
+				String type = m.getReturnType().toString();
+				if (m.getReturnType().toString().equals("class java.lang.Long"))
+					value = Float.parseFloat(((Long) m.invoke(ap, null))
+							.toString());
+				else if (m.getReturnType().toString()
+						.equals("class java.lang.Integer"))
+					value = Float.parseFloat(((Integer) m.invoke(ap, null))
+							.toString());
+				else if (m.getReturnType().toString()
+						.equals("class java.lang.Double"))
+					value = Float.parseFloat(((Double) m.invoke(ap, null))
+							.toString());
+				if (item.getPositiveOperator().equals("<=")) {
+					if (Integer.parseInt(item.getPositiveCriteria()) <= value) {
+						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
+					}
+				} else if (item.getPositiveOperator().equals("<")) {
+					if (Integer.parseInt(item.getPositiveCriteria()) < value) {
+						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
+					}
+				} else if (item.getPositiveOperator().equals("==")) {
+					if (Integer.parseInt(item.getPositiveCriteria()) == value) {
+						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
+					}
+				} else if (item.getPositiveOperator().equals("!=")) {
+					if (Integer.parseInt(item.getPositiveCriteria()) != value) {
+						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
+					}
+				} else if (item.getPositiveOperator().equals(">=")) {
+					if (Integer.parseInt(item.getPositiveCriteria()) >= value) {
+						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
+					}
+				} else if (item.getPositiveOperator().equals(">")) {
+					if (Integer.parseInt(item.getPositiveCriteria()) > value) {
+						score = score + item.getPositiveScore();
+						scoreItemMessage = item.getPositiveMessage();
+					}
+				} else if (item.getNegativeOperator().equals("<=")) {
+					if (Integer.parseInt(item.getNegativeCriteria()) <= value) {
+						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
+					}
+				} else if (item.getNegativeOperator().equals("<")) {
+					if (Integer.parseInt(item.getNegativeCriteria()) < value) {
+						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
+					}
+				} else if (item.getNegativeOperator().equals("==")) {
+					if (Integer.parseInt(item.getNegativeCriteria()) == value) {
+						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
+					}
+				} else if (item.getNegativeOperator().equals("!=")) {
+					if (Integer.parseInt(item.getNegativeCriteria()) != value) {
+						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
+					}
+				} else if (item.getNegativeOperator().equals(">=")) {
+					if (Integer.parseInt(item.getNegativeCriteria()) >= value) {
+						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
+					}
+				} else if (item.getNegativeOperator().equals(">")) {
+					if (Integer.parseInt(item.getNegativeCriteria()) > value) {
+						score = score + item.getNegativeScore();
+						scoreItemMessage = item.getNegativeMessage();
+					}
 				}
 			}
 		}
 		return new AccessPointScoreComputationItem(score, scoreItemMessage);
+
 	}
 
 	public static AccessPoint scoreAccessPoint(AccessPoint ap) {
@@ -1051,7 +1055,8 @@ public class AccessPointHelper {
 						AccessPointType.HOUSEHOLD.toString(), null, "all");
 				if (apList != null && !apList.isEmpty()) {
 					for (AccessPoint hh : apList) {
-						Double distance = CoordinateUtilities.computeDistance(ap, hh);
+						Double distance = CoordinateUtilities.computeDistance(
+								ap, hh);
 						if (distance != null && distance < 500) {
 							ap.setNumberWithinAcceptableDistance(ap
 									.getNumberWithinAcceptableDistance() + 1);
@@ -1070,9 +1075,11 @@ public class AccessPointHelper {
 				AccessPoint minDistanceWaterPoint = null;
 				Double minDistance = null;
 				for (AccessPoint wp : apList) {
-					Double distance = CoordinateUtilities.computeDistance(ap, wp);
+					Double distance = CoordinateUtilities.computeDistance(ap,
+							wp);
 					if (distance < minDistance || minDistance == null) {
-						minDistance = CoordinateUtilities.computeDistance(ap, wp);
+						minDistance = CoordinateUtilities.computeDistance(ap,
+								wp);
 						minDistanceWaterPoint = wp;
 					}
 				}
@@ -1091,5 +1098,4 @@ public class AccessPointHelper {
 		}
 	}
 
-	
 }

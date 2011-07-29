@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreComputationItemDto;
+import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDetailDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.DtoValueContainer;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
@@ -29,11 +30,13 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import services.S3Driver;
 
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.gallatinsystems.image.ImageUtils;
+import com.gallatinsystems.standards.domain.StandardScoreBucket;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AccessPointManagerServiceImpl extends RemoteServiceServlet
@@ -321,7 +324,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				String fieldDisplayName = item.getName();
 				Integer order = i;
 				String fieldType = item.getType().getSimpleName();
-				String fieldValue=null;
+				String fieldValue = null;
 				if (item.get(accessPointDto) != null)
 					fieldValue = item.get(accessPointDto).toString();
 				dtoVal.addRow(fieldName, fieldDisplayName, order, fieldType,
@@ -356,9 +359,9 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 				String fieldDisplayName = item.getName();
 				Integer order = i;
 				String fieldType = item.getType().getSimpleName();
-				String fieldValue=null;
-//				if (item.set(dtValue) != null)
-//					fieldValue = item.get(accessPointDto).toString();
+				String fieldValue = null;
+				// if (item.set(dtValue) != null)
+				// fieldValue = item.get(accessPointDto).toString();
 				dtoVal.addRow(fieldName, fieldDisplayName, order, fieldType,
 						fieldValue);
 				i++;
@@ -370,10 +373,42 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// } catch (IllegalAccessException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		return dtoVal;
+	}
+
+	@Override
+	public ArrayList<AccessPointScoreDetailDto> scorePointDynamic(
+			AccessPointDto accessPointDto) {
+		HashMap<Integer, String> scoreDetails = new HashMap<Integer, String>();
+		AccessPointHelper aph = new AccessPointHelper();
+		AccessPoint ap = new AccessPoint();
+		ap = AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
+		ap = aph.scoreAccessPointDynamic(ap);
+		List<AccessPointScoreDetail> apsdList = ap.getApScoreDetailList();
+		Date latestDate = null;
+		AccessPointScoreDetail selectedItem = null;
+
+		ArrayList<AccessPointScoreDetailDto> apsdDtoList = new ArrayList<AccessPointScoreDetailDto>();
+		for (AccessPointScoreDetail item : apsdList) {
+			AccessPointScoreDetailDto apsdto = new AccessPointScoreDetailDto();
+			apsdto.setAccessPointId(item.getAccessPointId());
+			apsdto.setComputationDate(item.getComputationDate());
+			apsdto.setScore(item.getScore());
+			BaseDAO<StandardScoreBucket> standardScoreBucketDao= new BaseDAO<StandardScoreBucket>(StandardScoreBucket.class);
+			StandardScoreBucket ssb = standardScoreBucketDao.getByKey(item.getScoreBucketId());
+			apsdto.setScoreBucket(ssb.getName());
+			for (AccessPointScoreComputationItem apsci : item
+					.getScoreComputationItems()) {
+				AccessPointScoreComputationItemDto apsciDto = new AccessPointScoreComputationItemDto();
+				apsciDto.setScoreDetailMessage(apsci.getScoreDetailMessage());
+				apsciDto.setScoreItem(apsci.getScoreItem());
+			}
+			apsdDtoList.add(apsdto);
+		}
+		return apsdDtoList;
 	}
 }
