@@ -556,5 +556,7 @@ public interface TextConstants extends Constants{
 	public String reportGeneration();
 	public String surveyApproval();
 	public String household();
+	public String submitter();
+	public String source();
 }
 

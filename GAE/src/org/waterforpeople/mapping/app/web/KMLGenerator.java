@@ -70,6 +70,11 @@ public class KMLGenerator {
 	public static final String ORGANIZATION_KEY = "organization";
 	public static final String ORGANIZATION = PropertyUtil
 			.getProperty("organization");
+	private static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat(
+			"dd-MM-yyyy HH:mm:ss z");
+
+	public static final String useLongDates = PropertyUtil
+			.getProperty("useLongDates");
 
 	public KMLGenerator() {
 		engine = new VelocityEngine();
@@ -478,8 +483,13 @@ public class KMLGenerator {
 			String timestamp = DateFormatUtils.formatUTC(
 					ap.getCreatedDateTime(),
 					DateFormatUtils.ISO_DATE_FORMAT.getPattern());
-			String formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
-					.format(ap.getCreatedDateTime());
+			String formattedDate = null;
+			if ("true".equals(useLongDates)) {
+				formattedDate = LONG_DATE_FORMAT.format(ap.getLastSurveyedDate());
+			} else {
+				formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
+				.format(ap.getLastSurveyedDate());							
+			}
 			context.put("collectionDate", formattedDate);
 			context.put("timestamp", timestamp);
 		}
@@ -508,17 +518,21 @@ public class KMLGenerator {
 				if (val.getStringValue() == null) {
 					valuesToBind.remove(val);
 				} else if (val.getStringValue().trim().toLowerCase()
-						.endsWith(".jpg") || val.getStringValue().trim().toLowerCase()
-						.endsWith(".jpeg")) {
+						.endsWith(".jpg")
+						|| val.getStringValue().trim().toLowerCase()
+								.endsWith(".jpeg")) {
 					String urlBase = val.getStringValue();
-					if(urlBase.contains("/")){
-						urlBase = urlBase.substring(urlBase.lastIndexOf("/")+1);
+					if (urlBase.contains("/")) {
+						urlBase = urlBase
+								.substring(urlBase.lastIndexOf("/") + 1);
 					}
-					if(!urlBase.toLowerCase().startsWith("http")){
-						if(urlBase.endsWith("/")){
-							urlBase = urlBase.substring(0,urlBase.length()-1);
+					if (!urlBase.toLowerCase().startsWith("http")) {
+						if (urlBase.endsWith("/")) {
+							urlBase = urlBase
+									.substring(0, urlBase.length() - 1);
 						}
-						urlBase = PropertyUtil.getProperty("photo_url_root")+urlBase;
+						urlBase = PropertyUtil.getProperty("photo_url_root")
+								+ urlBase;
 					}
 					context.put("photoUrl", urlBase);
 					foundPhoto = true;
@@ -559,9 +573,10 @@ public class KMLGenerator {
 			throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
-if(display != null && display.trim().equalsIgnoreCase(GOOGLE_EARTH_DISPLAY)){
-	vmName = "placemarkGoogleEarth.vm";
-}
+		if (display != null
+				&& display.trim().equalsIgnoreCase(GOOGLE_EARTH_DISPLAY)) {
+			vmName = "placemarkGoogleEarth.vm";
+		}
 		if (ap.getCountryCode() == null)
 			ap.setCountryCode("Unknown");
 		if (ap.getCountryCode() != null) {
@@ -904,7 +919,8 @@ if(display != null && display.trim().equalsIgnoreCase(GOOGLE_EARTH_DISPLAY)){
 			prefix = "sani";
 		} else if (AccessPointType.SCHOOL == type) {
 			prefix = "schwater";
-		} else if (AccessPointType.PUBLIC_INSTITUTION == type || AccessPointType.HEALTH_POSTS == type) {
+		} else if (AccessPointType.PUBLIC_INSTITUTION == type
+				|| AccessPointType.HEALTH_POSTS == type) {
 			prefix = "pubwater";
 		}
 		if (AccessPoint.Status.FUNCTIONING_HIGH == status) {

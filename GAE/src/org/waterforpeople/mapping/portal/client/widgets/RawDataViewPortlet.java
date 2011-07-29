@@ -65,7 +65,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			new DataTableHeader(TEXT_CONSTANTS.survey()),
 			new DataTableHeader(TEXT_CONSTANTS.surveyCode()),
 			new DataTableHeader(TEXT_CONSTANTS.collectionDate()),
-			new DataTableHeader(TEXT_CONSTANTS.approx()) };
+			new DataTableHeader(TEXT_CONSTANTS.approx()),
+			new DataTableHeader(TEXT_CONSTANTS.source()) };
+
 	private static final Integer PAGE_SIZE = 20;
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
@@ -478,6 +480,9 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		grid.setWidget(row, 4, ViewUtil.initLabel(item
 				.getApproximateLocationFlag() != null ? item
 				.getApproximateLocationFlag() : "False"));
+		grid.setWidget(row, 5,
+				ViewUtil.initLabel(item.getDeviceIdentifier() != null ? item
+						.getDeviceIdentifier() : ""));
 	}
 
 	@Override

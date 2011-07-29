@@ -3,6 +3,7 @@
 	<application>$instanceName</application>
 	<version>1</version>
 	<sessions-enabled>true</sessions-enabled>
+	<threadsafe>true</threadsafe>
 	<static-files>
 		<include path="/**.png" expiration="1000d 5h" />
 		<include path="/**.jpg" expiration="1000d 5h" />
@@ -56,5 +57,6 @@
 		<property name="optionRenderMode" value="radio"/>
 		<property name="backendpublish" value="false"/>
 		<property name="cacheExpirySeconds" value="3600"/>
+		<property name="useLongDates" value="false"/>
 	</system-properties>
 </appengine-web-app>
