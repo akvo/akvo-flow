@@ -124,6 +124,9 @@ public class AccessPointServiceSupport {
 		} else {
 			apDto.setPointType(AccessPointDto.AccessPointType.WATER_POINT);
 		}
+
+		apDto.setLocationTypeString(apCanonical.getLocationTypeString());
+
 		apDto.setScore(apCanonical.getScore());
 		apDto.setScoreComputationDate(apCanonical.getScoreComputationDate());
 		if (apCanonical.getApScoreDetailList() != null) {
@@ -229,7 +232,10 @@ public class AccessPointServiceSupport {
 		accessPoint.setNumberOfUsers(apDto.getNumberOfUsers());
 		accessPoint.setNumberOfLitersPerPersonPerDay(apDto
 				.getNumberOfLitersPerPersonPerDay());
-		accessPoint.setImprovedWaterPointFlag(apDto.getImprovedWaterPointFlag());
+		accessPoint
+				.setImprovedWaterPointFlag(apDto.getImprovedWaterPointFlag());
+		accessPoint.setLocationTypeString(apDto.getLocationTypeString());
+		
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else if (AccessPointDto.Status.FUNCTIONING_OK == apDto

@@ -1,5 +1,6 @@
 package com.gallatinsystems.standards.domain;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 import javax.jdo.annotations.PersistenceCapable;
@@ -34,6 +35,13 @@ public class StandardScoring extends BaseDomain {
 	private Integer neutralScore = null;
 	private String neutralMessage = null;
 	private Scope scoreScope  = null;
+	private Date effectiveStartDate = null;
+	private Date effectiveEndDate = null;
+	private Long scoreBucketId = null;
+	private String scoreBucket = null;
+	private Boolean negativeOverride = null;
+	
+
 	
 	public enum Scope {GLOBAL,COUNTRY,SUB_COUNTRY};
 	
@@ -61,12 +69,7 @@ public class StandardScoring extends BaseDomain {
 		this.neutralMessage = neutralMessage;
 	}
 
-	private Date effectiveStartDate = null;
-	private Date effectiveEndDate = null;
-	private Long scoreBucketId = null;
-	private Boolean negativeOverride = null;
 	
-
 	public Boolean getGlobalStandard() {
 		return globalStandard;
 	}
@@ -233,5 +236,44 @@ public class StandardScoring extends BaseDomain {
 
 	public Scope getScoreScope() {
 		return scoreScope;
+	}
+
+	public void setScoreBucket(String scoreBucket) {
+		this.scoreBucket = scoreBucket;
+	}
+
+	public String getScoreBucket() {
+		return scoreBucket;
+	}
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		String newLine = System.getProperty("line.separator");
+
+		result.append(this.getClass().getName());
+		result.append(" Object {");
+		result.append(newLine);
+
+		// determine fields declared in this class only (no fields of
+		// superclass)
+		Field[] fields = this.getClass().getDeclaredFields();
+
+		// print field names paired with their values
+		for (Field field : fields) {
+			field.setAccessible(true);
+			result.append("  ");
+			try {
+				result.append(field.getName());
+				result.append(": ");
+				// requires access to private field:
+				result.append(field.get(this));
+			} catch (IllegalAccessException ex) {
+				System.out.println(ex);
+			}
+			result.append(newLine);
+		}
+		result.append("}");
+
+		return result.toString();
 	}
 }

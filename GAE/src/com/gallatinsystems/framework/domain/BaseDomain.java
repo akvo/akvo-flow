@@ -1,6 +1,7 @@
 package com.gallatinsystems.framework.domain;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -14,12 +15,12 @@ import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 @Inheritance(strategy = InheritanceStrategy.SUBCLASS_TABLE)
-public abstract class BaseDomain implements Serializable{
-	
-	private static final long serialVersionUID = 7824199813334027150L; 
+public abstract class BaseDomain implements Serializable {
+
+	private static final long serialVersionUID = 7824199813334027150L;
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	protected Key key;	
+	protected Key key;
 	protected Date createdDateTime;
 	protected Date lastUpdateDateTime;
 	protected Long lastUpdateUserId;

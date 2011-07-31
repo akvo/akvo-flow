@@ -175,7 +175,6 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private Integer numberOfUsers= null;
 	@MappableField(displayName="Number of liters per person per day")
 	private Integer numberOfLitersPerPersonPerDay = null;
-	
 	@NotPersistent
 	private List<AccessPointScoreDetail> apScoreDetailList = null;
 
@@ -644,39 +643,12 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 		WATER_POINT, SANITATION_POINT, SCHOOL, HEALTH_POSTS, PUBLIC_INSTITUTION, HOUSEHOLD
 	}
 
+	public enum LocationType{
+		RURAL, URBAN, PERIURBAN
+	}
+	
 	public enum Status {
 		FUNCTIONING_HIGH, FUNCTIONING_OK, FUNCTIONING_WITH_PROBLEMS, BROKEN_DOWN, NO_IMPROVED_SYSTEM, OTHER, LATRINE_FULL, LATRINE_USED_TECH_PROBLEMS, LATRINE_NOT_USED_TECH_STRUCT_PROBLEMS, LATRINE_DO_NOT_KNOW, LATRINE_FUNCTIONAL
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
-
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
-
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
-
-		// print field names paired with their values
-		for (Field field : fields) {
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
-
-		return result.toString();
 	}
 
 	public void setTechnologyTypeOther(String technologyTypeOther) {
@@ -932,5 +904,36 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	public Integer getNumberOfLitersPerPersonPerDay() {
 		return numberOfLitersPerPersonPerDay;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		String newLine = System.getProperty("line.separator");
 
+		result.append(this.getClass().getName());
+		result.append(" Object {");
+		result.append(newLine);
+
+		// determine fields declared in this class only (no fields of
+		// superclass)
+		Field[] fields = this.getClass().getDeclaredFields();
+
+		// print field names paired with their values
+		for (Field field : fields) {
+			field.setAccessible(true);
+			result.append("  ");
+			try {
+				result.append(field.getName());
+				result.append(": ");
+				// requires access to private field:
+				result.append(field.get(this));
+			} catch (IllegalAccessException ex) {
+				System.out.println(ex);
+			}
+			result.append(newLine);
+		}
+		result.append("}");
+
+		return result.toString();
+	}
 }

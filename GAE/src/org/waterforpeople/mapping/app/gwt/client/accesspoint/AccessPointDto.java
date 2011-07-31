@@ -70,6 +70,9 @@ public class AccessPointDto extends BaseDto {
 	private Integer numberOfUsers= null;
 	private Integer numberOfLitersPerPersonPerDay = null;
 	
+	public enum LocationType{
+		URBAN, RURAL, PERIURBAN
+	}
 	
 	public Boolean getImprovedWaterPointFlag() {
 		return improvedWaterPointFlag;

@@ -652,6 +652,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				.getValue(scoreBucketsBox.getSelectedIndex()));
 		if (scoreBucketKey != null) {
 			item.setScoreBucketId(scoreBucketKey);
+			item.setScoreBucket(scoreBucketsBox.getItemText(scoreBucketsBox
+					.getSelectedIndex()));
 		}
 
 		ListBox global = (ListBox) grid.getWidget(row, 0);
@@ -701,7 +703,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			} else if (criteriaType.getSelectedIndex() == 3) {
 				// true/false
 				item.setCriteriaType("Boolean");
-			}else if(criteriaType.getSelectedIndex()==4){
+			} else if (criteriaType.getSelectedIndex() == 4) {
 				item.setCriteriaType("Distance");
 			}
 		}
@@ -861,13 +863,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 								posOper);
 						loadCriteriaOperators(grid, row, column + 6, "Number",
 								negOper);
-					} else if (target.getSelectedIndex() == 3
-							) {
+					} else if (target.getSelectedIndex() == 3) {
 						loadCriteriaOperators(grid, row, column + 2,
 								"NotNumber", posOper);
 						loadCriteriaOperators(grid, row, column + 6,
 								"NotNumber", negOper);
-					}else if(target.getSelectedIndex() == 4){
+					} else if (target.getSelectedIndex() == 4) {
 						loadCriteriaOperators(grid, row, column + 2,
 								"Distance", posOper);
 						loadCriteriaOperators(grid, row, column + 6,

@@ -34,6 +34,7 @@ public class StandardScoringDto extends BaseDto {
 	private Date effectiveStartDate = null;
 	private Date effectiveEndDate = null;
 	private Long scoreBucketId = null;
+	private String scoreBucket = null;
 	private Boolean negativeOverride = null;
 	private Scope scoreScope = null;
 
@@ -231,5 +232,13 @@ public class StandardScoringDto extends BaseDto {
 
 	public Scope getScoreScope() {
 		return scoreScope;
+	}
+
+	public void setScoreBucket(String scoreBucket) {
+		this.scoreBucket = scoreBucket;
+	}
+
+	public String getScoreBucket() {
+		return scoreBucket;
 	}
 }

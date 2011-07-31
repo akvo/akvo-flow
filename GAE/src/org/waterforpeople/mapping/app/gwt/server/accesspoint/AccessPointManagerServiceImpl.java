@@ -453,9 +453,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 			apsdto.setScoreBucket(ssb.getName());
 			for (AccessPointScoreComputationItem apsci : item
 					.getScoreComputationItems()) {
-				AccessPointScoreComputationItemDto apsciDto = new AccessPointScoreComputationItemDto();
-				apsciDto.setScoreDetailMessage(apsci.getScoreDetailMessage());
-				apsciDto.setScoreItem(apsci.getScoreItem());
+				apsdto.addScoreComputationItem(apsci.getScoreItem(), apsci.getScoreDetailMessage());
 			}
 			apsdDtoList.add(apsdto);
 		}

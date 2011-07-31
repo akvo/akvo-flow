@@ -381,8 +381,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				accessPointDetail.setWidget(3, 0,
 						ViewUtil.initLabel(TEXT_CONSTANTS.scoreMakeup()));
 				accessPointDetail.setWidget(3, 1, scoreItems);
-				
-			
+
 			}
 		}
 		Button scoreAccessPoint = new Button("Score Access Point");
@@ -410,31 +409,26 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 									scoreTable.resizeColumns(3);
 									Label scoreBucketName = new Label(
 											"Score Bucket Name");
-									scoreTable.setWidget(0, 0,
-											scoreBucketName);
+									scoreTable.setWidget(0, 0, scoreBucketName);
 									Label score = new Label("Score");
 									scoreTable.setWidget(0, 1, score);
-									Label messagelbl = new Label(
-											"Message");
-									scoreTable.setWidget(0, 2,
-											messagelbl);
+									Label messagelbl = new Label("Message");
+									scoreTable.setWidget(0, 2, messagelbl);
 									Integer totalScore = 0;
-
+									Integer i = 1;
 									for (AccessPointScoreDetailDto item : result) {
-										Label scoreBucket = new Label(
-												item.getScoreBucket());
-										Integer i = 1;
+										Label scoreBucket = new Label(item
+												.getScoreBucket());
+										
 										scoreTable.resizeRows(i + 1);
-										scoreTable.setWidget(i, 0,
-												scoreBucket);
+										scoreTable.setWidget(i, 0, scoreBucket);
+										i++;
 										if (item.getScoreComputationItems() != null) {
 											for (AccessPointScoreComputationItemDto scoreitem : item
 													.getScoreComputationItems()) {
-												scoreTable
-														.resizeRows(i + 1);
+												scoreTable.resizeRows(i + 1);
 												TextBox point = new TextBox();
-												if (scoreitem
-														.getScoreItem() != null) {
+												if (scoreitem.getScoreItem() != null) {
 													point.setText(scoreitem
 															.getScoreItem()
 															.toString());
@@ -443,17 +437,20 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 																	.getScoreItem();
 												}
 												TextBox message = new TextBox();
+												message.setWidth("35em");
 												if (scoreitem
 														.getScoreDetailMessage() != null)
 													message.setText(scoreitem
 															.getScoreDetailMessage());
-												scoreTable.setWidget(i,
-														0, point);
-												scoreTable.setWidget(i,
-														1, message);
+												scoreTable.setWidget(i, 1,
+														point);
+												scoreTable.setWidget(i, 2,
+														message);
 												i++;
 											}
 										}
+										i++;
+										scoreTable.resizeRows(i+1);
 										Label totalScorelbl = new Label(
 												"Total Score");
 										TextBox totalScoreTB = new TextBox();
@@ -461,8 +458,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 												.toString());
 										scoreTable.setWidget(i, 0,
 												totalScorelbl);
-										scoreTable.setWidget(i, 1,
-												totalScoreTB);
+										scoreTable
+												.setWidget(i, 1, totalScoreTB);
 									}
 									accessPointDetail.setWidget(5, 1,
 											scoreTable);
@@ -640,20 +637,22 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		if (accessPointDto != null && accessPointDto.getLatitude() != null
 				&& accessPointDto.getLongitude() != null) {
-			MapWidget map = new MapWidget();
-			map.setSize("180px", "180px");
-			map.addControl(new SmallZoomControl());
+			//Wrapping everything in a try catch so it can be tested without a network connection
 			try {
+				MapWidget map = new MapWidget();
+				map.setSize("180px", "180px");
+				map.addControl(new SmallZoomControl());
 				LatLng point = LatLng.newInstance(accessPointDto.getLatitude(),
 						accessPointDto.getLongitude());
 				map.addOverlay(new Marker(point));
 				map.setZoomLevel(12);
 				map.setCenter(point);
+				accessPointDetail.setWidget(0, 2, map);
+				accessPointDetail.getFlexCellFormatter().setRowSpan(0, 2, 5);
 			} catch (Throwable e) {
 				// swallow
 			}
-			accessPointDetail.setWidget(0, 2, map);
-			accessPointDetail.getFlexCellFormatter().setRowSpan(0, 2, 5);
+			
 		}
 
 		accessPointDetail.setWidget(4, 0,
@@ -1080,8 +1079,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 												.saveComplete());
 									}
 								});
-					}else{
-						attributeSave=false;
+					} else {
+						attributeSave = false;
 					}
 					accessPointDetail.setVisible(false);
 					statusLabel.setVisible(false);
@@ -1129,12 +1128,12 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		apDto = getAttributeAP(apDto, accessPointDetail);
 		if (getCurrentUser().isAdmin()) {
 			if (tp.getWidgetCount() == 5) {
-				
+
 				accessPointDetail = (FlexTable) tp.getWidget(4);
 
 				DtoValueContainer dtoValue = getAllAttributeAP(apDto,
 						accessPointDetail);
-				attributeSave=true;
+				attributeSave = true;
 				svc.saveDtoValueContainer(dtoValue,
 						new AsyncCallback<DtoValueContainer>() {
 
@@ -1146,7 +1145,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 							@Override
 							public void onSuccess(DtoValueContainer result) {
 								Window.alert("Saved");
-								
+
 							}
 						});
 			}
@@ -1164,8 +1163,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			if (dirtyFlag.getText().trim().equals("true")) {
 				String textBoxValue = ((TextBox) accessPointDetail.getWidget(i,
 						1)).getText().trim();
-				String attributeName = ((Label) accessPointDetail.getWidget(
-						i, 0)).getText();
+				String attributeName = ((Label) accessPointDetail.getWidget(i,
+						0)).getText();
 				dtoValue.addRow(attributeName, null, null, null, textBoxValue);
 			}
 		}

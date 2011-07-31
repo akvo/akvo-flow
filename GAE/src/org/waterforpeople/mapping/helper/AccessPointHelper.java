@@ -726,6 +726,7 @@ public class AccessPointHelper {
 		if (ssList != null && !ssList.isEmpty()) {
 			Integer score = 0;
 			for (StandardScoring item : ssList) {
+				
 				if (scoreBucketMap.containsKey(item.getScoreBucketId())) {
 					score = scoreBucketMap.get(item.getScoreBucketId());
 				} else {
@@ -756,7 +757,14 @@ public class AccessPointHelper {
 				scoreBucketMap.put(item.getScoreBucketId(), score);
 			}
 			for (Entry<Long, Integer> item : scoreBucketMap.entrySet()) {
+				String scoreBucketName = null;
+				for(StandardScoring ssitem: ssList){
+					if(ssitem.getScoreBucketId().equals(item.getKey())){
+						scoreBucketName=ssitem.getScoreBucket();
+					}
+				}
 				apss.setScoreBucketId(item.getKey());
+				apss.setScoreBucket(scoreBucketName);
 				apss.setScore(item.getValue());
 				apss.setScoreComputationItems(apsciList);
 				ap.setScore(score);
