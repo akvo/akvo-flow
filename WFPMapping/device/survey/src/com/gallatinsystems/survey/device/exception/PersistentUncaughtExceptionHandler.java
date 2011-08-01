@@ -96,6 +96,9 @@ public class PersistentUncaughtExceptionHandler implements
 			final Writer result = new StringWriter();
 			final PrintWriter printWriter = new PrintWriter(result);
 			exception.printStackTrace(printWriter);
+			if (exception.getMessage() != null) {
+				printWriter.print("\n" + exception.getMessage());
+			}
 
 			try {
 				FileOutputStream out = null;

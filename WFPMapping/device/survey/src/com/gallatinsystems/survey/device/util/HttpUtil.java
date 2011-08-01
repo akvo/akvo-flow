@@ -187,6 +187,8 @@ public class HttpUtil {
 					reader.close();
 				}
 			}
+		}else{
+			throw new Exception("Error performing httpGet: "+response.getStatusLine().toString());
 		}
 	}
 

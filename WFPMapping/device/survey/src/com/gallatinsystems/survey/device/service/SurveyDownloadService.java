@@ -30,6 +30,7 @@ import com.gallatinsystems.survey.device.domain.Question;
 import com.gallatinsystems.survey.device.domain.QuestionHelp;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
+import com.gallatinsystems.survey.device.exception.TransferException;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
@@ -49,6 +50,7 @@ public class SurveyDownloadService extends Service {
 
 	private static final String DEFAULT_TYPE = "Survey";
 	private static final int COMPLETE_ID = 2;
+	private static final int FAIL_ID = 3;
 
 	@SuppressWarnings("unused")
 	private static final String NO_SURVEY = "No Survey Found";
@@ -91,9 +93,8 @@ public class SurveyDownloadService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
-		Thread
-				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
-						.getInstance());
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+				.getInstance());
 		props = new PropertyUtil(getResources());
 		downloadExecutor = new ThreadPoolExecutor(1, 3, 5000,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
@@ -182,11 +183,8 @@ public class SurveyDownloadService extends Service {
 			// wait up to 30 minutes to download the media
 			downloadExecutor.awaitTermination(1800, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
-			Log
-					.e(
-							TAG,
-							"Error while waiting for download executor to terminate",
-							e);
+			Log.e(TAG,
+					"Error while waiting for download executor to terminate", e);
 		}
 		stopSelf();
 	}
@@ -198,22 +196,17 @@ public class SurveyDownloadService extends Service {
 	private boolean downloadSurvey(String serverBase, Survey survey) {
 		boolean success = false;
 		try {
-			HttpUtil
-					.httpDownload(
-							props.getProperty(ConstantUtil.SURVEY_S3_URL)
-									+ survey.getId()
-									+ ConstantUtil.ARCHIVE_SUFFIX,
-							FileUtil
-									.getFileOutputStream(
-											survey.getId()
-													+ ConstantUtil.ARCHIVE_SUFFIX,
-											ConstantUtil.DATA_DIR,
-											props
-													.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
-											this));
+			HttpUtil.httpDownload(
+					props.getProperty(ConstantUtil.SURVEY_S3_URL)
+							+ survey.getId() + ConstantUtil.ARCHIVE_SUFFIX,
+					FileUtil.getFileOutputStream(
+							survey.getId() + ConstantUtil.ARCHIVE_SUFFIX,
+							ConstantUtil.DATA_DIR,
+							props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+							this));
 			extractAndSave(FileUtil.getFileInputStream(survey.getId()
-					+ ConstantUtil.ARCHIVE_SUFFIX, ConstantUtil.DATA_DIR, props
-					.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this));
+					+ ConstantUtil.ARCHIVE_SUFFIX, ConstantUtil.DATA_DIR,
+					props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this));
 
 			survey.setFileName(survey.getId() + ConstantUtil.XML_SUFFIX);
 			survey.setType(DEFAULT_TYPE);
@@ -221,10 +214,22 @@ public class SurveyDownloadService extends Service {
 			success = true;
 		} catch (IOException e) {
 			Log.e(TAG, "Could write survey file " + survey.getFileName(), e);
-			PersistentUncaughtExceptionHandler.recordException(e);
+			String text = getResources().getString(R.string.cannotupdate);
+			ViewUtil.fireNotification(text, text, this, FAIL_ID, null);
+			PersistentUncaughtExceptionHandler
+					.recordException(new TransferException(survey.getId(),
+							null, e));
+
 		} catch (Exception e) {
 			Log.e(TAG, "Could not download survey " + survey.getId(), e);
-			PersistentUncaughtExceptionHandler.recordException(e);
+
+			String text = getResources().getString(R.string.cannotupdate);
+			ViewUtil.fireNotification(text, text, this, FAIL_ID, null);
+
+			PersistentUncaughtExceptionHandler
+					.recordException(new TransferException(survey.getId(),
+							null, e));
+
 		}
 		return success;
 	}
@@ -241,9 +246,9 @@ public class SurveyDownloadService extends Service {
 		ZipInputStream zis = new ZipInputStream(zipFile);
 		ZipEntry entry;
 		while ((entry = zis.getNextEntry()) != null) {
-			FileOutputStream fout = FileUtil.getFileOutputStream(entry
-					.getName(), ConstantUtil.DATA_DIR, props
-					.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this);
+			FileOutputStream fout = FileUtil.getFileOutputStream(
+					entry.getName(), ConstantUtil.DATA_DIR,
+					props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this);
 			byte[] buffer = new byte[2048];
 			int size;
 			while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
@@ -270,8 +275,8 @@ public class SurveyDownloadService extends Service {
 						.getLocation())) {
 					// load from resource
 					Resources res = getResources();
-					in = res.openRawResource(res.getIdentifier(survey
-							.getFileName(), ConstantUtil.RAW_RESOURCE,
+					in = res.openRawResource(res.getIdentifier(
+							survey.getFileName(), ConstantUtil.RAW_RESOURCE,
 							ConstantUtil.RESOURCE_PACKAGE));
 				} else {
 					// load from file
@@ -279,8 +284,7 @@ public class SurveyDownloadService extends Service {
 							.getFileInputStream(
 									survey.getFileName(),
 									ConstantUtil.DATA_DIR,
-									props
-											.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+									props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
 									this);
 				}
 				Survey hydratedSurvey = SurveyDao.loadSurvey(survey, in);
@@ -296,15 +300,16 @@ public class SurveyDownloadService extends Service {
 									.getQuestionGroups().get(i).getQuestions();
 							if (questions != null) {
 								for (int j = 0; j < questions.size(); j++) {
-									if (questions.get(j).getHelpByType(
-											ConstantUtil.VIDEO_HELP_TYPE)
+									if (questions
+											.get(j)
+											.getHelpByType(
+													ConstantUtil.VIDEO_HELP_TYPE)
 											.size() > 0) {
-										fileSet
-												.add(questions
-														.get(j)
-														.getHelpByType(
-																ConstantUtil.VIDEO_HELP_TYPE)
-														.get(0).getValue());
+										fileSet.add(questions
+												.get(j)
+												.getHelpByType(
+														ConstantUtil.VIDEO_HELP_TYPE)
+												.get(0).getValue());
 									}
 									ArrayList<QuestionHelp> helpList = questions
 											.get(j)
@@ -347,9 +352,8 @@ public class SurveyDownloadService extends Service {
 		try {
 			final FileOutputStream out = FileUtil.getFileOutputStream(
 					remoteFile.substring(remoteFile.lastIndexOf("/") + 1),
-					ConstantUtil.DATA_DIR + surveyId + "/", props
-							.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
-					this);
+					ConstantUtil.DATA_DIR + surveyId + "/",
+					props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE), this);
 			downloadExecutor.execute(new Runnable() {
 				@Override
 				public void run() {
@@ -385,9 +389,8 @@ public class SurveyDownloadService extends Service {
 					String currentLine = strTok.nextToken();
 					String[] touple = currentLine.split(",");
 					if (touple.length < 4) {
-						Log
-								.e(TAG,
-										"Survey list response is in an unrecognized format");
+						Log.e(TAG,
+								"Survey list response is in an unrecognized format");
 					} else {
 						Survey temp = new Survey();
 						temp.setId(touple[0]);
@@ -428,9 +431,8 @@ public class SurveyDownloadService extends Service {
 					String currentLine = strTok.nextToken();
 					String[] touple = currentLine.split(",");
 					if (touple.length < 5) {
-						Log
-								.e(TAG,
-										"Survey list response is in an unrecognized format");
+						Log.e(TAG,
+								"Survey list response is in an unrecognized format");
 					} else {
 						Survey temp = new Survey();
 						temp.setId(touple[1]);
@@ -489,6 +491,7 @@ public class SurveyDownloadService extends Service {
 		boolean ok = false;
 		if (precacheOptionIndex > -1
 				&& ConstantUtil.PRECACHE_WIFI_ONLY_IDX == precacheOptionIndex) {
+			
 			ok = StatusUtil.hasDataConnection(this, true);
 		} else {
 			ok = StatusUtil.hasDataConnection(this, false);
