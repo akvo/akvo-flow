@@ -8,6 +8,9 @@ import org.waterforpeople.mapping.app.gwt.client.community.CommunityDto;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationItemDto;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationService;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricService;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricServiceAsync;
@@ -35,6 +38,14 @@ import com.google.gwt.user.datepicker.client.DateBox;
 public class AccessPointSearchControl extends Composite {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static final String POINT_TYPES_CONFIG = "pointTypes";
+	private static final String WP_TYPE = "WaterPoint";
+	private static final String SP_TYPE = "SanitationPoint";
+	private static final String PI_TYPE = "PublicInstitution";
+	private static final String HH_TYPE = "Household";
+	private static final String SCHOOL_TYPE = "School";
+	private static final String TRAWLER_TYPE = "Trawler";
+	private static final String PROCEDURE_TYPE = "Procedure";
 
 	public enum Mode {
 		ACCESS_POINT, LOCALE
@@ -61,6 +72,25 @@ public class AccessPointSearchControl extends Composite {
 	}
 
 	public AccessPointSearchControl(Mode m) {
+		ConfigurationServiceAsync configService = GWT
+				.create(ConfigurationService.class);
+		configService.getConfigurationItem(POINT_TYPES_CONFIG,
+				new AsyncCallback<ConfigurationItemDto>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						// add default set of points
+						installPointTypes(null);
+					}
+
+					@Override
+					public void onSuccess(ConfigurationItemDto result) {
+						if (result != null) {
+							installPointTypes(result.getValue().split(","));
+						} else {
+							installPointTypes(null);
+						}
+					}
+				});
 		mode = m;
 		countryListbox = new ListBox();
 		communityListbox = new ListBox();
@@ -73,7 +103,6 @@ public class AccessPointSearchControl extends Composite {
 		metricValue = new TextBox();
 		specialOption = ANY_OPT;
 		Grid grid = new Grid(4, 4);
-		configureAccessPointListBox();
 		grid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 		grid.setWidget(0, 1, countryListbox);
 		if (Mode.ACCESS_POINT == mode) {
@@ -112,19 +141,50 @@ public class AccessPointSearchControl extends Composite {
 		initWidget(grid);
 	}
 
-	private void configureAccessPointListBox() {
+	private void installPointTypes(String[] pointTypes) {
 		if (Mode.LOCALE == mode) {
 			apTypeBox.addItem(ANY_OPT, ANY_OPT);
+			if (pointTypes == null || pointTypes.length == 0) {
+				apTypeBox.addItem(TEXT_CONSTANTS.waterPoint(), WP_TYPE);
+				apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(), SP_TYPE);
+				apTypeBox.addItem(TEXT_CONSTANTS.publicInst(), PI_TYPE);
+				apTypeBox.addItem(TEXT_CONSTANTS.school(), SCHOOL_TYPE);
+				apTypeBox.addItem(TEXT_CONSTANTS.household(), HH_TYPE);
+			} else {
+				for (int i = 0; i < pointTypes.length; i++) {
+					if (WP_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+						apTypeBox.addItem(TEXT_CONSTANTS.waterPoint(), WP_TYPE);
+					} else if (SP_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+						apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(),
+								SP_TYPE);
+					} else if (PI_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+						apTypeBox.addItem(TEXT_CONSTANTS.publicInst(), PI_TYPE);
+					} else if (TRAWLER_TYPE.equalsIgnoreCase(pointTypes[i]
+							.trim())) {
+						apTypeBox.addItem(TEXT_CONSTANTS.trawler(),
+								TRAWLER_TYPE);
+					} else if (SCHOOL_TYPE.equalsIgnoreCase(pointTypes[i]
+							.trim())) {
+						apTypeBox.addItem(TEXT_CONSTANTS.school(), SCHOOL_TYPE);
+					} else if (PROCEDURE_TYPE.equalsIgnoreCase(pointTypes[i]
+							.trim())) {
+						apTypeBox.addItem(TEXT_CONSTANTS.procedure(),
+								PROCEDURE_TYPE);
+					} else if (HH_TYPE.equalsIgnoreCase(pointTypes[i].trim())) {
+						apTypeBox.addItem(TEXT_CONSTANTS.household(), HH_TYPE);
+					}
+				}
+			}
+		} else {
+			apTypeBox.addItem(TEXT_CONSTANTS.waterPoint(),
+					AccessPointType.WATER_POINT.toString());
+			apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(),
+					AccessPointType.SANITATION_POINT.toString());
+			apTypeBox.addItem(TEXT_CONSTANTS.publicInst(),
+					AccessPointType.PUBLIC_INSTITUTION.toString());
+			apTypeBox.addItem(TEXT_CONSTANTS.school(),
+					AccessPointType.SCHOOL.toString());
 		}
-		apTypeBox.addItem(TEXT_CONSTANTS.waterPoint(),
-				AccessPointType.WATER_POINT.toString());
-		apTypeBox.addItem(TEXT_CONSTANTS.sanitationPoint(),
-				AccessPointType.SANITATION_POINT.toString());
-		apTypeBox.addItem(TEXT_CONSTANTS.publicInst(),
-				AccessPointType.PUBLIC_INSTITUTION.toString());
-		apTypeBox.addItem(TEXT_CONSTANTS.school(),
-				AccessPointType.SCHOOL.toString());
-
 	}
 
 	/**
@@ -204,7 +264,8 @@ public class AccessPointSearchControl extends Composite {
 	 */
 	private void loadMetrics() {
 		// TODO: parameterize with Organization name
-		// TODO: see if we need to progressively load the list or paginate or something if this gets to be too big
+		// TODO: see if we need to progressively load the list or paginate or
+		// something if this gets to be too big
 		metricService.listMetrics(null, null, null, null, "all",
 				new AsyncCallback<ResponseDto<ArrayList<MetricDto>>>() {
 					public void onFailure(Throwable caught) {
