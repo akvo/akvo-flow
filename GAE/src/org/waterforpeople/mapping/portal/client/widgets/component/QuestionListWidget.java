@@ -63,7 +63,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 					&& questionGroupDto.getQuestionMap().size() > 0) {
 				logger.log(
 						Level.SEVERE,
-						"Question list is populated already... has "+questionGroupDto.getQuestionMap().size()+ " items");
+						"QuestionListWidget: Question list is populated already... has "+questionGroupDto.getQuestionMap().size()+ " items");
 				
 				populateQuestionList(questionGroupDto.getQuestionMap().values());
 			} else {
@@ -87,7 +87,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 									}
 									logger.log(
 											Level.SEVERE,
-											"Question list fetched from server with "+questionTree.size()+ " items");
+											"QuestionListWidget: Question list fetched from server with "+questionTree.size()+ " items");
 									
 									populateQuestionList(result);
 									questionGroup.setQuestionMap(questionTree);
