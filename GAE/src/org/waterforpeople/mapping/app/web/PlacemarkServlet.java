@@ -278,12 +278,10 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private PlacemarkDto marshallDomainToDto(SurveyedLocale ap,
 			Boolean needDetailsFlag, String display) {
 		PlacemarkDto pdto = new PlacemarkDto();
-		// TODO: encode type and status properly
-		pdto.setPinStyle(KMLGenerator.encodePinStyle(
-				AccessPointType.WATER_POINT,
-				AccessPoint.Status.FUNCTIONING_HIGH));
-		pdto.setIconUrl(getUrlFromStatus(AccessPoint.Status.FUNCTIONING_HIGH,
-				AccessPointType.WATER_POINT));
+		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getLocaleType(),
+				ap.getCurrentStatus()));
+		pdto.setIconUrl(KMLGenerator.getMarkerImageUrl(ap.getLocaleType(),
+				ap.getCurrentStatus()));
 		pdto.setMarkType(AccessPointType.WATER_POINT.toString());
 
 		pdto.setLatitude(ap.getLatitude());

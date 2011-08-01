@@ -73,6 +73,45 @@ public class KMLGenerator {
 	private static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat(
 			"dd-MM-yyyy HH:mm:ss z");
 
+	private static final Map<String, String> ICON_TYPE_MAPPING;
+	private static final Map<String, String> ICON_COLOR_MAPPING;
+	private static final String IMAGE_PREFIX = PropertyUtil
+			.getProperty(IMAGE_ROOT);
+	private static final String DEFAULT = "DEFAULT";
+	static {
+		ICON_TYPE_MAPPING = new HashMap<String, String>();
+		ICON_TYPE_MAPPING.put("WaterPoint", "glass");
+		ICON_TYPE_MAPPING.put("PublicInstitution", "house");
+		ICON_TYPE_MAPPING.put("Household", "house");
+		ICON_TYPE_MAPPING.put("School", "pencil");
+		ICON_TYPE_MAPPING.put(DEFAULT, "glass");
+
+		ICON_COLOR_MAPPING = new HashMap<String, String>();
+		ICON_COLOR_MAPPING.put(DEFAULT, "Black36.png");
+		ICON_COLOR_MAPPING.put("FUNCTIONING_OK", "Green36.png");
+		ICON_COLOR_MAPPING.put("FUNCTIONING_HIGH", "Green36.png");
+		ICON_COLOR_MAPPING.put("FUNCTIONING_OK", "Yellow36.png");
+		ICON_COLOR_MAPPING.put("FUNCTIONING_WITH_PROBLEMS", "Yellow36.png");
+		ICON_COLOR_MAPPING.put("BROKEN_DOWN", "Black36.png");
+		ICON_COLOR_MAPPING.put("NO_IMPROVED_SYSTEM", "Black36.png");
+	}
+
+	/**
+	 * forms the url for the placemark image based on the status
+	 * 
+	 * @param type
+	 * @param status
+	 * @return
+	 */
+	public static String getMarkerImageUrl(String type, String status) {
+		return KMLGenerator.IMAGE_PREFIX
+				+ "/images/"
+				+ KMLGenerator.ICON_TYPE_MAPPING.get(type != null ? type
+						: KMLGenerator.DEFAULT)
+				+ KMLGenerator.ICON_COLOR_MAPPING.get(status != null ? status
+						: KMLGenerator.DEFAULT);
+	}
+
 	public static final String useLongDates = PropertyUtil
 			.getProperty("useLongDates");
 
@@ -938,6 +977,32 @@ public class KMLGenerator {
 		} else if (AccessPoint.Status.BROKEN_DOWN == status) {
 			return prefix + "pushpinred";
 		} else if (AccessPoint.Status.NO_IMPROVED_SYSTEM == status) {
+			return prefix + "pushpinblk";
+		} else {
+			return prefix + "pushpinblk";
+		}
+	}
+
+	public static String encodePinStyle(String type, String status) {
+		String prefix = "water";
+		if (type != null) {
+			if ("SanitationPoint".equalsIgnoreCase(type)) {
+				prefix = "sani";
+			} else if ("School".equalsIgnoreCase(type)) {
+				prefix = "schwater";
+			} else if ("PublicInstitution".equalsIgnoreCase(type)) {
+				prefix = "pubwater";
+			}
+		}
+
+		if ("FUNCTIONING_HIGH".equalsIgnoreCase(status)) {
+			return prefix + "pushpingreen";
+		} else if ("FUNCTIONING_OK".equalsIgnoreCase(status)
+				|| "FUNCTIONING_WITH_PROBLEMS".equalsIgnoreCase(status)) {
+			return prefix + "pushpinyellow";
+		} else if ("BROKEN_DOWN".equalsIgnoreCase(status)) {
+			return prefix + "pushpinred";
+		} else if ("NO_IMPROVED_SYSTEM".equalsIgnoreCase(status)) {
 			return prefix + "pushpinblk";
 		} else {
 			return prefix + "pushpinblk";

@@ -27,6 +27,7 @@ public class SurveyedLocaleDto extends BaseDto {
 	private Double latitude;
 	private Double longitude;
 	private boolean ambiguous;
+	private String currentStatus;
 	private Date lastSurveyedDate;
 	private Long lastSurveyalInstanceId;
 
@@ -166,6 +167,14 @@ public class SurveyedLocaleDto extends BaseDto {
 
 	public void setLastSurveyedDate(Date lastSurveyedDate) {
 		this.lastSurveyedDate = lastSurveyedDate;
+	}
+
+	public void setCurrentStatus(String currentStatus) {
+		this.currentStatus = currentStatus;
+	}
+
+	public String getCurrentStatus() {
+		return currentStatus;
 	}
 
 }

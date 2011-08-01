@@ -90,6 +90,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private TextBox sub5Box;
 	private TextBox sub6Box;
 	private TextBox pointTypeBox;
+	private TextBox statusBox;
 	private TextBox organizationBox;
 	private TextBox systemBox;
 	private MapWidget localeMap;
@@ -342,6 +343,11 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		grid.setWidget(row, 1, pointTypeBox);
 		row++;
 
+		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.status()));
+		statusBox = new TextBox();
+		grid.setWidget(row, 1, statusBox);
+		row++;
+
 		grid.setWidget(row, 0, ViewUtil.initLabel(TEXT_CONSTANTS.latitude()));
 		latTextBox = ViewUtil.constructNumericTextBox();
 		grid.setWidget(row, 1, latTextBox);
@@ -456,6 +462,9 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 			if (dto.getLocaleType() != null) {
 				pointTypeBox.setText(dto.getLocaleType());
 			}
+			if (dto.getCurrentStatus() != null) {
+				statusBox.setText(dto.getCurrentStatus());
+			}
 		}
 		return grid;
 	}
@@ -536,6 +545,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 				return false;
 			}
 			localeDto.setLocaleType(pointTypeBox.getText());
+			localeDto.setCurrentStatus(statusBox.getText());
 			localeDto.setOrganization(organizationBox.getText());
 			localeDto.setSystemIdentifier(systemBox.getText());
 			if (widgetToValueMap != null) {

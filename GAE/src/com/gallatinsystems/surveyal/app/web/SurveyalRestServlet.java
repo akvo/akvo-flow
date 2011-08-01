@@ -18,6 +18,8 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.gis.geography.dao.CountryDao;
+import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
@@ -54,6 +56,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private SurveyInstanceDAO surveyInstanceDao;
 	private SurveyedLocaleDao surveyedLocaleDao;
 	private QuestionDao qDao;
+	private CountryDao countryDao;
 	private SurveyMetricMappingDao metricMappingDao;
 	private MetricDao metricDao;
 
@@ -169,13 +172,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale = new SurveyedLocale();
 					locale.setAmbiguous(ambiguousFlag);
 					locale.setLatitude(lat);
-					locale.setLongitude(lon);					
+					locale.setLongitude(lon);
 					setGeoData(locale);
 					if (survey != null) {
 						locale.setLocaleType(survey.getPointType());
 					}
 					locale.setIdentifier(code);
-					// TODO: figure out how to set organization
+					// TODO: for multi-org instances, set org on Survey and pull
+					// from there
 					if (locale.getOrganization() == null) {
 						locale.setOrganization(PropertyUtil
 								.getProperty(DEFAULT_ORG_PROP));
@@ -184,15 +188,46 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				}
 			}
 			if (locale != null && locale.getKey() != null && answers != null) {
-				locale.setLastSurveyedDate(instance.getCollectionDate());				
+				locale.setLastSurveyedDate(instance.getCollectionDate());
 				locale.setLastSurveyalInstanceId(instance.getKey().getId());
-				instance.setSurveyedLocaleId(locale.getKey().getId());				
+				instance.setSurveyedLocaleId(locale.getKey().getId());
 				List<SurveyalValue> values = constructValues(locale, answers);
 				if (values != null) {
 					surveyedLocaleDao.save(values);
+					// now check the values to see if we have a status to update
+					// check the metrics first
+					boolean found = false;
+					for (SurveyalValue val : values) {
+						if (isStatus(val.getMetricName())
+								&& val.getStringValue() != null) {
+							found = true;
+							locale.setCurrentStatus(val.getStringValue());
+							break;
+						}
+					}
+					// if no luck, check the question text
+					if (!found) {
+						for (SurveyalValue val : values) {
+							if (isStatus(val.getQuestionText())
+									&& val.getStringValue() != null) {
+								found = true;
+								locale.setCurrentStatus(val.getStringValue());
+								break;
+							}
+						}
+					}
 				}
 			}
 		}
+	}
+
+	private boolean isStatus(String name) {
+		if (name != null) {
+			if (name.trim().toLowerCase().contains("status")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -207,7 +242,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		GeoPlace geoPlace = gs.manualLookup(l.getLatitude().toString(), l
 				.getLongitude().toString(),
 				OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+		String countryCode = null;
+		String countryName = null;
 		if (geoPlace != null) {
+			countryCode = geoPlace.getCountryCode();
+			countryName = geoPlace.getCountryName();
 			l.setCountryCode(geoPlace.getCountryCode());
 			l.setSublevel1(geoPlace.getSub1());
 			l.setSublevel2(geoPlace.getSub2());
@@ -220,6 +259,19 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					.toString(), l.getLongitude().toString());
 			if (geoPlaceCountry != null) {
 				l.setCountryCode(geoPlaceCountry.getCountryCode());
+				countryCode = geoPlaceCountry.getCountryCode();
+				countryName = geoPlaceCountry.getCountryName();
+			}
+		}
+		// check the country code to make sure it is in the database
+		if (countryCode != null) {
+			Country country = countryDao.findByCode(countryCode);
+			if (country == null) {
+				country = new Country();
+				country.setIsoAlpha2Code(countryCode);
+				country.setName(countryName != null ? countryName : countryCode);
+				country.setDisplayName(country.getName());
+				countryDao.save(country);
 			}
 		}
 	}

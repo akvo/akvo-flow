@@ -189,10 +189,9 @@ public class SurveyedLocaleServiceImpl extends RemoteServiceServlet implements
 					localeDao.save(valueList);
 				}
 			}
-			// populate the key so the UI can see it			
+			// populate the key so the UI can see it
 			locale.setKeyId(localeDomain.getKey().getId());
 		}
 		return locale;
 	}
-
 }
