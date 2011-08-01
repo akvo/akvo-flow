@@ -669,7 +669,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				if (currentQuestion.getKeyId() == null) {
 					// reload list and update order
 					logger.log(
-							Level.SEVERE,
+							Level.WARNING,
 							"QuestionEditWidget: Question is new so looking up question group size. Prior to lookup, order is "
 									+ currentQuestion.getOrder()
 									+ " and group has "
@@ -710,7 +710,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 											maxOrder = result.size();
 										}
 										currentQuestion.setOrder(maxOrder + 1);
-										logger.log(Level.SEVERE,
+										logger.log(Level.WARNING,
 												"QuestionEditWidget: Setting order to "
 														+ (maxOrder + 1));
 										if (questionGroup != null) {
@@ -722,7 +722,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 								}
 							});
 				} else {
-					logger.log(Level.SEVERE, "QuestionEditWidget: Question has id: "
+					logger.log(Level.WARNING, "QuestionEditWidget: Question has id: "
 							+ currentQuestion.getKeyId() + " and order "
 							+ currentQuestion.getOrder());
 					performSave(listener);

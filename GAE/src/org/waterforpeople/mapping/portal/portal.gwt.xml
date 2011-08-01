@@ -21,7 +21,7 @@
 		class="org.waterforpeople.mapping.portal.client.dashboard.Dashboard" />
 	<extend-property name="locale" values="es" />
 	
-	<set-property name="gwt.logging.logLevel" value="SEVERE" />
+	<set-property name="gwt.logging.logLevel" value="WARNING" />
 	<set-property name="gwt.logging.enabled" value="TRUE" />
 	<set-property name="gwt.logging.simpleRemoteHandler"
 		value="ENABLED" />
