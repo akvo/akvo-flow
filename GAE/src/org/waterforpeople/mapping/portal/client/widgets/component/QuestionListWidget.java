@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -39,6 +41,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static Logger logger = Logger.getLogger("");
 	private SurveyServiceAsync surveyService;
 	private QuestionDto selectedQuestion;
 	private QuestionGroupDto questionGroup;
@@ -58,6 +61,10 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		if (questionGroupDto != null) {
 			if (questionGroupDto.getQuestionMap() != null
 					&& questionGroupDto.getQuestionMap().size() > 0) {
+				logger.log(
+						Level.SEVERE,
+						"Question list is populated already... has "+questionGroupDto.getQuestionMap().size()+ " items");
+				
 				populateQuestionList(questionGroupDto.getQuestionMap().values());
 			} else {
 				surveyService.listQuestionsByQuestionGroup(questionGroupDto
@@ -78,6 +85,10 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 										questionTree.put(result.get(i)
 												.getOrder(), result.get(i));
 									}
+									logger.log(
+											Level.SEVERE,
+											"Question list fetched from server with "+questionTree.size()+ " items");
+									
 									populateQuestionList(result);
 									questionGroup.setQuestionMap(questionTree);
 									bundle.put(
@@ -149,6 +160,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		bundle.remove(BundleConstants.QUESTION_KEY);
 		questionGroup = (QuestionGroupDto) bundle
 				.get(BundleConstants.QUESTION_GROUP_KEY);
+	
 		loadData(questionGroup);
 	}
 

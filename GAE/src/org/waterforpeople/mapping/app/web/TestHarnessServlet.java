@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -189,38 +190,40 @@ public class TestHarnessServlet extends HttpServlet {
 			setupTestUser();
 		} else if ("computeDistanceAlongBearing".equals(action)) {
 			com.gallatinsystems.gis.coordinate.utilities.CoordinateUtilities cu = new CoordinateUtilities();
-			Coordinate startingPoint = new Coordinate(Double.parseDouble(req.getParameter("lat")),Double.parseDouble(req.getParameter("lon")));
-			
+			Coordinate startingPoint = new Coordinate(Double.parseDouble(req
+					.getParameter("lat")), Double.parseDouble(req
+					.getParameter("lon")));
+
 			Double distance = Double.parseDouble(req.getParameter("distance"));
 			Double bearing = Double.parseDouble(req.getParameter("bearing"));
-			
-			Coordinate newPoint = cu.computePointAlongBearingDistance(startingPoint, distance, bearing);
+
+			Coordinate newPoint = cu.computePointAlongBearingDistance(
+					startingPoint, distance, bearing);
 			try {
 				resp.getWriter().println("New Point : " + newPoint.toString());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
+
 		} else if ("testDistanceRule".equals(action)) {
-			 DeleteObjectUtil dou = new DeleteObjectUtil();
-			 dou.deleteAllObjects("AccessPointScoreComputationItem");
-			 dou.deleteAllObjects("AccessPointScoreDetail");
+			DeleteObjectUtil dou = new DeleteObjectUtil();
+			dou.deleteAllObjects("AccessPointScoreComputationItem");
+			dou.deleteAllObjects("AccessPointScoreDetail");
 			// AccessPointTest apt = new AccessPointTest();
 			// apt.loadWPDistanceTestData(resp);
 			// apt.loadHHDistanceTestData(resp);
-//			AccessPointDao apDao = new AccessPointDao();
-//			List<AccessPoint> apList = apDao.list("all");
-//			AccessPointHelper aph = new AccessPointHelper();
-//			for (AccessPoint ap : apList) {
-//				aph.computeDistanceRule(ap);
-//			}
-//			try {
-//				resp.getWriter().println("Completed test distance rule");
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			// AccessPointDao apDao = new AccessPointDao();
+			// List<AccessPoint> apList = apDao.list("all");
+			// AccessPointHelper aph = new AccessPointHelper();
+			// for (AccessPoint ap : apList) {
+			// aph.computeDistanceRule(ap);
+			// }
+			// try {
+			// resp.getWriter().println("Completed test distance rule");
+			// } catch (IOException e) {
+			// e.printStackTrace();
+			// }
 		} else if ("setupDevEnv".equals(action)) {
 			try {
 				DeleteObjectUtil dou = new DeleteObjectUtil();
@@ -272,6 +275,30 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+		} else if ("fixQuestionOrder".equals(action)) {
+
+			Long surveyId = Long.parseLong(req.getParameter("surveyId"));
+
+			QuestionDao qDao = new QuestionDao();
+
+			// this is the list in ascending order by the "order" field
+			List<Question> qList = qDao.listQuestionsBySurvey(surveyId);
+			if (qList != null) {
+				Map<Long, Integer> groupMaxCount = new HashMap<Long, Integer>();
+				for (Question q : qList) {
+					Integer max = groupMaxCount.get(q.getQuestionGroupId());
+					if (max == null) {
+						max = new Integer(1);
+					} else {
+						max = max + 1;
+					}
+					// since q is still attached, this should be all we need to
+					// do
+					q.setOrder(max);
+					groupMaxCount.put(q.getQuestionGroupId(), max);
+				}
+
 			}
 		} else if ("genBalloonData".equals(action)) {
 			MapBalloonDefinition mpd = new MapBalloonDefinition();

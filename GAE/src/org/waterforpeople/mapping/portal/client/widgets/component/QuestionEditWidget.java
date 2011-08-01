@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
@@ -58,6 +60,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class QuestionEditWidget extends Composite implements ContextAware,
 		ChangeHandler, ClickHandler, TranslationChangeListener,
 		CompletionListener {
+	private static Logger logger = Logger.getLogger("");
+
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	private static final int MAX_LEN = 500;
@@ -228,7 +232,6 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * populates the UI based on the values in the loaded QuestionDto
 	 */
 	private void populateFields() {
-
 		boolean isEditable = currentQuestion.getImmutable() == null
 				|| (!currentQuestion.getImmutable() || currentUser
 						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY));
@@ -358,7 +361,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		final Image moveUp = new Image("/images/greenuparrow.png");
 		final Image moveDown = new Image("/images/greendownarrow.png");
 		final Button deleteButton = new Button(TEXT_CONSTANTS.remove());
-		if(isEditable){
+		if (isEditable) {
 			optText.setFocus(true);
 		}
 		ClickHandler optionClickHandler = new ClickHandler() {
@@ -639,6 +642,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		}
 		if (doPopulation) {
 			bundle.put(BundleConstants.QUESTION_KEY, currentQuestion);
+			if (questionGroup != null) {
+				bundle.put(BundleConstants.QUESTION_GROUP_KEY, questionGroup);
+			}
 		}
 		return bundle;
 	}
@@ -662,6 +668,14 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			if (validationErrors == null || validationErrors.size() == 0) {
 				if (currentQuestion.getKeyId() == null) {
 					// reload list and update order
+					logger.log(
+							Level.SEVERE,
+							"Question is new so looking up question group size. Prior to lookup, order is "
+									+ currentQuestion.getOrder()
+									+ " and group has "
+									+ (questionGroup.getQuestionMap() != null ? questionGroup
+											.getQuestionMap().size() : "0")
+									+ "items");
 					surveyService.listQuestionsByQuestionGroup(currentQuestion
 							.getQuestionGroupId().toString(), false,
 							new AsyncCallback<ArrayList<QuestionDto>>() {
@@ -696,10 +710,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 											maxOrder = result.size();
 										}
 										currentQuestion.setOrder(maxOrder + 1);
-										QuestionGroupDto currentGroup = (QuestionGroupDto) bundle
-												.get(BundleConstants.QUESTION_GROUP_KEY);
-										if (currentGroup != null) {
-											currentGroup
+										logger.log(Level.SEVERE,
+												"Setting order to "
+														+ (maxOrder + 1));
+										if (questionGroup != null) {
+											questionGroup
 													.setQuestionMap(questionTree);
 										}
 									}
@@ -707,6 +722,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 								}
 							});
 				} else {
+					logger.log(Level.SEVERE, "Question has id: "
+							+ currentQuestion.getKeyId() + " and order "
+							+ currentQuestion.getOrder());
 					performSave(listener);
 				}
 			} else {
@@ -729,6 +747,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	}
 
 	private void performSave(final CompletionListener listener) {
+
 		surveyService.saveQuestion(currentQuestion,
 				currentQuestion.getQuestionGroupId(),
 				new AsyncCallback<QuestionDto>() {
@@ -913,14 +932,13 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			populateFields();
 		} else {
 			currentQuestion = new QuestionDto();
-			QuestionGroupDto currentGroup = (QuestionGroupDto) bundle
-					.get(BundleConstants.QUESTION_GROUP_KEY);
-			currentQuestion.setSurveyId(currentGroup.getSurveyId());
-			currentQuestion.setPath(currentGroup.getPath() + "/"
-					+ currentGroup.getCode());
-			currentQuestion.setQuestionGroupId(currentGroup.getKeyId());
-			if (currentGroup.getQuestionMap() != null) {
-				currentQuestion.setOrder(getMaxOrder(currentGroup) + 1);
+
+			currentQuestion.setSurveyId(questionGroup.getSurveyId());
+			currentQuestion.setPath(questionGroup.getPath() + "/"
+					+ questionGroup.getCode());
+			currentQuestion.setQuestionGroupId(questionGroup.getKeyId());
+			if (questionGroup.getQuestionMap() != null) {
+				currentQuestion.setOrder(getMaxOrder(questionGroup) + 1);
 			} else {
 				currentQuestion.setOrder(1);
 			}

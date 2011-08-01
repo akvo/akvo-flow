@@ -5,18 +5,31 @@
 	<inherits name="com.google.gwt.maps.GoogleMaps" />
 	<inherits name="com.gallatinsystems.framework.gwt.PortletFramework" />
 	<inherits name="com.gallatinsystems.user.app.gwt.User" />
-	<inherits name="com.gallatinsystems.notification.app.gwt.NotificationSubscription" />
-	<inherits name="com.gallatinsystems.gis.app.gwt.GISSupportServices"/>
-	<inherits name="com.gallatinsystems.messaging.app.gwt.MessagingService"/>
+	<inherits
+		name="com.gallatinsystems.notification.app.gwt.NotificationSubscription" />
+	<inherits name="com.gallatinsystems.gis.app.gwt.GISSupportServices" />
+	<inherits name="com.gallatinsystems.messaging.app.gwt.MessagingService" />
 	<inherits name="org.waterforpeople.mapping.app.gwt.WFPServices" />
 	<inherits name="org.waterforpeople.mapping.surveyentry.surveyentrywidgets" />
 	<inherits name="com.google.gwt.visualization.Visualization" />
-	
+	<inherits name="com.google.gwt.logging.Logging" />
 	<inherits name="com.google.gwt.i18n.I18N" />
 	<source path="client" />
 	<script
 		src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAf8_VY5oeMBNAES-TtQ7eiRS0UZPIjzZbuTBw3-WySZIOaQj8ZxSYlbqnWnjgNjWI7ob-et1ROd1pxA" />
 	<entry-point
 		class="org.waterforpeople.mapping.portal.client.dashboard.Dashboard" />
-		<extend-property name="locale" values="es"/>
+	<extend-property name="locale" values="es" />
+	
+	<set-property name="gwt.logging.logLevel" value="SEVERE" />
+	<set-property name="gwt.logging.enabled" value="TRUE" />
+	<set-property name="gwt.logging.simpleRemoteHandler"
+		value="ENABLED" />
+	<set-property name="gwt.logging.developmentModeHandler"
+		value="ENABLED" />
+	<set-property name="gwt.logging.consoleHandler" value="ENABLED" />
+	<set-property name="gwt.logging.systemHandler" value="DISABLED" />
+	<set-property name="gwt.logging.popupHandler" value="DISABLED" />
+	<set-property name="gwt.logging.firebugHandler" value="DISABLED" />
+	
 </module>
