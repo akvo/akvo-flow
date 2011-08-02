@@ -258,7 +258,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				}
 				if (model.getSectorList() != null
 						&& model.getSectorList().size() > 0) {
-					for (String sector : model.getSectorList()) {
+					for (String sector : model.getSectorList()) {				
 						writeSummaryReport(questionMap, model, sector, wb);
 					}
 				}
@@ -360,10 +360,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					}
 				}
 
-				String sector = "";
-				if (sectorQuestion != null) {
-					sector = responseMap.get(sectorQuestion.getKeyId()
-							.toString());
+				List<String> rollups =null;
+				if(rollupOrder != null && rollupOrder.size()>0) {
+					rollups = formRollupStrings(responseMap);
 				}
 				if (generateSummary) {
 					for (Entry<String, String> entry : responseMap.entrySet()) {
@@ -375,7 +374,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 							}
 							String[] vals = entry.getValue().split("\\|");
 							for (int i = 0; i < vals.length; i++) {
-								model.tallyResponse(effectiveId, sector,
+								model.tallyResponse(effectiveId, rollups,
 										vals[i]);
 							}
 						}

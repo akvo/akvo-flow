@@ -22,8 +22,8 @@ import javax.swing.JPanel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -43,14 +43,40 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	public static final String RESPONSE_KEY = "dtoList";
 	private static final String SERVLET_URL = "/surveyrestapi?action=";
 	private static final NumberFormat PCT_FMT = new DecimalFormat("0.00");
-	private static final String[] ROLLUP_QUESTIONS = { "Sector/Cell",
-			"Municipality", "Region","District", "Traditional Authority", "Sector","Cell","Gan Planchayat", "Block", "State" };
+	protected static final String[] ROLLUP_QUESTIONS = { "Sector/Cell",
+			"Department", "Province", "Municipality", "Region", "District",
+			"Traditional Authority (TA)", "Sub-Traditional Authority (Sub-TA)",
+			"County", "Sub County", "Sector", "Cell", "Gran Panchayet",
+			"Block", "State", "Micro-Region" };
+	protected static final Map<String, String[]> ROLLUP_MAP;
+	static {
+		ROLLUP_MAP = new HashMap<String, String[]>();
+		ROLLUP_MAP.put("IN", new String[] { "State", "District", "Block",
+				"Gran Panchayet" });
+		ROLLUP_MAP.put("HN", new String[] { "Department", "Municipality",
+				"Sector" });
+		ROLLUP_MAP.put("GT", new String[] { "Department", "Municipality" });
+		ROLLUP_MAP.put("DR", new String[] { "Province", "Municipality" });
+		ROLLUP_MAP.put("NI", new String[] { "Department", "Municipality",
+				"Micro-Region" });
+		ROLLUP_MAP.put("BO", new String[] { "Department", "Municipality",
+				"District" });
+		ROLLUP_MAP.put("PE", new String[] { "Region", "Province", "District" });
+		ROLLUP_MAP.put("EC", new String[] { "Province", "Municipality" });
+		ROLLUP_MAP.put("MW", new String[] { "District",
+				"Tradtional Authoriaty (TA)",
+				"Sub-Traditional Authority (Sub-TA)" });
+		ROLLUP_MAP.put("RW", new String[] { "District", "Sector", "Cell" });
+		ROLLUP_MAP.put("UG",
+				new String[] { "District", "County", "Sub County" });
+	}
 	protected List<QuestionGroupDto> orderedGroupList;
-	protected QuestionDto sectorQuestion;
+
+	protected List<QuestionDto> rollupOrder;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
-			String serverBase, Map<String,String> options) {
+			String serverBase, Map<String, String> options) {
 		InputDialog dia = new InputDialog();
 		PrintWriter pw = null;
 		try {
@@ -90,21 +116,45 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		for (String instanceId : instanceMap.keySet()) {
 			Map<String, String> responseMap = BulkDataServiceClient
 					.fetchQuestionResponses(instanceId, serverBase);
-			String sector = "";
-			if (sectorQuestion != null) {
-				sector = responseMap.get(sectorQuestion.getKeyId().toString());
+			List<String> rollups = null;
+			if (rollupOrder != null && rollupOrder.size() > 0) {
+				rollups = formRollupStrings(responseMap);
 			}
 			for (Entry<String, String> entry : responseMap.entrySet()) {
-				model.tallyResponse(entry.getKey(), sector, entry.getValue());
+				model.tallyResponse(entry.getKey(), rollups, entry.getValue());
 			}
 		}
 		return model;
+	}
+
+	protected List<String> formRollupStrings(Map<String, String> responseMap) {
+		List<String> rollups = new ArrayList<String>();		
+		for (int j = 0; j < rollupOrder.size() - 1; j++) {
+			String rollup = "";
+			int count = 0;
+			for (int i = 0; i < rollupOrder.size() - j; i++) {
+				String val = responseMap.get(rollupOrder.get(i).getKeyId()
+						.toString());
+				if (val != null && val.trim().length() > 0) {
+					if (count > 0) {
+						rollup += "|";
+					}
+					rollup += val;
+					count++;
+				}
+			}
+			rollups.add(rollup);
+		}
+		return rollups;
+
 	}
 
 	protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
 			String surveyId, String serverBase) throws Exception {
 		Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
 		orderedGroupList = fetchQuestionGroups(serverBase, surveyId);
+
+		rollupOrder = new ArrayList<QuestionDto>();
 		for (QuestionGroupDto group : orderedGroupList) {
 			List<QuestionDto> questions = fetchQuestions(serverBase,
 					group.getKeyId());
@@ -112,8 +162,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 				for (QuestionDto q : questions) {
 					for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
 						if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(q.getText())) {
-							sectorQuestion = q;
-							break;
+							rollupOrder.add(q);
 						}
 					}
 				}
@@ -265,7 +314,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		// contains the map of questionIds to all valid responses
 		private Map<String, List<String>> responseMap;
 		// list of all sectors encountered
-		private List<String> sectorList;
+		private List<String> rollupList;
 		// map of frequency counts of a response. the key is the packed value of
 		// questionId+sector+response
 		private Map<String, Long> sectorCountMap;
@@ -279,7 +328,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
 		public SummaryModel() {
 			responseMap = new HashMap<String, List<String>>();
-			sectorList = new ArrayList<String>();
+			rollupList = new ArrayList<String>();
 			sectorCountMap = new HashMap<String, Long>();
 			sectorTotalMap = new HashMap<String, Long>();
 			responseCountMap = new HashMap<String, Long>();
@@ -288,15 +337,15 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			sectorStatMap = new HashMap<String, Map<String, DescriptiveStats>>();
 		}
 
-		public void tallyResponse(String questionId, String sector,
+		public void tallyResponse(String questionId, List<String> rollups,
 				String response) {
 			addResponse(questionId, response);
-			addSector(sector);
-			incrementCount(questionId, sector, response);
-			updateStats(questionId, sector, response);
+			addRollup(rollups);
+			incrementCount(questionId, rollups, response);
+			updateStats(questionId, rollups, response);
 		}
 
-		private void updateStats(String questionId, String sector,
+		private void updateStats(String questionId, List<String> rollups,
 				String response) {
 			if (statMap.get(questionId) == null) {
 				DescriptiveStats stats = new DescriptiveStats();
@@ -305,31 +354,37 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			} else {
 				statMap.get(questionId).addSample(response);
 			}
-
-			if (sector != null) {
-				if (sectorStatMap.get(sector) == null) {
-					Map<String, DescriptiveStats> secStats = new HashMap<String, DescriptiveStats>();
-					sectorStatMap.put(sector, secStats);
-					DescriptiveStats stats = new DescriptiveStats();
-					stats.addSample(response);
-					secStats.put(questionId, stats);
-				} else {
-					if (sectorStatMap.get(sector).get(questionId) == null) {
-						DescriptiveStats stats = new DescriptiveStats();
-						stats.addSample(response);
-						sectorStatMap.get(sector).put(questionId, stats);
-					} else {
-						sectorStatMap.get(sector).get(questionId)
-								.addSample(response);
+			if (rollups != null) {
+				for (String sector : rollups) {
+					if (sector != null) {
+						if (sectorStatMap.get(sector) == null) {
+							Map<String, DescriptiveStats> secStats = new HashMap<String, DescriptiveStats>();
+							sectorStatMap.put(sector, secStats);
+							DescriptiveStats stats = new DescriptiveStats();
+							stats.addSample(response);
+							secStats.put(questionId, stats);
+						} else {
+							if (sectorStatMap.get(sector).get(questionId) == null) {
+								DescriptiveStats stats = new DescriptiveStats();
+								stats.addSample(response);
+								sectorStatMap.get(sector)
+										.put(questionId, stats);
+							} else {
+								sectorStatMap.get(sector).get(questionId)
+										.addSample(response);
+							}
+						}
 					}
 				}
 			}
 		}
 
-		private void incrementCount(String questionId, String sector,
+		private void incrementCount(String questionId, List<String> rollups,
 				String response) {
-			incrementValue(questionId + sector + response, sectorCountMap);
-			incrementValue(questionId + sector, sectorTotalMap);
+			for (String sector : rollups) {
+				incrementValue(questionId + sector + response, sectorCountMap);
+				incrementValue(questionId + sector, sectorTotalMap);
+			}
 			incrementValue(questionId + response, responseCountMap);
 			incrementValue(questionId, responseTotalMap);
 		}
@@ -344,9 +399,15 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			map.put(key, val);
 		}
 
-		private void addSector(String sector) {
-			if (sector != null && sector.trim().length()>0 && !sectorList.contains(sector.trim())) {
-				sectorList.add(sector.trim());
+		private void addRollup(List<String> rollups) {
+			if (rollups != null) {
+				for (String sector : rollups) {
+					if (sector != null && sector.trim().length() > 0
+							&& !rollupList.contains(sector.trim())) {
+						rollupList.add(sector.trim());
+
+					}
+				}
 			}
 		}
 
@@ -367,7 +428,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
 			if (isRolledUp) {
 				StringBuilder buffer = new StringBuilder();
-				for (String sector : sectorList) {
+				for (String sector : rollupList) {
 					buffer.append(outputResponses(groupName, questionText,
 							sector, questionId, isRolledUp));
 				}
@@ -418,16 +479,17 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			return buffer.toString();
 		}
 
-		public Map<String, Long> getResponseCountsForQuestion(Long questionId, String sector) {			
+		public Map<String, Long> getResponseCountsForQuestion(Long questionId,
+				String sector) {
 			List<String> responses = responseMap.get(questionId.toString());
 			Map<String, Long> countMap = new HashMap<String, Long>();
 			if (responses != null) {
 				for (String resp : responses) {
 					Long count = null;
-					if(sector == null){
-						count =responseCountMap.get(questionId + resp);
-					}else{
-						count = sectorCountMap.get(questionId+sector+resp);
+					if (sector == null) {
+						count = responseCountMap.get(questionId + resp);
+					} else {
+						count = sectorCountMap.get(questionId + sector + resp);
 					}
 					countMap.put(resp, count != null ? count : new Long(0));
 				}
@@ -449,7 +511,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		}
 
 		public List<String> getSectorList() {
-			return sectorList;
+			return rollupList;
 		}
 
 	}
