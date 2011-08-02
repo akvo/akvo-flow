@@ -91,6 +91,7 @@
 		<signjar jar="war/poi-ooxml-3.7-20101029.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 		<signjar jar="war/poi-ooxml-schemas-3.7-20101029.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 		<signjar jar="war/xbean.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+		<signjar jar="war/dom4j-1.6.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 	</target>
 
 
