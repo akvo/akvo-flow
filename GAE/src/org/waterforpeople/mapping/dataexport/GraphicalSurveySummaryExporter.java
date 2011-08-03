@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -258,7 +260,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				}
 				if (model.getSectorList() != null
 						&& model.getSectorList().size() > 0) {
-					for (String sector : model.getSectorList()) {				
+
+					Collections.sort(model.getSectorList(),
+							new Comparator<String>() {
+								@Override
+								public int compare(String o1, String o2) {
+									if (o1 != null && o2 != null) {
+										return o1.toLowerCase().compareTo(
+												o2.toLowerCase());
+									} else {
+										return 0;
+									}
+								}
+							});
+					for (String sector : model.getSectorList()) {
 						writeSummaryReport(questionMap, model, sector, wb);
 					}
 				}
@@ -360,8 +375,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					}
 				}
 
-				List<String> rollups =null;
-				if(rollupOrder != null && rollupOrder.size()>0) {
+				List<String> rollups = null;
+				if (rollupOrder != null && rollupOrder.size() > 0) {
 					rollups = formRollupStrings(responseMap);
 				}
 				if (generateSummary) {
