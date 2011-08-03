@@ -64,7 +64,8 @@ public class SurveySpreadsheetImporter implements DataImporter {
 			int i = 0;
 			sheet1 = wb.getSheetAt(0);
 			if (!isWholeSurvey) {
-				//even though there is a header row, we want lastRowNum since rows are 0 indexed
+				// even though there is a header row, we want lastRowNum since
+				// rows are 0 indexed
 				int questionCount = sheet1.getLastRowNum();
 				// figure out the starting order
 				QuestionDto startingQuestion = BulkDataServiceClient
@@ -187,7 +188,9 @@ public class SurveySpreadsheetImporter implements DataImporter {
 								}
 								sb.append(
 										SurveyRestRequest.DEPEND_QUESTION_PARAM)
-										.append("=").append(depOrder).append("|").append(parts[1])
+										.append("=")
+										.append(URLEncoder.encode(depOrder
+												+ "|" + parts[1], "UTF-8"))
 										.append("&");
 							}
 							break;

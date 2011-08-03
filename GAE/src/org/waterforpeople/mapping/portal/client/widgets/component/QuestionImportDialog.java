@@ -84,7 +84,7 @@ public class QuestionImportDialog extends DialogBox {
 					HTML html = new HTML();
 					html.setHTML(appletString);
 					appletPanel.add(html);
-					contentPane.add(ViewUtil.initLabel(TEXT_CONSTANTS.doNotClose()));					
+					controlPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.doNotClose()));					
 			}
 		});
 		cancel.addClickHandler(new ClickHandler() {

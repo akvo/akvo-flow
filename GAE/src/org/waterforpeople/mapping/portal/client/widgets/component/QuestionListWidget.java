@@ -58,8 +58,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		bundle = new HashMap<String, Object>();
 		surveyService = GWT.create(SurveyService.class);
 		selectedQuestion = null;
-		importQuestionsButton = new Button(TEXT_CONSTANTS.importQuestions());
-		importQuestionsButton.setEnabled(false);
+		importQuestionsButton = new Button(TEXT_CONSTANTS.importQuestions());		
 		importQuestionsButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -127,10 +126,13 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		if (dataGrid != null) {
 			dataGrid.removeFromParent();
 		}
+		if (importQuestionsButton.getParent()!=null){
+			importQuestionsButton.removeFromParent();
+		}
 		dataGrid = new Grid(questionList.size(), 4);
 		int i = 0;
 		if (questionList != null) {
-			importQuestionsButton.setEnabled(true);
+			
 			for (QuestionDto q : questionList) {
 				Label l = createListEntry((q.getOrder() != null ? q.getOrder()
 						: "") + ": " + q.getText());
@@ -168,10 +170,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				i++;
 			}
 		}
-		addWidget(dataGrid);
-		if (importQuestionsButton.getParent() == null) {
+		addWidget(dataGrid);		
 			addWidget(importQuestionsButton);
-		}
+		
 	}
 
 	@Override

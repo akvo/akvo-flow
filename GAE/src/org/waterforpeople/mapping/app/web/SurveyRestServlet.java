@@ -433,7 +433,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		// Question q = qDao.getByPath(questionOrder, questionPath);
 		Question q = qDao.getByQuestionGroupId(qg.getKey().getId(),
 				questionText);
-		if (q == null) {
+		
+		//since questions can have the same name, it only counts as a dupe if the order matches		
+		if (q == null || !questionOrder.equals(q.getOrder())) {
 			q = new Question();
 		} else {
 			// if the question already exists, delete it's children so we don't
