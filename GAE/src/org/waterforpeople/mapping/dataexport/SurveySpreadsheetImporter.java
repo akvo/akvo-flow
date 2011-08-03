@@ -219,9 +219,18 @@ public class SurveySpreadsheetImporter implements DataImporter {
 							break;
 						}
 					}
-					System.out.println(BulkDataServiceClient
-							.fetchDataFromServer(serverBase + SERVLET_URL
-									+ sb.toString()));
+					try {
+						System.out.println(BulkDataServiceClient
+								.fetchDataFromServer(serverBase + SERVLET_URL
+										+ sb.toString()));
+					} catch (Throwable t) {
+						System.out.println("Error: " + t);
+						t.printStackTrace();
+						System.out.println("Trying again");
+						System.out.println(BulkDataServiceClient
+								.fetchDataFromServer(serverBase + SERVLET_URL
+										+ sb.toString()));
+					}
 				}
 			}
 		} catch (Exception e) {
