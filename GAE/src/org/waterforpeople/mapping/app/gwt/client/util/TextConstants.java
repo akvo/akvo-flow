@@ -558,5 +558,8 @@ public interface TextConstants extends Constants{
 	public String household();
 	public String submitter();
 	public String source();
+	public String importQuestions();
+	public String questionBefore();
+	public String doNotClose();
 }
 

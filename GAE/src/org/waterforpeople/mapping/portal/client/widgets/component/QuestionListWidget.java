@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +22,8 @@ import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
@@ -48,6 +50,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	private Map<String, Object> bundle;
 	private Map<Widget, Integer> widgetRowMap;
 	private Map<Long, Integer> questionRowMap;
+	private Button importQuestionsButton;
 	private Grid dataGrid;
 
 	public QuestionListWidget(PageController controller) {
@@ -55,16 +58,28 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		bundle = new HashMap<String, Object>();
 		surveyService = GWT.create(SurveyService.class);
 		selectedQuestion = null;
+		importQuestionsButton = new Button(TEXT_CONSTANTS.importQuestions());
+		importQuestionsButton.setEnabled(false);
+		importQuestionsButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {				
+				QuestionImportDialog importDia = new QuestionImportDialog(
+						questionGroup);
+				importDia.show();
+			}
+		});
 	}
 
 	public void loadData(QuestionGroupDto questionGroupDto) {
 		if (questionGroupDto != null) {
 			if (questionGroupDto.getQuestionMap() != null
 					&& questionGroupDto.getQuestionMap().size() > 0) {
-				logger.log(
-						Level.WARNING,
-						"QuestionListWidget: Question list is populated already... has "+questionGroupDto.getQuestionMap().size()+ " items");
-				
+				logger.log(Level.WARNING,
+						"QuestionListWidget: Question list is populated already... has "
+								+ questionGroupDto.getQuestionMap().size()
+								+ " items");
+
 				populateQuestionList(questionGroupDto.getQuestionMap().values());
 			} else {
 				surveyService.listQuestionsByQuestionGroup(questionGroupDto
@@ -78,17 +93,18 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 
 							@Override
 							public void onSuccess(ArrayList<QuestionDto> result) {
-								if (result != null && result.size() > 0) {
+								if (result != null && result.size() > 0) {									
 									TreeMap<Integer, QuestionDto> questionTree = new TreeMap<Integer, QuestionDto>();
 
 									for (int i = 0; i < result.size(); i++) {
 										questionTree.put(result.get(i)
 												.getOrder(), result.get(i));
 									}
-									logger.log(
-											Level.WARNING,
-											"QuestionListWidget: Question list fetched from server with "+questionTree.size()+ " items");
-									
+									logger.log(Level.WARNING,
+											"QuestionListWidget: Question list fetched from server with "
+													+ questionTree.size()
+													+ " items");
+
 									populateQuestionList(result);
 									questionGroup.setQuestionMap(questionTree);
 									bundle.put(
@@ -105,7 +121,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	}
 
 	private void populateQuestionList(Collection<QuestionDto> questionList) {
-		toggleLoading(false);
+		toggleLoading(false);		
 		widgetRowMap = new HashMap<Widget, Integer>();
 		questionRowMap = new HashMap<Long, Integer>();
 		if (dataGrid != null) {
@@ -114,8 +130,10 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		dataGrid = new Grid(questionList.size(), 4);
 		int i = 0;
 		if (questionList != null) {
+			importQuestionsButton.setEnabled(true);
 			for (QuestionDto q : questionList) {
-				Label l = createListEntry((q.getOrder()!=null?q.getOrder():"")+": "+q.getText());
+				Label l = createListEntry((q.getOrder() != null ? q.getOrder()
+						: "") + ": " + q.getText());
 				HorizontalPanel bp = new HorizontalPanel();
 
 				Image moveUp = new Image("/images/greenuparrow.png");
@@ -151,6 +169,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 			}
 		}
 		addWidget(dataGrid);
+		if (importQuestionsButton.getParent() == null) {
+			addWidget(importQuestionsButton);
+		}
 	}
 
 	@Override
@@ -160,7 +181,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		bundle.remove(BundleConstants.QUESTION_KEY);
 		questionGroup = (QuestionGroupDto) bundle
 				.get(BundleConstants.QUESTION_GROUP_KEY);
-	
+
 		loadData(questionGroup);
 	}
 
@@ -241,8 +262,11 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				break;
 			}
 		}
-		widgetToMove.setText((targetQuestion.getOrder()!=null?targetQuestion.getOrder():"")+": "+targetQuestion.getText());
-		targetWidget.setText((qToMove.getOrder()!=null?qToMove.getOrder():"")+": "+qToMove.getText());
+		widgetToMove
+				.setText((targetQuestion.getOrder() != null ? targetQuestion
+						.getOrder() : "") + ": " + targetQuestion.getText());
+		targetWidget.setText((qToMove.getOrder() != null ? qToMove.getOrder()
+				: "") + ": " + qToMove.getText());
 		questionRowMap.put(qToMove.getKeyId(), targetRow);
 		questionRowMap.put(targetQuestion.getKeyId(), rowToMove);
 
@@ -258,7 +282,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 								.error(), TEXT_CONSTANTS.errorTracePrefix()
 								+ " " + caught.getLocalizedMessage());
 						errDia.showCentered();
-					
+
 					}
 
 					@Override
