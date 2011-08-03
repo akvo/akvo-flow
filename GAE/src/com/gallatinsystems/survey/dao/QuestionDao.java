@@ -144,13 +144,15 @@ public class QuestionDao extends BaseDAO<Question> {
 			for (int i = 0; i < f.length; i++) {
 				if (!"key".equals(f[i].getName())
 						&& f[i].getAnnotation(NotPersistent.class) == null
-						&& !"type".equals(f[i].getName()) && !f[i].getName().startsWith("jdo")) {					
+						&& !"type".equals(f[i].getName())
+						&& !f[i].getName().startsWith("jdo")
+						&& !f[i].getName().equals("serialVersionUID")) {
 					f[i].setAccessible(true);
 					question.setProperty(f[i].getName(), f[i].get(q));
 				}
 			}
-			//now set the type
-			question.setProperty("type",q.getType().toString());
+			// now set the type
+			question.setProperty("type", q.getType().toString());
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not set entity fields", e);
 		}
