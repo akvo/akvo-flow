@@ -1,11 +1,14 @@
 package com.gallatinsystems.survey.dao;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.annotations.NotPersistent;
 
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
@@ -18,7 +21,11 @@ import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 
 public class QuestionDao extends BaseDAO<Question> {
 
@@ -121,6 +128,39 @@ public class QuestionDao extends BaseDAO<Question> {
 		return orderedQuestionList;
 	}
 
+	public Question saveTransactional(Question q) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
+		Entity question = null;
+		try {
+			if (q.getKey() != null) {
+				question = datastore.get(q.getKey());
+			} else {
+				question = new Entity("Question");
+			}
+
+			Field[] f = Question.class.getDeclaredFields();
+			for (int i = 0; i < f.length; i++) {
+				if (!"key".equals(f[i].getName())
+						&& f[i].getAnnotation(NotPersistent.class) == null
+						&& !"type".equals(f[i].getName()) && !f[i].getName().startsWith("jdo")) {					
+					f[i].setAccessible(true);
+					question.setProperty(f[i].getName(), f[i].get(q));
+				}
+			}
+			//now set the type
+			question.setProperty("type",q.getType().toString());
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Could not set entity fields", e);
+		}
+
+		Key key = datastore.put(question);
+		q.setKey(key);
+		txn.commit();
+		return q;
+	}
+
 	public Question save(Question question, Long questionGroupId) {
 		if (questionGroupId != null) {
 			question.setQuestionGroupId(questionGroupId);
@@ -129,7 +169,7 @@ public class QuestionDao extends BaseDAO<Question> {
 				question.setSurveyId(group.getSurveyId());
 			}
 		}
-		question = save(question);
+		question = saveTransactional(question);
 		// delete existing options
 
 		QuestionOptionDao qoDao = new QuestionOptionDao();
@@ -289,10 +329,8 @@ public class QuestionDao extends BaseDAO<Question> {
 			String questionText) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query
-				.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
-		query
-				.declareParameters("Long questionGroupIdParam, String questionTextParam");
+		query.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
+		query.declareParameters("Long questionGroupIdParam, String questionTextParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, questionText);
 		if (results != null && results.size() > 0) {
@@ -306,10 +344,8 @@ public class QuestionDao extends BaseDAO<Question> {
 	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Question.class);
-		query
-				.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
-		query
-				.declareParameters("Long questionGroupIdParam, Integer orderParam");
+		query.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
+		query.declareParameters("Long questionGroupIdParam, Integer orderParam");
 		List<Question> results = (List<Question>) query.execute(
 				questionGroupId, order);
 		if (results != null && results.size() > 0) {
