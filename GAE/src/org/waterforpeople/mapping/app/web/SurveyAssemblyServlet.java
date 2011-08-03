@@ -231,8 +231,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		HttpServletResponse httpResp = getResponse();
 		httpResp.setStatus(HttpServletResponse.SC_OK);
-		httpResp.setContentType("text/plain");
+		//httpResp.setContentType("text/plain");
 		httpResp.getWriter().print("OK");
+		httpResp.flushBuffer();
 	}
 
 	private void assembleSurveyOnePass(Long surveyId) {
@@ -299,7 +300,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				MessageDao messageDao = new MessageDao();
 				messageDao.save(message);
 			}
-			log.warn("Completed onepass aseembly method for "+surveyId);
+			log.warn("Completed onepass assembly method for "+surveyId);
 		}
 	}
 
