@@ -24,20 +24,22 @@ public class SurveyRestRequest extends RestRequest {
 	public static final String GET_SURVEY_INSTANCE_ACTION = "getSurveyInstance";
 	public static final String DELETE_SURVEY_INSTANCE= "deleteSurveyInstance";
 	public static final String GET_GRAPH_ACTION="getGraph";
+	public static final String UPDATE_QUESTION_ORDER_ACTOIN = "updateQuestionOrder";
 	
 	
 
-	private static final String SURVEY_GROUP_NAME_PARAM = "surveyGroupName";
-	private static final String SURVEY_NAME_PARAM = "surveyName";
-	private static final String QUESTION_GROUP_NAME_PARAM = "questionGroupName";
-	private static final String QUESTION_TEXT_PARAM = "questionText";
-	private static final String QUESTION_TYPE_PARAM = "questionType";
-	private static final String OPTIONS_PARAM = "options";
-	private static final String DEPEND_QUESTION_PARAM = "dependQuestion";
-	private static final String ALLOW_OTHER_PARAM = "allowOther";
-	private static final String ALLOW_MULTIPLE_PARAM = "allowMultiple";
-	private static final String MANDATORY_PARAM = "mandatory";
-	private static final String QUESTION_GROUP_ORDER_PARAM = "questionGroupOrder";
+	public static final String SURVEY_GROUP_NAME_PARAM = "surveyGroupName";
+	public static final String SURVEY_NAME_PARAM = "surveyName";
+	public static final String QUESTION_GROUP_NAME_PARAM = "questionGroupName";
+	public static final String QUESTION_TEXT_PARAM = "questionText";
+	public static final String QUESTION_TYPE_PARAM = "questionType";
+	public static final String OPTIONS_PARAM = "options";
+	public static final String DEPEND_QUESTION_PARAM = "dependQuestion";
+	public static final String ALLOW_OTHER_PARAM = "allowOther";
+	public static final String ALLOW_MULTIPLE_PARAM = "allowMultiple";
+	public static final String MANDATORY_PARAM = "mandatory";
+	public static final String QUESTION_GROUP_ORDER_PARAM = "questionGroupOrder";
+	public static final String QUESTION_ORDER_PARAM = "questionOrder";
 	public static final String SURVEY_GROUP_ID_PARAM = "surveyGroupId";
 	public static final String SURVEY_ID_PARAM = "surveyId";
 	public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
@@ -65,6 +67,7 @@ public class SurveyRestRequest extends RestRequest {
 	private String scoring;
 	private Long instanceId;
 	private String graphType;
+	private Integer questionOrder;
 
 	public String getGraphType() {
 		return graphType;
@@ -246,6 +249,10 @@ public class SurveyRestRequest extends RestRequest {
 			questionGroupOrder = Integer.parseInt(req.getParameter(
 					QUESTION_GROUP_ORDER_PARAM).trim());
 		}
+		if (req.getParameter(QUESTION_ORDER_PARAM) != null) {
+			setQuestionOrder(Integer.parseInt(req.getParameter(
+					QUESTION_ORDER_PARAM).trim()));
+		}
 		if (req.getParameter(SURVEY_ID_PARAM) != null) {
 			surveyId = Integer.parseInt(req.getParameter(SURVEY_ID_PARAM)
 					.trim());
@@ -291,6 +298,14 @@ public class SurveyRestRequest extends RestRequest {
 
 	public Long getSurveyGroupId() {
 		return surveyGroupId;
+	}
+
+	public void setQuestionOrder(Integer questionOrder) {
+		this.questionOrder = questionOrder;
+	}
+
+	public Integer getQuestionOrder() {
+		return questionOrder;
 	}
 
 	

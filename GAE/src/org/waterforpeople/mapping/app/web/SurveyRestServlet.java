@@ -49,6 +49,7 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyRestServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(TaskServlet.class
@@ -100,12 +101,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				.equals(surveyReq.getAction())) {
 			questionSaved = saveQuestion(surveyReq.getSurveyGroupName(),
 					surveyReq.getSurveyName(),
-					surveyReq.getQuestionGroupName(), surveyReq
-							.getQuestionType(), surveyReq.getQuestionText(),
+					surveyReq.getQuestionGroupName(),
+					surveyReq.getQuestionType(), surveyReq.getQuestionText(),
 					surveyReq.getOptions(), surveyReq.getDependQuestion(),
-					surveyReq.getAllowOtherFlag(), surveyReq
-							.getAllowMultipleFlag(), surveyReq
-							.getMandatoryFlag(), surveyReq.getQuestionId(),
+					surveyReq.getAllowOtherFlag(),
+					surveyReq.getAllowMultipleFlag(),
+					surveyReq.getMandatoryFlag(), surveyReq.getQuestionOrder(),
 					surveyReq.getQuestionGroupOrder(), surveyReq.getScoring());
 			response.setCode("200");
 			response.setMessage("Record Saved status: " + questionSaved);
@@ -119,8 +120,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			response.setDtoList(sgList);
 		} else if (SurveyRestRequest.LIST_SURVEYS_ACTION.equals(surveyReq
 				.getAction())) {
-			response = listSurveys(surveyReq.getSurveyGroupId(), surveyReq
-					.getCursor(), response);
+			response = listSurveys(surveyReq.getSurveyGroupId(),
+					surveyReq.getCursor(), response);
 		} else if (SurveyRestRequest.GET_SURVEY_ACTION.equals(surveyReq
 				.getAction())) {
 			List<SurveyDto> sDtoList = new ArrayList<SurveyDto>();
@@ -142,8 +143,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 					.getQuestionId())));
 		} else if (SurveyRestRequest.GET_QUESTION_DETAILS_ACTION
 				.equals(surveyReq.getAction())) {
-			QuestionDto dto = loadQuestionDetails(new Long(surveyReq
-					.getQuestionId()));
+			QuestionDto dto = loadQuestionDetails(new Long(
+					surveyReq.getQuestionId()));
 			List<BaseDto> dtoList = new ArrayList<BaseDto>();
 			dtoList.add(dto);
 			response.setDtoList(dtoList);
@@ -162,6 +163,14 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			response.setUrl(constructChartUrl(surveyReq.getQuestionId(),
 					surveyReq.getGraphType()));
+		} else if (SurveyRestRequest.UPDATE_QUESTION_ORDER_ACTOIN
+				.equals(surveyReq.getAction())) {
+			Question q = new Question();
+			q.setKey(KeyFactory.createKey("Question", surveyReq.getQuestionId()));
+			q.setOrder(surveyReq.getQuestionOrder());
+			List<Question> questionList = new ArrayList<Question>();
+			questionList.add(q);
+			qDao.updateQuestionOrder(questionList);
 		}
 		return response;
 	}
@@ -176,25 +185,27 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	 * @param graphType
 	 * @return
 	 */
-	private String constructChartUrl(Integer questionId, String graphType){
+	private String constructChartUrl(Integer questionId, String graphType) {
 		StringBuilder url = new StringBuilder(CHART_API_URL);
 		SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-		List<SurveyQuestionSummary> summaries = summaryDao.listByQuestion(questionId.toString());
+		List<SurveyQuestionSummary> summaries = summaryDao
+				.listByQuestion(questionId.toString());
 		Question q = qDao.getByKey(new Long(questionId));
-		if(q != null && summaries != null){
+		if (q != null && summaries != null) {
 			url.append(q.getText()).append(CHART_API_LEGEND_PARAM);
 			StringBuilder legend = new StringBuilder();
 			StringBuilder data = new StringBuilder();
-			int i =0;
-			for(SurveyQuestionSummary sum: summaries){
-				if(i>0){
+			int i = 0;
+			for (SurveyQuestionSummary sum : summaries) {
+				if (i > 0) {
 					legend.append("|");
 					data.append(",");
 				}
 				legend.append(sum.getResponse());
 				data.append(sum.getCount());
 			}
-			url.append(legend.toString()).append(CHART_API_DATA_PARAM).append(data.toString());
+			url.append(legend.toString()).append(CHART_API_DATA_PARAM)
+					.append(data.toString());
 		}
 		return url.toString();
 	}
@@ -369,9 +380,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		// temp fix until we put a validation rule in
 		if (questionText.length() > 499) {
 			questionText = questionText.substring(0, 499);
-		}
-		if (questionOrder == 32) {
-			log.info("found");
 		}
 
 		// TODO: Change Impl Later if we support multiple langs

@@ -896,7 +896,7 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	protected static String fetchDataFromServer(String fullUrl)
+	public static String fetchDataFromServer(String fullUrl)
 			throws Exception {
 		BufferedReader reader = null;
 		String result = null;

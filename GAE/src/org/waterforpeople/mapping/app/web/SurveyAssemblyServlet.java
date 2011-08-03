@@ -106,7 +106,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				// if we're allowed to use a backend, then check to see if we
 				// need to (based on survey size)
 				List<Question> questionList = questionDao
-						.listQuestionsBySurvey(importReq.getSurveyId());
+						.listQuestionsBySurvey(importReq.getSurveyId());				
 				if (questionList != null
 						&& questionList.size() > BACKEND_QUESTION_THRESHOLD) {
 					useBackend = true;

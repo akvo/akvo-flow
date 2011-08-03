@@ -1,14 +1,11 @@
 package org.waterforpeople.mapping.dataexport;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -19,12 +16,19 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
+import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 
 /**
  * this data importer will read a local excel spreadsheet file using the POI
- * library and will then
+ * library and will then save it to the server via the rest api. This importer
+ * supports 2 modes: the default (isWholeSurvey =true) assumes we're loading an
+ * entire survey. If isWholeSurvey is false, then it assumes we're inserting
+ * questions into an existing survey above the question denoted by the
+ * beforeQuestionId param. before loading the questions, the entire survey is
+ * reordered to adjust the orderings for the to-be inserted items
  * 
  * @author Christopher Fagiani
  * 
@@ -32,110 +36,189 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 public class SurveySpreadsheetImporter implements DataImporter {
 
 	private static final String SERVLET_URL = "/surveyrestapi";
-	
+	private static final String BEFORE_QUESTION_ID_PARAM = "beforeQuestionId";
+	private static final String WHOLE_SURVEY_PARAM = "isWholeSurvey";
 
 	@Override
-	public void executeImport(File file, String serverBase, Map<String,String> criteria) {
+	public void executeImport(File file, String serverBase,
+			Map<String, String> criteria) {
 		InputStream inp = null;
 		Sheet sheet1 = null;
-
+		Integer startRow = 1;
+		Long beforeQuestionId = null;
+		boolean isWholeSurvey = true;
+		if (criteria != null) {
+			if (criteria.get(BEFORE_QUESTION_ID_PARAM) != null) {
+				beforeQuestionId = new Long(
+						criteria.get(BEFORE_QUESTION_ID_PARAM));
+			}
+			if (criteria.get(WHOLE_SURVEY_PARAM) != null) {
+				if ("false".equalsIgnoreCase(criteria.get(WHOLE_SURVEY_PARAM))) {
+					isWholeSurvey = false;
+				}
+			}
+		}
 		try {
 			inp = new FileInputStream(file);
 			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
 			int i = 0;
 			sheet1 = wb.getSheetAt(0);
+			if (!isWholeSurvey) {
+				//even though there is a header row, we want lastRowNum since rows are 0 indexed
+				int questionCount = sheet1.getLastRowNum();
+				// figure out the starting order
+				QuestionDto startingQuestion = BulkDataServiceClient
+						.loadQuestionDetails(serverBase, beforeQuestionId);
+				startRow = startingQuestion.getOrder();
+				// now get all the questions
+				List<QuestionDto> questionsInGroup = BulkDataServiceClient
+						.fetchQuestions(serverBase,
+								startingQuestion.getQuestionGroupId());
+
+				if (questionsInGroup != null) {
+					// we only need to reorder the group into which we're
+					// importing
+
+					for (QuestionDto q : questionsInGroup) {
+						if (q.getOrder() >= startRow) {
+							StringBuilder reorderBuffer = new StringBuilder();
+							reorderBuffer
+									.append("?")
+									.append(SurveyRestRequest.ACTION_PARAM)
+									.append("=")
+									.append(SurveyRestRequest.UPDATE_QUESTION_ORDER_ACTOIN)
+									.append("&")
+									.append(SurveyRestRequest.QUESTION_ID_PARAM)
+									.append("=")
+									.append(q.getKeyId())
+									.append("&")
+									.append(SurveyRestRequest.QUESTION_ORDER_PARAM)
+									.append("=")
+									.append((q.getOrder() + questionCount));
+							System.out.println(BulkDataServiceClient
+									.fetchDataFromServer(serverBase
+											+ SERVLET_URL
+											+ reorderBuffer.toString()));
+						}
+					}
+				}
+			}
+
 			for (Row row : sheet1) {
 				if (row.getRowNum() >= 1) {
 					StringBuilder sb = new StringBuilder();
-					sb.append("?action=saveQuestion&");
+					sb.append("?").append(SurveyRestRequest.ACTION_PARAM)
+							.append("=")
+							.append(SurveyRestRequest.SAVE_QUESTION_ACTION)
+							.append("&");
 					for (Cell cell : row) {
 						switch (cell.getColumnIndex()) {
 						case 0:
-							sb.append("surveyGroupName="
-									+ URLEncoder.encode(cell
+							sb.append(SurveyRestRequest.SURVEY_GROUP_NAME_PARAM)
+									.append("=")
+									.append(URLEncoder.encode(cell
 											.getStringCellValue().trim(),
-											"UTF-8") + "&");
+											"UTF-8")).append("&");
 							break;
 						case 1:
-							sb.append("surveyName="
-									+ URLEncoder.encode(cell
+							sb.append(SurveyRestRequest.SURVEY_NAME_PARAM)
+									.append("=")
+									.append(URLEncoder.encode(cell
 											.getStringCellValue().trim(),
-											"UTF-8") + "&");
+											"UTF-8")).append("&");
 							break;
 						case 2:
-							sb.append("questionGroupOrder="
-									+ new Double(cell.getNumericCellValue())
-											.intValue() + "&");
+							sb.append(
+									SurveyRestRequest.QUESTION_GROUP_ORDER_PARAM)
+									.append("=")
+									.append(new Double(cell
+											.getNumericCellValue()).intValue())
+									.append("&");
 							break;
 
 						case 3:
-							sb.append("questionGroupName="
-									+ URLEncoder.encode(cell
+							sb.append(
+									SurveyRestRequest.QUESTION_GROUP_NAME_PARAM)
+									.append("=")
+									.append(URLEncoder.encode(cell
 											.getStringCellValue().trim(),
-											"UTF-8") + "&");
+											"UTF-8")).append("&");
 							break;
 
 						case 4:
-							sb.append("questionID="
-									+ new Double(cell.getNumericCellValue())
-											.intValue() + "&");
+							int order = new Double(cell.getNumericCellValue())
+									.intValue();
+							if (!isWholeSurvey) {
+								order += (startRow - 1);
+							}
+							sb.append(SurveyRestRequest.QUESTION_ORDER_PARAM)
+									.append("=").append(order).append("&");
 							break;
+
 						case 5:
-							sb.append("questionText="
-									+ URLEncoder.encode(cell
+							sb.append(SurveyRestRequest.QUESTION_TEXT_PARAM)
+									.append("=")
+									.append(URLEncoder.encode(cell
 											.getStringCellValue().trim(),
-											"UTF-8") + "&");
+											"UTF-8")).append("&");
 							break;
 						case 6:
-							sb.append("questionType="
-									+ URLEncoder.encode(cell
+							sb.append(SurveyRestRequest.QUESTION_TYPE_PARAM)
+									.append("=")
+									.append(URLEncoder.encode(cell
 											.getStringCellValue().trim(),
-											"UTF-8") + "&");
+											"UTF-8")).append("&");
 							break;
 						case 7:
-							sb.append("options="
-									+ URLEncoder.encode(cell
+							sb.append(SurveyRestRequest.OPTIONS_PARAM)
+									.append("=")
+									.append(URLEncoder.encode(cell
 											.getStringCellValue().trim(),
-											"UTF-8") + "&");
+											"UTF-8")).append("&");
 							break;
 						case 8:
-							sb.append("dependQuestion="
-									+ URLEncoder.encode(cell
-											.getStringCellValue().trim(),
-											"UTF-8") + "&");
+							String valString = cell.getStringCellValue();
+							if (valString != null
+									&& valString.trim().length() > 0) {
+								String[] parts = valString.split("\\|");
+								int depOrder = new Integer(parts[0].trim());
+								if (!isWholeSurvey) {
+									depOrder += (startRow - 1);
+								}
+								sb.append(
+										SurveyRestRequest.DEPEND_QUESTION_PARAM)
+										.append("=").append(depOrder).append("|").append(parts[1])
+										.append("&");
+							}
 							break;
 						case 9:
-							sb.append("allowOther="
-									+ cell.getBooleanCellValue() + "&");
+							sb.append(SurveyRestRequest.ALLOW_OTHER_PARAM)
+									.append("=")
+									.append(cell.getBooleanCellValue())
+									.append("&");
 							break;
 						case 10:
-							sb.append("allowMultiple="
-									+ cell.getBooleanCellValue() + "&");
+							sb.append(SurveyRestRequest.ALLOW_MULTIPLE_PARAM)
+									.append("=")
+									.append(cell.getBooleanCellValue())
+									.append("&");
 							break;
 						case 11:
-							sb.append("mandatory=" + cell.getBooleanCellValue()
-									+ "&");
+							sb.append(SurveyRestRequest.MANDATORY_PARAM)
+									.append("=")
+									.append(cell.getBooleanCellValue())
+									.append("&");
 							break;
 						case 12:
-							sb.append("scoring=" + cell.getStringCellValue());
+							sb.append(SurveyRestRequest.SCORING_PARAM)
+									.append("=")
+									.append(cell.getStringCellValue());
 							break;
 						}
 					}
-
-					URL url = new URL(serverBase + SERVLET_URL + sb.toString());
-					System.out.println(i++ + " : " + serverBase + SERVLET_URL
-							+ sb.toString());
-					HttpURLConnection conn = (HttpURLConnection) url
-							.openConnection();
-					conn.setRequestMethod("GET");
-					conn.setDoOutput(true);
-					String line;
-					BufferedReader reader = new BufferedReader(
-							new InputStreamReader(conn.getInputStream()));
-					while ((line = reader.readLine()) != null) {
-						System.out.println(line);
-					}
-					reader.close();
+					System.out.println(BulkDataServiceClient
+							.fetchDataFromServer(serverBase + SERVLET_URL
+									+ sb.toString()));
 				}
 			}
 		} catch (Exception e) {
@@ -170,8 +253,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 							switch (cell.getColumnIndex()) {
 							case 0:
 								if (cell.getStringCellValue().trim().length() == 0) {
-									rowError
-											.append("Survey Group Name is missing\n");
+									rowError.append("Survey Group Name is missing\n");
 								}
 								break;
 							case 1:
@@ -182,74 +264,58 @@ public class SurveySpreadsheetImporter implements DataImporter {
 							case 2:
 								try {
 									if (cell.getNumericCellValue() < 0) {
-										rowError
-												.append("Question Group Order must be a positive integer\n");
+										rowError.append("Question Group Order must be a positive integer\n");
 									}
 								} catch (Exception e) {
-									rowError
-											.append("Question group order must be a number\n");
+									rowError.append("Question group order must be a number\n");
 								}
 								break;
 							case 3:
 								if (cell.getStringCellValue().trim().length() == 0) {
-									rowError
-											.append("Question Group Name is missing\n");
+									rowError.append("Question Group Name is missing\n");
 								}
 								break;
 							case 4:
 								try {
 									if (cell.getNumericCellValue() < 0) {
-										rowError
-												.append("Question Id Order must be a positive integer\n");
+										rowError.append("Question Id Order must be a positive integer\n");
 									}
 								} catch (Exception e) {
-									rowError
-											.append("Question Id order must be a number\n");
+									rowError.append("Question Id order must be a number\n");
 								}
 								break;
 							case 5:
 								if (cell.getStringCellValue().trim().length() == 0) {
-									rowError
-											.append("Question Text is missing\n");
+									rowError.append("Question Text is missing\n");
 								}
 								break;
 							case 6:
 								type = cell.getStringCellValue().trim();
 								if (type.length() == 0) {
-									rowError
-											.append("Question Type is missing\n");
+									rowError.append("Question Type is missing\n");
 								} else {
 									if (!(type
 											.equals(QuestionDto.QuestionType.FREE_TEXT
 													.toString())
-											|| type
-													.equals(QuestionDto.QuestionType.PHOTO
-															.toString())
-											|| type
-													.equals(QuestionDto.QuestionType.VIDEO
-															.toString())
-											|| type
-													.equals(QuestionDto.QuestionType.GEO
-															.toString())
-											|| type
-													.equals(QuestionDto.QuestionType.SCAN
-															.toString())
-											|| type
-													.equals(QuestionDto.QuestionType.TRACK
-															.toString())
-											|| type
-													.equals(QuestionDto.QuestionType.NAME
-															.toString())
-											|| type
-													.equals(QuestionDto.QuestionType.NUMBER
-															.toString()) || type
+											|| type.equals(QuestionDto.QuestionType.PHOTO
+													.toString())
+											|| type.equals(QuestionDto.QuestionType.VIDEO
+													.toString())
+											|| type.equals(QuestionDto.QuestionType.GEO
+													.toString())
+											|| type.equals(QuestionDto.QuestionType.SCAN
+													.toString())
+											|| type.equals(QuestionDto.QuestionType.TRACK
+													.toString())
+											|| type.equals(QuestionDto.QuestionType.NAME
+													.toString())
+											|| type.equals(QuestionDto.QuestionType.NUMBER
+													.toString()) || type
 											.equals(QuestionDto.QuestionType.OPTION
 													.toString()))
-											|| type
-													.equals(QuestionDto.QuestionType.STRENGTH
-															.toString())) {
-										rowError
-												.append("Invalid question type. Must be either: FREE_TEXT, PHOTO, VIDEO, GEO, NUMBER, OPTION, SCAN, TRACK, NAME, STRENGTH\n");
+											|| type.equals(QuestionDto.QuestionType.STRENGTH
+													.toString())) {
+										rowError.append("Invalid question type. Must be either: FREE_TEXT, PHOTO, VIDEO, GEO, NUMBER, OPTION, SCAN, TRACK, NAME, STRENGTH\n");
 									}
 								}
 								break;
@@ -259,8 +325,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 												.equals(type)) {
 									if (cell.getStringCellValue().trim()
 											.length() == 0) {
-										rowError
-												.append("Options are missing\n");
+										rowError.append("Options are missing\n");
 									}
 								}
 								// TODO: validate language codes
@@ -270,20 +335,17 @@ public class SurveySpreadsheetImporter implements DataImporter {
 								break;
 							case 9:
 								if (!validateBooleanField(cell)) {
-									rowError
-											.append("Allow Other must be either TRUE or FALSE\n");
+									rowError.append("Allow Other must be either TRUE or FALSE\n");
 								}
 								break;
 							case 10:
 								if (!validateBooleanField(cell)) {
-									rowError
-											.append("Allow Multiple must be either TRUE or FALSE\n");
+									rowError.append("Allow Multiple must be either TRUE or FALSE\n");
 								}
 								break;
 							case 11:
 								if (!validateBooleanField(cell)) {
-									rowError
-											.append("Manditory must be either TRUE or FALSE\n");
+									rowError.append("Manditory must be either TRUE or FALSE\n");
 								}
 								break;
 							}
@@ -338,6 +400,5 @@ public class SurveySpreadsheetImporter implements DataImporter {
 		}
 		return true;
 	}
-
 
 }
