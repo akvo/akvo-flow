@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
 import android.app.AlertDialog;
@@ -95,12 +96,14 @@ public class SurveyViewActivity extends TabActivity implements
 	private int tabCount;
 	private String eventSourceQuestionId;
 	private PropertyUtil props;
+	private HashSet<String> missingQuestions;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		currentTextSize = NORMAL_TXT_SIZE;
+		missingQuestions = new HashSet<String>();
 		readOnly = false;
 		factoryMap = new HashMap<QuestionGroup, SurveyQuestionTabContentFactory>();
 		databaseAdapter = new SurveyDbAdapter(this);
@@ -247,7 +250,7 @@ public class SurveyViewActivity extends TabActivity implements
 					@Override
 					public void onTabChanged(String tabId) {
 						if (SUBMIT_TAB_TAG.equals(tabId)) {
-							submissionTab.refreshView();
+							submissionTab.refreshView(true);
 						}
 					}
 				});
@@ -484,12 +487,29 @@ public class SurveyViewActivity extends TabActivity implements
 	 * questions
 	 */
 	public void resetAllQuestions() {
+		missingQuestions.clear();
 		for (int i = 0; i < tabContentFactories.size(); i++) {
 			tabContentFactories.get(i).resetTabQuestions();
 		}
 		tabHost.setCurrentTab(0);
 		if (submissionTab != null) {
-			submissionTab.refreshView();
+			submissionTab.refreshView(false);
+		}
+	}
+
+	/** 
+	 * stores the ids of the missing questions so we can highlight/unhighlight as users go back through the tabs
+	 * @param questions
+	 */
+	public void setMissingQuestions(ArrayList<Question> questions) {
+		missingQuestions.clear();
+		if (questions != null) {			
+			for (int i = 0; i < questions.size(); i++) {
+				missingQuestions.add(questions.get(i).getId());
+			}
+			for (SurveyQuestionTabContentFactory factory : tabContentFactories) {
+				factory.highlightMissingQuestions(missingQuestions);
+			}
 		}
 	}
 
@@ -789,10 +809,10 @@ public class SurveyViewActivity extends TabActivity implements
 
 							@Override
 							public void onClick(DialogInterface dialog,
-									int which) {
-								resetAllQuestions();
+									int which) {								
 								databaseAdapter.deleteResponses(respondentId
 										.toString());
+								resetAllQuestions();
 								dialog.dismiss();
 							}
 						});

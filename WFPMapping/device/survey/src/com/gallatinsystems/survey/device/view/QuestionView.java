@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
@@ -322,6 +323,7 @@ public class QuestionView extends TableLayout implements
 	 */
 	public void resetQuestion(boolean fireEvent) {
 		setResponse(null, false);
+		highlight(false);
 		if (fireEvent) {
 			notifyQuestionListeners(QuestionInteractionEvent.QUESTION_CLEAR_EVENT);
 		}
@@ -521,4 +523,16 @@ public class QuestionView extends TableLayout implements
 		this.defaultLang = defaultLang;
 	}
 
+	/**
+	 * turns highlighting on/off
+	 * 
+	 * @param useHighlight
+	 */
+	public void highlight(boolean useHighlight) {
+		if (useHighlight) {
+			questionText.setBackgroundColor(0x55CC99CC);
+		} else {
+			questionText.setBackgroundColor(Color.TRANSPARENT);
+		}
+	}
 }

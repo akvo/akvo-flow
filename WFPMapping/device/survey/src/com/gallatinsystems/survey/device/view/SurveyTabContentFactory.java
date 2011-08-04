@@ -23,12 +23,13 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 	protected String[] languageCodes;
 
 	protected SurveyTabContentFactory(SurveyViewActivity c,
-			SurveyDbAdapter dbAdaptor, float textSize, String defaultLang, String[] languageCodes) {
+			SurveyDbAdapter dbAdaptor, float textSize, String defaultLang,
+			String[] languageCodes) {
 		context = c;
 		databaseAdaptor = dbAdaptor;
 		defaultTextSize = textSize;
 		this.languageCodes = languageCodes;
-		this.defaultLang = defaultLang;		
+		this.defaultLang = defaultLang;
 
 	}
 
@@ -98,6 +99,10 @@ public abstract class SurveyTabContentFactory implements TabContentFactory {
 
 	public String getDefaultLang() {
 		return defaultLang;
+	}
+
+	protected SurveyViewActivity getContext() {
+		return context;
 	}
 
 }

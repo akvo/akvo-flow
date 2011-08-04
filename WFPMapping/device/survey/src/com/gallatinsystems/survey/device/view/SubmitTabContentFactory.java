@@ -52,7 +52,7 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 	 * 
 	 * @return
 	 */
-	public View refreshView() {
+	public View refreshView(boolean setMissing) {
 		// first, re-save all questions to make sure we didn't miss anything
 		context.saveAllResponses();
 		submitButton = configureActionButton(R.string.submitbutton,
@@ -79,11 +79,15 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 		// get the list (across all tabs) of missing mandatory
 		// responses
 		ArrayList<Question> missingQuestions = context.checkMandatory();
+		if (setMissing) {
+			getContext().setMissingQuestions(missingQuestions);
+		}
 		if (missingQuestions.size() == 0) {
 			table.addView(constructHeadingRow(context
 					.getString(R.string.submittext)));
 			// display the "all ok" text and
 			toggleButtons(true);
+
 		} else {
 			table.addView(constructHeadingRow(context
 					.getString(R.string.mandatorywarning)));

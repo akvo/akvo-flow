@@ -2,6 +2,7 @@ package com.gallatinsystems.survey.device.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import android.database.Cursor;
 import android.view.View;
@@ -179,6 +180,22 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 				view.resetQuestion(false);
 			}
 			resetView();
+		}
+	}
+	
+	/**
+	 * sets the mandatory highlight on each question that is in the set of question ids passed in
+	 * @param questions
+	 */
+	public void highlightMissingQuestions(HashSet<String> questions){
+		if(questionMap != null && questions != null){
+			for (QuestionView view : questionMap.values()) {
+				if(questions.contains(view.getQuestion().getId())){
+					view.highlight(true);
+				}else{				
+					view.highlight(false);
+				}
+			}
 		}
 	}
 
