@@ -100,7 +100,7 @@ public class RemoteExceptionRequest extends RestRequest {
 		if (req.getParameter(DATE_PARAM) != null) {
 			try {
 				date = DATE_FMT.parse(req.getParameter(DATE_PARAM));
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
 						RestError.BAD_DATATYPE_MESSAGE, DATE_PARAM
 								+ " must be in format: " + FORMAT_STRING));
