@@ -80,6 +80,9 @@ public class StatusUtil {
 				}
 			}
 		}
+		if(number == null || number.trim().length()==0){
+			number = teleMgr.getDeviceId();
+		}
 		return number;
 	}
 }
