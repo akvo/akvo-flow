@@ -24,7 +24,7 @@ public class RemoteExceptionRequest extends RestRequest {
 			FORMAT_STRING);
 
 	public static final String SAVE_TRACE_ACTION = "saveTrace";
-	
+
 	public static final String PHONE_PARAM = "phoneNumber";
 	public static final String DEV_ID_PARAM = "deviceIdentifier";
 	public static final String VERSION_PARAM = "version";
@@ -97,7 +97,8 @@ public class RemoteExceptionRequest extends RestRequest {
 		deviceIdent = req.getParameter(DEV_ID_PARAM);
 		version = req.getParameter(VERSION_PARAM);
 		stackTrace = req.getParameter(TRACE_PARAM);
-		if (req.getParameter(DATE_PARAM) != null) {
+		if (req.getParameter(DATE_PARAM) != null
+				&& req.getParameter(DATE_PARAM).trim().length() > 0) {
 			try {
 				date = DATE_FMT.parse(req.getParameter(DATE_PARAM));
 			} catch (Exception e) {

@@ -1,5 +1,7 @@
 package com.gallatinsystems.diagnostics.app.web;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.diagnostics.app.web.dto.RemoteExceptionRequest;
@@ -41,7 +43,8 @@ public class RemoteExceptionRestServlet extends AbstractRestApiServlet {
 		RemoteExceptionRequest exReq = (RemoteExceptionRequest) req;
 		if (RemoteExceptionRequest.SAVE_TRACE_ACTION.equals(req.getAction())) {
 			RemoteStacktrace trace = new RemoteStacktrace();
-			trace.setErrorDate(exReq.getDate());
+			trace.setErrorDate(exReq.getDate() != null ? exReq.getDate()
+					: new Date());
 			trace.setSoftwareVersion(exReq.getVersion());
 			trace.setDeviceIdentifier(exReq.getDeviceIdent());
 			trace.setPhoneNumber(exReq.getPhoneNumber());
