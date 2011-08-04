@@ -64,6 +64,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		surveyInstanceDao = new SurveyInstanceDAO();
 		surveyedLocaleDao = new SurveyedLocaleDao();
 		qDao = new QuestionDao();
+		countryDao = new CountryDao();
 		metricDao = new MetricDao();
 		metricMappingDao = new SurveyMetricMappingDao();
 
