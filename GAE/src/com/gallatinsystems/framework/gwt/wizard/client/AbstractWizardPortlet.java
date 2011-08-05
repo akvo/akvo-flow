@@ -75,7 +75,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private boolean working;
 	private UserDto currentUser;
 
-	protected AbstractWizardPortlet(String name, int width, int height, UserDto currentUser) {
+	protected AbstractWizardPortlet(String name, int width, int height,
+			UserDto currentUser) {
 		super(name, true, false, false, width, height);
 		working = false;
 		this.currentUser = currentUser;
@@ -100,10 +101,10 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 	protected void init() {
 		pageToLoad = workflow.getStartNode();
-		renderWizardPage(pageToLoad, true, null);
+		renderWizardPage(pageToLoad, true, false, null);
 		setContent(contentPane);
-		waitDialog = new MessageDialog(TEXT_CONSTANTS.saving(), TEXT_CONSTANTS
-				.pleaseWait(), true);
+		waitDialog = new MessageDialog(TEXT_CONSTANTS.saving(),
+				TEXT_CONSTANTS.pleaseWait(), true);
 	}
 
 	/**
@@ -132,8 +133,10 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			WizardButton[] buttonDefinitions, String style) {
 		if (buttonDefinitions != null) {
 			for (int i = 0; i < buttonDefinitions.length; i++) {
-				if(buttonDefinitions[i].getRequiredPermission()!= null){
-					if(currentUser== null|| !currentUser.hasPermission(buttonDefinitions[i].getRequiredPermission())){
+				if (buttonDefinitions[i].getRequiredPermission() != null) {
+					if (currentUser == null
+							|| !currentUser.hasPermission(buttonDefinitions[i]
+									.getRequiredPermission())) {
 						continue;
 					}
 				}
@@ -166,7 +169,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * onLoadComplete hook
 	 */
 	protected void renderWizardPage(WizardNode page, boolean isForward,
-			Map<String, Object> bundle) {
+			boolean isBreadcrumb, Map<String, Object> bundle) {
 		boolean calledSave = false;
 		prePageUnload(page);
 		widgetPanel.clear();
@@ -185,14 +188,17 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			}
 		}
 		if (!isForward && currentPage instanceof ContextAware) {
-			bundle = ((ContextAware) currentPage).getContextBundle(isForward);
-			((ContextAware) currentPage).flushContext();
-
+			if (isBreadcrumb || bundle == null) {
+				bundle = ((ContextAware) currentPage)
+						.getContextBundle(isForward);
+				((ContextAware) currentPage).flushContext();
+			}
 		}
 		if (isForward && page.getBreadcrumb() != null) {
 			if (currentPage instanceof ContextAware) {
-				addBreadcrumb(page, ((ContextAware) currentPage)
-						.getContextBundle(isForward));
+				addBreadcrumb(page,
+						((ContextAware) currentPage)
+								.getContextBundle(isForward));
 			} else {
 				addBreadcrumb(page, null);
 			}
@@ -216,7 +222,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	}
 
 	/**
-	 *Populates the bundle in the current page
+	 * Populates the bundle in the current page
 	 * 
 	 */
 	private void populateBundle(Map<String, Object> bundle) {
@@ -242,7 +248,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 				if (pendingPage instanceof ContextAware) {
 					((ContextAware) pendingPage).flushContext();
 					bundle = ((ContextAware) pendingPage)
-							.getContextBundle(false);					
+							.getContextBundle(false);
 				}
 				populateBundle(bundle);
 			} else {
@@ -251,7 +257,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			if (bundle.get(WizardBundleConstants.AUTO_ADVANCE_FLAG) != null) {
 				bundle.remove(WizardBundleConstants.AUTO_ADVANCE_FLAG);
 				renderWizardPage(workflow.getWorkflowNode(pageToLoad
-						.getNextNodes()[0].getNodeName()), true, bundle);
+						.getNextNodes()[0].getNodeName()), true, false, bundle);
 			} else {
 				if (currentPage instanceof AutoAdvancing) {
 					((AutoAdvancing) currentPage).advance(this);
@@ -330,15 +336,15 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			if (forwardNavButtons.contains(event.getSource())) {
 				renderWizardPage(workflow.getWorkflowNode(buttonMapping
 						.get(((Button) event.getSource()).getText())), true,
-						null);
+						false, null);
 			} else if (backwardNavButtons.contains(event.getSource())) {
 				renderWizardPage(workflow.getWorkflowNode(buttonMapping
 						.get(((Button) event.getSource()).getText())), false,
-						null);
+						false, null);
 			} else if (event.getSource() instanceof Breadcrumb) {
 				// if it is a breadcrumb
 				renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
-						.getSource()).getTargetNode()), false,
+						.getSource()).getTargetNode()), false, true,
 						((Breadcrumb) event.getSource()).getBundle());
 			}
 		}
@@ -351,11 +357,25 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 */
 	@SuppressWarnings("rawtypes")
 	public void openPage(Class clazz, Map<String, Object> bundle) {
+		openPage(clazz, true, bundle);
+	}
+
+	/**
+	 * opens a new wizard page allowing the caller to suppress the isForward
+	 * flag
+	 * 
+	 * @param clazz
+	 * @param isForward
+	 * @param bundle
+	 */
+	@SuppressWarnings("rawtypes")
+	public void openPage(Class clazz, boolean isForward,
+			Map<String, Object> bundle) {
 		if (!working) {
 			if (clazz != null) {
 				WizardNode node = workflow.findNode(clazz);
 				if (node != null) {
-					renderWizardPage(node, true, bundle);
+					renderWizardPage(node, isForward, false, bundle);
 				}
 			}
 		}
@@ -505,16 +525,16 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		private String requiredPermission;
 
 		public WizardButton(String node) {
-			this(node,node);			
+			this(node, node);
 		}
 
 		public WizardButton(String node, String label) {
 			nodeName = node;
 			this.label = label;
 		}
-		
-		public WizardButton(String node, String label, String requiredPermission){
-			this(node,label);
+
+		public WizardButton(String node, String label, String requiredPermission) {
+			this(node, label);
 			this.requiredPermission = requiredPermission;
 		}
 
@@ -537,7 +557,6 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		public String getRequiredPermission() {
 			return requiredPermission;
 		}
-		
 
 	}
 }

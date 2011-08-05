@@ -21,6 +21,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
+import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -83,6 +84,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private ListBox dependentQuestionSelector;
 	private ListBox dependentAnswerSelector;
 	private CaptionPanel dependencyPanel;
+	private CaptionPanel navPanel;
 	private Grid dependencyGrid;
 
 	private CheckBox allowOtherBox;
@@ -91,10 +93,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private CaptionPanel optionPanel;
 	private VerticalPanel optionContent;
 	private FlexTable optionTable;
+	private Label orderLabel;
 	private SurveyServiceAsync surveyService;
 	private Map<String, Object> bundle;
 	private QuestionDto currentQuestion;
 	private SurveyDto currentSurvey;
+
 	private Map<Long, List<QuestionDto>> optionQuestions;
 	private Button editTranslationButton;
 	private Button editHelpButton;
@@ -104,10 +108,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private boolean needTranslations;
 	private String locale;
 	private UserDto currentUser;
+	private PageController controller;
 
-	public QuestionEditWidget(UserDto user) {
+	public QuestionEditWidget(UserDto user, PageController controller) {
 		surveyService = GWT.create(SurveyService.class);
 		currentUser = user;
+		this.controller = controller;
 		optionQuestions = new HashMap<Long, List<QuestionDto>>();
 		locale = com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
 				.getLocaleName();
@@ -131,6 +137,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		tooltipArea = new TextArea();
 		tooltipArea.setWidth(DEFAULT_BOX_WIDTH);
 		validationRuleBox = new TextBox();
+		orderLabel = ViewUtil.initLabel("");
 		mandatoryBox = new CheckBox();
 		collapseableBox = new CheckBox();
 		immutableBox = new CheckBox();
@@ -154,26 +161,31 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		questionTypeSelector.addItem(TEXT_CONSTANTS.date(),
 				QuestionDto.QuestionType.DATE.toString());
 		questionTypeSelector.addChangeHandler(this);
+		navPanel = new CaptionPanel(TEXT_CONSTANTS.surveyNavigation());
+		panel.add(navPanel);
 		basePanel = new CaptionPanel(TEXT_CONSTANTS.questionBasics());
 
-		Grid grid = new Grid(9, 2);
+		int row = 0;
+		Grid grid = new Grid(10, 2);
 		basePanel.add(grid);
 
 		ViewUtil.installGridRow(TEXT_CONSTANTS.questionText(),
-				questionTextArea, grid, 0);
+				questionTextArea, grid, row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.questionType(),
-				questionTypeSelector, grid, 1);
-		ViewUtil.installGridRow(TEXT_CONSTANTS.tooltip(), tooltipArea, grid, 2);
+				questionTypeSelector, grid, row++);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.order(), orderLabel, grid, row++);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.tooltip(), tooltipArea, grid,
+				row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.validationRule(),
-				validationRuleBox, grid, 3);
+				validationRuleBox, grid, row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.collapseable(), collapseableBox,
-				grid, 4);
+				grid, row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.immutable(), immutableBox, grid,
-				5);
+				row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.mandatory(), mandatoryBox, grid,
-				6);
+				row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.dependent(), dependentBox, grid,
-				7);
+				row++);
 
 		dependencyPanel = new CaptionPanel(TEXT_CONSTANTS.dependencyDetails());
 		dependentQuestionSelector = new ListBox();
@@ -187,7 +199,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 		dependencyGrid = new Grid(2, 2);
 		dependencyPanel.add(dependencyGrid);
-		ViewUtil.installGridRow(null, dependencyPanel, grid, 8, 1, null);
+		ViewUtil.installGridRow(null, dependencyPanel, grid, row++, 1, null);
 		dependencyPanel.setVisible(false);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.question(),
 				dependentQuestionSelector, dependencyGrid, 0);
@@ -235,6 +247,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		boolean isEditable = currentQuestion.getImmutable() == null
 				|| (!currentQuestion.getImmutable() || currentUser
 						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY));
+		navPanel.add(new SurveyNavigationWidget(currentSurvey, questionGroup,
+				currentQuestion.getOrder(), controller, this));
 		addOptionButton.setEnabled(isEditable);
 		editTranslationButton.setEnabled(isEditable);
 		editHelpButton.setEnabled(isEditable);
@@ -245,6 +259,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				&& !"null".equals(currentQuestion.getTip())) {
 			tooltipArea.setText(currentQuestion.getTip());
 			tooltipArea.setEnabled(isEditable);
+		}
+		if (currentQuestion.getOrder() != null) {
+			orderLabel.setText(currentQuestion.getOrder().toString());
 		}
 		if (currentQuestion.getType() != null) {
 			for (int i = 0; i < questionTypeSelector.getItemCount(); i++) {
@@ -722,9 +739,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 								}
 							});
 				} else {
-					logger.log(Level.WARNING, "QuestionEditWidget: Question has id: "
-							+ currentQuestion.getKeyId() + " and order "
-							+ currentQuestion.getOrder());
+					logger.log(
+							Level.WARNING,
+							"QuestionEditWidget: Question has id: "
+									+ currentQuestion.getKeyId()
+									+ " and order "
+									+ currentQuestion.getOrder());
 					performSave(listener);
 				}
 			} else {

@@ -12,6 +12,12 @@ import java.util.Map;
 public interface PageController {
 	@SuppressWarnings("rawtypes")
 	public void openPage(Class clazz, Map<String, Object> bundle);
+
+	@SuppressWarnings("rawtypes")
+	public void openPage(Class clazz, boolean isForward,
+			Map<String, Object> bundle);
+
 	public void setWorking(boolean isWorking);
+
 	public boolean isWorking();
 }

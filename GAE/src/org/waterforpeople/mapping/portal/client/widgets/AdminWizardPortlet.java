@@ -199,7 +199,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		} else if (node.getWidgetClass().equals(PublicationWidget.class)) {
 			return new PublicationWidget();
 		} else if (node.getWidgetClass().equals(QuestionEditWidget.class)) {
-			return new QuestionEditWidget(user);
+			return new QuestionEditWidget(user,this);
 		} else if (node.getWidgetClass().equals(QuestionGroupEditWidget.class)) {
 			return new QuestionGroupEditWidget();
 		} else if (node.getWidgetClass().equals(QuestionGroupListWidget.class)) {

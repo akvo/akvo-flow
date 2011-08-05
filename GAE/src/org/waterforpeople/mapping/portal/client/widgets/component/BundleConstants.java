@@ -19,5 +19,5 @@ public class BundleConstants extends WizardBundleConstants {
 	public static final String SURVEY_ASSIGNMENT = "SURVEY_ASSIGNMENT";
 	public static final String WEB_ACTIVITY_AUTH = "WEB_ACTIVITY_AUTH";
 	public static final String USER= "USER";
-
+	public static final String INSERT_ABOVE_QUESTION = "INSERT_ABOVE";
 }
