@@ -39,7 +39,7 @@ public abstract class ListBasedWidget extends Composite implements
 	private static final String UNNAMED_TEXT = "unnamed";
 
 	protected static enum ClickMode {
-		OPEN, EDIT, DELETE, COPY, MOVE_UP, MOVE_DOWN, NEXT_PAGE, PREV_PAGE
+		OPEN, EDIT, DELETE, COPY, MOVE_UP, MOVE_DOWN, NEXT_PAGE, PREV_PAGE, INSERT
 	};
 
 	private Label loadingLabel;
@@ -88,6 +88,8 @@ public abstract class ListBasedWidget extends Composite implements
 			button.setStylePrimaryName(EDIT_BUTTON_CSS);
 		} else if (mode == ClickMode.EDIT) {
 			button.setStylePrimaryName(DEL_BUTTON_CSS);
+		}else if (mode == ClickMode.INSERT){
+			button.setStylePrimaryName(EDIT_BUTTON_CSS);
 		}
 		createClickableWidget(mode, button);
 		return button;

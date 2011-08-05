@@ -51,7 +51,7 @@ public interface SurveyService extends RemoteService {
 
 	public QuestionDto loadQuestionDetails(Long questionId);
 
-	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId);
+	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId, boolean forceReorder);
 
 	public String deleteSurveyGroup(SurveyGroupDto value);
 

@@ -936,7 +936,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 			dto.setQuestionGroupId(parentQGDto.getKeyId());
 		}
 
-		svc.saveQuestion(dto, parentId, new AsyncCallback<QuestionDto>() {
+		svc.saveQuestion(dto, parentId, false,new AsyncCallback<QuestionDto>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

@@ -596,7 +596,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		Question canonical = new Question();
 		DtoMarshaller.copyToCanonical(canonical, value);
 		try {
-			questionDao.delete(canonical);			
+			questionDao.delete(canonical);
 		} catch (IllegalDeletionException e) {
 
 			return e.getError();
@@ -606,9 +606,21 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId) {
+	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId,
+			boolean forceReorder) {
 		QuestionDao questionDao = new QuestionDao();
 		Question question = marshalQuestion(value);
+		if (forceReorder) {
+			TreeMap<Integer, Question> questions = questionDao
+					.listQuestionsByQuestionGroup(questionGroupId, false);
+			if (questions != null) {
+				for (Question q : questions.values()) {
+					if (q.getOrder() >= value.getOrder()) {
+						q.setOrder(q.getOrder() + 1);
+					}
+				}
+			}
+		}
 		question = questionDao.save(question, questionGroupId);
 		saveSurveyUpdateMessage(question.getSurveyId());
 		return marshalQuestionDto(question);

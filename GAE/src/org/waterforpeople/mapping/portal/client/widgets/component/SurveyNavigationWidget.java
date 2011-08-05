@@ -44,7 +44,8 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 	private HTML nextLabel;
 
 	public SurveyNavigationWidget(SurveyDto survey, QuestionGroupDto group,
-			Integer order, PageController controller, ContextAware parent) {
+			Integer order, boolean isMidInsert, PageController controller,
+			ContextAware parent) {
 		this.questionGroup = group;
 		this.curQuestionOrder = order;
 
@@ -69,6 +70,10 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 					if (temp != null) {
 						prevQuestion = temp;
 					}
+					if (isMidInsert) {
+						nextQuestion = q;
+						break;
+					}
 				} else if (foundQ) {
 					// if the question isn't the one we're editing AND we've
 					// already found the previous, then this is the next
@@ -78,6 +83,9 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 					temp = q;
 				}
 			}
+		}
+		if (!foundQ) {
+			prevQuestion = temp;
 		}
 
 		if (nextQuestion == null) {

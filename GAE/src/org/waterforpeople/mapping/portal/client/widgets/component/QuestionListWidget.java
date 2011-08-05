@@ -129,7 +129,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		if (importQuestionsButton.getParent() != null) {
 			importQuestionsButton.removeFromParent();
 		}
-		dataGrid = new Grid(questionList.size(), 4);
+		dataGrid = new Grid(questionList.size(), 5);
 		int i = 0;
 		if (questionList != null) {
 
@@ -151,6 +151,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				Button editButton = createButton(ClickMode.EDIT,
 						TEXT_CONSTANTS.edit());
 
+				Button insertAboveButton = createButton(ClickMode.INSERT,
+						TEXT_CONSTANTS.insertQuestionAbove());
+
 				bp.add(moveUp);
 				bp.add(moveDown);
 
@@ -159,11 +162,13 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				dataGrid.setWidget(i, 1, bp);
 				dataGrid.setWidget(i, 2, editButton);
 				dataGrid.setWidget(i, 3, deleteButton);
+				dataGrid.setWidget(i, 4, insertAboveButton);
 
 				widgetRowMap.put(editButton, i);
 				widgetRowMap.put(deleteButton, i);
 				widgetRowMap.put(moveUp, i);
 				widgetRowMap.put(moveDown, i);
+				widgetRowMap.put(insertAboveButton, i);
 
 				questionRowMap.put(q.getKeyId(), i);
 
@@ -204,6 +209,12 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 			moveQuestion(1, selectedQuestion);
 		} else if (ClickMode.MOVE_UP == mode) {
 			moveQuestion(-1, selectedQuestion);
+		} else if (ClickMode.INSERT == mode) {
+			Map<String, Object> bundle = getContextBundle(true);
+			bundle.put(BundleConstants.INSERT_ABOVE_QUESTION, selectedQuestion);
+			bundle.remove(BundleConstants.QUESTION_KEY);
+			selectedQuestion = null;
+			openPage(QuestionEditWidget.class, bundle);
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,6 +98,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private SurveyServiceAsync surveyService;
 	private Map<String, Object> bundle;
 	private QuestionDto currentQuestion;
+	private QuestionDto insertAboveQuestion;
 	private SurveyDto currentSurvey;
 
 	private Map<Long, List<QuestionDto>> optionQuestions;
@@ -248,7 +250,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				|| (!currentQuestion.getImmutable() || currentUser
 						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY));
 		navPanel.add(new SurveyNavigationWidget(currentSurvey, questionGroup,
-				currentQuestion.getOrder(), controller, this));
+				currentQuestion.getOrder(), (insertAboveQuestion != null),
+				controller, this));
 		addOptionButton.setEnabled(isEditable);
 		editTranslationButton.setEnabled(isEditable);
 		editHelpButton.setEnabled(isEditable);
@@ -669,6 +672,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	@Override
 	public void flushContext() {
 		bundle.remove(BundleConstants.QUESTION_KEY);
+		bundle.remove(BundleConstants.INSERT_ABOVE_QUESTION);
 	}
 
 	/**
@@ -683,7 +687,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY))) {
 			List<String> validationErrors = updateCurrentQuestion();
 			if (validationErrors == null || validationErrors.size() == 0) {
-				if (currentQuestion.getKeyId() == null) {
+				if (currentQuestion.getKeyId() == null
+						&& insertAboveQuestion == null) {
 					// reload list and update order
 					logger.log(
 							Level.WARNING,
@@ -770,11 +775,33 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 		surveyService.saveQuestion(currentQuestion,
 				currentQuestion.getQuestionGroupId(),
+				(insertAboveQuestion != null),
 				new AsyncCallback<QuestionDto>() {
 
 					@Override
 					public void onSuccess(QuestionDto result) {
 						currentQuestion = result;
+						if (insertAboveQuestion != null) {
+							// set to null so we don't keep bumping it up on
+							// subsequent saves if the user doesn't navigate off
+							// the page
+							insertAboveQuestion = null;
+							TreeMap<Integer, QuestionDto> movedQuestions = new TreeMap<Integer, QuestionDto>();
+							TreeMap<Integer, QuestionDto> origQuestionMap = questionGroup
+									.getQuestionMap();
+							for (QuestionDto q : origQuestionMap.values()) {
+								if (q.getOrder() >= currentQuestion.getOrder()) {
+									q.setOrder(q.getOrder() + 1);
+									movedQuestions.put(q.getOrder(), q);
+								}
+							}
+							// now update the orders.
+							for (Entry<Integer, QuestionDto> entry : movedQuestions
+									.entrySet()) {
+								origQuestionMap.put(entry.getKey(),
+										entry.getValue());
+							}
+						}
 						questionGroup.addQuestion(currentQuestion,
 								currentQuestion.getOrder());
 						if (currentQuestion.getType() == QuestionDto.QuestionType.OPTION
@@ -940,6 +967,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		this.bundle = bundle;
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
+		insertAboveQuestion = (QuestionDto) bundle
+				.get(BundleConstants.INSERT_ABOVE_QUESTION);
+		bundle.remove(BundleConstants.INSERT_ABOVE_QUESTION);
 		currentSurvey = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 		questionGroup = (QuestionGroupDto) bundle
 				.get(BundleConstants.QUESTION_GROUP_KEY);
@@ -948,21 +978,25 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (optionQuestions == null) {
 			optionQuestions = new HashMap<Long, List<QuestionDto>>();
 		}
-		if (currentQuestion != null) {
-			populateFields();
-		} else {
+		if (currentQuestion == null) {
+
 			currentQuestion = new QuestionDto();
 
 			currentQuestion.setSurveyId(questionGroup.getSurveyId());
 			currentQuestion.setPath(questionGroup.getPath() + "/"
 					+ questionGroup.getCode());
 			currentQuestion.setQuestionGroupId(questionGroup.getKeyId());
-			if (questionGroup.getQuestionMap() != null) {
-				currentQuestion.setOrder(getMaxOrder(questionGroup) + 1);
+			if (insertAboveQuestion != null) {
+				currentQuestion.setOrder(insertAboveQuestion.getOrder());
 			} else {
-				currentQuestion.setOrder(1);
+				if (questionGroup.getQuestionMap() != null) {
+					currentQuestion.setOrder(getMaxOrder(questionGroup) + 1);
+				} else {
+					currentQuestion.setOrder(1);
+				}
 			}
 		}
+		populateFields();
 	}
 
 	/**

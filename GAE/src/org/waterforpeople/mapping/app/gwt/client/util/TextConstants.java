@@ -562,5 +562,6 @@ public interface TextConstants extends Constants{
 	public String questionBefore();
 	public String doNotClose();
 	public String surveyNavigation();
+	public String insertQuestionAbove();
 }
 

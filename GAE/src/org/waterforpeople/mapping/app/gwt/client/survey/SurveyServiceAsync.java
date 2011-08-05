@@ -13,8 +13,8 @@ public interface SurveyServiceAsync {
 
 	public void listSurvey(AsyncCallback<SurveyDto[]> callback);
 
-	public void listSurveyQuestionByType(Long surveyId, QuestionType type, boolean loadTranslations,
-			AsyncCallback<QuestionDto[]> callback);
+	public void listSurveyQuestionByType(Long surveyId, QuestionType type,
+			boolean loadTranslations, AsyncCallback<QuestionDto[]> callback);
 
 	void listSurveysByGroup(String selectedGroupId,
 			AsyncCallback<ArrayList<SurveyDto>> callback);
@@ -43,7 +43,7 @@ public interface SurveyServiceAsync {
 			AsyncCallback<SurveyDto> callback);
 
 	void saveQuestion(QuestionDto value, Long questionGroupId,
-			AsyncCallback<QuestionDto> callback);
+			boolean forceReorder, AsyncCallback<QuestionDto> callback);
 
 	void saveQuestionGroup(QuestionGroupDto dto, Long surveyId,
 			AsyncCallback<QuestionGroupDto> callback);
