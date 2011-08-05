@@ -87,7 +87,11 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 			}
 		} else {
 			surveyListbox = new ListBox();
+			surveyListbox.addChangeHandler(this);
 			questionGroupListbox = new ListBox();
+		}
+		if (TerminalType.QUESTION == type) {
+			questionGroupListbox.addChangeHandler(this);
 		}
 		if (Orientation.HORIZONTAL == orient) {
 			contentPanel = new HorizontalPanel();
@@ -218,6 +222,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		surveyListbox.clear();
 		if (surveyItems != null) {
 			int i = 0;
+			surveyListbox.addItem("", "");
 			for (SurveyDto survey : surveyItems) {
 				surveyListbox.addItem(
 						survey.getName() != null ? survey.getName()
@@ -237,37 +242,37 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	 * @return
 	 */
 	private void loadSurveyQuestionGroups() {
-		if (surveyListbox.getSelectedIndex() > 0) {
-			final String selectedId = surveyListbox.getValue(surveyListbox
-					.getSelectedIndex());
-			if (selectedId != null) {
-				if (questionGroups.get(selectedId) == null) {
-					toggleLoading(true);
-					AsyncCallback<ArrayList<QuestionGroupDto>> surveyCallback = new AsyncCallback<ArrayList<QuestionGroupDto>>() {
-						public void onFailure(Throwable caught) {
-							toggleLoading(false);
-							MessageDialog errDia = new MessageDialog(
-									TEXT_CONSTANTS.error(),
-									TEXT_CONSTANTS.errorTracePrefix() + " "
-											+ caught.getLocalizedMessage());
-							errDia.showCentered();
-						}
 
-						public void onSuccess(ArrayList<QuestionGroupDto> result) {
-							toggleLoading(false);
-							if (result != null) {
-								questionGroups.put(selectedId, result);
-								populateQuestionGroupList(result);
-							}
+		final String selectedId = ViewUtil.getListBoxSelection(surveyListbox,
+				true);
+		if (selectedId != null) {
+			if (questionGroups.get(selectedId) == null) {
+				toggleLoading(true);
+				AsyncCallback<ArrayList<QuestionGroupDto>> surveyCallback = new AsyncCallback<ArrayList<QuestionGroupDto>>() {
+					public void onFailure(Throwable caught) {
+						toggleLoading(false);
+						MessageDialog errDia = new MessageDialog(
+								TEXT_CONSTANTS.error(),
+								TEXT_CONSTANTS.errorTracePrefix() + " "
+										+ caught.getLocalizedMessage());
+						errDia.showCentered();
+					}
+
+					public void onSuccess(ArrayList<QuestionGroupDto> result) {
+						toggleLoading(false);
+						if (result != null) {
+							questionGroups.put(selectedId, result);
+							populateQuestionGroupList(result);
 						}
-					};
-					surveyService.listQuestionGroupsBySurvey(selectedId,
-							surveyCallback);
-				} else {
-					populateQuestionGroupList(questionGroups.get(selectedId));
-				}
+					}
+				};
+				surveyService.listQuestionGroupsBySurvey(selectedId,
+						surveyCallback);
+			} else {
+				populateQuestionGroupList(questionGroups.get(selectedId));
 			}
 		}
+
 	}
 
 	private void loadQuestions() {
@@ -357,7 +362,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 
 	public List<String> getSelectedSurveyNames() {
 		List<String> nameList = new ArrayList<String>();
-		for (int i = 0; i < surveyListbox.getItemCount(); i++) {
+		for (int i = 1; i < surveyListbox.getItemCount(); i++) {
 			if (surveyListbox.isItemSelected(i)) {
 				nameList.add(surveyListbox.getItemText(i));
 			}
@@ -368,7 +373,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	public List<String> getSelectedQuestionGroupNames() {
 		List<String> nameList = new ArrayList<String>();
 		if (questionGroupListbox != null) {
-			for (int i = 0; i < questionGroupListbox.getItemCount(); i++) {
+			for (int i = 1; i < questionGroupListbox.getItemCount(); i++) {
 				if (questionGroupListbox.isItemSelected(i)) {
 					nameList.add(questionGroupListbox.getItemText(i));
 				}
@@ -389,7 +394,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	public List<Long> getSelectedSurveyIds() {
 		List<Long> idList = new ArrayList<Long>();
 		if (surveyListbox != null) {
-			for (int i = 0; i < surveyListbox.getItemCount(); i++) {
+			for (int i = 1; i < surveyListbox.getItemCount(); i++) {
 				if (surveyListbox.isItemSelected(i)) {
 					idList.add(new Long(surveyListbox.getValue(i)));
 				}

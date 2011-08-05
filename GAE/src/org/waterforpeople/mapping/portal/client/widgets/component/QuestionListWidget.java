@@ -65,7 +65,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 			public void onClick(ClickEvent event) {
 				QuestionImportDialog importDia = new QuestionImportDialog(
 						questionGroup);
-				importDia.show();
+				importDia.showCentered();
 			}
 		});
 	}

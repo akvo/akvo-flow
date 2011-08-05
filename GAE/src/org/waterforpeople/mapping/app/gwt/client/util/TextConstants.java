@@ -563,6 +563,9 @@ public interface TextConstants extends Constants{
 	public String doNotClose();
 	public String surveyNavigation();
 	public String insertQuestionAbove();
-	public String viewDependencyTree();
+	public String viewDependencyTree();	
+	public String file();
+	public String otherSurvey();
+	public String includeDependentQuestions();
 }
 
