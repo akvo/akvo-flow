@@ -318,6 +318,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 
 	private void deleteQuestion(QuestionDto question) {
 		setWorking(true);
+		final MessageDialog deletingDialog = new MessageDialog(
+				TEXT_CONSTANTS.deleting(), TEXT_CONSTANTS.pleaseWait(), true);
+		deletingDialog.showCentered();
 		Integer key = findKeyForQuestion(question);
 		if (key != null) {
 			questionGroup.getQuestionMap().remove(key);
@@ -333,6 +336,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 						@Override
 						public void onFailure(Throwable caught) {
 							setWorking(false);
+							deletingDialog.hide();
 							selectedQuestion = null;
 							MessageDialog errDia = new MessageDialog(
 									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
@@ -345,6 +349,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 						@Override
 						public void onSuccess(String result) {
 							setWorking(false);
+							deletingDialog.hide();
 							selectedQuestion = null;
 							loadData(questionGroup);
 						}
