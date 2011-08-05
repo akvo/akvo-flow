@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
@@ -40,6 +41,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	private ListBox surveyGroupListbox;
 	private ListBox surveyListbox;
 	private ListBox questionGroupListbox;
+	private ListBox questionListbox;
 	private SurveyServiceAsync surveyService;
 	private Panel contentPanel;
 	private MessageDialog loadingDialog;
@@ -48,13 +50,14 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 
 	private Map<String, List<SurveyDto>> surveys;
 	private Map<String, List<QuestionGroupDto>> questionGroups;
+	private Map<String, List<QuestionDto>> questions;
 
 	public enum Orientation {
 		VERTICAL, HORIZONTAL
 	};
 
 	public enum TerminalType {
-		SURVEY, QUESTIONGROUP
+		SURVEY, QUESTIONGROUP, QUESTION
 	};
 
 	public enum SelectionMode {
@@ -66,12 +69,15 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		termType = type;
 		surveys = new HashMap<String, List<SurveyDto>>();
 		questionGroups = new HashMap<String, List<QuestionGroupDto>>();
+		questions = new HashMap<String, List<QuestionDto>>();
 
 		loadingDialog = new MessageDialog(TEXT_CONSTANTS.loading(),
 				TEXT_CONSTANTS.pleaseWait(), true);
 		surveyService = GWT.create(SurveyService.class);
 		surveyGroupListbox = new ListBox();
 		surveyGroupListbox.addChangeHandler(this);
+		questionListbox = new ListBox();
+		questionListbox.addChangeHandler(this);
 		if (TerminalType.SURVEY == type) {
 			if (SelectionMode.MULTI == mode) {
 				surveyListbox = new ListBox(true);
@@ -92,10 +98,14 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 				surveyGroupListbox, LABEL_STYLE);
 		ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.survey(),
 				surveyListbox, LABEL_STYLE);
-		if (TerminalType.QUESTIONGROUP == type) {
+		if (TerminalType.QUESTIONGROUP == type || TerminalType.QUESTION == type) {
 			ViewUtil.installFieldRow(contentPanel,
 					TEXT_CONSTANTS.questionGroup(), questionGroupListbox,
 					LABEL_STYLE);
+		}
+		if (TerminalType.QUESTION == type) {
+			ViewUtil.installFieldRow(contentPanel, TEXT_CONSTANTS.question(),
+					questionListbox, LABEL_STYLE);
 		}
 		initWidget(contentPanel);
 		loadSurveyGroups();
@@ -260,6 +270,50 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		}
 	}
 
+	private void loadQuestions() {
+		final String groupId = ViewUtil.getListBoxSelection(
+				questionGroupListbox, true);
+		if (groupId != null) {
+			if (questions.get(groupId) == null) {
+				toggleLoading(true);
+				AsyncCallback<ArrayList<QuestionDto>> surveyCallback = new AsyncCallback<ArrayList<QuestionDto>>() {
+					public void onFailure(Throwable caught) {
+						toggleLoading(false);
+						MessageDialog errDia = new MessageDialog(
+								TEXT_CONSTANTS.error(),
+								TEXT_CONSTANTS.errorTracePrefix() + " "
+										+ caught.getLocalizedMessage());
+						errDia.showCentered();
+					}
+
+					public void onSuccess(ArrayList<QuestionDto> result) {
+						toggleLoading(false);
+						if (result != null) {
+							questions.put(groupId, result);
+							populateQuestionList(result);
+						}
+					}
+				};
+				surveyService.listQuestionsByQuestionGroup(groupId, false,
+						surveyCallback);
+			} else {
+				populateQuestionList(questions.get(groupId));
+			}
+		}
+	}
+
+	private void populateQuestionList(List<QuestionDto> questions) {
+		questionListbox.clear();
+		if (questions != null) {
+			questionListbox.addItem("", "");
+			for (QuestionDto question : questions) {
+				questionListbox.addItem(
+						question.getOrder() + ": " + question.getText(),
+						question.getKeyId().toString());
+			}
+		}
+	}
+
 	private void populateQuestionGroupList(List<QuestionGroupDto> groups) {
 		questionGroupListbox.clear();
 		if (groups != null) {
@@ -275,9 +329,12 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	public void onChange(ChangeEvent event) {
 		if (event.getSource() == surveyGroupListbox) {
 			getSurveys();
-		} else if (TerminalType.QUESTIONGROUP == termType
+		} else if ((TerminalType.QUESTIONGROUP == termType || TerminalType.QUESTION == termType)
 				&& event.getSource() == surveyListbox) {
 			loadSurveyQuestionGroups();
+		} else if (TerminalType.QUESTION == termType
+				&& event.getSource() == questionGroupListbox) {
+			loadQuestions();
 		}
 	}
 

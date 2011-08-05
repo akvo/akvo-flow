@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This component does a reverse traversal of the depencency tree for a given
+ * This component does a reverse traversal of the dependency tree for a given
  * question and shows the path
  * 
  * @author Christopher Fagiani
