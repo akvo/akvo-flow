@@ -58,11 +58,11 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		bundle = new HashMap<String, Object>();
 		surveyService = GWT.create(SurveyService.class);
 		selectedQuestion = null;
-		importQuestionsButton = new Button(TEXT_CONSTANTS.importQuestions());		
+		importQuestionsButton = new Button(TEXT_CONSTANTS.importQuestions());
 		importQuestionsButton.addClickHandler(new ClickHandler() {
 
 			@Override
-			public void onClick(ClickEvent event) {				
+			public void onClick(ClickEvent event) {
 				QuestionImportDialog importDia = new QuestionImportDialog(
 						questionGroup);
 				importDia.show();
@@ -92,7 +92,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 
 							@Override
 							public void onSuccess(ArrayList<QuestionDto> result) {
-								if (result != null && result.size() > 0) {									
+								if (result != null && result.size() > 0) {
 									TreeMap<Integer, QuestionDto> questionTree = new TreeMap<Integer, QuestionDto>();
 
 									for (int i = 0; i < result.size(); i++) {
@@ -120,19 +120,19 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	}
 
 	private void populateQuestionList(Collection<QuestionDto> questionList) {
-		toggleLoading(false);		
+		toggleLoading(false);
 		widgetRowMap = new HashMap<Widget, Integer>();
 		questionRowMap = new HashMap<Long, Integer>();
 		if (dataGrid != null) {
 			dataGrid.removeFromParent();
 		}
-		if (importQuestionsButton.getParent()!=null){
+		if (importQuestionsButton.getParent() != null) {
 			importQuestionsButton.removeFromParent();
 		}
 		dataGrid = new Grid(questionList.size(), 4);
 		int i = 0;
 		if (questionList != null) {
-			
+
 			for (QuestionDto q : questionList) {
 				Label l = createListEntry((q.getOrder() != null ? q.getOrder()
 						: "") + ": " + q.getText());
@@ -170,9 +170,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				i++;
 			}
 		}
-		addWidget(dataGrid);		
-			addWidget(importQuestionsButton);
-		
+		addWidget(dataGrid);
+		addWidget(importQuestionsButton);
+
 	}
 
 	@Override
@@ -321,6 +321,12 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		Integer key = findKeyForQuestion(question);
 		if (key != null) {
 			questionGroup.getQuestionMap().remove(key);
+			// now fix the orders
+			for (QuestionDto q : questionGroup.getQuestionMap().values()) {
+				if (q.getOrder() >= question.getOrder()) {
+					q.setOrder(q.getOrder() - 1);
+				}
+			}
 			surveyService.deleteQuestion(question,
 					question.getQuestionGroupId(), new AsyncCallback<String>() {
 

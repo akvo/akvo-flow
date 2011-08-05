@@ -596,7 +596,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		Question canonical = new Question();
 		DtoMarshaller.copyToCanonical(canonical, value);
 		try {
-			questionDao.delete(canonical);
+			questionDao.delete(canonical);			
 		} catch (IllegalDeletionException e) {
 
 			return e.getError();

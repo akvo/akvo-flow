@@ -98,7 +98,19 @@ public class QuestionDao extends BaseDAO<Question> {
 			// TODO:Implement help media delete
 			Question q = getByKey(question.getKey());
 			if (q != null) {
+				int order = q.getOrder();
+				Long groupId = q.getQuestionGroupId();
 				super.delete(q);
+				// now adjust other orders
+				TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
+						groupId, false);
+				if (groupQs != null) {
+					for (Question gq : groupQs.values()) {
+						if (gq.getOrder() >= order) {
+							gq.setOrder(gq.getOrder() - 1);
+						}
+					}
+				}
 			}
 		} else {
 			throw new IllegalDeletionException(
