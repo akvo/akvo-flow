@@ -26,6 +26,7 @@ import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
+import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.gallatinsystems.user.app.gwt.client.PermissionConstants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -85,6 +86,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private ListBox dependentQuestionSelector;
 	private ListBox dependentAnswerSelector;
 	private CaptionPanel dependencyPanel;
+	private Button viewTreeButton;
 	private CaptionPanel navPanel;
 	private Grid dependencyGrid;
 
@@ -143,6 +145,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		mandatoryBox = new CheckBox();
 		collapseableBox = new CheckBox();
 		immutableBox = new CheckBox();
+		viewTreeButton = new Button(TEXT_CONSTANTS.viewDependencyTree());
+		viewTreeButton.setVisible(false);
+		viewTreeButton.addClickHandler(this);
 		dependentBox = new CheckBox();
 		dependentBox.addClickHandler(this);
 		questionTypeSelector = new ListBox();
@@ -196,10 +201,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		dependentQuestionSelector.addItem(SELECT_TXT);
 
 		dependentAnswerSelector = new ListBox();
+		dependentAnswerSelector.addChangeHandler(this);
 		dependentAnswerSelector.addItem(SELECT_TXT);
 		dependentAnswerSelector.setWidth(DEFAULT_BOX_WIDTH);
 
-		dependencyGrid = new Grid(2, 2);
+		dependencyGrid = new Grid(3, 2);
 		dependencyPanel.add(dependencyGrid);
 		ViewUtil.installGridRow(null, dependencyPanel, grid, row++, 1, null);
 		dependencyPanel.setVisible(false);
@@ -207,7 +213,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				dependentQuestionSelector, dependencyGrid, 0);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.response(),
 				dependentAnswerSelector, dependencyGrid, 1);
-
+		dependencyGrid.setWidget(2, 1, viewTreeButton);
 		panel.add(basePanel);
 
 		allowMultipleBox = new CheckBox();
@@ -298,6 +304,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		if (currentQuestion.getQuestionDependency() != null
 				&& currentQuestion.getQuestionDependency().getQuestionId() != null) {
 			dependentBox.setValue(true);
+			viewTreeButton.setVisible(true);
 			loadDependencyList(isEditable);
 		}
 		dependentBox.setEnabled(isEditable);
@@ -1040,6 +1047,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			} else {
 				populateDependencyAnswers(currentQuestion, null);
 			}
+		} else if (event.getSource() == dependentAnswerSelector) {
+			viewTreeButton.setVisible(true);
 		}
 	}
 
@@ -1065,6 +1074,25 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		} else if (event.getSource() == editHelpButton) {
 			operation = EDIT_HELP_OP;
 			persistContext(this);
+		} else if (event.getSource() == viewTreeButton) {
+			// don't mess with currentDto since the changes may not be saved yet
+			QuestionDto temp = new QuestionDto();
+			QuestionDependencyDto depDto = new QuestionDependencyDto();
+			String val = ViewUtil.getListBoxSelection(
+					dependentQuestionSelector, true);
+			if (val != null) {
+				depDto.setQuestionId(new Long(val));
+				depDto.setAnswerValue(ViewUtil.getListBoxSelection(
+						dependentAnswerSelector, true));
+				if (depDto.getAnswerValue() != null) {
+					temp.setQuestionDependency(depDto);
+					WidgetDialog dia = new WidgetDialog(
+							TEXT_CONSTANTS.viewDependencyTree(),
+							new DependencyTreeViewerWidget(temp,
+									optionQuestions));
+					dia.showCentered();
+				}
+			}
 		}
 	}
 
@@ -1115,7 +1143,6 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						(QuestionDto) currentQuestion, this);
 				dia.show();
 			} else if (operation == null) {
-
 			}
 		}
 		operation = null;
