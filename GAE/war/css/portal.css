@@ -516,7 +516,7 @@ button {
 
 .loading-label {
 	font: 14px/17px Verdana, Helvetica, sans-serif;
-	font-style: italic;	
+	font-style: italic;
 	backgroud-color: #FFFF00;
 }
 
@@ -527,54 +527,53 @@ button {
 
 .red-hover {
 	text-decoration: underline;
-	color:red;
+	color: red;
 }
 
-.wizard-breadcrumb-panel{	 
+.wizard-breadcrumb-panel {
 	border-bottom: 2px solid;
-	border-bottom-style: ridge;	 
+	border-bottom-style: ridge;
 }
 
-.reorder-button{
+.reorder-button {
 	padding-right: 3px;
 	padding-left: 3px;
-	cursor: pointer;	
+	cursor: pointer;
 }
 
-.input-label{
-	font:14px/17px Veranda, Helvetica, sans-serif;
-	font-style: bold;
+.input-label {
+	font: 14px/17px Veranda, Helvetica, sans-serif;
 }
 
-.input-label-padded{
-	font:14px/17px Veranda, Helvetica, sans-serif;
+
+.input-label-padded {
+	font: 14px/17px Veranda, Helvetica, sans-serif;
 	font-style: bold;
 	padding-right: 5px;
 	padding-left: 5px;
 }
 
-
-.input-label-topalign{
-	font:14px/17px Veranda, Helvetica, sans-serif;
-	font-style: bold;
-	vertical-align: top;	
-}
-
-.datatable-header{
-	font:14px/17px Veranda, Helvetica, sans-serif;
+.input-label-topalign {
+	font: 14px/17px Veranda, Helvetica, sans-serif;
 	font-style: bold;
 	vertical-align: top;
 }
 
-.message{
-	font:18px/20px Veranda, Helvetica, sans-serif;
-	font-style: bold;	
+.datatable-header {
+	font: 14px/17px Veranda, Helvetica, sans-serif;
+	font-style: bold;
+	vertical-align: top;
+}
+
+.message {
+	font: 18px/20px Veranda, Helvetica, sans-serif;
+	font-style: bold;
 	text-align: center;
 }
 
-.char-remaining{
-	font:10px/12px Veranda, Helvetica, sans-serif;
-	font-style: italic;	
+.char-remaining {
+	font: 10px/12px Veranda, Helvetica, sans-serif;
+	font-style: italic;
 	text-align: left;
 	padding-left: 3px;
 }

@@ -28,7 +28,7 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 
-	private static final int PREFIX_LEN = 100;
+	private static final int PREFIX_LEN = 100;	
 	private static final String CLICKABLE_ITEM_CSS = "clickable-list-item";
 
 	private Integer curQuestionOrder;
@@ -104,10 +104,10 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 		contentPanel.add(nextLabel, DockPanel.EAST);
 		Grid surveyGrid = new Grid(2, 2);
 
-		surveyGrid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.survey()));
+		surveyGrid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.survey()+": "));
 		surveyGrid.setWidget(0, 1, ViewUtil.initLabel(survey.getName()));
 		surveyGrid.setWidget(1, 0,
-				ViewUtil.initLabel(TEXT_CONSTANTS.questionGroup()));
+				ViewUtil.initLabel(TEXT_CONSTANTS.questionGroup()+": "));
 		surveyGrid.setWidget(1, 1, ViewUtil.initLabel(group.getName()));
 		contentPanel.add(surveyGrid, DockPanel.CENTER);
 		contentPanel.setCellHorizontalAlignment(surveyGrid,
