@@ -49,7 +49,7 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 			if (qasList != null) {
 				GeoCoordinates geoC = null;
 				for (QuestionAnswerStore q : qasList) {
-					if (q.getValue() != null) {
+					if (q.getValue() != null && q.getValue().trim().length()>0) {
 						geoC = GeoCoordinates
 								.extractGeoCoordinate(q.getValue());
 						if (geoC != null) {

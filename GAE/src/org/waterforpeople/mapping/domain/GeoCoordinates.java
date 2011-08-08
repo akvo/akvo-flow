@@ -47,11 +47,14 @@ public class GeoCoordinates {
 			if (coordinates.length > 1) {
 				gc.setLatitude(new Double(coordinates[0]));
 				gc.setLongitude(new Double(coordinates[1]));
-			}else{
+			} else {
 				return null;
 			}
 			if (coordinates.length > 2) {
-				gc.setAltitude(new Double(coordinates[2]));
+				if (coordinates[2] != null
+						&& coordinates[2].trim().length() > 0) {
+					gc.setAltitude(new Double(coordinates[2]));
+				}
 			}
 			if (coordinates.length > 3) {
 				gc.setCode(coordinates[3]);
@@ -65,7 +68,7 @@ public class GeoCoordinates {
 		sb.append("GeoCoordinates:");
 		sb.append("\n--Latitude: " + this.latitude);
 		sb.append("\n--Longitude: " + this.longitude);
-		sb.append("\n--Altitude: " + this.altitude);		
+		sb.append("\n--Altitude: " + this.altitude);
 		return sb.toString();
 	}
 
