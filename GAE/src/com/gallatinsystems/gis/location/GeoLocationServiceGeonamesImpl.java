@@ -65,7 +65,8 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 			put("UG", new Double[] { 4.2144, 29.5732, -1.4840, 35.0360 });
 			put("IN", new Double[] { 36.2617, 68.0323, 6.7471, 97.4030 });
 			put("LR",
-					new Double[] { 4.353060, -11.492080, 8.551790, -7.365110 });
+					//new Double[] { 4.353060, -11.492080, 8.551790, -7.365110 });
+					new Double[] { 3.0, -14.7, 8.551790, -7.365110 });
 		}
 	};
 
