@@ -193,7 +193,7 @@ public class SurveyDbAdapter {
 				db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
-			} else if (oldVersion < 70){
+			} else if (oldVersion < 70) {
 
 				// changes made in version 57
 				try {
@@ -263,11 +263,11 @@ public class SurveyDbAdapter {
 					// swallow
 				}
 			}
-			if(oldVersion  < 73){
-				try{
+			if (oldVersion < 73) {
+				try {
 					db.execSQL("update survey set language = 'en' where language = 'english' or language is null");
-				}catch(Exception e){
-					//no-op
+				} catch (Exception e) {
+					// no-op
 				}
 			}
 		}
@@ -469,7 +469,8 @@ public class SurveyDbAdapter {
 	 */
 	public Cursor listUsers() {
 		Cursor cursor = database.query(USER_TABLE, new String[] { PK_ID_COL,
-				DISP_NAME_COL, EMAIL_COL }, DELETED_COL +" <> ?", new String[]{ConstantUtil.IS_DELETED}, null, null, null);
+				DISP_NAME_COL, EMAIL_COL }, DELETED_COL + " <> ?",
+				new String[] { ConstantUtil.IS_DELETED }, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}

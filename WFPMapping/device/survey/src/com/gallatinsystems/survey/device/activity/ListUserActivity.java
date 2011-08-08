@@ -103,9 +103,18 @@ public class ListUserActivity extends AbstractListEditActivity {
 		}
 		return false;
 	}
-	
-	private void handleDelete(String id){
+
+	private void handleDelete(String id) {
+		String savedId = databaseAdaptor
+				.findPreference(ConstantUtil.LAST_USER_SETTING_KEY);
 		databaseAdaptor.deleteUser(new Long(id));
+		if (savedId != null && savedId.equals(id)) {
+			databaseAdaptor.savePreference(ConstantUtil.LAST_USER_SETTING_KEY,
+					"");
+			Intent intent = new Intent();
+			intent.putExtra(ConstantUtil.DELETED_SAVED_USER, new Boolean(true));
+			setResult(RESULT_CANCELED, intent);
+		}
 		fillData();
 	}
 }

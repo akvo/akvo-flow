@@ -34,7 +34,6 @@ public class ConstantUtil {
 	 */
 	public static final String RESOURCE_LOCATION = "res";
 	public static final String FILE_LOCATION = "sdcard";
-	
 
 	/**
 	 * status related constants
@@ -150,6 +149,7 @@ public class ConstantUtil {
 	public static final String SURVEY_ID_KEY = "SID";
 	public static final String ID_KEY = "_id";
 	public static final String DISPLAY_NAME_KEY = "display_name";
+	public static final String DELETED_SAVED_USER = "deletedSavedUser";
 	public static final String EMAIL_KEY = "email";
 	public static final String INTERVAL_KEY = "interval";
 	public static final String RESPONDENT_ID_KEY = "survey_respondent_id";
@@ -254,7 +254,7 @@ public class ConstantUtil {
 	public static final String SURVEY_S3_URL = "surveyS3Url";
 	public static final String USE_INTERNAL_STORAGE = "useInternalStorage";
 	public static final String INCLUDE_OPTIONAL_ICONS = "includeOptionalIcons";
-	public static final String PROMPT_ON_OPT_CHANGE ="promptOnOptionChange";
+	public static final String PROMPT_ON_OPT_CHANGE = "promptOnOptionChange";
 
 	/**
 	 * resource related constants

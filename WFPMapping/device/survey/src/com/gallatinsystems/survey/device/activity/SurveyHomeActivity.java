@@ -67,22 +67,23 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		props = new PropertyUtil(getResources());
-		Thread
-				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+				.getInstance());
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.home);
 
 		boolean includeOptional = true;
 		String useOpt = props.getProperty(ConstantUtil.INCLUDE_OPTIONAL_ICONS);
-		if(useOpt != null){
-			try{
+		if (useOpt != null) {
+			try {
 				includeOptional = Boolean.parseBoolean(useOpt.trim());
-			}catch(Exception e){
-				Log.e(TAG, "include optional property is not a boolean: "+useOpt);
+			} catch (Exception e) {
+				Log.e(TAG, "include optional property is not a boolean: "
+						+ useOpt);
 			}
 		}
-		menuViewAdapter = new HomeMenuViewAdapter(this,includeOptional);
+		menuViewAdapter = new HomeMenuViewAdapter(this, includeOptional);
 		userField = (TextView) findViewById(R.id.currentUserField);
 
 		GridView grid = (GridView) findViewById(R.id.gridview);
@@ -240,7 +241,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			} else {
 				// if the current user is null, we can't enter survey mode
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage(R.string.mustselectuser).setCancelable(true)
+				builder.setMessage(R.string.mustselectuser)
+						.setCancelable(true)
 						.setPositiveButton(R.string.okbutton,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
@@ -267,6 +269,14 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 					currentUserId = bundle.getString(ConstantUtil.ID_KEY);
 					currentName = bundle
 							.getString(ConstantUtil.DISPLAY_NAME_KEY);
+					populateFields();
+				}
+			} else if (resultCode == RESULT_CANCELED && intent != null) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null
+						&& bundle.getBoolean(ConstantUtil.DELETED_SAVED_USER)) {
+					currentUserId = null;
+					currentName = null;
 					populateFields();
 				}
 			}

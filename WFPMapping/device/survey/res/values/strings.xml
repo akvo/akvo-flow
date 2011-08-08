@@ -188,5 +188,5 @@
 	<string name="sdcardspace">Free Space (MB):</string>
 	<string name="pickdate">Select Date</string>
 	<string name="cannotupdate">Survey could not be downloaded. It may not be published.</string>
-	<string name="appversion">1.9.13</string>	
+	<string name="appversion">1.9.14</string>	
 </resources>
