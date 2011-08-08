@@ -334,20 +334,20 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 */
 	public void onClick(ClickEvent event) {
 		if (!working) {
-			String buttonText = ((Button) event.getSource()).getText();
-			if (forwardNavButtons.contains(event.getSource())) {
-				renderWizardPage(
-						workflow.getWorkflowNode(buttonMapping.get(buttonText)),
-						true, false, buttonText, null);
-			} else if (backwardNavButtons.contains(event.getSource())) {
-				renderWizardPage(
-						workflow.getWorkflowNode(buttonMapping.get(buttonText)),
-						false, false, buttonText, null);
-			} else if (event.getSource() instanceof Breadcrumb) {
+			if (event.getSource() instanceof Breadcrumb) {
 				// if it is a breadcrumb
 				renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
 						.getSource()).getTargetNode()), false, true, null,
 						((Breadcrumb) event.getSource()).getBundle());
+			} else {
+				String buttonText = ((Button) event.getSource()).getText();
+				if (forwardNavButtons.contains(event.getSource())) {
+					renderWizardPage(workflow.getWorkflowNode(buttonMapping
+							.get(buttonText)), true, false, buttonText, null);
+				} else if (backwardNavButtons.contains(event.getSource())) {
+					renderWizardPage(workflow.getWorkflowNode(buttonMapping
+							.get(buttonText)), false, false, buttonText, null);
+				}
 			}
 		}
 	}
