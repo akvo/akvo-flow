@@ -12,9 +12,11 @@ import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyNavigationWidget.MODE;
 
 import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
@@ -26,6 +28,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -52,6 +55,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 	private Map<Long, Integer> questionRowMap;
 	private Button importQuestionsButton;
 	private Grid dataGrid;
+	private SurveyNavigationWidget surveyNavigationWidget;
 
 	public QuestionListWidget(PageController controller) {
 		super(controller);
@@ -68,6 +72,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				importDia.showCentered();
 			}
 		});
+
 	}
 
 	public void loadData(QuestionGroupDto questionGroupDto) {
@@ -187,7 +192,13 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		bundle.remove(BundleConstants.QUESTION_KEY);
 		questionGroup = (QuestionGroupDto) bundle
 				.get(BundleConstants.QUESTION_GROUP_KEY);
-
+		surveyNavigationWidget = new SurveyNavigationWidget(
+				(SurveyDto) bundle.get(BundleConstants.SURVEY_KEY), null,
+				questionGroup.getOrder(), false, MODE.QUESTION_LIST,
+				getPageController(), this);
+		CaptionPanel cap = new CaptionPanel(TEXT_CONSTANTS.surveyNavigation());
+		cap.add(surveyNavigationWidget);
+		addWidget(cap);
 		loadData(questionGroup);
 	}
 

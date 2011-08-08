@@ -88,7 +88,7 @@ public abstract class ListBasedWidget extends Composite implements
 			button.setStylePrimaryName(EDIT_BUTTON_CSS);
 		} else if (mode == ClickMode.EDIT) {
 			button.setStylePrimaryName(DEL_BUTTON_CSS);
-		}else if (mode == ClickMode.INSERT){
+		} else if (mode == ClickMode.INSERT) {
 			button.setStylePrimaryName(EDIT_BUTTON_CSS);
 		}
 		createClickableWidget(mode, button);
@@ -210,9 +210,13 @@ public abstract class ListBasedWidget extends Composite implements
 	protected Button getPreviousButtion() {
 		return previousButton;
 	}
-	
-	protected int getCurrentPage(){
+
+	protected int getCurrentPage() {
 		return currentPage;
+	}
+
+	protected PageController getPageController() {
+		return controller;
 	}
 
 	protected abstract void handleItemClick(Object source, ClickMode mode);

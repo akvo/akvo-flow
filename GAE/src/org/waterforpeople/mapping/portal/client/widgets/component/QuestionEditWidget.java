@@ -21,6 +21,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyNavigationWidget.MODE;
 
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
@@ -257,7 +258,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY));
 		navPanel.add(new SurveyNavigationWidget(currentSurvey, questionGroup,
 				currentQuestion.getOrder(), (insertAboveQuestion != null),
-				controller, this));
+				MODE.QUESTION, controller, this));
 		addOptionButton.setEnabled(isEditable);
 		editTranslationButton.setEnabled(isEditable);
 		editHelpButton.setEnabled(isEditable);

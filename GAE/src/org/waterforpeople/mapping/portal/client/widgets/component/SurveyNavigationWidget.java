@@ -28,14 +28,23 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 
-	private static final int PREFIX_LEN = 100;	
+	private static final int PREFIX_LEN = 100;
 	private static final String CLICKABLE_ITEM_CSS = "clickable-list-item";
 
-	private Integer curQuestionOrder;
+	public enum MODE {
+		QUESTION, QUESTION_LIST, QUESTION_GROUP_EDIT
+	}
 
+	private Integer curOrder;
+
+	private QuestionGroupDto prevGroup;
+	private QuestionGroupDto nextGroup;
+	private SurveyDto survey;
+	private MODE mode;
 	private QuestionGroupDto questionGroup;
 	private QuestionDto prevQuestion;
 	private QuestionDto nextQuestion;
+
 	private DockPanel contentPanel;
 	private PageController controller;
 	private ContextAware parent;
@@ -44,11 +53,12 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 	private HTML nextLabel;
 
 	public SurveyNavigationWidget(SurveyDto survey, QuestionGroupDto group,
-			Integer order, boolean isMidInsert, PageController controller,
-			ContextAware parent) {
+			Integer order, boolean isMidInsert, MODE mode,
+			PageController controller, ContextAware parent) {
 		this.questionGroup = group;
-		this.curQuestionOrder = order;
-
+		this.curOrder = order;
+		this.survey = survey;
+		this.mode = mode;
 		this.parent = parent;
 		this.controller = controller;
 
@@ -61,11 +71,79 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 		nextLabel.setStylePrimaryName(CLICKABLE_ITEM_CSS);
 
 		nextLabel.addClickHandler(this);
+		if (mode == MODE.QUESTION) {
+			initializeNextPreviousQuestion(isMidInsert);
+		} else {
+			initializeNextPreviousGroup();
+		}
+		contentPanel.add(prevLabel, DockPanel.WEST);
+		contentPanel.add(nextLabel, DockPanel.EAST);
+		Grid surveyGrid = new Grid(2, 2);
+
+		surveyGrid.setWidget(0, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.survey() + ": "));
+		surveyGrid.setWidget(0, 1, ViewUtil.initLabel(survey.getName()));
+		if (questionGroup != null) {
+			surveyGrid.setWidget(1, 0,
+					ViewUtil.initLabel(TEXT_CONSTANTS.questionGroup() + ": "));
+			surveyGrid.setWidget(1, 1, ViewUtil.initLabel(group.getName()));
+		}
+
+		contentPanel.add(surveyGrid, DockPanel.CENTER);
+		contentPanel.setCellHorizontalAlignment(surveyGrid,
+				DockPanel.ALIGN_CENTER);
+
+		contentPanel.setWidth("100%");
+		contentPanel.setCellWidth(prevLabel, "25%");
+		contentPanel.setCellWidth(nextLabel, "25%");
+		contentPanel.setCellWidth(surveyGrid, "50%");
+		initWidget(contentPanel);
+	}
+
+	private void initializeNextPreviousGroup() {
+		QuestionGroupDto temp = null;
+		boolean foundGroup = false;
+		if (survey.getQuestionGroupList() != null) {
+			for (QuestionGroupDto g : survey.getQuestionGroupList()) {
+				if (g.getOrder() == curOrder) {
+					foundGroup = true;
+					if (temp != null) {
+						prevGroup = temp;
+					}
+				} else if (foundGroup) {
+					// if the group isn't the one we're editing AND we've
+					// already found the previous, then this is the next
+					nextGroup = g;
+					break;
+				} else {
+					temp = g;
+				}
+			}
+		}
+		if (!foundGroup) {
+			prevGroup = temp;
+		}
+
+		if (nextGroup == null) {
+			nextLabel.setVisible(false);
+		} else {
+			nextLabel.setHTML(formDirectionLabelHtml(true, nextGroup.getOrder()
+					+ ": " + nextGroup.getName()));
+		}
+		if (prevGroup == null) {
+			prevLabel.setVisible(false);
+		} else {
+			prevLabel.setHTML(formDirectionLabelHtml(false,
+					prevGroup.getOrder() + ": " + prevGroup.getName()));
+		}
+	}
+
+	private void initializeNextPreviousQuestion(boolean isMidInsert) {
 		QuestionDto temp = null;
 		boolean foundQ = false;
 		if (questionGroup.getQuestionMap() != null) {
 			for (QuestionDto q : questionGroup.getQuestionMap().values()) {
-				if (q.getOrder() == curQuestionOrder) {
+				if (q.getOrder() == curOrder) {
 					foundQ = true;
 					if (temp != null) {
 						prevQuestion = temp;
@@ -100,24 +178,6 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 			prevLabel.setHTML(formDirectionLabelHtml(false,
 					prevQuestion.getOrder() + ": " + prevQuestion.getText()));
 		}
-		contentPanel.add(prevLabel, DockPanel.WEST);
-		contentPanel.add(nextLabel, DockPanel.EAST);
-		Grid surveyGrid = new Grid(2, 2);
-
-		surveyGrid.setWidget(0, 0, ViewUtil.initLabel(TEXT_CONSTANTS.survey()+": "));
-		surveyGrid.setWidget(0, 1, ViewUtil.initLabel(survey.getName()));
-		surveyGrid.setWidget(1, 0,
-				ViewUtil.initLabel(TEXT_CONSTANTS.questionGroup()+": "));
-		surveyGrid.setWidget(1, 1, ViewUtil.initLabel(group.getName()));
-		contentPanel.add(surveyGrid, DockPanel.CENTER);
-		contentPanel.setCellHorizontalAlignment(surveyGrid,
-				DockPanel.ALIGN_CENTER);
-
-		contentPanel.setWidth("100%");
-		contentPanel.setCellWidth(prevLabel, "25%");
-		contentPanel.setCellWidth(nextLabel, "25%");
-		contentPanel.setCellWidth(surveyGrid, "50%");
-		initWidget(contentPanel);
 	}
 
 	private String formDirectionLabelHtml(boolean isNext, String questionText) {
@@ -148,11 +208,25 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 	public void onClick(ClickEvent event) {
 		Map<String, Object> bundle = parent.getContextBundle(false);
 		if (event.getSource() == prevLabel) {
-			bundle.put(BundleConstants.QUESTION_KEY, prevQuestion);
+			if (mode == MODE.QUESTION) {
+				bundle.put(BundleConstants.QUESTION_KEY, prevQuestion);
+			} else {
+				bundle.put(BundleConstants.QUESTION_GROUP_KEY, prevGroup);
+			}
 		} else if (event.getSource() == nextLabel) {
-			bundle.put(BundleConstants.QUESTION_KEY, nextQuestion);
+			if (mode == MODE.QUESTION) {
+				bundle.put(BundleConstants.QUESTION_KEY, nextQuestion);
+			} else {
+				bundle.put(BundleConstants.QUESTION_GROUP_KEY, nextGroup);
+			}
 		}
-		controller.openPage(QuestionEditWidget.class, false, bundle);
+		if (mode == MODE.QUESTION) {
+			controller.openPage(QuestionEditWidget.class, false, bundle);
+		} else if (mode == MODE.QUESTION_LIST) {
+			controller.openPage(QuestionListWidget.class, false, bundle);
+		} else if (mode == MODE.QUESTION_GROUP_EDIT) {
+			controller.openPage(QuestionGroupEditWidget.class, false, bundle);
+		}
 	}
 
 }

@@ -9,7 +9,9 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyNavigationWidget.MODE;
 
+import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -18,6 +20,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -39,6 +42,8 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 	private static final String FORM_LABEL_CSS = "form-label";
 	private static final String TXT_BOX_CSS = "txt-box";
 	private VerticalPanel panel;
+	private CaptionPanel nav;
+	private SurveyNavigationWidget surveyNavigationWidget;
 	private Map<String, Object> bundle;
 	private TextBox nameBox;
 	private TextBox descriptionBox;
@@ -48,14 +53,18 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 	private SurveyGroupDto groupDto;
 	private QuestionGroupDto currentDto;
 	private boolean isChanged;
+	private PageController controller;
 
-	public QuestionGroupEditWidget() {
+	public QuestionGroupEditWidget(PageController controller) {
+		this.controller = controller;
 		panel = new VerticalPanel();
 		surveyService = GWT.create(SurveyService.class);
 		nameBox = new TextBox();
 		descriptionBox = new TextBox();
 		orderBox = new TextBox();
 		orderBox.setReadOnly(true);
+		nav = new CaptionPanel(TEXT_CONSTANTS.surveyNavigation());
+		panel.add(nav);
 		panel.add(buildRow(TEXT_CONSTANTS.name(), nameBox));
 		panel.add(buildRow(TEXT_CONSTANTS.description(), descriptionBox));
 		panel.add(buildRow(TEXT_CONSTANTS.order(), orderBox));
@@ -106,8 +115,7 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 			currentDto.setName(nameBox.getText().trim());
 			currentDto
 					.setDescription(descriptionBox.getText() != null ? descriptionBox
-							.getText().trim()
-							: null);
+							.getText().trim() : null);
 
 			surveyService.saveQuestionGroup(currentDto, surveyDto.getKeyId(),
 					new AsyncCallback<QuestionGroupDto>() {
@@ -137,8 +145,9 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 						}
 					});
 		} else {
-			MessageDialog validationDialog = new MessageDialog(TEXT_CONSTANTS
-					.inputError(), TEXT_CONSTANTS.invalidQuestionGroup());
+			MessageDialog validationDialog = new MessageDialog(
+					TEXT_CONSTANTS.inputError(),
+					TEXT_CONSTANTS.invalidQuestionGroup());
 			validationDialog.showRelativeTo(panel);
 		}
 	}
@@ -160,6 +169,16 @@ public class QuestionGroupEditWidget extends Composite implements ContextAware,
 		surveyDto = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 		groupDto = (SurveyGroupDto) bundle
 				.get(BundleConstants.SURVEY_GROUP_KEY);
+		int order = 1;
+		if (currentDto != null) {
+			order = currentDto.getOrder();
+		} else if (surveyDto.getQuestionGroupList() != null) {
+			order = surveyDto.getQuestionGroupList().size() + 1;
+		}
+		surveyNavigationWidget = new SurveyNavigationWidget(surveyDto, null,
+				order, false, MODE.QUESTION_GROUP_EDIT, controller, this);
+		nav.add(surveyNavigationWidget);
+
 		flushContext();
 		populateWidgets();
 	}
