@@ -77,7 +77,7 @@ public class NotificationHelper {
 							optBuilder.append(opt != null ? opt : UNSPECIFIED);
 						}
 						// now dump the item on the queue
-						queue.add(TaskOptions.Builder
+						TaskOptions opts = TaskOptions.Builder
 								.withUrl(PROCESSOR_URL)
 								.param(NotificationRequest.DEST_PARAM,
 										builder.toString())
@@ -86,10 +86,12 @@ public class NotificationHelper {
 								.param(NotificationRequest.SUB_ENTITY_PARAM,
 										notifEntry.getKey().toString())
 								.param(NotificationRequest.TYPE_PARAM,
-										entry.getKey())
-								.param(NotificationRequest.NOTIF_ENTITY_PARAM,
-										notificationEntityId.toString()));
-
+										entry.getKey());
+						if (notificationEntityId != null) {
+							opts.param(NotificationRequest.NOTIF_ENTITY_PARAM,
+									notificationEntityId.toString());
+						}
+						queue.add(opts);
 					}
 				}
 			}
