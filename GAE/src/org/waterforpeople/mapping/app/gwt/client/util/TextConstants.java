@@ -567,5 +567,6 @@ public interface TextConstants extends Constants{
 	public String file();
 	public String otherSurvey();
 	public String includeDependentQuestions();
+	public String saveGotoNext();
 }
 

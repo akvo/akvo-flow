@@ -110,7 +110,7 @@ public class EditorialPageEditWidget extends Composite implements ContextAware {
 	}
 
 	@Override
-	public void persistContext(final CompletionListener listener) {
+	public void persistContext(String buttonText, final CompletionListener listener) {
 		currentPage.setTemplate(template.getValue());
 		currentPage.setTargetFileName(targetFileNameBox.getValue());
 		editorialService.saveEditorialPage(currentPage,

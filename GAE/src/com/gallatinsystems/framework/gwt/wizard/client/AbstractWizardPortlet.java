@@ -101,7 +101,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 
 	protected void init() {
 		pageToLoad = workflow.getStartNode();
-		renderWizardPage(pageToLoad, true, false, null);
+		renderWizardPage(pageToLoad, true, false, null, null);
 		setContent(contentPane);
 		waitDialog = new MessageDialog(TEXT_CONSTANTS.saving(),
 				TEXT_CONSTANTS.pleaseWait(), true);
@@ -169,7 +169,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 * onLoadComplete hook
 	 */
 	protected void renderWizardPage(WizardNode page, boolean isForward,
-			boolean isBreadcrumb, Map<String, Object> bundle) {
+			boolean isBreadcrumb, String buttonText, Map<String, Object> bundle) {
 		boolean calledSave = false;
 		prePageUnload(page);
 		widgetPanel.clear();
@@ -183,7 +183,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			if (!(pendingPage instanceof AutoAdvancing)) {
 				Window.scrollTo(0, 0);
 				waitDialog.showCentered();
-				pendingPage.persistContext(this);
+				pendingPage.persistContext(buttonText, this);
 				calledSave = true;
 			}
 		}
@@ -257,7 +257,8 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			if (bundle.get(WizardBundleConstants.AUTO_ADVANCE_FLAG) != null) {
 				bundle.remove(WizardBundleConstants.AUTO_ADVANCE_FLAG);
 				renderWizardPage(workflow.getWorkflowNode(pageToLoad
-						.getNextNodes()[0].getNodeName()), true, false, bundle);
+						.getNextNodes()[0].getNodeName()), true, false, null,
+						bundle);
 			} else {
 				if (currentPage instanceof AutoAdvancing) {
 					((AutoAdvancing) currentPage).advance(this);
@@ -333,18 +334,19 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	 */
 	public void onClick(ClickEvent event) {
 		if (!working) {
+			String buttonText = ((Button) event.getSource()).getText();
 			if (forwardNavButtons.contains(event.getSource())) {
-				renderWizardPage(workflow.getWorkflowNode(buttonMapping
-						.get(((Button) event.getSource()).getText())), true,
-						false, null);
+				renderWizardPage(
+						workflow.getWorkflowNode(buttonMapping.get(buttonText)),
+						true, false, buttonText, null);
 			} else if (backwardNavButtons.contains(event.getSource())) {
-				renderWizardPage(workflow.getWorkflowNode(buttonMapping
-						.get(((Button) event.getSource()).getText())), false,
-						false, null);
+				renderWizardPage(
+						workflow.getWorkflowNode(buttonMapping.get(buttonText)),
+						false, false, buttonText, null);
 			} else if (event.getSource() instanceof Breadcrumb) {
 				// if it is a breadcrumb
 				renderWizardPage(workflow.getWorkflowNode(((Breadcrumb) event
-						.getSource()).getTargetNode()), false, true,
+						.getSource()).getTargetNode()), false, true, null,
 						((Breadcrumb) event.getSource()).getBundle());
 			}
 		}
@@ -375,7 +377,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 			if (clazz != null) {
 				WizardNode node = workflow.findNode(clazz);
 				if (node != null) {
-					renderWizardPage(node, isForward, false, bundle);
+					renderWizardPage(node, isForward, false, null, bundle);
 				}
 			}
 		}

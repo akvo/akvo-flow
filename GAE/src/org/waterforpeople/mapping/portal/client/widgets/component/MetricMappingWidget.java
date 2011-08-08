@@ -128,7 +128,7 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 	}
 
 	@Override
-	public void persistContext(CompletionListener listener) {
+	public void persistContext(String buttonText,CompletionListener listener) {
 		saveMapping(false, listener);
 	}
 

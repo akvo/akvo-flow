@@ -63,7 +63,7 @@ public class PublicationWidget extends Composite implements ContextAware,
 	}
 	
 	@Override
-	public void persistContext(CompletionListener listener) {
+	public void persistContext(String buttonText,CompletionListener listener) {
 		// no-op. This is handled by advance in this case
 	}
 

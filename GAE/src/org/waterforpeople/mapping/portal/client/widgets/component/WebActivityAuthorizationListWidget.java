@@ -78,8 +78,8 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 		contentPanel = new VerticalPanel();
 		surveySelector = new SurveySelectionWidget(Orientation.HORIZONTAL,
 				TerminalType.SURVEY);
-		CaptionPanel selectorPanel = new CaptionPanel(TEXT_CONSTANTS
-				.filterResults());
+		CaptionPanel selectorPanel = new CaptionPanel(
+				TEXT_CONSTANTS.filterResults());
 		selectorPanel.add(surveySelector);
 		contentPanel.add(selectorPanel);
 		contentPanel.add(authTable);
@@ -98,8 +98,8 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 		}
 		grid.setWidget(row, 2, new Label(authDto.getToken()));
 		if (authDto.getExpirationDate() != null) {
-			grid.setWidget(row, 3, new Label(dateFormat.format(authDto
-					.getExpirationDate())));
+			grid.setWidget(row, 3,
+					new Label(dateFormat.format(authDto.getExpirationDate())));
 		}
 
 		Button editButton = new Button(TEXT_CONSTANTS.edit());
@@ -221,7 +221,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 	}
 
 	@Override
-	public void persistContext(CompletionListener listener) {
+	public void persistContext(String buttonText, CompletionListener listener) {
 		listener.operationComplete(true, bundle);
 	}
 

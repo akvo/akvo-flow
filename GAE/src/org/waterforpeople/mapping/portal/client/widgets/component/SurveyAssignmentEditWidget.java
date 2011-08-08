@@ -252,7 +252,8 @@ public class SurveyAssignmentEditWidget extends Composite implements
 	 * saves the assignment to the datastore
 	 */
 	@Override
-	public void persistContext(final CompletionListener listener) {
+	public void persistContext(String buttonText,
+			final CompletionListener listener) {
 		SurveyAssignmentDto dto = (SurveyAssignmentDto) contextBundle
 				.get(BundleConstants.SURVEY_ASSIGNMENT);
 

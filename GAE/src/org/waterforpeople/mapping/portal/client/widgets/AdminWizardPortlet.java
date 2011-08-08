@@ -109,9 +109,13 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 				new WizardButton[] { new WizardButton("QuestionGroupList",
 						TEXT_CONSTANTS.backToQuestionGroupList()) }));
 		wf.addInternalNode(new WizardNode("QuestionCreate", null,
-				QuestionEditWidget.class, new WizardButton("QuestionCreate",
-						TEXT_CONSTANTS.saveAndContinue()), new WizardButton(
-						"QuestionList", TEXT_CONSTANTS.backToQuestionList())));
+				QuestionEditWidget.class, new WizardButton[] {
+						new WizardButton("QuestionCreate", TEXT_CONSTANTS
+								.saveGotoNext()),
+						new WizardButton("QuestionCreate", TEXT_CONSTANTS
+								.saveAndContinue()) },
+				new WizardButton[] { new WizardButton("QuestionList",
+						TEXT_CONSTANTS.backToQuestionList()) }));
 		wf.addInternalNode(new WizardNode("Publish", null,
 				PublicationWidget.class, new WizardButton[] { new WizardButton(
 						"Attribute Assignment", TEXT_CONSTANTS
@@ -199,7 +203,7 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 		} else if (node.getWidgetClass().equals(PublicationWidget.class)) {
 			return new PublicationWidget();
 		} else if (node.getWidgetClass().equals(QuestionEditWidget.class)) {
-			return new QuestionEditWidget(user,this);
+			return new QuestionEditWidget(user, this);
 		} else if (node.getWidgetClass().equals(QuestionGroupEditWidget.class)) {
 			return new QuestionGroupEditWidget(this);
 		} else if (node.getWidgetClass().equals(QuestionGroupListWidget.class)) {
@@ -218,9 +222,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 			return new UserManagerWidget();
 		} else if (node.getWidgetClass()
 				.equals(AttributeAssignmentWidget.class)) {
-			if(LOCALE_DOMAIN.equalsIgnoreCase(domainType)){
+			if (LOCALE_DOMAIN.equalsIgnoreCase(domainType)) {
 				return new MetricMappingWidget();
-			}else{
+			} else {
 				return new AttributeAssignmentWidget();
 			}
 		} else if (node.getWidgetClass().equals(EditorialPageEditWidget.class)) {

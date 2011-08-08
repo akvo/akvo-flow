@@ -130,7 +130,7 @@ public class AttributeAssignmentWidget extends Composite implements
 	}
 
 	@Override
-	public void persistContext(CompletionListener listener) {
+	public void persistContext(String buttonText,CompletionListener listener) {
 		saveMapping(false, listener);
 	}
 

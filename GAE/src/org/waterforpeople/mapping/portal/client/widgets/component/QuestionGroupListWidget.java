@@ -290,7 +290,7 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	public void persistContext(CompletionListener listener) {
+	public void persistContext(String buttonText,CompletionListener listener) {
 		if (listener != null) {
 			listener.operationComplete(true, getContextBundle(true));
 		}

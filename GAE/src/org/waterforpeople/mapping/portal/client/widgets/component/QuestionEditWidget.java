@@ -689,7 +689,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * list of errors.
 	 */
 	@Override
-	public void persistContext(final CompletionListener listener) {
+	public void persistContext(final String buttonText,
+			final CompletionListener listener) {
 		if (currentQuestion.getImmutable() == null
 				|| (!currentQuestion.getImmutable() || currentUser
 						.hasPermission(PermissionConstants.EDIT_IMMUTABLITY))) {
@@ -758,6 +759,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 									+ currentQuestion.getKeyId()
 									+ " and order "
 									+ currentQuestion.getOrder());
+					if (TEXT_CONSTANTS.saveGotoNext().equals(buttonText)) {
+						getContextBundle(false).put(
+								BundleConstants.LAST_QUESTION_ORDER,
+								currentQuestion.getOrder());
+					}
 					performSave(listener);
 				}
 			} else {
@@ -975,12 +981,37 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		this.bundle = bundle;
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
+
 		insertAboveQuestion = (QuestionDto) bundle
 				.get(BundleConstants.INSERT_ABOVE_QUESTION);
 		bundle.remove(BundleConstants.INSERT_ABOVE_QUESTION);
 		currentSurvey = (SurveyDto) bundle.get(BundleConstants.SURVEY_KEY);
 		questionGroup = (QuestionGroupDto) bundle
 				.get(BundleConstants.QUESTION_GROUP_KEY);
+		if (currentQuestion == null
+				&& bundle.get(BundleConstants.LAST_QUESTION_ORDER) != null) {
+
+			Integer order = (Integer) bundle
+					.remove(BundleConstants.LAST_QUESTION_ORDER);
+			// find the next question the hard way since we may not have
+			// continuous ordering
+			if (questionGroup.getQuestionMap() != null) {
+				QuestionDto candidate = null;
+				for (QuestionDto q : questionGroup.getQuestionMap().values()) {
+					if (q.getOrder() > order) {
+						if (candidate == null) {
+							candidate = q;
+						} else if (candidate.getOrder() > q.getOrder()) {
+							candidate = q;
+						}
+					}
+				}
+				if (candidate != null) {
+					currentQuestion = candidate;
+					bundle.put(BundleConstants.QUESTION_KEY, candidate);
+				}
+			}
+		}
 		optionQuestions = (Map<Long, List<QuestionDto>>) bundle
 				.get(BundleConstants.OPTION_QUESTION_LIST_KEY);
 		if (optionQuestions == null) {
@@ -1071,10 +1102,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			installOptionRow(null, true);
 		} else if (event.getSource() == editTranslationButton) {
 			operation = EDIT_TRANS_OP;
-			persistContext(this);
+			persistContext(null, this);
 		} else if (event.getSource() == editHelpButton) {
 			operation = EDIT_HELP_OP;
-			persistContext(this);
+			persistContext(null, this);
 		} else if (event.getSource() == viewTreeButton) {
 			// don't mess with currentDto since the changes may not be saved yet
 			QuestionDto temp = new QuestionDto();

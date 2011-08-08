@@ -176,7 +176,7 @@ public class SurveyWebActivityAuthorizationEditWidget extends Composite
 	}
 
 	@Override
-	public void persistContext(final CompletionListener listener) {
+	public void persistContext(String buttonText, final CompletionListener listener) {
 		List<String> validationErrors = updateCurrentAuthDto();
 		if (validationErrors == null || validationErrors.size() == 0) {
 			authService.saveAuthorization(currentAuthDto,
