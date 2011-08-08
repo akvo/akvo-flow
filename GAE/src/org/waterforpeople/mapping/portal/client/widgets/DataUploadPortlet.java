@@ -34,7 +34,7 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 
 	private static UploadConstants UPLOAD_CONSTANTS = GWT
 			.create(UploadConstants.class);
-	
+
 	public static final String NAME = TEXT_CONSTANTS.uploadPortletTitle();
 
 	private static final int WIDTH = 300;
@@ -76,8 +76,8 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 	public DataUploadPortlet() {
 		super(NAME, false, false, WIDTH, HEIGHT);
 		contentPane = new VerticalPanel();
-		Label instructions = new Label(TEXT_CONSTANTS
-				.uploadPortletInstructions());
+		Label instructions = new Label(
+				TEXT_CONSTANTS.uploadPortletInstructions());
 		contentPane.add(instructions);
 		HorizontalPanel phPanel = new HorizontalPanel();
 		phPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.devicePhoneNumber()));
@@ -187,6 +187,14 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 			if (filename != null) {
 
 				if (filename.toLowerCase().trim().endsWith(".zip")) {
+					if (filename.contains("/")) {
+						filename = filename
+								.substring(filename.lastIndexOf("/")+1);
+					}
+					if (filename.contains("\\")) {
+						filename = filename.substring(filename
+								.lastIndexOf("\\")+1);
+					}
 					FormPanel tempForm = new FormPanel();
 					tempForm.setMethod(FormPanel.METHOD_GET);
 					tempForm.setAction(NOTIFICATION_URL);
@@ -198,16 +206,13 @@ public class DataUploadPortlet extends Portlet implements ClickHandler,
 					tempForm.setWidget(vPanel);
 					tempForm.setVisible(false);
 					contentPane.add(tempForm);
-					tempForm
-							.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+					tempForm.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 
-								@Override
-								public void onSubmitComplete(
-										SubmitCompleteEvent event) {
-									contentPane.remove((Widget) event
-											.getSource());
-								}
-							});
+						@Override
+						public void onSubmitComplete(SubmitCompleteEvent event) {
+							contentPane.remove((Widget) event.getSource());
+						}
+					});
 					tempForm.submit();
 				}
 			}
