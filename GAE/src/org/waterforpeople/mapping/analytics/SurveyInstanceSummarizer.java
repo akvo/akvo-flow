@@ -49,7 +49,8 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 			if (qasList != null) {
 				GeoCoordinates geoC = null;
 				for (QuestionAnswerStore q : qasList) {
-					if (q.getValue() != null && q.getValue().trim().length()>0) {
+					if (q.getValue() != null
+							&& q.getValue().trim().length() > 0) {
 						geoC = GeoCoordinates
 								.extractGeoCoordinate(q.getValue());
 						if (geoC != null) {
@@ -68,6 +69,11 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 								instance.getCollectionDate());
 						success = true;
 					}
+				} else {
+					logger.log(Level.INFO,
+							"Instance does not have a geo question: "
+									+ instance.getKey().getId());
+					success = true;
 				}
 			}
 			if (!success) {
