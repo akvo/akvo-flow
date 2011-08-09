@@ -3,7 +3,9 @@ package com.gallatinsystems.surveyal.app.web;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +51,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 5923399458369692813L;
 	private static final double TOLERANCE = 0.01;
 	private static final double UNSET_VAL = -9999.9;
+	private static final String DEFAULT = "DEFAULT";
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
 	private static final Logger log = Logger
 			.getLogger(SurveyalRestServlet.class.getName());
@@ -59,6 +62,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private CountryDao countryDao;
 	private SurveyMetricMappingDao metricMappingDao;
 	private MetricDao metricDao;
+	private boolean useConfigStatusScore = false;
+	private String statusFragment;
+	private Map<String, String> scoredVals;
 
 	public SurveyalRestServlet() {
 		surveyInstanceDao = new SurveyInstanceDAO();
@@ -67,7 +73,21 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		countryDao = new CountryDao();
 		metricDao = new MetricDao();
 		metricMappingDao = new SurveyMetricMappingDao();
-
+		statusFragment = PropertyUtil.getProperty("statusQuestionText");
+		if (statusFragment != null && statusFragment.trim().length() > 0) {
+			useConfigStatusScore = true;
+			String[] fields = statusFragment.split(";");
+			statusFragment = fields[0].toLowerCase();
+			scoredVals = new HashMap<String, String>();
+			if (fields.length > 1) {
+				for (int i = 1; i < fields.length; i++) {
+					if (fields[i].contains("=")) {
+						String[] kvp = fields[i].split("=");
+						scoredVals.put(kvp[0], kvp[1]);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -195,25 +215,42 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				List<SurveyalValue> values = constructValues(locale, answers);
 				if (values != null) {
 					surveyedLocaleDao.save(values);
-					// now check the values to see if we have a status to update
-					// check the metrics first
-					boolean found = false;
-					for (SurveyalValue val : values) {
-						if (isStatus(val.getMetricName())
-								&& val.getStringValue() != null) {
-							found = true;
-							locale.setCurrentStatus(val.getStringValue());
-							break;
-						}
-					}
-					// if no luck, check the question text
-					if (!found) {
+					if (!useConfigStatusScore) {
+						// now check the values to see if we have a status to
+						// update
+						// check the metrics first
+						boolean found = false;
 						for (SurveyalValue val : values) {
-							if (isStatus(val.getQuestionText())
+							if (isStatus(val.getMetricName())
 									&& val.getStringValue() != null) {
 								found = true;
 								locale.setCurrentStatus(val.getStringValue());
 								break;
+							}
+						}
+						// if no luck, check the question text
+						if (!found) {
+							for (SurveyalValue val : values) {
+								if (isStatus(val.getQuestionText())
+										&& val.getStringValue() != null) {
+									found = true;
+									locale.setCurrentStatus(val
+											.getStringValue());
+									break;
+								}
+							}
+						}
+					} else {
+						for (SurveyalValue val : values) {
+							if (val.getQuestionText() != null
+									&& val.getQuestionText().toLowerCase()
+											.contains(statusFragment)) {
+								String scoredField = scoredVals.get(val
+										.getStringValue());
+								if (scoredField == null) {
+									scoredField = scoredVals.get(DEFAULT);
+								}
+								locale.setCurrentStatus(scoredField);
 							}
 						}
 					}

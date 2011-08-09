@@ -58,5 +58,6 @@
 		<property name="backendpublish" value="false"/>
 		<property name="cacheExpirySeconds" value="3600"/>
 		<property name="useLongDates" value="false"/>
+		<property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
 	</system-properties>
 </appengine-web-app>

@@ -154,6 +154,9 @@ public class SurveyCopyDialog extends DialogBox {
 		newSurveyDto.setCode(surveyName.getText());
 		newSurveyDto.setName(surveyName.getText());
 		newSurveyDto.setDescription(surveyDto.getDescription());
+		newSurveyDto.setDefaultLanguageCode(surveyDto.getDefaultLanguageCode());
+		newSurveyDto.setPointType(surveyDto.getPointType());
+		newSurveyDto.setRequireApproval(surveyDto.getRequireApproval());
 		newSurveyDto.setPath(surveyGroupList.getItemText(surveyGroupList
 				.getSelectedIndex()));
 		newSurveyDto.setSurveyGroupId(new Long(surveyGroupList
