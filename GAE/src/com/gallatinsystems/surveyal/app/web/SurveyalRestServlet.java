@@ -327,8 +327,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private List<SurveyalValue> constructValues(SurveyedLocale l,
 			List<QuestionAnswerStore> answers) {
 		List<SurveyalValue> values = new ArrayList<SurveyalValue>();
-		if (answers != null) {
+		if (answers != null && answers.size() > 0) {
 			List<SurveyMetricMapping> mappings = null;
+			List<SurveyalValue> oldVals = surveyedLocaleDao
+					.listSurveyalValuesByInstance(answers.get(0)
+							.getSurveyInstanceId());
 			List<Metric> metrics = null;
 			boolean loadedItems = false;
 			List<Question> questionList = null;
@@ -346,7 +349,19 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 							.getSurveyId());
 					loadedItems = true;
 				}
-				SurveyalValue val = new SurveyalValue();
+				SurveyalValue val = null;
+				if (oldVals != null) {
+					for (SurveyalValue oldVal : oldVals) {
+						if (oldVal.getSurveyQuestionId() != null
+								&& oldVal.getSurveyQuestionId().toString()
+										.equals(ans.getQuestionID())) {
+							val = oldVal;
+						}
+					}
+				}
+				if (val == null) {
+					val = new SurveyalValue();
+				}
 				val.setSurveyedLocaleId(l.getKey().getId());
 				val.setCollectionDate(ans.getCollectionDate());
 				val.setCountryCode(l.getCountryCode());
@@ -384,7 +399,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								}
 							}
 						}
-
 					}
 				}
 				// TODO: resolve score

@@ -84,6 +84,7 @@ public class KMLGenerator {
 		ICON_TYPE_MAPPING.put("PublicInstitution", "house");
 		ICON_TYPE_MAPPING.put("Household", "house");
 		ICON_TYPE_MAPPING.put("School", "pencil");
+		ICON_TYPE_MAPPING.put("Trawler", "glass");
 		ICON_TYPE_MAPPING.put(DEFAULT, "glass");
 
 		ICON_COLOR_MAPPING = new HashMap<String, String>();
@@ -104,12 +105,22 @@ public class KMLGenerator {
 	 * @return
 	 */
 	public static String getMarkerImageUrl(String type, String status) {
-		return KMLGenerator.IMAGE_PREFIX
-				+ "/images/"
-				+ KMLGenerator.ICON_TYPE_MAPPING.get(type != null ? type
-						: KMLGenerator.DEFAULT)
-				+ KMLGenerator.ICON_COLOR_MAPPING.get(status != null ? status
-						: KMLGenerator.DEFAULT);
+		String url = KMLGenerator.IMAGE_PREFIX + "/images/";
+
+		String typePart = KMLGenerator.ICON_TYPE_MAPPING
+				.get(type != null ? type : KMLGenerator.DEFAULT);
+		if (typePart == null) {
+			typePart = KMLGenerator.ICON_TYPE_MAPPING.get(KMLGenerator.DEFAULT);
+		}
+		url += typePart;
+		String statusPart = KMLGenerator.ICON_COLOR_MAPPING
+				.get(status != null ? status : KMLGenerator.DEFAULT);
+		if (statusPart == null) {
+			statusPart = KMLGenerator.ICON_COLOR_MAPPING
+					.get(KMLGenerator.DEFAULT);
+		}
+		url += statusPart;
+		return url;
 	}
 
 	public static final String useLongDates = PropertyUtil

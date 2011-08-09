@@ -124,7 +124,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				qas.setValue(parts[4].trim());
 			}
 			if (parts.length >= 5) {
-				if (si.getSubmitterName() == null) {
+				if (si.getSubmitterName() == null
+						|| si.getSubmitterName().trim().length() == 0) {
 					si.setSubmitterName(parts[5].trim());
 				}
 			}
