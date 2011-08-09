@@ -583,11 +583,7 @@ public class DataSyncService extends Service {
 				if (deviceIdentifier == null) {
 					deviceIdentifier = "unset";
 				} else {
-					if (deviceIdentifier.contains(",")) {
-						// prevent commas from messing up the submission
-						deviceIdentifier = deviceIdentifier
-								.replaceAll(",", " ");
-					}
+					deviceIdentifier = cleanVal(deviceIdentifier);					
 				}
 				do {
 
@@ -622,18 +618,18 @@ public class DataSyncService extends Service {
 													.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
 					buf.append(DELIMITER).append(type);
 					buf.append(DELIMITER).append(value);
+					
 					buf
 							.append(DELIMITER)
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+							.append(cleanVal(data
+									.getString(data
+											.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL))));
 					buf
 							.append(DELIMITER)
-							.append(
+							.append(cleanVal(
 									data
 											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL)));
+													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL))));
 					buf
 							.append(DELIMITER)
 							.append(
@@ -681,6 +677,18 @@ public class DataSyncService extends Service {
 				data.close();
 			}
 		}
+	}
+	
+	private String cleanVal(String val){
+		if(val != null){
+			if(val.contains(DELIMITER)){
+				val = val.replaceAll(DELIMITER, " ");
+			}
+			if(val.contains(",")){
+				val.replaceAll(",", " ");
+			}
+		}
+		return val;
 	}
 
 	/**
