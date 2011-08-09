@@ -74,6 +74,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private static final String SELECT_TXT = TEXT_CONSTANTS.select() + "...";
 	private static final String EDIT_TRANS_OP = "Edit Translation";
 	private static final String EDIT_HELP_OP = "Edit Help";
+	private static final String FWD = "FWD";
 	private VerticalPanel panel;
 	private CaptionPanel basePanel;
 	private TextArea questionTextArea;
@@ -551,8 +552,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				if (currentQuestion == null
 						|| (currentQuestion.getKeyId() == null || !currentQuestion
 								.getKeyId().equals(q.getKeyId()))) {
-					dependentQuestionSelector.addItem((q.getOrder()!=null?q.getOrder()+": ":"")+q.getText(), q.getKeyId()
-							.toString());
+					dependentQuestionSelector.addItem(
+							(q.getOrder() != null ? q.getOrder() + ": " : "")
+									+ q.getText(), q.getKeyId().toString());
 					if (currentQuestion != null
 							&& currentQuestion.getQuestionDependency() != null
 							&& currentQuestion.getQuestionDependency()
@@ -760,6 +762,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 									+ " and order "
 									+ currentQuestion.getOrder());
 					if (TEXT_CONSTANTS.saveGotoNext().equals(buttonText)) {
+						getContextBundle(false).put(
+								BundleConstants.LAST_QUESTION_ORDER,
+								currentQuestion.getOrder());
+						getContextBundle(false).put(BundleConstants.DIRECTION,
+								FWD);
+					} else if (TEXT_CONSTANTS.saveGotoPrev().equals(buttonText)) {
 						getContextBundle(false).put(
 								BundleConstants.LAST_QUESTION_ORDER,
 								currentQuestion.getOrder());
@@ -993,16 +1001,27 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 			Integer order = (Integer) bundle
 					.remove(BundleConstants.LAST_QUESTION_ORDER);
+			String dir = (String) bundle.remove(BundleConstants.DIRECTION);
 			// find the next question the hard way since we may not have
 			// continuous ordering
 			if (questionGroup.getQuestionMap() != null) {
 				QuestionDto candidate = null;
 				for (QuestionDto q : questionGroup.getQuestionMap().values()) {
-					if (q.getOrder() > order) {
-						if (candidate == null) {
-							candidate = q;
-						} else if (candidate.getOrder() > q.getOrder()) {
-							candidate = q;
+					if (FWD.equals(dir)) {
+						if (q.getOrder() > order) {
+							if (candidate == null) {
+								candidate = q;
+							} else if (candidate.getOrder() > q.getOrder()) {
+								candidate = q;
+							}
+						}
+					} else {
+						if (q.getOrder() < order) {
+							if (candidate == null) {
+								candidate = q;
+							} else if (candidate.getOrder() < q.getOrder()) {
+								candidate = q;
+							}
 						}
 					}
 				}

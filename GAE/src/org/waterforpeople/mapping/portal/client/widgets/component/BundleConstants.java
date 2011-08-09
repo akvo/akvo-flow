@@ -21,4 +21,5 @@ public class BundleConstants extends WizardBundleConstants {
 	public static final String USER = "USER";
 	public static final String INSERT_ABOVE_QUESTION = "INSERT_ABOVE";
 	public static final String LAST_QUESTION_ORDER = "LAST_Q_ORDER";
+	public static final String DIRECTION = "DIRECTION";
 }
