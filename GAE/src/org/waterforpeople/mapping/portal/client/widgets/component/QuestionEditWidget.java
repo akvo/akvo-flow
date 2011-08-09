@@ -551,7 +551,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				if (currentQuestion == null
 						|| (currentQuestion.getKeyId() == null || !currentQuestion
 								.getKeyId().equals(q.getKeyId()))) {
-					dependentQuestionSelector.addItem(q.getText(), q.getKeyId()
+					dependentQuestionSelector.addItem((q.getOrder()!=null?q.getOrder()+": ":"")+q.getText(), q.getKeyId()
 							.toString());
 					if (currentQuestion != null
 							&& currentQuestion.getQuestionDependency() != null
