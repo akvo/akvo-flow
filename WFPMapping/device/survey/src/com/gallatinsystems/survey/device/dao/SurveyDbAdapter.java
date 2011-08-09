@@ -285,7 +285,9 @@ public class SurveyDbAdapter {
 		public synchronized void close() {
 			instanceCount--;
 			if (instanceCount <= 0) {
-				super.close();
+				if (database != null && database.isOpen()) {
+					super.close();
+				}
 				database = null;
 			}
 		}

@@ -80,6 +80,14 @@ public class PersistentUncaughtExceptionHandler implements
 			return true;
 		} else if (exception instanceof SocketException) {
 			return true;
+		} else if (exception instanceof IllegalStateException) {
+			if (exception.getMessage() != null
+					&& exception
+							.getMessage()
+							.toLowerCase()
+							.contains("sqlitedatabase created and never closed")) {
+				return true;
+			}
 		}
 		return false;
 	}

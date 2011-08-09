@@ -51,6 +51,7 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  */
 public class BootstrapService extends Service {
 	private static final String TAG = "BOOTSTRAP_SERVICE";
+	public static boolean isProcessing = false;
 	private static Semaphore lock = new Semaphore(1);
 	private Thread workerThread;
 	private SurveyDbAdapter databaseAdapter;
@@ -89,6 +90,7 @@ public class BootstrapService extends Service {
 			lock.acquire();
 			ArrayList<File> zipFiles = getZipFiles();
 			if (zipFiles != null && zipFiles.size() > 0) {
+				isProcessing = true;
 				String startMessage = getString(R.string.bootstrapstart);
 				ViewUtil.fireNotification(startMessage, startMessage, this,
 						NOTIFICATION_ID, android.R.drawable.ic_dialog_info);
@@ -115,7 +117,7 @@ public class BootstrapService extends Service {
 					String endMessage = getString(R.string.bootstrapcomplete);
 					ViewUtil.fireNotification(endMessage, endMessage, this,
 							NOTIFICATION_ID, android.R.drawable.ic_dialog_info);
-				} finally {
+				} finally {					
 					if (databaseAdapter != null) {
 						databaseAdapter.close();
 					}
@@ -127,6 +129,7 @@ public class BootstrapService extends Service {
 					NOTIFICATION_ID, android.R.drawable.ic_dialog_alert);
 			Log.e(TAG, "Bootstrap error", e);
 		} finally {
+			isProcessing = false;
 			lock.release();
 		}
 	}

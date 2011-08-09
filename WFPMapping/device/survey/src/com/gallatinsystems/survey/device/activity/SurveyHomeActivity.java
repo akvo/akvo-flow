@@ -11,16 +11,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+import android.widget.TextView;
 
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
@@ -201,7 +201,6 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		String selected = menuViewAdapter.getSelectedOperation(position);
 		v.setSelected(false);
-
 		if (selected.equals(ConstantUtil.USER_OP)) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
@@ -228,15 +227,29 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			startActivityForResult(i, WF_CALC_ACTIVITY);
 		} else {
 			if (currentUserId != null) {
-				Survey survey = menuViewAdapter.getSelectedSurvey(position);
-				if (survey != null) {
-					Intent i = new Intent(v.getContext(),
-							SurveyViewActivity.class);
-					i.putExtra(ConstantUtil.USER_ID_KEY, currentUserId);
-					i.putExtra(ConstantUtil.SURVEY_ID_KEY, survey.getId());
-					startActivityForResult(i, SURVEY_ACTIVITY);
-				} else {
-					Log.e(TAG, "Survey for selection is null");
+				if (!BootstrapService.isProcessing) {
+					Survey survey = menuViewAdapter.getSelectedSurvey(position);
+					if (survey != null) {
+						Intent i = new Intent(v.getContext(),
+								SurveyViewActivity.class);
+						i.putExtra(ConstantUtil.USER_ID_KEY, currentUserId);
+						i.putExtra(ConstantUtil.SURVEY_ID_KEY, survey.getId());
+						startActivityForResult(i, SURVEY_ACTIVITY);
+					} else {
+						Log.e(TAG, "Survey for selection is null");
+					}
+				}else{
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setMessage(R.string.pleasewaitforbootstrap)
+							.setCancelable(true)
+							.setPositiveButton(R.string.okbutton,
+									new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog,
+												int id) {
+											dialog.cancel();
+										}
+									});
+					builder.show();
 				}
 			} else {
 				// if the current user is null, we can't enter survey mode

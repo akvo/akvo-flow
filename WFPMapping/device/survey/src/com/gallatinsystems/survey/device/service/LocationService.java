@@ -60,27 +60,34 @@ public class LocationService extends Service {
 		// call endService if they change the preference to false after we're
 		// already
 		// started
-		SurveyDbAdapter database = new SurveyDbAdapter(this);
-		database.open();
-		String val = database
-				.findPreference(ConstantUtil.LOCATION_BEACON_SETTING_KEY);
-		deviceId = database.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
-		if (val != null) {
-			sendBeacon = Boolean.parseBoolean(val);
-		}
-		Resources resources = getResources();
-		version = resources.getString(R.string.appversion);
-		String serverBase = database
-				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
-		if (serverBase != null && serverBase.trim().length() > 0) {
-			serverBase = resources.getStringArray(R.array.servers)[Integer
-					.parseInt(serverBase)];
-		} else {
-			serverBase = props.getProperty(ConstantUtil.SERVER_BASE);
-		}
-		final String server = serverBase;
+		SurveyDbAdapter database = null;
+		final String server;
+		try {
+			database = new SurveyDbAdapter(this);
 
-		database.close();
+			database.open();
+			String val = database
+					.findPreference(ConstantUtil.LOCATION_BEACON_SETTING_KEY);
+			deviceId = database.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
+			if (val != null) {
+				sendBeacon = Boolean.parseBoolean(val);
+			}
+			Resources resources = getResources();
+			version = resources.getString(R.string.appversion);
+			String serverBase = database
+					.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+			if (serverBase != null && serverBase.trim().length() > 0) {
+				serverBase = resources.getStringArray(R.array.servers)[Integer
+						.parseInt(serverBase)];
+			} else {
+				serverBase = props.getProperty(ConstantUtil.SERVER_BASE);
+			}
+			server = serverBase;
+		} finally {
+			if (database != null) {
+				database.close();
+			}
+		}
 		if (timer == null && sendBeacon) {
 			timer = new Timer(true);
 			timer.scheduleAtFixedRate(new TimerTask() {
@@ -117,31 +124,35 @@ public class LocationService extends Service {
 	 * @param loc
 	 */
 	private void sendLocation(String serverBase, Location loc) {
-		try {
-			String phoneNumber = StatusUtil.getPhoneNumber(this);
-			if (loc != null) {
-				if (phoneNumber != null) {
-					String url = serverBase + BEACON_SERVICE_PATH
-							+ URLEncoder.encode(phoneNumber, "UTF-8") + LAT
-							+ loc.getLatitude() + LON + loc.getLongitude()
-							+ ACC + loc.getAccuracy() + VER + version;
-					if (deviceId != null) {
-						url += DEV_ID + URLEncoder.encode(deviceId, "UTF-8");
+		if (serverBase != null) {
+			try {
+				String phoneNumber = StatusUtil.getPhoneNumber(this);
+				if (loc != null) {
+					if (phoneNumber != null) {
+						String url = serverBase + BEACON_SERVICE_PATH
+								+ URLEncoder.encode(phoneNumber, "UTF-8") + LAT
+								+ loc.getLatitude() + LON + loc.getLongitude()
+								+ ACC + loc.getAccuracy() + VER + version;
+						if (deviceId != null) {
+							url += DEV_ID
+									+ URLEncoder.encode(deviceId, "UTF-8");
+						}
+						HttpUtil.httpGet(url);
 					}
-					HttpUtil.httpGet(url);
+				} else {
+					if (phoneNumber != null) {
+						// if location is null, send an update anyway, just
+						// without
+						// lat/lon
+						HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
+								+ URLEncoder.encode(phoneNumber, "UTF-8") + VER
+								+ version);
+					}
 				}
-			} else {
-				if (phoneNumber != null) {
-					// if location is null, send an update anyway, just without
-					// lat/lon
-					HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
-							+ URLEncoder.encode(phoneNumber, "UTF-8") + VER
-							+ version);
-				}
+			} catch (Exception e) {
+				Log.e(TAG, "Could not send location beacon", e);
+				PersistentUncaughtExceptionHandler.recordException(e);
 			}
-		} catch (Exception e) {
-			Log.e(TAG, "Could not send location beacon", e);
-			PersistentUncaughtExceptionHandler.recordException(e);
 		}
 	}
 

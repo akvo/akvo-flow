@@ -188,5 +188,6 @@
 	<string name="sdcardspace">Free Space (MB):</string>
 	<string name="pickdate">Select Date</string>
 	<string name="cannotupdate">Survey could not be downloaded. It may not be published.</string>
-	<string name="appversion">1.9.14</string>	
+	<string name="pleasewaitforbootstrap">Please wait until the bootstrap file has finished processing.</string>
+	<string name="appversion">1.9.15</string>
 </resources>
