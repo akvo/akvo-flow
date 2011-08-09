@@ -50,6 +50,7 @@ public class UserEditActivity extends Activity {
 
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
+				saveState();
 				setResult(RESULT_OK);
 				finish();
 			}
@@ -82,8 +83,7 @@ public class UserEditActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		super.onPause();
-		saveState();
+		super.onPause();		
 	}
 
 	@Override
