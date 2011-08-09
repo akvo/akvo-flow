@@ -179,7 +179,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	@SuppressWarnings("unchecked")
 	public List<SurveyInstance> listByDateRange(Date beginDate, Date endDate,
-			boolean unapprovedOnlyFlag, String cursorString) {
+			boolean unapprovedOnlyFlag, Long surveyId, String source,
+			String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
 
@@ -189,6 +190,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
+		appendNonNullParam("deviceIdentifier", filterString, paramString,
+				"String", source, paramMap);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				beginDate, paramMap, GTE_OP);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",

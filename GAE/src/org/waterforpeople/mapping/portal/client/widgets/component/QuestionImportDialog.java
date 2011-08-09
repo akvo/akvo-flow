@@ -95,19 +95,25 @@ public class QuestionImportDialog extends DialogBox implements ChangeHandler {
 		contentPane.add(buttonPanel, DockPanel.SOUTH);
 		ok.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
+				if (SURVEY_SOURCE.equals(ViewUtil.getListBoxSelection(
+						sourceBox, false))) {
+					
 
-				String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,poi-3.5-signed.jar,json.jar'>";
-				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
-				appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
-				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-				appletString += "<PARAM name='criteria' value='isWholeSurvey=false;beforeQuestionId="
-						+ ViewUtil.getListBoxSelection(questionBox, false)
-						+ "'>";
-				appletString += "</applet>";
-				HTML html = new HTML();
-				html.setHTML(appletString);
-				appletPanel.add(html);
-				controlPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.doNotClose()));
+				} else {
+					String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,poi-3.5-signed.jar,json.jar'>";
+					appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
+					appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
+					appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+					appletString += "<PARAM name='criteria' value='isWholeSurvey=false;beforeQuestionId="
+							+ ViewUtil.getListBoxSelection(questionBox, false)
+							+ "'>";
+					appletString += "</applet>";
+					HTML html = new HTML();
+					html.setHTML(appletString);
+					appletPanel.add(html);
+					controlPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
+							.doNotClose()));
+				}
 			}
 		});
 		cancel.addClickHandler(new ClickHandler() {

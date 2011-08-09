@@ -9,10 +9,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SurveyInstanceServiceAsync {
 
-	void listSurveyInstance(Date beginDate, Date endDate, boolean unapprovedOnlyFlag,String cursorString,
+	void listSurveyInstance(Date beginDate, Date endDate,
+			boolean unapprovedOnlyFlag, Long surveyId, String source,
+			String cursorString,
 			AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>> callback);
-	
-	
 
 	void listQuestionsByInstance(Long instanceId,
 			AsyncCallback<List<QuestionAnswerStoreDto>> callback);
@@ -34,8 +34,6 @@ public interface SurveyInstanceServiceAsync {
 	void approveSurveyInstance(Long instanceId,
 			List<QuestionAnswerStoreDto> changedQuestions,
 			AsyncCallback<Void> callback);
-
-
 
 	void listInstancesByLocale(Long localeId, Date dateFrom, Date dateTo,
 			String cursor,

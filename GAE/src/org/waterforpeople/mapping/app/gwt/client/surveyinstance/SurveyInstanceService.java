@@ -11,7 +11,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("surveyinstance")
 public interface SurveyInstanceService extends RemoteService {
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
-			Date beginDate, Date toDate, boolean unapprovedOnlyFlag,
+			Date beginDate, Date toDate, boolean unapprovedOnlyFlag, Long surveyId, String source,
 			String cursorString);
 
 	public List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId);

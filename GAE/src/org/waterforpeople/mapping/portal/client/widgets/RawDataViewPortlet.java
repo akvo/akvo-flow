@@ -11,6 +11,10 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDt
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.SelectionMode;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
 import org.waterforpeople.mapping.surveyentry.client.component.SurveyEntryWidget;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
@@ -78,6 +82,8 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private PaginatedDataTable<SurveyInstanceDto> surveyInstanceTable;
 	private Panel finderPanel;
 	private TextBox instanceIdBox;
+	private SurveySelectionWidget surveySelector;
+	private TextBox sourceBox;
 	private HorizontalPanel contentPanel;
 	private Map<Long, QuestionAnswerStoreDto> changedAnswers;
 	private Long selectedInstance;
@@ -117,6 +123,13 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		tempPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.to()));
 		tempPanel.add(dateToBox);
 		finderPanel.add(tempPanel);
+		surveySelector = new SurveySelectionWidget(Orientation.HORIZONTAL,
+				TerminalType.SURVEY, SelectionMode.SINGLE);
+		finderPanel.add(surveySelector);
+		sourceBox = new TextBox();
+		ViewUtil.installFieldRow(finderPanel, TEXT_CONSTANTS.source(),
+				sourceBox, ViewUtil.DEFAULT_INPUT_LABEL_CSS);
+
 		tempPanel = new HorizontalPanel();
 		showAllButton = new RadioButton("approvedFlag",
 				TEXT_CONSTANTS.showAll());
@@ -514,8 +527,14 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 			dateForQuery = new Date((new Date()).getTime() - (86400000L * 90L));
 			fromDate = dateForQuery;
 		}
+		List<Long> ids = surveySelector.getSelectedSurveyIds();
+		Long surveyId = null;
+		if (ids != null && ids.size() > 0) {
+			surveyId = ids.get(0);
+		}
 		svc.listSurveyInstance(fromDate, toDate,
-				showUnapprovedButton.getValue(), cursor,
+				showUnapprovedButton.getValue(), surveyId,
+				ViewUtil.getNonBlankValue(sourceBox), cursor,
 				new AsyncCallback<ResponseDto<ArrayList<SurveyInstanceDto>>>() {
 					@Override
 					public void onFailure(Throwable caught) {

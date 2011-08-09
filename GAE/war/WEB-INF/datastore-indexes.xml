@@ -403,5 +403,24 @@
 		<property name="localeType" direction="asc" />
 		<property name="latitude" direction="asc" />
 	</datastore-index>
+	  <datastore-index kind="SurveyInstance" ancestor="false" >
+        <property name="surveyId" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyInstance" ancestor="false">
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyInstance" ancestor="false">
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="surveyId" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyInstance" ancestor="false">
+        <property name="approvedFlag" direction="asc"/>
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="surveyId" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
 
 </datastore-indexes>
