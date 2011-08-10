@@ -65,14 +65,20 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private boolean useConfigStatusScore = false;
 	private String statusFragment;
 	private Map<String, String> scoredVals;
+	private boolean mergeNearby;
 
 	public SurveyalRestServlet() {
 		surveyInstanceDao = new SurveyInstanceDAO();
 		surveyedLocaleDao = new SurveyedLocaleDao();
-		qDao = new QuestionDao();
+		qDao = new QuestionDao();		
 		countryDao = new CountryDao();
 		metricDao = new MetricDao();
 		metricMappingDao = new SurveyMetricMappingDao();
+		mergeNearby = true;
+		String mergeProp = PropertyUtil.getProperty("mergeNearbyLocales");
+		if(mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())){
+			mergeNearby =false;
+		}
 		statusFragment = PropertyUtil.getProperty("statusQuestionText");
 		if (statusFragment != null && statusFragment.trim().length() > 0) {
 			useConfigStatusScore = true;
@@ -175,7 +181,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					throw new RuntimeException(
 							"Could not parse lat/lon from Geo Question "
 									+ geoQ.getQuestionID());
-				} else {
+				} else if(mergeNearby){
 					// if we have a geo question but no locale id, see if we can
 					// find one based on lat/lon
 					List<SurveyedLocale> candidates = surveyedLocaleDao

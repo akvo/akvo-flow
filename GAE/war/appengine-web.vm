@@ -59,5 +59,6 @@
 		<property name="cacheExpirySeconds" value="3600"/>
 		<property name="useLongDates" value="false"/>
 		<property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
+		<property name="mergeNearbyLocales" value="true"/>
 	</system-properties>
 </appengine-web-app>
