@@ -268,6 +268,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		statusLabel = ViewUtil.initLabel(TEXT_CONSTANTS.loading());
 		instanceTable = new FlexTable();
 		instanceListBox = new ListBox(false);
+		instanceListBox.addChangeHandler(this);
 		CaptionPanel cap = new CaptionPanel(TEXT_CONSTANTS.selectInstance());
 		Panel controlPanel = new VerticalPanel();
 
