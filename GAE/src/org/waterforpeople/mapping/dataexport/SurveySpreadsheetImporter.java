@@ -87,7 +87,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 									.append("?")
 									.append(SurveyRestRequest.ACTION_PARAM)
 									.append("=")
-									.append(SurveyRestRequest.UPDATE_QUESTION_ORDER_ACTOIN)
+									.append(SurveyRestRequest.UPDATE_QUESTION_ORDER_ACTION)
 									.append("&")
 									.append(SurveyRestRequest.QUESTION_ID_PARAM)
 									.append("=")

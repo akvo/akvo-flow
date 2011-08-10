@@ -133,5 +133,17 @@ public interface SurveyService extends RemoteService {
 	 * @param id
 	 */
 	public void markSurveyChangesComplete(Long id);
+	
+	/**
+	 * lists the base question info for all questions that depend on the
+	 * questionId passed in
+	 * 
+	 * @param questionId
+	 * @return
+	 */
+	public ArrayList<QuestionDto> listQuestionsDependentOnQuestion(Long questionId);
 
+	
+	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
+			String questionGroupId, boolean needDetails, boolean allowSideEffects);
 }

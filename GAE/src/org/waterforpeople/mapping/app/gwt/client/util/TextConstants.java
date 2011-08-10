@@ -569,5 +569,7 @@ public interface TextConstants extends Constants{
 	public String includeDependentQuestions();
 	public String saveGotoNext();
 	public String saveGotoPrev();
+	public String questionMandatory();
+	public String copyingDependencies();
 }
 

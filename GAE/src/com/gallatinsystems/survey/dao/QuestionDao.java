@@ -122,6 +122,11 @@ public class QuestionDao extends BaseDAO<Question> {
 		}
 
 	}
+	
+	public List<Question> listQuestionsInOrderForGroup(Long groupId){
+		return listByProperty("questionGroupId", groupId,
+				"Long", "order", "asc");
+	}
 
 	public List<Question> listQuestionInOrder(Long surveyId) {
 		List<Question> orderedQuestionList = new ArrayList<Question>();
@@ -278,9 +283,13 @@ public class QuestionDao extends BaseDAO<Question> {
 		return listByProperty("questionGroupId", questionGroupId, "Long",
 				"createdDateTime", "asc");
 	}
-
+	
 	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
 			Long questionGroupId, boolean needDetails) {
+		return listQuestionsByQuestionGroup(questionGroupId, needDetails, true);
+	}
+	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
+			Long questionGroupId, boolean needDetails, boolean allowSideEffects) {
 		List<Question> qList = listByProperty("questionGroupId",
 				questionGroupId, "Long", "order", "asc");
 		TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
@@ -310,7 +319,7 @@ public class QuestionDao extends BaseDAO<Question> {
 				if (q.getOrder() == null) {
 					q.setOrder(qList.size() + 1);
 					i++;
-				} else {
+				} else if(allowSideEffects) {
 					if (map.size() > 0 && !(q.getOrder() > map.size())) {
 						q.setOrder(map.size() + 1);
 						super.save(q);
@@ -402,5 +411,15 @@ public class QuestionDao extends BaseDAO<Question> {
 				// save. It will be saved on flush of the Persistent session
 			}
 		}
+	}
+
+	/**
+	 * lists all questions that depend on the id passed in
+	 * 
+	 * @param questionId
+	 * @return
+	 */
+	public List<Question> listQuestionsByDependency(Long questionId) {
+		return listByProperty("dependentQuestionId", questionId, "Long");
 	}
 }

@@ -351,6 +351,15 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 		}
 	}
 
+	public Long getSelectedQuestionId() {
+		String val =ViewUtil.getListBoxSelection(questionListbox, true);
+		if(val != null){
+			return new Long(val);
+		}else{
+			return null;
+		}
+	}
+
 	public String getSelectedSurveyGroupName() {
 		if (surveyGroupListbox.getSelectedIndex() >= 0) {
 			return surveyGroupListbox.getItemText(surveyGroupListbox

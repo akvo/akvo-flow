@@ -33,6 +33,16 @@ public interface SurveyServiceAsync {
 	void listQuestionGroupsBySurvey(String surveyId,
 			AsyncCallback<ArrayList<QuestionGroupDto>> callback);
 
+	/**
+	 * use method that explicitly takes the allowSideEffects parameter instead.
+	 * Do not rely on the side effects as they should be removed as soon as the
+	 * change is regression tested
+	 * 
+	 * @param questionGroupId
+	 * @param needDetails
+	 * @param callback
+	 */
+	@Deprecated
 	void listQuestionsByQuestionGroup(String questionGroupId,
 			boolean needDetails, AsyncCallback<ArrayList<QuestionDto>> callback);
 
@@ -103,5 +113,12 @@ public interface SurveyServiceAsync {
 	void findSurvey(Long id, AsyncCallback<SurveyDto> callback);
 
 	void markSurveyChangesComplete(Long id, AsyncCallback<Void> callback);
+
+	void listQuestionsDependentOnQuestion(Long questionId,
+			AsyncCallback<ArrayList<QuestionDto>> callback);
+
+	void listQuestionsByQuestionGroup(String questionGroupId,
+			boolean needDetails, boolean allowSideEffects,
+			AsyncCallback<ArrayList<QuestionDto>> callback);
 
 }

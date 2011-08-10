@@ -163,7 +163,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			response.setUrl(constructChartUrl(surveyReq.getQuestionId(),
 					surveyReq.getGraphType()));
-		} else if (SurveyRestRequest.UPDATE_QUESTION_ORDER_ACTOIN
+		} else if (SurveyRestRequest.UPDATE_QUESTION_ORDER_ACTION
 				.equals(surveyReq.getAction())) {
 			Question q = new Question();
 			q.setKey(KeyFactory.createKey("Question", surveyReq.getQuestionId()));

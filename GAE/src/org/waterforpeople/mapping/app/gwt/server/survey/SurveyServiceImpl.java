@@ -574,16 +574,37 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
 			String questionGroupId, boolean needDetails) {
+		return listQuestionsByQuestionGroup(questionGroupId, needDetails, true);
+	}
+
+	@Override
+	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
+			String questionGroupId, boolean needDetails,
+			boolean allowSideEffects) {
 		QuestionDao questionDao = new QuestionDao();
-		TreeMap<Integer, Question> questionList = questionDao
-				.listQuestionsByQuestionGroup(Long.parseLong(questionGroupId),
-						needDetails);
 		java.util.ArrayList<QuestionDto> questionDtoList = new ArrayList<QuestionDto>();
-		if (questionList != null && !questionList.isEmpty()) {
-			for (Question canonical : questionList.values()) {
-				QuestionDto dto = marshalQuestionDto(canonical);
-				questionDtoList.add(dto);
+		if (allowSideEffects) {
+			TreeMap<Integer, Question> questionList = questionDao
+					.listQuestionsByQuestionGroup(
+							Long.parseLong(questionGroupId), needDetails,
+							allowSideEffects);
+
+			if (questionList != null && !questionList.isEmpty()) {
+				for (Question canonical : questionList.values()) {
+					QuestionDto dto = marshalQuestionDto(canonical);
+					questionDtoList.add(dto);
+				}
 			}
+		}else{
+			List<Question> questionList = questionDao.listQuestionsInOrderForGroup(new Long(questionGroupId));
+			if (questionList != null && !questionList.isEmpty()) {
+				for (Question canonical : questionList) {
+					QuestionDto dto = marshalQuestionDto(canonical);
+					questionDtoList.add(dto);
+				}
+			}
+		}
+		if (questionDtoList.size() > 0) {
 			return questionDtoList;
 		} else {
 			return null;
@@ -1145,7 +1166,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		QuestionDao dao = new QuestionDao();
-		dao.save(questionToSave, newParentGroup.getKeyId());
+		questionToSave = dao.save(questionToSave, newParentGroup.getKeyId());
 		return marshalQuestionDto(questionToSave);
 	}
 
@@ -1386,5 +1407,29 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					"Could not get current user when publishing message");
 		}
 		messageDao.save(m);
+	}
+
+	/**
+	 * lists the base question info for all questions that depend on the
+	 * questionId passed in
+	 * 
+	 * @param questionId
+	 * @return
+	 */
+	@Override
+	public ArrayList<QuestionDto> listQuestionsDependentOnQuestion(
+			Long questionId) {
+		QuestionDao dao = new QuestionDao();
+		List<Question> qList = dao.listQuestionsByDependency(questionId);
+		ArrayList<QuestionDto> dtoList = null;
+		if (qList != null) {
+			dtoList = new ArrayList<QuestionDto>();
+			for (Question q : qList) {
+				QuestionDto dto = new QuestionDto();
+				DtoMarshaller.copyToDto(q, dto);
+				dtoList.add(dto);
+			}
+		}
+		return dtoList;
 	}
 }
