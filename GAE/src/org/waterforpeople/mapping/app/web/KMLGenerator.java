@@ -625,6 +625,9 @@ public class KMLGenerator {
 			context.put("photoUrl",
 					"http://waterforpeople.s3.amazonaws.com/images/wfplogo.jpg");
 		}
+		
+		context.put("latitude",ap.getLatitude());
+		context.put("longitude",ap.getLongitude());
 
 		if (ap.getLocaleType() != null) {
 			context.put("type", ap.getLocaleType());
