@@ -138,7 +138,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 			configMap.put(GCacheFactory.EXPIRATION_DELTA, cacheExpirySec);
 			configMap.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-			cache = cacheFactory.createCache(Collections.emptyMap());
+			cache = cacheFactory.createCache(configMap);
 		} catch (CacheException e) {
 			log.log(Level.SEVERE, "Could not initialize cache", e);
 		}
