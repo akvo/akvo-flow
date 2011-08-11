@@ -47,7 +47,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 		SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
 		RawDataImportRequest importReq = (RawDataImportRequest) req;
 		if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq
-				.getAction())) {		
+				.getAction())) {
 			List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
 			if (importReq.getSurveyInstanceId() == null
 					&& importReq.getSurveyId() != null) {
@@ -77,7 +77,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				instanceDao.delete(oldAnswers);
 				if (instance != null) {
 					instance.setLastUpdateDateTime(new Date());
-					instance.setSubmitterName(importReq.getSubmitter());
+					if (importReq.getSubmitter() != null
+							&& importReq.getSubmitter().trim().length() > 0
+							&& !"null".equalsIgnoreCase(importReq
+									.getSubmitter().trim())) {
+						instance.setSubmitterName(importReq.getSubmitter());
+					}
 					instance.setSurveyId(importReq.getSurveyId());
 					instanceDao.save(instance);
 				}
@@ -93,7 +98,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 					instanceDao.save(instance);
 				} else {
 					instance.setLastUpdateDateTime(new Date());
-					instance.setSubmitterName(importReq.getSubmitter());
+					if (importReq.getSubmitter() != null
+							&& importReq.getSubmitter().trim().length() > 0
+							&& !"null".equalsIgnoreCase(importReq
+									.getSubmitter().trim())) {
+						instance.setSubmitterName(importReq.getSubmitter());
+					}
 					instance.setSurveyId(importReq.getSurveyId());
 					instanceDao.save(instance);
 				}
