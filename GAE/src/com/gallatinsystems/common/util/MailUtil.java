@@ -76,8 +76,8 @@ public class MailUtil {
 			return true;
 
 		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not send mail subj:" + subject + " ",
-					e.getMessage());
+			log.log(Level.SEVERE, "Could not send mail subj:" + subject + "\n"+messageBody,
+					e);
 			return false;
 		}
 	}

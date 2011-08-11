@@ -293,7 +293,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				sendProcessingMessages(domain);
 			}
 		}
-
+		SurveyEventHelper.fireEvent(
+				SurveyEventHelper.SUBMISSION_EVENT,
+				instance.getSurveyId(), instance.getKeyId());
 		return instance;
 	}
 
