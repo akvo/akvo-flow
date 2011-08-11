@@ -594,7 +594,7 @@ public class KMLGenerator {
 					context.put("photoUrl", urlBase);
 					foundPhoto = true;
 					valuesToBind.remove(val);
-				} else {
+				} else if (ap.getCurrentStatus() == null) {
 					if (val.getMetricName() != null
 							&& val.getMetricName().trim().toLowerCase()
 									.contains("status")) {
@@ -603,11 +603,22 @@ public class KMLGenerator {
 					}
 				}
 			}
+
 			context.put("surveyalValues", valuesToBind);
 		}
 
-		if (!foundStatus) {
-			context.put("waterSystemStatus", "Unknown");
+		if (ap.getCurrentStatus() != null) {
+			try {
+				context.put("waterSystemStatus",
+						encodeStatusString(AccessPoint.Status.valueOf(ap
+								.getCurrentStatus())));
+			} catch (Exception e) {
+				context.put("waterSystemStatus", "Unknown");
+			}
+		} else {
+			if (!foundStatus) {
+				context.put("waterSystemStatus", "Unknown");
+			}
 		}
 		// TODO: parameterize the default logo
 		if (!foundPhoto) {

@@ -282,7 +282,11 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 				ap.getCurrentStatus()));
 		pdto.setIconUrl(KMLGenerator.getMarkerImageUrl(ap.getLocaleType(),
 				ap.getCurrentStatus()));
+		if(ap.getLocaleType() == null){
 		pdto.setMarkType(AccessPointType.WATER_POINT.toString());
+		}else{
+			pdto.setMarkType(ap.getLocaleType());
+		}
 
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
