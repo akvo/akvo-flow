@@ -79,6 +79,8 @@ import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -102,7 +104,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private static final String SURVEY_CHANGE_COMPLTE_MESSAGE_ACTION = "surveyChangeComplete";
 	private static final String SURVEY_UPDATE_MESSAGE = "Survey has been updated. Please publish it to release it to devices.";
 	private static final String SURVEY_CHANGE_COMPLETE_MESSAGE = "Survey changes have been marked as complete. Please publish it to release it to devices.";
-
+	private static final int CACHE_EXPIRY_DEFAULT = 3600;
+	private static final String CACHE_EXP_PROP = "cacheExpirySeconds";
+	
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
@@ -110,13 +114,30 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private SurveyDAO surveyDao;
 	private Cache cache;
 	private MessageDao messageDao;
-
+	private int cacheExpirySec = CACHE_EXPIRY_DEFAULT;
+	
+	@SuppressWarnings({"rawtypes","unchecked"})
 	public SurveyServiceImpl() {
 		surveyDao = new SurveyDAO();
 		messageDao = new MessageDao();
 		try {
 			CacheFactory cacheFactory = CacheManager.getInstance()
 					.getCacheFactory();
+			
+			Map configMap = new HashMap();
+			String cacheExpString = PropertyUtil.getProperty(CACHE_EXP_PROP);
+			if (cacheExpString != null) {
+				try {
+					cacheExpirySec = Integer.parseInt(cacheExpString);
+				} catch (Exception e) {
+					// no-op
+				}
+			}
+			if (cacheExpirySec <= 0) {
+				cacheExpirySec = CACHE_EXPIRY_DEFAULT;
+			}
+			configMap.put(GCacheFactory.EXPIRATION_DELTA, cacheExpirySec);
+			configMap.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
 			cache = cacheFactory.createCache(Collections.emptyMap());
 		} catch (CacheException e) {
 			log.log(Level.SEVERE, "Could not initialize cache", e);
