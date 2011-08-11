@@ -21,6 +21,7 @@ public abstract class BaseNotificationHandler implements NotificationHandler {
 
 	protected BaseNotificationHandler() {
 		FROM_ADDRESS = PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY);
+		dao = new NotificationSubscriptionDao();
 	}
 
 	protected NotificationHistory getHistory(String type, Long id) {
