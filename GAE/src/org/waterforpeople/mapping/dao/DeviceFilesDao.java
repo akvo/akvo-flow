@@ -52,23 +52,28 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 		return results;
 	}
 
+	public DeviceFiles findByInstance(Long instanceId) {
+		return findByProperty("surveyInstanceId", instanceId, "Long");
+	}
+
 	@SuppressWarnings("unchecked")
 	public DeviceFiles findByUri(String uri) {
 		List<DeviceFiles> dfList = (List<DeviceFiles>) listByProperty("URI",
 				uri, "String");
-		if (dfList.size()>0)
+		if (dfList.size() > 0)
 			return dfList.get(0);
 		else
 			return null;
 	}
+
 	public List<DeviceFiles> listByUri(String uri) {
 		List<DeviceFiles> dfList = (List<DeviceFiles>) listByProperty("URI",
 				uri, "String");
-		if (dfList.size()>0)
+		if (dfList.size() > 0)
 			return dfList;
 		else
 			return null;
-	} 
+	}
 
 	public List<DeviceFiles> listDeviceFilesByStatus(Status.StatusCode status,
 			String cursorString) {

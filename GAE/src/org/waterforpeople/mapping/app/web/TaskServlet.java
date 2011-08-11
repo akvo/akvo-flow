@@ -224,7 +224,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		return surveyInstances;
 	}
 
-	private ArrayList<String> extractDataFromZip(ZipInputStream zis)
+	public static ArrayList<String> extractDataFromZip(ZipInputStream zis)
 			throws IOException, SignedDataException {
 		ArrayList<String> lines = new ArrayList<String>();
 		String line = null;

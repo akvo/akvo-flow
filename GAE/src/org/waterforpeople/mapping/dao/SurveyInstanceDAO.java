@@ -399,6 +399,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	/**
+	 * lists all survey instances by the submitter passed in
+	 * 
+	 * @param submitter
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstance> listInstanceBySubmitter(String submitter) {
+		if (submitter != null) {
+			return listByProperty("submitterName", submitter, "String");
+		} else {
+			PersistenceManager pm = PersistenceFilter.getManager();
+			javax.jdo.Query query = pm.newQuery(SurveyInstance.class,
+					"submitterName == null");
+			return (List<SurveyInstance>) query.execute();
+		}
+	}
+
+	/**
 	 * finds a single survey instance by uuid. This method will NOT load all
 	 * QuestionAnswerStore objects.
 	 * 

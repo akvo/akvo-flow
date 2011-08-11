@@ -1648,6 +1648,14 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("deleteallqsum".equals(action)) {
 			DeleteObjectUtil dou = new DeleteObjectUtil();
 			dou.deleteAllObjects("SurveyQuestionSummary");
+		} else if ("fixNullSubmitter".equals(action)) {
+			TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor").param(
+					DataProcessorRequest.ACTION_PARAM,
+					DataProcessorRequest.FIX_NULL_SUBMITTER_ACTION);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
 		}
 	}
 

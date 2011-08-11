@@ -41,9 +41,10 @@ public class SurveyedLocaleServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void deleteLocale(Long localeId) {
 		SurveyedLocale l = localeDao.getByKey(localeId);
-		if (l != null) {
+		if (l != null) {			
 			localeDao.delete(l);
 		}
+
 	}
 
 	/**

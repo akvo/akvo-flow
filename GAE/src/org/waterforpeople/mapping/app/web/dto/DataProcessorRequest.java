@@ -16,6 +16,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String PROJECT_FLAG_UPDATE_ACTION = "projectFlagUpdate";
 	public static final String REBUILD_QUESTION_SUMMARY_ACTION = "rebuildQuestionSummary";
 	public static final String IMPORT_REMOTE_SURVEY_ACTION = "importRemoteSurvey";
+	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
 	public static final String RESCORE_AP_ACTION = "rescoreAp";
 	public static final String SOURCE_PARAM = "source";
 	public static final String COUNTRY_PARAM = "country";

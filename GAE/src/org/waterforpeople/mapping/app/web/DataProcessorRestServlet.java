@@ -2,12 +2,15 @@ package org.waterforpeople.mapping.app.web;
 
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
+import java.io.BufferedInputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,11 +18,15 @@ import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
+import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -65,6 +72,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.RESCORE_AP_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			rescoreAp(dpReq.getCountry());
+		} else if (DataProcessorRequest.FIX_NULL_SUBMITTER_ACTION
+				.equalsIgnoreCase(dpReq.getAction())) {
+			fixNullSubmitter();
 		}
 		return new RestResponse();
 	}
@@ -72,6 +82,44 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
+	}
+
+	private void fixNullSubmitter() {
+		SurveyInstanceDAO instDao = new SurveyInstanceDAO();
+		List<SurveyInstance> instances = instDao.listInstanceBySubmitter(null);
+
+		if (instances != null) {
+			DeviceFilesDao dfDao = new DeviceFilesDao();
+			for (SurveyInstance inst : instances) {
+				DeviceFiles f = dfDao.findByInstance(inst.getKey().getId());
+				if (f != null) {
+					try {
+						URL url = new URL(f.getURI());
+						BufferedInputStream bis = new BufferedInputStream(
+								url.openStream());
+						ZipInputStream zis = new ZipInputStream(bis);
+						ArrayList<String> lines = TaskServlet
+								.extractDataFromZip(zis);
+						zis.close();
+
+						if (lines != null) {
+							for (String line : lines) {
+								String[] parts = line.split("\t");
+								if (parts.length >= 5) {
+									if (parts[5] != null
+											&& parts[5].trim().length() > 0) {
+										inst.setSubmitterName(parts[5]);
+										break;
+									}
+								}
+							}
+						}
+					} catch (Exception e) {
+						log("Could not download zip: " + f.getURI());
+					}	
+				}
+			}
+		}
 	}
 
 	/**
@@ -89,7 +137,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			if (apList != null) {
 				cursor = AccessPointDao.getCursor(apList);
 			}
-			for(AccessPoint ap:apList){
+			for (AccessPoint ap : apList) {
 				apDao.save(ap);
 			}
 		} while (apList != null && apList.size() == 200);
