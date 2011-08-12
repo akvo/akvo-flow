@@ -19,6 +19,7 @@ import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 
 /**
  * Database class for the survey db. It can create/upgrade the database as well
@@ -123,7 +124,9 @@ public class SurveyDbAdapter {
 			"insert into preferences values('screen.keepon','true')",
 			"insert into preferences values('precache.points.countries','2')",
 			"insert into preferences values('precache.points.limit','200')",
-			"insert into preferences values('survey.textsize','LARGE')" };
+			"insert into preferences values('survey.textsize','LARGE')",
+			"insert into preferences values('survey.checkforupdates','0')",
+			"insert into preferences values('remoteexception.upload','0')"};
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -140,7 +143,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 73;
+	private static final int DATABASE_VERSION = 74;
 
 	private final Context context;
 
@@ -156,9 +159,11 @@ public class SurveyDbAdapter {
 
 		private static SQLiteDatabase database;
 		private volatile static int instanceCount = 0;
+		private Context context;
 
 		DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+			this.context = context;
 		}
 
 		@Override
@@ -270,6 +275,39 @@ public class SurveyDbAdapter {
 					// no-op
 				}
 			}
+			if(oldVersion < 74){
+				try {
+					db.execSQL("insert into preferences values('survey.checkforupdates','0')");
+					db.execSQL("insert into preferences values('remoteexception.upload','0')");
+				} catch (Exception e) {
+					// no-op
+				}
+			}
+			// now handle defaults
+			checkDefaults(db);
+			this.context = null;
+
+		}
+
+		/**
+		 * checks whether we should restore defaults and, if so, sets the
+		 * properties in the table to the values from the prop file
+		 * 
+		 * @param db
+		 */
+		private void checkDefaults(SQLiteDatabase db) {
+			// check for defaults and set them
+			PropertyUtil props = new PropertyUtil(context.getResources());
+			String defaults = props.getProperty(ConstantUtil.DEFAULT_SETTINGS);
+			if (defaults != null) {
+				String[] defaultPairs = defaults.split(";");
+				for (int i = 0; i < defaultPairs.length; i++) {
+					String[] nvp = defaultPairs[i].split("=");
+					if (nvp.length == 2) {
+						savePreference(db, nvp[0].trim(), nvp[1].trim());
+					}
+				}
+			}
 		}
 
 		@Override
@@ -293,6 +331,41 @@ public class SurveyDbAdapter {
 					database.close();
 				}
 				database = null;
+			}
+		}
+
+		/**
+		 * returns the value of a single setting identified by the key passed in
+		 */
+		public String findPreference(SQLiteDatabase db, String key) {
+			String value = null;
+			Cursor cursor = db.query(PREFERENCES_TABLE, new String[] { KEY_COL,
+					VALUE_COL }, KEY_COL + " = ?", new String[] { key }, null,
+					null, null);
+			if (cursor != null) {
+				if (cursor.getCount() > 0) {
+					cursor.moveToFirst();
+					value = cursor.getString(cursor
+							.getColumnIndexOrThrow(VALUE_COL));
+				}
+				cursor.close();
+			}
+			return value;
+		}
+
+		/**
+		 * persists setting to the db
+		 * 
+		 * @param surveyId
+		 */
+		public void savePreference(SQLiteDatabase db, String key, String value) {
+			ContentValues updatedValues = new ContentValues();
+			updatedValues.put(VALUE_COL, value);
+			int updated = db.update(PREFERENCES_TABLE, updatedValues, KEY_COL
+					+ " = ?", new String[] { key });
+			if (updated <= 0) {
+				updatedValues.put(KEY_COL, key);
+				db.insert(PREFERENCES_TABLE, null, updatedValues);
 			}
 		}
 	}
@@ -1030,19 +1103,7 @@ public class SurveyDbAdapter {
 	 * returns the value of a single setting identified by the key passed in
 	 */
 	public String findPreference(String key) {
-		String value = null;
-		Cursor cursor = database.query(PREFERENCES_TABLE, new String[] {
-				KEY_COL, VALUE_COL }, KEY_COL + " = ?", new String[] { key },
-				null, null, null);
-		if (cursor != null) {
-			if (cursor.getCount() > 0) {
-				cursor.moveToFirst();
-				value = cursor.getString(cursor
-						.getColumnIndexOrThrow(VALUE_COL));
-			}
-			cursor.close();
-		}
-		return value;
+		return databaseHelper.findPreference(database, key);
 	}
 
 	/**
@@ -1072,14 +1133,7 @@ public class SurveyDbAdapter {
 	 * @param surveyId
 	 */
 	public void savePreference(String key, String value) {
-		ContentValues updatedValues = new ContentValues();
-		updatedValues.put(VALUE_COL, value);
-		int updated = database.update(PREFERENCES_TABLE, updatedValues, KEY_COL
-				+ " = ?", new String[] { key });
-		if (updated <= 0) {
-			updatedValues.put(KEY_COL, key);
-			database.insert(PREFERENCES_TABLE, null, updatedValues);
-		}
+		databaseHelper.savePreference(database, key, value);
 	}
 
 	/**

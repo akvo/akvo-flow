@@ -180,6 +180,9 @@ public class ConstantUtil {
 	public static final String PRECACHE_POINT_LIMIT_KEY = "precache.points.limit";
 	public static final String DEVICE_IDENT_KEY = "device.identifier";
 	public static final String SURVEY_TEXT_SIZE_KEY = "survey.textsize";
+	public static final String CHECK_FOR_SURVEYS = "survey.checkforupdates";
+	public static final String UPLOAD_ERRORS = "remoteexception.upload";
+	
 
 	/**
 	 * settings values
@@ -255,6 +258,7 @@ public class ConstantUtil {
 	public static final String USE_INTERNAL_STORAGE = "useInternalStorage";
 	public static final String INCLUDE_OPTIONAL_ICONS = "includeOptionalIcons";
 	public static final String PROMPT_ON_OPT_CHANGE = "promptOnOptionChange";
+	public static final String DEFAULT_SETTINGS = "defaultSettings";
 
 	/**
 	 * resource related constants

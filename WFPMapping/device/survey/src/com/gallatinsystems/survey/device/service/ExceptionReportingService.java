@@ -45,7 +45,7 @@ public class ExceptionReportingService extends Service {
 	private static final String DEV_ID_PARAM = "deviceIdentifier";
 	private static final String DATE_PARAM = "date";
 	private static final String TRACE_PARAM = "trace";
-	private static final long INITIAL_DELAY = 60000;	
+	private static final long INITIAL_DELAY = 60000;
 	private static final long INTERVAL = 300000;
 
 	private static final DateFormat DATE_FMT = new SimpleDateFormat(
@@ -57,6 +57,7 @@ public class ExceptionReportingService extends Service {
 	private String deviceId;
 	private PropertyUtil props;
 	private String phoneNumber;
+	private static volatile int uploadOption = 0;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -70,23 +71,39 @@ public class ExceptionReportingService extends Service {
 	 * the server via a REST call
 	 */
 	public int onStartCommand(final Intent intent, int flags, int startid) {
+		SurveyDbAdapter database = null;
+		String server = null;
 
-		SurveyDbAdapter database = new SurveyDbAdapter(this);
-		database.open();
-		deviceId = database.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
-		Resources resources = getResources();
-		version = resources.getString(R.string.appversion);
-		String serverBase = database
-				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
-		if (serverBase != null && serverBase.trim().length() > 0) {
-			serverBase = resources.getStringArray(R.array.servers)[Integer
-					.parseInt(serverBase)];
-		} else {
-			serverBase = props.getProperty(ConstantUtil.SERVER_BASE);
+		try {
+			database = new SurveyDbAdapter(this);
+			database.open();
+			deviceId = database.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
+			Resources resources = getResources();
+			version = resources.getString(R.string.appversion);
+			String serverBase = database
+					.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+			if (serverBase != null && serverBase.trim().length() > 0) {
+				serverBase = resources.getStringArray(R.array.servers)[Integer
+						.parseInt(serverBase)];
+			} else {
+				serverBase = props.getProperty(ConstantUtil.SERVER_BASE);
+			}
+			server = serverBase;
+			phoneNumber = StatusUtil.getPhoneNumber(this);
+			try {
+				uploadOption = Integer.parseInt(database
+						.findPreference(ConstantUtil.UPLOAD_ERRORS));
+			} catch (Exception e) {
+				// no-op
+				uploadOption = 0;
+			}
+
+		} finally {
+			if (database != null) {
+				database.close();
+			}
 		}
-		final String server = serverBase;
-		phoneNumber = StatusUtil.getPhoneNumber(this);
-		database.close();
+		final String finalServer = server;
 		if (timer == null) {
 			timer = new Timer(true);
 			timer.scheduleAtFixedRate(new TimerTask() {
@@ -95,7 +112,7 @@ public class ExceptionReportingService extends Service {
 				public void run() {
 					if (StatusUtil.hasDataConnection(
 							ExceptionReportingService.this, false)) {
-						submitStackTraces(server);
+						submitStackTraces(finalServer);
 					}
 				}
 			}, INITIAL_DELAY, INTERVAL);
@@ -105,9 +122,8 @@ public class ExceptionReportingService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
-		Thread
-				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
-						.getInstance());
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+				.getInstance());
 		props = new PropertyUtil(getResources());
 	}
 
@@ -118,10 +134,13 @@ public class ExceptionReportingService extends Service {
 	 */
 	private String[] getTraceFiles() {
 		String dirString = null;
-		if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-			dirString  = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "false");
-		}else{
-			dirString = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "true");
+		if (Environment.getExternalStorageState().equals(
+				Environment.MEDIA_MOUNTED)) {
+			dirString = FileUtil.getStorageDirectory(
+					ConstantUtil.STACKTRACE_DIR, "false");
+		} else {
+			dirString = FileUtil.getStorageDirectory(
+					ConstantUtil.STACKTRACE_DIR, "true");
 		}
 		File dir = FileUtil.findOrCreateDir(dirString);
 		FilenameFilter traceFilter = new FilenameFilter() {
@@ -137,40 +156,67 @@ public class ExceptionReportingService extends Service {
 	 * the server and, on success, delete the file.
 	 */
 	public void submitStackTraces(String server) {
-		try {
-			String dirString = null;
-			if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-				dirString  = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "false");
-			}else{
-				dirString = FileUtil.getStorageDirectory(ConstantUtil.STACKTRACE_DIR, "true");
-			}
-			String[] list = getTraceFiles();
-			if (list != null && list.length > 0) {
-				for (int i = 0; i < list.length; i++) {
-					String trace = FileUtil
-							.readFileAsString(dirString
+		if (canUpload(uploadOption)) {
+			try {
+				if (server != null) {
+					String dirString = null;
+					if (Environment.getExternalStorageState().equals(
+							Environment.MEDIA_MOUNTED)) {
+						dirString = FileUtil.getStorageDirectory(
+								ConstantUtil.STACKTRACE_DIR, "false");
+					} else {
+						dirString = FileUtil.getStorageDirectory(
+								ConstantUtil.STACKTRACE_DIR, "true");
+					}
+					String[] list = getTraceFiles();
+					if (list != null && list.length > 0) {
+						for (int i = 0; i < list.length; i++) {
+							String trace = FileUtil.readFileAsString(dirString
 									+ list[i]);
-					File f = new File(dirString + list[i]);
+							File f = new File(dirString + list[i]);
 
-					Map<String, String> params = new HashMap<String, String>();
-					params.put(ACTION_PARAM, ACTION_VALUE);
-					params.put(PHONE_PARAM, phoneNumber);
-					params.put(VER_PARAM, version);
-					params.put(DATE_PARAM, DATE_FMT.format(new Date(f
-							.lastModified())));
-					params.put(DEV_ID_PARAM, deviceId);
-					params.put(TRACE_PARAM, trace);
+							Map<String, String> params = new HashMap<String, String>();
+							params.put(ACTION_PARAM, ACTION_VALUE);
+							params.put(PHONE_PARAM, phoneNumber);
+							params.put(VER_PARAM, version);
+							params.put(DATE_PARAM,
+									DATE_FMT.format(new Date(f.lastModified())));
+							params.put(DEV_ID_PARAM, deviceId);
+							params.put(TRACE_PARAM, trace);
 
-					String response = HttpUtil.httpPost(server
-							+ EXCEPTION_SERVICE_PATH, params);
-					if (response == null || response.trim().length() == 0) {
-						f.delete();
+							String response = HttpUtil.httpPost(server
+									+ EXCEPTION_SERVICE_PATH, params);
+							if (response == null
+									|| response.trim().length() == 0
+									|| "ok".equalsIgnoreCase(response)) {
+								f.delete();
+							}
+						}
 					}
 				}
+			} catch (Exception e) {
+				Log.e(TAG, "Could not send exception", e);
 			}
-		} catch (Exception e) {
-			Log.e(TAG, "Could not send exception", e);
 		}
+	}
+
+	/**
+	 * this method checks if the service can send exception files based on the
+	 * user preference and the type of network connection currently held
+	 * 
+	 * @param type
+	 * @return
+	 */
+	private boolean canUpload(int optionIndex) {
+		boolean ok = false;
+		if (optionIndex > -1
+				&& ConstantUtil.PRECACHE_WIFI_ONLY_IDX == optionIndex) {
+
+			ok = StatusUtil.hasDataConnection(this, true);
+		} else {
+			ok = StatusUtil.hasDataConnection(this, false);
+		}
+		return ok;
 	}
 
 }

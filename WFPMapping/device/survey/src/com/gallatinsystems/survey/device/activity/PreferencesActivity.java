@@ -44,6 +44,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private TextView languageTextView;
 	private TextView precacheHelpTextView;
 	private TextView precachePointsTextView;
+	private TextView surveyUpdateTextView;
+	private TextView uploadErrorTextView;
 	private TextView serverTextView;
 	private TextView identTextView;
 	private SurveyDbAdapter database;
@@ -68,6 +70,9 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		languageTextView = (TextView) findViewById(R.id.surveylangvalue);
 		precachePointsTextView = (TextView) findViewById(R.id.cacheptcountryvalue);
 		precacheHelpTextView = (TextView) findViewById(R.id.precachehelpvalue);
+
+		surveyUpdateTextView = (TextView) findViewById(R.id.surveycheckvalue);
+		uploadErrorTextView = (TextView) findViewById(R.id.uploaderrorvalue);
 		serverTextView = (TextView) findViewById(R.id.servervalue);
 		identTextView = (TextView) findViewById(R.id.identvalue);
 
@@ -131,6 +136,18 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					.parseInt(val)]);
 		}
 
+		val = settings.get(ConstantUtil.CHECK_FOR_SURVEYS);
+		if (val != null) {
+			surveyUpdateTextView.setText(precacheHelpArray[Integer
+					.parseInt(val)]);
+		}
+
+		val = settings.get(ConstantUtil.UPLOAD_ERRORS);
+		if (val != null) {
+			uploadErrorTextView
+					.setText(precacheHelpArray[Integer.parseInt(val)]);
+		}
+
 		val = settings.get(ConstantUtil.SERVER_SETTING_KEY);
 		if (val != null) {
 			serverTextView.setText(serverArray[Integer.parseInt(val)]);
@@ -165,6 +182,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		((ImageButton) findViewById(R.id.serverbutton))
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.identbutton)).setOnClickListener(this);
+		((ImageButton) findViewById(R.id.surveycheckbutton))
+				.setOnClickListener(this);
+		((ImageButton) findViewById(R.id.uploaderrorbutton))
+				.setOnClickListener(this);
 	}
 
 	public void onPause() {
@@ -206,6 +227,30 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					precacheHelpTextView,
 					precacheHelpArray[ConstantUtil.PRECACHE_ALWAYS_IDX],
 					ConstantUtil.PRECACHE_INTENT);
+		} else if (R.id.surveycheckbutton == v.getId()) {
+			ViewUtil.showAdminAuthDialog(this,
+					new ViewUtil.AdminAuthDialogListener() {
+						@Override
+						public void onAuthenticated() {
+							showPreferenceDialog(R.string.surveychecklabel,
+									R.array.precachehelpoptions,
+									ConstantUtil.CHECK_FOR_SURVEYS,
+									precacheHelpArray, surveyUpdateTextView,
+									null, null);
+						}
+					});
+		} else if (R.id.uploaderrorbutton == v.getId()) {
+			ViewUtil.showAdminAuthDialog(this,
+					new ViewUtil.AdminAuthDialogListener() {
+						@Override
+						public void onAuthenticated() {
+							showPreferenceDialog(R.string.uploaderrorlabel,
+									R.array.precachehelpoptions,
+									ConstantUtil.UPLOAD_ERRORS,
+									precacheHelpArray, uploadErrorTextView,
+									null, null);
+						}
+					});
 		} else if (R.id.serverbutton == v.getId()) {
 			ViewUtil.showAdminAuthDialog(this,
 					new ViewUtil.AdminAuthDialogListener() {

@@ -189,5 +189,7 @@
 	<string name="pickdate">Select Date</string>
 	<string name="cannotupdate">Survey could not be downloaded. It may not be published.</string>
 	<string name="pleasewaitforbootstrap">Please wait until the bootstrap file has finished processing.</string>
-	<string name="appversion">1.9.16</string>
+	<string name="surveychecklabel">Automatically Check for Survey Updates</string>
+	<string name="uploaderrorlabel">Automatically Upload App Errors</string>
+	<string name="appversion">1.9.17</string>
 </resources>
