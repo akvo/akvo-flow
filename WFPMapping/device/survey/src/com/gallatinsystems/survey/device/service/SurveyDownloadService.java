@@ -125,57 +125,59 @@ public class SurveyDownloadService extends Service {
 
 				int surveyCheckOption = Integer.parseInt(databaseAdaptor
 						.findPreference(ConstantUtil.CHECK_FOR_SURVEYS));
-				if (canDownload(surveyCheckOption)) {
-					ArrayList<Survey> surveys = null;
 
-					if (surveyId != null && surveyId.trim().length() > 0) {
-						surveys = getSurveyHeader(serverBase, surveyId);
-						if (surveys != null && surveys.size() > 0) {
-							// if we already have the survey, delete it first
-							databaseAdaptor.deleteSurvey(surveyId.trim(), true);
-						}
-					} else {
+				ArrayList<Survey> surveys = null;
+
+				if (surveyId != null && surveyId.trim().length() > 0) {
+					surveys = getSurveyHeader(serverBase, surveyId);
+					if (surveys != null && surveys.size() > 0) {
+						// if we already have the survey, delete it first
+						databaseAdaptor.deleteSurvey(surveyId.trim(), true);
+					}
+				} else {
+					if (canDownload(surveyCheckOption)) {
 						surveys = checkForSurveys(serverBase);
 					}
+				}
+				if (surveys != null && surveys.size() > 0) {
+					// if there are surveys for this device, see if we need
+					// them
+					surveys = databaseAdaptor.checkSurveyVersions(surveys);
+					int updateCount = 0;
 					if (surveys != null && surveys.size() > 0) {
-						// if there are surveys for this device, see if we need
-						// them
-						surveys = databaseAdaptor.checkSurveyVersions(surveys);
-						int updateCount = 0;
-						if (surveys != null && surveys.size() > 0) {
-							for (int i = 0; i < surveys.size(); i++) {
-								Survey survey = surveys.get(i);
-								try {
-									if (downloadSurvey(serverBase, survey)) {
-										databaseAdaptor.saveSurvey(survey);
-										downloadHelp(survey, precacheOption);
-										updateCount++;
-									}
-								} catch (Exception e) {
-									Log.e(TAG, "Could not download survey", e);
-									PersistentUncaughtExceptionHandler
-											.recordException(e);
+						for (int i = 0; i < surveys.size(); i++) {
+							Survey survey = surveys.get(i);
+							try {
+								if (downloadSurvey(serverBase, survey)) {
+									databaseAdaptor.saveSurvey(survey);
+									downloadHelp(survey, precacheOption);
+									updateCount++;
 								}
-							}
-							if (updateCount > 0) {
-								fireNotification(updateCount);
+							} catch (Exception e) {
+								Log.e(TAG, "Could not download survey", e);
+								PersistentUncaughtExceptionHandler
+										.recordException(e);
 							}
 						}
+						if (updateCount > 0) {
+							fireNotification(updateCount);
+						}
 					}
+				}
 
-					// now check if any previously downloaded surveys still need
-					// don't have their help media pre-cached
-					if (canDownload(precacheOption)) {
-						surveys = databaseAdaptor.listSurveys(null);
-						if (surveys != null) {
-							for (int i = 0; i < surveys.size(); i++) {
-								if (!surveys.get(i).isHelpDownloaded()) {
-									downloadHelp(surveys.get(i), precacheOption);
-								}
+				// now check if any previously downloaded surveys still need
+				// don't have their help media pre-cached
+				if (canDownload(precacheOption)) {
+					surveys = databaseAdaptor.listSurveys(null);
+					if (surveys != null) {
+						for (int i = 0; i < surveys.size(); i++) {
+							if (!surveys.get(i).isHelpDownloaded()) {
+								downloadHelp(surveys.get(i), precacheOption);
 							}
 						}
 					}
 				}
+
 				databaseAdaptor.close();
 			} catch (Exception e) {
 				Log.e(TAG, "Could not update surveys", e);
