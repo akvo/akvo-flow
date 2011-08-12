@@ -33,7 +33,7 @@ public class LocationService extends Service {
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
 	private static final long INITIAL_DELAY = 60000;
-	private static final long INTERVAL = 300000;
+	private static final long INTERVAL = 1800000;
 	private static boolean sendBeacon = true;
 	private static final String BEACON_SERVICE_PATH = "/locationBeacon?action=beacon&phoneNumber=";
 	private static final String VER = "&ver=";
@@ -42,8 +42,8 @@ public class LocationService extends Service {
 	private static final String ACC = "&acc=";
 	private static final String DEV_ID = "&devId=";
 	private static final String TAG = "LocationService";
-	private String version;
-	private String deviceId;
+	private static String version;
+	private static String deviceId;
 	private PropertyUtil props;
 
 	public IBinder onBind(Intent intent) {
