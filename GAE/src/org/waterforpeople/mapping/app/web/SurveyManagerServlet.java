@@ -19,6 +19,9 @@ import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
+import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -32,13 +35,15 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 public class SurveyManagerServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
 			.getLogger(SurveyManagerServlet.class.getName());
+	private static final long serialVersionUID = 4400244780977729721L;
+
+	private DeviceDAO deviceDao;
 
 	public SurveyManagerServlet() {
 		super();
+		deviceDao = new DeviceDAO();
 		setMode(AbstractRestApiServlet.XML_MODE);
 	}
-
-	private static final long serialVersionUID = 4400244780977729721L;
 
 	private String getSurveyForPhone(String devicePhoneNumber) {
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
@@ -132,6 +137,19 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 							.append(survey.getVersion() != null ? survey
 									.getVersion() : "1");
 					resp.setMessage(sb.toString());
+				}
+			}
+			if (mgrReq.getPhoneNumber() != null
+					&& mgrReq.getPhoneNumber().trim().length() > 0) {
+				// check for a device
+				Device device = deviceDao.get(mgrReq.getPhoneNumber());
+				if (device == null) {
+					// create a device if missing
+					device = new Device();
+					device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+					device.setDeviceIdentifier(mgrReq.getDeviceId());
+					device.setPhoneNumber(mgrReq.getPhoneNumber());
+					deviceDao.save(device);
 				}
 			}
 		} else if (SurveyManagerRequest.GET_ZIP_FILE_URL_ACTION
