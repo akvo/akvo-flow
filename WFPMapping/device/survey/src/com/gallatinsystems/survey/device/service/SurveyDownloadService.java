@@ -125,11 +125,12 @@ public class SurveyDownloadService extends Service {
 
 				int surveyCheckOption = Integer.parseInt(databaseAdaptor
 						.findPreference(ConstantUtil.CHECK_FOR_SURVEYS));
-
+				String deviceId = databaseAdaptor
+						.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
 				ArrayList<Survey> surveys = null;
 
 				if (surveyId != null && surveyId.trim().length() > 0) {
-					surveys = getSurveyHeader(serverBase, surveyId);
+					surveys = getSurveyHeader(serverBase, surveyId, deviceId);
 					if (surveys != null && surveys.size() > 0) {
 						// if we already have the survey, delete it first
 						databaseAdaptor.deleteSurvey(surveyId.trim(), true);
@@ -385,12 +386,15 @@ public class SurveyDownloadService extends Service {
 	 * @param surveyId
 	 * @return
 	 */
-	private ArrayList<Survey> getSurveyHeader(String serverBase, String surveyId) {
+	private ArrayList<Survey> getSurveyHeader(String serverBase,
+			String surveyId, String deviceId) {
 		String response = null;
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
 			response = HttpUtil.httpGet(serverBase + SURVEY_HEADER_SERVICE_PATH
-					+ surveyId);
+					+ surveyId + "&phoneNumber="
+					+ StatusUtil.getPhoneNumber(this)
+					+ (deviceId != null ? ("&devId=" + deviceId) : ""));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {
