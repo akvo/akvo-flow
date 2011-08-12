@@ -285,8 +285,12 @@ public class SurveyDbAdapter {
 		public synchronized void close() {
 			instanceCount--;
 			if (instanceCount <= 0) {
+				// close the database held by the helper (if any)
+				super.close();
 				if (database != null && database.isOpen()) {
-					super.close();
+					// we may be holding a different database than the helper so
+					// close that too if it's still open.
+					database.close();
 				}
 				database = null;
 			}
