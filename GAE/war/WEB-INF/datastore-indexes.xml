@@ -422,5 +422,13 @@
         <property name="surveyId" direction="asc"/>
         <property name="collectionDate" direction="desc"/>
     </datastore-index>
-
+ 	<datastore-index kind="SurveyedLocale" ancestor="false">
+        <property name="localeType" direction="asc"/>
+        <property name="lastSurveyedDate" direction="asc"/>
+    </datastore-index>
+     <datastore-index kind="SurveyedLocale" ancestor="false">
+        <property name="localeType" direction="asc"/>
+        <property name="identifier" direction="asc"/>
+    </datastore-index>
+    
 </datastore-indexes>
