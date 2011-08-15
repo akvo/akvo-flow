@@ -185,8 +185,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			// entries as we go
 			List<SurveyQuestionSummary> toDeleteList = new ArrayList<SurveyQuestionSummary>(
 					summaryList);
-			List<SurveyQuestionSummary> toCreateList = new ArrayList<SurveyQuestionSummary>(
-					summaryList);
+			List<SurveyQuestionSummary> toCreateList = new ArrayList<SurveyQuestionSummary>();
 			for (Entry<String, Long> valueEntry : summaryEntry.getValue()
 					.entrySet()) {
 				String val = valueEntry.getKey();
