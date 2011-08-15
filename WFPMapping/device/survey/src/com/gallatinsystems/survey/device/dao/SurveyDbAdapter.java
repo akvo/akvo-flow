@@ -312,8 +312,9 @@ public class SurveyDbAdapter {
 
 		@Override
 		public synchronized SQLiteDatabase getWritableDatabase() {
-			if (database == null) {
+			if (database == null || !database.isOpen()) {
 				database = super.getWritableDatabase();
+				instanceCount = 0;
 			}
 			instanceCount++;
 			return database;
