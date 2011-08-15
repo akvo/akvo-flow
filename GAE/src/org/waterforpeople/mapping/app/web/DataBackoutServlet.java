@@ -23,12 +23,16 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
  * servlet for backing out survey response data (and corresponding
@@ -45,6 +49,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	private SurveyQuestionSummaryDao questionSummaryDao;
 	private SurveyInstanceDAO instanceDao;
 	private AccessPointDao accessPointDao;
+	private SurveyedLocaleDao localeDao;
 	private AccessPointStatusSummaryDao apSummaryDao;
 	private static final DateFormat OUT_FMT = new SimpleDateFormat(
 			"dd-MM-yyyy HH:mm:ss z");
@@ -52,6 +57,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	public DataBackoutServlet() {
 		setMode(PLAINTEXT_MODE);
 		qDao = new QuestionDao();
+		localeDao = new SurveyedLocaleDao();
 		questionSummaryDao = new SurveyQuestionSummaryDao();
 		instanceDao = new SurveyInstanceDAO();
 		accessPointDao = new AccessPointDao();
@@ -77,29 +83,27 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 			deleteQuestionSummary(boReq.getQuestionId());
 		} else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq
 				.getAction())) {
-			response.setMessage(listSurveyInstance(boReq.getSurveyId(), boReq
-					.includeDate()));
+			response.setMessage(listSurveyInstance(boReq.getSurveyId(),
+					boReq.getDate(), boReq.includeDate()));
 		} else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
 				.equals(boReq.getAction())) {
 			deleteSurveyInstance(boReq.getSurveyInstanceId());
 		} else if (DataBackoutRequest.DELETE_ACCESS_POINT_ACTION.equals(boReq
 				.getAction())) {
-			response
-					.setMessage(""
-							+ deleteAccessPoint(boReq.getCountryCode(), boReq
-									.getDate()));
+			response.setMessage(""
+					+ deleteAccessPoint(boReq.getCountryCode(), boReq.getDate()));
 		} else if (DataBackoutRequest.DELETE_AP_SUMMARY_ACTION.equals(boReq
 				.getAction())) {
 			response.setMessage(""
-					+ deleteAccessPointSummary(boReq.getCountryCode(), boReq
-							.getDate()));
+					+ deleteAccessPointSummary(boReq.getCountryCode(),
+							boReq.getDate()));
 		} else if (DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION
 				.equals(boReq.getAction())) {
 			response.setMessage(listResponses(boReq.getSurveyInstanceId()));
 		} else if (DataBackoutRequest.LIST_QUESTION_RESPONSE_ACTION
 				.equals(boReq.getAction())) {
-			response = listQuestionResponse(boReq.getQuestionId(), boReq
-					.getCursor());
+			response = listQuestionResponse(boReq.getQuestionId(),
+					boReq.getCursor());
 		}
 		return response;
 	}
@@ -116,7 +120,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 		List<QuestionAnswerStore> answers = instanceDao
 				.listQuestionAnswerStoreForQuestion(questionId.toString(),
 						cursor);
-		return convertToAnswerResponse(answers, SurveyInstanceDAO.getCursor(answers));
+		return convertToAnswerResponse(answers,
+				SurveyInstanceDAO.getCursor(answers));
 	}
 
 	/**
@@ -138,8 +143,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 					} else {
 						isFirst = false;
 					}
-					result.append(qas.getQuestionID()).append(",").append(
-							qas.getValue());
+					result.append(qas.getQuestionID()).append(",")
+							.append(qas.getValue());
 				}
 			}
 		}
@@ -200,9 +205,10 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	 * @param surveyId
 	 * @return
 	 */
-	private String listSurveyInstance(Long surveyId, boolean includeDate) {
-		List<SurveyInstance> instances = instanceDao
-				.listSurveyInstanceBySurvey(surveyId, null);
+	private String listSurveyInstance(Long surveyId, Date beforeDate,
+			boolean includeDate) {
+		List<SurveyInstance> instances = instanceDao.listByDateRange(null,
+				beforeDate, false, surveyId, null, Constants.ALL_RESULTS);
 		StringBuilder buffer = new StringBuilder();
 		if (instances != null) {
 			boolean isFirst = true;
@@ -223,7 +229,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	}
 
 	/**
-	 * deletes a survye instance and it's associated questionAnswerStore objects
+	 * deletes a survey instance and it's associated questionAnswerStore objects
 	 * 
 	 * @param surveyInstanceId
 	 */
@@ -237,6 +243,18 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 		if (instance != null) {
 			instanceDao.delete(instance);
 		}
+		List<SurveyalValue> vals = localeDao.listSurveyalValuesByInstance(surveyInstanceId);
+		if(vals != null && vals.size()>0){
+			Long localeId = vals.get(0).getSurveyedLocaleId();
+			localeDao.delete(vals);
+			//now see if there are any other values for the same locale
+			List<SurveyalValue> otherVals = localeDao.listValuesByLocale(localeId);
+			if(otherVals == null || otherVals.size()==0){
+				//if there are no other values, delete the locale
+				SurveyedLocale l = localeDao.getByKey(localeId);
+				localeDao.delete(l);
+			}
+		}		
 	}
 
 	/**

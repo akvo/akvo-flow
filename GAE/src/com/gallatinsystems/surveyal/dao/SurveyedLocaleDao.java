@@ -93,6 +93,17 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	}
 
 	/**
+	 * lists all SurveyalValues for a single Locale
+	 * 
+	 * @param surveyedLocaleId
+	 * @return
+	 */
+	public List<SurveyalValue> listValuesByLocale(Long surveyedLocaleId) {
+		return listByProperty("surveyedLocaleId", surveyedLocaleId, "Long",
+				SurveyalValue.class);
+	}
+
+	/**
 	 * lists all locales that match the geo constraints passed in
 	 * 
 	 * @param countryCode

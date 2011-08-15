@@ -71,7 +71,7 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 			deleteAccessPoints();
 			SwingUtilities.invokeLater(new StatusUpdater(
 					"Deleting AP summaries"));
-			deleteAccessPointSummary();
+			deleteAccessPointSummary();			
 			SwingUtilities.invokeLater(new StatusUpdater("Backout Complete"));
 		} catch (Exception e) {
 			SwingUtilities
@@ -83,9 +83,12 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 		String resultString = "true";
 		while (resultString != null
 				&& "true".equalsIgnoreCase(resultString.trim())) {
-			resultString = invokeRemoteMethod(DataBackoutRequest.DELETE_ACCESS_POINT_ACTION + "&"
-					+ DataBackoutRequest.COUNTRY_PARAM + "=" + country + "&"
-					+ DataBackoutRequest.DATE_PARAM + "=" + date);
+			resultString = invokeRemoteMethod(DataBackoutRequest.DELETE_ACCESS_POINT_ACTION
+					+ "&"
+					+ DataBackoutRequest.COUNTRY_PARAM
+					+ "="
+					+ country
+					+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date);
 		}
 	}
 
@@ -93,21 +96,25 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 		String resultString = "true";
 		while (resultString != null
 				&& "true".equalsIgnoreCase(resultString.trim())) {
-			resultString = invokeRemoteMethod(DataBackoutRequest.DELETE_AP_SUMMARY_ACTION + "&"
-					+ DataBackoutRequest.COUNTRY_PARAM + "=" + country + "&"
-					+ DataBackoutRequest.DATE_PARAM + "=" + date);
+			resultString = invokeRemoteMethod(DataBackoutRequest.DELETE_AP_SUMMARY_ACTION
+					+ "&"
+					+ DataBackoutRequest.COUNTRY_PARAM
+					+ "="
+					+ country
+					+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date);
 		}
 	}
 
 	private void deleteQuestionSummaries() throws Exception {
 		String summaryString = invokeRemoteMethod(DataBackoutRequest.GET_QUESTION_ACTION
-				+ "&"
-				+ DataBackoutRequest.SURVEY_ID_PARAM + "="+surveyId);
+				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId);
 		if (summaryString != null) {
 			StringTokenizer strTok = new StringTokenizer(summaryString, ",");
 			while (strTok.hasMoreTokens()) {
 				invokeRemoteMethod(DataBackoutRequest.DELETE_QUESTION_SUMMARY_ACTION
-						+ "&" + DataBackoutRequest.QUESTION_ID_PARAM + "="
+						+ "&"
+						+ DataBackoutRequest.QUESTION_ID_PARAM
+						+ "="
 						+ strTok.nextToken());
 			}
 		}
@@ -116,12 +123,16 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 	private void deleteSurveyInstances() throws Exception {
 		String instanceString = invokeRemoteMethod(DataBackoutRequest.LIST_INSTANCE_ACTION
 				+ "&"
-				+ DataBackoutRequest.SURVEY_ID_PARAM +"="+ surveyId);
+				+ DataBackoutRequest.SURVEY_ID_PARAM
+				+ "="
+				+ surveyId
+				+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date);
 		if (instanceString != null) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
 				invokeRemoteMethod(DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
-						+ "&" + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM
+						+ "&"
+						+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM
 						+ "=" + strTok.nextToken());
 			}
 		}
@@ -133,8 +144,8 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 		conn.setRequestMethod("GET");
 		conn.setDoOutput(true);
 		String line;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(conn
-				.getInputStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				conn.getInputStream()));
 		StringBuilder builder = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
 			builder.append(line);
@@ -160,7 +171,7 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 	}
 
 	private class InputDialog extends JDialog implements ActionListener {
-		
+
 		private static final long serialVersionUID = -2875321125734363515L;
 		private JTextField surveyField;
 		private JTextField countryField;
