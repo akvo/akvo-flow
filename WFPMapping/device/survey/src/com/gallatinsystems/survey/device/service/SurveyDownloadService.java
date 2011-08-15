@@ -392,7 +392,7 @@ public class SurveyDownloadService extends Service {
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
 			response = HttpUtil.httpGet(serverBase + SURVEY_HEADER_SERVICE_PATH
-					+ surveyId + "&phoneNumber="
+					+ surveyId + "&devicePhoneNumber="
 					+ StatusUtil.getPhoneNumber(this)
 					+ (deviceId != null ? ("&devId=" + deviceId) : ""));
 			if (response != null) {
