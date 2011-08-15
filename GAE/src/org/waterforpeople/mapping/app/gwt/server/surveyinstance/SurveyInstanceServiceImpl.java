@@ -54,11 +54,11 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
 		}
 		List<SurveyInstance> siList = null;
-		if (beginDate == null && toDate == null) {
+		/*if (beginDate == null && toDate == null) {
 			Calendar c = Calendar.getInstance();
 			c.add(Calendar.DAY_OF_MONTH, -90);
 			beginDate = c.getTime();
-		}
+		}*/
 		siList = dao.listByDateRange(beginDate, toDate, unapprovedOnlyFlag,surveyId, source,
 				cursorString);
 		String newCursor = SurveyInstanceDAO.getCursor(siList);
