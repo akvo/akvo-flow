@@ -75,8 +75,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 	private static final Integer PAGE_SIZE = 20;
 	private SurveyInstanceServiceAsync svc;
 	private Grid qasDetailGrid;
-	private Label statusLabel;
-	private Date dateForQuery;
+	private Label statusLabel;	
 
 	private VerticalPanel surveyInstancePanel;
 	private PaginatedDataTable<SurveyInstanceDto> surveyInstanceTable;
@@ -521,12 +520,7 @@ public class RawDataViewPortlet extends LocationDrivenPortlet implements
 		Date fromDate = dateFromBox.getValue();
 		Date toDate = dateToBox.getValue();
 
-		if (fromDate == null && toDate == null && isNew) {
-			// create a date object that is 90 days earlier than now.
-			// jumping through hoops to avoid deprecated APIs
-			dateForQuery = new Date((new Date()).getTime() - (86400000L * 90L));
-			fromDate = dateForQuery;
-		}
+		
 		List<Long> ids = surveySelector.getSelectedSurveyIds();
 		Long surveyId = null;
 		if (ids != null && ids.size() > 0) {
