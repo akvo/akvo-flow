@@ -106,7 +106,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				// if we're allowed to use a backend, then check to see if we
 				// need to (based on survey size)
 				List<Question> questionList = questionDao
-						.listQuestionsBySurvey(importReq.getSurveyId());				
+						.listQuestionsBySurvey(importReq.getSurveyId());
 				if (questionList != null
 						&& questionList.size() > BACKEND_QUESTION_THRESHOLD) {
 					useBackend = true;
@@ -231,7 +231,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		HttpServletResponse httpResp = getResponse();
 		httpResp.setStatus(HttpServletResponse.SC_OK);
-		//httpResp.setContentType("text/plain");
+		// httpResp.setContentType("text/plain");
 		httpResp.getWriter().print("OK");
 		httpResp.flushBuffer();
 	}
@@ -241,7 +241,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		 * 1, Select survey based on surveyId 2. Retrieve all question groups
 		 * fire off queue tasks
 		 */
-		log.warn("Starting assembly of "+surveyId);
+		log.warn("Starting assembly of " + surveyId);
 		// Swap with proper UUID
 		SurveyDAO surveyDao = new SurveyDAO();
 		Survey s = surveyDao.getById(surveyId);
@@ -260,12 +260,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			StringBuilder surveyXML = new StringBuilder();
 			surveyXML.append(surveyHeader);
 			for (QuestionGroup item : qgList.values()) {
-				log.warn("Assembling group "+item.getKey().getId()+" for survey "+surveyId);
+				log.warn("Assembling group " + item.getKey().getId()
+						+ " for survey " + surveyId);
 				surveyXML.append(buildQuestionGroupXML(item));
 			}
 
 			surveyXML.append(surveyFooter);
-			log.warn("Uploading "+surveyId);
+			log.warn("Uploading " + surveyId);
 			UploadStatusContainer uc = uploadSurveyXML(surveyId,
 					surveyXML.toString());
 			Message message = new Message();
@@ -275,7 +276,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
 				// increment the version so devices know to pick up the changes
-				log.warn("Finishing assembly of "+surveyId);
+				log.warn("Finishing assembly of " + surveyId);
 				surveyDao.incrementVersion(surveyId);
 				String messageText = "Published.  Please check: " + uc.getUrl();
 				message.setShortMessage(messageText);
@@ -300,7 +301,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				MessageDao messageDao = new MessageDao();
 				messageDao.save(message);
 			}
-			log.warn("Completed onepass assembly method for "+surveyId);
+			log.warn("Completed onepass assembly method for " + surveyId);
 		}
 	}
 
@@ -511,12 +512,31 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			qXML.setHelp(helpList);
 		}
 
-		if (q.getValidationRule() != null) {
+		boolean hasValidation = false;
+		if (q.getIsName() != null && q.getIsName()) {
 			ValidationRule validationRule = objFactory.createValidationRule();
+			validationRule.setValidationType("name");
+			qXML.setValidationRule(validationRule);
+			hasValidation = true;
 
-			// TODO set validation rule xml
-			// validationRule.setAllowDecimal(value)
+		} else if (q.getAllowDecimal() != null || q.getAllowSign() != null
+				|| q.getMinVal() != null || q.getMaxVal() != null) {
+			ValidationRule validationRule = objFactory.createValidationRule();
+			validationRule.setValidationType("numeric");
+			validationRule.setAllowDecimal(q.getAllowDecimal() != null ? q
+					.getAllowDecimal().toString().toLowerCase() : "false");
+			validationRule.setSigned(q.getAllowSign() != null ? q
+					.getAllowSign().toString().toLowerCase() : "false");
+			if (q.getMinVal() != null) {
+				validationRule.setMinVal(q.getMinVal().toString());
+			}
+			if (q.getMaxVal() != null) {
+				validationRule.setMaxVal(q.getMaxVal().toString());
+			}
+			qXML.setValidationRule(validationRule);
+			hasValidation = true;
 		}
+
 		qXML.setAltText(formAltText(q.getTranslationMap()));
 
 		if (q.getType().equals(Question.Type.FREE_TEXT)) {
@@ -525,10 +545,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			qXML.setType(GEO_QUESTION_TYPE);
 		} else if (q.getType().equals(Question.Type.NUMBER)) {
 			qXML.setType(FREE_QUESTION_TYPE);
-			ValidationRule vrule = new ValidationRule();
-			vrule.setValidationType("numeric");
-			vrule.setSigned("false");
-			qXML.setValidationRule(vrule);
+			if (!hasValidation) {
+				ValidationRule vrule = new ValidationRule();
+				vrule.setValidationType("numeric");
+				vrule.setSigned("false");
+				qXML.setValidationRule(vrule);
+			}
 		} else if (q.getType().equals(Question.Type.OPTION)) {
 			qXML.setType(OPTION_QUESTION_TYPE);
 		} else if (q.getType().equals(Question.Type.PHOTO)) {

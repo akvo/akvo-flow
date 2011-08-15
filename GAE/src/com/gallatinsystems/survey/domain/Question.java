@@ -34,7 +34,7 @@ public class Question extends BaseDomain {
 	private String dependentQuestionAnswer;
 	@NotPersistent
 	private TreeMap<Integer, QuestionOption> questionOptionMap = null;
-	private String validationRule = null;
+	
 	@NotPersistent
 	private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
 	private Long questionGroupId;
@@ -45,6 +45,51 @@ public class Question extends BaseDomain {
 	private String referenceId;
 	@NotPersistent
 	private List<ScoringRule> scoringRules = null;
+	private Boolean allowDecimal;
+	private Boolean allowSign;
+	private Double minVal;
+	private Double maxVal;
+	private Boolean isName;
+
+	public Boolean getAllowDecimal() {
+		return allowDecimal;
+	}
+
+	public void setAllowDecimal(Boolean allowDecimal) {
+		this.allowDecimal = allowDecimal;
+	}
+
+	public Boolean getAllowSign() {
+		return allowSign;
+	}
+
+	public void setAllowSign(Boolean allowSign) {
+		this.allowSign = allowSign;
+	}
+
+	public Double getMinVal() {
+		return minVal;
+	}
+
+	public void setMinVal(Double minVal) {
+		this.minVal = minVal;
+	}
+
+	public Double getMaxVal() {
+		return maxVal;
+	}
+
+	public void setMaxVal(Double maxVal) {
+		this.maxVal = maxVal;
+	}
+
+	public Boolean getIsName() {
+		return isName;
+	}
+
+	public void setIsName(Boolean isName) {
+		this.isName = isName;
+	}
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -146,14 +191,7 @@ public class Question extends BaseDomain {
 		this.allowOtherFlag = allowOtherFlag;
 	}
 
-	public String getValidationRule() {
-		return validationRule;
-	}
-
-	public void setValidationRule(String validationRule) {
-		this.validationRule = validationRule;
-	}
-
+	
 	public void setQuestionOptionMap(
 			TreeMap<Integer, QuestionOption> questionOptionMap) {
 		this.questionOptionMap = questionOptionMap;

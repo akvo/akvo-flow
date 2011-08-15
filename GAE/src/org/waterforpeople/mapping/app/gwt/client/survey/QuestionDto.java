@@ -17,8 +17,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private QuestionType type;
 	private OptionContainerDto optionContainerDto = null;
 	private List<QuestionHelpDto> questionHelpList;
-	private String tip = null;
-	private String validationRule = null;
+	private String tip = null;	
 	private Boolean mandatoryFlag = null;
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
@@ -30,6 +29,51 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Integer order;
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
+	private Boolean allowDecimal;
+	private Boolean allowSign;
+	private Double minVal;
+	private Double maxVal;
+	private Boolean isName;
+
+	public Boolean getAllowDecimal() {
+		return allowDecimal;
+	}
+
+	public void setAllowDecimal(Boolean allowDecimal) {
+		this.allowDecimal = allowDecimal;
+	}
+
+	public Boolean getAllowSign() {
+		return allowSign;
+	}
+
+	public void setAllowSign(Boolean allowSign) {
+		this.allowSign = allowSign;
+	}
+
+	public Double getMinVal() {
+		return minVal;
+	}
+
+	public void setMinVal(Double minVal) {
+		this.minVal = minVal;
+	}
+
+	public Double getMaxVal() {
+		return maxVal;
+	}
+
+	public void setMaxVal(Double maxVal) {
+		this.maxVal = maxVal;
+	}
+
+	public Boolean getIsName() {
+		return isName;
+	}
+
+	public void setIsName(Boolean isName) {
+		this.isName = isName;
+	}
 
 	public String getPath() {
 		return path;
@@ -135,14 +179,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return tip;
 	}
 
-	public void setValidationRule(String validationRule) {
-		this.validationRule = validationRule;
-	}
-
-	public String getValidationRule() {
-		return validationRule;
-	}
-
+	
 	public void setMandatoryFlag(Boolean mandatoryFlag) {
 		this.mandatoryFlag = mandatoryFlag;
 	}
@@ -199,15 +236,15 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		}
 		return false;
 	}
-	
+
 	@Override
-	public int hashCode(){
-		if(getKeyId()!= null){
+	public int hashCode() {
+		if (getKeyId() != null) {
 			return getKeyId().hashCode();
-		}else if (getText() != null){
+		} else if (getText() != null) {
 			return getText().hashCode();
-		}else{
-			return 0; 
+		} else {
+			return 0;
 		}
 	}
 

@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,7 +105,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private static final String SURVEY_CHANGE_COMPLETE_MESSAGE = "Survey changes have been marked as complete. Please publish it to release it to devices.";
 	private static final int CACHE_EXPIRY_DEFAULT = 3600;
 	private static final String CACHE_EXP_PROP = "cacheExpirySeconds";
-	
+
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
 
@@ -115,15 +114,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private Cache cache;
 	private MessageDao messageDao;
 	private int cacheExpirySec = CACHE_EXPIRY_DEFAULT;
-	
-	@SuppressWarnings({"rawtypes","unchecked"})
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SurveyServiceImpl() {
 		surveyDao = new SurveyDAO();
 		messageDao = new MessageDao();
 		try {
 			CacheFactory cacheFactory = CacheManager.getInstance()
 					.getCacheFactory();
-			
+
 			Map configMap = new HashMap();
 			String cacheExpString = PropertyUtil.getProperty(CACHE_EXP_PROP);
 			if (cacheExpString != null) {
@@ -327,8 +326,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (q.getType() != null)
 			qDto.setType(QuestionDto.QuestionType.valueOf(q.getType()
 					.toString()));
-		if (q.getValidationRule() != null)
-			qDto.setValidationRule(q.getValidationRule());
+		qDto.setAllowDecimal(q.getAllowDecimal());
+		qDto.setAllowSign(q.getAllowSign());
+		qDto.setMinVal(q.getMinVal());
+		qDto.setMaxVal(q.getMaxVal());
+		qDto.setIsName(q.getIsName());
+
 
 		if (q.getQuestionHelpMediaMap() != null) {
 			for (QuestionHelpMedia help : q.getQuestionHelpMediaMap().values()) {
@@ -443,8 +446,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			q.setTip(qdto.getTip());
 		if (qdto.getType() != null)
 			q.setType(Question.Type.valueOf(qdto.getType().toString()));
-		if (qdto.getValidationRule() != null)
-			q.setValidationRule(qdto.getValidationRule());
+
+		q.setAllowDecimal(qdto.getAllowDecimal());
+		q.setAllowSign(qdto.getAllowSign());
+		q.setMinVal(qdto.getMinVal());
+		q.setMaxVal(qdto.getMaxVal());
+		q.setIsName(qdto.getIsName());
 
 		if (qdto.getQuestionHelpList() != null) {
 			List<QuestionHelpDto> qHListDto = qdto.getQuestionHelpList();
@@ -616,8 +623,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					questionDtoList.add(dto);
 				}
 			}
-		}else{
-			List<Question> questionList = questionDao.listQuestionsInOrderForGroup(new Long(questionGroupId));
+		} else {
+			List<Question> questionList = questionDao
+					.listQuestionsInOrderForGroup(new Long(questionGroupId));
 			if (questionList != null && !questionList.isEmpty()) {
 				for (Question canonical : questionList) {
 					QuestionDto dto = marshalQuestionDto(canonical);
@@ -906,12 +914,40 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							}
 						}
 
-						if (q.getValidationRule() != null) {
+						boolean hasValidation = false;
+						if (q.getIsName() != null && q.getIsName()) {
 							ValidationRule validationRule = objFactory
 									.createValidationRule();
+							validationRule.setValidationType("name");
+							qXML.setValidationRule(validationRule);
+							hasValidation = true;
 
-							// TODO: set validation rule xml
-							// validationRule.setAllowDecimal(value)
+						} else if (q.getAllowDecimal() != null
+								|| q.getAllowSign() != null
+								|| q.getMinVal() != null
+								|| q.getMaxVal() != null) {
+							ValidationRule validationRule = objFactory
+									.createValidationRule();
+							validationRule.setValidationType("numeric");
+							validationRule
+									.setAllowDecimal(q.getAllowDecimal() != null ? q
+											.getAllowDecimal().toString()
+											.toLowerCase()
+											: "false");
+							validationRule
+									.setSigned(q.getAllowSign() != null ? q
+											.getAllowSign().toString()
+											.toLowerCase() : "false");
+							if (q.getMinVal() != null) {
+								validationRule.setMinVal(q.getMinVal()
+										.toString());
+							}
+							if (q.getMaxVal() != null) {
+								validationRule.setMaxVal(q.getMaxVal()
+										.toString());
+							}
+							qXML.setValidationRule(validationRule);
+							hasValidation = true;
 						}
 
 						if (q.getType().equals(QuestionType.FREE_TEXT))
@@ -920,10 +956,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							qXML.setType(GEO_QUESTION_TYPE);
 						else if (q.getType().equals(QuestionType.NUMBER)) {
 							qXML.setType(FREE_QUESTION_TYPE);
-							ValidationRule vrule = new ValidationRule();
-							vrule.setValidationType("numeric");
-							vrule.setSigned("false");
-							qXML.setValidationRule(vrule);
+							if (!hasValidation) {
+								ValidationRule vrule = new ValidationRule();
+								vrule.setValidationType("numeric");
+								vrule.setSigned("false");
+								qXML.setValidationRule(vrule);
+							}
 						} else if (q.getType().equals(QuestionType.OPTION)) {
 							qXML.setType(OPTION_QUESTION_TYPE);
 						} else if (q.getType().equals(QuestionType.STRENGTH)) {

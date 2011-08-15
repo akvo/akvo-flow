@@ -50,6 +50,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -80,7 +81,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private TextArea questionTextArea;
 	private ListBox questionTypeSelector;
 	private TextArea tooltipArea;
-	private TextBox validationRuleBox;
+	private CheckBox allowDecimal;
+	private CheckBox allowSign;
+	private TextBox minVal;
+	private TextBox maxVal;
+	private CheckBox isName;
 	private CheckBox mandatoryBox;
 	private CheckBox dependentBox;
 	private CheckBox collapseableBox;
@@ -91,6 +96,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private Button viewTreeButton;
 	private CaptionPanel navPanel;
 	private Grid dependencyGrid;
+	private Panel numericValidationPanel;
+	private Panel textValidationPanel;
+	private Panel validationPanel;
 
 	private CheckBox allowOtherBox;
 	private CheckBox allowMultipleBox;
@@ -142,11 +150,18 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		questionTextArea.setWidth(DEFAULT_BOX_WIDTH);
 		tooltipArea = new TextArea();
 		tooltipArea.setWidth(DEFAULT_BOX_WIDTH);
-		validationRuleBox = new TextBox();
+
 		orderLabel = ViewUtil.initLabel("");
 		mandatoryBox = new CheckBox();
 		collapseableBox = new CheckBox();
 		immutableBox = new CheckBox();
+
+		isName = new CheckBox();
+		allowDecimal = new CheckBox();
+		allowSign = new CheckBox();
+		minVal = ViewUtil.constructNumericTextBox();
+		maxVal = ViewUtil.constructNumericTextBox();
+
 		viewTreeButton = new Button(TEXT_CONSTANTS.viewDependencyTree());
 		viewTreeButton.setVisible(false);
 		viewTreeButton.addClickHandler(this);
@@ -185,8 +200,28 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		ViewUtil.installGridRow(TEXT_CONSTANTS.order(), orderLabel, grid, row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.tooltip(), tooltipArea, grid,
 				row++);
-		ViewUtil.installGridRow(TEXT_CONSTANTS.validationRule(),
-				validationRuleBox, grid, row++);
+		numericValidationPanel = new VerticalPanel();
+		textValidationPanel = new VerticalPanel();
+		validationPanel = new VerticalPanel();
+
+		ViewUtil.installFieldRow(textValidationPanel, TEXT_CONSTANTS.isName(),
+				isName, ViewUtil.DEFAULT_INPUT_LABEL_CSS);
+		Grid validationGrid = new Grid(3, 2);
+
+		validationGrid
+				.setWidget(0, 0, ViewUtil.formFieldPair(TEXT_CONSTANTS.min(),
+						minVal, ViewUtil.DEFAULT_INPUT_LABEL_CSS));
+		validationGrid
+				.setWidget(0, 1, ViewUtil.formFieldPair(TEXT_CONSTANTS.max(),
+						maxVal, ViewUtil.DEFAULT_INPUT_LABEL_CSS));
+		ViewUtil.installGridRow(TEXT_CONSTANTS.isSigned(), allowSign,
+				validationGrid, 1);
+		ViewUtil.installGridRow(TEXT_CONSTANTS.isDecimal(), allowDecimal,
+				validationGrid, 2);
+		numericValidationPanel.add(validationGrid);
+		
+		ViewUtil.installGridRow(TEXT_CONSTANTS.validationRules(),
+				validationPanel, grid, row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.collapseable(), collapseableBox,
 				grid, row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.immutable(), immutableBox, grid,
@@ -283,6 +318,32 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				}
 			}
 			questionTypeSelector.setEnabled(isEditable);
+		}
+		if (QuestionDto.QuestionType.NUMBER == currentQuestion.getType()) {
+			validationPanel.clear();
+			validationPanel.add(numericValidationPanel);
+			allowDecimal.setValue(currentQuestion.getAllowDecimal());
+			allowDecimal.setEnabled(isEditable);
+			allowSign.setValue(currentQuestion.getAllowSign());
+			allowSign.setEnabled(isEditable);
+			if (currentQuestion.getMaxVal() != null) {
+				maxVal.setText(currentQuestion.getMaxVal().toString());
+			}
+			maxVal.setEnabled(isEditable);
+			if (currentQuestion.getMinVal() != null) {
+				minVal.setText(currentQuestion.getMinVal().toString());
+			}
+			minVal.setEnabled(isEditable);
+			validationPanel.setVisible(true);
+		} else if (QuestionDto.QuestionType.FREE_TEXT == currentQuestion
+				.getType()) {
+			validationPanel.clear();
+			validationPanel.add(textValidationPanel);
+			validationPanel.setVisible(true);
+			isName.setValue(currentQuestion.getIsName());
+			isName.setEnabled(isEditable);
+		} else {
+			validationPanel.setVisible(false);
 		}
 		if (currentQuestion.getCollapseable() != null) {
 			collapseableBox.setValue(currentQuestion.getCollapseable());
@@ -710,7 +771,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 											.getQuestionMap().size() : "0")
 									+ "items");
 					surveyService.listQuestionsByQuestionGroup(currentQuestion
-							.getQuestionGroupId().toString(), false,
+							.getQuestionGroupId().toString(), false,false,
 							new AsyncCallback<ArrayList<QuestionDto>>() {
 
 								@Override
@@ -909,7 +970,35 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			currentQuestion.setType(QuestionDto.QuestionType
 					.valueOf(questionTypeSelector.getValue(questionTypeSelector
 							.getSelectedIndex())));
-			currentQuestion.setValidationRule(validationRuleBox.getText());
+			if (QuestionType.NUMBER == currentQuestion.getType()) {
+				currentQuestion.setIsName(false);
+				currentQuestion.setAllowDecimal(allowDecimal.getValue());
+				currentQuestion.setAllowSign(allowSign.getValue());
+				String val = ViewUtil.getNonBlankValue(minVal);
+				if (val != null) {
+					currentQuestion.setMinVal(new Double(val));
+				} else {
+					currentQuestion.setMinVal(null);
+				}
+				val = ViewUtil.getNonBlankValue(maxVal);
+				if (val != null) {
+					currentQuestion.setMaxVal(new Double(val));
+				} else {
+					currentQuestion.setMaxVal(null);
+				}
+			} else if (QuestionType.FREE_TEXT == currentQuestion.getType()) {
+				currentQuestion.setIsName(isName.getValue());
+				currentQuestion.setAllowDecimal(false);
+				currentQuestion.setAllowSign(false);
+				currentQuestion.setMinVal(null);
+				currentQuestion.setMaxVal(null);
+			} else {
+				currentQuestion.setIsName(false);
+				currentQuestion.setAllowDecimal(false);
+				currentQuestion.setAllowSign(false);
+				currentQuestion.setMinVal(null);
+				currentQuestion.setMaxVal(null);
+			}
 			if (dependentBox.getValue()) {
 				QuestionDependencyDto depDto = currentQuestion
 						.getQuestionDependency();
@@ -1086,9 +1175,24 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					questionTypeSelector.getValue(questionTypeSelector
 							.getSelectedIndex()))) {
 				optionPanel.setVisible(true);
+				validationPanel.setVisible(false);
 				loadOptions(true);
 			} else {
 				optionPanel.setVisible(false);
+				if (QuestionDto.QuestionType.NUMBER.toString().equals(
+						questionTypeSelector.getValue(questionTypeSelector
+								.getSelectedIndex()))) {
+					validationPanel.clear();
+					validationPanel.add(numericValidationPanel);
+					validationPanel.setVisible(true);
+				} else if (QuestionDto.QuestionType.FREE_TEXT.toString()
+						.equals(questionTypeSelector
+								.getValue(questionTypeSelector
+										.getSelectedIndex()))) {
+					validationPanel.clear();
+					validationPanel.add(textValidationPanel);
+					validationPanel.setVisible(true);
+				}
 			}
 		} else if (event.getSource() == dependentQuestionSelector) {
 			int index = dependentQuestionSelector.getSelectedIndex();

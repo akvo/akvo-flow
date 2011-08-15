@@ -49,6 +49,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+@Deprecated
 public class SurveyManagerPortlet extends UserAwarePortlet implements
 		ClickHandler, SurveyTreeListener, TranslationChangeListener {
 
@@ -362,10 +363,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 					&& !"null".equalsIgnoreCase(item.getTip().trim())) {
 				tip.setText(item.getTip());
 			}
-			if (item.getValidationRule() != null
-					&& !"null".equalsIgnoreCase(item.getTip().trim())) {
-				validationRule.setText(item.getValidationRule());
-			}
+			
 			if (item.getMandatoryFlag() != null)
 				if (item.getMandatoryFlag())
 					mandatoryQuestion.setValue(true);
@@ -471,7 +469,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				ViewUtil.initLabel(TEXT_CONSTANTS.questionToolTip()));
 		questionDetailPanel.setWidget(3, 1, tip);
 		questionDetailPanel.setWidget(4, 0,
-				ViewUtil.initLabel(TEXT_CONSTANTS.validationRule()));
+				ViewUtil.initLabel(TEXT_CONSTANTS.validationRules()));
 		questionDetailPanel.setWidget(4, 1, validationRule);
 		questionDetailPanel.setWidget(5, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.mandatory()));
@@ -998,9 +996,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 		if (ViewUtil.isTextPopulated(tip)) {
 			value.setTip(tip.getText());
 		}
-		if (ViewUtil.isTextPopulated(validationRule)) {
-			value.setValidationRule(validationRule.getText());
-		}
+		
 		value.setMandatoryFlag(mandatoryQuestion.getValue());
 
 		if (questionTypeLB.getSelectedIndex() == 0) {

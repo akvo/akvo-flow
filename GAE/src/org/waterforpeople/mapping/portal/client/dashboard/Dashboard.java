@@ -248,7 +248,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					});
 		}
 
-		mgrMenu.addItem(TEXT_CONSTANTS.surveyManagerPortletTitle(),
+		//TODO: remove altogether
+		/*mgrMenu.addItem(TEXT_CONSTANTS.surveyManagerPortletTitle(),
 				new Command() {
 					public void execute() {
 						launchFullscreen(SurveyManagerPortlet.NAME);
@@ -262,7 +263,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					launchFullscreen(DataUploadPortlet.NAME);
 				}
 			});
-		}
+		}*/
 
 		mgrMenu.addItem(TEXT_CONSTANTS.rawDataViewPortletName(), new Command() {
 			public void execute() {

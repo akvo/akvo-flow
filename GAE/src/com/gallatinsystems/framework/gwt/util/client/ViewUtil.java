@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
@@ -91,14 +92,28 @@ public class ViewUtil {
 	 */
 	public static void installFieldRow(HasWidgets container, String text,
 			Widget field, String labelStyle) {
-		HorizontalPanel hp = new HorizontalPanel();
+		Panel p = formFieldPair(text, field, labelStyle);
+		container.add(p);
+	}
+
+	/**
+	 * constructs a new horizontal Panel that consists of a label and a field
+	 * 
+	 * @param text
+	 * @param field
+	 * @param labelStyle
+	 * @return
+	 */
+	public static Panel formFieldPair(String text, Widget field,
+			String labelStyle) {
+		Panel hp = new HorizontalPanel();
 		Label l = new Label(text);
 		if (labelStyle != null) {
 			l.setStylePrimaryName(labelStyle);
 		}
 		hp.add(l);
 		hp.add(field);
-		container.add(hp);
+		return hp;
 	}
 
 	/**
@@ -161,7 +176,8 @@ public class ViewUtil {
 	/**
 	 * returns the selected value of the listbox. If suppressFirstEntry is set
 	 * to true, this method will return null if the first item in the list box
-	 * is selected. This method is only applicable for single-selection listboxes.
+	 * is selected. This method is only applicable for single-selection
+	 * listboxes.
 	 * 
 	 * @param list
 	 * @param suppressFirstEntry
@@ -170,7 +186,8 @@ public class ViewUtil {
 	public static String getListBoxSelection(ListBox list,
 			boolean suppressFirstEntry) {
 		int idx = list.getSelectedIndex();
-		if ((suppressFirstEntry && idx > 0) || (suppressFirstEntry == false &&idx >= 0)) {
+		if ((suppressFirstEntry && idx > 0)
+				|| (suppressFirstEntry == false && idx >= 0)) {
 			return list.getValue(idx);
 		} else {
 			return null;

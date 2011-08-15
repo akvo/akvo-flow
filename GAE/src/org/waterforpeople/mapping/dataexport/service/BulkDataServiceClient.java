@@ -791,10 +791,27 @@ public class BulkDataServiceClient {
 								dto.setMandatoryFlag(Boolean.parseBoolean(json
 										.getString("mandatoryFlag")));
 							}
-							if (json.has("validationRule")) {
-								dto.setValidationRule(json
-										.getString("validationRule"));
+							if (json.has("isName")) {
+								dto.setIsName(json
+										.getBoolean("isName"));
 							}
+							if (json.has("allowDecimal")) {
+								dto.setAllowDecimal(json
+										.getBoolean("allowDecimal"));
+							}
+							if (json.has("allowSign")) {
+								dto.setAllowSign(json
+										.getBoolean("allowSign"));
+							}
+							if (json.has("minVal")) {
+								dto.setMinVal(json
+										.getDouble("minVal"));
+							}
+							if (json.has("maxVal")) {
+								dto.setMaxVal(json
+										.getDouble("maxVal"));
+							}
+							
 							if (json.has("translationMap")
 									&& !JSONObject.NULL.equals(json
 											.get("translationMap"))) {

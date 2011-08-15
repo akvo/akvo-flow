@@ -281,7 +281,7 @@ public interface TextConstants extends Constants{
 	public String video();
 	public String number();
 	public String tooltip();
-	public String validationRule();
+	public String validationRules();
 	public String mandatory();
 	public String dependent();
 	public String dependencyDetails();
@@ -571,5 +571,10 @@ public interface TextConstants extends Constants{
 	public String saveGotoPrev();
 	public String questionMandatory();
 	public String copyingDependencies();
+	public String isSigned();
+	public String isDecimal();
+	public String min();
+	public String max();
+	public String isName();
 }
 

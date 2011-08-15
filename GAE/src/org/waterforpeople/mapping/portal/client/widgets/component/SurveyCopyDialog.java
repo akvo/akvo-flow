@@ -248,7 +248,7 @@ public class SurveyCopyDialog extends DialogBox {
 								.getQuestionMap().size() == 0) {
 					surveyService.listQuestionsByQuestionGroup(surveyDto
 							.getQuestionGroupList().get(groupIndex).getKeyId()
-							.toString(), false,
+							.toString(), false,false,
 							new AsyncCallback<ArrayList<QuestionDto>>() {
 								@Override
 								public void onFailure(Throwable caught) {
