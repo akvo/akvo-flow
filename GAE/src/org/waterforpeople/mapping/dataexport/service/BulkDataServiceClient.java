@@ -804,14 +804,20 @@ public class BulkDataServiceClient {
 										.getString("allowSign")));
 							}
 							if (json.has("minVal")) {
-								dto.setMinVal(json
-										.getDouble("minVal"));
+								try {
+									dto.setMinVal(json.getDouble("minVal"));
+								} catch (Exception e) {
+									dto.setMinVal(null);
+								}
 							}
 							if (json.has("maxVal")) {
-								dto.setMaxVal(json
-										.getDouble("maxVal"));
+								try {
+									dto.setMaxVal(json.getDouble("maxVal"));
+								} catch (Exception e) {
+									dto.setMaxVal(null);
+								}
 							}
-							
+
 							if (json.has("translationMap")
 									&& !JSONObject.NULL.equals(json
 											.get("translationMap"))) {
@@ -913,8 +919,7 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String fetchDataFromServer(String fullUrl)
-			throws Exception {
+	public static String fetchDataFromServer(String fullUrl) throws Exception {
 		BufferedReader reader = null;
 		String result = null;
 		try {
