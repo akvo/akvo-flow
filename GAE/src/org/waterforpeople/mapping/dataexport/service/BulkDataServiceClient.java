@@ -792,16 +792,16 @@ public class BulkDataServiceClient {
 										.getString("mandatoryFlag")));
 							}
 							if (json.has("isName")) {
-								dto.setIsName(json
-										.getBoolean("isName"));
+								dto.setIsName(Boolean.parseBoolean(json
+										.getString("isName")));
 							}
 							if (json.has("allowDecimal")) {
-								dto.setAllowDecimal(json
-										.getBoolean("allowDecimal"));
+								dto.setAllowDecimal(Boolean.parseBoolean(json
+										.getString("allowDecimal")));
 							}
 							if (json.has("allowSign")) {
-								dto.setAllowSign(json
-										.getBoolean("allowSign"));
+								dto.setAllowSign(Boolean.parseBoolean(json
+										.getString("allowSign")));
 							}
 							if (json.has("minVal")) {
 								dto.setMinVal(json
