@@ -27,6 +27,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -35,6 +36,7 @@ import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.SmallZoomControl;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -45,6 +47,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -96,6 +99,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private MapWidget localeMap;
 	private FlexTable instanceTable;
 	private Map<Widget, SurveyalValueDto> widgetToValueMap;
+	private ScrollPanel instanceScrollPanel;
 
 	public SurveyedLocaleEditorWidget(boolean allowEdit,
 			SurveyedLocaleDto surveyedLocale,
@@ -119,6 +123,8 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		saveButton = new Button(TEXT_CONSTANTS.save());
 		saveButton.addClickHandler(this);
 		instanceTable = new FlexTable();
+		instanceScrollPanel = new ScrollPanel();
+		instanceScrollPanel.add(instanceTable);
 		TabPanel tp = new TabPanel();
 		tp.add(constructGeneralTab(localeDto), TEXT_CONSTANTS.general());
 		tp.add(constructInstanceTab(), TEXT_CONSTANTS.attributes());
@@ -266,7 +272,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private Widget constructInstanceTab() {
 		Panel tabContent = new VerticalPanel();
 		statusLabel = ViewUtil.initLabel(TEXT_CONSTANTS.loading());
-		instanceTable = new FlexTable();
+		//instanceTable = new FlexTable();
 		instanceListBox = new ListBox(false);
 		instanceListBox.addChangeHandler(this);
 		CaptionPanel cap = new CaptionPanel(TEXT_CONSTANTS.selectInstance());
@@ -308,8 +314,10 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		cap.add(controlPanel);
 		tabContent.add(cap);
 
-		tabContent.add(statusLabel);
-		tabContent.add(instanceTable);
+		tabContent.add(statusLabel);		
+		tabContent.add(instanceScrollPanel);
+		instanceScrollPanel.setHeight((Window.getClientHeight()/2)+"px");
+		
 
 		return tabContent;
 	}
@@ -584,6 +592,6 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 			dia.showCentered();
 			return false;
 		}
-
 	}
+	
 }

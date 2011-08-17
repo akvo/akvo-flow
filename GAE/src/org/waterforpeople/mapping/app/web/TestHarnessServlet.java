@@ -148,6 +148,9 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
@@ -1656,6 +1659,24 @@ public class TestHarnessServlet extends HttpServlet {
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
+		}else if ("createVals".equals(action)){
+			SurveyedLocaleDao localeDao =new SurveyedLocaleDao();
+			List<SurveyedLocale> lList = localeDao.list(null);
+			if(lList != null && lList.size()>0){
+				List<SurveyalValue> valList = new ArrayList<SurveyalValue>();
+				for(int i=0; i < 50; i++){
+					SurveyalValue val = new SurveyalValue();
+					val.setSurveyedLocaleId(lList.get(0).getKey().getId());
+					val.setStringValue("val:"+i);
+					val.setQuestionText("TEXT: "+i);
+					val.setLocaleType(lList.get(0).getLocaleType());
+					val.setQuestionType("FREE_TEXT");
+					val.setSurveyInstanceId(lList.get(0).getLastSurveyalInstanceId());
+					valList.add(val);
+				}
+				
+				localeDao.save(valList);
+			}
 		}
 	}
 
