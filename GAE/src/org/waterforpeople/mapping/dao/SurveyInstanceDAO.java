@@ -206,12 +206,19 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		if (beginDate != null || endDate != null) {
 			query.declareImports("import java.util.Date");
 		}
+
 		query.setOrdering("collectionDate desc");
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+		if (filterString.length() > 0) {
+			query.setFilter(filterString.toString());
+			query.declareParameters(paramString.toString());
+		}
 
 		prepareCursor(cursorString, query);
-		return (List<SurveyInstance>) query.executeWithMap(paramMap);
+		if (filterString.length() > 0) {
+			return (List<SurveyInstance>) query.executeWithMap(paramMap);
+		} else {
+			return (List<SurveyInstance>) query.execute();
+		}
 	}
 
 	/**
