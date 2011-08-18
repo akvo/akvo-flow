@@ -71,7 +71,11 @@ public class MailUtil {
 						recipientMap.getKey(), recipientMap.getValue()));
 			}
 			msg.setSubject(subject);
-			msg.setText(messageBody);
+			if(messageBody != null){
+				msg.setText(messageBody);
+			}else{
+				msg.setText("");
+			}
 			Transport.send(msg);
 			return true;
 

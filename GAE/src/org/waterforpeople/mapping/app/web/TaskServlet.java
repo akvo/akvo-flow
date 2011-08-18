@@ -209,7 +209,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 				log.log(Level.SEVERE, message);
 				deviceFile.addProcessingMessage(message);
 				MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-						"Device File Processing Error: " + fileName, message);
+						"Device File Processing Error: " + fileName, DEVICE_FILE_PATH+fileName+"\n"+message);
 
 			}
 
@@ -218,7 +218,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not process data file", e);
 			MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-					"Device File Processing Error: " + fileName, e.getMessage());
+					"Device File Processing Error: " +fileName,DEVICE_FILE_PATH+fileName+"\n"+(e.getMessage()!=null?e.getMessage():""));
 		}
 
 		return surveyInstances;
