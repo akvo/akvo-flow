@@ -255,7 +255,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						launchFullscreen(SurveyManagerPortlet.NAME);
 
 					}
-				});
+				});*/
 		if (getCurrentUser().hasPermission(
 				PermissionConstants.UPLOAD_SURVEY_DATA)) {
 			mgrMenu.addItem(TEXT_CONSTANTS.uploadPortletTitle(), new Command() {
@@ -263,7 +263,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					launchFullscreen(DataUploadPortlet.NAME);
 				}
 			});
-		}*/
+		}
 
 		mgrMenu.addItem(TEXT_CONSTANTS.rawDataViewPortletName(), new Command() {
 			public void execute() {
