@@ -31,7 +31,6 @@ import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyLoaderPortlet;
-import org.waterforpeople.mapping.portal.client.widgets.SurveyManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.UserManagerPortlet;
