@@ -1643,6 +1643,11 @@ public class TestHarnessServlet extends HttpServlet {
 								BackendServiceFactory.getBackendService()
 										.getBackendAddress("dataprocessor"));
 			}
+			String surveyId = req
+					.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
+			if (surveyId != null && surveyId.trim().length() > 0) {
+				options.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId);
+			}
 
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
@@ -1659,22 +1664,23 @@ public class TestHarnessServlet extends HttpServlet {
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
-		}else if ("createVals".equals(action)){
-			SurveyedLocaleDao localeDao =new SurveyedLocaleDao();
+		} else if ("createVals".equals(action)) {
+			SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 			List<SurveyedLocale> lList = localeDao.list(null);
-			if(lList != null && lList.size()>0){
+			if (lList != null && lList.size() > 0) {
 				List<SurveyalValue> valList = new ArrayList<SurveyalValue>();
-				for(int i=0; i < 50; i++){
+				for (int i = 0; i < 50; i++) {
 					SurveyalValue val = new SurveyalValue();
 					val.setSurveyedLocaleId(lList.get(0).getKey().getId());
-					val.setStringValue("val:"+i);
-					val.setQuestionText("TEXT: "+i);
+					val.setStringValue("val:" + i);
+					val.setQuestionText("TEXT: " + i);
 					val.setLocaleType(lList.get(0).getLocaleType());
 					val.setQuestionType("FREE_TEXT");
-					val.setSurveyInstanceId(lList.get(0).getLastSurveyalInstanceId());
+					val.setSurveyInstanceId(lList.get(0)
+							.getLastSurveyalInstanceId());
 					valList.add(val);
 				}
-				
+
 				localeDao.save(valList);
 			}
 		}

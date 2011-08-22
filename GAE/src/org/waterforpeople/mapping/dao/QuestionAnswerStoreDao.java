@@ -38,7 +38,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listByTypeAndDate(String type,
-			Date sinceDate, String cursor, Integer pageSize) {
+			Long surveyId, Date sinceDate, String cursor, Integer pageSize) {
 
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
@@ -51,6 +51,8 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
 		appendNonNullParam("type", filterString, paramString, "String", type,
 				paramMap);
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
 		appendNonNullParam("lastUpdateDateTime", filterString, paramString,
 				"Date", sinceDate, paramMap, GTE_OP);
 		if (sinceDate != null) {

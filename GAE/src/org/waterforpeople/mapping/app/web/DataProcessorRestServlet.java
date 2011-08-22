@@ -64,7 +64,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			updateAccessPointProjectFlag(dpReq.getCountry(), dpReq.getCursor());
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
-			rebuildQuestionSummary();
+			rebuildQuestionSummary(dpReq.getSurveyId());
 		} else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
@@ -148,19 +148,19 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * This method should only be run on a Backend instance as it is unlikely to
 	 * complete within the task duration limits on other instances.
 	 */
-	private void rebuildQuestionSummary() {
+	private void rebuildQuestionSummary(Long surveyId) {
 		ProcessingStatusDao statusDao = new ProcessingStatusDao();
 		ProcessingStatus status = statusDao
-				.getStatusByCode(REBUILD_Q_SUM_STATUS_KEY);
+				.getStatusByCode(REBUILD_Q_SUM_STATUS_KEY+(surveyId !=null?":"+surveyId:""));
 
-		Map<String, Map<String, Long>> summaryMap = summarizeQuestionAnswerStore(null);
+		Map<String, Map<String, Long>> summaryMap = summarizeQuestionAnswerStore(surveyId,null);
 		if (summaryMap != null) {
 			saveSummaries(summaryMap);
 		}
 		// now update the status so we can know it last ran
 		if (status == null) {
 			status = new ProcessingStatus();
-			status.setCode(REBUILD_Q_SUM_STATUS_KEY);
+			status.setCode(REBUILD_Q_SUM_STATUS_KEY+(surveyId !=null?":"+surveyId:""));
 		}
 		status.setInError(false);
 		status.setLastEventDate(new Date());
@@ -233,14 +233,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * @param sinceDate
 	 * @return
 	 */
-	private Map<String, Map<String, Long>> summarizeQuestionAnswerStore(
+	private Map<String, Map<String, Long>> summarizeQuestionAnswerStore(Long surveyId,
 			Date sinceDate) {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		String cursor = null;
 		Map<String, Map<String, Long>> summaryMap = new HashMap<String, Map<String, Long>>();
 		List<QuestionAnswerStore> qasList = null;
 		do {
-			qasList = qasDao.listByTypeAndDate(VALUE_TYPE, sinceDate, cursor,
+			qasList = qasDao.listByTypeAndDate(VALUE_TYPE,surveyId, sinceDate, cursor,
 					QAS_PAGE_SIZE);
 			if (qasList != null && qasList.size() > 0) {
 				cursor = QuestionAnswerStoreDao.getCursor(qasList);
