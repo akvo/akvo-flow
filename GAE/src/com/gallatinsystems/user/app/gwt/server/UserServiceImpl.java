@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
@@ -32,6 +34,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class UserServiceImpl extends RemoteServiceServlet implements
 		UserService {
 
+	private static Logger log = Logger.getLogger("UserServiceImpl");
 	private static final long serialVersionUID = 5371988266704758230L;
 	private UserDao userDao;
 
@@ -106,6 +109,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 			if (currentUser.getEmail() != null
 					&& currentUser.getEmail().trim().length() > 0) {
 				u = userDao.findUserByEmail(currentUser.getEmail());
+				if(u == null){
+					u = userDao.findUserByEmail(currentUser.getEmail().toLowerCase());
+				}
 			}
 			if (u == null && (createIfNotFound || userService.isUserAdmin())) {
 				User newUser = new User();
@@ -116,6 +122,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				newUser = userDao.save(newUser);
 				userDto.setKeyId(newUser.getKey().getId());
 			} else if (u != null) {
+				log.log(Level.SEVERE,"user not found in database using email: "+currentUser.getEmail());
 				Map<String, Set<UserConfigDto>> configMap = new HashMap<String, Set<UserConfigDto>>();
 
 				if (u.getConfig() != null) {
@@ -151,6 +158,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void saveUser(UserDto user) {
 		User existingUser = userDao.findUserByEmail(user.getEmailAddress());
+		if(existingUser == null){
+			existingUser = userDao.findUserByEmail(user.getEmailAddress().toLowerCase());
+		}
 		User newUser = new User();
 		if (existingUser != null) {
 			newUser = existingUser;
@@ -253,6 +263,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	private UserConfig findUserConfig(String emailAddress, String configGroup,
 			String configName, boolean createIfMissing) {
 		User user = userDao.findUserByEmail(emailAddress);
+		if(user == null){
+			user = userDao.findUserByEmail(emailAddress.toLowerCase());
+		}
 		if (user != null && user.getConfig() != null) {
 			for (UserConfig confItem : user.getConfig()) {
 				if (configGroup != null
