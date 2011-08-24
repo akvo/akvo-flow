@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Dialog box that allows selection of a survey
@@ -32,20 +33,26 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 			.create(TextConstants.class);
 	public static final String SURVEY_KEY = "survey";
 	private SurveySelectionWidget selector;
+	private Widget additionalControls;
 	private Button okButton;
 	private Button cancelButton;
 	private Label messageLabel;
 
 	public SurveySelectionDialog(CompletionListener listener,
-			boolean allowMultiple) {
+			boolean allowMultiple, Widget additionalControls) {
 		super(TEXT_CONSTANTS.selectSurvey(), null, true, listener);
+		this.additionalControls = additionalControls;
 		Panel panel = new VerticalPanel();
 		messageLabel = new Label();
 		Panel buttonPanel = new HorizontalPanel();
-		
+
 		selector = new SurveySelectionWidget(Orientation.HORIZONTAL,
-				TerminalType.SURVEY,allowMultiple?SelectionMode.MULTI:SelectionMode.SINGLE);
+				TerminalType.SURVEY, allowMultiple ? SelectionMode.MULTI
+						: SelectionMode.SINGLE);
 		panel.add(selector);
+		if (additionalControls != null) {
+			panel.add(additionalControls);
+		}
 		panel.add(messageLabel);
 		messageLabel.setVisible(false);
 		okButton = new Button(TEXT_CONSTANTS.ok());
@@ -56,6 +63,15 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 		buttonPanel.add(cancelButton);
 		panel.add(buttonPanel);
 		setContentWidget(panel);
+	}
+
+	public Widget getAdditionalControls() {
+		return additionalControls;
+	}
+
+	public SurveySelectionDialog(CompletionListener listener,
+			boolean allowMultiple) {
+		this(listener, allowMultiple, null);
 	}
 
 	public SurveySelectionDialog(CompletionListener listener) {

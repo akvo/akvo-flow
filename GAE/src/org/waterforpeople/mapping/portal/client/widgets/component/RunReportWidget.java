@@ -8,13 +8,17 @@ import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * widget to the user to run any of the data export applets.
@@ -115,6 +119,19 @@ public class RunReportWidget extends MenuBasedWidget {
 			filterDia.showCentered();
 		} else {
 			final Object eventSource = event.getSource();
+			final Widget rollupControl;
+			final CheckBox summaryBox;
+			if(eventSource == comprehensiveReportButton){
+				HorizontalPanel rollupPanel = new HorizontalPanel();
+				rollupPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.generateSummariesByGeography()));
+				summaryBox = new CheckBox();
+				summaryBox.setValue(true);
+				rollupPanel.add(summaryBox);
+				rollupControl = rollupPanel;
+			}else{
+				rollupControl = null;
+				summaryBox = null;
+			}
 			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
 					new CompletionListener() {
 						@Override
@@ -127,15 +144,15 @@ public class RunReportWidget extends MenuBasedWidget {
 								handleSurveySelection(
 										eventSource,
 										(Long) payload
-												.get(SurveySelectionDialog.SURVEY_KEY));
+												.get(SurveySelectionDialog.SURVEY_KEY), summaryBox !=null?summaryBox.getValue():true);
 							}
 						}
-					},false);
+					},false,rollupControl);
 			surveyDia.showCentered();
 		}
 	}
 
-	private void handleSurveySelection(Object eventSource, Long surveyId) {
+	private void handleSurveySelection(Object eventSource, Long surveyId, boolean doRollups) {
 		if (eventSource == rawDataReportButton) {			 					   
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.7-20101029.jar,poi-ooxml-3.7-20101029.jar,poi-ooxml-schemas-3.7-20101029.jar,xbean.jar,dom4j-1.6.1.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
@@ -186,7 +203,11 @@ public class RunReportWidget extends MenuBasedWidget {
 					+ ">";
 			appletString += "<PARAM name='options' value='locale="
 					+ com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
-							.getLocaleName() + ";imgPrefix="
+							.getLocaleName();
+			if(!doRollups){
+				appletString+=";performRollup=false";
+			}
+			appletString += ";imgPrefix="
 					+ UPLOAD_CONSTANTS.uploadUrl()
 					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 			appletString += "</applet>";
