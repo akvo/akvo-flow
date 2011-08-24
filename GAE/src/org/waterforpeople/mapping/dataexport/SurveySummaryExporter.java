@@ -83,7 +83,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			pw = new PrintWriter(fileName);
 			writeHeader(pw, dia.getDoRollup());
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
+					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), true,
+					serverBase);
 			if (questionMap.size() > 0) {
 				SummaryModel model = buildDataModel(
 						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
@@ -128,8 +129,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	}
 
 	protected List<String> formRollupStrings(Map<String, String> responseMap) {
-		List<String> rollups = new ArrayList<String>();		
-		for (int j = 0; j < rollupOrder.size() - 1; j++) {
+		List<String> rollups = new ArrayList<String>();
+		for (int j = 0; j < rollupOrder.size(); j++) {
 			String rollup = "";
 			int count = 0;
 			for (int i = 0; i < rollupOrder.size() - j; i++) {
@@ -150,15 +151,15 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	}
 
 	protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
-			String surveyId, String serverBase) throws Exception {
+			String surveyId, boolean performRollups, String serverBase)
+			throws Exception {
 		Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
 		orderedGroupList = fetchQuestionGroups(serverBase, surveyId);
-
 		rollupOrder = new ArrayList<QuestionDto>();
 		for (QuestionGroupDto group : orderedGroupList) {
 			List<QuestionDto> questions = fetchQuestions(serverBase,
 					group.getKeyId());
-			if (questions != null) {
+			if (performRollups && questions != null) {
 				for (QuestionDto q : questions) {
 					for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
 						if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(q.getText())) {
@@ -381,9 +382,12 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
 		private void incrementCount(String questionId, List<String> rollups,
 				String response) {
-			for (String sector : rollups) {
-				incrementValue(questionId + sector + response, sectorCountMap);
-				incrementValue(questionId + sector, sectorTotalMap);
+			if (rollups != null) {
+				for (String sector : rollups) {
+					incrementValue(questionId + sector + response,
+							sectorCountMap);
+					incrementValue(questionId + sector, sectorTotalMap);
+				}
 			}
 			incrementValue(questionId + response, responseCountMap);
 			incrementValue(questionId, responseTotalMap);

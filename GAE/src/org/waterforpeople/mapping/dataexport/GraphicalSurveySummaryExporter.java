@@ -49,6 +49,7 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int MAX_COL = 255;
 	private static final String IMAGE_PREFIX_OPT = "imgPrefix";
+	private static final String DO_ROLLUP_OPT = "performRollup";
 	private static final String LOCALE_OPT = "locale";
 	private static final String TYPE_OPT = "exportMode";
 	private static final String RAW_ONLY_TYPE = "RAW_DATA";
@@ -210,6 +211,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private int currentStep;
 	private int maxSteps;
 	private boolean isFullReport;
+	private boolean performGeoRollup;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -225,7 +227,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					LOADING_QUESTIONS.get(locale)));
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase);
+					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
+					performGeoRollup, serverBase);
 			if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
 				// if we are using some other locale, we need to check for
 				// translations
@@ -631,29 +634,50 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					}
 					curRow = tableBottomRow;
 					if (labels.size() > 0) {
-						// now insert the graph
-						int indx = wb.addPicture(JFreechartChartUtil
-								.getPieChart(
-										labels,
-										values,
-										getLocalizedText(question.getText(),
-												question.getTranslationMap()),
-										CHART_WIDTH, CHART_HEIGHT),
-								Workbook.PICTURE_TYPE_PNG);
-						ClientAnchor anchor = creationHelper
-								.createClientAnchor();
-						anchor.setDx1(0);
-						anchor.setDy1(0);
-						anchor.setDx2(0);
-						anchor.setDy2(255);
-						anchor.setCol1(6);
-						anchor.setRow1(tableTopRow);
-						anchor.setCol2(6 + CHART_CELL_WIDTH);
-						anchor.setRow2(tableTopRow + CHART_CELL_HEIGHT);
-						anchor.setAnchorType(2);
-						patriarch.createPicture(anchor, indx);
-						if (tableTopRow + CHART_CELL_HEIGHT > tableBottomRow) {
-							curRow = tableTopRow + CHART_CELL_HEIGHT;
+						boolean hasVals = false;
+						if (values != null) {
+							for (String val : values) {
+								try {
+									if (val != null
+											&& new Double(val.trim()) > 0D) {
+										hasVals = true;
+										break;
+									}
+								} catch (Exception e) {
+									// no-op
+								}
+							}
+						}
+						//only insert the image if we have at least 1 non-zero value
+						if (hasVals) {
+							// now insert the graph
+							int indx = wb
+									.addPicture(
+											JFreechartChartUtil
+													.getPieChart(
+															labels,
+															values,
+															getLocalizedText(
+																	question.getText(),
+																	question.getTranslationMap()),
+															CHART_WIDTH,
+															CHART_HEIGHT),
+											Workbook.PICTURE_TYPE_PNG);
+							ClientAnchor anchor = creationHelper
+									.createClientAnchor();
+							anchor.setDx1(0);
+							anchor.setDy1(0);
+							anchor.setDx2(0);
+							anchor.setDy2(255);
+							anchor.setCol1(6);
+							anchor.setRow1(tableTopRow);
+							anchor.setCol2(6 + CHART_CELL_WIDTH);
+							anchor.setRow2(tableTopRow + CHART_CELL_HEIGHT);
+							anchor.setAnchorType(2);
+							patriarch.createPicture(anchor, indx);
+							if (tableTopRow + CHART_CELL_HEIGHT > tableBottomRow) {
+								curRow = tableTopRow + CHART_CELL_HEIGHT;
+							}
 						}
 					}
 
@@ -709,6 +733,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 */
 	private void processOptions(Map<String, String> options) {
 		isFullReport = true;
+		performGeoRollup = true;
 		maxSteps = FULL_STEPS;
 		if (options != null) {
 			locale = options.get(LOCALE_OPT);
@@ -716,6 +741,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			if (RAW_ONLY_TYPE.equalsIgnoreCase(options.get(TYPE_OPT))) {
 				isFullReport = false;
 				maxSteps = RAW_STEPS;
+			}
+			if (options.get(DO_ROLLUP_OPT) != null) {
+				if ("false".equalsIgnoreCase(options.get(DO_ROLLUP_OPT))) {
+					performGeoRollup = false;
+				}
 			}
 		}
 		if (locale != null) {
