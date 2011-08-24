@@ -99,7 +99,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		Boolean questionSaved = null;
 		if (SurveyRestRequest.SAVE_QUESTION_ACTION
 				.equals(surveyReq.getAction())) {
-			questionSaved = saveQuestion(surveyReq.getSurveyGroupName(),
+		/*	questionSaved = saveQuestion(surveyReq);.getSurveyGroupName(),
 					surveyReq.getSurveyName(),
 					surveyReq.getQuestionGroupName(),
 					surveyReq.getQuestionType(), surveyReq.getQuestionText(),
@@ -107,7 +107,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 					surveyReq.getAllowOtherFlag(),
 					surveyReq.getAllowMultipleFlag(),
 					surveyReq.getMandatoryFlag(), surveyReq.getQuestionOrder(),
-					surveyReq.getQuestionGroupOrder(), surveyReq.getScoring());
+					surveyReq.getQuestionGroupOrder(), surveyReq.getScoring());*/
+			questionSaved = saveQuestion(surveyReq);
 			response.setCode("200");
 			response.setMessage("Record Saved status: " + questionSaved);
 		} else if (SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION.equals(surveyReq
@@ -371,22 +372,20 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		return dtoList;
 	}
 
-	private Boolean saveQuestion(String surveyGroupName, String surveyName,
-			String questionGroupName, String questionType, String questionText,
-			String options, String dependentQuestion, Boolean allowOtherFlag,
-			Boolean allowMultipleFlag, Boolean mandatoryFlag,
-			Integer questionOrder, Integer questionGroupOrder, String scoring)
+	private Boolean saveQuestion(SurveyRestRequest req)
 			throws UnsupportedEncodingException {
 		// temp fix until we put a validation rule in
+		String questionText = req.getQuestionText();
 		if (questionText.length() > 499) {
 			questionText = questionText.substring(0, 499);
 		}
 
 		// TODO: Change Impl Later if we support multiple langs
-		surveyName = parseLangMap(surveyName).get("en");
-		questionGroupName = parseLangMap(questionGroupName).get("en");
+		String surveyName = parseLangMap(req.getSurveyName()).get("en");
+		String questionGroupName = parseLangMap(req.getQuestionGroupName()).get("en");
 
 		SurveyGroup sg = null;
+		String surveyGroupName= req.getSurveyGroupName();
 		if (surveyGroupName != null) {
 			sg = sgDao.findBySurveyGroupName(surveyGroupName);
 		}
@@ -423,8 +422,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			qg.setName(questionGroupName);
 			qg.setCode(questionGroupName);
 			qg.setPath(qgPath);
-			qg.setOrder(questionGroupOrder);
-			survey.addQuestionGroup(questionGroupOrder, qg);
+			qg.setOrder(req.getQuestionGroupOrder());
+			survey.addQuestionGroup(req.getQuestionGroupOrder(), qg);
 			qg.setSurveyId(survey.getKey().getId());
 			qgDao.save(qg);
 		}
@@ -433,7 +432,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		// Question q = qDao.getByPath(questionOrder, questionPath);
 		Question q = qDao.getByQuestionGroupId(qg.getKey().getId(),
 				questionText);
-		
+		Integer questionOrder = req.getQuestionOrder();
 		//since questions can have the same name, it only counts as a dupe if the order matches		
 		if (q == null || !questionOrder.equals(q.getOrder())) {
 			q = new Question();
@@ -465,22 +464,23 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				q.addTranslation(t);
 			}
 		}
-
+String questionType = req.getQuestionType();
 		if (questionType.equals("GEO")) {
 			q.setType(Question.Type.GEO);
 		} else if (questionType.equals("FREE_TEXT")) {
 			q.setType(Question.Type.FREE_TEXT);
+			q.setIsName(req.getIsName());
 		} else if (questionType.equals("OPTION")
 				|| questionType.equals("STRENGTH")) {
-			q.setAllowMultipleFlag(allowMultipleFlag);
-			q.setAllowOtherFlag(allowOtherFlag);
+			q.setAllowMultipleFlag(req.getAllowMultipleFlag());
+			q.setAllowOtherFlag(req.getAllowOtherFlag());
 			if (questionType.equals("OPTION")) {
 				q.setType(Type.OPTION);
 			} else {
 				q.setType(Type.STRENGTH);
 			}
 			int i = 1;
-			for (QuestionOptionContainer qoc : parseQuestionOption(options)) {
+			for (QuestionOptionContainer qoc : parseQuestionOption(req.getOptions())) {
 				QuestionOption qo = new QuestionOption();
 				qo.setText(qoc.getOption());
 				qo.setCode(qoc.getOption());
@@ -500,18 +500,22 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			q.setType(Question.Type.PHOTO);
 		} else if (questionType.equals("NUMBER")) {
 			q.setType(Question.Type.NUMBER);
+			q.setAllowDecimal(req.getAllowDecimal());
+			q.setAllowSign(req.getAllowSign());
+			q.setMinVal(req.getMinVal());
+			q.setMaxVal(req.getMaxVal());
 		} else if (questionType.equals("NAME")) {
 			q.setType(Question.Type.NAME);
 		} else if (questionType.equals("VIDEO")) {
 			q.setType(Question.Type.VIDEO);
 		}
 
-		if (mandatoryFlag != null) {
-			q.setMandatoryFlag(mandatoryFlag);
+		if (req.getMandatoryFlag() != null) {
+			q.setMandatoryFlag(req.getMandatoryFlag());
 		}
 
 		// deal with options and dependencies
-
+		String dependentQuestion = req.getDependQuestion();
 		if (dependentQuestion != null && dependentQuestion.trim().length() > 1) {
 			String[] parts = dependentQuestion.split("\\|");
 			Integer quesitonOrderId = new Integer(parts[0]);
@@ -556,12 +560,14 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				translationDao.save(t);
 			}
 		}
+		String scoring = req.getScoring();
 		if (scoring != null && scoring.trim().length() > 0
 				&& !"null".equalsIgnoreCase(scoring)) {
 			List<ScoringRule> rules = parseScoring(scoring, q.getKey().getId());
 			scoringRuleDao.save(rules);
 			q.setScoringRules(rules);
 		}
+		
 
 		qg.addQuestion(questionOrder, q);
 		qgDao.save(qg);
