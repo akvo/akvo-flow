@@ -191,5 +191,5 @@
 	<string name="pleasewaitforbootstrap">Please wait until the bootstrap file has finished processing.</string>
 	<string name="surveychecklabel">Automatically Check for Survey Updates</string>
 	<string name="uploaderrorlabel">Automatically Upload App Errors</string>
-	<string name="appversion">1.9.18</string>
+	<string name="appversion">1.9.19</string>
 </resources>
