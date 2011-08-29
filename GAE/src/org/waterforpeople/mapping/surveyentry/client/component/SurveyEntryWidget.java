@@ -184,12 +184,14 @@ public class SurveyEntryWidget extends Composite implements
 				if (value != null) {
 					boolean isMatch = false;
 					String[] tokens = value.split("\\|");
-
+					String[] depVals = dep.getAnswerValue().trim().split(QuestionDto.ANS_DELIM_REGEX);
 					for (int i = 0; i < tokens.length; i++) {
-						if (dep.getAnswerValue().trim().equalsIgnoreCase(
-								tokens[i].trim())) {
-							isMatch = true;
-						}
+						for(int j=0; j < depVals.length; j++){
+							if(tokens[i].trim().equalsIgnoreCase(depVals[j])){
+								isMatch = true;
+								break;
+							}
+						}						
 					}
 					w.setVisible(isMatch);
 				}
