@@ -11,8 +11,11 @@ import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 public class QuestionDto extends BaseDto implements NamedObject {
 
 	private static final long serialVersionUID = -4708385830894435407L;
-
+	public static final String ANS_DELIM = "|";
+	public static final String ANS_DELIM_REGEX = "\\|";
+	
 	private String text;
+	
 
 	private QuestionType type;
 	private OptionContainerDto optionContainerDto = null;

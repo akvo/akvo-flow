@@ -237,10 +237,11 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		dependentQuestionSelector.addChangeHandler(this);
 		dependentQuestionSelector.addItem(SELECT_TXT);
 
-		dependentAnswerSelector = new ListBox();
+		dependentAnswerSelector = new ListBox(true);
 		dependentAnswerSelector.addChangeHandler(this);
 		dependentAnswerSelector.addItem(SELECT_TXT);
 		dependentAnswerSelector.setWidth(DEFAULT_BOX_WIDTH);
+		dependentAnswerSelector.setVisibleItemCount(4);
 
 		dependencyGrid = new Grid(3, 2);
 		dependencyPanel.add(dependencyGrid);
@@ -707,18 +708,22 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		// now add the "select" item
 		dependentAnswerSelector.addItem(SELECT_TXT);
 		if (options != null) {
+			String[] answers = null;
+			if(currentQuestion != null){
+				if(currentQuestion.getQuestionDependency()!=null && currentQuestion.getQuestionDependency().getAnswerValue()!=null){
+					answers = currentQuestion.getQuestionDependency().getAnswerValue().split(QuestionDto.ANS_DELIM_REGEX);
+				}
+			}
 			for (int i = 0; i < options.size(); i++) {
 				dependentAnswerSelector.addItem(options.get(i).getText(),
-						options.get(i).getText());
-				if (currentQuestion != null
-						&& currentQuestion.getQuestionDependency() != null
-						&& options
-								.get(i)
-								.getText()
-								.equals(currentQuestion.getQuestionDependency()
-										.getAnswerValue())) {
-					dependentAnswerSelector.setSelectedIndex(i + 1);
-				}
+						options.get(i).getText());				
+				if(answers != null){
+					for(int j =0; j < answers.length; j++){
+						if(options.get(i).getText().equals(answers[j])){
+							dependentAnswerSelector.setItemSelected(i + 1,true);		
+						}
+					}
+				}					
 			}
 		}
 	}
@@ -1013,13 +1018,21 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 							.parseLong(dependentQuestionSelector
 									.getValue(dependentQuestionSelector
 											.getSelectedIndex())));
-					if (dependentAnswerSelector.getSelectedIndex() == 0) {
+					if (dependentAnswerSelector.getSelectedIndex() <= 0) {
 						validationMessages.add(TEXT_CONSTANTS
 								.dependentResponseMandatory());
 					} else {
-						depDto.setAnswerValue(dependentAnswerSelector
-								.getValue(dependentAnswerSelector
-										.getSelectedIndex()));
+						//start at 1 since 0 is the "SELECT" text
+						StringBuilder builder = new StringBuilder();
+						for(int i =1; i < dependentAnswerSelector.getItemCount();i++){
+							if(dependentAnswerSelector.isItemSelected(i)){
+								if(builder.length()>0){
+									builder.append(QuestionDto.ANS_DELIM);
+								}
+								builder.append(dependentAnswerSelector.getValue(i));
+							}
+						}
+						depDto.setAnswerValue(builder.toString());
 					}
 				}
 			} else {
