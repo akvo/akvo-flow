@@ -30,4 +30,20 @@ public class Dependency {
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
+
+	public boolean isMatch(String val) {
+		boolean isMatch = false;
+		if (answer != null) {
+			String[] tokens = answer.split("\\|");
+			for (int i = 0; i < tokens.length; i++) {
+				if (tokens[i].trim().equals(val.trim())) {
+					isMatch = true;
+					break;
+				}
+			}
+		} else if (val == null) {
+			isMatch = true;
+		}
+		return isMatch;
+	}
 }

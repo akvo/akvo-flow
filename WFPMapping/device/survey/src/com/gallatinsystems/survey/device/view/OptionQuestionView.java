@@ -104,14 +104,14 @@ public class OptionQuestionView extends QuestionView {
 									displayOtherDialog();
 								}
 							} else if (position == 0) {
-								if(otherText != null){
+								if (otherText != null) {
 									otherText.setText("");
 								}
 								setResponse(new QuestionResponse("",
 										ConstantUtil.VALUE_RESPONSE_TYPE,
 										question.getId()));
 							} else {
-								if(otherText != null){
+								if (otherText != null) {
 									otherText.setText("");
 								}
 								setResponse(new QuestionResponse(question
@@ -240,11 +240,11 @@ public class OptionQuestionView extends QuestionView {
 						checkBoxes.get(i).setEnabled(false);
 					}
 				}
-			}			
+			}
 			if (tr.getChildCount() > 0) {
 				addView(tr);
 			}
-			if(question.isAllowOther()){
+			if (question.isAllowOther()) {
 				otherText = new TextView(context);
 				otherText.setWidth(getMaxTextWidth());
 				addView(otherText);
@@ -411,8 +411,10 @@ public class OptionQuestionView extends QuestionView {
 							.equals(ConstantUtil.OTHER_RESPONSE_TYPE))) {
 				displayOtherDialog();
 			} else if (!isChecked && getResponse() != null) {
-				//since they unchecked "Other", clear the display
-				otherText.setText("");				
+				// since they unchecked "Other", clear the display
+				if (otherText != null) {
+					otherText.setText("");
+				}
 				getResponse().setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 			}
 
@@ -421,8 +423,11 @@ public class OptionQuestionView extends QuestionView {
 					|| (question.isAllowMultiple() && (getResponse() == null
 							|| getResponse().getValue() == null || getResponse()
 							.getValue().trim().length() == 0))) {
-				//if we don't allow multiple and they didn't select other, we can clear the otherText
-				otherText.setText("");
+				// if we don't allow multiple and they didn't select other, we
+				// can clear the otherText
+				if (otherText != null) {
+					otherText.setText("");
+				}
 				setResponse(new QuestionResponse(idToValueMap.get(checkedId),
 						ConstantUtil.VALUE_RESPONSE_TYPE, question.getId()));
 			} else {
@@ -514,10 +519,10 @@ public class OptionQuestionView extends QuestionView {
 									ConstantUtil.OTHER_RESPONSE_TYPE, question
 											.getId()));
 						}
-						//update the UI with the other text
-						
-						otherText.setText(latestOtherText);
-						
+						// update the UI with the other text
+						if (otherText != null) {
+							otherText.setText(latestOtherText);
+						}
 						dialog.dismiss();
 					}
 				});
@@ -553,10 +558,9 @@ public class OptionQuestionView extends QuestionView {
 									.getType()) && idToValueMap.get(key)
 									.equals(OTHER_TEXT))) {
 						optionGroup.check(key);
-						if(idToValueMap.get(key)
-									.equals(OTHER_TEXT)){
+						if (idToValueMap.get(key).equals(OTHER_TEXT)) {
 							String txt = resp.getValue();
-							if(txt != null){
+							if (txt != null) {
 								otherText.setText(txt);
 							}
 						}
@@ -592,13 +596,12 @@ public class OptionQuestionView extends QuestionView {
 									.getType()) && idToValueMap.get(key)
 									.equals(OTHER_TEXT))) {
 						checkBoxes.get(key.intValue()).setChecked(true);
-						if(idToValueMap.get(key)
-								.equals(OTHER_TEXT)){
-						String txt = resp.getValue();
-						if(txt != null){
-							otherText.setText(txt);
+						if (idToValueMap.get(key).equals(OTHER_TEXT)) {
+							String txt = resp.getValue();
+							if (txt != null) {
+								otherText.setText(txt);
+							}
 						}
-					}
 					}
 				}
 			}
@@ -611,8 +614,8 @@ public class OptionQuestionView extends QuestionView {
 					// OTHER options which both aren't in the options
 					// collection)
 					spinner.setSelection(options.size() + 1);
-					if(resp.getValue() != null){
-					otherText.setText(resp.getValue());
+					if (resp.getValue() != null) {
+						otherText.setText(resp.getValue());
 					}
 				} else {
 					boolean found = false;

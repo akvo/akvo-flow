@@ -364,7 +364,7 @@ public class QuestionView extends TableLayout implements
 		boolean isMatch = false;
 		if (dep.getAnswer() != null
 				&& resp != null
-				&& dep.getAnswer().equalsIgnoreCase(resp.getValue())
+				&& dep.isMatch(resp.getValue())
 				&& (resp.getIncludeFlag() == null || "true"
 						.equalsIgnoreCase(resp.getIncludeFlag()))) {
 			isMatch = true;
@@ -376,8 +376,7 @@ public class QuestionView extends TableLayout implements
 				StringTokenizer strTok = new StringTokenizer(resp.getValue(),
 						"|");
 				while (strTok.hasMoreTokens()) {
-					if (dep.getAnswer().trim()
-							.equalsIgnoreCase(strTok.nextToken().trim())) {
+					if (dep.isMatch(strTok.nextToken().trim())) {
 						isMatch = true;
 					}
 				}
