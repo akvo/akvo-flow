@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.text.Html;
 import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
@@ -28,6 +29,8 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -39,8 +42,10 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  */
 public class SettingsActivity extends ListActivity {
 
+	private static final String TAG = "SettingsActivity";
 	private static final String LABEL = "label";
 	private static final String DESC = "desc";
+	private PropertyUtil props;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,6 +54,7 @@ public class SettingsActivity extends ListActivity {
 
 		ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 		Resources resources = getResources();
+		props = new PropertyUtil(resources);
 		list.add(createMap(resources.getString(R.string.prefoptlabel),
 				resources.getString(R.string.prefoptdesc)));
 		list.add(createMap(resources.getString(R.string.sendoptlabel),
@@ -278,11 +284,94 @@ public class SettingsActivity extends ListActivity {
 						new ViewUtil.AdminAuthDialogListener() {
 							@Override
 							public void onAuthenticated() {
-								SurveyDbAdapter database = new SurveyDbAdapter(
+								AlertDialog.Builder builder = new AlertDialog.Builder(
 										SettingsActivity.this);
-								database.open();
-								database.clearAllData();
-								database.close();
+								builder.setMessage(
+										R.string.deletealldatawarning)
+										.setCancelable(true)
+										.setPositiveButton(
+												R.string.okbutton,
+												new DialogInterface.OnClickListener() {
+													public void onClick(
+															DialogInterface dialog,
+															int id) {
+														SurveyDbAdapter database = new SurveyDbAdapter(
+																SettingsActivity.this);
+														database.open();
+														database.clearAllData();
+														database.close();
+														// now delete all files
+														try {
+															// delete downloaded
+															// survey xml/zips
+															String useInternalStorage = props
+																	.getProperty(ConstantUtil.USE_INTERNAL_STORAGE);
+															FileUtil.deleteFilesInDirectory(
+																	new File(
+																			FileUtil.getStorageDirectory(
+																					ConstantUtil.DATA_DIR,
+																					useInternalStorage)),
+																	false);
+															// delete stacktrace
+															// files (depending
+															// on SD card state,
+															// they may be
+															// written to both
+															// internal and
+															// external storage
+															try {
+																FileUtil.deleteFilesInDirectory(
+																		new File(
+																				FileUtil.getStorageDirectory(
+																						ConstantUtil.STACKTRACE_DIR,
+																						"false")),
+																		false);
+															} catch (Exception e) {
+																Log.e(TAG,
+																		"Could not delete stacktraces on SD card",
+																		e);
+															}
+															try {
+																FileUtil.deleteFilesInDirectory(
+																		new File(
+																				FileUtil.getStorageDirectory(
+																						ConstantUtil.STACKTRACE_DIR,
+																						"true")),
+																		false);
+															} catch (Exception e) {
+																Log.e(TAG,
+																		"Could not delete stacktraces on internal storage",
+																		e);
+															}
+															//delete bootstraps
+															FileUtil.deleteFilesInDirectory(
+																	new File(
+																			FileUtil.getStorageDirectory(
+																					ConstantUtil.BOOTSTRAP_DIR,
+																					useInternalStorage)),
+																	false);
+															
+															//now delete exported zips and images
+															FileUtil.deleteFilesMatchingExpression(Environment.getExternalStorageDirectory().getAbsolutePath(),"wfp[0-9]+\\.zip");
+															FileUtil.deleteFilesMatchingExpression(Environment.getExternalStorageDirectory().getAbsolutePath(),"wfpPhoto[0-9]+\\.jpg");
+
+														} catch (Exception e) {
+															Log.e(TAG,
+																	"could not delete files",
+																	e);
+														}
+													}
+												})
+										.setNegativeButton(
+												R.string.cancelbutton,
+												new DialogInterface.OnClickListener() {
+													public void onClick(
+															DialogInterface dialog,
+															int id) {
+														dialog.cancel();
+													}
+												});
+								builder.show();
 							}
 						});
 			} else if (resources.getString(R.string.checksd).equals(val)) {
@@ -305,7 +394,9 @@ public class SettingsActivity extends ListActivity {
 							long space = fs.getFreeBlocks() * fs.getBlockSize();
 							builder.append(
 									resources.getString(R.string.sdcardspace))
-									.append(String.format(" %.2f", (double)space/(double)(1024*1024)));
+									.append(String.format(" %.2f",
+											(double) space
+													/ (double) (1024 * 1024)));
 						}
 					}
 				}

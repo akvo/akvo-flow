@@ -130,6 +130,7 @@
 	<string name="deleteall">Delete all</string>
 	<string name="submittedsurveysmenu">Submitted Surveys</string>
 	<string name="deleteallwarning">This will permanently delete all survey responses (saved AND submitted) on the device. Click OK to proceed or cancel to abort.</string>
+	<string name="deletealldatawarning">This will permanently all data on the device. This operation is not reversible. Click OK to proceed or cancel to abort.</string>
 	<string name="deleteonewarning">This will permanently delete this survey response. Click OK to proceed or cancel to abort.</string>
 	<string name="waterflowcalclabel">Waterflow Calculator</string>
 	<string name="calctext">Fill in any two values and click solve to calculate the third.</string>
@@ -180,7 +181,7 @@
 	<string name="uploaderror">Error while uploading</string>
 	<string name="captureheading">Capture Heading</string>
 	<string name="resetall">Delete All Data</string>
-	<string name="resetalldesc">Permanently deletes all surveys, responses and users</string>
+	<string name="resetalldesc">Permanently deletes all surveys, responses (including images and exported zip files) and users</string>
 	<string name="checksd">Check SD Card State</string>
 	<string name="checksddesc">Checks to see that the SD card is mounted and displays the free space remaining on the card.</string>
 	<string name="sdmissing">SD card missing or unmounted. Ensure that you have turned off "USB File Copying"</string>

@@ -198,4 +198,54 @@ public class FileUtil {
 		return dir;
 	}
 
+	/**
+	 * deletes all files in the directory (recursively) AND then deletes the
+	 * directory itself if the "deleteFlag" is true
+	 * 
+	 * @param dir
+	 */
+	public static void deleteFilesInDirectory(File dir, boolean deleteDir) {
+		if (dir != null && dir.isDirectory()) {
+			File[] files = dir.listFiles();
+			if (files != null) {
+				for (int i = 0; i < files.length; i++) {
+					if (files[i].isFile()) {
+						files[i].delete();
+					} else {
+						// recursively delete
+						deleteFilesInDirectory(files[i], true);
+					}
+				}
+			}
+			// now delete the directory itself
+			if (deleteDir) {
+				dir.delete();
+			}
+		}
+	}
+
+	/**
+	 * non-recursive delete of all files in a single directory that match the
+	 * expression (regex) passed in
+	 * 
+	 * @param path
+	 * @param expression
+	 */
+	public static void deleteFilesMatchingExpression(String path,
+			String expression) {
+		if(path != null){
+			File dir = new File(path);
+			if(dir.isDirectory()){
+				File[] files = dir.listFiles();
+				if(files != null){
+					for (int i =0; i < files.length; i++){
+						if(files[i].getName().matches(expression)){
+							files[i].delete();
+						}
+					}
+				}
+			}
+		}
+	}
+
 }
