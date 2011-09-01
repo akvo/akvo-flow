@@ -14,4 +14,12 @@ public interface SurveyMetricMappingServiceAsync {
 			List<SurveyMetricMappingDto> mappings,
 			AsyncCallback<List<SurveyMetricMappingDto>> callback);
 
+
+	void listMappingsByQuestion(Long questionId,
+			AsyncCallback<List<SurveyMetricMappingDto>> callback);
+
+
+	void saveMapping(SurveyMetricMappingDto mapping,
+			AsyncCallback<SurveyMetricMappingDto> callback);
+
 }

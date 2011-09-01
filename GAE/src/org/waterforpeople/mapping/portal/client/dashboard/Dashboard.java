@@ -312,13 +312,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 						}
 					});
-			if (LOCALE_DOMAIN.equalsIgnoreCase(domainType)) {
 				mgrMenu.addItem(TEXT_CONSTANTS.metricManager(), new Command() {
 					public void execute() {
 						launchFullscreen(MetricManagerPortlet.NAME);
 					}
 				});
-			}
+
 		}
 
 		menu.addItem(TEXT_CONSTANTS.dataManagers(), mgrMenu);

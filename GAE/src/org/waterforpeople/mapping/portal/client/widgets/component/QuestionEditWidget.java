@@ -10,6 +10,9 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricService;
+import org.waterforpeople.mapping.app.gwt.client.survey.MetricServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -17,6 +20,9 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingService;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
@@ -24,6 +30,7 @@ import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveyNavigationWidget.MODE;
 
 import com.gallatinsystems.framework.gwt.component.PageController;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -92,6 +99,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private CheckBox immutableBox;
 	private ListBox dependentQuestionSelector;
 	private ListBox dependentAnswerSelector;
+	private ListBox metricSelector;
 	private CaptionPanel dependencyPanel;
 	private Button viewTreeButton;
 	private CaptionPanel navPanel;
@@ -108,6 +116,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private FlexTable optionTable;
 	private Label orderLabel;
 	private SurveyServiceAsync surveyService;
+	private MetricServiceAsync metricService;
+	private SurveyMetricMappingServiceAsync metricMappingService;
 	private Map<String, Object> bundle;
 	private QuestionDto currentQuestion;
 	private QuestionDto insertAboveQuestion;
@@ -123,9 +133,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	private String locale;
 	private UserDto currentUser;
 	private PageController controller;
+	private List<MetricDto> metricList;
 
 	public QuestionEditWidget(UserDto user, PageController controller) {
 		surveyService = GWT.create(SurveyService.class);
+		metricService = GWT.create(MetricService.class);
+		metricMappingService = GWT.create(SurveyMetricMappingService.class);
 		currentUser = user;
 		this.controller = controller;
 		optionQuestions = new HashMap<Long, List<QuestionDto>>();
@@ -185,12 +198,15 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		questionTypeSelector.addItem(TEXT_CONSTANTS.date(),
 				QuestionDto.QuestionType.DATE.toString());
 		questionTypeSelector.addChangeHandler(this);
+
+		metricSelector = new ListBox();
+		metricSelector.addItem("", "");
 		navPanel = new CaptionPanel(TEXT_CONSTANTS.surveyNavigation());
 		panel.add(navPanel);
 		basePanel = new CaptionPanel(TEXT_CONSTANTS.questionBasics());
 
 		int row = 0;
-		Grid grid = new Grid(10, 2);
+		Grid grid = new Grid(11, 2);
 		basePanel.add(grid);
 
 		ViewUtil.installGridRow(TEXT_CONSTANTS.questionText(),
@@ -219,9 +235,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		ViewUtil.installGridRow(TEXT_CONSTANTS.isDecimal(), allowDecimal,
 				validationGrid, 2);
 		numericValidationPanel.add(validationGrid);
-		
+
 		ViewUtil.installGridRow(TEXT_CONSTANTS.validationRules(),
 				validationPanel, grid, row++);
+
+		ViewUtil.installGridRow(TEXT_CONSTANTS.metric(), metricSelector, grid,
+				row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.collapseable(), collapseableBox,
 				grid, row++);
 		ViewUtil.installGridRow(TEXT_CONSTANTS.immutable(), immutableBox, grid,
@@ -709,21 +728,26 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		dependentAnswerSelector.addItem(SELECT_TXT);
 		if (options != null) {
 			String[] answers = null;
-			if(currentQuestion != null){
-				if(currentQuestion.getQuestionDependency()!=null && currentQuestion.getQuestionDependency().getAnswerValue()!=null){
-					answers = currentQuestion.getQuestionDependency().getAnswerValue().split(QuestionDto.ANS_DELIM_REGEX);
+			if (currentQuestion != null) {
+				if (currentQuestion.getQuestionDependency() != null
+						&& currentQuestion.getQuestionDependency()
+								.getAnswerValue() != null) {
+					answers = currentQuestion.getQuestionDependency()
+							.getAnswerValue()
+							.split(QuestionDto.ANS_DELIM_REGEX);
 				}
 			}
 			for (int i = 0; i < options.size(); i++) {
 				dependentAnswerSelector.addItem(options.get(i).getText(),
-						options.get(i).getText());				
-				if(answers != null){
-					for(int j =0; j < answers.length; j++){
-						if(options.get(i).getText().equals(answers[j])){
-							dependentAnswerSelector.setItemSelected(i + 1,true);		
+						options.get(i).getText());
+				if (answers != null) {
+					for (int j = 0; j < answers.length; j++) {
+						if (options.get(i).getText().equals(answers[j])) {
+							dependentAnswerSelector
+									.setItemSelected(i + 1, true);
 						}
 					}
-				}					
+				}
 			}
 		}
 	}
@@ -776,7 +800,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 											.getQuestionMap().size() : "0")
 									+ "items");
 					surveyService.listQuestionsByQuestionGroup(currentQuestion
-							.getQuestionGroupId().toString(), false,false,
+							.getQuestionGroupId().toString(), false, false,
 							new AsyncCallback<ArrayList<QuestionDto>>() {
 
 								@Override
@@ -869,6 +893,41 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					@Override
 					public void onSuccess(QuestionDto result) {
 						currentQuestion = result;
+						if (metricSelector.getSelectedIndex() > 0) {
+							SurveyMetricMappingDto mapping = new SurveyMetricMappingDto();
+							mapping.setSurveyQuestionId(currentQuestion
+									.getKeyId());
+							mapping.setMetricId(new Long(ViewUtil
+									.getListBoxSelection(metricSelector, true)));
+							mapping.setQuestionGroupId(currentQuestion
+									.getQuestionGroupId());
+							mapping.setSurveyId(currentQuestion.getSurveyId());
+							metricMappingService
+									.saveMapping(
+											mapping,
+											new AsyncCallback<SurveyMetricMappingDto>() {
+
+												@Override
+												public void onFailure(
+														Throwable caught) {
+													MessageDialog dia = new MessageDialog(
+															TEXT_CONSTANTS
+																	.error(),
+															TEXT_CONSTANTS
+																	.errorTracePrefix()
+																	+ " "
+																	+ caught.getLocalizedMessage());
+													dia.showCentered();
+
+												}
+
+												@Override
+												public void onSuccess(
+														SurveyMetricMappingDto result) {
+													// no-op
+												}
+											});
+						}
 						if (insertAboveQuestion != null) {
 							// set to null so we don't keep bumping it up on
 							// subsequent saves if the user doesn't navigate off
@@ -1022,14 +1081,16 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 						validationMessages.add(TEXT_CONSTANTS
 								.dependentResponseMandatory());
 					} else {
-						//start at 1 since 0 is the "SELECT" text
+						// start at 1 since 0 is the "SELECT" text
 						StringBuilder builder = new StringBuilder();
-						for(int i =1; i < dependentAnswerSelector.getItemCount();i++){
-							if(dependentAnswerSelector.isItemSelected(i)){
-								if(builder.length()>0){
+						for (int i = 1; i < dependentAnswerSelector
+								.getItemCount(); i++) {
+							if (dependentAnswerSelector.isItemSelected(i)) {
+								if (builder.length() > 0) {
 									builder.append(QuestionDto.ANS_DELIM);
 								}
-								builder.append(dependentAnswerSelector.getValue(i));
+								builder.append(dependentAnswerSelector
+										.getValue(i));
 							}
 						}
 						depDto.setAnswerValue(builder.toString());
@@ -1082,6 +1143,96 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	}
 
 	/**
+	 * populates the metric selector AND sets the list in the context bundle so
+	 * we don't need to hit the server all the time
+	 */
+	private void loadMetrics(String cursor) {
+		metricService.listMetrics(null, null, null, null, null,
+				new AsyncCallback<ResponseDto<ArrayList<MetricDto>>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						MessageDialog dia = new MessageDialog(TEXT_CONSTANTS
+								.error(), TEXT_CONSTANTS.errorTracePrefix()
+								+ " " + caught.getLocalizedMessage());
+						dia.showCentered();
+					}
+
+					@Override
+					public void onSuccess(
+							ResponseDto<ArrayList<MetricDto>> result) {
+						if (result != null && result.getPayload() != null) {
+							populateMetricControl(result.getPayload());
+							metricList.addAll(result.getPayload());
+							if (result.getCursorString() != null
+									&& result.getPayload().size() == ResponseDto.DEFAULT_PAGE_SIZE) {
+								loadMetrics(result.getCursorString());
+							}
+						} else {
+							loadMetricMapping();
+						}
+					}
+				});
+	}
+
+	/**
+	 * installs metrics into the selection dialog
+	 * 
+	 * @param metrics
+	 */
+	private void populateMetricControl(List<MetricDto> metrics) {
+		if (metrics != null) {
+			for (MetricDto dto : metrics) {
+				metricSelector
+						.addItem(dto.getName(), dto.getKeyId().toString());
+			}
+		}
+	}
+
+	/**
+	 * loads the mapping (if any) for this question if it's saved TODO: see if
+	 * we need to handle multiple mappings per question
+	 */
+	private void loadMetricMapping() {
+		if (currentQuestion != null && currentQuestion.getKeyId() != null) {
+			metricMappingService.listMappingsByQuestion(
+					currentQuestion.getKeyId(),
+					new AsyncCallback<List<SurveyMetricMappingDto>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							MessageDialog dia = new MessageDialog(
+									TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+											.errorTracePrefix()
+											+ " "
+											+ caught.getLocalizedMessage());
+							dia.showCentered();
+						}
+
+						@Override
+						public void onSuccess(
+								List<SurveyMetricMappingDto> result) {
+							if (result != null) {
+								for (SurveyMetricMappingDto mapping : result) {
+									for (int i = 0; i < metricSelector
+											.getItemCount(); i++) {
+										if (mapping
+												.getMetricId()
+												.toString()
+												.equals(metricSelector
+														.getValue(i))) {
+											metricSelector.setSelectedIndex(i);
+											return;
+										}
+									}
+								}
+							}
+						}
+					});
+		}
+	}
+
+	/**
 	 * installs the contextBundle and triggers invocation of the populateFields
 	 * method (if there is a questionDto in the bundle).
 	 */
@@ -1092,6 +1243,19 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 		currentQuestion = (QuestionDto) bundle
 				.get(BundleConstants.QUESTION_KEY);
 
+		if (bundle.get(BundleConstants.METRIC_LIST) != null) {
+			metricList = (List<MetricDto>) bundle
+					.get(BundleConstants.METRIC_LIST);
+			populateMetricControl(metricList);
+			loadMetricMapping();
+		} else {
+			metricList = new ArrayList<MetricDto>();
+			loadMetrics(null);
+			if (this.bundle == null) {
+				this.bundle = new HashMap<String, Object>();
+			}
+			this.bundle.put(BundleConstants.METRIC_LIST, metricList);
+		}
 		insertAboveQuestion = (QuestionDto) bundle
 				.get(BundleConstants.INSERT_ABOVE_QUESTION);
 		bundle.remove(BundleConstants.INSERT_ABOVE_QUESTION);

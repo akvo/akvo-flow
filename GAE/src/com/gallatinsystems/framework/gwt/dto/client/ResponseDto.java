@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class ResponseDto<T extends Serializable> implements Serializable {
 	
 	private static final long serialVersionUID = -670907947130363885L;
+	public static final int DEFAULT_PAGE_SIZE = 20;
 	private String cursorString = null;
 	private T payload = null;
 

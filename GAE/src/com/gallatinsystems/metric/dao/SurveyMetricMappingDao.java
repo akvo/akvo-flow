@@ -61,6 +61,16 @@ public class SurveyMetricMappingDao extends BaseDAO<SurveyMetricMapping> {
 	}
 
 	/**
+	 * lists all mappings for a single question
+	 * 
+	 * @param questionId
+	 * @return
+	 */
+	public List<SurveyMetricMapping> listMappingsByQuestion(Long questionId) {
+		return listByProperty("surveyQuestionId", questionId, "Long");
+	}
+
+	/**
 	 * deletes all mappings for a given questionGroupId
 	 * 
 	 * @param surveyId

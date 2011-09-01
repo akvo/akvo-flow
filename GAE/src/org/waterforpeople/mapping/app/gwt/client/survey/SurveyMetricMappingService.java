@@ -19,6 +19,13 @@ public interface SurveyMetricMappingService extends RemoteService {
 	 */
 	public List<SurveyMetricMappingDto> listMappingsBySurvey(Long surveyId);
 
+	
+	/**
+	 * lists all mappings for a single question
+	 * @param questionId
+	 * @return
+	 */
+	public List<SurveyMetricMappingDto> listMappingsByQuestion(Long questionId);
 
 	/**
 	 * saves all mappings within a single quesiton group. Existing mappings for
@@ -30,5 +37,12 @@ public interface SurveyMetricMappingService extends RemoteService {
 	 */
 	public List<SurveyMetricMappingDto> saveMappings(Long questionGroupId,
 			List<SurveyMetricMappingDto> mappings);
+	
+	/**
+	 * saves the new mapping (replacing the old ones, if needed)
+	 * @param mapping
+	 * @return
+	 */
+	public SurveyMetricMappingDto saveMapping(SurveyMetricMappingDto mapping);
 
 }
