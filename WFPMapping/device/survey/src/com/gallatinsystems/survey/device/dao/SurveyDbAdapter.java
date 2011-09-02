@@ -668,6 +668,9 @@ public class SurveyDbAdapter {
 			responseToSave.setValue(resp.getValue());
 			responseToSave.setStrength(resp.getStrength());
 			responseToSave.setScoredValue(resp.getScoredValue());
+			if(resp.getType() != null){
+				responseToSave.setType(resp.getType());
+			}
 		} else {
 			responseToSave = resp;
 		}

@@ -415,7 +415,14 @@ public class OptionQuestionView extends QuestionView {
 				if (otherText != null) {
 					otherText.setText("");
 				}
-				getResponse().setType(ConstantUtil.VALUE_RESPONSE_TYPE);
+				latestOtherText = "";
+				QuestionResponse r = getResponse();				
+				r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
+				if (question.isAllowMultiple()) {
+					r.setValue(getMultipleSelections());
+				}else{
+					r.setValue("");
+				}
 			}
 
 		} else {
@@ -434,7 +441,7 @@ public class OptionQuestionView extends QuestionView {
 				// if there is already a response and we support multiple,
 				// we have to combine
 				QuestionResponse r = getResponse();
-				String newResponse = getMultipleSelections(r);
+				String newResponse = getMultipleSelections();
 				r.setValue(newResponse);
 				r.setType(ConstantUtil.VALUE_RESPONSE_TYPE);
 				notifyQuestionListeners(QuestionInteractionEvent.QUESTION_ANSWER_EVENT);
@@ -449,7 +456,7 @@ public class OptionQuestionView extends QuestionView {
 	 * @param r
 	 * @return
 	 */
-	private String getMultipleSelections(QuestionResponse r) {
+	private String getMultipleSelections() {
 		StringBuffer newResponse = new StringBuffer();
 		int count = 0;
 		if (checkBoxes != null) {
@@ -502,13 +509,8 @@ public class OptionQuestionView extends QuestionView {
 							// if we support multiple, we need to append the
 							// answer
 							QuestionResponse r = getResponse();
-							String responseText = getMultipleSelections(r);
-							if (responseText.trim().length() > 0) {
-								responseText = responseText + "|"
-										+ latestOtherText;
-							} else {
-								responseText = latestOtherText;
-							}
+							String responseText = getMultipleSelections();
+							
 							setResponse(new QuestionResponse(responseText,
 									ConstantUtil.OTHER_RESPONSE_TYPE, question
 											.getId()));
@@ -570,6 +572,9 @@ public class OptionQuestionView extends QuestionView {
 			} else if (checkBoxes != null) {
 				if (resp.getValue() != null
 						&& resp.getValue().trim().length() > 0) {
+					// if the response text matches the text stored for this
+					// option ID OR if the response is the "OTHER" type and the
+					// id matches the other option, select it
 					List<String> valList = Arrays.asList(resp.getValue().split(
 							"\\|"));
 					for (Integer key : idToValueMap.keySet()) {
@@ -587,23 +592,6 @@ public class OptionQuestionView extends QuestionView {
 					}
 				}
 
-				for (Integer key : idToValueMap.keySet()) {
-					// if the response text matches the text stored for this
-					// option ID OR if the response is the "OTHER" type and the
-					// id matches the other option, select it
-					if (idToValueMap.get(key).equals(resp.getValue())
-							|| (ConstantUtil.OTHER_RESPONSE_TYPE.equals(resp
-									.getType()) && idToValueMap.get(key)
-									.equals(OTHER_TEXT))) {
-						checkBoxes.get(key.intValue()).setChecked(true);
-						if (idToValueMap.get(key).equals(OTHER_TEXT)) {
-							String txt = resp.getValue();
-							if (txt != null) {
-								otherText.setText(txt);
-							}
-						}
-					}
-				}
 			}
 			if (spinner != null && resp.getValue() != null) {
 				ArrayList<Option> options = question.getOptions();
