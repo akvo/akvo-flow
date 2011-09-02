@@ -44,5 +44,11 @@ public interface SurveyMetricMappingService extends RemoteService {
 	 * @return
 	 */
 	public SurveyMetricMappingDto saveMapping(SurveyMetricMappingDto mapping);
+	
+	/**
+	 * deletes all mappings for a single question
+	 * 
+	 */
+	public void deleteMetricMapping(Long questionId);
 
 }

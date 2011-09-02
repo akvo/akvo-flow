@@ -36,6 +36,19 @@ public class SurveyMetricMappingServiceImpl extends RemoteServiceServlet
 	}
 
 	/**
+	 * deletes all mappings for a single question
+	 * 
+	 */
+	@Override
+	public void deleteMetricMapping(Long questionId) {
+		List<SurveyMetricMapping> mappings = mappingDao
+				.listMappingsByQuestion(questionId);
+		if (mappings != null && mappings.size() > 0) {
+			mappingDao.delete(mappings);
+		}
+	}
+
+	/**
 	 * lists all mappings for a single survey
 	 */
 	@Override
@@ -80,26 +93,28 @@ public class SurveyMetricMappingServiceImpl extends RemoteServiceServlet
 		}
 		return mappings;
 	}
-	
+
 	/**
 	 * saves the new mapping (replacing the old ones, if needed)
+	 * 
 	 * @param mapping
 	 * @return
 	 */
 	@Override
-	public SurveyMetricMappingDto saveMapping(SurveyMetricMappingDto mapping){
-		if(mapping != null && mapping.getKeyId() == null){
-			List<SurveyMetricMapping> oldMappings = mappingDao.listMappingsByQuestion(mapping.getSurveyQuestionId());
-			if(oldMappings != null){
+	public SurveyMetricMappingDto saveMapping(SurveyMetricMappingDto mapping) {
+		if (mapping != null && mapping.getKeyId() == null) {
+			List<SurveyMetricMapping> oldMappings = mappingDao
+					.listMappingsByQuestion(mapping.getSurveyQuestionId());
+			if (oldMappings != null) {
 				mappingDao.delete(oldMappings);
 			}
 		}
-		if(mapping != null){
+		if (mapping != null) {
 			SurveyMetricMapping mappingDomain = new SurveyMetricMapping();
 			DtoMarshaller.copyToCanonical(mappingDomain, mapping);
 			mappingDomain = mappingDao.save(mappingDomain);
 			mapping.setKeyId(mappingDomain.getKey().getId());
-		}		
+		}
 		return mapping;
 	}
 

@@ -927,6 +927,21 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 													// no-op
 												}
 											});
+						} else {
+							metricMappingService.deleteMetricMapping(
+									currentQuestion.getKeyId(),
+									new AsyncCallback<Void>() {
+
+										@Override
+										public void onFailure(Throwable caught) {
+											// no-op
+										}
+
+										@Override
+										public void onSuccess(Void result) {
+											// no-op
+										}
+									});
 						}
 						if (insertAboveQuestion != null) {
 							// set to null so we don't keep bumping it up on

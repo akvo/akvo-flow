@@ -22,4 +22,7 @@ public interface SurveyMetricMappingServiceAsync {
 	void saveMapping(SurveyMetricMappingDto mapping,
 			AsyncCallback<SurveyMetricMappingDto> callback);
 
+
+	void deleteMetricMapping(Long questionId, AsyncCallback<Void> callback);
+
 }
