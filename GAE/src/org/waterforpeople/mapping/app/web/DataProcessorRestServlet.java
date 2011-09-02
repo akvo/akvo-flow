@@ -154,7 +154,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						if (lines != null) {
 							for (String line : lines) {
 								String[] parts = line.split("\t");
-								if (parts.length >= 5) {
+								if (parts.length > 5) {
 									if (parts[5] != null
 											&& parts[5].trim().length() > 0) {
 										inst.setSubmitterName(parts[5]);
