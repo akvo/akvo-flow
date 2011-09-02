@@ -49,6 +49,8 @@ import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
+import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
+import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
@@ -331,7 +333,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		qDto.setMinVal(q.getMinVal());
 		qDto.setMaxVal(q.getMaxVal());
 		qDto.setIsName(q.getIsName());
-
 
 		if (q.getQuestionHelpMediaMap() != null) {
 			for (QuestionHelpMedia help : q.getQuestionHelpMediaMap().values()) {
@@ -1226,6 +1227,25 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		}
 		QuestionDao dao = new QuestionDao();
 		questionToSave = dao.save(questionToSave, newParentGroup.getKeyId());
+		// now see if we have a metric mapping to copy
+		SurveyMetricMappingDao mappingDao = new SurveyMetricMappingDao();
+		List<SurveyMetricMapping> mappings = mappingDao
+				.listMappingsByQuestion(existingQuestion.getKeyId());
+		if (mappings != null) {
+			List<SurveyMetricMapping> newMappings = new ArrayList<SurveyMetricMapping>();
+			for (SurveyMetricMapping mapping : mappings) {
+				SurveyMetricMapping newMapping = new SurveyMetricMapping();
+				newMapping.setQuestionGroupId(questionToSave
+						.getQuestionGroupId());
+				newMapping.setMetricId(mapping.getMetricId());
+				newMapping.setSurveyId(questionToSave.getSurveyId());
+				newMapping.setSurveyQuestionId(questionToSave.getKey().getId());
+				newMappings.add(newMapping);
+			}
+			if (newMappings.size() > 0) {
+				mappingDao.save(newMappings);
+			}
+		}
 		return marshalQuestionDto(questionToSave);
 	}
 

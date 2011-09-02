@@ -56,6 +56,7 @@ public class SurveyCopyDialog extends DialogBox {
 	private boolean enabled;
 	private SurveyDto newSurveyDto;
 	private List<QuestionDto> origQuestionsWithDeps;
+	
 
 	private Map<Long, Long> questionIdMap;
 
@@ -77,6 +78,7 @@ public class SurveyCopyDialog extends DialogBox {
 		origQuestionsWithDeps = new ArrayList<QuestionDto>();
 		mainPanel = new VerticalPanel();
 		surveyService = GWT.create(SurveyService.class);
+		
 		statusLabel = new Label(TEXT_CONSTANTS.loading());
 		contentPane = new DockPanel();
 		setPopupPosition(Window.getClientWidth() / 4,
