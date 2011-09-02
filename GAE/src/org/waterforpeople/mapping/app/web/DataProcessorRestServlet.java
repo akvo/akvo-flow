@@ -97,7 +97,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		String cursor = null;
 		do {
 			List<QuestionAnswerStore> answers = qasDao.listByTypeAndDate(
-					"OTHER", null, null, cursor, null);
+					"OTHER", null, null, cursor, pageSize);
 			if (answers != null) {
 				for (QuestionAnswerStore ans : answers) {
 					if (ans.getValue() != null && ans.getValue().contains("|")) {
