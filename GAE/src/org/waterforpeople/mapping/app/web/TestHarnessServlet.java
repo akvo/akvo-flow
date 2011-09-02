@@ -1683,6 +1683,14 @@ public class TestHarnessServlet extends HttpServlet {
 
 				localeDao.save(valList);
 			}
+		}else if("fixDuplicateOtherText".equals(action)){
+			TaskOptions options = TaskOptions.Builder.withUrl(
+			"/app_worker/dataprocessor").param(
+			DataProcessorRequest.ACTION_PARAM,
+			DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION);
+	com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+			.getDefaultQueue();
+	queue.add(options);
 		}
 	}
 

@@ -75,6 +75,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.FIX_NULL_SUBMITTER_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			fixNullSubmitter();
+		} else if (DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION
+				.equalsIgnoreCase(dpReq.getAction())) {
+			fixDuplicateOtherText();
 		}
 		return new RestResponse();
 	}
@@ -82,6 +85,52 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
+	}
+
+	/**
+	 * lists all "OTHER" type answers and checks if the last tokens are
+	 * duplicates. Fixes if they are.
+	 */
+	private void fixDuplicateOtherText() {
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		int pageSize = 300;
+		String cursor = null;
+		do {
+			List<QuestionAnswerStore> answers = qasDao.listByTypeAndDate(
+					"OTHER", null, null, cursor, null);
+			if (answers != null) {
+				for (QuestionAnswerStore ans : answers) {
+					if (ans.getValue() != null && ans.getValue().contains("|")) {
+						String[] tokens = ans.getValue().split("\\|");
+						String lastVal = null;
+						boolean droppedVal = false;
+						StringBuilder buf = new StringBuilder();
+						for (int i = 0; i < tokens.length; i++) {
+							if (!tokens[i].equals(lastVal)) {
+								lastVal = tokens[i];
+								if (i > 0) {
+									buf.append("|");
+								}
+								buf.append(lastVal);
+							} else {
+								droppedVal = true;
+							}
+						}
+						if (droppedVal) {
+							// only dirty the object if needed
+							ans.setValue(buf.toString());
+						}
+					}
+				}
+
+				if (answers.size() == pageSize) {
+
+					cursor = QuestionAnswerStoreDao.getCursor(answers);
+				} else {
+					cursor = null;
+				}
+			}
+		} while (cursor != null);
 	}
 
 	private void fixNullSubmitter() {
@@ -116,7 +165,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						}
 					} catch (Exception e) {
 						log("Could not download zip: " + f.getURI());
-					}	
+					}
 				}
 			}
 		}
@@ -151,16 +200,19 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private void rebuildQuestionSummary(Long surveyId) {
 		ProcessingStatusDao statusDao = new ProcessingStatusDao();
 		ProcessingStatus status = statusDao
-				.getStatusByCode(REBUILD_Q_SUM_STATUS_KEY+(surveyId !=null?":"+surveyId:""));
+				.getStatusByCode(REBUILD_Q_SUM_STATUS_KEY
+						+ (surveyId != null ? ":" + surveyId : ""));
 
-		Map<String, Map<String, Long>> summaryMap = summarizeQuestionAnswerStore(surveyId,null);
+		Map<String, Map<String, Long>> summaryMap = summarizeQuestionAnswerStore(
+				surveyId, null);
 		if (summaryMap != null) {
 			saveSummaries(summaryMap);
 		}
 		// now update the status so we can know it last ran
 		if (status == null) {
 			status = new ProcessingStatus();
-			status.setCode(REBUILD_Q_SUM_STATUS_KEY+(surveyId !=null?":"+surveyId:""));
+			status.setCode(REBUILD_Q_SUM_STATUS_KEY
+					+ (surveyId != null ? ":" + surveyId : ""));
 		}
 		status.setInError(false);
 		status.setLastEventDate(new Date());
@@ -233,15 +285,15 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * @param sinceDate
 	 * @return
 	 */
-	private Map<String, Map<String, Long>> summarizeQuestionAnswerStore(Long surveyId,
-			Date sinceDate) {
+	private Map<String, Map<String, Long>> summarizeQuestionAnswerStore(
+			Long surveyId, Date sinceDate) {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		String cursor = null;
 		Map<String, Map<String, Long>> summaryMap = new HashMap<String, Map<String, Long>>();
 		List<QuestionAnswerStore> qasList = null;
 		do {
-			qasList = qasDao.listByTypeAndDate(VALUE_TYPE,surveyId, sinceDate, cursor,
-					QAS_PAGE_SIZE);
+			qasList = qasDao.listByTypeAndDate(VALUE_TYPE, surveyId, sinceDate,
+					cursor, QAS_PAGE_SIZE);
 			if (qasList != null && qasList.size() > 0) {
 				cursor = QuestionAnswerStoreDao.getCursor(qasList);
 				for (QuestionAnswerStore qas : qasList) {
