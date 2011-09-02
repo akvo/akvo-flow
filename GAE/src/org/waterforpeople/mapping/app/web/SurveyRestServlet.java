@@ -33,6 +33,10 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.metric.dao.MetricDao;
+import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
+import com.gallatinsystems.metric.domain.Metric;
+import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
@@ -99,15 +103,15 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		Boolean questionSaved = null;
 		if (SurveyRestRequest.SAVE_QUESTION_ACTION
 				.equals(surveyReq.getAction())) {
-		/*	questionSaved = saveQuestion(surveyReq);.getSurveyGroupName(),
-					surveyReq.getSurveyName(),
-					surveyReq.getQuestionGroupName(),
-					surveyReq.getQuestionType(), surveyReq.getQuestionText(),
-					surveyReq.getOptions(), surveyReq.getDependQuestion(),
-					surveyReq.getAllowOtherFlag(),
-					surveyReq.getAllowMultipleFlag(),
-					surveyReq.getMandatoryFlag(), surveyReq.getQuestionOrder(),
-					surveyReq.getQuestionGroupOrder(), surveyReq.getScoring());*/
+			/*
+			 * questionSaved = saveQuestion(surveyReq);.getSurveyGroupName(),
+			 * surveyReq.getSurveyName(), surveyReq.getQuestionGroupName(),
+			 * surveyReq.getQuestionType(), surveyReq.getQuestionText(),
+			 * surveyReq.getOptions(), surveyReq.getDependQuestion(),
+			 * surveyReq.getAllowOtherFlag(), surveyReq.getAllowMultipleFlag(),
+			 * surveyReq.getMandatoryFlag(), surveyReq.getQuestionOrder(),
+			 * surveyReq.getQuestionGroupOrder(), surveyReq.getScoring());
+			 */
 			questionSaved = saveQuestion(surveyReq);
 			response.setCode("200");
 			response.setMessage("Record Saved status: " + questionSaved);
@@ -382,10 +386,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
 		// TODO: Change Impl Later if we support multiple langs
 		String surveyName = parseLangMap(req.getSurveyName()).get("en");
-		String questionGroupName = parseLangMap(req.getQuestionGroupName()).get("en");
+		String questionGroupName = parseLangMap(req.getQuestionGroupName())
+				.get("en");
 
 		SurveyGroup sg = null;
-		String surveyGroupName= req.getSurveyGroupName();
+		String surveyGroupName = req.getSurveyGroupName();
 		if (surveyGroupName != null) {
 			sg = sgDao.findBySurveyGroupName(surveyGroupName);
 		}
@@ -433,7 +438,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 		Question q = qDao.getByQuestionGroupId(qg.getKey().getId(),
 				questionText);
 		Integer questionOrder = req.getQuestionOrder();
-		//since questions can have the same name, it only counts as a dupe if the order matches		
+		// since questions can have the same name, it only counts as a dupe if
+		// the order matches
 		if (q == null || !questionOrder.equals(q.getOrder())) {
 			q = new Question();
 		} else {
@@ -464,7 +470,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 				q.addTranslation(t);
 			}
 		}
-String questionType = req.getQuestionType();
+		String questionType = req.getQuestionType();
 		if (questionType.equals("GEO")) {
 			q.setType(Question.Type.GEO);
 		} else if (questionType.equals("FREE_TEXT")) {
@@ -480,7 +486,8 @@ String questionType = req.getQuestionType();
 				q.setType(Type.STRENGTH);
 			}
 			int i = 1;
-			for (QuestionOptionContainer qoc : parseQuestionOption(req.getOptions())) {
+			for (QuestionOptionContainer qoc : parseQuestionOption(req
+					.getOptions())) {
 				QuestionOption qo = new QuestionOption();
 				qo.setText(qoc.getOption());
 				qo.setCode(qoc.getOption());
@@ -531,7 +538,22 @@ String questionType = req.getQuestionType();
 		} else {
 			q.setDependentFlag(false);
 		}
-		qDao.save(q);
+		q = qDao.save(q);
+		if (req.getMetricName() != null
+				&& req.getMetricName().trim().length() > 0) {
+			MetricDao metricDao = new MetricDao();
+			List<Metric> metrics = metricDao.listMetrics(req.getMetricName(),
+					req.getMetricGroup(), null, null, null);
+			if (metrics != null && metrics.size() > 0) {
+				SurveyMetricMappingDao mappingDao = new SurveyMetricMappingDao();
+				SurveyMetricMapping mapping = new SurveyMetricMapping();
+				mapping.setSurveyId(q.getSurveyId());
+				mapping.setQuestionGroupId(q.getQuestionGroupId());
+				mapping.setSurveyQuestionId(q.getKey().getId());
+				mapping.setMetricId(metrics.get(0).getKey().getId());
+				mappingDao.save(mapping);
+			}
+		}
 
 		// now update the question id in the children and save
 		if (q.getQuestionOptionMap() != null) {
@@ -567,7 +589,6 @@ String questionType = req.getQuestionType();
 			scoringRuleDao.save(rules);
 			q.setScoringRules(rules);
 		}
-		
 
 		qg.addQuestion(questionOrder, q);
 		qgDao.save(qg);

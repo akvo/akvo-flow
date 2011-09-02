@@ -117,13 +117,15 @@ public class SurveySpreadsheetImporter implements DataImporter {
 						case 0:
 							sb.append(SurveyRestRequest.SURVEY_GROUP_NAME_PARAM)
 									.append("=")
-									.append(URLEncoder.encode(parseCellAsString(cell).trim(),
+									.append(URLEncoder.encode(
+											parseCellAsString(cell).trim(),
 											"UTF-8")).append("&");
 							break;
 						case 1:
 							sb.append(SurveyRestRequest.SURVEY_NAME_PARAM)
 									.append("=")
-									.append(URLEncoder.encode(parseCellAsString(cell).trim(),
+									.append(URLEncoder.encode(
+											parseCellAsString(cell).trim(),
 											"UTF-8")).append("&");
 							break;
 						case 2:
@@ -139,7 +141,8 @@ public class SurveySpreadsheetImporter implements DataImporter {
 							sb.append(
 									SurveyRestRequest.QUESTION_GROUP_NAME_PARAM)
 									.append("=")
-									.append(URLEncoder.encode(parseCellAsString(cell).trim(),
+									.append(URLEncoder.encode(
+											parseCellAsString(cell).trim(),
 											"UTF-8")).append("&");
 							break;
 
@@ -156,19 +159,22 @@ public class SurveySpreadsheetImporter implements DataImporter {
 						case 5:
 							sb.append(SurveyRestRequest.QUESTION_TEXT_PARAM)
 									.append("=")
-									.append(URLEncoder.encode(parseCellAsString(cell).trim(),
+									.append(URLEncoder.encode(
+											parseCellAsString(cell).trim(),
 											"UTF-8")).append("&");
 							break;
 						case 6:
 							sb.append(SurveyRestRequest.QUESTION_TYPE_PARAM)
 									.append("=")
-									.append(URLEncoder.encode(parseCellAsString(cell).trim(),
+									.append(URLEncoder.encode(
+											parseCellAsString(cell).trim(),
 											"UTF-8")).append("&");
 							break;
 						case 7:
 							sb.append(SurveyRestRequest.OPTIONS_PARAM)
 									.append("=")
-									.append(URLEncoder.encode(parseCellAsString(cell).trim(),
+									.append(URLEncoder.encode(
+											parseCellAsString(cell).trim(),
 											"UTF-8")).append("&");
 							break;
 						case 8:
@@ -212,38 +218,69 @@ public class SurveySpreadsheetImporter implements DataImporter {
 									.append(parseCellAsString(cell));
 							break;
 						case 13:
-							//min val
-							String minVal = parseCellAsString(cell);						
-							if(minVal != null && minVal.trim().length()>0){
-								sb.append("&").append(SurveyRestRequest.VALIDATION_MIN_PARAM).append("=").append(minVal);
+							// min val
+							String minVal = parseCellAsString(cell);
+							if (minVal != null && minVal.trim().length() > 0) {
+								sb.append("&")
+										.append(SurveyRestRequest.VALIDATION_MIN_PARAM)
+										.append("=").append(minVal);
 							}
 							break;
 						case 14:
-							//max val
-							String maxVal = parseCellAsString(cell);						
-							if(maxVal != null && maxVal.trim().length()>0){
-								sb.append("&").append(SurveyRestRequest.VALIDATION_MAX_PARAM).append("=").append(maxVal);
+							// max val
+							String maxVal = parseCellAsString(cell);
+							if (maxVal != null && maxVal.trim().length() > 0) {
+								sb.append("&")
+										.append(SurveyRestRequest.VALIDATION_MAX_PARAM)
+										.append("=").append(maxVal);
 							}
 							break;
 						case 15:
-							//allow sign
+							// allow sign
 							String signVal = parseCellAsString(cell);
-							if(signVal != null && signVal.trim().length()>0){
-								sb.append("&").append(SurveyRestRequest.VALIDATION_ALLOW_SIGN_PARAM).append("=").append(signVal);
-							}							
+							if (signVal != null && signVal.trim().length() > 0) {
+								sb.append("&")
+										.append(SurveyRestRequest.VALIDATION_ALLOW_SIGN_PARAM)
+										.append("=").append(signVal);
+							}
 							break;
 						case 16:
-							//allow decimal
+							// allow decimal
 							String decimalVal = parseCellAsString(cell);
-							if(decimalVal != null && decimalVal.trim().length()>0){
-								sb.append("&").append(SurveyRestRequest.VALIDATION_ALLOW_DECIMAL_PARAM).append("=").append(decimalVal);
+							if (decimalVal != null
+									&& decimalVal.trim().length() > 0) {
+								sb.append("&")
+										.append(SurveyRestRequest.VALIDATION_ALLOW_DECIMAL_PARAM)
+										.append("=").append(decimalVal);
 							}
 							break;
 						case 17:
-							//is name
+							// is name
 							String isNameVal = parseCellAsString(cell);
-							if(isNameVal != null && isNameVal.trim().length()>0){
-								sb.append("&").append(SurveyRestRequest.VALIDATION_IS_NAME_PARAM).append("=").append(isNameVal);
+							if (isNameVal != null
+									&& isNameVal.trim().length() > 0) {
+								sb.append("&")
+										.append(SurveyRestRequest.VALIDATION_IS_NAME_PARAM)
+										.append("=").append(isNameVal);
+							}
+							break;
+
+						case 18:
+							String metricName = parseCellAsString(cell);
+							if (metricName != null
+									&& metricName.trim().length() > 0) {
+								sb.append("&")
+										.append(SurveyRestRequest.METRIC_NAME_PARAM)
+										.append("=").append(metricName);
+							}
+							break;
+						case 19:
+							String metricGroup = parseCellAsString(cell);
+							if (metricGroup != null
+									&& metricGroup.trim().length() > 0) {
+								sb.append("&")
+										.append(SurveyRestRequest.METRIC_GROUP_PARAM)
+										.append("=").append(metricGroup);
 							}
 							break;
 						}
@@ -274,16 +311,16 @@ public class SurveySpreadsheetImporter implements DataImporter {
 			}
 		}
 	}
-	
-	private String parseCellAsString(Cell cell){
+
+	private String parseCellAsString(Cell cell) {
 		String val = null;
-		if(cell != null){
-			switch(cell.getCellType()){
+		if (cell != null) {
+			switch (cell.getCellType()) {
 			case Cell.CELL_TYPE_BOOLEAN:
-				val = cell.getBooleanCellValue()+"";
+				val = cell.getBooleanCellValue() + "";
 				break;
 			case Cell.CELL_TYPE_NUMERIC:
-				val = cell.getNumericCellValue()+"";
+				val = cell.getNumericCellValue() + "";
 				break;
 			default:
 				val = cell.getStringCellValue();
