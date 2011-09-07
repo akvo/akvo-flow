@@ -72,6 +72,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			new DataTableHeader(TEXT_CONSTANTS.id(), "key", true),
 			new DataTableHeader(TEXT_CONSTANTS.communityCode(),
 					"communityCode", true),
+			new DataTableHeader(TEXT_CONSTANTS.community(), "communityName",
+					true),
+			new DataTableHeader(TEXT_CONSTANTS.country(), "countryCode", true),
 			new DataTableHeader(TEXT_CONSTANTS.latitude(), "latitude", true),
 			new DataTableHeader(TEXT_CONSTANTS.longitude(), "longitude", true),
 			new DataTableHeader(TEXT_CONSTANTS.pointType(), "pointType", true),
@@ -419,7 +422,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 									for (AccessPointScoreDetailDto item : result) {
 										Label scoreBucket = new Label(item
 												.getScoreBucket());
-										
+
 										scoreTable.resizeRows(i + 1);
 										scoreTable.setWidget(i, 0, scoreBucket);
 										i++;
@@ -450,7 +453,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 											}
 										}
 										i++;
-										scoreTable.resizeRows(i+1);
+										scoreTable.resizeRows(i + 1);
 										Label totalScorelbl = new Label(
 												"Total Score");
 										TextBox totalScoreTB = new TextBox();
@@ -637,7 +640,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		if (accessPointDto != null && accessPointDto.getLatitude() != null
 				&& accessPointDto.getLongitude() != null) {
-			//Wrapping everything in a try catch so it can be tested without a network connection
+			// Wrapping everything in a try catch so it can be tested without a
+			// network connection
 			try {
 				MapWidget map = new MapWidget();
 				map.setSize("180px", "180px");
@@ -652,7 +656,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			} catch (Throwable e) {
 				// swallow
 			}
-			
+
 		}
 
 		accessPointDetail.setWidget(4, 0,
@@ -1077,10 +1081,38 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 									public void onSuccess(AccessPointDto result) {
 										Window.alert(TEXT_CONSTANTS
 												.saveComplete());
+										attributeSave = false;
 									}
 								});
 					} else {
-						attributeSave = false;
+						if (getCurrentUser().isAdmin()) {
+							TabPanel tp = (TabPanel) accessPointDetail
+									.getWidget(1, 0);
+							if (tp.getWidgetCount() == 5) {
+
+								accessPointDetail = (FlexTable) tp.getWidget(4);
+
+								DtoValueContainer dtoValue = getAllAttributeAP(
+										apDto, accessPointDetail);
+
+								svc.saveDtoValueContainer(dtoValue,
+										new AsyncCallback<DtoValueContainer>() {
+
+											@Override
+											public void onFailure(
+													Throwable caught) {
+												Window.alert("Failed to Save");
+											}
+
+											@Override
+											public void onSuccess(
+													DtoValueContainer result) {
+												Window.alert("Saved");
+
+											}
+										});
+							}
+						}
 					}
 					accessPointDetail.setVisible(false);
 					statusLabel.setVisible(false);
@@ -1126,31 +1158,6 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		accessPointDetail = (FlexTable) tp.getWidget(2);
 		apDto = getAttributeAP(apDto, accessPointDetail);
-		if (getCurrentUser().isAdmin()) {
-			if (tp.getWidgetCount() == 5) {
-
-				accessPointDetail = (FlexTable) tp.getWidget(4);
-
-				DtoValueContainer dtoValue = getAllAttributeAP(apDto,
-						accessPointDetail);
-				attributeSave = true;
-				svc.saveDtoValueContainer(dtoValue,
-						new AsyncCallback<DtoValueContainer>() {
-
-							@Override
-							public void onFailure(Throwable caught) {
-								Window.alert("Failed to Save");
-							}
-
-							@Override
-							public void onSuccess(DtoValueContainer result) {
-								Window.alert("Saved");
-
-							}
-						});
-			}
-		}
-
 		return apDto;
 	}
 
@@ -1376,16 +1383,22 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 				communityCode = communityCode.substring(0, 10);
 			grid.setWidget(row, 1, new Label(communityCode));
 		}
+		if (apDto.getCommunityName() != null) {
+			grid.setWidget(row, 2, new Label(apDto.getCommunityName()));
+		}
+		if (apDto.getCountryCode() != null) {
+			grid.setWidget(row, 3, new Label(apDto.getCountryCode()));
+		}
 
 		if (apDto.getLatitude() != null && apDto.getLongitude() != null) {
-			grid.setWidget(row, 2, new Label(apDto.getLatitude().toString()));
-			grid.setWidget(row, 3, new Label(apDto.getLongitude().toString()));
+			grid.setWidget(row, 4, new Label(apDto.getLatitude().toString()));
+			grid.setWidget(row, 5, new Label(apDto.getLongitude().toString()));
 		}
 		if (apDto.getPointType() != null) {
-			grid.setWidget(row, 4, new Label(apDto.getPointType().name()));
+			grid.setWidget(row, 6, new Label(apDto.getPointType().name()));
 		}
 		if (apDto.getCollectionDate() != null) {
-			grid.setWidget(row, 5,
+			grid.setWidget(row, 7,
 					new Label(dateFormat.format(apDto.getCollectionDate())));
 		}
 
