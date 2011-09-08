@@ -5,6 +5,12 @@
 		<property name="pointType" direction="asc" />
 		<property name="__key__" direction="desc" />
 	</datastore-index>
+	
+    <datastore-index kind="AccessPoint" ancestor="false">
+        <property name="pointType" direction="asc"/>
+        <property name="communityName" direction="desc"/>
+    </datastore-index>
+	
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />

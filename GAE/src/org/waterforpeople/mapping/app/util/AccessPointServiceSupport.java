@@ -36,6 +36,7 @@ public class AccessPointServiceSupport {
 		apDto.setLatitude(apCanonical.getLatitude());
 		apDto.setLongitude(apCanonical.getLongitude());
 		apDto.setCommunityCode(apCanonical.getCommunityCode());
+		apDto.setCommunityName(apCanonical.getCommunityName());
 		apDto.setCollectionDate(apCanonical.getCollectionDate());
 		apDto.setConstructionDate(apCanonical.getConstructionDate());
 		apDto.setCountryCode(apCanonical.getCountryCode());

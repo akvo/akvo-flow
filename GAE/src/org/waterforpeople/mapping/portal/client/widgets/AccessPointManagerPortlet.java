@@ -607,36 +607,46 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 	private FlexTable loadGeneralTab(AccessPointDto accessPointDto) {
 		FlexTable accessPointDetail = new FlexTable();
 		accessPointDetail.setWidget(0, 0,
+				ViewUtil.initLabel(TEXT_CONSTANTS.community()));
+		TextBox communityNameTB = new TextBox();
+		accessPointDetail.setWidget(0, 1, communityNameTB);
+
+		accessPointDetail.setWidget(1, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.communityCode()));
 		TextBox communityCodeTB = new TextBox();
 		if (accessPointDto != null) {
-			communityCodeTB.setText(accessPointDto.getCommunityCode());
+			if (accessPointDto.getCommunityName() != null) {
+				communityNameTB.setText(accessPointDto.getCommunityName());
+			}
+			if (accessPointDto.getCommunityCode() != null) {
+				communityCodeTB.setText(accessPointDto.getCommunityCode());
+			}
 		}
 
-		accessPointDetail.setWidget(0, 1, communityCodeTB);
+		accessPointDetail.setWidget(1, 1, communityCodeTB);
 
-		accessPointDetail.setWidget(1, 0,
+		accessPointDetail.setWidget(2, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.countryCode()));
 		TextBox countryCodeTB = new TextBox();
 		if (accessPointDto != null) {
 			countryCodeTB.setText(accessPointDto.getCountryCode());
 		}
 
-		accessPointDetail.setWidget(1, 1, countryCodeTB);
+		accessPointDetail.setWidget(2, 1, countryCodeTB);
 
-		accessPointDetail.setWidget(2, 0,
+		accessPointDetail.setWidget(3, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.latitude()));
 		TextBox latitudeTB = new TextBox();
 		if (accessPointDto != null)
 			latitudeTB.setText(accessPointDto.getLatitude().toString());
-		accessPointDetail.setWidget(2, 1, latitudeTB);
+		accessPointDetail.setWidget(3, 1, latitudeTB);
 
-		accessPointDetail.setWidget(3, 0,
+		accessPointDetail.setWidget(4, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.longitude()));
 		TextBox longitudeTB = new TextBox();
 		if (accessPointDto != null)
 			longitudeTB.setText(accessPointDto.getLongitude().toString());
-		accessPointDetail.setWidget(3, 1, longitudeTB);
+		accessPointDetail.setWidget(4, 1, longitudeTB);
 
 		if (accessPointDto != null && accessPointDto.getLatitude() != null
 				&& accessPointDto.getLongitude() != null) {
@@ -659,62 +669,62 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 		}
 
-		accessPointDetail.setWidget(4, 0,
+		accessPointDetail.setWidget(5, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.collectionDate()));
 		DateBox pickerCollectionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerCollectionDate.setValue(accessPointDto.getCollectionDate());
-		accessPointDetail.setWidget(4, 1, pickerCollectionDate);
+		accessPointDetail.setWidget(5, 1, pickerCollectionDate);
 
-		accessPointDetail.setWidget(5, 0,
+		accessPointDetail.setWidget(6, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.constructionDate()));
 		DateBox pickerConstructionDate = new DateBox();
 		if (accessPointDto != null)
 			pickerConstructionDate.setValue(accessPointDto
 					.getConstructionDate());
-		accessPointDetail.setWidget(5, 1, pickerConstructionDate);
+		accessPointDetail.setWidget(6, 1, pickerConstructionDate);
 
-		accessPointDetail.setWidget(6, 0,
+		accessPointDetail.setWidget(7, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 1));
 		TextBox sub1 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub1() != null)
 			sub1.setText(accessPointDto.getSub1());
-		accessPointDetail.setWidget(6, 1, sub1);
+		accessPointDetail.setWidget(7, 1, sub1);
 
-		accessPointDetail.setWidget(7, 0,
+		accessPointDetail.setWidget(8, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 2));
 		TextBox sub2 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub2() != null)
 			sub2.setText(accessPointDto.getSub2());
-		accessPointDetail.setWidget(7, 1, sub2);
+		accessPointDetail.setWidget(8, 1, sub2);
 
-		accessPointDetail.setWidget(8, 0,
+		accessPointDetail.setWidget(9, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 3));
 		TextBox sub3 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub3() != null)
 			sub3.setText(accessPointDto.getSub3());
-		accessPointDetail.setWidget(8, 1, sub3);
+		accessPointDetail.setWidget(9, 1, sub3);
 
-		accessPointDetail.setWidget(9, 0,
+		accessPointDetail.setWidget(10, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 4));
 		TextBox sub4 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub4() != null)
 			sub1.setText(accessPointDto.getSub4());
-		accessPointDetail.setWidget(9, 1, sub4);
+		accessPointDetail.setWidget(10, 1, sub4);
 
-		accessPointDetail.setWidget(10, 0,
+		accessPointDetail.setWidget(11, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 5));
 		TextBox sub5 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub5() != null)
 			sub5.setText(accessPointDto.getSub5());
-		accessPointDetail.setWidget(10, 1, sub5);
+		accessPointDetail.setWidget(11, 1, sub5);
 
-		accessPointDetail.setWidget(11, 0,
+		accessPointDetail.setWidget(12, 0,
 				ViewUtil.initLabel(TEXT_CONSTANTS.subdivision() + " " + 6));
 		TextBox sub6 = new TextBox();
 		if (accessPointDto != null && accessPointDto.getSub6() != null)
 			sub6.setText(accessPointDto.getSub6());
-		accessPointDetail.setWidget(11, 1, sub6);
+		accessPointDetail.setWidget(12, 1, sub6);
 
 		// Missing
 		// InstitutionName
@@ -725,7 +735,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 			apId = new Label("-1");
 		}
 		apId.setVisible(false);
-		accessPointDetail.setWidget(15, 1, apId);
+		accessPointDetail.setWidget(16, 1, apId);
 		return accessPointDetail;
 	}
 
@@ -1180,53 +1190,56 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 
 	private AccessPointDto getGeneralAP(AccessPointDto apDto,
 			FlexTable accessPointDetail) {
-		Label apId = (Label) accessPointDetail.getWidget(15, 1);
+		Label apId = (Label) accessPointDetail.getWidget(16, 1);
 		Long id = new Long(apId.getText());
 		if (id > -1) {
 			apDto.setKeyId(id);
 		} else {
 			apDto.setKeyId(null);
 		}
-		TextBox communityCodeTB = (TextBox) accessPointDetail.getWidget(0, 1);
+		TextBox communityNameTB = (TextBox)accessPointDetail.getWidget(0,1);
+		apDto.setCommunityName(communityNameTB.getText());
+		
+		TextBox communityCodeTB = (TextBox) accessPointDetail.getWidget(1, 1);
 		String communityCode = communityCodeTB.getText();
 		apDto.setCommunityCode(communityCode);
 
-		TextBox countryCodeTB = (TextBox) accessPointDetail.getWidget(1, 1);
+		TextBox countryCodeTB = (TextBox) accessPointDetail.getWidget(2, 1);
 		String countryCode = countryCodeTB.getText();
 		apDto.setCountryCode(countryCode);
 
-		TextBox subBox = (TextBox) accessPointDetail.getWidget(6, 1);
+		TextBox subBox = (TextBox) accessPointDetail.getWidget(7, 1);
 		apDto.setSub1(subBox.getText());
 
-		subBox = (TextBox) accessPointDetail.getWidget(7, 1);
+		subBox = (TextBox) accessPointDetail.getWidget(8, 1);
 		apDto.setSub2(subBox.getText());
 
-		subBox = (TextBox) accessPointDetail.getWidget(8, 1);
+		subBox = (TextBox) accessPointDetail.getWidget(9, 1);
 		apDto.setSub3(subBox.getText());
 
-		subBox = (TextBox) accessPointDetail.getWidget(9, 1);
+		subBox = (TextBox) accessPointDetail.getWidget(10, 1);
 		apDto.setSub4(subBox.getText());
 
-		subBox = (TextBox) accessPointDetail.getWidget(10, 1);
+		subBox = (TextBox) accessPointDetail.getWidget(11, 1);
 		apDto.setSub5(subBox.getText());
 
-		subBox = (TextBox) accessPointDetail.getWidget(11, 1);
+		subBox = (TextBox) accessPointDetail.getWidget(12, 1);
 		apDto.setSub6(subBox.getText());
 
-		TextBox latitudeTB = (TextBox) accessPointDetail.getWidget(2, 1);
+		TextBox latitudeTB = (TextBox) accessPointDetail.getWidget(3, 1);
 		Double latitude = new Double(latitudeTB.getText());
 		apDto.setLatitude(latitude);
 
-		TextBox longitudeTB = (TextBox) accessPointDetail.getWidget(3, 1);
+		TextBox longitudeTB = (TextBox) accessPointDetail.getWidget(4, 1);
 		Double longitude = new Double(longitudeTB.getText());
 		apDto.setLongitude(longitude);
 
-		DateBox collectionDateTB = (DateBox) accessPointDetail.getWidget(4, 1);
+		DateBox collectionDateTB = (DateBox) accessPointDetail.getWidget(5, 1);
 
 		apDto.setCollectionDate(collectionDateTB.getValue());
 
 		DateBox constructionDateTB = (DateBox) accessPointDetail
-				.getWidget(5, 1);
+				.getWidget(6, 1);
 		apDto.setConstructionDate(constructionDateTB.getValue());
 
 		return apDto;
