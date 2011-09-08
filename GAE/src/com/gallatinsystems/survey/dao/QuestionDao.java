@@ -152,7 +152,12 @@ public class QuestionDao extends BaseDAO<Question> {
 		Entity question = null;
 		try {
 			if (q.getKey() != null) {
+				try{
 				question = datastore.get(q.getKey());
+				}catch(Exception e){
+					log.log(Level.WARNING,"Key is set but not found. Assuming this is an import");
+					question = new Entity(q.getKey());
+				}
 			} else {
 				question = new Entity("Question");
 			}
