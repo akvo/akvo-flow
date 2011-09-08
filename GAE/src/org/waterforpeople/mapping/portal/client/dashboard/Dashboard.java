@@ -226,12 +226,6 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						}
 					});
 
-			mgrMenu.addItem(TEXT_CONSTANTS.technologyTypeManagerPortletTitle(),
-					new Command() {
-						public void execute() {
-							launchFullscreen(TechnologyTypeManagerPortlet.NAME);
-						}
-					});
 			mgrMenu.addItem(
 					TEXT_CONSTANTS.standardScoringManagerPortletTitle(),
 					new Command() {
@@ -249,15 +243,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						}
 					});
 		}
-
-		//TODO: remove altogether
-		/*mgrMenu.addItem(TEXT_CONSTANTS.surveyManagerPortletTitle(),
-				new Command() {
-					public void execute() {
-						launchFullscreen(SurveyManagerPortlet.NAME);
-
-					}
-				});*/
+		
 		if (getCurrentUser().hasPermission(
 				PermissionConstants.UPLOAD_SURVEY_DATA)) {
 			mgrMenu.addItem(TEXT_CONSTANTS.uploadPortletTitle(), new Command() {

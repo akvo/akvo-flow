@@ -392,8 +392,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 							}
 							String[] vals = entry.getValue().split("\\|");
 							for (int i = 0; i < vals.length; i++) {
-								model.tallyResponse(effectiveId, rollups,
+								if(vals[i]!=null && vals[i].trim().length()>0){
+									model.tallyResponse(effectiveId, rollups,
 										vals[i]);
+								}
 							}
 						}
 					}
