@@ -56,6 +56,7 @@ public class SurveyDownloadService extends Service {
 	private static final String NO_SURVEY = "No Survey Found";
 	private static final String SURVEY_LIST_SERVICE_PATH = "/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_HEADER_SERVICE_PATH = "/surveymanager?action=getSurveyHeader&surveyId=";
+	private static final String DEV_ID_PARAM = "&devId=";
 	@SuppressWarnings("unused")
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
 	private static final String SD_LOC = "sdcard";
@@ -137,7 +138,7 @@ public class SurveyDownloadService extends Service {
 					}
 				} else {
 					if (canDownload(surveyCheckOption)) {
-						surveys = checkForSurveys(serverBase);
+						surveys = checkForSurveys(serverBase, deviceId);
 					}
 				}
 				if (surveys != null && surveys.size() > 0) {
@@ -394,7 +395,7 @@ public class SurveyDownloadService extends Service {
 			response = HttpUtil.httpGet(serverBase + SURVEY_HEADER_SERVICE_PATH
 					+ surveyId + "&devicePhoneNumber="
 					+ StatusUtil.getPhoneNumber(this)
-					+ (deviceId != null ? ("&devId=" + deviceId) : ""));
+					+ (deviceId != null ? (DEV_ID_PARAM + deviceId) : ""));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {
@@ -431,12 +432,13 @@ public class SurveyDownloadService extends Service {
 	 * @return - an arrayList of Survey objects with the id and version
 	 *         populated
 	 */
-	private ArrayList<Survey> checkForSurveys(String serverBase) {
+	private ArrayList<Survey> checkForSurveys(String serverBase, String deviceId) {
 		String response = null;
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
 			response = HttpUtil.httpGet(serverBase + SURVEY_LIST_SERVICE_PATH
-					+ StatusUtil.getPhoneNumber(this));
+					+ StatusUtil.getPhoneNumber(this)
+					+ (deviceId != null ? DEV_ID_PARAM + deviceId : ""));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {
