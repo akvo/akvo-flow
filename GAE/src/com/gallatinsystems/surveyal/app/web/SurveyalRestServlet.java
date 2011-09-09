@@ -49,6 +49,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
  */
 public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 5923399458369692813L;
+	private static final String COMMUNITY_METRIC_NAME = "Community";
 	private static final double TOLERANCE = 0.01;
 	private static final double UNSET_VAL = -9999.9;
 	private static final String DEFAULT = "DEFAULT";
@@ -70,14 +71,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	public SurveyalRestServlet() {
 		surveyInstanceDao = new SurveyInstanceDAO();
 		surveyedLocaleDao = new SurveyedLocaleDao();
-		qDao = new QuestionDao();		
+		qDao = new QuestionDao();
 		countryDao = new CountryDao();
 		metricDao = new MetricDao();
 		metricMappingDao = new SurveyMetricMappingDao();
 		mergeNearby = true;
 		String mergeProp = PropertyUtil.getProperty("mergeNearbyLocales");
-		if(mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())){
-			mergeNearby =false;
+		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
+			mergeNearby = false;
 		}
 		statusFragment = PropertyUtil.getProperty("statusQuestionText");
 		if (statusFragment != null && statusFragment.trim().length() > 0) {
@@ -156,9 +157,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				locale = surveyedLocaleDao.getByKey(instance
 						.getSurveyedLocaleId());
 			}
+			GeoPlace geoPlace = null;
 
 			// only create a "locale" if we have a geographic question
-			if (locale == null && geoQ != null && geoQ.getValue() != null) {
+			if (geoQ != null && geoQ.getValue() != null) {
 				double lat = UNSET_VAL;
 				double lon = UNSET_VAL;
 				boolean ambiguousFlag = false;
@@ -181,7 +183,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					throw new RuntimeException(
 							"Could not parse lat/lon from Geo Question "
 									+ geoQ.getQuestionID());
-				} else if(mergeNearby){
+				} else if (mergeNearby) {
 					// if we have a geo question but no locale id, see if we can
 					// find one based on lat/lon
 					List<SurveyedLocale> candidates = surveyedLocaleDao
@@ -195,12 +197,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						ambiguousFlag = true;
 					}
 				}
+				geoPlace = getGeoPlace(lat, lon);
 				if (locale == null) {
 					locale = new SurveyedLocale();
 					locale.setAmbiguous(ambiguousFlag);
 					locale.setLatitude(lat);
 					locale.setLongitude(lon);
-					setGeoData(locale);
+					setGeoData(geoPlace, locale);
 					if (survey != null) {
 						locale.setLocaleType(survey.getPointType());
 					}
@@ -214,6 +217,41 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale = surveyedLocaleDao.save(locale);
 				}
 			}
+			if (instance != null && geoPlace != null) {
+				instance.setCountryCode(geoPlace.getCountryCode());
+				instance.setSublevel1(geoPlace.getSub1());
+				instance.setSublevel2(geoPlace.getSub2());
+				instance.setSublevel3(geoPlace.getSub3());
+				instance.setSublevel4(geoPlace.getSub4());
+				instance.setSublevel5(geoPlace.getSub5());
+				instance.setSublevel6(geoPlace.getSub6());
+				if (answers != null) {
+					// look for the Community metric
+					List<Metric> metrics = metricDao.listMetrics(
+							COMMUNITY_METRIC_NAME, null, null, null, null);
+					if (metrics != null) {
+						List<SurveyMetricMapping> mappings = new ArrayList<SurveyMetricMapping>();
+						for (Metric m : metrics) {
+							List<SurveyMetricMapping> temp = metricMappingDao
+									.listMetricsBySurveyAndMetric(m.getKey()
+											.getId(), instance.getSurveyId());
+							if (temp != null) {
+								mappings.addAll(temp);
+							}
+						}
+						for (SurveyMetricMapping mapping : mappings) {
+							for (QuestionAnswerStore ans : answers) {
+								if (ans.getQuestionID().equals(
+										mapping.getSurveyQuestionId())) {
+									instance.setCommunity(ans.getValue());
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+
 			if (locale != null && locale.getKey() != null && answers != null) {
 				locale.setLastSurveyedDate(instance.getCollectionDate());
 				locale.setLastSurveyalInstanceId(instance.getKey().getId());
@@ -275,22 +313,44 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	}
 
 	/**
+	 * tries several methods to resolve the lat/lon to a GeoPlace. If a geoPlace
+	 * is found, looks for the country in the database and creates it if not
+	 * found
+	 * 
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
+	private GeoPlace getGeoPlace(Double lat, Double lon) {
+		GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
+		GeoPlace geoPlace = gs.manualLookup(lat.toString(), lon.toString(),
+				OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+		if (geoPlace == null) {
+			geoPlace = gs.findGeoPlace(lat.toString(), lon.toString());
+		}
+		// check the country code to make sure it is in the database
+		if (geoPlace != null && geoPlace.getCountryCode() != null) {
+			Country country = countryDao.findByCode(geoPlace.getCountryCode());
+			if (country == null) {
+				country = new Country();
+				country.setIsoAlpha2Code(geoPlace.getCountryCode());
+				country.setName(geoPlace.getCountryName() != null ? geoPlace
+						.getCountryName() : geoPlace.getCountryCode());
+				country.setDisplayName(country.getName());
+				countryDao.save(country);
+			}
+		}
+		return geoPlace;
+	}
+
+	/**
 	 * uses the geolocationService to determine the geographic sub-regions and
 	 * country for a given point
 	 * 
 	 * @param l
 	 */
-	private void setGeoData(SurveyedLocale l) {
-
-		GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
-		GeoPlace geoPlace = gs.manualLookup(l.getLatitude().toString(), l
-				.getLongitude().toString(),
-				OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
-		String countryCode = null;
-		String countryName = null;
+	private void setGeoData(GeoPlace geoPlace, SurveyedLocale l) {
 		if (geoPlace != null) {
-			countryCode = geoPlace.getCountryCode();
-			countryName = geoPlace.getCountryName();
 			l.setCountryCode(geoPlace.getCountryCode());
 			l.setSublevel1(geoPlace.getSub1());
 			l.setSublevel2(geoPlace.getSub2());
@@ -298,25 +358,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			l.setSublevel4(geoPlace.getSub4());
 			l.setSublevel5(geoPlace.getSub5());
 			l.setSublevel6(geoPlace.getSub6());
-		} else if (geoPlace == null || l.getCountryCode() == null) {
-			GeoPlace geoPlaceCountry = gs.findGeoPlace(l.getLatitude()
-					.toString(), l.getLongitude().toString());
-			if (geoPlaceCountry != null) {
-				l.setCountryCode(geoPlaceCountry.getCountryCode());
-				countryCode = geoPlaceCountry.getCountryCode();
-				countryName = geoPlaceCountry.getCountryName();
-			}
-		}
-		// check the country code to make sure it is in the database
-		if (countryCode != null) {
-			Country country = countryDao.findByCode(countryCode);
-			if (country == null) {
-				country = new Country();
-				country.setIsoAlpha2Code(countryCode);
-				country.setName(countryName != null ? countryName : countryCode);
-				country.setDisplayName(country.getName());
-				countryDao.save(country);
-			}
 		}
 	}
 

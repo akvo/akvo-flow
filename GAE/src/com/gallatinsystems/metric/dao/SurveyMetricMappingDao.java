@@ -50,6 +50,33 @@ public class SurveyMetricMappingDao extends BaseDAO<SurveyMetricMapping> {
 	}
 
 	/**
+	 * lists all metric mappings for a single survey with the metric id specified
+	 * @param metricId
+	 * @param surveyId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyMetricMapping> listMetricsBySurveyAndMetric(
+			Long metricId, Long surveyId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyMetricMapping.class);
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
+		appendNonNullParam("metricId", filterString, paramString, "Long",
+				metricId, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		return (List<SurveyMetricMapping>) query.executeWithMap(paramMap);
+
+	}
+
+	/**
 	 * returns all SurveyMetricMappings for the given questionGroupId
 	 * 
 	 * @param questionGroupId
