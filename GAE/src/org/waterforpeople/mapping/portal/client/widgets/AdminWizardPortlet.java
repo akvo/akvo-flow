@@ -115,7 +115,8 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 						new WizardButton("QuestionCreate", TEXT_CONSTANTS
 								.saveGotoNext()),
 						new WizardButton("QuestionCreate", TEXT_CONSTANTS
-								.saveAndContinue()) },
+								.saveNewQuestion()),new WizardButton("QuestionList", TEXT_CONSTANTS
+										.saveBackToList()) },
 				new WizardButton[] { new WizardButton("QuestionList",
 						TEXT_CONSTANTS.backToQuestionList()) }));
 		wf.addInternalNode(new WizardNode("Publish", null,

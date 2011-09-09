@@ -577,5 +577,7 @@ public interface TextConstants extends Constants{
 	public String max();
 	public String isName();
 	public String generateSummariesByGeography();
+	public String saveNewQuestion();
+	public String saveBackToList();
 }
 

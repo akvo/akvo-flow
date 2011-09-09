@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,14 +24,18 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
 import com.gallatinsystems.operations.domain.ProcessingStatus;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * Restful servlet to do bulk data update operations
@@ -199,24 +201,39 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 */
 	private void rebuildQuestionSummary(Long surveyId) {
 		ProcessingStatusDao statusDao = new ProcessingStatusDao();
-		ProcessingStatus status = statusDao
-				.getStatusByCode(REBUILD_Q_SUM_STATUS_KEY
-						+ (surveyId != null ? ":" + surveyId : ""));
+		List<Long> surveyIds = new ArrayList<Long>();
+		if (surveyId == null) {
+			SurveyDAO surveyDao = new SurveyDAO();
+			List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
+			if (surveys != null) {
+				for (Survey s : surveys) {
+					surveyIds.add(s.getKey().getId());
+				}
+			}
+		} else {
+			surveyIds.add(surveyId);
+		}
 
-		Map<String, Map<String, Long>> summaryMap = summarizeQuestionAnswerStore(
-				surveyId, null);
-		if (summaryMap != null) {
-			saveSummaries(summaryMap);
+		for (Long sid : surveyIds) {
+			ProcessingStatus status = statusDao
+					.getStatusByCode(REBUILD_Q_SUM_STATUS_KEY
+							+ (sid != null ? ":" + sid : ""));
+
+			Map<String, Map<String, Long>> summaryMap = summarizeQuestionAnswerStore(
+					sid, null);
+			if (summaryMap != null) {
+				saveSummaries(summaryMap);
+			}
+			// now update the status so we can know it last ran
+			if (status == null) {
+				status = new ProcessingStatus();
+				status.setCode(REBUILD_Q_SUM_STATUS_KEY
+						+ (sid != null ? ":" + sid : ""));
+			}
+			status.setInError(false);
+			status.setLastEventDate(new Date());
+			statusDao.save(status);
 		}
-		// now update the status so we can know it last ran
-		if (status == null) {
-			status = new ProcessingStatus();
-			status.setCode(REBUILD_Q_SUM_STATUS_KEY
-					+ (surveyId != null ? ":" + surveyId : ""));
-		}
-		status.setInError(false);
-		status.setLastEventDate(new Date());
-		statusDao.save(status);
 	}
 
 	/**
@@ -390,14 +407,16 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * @param cursor
 	 */
 	public static void sendProjectUpdateTask(String country, String cursor) {
-		Queue queue = QueueFactory.getDefaultQueue();
-
-		queue.add(url("/app_worker/dataprocessor")
+		TaskOptions options = TaskOptions.Builder
+				.withUrl("/app_worker/dataprocessor")
 				.param(DataProcessorRequest.ACTION_PARAM,
 						DataProcessorRequest.PROJECT_FLAG_UPDATE_ACTION)
 				.param(DataProcessorRequest.COUNTRY_PARAM, country)
 				.param(DataProcessorRequest.CURSOR_PARAM,
-						cursor != null ? cursor : ""));
+						cursor != null ? cursor : "");
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(options);
+
 	}
 
 }
