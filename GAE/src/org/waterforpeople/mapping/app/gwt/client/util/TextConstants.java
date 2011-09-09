@@ -579,5 +579,7 @@ public interface TextConstants extends Constants{
 	public String generateSummariesByGeography();
 	public String saveNewQuestion();
 	public String saveBackToList();
+	public String rawDataReportGeneration();
+	public String fieldStatusReportGeneration();
 }
 

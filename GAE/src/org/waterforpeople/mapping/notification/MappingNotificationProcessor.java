@@ -20,6 +20,8 @@ public class MappingNotificationProcessor extends NotificationProcessor {
 		notificationTypeMap = new HashMap<String, String>();
 		notificationTypeMap.put(RawDataReportNotificationHandler.TYPE,
 				RawDataReportNotificationHandler.class.getCanonicalName());
+		notificationTypeMap.put(FieldStatusReportNotificationHandler.TYPE,
+				FieldStatusReportNotificationHandler.class.getCanonicalName());
 		for (int i = 0; i < SurveyEventNotificationHandler.EVENTS.length; i++) {
 			notificationTypeMap.put(SurveyEventNotificationHandler.EVENTS[i],
 					SurveyEventNotificationHandler.class.getCanonicalName());

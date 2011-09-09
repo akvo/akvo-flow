@@ -323,31 +323,31 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	 * @param surveyId
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	
 	public List<SurveyInstance> listSurveyInstanceBySurvey(Long surveyId,
 			Integer count) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		Query q = pm.newQuery(SurveyInstance.class);
-		q.setFilter("surveyId == surveyIdParam");
-		q.declareParameters("Long surveyIdParam");
-		if (count != null) {
-			q.setRange(0, count);
-		}
-		return (List<SurveyInstance>) q.execute(surveyId);
+		return listSurveyInstanceBySurvey(surveyId,count,null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<SurveyInstance> listSurveyInstanceBySurveyId(Long surveyId,
-			String cursorString) {
+	public List<SurveyInstance> listSurveyInstanceBySurvey(Long surveyId,
+			Integer count, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("surveyId == surveyIdParam");
 		q.declareParameters("Long surveyIdParam");
-		prepareCursor(cursorString, q);
+		prepareCursor(cursorString,count,q);
 		List<SurveyInstance> siList = (List<SurveyInstance>) q
 				.execute(surveyId);
 
 		return siList;
+	}
+
+	
+	public List<SurveyInstance> listSurveyInstanceBySurveyId(Long surveyId,
+			String cursorString) {
+		return listSurveyInstanceBySurvey(surveyId, null,
+				cursorString);
 	}
 
 	/**

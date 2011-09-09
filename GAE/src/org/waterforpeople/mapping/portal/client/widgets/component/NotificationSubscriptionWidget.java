@@ -57,7 +57,10 @@ public class NotificationSubscriptionWidget extends Composite implements
 		ViewUtil.installFieldRow(horizPanel, TEXT_CONSTANTS.expires(),
 				expiryBox, null);
 
-		typeSel.addItem(TEXT_CONSTANTS.reportGeneration(), "rawDataReport");
+		typeSel.addItem(TEXT_CONSTANTS.rawDataReportGeneration(),
+				"rawDataReport");
+		typeSel.addItem(TEXT_CONSTANTS.fieldStatusReportGeneration(),
+				"fieldStatusReport");
 		typeSel.addItem(TEXT_CONSTANTS.surveySubmission(), "surveySubmission");
 		typeSel.addItem(TEXT_CONSTANTS.surveyApproval(), "surveyApproval");
 		typeSel.addChangeHandler(this);
@@ -74,23 +77,26 @@ public class NotificationSubscriptionWidget extends Composite implements
 			if (subscription.getExpiryDate() != null) {
 				expiryBox.setValue(subscription.getExpiryDate());
 			}
-			if (subscription.getNotificationOption() != null) {
-				ViewUtil.setListboxSelection(optionSelector,
-						subscription.getNotificationOption());
-			} else {
-				optionSelector.setSelectedIndex(0);
-			}
+			
 			if (subscription.getNotificationType() != null) {
 				ViewUtil.setListboxSelection(typeSel,
 						subscription.getNotificationType());
 			} else {
 				typeSel.setSelectedIndex(0);
 			}
+			updateOptions();
+			if (subscription.getNotificationOption() != null) {
+				ViewUtil.setListboxSelection(optionSelector,
+						subscription.getNotificationOption());
+			} else {
+				optionSelector.setSelectedIndex(0);
+			}
 		} else {
 			subscription = new NotificationSubscriptionDto();
 			subscription.setNotificationMethod("EMAIL");
+			updateOptions();
 		}
-		updateOptions();
+		
 	}
 
 	public NotificationSubscriptionDto getValue() {
@@ -101,7 +107,7 @@ public class NotificationSubscriptionWidget extends Composite implements
 			subscription.setNotificationOption(ViewUtil.getListBoxSelection(
 					optionSelector, false));
 			subscription.setNotificationType(ViewUtil.getListBoxSelection(
-					typeSel, false));
+					typeSel, false));			
 
 		}
 		return subscription;
@@ -116,8 +122,8 @@ public class NotificationSubscriptionWidget extends Composite implements
 
 	private void updateOptions() {
 		optionSelector.clear();
-		if (ViewUtil.getListBoxSelection(typeSel, false)
-				.equals("rawDataReport")) {
+		String type = ViewUtil.getListBoxSelection(typeSel, false);
+		if ("rawDataReport".equals(type) || "fieldStatusReport".equals(type)) {
 			optionSelector.addItem(TEXT_CONSTANTS.attachment(),
 					ATTACHMENT_OPTION.toUpperCase());
 			optionSelector.addItem(TEXT_CONSTANTS.link(),

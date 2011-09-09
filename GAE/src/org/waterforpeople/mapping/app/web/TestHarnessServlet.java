@@ -1757,7 +1757,7 @@ public class TestHarnessServlet extends HttpServlet {
 						"christopher.fagiani@gmail.com||christopher.fagiani@gmail.com")
 				.param(NotificationRequest.DEST_OPT_PARAM, "ATTACHMENT||LINK")
 				.param(NotificationRequest.SUB_ENTITY_PARAM, surveyId)
-				.param(NotificationRequest.TYPE_PARAM, "rawDataReport"));
+				.param(NotificationRequest.TYPE_PARAM, "fieldStatusReport"));
 	}
 
 	private void populatePermissions() {
