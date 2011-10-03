@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.dataexport.service;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -913,51 +914,131 @@ public class BulkDataServiceClient {
 	}
 
 	/**
-	 * invokes a remote REST api
-	 * 
-	 * @param fullUrl
-	 * @return
-	 * @throws Exception
-	 */
-	public static String fetchDataFromServer(String fullUrl) throws Exception {
-		BufferedReader reader = null;
-		String result = null;
-		try {
-			URL url = new URL(fullUrl);
-			System.out.println("Calling: " + url.toString());
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-			conn.setConnectTimeout(30000);
-			conn.setRequestMethod("GET");
-			conn.setDoOutput(true);
-			conn.addRequestProperty("Accept-Encoding", "gzip");
-			conn.addRequestProperty("User-Agent", "gzip");
-			InputStream instream = conn.getInputStream();
-			String contentEncoding = conn.getHeaderField("Content-Encoding");
-
-			if (contentEncoding != null
-					&& contentEncoding.equalsIgnoreCase("gzip")) {
-				reader = new BufferedReader(new InputStreamReader(
-						new GZIPInputStream(instream), "UTF-8"));
+		 * invokes a remote REST api. If the url is longer than 2048 characters, this method will use POST since that is too long for a GET
+		 * 
+		 * @param fullUrl
+		 * @return
+		 * @throws Exception
+		 */
+		public static String fetchDataFromServer(String fullUrl) throws Exception {
+			if (fullUrl != null) {
+				if (fullUrl.length() > 2048) {
+					return fetchDataFromServerPOST(fullUrl);
+				} else {
+					return fetchDataFromServerGET(fullUrl);
+				}
 			} else {
-				reader = new BufferedReader(new InputStreamReader(instream,
-						"UTF-8"));
-			}
-
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
-			}
-			result = sb.toString();
-		} finally {
-			if (reader != null) {
-				reader.close();
+				return null;
 			}
 		}
-		return result;
-	}
+	
+	/**
+	* executes a post to invoke a rest api
+	*/
+		private static String fetchDataFromServerPOST(String fullUrl)
+				throws Exception {
+			BufferedReader reader = null;
+			String result = null;
+			try {
+				String baseUrl = fullUrl;
+				String queryString = null;
+				if (fullUrl.contains("?")) {
+					baseUrl = fullUrl.substring(0, fullUrl.indexOf("?"));
+					queryString = fullUrl.substring(fullUrl.indexOf("?") + 1);
+				}
+				URL url = new URL(baseUrl);
+				System.out.println("Calling: " + baseUrl + " with params: "
+						+ queryString);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	
+				conn.setConnectTimeout(30000);
+				conn.setRequestMethod("POST");
+				conn.setUseCaches(false);
+				conn.setRequestProperty("Content-Length",
+						"" + Integer.toString(queryString.getBytes().length));
+				conn.setRequestProperty("Content-Type",
+						"application/x-www-form-urlencoded");
+	
+				conn.setDoInput(true);
+				conn.setDoOutput(true);
+				conn.addRequestProperty("Accept-Encoding", "gzip");
+				conn.addRequestProperty("User-Agent", "gzip");
+	
+				DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+				wr.writeBytes(queryString);
+				wr.flush();
+				wr.close();
+				InputStream instream = conn.getInputStream();
+				String contentEncoding = conn.getHeaderField("Content-Encoding");
+	
+				if (contentEncoding != null
+						&& contentEncoding.equalsIgnoreCase("gzip")) {
+					reader = new BufferedReader(new InputStreamReader(
+							new GZIPInputStream(instream), "UTF-8"));
+				} else {
+					reader = new BufferedReader(new InputStreamReader(instream,
+							"UTF-8"));
+				}
+	
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+	
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+				result = sb.toString();
+			} finally {
+				if (reader != null) {
+					reader.close();
+				}
+			}
+			return result;
+		}
+	
+	/**
+	* executes a GET to invoke a rest api
+	*/
+		private static String fetchDataFromServerGET(String fullUrl)
+				throws Exception {
+			BufferedReader reader = null;
+			String result = null;
+			try {
+				URL url = new URL(fullUrl);
+				System.out.println("Calling: " + url.toString());
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	
+				conn.setConnectTimeout(30000);
+				conn.setRequestMethod("GET");
+				conn.setDoOutput(true);
+				conn.addRequestProperty("Accept-Encoding", "gzip");
+				conn.addRequestProperty("User-Agent", "gzip");
+				InputStream instream = conn.getInputStream();
+				String contentEncoding = conn.getHeaderField("Content-Encoding");
+	
+				if (contentEncoding != null
+						&& contentEncoding.equalsIgnoreCase("gzip")) {
+					reader = new BufferedReader(new InputStreamReader(
+							new GZIPInputStream(instream), "UTF-8"));
+				} else {
+					reader = new BufferedReader(new InputStreamReader(instream,
+							"UTF-8"));
+				}
+	
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+	
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+				result = sb.toString();
+			} finally {
+				if (reader != null) {
+					reader.close();
+				}
+			}
+			return result;
+		}
+
 
 	/**
 	 * converts the string into a JSON array object.
