@@ -160,44 +160,32 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					String value = null;
 					boolean hasValue = false;
 					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 2) {
-						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-							sb.append("questionId="
-									+ questionIDColMap.get(cell
-											.getColumnIndex()) + "|value=");
-
-							value = cell.getStringCellValue().trim();
-							if (value.contains("|")) {
-								value = value.replaceAll("\\|", "^^");
+						String cellVal = parseCellAsString(cell);
+						if (cellVal != null) {
+							cellVal = cellVal.trim();
+							if (cellVal.contains("|")) {
+								cellVal = cellVal.replaceAll("\\|", "^^");
 							}
-							if (value.endsWith(".jpg")) {
+							if (cellVal.endsWith(".jpg")) {
 								type = "PHOTO";
-								value = value.substring(value.lastIndexOf("/"));
-								value = "/sdcard" + value;
+								cellVal = cellVal.substring(cellVal
+										.lastIndexOf("/"));
+								cellVal = "/sdcard" + value;
 							}
-							sb.append(URLEncoder.encode(value, "UTF-8"));
+						}
+						if (cellVal != null && cellVal.trim().length() > 0) {
 							hasValue = true;
+							sb.append(
+									"questionId="
+											+ questionIDColMap.get(cell
+													.getColumnIndex())
+											+ "|value=").append(
+									cellVal != null ? URLEncoder.encode(
+											cellVal, "UTF-8") : "");
+						}
+						type = typeMap.get(questionIDColMap.get(cell
+								.getColumnIndex()));
 
-						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-							sb.append("questionId="
-									+ questionIDColMap.get(cell
-											.getColumnIndex())
-									+ "|value="
-									+ new Double(cell.getNumericCellValue())
-											.toString().trim());
-							hasValue = true;
-						} else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
-							sb.append("questionId="
-									+ questionIDColMap.get(cell
-											.getColumnIndex())
-									+ "|value="
-									+ new Boolean(cell.getBooleanCellValue())
-											.toString().trim());
-							hasValue = true;
-						}
-						if (type == null && value != null) {
-							type = typeMap.get(questionIDColMap.get(cell
-									.getColumnIndex()));
-						}
 						if (type == null) {
 							type = "VALUE";
 						}
@@ -205,7 +193,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							sb.append("|type=").append(type).append("&");
 						}
 					}
-
 				}
 				if (row.getRowNum() > 0) {
 
@@ -224,8 +211,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					invokeUrl(serverBase, sb.toString());
 
 				}
-
 			}
+
+			// now update the summaries
+			invokeUrl(serverBase, "action="
+					+ RawDataImportRequest.UPDATE_SUMMARIES_ACTION + "&"
+					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId);
+
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					COMPLETE.get(locale)));
 		} catch (Exception e) {
@@ -244,6 +236,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	 */
 	protected void invokeUrl(String serverBase, String urlString)
 			throws Exception {
+
 		URL url = new URL(serverBase + SERVLET_URL);
 		System.out.println(serverBase + SERVLET_URL + urlString);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -291,6 +284,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
+	}
+
+	private String parseCellAsString(Cell cell) {
+		String val = null;
+		if (cell != null) {
+			switch (cell.getCellType()) {
+			case Cell.CELL_TYPE_BOOLEAN:
+				val = cell.getBooleanCellValue() + "";
+				break;
+			case Cell.CELL_TYPE_NUMERIC:
+				val = cell.getNumericCellValue() + "";
+				break;
+			default:
+				val = cell.getStringCellValue();
+				break;
+			}
+		}
+		return val;
 	}
 
 	/**

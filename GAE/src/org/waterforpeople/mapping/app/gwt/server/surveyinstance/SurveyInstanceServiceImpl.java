@@ -142,7 +142,12 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public List<QuestionAnswerStoreDto> updateQuestions(
-			List<QuestionAnswerStoreDto> dtoList, boolean isApproved) {
+			List<QuestionAnswerStoreDto> dtoList, boolean isApproved){
+		return updateQuestions(dtoList, isApproved,true);
+	}
+	
+	public List<QuestionAnswerStoreDto> updateQuestions(
+			List<QuestionAnswerStoreDto> dtoList, boolean isApproved, boolean processSummaries) {
 		List<QuestionAnswerStore> domainList = new ArrayList<QuestionAnswerStore>();
 		for (QuestionAnswerStoreDto dto : dtoList) {
 			QuestionAnswerStore answer = new QuestionAnswerStore();
@@ -155,7 +160,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyAttributeMappingDao mappingDao = new SurveyAttributeMappingDao();
 		dao.save(domainList);
-		if (isApproved) {
+		if (isApproved && processSummaries) {
 			// now send a change message for each item
 			Queue queue = QueueFactory.getQueue("dataUpdate");
 			for (QuestionAnswerStoreDto item : dtoList) {

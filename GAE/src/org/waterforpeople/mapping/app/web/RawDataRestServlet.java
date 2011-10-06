@@ -9,20 +9,25 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
+import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Question.Type;
+import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class RawDataRestServlet extends AbstractRestApiServlet {
 
@@ -65,7 +70,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				qasDto.setCollectionDate(importReq.getCollectionDate());
 				dtoList.add(qasDto);
 			}
-			sisi.updateQuestions(dtoList, true);
+			sisi.updateQuestions(dtoList, true, false);
 		} else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				.equals(importReq.getAction())) {
 			SurveyInstance instance = instanceDao.getByKey(importReq
@@ -157,6 +162,36 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 							+ importReq.getSurveyId());
 				}
 				// todo: send processing message
+			}
+		} else if (RawDataImportRequest.UPDATE_SUMMARIES_ACTION
+				.equalsIgnoreCase(importReq.getAction())) {
+			// first rebuild the summaries
+			TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor").param(
+					DataProcessorRequest.ACTION_PARAM,
+					DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
+			String backendPub = PropertyUtil.getProperty("backendpublish");
+			if (backendPub != null && "true".equals(backendPub)) {
+				// change the host so the queue invokes the backend
+				options = options
+						.header("Host",
+								BackendServiceFactory.getBackendService()
+										.getBackendAddress("dataprocessor"));
+			}
+			Long surveyId = importReq.getSurveyId();
+			if (surveyId != null && surveyId > 0) {
+				options.param(DataProcessorRequest.SURVEY_ID_PARAM,
+						surveyId.toString());
+			}
+
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
+
+			// now remap to access point
+			if (surveyId != null) {
+				SurveyServiceImpl ssi = new SurveyServiceImpl();
+				ssi.rerunAPMappings(surveyId);
 			}
 		}
 		return null;
