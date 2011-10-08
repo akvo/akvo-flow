@@ -125,6 +125,16 @@ public class ProgressDialog extends JDialog implements ActionListener {
 	 * @param task
 	 */
 	public void update(int step, String task) {
+		update(step,task,false);
+	}
+	
+	/**
+	 * updates the current status displayed by this dialog.
+	 * 
+	 * @param step
+	 * @param task
+	 */
+	public void update(int step, String task, boolean isComplete) {
 		if (task == null) {
 			currentStepLabel.setText("");
 		} else {
@@ -133,7 +143,7 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		if (step != currentStep) {
 			currentStep = step;
 			progressBar.setValue(currentStep);			
-			if (currentStep > maxSteps) {							
+			if (currentStep > maxSteps || isComplete) {							
 				closeButton.setVisible(true);
 			}else{
 				String statusText = STEP.get(locale);

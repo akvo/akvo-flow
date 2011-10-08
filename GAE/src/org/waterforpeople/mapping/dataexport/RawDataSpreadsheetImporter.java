@@ -13,6 +13,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
@@ -37,6 +41,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private InputStream stream;
 	private ProgressDialog progressDialog;
 	private String locale = DEFAULT_LOCALE;
+	private ThreadPoolExecutor threadPool;
+	private BlockingQueue<Runnable> jobQueue;
+	private volatile int currentStep;
 
 	static {
 		SAVING_DATA = new HashMap<String, String>();
@@ -85,7 +92,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	public void executeImport(File file, String serverBase,
 			Map<String, String> criteria) {
 		try {
-
+			jobQueue = new LinkedBlockingQueue<Runnable>();
+			threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
+					jobQueue);
 			DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
 			setSurveyId(criteria);
 			int i = 0;
@@ -94,10 +103,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			progressDialog.setVisible(true);
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			Map<String, String> typeMap = new HashMap<String, String>();
-			int currentStep = 0;
+			currentStep = 0;
 			for (Row row : sheet1) {
-				SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-						SAVING_DATA.get(locale)));
 				String instanceId = null;
 				String dateString = null;
 				String submitter = null;
@@ -195,8 +202,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 				}
 				if (row.getRowNum() > 0) {
-
-					invokeUrl(serverBase, "action="
+					sendDataToServer(serverBase, "action="
 							+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 							+ "&"
 							+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
@@ -206,25 +212,53 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							+ RawDataImportRequest.COLLECTION_DATE_PARAM + "="
 							+ URLEncoder.encode(dateString, "UTF-8") + "&"
 							+ RawDataImportRequest.SUBMITTER_PARAM + "="
-							+ URLEncoder.encode(submitter, "UTF-8"));
-					System.out.print(i++ + " : ");
-					invokeUrl(serverBase, sb.toString());
+							+ URLEncoder.encode(submitter, "UTF-8"),
+							sb.toString());
 
 				}
 			}
-
+			while(!threadPool.getQueue().isEmpty()){
+				Thread.sleep(5000);
+			}
+			System.out.println(i + ": ");
 			// now update the summaries
 			invokeUrl(serverBase, "action="
 					+ RawDataImportRequest.UPDATE_SUMMARIES_ACTION + "&"
 					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId);
 
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-					COMPLETE.get(locale)));
+					COMPLETE.get(locale),true));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			cleanup();
 		}
+	}
+
+	/**
+	 * handles calling invokeURL twice (once to reset the instance and again to
+	 * save the new one) as a separate job submitted to the thread pool
+	 * 
+	 * @param serverBase
+	 * @param resetUrlString
+	 * @param saveUrlString
+	 */
+	private void sendDataToServer(final String serverBase,
+			final String resetUrlString, final String saveUrlString) {
+		threadPool.execute(new Runnable() {
+
+			public void run() {
+				try {					
+						SwingUtilities.invokeLater(new StatusUpdater(
+								currentStep++, SAVING_DATA.get(locale)));					
+					invokeUrl(serverBase, resetUrlString);
+					invokeUrl(serverBase, saveUrlString);
+				} catch (Exception e) {
+					System.err.println("Could not invoke rest services: " + e);
+					e.printStackTrace(System.err);
+				}
+			}
+		});
 	}
 
 	/**
@@ -311,14 +345,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 		private int step;
 		private String msg;
+		private boolean isComplete;
 
 		public StatusUpdater(int step, String message) {
+			this(step,message,false);
+		}
+		
+		public StatusUpdater(int step, String message, boolean isComplete) {
 			msg = message;
 			this.step = step;
+			this.isComplete = isComplete;
 		}
 
+
 		public void run() {
-			progressDialog.update(step, msg);
+			progressDialog.update(step, msg,isComplete);
 		}
 	}
 }
