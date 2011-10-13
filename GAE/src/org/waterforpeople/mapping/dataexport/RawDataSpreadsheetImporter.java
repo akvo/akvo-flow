@@ -171,8 +171,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 					String value = null;
 					boolean hasValue = false;
-					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 2 && questionIDColMap.get(cell
-							.getColumnIndex())!=null) {
+					if (cell.getRowIndex() > 0
+							&& cell.getColumnIndex() > 2
+							&& questionIDColMap.get(cell.getColumnIndex()) != null) {
 						String cellVal = parseCellAsString(cell);
 						if (cellVal != null) {
 							cellVal = cellVal.trim();
@@ -206,17 +207,26 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						if (hasValue) {
 							sb.append("|type=").append(type).append("&");
 						}
-					}else if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 2){
-						//we should only get here if we have a column that isn't in the header
-						//as long as the user hasn't messed up the sheet, this is the md5 digest of the original data
-						try{
-						String md5 = parseCellAsString(cell);
-						if(md5 != null && md5.equals(StringUtil.toHexString(digest.digest()))){
-							needUpload = false;
-						}
-						}catch(Exception e){
-							//if we can't handle the md5, then just assume we need to update the row
-							System.err.println("Couldn't process md5 for row: "+row.getRowNum());
+					} else if (cell.getRowIndex() > 0
+							&& cell.getColumnIndex() > 2) {
+						// we should only get here if we have a column that
+						// isn't in the header
+						// as long as the user hasn't messed up the sheet, this
+						// is the md5 digest of the original data
+						try {
+							String md5 = parseCellAsString(cell);
+							String digestVal = StringUtil.toHexString(digest
+									.digest());
+							if (md5 != null && md5.equals(digestVal)) {
+								System.out.println("Row: " + row.getRowNum()
+										+ " MD5: " + digestVal);
+								needUpload = false;
+							}
+						} catch (Exception e) {
+							// if we can't handle the md5, then just assume we
+							// need to update the row
+							System.err.println("Couldn't process md5 for row: "
+									+ row.getRowNum());
 						}
 					}
 				}
@@ -234,13 +244,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							+ URLEncoder.encode(submitter, "UTF-8"),
 							sb.toString());
 
-				}else if (row.getRowNum() > 0 ){
-					//if we didn't need to upload, then just increment our progress counter
-					SwingUtilities.invokeLater(new StatusUpdater(
-							currentStep++, SAVING_DATA.get(locale)));	
+				} else if (row.getRowNum() > 0) {
+					// if we didn't need to upload, then just increment our
+					// progress counter
+					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+							SAVING_DATA.get(locale)));
 				}
 			}
-			while(!threadPool.getQueue().isEmpty()){
+			while (!threadPool.getQueue().isEmpty()) {
 				Thread.sleep(5000);
 			}
 			System.out.println(i + ": ");
@@ -250,7 +261,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId);
 
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-					COMPLETE.get(locale),true));
+					COMPLETE.get(locale), true));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -271,9 +282,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		threadPool.execute(new Runnable() {
 
 			public void run() {
-				try {					
-						SwingUtilities.invokeLater(new StatusUpdater(
-								currentStep++, SAVING_DATA.get(locale)));					
+				try {
+					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+							SAVING_DATA.get(locale)));
 					invokeUrl(serverBase, resetUrlString);
 					invokeUrl(serverBase, saveUrlString);
 				} catch (Exception e) {
@@ -371,18 +382,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		private boolean isComplete;
 
 		public StatusUpdater(int step, String message) {
-			this(step,message,false);
+			this(step, message, false);
 		}
-		
+
 		public StatusUpdater(int step, String message, boolean isComplete) {
 			msg = message;
 			this.step = step;
 			this.isComplete = isComplete;
 		}
 
-
 		public void run() {
-			progressDialog.update(step, msg,isComplete);
+			progressDialog.update(step, msg, isComplete);
 		}
 	}
 }

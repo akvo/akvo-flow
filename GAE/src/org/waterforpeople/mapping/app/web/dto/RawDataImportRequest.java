@@ -33,7 +33,7 @@ public class RawDataImportRequest extends RestRequest {
 	public static final String UPDATE_SUMMARIES_ACTION = "updateSummaries";
 
 	public static final String FIELD_VAL_DELIMITER = ";;";
-	
+
 	private Long surveyId;
 	private Long surveyedLocaleId;
 	private Long surveyInstanceId = null;
@@ -176,7 +176,8 @@ public class RawDataImportRequest extends RestRequest {
 		if (req.getParameter(SURVEY_ID_PARAM) != null) {
 			surveyId = new Long(req.getParameter(SURVEY_ID_PARAM).trim());
 		}
-		if (req.getParameter(COLLECTION_DATE_PARAM) != null) {
+		if (req.getParameter(COLLECTION_DATE_PARAM) != null
+				&& req.getParameter(COLLECTION_DATE_PARAM).trim().length() > 0	) {
 			collectionDate = IN_FMT.parse(req.getParameter(
 					COLLECTION_DATE_PARAM).trim());
 		}
