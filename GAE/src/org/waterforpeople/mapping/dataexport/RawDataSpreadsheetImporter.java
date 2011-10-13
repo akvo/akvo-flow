@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +29,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 
+import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
@@ -104,7 +106,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			Map<String, String> typeMap = new HashMap<String, String>();
 			currentStep = 0;
+			MessageDigest digest = MessageDigest.getInstance("MD5");
 			for (Row row : sheet1) {
+				digest.reset();
 				String instanceId = null;
 				String dateString = null;
 				String submitter = null;
@@ -114,6 +118,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
 						+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
 						+ getSurveyId() + "&");
+				boolean needUpload = true;
 				for (Cell cell : row) {
 					String type = null;
 					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
@@ -166,7 +171,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 					String value = null;
 					boolean hasValue = false;
-					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 2) {
+					if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 2 && questionIDColMap.get(cell
+							.getColumnIndex())!=null) {
 						String cellVal = parseCellAsString(cell);
 						if (cellVal != null) {
 							cellVal = cellVal.trim();
@@ -189,6 +195,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 											+ "|value=").append(
 									cellVal != null ? URLEncoder.encode(
 											cellVal, "UTF-8") : "");
+							digest.update(cellVal.getBytes());
 						}
 						type = typeMap.get(questionIDColMap.get(cell
 								.getColumnIndex()));
@@ -199,9 +206,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						if (hasValue) {
 							sb.append("|type=").append(type).append("&");
 						}
+					}else if (cell.getRowIndex() > 0 && cell.getColumnIndex() > 2){
+						//we should only get here if we have a column that isn't in the header
+						//as long as the user hasn't messed up the sheet, this is the md5 digest of the original data
+						try{
+						String md5 = parseCellAsString(cell);
+						if(md5 != null && md5.equals(StringUtil.toHexString(digest.digest()))){
+							needUpload = false;
+						}
+						}catch(Exception e){
+							//if we can't handle the md5, then just assume we need to update the row
+							System.err.println("Couldn't process md5 for row: "+row.getRowNum());
+						}
 					}
 				}
-				if (row.getRowNum() > 0) {
+				if (row.getRowNum() > 0 && needUpload) {
 					sendDataToServer(serverBase, "action="
 							+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 							+ "&"
@@ -215,6 +234,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							+ URLEncoder.encode(submitter, "UTF-8"),
 							sb.toString());
 
+				}else if (row.getRowNum() > 0 ){
+					//if we didn't need to upload, then just increment our progress counter
+					SwingUtilities.invokeLater(new StatusUpdater(
+							currentStep++, SAVING_DATA.get(locale)));	
 				}
 			}
 			while(!threadPool.getQueue().isEmpty()){
