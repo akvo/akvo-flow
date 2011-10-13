@@ -59,4 +59,18 @@ public class StringUtil {
 		firstChar = firstChar.toUpperCase();
 		return firstChar + attributeField.substring(1);
 	}
+
+	/**
+	 * takes a byte array and outputs it as a string of hex digits
+	 * 
+	 * @param bytes
+	 * @return
+	 */
+	public static String toHexString(byte[] bytes) {
+		StringBuffer hexString = new StringBuffer();
+		for (int i = 0; i < bytes.length; i++) {
+			hexString.append(Integer.toHexString(0xFF & bytes[i]));
+		}
+		return hexString.toString();
+	}
 }

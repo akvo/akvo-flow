@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.dataexport;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
+import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 /**
@@ -336,6 +338,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				.fetchInstanceIds(surveyId, serverBase);
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCE_DETAILS.get(locale)));
+		MessageDigest digest = MessageDigest.getInstance("MD5");
 		for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
 			String instanceId = instanceEntry.getKey();
 			String dateString = instanceEntry.getValue();
@@ -363,7 +366,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 						createCell(row, col++, " ", null);
 					}
 				}
-
+				digest.reset();
 				for (String q : questionIdList) {
 					String val = responseMap.get(q);
 					if (val != null) {
@@ -372,12 +375,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 									+ val.substring(val.indexOf(SDCARD_PREFIX)
 											+ SDCARD_PREFIX.length());
 						}
+						String cellVal = val.replaceAll("\n", " ").trim();
 						createCell(row, col++,
-								val.replaceAll("\n", " ").trim(), null);
+								cellVal, null);
+						digest.update(cellVal.getBytes());
 					} else {
-						createCell(row, col++, "", null);
+						createCell(row, col++, "", null);						
 					}
 				}
+				//now add 1 more col that contains the digest
+				createCell(row,col++,StringUtil.toHexString(digest.digest()),null);
 
 				
 				if (generateSummary) {
