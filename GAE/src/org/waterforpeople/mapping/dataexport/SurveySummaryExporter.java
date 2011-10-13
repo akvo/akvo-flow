@@ -10,9 +10,11 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -72,6 +74,10 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	}
 	protected List<QuestionGroupDto> orderedGroupList;
 
+	/**
+	 * the ordered list of "rollup questions" (i.e. so we know how to build the
+	 * drill-downs)
+	 */
 	protected List<QuestionDto> rollupOrder;
 
 	@Override
@@ -117,7 +123,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		for (String instanceId : instanceMap.keySet()) {
 			Map<String, String> responseMap = BulkDataServiceClient
 					.fetchQuestionResponses(instanceId, serverBase);
-			List<String> rollups = null;
+			Set<String> rollups = null;
 			if (rollupOrder != null && rollupOrder.size() > 0) {
 				rollups = formRollupStrings(responseMap);
 			}
@@ -128,8 +134,16 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		return model;
 	}
 
-	protected List<String> formRollupStrings(Map<String, String> responseMap) {
-		List<String> rollups = new ArrayList<String>();
+	/**
+	 * builds the keys to use for roll-ups. So if the rollupOrder contains 2
+	 * questions, say State and District, it will form strings that look like:
+	 * "<StateResponse>" and "<StateResponse>|<DistrictResponse>"
+	 * 
+	 * @param responseMap
+	 * @return
+	 */
+	protected Set<String> formRollupStrings(Map<String, String> responseMap) {
+		Set<String> rollups = new HashSet<String>();
 		for (int j = 0; j < rollupOrder.size(); j++) {
 			String rollup = "";
 			int count = 0;
@@ -338,7 +352,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			sectorStatMap = new HashMap<String, Map<String, DescriptiveStats>>();
 		}
 
-		public void tallyResponse(String questionId, List<String> rollups,
+		public void tallyResponse(String questionId, Set<String> rollups,
 				String response) {
 			addResponse(questionId, response);
 			addRollup(rollups);
@@ -346,7 +360,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			updateStats(questionId, rollups, response);
 		}
 
-		private void updateStats(String questionId, List<String> rollups,
+		private void updateStats(String questionId, Set<String> rollups,
 				String response) {
 			if (statMap.get(questionId) == null) {
 				DescriptiveStats stats = new DescriptiveStats();
@@ -380,7 +394,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			}
 		}
 
-		private void incrementCount(String questionId, List<String> rollups,
+		private void incrementCount(String questionId, Set<String> rollups,
 				String response) {
 			if (rollups != null) {
 				for (String sector : rollups) {
@@ -403,7 +417,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			map.put(key, val);
 		}
 
-		private void addRollup(List<String> rollups) {
+		private void addRollup(Set<String> rollups) {
 			if (rollups != null) {
 				for (String sector : rollups) {
 					if (sector != null && sector.trim().length() > 0

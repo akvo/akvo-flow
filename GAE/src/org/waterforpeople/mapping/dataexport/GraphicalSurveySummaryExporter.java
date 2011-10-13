@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
@@ -378,11 +379,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					}
 				}
 
-				List<String> rollups = null;
-				if (rollupOrder != null && rollupOrder.size() > 0) {
-					rollups = formRollupStrings(responseMap);
-				}
+				
 				if (generateSummary) {
+					Set<String> rollups = null;
+					if (rollupOrder != null && rollupOrder.size() > 0) {
+						rollups = formRollupStrings(responseMap);
+					}
 					for (Entry<String, String> entry : responseMap.entrySet()) {
 						if (!unsummarizable.contains(entry.getKey())) {
 							String effectiveId = entry.getKey();
