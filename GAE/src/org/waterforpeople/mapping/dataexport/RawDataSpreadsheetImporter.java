@@ -257,7 +257,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			while (!threadPool.getQueue().isEmpty()) {
 				Thread.sleep(5000);
 			}
-			System.out.println(i + ": ");
+			System.out.println("Updating summaries");
 			// now update the summaries
 			invokeUrl(serverBase, "action="
 					+ RawDataImportRequest.UPDATE_SUMMARIES_ACTION + "&"
