@@ -177,6 +177,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						String cellVal = parseCellAsString(cell);
 						if (cellVal != null) {
 							cellVal = cellVal.trim();
+							//need to update digest before manipulating the data
+							digest.update(cellVal.getBytes());
 							if (cellVal.contains("|")) {
 								cellVal = cellVal.replaceAll("\\|", "^^");
 							}
@@ -196,7 +198,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 											+ "|value=").append(
 									cellVal != null ? URLEncoder.encode(
 											cellVal, "UTF-8") : "");
-							digest.update(cellVal.getBytes());
+							
 						}
 						type = typeMap.get(questionIDColMap.get(cell
 								.getColumnIndex()));
@@ -217,10 +219,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							String md5 = parseCellAsString(cell);
 							String digestVal = StringUtil.toHexString(digest
 									.digest());
-							if (md5 != null && md5.equals(digestVal)) {
-								System.out.println("Row: " + row.getRowNum()
-										+ " MD5: " + digestVal);
+							if (md5 != null && md5.equals(digestVal)) {								
 								needUpload = false;
+							}else if(md5 != null){
+								System.out.println("Row: " + row.getRowNum()
+										+ " MD5: " + digestVal+" orig md5: "+md5);
 							}
 						} catch (Exception e) {
 							// if we can't handle the md5, then just assume we
