@@ -11,8 +11,10 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -45,6 +47,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private String locale = DEFAULT_LOCALE;
 	private ThreadPoolExecutor threadPool;
 	private BlockingQueue<Runnable> jobQueue;
+	private List<String> errorIds;
 	private volatile int currentStep;
 
 	static {
@@ -94,12 +97,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	public void executeImport(File file, String serverBase,
 			Map<String, String> criteria) {
 		try {
+			errorIds = new ArrayList<String>();
 			jobQueue = new LinkedBlockingQueue<Runnable>();
 			threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
 					jobQueue);
 			DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
 			setSurveyId(criteria);
-			int i = 0;
+			
 			Sheet sheet1 = getDataSheet(file);
 			progressDialog = new ProgressDialog(sheet1.getLastRowNum(), locale);
 			progressDialog.setVisible(true);
@@ -254,8 +258,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							SAVING_DATA.get(locale)));
 				}
 			}
-			while (!threadPool.getQueue().isEmpty()) {
+			while (!jobQueue.isEmpty()) {
 				Thread.sleep(5000);
+			}
+			if(errorIds.size()>0){
+				System.out.println("There were ERRORS: ");
+				for(String line:errorIds){
+					System.out.println(line);
+				}
 			}
 			System.out.println("Updating summaries");
 			// now update the summaries
@@ -291,6 +301,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					invokeUrl(serverBase, resetUrlString);
 					invokeUrl(serverBase, saveUrlString);
 				} catch (Exception e) {
+					errorIds.add(saveUrlString);
 					System.err.println("Could not invoke rest services: " + e);
 					e.printStackTrace(System.err);
 				}
