@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
@@ -215,12 +219,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private int maxSteps;
 	private boolean isFullReport;
 	private boolean performGeoRollup;
+	private ThreadPoolExecutor threadPool;
+	private BlockingQueue<Runnable> jobQueue;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase, Map<String, String> options) {
 		processOptions(options);
-
+		jobQueue = new LinkedBlockingQueue<Runnable>();
+		threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
+				jobQueue);
 		progressDialog = new ProgressDialog(maxSteps, locale);
 		progressDialog.setVisible(true);
 		currentStep = 1;
@@ -306,16 +314,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 	@SuppressWarnings("unchecked")
 	protected SummaryModel fetchAndWriteRawData(String surveyId,
-			String serverBase,
+			final String serverBase,
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
-			boolean generateSummary, File outputFile) throws Exception {
-		SummaryModel model = new SummaryModel();
+			final boolean generateSummary, File outputFile) throws Exception {
+		final SummaryModel model = new SummaryModel();
 
 		Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
 		int curRow = 1;
 
-		Map<String, String> collapseIdMap = new HashMap<String, String>();
-		Map<String, String> nameToIdMap = new HashMap<String, String>();
+		final Map<String, String> collapseIdMap = new HashMap<String, String>();
+		final Map<String, String> nameToIdMap = new HashMap<String, String>();
 		for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
 				.entrySet()) {
 			for (QuestionDto q : groupEntry.getValue()) {
@@ -329,8 +337,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 
 		Object[] results = createRawDataHeader(wb, sheet, questionMap);
-		List<String> questionIdList = (List<String>) results[0];
-		List<String> unsummarizable = (List<String>) results[1];
+		final List<String> questionIdList = (List<String>) results[0];
+		final List<String> unsummarizable = (List<String>) results[1];
 
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCES.get(locale)));
@@ -338,83 +346,113 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				.fetchInstanceIds(surveyId, serverBase);
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCE_DETAILS.get(locale)));
-		MessageDigest digest = MessageDigest.getInstance("MD5");
+
 		for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
-			String instanceId = instanceEntry.getKey();
-			String dateString = instanceEntry.getValue();
-			Row row = null;
+			final String instanceId = instanceEntry.getKey();
+			final String dateString = instanceEntry.getValue();
 
-			row = getRow(curRow++, sheet);
+			final Row row = getRow(curRow++, sheet);
 
-			Map<String, String> responseMap = BulkDataServiceClient
-					.fetchQuestionResponses(instanceId, serverBase);
-			int col = 0;
+			threadPool.execute(new Runnable() {
+				public void run() {
+					try {
+						Map<String, String> responseMap = BulkDataServiceClient
+								.fetchQuestionResponses(instanceId, serverBase);
 
-			if (responseMap != null && responseMap.size() > 0) {
-				SurveyInstanceDto dto = BulkDataServiceClient
-						.findSurveyInstance(Long.parseLong(instanceId.trim()),
-								serverBase);
+						SurveyInstanceDto dto = BulkDataServiceClient
+								.findSurveyInstance(
+										Long.parseLong(instanceId.trim()),
+										serverBase);
+						writeRow(row, dto, responseMap, dateString, instanceId,
+								generateSummary, questionIdList,
+								unsummarizable, nameToIdMap, collapseIdMap,
+								model);
 
-				createCell(row, col++, instanceId, null);
-				createCell(row, col++, dateString, null);
-				if (dto != null) {
-					String name = dto.getSubmitterName();
-					if (name != null) {
-						createCell(row, col++, dto.getSubmitterName()
-								.replaceAll("\n", " ").trim(), null);
-					} else {
-						createCell(row, col++, " ", null);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
-				digest.reset();
-				for (String q : questionIdList) {
-					String val = responseMap.get(q);
-					if (val != null) {
-						if (val.contains(SDCARD_PREFIX)) {
-							val = imagePrefix
-									+ val.substring(val.indexOf(SDCARD_PREFIX)
-											+ SDCARD_PREFIX.length());
-						}
-						String cellVal = val.replaceAll("\n", " ").trim();
-						createCell(row, col++,
-								cellVal, null);
-						digest.update(cellVal.getBytes());
-					} else {
-						createCell(row, col++, "", null);						
-					}
-				}
-				//now add 1 more col that contains the digest
-				createCell(row,col++,StringUtil.toHexString(digest.digest()),null);
+			});
+		}
+		while (!jobQueue.isEmpty()) {
+			try {
+				System.out.println("Sleeping, Queue has: " + jobQueue.size());
+				Thread.sleep(5000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
+				WRITING_RAW_DATA.get(locale)));
+		return model;
+	}
 
-				
-				if (generateSummary) {
-					Set<String> rollups = null;
-					if (rollupOrder != null && rollupOrder.size() > 0) {
-						rollups = formRollupStrings(responseMap);
+	private void writeRow(Row row, SurveyInstanceDto dto,
+			Map<String, String> responseMap, String dateString,
+			String instanceId, boolean generateSummary,
+			List<String> questionIdList, List<String> unsummarizable,
+			Map<String, String> nameToIdMap, Map<String, String> collapseIdMap,
+			SummaryModel model) throws Exception {
+		int col = 0;
+		MessageDigest digest = MessageDigest.getInstance("MD5");
+		createCell(row, col++, instanceId, null);
+		createCell(row, col++, dateString, null);
+		if (dto != null) {
+			String name = dto.getSubmitterName();
+			if (name != null) {
+				createCell(row, col++,
+						dto.getSubmitterName().replaceAll("\n", " ").trim(),
+						null);
+			} else {
+				createCell(row, col++, " ", null);
+			}
+		}
+
+		for (String q : questionIdList) {
+			String val = null;
+			if (responseMap != null) {
+				val = responseMap.get(q);
+			}
+			if (val != null) {
+				if (val.contains(SDCARD_PREFIX)) {
+					val = imagePrefix
+							+ val.substring(val.indexOf(SDCARD_PREFIX)
+									+ SDCARD_PREFIX.length());
+				}
+				String cellVal = val.replaceAll("\n", " ").trim();
+				createCell(row, col++, cellVal, null);
+				digest.update(cellVal.getBytes());
+			} else {
+				createCell(row, col++, "", null);
+			}
+		}
+		// now add 1 more col that contains the digest
+		createCell(row, col++, StringUtil.toHexString(digest.digest()), null);
+
+		if (generateSummary && responseMap != null) {
+			Set<String> rollups = null;
+			if (rollupOrder != null && rollupOrder.size() > 0) {
+				rollups = formRollupStrings(responseMap);
+			}
+			for (Entry<String, String> entry : responseMap.entrySet()) {
+				if (!unsummarizable.contains(entry.getKey())) {
+					String effectiveId = entry.getKey();
+					if (nameToIdMap.get(effectiveId) != null) {
+						effectiveId = collapseIdMap.get(nameToIdMap
+								.get(effectiveId));
 					}
-					for (Entry<String, String> entry : responseMap.entrySet()) {
-						if (!unsummarizable.contains(entry.getKey())) {
-							String effectiveId = entry.getKey();
-							if (nameToIdMap.get(effectiveId) != null) {
-								effectiveId = collapseIdMap.get(nameToIdMap
-										.get(effectiveId));
-							}
-							String[] vals = entry.getValue().split("\\|");
-							for (int i = 0; i < vals.length; i++) {
-								if(vals[i]!=null && vals[i].trim().length()>0){
-									model.tallyResponse(effectiveId, rollups,
+					String[] vals = entry.getValue().split("\\|");
+					synchronized (model) {
+						for (int i = 0; i < vals.length; i++) {
+							if (vals[i] != null && vals[i].trim().length() > 0) {
+								model.tallyResponse(effectiveId, rollups,
 										vals[i]);
-								}
 							}
 						}
 					}
 				}
 			}
 		}
-
-		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-				WRITING_RAW_DATA.get(locale)));
-		return model;
 	}
 
 	/**
@@ -659,7 +697,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 								}
 							}
 						}
-						//only insert the image if we have at least 1 non-zero value
+						// only insert the image if we have at least 1 non-zero
+						// value
 						if (hasVals) {
 							// now insert the graph
 							int indx = wb
