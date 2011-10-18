@@ -13,6 +13,7 @@ import com.gallatinsystems.framework.gwt.component.ListBasedWidget;
 import com.gallatinsystems.framework.gwt.component.PageController;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.wizard.client.ContextAware;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -69,7 +70,7 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 						setCursor(response.getCursorString());
 						toggleLoading(false);
 						if (result != null && result.size() > 0) {
-							dataGrid = new Grid(result.size() + 1, 2);
+							dataGrid = new Grid(result.size() + 1, 3);
 							for (int i = 0; i < result.size(); i++) {
 								Label l = createListEntry(result.get(i)
 										.getDisplayName());
@@ -77,8 +78,15 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 								groupMap.put(l, result.get(i));
 								Button b = createButton(ClickMode.EDIT,
 										TEXT_CONSTANTS.edit());
+								Button deleteButton = createButton(
+										ClickMode.DELETE,
+										TEXT_CONSTANTS.delete());
+
 								groupMap.put(b, result.get(i));
+								groupMap.put(deleteButton, result.get(i));
 								dataGrid.setWidget(i, 1, b);
+								dataGrid.setWidget(i, 2, deleteButton);
+
 							}
 							HorizontalPanel navPanel = new HorizontalPanel();
 							if (getCurrentPage() > 0) {
@@ -96,6 +104,32 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 				});
 	}
 
+	private void deleteSurveyGroup(SurveyGroupDto group) {
+		setWorking(true);
+		final MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.deleting(),
+				TEXT_CONSTANTS.pleaseWait(), true);
+		surveyService.deleteSurveyGroup(group, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				dia.hide(true);
+				setWorking(false);
+				MessageDialog errDia = new MessageDialog(
+						TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+								.errorTracePrefix()
+								+ " "
+								+ caught.getLocalizedMessage());
+				errDia.showCentered();
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				dia.hide(true);
+				setWorking(false);
+				loadData();
+			}
+		});
+	}
+
 	@Override
 	protected void handleItemClick(Object source, ClickMode mode) {
 		bundle.put(BundleConstants.SURVEY_GROUP_KEY, groupMap.get(source));
@@ -111,6 +145,8 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 			loadDataPage(-1);
 			currentCursor = getCursor(getCurrentPage() - 1);
 			loadData();
+		} else if (ClickMode.DELETE == mode) {
+			deleteSurveyGroup(groupMap.get(source));
 		}
 	}
 
@@ -126,7 +162,7 @@ public class SurveyGroupListWidget extends ListBasedWidget implements
 	}
 
 	@Override
-	public void persistContext(String buttonText,CompletionListener listener) {
+	public void persistContext(String buttonText, CompletionListener listener) {
 		if (listener != null) {
 			listener.operationComplete(true, getContextBundle(true));
 		}
