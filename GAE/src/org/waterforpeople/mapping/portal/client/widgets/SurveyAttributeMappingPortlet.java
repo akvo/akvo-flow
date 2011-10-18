@@ -379,7 +379,7 @@ public class SurveyAttributeMappingPortlet extends Portlet implements
 				}
 			}
 		};
-		surveyService.listQuestionsByQuestionGroup(groupId.toString(), false,
+		surveyService.listQuestionsByQuestionGroup(groupId.toString(), false,false,
 				questionCallback);
 
 	}

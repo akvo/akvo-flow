@@ -294,7 +294,7 @@ public class MetricMappingWidget extends Composite implements ContextAware,
 				}
 			}
 		};
-		surveyService.listQuestionsByQuestionGroup(groupId.toString(), false,
+		surveyService.listQuestionsByQuestionGroup(groupId.toString(), false,false,
 				questionCallback);
 
 	}

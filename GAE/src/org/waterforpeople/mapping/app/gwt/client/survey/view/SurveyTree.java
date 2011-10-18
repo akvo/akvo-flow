@@ -379,7 +379,7 @@ public class SurveyTree implements OpenHandler<TreeItem>,
 					&& item.getUserObject() instanceof QuestionGroupDto) {
 				surveyService.listQuestionsByQuestionGroup(
 						((QuestionGroupDto) (item.getUserObject())).getKeyId()
-								.toString(), false,
+								.toString(), false,false,
 						new AsyncCallback<ArrayList<QuestionDto>>() {
 
 							@Override

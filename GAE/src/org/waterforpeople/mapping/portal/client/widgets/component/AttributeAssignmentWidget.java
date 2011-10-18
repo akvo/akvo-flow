@@ -295,7 +295,7 @@ public class AttributeAssignmentWidget extends Composite implements
 				}
 			}
 		};
-		surveyService.listQuestionsByQuestionGroup(groupId.toString(), false,
+		surveyService.listQuestionsByQuestionGroup(groupId.toString(), false,false,
 				questionCallback);
 
 	}

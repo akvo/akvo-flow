@@ -299,7 +299,7 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 						}
 					}
 				};
-				surveyService.listQuestionsByQuestionGroup(groupId, false,
+				surveyService.listQuestionsByQuestionGroup(groupId, false,false,
 						surveyCallback);
 			} else {
 				populateQuestionList(questions.get(groupId));

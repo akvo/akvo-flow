@@ -87,7 +87,7 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 				populateQuestionList(questionGroupDto.getQuestionMap().values());
 			} else {
 				surveyService.listQuestionsByQuestionGroup(questionGroupDto
-						.getKeyId().toString(), false,
+						.getKeyId().toString(), false,false,
 						new AsyncCallback<ArrayList<QuestionDto>>() {
 
 							@Override
@@ -372,6 +372,14 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 						public void onSuccess(String result) {
 							setWorking(false);
 							deletingDialog.hide();
+							if(result != null && result.trim().length()>0){
+								MessageDialog errDia = new MessageDialog(
+										TEXT_CONSTANTS.error(), TEXT_CONSTANTS
+												.errorTracePrefix()
+												+ " "
+												+ result);
+								errDia.showCentered();
+							}
 							selectedQuestion = null;
 							loadData(questionGroup);
 						}
