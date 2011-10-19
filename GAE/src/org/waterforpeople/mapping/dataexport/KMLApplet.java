@@ -68,7 +68,12 @@ public class KMLApplet extends JApplet implements Runnable {
 		}
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
-		serverBase = getCodeBase().toString();
+		if (getParameter("serverOverride") != null
+				&& getParameter("serverOverride").trim().length() > 0) {
+			serverBase = getParameter("serverOverride").trim();
+		} else {
+			serverBase = getCodeBase().toString();
+		}
 		if (serverBase.trim().endsWith("/")) {
 			serverBase = serverBase.trim().substring(0,
 					serverBase.lastIndexOf("/"));
@@ -183,8 +188,8 @@ public class KMLApplet extends JApplet implements Runnable {
 							&& pm.getLongitude() != null
 							&& pm.getLongitude() != 0) {
 						VelocityContext vc = new VelocityContext();
-						String timestamp = DateFormatUtils.formatUTC(pm
-								.getCollectionDate(),
+						String timestamp = DateFormatUtils.formatUTC(
+								pm.getCollectionDate(),
 								DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 						vc.put("timestamp", timestamp);
 						vc.put("pinStyle", pm.getPinStyle());
@@ -193,7 +198,7 @@ public class KMLApplet extends JApplet implements Runnable {
 						vc.put("latitude", pm.getLatitude());
 						vc.put("altitude", pm.getAltitude());
 						vc.put("communityCode", pm.getCommunityCode());
-						vc.put("communityName",pm.getCommunityCode());
+						vc.put("communityName", pm.getCommunityCode());
 						String placemark = mergeContext(vc,
 								"template/PlacemarksNewLook.vm");
 						zipOut.write(placemark.getBytes("UTF-8"));
