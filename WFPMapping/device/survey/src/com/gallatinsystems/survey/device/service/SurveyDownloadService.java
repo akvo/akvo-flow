@@ -180,11 +180,11 @@ public class SurveyDownloadService extends Service {
 					}
 				}
 
-				databaseAdaptor.close();
 			} catch (Exception e) {
 				Log.e(TAG, "Could not update surveys", e);
 				PersistentUncaughtExceptionHandler.recordException(e);
 			} finally {
+				databaseAdaptor.close();
 				lock.release();
 			}
 		}

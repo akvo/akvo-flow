@@ -35,7 +35,7 @@ public class UserEditActivity extends Activity {
 		emailAddr = (EditText) findViewById(R.id.emailField);
 
 		databaseAdaptor = new SurveyDbAdapter(this);
-		databaseAdaptor.open();
+		
 
 		Button saveButton = (Button) findViewById(R.id.confirm);
 
@@ -46,7 +46,7 @@ public class UserEditActivity extends Activity {
 			userId = extras != null ? new Long(extras
 					.getString(ConstantUtil.ID_KEY)) : null;
 		}
-		populateFields();
+		
 
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -56,6 +56,8 @@ public class UserEditActivity extends Activity {
 			}
 		});
 	}
+	
+	
 
 	/**
 	 * put loaded data into the views for display
@@ -83,20 +85,22 @@ public class UserEditActivity extends Activity {
 
 	@Override
 	protected void onPause() {
+		if (databaseAdaptor != null) {
+			databaseAdaptor.close();
+		}
 		super.onPause();		
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		databaseAdaptor.open();		
 		populateFields();
 	}
 
 	protected void onDestroy() {
+		
 		super.onDestroy();
-		if (databaseAdaptor != null) {
-			databaseAdaptor.close();
-		}
 	}
 
 	/**

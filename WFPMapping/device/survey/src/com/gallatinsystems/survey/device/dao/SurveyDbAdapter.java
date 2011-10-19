@@ -126,7 +126,7 @@ public class SurveyDbAdapter {
 			"insert into preferences values('precache.points.limit','200')",
 			"insert into preferences values('survey.textsize','LARGE')",
 			"insert into preferences values('survey.checkforupdates','0')",
-			"insert into preferences values('remoteexception.upload','0')"};
+			"insert into preferences values('remoteexception.upload','0')" };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -143,7 +143,7 @@ public class SurveyDbAdapter {
 	private static final String PLOT_JOIN = "plot LEFT OUTER JOIN plot_point ON (plot._id = plot_point.plot_id) LEFT OUTER JOIN user ON (user._id = plot.user_id)";
 	private static final String RESPONDENT_JOIN = "survey_respondent LEFT OUTER JOIN survey ON (survey_respondent.survey_id = survey._id)";
 
-	private static final int DATABASE_VERSION = 74;
+	private static final int DATABASE_VERSION = 75;
 
 	private final Context context;
 
@@ -198,14 +198,11 @@ public class SurveyDbAdapter {
 				db.execSQL("DROP TABLE IF EXISTS " + POINT_OF_INTEREST_TABLE);
 				db.execSQL("DROP TABLE IF EXISTS " + TRANSMISSION_HISTORY_TABLE);
 				onCreate(db);
-			} else if (oldVersion < 70) {
+			} else if (oldVersion < 75) {
 
 				// changes made in version 57
-				try {
-					db.execSQL(TRANSMISSION_HISTORY_TABLE_CREATE);
-				} catch (Exception e) {
-					// swallow since this fails if the update is already applied
-				}
+				runSQL(TRANSMISSION_HISTORY_TABLE_CREATE, db);
+
 				// changes made in version 58
 				try {
 					String value = null;
@@ -223,21 +220,21 @@ public class SurveyDbAdapter {
 						cursor.close();
 					}
 					if (value == null) {
-						db.execSQL("insert into preferences values('survey.textsize','LARGE')");
+						runSQL("insert into preferences values('survey.textsize','LARGE')",
+								db);
 					}
 				} catch (Exception e) {
 					// swallow
 				}
 
 				// changes in version 63
-				try {
-					db.execSQL("alter table survey_respondent add column exported_flag text");
-				} catch (Exception e) {
-					// swallow
-				}
+				runSQL("alter table survey_respondent add column exported_flag text",
+						db);
+
 				// changes in version 68
 				try {
-					db.execSQL("alter table survey_respondent add column uuid text");
+					runSQL("alter table survey_respondent add column uuid text",
+							db);
 					// also generate a uuid for all in-flight responses
 					Cursor cursor = db.query(RESPONDENT_JOIN, new String[] {
 							RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
@@ -261,32 +258,33 @@ public class SurveyDbAdapter {
 					// swallow
 				}
 				// changes made in version 69
-				try {
-					db.execSQL("alter table user add column deleted_flag text");
-					db.execSQL("update user set deleted_flag = 'N'");
-				} catch (Exception e) {
-					// swallow
+				runSQL("alter table user add column deleted_flag text", db);
+				runSQL("update user set deleted_flag = 'N' where deleted_flag <> 'Y'",
+						db);
+
+				runSQL("update survey set language = 'en' where language = 'english' or language is null",
+						db);
+				if (oldVersion < 74) {
+					runSQL("insert into preferences values('survey.checkforupdates','0')",
+							db);
+					runSQL("insert into preferences values('remoteexception.upload','0')",
+							db);
 				}
 			}
-			if (oldVersion < 73) {
-				try {
-					db.execSQL("update survey set language = 'en' where language = 'english' or language is null");
-				} catch (Exception e) {
-					// no-op
-				}
-			}
-			if(oldVersion < 74){
-				try {
-					db.execSQL("insert into preferences values('survey.checkforupdates','0')");
-					db.execSQL("insert into preferences values('remoteexception.upload','0')");
-				} catch (Exception e) {
-					// no-op
-				}
-			}
+
 			// now handle defaults
 			checkDefaults(db);
-			this.context = null;
 
+			this.context = null;
+		}
+
+		// executes a sql statement and swallows errors
+		private void runSQL(String ddl, SQLiteDatabase db) {
+			try {
+				db.execSQL(ddl);
+			} catch (Exception e) {
+				// no-op
+			}
 		}
 
 		/**
@@ -668,7 +666,7 @@ public class SurveyDbAdapter {
 			responseToSave.setValue(resp.getValue());
 			responseToSave.setStrength(resp.getStrength());
 			responseToSave.setScoredValue(resp.getScoredValue());
-			if(resp.getType() != null){
+			if (resp.getType() != null) {
 				responseToSave.setType(resp.getType());
 			}
 		} else {

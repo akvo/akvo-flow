@@ -97,6 +97,10 @@ public class SurveyViewActivity extends TabActivity implements
 	private String eventSourceQuestionId;
 	private PropertyUtil props;
 	private HashSet<String> missingQuestions;
+	private boolean hasAddedTabs;
+	private int pendingRequestCode;
+	private int pendingResultCode;
+	private Intent pendingData;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -105,9 +109,10 @@ public class SurveyViewActivity extends TabActivity implements
 		currentTextSize = NORMAL_TXT_SIZE;
 		missingQuestions = new HashSet<String>();
 		readOnly = false;
+		hasAddedTabs = false;
 		factoryMap = new HashMap<QuestionGroup, SurveyQuestionTabContentFactory>();
 		databaseAdapter = new SurveyDbAdapter(this);
-		databaseAdapter.open();
+
 		isTrackRecording = false;
 		setContentView(R.layout.main);
 		tabCount = 0;
@@ -126,21 +131,6 @@ public class SurveyViewActivity extends TabActivity implements
 		OptionQuestionView.promptOnChange = promptOnChange;
 		QuestionView.screenWidth = getWindowManager().getDefaultDisplay()
 				.getWidth();
-
-		String langSelection = databaseAdapter
-				.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-		ArrayPreferenceData langData = ArrayPreferenceUtil.loadArray(this,
-				langSelection, R.array.languages);
-
-		String textSize = databaseAdapter
-				.findPreference(ConstantUtil.SURVEY_TEXT_SIZE_KEY);
-		if (ConstantUtil.LARGE_TXT.equalsIgnoreCase(textSize)) {
-			currentTextSize = LARGE_TXT_SIZE;
-		}
-
-		selectedLanguages = langData.getSelectedItems();
-		selectedLanguageCodes = ArrayPreferenceUtil.getSelectedCodes(this,
-				selectedLanguages, R.array.languagecodes);
 
 		Bundle extras = getIntent().getExtras();
 		userId = extras != null ? extras.getString(ConstantUtil.USER_ID_KEY)
@@ -177,85 +167,6 @@ public class SurveyViewActivity extends TabActivity implements
 					.getString(ConstantUtil.QUESTION_ID_KEY);
 		}
 
-		try {
-			Survey surveyFromDb = databaseAdapter.findSurvey(surveyId);
-			InputStream in = null;
-			if (ConstantUtil.RESOURCE_LOCATION.equalsIgnoreCase(surveyFromDb
-					.getLocation())) {
-				// load from resource
-				Resources res = getResources();
-				in = res.openRawResource(res.getIdentifier(
-						surveyFromDb.getFileName(), ConstantUtil.RAW_RESOURCE,
-						ConstantUtil.RESOURCE_PACKAGE));
-			} else {
-				// load from file
-				in = FileUtil.getFileInputStream(surveyFromDb.getFileName(),
-						ConstantUtil.DATA_DIR,
-						props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
-						this);
-			}
-
-			survey = SurveyDao.loadSurvey(surveyFromDb, in);
-
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "Could not load survey xml file");
-		}
-
-		if (respondentId == null) {
-			respondentId = databaseAdapter.createOrLoadSurveyRespondent(
-					surveyId.toString(), userId.toString());
-		}
-
-		if (survey != null) {
-			TextView title = (TextView) findViewById(R.id.titletext);
-			title.setText(survey.getName());
-			tabContentFactories = new ArrayList<SurveyQuestionTabContentFactory>();
-			// if the device has an active survey, create a tab for each
-			// question group
-			tabHost = getTabHost();
-			String screenOn = databaseAdapter
-					.findPreference(ConstantUtil.SCREEN_ON_KEY);
-			if (screenOn != null && Boolean.parseBoolean(screenOn.trim())) {
-				tabHost.setKeepScreenOn(true);
-			}
-			for (QuestionGroup group : survey.getQuestionGroups()) {
-				if (group.getQuestions() != null
-						&& group.getQuestions().size() > 0) {
-					SurveyQuestionTabContentFactory factory = new SurveyQuestionTabContentFactory(
-							this, group, databaseAdapter, currentTextSize,
-							survey.getLanguage() != null ? survey.getLanguage()
-									: ConstantUtil.ENGLISH_CODE,
-							selectedLanguageCodes, readOnly);
-					factoryMap.put(group, factory);
-					tabHost.addTab(tabHost.newTabSpec(group.getHeading())
-							.setIndicator(group.getHeading())
-							.setContent(factory));
-					tabContentFactories.add(factory);
-					tabCount++;
-				}
-			}
-			if (!readOnly) {
-				// if we're not in read-only mode, we need to add the submission
-				// tab
-				submissionTab = new SubmitTabContentFactory(this,
-						databaseAdapter, currentTextSize,
-						survey.getLanguage() != null ? survey.getLanguage()
-								: ConstantUtil.ENGLISH_CODE,
-						selectedLanguageCodes);
-				tabCount++;
-				tabHost.addTab(tabHost.newTabSpec(SUBMIT_TAB_TAG)
-						.setIndicator(getString(R.string.submitbutton))
-						.setContent(submissionTab));
-				tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-					@Override
-					public void onTabChanged(String tabId) {
-						if (SUBMIT_TAB_TAG.equals(tabId)) {
-							submissionTab.refreshView(true);
-						}
-					}
-				});
-			}
-		}
 	}
 
 	/**
@@ -347,14 +258,26 @@ public class SurveyViewActivity extends TabActivity implements
 
 	/**
 	 * this is called when external activities launched by this activity return
-	 * and we need to do something. Right now the only activity we care about is
-	 * the media (photo/video/audio) activity (when the user is done recording
-	 * the media). When we get control back from the camera, we just need to
-	 * capture the details about the file that was just stored and stuff it into
-	 * the question response.
+	 * and we need to do something. All we do for now is capture the data coming
+	 * back in instance variables so we can process them after resume (i.e.
+	 * after the db is reopened)
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		pendingData = data;
+		pendingRequestCode = requestCode;
+		pendingResultCode = resultCode;
+	}
+
+	/**
+	 * this handles the data returned from other activities. Right now the only
+	 * activity we care about is the media (photo/video/audio) activity (when
+	 * the user is done recording the media). When we get control back from the
+	 * camera, we just need to capture the details about the file that was just
+	 * stored and stuff it into the question response.
+	 */
+	private void processActivityResult(int requestCode, int resultCode,
+			Intent data) {
 		// on activity return
 		try {
 			if (eventQuestionSource == null && eventSourceQuestionId != null) {
@@ -459,6 +382,10 @@ public class SurveyViewActivity extends TabActivity implements
 			}
 		} catch (Exception e) {
 			Log.e(ACTIVITY_NAME, "Error handling activity return", e);
+		} finally {
+			pendingData = null;
+			pendingRequestCode = -1;
+			pendingResultCode = -1;
 		}
 	}
 
@@ -497,13 +424,15 @@ public class SurveyViewActivity extends TabActivity implements
 		}
 	}
 
-	/** 
-	 * stores the ids of the missing questions so we can highlight/unhighlight as users go back through the tabs
+	/**
+	 * stores the ids of the missing questions so we can highlight/unhighlight
+	 * as users go back through the tabs
+	 * 
 	 * @param questions
 	 */
 	public void setMissingQuestions(ArrayList<Question> questions) {
 		missingQuestions.clear();
-		if (questions != null) {			
+		if (questions != null) {
 			for (int i = 0; i < questions.size(); i++) {
 				missingQuestions.add(questions.get(i).getId());
 			}
@@ -809,7 +738,7 @@ public class SurveyViewActivity extends TabActivity implements
 
 							@Override
 							public void onClick(DialogInterface dialog,
-									int which) {								
+									int which) {
 								databaseAdapter.deleteResponses(respondentId
 										.toString());
 								resetAllQuestions();
@@ -905,33 +834,142 @@ public class SurveyViewActivity extends TabActivity implements
 
 	@Override
 	protected void onPause() {
-		super.onPause();
 		saveAllResponses();
+		if (databaseAdapter != null) {
+			databaseAdapter.close();
+		}
+		super.onPause();
 	}
 
 	@Override
 	protected void onResume() {
 		try {
 			super.onResume();
-			if (tabContentFactories != null) {
-				for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
-					tab.loadState(respondentId);
+			databaseAdapter.open();
+			String langSelection = databaseAdapter
+					.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
+			ArrayPreferenceData langData = ArrayPreferenceUtil.loadArray(this,
+					langSelection, R.array.languages);
+
+			String textSize = databaseAdapter
+					.findPreference(ConstantUtil.SURVEY_TEXT_SIZE_KEY);
+			if (ConstantUtil.LARGE_TXT.equalsIgnoreCase(textSize)) {
+				currentTextSize = LARGE_TXT_SIZE;
+			}
+
+			selectedLanguages = langData.getSelectedItems();
+			selectedLanguageCodes = ArrayPreferenceUtil.getSelectedCodes(this,
+					selectedLanguages, R.array.languagecodes);
+
+			try {
+				Survey surveyFromDb = databaseAdapter.findSurvey(surveyId);
+				InputStream in = null;
+				if (ConstantUtil.RESOURCE_LOCATION
+						.equalsIgnoreCase(surveyFromDb.getLocation())) {
+					// load from resource
+					Resources res = getResources();
+					in = res.openRawResource(res.getIdentifier(
+							surveyFromDb.getFileName(),
+							ConstantUtil.RAW_RESOURCE,
+							ConstantUtil.RESOURCE_PACKAGE));
+				} else {
+					// load from file
+					in = FileUtil
+							.getFileInputStream(
+									surveyFromDb.getFileName(),
+									ConstantUtil.DATA_DIR,
+									props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE),
+									this);
+				}
+
+				survey = SurveyDao.loadSurvey(surveyFromDb, in);
+
+			} catch (FileNotFoundException e) {
+				Log.e(TAG, "Could not load survey xml file");
+			}
+
+			if (respondentId == null) {
+				respondentId = databaseAdapter.createOrLoadSurveyRespondent(
+						surveyId.toString(), userId.toString());
+			}
+
+			if (survey != null && !hasAddedTabs) {
+				hasAddedTabs = true;
+				TextView title = (TextView) findViewById(R.id.titletext);
+				title.setText(survey.getName());
+				tabContentFactories = new ArrayList<SurveyQuestionTabContentFactory>();
+				// if the device has an active survey, create a tab for each
+				// question group
+				tabHost = getTabHost();
+				String screenOn = databaseAdapter
+						.findPreference(ConstantUtil.SCREEN_ON_KEY);
+				if (screenOn != null && Boolean.parseBoolean(screenOn.trim())) {
+					tabHost.setKeepScreenOn(true);
+				}
+				for (QuestionGroup group : survey.getQuestionGroups()) {
+					if (group.getQuestions() != null
+							&& group.getQuestions().size() > 0) {
+						SurveyQuestionTabContentFactory factory = new SurveyQuestionTabContentFactory(
+								this, group, databaseAdapter, currentTextSize,
+								survey.getLanguage() != null ? survey
+										.getLanguage()
+										: ConstantUtil.ENGLISH_CODE,
+								selectedLanguageCodes, readOnly);
+						factoryMap.put(group, factory);
+						tabHost.addTab(tabHost.newTabSpec(group.getHeading())
+								.setIndicator(group.getHeading())
+								.setContent(factory));
+						tabContentFactories.add(factory);
+						tabCount++;
+					}
+				}
+				if (!readOnly) {
+					// if we're not in read-only mode, we need to add the
+					// submission
+					// tab
+					submissionTab = new SubmitTabContentFactory(this,
+							databaseAdapter, currentTextSize,
+							survey.getLanguage() != null ? survey.getLanguage()
+									: ConstantUtil.ENGLISH_CODE,
+							selectedLanguageCodes);
+					tabCount++;
+					tabHost.addTab(tabHost.newTabSpec(SUBMIT_TAB_TAG)
+							.setIndicator(getString(R.string.submitbutton))
+							.setContent(submissionTab));
+					tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+						@Override
+						public void onTabChanged(String tabId) {
+							if (SUBMIT_TAB_TAG.equals(tabId)) {
+								submissionTab.refreshView(true);
+							}
+						}
+					});
+				}
+				if (tabContentFactories != null) {
+					for (SurveyQuestionTabContentFactory tab : tabContentFactories) {
+						tab.loadState(respondentId);
+					}
+				}
+			} else if (survey != null) {
+				if (pendingRequestCode > 0) {
+					processActivityResult(pendingRequestCode,
+							pendingResultCode, pendingData);
 				}
 			}
+
 		} catch (Exception e) {
 			Log.w(TAG, "Error while restoring", e);
 		}
 	}
 
 	protected void onDestroy() {
-		super.onDestroy();
+
 		// make sure we're not keeping the screen on once we're destroyed
 		if (tabHost != null) {
 			tabHost.setKeepScreenOn(false);
 		}
-		if (databaseAdapter != null) {
-			databaseAdapter.close();
-		}
+
+		super.onDestroy();
 	}
 
 	public String getSurveyId() {

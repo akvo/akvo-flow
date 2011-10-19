@@ -37,6 +37,11 @@ public class TransmissionHistoryActivity extends ListActivity {
 		}
 		setContentView(R.layout.transmissionhistory);
 		databaseAdapter = new SurveyDbAdapter(this);
+		
+	}
+	
+	public void onResume(){
+		super.onResume();
 		databaseAdapter.open();
 		getData();
 	}
@@ -61,9 +66,14 @@ public class TransmissionHistoryActivity extends ListActivity {
 
 	protected void onDestroy() {
 		super.onDestroy();
+		
+	}
+	
+	protected void onPause(){
 		if (databaseAdapter != null) {
 			databaseAdapter.close();
 		}
+		super.onPause();
 	}
 
 }

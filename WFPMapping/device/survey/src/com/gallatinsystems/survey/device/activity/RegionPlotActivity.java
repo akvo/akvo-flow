@@ -99,15 +99,6 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 
 		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		dbAdaptor = new SurveyDbAdapter(this);
-		dbAdaptor.open();
-
-		String intervalPref = dbAdaptor
-				.findPreference(ConstantUtil.PLOT_INTERVAL_SETTING_KEY);
-		if (intervalPref != null) {
-			interval = Integer.parseInt(intervalPref);
-		} else {
-			interval = DEFAULT_AUTO_INTERVAL;
-		}
 
 		// handle instance state
 		plotId = savedInstanceState != null ? savedInstanceState
@@ -123,21 +114,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 					.getString(ConstantUtil.STATUS_KEY)
 					: ConstantUtil.IN_PROGRESS_STATUS;
 		}
-		if (ConstantUtil.RUNNING_STATUS.equals(currentStatus)) {
-			currentMode = AUTO_MODE;
-		} else {
-			// if we're not running, check the defaults
-			String mode = dbAdaptor
-					.findPreference(ConstantUtil.PLOT_MODE_SETTING_KEY);
-			if (mode != null) {
-				currentMode = mode;
-			} else {
-				currentMode = MANUAL_MODE;
-			}
-		}
-		updateLabels();
 
-		fillPlot();
 		registerForContextMenu(mapView);
 	}
 
@@ -147,7 +124,6 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	 */
 	private void fillPlot() {
 		Cursor data = dbAdaptor.listPlotPoints(plotId, lastDrawTime);
-		startManagingCursor(data);
 		while (!data.isAfterLast()) {
 			regionPlot.addLocation(GeoUtil.convertToPoint(data.getString(data
 					.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)), data
@@ -190,7 +166,7 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 
 	public void onDestroy() {
 		super.onDestroy();
-		dbAdaptor.close();
+
 	}
 
 	/**
@@ -198,9 +174,10 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 	 * life).
 	 */
 	public void onPause() {
-		super.onPause();
+		dbAdaptor.close();
 		myLocation.disableMyLocation();
 		locMgr.removeUpdates(this);
+		super.onPause();
 	}
 
 	/**
@@ -215,6 +192,30 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		}
 		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 				LOCATION_UPDATE_FREQ, 0, this);
+		dbAdaptor.open();
+
+		String intervalPref = dbAdaptor
+				.findPreference(ConstantUtil.PLOT_INTERVAL_SETTING_KEY);
+		if (intervalPref != null) {
+			interval = Integer.parseInt(intervalPref);
+		} else {
+			interval = DEFAULT_AUTO_INTERVAL;
+		}
+		if (ConstantUtil.RUNNING_STATUS.equals(currentStatus)) {
+			currentMode = AUTO_MODE;
+		} else {
+			// if we're not running, check the defaults
+			String mode = dbAdaptor
+					.findPreference(ConstantUtil.PLOT_MODE_SETTING_KEY);
+			if (mode != null) {
+				currentMode = mode;
+			} else {
+				currentMode = MANUAL_MODE;
+			}
+		}
+		updateLabels();
+
+		fillPlot();
 	}
 
 	/**
@@ -329,7 +330,8 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 		case INTERVAL_ID:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.plotinterval);
-			final CharSequence[] items = getResources().getStringArray(R.array.plotintervals);
+			final CharSequence[] items = getResources().getStringArray(
+					R.array.plotintervals);
 			final int[] vals = { 30000, 60000, 120000, 300000, 600000 };
 			builder.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int item) {

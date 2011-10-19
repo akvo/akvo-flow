@@ -264,8 +264,7 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 		}
 		if (respondentId != null) {
 			Cursor responseCursor = databaseAdaptor
-					.fetchResponsesByRespondent(respondentId.toString());
-			context.startManagingCursor(responseCursor);
+					.fetchResponsesByRespondent(respondentId.toString());			
 
 			while (responseCursor.moveToNext()) {
 				String[] cols = responseCursor.getColumnNames();

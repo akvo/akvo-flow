@@ -88,16 +88,6 @@ public class NearbyItemActivity extends ListActivity implements
 		}
 
 		databaseAdapter = new SurveyDbAdapter(this);
-		databaseAdapter.open();
-		serverBase = databaseAdapter
-				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
-		if (serverBase != null && serverBase.trim().length() > 0) {
-			serverBase = getResources().getStringArray(R.array.servers)[Integer
-					.parseInt(serverBase)];
-		} else {
-			serverBase = new PropertyUtil(getResources())
-					.getProperty(ConstantUtil.SERVER_BASE);
-		}
 
 		setContentView(R.layout.nearbyitem);
 		Resources resources = getResources();
@@ -139,12 +129,25 @@ public class NearbyItemActivity extends ListActivity implements
 		}
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onResume() {
+		super.onResume();
+		databaseAdapter.open();
+		serverBase = databaseAdapter
+				.findPreference(ConstantUtil.SERVER_SETTING_KEY);
+		if (serverBase != null && serverBase.trim().length() > 0) {
+			serverBase = getResources().getStringArray(R.array.servers)[Integer
+					.parseInt(serverBase)];
+		} else {
+			serverBase = new PropertyUtil(getResources())
+					.getProperty(ConstantUtil.SERVER_BASE);
+		}
+	}
+
+	protected void onPause() {
 		if (databaseAdapter != null) {
 			databaseAdapter.close();
 		}
+		super.onPause();
 	}
 
 	/**

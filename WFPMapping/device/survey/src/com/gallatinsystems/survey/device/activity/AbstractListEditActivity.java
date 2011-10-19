@@ -44,6 +44,7 @@ public abstract class AbstractListEditActivity extends ListActivity {
 	protected int editStringId;
 	protected String editActivityClassName;
 	protected final static String TAG = "EditListActivity";
+	private Cursor dataCursor;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -58,9 +59,13 @@ public abstract class AbstractListEditActivity extends ListActivity {
 		emp.setText(emptyStringId);
 
 		databaseAdaptor = new SurveyDbAdapter(this);
+		registerForContextMenu(getListView());
+	}
+
+	public void onResume() {
+		super.onResume();
 		databaseAdaptor.open();
 		fillData();
-		registerForContextMenu(getListView());
 	}
 
 	/**
@@ -81,10 +86,15 @@ public abstract class AbstractListEditActivity extends ListActivity {
 	 * SimpleCursorAdaptor
 	 */
 	protected void fillData() {
+		if (dataCursor != null) {
+			try {
+				dataCursor.close();
+			} catch (Exception e) {
+				Log.w(TAG, "Could not close old cursor", e);
+			}
+		}
 		// Get all of the rows from the database and create the item list
-		Cursor dataCursor = getData();
-		startManagingCursor(dataCursor);
-
+		dataCursor = getData();
 		// Create an array to specify the fields we want to display in the list
 		String[] from = new String[] { SurveyDbAdapter.DISP_NAME_COL };
 
@@ -180,13 +190,24 @@ public abstract class AbstractListEditActivity extends ListActivity {
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		fillData();
 	}
 
 	protected void onDestroy() {
 		super.onDestroy();
+		if (dataCursor != null) {
+			try {
+				dataCursor.close();
+			} catch (Exception e) {
+
+			}
+		}
 		if (databaseAdaptor != null) {
 			databaseAdaptor.close();
 		}
+	}
+
+	protected void onPause() {
+
+		super.onPause();
 	}
 }

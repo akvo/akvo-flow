@@ -39,7 +39,7 @@ public class ListUserActivity extends AbstractListEditActivity {
 		super.onListItemClick(list, view, position, id);
 		Intent intent = new Intent();
 		Cursor user = databaseAdaptor.findUser(id);
-		startManagingCursor(user);
+		
 		intent.putExtra(ConstantUtil.ID_KEY, user.getString(user
 				.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
 		intent.putExtra(ConstantUtil.DISPLAY_NAME_KEY, user.getString(user
@@ -49,6 +49,7 @@ public class ListUserActivity extends AbstractListEditActivity {
 		// save the user to the prefs table
 		databaseAdaptor.savePreference(ConstantUtil.LAST_USER_SETTING_KEY, id
 				+ "");
+		user.close();
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -115,6 +116,7 @@ public class ListUserActivity extends AbstractListEditActivity {
 			intent.putExtra(ConstantUtil.DELETED_SAVED_USER, new Boolean(true));
 			setResult(RESULT_CANCELED, intent);
 		}
+		
 		fillData();
 	}
 }

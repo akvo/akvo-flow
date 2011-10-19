@@ -188,9 +188,9 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 				.setOnClickListener(this);
 	}
 
-	public void onPause() {
-		super.onPause();
+	public void onPause() {	
 		database.close();
+		super.onPause();
 	}
 
 	/**

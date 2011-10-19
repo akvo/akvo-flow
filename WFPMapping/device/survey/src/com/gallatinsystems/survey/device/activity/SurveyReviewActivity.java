@@ -58,9 +58,9 @@ public class SurveyReviewActivity extends ListActivity {
 		setContentView(R.layout.surveyreview);
 		viewTypeLabel = (TextView) findViewById(R.id.viewtypelabel);
 		databaseAdapter = new SurveyDbAdapter(this);
-		databaseAdapter.open();
+
 		registerForContextMenu(getListView());
-		getData();
+
 	}
 
 	/**
@@ -102,6 +102,19 @@ public class SurveyReviewActivity extends ListActivity {
 			menu.add(0, RESEND_ONE, 1, R.string.resendone);
 		}
 
+	}
+
+	public void onResume() {
+		super.onResume();
+		databaseAdapter.open();
+		getData();
+	}
+
+	public void onPause() {
+		if (databaseAdapter != null) {
+			databaseAdapter.close();
+		}
+		super.onPause();
 	}
 
 	@Override
@@ -262,7 +275,6 @@ public class SurveyReviewActivity extends ListActivity {
 		if (ConstantUtil.SUBMITTED_STATUS.equals(currentStatusMode)) {
 			i.putExtra(ConstantUtil.READONLY_KEY, true);
 		}
-		databaseAdapter.close();
 		setResult(RESULT_OK, intent);
 		finish();
 		startActivity(i);
@@ -278,9 +290,6 @@ public class SurveyReviewActivity extends ListActivity {
 
 	protected void onDestroy() {
 		super.onDestroy();
-		if (databaseAdapter != null) {
-			databaseAdapter.close();
-		}
 	}
 
 }
