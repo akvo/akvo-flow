@@ -30,6 +30,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	public static final String SURVEY_ID = "surveyId";
 	private Map<String, String> questionMap;
 	private List<String> keyList;
+		
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -113,7 +114,7 @@ public class RawDataExporter extends AbstractDataExporter {
 					try {
 						Map<String, String> responses = BulkDataServiceClient
 								.fetchQuestionResponses(instanceId, serverBase);
-						if (responses != null) {
+						if (responses != null && responses.size()>0) {
 							pw.write(instanceId);
 							pw.write("\t");
 							pw.write(dateString);
