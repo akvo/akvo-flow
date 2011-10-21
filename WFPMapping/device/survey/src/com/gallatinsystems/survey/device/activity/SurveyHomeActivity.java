@@ -65,7 +65,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);		
 		props = new PropertyUtil(getResources());
 		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
 				.getInstance());
@@ -98,11 +98,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 
 		if (currentUserId == null) {
 			loadLastUser();
-		}
-
-		if (currentName != null) {
-			populateFields();
-		}
+		}		
 
 		startSyncService();
 		startService(SurveyDownloadService.class);
