@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +33,7 @@ import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
  */
 public class SurveyReviewActivity extends ListActivity {
 
-	private SurveyDbAdapter databaseAdapter;
+	private static final String TAG = "SurveyReviewActivity";
 	private static final int MODE_SELECTOR = 1;
 	private static final int DELETE_ALL = 3;
 	private static final int DELETE_ONE = 4;
@@ -42,6 +43,8 @@ public class SurveyReviewActivity extends ListActivity {
 	private String currentStatusMode = ConstantUtil.SAVED_STATUS;
 	private TextView viewTypeLabel;
 	private Long selectedSurvey;
+	private Cursor dataCursor;
+	private SurveyDbAdapter databaseAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,10 +78,15 @@ public class SurveyReviewActivity extends ListActivity {
 		} else {
 			label = getString(R.string.submittedsurveyslabel);
 		}
-
-		Cursor dataCursor = databaseAdapter
-				.listSurveyRespondent(currentStatusMode);
-		startManagingCursor(dataCursor);
+		try{
+		if(dataCursor != null){
+			dataCursor.close();
+		}
+		}catch(Exception e){
+			Log.w(TAG, "Could not close old cursor before reloading list",e);
+		}
+		dataCursor = databaseAdapter
+				.listSurveyRespondent(currentStatusMode);		
 
 		SurveyReviewCursorAdaptor surveys = new SurveyReviewCursorAdaptor(this,
 				dataCursor);
@@ -110,11 +118,18 @@ public class SurveyReviewActivity extends ListActivity {
 		getData();
 	}
 
-	public void onPause() {
+	protected void onDestroy() {
+		if (dataCursor != null) {
+			try {
+				dataCursor.close();
+			} catch (Exception e) {
+
+			}
+		}
 		if (databaseAdapter != null) {
 			databaseAdapter.close();
 		}
-		super.onPause();
+		super.onDestroy();
 	}
 
 	@Override
@@ -286,10 +301,6 @@ public class SurveyReviewActivity extends ListActivity {
 		if (outState != null) {
 			outState.putString(ConstantUtil.STATUS_KEY, currentStatusMode);
 		}
-	}
-
-	protected void onDestroy() {
-		super.onDestroy();
 	}
 
 }

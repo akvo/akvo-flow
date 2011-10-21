@@ -207,7 +207,6 @@ public abstract class AbstractListEditActivity extends ListActivity {
 	}
 
 	protected void onPause() {
-
 		super.onPause();
 	}
 }
