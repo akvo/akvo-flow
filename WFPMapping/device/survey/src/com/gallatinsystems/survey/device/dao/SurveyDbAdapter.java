@@ -158,6 +158,7 @@ public class SurveyDbAdapter {
 	static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static SQLiteDatabase database;
+		private static volatile Long LOCK_OBJ = new Long(1);
 		private volatile static int instanceCount = 0;
 		private Context context;
 
@@ -206,9 +207,8 @@ public class SurveyDbAdapter {
 				// changes made in version 58
 				try {
 					String value = null;
-					Cursor cursor = db.query(PREFERENCES_TABLE,
-							new String[] { KEY_COL, VALUE_COL }, KEY_COL
-									+ " = ?",
+					Cursor cursor = db.query(PREFERENCES_TABLE, new String[] {
+							KEY_COL, VALUE_COL }, KEY_COL + " = ?",
 							new String[] { "survey.textsize" }, null, null,
 							null);
 					if (cursor != null) {
@@ -309,27 +309,33 @@ public class SurveyDbAdapter {
 		}
 
 		@Override
-		public synchronized SQLiteDatabase getWritableDatabase() {
-			if (database == null || !database.isOpen()) {
-				database = super.getWritableDatabase();
-				instanceCount = 0;
+		public SQLiteDatabase getWritableDatabase() {
+			synchronized (LOCK_OBJ) {
+
+				if (database == null || !database.isOpen()) {
+					database = super.getWritableDatabase();
+					instanceCount = 0;
+				}
+				instanceCount++;
+				return database;
 			}
-			instanceCount++;
-			return database;
 		}
 
 		@Override
-		public synchronized void close() {
-			instanceCount--;
-			if (instanceCount <= 0) {
-				// close the database held by the helper (if any)
-				super.close();
-				if (database != null && database.isOpen()) {
-					// we may be holding a different database than the helper so
-					// close that too if it's still open.
-					database.close();
+		public void close() {
+			synchronized (LOCK_OBJ) {
+				instanceCount--;
+				if (instanceCount <= 0) {
+					// close the database held by the helper (if any)
+					super.close();
+					if (database != null && database.isOpen()) {
+						// we may be holding a different database than the
+						// helper so
+						// close that too if it's still open.
+						database.close();
+					}
+					database = null;
 				}
-				database = null;
 			}
 		}
 
