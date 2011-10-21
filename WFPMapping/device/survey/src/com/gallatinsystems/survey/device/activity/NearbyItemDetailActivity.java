@@ -57,6 +57,7 @@ public class NearbyItemDetailActivity extends Activity implements
 	private NumberFormat distanceFormat;
 	private String[] units;
 	private Resources res;
+	private SensorManager sensorMgr;
 
 	private static final float MIN_CHANGE = 2f;
 
@@ -68,13 +69,11 @@ public class NearbyItemDetailActivity extends Activity implements
 		lastOrientation = 0f;
 		distanceFormat = NumberFormat.getInstance();
 		locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
-		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0,
-				this);
-		SensorManager sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+		sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
 		orientSensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-		sensorMgr.registerListener(this, orientSensor,
-				SensorManager.SENSOR_DELAY_NORMAL);
+
 		res = getResources();
 		units = res.getStringArray(R.array.distancemesures);
 		locationCriteria = new Criteria();
@@ -105,10 +104,25 @@ public class NearbyItemDetailActivity extends Activity implements
 	 * when this activity is done, stop listening for location updates
 	 */
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onPause() {
+		super.onPause();
 		if (locMgr != null) {
 			locMgr.removeUpdates(this);
+		}
+		if (sensorMgr != null) {
+			sensorMgr.unregisterListener(this);
+		}
+	}
+
+	public void onResume() {
+		super.onResume();
+		if (locMgr != null) {
+			locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000,
+					0, this);
+		}
+		if (sensorMgr != null) {
+			sensorMgr.registerListener(this, orientSensor,
+					SensorManager.SENSOR_DELAY_NORMAL);
 		}
 	}
 

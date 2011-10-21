@@ -30,10 +30,10 @@ public class PointOfInterestService {
 	private String currentCursor;
 	private String serverBase;
 
-	public PointOfInterestService(String serverBase){
+	public PointOfInterestService(String serverBase) {
 		this.serverBase = serverBase;
 	}
-	
+
 	/**
 	 * 
 	 * calls a service to get all the access points near the position passed in.
@@ -59,24 +59,26 @@ public class PointOfInterestService {
 			if (useCursor && currentCursor != null
 					&& !NULL.equalsIgnoreCase(currentCursor)) {
 				url = url + CURSOR_PARAM + currentCursor;
-			}else if (!useCursor){
+			} else if (!useCursor) {
 				currentCursor = null;
 			}
-			String response = HttpUtil.httpGet(url);
-			if (response != null) {
-				JSONObject json = new JSONObject(response);
-				if (json != null) {
-					JSONArray arr = json
-							.getJSONArray(POINTS_OF_INTEREST_JSON_KEY);
-					if (arr != null) {
-						for (int i = 0; i < arr.length(); i++) {
-							if (arr.getJSONObject(i) != null) {
-								dtoList.add(convertToPointOfInterestDto(arr
-										.getJSONObject(i)));
+			if (url != null) {
+				String response = HttpUtil.httpGet(url);
+				if (response != null) {
+					JSONObject json = new JSONObject(response);
+					if (json != null) {
+						JSONArray arr = json
+								.getJSONArray(POINTS_OF_INTEREST_JSON_KEY);
+						if (arr != null) {
+							for (int i = 0; i < arr.length(); i++) {
+								if (arr.getJSONObject(i) != null) {
+									dtoList.add(convertToPointOfInterestDto(arr
+											.getJSONObject(i)));
+								}
 							}
 						}
+						currentCursor = json.getString(CURSOR_JSON_KEY);
 					}
-					currentCursor = json.getString(CURSOR_JSON_KEY);
 				}
 			}
 		} catch (Exception e) {
@@ -104,19 +106,18 @@ public class PointOfInterestService {
 	/**
 	 * converts a JSON object to an PointOfInterest
 	 */
-	public static PointOfInterest convertToPointOfInterestDto(
-			JSONObject json) {
+	public static PointOfInterest convertToPointOfInterestDto(JSONObject json) {
 		PointOfInterest point = null;
 		if (json != null && json.has("name")) {
 			point = new PointOfInterest();
 			try {
-				if(json.has("latitude")){
+				if (json.has("latitude")) {
 					point.setLatitude(json.getDouble("latitude"));
 				}
-				if(json.has("longitude")){
+				if (json.has("longitude")) {
 					point.setLongitude(json.getDouble("longitude"));
 				}
-				if(json.has("id")){
+				if (json.has("id")) {
 					point.setId(json.getLong("id"));
 				}
 				point.setName(json.getString("name"));

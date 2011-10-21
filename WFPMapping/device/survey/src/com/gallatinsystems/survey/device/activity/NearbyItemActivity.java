@@ -116,17 +116,6 @@ public class NearbyItemActivity extends ListActivity implements
 				updateUi();
 			}
 		};
-
-		String provider = locMgr.getBestProvider(locationCriteria, true);
-		if (provider != null) {
-			Location loc = locMgr.getLastKnownLocation(provider);
-			if (loc != null) {
-				loadData(loc.getLatitude(), loc.getLongitude(), country, null);
-			} else {
-				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-						1000, 0, this);
-			}
-		}
 	}
 
 	public void onResume() {
@@ -141,11 +130,29 @@ public class NearbyItemActivity extends ListActivity implements
 			serverBase = new PropertyUtil(getResources())
 					.getProperty(ConstantUtil.SERVER_BASE);
 		}
+		String provider = locMgr.getBestProvider(locationCriteria, true);
+		if (provider != null) {
+			Location loc = locMgr.getLastKnownLocation(provider);
+			if (loc != null) {
+				// since onResume is called every time we resume the activity,
+				// only hit the server if we don't already have data
+				if (pointsOfInterest == null || pointsOfInterest.size() == 0) {
+					loadData(loc.getLatitude(), loc.getLongitude(), country,
+							null);
+				}
+			} else {
+				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+						1000, 0, this);
+			}
+		}
 	}
 
 	protected void onPause() {
 		if (databaseAdapter != null) {
 			databaseAdapter.close();
+		}
+		if (locMgr != null) {
+			locMgr.removeUpdates(this);
 		}
 		super.onPause();
 	}
