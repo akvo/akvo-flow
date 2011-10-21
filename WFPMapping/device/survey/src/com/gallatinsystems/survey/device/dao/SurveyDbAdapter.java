@@ -206,7 +206,7 @@ public class SurveyDbAdapter {
 				// changes made in version 58
 				try {
 					String value = null;
-					Cursor cursor = database.query(PREFERENCES_TABLE,
+					Cursor cursor = db.query(PREFERENCES_TABLE,
 							new String[] { KEY_COL, VALUE_COL }, KEY_COL
 									+ " = ?",
 							new String[] { "survey.textsize" }, null, null,
