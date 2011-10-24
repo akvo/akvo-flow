@@ -289,15 +289,20 @@ public class AccessPointHelper {
 					|| qas.getType().equals("PHOTO")) {
 				String newURL = null;
 				String[] photoParts = qas.getValue().split("/");
-				if (qas.getValue().startsWith("/sdcard")) {
-					newURL = photo_url_root + photoParts[2];
-				} else if (qas.getValue().startsWith("/mnt")) {
-					newURL = photo_url_root + photoParts[3];
+				if (photoParts.length > 1) {
+					if (qas.getValue().startsWith("/sdcard")) {
+						newURL = photo_url_root + photoParts[2];
+					} else if (qas.getValue().startsWith("/mnt")) {
+						newURL = photo_url_root + photoParts[3];
+					}else{
+						//otherwise, take the last token and concatenate with the photo_url_root
+						newURL = photo_url_root + photoParts[photoParts.length-1];
+					}
 				} else if (photoParts.length == 1) {
 					// handle the case where we only have the filename (no
 					// paths)
 					newURL = photo_url_root + photoParts[0];
-				}
+				}				
 				f.set(ap, newURL);
 				apmh.setQuestionAnswerType("PHOTO");
 				apmh.setAccessPointValue(ap.getPhotoURL());
@@ -726,7 +731,7 @@ public class AccessPointHelper {
 		if (ssList != null && !ssList.isEmpty()) {
 			Integer score = 0;
 			for (StandardScoring item : ssList) {
-				
+
 				if (scoreBucketMap.containsKey(item.getScoreBucketId())) {
 					score = scoreBucketMap.get(item.getScoreBucketId());
 				} else {
@@ -758,9 +763,9 @@ public class AccessPointHelper {
 			}
 			for (Entry<Long, Integer> item : scoreBucketMap.entrySet()) {
 				String scoreBucketName = null;
-				for(StandardScoring ssitem: ssList){
-					if(ssitem.getScoreBucketId().equals(item.getKey())){
-						scoreBucketName=ssitem.getScoreBucket();
+				for (StandardScoring ssitem : ssList) {
+					if (ssitem.getScoreBucketId().equals(item.getKey())) {
+						scoreBucketName = ssitem.getScoreBucket();
 					}
 				}
 				apss.setScoreBucketId(item.getKey());
