@@ -92,6 +92,10 @@ public class AccessPointServiceSupport {
 		apDto.setNumberOfLitersPerPersonPerDay(apCanonical
 				.getNumberOfLitersPerPersonPerDay());
 		apDto.setCollectTariffFlag(apCanonical.getCollectTariffFlag());
+		apDto.setFinancialRecordsAvailableDayOfVisitFlag(apCanonical
+				.getFinancialRecordsAvailableDayOfVisitFlag());
+		apDto.setEnumeratorReviewedRecord(apCanonical
+				.getEnumeratorReviewedRecord());
 
 		if (apCanonical.getCollectionDate() != null) {
 			apDto.setYear(DateUtil.getYear(apCanonical.getCollectionDate()));
@@ -236,7 +240,10 @@ public class AccessPointServiceSupport {
 		accessPoint
 				.setImprovedWaterPointFlag(apDto.getImprovedWaterPointFlag());
 		accessPoint.setLocationTypeString(apDto.getLocationTypeString());
-		
+		accessPoint.setFinancialRecordsAvailableDayOfVisitFlag(apDto
+				.getFinancialRecordsAvailableDayOfVisitFlag());
+		accessPoint.setEnumeratorReviewedRecord(apDto
+				.getEnumeratorReviewedRecord());
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else if (AccessPointDto.Status.FUNCTIONING_OK == apDto

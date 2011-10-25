@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 import java.util.Date;
 import java.util.List;
 
+import com.gallatinsystems.common.util.MappableField;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class AccessPointDto extends BaseDto {
@@ -69,6 +70,10 @@ public class AccessPointDto extends BaseDto {
 	private Integer numberOutsideAcceptableDistance = null;
 	private Integer numberOfUsers= null;
 	private Integer numberOfLitersPerPersonPerDay = null;
+	@MappableField(displayName="Financial Records/Books Available for Point")
+	private Boolean financialRecordsAvailableDayOfVisitFlag = null;
+	@MappableField(displayName="Enumerator Reviewed Record")
+	private Boolean enumeratorReviewedRecord = null;
 	
 	public enum LocationType{
 		URBAN, RURAL, PERIURBAN
@@ -629,5 +634,22 @@ public class AccessPointDto extends BaseDto {
 
 	public Integer getNumberOfLitersPerPersonPerDay() {
 		return numberOfLitersPerPersonPerDay;
+	}
+
+	public void setFinancialRecordsAvailableDayOfVisitFlag(
+			Boolean financialRecordsAvailableDayOfVisitFlag) {
+		this.financialRecordsAvailableDayOfVisitFlag = financialRecordsAvailableDayOfVisitFlag;
+	}
+
+	public Boolean getFinancialRecordsAvailableDayOfVisitFlag() {
+		return financialRecordsAvailableDayOfVisitFlag;
+	}
+
+	public void setEnumeratorReviewedRecord(Boolean enumeratorReviewedRecord) {
+		this.enumeratorReviewedRecord = enumeratorReviewedRecord;
+	}
+
+	public Boolean getEnumeratorReviewedRecord() {
+		return enumeratorReviewedRecord;
 	}
 }

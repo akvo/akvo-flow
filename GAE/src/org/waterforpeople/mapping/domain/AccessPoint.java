@@ -90,6 +90,10 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	@MappableField(displayName = "Point Type")
 	@Persistent
 	private AccessPointType pointType;
+	@MappableField(displayName="Financial Records/Books Available for Point")
+	private Boolean financialRecordsAvailableDayOfVisitFlag = null;
+	@MappableField(displayName="Enumerator Reviewed Record")
+	private Boolean enumeratorReviewedRecord = null;
 	@MappableField(displayName = "Country Code")
 	private String countryCode;
 	private List<String> geocells;
@@ -903,6 +907,23 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public Integer getNumberOfLitersPerPersonPerDay() {
 		return numberOfLitersPerPersonPerDay;
+	}
+	
+	public Boolean getFinancialRecordsAvailableDayOfVisitFlag() {
+		return financialRecordsAvailableDayOfVisitFlag;
+	}
+
+	public void setFinancialRecordsAvailableDayOfVisitFlag(
+			Boolean financialRecordsAvailableDayOfVisitFlag) {
+		this.financialRecordsAvailableDayOfVisitFlag = financialRecordsAvailableDayOfVisitFlag;
+	}
+
+	public Boolean getEnumeratorReviewedRecord() {
+		return enumeratorReviewedRecord;
+	}
+
+	public void setEnumeratorReviewedRecord(Boolean enumeratorReviewedRecord) {
+		this.enumeratorReviewedRecord = enumeratorReviewedRecord;
 	}
 	
 	@Override
