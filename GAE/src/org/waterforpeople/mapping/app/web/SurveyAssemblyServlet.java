@@ -518,9 +518,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			validationRule.setValidationType("name");
 			qXML.setValidationRule(validationRule);
 			hasValidation = true;
-
-		} else if (q.getAllowDecimal() != null || q.getAllowSign() != null
-				|| q.getMinVal() != null || q.getMaxVal() != null) {
+		} else if (q.getType() == Question.Type.NUMBER
+				&& (q.getAllowDecimal() != null || q.getAllowSign() != null
+						|| q.getMinVal() != null || q.getMaxVal() != null)) {
 			ValidationRule validationRule = objFactory.createValidationRule();
 			validationRule.setValidationType("numeric");
 			validationRule.setAllowDecimal(q.getAllowDecimal() != null ? q
