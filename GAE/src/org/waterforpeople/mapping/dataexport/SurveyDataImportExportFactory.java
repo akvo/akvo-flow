@@ -24,7 +24,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
 			put("RAW_DATA", GraphicalSurveySummaryExporter.class);
 			put("RAW_DATA_TEXT",RawDataExporter.class);
 			put("SURVEY_FORM", SurveyFormExporter.class);
-			put("GRAPHICAL_SURVEY_SUMMARY",GraphicalSurveySummaryExporter.class);
+			put("GRAPHICAL_SURVEY_SUMMARY",GraphicalSurveySummaryExporter.class);			
 		}
 	};
 	
@@ -35,6 +35,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
 			put("SURVEY_SPREADSHEET", SurveySpreadsheetImporter.class);
 			put("RAW_DATA", RawDataSpreadsheetImporter.class);
 			put("FIXED_FORMAT",FixedFormatRawDataImporter.class);
+			put("BULK_SURVEY",SurveyBulkUploader.class);
 		}
 	};
 
