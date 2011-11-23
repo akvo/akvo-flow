@@ -581,5 +581,7 @@ public interface TextConstants extends Constants{
 	public String saveBackToList();
 	public String rawDataReportGeneration();
 	public String fieldStatusReportGeneration();
+	public String bulkImportSurveys();
+	public String bulkImportSurveysDescription();
 }
 

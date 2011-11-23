@@ -2,6 +2,7 @@ package com.gallatinsystems.common.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -155,10 +156,31 @@ public class UploadUtil {
 			String policy, String sig, String contentType,
 			UploadStatusContainer uc) {
 
+		return upload(outputStream.toByteArray(), fileName, dir, uploadUrl,
+				s3ID, policy, sig, contentType, uc);
+	}
+
+	/**
+	 * uploads a byte array as a file to s3
+	 * 
+	 * @param fileData
+	 * @param fileName
+	 * @param dir
+	 * @param uploadUrl
+	 * @param s3ID
+	 * @param policy
+	 * @param sig
+	 * @param contentType
+	 * @param uc
+	 * @return
+	 */
+	public static boolean upload(byte[] fileData, String fileName, String dir,
+			String uploadUrl, String s3ID, String policy, String sig,
+			String contentType, UploadStatusContainer uc) {
 		try {
 			HttpURLConnection conn = UploadUtil.createConnection(new URL(
 					uploadUrl));
-			
+
 			UploadUtil stream = new UploadUtil(conn.getOutputStream());
 			stream.writeFormField("key", dir + "/${filename}");
 			stream.writeFormField("AWSAccessKeyId", s3ID);
@@ -168,8 +190,7 @@ public class UploadUtil {
 			stream.writeFormField("policy", policy);
 			stream.writeFormField("signature", sig);
 			stream.writeFormField("Content-Type", contentType);
-			stream.writeFile("file", fileName, outputStream.toByteArray(),
-					XML_MIME_TYPE);
+			stream.writeFile("file", fileName, fileData, XML_MIME_TYPE);
 			stream.close();
 			int code = conn.getResponseCode();
 			if (code != REDIRECT_CODE && code != OK_CODE) {

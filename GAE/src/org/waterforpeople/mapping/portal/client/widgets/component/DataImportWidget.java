@@ -3,6 +3,7 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
@@ -25,15 +26,18 @@ public class DataImportWidget extends MenuBasedWidget {
 
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static UploadConstants UPLOAD_CONSTANTS = GWT
+			.create(UploadConstants.class);
 	private Panel appletPanel;
 	private Button surveyImportButton;
 	private Button rawDataImportButton;
 	private Button importGISButton;
 	private Button fixedFormatImportButton;
+	private Button bulkImportButton;
 
 	public DataImportWidget() {
 		Panel contentPanel = new VerticalPanel();
-		Grid grid = new Grid(4, 2);
+		Grid grid = new Grid(5, 2);
 		contentPanel.add(grid);
 		appletPanel = new VerticalPanel();
 		contentPanel.add(appletPanel);
@@ -56,6 +60,14 @@ public class DataImportWidget extends MenuBasedWidget {
 		grid.setWidget(3, 0, fixedFormatImportButton);
 		grid.setWidget(3, 1, createDescription(TEXT_CONSTANTS
 				.importFixedFormatFileDescription()));
+
+		bulkImportButton = initButton(TEXT_CONSTANTS.bulkImportSurveys());
+		grid.setWidget(4, 0, bulkImportButton);
+		grid.setWidget(
+				4,
+				1,
+				createDescription(TEXT_CONSTANTS.bulkImportSurveysDescription()));
+
 		initWidget(contentPanel);
 	}
 
@@ -173,6 +185,23 @@ public class DataImportWidget extends MenuBasedWidget {
 						}
 					});
 			surveyDia.showCentered();
+		} else if (event.getSource() == bulkImportButton) {
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar'>";
+			appletString += "<PARAM name='importType' value='BULK_SURVEY'>";
+			appletString += "<PARAM name='selectionMode' value='dir'>";
+			appletString +="<param name='java_arguments' value='-Xmx512m'>";
+			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+			appletString += "<PARAM name='criteria' value=imagePolicy="
+					+ UPLOAD_CONSTANTS.imageS3Policy() + ";imageSig="
+					+ UPLOAD_CONSTANTS.imageS3Sig() + ";dataPolicy="
+					+ UPLOAD_CONSTANTS.surveyDataS3Policy() + ";dataSig="
+					+ UPLOAD_CONSTANTS.surveyDataS3Sig() + ";awsId="
+					+ UPLOAD_CONSTANTS.s3Id() + ";uploadBase="
+					+ UPLOAD_CONSTANTS.uploadUrl() + ">";
+			appletString += "</applet>";
+			HTML html = new HTML();
+			html.setHTML(appletString);
+			appletPanel.add(html);
 		}
 	}
 

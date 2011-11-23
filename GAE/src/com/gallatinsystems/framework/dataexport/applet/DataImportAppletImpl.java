@@ -23,6 +23,8 @@ public class DataImportAppletImpl extends AbstractDataImportExportApplet {
 
 	private static final long serialVersionUID = -545153291195490725L;
 	private static final String IMPORT_TYPE_PARAM = "importType";
+	private static final String FILE_SELECTION_MODE_PARAM = "selectionMode";
+	private static final String DIR_MODE = "dir";
 	private DataImportExportFactory dataImporterFactory;
 	private JLabel statusLabel;
 
@@ -44,8 +46,9 @@ public class DataImportAppletImpl extends AbstractDataImportExportApplet {
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
 		String type = getParameter(IMPORT_TYPE_PARAM);
+		String mode = getParameter(FILE_SELECTION_MODE_PARAM);
 		dataImporterFactory = getDataImportExportFactory();
-		doImport(type, getServerBase(), getConfigCriteria());
+		doImport(type, getServerBase(), getConfigCriteria(), mode);
 	}
 
 	/**
@@ -58,9 +61,11 @@ public class DataImportAppletImpl extends AbstractDataImportExportApplet {
 	 * @param serverBase
 	 */
 	public void doImport(String type, String serverBase,
-			Map<String, String> config) {
+			Map<String, String> config, String mode) {
 		JFileChooser chooser = new JFileChooser();
-
+		if (mode != null && DIR_MODE.equalsIgnoreCase(mode)) {
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		}
 		chooser.showOpenDialog(this);
 		if (chooser.getSelectedFile() != null) {
 			DataImporter importer = dataImporterFactory.getImporter(type);

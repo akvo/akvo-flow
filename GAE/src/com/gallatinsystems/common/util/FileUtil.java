@@ -109,5 +109,14 @@ public final class FileUtil {
 		in.close();
 		return sb.toString();
 	}
+	
+	public static boolean createDir(String directory){
+		File f = new File(directory);
+		if(f.exists()){
+			return true;
+		}else{
+			return f.mkdirs();
+		}
+	}
 }
 

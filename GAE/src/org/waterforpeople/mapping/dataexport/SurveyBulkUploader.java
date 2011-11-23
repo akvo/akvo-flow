@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 
 import com.gallatinsystems.common.util.FileUtil;
 import com.gallatinsystems.common.util.ImageUtil;
+import com.gallatinsystems.common.util.UploadUtil;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
@@ -45,16 +46,22 @@ public class SurveyBulkUploader implements DataImporter {
 
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
 	private static final String UPLOAD_IMAGE_MODE = "uploadImageOnly";
-	private static final String ZIP_ONLY_MODE = "processZipOnly";	
-	private static final String SOURCE_DIR_KEY = "sourcedir";
+	private static final String ZIP_ONLY_MODE = "processZipOnly";
 	private static final String MODE_KEY = "mode";
-	private static final String PROGRESS_FILE_KEY = "progress";
-	private static final String DATA_TEMP_DIR_KEY = "tempdir";
-	private static final String IMAGE_TEMP_DIR_KEY = "imgtemp";
+	private static final String PROGRESS_FILE_NAME = "progress.txt";
+
+	private static final String IMAGE_TEMP_DIR = "resized";
+
+	private static final String IMAGE_POLICY_KEY = "imagePolicy";
+	private static final String IMAGE_SIG_KEY = "imageSig";
+	private static final String DATA_POLICY_KEY = "dataPolicy";
+	private static final String DATA_SIG_KEY = "dataSig";
+	private static final String AWS_ID_KEY = "awsId";
+	private static final String UPLOAD_BASE_KEY = "uploadBase";
 	private static final String DEFAULT_LOCALE = "en";
-	private static Map<String,String> UPLOADING;
-	private static Map<String,String> COMPLETE;
-	
+	private static Map<String, String> UPLOADING;
+	private static Map<String, String> COMPLETE;
+
 	static {
 		UPLOADING = new HashMap<String, String>();
 		UPLOADING.put("en", "Uploading");
@@ -63,7 +70,6 @@ public class SurveyBulkUploader implements DataImporter {
 		COMPLETE.put("en", "Complete");
 	}
 
-	
 	private String locale = DEFAULT_LOCALE;
 	private ProgressDialog progressDialog;
 
@@ -75,25 +81,22 @@ public class SurveyBulkUploader implements DataImporter {
 	}
 
 	@Override
-	public void executeImport(File file, String serverBase,
+	public void executeImport(File sourceDirectory, String serverBase,
 			Map<String, String> criteria) {
-		
-		
-		// TODO: replace with call to get remote properties for S3 upload
-		// S3Driver s3Driver = new S3Driver(args[2], args[3]);
-		File sourceDirectory = new File(criteria.get(SOURCE_DIR_KEY));
 
 		int i = 0;
 		boolean uploadImage = true;
 		boolean processZip = true;
 		List<String> processedList = new ArrayList<String>();
 		FileUtil futil = new FileUtil();
+
+		String progressFileName = sourceDirectory + File.separator
+				+ PROGRESS_FILE_NAME;
 		try {
-			// TODO: try putting progress file in app cache directory
-			File progressFile = new File(criteria.get(PROGRESS_FILE_KEY));
+
+			File progressFile = new File(progressFileName);
 			if (progressFile.exists()) {
-				String allData = futil.readFromFile(criteria
-						.get(PROGRESS_FILE_KEY));
+				String allData = futil.readFromFile(progressFileName);
 				StringTokenizer strTok = new StringTokenizer(allData, "|");
 				while (strTok.hasMoreTokens()) {
 					processedList.add(strTok.nextToken());
@@ -104,18 +107,20 @@ public class SurveyBulkUploader implements DataImporter {
 			e1.printStackTrace(System.err);
 		}
 		List<List<File>> filesInDir = addFilesInDirectory(sourceDirectory,
-				criteria.get(DATA_TEMP_DIR_KEY), processedList, true);
-		
+				processedList, true);
+
 		progressDialog = new ProgressDialog(filesInDir.size(), locale);
 		progressDialog.setVisible(true);
-		
+
 		List<File> filesToUpload = filesInDir.get(0);
 		if (UPLOAD_IMAGE_MODE.equalsIgnoreCase(criteria.get(MODE_KEY))) {
 			processZip = false;
 		} else if (ZIP_ONLY_MODE.equalsIgnoreCase(criteria.get(MODE_KEY))) {
 			uploadImage = false;
 		}
-		int currentStep = 0;
+		File tempDir = new File(sourceDirectory, IMAGE_TEMP_DIR);
+		tempDir.mkdirs();
+
 		for (File fx : filesToUpload) {
 			if (!processedList.contains(fx.getName())) {
 				try {
@@ -125,36 +130,45 @@ public class SurveyBulkUploader implements DataImporter {
 
 					if (fx.getName().endsWith(".jpg")) {
 						if (uploadImage) {
-							File resizedFile = ImageUtil.resizeImage(fx,
-									criteria.get(IMAGE_TEMP_DIR_KEY), 500, 500);
-							// TODO: add call to upload here
-							/*
-							 * s3Driver.uploadFile(args[1] + "/images",
-							 * resizedFile.getName(),
-							 * futil.readFileBytes(resizedFile));
-							 */
+							File resizedFile = ImageUtil
+									.resizeImage(fx,
+											tempDir.getAbsolutePath(),
+											500, 500);
+							UploadUtil.upload(futil.readFileBytes(resizedFile),
+									resizedFile.getName(), "images",
+									criteria.get(UPLOAD_BASE_KEY),
+									criteria.get(AWS_ID_KEY),
+									criteria.get(IMAGE_POLICY_KEY),
+									criteria.get(IMAGE_SIG_KEY), "image/jpeg", null);
+							// now delete the temp file
+							resizedFile.delete();
 						}
 					} else {
 						if (processZip) {
-							// TODO: add call to upload here
-							/*
-							 * s3Driver.uploadFile(args[1] + "/devicezip",
-							 * fx.getName(), futil.readFileBytes(fx));
-							 */
+							UploadUtil.upload(futil.readFileBytes(fx),
+									fx.getName(), "devicezip",
+									criteria.get(UPLOAD_BASE_KEY),
+									criteria.get(AWS_ID_KEY),
+									criteria.get(DATA_POLICY_KEY),
+									criteria.get(DATA_SIG_KEY),
+									"application/zip", null);
+
 							// now notify the server that a new file is there
 							// for processing
 							sendFileNotification(serverBase, fx.getName());
+							// delete the merged zip
+							fx.delete();
 						}
 					}
 					processedList.add(fx.getName());
 					i++;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					// TODO report error to ui
 					e.printStackTrace();
 				}
 			}
-			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-					UPLOADING.get(locale)));
+			SwingUtilities.invokeLater(new StatusUpdater(i, UPLOADING
+					.get(locale)));
 		}
 		StringBuilder buf = new StringBuilder();
 		for (String s : processedList) {
@@ -163,10 +177,10 @@ public class SurveyBulkUploader implements DataImporter {
 		for (File fn : filesInDir.get(1)) {
 			buf.append(fn.getName()).append("|");
 		}
-		futil.writeToFile(buf.toString(), criteria.get(PROGRESS_FILE_KEY));
-		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-				COMPLETE.get(locale),true));
-		
+		futil.writeToFile(buf.toString(), progressFileName);
+		SwingUtilities.invokeLater(new StatusUpdater(i, COMPLETE.get(locale),
+				true));
+
 	}
 
 	public static void sendFileNotification(String serverBase, String fileName)
@@ -185,7 +199,7 @@ public class SurveyBulkUploader implements DataImporter {
 	}
 
 	private static List<List<File>> addFilesInDirectory(File dir,
-			String tempDir, List<String> ignoreList, boolean hasUUID) {
+			List<String> ignoreList, boolean hasUUID) {
 		List<File> fileList = new ArrayList<File>();
 		List<File> collapsedZips = new ArrayList<File>();
 		List<File> zipFileList = new ArrayList<File>();
@@ -200,14 +214,16 @@ public class SurveyBulkUploader implements DataImporter {
 								fileList.add(files[i]);
 							}
 						} else if (files[i].getName().endsWith(".zip")) {
-							zipFileList.add(files[i]);
+							if (!files[i].getName().contains("wfpGenerated")) {
+								zipFileList.add(files[i]);
+							}
 						}
 					} else if (files[i].isDirectory()
 							&& !files[i].getName().endsWith("fieldsurvey")
 							&& !files[i].getName().endsWith(".thumbnails")
 							&& !files[i].getName().endsWith("processed")) {
 						List<List<File>> added = addFilesInDirectory(files[i],
-								tempDir, ignoreList, hasUUID);
+								ignoreList, hasUUID);
 						fileList.addAll(added.get(0));
 						collapsedZips.addAll(added.get(1));
 					}
@@ -278,7 +294,7 @@ public class SurveyBulkUploader implements DataImporter {
 					try {
 						ByteArrayOutputStream stream = ZipUtil.generateZip(
 								newContent.toString(), "data.txt");
-						File f = new File(tempDir, "wfpGenerated"
+						File f = new File(dir, "wfpGenerated"
 								+ System.currentTimeMillis() + ".zip");
 						FileOutputStream foStream = new FileOutputStream(f);
 						stream.writeTo(foStream);
