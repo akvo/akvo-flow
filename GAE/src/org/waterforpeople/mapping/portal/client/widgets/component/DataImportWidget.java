@@ -191,13 +191,13 @@ public class DataImportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='selectionMode' value='dir'>";
 			appletString +="<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=imagePolicy="
+			appletString += "<PARAM name='criteria' value='imagePolicy="
 					+ UPLOAD_CONSTANTS.imageS3Policy() + ";imageSig="
 					+ UPLOAD_CONSTANTS.imageS3Sig() + ";dataPolicy="
 					+ UPLOAD_CONSTANTS.surveyDataS3Policy() + ";dataSig="
 					+ UPLOAD_CONSTANTS.surveyDataS3Sig() + ";awsId="
 					+ UPLOAD_CONSTANTS.s3Id() + ";uploadBase="
-					+ UPLOAD_CONSTANTS.uploadUrl() + ">";
+					+ UPLOAD_CONSTANTS.uploadUrl() + "'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
