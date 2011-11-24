@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.Map;
+
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.AdminHomeWidget;
 import org.waterforpeople.mapping.portal.client.widgets.component.AttributeAssignmentWidget;
@@ -39,6 +41,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class AdminWizardPortlet extends AbstractWizardPortlet {
+	public static final String LOAD_PAGE_CLASS_KEY = "loadPage";
 	private static final String LOCALE_DOMAIN = "locale";
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
@@ -115,8 +118,9 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 						new WizardButton("QuestionCreate", TEXT_CONSTANTS
 								.saveGotoNext()),
 						new WizardButton("QuestionCreate", TEXT_CONSTANTS
-								.saveNewQuestion()),new WizardButton("QuestionList", TEXT_CONSTANTS
-										.saveBackToList()) },
+								.saveNewQuestion()),
+						new WizardButton("QuestionList", TEXT_CONSTANTS
+								.saveBackToList()) },
 				new WizardButton[] { new WizardButton("QuestionList",
 						TEXT_CONSTANTS.backToQuestionList()) }));
 		wf.addInternalNode(new WizardNode("Publish", null,
@@ -274,6 +278,14 @@ public class AdminWizardPortlet extends AbstractWizardPortlet {
 	protected void prePageUnload(WizardNode nextNode) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void initialize(Map<String, Object> options) {
+		if (options != null && options.get(LOAD_PAGE_CLASS_KEY) != null) {
+			openPage((Class) options.get(LOAD_PAGE_CLASS_KEY), null);
+		}
 	}
 
 }

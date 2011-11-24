@@ -32,8 +32,10 @@ import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyLoaderPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyQuestionPortlet;
-import org.waterforpeople.mapping.portal.client.widgets.TechnologyTypeManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.UserManagerPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyAssignmentListWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.SurveyGroupListWidget;
+import org.waterforpeople.mapping.portal.client.widgets.component.WebActivityAuthorizationListWidget;
 
 import com.gallatinsystems.framework.gwt.portlet.client.PortalContainer;
 import com.gallatinsystems.framework.gwt.portlet.client.Portlet;
@@ -160,7 +162,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 					containerPanel.add(new Image("images/wfp-logo.gif"));
 					Anchor logoutAnchor = new Anchor(
 							TEXT_CONSTANTS.logOnAsDifferentUser(),
-							result.getLogoutUrl());					
+							result.getLogoutUrl());
 					containerPanel.add(logoutAnchor);
 					MessageDialog errDia = new MessageDialog(
 							TEXT_CONSTANTS.unknownUser(),
@@ -243,7 +245,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						}
 					});
 		}
-		
+
 		if (getCurrentUser().hasPermission(
 				PermissionConstants.UPLOAD_SURVEY_DATA)) {
 			mgrMenu.addItem(TEXT_CONSTANTS.uploadPortletTitle(), new Command() {
@@ -298,15 +300,45 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 						}
 					});
-				mgrMenu.addItem(TEXT_CONSTANTS.metricManager(), new Command() {
-					public void execute() {
-						launchFullscreen(MetricManagerPortlet.NAME);
-					}
-				});
+			mgrMenu.addItem(TEXT_CONSTANTS.metricManager(), new Command() {
+				public void execute() {
+					launchFullscreen(MetricManagerPortlet.NAME);
+				}
+			});
 
 		}
 
 		menu.addItem(TEXT_CONSTANTS.dataManagers(), mgrMenu);
+		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_SURVEY)) {
+			MenuBar surveyMenu = new MenuBar(true);
+			surveyMenu.setAnimationEnabled(true);
+			surveyMenu.addItem(TEXT_CONSTANTS.manageSurveys(), new Command() {
+				public void execute() {
+					Map<String, Object> options = new HashMap<String, Object>();
+					options.put(AdminWizardPortlet.LOAD_PAGE_CLASS_KEY,
+							SurveyGroupListWidget.class);
+					launchFullscreen(AdminWizardPortlet.NAME, options);
+				}
+			});
+			surveyMenu.addItem(TEXT_CONSTANTS.assignSurveys(), new Command() {
+				public void execute() {
+					Map<String, Object> options = new HashMap<String, Object>();
+					options.put(AdminWizardPortlet.LOAD_PAGE_CLASS_KEY,
+							SurveyAssignmentListWidget.class);
+					launchFullscreen(AdminWizardPortlet.NAME, options);
+				}
+			});
+			surveyMenu.addItem(TEXT_CONSTANTS.editWebAuth(), new Command() {
+				public void execute() {
+					Map<String, Object> options = new HashMap<String, Object>();
+					options.put(AdminWizardPortlet.LOAD_PAGE_CLASS_KEY,
+							WebActivityAuthorizationListWidget.class);
+					launchFullscreen(AdminWizardPortlet.NAME, options);
+				}
+			});
+			menu.addItem(TEXT_CONSTANTS.surveys(), surveyMenu);
+		}
+
 		if (getCurrentUser().hasPermission(PermissionConstants.RUN_REPORTS)) {
 			menu.addItem(TEXT_CONSTANTS.runReports(), new Command() {
 
@@ -358,16 +390,31 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	}
 
 	/**
-	 * launches a portlet in fullscreen mode and hides unneeded controls
+	 * launches a portlet in full screen mode and hides unneeded controls
 	 * 
 	 * @param portletName
 	 */
 	private void launchFullscreen(String portletName) {
+		launchFullscreen(portletName, null);
+	}
+
+	/**
+	 * launches a portlet in full screen mode and hides unneeded controls,
+	 * passing the options to the newly constructed portlet.
+	 * 
+	 * @param portletName
+	 * @param options
+	 */
+	private void launchFullscreen(String portletName,
+			Map<String, Object> options) {
 		Portlet p = PortletFactory.createPortlet(portletName, getCurrentUser(),
 				domainType);
 		p.setShowFullscreen(true);
 		if (confImage != null) {
 			confImage.setVisible(false);
+		}
+		if (options != null) {
+			p.initialize(options);
 		}
 		takeoverScreen(p);
 	}

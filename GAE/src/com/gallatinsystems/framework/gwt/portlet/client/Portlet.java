@@ -1,5 +1,7 @@
 package com.gallatinsystems.framework.gwt.portlet.client;
 
+import java.util.Map;
+
 import com.allen_sauer.gwt.dnd.client.HasDragHandle;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -409,6 +411,16 @@ public abstract class Portlet extends FocusPanel implements HasDragHandle {
 
 	public Widget getHeaderWidget() {
 		return headerWidget;
+	}
+
+	/**
+	 * this method can be overriden by subclasses to provide custom post-initialization
+	 * options
+	 * 
+	 * @param options
+	 */
+	public void initialize(Map<String, Object> options) {
+
 	}
 
 }
