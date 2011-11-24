@@ -121,14 +121,15 @@ public class RunReportWidget extends MenuBasedWidget {
 			final Object eventSource = event.getSource();
 			final Widget rollupControl;
 			final CheckBox summaryBox;
-			if(eventSource == comprehensiveReportButton){
+			if (eventSource == comprehensiveReportButton) {
 				HorizontalPanel rollupPanel = new HorizontalPanel();
-				rollupPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.generateSummariesByGeography()));
+				rollupPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
+						.generateSummariesByGeography()));
 				summaryBox = new CheckBox();
 				summaryBox.setValue(true);
 				rollupPanel.add(summaryBox);
 				rollupControl = rollupPanel;
-			}else{
+			} else {
 				rollupControl = null;
 				summaryBox = null;
 			}
@@ -139,31 +140,35 @@ public class RunReportWidget extends MenuBasedWidget {
 								Map<String, Object> payload) {
 							if (wasSuccessful
 									&& payload != null
-									&& payload
-											.get(SurveySelectionDialog.SURVEY_KEY) != null) {
+									&& payload.get(SurveySelectionDialog.SURVEY_KEY) != null) {
+								String lang = (String) payload
+										.get(SurveySelectionDialog.LANG_KEY);
 								handleSurveySelection(
 										eventSource,
 										(Long) payload
-												.get(SurveySelectionDialog.SURVEY_KEY), summaryBox !=null?summaryBox.getValue():true);
+												.get(SurveySelectionDialog.SURVEY_KEY),
+										summaryBox != null ? summaryBox
+												.getValue() : true, lang);
 							}
 						}
-					},false,rollupControl);
+					}, false, rollupControl, true);
 			surveyDia.showCentered();
 		}
 	}
 
-	private void handleSurveySelection(Object eventSource, Long surveyId, boolean doRollups) {
-		if (eventSource == rawDataReportButton) {			 					   
+	private void handleSurveySelection(Object eventSource, Long surveyId,
+			boolean doRollups, String locale) {
+		if (eventSource == rawDataReportButton) {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.7-20101029.jar,poi-ooxml-3.7-20101029.jar,poi-ooxml-schemas-3.7-20101029.jar,xbean.jar,dom4j-1.6.1.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='RAW_DATA'>";
-			appletString +="<param name='java_arguments' value='-Xmx512m'>";
+			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
 					+ ">";
 			appletString += "<PARAM name='options' value='exportMode=RAW_DATA;locale="
-					+ com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
-							.getLocaleName() + ";imgPrefix="
+					+ locale
+					+ ";imgPrefix="
 					+ UPLOAD_CONSTANTS.uploadUrl()
 					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 			appletString += "</applet>";
@@ -185,7 +190,7 @@ public class RunReportWidget extends MenuBasedWidget {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
-			appletString +="<param name='java_arguments' value='-Xmx512m'>";
+			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
 					+ ">";
@@ -193,22 +198,19 @@ public class RunReportWidget extends MenuBasedWidget {
 			HTML html = new HTML();
 			html.setHTML(appletString);
 			appletPanel.add(html);
-		} else if (eventSource == comprehensiveReportButton) {			                       
+		} else if (eventSource == comprehensiveReportButton) {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.7-20101029.jar,poi-ooxml-3.7-20101029.jar,poi-ooxml-schemas-3.7-20101029.jar,xbean.jar,dom4j-1.6.1.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='exportType' value='GRAPHICAL_SURVEY_SUMMARY'>";
-			appletString +="<param name='java_arguments' value='-Xmx512m'>";
+			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
 					+ ">";
-			appletString += "<PARAM name='options' value='locale="
-					+ com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
-							.getLocaleName();
-			if(!doRollups){
-				appletString+=";performRollup=false";
+			appletString += "<PARAM name='options' value='locale=" + locale;
+			if (!doRollups) {
+				appletString += ";performRollup=false";
 			}
-			appletString += ";imgPrefix="
-					+ UPLOAD_CONSTANTS.uploadUrl()
+			appletString += ";imgPrefix=" + UPLOAD_CONSTANTS.uploadUrl()
 					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
