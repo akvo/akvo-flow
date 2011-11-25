@@ -130,16 +130,15 @@ public class SurveyBulkUploader implements DataImporter {
 
 					if (fx.getName().endsWith(".jpg")) {
 						if (uploadImage) {
-							File resizedFile = ImageUtil
-									.resizeImage(fx,
-											tempDir.getAbsolutePath(),
-											500, 500);
+							File resizedFile = ImageUtil.resizeImage(fx,
+									tempDir.getAbsolutePath(), 500, 500);
 							UploadUtil.upload(futil.readFileBytes(resizedFile),
 									resizedFile.getName(), "images",
 									criteria.get(UPLOAD_BASE_KEY),
 									criteria.get(AWS_ID_KEY),
 									criteria.get(IMAGE_POLICY_KEY),
-									criteria.get(IMAGE_SIG_KEY), "image/jpeg", null);
+									criteria.get(IMAGE_SIG_KEY), "image/jpeg",
+									null);
 							// now delete the temp file
 							resizedFile.delete();
 						}
@@ -221,7 +220,8 @@ public class SurveyBulkUploader implements DataImporter {
 					} else if (files[i].isDirectory()
 							&& !files[i].getName().endsWith("fieldsurvey")
 							&& !files[i].getName().endsWith(".thumbnails")
-							&& !files[i].getName().endsWith("processed")) {
+							&& !files[i].getName().endsWith("processed")
+							&& !files[i].getName().endsWith(IMAGE_TEMP_DIR)) {
 						List<List<File>> added = addFilesInDirectory(files[i],
 								ignoreList, hasUUID);
 						fileList.addAll(added.get(0));
