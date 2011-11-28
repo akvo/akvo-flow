@@ -143,7 +143,8 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		if (step != currentStep) {
 			currentStep = step;
 			progressBar.setValue(currentStep);			
-			if (currentStep > maxSteps || isComplete) {							
+			if (currentStep >= maxSteps || isComplete) {	
+				progressBar.setValue(maxSteps);
 				closeButton.setVisible(true);
 			}else{
 				String statusText = STEP.get(locale);
