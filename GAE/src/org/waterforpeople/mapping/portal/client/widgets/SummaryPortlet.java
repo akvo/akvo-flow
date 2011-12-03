@@ -118,7 +118,7 @@ public class SummaryPortlet extends Portlet {
 		panel.add(new Label(TEXT_CONSTANTS.devices()));
 		deviceRoot = t.addItem(panel);
 
-		loadCountryMapLinks(t);
+		//loadCountryMapLinks(t);
 
 		return t;
 	}
