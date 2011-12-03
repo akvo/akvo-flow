@@ -236,7 +236,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						}
 					});
 		}
-		if (getCurrentUser().hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
+		/*if (getCurrentUser().hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
 			mgrMenu.addItem(TEXT_CONSTANTS.displayContentManagerTitle(),
 					new Command() {
 						public void execute() {
@@ -244,7 +244,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 
 						}
 					});
-		}
+		}*/
 
 		if (getCurrentUser().hasPermission(
 				PermissionConstants.UPLOAD_SURVEY_DATA)) {
