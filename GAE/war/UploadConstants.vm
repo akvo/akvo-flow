@@ -2,8 +2,8 @@ uploadUrl = $s3url
 s3Id = $awsIdentifier
 
 #NOTE: the S3 policies expire on 10/2/2013
-surveyDataS3Policy = $surveyPolicy
-surveyDataS3Sig = $surveyS3Sig
+surveyDataS3Policy = $surveyDataPolicy
+surveyDataS3Sig = $surveyDataS3Sig
 surveyDataS3Path = devicezip 
 surveyDataContentType = application/zip
 
