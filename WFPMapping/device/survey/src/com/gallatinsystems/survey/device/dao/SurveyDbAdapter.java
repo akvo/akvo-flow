@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Location;
 import android.util.Log;
 
 import com.gallatinsystems.survey.device.domain.FileTransmission;
@@ -1248,10 +1249,11 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * lists all points of interest, optionally filtering by country code
+	 * lists all points of interest, optionally filtering by country code and name prefix
 	 * 
 	 * @param country
-	 * @return
+	 * @param prefix
+	 * @return list
 	 */
 	public ArrayList<PointOfInterest> listPointsOfInterest(String country,
 			String prefix) {
@@ -1306,6 +1308,118 @@ public class SurveyDbAdapter {
 
 					points.add(point);
 
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return points;
+	}
+
+	/**
+	 * lists all points of interest, filtering by distance, optionally filtering by country code
+	 * 
+	 * @param country - country code
+	 * @param prefix
+	 * @param latitude - decimal degrees
+	 * @param longitude - decimal degrees
+	 * @param radius - meters
+	 * @return ArrayList<PointOfInterest>
+	 */
+	public ArrayList<PointOfInterest> listPointsOfInterest(String country, String prefix, Double longitude, Double latitude, Double radius ) {
+		if (longitude == null || latitude == null)
+			return listPointsOfInterest(country, prefix);
+		
+		ArrayList<PointOfInterest> points = null;
+		String whereClause = null;
+		String[] whereValues; //unfortunately, length of this array must match the number of ?'s in the whereClause
+		int i;
+		//Maximum angular difference for a given radius. Must avoid problems at high latitudes....
+		double nsDegrees = radius * 360 / 40000000;
+		double ewDegrees;
+		if (Math.abs(latitude) > 80.0d)
+			ewDegrees = 0; //don't use, just include the whole [ant]arctic...
+		else
+			ewDegrees = radius * 360 / (40000000 * Math.cos(latitude*Math.PI/180.0d));
+		if (Math.abs(ewDegrees) > 180.0d)
+			ewDegrees = 0;
+
+		//Longitude is a little tricky (if we are out in the Pacific...)
+		double east = longitude + ewDegrees;
+		double west = longitude - ewDegrees;
+
+		whereClause = LAT_COL + "<? AND " + LAT_COL + ">?";
+		if (ewDegrees == 0.0d){ //degenerate case
+			whereValues = new String[2];
+			i = 2;
+		} else	{
+			whereValues = new String[4];
+			whereValues[2] = Double.toString(east); //East limit
+			whereValues[3] = Double.toString(west); //West limit
+			i = 4;
+			if (east > 180.0d){ //wrapped
+				east = east - 360.0d;
+				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?)"; 
+			} else	
+			if (west < -180.0d){
+				west = west + 360.0d;
+				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?) "; 
+					
+			} else	//boring case		
+				whereClause += " AND " + LON_COL + "<? AND " + LON_COL + ">? "; 
+		}
+		//Latitude is simple
+		whereValues[0] = Double.toString(Math.min(latitude + nsDegrees,  90.0d));//North limit
+		whereValues[1] = Double.toString(Math.max(latitude - nsDegrees, -90.0d));//South limit
+
+/*	TODO: (maybe)
+		if (country != null) {
+			whereClause += " AND " + COUNTRY_COL + "=?";
+			whereValues[i] = country;
+
+		}
+		if (prefix != null && prefix.trim().length() > 0) {
+			whereClause += " AND " + DISP_NAME_COL + " like ?";
+			whereValues = new String[2];
+			whereValues[i] = country;
+			whereValues[i+1] = prefix + "%";
+		}
+		*/
+		Cursor cursor = database.query(POINT_OF_INTEREST_TABLE, new String[] {
+				PK_ID_COL, COUNTRY_COL, DISP_NAME_COL, UPDATED_DATE_COL,
+				LAT_COL, LON_COL, PROP_NAME_COL, PROP_VAL_COL, TYPE_COL },
+				whereClause, whereValues, null, null, null);
+		if (cursor != null) {
+			if (cursor.getCount() > 0) {
+				cursor.moveToFirst();
+
+				cursor.moveToFirst();
+				points = new ArrayList<PointOfInterest>();
+				do {
+					PointOfInterest point = new PointOfInterest();
+					point.setName(cursor.getString(cursor
+							.getColumnIndexOrThrow(DISP_NAME_COL)));
+					point.setType(cursor.getString(cursor
+							.getColumnIndexOrThrow(TYPE_COL)));
+					point.setCountry(cursor.getString(cursor
+							.getColumnIndexOrThrow(COUNTRY_COL)));
+					point.setId(cursor.getLong(cursor
+							.getColumnIndexOrThrow(PK_ID_COL)));
+					point.setPropertyNames(cursor.getString(cursor
+							.getColumnIndexOrThrow(PROP_NAME_COL)));
+					point.setPropertyValues(cursor.getString(cursor
+							.getColumnIndexOrThrow(PROP_VAL_COL)));
+					point.setLatitude(cursor.getDouble(cursor
+							.getColumnIndexOrThrow(LAT_COL)));
+					point.setLongitude(cursor.getDouble(cursor
+							.getColumnIndexOrThrow(LON_COL)));
+					float[] distance = new float[1];
+					Location.distanceBetween(latitude,longitude,
+											 point.getLatitude(),point.getLongitude(),
+											 distance);
+					if (distance[0] < radius){//now keep only those within actual distance
+						point.setDistance(new Double(distance[0]));
+						points.add(point);
+					}
 				} while (cursor.moveToNext());
 			}
 			cursor.close();

@@ -6,6 +6,19 @@
 		android:layout_height="wrap_content" android:orientation="vertical">
 		<RelativeLayout android:layout_width="fill_parent"
 			android:layout_height="wrap_content">
+			<ImageButton android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/radiusbutton"
+				android:src="@android:drawable/arrow_down_float"
+				android:layout_alignParentRight="true" />
+			<TextView android:textSize="20dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/radiuslabel"
+				android:text="@string/radiuslabel" android:layout_toLeftOf="@id/radiusbutton" />
+			<TextView android:textSize="10dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/radiusvalue"
+				android:layout_below="@id/radiuslabel" />
+		</RelativeLayout>
+	    <RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
 			<CheckBox android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/lastusercheckbox"
 				android:layout_alignParentRight="true" />

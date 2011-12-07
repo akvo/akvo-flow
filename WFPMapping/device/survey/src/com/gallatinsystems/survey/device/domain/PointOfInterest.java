@@ -3,6 +3,7 @@ package com.gallatinsystems.survey.device.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+
 public class PointOfInterest implements Serializable {
 	private static final long serialVersionUID = -545858029643355078L;
 	private static final String PACKED_FIELD_DELIMITER = "#~#";
@@ -13,6 +14,7 @@ public class PointOfInterest implements Serializable {
 	private String country;
 	private Double latitude;
 	private Double longitude;
+	private Double distance;
 	private ArrayList<String> propertyNames;
 	private ArrayList<String> propertyValues;
 
@@ -62,6 +64,14 @@ public class PointOfInterest implements Serializable {
 
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
 	}
 
 	public ArrayList<String> getPropertyNames() {

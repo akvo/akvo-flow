@@ -1,6 +1,7 @@
 package com.gallatinsystems.survey.device.activity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -45,6 +46,7 @@ public class NearbyItemActivity extends ListActivity implements
 	private static final int COUNTRY_OPT = 3;
 	private static final int SERVER_OPT = 4;
 	private static final int SEARCH_OPT = 5;
+	private static final int ATP_OPT = 6;//debug only
 	private static final int DEFAULT_WIDTH = 100;
 	private LocationManager locMgr;
 	private Criteria locationCriteria;
@@ -64,12 +66,14 @@ public class NearbyItemActivity extends ListActivity implements
 	private Double lastLat;
 	private Double lastLon;
 	private String mode;
+	private Double nearbyRadius;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		useServer = true;
+//		useServer = true;
+		useServer = false;
 		// set up a dummy PointOfInterest to serve as a placeholder. This will
 		// be used to show a "loading" message when the user scrolls to the
 		// bottom of the list.
@@ -130,6 +134,20 @@ public class NearbyItemActivity extends ListActivity implements
 			serverBase = new PropertyUtil(getResources())
 					.getProperty(ConstantUtil.SERVER_BASE);
 		}
+		String val = databaseAdapter.findPreference(ConstantUtil.NEARBY_RADIUS);
+		if (val != null) {
+			try{
+				nearbyRadius = Double.parseDouble(val);
+				}
+			catch (NumberFormatException e){
+				/*could complain here*/
+				};
+			
+		} else {
+			nearbyRadius = 100000.0d;//default to 100 km, TODO: move this to constants
+		}
+
+		
 		String provider = locMgr.getBestProvider(locationCriteria, true);
 		if (provider != null) {
 			Location loc = locMgr.getLastKnownLocation(provider);
@@ -157,14 +175,33 @@ public class NearbyItemActivity extends ListActivity implements
 		super.onPause();
 	}
 
+	private class PointOfInterestByDistanceComparator implements Comparator<PointOfInterest>
+	{
+	     // compare(o1, o2) < 0     - o1 is less than o2
+	     // compare(o1, o2) == 0    - o1 is equal to o2
+	     // compare(o1, o2) > 0     - o1 is greater then o2
+		//TODO: test if this is correct polarity to sort ascending
+	    public int compare(PointOfInterest o1, PointOfInterest o2) {
+	    	if (o1.getDistance() == null || o2.getDistance() == null)
+	    		return 0; //incomparable!
+	        if (o1.getDistance() < o2.getDistance())
+	        	return -1;
+	        if (o1.getDistance() > o2.getDistance())
+	        	return 1;
+	        return 0;
+	    }
+	}
+	
 	/**
 	 * updates the ui with the results of the service call that was running in
 	 * the background thread.
 	 */
 	private void updateUi() {
 		if (pointsOfInterest != null) {
-			setListAdapter(new ArrayAdapter<PointOfInterest>(this,
-					R.layout.itemlistrow, pointsOfInterest));
+			ArrayAdapter<PointOfInterest> aa = new ArrayAdapter<PointOfInterest>(this,
+					R.layout.itemlistrow, pointsOfInterest);
+			aa.sort(new PointOfInterestByDistanceComparator());
+			setListAdapter(aa);
 		} else {
 			setListAdapter(new ArrayAdapter<PointOfInterest>(this,
 					R.layout.itemlistrow, new ArrayList<PointOfInterest>()));
@@ -179,9 +216,11 @@ public class NearbyItemActivity extends ListActivity implements
 	 * 
 	 * @param lat
 	 * @param lon
+	 * @param country
+	 * @param prefix
 	 */
 	private void loadData(final Double lat, final Double lon,
-			final String country, final String prefix) {
+			              final String country, final String prefix) {
 		isRunning = true;
 		lastLat = lat;
 		lastLon = lon;
@@ -192,11 +231,9 @@ public class NearbyItemActivity extends ListActivity implements
 		dataThread = new Thread() {
 			public void run() {
 				if (useServer) {
-					PointOfInterestService pointOfInterestService = new PointOfInterestService(
-							serverBase);
+					PointOfInterestService pointOfInterestService = new PointOfInterestService(serverBase);
 					ArrayList<PointOfInterest> newPoints = pointOfInterestService
-							.getNearbyAccessPoints(lat, lon, country,
-									serverBase, additive);
+							.getNearbyAccessPoints(lat, lon, country, serverBase, additive);
 					savePoints(newPoints);
 
 					if (additive && pointsOfInterest != null) {
@@ -212,7 +249,7 @@ public class NearbyItemActivity extends ListActivity implements
 					}
 				} else {
 					pointsOfInterest = databaseAdapter.listPointsOfInterest(
-							country, prefix);
+							country, prefix, lat, lon, nearbyRadius);
 				}
 				dataHandler.post(resultsUpdater);
 				additive = false;
@@ -236,6 +273,40 @@ public class NearbyItemActivity extends ListActivity implements
 		}
 	}
 
+	
+	/**
+	 * Debug code
+	 * Just put some test points of interest in the db
+	 */
+	private void saveTestPoints(){
+		ArrayList<PointOfInterest> newPoints = new ArrayList<PointOfInterest>();
+		PointOfInterest poi1 = new PointOfInterest();
+		poi1.setId(4711L);
+		poi1.setLongitude(18.0d);
+		poi1.setLatitude(59.0d);
+		poi1.setName("TestPt1");
+		poi1.setCountry("US");
+		newPoints.add(poi1);
+
+		PointOfInterest poi2 = new PointOfInterest();
+		poi2.setId(4712L);
+		poi2.setLongitude(19.0d);
+		poi2.setLatitude(59.1d);
+		poi2.setName("TestPt2");
+		poi2.setCountry("US");
+		newPoints.add(poi2);
+
+		PointOfInterest poi3 = new PointOfInterest();
+		poi3.setId(4713L);
+		poi3.setLongitude(19.0d);
+		poi3.setLatitude(59.2d);
+		poi3.setName("TestPt3");
+		poi3.setCountry("US");
+		newPoints.add(poi3);
+
+		savePoints(newPoints);
+	}
+	
 	/**
 	 * when a list item is clicked, launch the detail activity
 	 */
@@ -271,6 +342,8 @@ public class NearbyItemActivity extends ListActivity implements
 		menu.add(0, SEARCH_OPT, 1, R.string.searchpoints);
 		menu.add(0, COUNTRY_OPT, 2, R.string.countryselection);
 		menu.add(0, SERVER_OPT, 3, R.string.uselocal);
+//		menu.add(0, ATP_OPT, 4, R.string.addtestpoints); //debug only
+		//TODO: add settings choice
 		return true;
 	}
 
@@ -292,6 +365,9 @@ public class NearbyItemActivity extends ListActivity implements
 			return true;
 		case SEARCH_OPT:
 			displaySearchDialog();
+			return true;
+		case ATP_OPT:
+			saveTestPoints();//debug only
 			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
@@ -344,7 +420,7 @@ public class NearbyItemActivity extends ListActivity implements
 									int which) {
 								country = countries[which];
 								additive = false;
-								loadData(null, null, country, null);
+								loadData(null, null, country, null); //ignore our current position
 							}
 						}).create();
 		dia.show();

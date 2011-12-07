@@ -182,6 +182,7 @@ public class ConstantUtil {
 	public static final String SURVEY_TEXT_SIZE_KEY = "survey.textsize";
 	public static final String CHECK_FOR_SURVEYS = "survey.checkforupdates";
 	public static final String UPLOAD_ERRORS = "remoteexception.upload";
+	public static final String NEARBY_RADIUS = "nearby.points.radius";
 	
 
 	/**

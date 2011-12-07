@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.method.DigitsKeyListener;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -48,6 +49,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private TextView uploadErrorTextView;
 	private TextView serverTextView;
 	private TextView identTextView;
+	private TextView radiusTextView;
 	private SurveyDbAdapter database;
 	private String[] languageArray;
 	private boolean[] selectedLanguages;
@@ -75,6 +77,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		uploadErrorTextView = (TextView) findViewById(R.id.uploaderrorvalue);
 		serverTextView = (TextView) findViewById(R.id.servervalue);
 		identTextView = (TextView) findViewById(R.id.identvalue);
+		radiusTextView = (TextView) findViewById(R.id.radiusvalue);
 
 		Resources res = getResources();
 
@@ -157,6 +160,13 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		if (val != null) {
 			identTextView.setText(val);
 		}
+		
+		val = settings.get(ConstantUtil.NEARBY_RADIUS);
+		if (val != null) {
+			radiusTextView.setText(Double.parseDouble(val)/1000.0+" km");
+		}
+		
+
 	}
 
 	/**
@@ -186,6 +196,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.uploaderrorbutton))
 				.setOnClickListener(this);
+		((ImageButton) findViewById(R.id.radiusbutton))
+				.setOnClickListener(this);
 	}
 
 	public void onPause() {	
@@ -199,7 +211,43 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	 */
 	@Override
 	public void onClick(View v) {
-		if (R.id.uploadoptionbutton == v.getId()) {
+		if (R.id.radiusbutton == v.getId()) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+			alert.setTitle(R.string.radiuslabel);
+			alert.setMessage(R.string.radiusprompt);
+
+			// Set an EditText view to get user input 
+			final EditText input = new EditText(this);
+			//make it accept numbers only; no negatives, decimals ok
+			input.setKeyListener( new DigitsKeyListener(false, true) );
+			alert.setView(input);
+
+			alert.setPositiveButton(R.string.okbutton, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				String radiusValue = input.getText().toString();
+				try {//validate input
+					Double nearbyRadius = Double.parseDouble(radiusValue)*1000.0;
+					//save to DB
+					database.savePreference(ConstantUtil.NEARBY_RADIUS,nearbyRadius.toString());
+					//Show it
+					radiusTextView.setText(radiusValue + " km");
+				}
+				catch (NumberFormatException e){
+					/*could complain here*/
+					};
+				
+			  }
+			});
+
+			alert.setNegativeButton(R.string.cancelbutton, new DialogInterface.OnClickListener() {
+			  public void onClick(DialogInterface dialog, int whichButton) {
+			    // Canceled.
+			  }
+			});
+
+			alert.show();
+		} else if (R.id.uploadoptionbutton == v.getId()) {
 			showPreferenceDialog(R.string.uploadoptiondialogtitle,
 					R.array.celluploadoptions,
 					ConstantUtil.CELL_UPLOAD_SETTING_KEY, uploadArray,

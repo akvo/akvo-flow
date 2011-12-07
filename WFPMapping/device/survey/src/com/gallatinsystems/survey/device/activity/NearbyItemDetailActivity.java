@@ -133,6 +133,9 @@ public class NearbyItemDetailActivity extends Activity implements
 		if (pointOfInterest != null) {
 			nameField.setText(" " + pointOfInterest.getName());
 			typeField.setText(" " + pointOfInterest.getType());
+			Double dist=pointOfInterest.getDistance();
+			if (dist  != null )
+				distanceField.setText(" " + Math.rint(dist) + "m");//show whole meters
 			if (pointOfInterest.getPropertyNames() != null) {
 				for (int i = 0; i < pointOfInterest.getPropertyNames().size(); i++) {
 					if (pointOfInterest.getPropertyValues().size() > i) {
