@@ -210,6 +210,7 @@ public class SurveyBulkUploader implements DataImporter {
 							&& !ignoreList.contains(files[i].getName())) {
 						if (files[i].getName().endsWith(".jpg")) {
 							if (!files[i].getName().endsWith(" - Copy.jpg")) {
+					
 								fileList.add(files[i]);
 							}
 						} else if (files[i].getName().endsWith(".zip")) {
