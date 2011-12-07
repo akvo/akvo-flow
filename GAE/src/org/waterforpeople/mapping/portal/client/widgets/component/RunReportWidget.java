@@ -164,11 +164,11 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='exportType' value='RAW_DATA'>";
 			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
+			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
 					+ ">";
-			appletString += "<PARAM name='options' value='exportMode=RAW_DATA;locale="
+			appletString += "<PARAM name='options' value='exportMode:=RAW_DATA;locale:="
 					+ locale
-					+ ";imgPrefix="
+					+ ";imgPrefix:="
 					+ UPLOAD_CONSTANTS.uploadUrl()
 					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 			appletString += "</applet>";
@@ -180,7 +180,7 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 			appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
+			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
 					+ ">";
 			appletString += "</applet>";
 			HTML html = new HTML();
@@ -192,7 +192,7 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
 			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
+			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
 					+ ">";
 			appletString += "</applet>";
 			HTML html = new HTML();
@@ -204,13 +204,13 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='exportType' value='GRAPHICAL_SURVEY_SUMMARY'>";
 			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId=" + surveyId
+			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
 					+ ">";
-			appletString += "<PARAM name='options' value='locale=" + locale;
+			appletString += "<PARAM name='options' value='locale:=" + locale;
 			if (!doRollups) {
-				appletString += ";performRollup=false";
+				appletString += ";performRollup:=false";
 			}
-			appletString += ";imgPrefix=" + UPLOAD_CONSTANTS.uploadUrl()
+			appletString += ";imgPrefix:=" + UPLOAD_CONSTANTS.uploadUrl()
 					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 			appletString += "</applet>";
 			HTML html = new HTML();

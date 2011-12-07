@@ -51,11 +51,15 @@ public class AbstractDataImportExportApplet extends JApplet {
 	 * @return
 	 */
 	protected Map<String, String> parseCriteria(String source) {
+		String delimiter = ":=";
+		if(source != null && !source.contains(":=")){
+			delimiter = "=";
+		}
 		Map<String, String> crit = new HashMap<String, String>();
 		if (source != null) {
 			StringTokenizer strTok = new StringTokenizer(source, ";");
 			while (strTok.hasMoreTokens()) {
-				String[] parts = strTok.nextToken().split("=");
+				String[] parts = strTok.nextToken().split(delimiter);
 				if (parts.length == 2) {
 					crit.put(parts[0], parts[1]);
 				}

@@ -147,7 +147,7 @@ public class AccessPointSearchCriteriaDto implements Serializable {
 			if (builder.length() > 0) {
 				builder.append(";");
 			}
-			builder.append(name).append("=").append(value);
+			builder.append(name).append(":=").append(value);
 		}
 	}
 }

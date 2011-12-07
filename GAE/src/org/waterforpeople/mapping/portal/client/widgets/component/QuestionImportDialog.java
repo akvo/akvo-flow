@@ -338,7 +338,7 @@ public class QuestionImportDialog extends DialogBox implements ChangeHandler {
 		appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 		appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
 		appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-		appletString += "<PARAM name='criteria' value='isWholeSurvey=false;beforeQuestionId="
+		appletString += "<PARAM name='criteria' value='isWholeSurvey:=false;beforeQuestionId:="
 				+ ViewUtil.getListBoxSelection(questionBox, false) + "'>";
 		appletString += "</applet>";
 		HTML html = new HTML();

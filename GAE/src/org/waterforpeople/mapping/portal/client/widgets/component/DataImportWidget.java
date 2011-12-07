@@ -97,7 +97,7 @@ public class DataImportWidget extends MenuBasedWidget {
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 								appletString += "<PARAM name='importType' value='RAW_DATA'>";
-								appletString += "<PARAM name='criteria' value=surveyId="
+								appletString += "<PARAM name='criteria' value=surveyId:="
 										+ payload
 												.get(SurveySelectionDialog.SURVEY_KEY)
 										+ ">";
@@ -173,7 +173,7 @@ public class DataImportWidget extends MenuBasedWidget {
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='importType' value='FIXED_FORMAT'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-								appletString += "<PARAM name='criteria' value=surveyId="
+								appletString += "<PARAM name='criteria' value=surveyId:="
 										+ payload
 												.get(SurveySelectionDialog.SURVEY_KEY)
 										+ ">";
@@ -191,12 +191,12 @@ public class DataImportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='selectionMode' value='dir'>";
 			appletString +="<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value='imagePolicy="
-					+ UPLOAD_CONSTANTS.imageS3Policy() + ";imageSig="
-					+ UPLOAD_CONSTANTS.imageS3Sig() + ";dataPolicy="
-					+ UPLOAD_CONSTANTS.surveyDataS3Policy() + ";dataSig="
-					+ UPLOAD_CONSTANTS.surveyDataS3Sig() + ";awsId="
-					+ UPLOAD_CONSTANTS.s3Id() + ";uploadBase="
+			appletString += "<PARAM name='criteria' value='imagePolicy:="
+					+ UPLOAD_CONSTANTS.imageS3Policy() + ";imageSig:="
+					+ UPLOAD_CONSTANTS.imageS3Sig() + ";dataPolicy:="
+					+ UPLOAD_CONSTANTS.surveyDataS3Policy() + ";dataSig:="
+					+ UPLOAD_CONSTANTS.surveyDataS3Sig() + ";awsId:="
+					+ UPLOAD_CONSTANTS.s3Id() + ";uploadBase:="
 					+ UPLOAD_CONSTANTS.uploadUrl() + "'>";
 			appletString += "</applet>";
 			HTML html = new HTML();

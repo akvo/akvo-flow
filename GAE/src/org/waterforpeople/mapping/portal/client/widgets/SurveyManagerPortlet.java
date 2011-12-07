@@ -1344,7 +1344,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
 				appletString +="<param name='java_arguments' value='-Xmx256m'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-				appletString += "<PARAM name='criteria' value=surveyId="
+				appletString += "<PARAM name='criteria' value=surveyId:="
 						+ item.getKeyId() + ">";
 				appletString += "</applet>";
 				HTML html = new HTML();
@@ -1361,11 +1361,11 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				appletString += "<PARAM name='exportType' value='RAW_DATA'>";
 				appletString +="<param name='java_arguments' value='-Xmx256m'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-				appletString += "<PARAM name='criteria' value=surveyId=" + item.getKeyId()
+				appletString += "<PARAM name='criteria' value=surveyId:=" + item.getKeyId()
 						+ ">";
-				appletString += "<PARAM name='options' value='exportMode=RAW_DATA;locale="
+				appletString += "<PARAM name='options' value='exportMode:=RAW_DATA;locale:="
 						+ com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
-								.getLocaleName() + ";imgPrefix="
+								.getLocaleName() + ";imgPrefix:="
 						+ UPLOAD_CONSTANTS.uploadUrl()
 						+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
 				appletString += "</applet>";
@@ -1382,7 +1382,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 				appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-				appletString += "<PARAM name='criteria' value=surveyId="
+				appletString += "<PARAM name='criteria' value=surveyId:="
 						+ item.getKeyId() + ">";
 				appletString += "</applet>";
 				HTML html = new HTML();
@@ -1399,7 +1399,7 @@ public class SurveyManagerPortlet extends UserAwarePortlet implements
 				appletString += "<PARAM name='importType' value='RAW_DATA'>";
 				appletString +="<param name='java_arguments' value='-Xmx256m'>";
 				appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-				appletString += "<PARAM name='criteria' value='surveyId="
+				appletString += "<PARAM name='criteria' value='surveyId:="
 						+ item.getKeyId() + "'>";
 				appletString += "</applet>";
 				HTML html = new HTML();
