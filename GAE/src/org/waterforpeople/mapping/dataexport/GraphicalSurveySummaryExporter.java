@@ -102,6 +102,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final NumberFormat PCT_FMT = DecimalFormat
 			.getPercentInstance();
 
+	
 	static {
 		// populate all translations
 		RANGE_LABEL = new HashMap<String, String>();
@@ -221,6 +222,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private boolean performGeoRollup;
 	private ThreadPoolExecutor threadPool;
 	private BlockingQueue<Runnable> jobQueue;
+	private volatile int threadsCompleted = 0;
+	private Object lock = new Object();
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -347,17 +350,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCE_DETAILS.get(locale)));
 
+		final List<RowData> allData = new ArrayList<RowData>();
+		int started = 0;
 		for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
 			final String instanceId = instanceEntry.getKey();
 			final String dateString = instanceEntry.getValue();
-
-			final int rowNum = curRow;
-			curRow++;
-			
+			started++;
 			threadPool.execute(new Runnable() {
 				public void run() {
-					try {
-						Row row = getRow(rowNum, sheet);
+					try {						
 						Map<String, String> responseMap = BulkDataServiceClient
 								.fetchQuestionResponses(instanceId, serverBase);
 
@@ -365,18 +366,26 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 								.findSurveyInstance(
 										Long.parseLong(instanceId.trim()),
 										serverBase);
-						writeRow(row, dto, responseMap, dateString, instanceId,
-								generateSummary, questionIdList,
-								unsummarizable, nameToIdMap, collapseIdMap,
-								model);
+						synchronized (allData) {
+							RowData rd = new RowData();
+							rd.setResponseMap(responseMap);
+							rd.setDto(dto);
+							rd.setInstanceId(instanceId);
+							rd.setDateString(dateString);
+							allData.add(rd);
+						}						
 
 					} catch (Exception e) {
 						e.printStackTrace();
+					}finally{
+						synchronized(lock){
+							threadsCompleted++;
+						}
 					}
 				}
 			});
 		}
-		while (!jobQueue.isEmpty()) {
+		while (!jobQueue.isEmpty() || threadPool.getActiveCount()>0 || started > threadsCompleted) {
 			try {
 				System.out.println("Sleeping, Queue has: " + jobQueue.size());
 				Thread.sleep(5000);
@@ -384,12 +393,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				e.printStackTrace();
 			}
 		}
+		//write the data now
+		for(RowData rd: allData){
+			Row row = getRow(curRow++,sheet);		
+			writeRow(row, rd.getDto(), rd.getResponseMap(), rd.getDateString(), rd.getInstanceId(),
+				generateSummary, questionIdList,
+				unsummarizable, nameToIdMap, collapseIdMap,
+				model);
+		}
+		
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				WRITING_RAW_DATA.get(locale)));
 		return model;
 	}
 
-	private void writeRow(Row row, SurveyInstanceDto dto,
+	private synchronized void writeRow(Row row, SurveyInstanceDto dto,
 			Map<String, String> responseMap, String dateString,
 			String instanceId, boolean generateSummary,
 			List<String> questionIdList, List<String> unsummarizable,
@@ -883,4 +901,36 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 	}
 
+	private class RowData{
+		private Map<String,String> responseMap;
+		private String dateString;
+		private String instanceId;
+		private SurveyInstanceDto dto;
+		public Map<String, String> getResponseMap() {
+			return responseMap;
+		}
+		public void setResponseMap(Map<String, String> responseMap) {
+			this.responseMap = responseMap;
+		}
+		public String getDateString() {
+			return dateString;
+		}
+		public void setDateString(String dateString) {
+			this.dateString = dateString;
+		}
+		public String getInstanceId() {
+			return instanceId;
+		}
+		public void setInstanceId(String instanceId) {
+			this.instanceId = instanceId;
+		}
+		public SurveyInstanceDto getDto() {
+			return dto;
+		}
+		public void setDto(SurveyInstanceDto dto) {
+			this.dto = dto;
+		}
+		
+		
+	}
 }
