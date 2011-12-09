@@ -9,7 +9,7 @@
 	-->
 	<com.google.android.maps.MapView
 		android:id="@+id/mapview" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:apiKey="0-VFNHx65gE6OqJZPaTIeowR2Kg2aeYfMokk5mA"
+		android:layout_height="fill_parent" android:apiKey="0-VFNHx65gE450HSGdTPbJ5Il3CWEM2ORzAZJoA"
 		android:enabled="true" android:clickable="true" />
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="fill_parent"

@@ -12,20 +12,31 @@
 					calculadora</altText>
 			</help>
 		</question>
+		<question id="01q2" type="date" mandatory="false" order="2">
+			<text>Date question</text>
+		</question>
 		<question id="01q" order="1" mandatory="false" type="free">
 			<text>Test scoring?</text>
 			<scoring type="numeric">
-				<score rangeHigh="9" value="BAD"/>
-				<score rangeLow="10" rangeHigh="19" value="OK"/>
-				<score rangeLow="20" value="GOOD"/>
-			</scoring>					
-		</question>		
-	 	<question id="01q" order="1" mandatory="false" type="strength" strengthMin="1" strengthMax="5">
-			<text>How does this look (strength)?</text>
+				<score rangeHigh="9" value="BAD" />
+				<score rangeLow="10" rangeHigh="19" value="OK" />
+				<score rangeLow="20" value="GOOD" />
+			</scoring>
+		</question>
+		<question id="02q" order="1" mandatory="false" type="option">
+			<text>Test html?</text>
+			<options allowOther="true">
+				<option value="r">&gt;100</option>
+				<option value="pu">&lt;50</option>
+			</options>
+		</question>
+		<question id="01q" order="1" mandatory="false" type="strength"
+			strengthMin="1" strengthMax="5">
+			<text>How does this look?</text>
 			<options allowOther="false">
 				<option value="r">OK</option>
-				<option value="pu">I don't like it</option>				
-			</options>			
+				<option value="pu">I don't like it</option>
+			</options>
 		</question>
 		<question id="1q" order="0" mandatory="false" type="track">
 			<text>Record distance to water point</text>
@@ -96,7 +107,7 @@
 				<option value="p">Piped Supply</option>
 			</options>
 		</question>
-		<question id="q7" order="7" mandatory="false" type="option">			
+		<question id="q7" order="7" mandatory="false" type="option">
 			<text>Collection Point?</text>
 			<options allowOther="false">
 				<option value="ph">
@@ -118,9 +129,11 @@
 				<option value="ok">Ok</option>
 				<option value="p">Poor</option>
 			</options>
-			<help type="tip"><text><![CDATA[<b>High</b> = Water is flowing in adequate quantity and quality, meets govt standards and has no significant broken parts/problems.<br>
+			<help type="tip">
+				<text><![CDATA[<b>High</b> = Water is flowing in adequate quantity and quality, meets govt standards and has no significant broken parts/problems.<br>
     <b>Ok</b> = Water is flowing but is either not adequate quantity or quality, or does not meet govt. standards, or has broken parts, leaks or problems.<br>
-    <b>Poor</b> =System does not function.]]></text></help>			
+    <b>Poor</b> =System does not function.]]></text>
+			</help>
 		</question>
 		<question id="q9" order="9" mandatory="false" type="scan">
 			<text>Waterpoint barcode?</text>

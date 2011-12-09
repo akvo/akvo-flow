@@ -181,7 +181,7 @@ public class SurveyDbAdapter {
 			db.execSQL(TRANSMISSION_HISTORY_TABLE_CREATE);
 			for (int i = 0; i < DEFAULT_INSERTS.length; i++) {
 				db.execSQL(DEFAULT_INSERTS[i]);
-			}
+			}			
 		}
 
 		@Override
