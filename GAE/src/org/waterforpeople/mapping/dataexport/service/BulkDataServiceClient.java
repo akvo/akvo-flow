@@ -315,8 +315,8 @@ public class BulkDataServiceClient {
 	 * @return
 	 */
 	private static Map<String, String> parseInstanceValues(String data) {
-		Map<String, String> responseMap = new HashMap<String, String>();
-		if (data != null) {
+		Map<String, String> responseMap = new HashMap<String, String>();	
+		if (data != null) {	
 			StringTokenizer lines = new StringTokenizer(data, "\n");
 			if (lines != null) {
 				while (lines.hasMoreTokens()) {
@@ -348,7 +348,7 @@ public class BulkDataServiceClient {
 					}
 				}
 			}
-		}
+		}		
 		return responseMap;
 	}
 

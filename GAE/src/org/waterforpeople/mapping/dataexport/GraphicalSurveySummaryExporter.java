@@ -173,8 +173,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		SUB_DATE_LABEL.put("es", "Fecha de presentación");
 
 		SUBMITTER_LABEL = new HashMap<String, String>();
-		SUB_DATE_LABEL.put("en", "Submitter");
-		SUB_DATE_LABEL.put("es", "Peticionario");
+		SUBMITTER_LABEL.put("en", "Submitter");
+		SUBMITTER_LABEL.put("es", "Peticionario");
 
 		LOADING_QUESTIONS = new HashMap<String, String>();
 		LOADING_QUESTIONS.put("en", "Loading Questions");
@@ -319,7 +319,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			final boolean generateSummary, File outputFile) throws Exception {
 		final SummaryModel model = new SummaryModel();
 
-		Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
+		final Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
 		int curRow = 1;
 
 		final Map<String, String> collapseIdMap = new HashMap<String, String>();
@@ -351,11 +351,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			final String instanceId = instanceEntry.getKey();
 			final String dateString = instanceEntry.getValue();
 
-			final Row row = getRow(curRow++, sheet);
-
+			final int rowNum = curRow;
+			curRow++;
+			
 			threadPool.execute(new Runnable() {
 				public void run() {
 					try {
+						Row row = getRow(rowNum, sheet);
 						Map<String, String> responseMap = BulkDataServiceClient
 								.fetchQuestionResponses(instanceId, serverBase);
 
@@ -407,7 +409,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				createCell(row, col++, " ", null);
 			}
 		}
-
+		
+		
 		for (String q : questionIdList) {
 			String val = null;
 			if (responseMap != null) {
@@ -417,12 +420,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (val.contains(SDCARD_PREFIX)) {
 					val = imagePrefix
 							+ val.substring(val.indexOf(SDCARD_PREFIX)
-									+ SDCARD_PREFIX.length());
+									+ SDCARD_PREFIX.length());	
 				}
-				String cellVal = val.replaceAll("\n", " ").trim();
+				String cellVal = val.replaceAll("\n", " ").trim();				
 				createCell(row, col++, cellVal, null);
 				digest.update(cellVal.getBytes());
-			} else {
+			} else {				
 				createCell(row, col++, "", null);
 			}
 		}
@@ -752,7 +755,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		if (value != null) {
 			cell.setCellValue(value);
 		}
-
+	
 		return cell;
 	}
 
@@ -764,7 +767,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 * @param sheet
 	 * @return
 	 */
-	private Row getRow(int index, Sheet sheet) {
+	private synchronized Row getRow(int index, Sheet sheet) {
 		Row row = null;
 		if (index < sheet.getLastRowNum()) {
 			row = sheet.getRow(index);
