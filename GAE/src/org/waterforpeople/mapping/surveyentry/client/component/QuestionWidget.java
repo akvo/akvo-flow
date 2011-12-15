@@ -26,10 +26,16 @@ public abstract class QuestionWidget extends Composite {
 	private Panel answerPanel;
 	private QuestionDto question;
 	private QuestionAnswerStoreDto answer;
+	protected String currentLocale;
 
 	protected QuestionWidget(QuestionDto question, QuestionAnswerStoreDto ans) {
 		answerPanel = new VerticalPanel();
 		answer = ans;
+		currentLocale =  com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
+		.getLocaleName();
+		if(currentLocale == null){
+			currentLocale = "en";
+		}
 		if (answer == null) {
 			answer = new QuestionAnswerStoreDto();
 			answer.setType(DEFAULT_ANS_TYPE);
@@ -51,7 +57,7 @@ public abstract class QuestionWidget extends Composite {
 	 * TODO: handle unsupported question types (SCAN, TRACK, etc)
 	 */
 	protected void bindQuestion() {
-		Label text = new Label(question.getText()
+		Label text = new Label(question.getLocalizedText(currentLocale)
 				+ (question.getMandatoryFlag() ? "*" : ""));
 		text.setWordWrap(true);
 		text.setWidth(TEXT_WIDTH);

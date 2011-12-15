@@ -54,7 +54,7 @@ public class OptionQuestionWidget extends QuestionWidget implements
 			}
 			for (QuestionOptionDto opt : getQuestion().getOptionContainerDto()
 					.getOptionsList()) {
-				listBox.addItem(opt.getText(), opt.getText());
+				listBox.addItem(opt.getLocalizedText(currentLocale), opt.getText());
 			}
 			if (getQuestion().getOptionContainerDto().getAllowOtherFlag()) {
 				listBox.addItem(OTHER_TEXT, OTHER_TEXT);
@@ -73,7 +73,7 @@ public class OptionQuestionWidget extends QuestionWidget implements
 				for(int i =0; i < ans.length; i++){					
 					boolean found = false;
 					for (int j = 0; j < listBox.getItemCount(); j++) {
-						if(listBox.getItemText(j).equalsIgnoreCase(ans[i])){
+						if(listBox.getItemValue(j).equalsIgnoreCase(ans[i])){
 							listBox.setItemSelected(j, true);
 							found = true;
 						}

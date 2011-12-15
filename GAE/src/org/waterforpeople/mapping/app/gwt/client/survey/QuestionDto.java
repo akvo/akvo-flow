@@ -13,14 +13,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private static final long serialVersionUID = -4708385830894435407L;
 	public static final String ANS_DELIM = "|";
 	public static final String ANS_DELIM_REGEX = "\\|";
-	
+
 	private String text;
-	
 
 	private QuestionType type;
 	private OptionContainerDto optionContainerDto = null;
 	private List<QuestionHelpDto> questionHelpList;
-	private String tip = null;	
+	private String tip = null;
 	private Boolean mandatoryFlag = null;
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
@@ -146,6 +145,30 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return text;
 	}
 
+	/**
+	 * returns the translated version of the text for the locale specified (if
+	 * present). If no translation exists, it will return the default text.
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public String getLocalizedText(String locale) {
+		if (locale != null && translationMap != null) {
+			TranslationDto trans = translationMap.get(locale);
+			String txt = null;
+			if (trans != null) {
+				txt = trans.getText();
+			}
+			if (txt != null && txt.trim().length() > 0) {
+				return txt;
+			} else {
+				return this.text;
+			}
+		} else {
+			return this.text;
+		}
+	}
+
 	public void setText(String text) {
 		this.text = text;
 	}
@@ -182,7 +205,6 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return tip;
 	}
 
-	
 	public void setMandatoryFlag(Boolean mandatoryFlag) {
 		this.mandatoryFlag = mandatoryFlag;
 	}

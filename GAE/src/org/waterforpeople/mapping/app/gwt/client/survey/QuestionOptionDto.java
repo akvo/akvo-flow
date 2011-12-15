@@ -46,6 +46,30 @@ public class QuestionOptionDto extends BaseDto implements Serializable {
 	public String getText() {
 		return text;
 	}
+	
+	/**
+	 * returns the translated version of the text for the locale specified (if
+	 * present). If no translation exists, it will return the default text.
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public String getLocalizedText(String locale) {
+		if (locale != null && translationMap != null) {
+			TranslationDto trans = translationMap.get(locale);
+			String txt = null;
+			if (trans != null) {
+				txt = trans.getText();
+			}
+			if (txt != null && txt.trim().length() > 0) {
+				return txt;
+			} else {
+				return this.text;
+			}
+		} else {
+			return this.text;
+		}
+	}
 
 	public void setText(String text) {
 		this.text = text;
