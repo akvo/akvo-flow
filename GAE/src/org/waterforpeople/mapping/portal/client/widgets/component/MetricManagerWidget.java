@@ -49,6 +49,9 @@ public class MetricManagerWidget extends Composite implements
 	private static final Integer PAGE_SIZE = 20;
 	private static final String STRING_TYPE = "String";
 	private static final String DOUBLE_TYPE = "Double";
+	private static final String GEO_TYPE = "Geo";
+	private static final String MEDIA_TYPE = "Media";
+	private static final String IDENTIFIER_TYPE = "Identifier";
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader(TEXT_CONSTANTS.id(), "key", true),
 			new DataTableHeader(TEXT_CONSTANTS.name(), "name", true),
@@ -94,6 +97,9 @@ public class MetricManagerWidget extends Composite implements
 		valueTypeListBox.addItem("", "");
 		valueTypeListBox.addItem(TEXT_CONSTANTS.text(), STRING_TYPE);
 		valueTypeListBox.addItem(TEXT_CONSTANTS.number(), DOUBLE_TYPE);
+		valueTypeListBox.addItem(TEXT_CONSTANTS.geo(),GEO_TYPE);
+		valueTypeListBox.addItem(TEXT_CONSTANTS.media(),MEDIA_TYPE);
+		valueTypeListBox.addItem(TEXT_CONSTANTS.identifier(),IDENTIFIER_TYPE);
 		nameTextBox = new TextBox();
 		groupTextBox = new TextBox();
 		searchControls.add(ViewUtil.initLabel(TEXT_CONSTANTS.name()));
