@@ -27,7 +27,7 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 /**
- * qUtility to recursively search the file system for all zip and jpg files to
+ * Utility to recursively search the file system for all zip and jpg files to
  * upload. Some ignore paths are hard coded based on the data upload by WSP in
  * Liberia.
  * 
@@ -132,7 +132,7 @@ public class SurveyBulkUploader implements DataImporter {
 						if (uploadImage) {
 							File resizedFile = ImageUtil.resizeImage(fx,
 									tempDir.getAbsolutePath(), 500, 500);
-							UploadUtil.upload(futil.readFileBytes(resizedFile),
+							UploadUtil.upload(FileUtil.readFileBytes(resizedFile),
 									resizedFile.getName(), "images",
 									criteria.get(UPLOAD_BASE_KEY),
 									criteria.get(AWS_ID_KEY),
@@ -144,7 +144,7 @@ public class SurveyBulkUploader implements DataImporter {
 						}
 					} else {
 						if (processZip) {
-							UploadUtil.upload(futil.readFileBytes(fx),
+							UploadUtil.upload(FileUtil.readFileBytes(fx),
 									fx.getName(), "devicezip",
 									criteria.get(UPLOAD_BASE_KEY),
 									criteria.get(AWS_ID_KEY),
