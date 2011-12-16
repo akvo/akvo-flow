@@ -41,7 +41,6 @@ import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
-import org.waterforpeople.mapping.analytics.MapSummarizer;
 import org.waterforpeople.mapping.analytics.dao.AccessPointMetricSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
@@ -665,7 +664,7 @@ public class TestHarnessServlet extends HttpServlet {
 					else
 						ap.setTypeTechnologyString("Afridev Handpump");
 					apDao.save(ap);
-					MapSummarizer ms = new MapSummarizer();
+				
 					// ms.performSummarization("" + ap.getKey().getId(), "");
 					if (i % 50 == 0)
 						log.log(Level.INFO, "Loaded to " + i);

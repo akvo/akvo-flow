@@ -43,6 +43,13 @@ public class AccessPointUpdater implements DataSummarizer {
 		return null;
 	}
 
+	/**
+	 * populates a DataChangeRecord from the input value passed in and uses it
+	 * to determine whether or not anything needs to be done: if the change to
+	 * the access point included a change to the country or community, then it
+	 * will decrement the count from the AccessPointSummary for the old value
+	 * then increment the count for the new.
+	 */
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {
@@ -90,7 +97,8 @@ public class AccessPointUpdater implements DataSummarizer {
 					if (communityCode != null && changedAnswer != null) {
 						List<AccessPoint> pointList = apDao.searchAccessPoints(
 								null, communityCode, null, null, null, null,
-								null, null, "collectionDate", "desc",null, null);
+								null, null, "collectionDate", "desc", null,
+								null);
 						if (pointList != null && pointList.size() > 0) {
 							AccessPoint point = pointList.get(0);
 							try {
@@ -98,7 +106,7 @@ public class AccessPointUpdater implements DataSummarizer {
 										changedAnswer, questionMapping, apmh);
 								logger.info("Estimated pop is: "
 										+ point.getExtimatedPopulation());
-								apDao.save(point);								
+								apDao.save(point);
 							} catch (Exception e) {
 								logger.log(Level.SEVERE,
 										"Could not update AP field", e);
@@ -107,9 +115,6 @@ public class AccessPointUpdater implements DataSummarizer {
 					}
 				}
 			}
-//			BaseDAO<AccessPointMappingHistory> apmhDao = new BaseDAO<AccessPointMappingHistory>(
-//					AccessPointMappingHistory.class);
-//			apmhDao.save(apmh);
 		}
 		return true;
 	}

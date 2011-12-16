@@ -17,6 +17,9 @@ import com.gallatinsystems.gis.geography.domain.Country;
  */
 public class AccessPointStatusSummarizer implements DataSummarizer {
 
+	/**
+	 * summarizes AccessPoints by incrementing counts of AP by country
+	 */
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {

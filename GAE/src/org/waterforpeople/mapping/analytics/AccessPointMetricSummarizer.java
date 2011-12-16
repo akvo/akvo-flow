@@ -26,10 +26,14 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 	Logger logger = Logger.getLogger(AccessPointMetricSummarizer.class
 			.getName());
 
+	/**
+	 * summarizes the access point metrics by rolling them up by geographic
+	 * region and year. The summaries will be incremented at each geographic
+	 * level so counts can be provided in a drill-down fashion.
+	 */
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {
-		AccessPointMetricSummaryDao summaryDao = new AccessPointMetricSummaryDao();
 		AccessPointMetricMappingDao mappingDao = new AccessPointMetricMappingDao();
 		AccessPointDao apDao = new AccessPointDao();
 		if (key != null) {
@@ -171,14 +175,18 @@ public class AccessPointMetricSummarizer implements DataSummarizer {
 		return true;
 	}
 
-	private Double[] getCoordinates(String countryCode, String subValue,
-			Integer subLevel) {
-		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
-		List<OGRFeature> item = ogrFeatureDao.listBySubLevelCountry(
-				countryCode, subLevel, null);
-		return null;
-	}
-
+	/**
+	 * constructs a summary object using the values passed in. Once this is
+	 * returned, the caller should set the relevant geo and count information prior to saving.
+	 * 
+	 * @param fieldValue
+	 * @param metricGroup
+	 * @param metricName
+	 * @param org
+	 * @param country
+	 * @param valueBucket
+	 * @return
+	 */
 	private AccessPointMetricSummary constructBaseSummary(String fieldValue,
 			String metricGroup, String metricName, String org, String country,
 			String valueBucket) {

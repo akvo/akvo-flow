@@ -25,6 +25,11 @@ import com.gallatinsystems.common.data.spreadsheet.domain.RowContainer;
 import com.gallatinsystems.common.data.spreadsheet.domain.SpreadsheetContainer;
 import com.google.gdata.util.ServiceException;
 
+/**
+ * Adapter for loading AccessPoints using a google spreadsheet.
+ * 
+ *@deprecated
+ */
 public class SpreadsheetAccessPointAdapter {
 	private static final Logger log = Logger
 			.getLogger(SpreadsheetAccessPointAdapter.class.getName());
