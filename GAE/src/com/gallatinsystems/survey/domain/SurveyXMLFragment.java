@@ -4,6 +4,14 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
+
+/**
+ * wrapper class allowing for saving of chunks of xml that represent PART OF a
+ * single survey. This is primarily used during survey assembly in the event
+ * that a survey is too large to be accommodated in a single operation.
+ * 
+ * 
+ */
 @PersistenceCapable
 public class SurveyXMLFragment extends BaseDomain {
 
@@ -12,7 +20,7 @@ public class SurveyXMLFragment extends BaseDomain {
 	 */
 	private static final long serialVersionUID = -6955885065118685217L;
 	private Long surveyId = null;
-	private Long questionGroupId =null;
+	private Long questionGroupId = null;
 	private Integer fragmentOrder = null;
 	private Text fragment = null;
 	private FRAGMENT_TYPE fragmentType = null;
@@ -79,7 +87,9 @@ public class SurveyXMLFragment extends BaseDomain {
 	public enum FRAGMENT_STATUS {
 		FINISHED, INPROCESS
 	};
-	
-	public enum FRAGMENT_TYPE{QUESTION_GROUP, QUESTION};
+
+	public enum FRAGMENT_TYPE {
+		QUESTION_GROUP, QUESTION
+	};
 
 }

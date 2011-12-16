@@ -10,12 +10,26 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 
+/**
+ * dao for manipulating surveyXMLFragments (used in partial publishing).
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class SurveyXMLFragmentDao extends BaseDAO<SurveyXMLFragment> {
 
 	public SurveyXMLFragmentDao() {
 		super(SurveyXMLFragment.class);
 	}
 
+	/**
+	 * lists all fragments for a given survey
+	 * 
+	 * @param surveyId
+	 * @param type
+	 * @param transactionId
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<SurveyXMLFragment> listSurveyFragments(Long surveyId,
 			SurveyXMLFragment.FRAGMENT_TYPE type, Long transactionId) {

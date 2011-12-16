@@ -123,6 +123,11 @@ public abstract class RestRequest implements Serializable {
 		return intVal;
 	}
 
+	/**
+	 * adds a RestError to the internal validationError list
+	 * 
+	 * @param err
+	 */
 	protected void addError(RestError err) {
 		if (validationErrorList == null) {
 			validationErrorList = new ArrayList<RestError>();
@@ -130,11 +135,28 @@ public abstract class RestRequest implements Serializable {
 		validationErrorList.add(err);
 	}
 
+	/**
+	 * subclasses should implement this method such that it reads all the
+	 * subclass-specific values from the HTTP request and sets the corresponding
+	 * fields within the subclass with the values.
+	 * 
+	 * @param req
+	 * @throws Exception
+	 */
 	protected abstract void populateFields(HttpServletRequest req)
 			throws Exception;
 
+	/**
+	 * populates any errors in the subclass-specific fields
+	 */
 	protected abstract void populateErrors();
 
+	/**
+	 * validates the request by calling populateErrors to perform
+	 * subclass-specific validation.
+	 * 
+	 * @throws RestValidationException
+	 */
 	public void validate() throws RestValidationException {
 		populateErrors();
 		if (validationErrorList != null && validationErrorList.size() > 0) {
@@ -143,6 +165,14 @@ public abstract class RestRequest implements Serializable {
 		}
 	}
 
+	/**
+	 * Convenience method to parse a string value as a Long and to add a new
+	 * BAD_DATATYPE error in the event that its unparseable
+	 * 
+	 * @param val
+	 * @param field
+	 * @return
+	 */
 	protected Long parseLong(String val, String field) {
 		Long result = null;
 		if (val != null && val.trim().length() > 0) {

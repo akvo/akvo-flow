@@ -44,15 +44,6 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 	private String currentSortField;
 	private String defaultSortField;
 	private int currentSelection;
-
-	public int getCurrentSelection() {
-		return currentSelection;
-	}
-
-	public void setCurrentSelection(int currentSelection) {
-		this.currentSelection = currentSelection;
-	}
-
 	private List<String> cursorArray;
 	private Grid instanceGrid;
 	private int currentPage;
@@ -68,6 +59,24 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 
 	public Grid getGrid() {
 		return instanceGrid;
+	}
+
+	/**
+	 * returns the index of the currently selected row
+	 * 
+	 * @return
+	 */
+	public int getCurrentSelection() {
+		return currentSelection;
+	}
+
+	/**
+	 * sets the current selection to the row index passed in (rows are 0 based)
+	 * 
+	 * @param currentSelection
+	 */
+	public void setCurrentSelection(int currentSelection) {
+		this.currentSelection = currentSelection;
 	}
 
 	/**
@@ -276,11 +285,12 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 
 	/**
 	 * adds a new row to the bottom of this grid and calls bindData on the new
-	 * row, passing the item passed in for the instance value. This method can be used to
-	 * support in-table editors where the user can click "add" to create a new
-	 * item in-place by passing null as the item.
+	 * row, passing the item passed in for the instance value. This method can
+	 * be used to support in-table editors where the user can click "add" to
+	 * create a new item in-place by passing null as the item.
 	 * 
-	 * @param item - item to bind to the new row (can be null)
+	 * @param item
+	 *            - item to bind to the new row (can be null)
 	 */
 	public void addNewRow(T item) {
 		if (instanceGrid != null) {
@@ -295,8 +305,6 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 			binder.bindRow(instanceGrid, item, instanceGrid.getRowCount() - 1);
 		}
 	}
-	
-	
 
 	/**
 	 * populates the data grid with the dtos passed in
@@ -382,17 +390,32 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		}
 	}
 
+	/**
+	 * returns the current sort direction
+	 * 
+	 * @return
+	 */
 	public String getCurrentSortDirection() {
 		return currentSortDirection;
 	}
 
+	/**
+	 * overrides the user selected sort with the sort options passed in
+	 * 
+	 * @param field
+	 * @param dir
+	 */
 	public void overrideSort(String field, String dir) {
 		currentSortDirection = dir;
 		currentSortField = field;
 		sortOverriden = true;
-
 	}
 
+	/**
+	 * returns the name of the field by which the data is currently sorted
+	 * 
+	 * @return
+	 */
 	public String getCurrentSortField() {
 		return currentSortField;
 	}
@@ -406,9 +429,13 @@ public class PaginatedDataTable<T extends BaseDto> extends Composite implements
 		int rowCount = instanceGrid.getRowCount();
 		instanceGrid.resizeRows(rowCount + 1);
 		instanceGrid.setWidget(rowCount, 0, w);
-
 	}
 
+	/**
+	 * removes a row at index row from the underlying data table
+	 * 
+	 * @param row
+	 */
 	public void removeRow(Integer row) {
 		instanceGrid.removeRow(row);
 	}

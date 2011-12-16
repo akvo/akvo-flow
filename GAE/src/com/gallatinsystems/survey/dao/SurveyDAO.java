@@ -22,9 +22,14 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.Key;
 
+/**
+ * Dao for manipulating survey objects
+ * 
+ * 
+ */
 public class SurveyDAO extends BaseDAO<Survey> {
-	private static final Logger log = Logger
-			.getLogger(DeviceManagerServlet.class.getName());
+	private static final Logger log = Logger.getLogger(SurveyDAO.class
+			.getName());
 	private QuestionGroupDao questionGroupDao;
 
 	public SurveyDAO() {
@@ -51,7 +56,8 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	}
 
 	/**
-	 * loads a full survey object (whole object graph, including questions)
+	 * loads a full survey object (whole object graph, including questions).
+	 * This method can only be called reliably from a background task or backend
 	 * 
 	 * @param id
 	 * @return
@@ -63,6 +69,14 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return survey;
 	}
 
+	/**
+	 * saves a surveyContainer containing the xml representation of the survey
+	 * document.
+	 * 
+	 * @param surveyId
+	 * @param surveyDocument
+	 * @return
+	 */
 	public Long save(Long surveyId, String surveyDocument) {
 		SurveyContainer sc = new SurveyContainer();
 		sc.setSurveyId(surveyId);
@@ -73,13 +87,13 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return sc.getKey().getId();
 	}
 
-	public String getForTest() {
-		// Question quest = super.getByKey(300L);
-		StringBuilder sb = new StringBuilder();
-
-		return sb.toString();
-	}
-
+	/**
+	 * returns a Survey xml pojo obtained after unmarshalling the
+	 * SurveyContainer
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
 		SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
 
@@ -94,11 +108,22 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		return survey;
 	}
 
+	/**
+	 * gets a document from the surveyContainer
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public String getSurveyDocument(Long id) {
 		SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
 		return surveyContainer.getSurveyDocument().getValue();
 	}
 
+	/**
+	 * lists all survey container objects
+	 * 
+	 * @return
+	 */
 	public List<SurveyContainer> listSurveyContainers() {
 		return list(SurveyContainer.class, "all");
 	}
@@ -111,20 +136,40 @@ public class SurveyDAO extends BaseDAO<Survey> {
 				SurveyQuestion.class);
 	}
 
+	/**
+	 * lists all survey groups
+	 * 
+	 * @param cursorString
+	 * @return
+	 */
 	public List<SurveyGroup> listSurveyGroup(String cursorString) {
 		return list(SurveyGroup.class, cursorString);
 	}
 
+	/**
+	 * lists all surveys in a given surveyGroup
+	 * 
+	 * @param surveyGroupId
+	 * @return
+	 */
 	public List<Survey> listSurveysByGroup(Long surveyGroupId) {
 		return listByProperty("surveyGroupId", surveyGroupId, "Long");
 	}
-	
-	public Survey getByParentIdAndCode(String code, Long surveyGroupId){
+
+	/**
+	 * gets a survey by the surveyGroupId and survey code
+	 * 
+	 * @param code
+	 * @param surveyGroupId
+	 * @return
+	 */
+	public Survey getByParentIdAndCode(String code, Long surveyGroupId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Survey.class);
 		query.setFilter(" code == codeParam && surveyGroupId == idParam");
 		query.declareParameters("String codeParam, Long idParam");
-		List<Survey> results = (List<Survey>) query.execute(code, surveyGroupId);
+		List<Survey> results = (List<Survey>) query
+				.execute(code, surveyGroupId);
 		if (results != null && results.size() > 0) {
 			return results.get(0);
 		} else {
@@ -132,6 +177,14 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		}
 	}
 
+	/**
+	 * gets a single survey by code and path. path is defined as
+	 * "surveyGroupName"
+	 * 
+	 * @param code
+	 * @param path
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public Survey getByPath(String code, String path) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -161,15 +214,23 @@ public class SurveyDAO extends BaseDAO<Survey> {
 				v++;
 			}
 			s.setVersion(v);
-			save(s);					
+			save(s);
 		}
 	}
 
+	/**
+	 * deletes a survey and spawns delete questionGroup tasks to delete all
+	 * children asynchronously.
+	 * 
+	 * @param item
+	 * @throws IllegalDeletionException
+	 *             - if the system contains responses for this survey
+	 */
 	public void delete(Survey item) throws IllegalDeletionException {
 		// Check to see if there are any surveys for this first
 		item = getByKey(item.getKey());
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-		if (qasDao.listBySurvey(new Long(item.getKey().getId())).size()==0) {
+		if (qasDao.listBySurvey(new Long(item.getKey().getId())).size() == 0) {
 			QuestionGroupDao qgDao = new QuestionGroupDao();
 			for (Map.Entry<Integer, QuestionGroup> qgItem : qgDao
 					.listQuestionGroupsBySurvey(item.getKey().getId())
@@ -178,15 +239,25 @@ public class SurveyDAO extends BaseDAO<Survey> {
 						.getValue().getKey().getId());
 			}
 			super.delete(item);
-		}else{
-			throw new IllegalDeletionException("Cannot delete surveyId: " + item.getKey().getId() + " surveyCode:" + item.getCode() + " because there is a QuestionAnswerStore value for this survey. Please delete all survey response first");
+		} else {
+			throw new IllegalDeletionException(
+					"Cannot delete surveyId: "
+							+ item.getKey().getId()
+							+ " surveyCode:"
+							+ item.getCode()
+							+ " because there is a QuestionAnswerStore value for this survey. Please delete all survey response first");
 		}
 	}
 
-	
-	public List<Key> listSurveyIds(){
+	/**
+	 * lists all survey ids
+	 * 
+	 * @return
+	 */
+	public List<Key> listSurveyIds() {
 		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery("select key from " + Survey.class.getName());
+		javax.jdo.Query query = pm.newQuery("select key from "
+				+ Survey.class.getName());
 		List<Key> results = (List<Key>) query.execute();
 		return results;
 	}

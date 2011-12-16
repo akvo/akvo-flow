@@ -41,6 +41,7 @@ public class RemoteExceptionRestServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		RestResponse resp = new RestResponse();
 		RemoteExceptionRequest exReq = (RemoteExceptionRequest) req;
+		//saves a stacktrace
 		if (RemoteExceptionRequest.SAVE_TRACE_ACTION.equals(req.getAction())) {
 			RemoteStacktrace trace = new RemoteStacktrace();
 			trace.setErrorDate(exReq.getDate() != null ? exReq.getDate()

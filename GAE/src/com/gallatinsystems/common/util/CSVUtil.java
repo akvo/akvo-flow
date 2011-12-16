@@ -1,5 +1,10 @@
 package com.gallatinsystems.common.util;
 
+/**
+ * utility class for dealing with CSV files (handles things like escaping/unescaping quotes, commas and newlines)
+ * 
+ *
+ */
 public class CSVUtil {
 
 	private static final String QUOTE = "\"";

@@ -17,9 +17,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  * @author Christopher Fagiani
  * 
  */
-public class NotificationSubscriptionServiceImpl extends RemoteServiceServlet implements
-		NotificationSubscriptionService {
-
+public class NotificationSubscriptionServiceImpl extends RemoteServiceServlet
+		implements NotificationSubscriptionService {
 
 	private static final long serialVersionUID = -6085743838802553835L;
 	private NotificationSubscriptionDao notifDao;
@@ -28,6 +27,9 @@ public class NotificationSubscriptionServiceImpl extends RemoteServiceServlet im
 		notifDao = new NotificationSubscriptionDao();
 	}
 
+	/**
+	 * deletes a subscription if it exists.
+	 */
 	@Override
 	public void deleteSubscription(NotificationSubscriptionDto dto) {
 		if (dto != null) {
@@ -57,6 +59,10 @@ public class NotificationSubscriptionServiceImpl extends RemoteServiceServlet im
 		return dtoList;
 	}
 
+	/**
+	 * saves all teh subscriptions passed in (either creates or updates
+	 * depending on whether or not the id is set).
+	 */
 	@Override
 	public List<NotificationSubscriptionDto> saveSubscriptions(
 			List<NotificationSubscriptionDto> dtoList) {

@@ -8,6 +8,12 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * Grouping of questions within a survey. A questionGroup belongs to exactly 1
+ * survey. Within a group, each question has a unique order.
+ * 
+ */
 @PersistenceCapable
 public class QuestionGroup extends BaseDomain {
 	/**

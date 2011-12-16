@@ -18,6 +18,7 @@ import com.gallatinsystems.framework.rest.exception.RestException;
  * writing the response (delegating to subclasses) or writing the error to the
  * response
  * 
+ * Servlets that descend from this class can handle both POSTs and GETs
  * 
  * @author Christopher Fagiani
  * 
@@ -48,18 +49,33 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
 		executeRequest(req, resp);
 	}
 
+	/**
+	 * handles the incoming request by first binding the request/response to
+	 * thread local variables (so this servlet can handle multiple simultaneous
+	 * requests). It will then parse the http request into a RestRequest and
+	 * pass that to the handleRequest abstract method.
+	 * 
+	 * @param req
+	 * @param resp
+	 */
 	private void executeRequest(HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			checkThreadLocal();
 			resp.setCharacterEncoding("UTF-8");
+			// bind request/response to thread local
 			requests.set(req);
 			responses.set(resp);
+
 			setContentType(resp);
+			// convert the http request to our RestRequest and validate it
 			RestRequest restReq = convertRequest();
 			restReq.validate();
+
 			RestResponse restResp = handleRequest(restReq);
+			// if we're here, we're ok
 			writeOkResponse(restResp);
 		} catch (RestException e) {
+			// if handleRequest threw an execption, handle it
 			writeErrorResponse(e.getErrors(), resp);
 		} catch (Throwable e) {
 			// we get here if we get some unexpected exception that does not

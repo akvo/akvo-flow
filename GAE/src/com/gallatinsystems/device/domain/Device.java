@@ -7,6 +7,12 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * domain object representing handheld devices capable of running the survey
+ * application.
+ * 
+ */
 @PersistenceCapable
 public class Device extends BaseDomain {
 

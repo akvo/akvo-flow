@@ -5,7 +5,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * permissions that can be assigned to a user. Code is mandatory and must be unique
+ * permissions that can be assigned to a user. Code is mandatory and must be
+ * unique
  * 
  * @author Christopher Fagiani
  * 
@@ -15,13 +16,13 @@ public class Permission extends BaseDomain {
 	private static final long serialVersionUID = 3706308694153467750L;
 	private String code;
 	private String name;
-	
-	public Permission(String name, String code){
+
+	public Permission(String name, String code) {
 		this.name = name;
 		this.code = code;
 	}
-	
-	public Permission(String name){
+
+	public Permission(String name) {
 		this(name, name.toUpperCase());
 	}
 
@@ -40,26 +41,29 @@ public class Permission extends BaseDomain {
 	public void setName(String name) {
 		this.name = name;
 	}
-		
-	public boolean equals(Object other){
-		if(other != null && other instanceof Permission){
-			Permission op = (Permission)other;
-			if(getCode()!= null && getCode().equals(op.getCode())){
+
+	/**
+	 * equality defined as having the same code
+	 */
+	public boolean equals(Object other) {
+		if (other != null && other instanceof Permission) {
+			Permission op = (Permission) other;
+			if (getCode() != null && getCode().equals(op.getCode())) {
 				return true;
-			}else if(op.getCode()== null && getCode() == null){
-				return true;				
-			}else{
+			} else if (op.getCode() == null && getCode() == null) {
+				return true;
+			} else {
 				return false;
 			}
-		}else{
+		} else {
 			return false;
 		}
 	}
 
-	public int hashCode(){
-		if(code != null){
+	public int hashCode() {
+		if (code != null) {
 			return code.hashCode();
-		}else{
+		} else {
 			return 0;
 		}
 	}

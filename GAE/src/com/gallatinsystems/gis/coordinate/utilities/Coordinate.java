@@ -1,7 +1,12 @@
 package com.gallatinsystems.gis.coordinate.utilities;
 
+/**
+ * 
+ * Datastructure to encapsulate a lat/lon location
+ * 
+ */
 public class Coordinate {
-	
+
 	private Double longitude = 0.0;
 	private Double latitude = 0.0;
 
@@ -19,7 +24,8 @@ public class Coordinate {
 	}
 
 	@Override
-	public String toString(){
-		return "Latitude: " + this.getLatitude() + " Longitude: " + this.getLongitude();
+	public String toString() {
+		return "Latitude: " + this.getLatitude() + " Longitude: "
+				+ this.getLongitude();
 	}
 }

@@ -8,6 +8,13 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * Survey are a collection of questionGroups (that, in turn, have collections of
+ * questions). A survey belongs to exactly 1 survey group. Surveys can have a
+ * default language that indicates what language is considered primary.
+ * 
+ */
 @PersistenceCapable
 public class Survey extends BaseDomain {
 
@@ -33,7 +40,7 @@ public class Survey extends BaseDomain {
 
 	public Survey() {
 		questionGroupMap = new TreeMap<Integer, QuestionGroup>();
-		requireApproval = false;		
+		requireApproval = false;
 	}
 
 	public Long getSurveyGroupId() {

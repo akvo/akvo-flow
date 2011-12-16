@@ -11,8 +11,22 @@ import java.util.Map;
  */
 public interface DataImporter {
 
-	public Map<Integer,String> validate(File file);
+	/**
+	 * validates the format of the import file
+	 * 
+	 * @param file
+	 * @return - map of error messages
+	 */
+	public Map<Integer, String> validate(File file);
 
-	public void executeImport(File file, String serverBase, Map<String, String> criteria);
-	
+	/**
+	 * executes the import by reading from file and calling methods on the server.
+	 * 
+	 * @param file
+	 * @param serverBase
+	 * @param criteria
+	 */
+	public void executeImport(File file, String serverBase,
+			Map<String, String> criteria);
+
 }

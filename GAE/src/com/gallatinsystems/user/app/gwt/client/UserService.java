@@ -7,6 +7,11 @@ import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * service for getting user info from the server
+ * @author Christopher Fagiani
+ *
+ */
 @RemoteServiceRelativePath("userrpcservice")
 public interface UserService extends RemoteService {
 

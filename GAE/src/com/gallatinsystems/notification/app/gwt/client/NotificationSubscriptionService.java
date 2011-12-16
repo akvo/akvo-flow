@@ -9,13 +9,35 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * service for retrieving/saving notificationsubscription objects
  * 
  * @author Christopher Fagiani
- *
+ * 
  */
 @RemoteServiceRelativePath("notificationsubrpcservice")
-public interface NotificationSubscriptionService extends RemoteService{
+public interface NotificationSubscriptionService extends RemoteService {
 
-	public List<NotificationSubscriptionDto> listSubscriptions(Long entityId, String type);
-	public List<NotificationSubscriptionDto> saveSubscriptions(List<NotificationSubscriptionDto> dtoList);
+	/**
+	 * lists all subscriptions for a given entity id/type combination
+	 * 
+	 * @param entityId
+	 * @param type
+	 * @return
+	 */
+	public List<NotificationSubscriptionDto> listSubscriptions(Long entityId,
+			String type);
+
+	/**
+	 * saves a subscription
+	 * 
+	 * @param dtoList
+	 * @return
+	 */
+	public List<NotificationSubscriptionDto> saveSubscriptions(
+			List<NotificationSubscriptionDto> dtoList);
+
+	/**
+	 * deletes a subscription
+	 * 
+	 * @param dto
+	 */
 	public void deleteSubscription(NotificationSubscriptionDto dto);
-	
+
 }

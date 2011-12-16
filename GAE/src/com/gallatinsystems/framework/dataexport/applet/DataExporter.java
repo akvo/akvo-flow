@@ -12,5 +12,13 @@ import java.util.Map;
  */
 public interface DataExporter {
 
+	/**
+	 * exports the data to a file specified by the fileName parameter.
+	 * 
+	 * @param criteria
+	 * @param fileName
+	 * @param serverBase
+	 * @param options
+	 */
 	public void export(Map<String, String> criteria, File fileName, String serverBase, Map<String,String> options);
 }

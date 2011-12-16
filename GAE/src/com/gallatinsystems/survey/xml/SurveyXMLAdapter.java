@@ -16,6 +16,12 @@ import com.gallatinsystems.survey.domain.xml.Question;
 import com.gallatinsystems.survey.domain.xml.QuestionGroup;
 import com.gallatinsystems.survey.domain.xml.Survey;
 
+/**
+ * 
+ * Utility to use JaxB to marshall/unmarshall Survey xml objects into/from xml
+ * strings.
+ * 
+ */
 public class SurveyXMLAdapter {
 	private static final Logger log = Logger.getLogger(SurveyXMLAdapter.class
 			.getName());
@@ -86,7 +92,5 @@ public class SurveyXMLAdapter {
 		reader.close();
 		return fileData.toString();
 	}
-	
-	
 
 }

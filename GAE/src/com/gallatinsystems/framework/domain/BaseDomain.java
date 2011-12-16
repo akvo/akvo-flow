@@ -13,6 +13,13 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
 
+/**
+ * base class for all persistent objects. It defines 5 fields common to all
+ * persistent objects (key plus 4 audit fields).
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 @Inheritance(strategy = InheritanceStrategy.SUBCLASS_TABLE)
 public abstract class BaseDomain implements Serializable {

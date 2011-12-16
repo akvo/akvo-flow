@@ -1069,7 +1069,7 @@ public class AccessPointHelper {
 				if (apList != null && !apList.isEmpty()) {
 					for (AccessPoint hh : apList) {
 						Double distance = CoordinateUtilities.computeDistance(
-								ap, hh);
+								ap.getLatitude(),ap.getLongitude(), hh.getLatitude(),hh.getLongitude());
 						if (distance != null && distance < 500) {
 							ap.setNumberWithinAcceptableDistance(ap
 									.getNumberWithinAcceptableDistance() + 1);

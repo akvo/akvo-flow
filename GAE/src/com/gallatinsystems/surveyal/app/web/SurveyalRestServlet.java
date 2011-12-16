@@ -68,6 +68,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private Map<String, String> scoredVals;
 	private boolean mergeNearby;
 
+	/**
+	 * initializes the servlet by instantiating all needed Dao classes and
+	 * loading properties from the configuration.
+	 * 
+	 * 
+	 */
 	public SurveyalRestServlet() {
 		surveyInstanceDao = new SurveyInstanceDAO();
 		surveyedLocaleDao = new SurveyedLocaleDao();
@@ -80,6 +86,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
 			mergeNearby = false;
 		}
+		//TODO: once the appropriate metric types are defined and reliably
+		//assigned, consider removing the  in favor of metrics
 		statusFragment = PropertyUtil.getProperty("statusQuestionText");
 		if (statusFragment != null && statusFragment.trim().length() > 0) {
 			useConfigStatusScore = true;

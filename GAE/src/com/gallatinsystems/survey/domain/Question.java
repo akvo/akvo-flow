@@ -11,6 +11,11 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * Represents a Question on a survey. A question belongs to exactly 1 questionGroup.
+ *
+ */
 @PersistenceCapable
 public class Question extends BaseDomain {
 

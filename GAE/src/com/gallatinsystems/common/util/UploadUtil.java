@@ -2,7 +2,6 @@ package com.gallatinsystems.common.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -12,6 +11,12 @@ import java.util.logging.Logger;
 
 import com.gallatinsystems.common.domain.UploadStatusContainer;
 
+/**
+ * Utility class to perform mime/multipart file uploads. This utility is
+ * STATEFUL in that upon construction it binds a DataoutputStream to the output
+ * stream passed into the constructor. All the "writeXXX" methods will write to
+ * this output stream.
+ */
 public class UploadUtil {
 	private static final String BOUNDRY = "***xxx";
 	private static final int UPLOAD_TIMEOUT_MS = 120000;
@@ -28,6 +33,9 @@ public class UploadUtil {
 		out = new DataOutputStream(os);
 	}
 
+	/**
+	 * writes a form field name/value pair using MIME/MULTIPART encoding.
+	 */
 	public void writeFormField(String name, String value) throws IOException {
 		out.writeBytes(PREFIX);
 		out.writeBytes(BOUNDRY);
@@ -42,12 +50,20 @@ public class UploadUtil {
 		out.flush();
 	}
 
+	/**
+	 * writes the contents of the fileContent string as an UTF-8 encoded file to
+	 * the output stream.
+	 */
 	public void writeFile(String key, String fileName, String fileContent,
 			String mimeType) throws IOException {
 		byte[] allBytes = fileContent.getBytes("UTF-8");
 		writeFile(key, fileName, allBytes, mimeType);
 	}
 
+	/**
+	 * writes the contents of the byteArray to the output stream using
+	 * MIME/MULTIPART encoding
+	 */
 	public void writeFile(String key, String fileName, byte[] bytes,
 			String mimeType) throws IOException {
 		out.writeBytes(PREFIX);
@@ -75,6 +91,10 @@ public class UploadUtil {
 		out.flush();
 	}
 
+	/**
+	 * writes the end of file markers to the output stream and then flushes and
+	 * closes it.
+	 * */
 	public void close() throws IOException {
 		out.writeBytes(PREFIX);
 		out.writeBytes(BOUNDRY);
@@ -84,6 +104,9 @@ public class UploadUtil {
 		out.close();
 	}
 
+	/**
+	 * creates an HttpUrlConnection to a remote url and sets it up to do a multipart upload.
+	 */
 	public static HttpURLConnection createConnection(URL url)
 			throws java.io.IOException {
 		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
@@ -212,12 +235,5 @@ public class UploadUtil {
 			return false;
 		}
 		return true;
-	}
-
-	public static boolean sendStringAsFileMultiPart(String fileName,
-			String fileContents, String dir, String uploadUrl, String s3ID,
-			String policy, String sig, String contentType) {
-
-		return false;
-	}
+	}	
 }

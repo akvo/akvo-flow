@@ -38,6 +38,13 @@ public class Breadcrumb extends Label implements MouseOverHandler,
 		return targetNode;
 	}
 
+	/**
+	 * checks for logical equality of a breadcrumb. Two breadcrumbs are equal if
+	 * they share the same text.
+	 * 
+	 * @param other
+	 * @return
+	 */
 	public boolean equals(Object other) {
 		boolean isSame = false;
 		if (other instanceof Breadcrumb) {
@@ -53,20 +60,45 @@ public class Breadcrumb extends Label implements MouseOverHandler,
 		return getText().hashCode();
 	}
 
+	/**
+	 * removes the hover style
+	 * 
+	 * @param event
+	 */
 	@Override
 	public void onMouseOut(MouseOutEvent event) {
 		removeStyleName(HOVER_STYLE);
 	}
 
+	/**
+	 * sets the hover style
+	 * 
+	 * @param event
+	 */
 	@Override
 	public void onMouseOver(MouseOverEvent event) {
 		addStyleName(HOVER_STYLE);
 	}
 
+	/**
+	 * gets the bundle (map of name/value pairs representing state) associated
+	 * with this breadcrumb. The actual underlying map is returned so any
+	 * modifications to the map in the client code will be reflected here as
+	 * well.
+	 * 
+	 * @return
+	 */
 	public Map<String, Object> getBundle() {
 		return bundle;
 	}
 
+	/**
+	 * sets the bundle (map of name/value pairs representing state) associated
+	 * with this breadcrumb. This will overwrite any existing bundle already
+	 * saved with the breadcrumb.
+	 * 
+	 * @param bundle
+	 */
 	public void setBundle(Map<String, Object> bundle) {
 		this.bundle = bundle;
 	}

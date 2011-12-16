@@ -14,8 +14,24 @@ import java.io.InputStreamReader;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public final class FileUtil {
-	public Boolean copyFile(String srcFile, String destFile) {
+/**
+ * Utility class for manipulating files.
+ * 
+ * 
+ */
+public class FileUtil {
+	private static final int BUFFER = 2048;
+
+	/**
+	 * copies a file to a new location on the local file system. This
+	 * implementation will not create any directories (so the destination
+	 * directory must exist).
+	 * 
+	 * @param srcFile
+	 * @param destFile
+	 * @return
+	 */
+	public static Boolean copyFile(String srcFile, String destFile) {
 		Boolean copyFlag = false;
 		File inputFile = new File(srcFile);
 		File outputFile = new File(destFile);
@@ -35,9 +51,14 @@ public final class FileUtil {
 		return copyFlag;
 	}
 
-	private static final int BUFFER = 2048;
-
-	public void generateKMZ(String inputFileName, String outputFileName) {
+	/**
+	 * generates a kmz zip file
+	 * 
+	 * @param inputFileName
+	 * @param outputFileName
+	 * @deprecated
+	 */
+	public static void generateKMZ(String inputFileName, String outputFileName) {
 		try {
 			BufferedInputStream origin = null;
 			FileOutputStream dest = new FileOutputStream("outputFileName");
@@ -66,8 +87,16 @@ public final class FileUtil {
 			e.printStackTrace();
 		}
 	}
-	
-	public byte[] readFileBytes(File fx) throws IOException{
+
+	/**
+	 * reads the content of a File and returns a byte array representing the
+	 * content.
+	 * 
+	 * @param fx
+	 * @return the content of the file in a byte array
+	 * @throws IOException
+	 */
+	public static byte[] readFileBytes(File fx) throws IOException {
 		FileInputStream fis;
 		fis = new FileInputStream(fx);
 		long length = fx.length();
@@ -75,15 +104,22 @@ public final class FileUtil {
 		int offset = 0;
 		int numRead = 0;
 		while (offset < bytes.length
-				&& (numRead = fis.read(bytes, offset, bytes.length
-						- offset)) >= 0) {
+				&& (numRead = fis.read(bytes, offset, bytes.length - offset)) >= 0) {
 			offset += numRead;
 		}
 		fis.close();
 		return bytes;
 	}
 
-	public String writeToFile(String textToWrite, String fileName) {
+	/**
+	 * writes the contents of textToWrite to a file on the local filesystem
+	 * identified by fileName.
+	 * 
+	 * @param textToWrite
+	 * @param fileName
+	 * @return - the absolute path of the file written
+	 */
+	public static String writeToFile(String textToWrite, String fileName) {
 		File outFile = new File(fileName);
 		try {
 			FileWriter out = new FileWriter(outFile);
@@ -97,11 +133,20 @@ public final class FileUtil {
 
 	}
 
-	public String readFromFile(String fileName) throws IOException {
+	/**
+	 * reads the contents of the file passed in and returns the content as a
+	 * String. This assumes that the file is encoded in UTF-8
+	 * 
+	 * @param fileName
+	 * @return - string representation of the file
+	 * @throws IOException
+	 */
+	public static String readFromFile(String fileName) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		FileInputStream fstream = new FileInputStream(fileName);
 		DataInputStream in = new DataInputStream(fstream);
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		BufferedReader br = new BufferedReader(new InputStreamReader(in,
+				"UTF-8"));
 		String line;
 		while ((line = br.readLine()) != null) {
 			sb.append(line);
@@ -109,14 +154,19 @@ public final class FileUtil {
 		in.close();
 		return sb.toString();
 	}
-	
-	public static boolean createDir(String directory){
+
+	/**
+	 * creates the directory passed in, creating any parents as needed.
+	 * 
+	 * @param directory
+	 * @return - true if successful, false if not.
+	 */
+	public static boolean createDir(String directory) {
 		File f = new File(directory);
-		if(f.exists()){
+		if (f.exists()) {
 			return true;
-		}else{
+		} else {
 			return f.mkdirs();
 		}
 	}
 }
-

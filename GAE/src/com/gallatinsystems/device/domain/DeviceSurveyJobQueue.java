@@ -9,6 +9,11 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+/**
+ * 
+ * Persistent class for storing an assignment of a survey to a device.
+ *
+ */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceSurveyJobQueue {
 

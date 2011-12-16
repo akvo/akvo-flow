@@ -3,9 +3,16 @@ package com.gallatinsystems.user.app.gwt.client;
 import java.util.Map;
 import java.util.Set;
 
-
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
+/**
+ * dto representing the user objects. When returned, this object usually will
+ * have a set of UserConfigDtos enumerating the per-user configuration as well
+ * as a list of UserPermissionDtos
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class UserDto extends BaseDto {
 
 	private static final long serialVersionUID = -61713350825542379L;
@@ -27,7 +34,7 @@ public class UserDto extends BaseDto {
 	}
 
 	public boolean isAdmin() {
-		
+
 		return hasPermission(PermissionConstants.ADMIN);
 	}
 
@@ -77,11 +84,12 @@ public class UserDto extends BaseDto {
 
 	public boolean hasPermission(String permission) {
 		if (admin) {
-			//admins automatically get all permissions
+			// admins automatically get all permissions
 			return true;
 		} else {
 			if (permissionList != null) {
-				return (permissionList.contains(permission)||permissionList.contains(PermissionConstants.ADMIN));
+				return (permissionList.contains(permission) || permissionList
+						.contains(PermissionConstants.ADMIN));
 			} else {
 				return false;
 			}

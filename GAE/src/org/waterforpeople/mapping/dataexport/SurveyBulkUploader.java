@@ -88,7 +88,7 @@ public class SurveyBulkUploader implements DataImporter {
 		boolean uploadImage = true;
 		boolean processZip = true;
 		List<String> processedList = new ArrayList<String>();
-		FileUtil futil = new FileUtil();
+
 
 		String progressFileName = sourceDirectory + File.separator
 				+ PROGRESS_FILE_NAME;
@@ -96,7 +96,7 @@ public class SurveyBulkUploader implements DataImporter {
 
 			File progressFile = new File(progressFileName);
 			if (progressFile.exists()) {
-				String allData = futil.readFromFile(progressFileName);
+				String allData = FileUtil.readFromFile(progressFileName);
 				StringTokenizer strTok = new StringTokenizer(allData, "|");
 				while (strTok.hasMoreTokens()) {
 					processedList.add(strTok.nextToken());

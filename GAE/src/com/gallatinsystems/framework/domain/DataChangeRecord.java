@@ -23,10 +23,18 @@ public class DataChangeRecord {
 		newVal = n;
 	}
 
+	/**
+	 * parses a packedString to hydrate a new instance. The input to this class
+	 * should only ever be strings that were initially generated via
+	 * DataChangeRecord.packString();
+	 * 
+	 * @param packedString
+	 */
 	public DataChangeRecord(String packedString) {
 		String[] parts = packedString.split(DELIMITER);
 		if (parts.length < 3) {
-			throw new RuntimeException("Packed string in invalid format: "+packedString);
+			throw new RuntimeException("Packed string in invalid format: "
+					+ packedString);
 		} else {
 			type = parts[0];
 			id = parts[1];
@@ -39,6 +47,11 @@ public class DataChangeRecord {
 		}
 	}
 
+	/**
+	 * forms a string representation of this object.
+	 * 
+	 * @return
+	 */
 	public String packString() {
 		return type + DELIMITER + id + DELIMITER + oldVal + DELIMITER + newVal;
 	}

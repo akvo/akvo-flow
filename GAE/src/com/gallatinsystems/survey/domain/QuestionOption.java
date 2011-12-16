@@ -7,6 +7,11 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * Option for multiple choice questions.
+ *
+ */
 @PersistenceCapable
 public class QuestionOption extends BaseDomain {
 

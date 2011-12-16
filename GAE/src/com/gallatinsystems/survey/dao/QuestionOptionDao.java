@@ -10,6 +10,12 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 
+/**
+ * Dao for manipulating questionOptions
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 
 	private TranslationDao translationDao;
@@ -19,9 +25,16 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 		translationDao = new TranslationDao();
 	}
 
+	/**
+	 * lists all options for a given quesiton id, including the translations (if
+	 * any)
+	 * 
+	 * @param questionId
+	 * @return
+	 */
 	public TreeMap<Integer, QuestionOption> listOptionByQuestion(Long questionId) {
 		List<QuestionOption> oList = listByProperty("questionId", questionId,
-				"Long","order", "asc");
+				"Long", "order", "asc");
 		TreeMap<Integer, QuestionOption> map = new TreeMap<Integer, QuestionOption>();
 		if (oList != null) {
 			int i = 1;
@@ -48,7 +61,8 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 			PersistenceManager pm = PersistenceFilter.getManager();
 			TranslationDao tDao = new TranslationDao();
 			for (QuestionOption opt : oList) {
-				tDao.deleteTranslationsForParent(opt.getKey().getId(), Translation.ParentType.QUESTION_OPTION);
+				tDao.deleteTranslationsForParent(opt.getKey().getId(),
+						Translation.ParentType.QUESTION_OPTION);
 				pm.deletePersistent(opt);
 			}
 		}

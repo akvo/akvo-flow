@@ -8,6 +8,11 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.appengine.api.datastore.Key;
 
+/**
+ * 
+ * Dao for manipulating surveyGroups
+ * 
+ */
 public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
@@ -37,35 +42,30 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 		return group;
 	}
 
-	public SurveyGroup getByKey(Long id, boolean includeQuestions) {
-		SurveyGroup sg = getByKey(id);
-
-		return sg;
-	}
-
-	public SurveyGroup getByKey(Key key) {
-		return super.getByKey(key);
-	}
-
-	public List<SurveyGroup> list(String cursorString, Boolean loadSurveyFlag,
-			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
-		List<SurveyGroup> sgList = null;
-		sgList = super.list(cursorString);
-
-		return sgList;
-	}
-
+	/**
+	 * finds a single survey group by code
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public SurveyGroup findBySurveyGroupName(String name) {
 		return super.findByProperty("code", name, "String");
 	}
 
+	/**
+	 * deletes the survey group and spawns asynchronous delete survey messages
+	 * for any surveys contained therein.
+	 * 
+	 * @param item
+	 */
 	public void delete(SurveyGroup item) {
 		// This probably won't work on the server
 		SurveyDAO surveyDao = new SurveyDAO();
 		item = super.getByKey(item.getKey().getId());
 		for (Survey survey : surveyDao
 				.listSurveysByGroup(item.getKey().getId())) {
-			SurveyTaskUtil.spawnDeleteTask("deleteSurvey", survey.getKey().getId());
+			SurveyTaskUtil.spawnDeleteTask("deleteSurvey", survey.getKey()
+					.getId());
 		}
 		super.delete(item);
 	}

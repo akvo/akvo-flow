@@ -5,6 +5,15 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
 
+/**
+ * persistent class for representing a content snippet for an editorial page. A
+ * page can have 0 or more of these EditorialPageContent items. These can be
+ * bound into the editorial page by using the type name from this class as a
+ * context variable within the template stored in the EditorialPage.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class EditorialPageContent extends BaseDomain {
 

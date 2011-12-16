@@ -141,7 +141,6 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// no-op
-
+		resp.setCode("200");
 	}
 }

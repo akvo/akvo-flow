@@ -7,6 +7,12 @@ import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
+/**
+ * data access object for devices.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class DeviceDAO extends BaseDAO<Device> {
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(DeviceDAO.class
@@ -16,6 +22,13 @@ public class DeviceDAO extends BaseDAO<Device> {
 		super(Device.class);
 	}
 
+	/**
+	 * gets a single device by phoneNumber. If phone number is not unique (this
+	 * shouldn't happen), it returns the first instance found.
+	 * 
+	 * @param phoneNumber
+	 * @return
+	 */
 	public Device get(String phoneNumber) {
 		return super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
 	}

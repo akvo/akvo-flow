@@ -9,14 +9,19 @@ import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+/**
+ * 
+ * Service to support listing some of the GIS data stored in the system.
+ * 
+ */
 public class GISSupportServiceImpl extends RemoteServiceServlet implements
 		GISSupportService {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3064880631626252519L;
 
+	/**
+	 * lists all country codes stored in the system.
+	 */
 	@Override
 	public TreeMap<String, String> listCountryCodes() {
 		CountryDao countryDao = new CountryDao();
@@ -30,6 +35,9 @@ public class GISSupportServiceImpl extends RemoteServiceServlet implements
 
 	}
 
+	/**
+	 * lists all coordinate types the system understands
+	 */
 	@Override
 	public TreeMap<String, String> listCoordinateTypes() {
 		TreeMap<String, String> ctMap = new TreeMap<String, String>();
@@ -38,6 +46,9 @@ public class GISSupportServiceImpl extends RemoteServiceServlet implements
 		return ctMap;
 	}
 
+	/**
+	 * lists all utm zones
+	 */
 	@Override
 	public ArrayList<Integer> listUTMZones() {
 		ArrayList<Integer> utmZones = new ArrayList<Integer>();
@@ -47,6 +58,9 @@ public class GISSupportServiceImpl extends RemoteServiceServlet implements
 		return utmZones;
 	}
 
+	/**
+	 * lists all feature types the system supports
+	 */
 	@Override
 	public TreeMap<String, String> listFeatureTypes() {
 		TreeMap<String, String> featureTypes = new TreeMap<String, String>();
@@ -54,6 +68,5 @@ public class GISSupportServiceImpl extends RemoteServiceServlet implements
 		featureTypes.put("SUB_COUNTRY_OTHER", "Sub-Country Other");
 		return featureTypes;
 	}
-
 
 }

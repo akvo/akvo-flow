@@ -7,6 +7,12 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.Translation;
 
+/**
+ * dao for manipulation of HelpMedia objects
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class QuestionHelpMediaDao extends BaseDAO<QuestionHelpMedia> {
 
 	private TranslationDao translationDao;
@@ -16,6 +22,12 @@ public class QuestionHelpMediaDao extends BaseDAO<QuestionHelpMedia> {
 		translationDao = new TranslationDao();
 	}
 
+	/**
+	 * lists all help objects for a given question, including any translations.
+	 * 
+	 * @param questionId
+	 * @return
+	 */
 	public TreeMap<Integer, QuestionHelpMedia> listHelpByQuestion(
 			Long questionId) {
 		List<QuestionHelpMedia> hList = listByProperty("questionId",

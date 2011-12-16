@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *Utility for finding specific class annotations
+ * Utility for finding specific class annotations
  */
 public class ClassAttributeUtil {
 	private static HashMap<String, TreeMap<String, String>> classAttributeMap = new HashMap<String, TreeMap<String, String>>();
@@ -20,11 +20,12 @@ public class ClassAttributeUtil {
 				.get(className);
 		if (attributesList == null) {
 			attributesList = new TreeMap<String, String>();
-			Class cls;
+			Class cls = null;
 			try {
 				cls = Class.forName(className);
 
 				for (Field item : cls.getDeclaredFields()) {
+					//exclude JDO injected fields and the geoCells objects
 					if (!item.getName().contains("jdo")
 							&& !item.getName().equals("serialVersionUID")
 							&& !item.getName().equals("geoCells")) {

@@ -11,12 +11,26 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Translation;
 
+/**
+ * dao for manipulating Translation objects
+ * 
+ * @author Christohper Fagiani
+ * 
+ */
 public class TranslationDao extends BaseDAO<Translation> {
 
 	public TranslationDao() {
 		super(Translation.class);
 	}
 
+	/**
+	 * gets all translations for a given id and parentType combination. The map
+	 * returned is keyed on language code.
+	 * 
+	 * @param parentType
+	 * @param parentId
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Translation> findTranslations(
 			Translation.ParentType parentType, Long parentId) {

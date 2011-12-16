@@ -1,5 +1,10 @@
 package com.gallatinsystems.gis.app.gwt.client;
 
+/**
+ * Constants used in the GIS ui components
+ * 
+ *
+ */
 public class GISSupportConstants {
 	public static final String GIS_FEATURE_TYPE_PARAM = "gisFeatureTypeParam";
 

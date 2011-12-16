@@ -5,6 +5,11 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * persistent object to store countries
+ *
+ */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Country extends BaseDomain {
 

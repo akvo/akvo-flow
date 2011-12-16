@@ -4,6 +4,14 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * represents a single row within a section of a map balloon. When evaluated the
+ * variableFieldName will be used to look up the field within the object being
+ * mapped and its value will be used when forming the final content.
+ * 
+ * @deprecated
+ */
 @PersistenceCapable
 public class MapBalloonRowDefinition extends BaseDomain {
 

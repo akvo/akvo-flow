@@ -19,14 +19,29 @@ public class DataExportAppletImpl extends AbstractDataImportExportApplet {
 	private JLabel statusLabel;
 	private DataImportExportFactory dataExporterFactory;
 
+	/**
+	 * initializes the UI, constructs the exporter factory then invokes the
+	 * export method.
+	 */
 	public void init() {
 		statusLabel = new JLabel();
 		getContentPane().add(statusLabel);
 		String type = getParameter(EXPORT_TYPE_PARAM);
 		dataExporterFactory = getDataImportExportFactory();
-		doExport(type, getConfigCriteria(), getServerBase(), parseCriteria(getParameter(OPTIONS_PARAM)));
+		doExport(type, getConfigCriteria(), getServerBase(),
+				parseCriteria(getParameter(OPTIONS_PARAM)));
 	}
-	
+
+	/**
+	 * launches a JFileChooser to prompt the user to specify an output file. If
+	 * the file is supplied, will then invoke the export method on the exporter
+	 * returned from the factory..
+	 * 
+	 * @param type
+	 * @param criteriaMap
+	 * @param serverBase
+	 * @param options
+	 */
 	public void doExport(String type, Map<String, String> criteriaMap,
 			String serverBase, Map<String, String> options) {
 		JFileChooser chooser = new JFileChooser();

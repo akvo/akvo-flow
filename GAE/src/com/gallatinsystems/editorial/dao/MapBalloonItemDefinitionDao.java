@@ -2,19 +2,25 @@ package com.gallatinsystems.editorial.dao;
 
 import java.util.List;
 
-import javax.jdo.annotations.PersistenceCapable;
-
 import com.gallatinsystems.editorial.domain.MapBalloonItemDefinition;
 import com.gallatinsystems.editorial.domain.MapBalloonRowDefinition;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
-@PersistenceCapable
+/**
+ * 
+ * dao for mapBaloonItemDefinition objects
+ * 
+ * @deprecated
+ */
 public class MapBalloonItemDefinitionDao extends
 		BaseDAO<MapBalloonItemDefinition> {
 	public MapBalloonItemDefinitionDao() {
 		super(MapBalloonItemDefinition.class);
 	}
 
+	/**
+	 * loads the item along with any rows that descend from it
+	 */
 	public MapBalloonItemDefinition getByKey(Long id) {
 		MapBalloonItemDefinition item = super.getByKey(id);
 		List<MapBalloonRowDefinition> rowDefList = new MapBalloonRowDefinitionDao()
@@ -24,6 +30,11 @@ public class MapBalloonItemDefinitionDao extends
 		return item;
 	}
 
+	/**
+	 * saves the mapBaloonItemDefintion and then iterates over any child rows and saves those.
+	 * @param item
+	 * @return
+	 */
 	public MapBalloonItemDefinition save(MapBalloonItemDefinition item) {
 		super.save(item);
 		if (item.getRows() != null) {
@@ -39,13 +50,15 @@ public class MapBalloonItemDefinitionDao extends
 	}
 
 	public List<MapBalloonItemDefinition> listByParentId(Long id) {
-		List<MapBalloonItemDefinition> mapIdList = super.listByProperty("parentId", id, "Long");
+		List<MapBalloonItemDefinition> mapIdList = super.listByProperty(
+				"parentId", id, "Long");
 		MapBalloonRowDefinitionDao mapRowDefDao = new MapBalloonRowDefinitionDao();
-		for(MapBalloonItemDefinition item: mapIdList){
-			List<MapBalloonRowDefinition> mapRowDefList = mapRowDefDao.listByParentId(item.getKey().getId());
+		for (MapBalloonItemDefinition item : mapIdList) {
+			List<MapBalloonRowDefinition> mapRowDefList = mapRowDefDao
+					.listByParentId(item.getKey().getId());
 			item.setRows(mapRowDefList);
 		}
-		return mapIdList; 
+		return mapIdList;
 	}
 
 }

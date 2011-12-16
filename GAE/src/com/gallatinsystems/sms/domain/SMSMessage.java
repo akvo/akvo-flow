@@ -6,6 +6,12 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * domain class to persist sms messages received by the system.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class SMSMessage extends BaseDomain {
 

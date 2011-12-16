@@ -5,6 +5,13 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
 
+/**
+ * persistent object for storing system messages that are to be displayed to the
+ * user.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class Message extends BaseDomain {
 

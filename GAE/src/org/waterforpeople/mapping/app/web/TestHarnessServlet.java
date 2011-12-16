@@ -171,25 +171,7 @@ public class TestHarnessServlet extends HttpServlet {
 	@SuppressWarnings("unused")
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
-		if ("testSurveyOrdering".equals(action)) {
-			SurveyGroupDAO sgDao = new SurveyGroupDAO();
-			SurveyGroup sgItem = sgDao.list("all").get(0);
-			sgItem = sgDao.getByKey(sgItem.getKey().getId(), true);
-		} else if ("testQuestionOrder".equals(action)) {
-			QuestionDao qDao = new QuestionDao();
-			for (Question q : qDao.listQuestionInOrder(Long.parseLong(req
-					.getParameter("surveyId")))) {
-				try {
-					resp.getWriter().println(
-							"qgId: " + q.getQuestionGroupId() + " order: "
-									+ q.getOrder() + " question: "
-									+ q.getText());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} else if ("setupTestUser".equals(action)) {
+		if ("setupTestUser".equals(action)) {
 			setupTestUser();
 		} else if ("computeDistanceAlongBearing".equals(action)) {
 			com.gallatinsystems.gis.coordinate.utilities.CoordinateUtilities cu = new CoordinateUtilities();
@@ -530,20 +512,7 @@ public class TestHarnessServlet extends HttpServlet {
 			qoDao.delete(qoDao.list("all"));
 			TranslationDao tDao = new TranslationDao();
 			tDao.delete(tDao.list("all"));
-
-			/*
-			 * createSurveyGroupGraph(resp); //SurveyGroupDAO sgDao = new
-			 * SurveyGroupDAO(); List<SurveyGroup> sgList = sgDao.list("all");
-			 * Survey survey = sgList.get(0).getSurveyList().get(0);
-			 * QuestionAnswerStore qas = new QuestionAnswerStore();
-			 * qas.setArbitratyNumber(1L);
-			 * qas.setSurveyId(survey.getKey().getId()); qas.setQuestionID("1");
-			 * qas.setValue("test"); QuestionAnswerStoreDao qasDao = new
-			 * QuestionAnswerStoreDao(); qasDao.save(qas);
-			 * 
-			 * 
-			 * for(SurveyGroup sg: sgList) sgDao.delete(sg);
-			 */
+			
 		} else if ("replicateDeviceFiles".equals(action)) {
 			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 			for (SurveyInstance si : siDao.list("all")) {
@@ -600,21 +569,6 @@ public class TestHarnessServlet extends HttpServlet {
 			df.setProcessDate(dateTime);
 			dfDao.save(df);
 
-		} else if ("testBaseDomain".equals(action)) {
-
-			SurveyDAO surveyDAO = new SurveyDAO();
-			String outString = surveyDAO.getForTest();
-			BaseDAO<AccessPoint> pointDao = new BaseDAO<AccessPoint>(
-					AccessPoint.class);
-			AccessPoint point = new AccessPoint();
-			point.setLatitude(78d);
-			point.setLongitude(43d);
-			pointDao.save(point);
-			try {
-				resp.getWriter().print(outString);
-			} catch (IOException e) {
-				log.log(Level.SEVERE, "Could not execute test", e);
-			}
 		} else if ("populateScoreBuckets".equals(action)) {
 			BaseDAO<StandardScoreBucket> scDao = new BaseDAO<StandardScoreBucket>(
 					StandardScoreBucket.class);

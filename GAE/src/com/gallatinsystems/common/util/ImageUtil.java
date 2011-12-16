@@ -21,6 +21,18 @@ import javax.imageio.stream.ImageOutputStream;
  */
 public class ImageUtil {
 
+	/**
+	 * generates a new image in the destImageDir with the same file name as the
+	 * image file passed in. NOTE: you cannot use this method to overwrite the
+	 * source image (i.e. you cannot specify the destDir as the same directory
+	 * that houses the source image)
+	 * 
+	 * @param image
+	 * @param destImageDir
+	 * @param width
+	 * @param height
+	 * @return
+	 */
 	public static File resizeImage(File image, String destImageDir,
 			Integer width, Integer height) {
 		String destFile = destImageDir + File.separator + image.getName();
@@ -61,6 +73,17 @@ public class ImageUtil {
 		return destFileObj;
 	}
 
+	/**
+	 * resizes the image represented by the inputstream passed in into a new
+	 * InputStream. The resize will attempt to maintain the aspect ratio of the
+	 * orginal image.
+	 * 
+	 * @param p_image
+	 * @param p_width
+	 * @param p_height
+	 * @return
+	 * @throws Exception
+	 */
 	public static InputStream scaleImage(InputStream p_image, int p_width,
 			int p_height) throws Exception {
 

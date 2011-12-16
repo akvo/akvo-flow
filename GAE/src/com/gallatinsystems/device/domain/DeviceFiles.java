@@ -12,11 +12,15 @@ import org.waterforpeople.mapping.domain.Status.StatusCode;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
 
+/**
+ * 
+ * persistent class for storing a record of which file(s) were uploaded by which
+ * devices and their processing status.
+ * 
+ */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceFiles extends BaseDomain {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	@Persistent
@@ -113,8 +117,6 @@ public class DeviceFiles extends BaseDomain {
 	public void setProcessingMessageText(Text processingMessage) {
 		this.processingMessageText = processingMessage;
 	}
-
-	
 
 	public String getProcessingStringMessage() {
 		return processingMessageText.getValue();

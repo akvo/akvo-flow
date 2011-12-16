@@ -4,6 +4,11 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * 
+ * Wrapper object allowing persistence of xml representations of surveys
+ *
+ */
 @PersistenceCapable
 public class SurveyContainer extends BaseDomain {
 	

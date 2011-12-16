@@ -9,6 +9,11 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * a grouping of surveys. 
+ * 
+ *
+ */
 @PersistenceCapable
 public class SurveyGroup extends BaseDomain {  
 

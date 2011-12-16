@@ -5,6 +5,12 @@ import javax.servlet.http.HttpServletRequest;
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
+/**
+ * request class for the SurveyalServlet.  
+ * 
+ * @author Christopher Fagiani
+ *
+ */
 public class SurveyalRestRequest extends RestRequest {
 
 	private static final long serialVersionUID = -1002622416183902696L;

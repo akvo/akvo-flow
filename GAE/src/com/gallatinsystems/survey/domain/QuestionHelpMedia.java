@@ -8,9 +8,18 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
+/**
+ * represents help media for a question. Help media is text and/or digital media
+ * like photos or videos. In the case of digital media, this object only retains
+ * a URL pointing to the resource. Help can optionally have translation objects
+ * for the text.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class QuestionHelpMedia extends BaseDomain {
-	
+
 	private static final long serialVersionUID = 7035250558880867571L;
 	private String resourceUrl = null;
 	private Type type = null;

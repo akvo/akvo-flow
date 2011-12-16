@@ -1,5 +1,10 @@
 package com.gallatinsystems.common.domain;
 
+/**
+ * Simple data structure class to encapsulate responses from file upload.
+ * 
+ *
+ */
 public class UploadStatusContainer {
 	private Boolean uploadedFile = null;
 	private Boolean uploadedZip = null;

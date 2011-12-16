@@ -16,13 +16,18 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.security.authorization.utility.TokenUtility;
 import com.google.gdata.client.http.AuthSubUtil;
 
+/**
+ * servlet used to authorize the user with via his/her google account.
+ * 
+ * 
+ */
 public class AuthenticationSubscriptionServlet extends HttpServlet {
 	private static final Logger log = Logger
 			.getLogger(AuthenticationSubscriptionServlet.class.getName());
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 8839978412963370603L;
+	public final static String FORWARD_URL_PROP = "next_url";
+	public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		if (req.getParameter("token") == null) {
@@ -41,9 +46,6 @@ public class AuthenticationSubscriptionServlet extends HttpServlet {
 			processToken(req, resp);
 		}
 	}
-
-	public final static String FORWARD_URL_PROP = "next_url";
-	public final static String GOOGLE_REQUEST_SCOPE = "google_scope";
 
 	private void getToken(HttpServletResponse resp) {
 		String nextUrl = PropertyUtil.getProperty(FORWARD_URL_PROP);

@@ -7,12 +7,17 @@ import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
+
+/**
+ * 
+ * Represents a configuration for Map balloons (pop-ups on google maps/google earth maps).
+ *
+ *@deprecated
+ */
 @PersistenceCapable
 public class MapBalloonDefinition extends BaseDomain {
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 7574762368535643204L;
 	
 	private Long parentId = null;

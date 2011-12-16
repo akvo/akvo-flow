@@ -27,6 +27,11 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 
+/**
+ * saves/finds question objects
+ * 
+ * 
+ */
 public class QuestionDao extends BaseDAO<Question> {
 
 	private QuestionOptionDao optionDao;
@@ -42,6 +47,14 @@ public class QuestionDao extends BaseDAO<Question> {
 		scoringRuleDao = new ScoringRuleDao();
 	}
 
+	/**
+	 * lists all questions filtered by type optionally filtered by surveyId as
+	 * well.
+	 * 
+	 * @param surveyId
+	 * @param type
+	 * @return
+	 */
 	public List<Question> listQuestionByType(Long surveyId, Question.Type type) {
 		if (surveyId == null) {
 			return listByProperty("type", type.toString(), "String", "order",
@@ -120,14 +133,28 @@ public class QuestionDao extends BaseDAO<Question> {
 							+ question.getText()
 							+ " because there is a QuestionAnswerStore value for this question. Please delete all survey response first");
 		}
-
-	}
-	
-	public List<Question> listQuestionsInOrderForGroup(Long groupId){
-		return listByProperty("questionGroupId", groupId,
-				"Long", "order", "asc");
 	}
 
+	/**
+	 * lists all questions in a group and orders them by their sortOrder
+	 * 
+	 * @param groupId
+	 * @return
+	 */
+	public List<Question> listQuestionsInOrderForGroup(Long groupId) {
+		return listByProperty("questionGroupId", groupId, "Long", "order",
+				"asc");
+	}
+
+	/**
+	 * lists all questions for a survey and orders them by sort order. THIS
+	 * METHOD SHOULD NOT BE USED AS SORT ORDERS MAY BE DUPLICATED ACROSS
+	 * QUESTIONGROUPS SO THE ORDERING IS UNDEFINED
+	 * 
+	 * @param surveyId
+	 * @return
+	 * @deprecated
+	 */
 	public List<Question> listQuestionInOrder(Long surveyId) {
 		List<Question> orderedQuestionList = new ArrayList<Question>();
 		List<Question> unknownOrder = listByProperty("surveyId", surveyId,
@@ -145,6 +172,12 @@ public class QuestionDao extends BaseDAO<Question> {
 		return orderedQuestionList;
 	}
 
+	/**
+	 * saves a question object in a transaction
+	 * 
+	 * @param q
+	 * @return
+	 */
 	public Question saveTransactional(Question q) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -152,10 +185,11 @@ public class QuestionDao extends BaseDAO<Question> {
 		Entity question = null;
 		try {
 			if (q.getKey() != null) {
-				try{
-				question = datastore.get(q.getKey());
-				}catch(Exception e){
-					log.log(Level.WARNING,"Key is set but not found. Assuming this is an import");
+				try {
+					question = datastore.get(q.getKey());
+				} catch (Exception e) {
+					log.log(Level.WARNING,
+							"Key is set but not found. Assuming this is an import");
 					question = new Entity(q.getKey());
 				}
 			} else {
@@ -185,6 +219,14 @@ public class QuestionDao extends BaseDAO<Question> {
 		return q;
 	}
 
+	/**
+	 * saves a question, including its question options, translations, and help
+	 * media (if any).
+	 * 
+	 * @param question
+	 * @param questionGroupId
+	 * @return
+	 */
 	public Question save(Question question, Long questionGroupId) {
 		if (questionGroupId != null) {
 			question.setQuestionGroupId(questionGroupId);
@@ -252,11 +294,26 @@ public class QuestionDao extends BaseDAO<Question> {
 		return question;
 	}
 
+	/**
+	 * finds a question by its reference id
+	 * 
+	 * @param refid
+	 * @return
+	 * @deprecated
+	 */
 	public Question findByReferenceId(String refid) {
 		Question q = findByProperty("referenceIndex", refid, "String");
 		return q;
 	}
 
+	/**
+	 * finds a question by its id. If needDetails is true, all child objects
+	 * (options, help, translations) will also be loaded.
+	 * 
+	 * @param id
+	 * @param needDetails
+	 * @return
+	 */
 	public Question getByKey(Long id, boolean needDetails) {
 		Question q = getByKey(id);
 		if (needDetails) {
@@ -279,20 +336,52 @@ public class QuestionDao extends BaseDAO<Question> {
 		return q;
 	}
 
+	/**
+	 * finds the base question (no child objects) by id
+	 */
 	public Question getByKey(Key key) {
 		return super.getByKey(key);
 	}
 
+	/**
+	 * lists questions within a group ordered by creation date
+	 * 
+	 * @param questionGroupId
+	 * @return
+	 */
 	public List<Question> listQuestionsByQuestionGroupOrderByCreatedDateTime(
 			Long questionGroupId) {
 		return listByProperty("questionGroupId", questionGroupId, "Long",
 				"createdDateTime", "asc");
 	}
-	
+
+	/**
+	 * lists questions within a group. If needDetails flag is true, the child
+	 * objects will be loaded for each question. Due to processing constraints
+	 * on GAE, needDetails should only be true when calling this method if being
+	 * called from a backend or task.
+	 * 
+	 * @param questionGroupId
+	 * @param needDetails
+	 * @return
+	 */
 	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
 			Long questionGroupId, boolean needDetails) {
 		return listQuestionsByQuestionGroup(questionGroupId, needDetails, true);
 	}
+
+	/**
+	 * lists all the questions in a group, optionally loading details. If
+	 * allowSideEffects is true, it will attempt to reorder any duplicated
+	 * question orderings on retrieval. New users of this method should ALWAY
+	 * call this with allowSideEffects = false
+	 * 
+	 * @param questionGroupId
+	 * @param needDetails
+	 * @param allowSideEffects
+	 * @return
+	 * 
+	 */
 	public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
 			Long questionGroupId, boolean needDetails, boolean allowSideEffects) {
 		List<Question> qList = listByProperty("questionGroupId",
@@ -324,7 +413,7 @@ public class QuestionDao extends BaseDAO<Question> {
 				if (q.getOrder() == null) {
 					q.setOrder(qList.size() + 1);
 					i++;
-				} else if(allowSideEffects) {
+				} else if (allowSideEffects) {
 					if (map.size() > 0 && !(q.getOrder() > map.size())) {
 						q.setOrder(map.size() + 1);
 						super.save(q);
@@ -338,6 +427,14 @@ public class QuestionDao extends BaseDAO<Question> {
 		return map;
 	}
 
+	/**
+	 * finds q question by its path and order. Path is defined as the name of
+	 * the "surveyGroupName/surveyName/QuestionGroupName"
+	 * 
+	 * @param order
+	 * @param path
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public Question getByPath(Integer order, String path) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -352,6 +449,13 @@ public class QuestionDao extends BaseDAO<Question> {
 		}
 	}
 
+	/**
+	 * finds a question within a group by matching on the questionText passed in
+	 * 
+	 * @param questionGroupId
+	 * @param questionText
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public Question getByQuestionGroupId(Long questionGroupId,
 			String questionText) {
@@ -368,6 +472,14 @@ public class QuestionDao extends BaseDAO<Question> {
 		}
 	}
 
+	/**
+	 * finds a question by groupId and order. If there are questions with
+	 * duplicated orders, the first is returned.
+	 * 
+	 * @param questionGroupId
+	 * @param order
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public Question getByGroupIdAndOrder(Long questionGroupId, Integer order) {
 		PersistenceManager pm = PersistenceFilter.getManager();

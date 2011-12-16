@@ -21,17 +21,45 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class WidgetDialog extends DialogBox {
 	private static FrameworkTextConstants TEXT_CONSTANTS = GWT
-	.create(FrameworkTextConstants.class);
+			.create(FrameworkTextConstants.class);
 
 	private CompletionListener listener;
 	private Button closeButton;
 	private DockPanel contentPane;
 	private boolean hideControls;
 
+	/**
+	 * initializes and displays a new dialog with the default controls
+	 * 
+	 * @param title
+	 * @param widget
+	 * @param listen
+	 */
 	public WidgetDialog(String title, Widget widget, CompletionListener listen) {
 		this(title, widget, false, listen);
 	}
 
+	/**
+	 * constructs a basic WidgetDialog that has the title and content widget
+	 * specified. The close button will be displayed and NO listener will be
+	 * bound.
+	 * 
+	 * @param title
+	 * @param widget
+	 */
+	public WidgetDialog(String title, Widget widget) {
+		this(title, widget, null);
+	}
+
+	/**
+	 * initializes a new dialog with the title and content widget displayed.
+	 * noControls flag determines whether or not to show the close button.
+	 * 
+	 * @param title
+	 * @param widget
+	 * @param noControls
+	 * @param listen
+	 */
 	public WidgetDialog(String title, Widget widget, boolean noControls,
 			CompletionListener listen) {
 		hideControls = noControls;
@@ -59,14 +87,24 @@ public class WidgetDialog extends DialogBox {
 		setWidget(contentPane);
 	}
 
-	public WidgetDialog(String title, Widget widget) {
-		this(title, widget, null);
-	}
-
+	/**
+	 * sets the contentPane for this dialog to be the widget passed in.
+	 * 
+	 * @param w
+	 */
 	public void setContentWidget(Widget w) {
 		contentPane.add(w, DockPanel.CENTER);
 	}
 
+	/**
+	 * allows the user to press "escape" to close the dialog. if hideControls is
+	 * true, then this is suppressed (since the normal close button is hidden in
+	 * that case)
+	 * 
+	 * @param key
+	 * @param modifiers
+	 * @return
+	 */
 	@Override
 	public boolean onKeyDownPreview(char key, int modifiers) {
 		switch (key) {
@@ -79,11 +117,14 @@ public class WidgetDialog extends DialogBox {
 		return false;
 	}
 
+	/**
+	 * shows the dialog in the center of the viewport
+	 */
 	public void showCentered() {
 		setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 			public void setPosition(int offsetWidth, int offsetHeight) {
-				int left = ((Window.getScrollLeft()+Window.getClientWidth() - offsetWidth) / 2) >> 0;
-				int top = ((Window.getScrollTop()+Window.getClientHeight() - offsetHeight) / 2) >> 0;
+				int left = ((Window.getScrollLeft() + Window.getClientWidth() - offsetWidth) / 2) >> 0;
+				int top = ((Window.getScrollTop() + Window.getClientHeight() - offsetHeight) / 2) >> 0;
 				setPopupPosition(left, top);
 			}
 		});

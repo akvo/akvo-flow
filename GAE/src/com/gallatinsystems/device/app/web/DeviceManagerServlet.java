@@ -9,15 +9,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.device.helper.DeviceHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 
+/**
+ * Servlet class to handle the device (handheld) related management tasks.
+ * 
+ *@deprecated
+ */
 public class DeviceManagerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1979457951988807893L;
 	private static final Logger log = Logger
 			.getLogger(DeviceManagerServlet.class.getName());
+	private DeviceDAO deviceDao = new DeviceDAO();
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
@@ -74,16 +80,16 @@ public class DeviceManagerServlet extends HttpServlet {
 		String countryIdString = req.getParameter("countryIdString");
 		String phoneNumber = req.getParameter("devicePhoneNumber");
 		String outServiceDateString = req.getParameter("outServiceDateString");
-
-		DeviceHelper deviceHelper = new DeviceHelper();
+		
+		
 		phoneNumber = phoneNumber.replace("-", "");
 		Device device = new Device();
 
 		device.setDeviceType(Device.DeviceType.CELL_PHONE_ANDROID);
 
 		device.setEsn(esn);
-		device.setPhoneNumber(phoneNumber);
-		device.setKey(deviceHelper.createDevice(device).getKey());
+		device.setPhoneNumber(phoneNumber);		
+		deviceDao.save(device);
 		sb.append(device.toString());
 		return sb.toString();
 	}

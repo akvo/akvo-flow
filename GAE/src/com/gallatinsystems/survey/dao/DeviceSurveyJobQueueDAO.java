@@ -8,8 +8,19 @@ import javax.jdo.PersistenceManager;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
+/**
+ * dao for saving deviceSurveyJobQueue objects.
+ * 
+ * 
+ */
 public class DeviceSurveyJobQueueDAO {
 
+	/**
+	 * lists all objects for a given phoneNumber
+	 * 
+	 * @param devicePhoneNumber
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<DeviceSurveyJobQueue> get(String devicePhoneNumber) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -21,17 +32,33 @@ public class DeviceSurveyJobQueueDAO {
 		return results;
 	}
 
+	/**
+	 * saves or updates and instance
+	 * 
+	 * @param deviceSurveyJobQueue
+	 * @return
+	 */
 	public Long save(DeviceSurveyJobQueue deviceSurveyJobQueue) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		pm.makePersistent(deviceSurveyJobQueue);
 		return deviceSurveyJobQueue.getId();
 	}
 
+	/**
+	 * saves or updates a collection of instances
+	 * 
+	 * @param itemList
+	 */
 	public void save(List<DeviceSurveyJobQueue> itemList) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		pm.makePersistentAll(itemList);
 	}
 
+	/**
+	 * lists all instances
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<DeviceSurveyJobQueue> listAllJobsInQueue() {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -72,7 +99,7 @@ public class DeviceSurveyJobQueueDAO {
 	 * 
 	 * @param assignmentId
 	 */
-	public void deleteJob(Long assignmentId) {		
+	public void deleteJob(Long assignmentId) {
 		if (assignmentId != null) {
 			List<DeviceSurveyJobQueue> results = listJobByAssignment(assignmentId);
 			if (results != null) {
@@ -136,6 +163,12 @@ public class DeviceSurveyJobQueueDAO {
 		}
 	}
 
+	/**
+	 * lists all instances that have expired prior to the time passed in
+	 * 
+	 * @param expirationDate
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<DeviceSurveyJobQueue> listAssignmentsWithEarlierExpirationDate(
 			Date expirationDate) {

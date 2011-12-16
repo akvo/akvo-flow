@@ -28,8 +28,15 @@ public abstract class NotificationProcessor extends AbstractRestApiServlet {
 		initializeTypeMapping();
 	}
 
+	/**
+	 * subclasses should implement this method in such a way that maps a given
+	 * notificationType to an instance of the appropriate NotificationHelper.
+	 */
 	protected abstract void initializeTypeMapping();
 
+	/**
+	 * converts the servlet request into an instance of NotificationRequest
+	 */
 	@Override
 	protected RestRequest convertRequest() throws Exception {
 		HttpServletRequest req = getRequest();
@@ -57,11 +64,13 @@ public abstract class NotificationProcessor extends AbstractRestApiServlet {
 			String serverBase = req.getScheme()
 					+ "://"
 					+ req.getServerName()
-					+ ((req.getLocalPort() != 80 && req.getLocalPort() != 443 && req.getLocalPort() != 0) ? ":"
-							+ req.getLocalPort()
+					+ ((req.getLocalPort() != 80 && req.getLocalPort() != 443 && req
+							.getLocalPort() != 0) ? ":" + req.getLocalPort()
 							: "");
-			handler.generateNotification(notificationRequest.getType(),notificationRequest.getNotifEntityId(),
-					notificationRequest.getDestinations(), notificationRequest.getDestOptions(),serverBase);
+			handler.generateNotification(notificationRequest.getType(),
+					notificationRequest.getNotifEntityId(),
+					notificationRequest.getDestinations(),
+					notificationRequest.getDestOptions(), serverBase);
 		} else {
 			log("Could not find notification handler for type: "
 					+ notificationRequest.getType());

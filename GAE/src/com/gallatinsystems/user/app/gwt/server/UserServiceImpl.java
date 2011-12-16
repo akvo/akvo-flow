@@ -109,8 +109,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 			if (currentUser.getEmail() != null
 					&& currentUser.getEmail().trim().length() > 0) {
 				u = userDao.findUserByEmail(currentUser.getEmail());
-				if(u == null){
-					u = userDao.findUserByEmail(currentUser.getEmail().toLowerCase());
+				if (u == null) {
+					u = userDao.findUserByEmail(currentUser.getEmail()
+							.toLowerCase());
 				}
 			}
 			if (u == null && (createIfNotFound || userService.isUserAdmin())) {
@@ -122,7 +123,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				newUser = userDao.save(newUser);
 				userDto.setKeyId(newUser.getKey().getId());
 			} else if (u != null) {
-				log.log(Level.SEVERE,"user not found in database using email: "+currentUser.getEmail());
+				log.log(Level.SEVERE,
+						"user not found in database using email: "
+								+ currentUser.getEmail());
 				Map<String, Set<UserConfigDto>> configMap = new HashMap<String, Set<UserConfigDto>>();
 
 				if (u.getConfig() != null) {
@@ -147,19 +150,24 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				userDto.setAdmin(userService.isUserAdmin());
 				userDto.setKeyId(u.getKey().getId());
 			} else {
-				userDto.setHasAccess(false);				
+				userDto.setHasAccess(false);
 			}
-			userDto.setLogoutUrl(userService
-					.createLogoutURL("/logout.html"));
+			userDto.setLogoutUrl(userService.createLogoutURL("/logout.html"));
 		}
 		return userDto;
 	}
 
+	/**
+	 * saves a user to the datastore. If a user already exists with the same
+	 * email address, it will be updated to prevent duplicates. this method will
+	 * also save any configuration and/or permissions passed in.
+	 */
 	@Override
 	public void saveUser(UserDto user) {
 		User existingUser = userDao.findUserByEmail(user.getEmailAddress());
-		if(existingUser == null){
-			existingUser = userDao.findUserByEmail(user.getEmailAddress().toLowerCase());
+		if (existingUser == null) {
+			existingUser = userDao.findUserByEmail(user.getEmailAddress()
+					.toLowerCase());
 		}
 		User newUser = new User();
 		if (existingUser != null) {
@@ -263,7 +271,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 	private UserConfig findUserConfig(String emailAddress, String configGroup,
 			String configName, boolean createIfMissing) {
 		User user = userDao.findUserByEmail(emailAddress);
-		if(user == null){
+		if (user == null) {
 			user = userDao.findUserByEmail(emailAddress.toLowerCase());
 		}
 		if (user != null && user.getConfig() != null) {

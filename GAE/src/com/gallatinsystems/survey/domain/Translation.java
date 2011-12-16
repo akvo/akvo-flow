@@ -3,17 +3,26 @@ package com.gallatinsystems.survey.domain;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+
+/**
+ * persistent class that represents a translation of some textual element.
+ * Translations can be attached to many things in the system (defined by the
+ * parentType and parentId). Each translation contains the language code and
+ * translation text.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 @PersistenceCapable
 public class Translation extends BaseDomain {
 
-	
 	private static final long serialVersionUID = 1297504186153393251L;
-	
+
 	private String languageCode = null;
-	private String text  = null;
+	private String text = null;
 	private Long parentId = null;
-	private ParentType parentType = null;	
-	
+	private ParentType parentType = null;
+
 	public String getLanguageCode() {
 		return languageCode;
 	}
@@ -45,7 +54,9 @@ public class Translation extends BaseDomain {
 	public void setParentType(ParentType parentType) {
 		this.parentType = parentType;
 	}
-	
-	public enum ParentType {SURVEY_GROUP_NAME, SURVEY_GROUP_DESC, SURVEY_NAME, SURVEY_DESC, QUESTION_GROUP_DESC, QUESTION_GROUP_NAME, QUESTION_NAME,QUESTION_DESC, QUESTION_TEXT, QUESTION_TIP , QUESTION_OPTION, QUESTION_HELP_MEDIA_TEXT};
+
+	public enum ParentType {
+		SURVEY_GROUP_NAME, SURVEY_GROUP_DESC, SURVEY_NAME, SURVEY_DESC, QUESTION_GROUP_DESC, QUESTION_GROUP_NAME, QUESTION_NAME, QUESTION_DESC, QUESTION_TEXT, QUESTION_TIP, QUESTION_OPTION, QUESTION_HELP_MEDIA_TEXT
+	};
 
 }

@@ -19,6 +19,15 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
+/**
+ * This is a reusable data access object that supports basic operations (save,
+ * find by property, list).
+ * 
+ * @author Christopher Fagiani
+ * 
+ * @param <T>
+ *            a persistent class that extends BaseDomain
+ */
 public class BaseDAO<T extends BaseDomain> {
 	public static final int DEFAULT_RESULT_COUNT = 20;
 	protected static final int RETRY_INTERVAL_MILLIS = 200;
@@ -53,8 +62,9 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	/**
-	 * saves an object to the data store AND closes the persistence manager
-	 * instance to force a flush
+	 * saves an object to the data store. This method will set the
+	 * lastUpdateDateTime on the domain object prior to saving and will set the
+	 * createdDateTime (if it is null).
 	 * 
 	 * @param <E>
 	 * @param obj
@@ -72,6 +82,15 @@ public class BaseDAO<T extends BaseDomain> {
 		return obj;
 	}
 
+	/**
+	 * saves an object and then flushes the persistence manager. In most cases,
+	 * this method should <b>NOT</b> be used (prefer the normal save method
+	 * instead).
+	 * 
+	 * @param <E>
+	 * @param obj
+	 * @return
+	 */
 	public <E extends BaseDomain> E saveAndFlush(E obj) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		if (obj.getCreatedDateTime() == null) {
@@ -84,10 +103,14 @@ public class BaseDAO<T extends BaseDomain> {
 		return obj;
 	}
 
-	public T saveOrUpdate(T object) {
-		return save(object);
-	}
-
+	/**
+	 * saves all instances contained within the collection passed in. This will
+	 * set the lastUpdateDateTime for the objects prior to saving.
+	 * 
+	 * @param <E>
+	 * @param objList
+	 * @return
+	 */
 	public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
 		if (objList != null) {
 			for (E item : objList) {
@@ -103,7 +126,6 @@ public class BaseDAO<T extends BaseDomain> {
 
 		}
 		return objList;
-
 	}
 
 	/**
@@ -117,6 +139,12 @@ public class BaseDAO<T extends BaseDomain> {
 		return getByKey(keyString, concreteClass);
 	}
 
+	/**
+	 * gets an object by key
+	 * 
+	 * @param key
+	 * @return
+	 */
 	public T getByKey(Key key) {
 		return getByKey(key, concreteClass);
 	}
@@ -141,6 +169,14 @@ public class BaseDAO<T extends BaseDomain> {
 		return result;
 	}
 
+	/**
+	 * gets a single object identified by the key passed in.
+	 * 
+	 * @param <E>
+	 * @param key
+	 * @param clazz
+	 * @return the object corresponding to the key (or null if not found)
+	 */
 	public <E extends BaseDomain> E getByKey(Key key, Class<E> clazz) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		E result = null;
@@ -154,10 +190,25 @@ public class BaseDAO<T extends BaseDomain> {
 		return result;
 	}
 
+	/**
+	 * gets a single object by key where the key is represented as a Long
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public T getByKey(Long id) {
 		return getByKey(id, concreteClass);
 	}
 
+	/**
+	 * gets a single object by key where the key is represented as a Long and
+	 * the type is the class passed in via clazz
+	 * 
+	 * @param <E>
+	 * @param id
+	 * @param clazz
+	 * @return
+	 */
 	public <E extends BaseDomain> E getByKey(Long id, Class<E> clazz) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		String itemKey = KeyFactory.createKeyString(clazz.getSimpleName(), id);
@@ -247,6 +298,17 @@ public class BaseDAO<T extends BaseDomain> {
 				null, EQ_OP, concreteClass);
 	}
 
+	/**
+	 * lists all objects of type class that have the property name/value passed
+	 * in
+	 * 
+	 * @param <E>
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param propertyType
+	 * @param clazz
+	 * @return
+	 */
 	protected <E extends BaseDomain> List<E> listByProperty(
 			String propertyName, Object propertyValue, String propertyType,
 			Class<E> clazz) {
@@ -254,6 +316,19 @@ public class BaseDAO<T extends BaseDomain> {
 				null, EQ_OP, clazz);
 	}
 
+	/**
+	 * lists all instances of type clazz that have the property equal to the
+	 * value passed in and orders the results by the field specified. NOTE: for
+	 * this to work on the datastore, you may need to have an index defined.
+	 * 
+	 * @param <E>
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param propertyType
+	 * @param orderBy
+	 * @param clazz
+	 * @return
+	 */
 	protected <E extends BaseDomain> List<E> listByProperty(
 			String propertyName, Object propertyValue, String propertyType,
 			String orderBy, Class<E> clazz) {
@@ -261,12 +336,37 @@ public class BaseDAO<T extends BaseDomain> {
 				orderBy, null, EQ_OP, clazz);
 	}
 
+	/**
+	 * lists all instances that have the property name/value matching those
+	 * passed in optionally sorted by the order by column and direction. NOTE:
+	 * depending on the sort being done, you may need an index in the datastore
+	 * for this to work.
+	 * 
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param propertyType
+	 * @param orderByCol
+	 * @param orderByDir
+	 * @return
+	 */
 	protected List<T> listByProperty(String propertyName, Object propertyValue,
 			String propertyType, String orderByCol, String orderByDir) {
 		return (List<T>) listByProperty(propertyName, propertyValue,
 				propertyType, orderByCol, orderByDir, EQ_OP, concreteClass);
 	}
 
+	/**
+	 * lists all instances that have the property name/value matching those
+	 * passed in optionally sorted by the order by column. NOTE: depending on
+	 * the sort being done, you may need an index in the datastore for this to
+	 * work.
+	 * 
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param propertyType
+	 * @param orderByCol
+	 * @return
+	 */
 	protected List<T> listByProperty(String propertyName, Object propertyValue,
 			String propertyType, String orderByCol) {
 		return listByProperty(propertyName, propertyValue, propertyType,
@@ -394,6 +494,14 @@ public class BaseDAO<T extends BaseDomain> {
 		}
 	}
 
+	/**
+	 * gets a GAE datastore cursor based on the results list passed in. The list
+	 * must be a non-null list of persistent entities (entites retrived from the
+	 * datastore in the same session).
+	 * 
+	 * @param results
+	 * @return
+	 */
 	@SuppressWarnings("rawtypes")
 	public static String getCursor(List results) {
 		if (results != null && results.size() > 0) {
@@ -456,6 +564,9 @@ public class BaseDAO<T extends BaseDomain> {
 		prepareCursor(cursorString, DEFAULT_RESULT_COUNT, query);
 	}
 
+	/**
+	 * method used to sleep in the event of a retry
+	 */
 	protected static void sleep() {
 		try {
 			Thread.sleep(RETRY_INTERVAL_MILLIS);

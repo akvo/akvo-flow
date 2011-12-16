@@ -12,7 +12,7 @@ public class SignedDataException extends Exception {
 	private static final long serialVersionUID = 8734887355683444379L;
 
 	public SignedDataException(String message) {
-		super(message);
+		this(message,null);
 	}
 
 	public SignedDataException(String message, Throwable cause) {

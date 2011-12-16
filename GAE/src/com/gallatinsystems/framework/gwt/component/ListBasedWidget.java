@@ -50,6 +50,12 @@ public abstract class ListBasedWidget extends Composite implements
 	private Button previousButton;
 	private int currentPage;
 
+	/**
+	 * Constructs a new instance and sets the "loading" label up as the primary
+	 * view.
+	 * 
+	 * @param controller
+	 */
 	protected ListBasedWidget(PageController controller) {
 		this.controller = controller;
 		panel = new VerticalPanel();
@@ -65,6 +71,13 @@ public abstract class ListBasedWidget extends Composite implements
 		initWidget(panel);
 	}
 
+	/**
+	 * creates an entry in the main data list using the display text passed in.
+	 * the list item will be clickable and respond to mouse over events.
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public Label createListEntry(String text) {
 		Label l = new Label();
 		l.setStylePrimaryName(LIST_ITEM_CSS);
@@ -79,6 +92,16 @@ public abstract class ListBasedWidget extends Composite implements
 		return l;
 	}
 
+	/**
+	 * creates a button attached to a row within the list. The button has a
+	 * clickMode that defines its operation and a label used as the button text.
+	 * 
+	 * @param mode
+	 *            - click mode (defines operation)
+	 * @param label
+	 *            - button text
+	 * @return - new Button
+	 */
 	public Button createButton(final ClickMode mode, String label) {
 		Button button = new Button();
 		if (label != null) {
@@ -95,6 +118,12 @@ public abstract class ListBasedWidget extends Composite implements
 		return button;
 	}
 
+	/**
+	 * adds a click handler to a widget
+	 * 
+	 * @param mode
+	 * @param widget
+	 */
 	public void createClickableWidget(final ClickMode mode,
 			HasClickHandlers widget) {
 		widget.addClickHandler(new ClickHandler() {
@@ -165,16 +194,32 @@ public abstract class ListBasedWidget extends Composite implements
 		}
 	}
 
+	/**
+	 * removes hover style
+	 * 
+	 * @param event
+	 */
 	@Override
 	public void onMouseOut(MouseOutEvent event) {
 		((Label) event.getSource()).removeStyleName(LIST_ITEM_HOVER_CSS);
 	}
 
+	/**
+	 * sets hover style
+	 * 
+	 * @param event
+	 */
 	@Override
 	public void onMouseOver(MouseOverEvent event) {
 		((Label) event.getSource()).addStyleName(LIST_ITEM_HOVER_CSS);
 	}
 
+	/**
+	 * checks whether we're currently loading a new page and, if not, responds
+	 * to a click event by delegating to the handleItemClick method.
+	 * 
+	 * @param event
+	 */
 	@Override
 	public void onClick(ClickEvent event) {
 		if (!controller.isWorking()) {
@@ -182,31 +227,68 @@ public abstract class ListBasedWidget extends Composite implements
 		}
 	}
 
+	/**
+	 * hides or shows the Loading indicator
+	 * 
+	 * @param show
+	 */
 	protected void toggleLoading(boolean show) {
 		loadingLabel.setVisible(show);
 	}
 
+	/**
+	 * adds a widget to the base panel.
+	 * 
+	 * @param w
+	 */
 	protected void addWidget(Widget w) {
 		panel.add(w);
 	}
 
+	/**
+	 * sends an openPage call to the controller bound to this widget (thus
+	 * allowing you to open a full-page widget).
+	 * 
+	 * @param clazz
+	 * @param bundle
+	 */
 	@SuppressWarnings("rawtypes")
 	protected void openPage(Class clazz, Map<String, Object> bundle) {
 		controller.openPage(clazz, bundle);
 	}
 
+	/**
+	 * notifies the controller that the widget is busy processing something so
+	 * it can suppress other click events.
+	 * 
+	 * @param isWorking
+	 */
 	protected void setWorking(boolean isWorking) {
 		controller.setWorking(isWorking);
 	}
 
+	/**
+	 * returns true if the controller is working, false if not.
+	 * @return
+	 */
 	protected boolean isWorking() {
 		return controller.isWorking();
 	}
 
+	/**
+	 * gets the "next" button in the case where pagination is needed
+	 * 
+	 * @return
+	 */
 	protected Button getNextButton() {
 		return nextButton;
 	}
 
+	/**
+	 * gets the "previous" button in the case where pagination is needed
+	 * 
+	 * @return
+	 */
 	protected Button getPreviousButtion() {
 		return previousButton;
 	}

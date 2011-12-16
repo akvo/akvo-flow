@@ -18,6 +18,11 @@ import org.apache.velocity.app.VelocityEngine;
 
 import com.gallatinsystems.instancecreator.util.S3PolicySigner;
 
+/**
+ * 
+ * Class to faciliatate configuring new instances based on templatized configuration files.
+ *
+ */
 public class InstanceConfigurator {
 	private VelocityEngine engine = null;
 	private static final Logger log = Logger

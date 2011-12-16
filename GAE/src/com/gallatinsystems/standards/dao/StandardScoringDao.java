@@ -14,12 +14,19 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.domain.StandardScoring;
 
+/**
+ * 
+ * Dao for managing scoring objects.
+ *
+ *TODO: need to move this or get rid of dependency on AccessPoint
+ */
 public class StandardScoringDao extends BaseDAO<StandardScoring> {
 
 	public StandardScoringDao() {
 		super(StandardScoring.class);
 	}
 
+	
 	public List<StandardScoring> listStandardScoring(AccessPoint ap) {
 		List<StandardScoring> ssList = new ArrayList<StandardScoring>();
 		ssList = super.listByProperty("pointType", ap.getPointType().toString(), "String");

@@ -75,6 +75,16 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 	private boolean working;
 	private UserDto currentUser;
 
+	/**
+	 * constructs a new portlet with the dimensions given. This method will also
+	 * result in the loading of the workflow returned by the getWizardWorkflow
+	 * abstract method.
+	 * 
+	 * @param name
+	 * @param width
+	 * @param height
+	 * @param currentUser
+	 */
 	protected AbstractWizardPortlet(String name, int width, int height,
 			UserDto currentUser) {
 		super(name, true, false, false, width, height);
@@ -99,6 +109,9 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		workflow = getWizardWorkflow();
 	}
 
+	/**
+	 * initializes the portlet by loading the startNode of the wizard.
+	 */
 	protected void init() {
 		pageToLoad = workflow.getStartNode();
 		renderWizardPage(pageToLoad, true, false, null, null);
@@ -156,7 +169,7 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
-	/*
+	/**
 	 * This method handles the majority of the page loading logic. It will do
 	 * the following: Calls the prePageUnload method Clear the current widget If
 	 * the page is "forward" (i.e. not a click of a breadcrumb or a back button)
@@ -521,6 +534,14 @@ public abstract class AbstractWizardPortlet extends Portlet implements
 		}
 	}
 
+	/**
+	 * class representing a navigation button within a wizard. Buttons can be
+	 * bound to permissions (so they can be conditionally shown/hidden based on
+	 * a user)
+	 * 
+	 * @author Christopher Fagiani
+	 * 
+	 */
 	public class WizardButton {
 		private String nodeName;
 		private String label;

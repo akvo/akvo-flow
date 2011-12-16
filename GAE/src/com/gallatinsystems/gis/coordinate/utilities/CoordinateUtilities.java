@@ -1,7 +1,10 @@
 package com.gallatinsystems.gis.coordinate.utilities;
 
-import org.waterforpeople.mapping.domain.AccessPoint;
-
+/**
+ * 
+ * Utility for manipulation of geo coordinates
+ * 
+ */
 public class CoordinateUtilities {
 
 	static final Double polarAxis = 6356752.314;
@@ -24,16 +27,26 @@ public class CoordinateUtilities {
 	// Mean radius in KM
 	public static final double EARTH_RADIUS = 6371.0;
 
-	public static Double computeDistance(AccessPoint start, AccessPoint end) {
+
+	/**
+	 * computes the distance between 2 points
+	 * 
+	 * @param startLat
+	 * @param startLon
+	 * @param endLat
+	 * @param endLon
+	 * @return
+	 */
+	public static Double computeDistance(Double startLat, Double startLon, Double endLat, Double endLon) {
 		Double distance = null;
 
-		double p1 = Math.cos(start.getLatitude())
-				* Math.cos(start.getLongitude()) * Math.cos(end.getLatitude())
-				* Math.cos(end.getLatitude());
-		double p2 = Math.cos(start.getLatitude())
-				* Math.sin(start.getLongitude()) * Math.cos(end.getLatitude())
-				* Math.sin(end.getLongitude());
-		double p3 = Math.sin(start.getLatitude()) * Math.sin(end.getLatitude());
+		double p1 = Math.cos(startLat)
+				* Math.cos(startLon) * Math.cos(endLat)
+				* Math.cos(endLat);
+		double p2 = Math.cos(startLat)
+				* Math.sin(startLon) * Math.cos(endLat)
+				* Math.sin(endLon);
+		double p3 = Math.sin(startLat) * Math.sin(endLat);
 
 		distance = (Math.acos(p1 + p2 + p3) * EARTH_RADIUS);
 		// Return distance in meters
@@ -44,13 +57,12 @@ public class CoordinateUtilities {
 
 	public Coordinate computePointAlongBearingDistance(
 			Coordinate startingPoint, Double distance, Double bearing) {
-		Double lat1 = startingPoint.getLatitude()*DEGREES_TO_RADIANS;
-		Double lon1 = startingPoint.getLongitude()*DEGREES_TO_RADIANS;
+		Double lat1 = startingPoint.getLatitude() * DEGREES_TO_RADIANS;
+		Double lon1 = startingPoint.getLongitude() * DEGREES_TO_RADIANS;
 		bearing = bearing * DEGREES_TO_RADIANS;
 
 		Double lat2 = Math.asin(Math.sin(lat1)
-				* Math.cos(distance / EARTH_RADIUS)
-				+ Math.cos(lat1)
+				* Math.cos(distance / EARTH_RADIUS) + Math.cos(lat1)
 				* Math.sin(distance / EARTH_RADIUS) * Math.cos(bearing));
 		Double lon2 = lon1
 				+ Math.atan2(
@@ -58,10 +70,10 @@ public class CoordinateUtilities {
 								* Math.cos(lat1),
 						Math.cos(distance / EARTH_RADIUS) - Math.sin(lat1)
 								* Math.sin(lat2));
-		lon2 = (lon2+3*Math.PI)%(2*Math.PI)-Math.PI;
-		
-		lat2=lat2/DEGREES_TO_RADIANS;
-		lon2=lon2/DEGREES_TO_RADIANS;
+		lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+
+		lat2 = lat2 / DEGREES_TO_RADIANS;
+		lon2 = lon2 / DEGREES_TO_RADIANS;
 
 		Coordinate newPoint = new Coordinate(lat2, lon2);
 		return newPoint;

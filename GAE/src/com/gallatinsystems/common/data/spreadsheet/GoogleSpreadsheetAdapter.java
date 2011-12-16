@@ -39,11 +39,13 @@ public class GoogleSpreadsheetAdapter {
 	private String google_spreadsheet_url;
 	private static final String RANDOM_SPREADSHEET_NAME = "exampleCo-exampleApp-1.0";
 
-	SpreadsheetFeed feed = null;
+	private SpreadsheetService service;
+	private SpreadsheetFeed feed = null;
 
 	public GoogleSpreadsheetAdapter(String sessionToken, PrivateKey privateKey)
 			throws IOException, ServiceException {
-		google_spreadsheet_url = PropertyUtil.getProperty("google_spreadsheet_url");
+		google_spreadsheet_url = PropertyUtil
+				.getProperty("google_spreadsheet_url");
 		if (service == null) {
 			service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
 			service.setAuthSubToken(sessionToken, privateKey);
@@ -66,8 +68,6 @@ public class GoogleSpreadsheetAdapter {
 		}
 
 	}
-
-	SpreadsheetService service;
 
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws IOException, ServiceException {
@@ -137,27 +137,38 @@ public class GoogleSpreadsheetAdapter {
 		return columns;
 	}
 
+	/**
+	 * Gets a list of spreadsheets using the feed and then iterates over the
+	 * list until it finds one that matches the name passed in. If found, it
+	 * will then get spreadsheet content.
+	 * 
+	 * @param spreadsheetName
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	private SpreadsheetContainer loadSpreadsheet(String spreadsheetName)
 			throws IOException, ServiceException {
-		log.info("Inside loadSpreadsheet");
 		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
-
 		for (int i = 0; i < spreadsheets.size(); i++) {
 			SpreadsheetEntry entry = spreadsheets.get(i);
 			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
-				log.info("Found spreadsheet");
 				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				log.info("Got worksheet");
-				// for (int j = 0; j < worksheets.size(); j++) {
 				WorksheetEntry worksheet = worksheets.get(0);
-				log.info("got 0 worksheet contents.");
 				return getListFeed(worksheet);
-				// }
 			}
 		}
 		return null;
 	}
 
+	/**
+	 * gets the content for a single Worksheet using its feedURL
+	 * 
+	 * @param worksheetEntry
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 */
 	private SpreadsheetContainer getListFeed(WorksheetEntry worksheetEntry)
 			throws IOException, ServiceException {
 		URL listFeedUrl = worksheetEntry.getListFeedUrl();

@@ -172,8 +172,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		ResponseDto<ArrayList<SurveyGroupDto>> response = new ResponseDto<ArrayList<SurveyGroupDto>>();
 		ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
 		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-		List<SurveyGroup> groupList = surveyGroupDao.list(cursorString,
-				loadSurveyFlag, loadQuestionGroupFlag, loadQuestionFlag);
+		List<SurveyGroup> groupList = surveyGroupDao.list(cursorString);
 		for (SurveyGroup canonical : groupList) {
 			SurveyGroupDto dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(canonical, dto);

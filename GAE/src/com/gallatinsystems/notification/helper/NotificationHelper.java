@@ -45,6 +45,12 @@ public class NotificationHelper {
 		}
 	}
 
+	/**
+	 * this method will find all unexpired notification subscriptions, collate
+	 * them and then generate messages that will be placed on the notification
+	 * processor queue (so the actual notification can be handled by the
+	 * appropriate notification handler class).
+	 */
 	public void execute() {
 		// find all notifications that have not yet expired
 		List<NotificationSubscription> subs = notificationDao
@@ -98,6 +104,14 @@ public class NotificationHelper {
 		}
 	}
 
+	/**
+	 * this method will collate subscriptions based on notification type and
+	 * delivery type. this allows us to reduce processing by generating a list
+	 * of all addresses to be notified via a specific delivery mechanism
+	 * 
+	 * @param subs
+	 * @return
+	 */
 	private Map<String, Map<Long, List<NotificationSubscription>>> collateSubscriptions(
 			List<NotificationSubscription> subs) {
 		Map<String, Map<Long, List<NotificationSubscription>>> subMap = new HashMap<String, Map<Long, List<NotificationSubscription>>>();

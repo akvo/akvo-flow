@@ -6,6 +6,11 @@ import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * service for manipulation of Message objects
+ * @author Christopher Fagiani
+ *
+ */
 @RemoteServiceRelativePath("messagerpcservice")
 public interface MessageService extends RemoteService {
 

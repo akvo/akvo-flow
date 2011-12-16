@@ -1,5 +1,12 @@
 package com.gallatinsystems.user.app.gwt.client;
 
+/**
+ * constants to be used as permissions
+ * 
+ * @author Christopher Fagiani
+ * 
+ *         TODO: relocate this
+ */
 public class PermissionConstants {
 
 	public static final String EDIT_SURVEY = "EDIT SURVEY";
@@ -16,5 +23,5 @@ public class PermissionConstants {
 	public static final String EDIT_TOKENS = "EDIT TOKENS";
 	public static final String VIEW_MESSAGES = "VIEW MESSAGES";
 	public static final String EDIT_IMMUTABLITY = "EDIT IMMUTABILITY";
-	public static final String ADMIN = "ADMIN";	
+	public static final String ADMIN = "ADMIN";
 }

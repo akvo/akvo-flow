@@ -11,12 +11,25 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 
+/**
+ * 
+ * Dao for question groups
+ * 
+ */
 public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
 	public QuestionGroupDao() {
 		super(QuestionGroup.class);
 	}
 
+	/**
+	 * saves a question group and associates it with the survey specified
+	 * 
+	 * @param item
+	 * @param surveyId
+	 * @param order
+	 * @return
+	 */
 	public QuestionGroup save(QuestionGroup item, Long surveyId, Integer order) {
 		if (item.getSurveyId() == null || item.getSurveyId() == 0) {
 			item.setSurveyId(surveyId);
@@ -25,15 +38,23 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		return item;
 	}
 
+	/**
+	 * deletes a group
+	 * 
+	 * @param item
+	 * @param surveyId
+	 */
 	public void delete(QuestionGroup item, Long surveyId) {
 
 		delete(item);
 	}
 
-	public QuestionGroup getId(String questionGroupCode) {
-		return findByProperty("code", questionGroupCode, "String");
-	}
-
+	/**
+	 * lists all question groups within a survey
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
 	public TreeMap<Integer, QuestionGroup> listQuestionGroupsBySurvey(
 			Long surveyId) {
 		List<QuestionGroup> groups = listByProperty("surveyId", surveyId,
@@ -42,7 +63,9 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		if (groups != null) {
 			int i = 1;
 			for (QuestionGroup group : groups) {
-				//TODO: Hack because we seem to have quesitongroups with same order key so put an arbitraty value there for now since it isn't used.
+				// TODO: Hack because we seem to have quesitongroups with same
+				// order key so put an arbitrary value there for now since it
+				// isn't used.
 				if (map.containsKey(group.getOrder())) {
 					map.put(i, group);
 				} else {
@@ -51,14 +74,28 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 				}
 				i++;
 			}
-
 		}
 		return map;
 	}
-	public List<QuestionGroup> listQuestionGroupBySurvey(Long surveyId){
-		return super.listByProperty("surveyId", surveyId, "Long","order","asc");
+
+	/**
+	 * lists all question groups by survey, ordered by the order field
+	 * 
+	 * @param surveyId
+	 * @return
+	 */
+	public List<QuestionGroup> listQuestionGroupBySurvey(Long surveyId) {
+		return super.listByProperty("surveyId", surveyId, "Long", "order",
+				"asc");
 	}
 
+	/**
+	 * gets a group by its code and survey id
+	 * 
+	 * @param code
+	 * @param surveyId
+	 * @return
+	 */
 	public QuestionGroup getByParentIdandCode(String code, Long surveyId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionGroup.class);
@@ -74,6 +111,13 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
 	}
 
+	/**
+	 * finds a group by code and path. Path is "surveyGroupName/surveyName"
+	 * 
+	 * @param code
+	 * @param path
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public QuestionGroup getByPath(String code, String path) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -89,6 +133,17 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 		}
 	}
 
+	/**
+	 * deletes a questionGroup and spawns an asynchronous task to delete all the
+	 * questions for that group. NOTE: it is possible for the group to be
+	 * deleted and the questions to remain (if there are existing answers in the
+	 * system, the question delete will fail). This is permissible since we need
+	 * to keep the questions around to be able to display the question text when
+	 * rendering the results but we don't need to keep the question permanently
+	 * attached to the group.
+	 * 
+	 * @param item
+	 */
 	public void delete(QuestionGroup item) {
 		QuestionDao qDao = new QuestionDao();
 		for (Map.Entry<Integer, Question> qItem : qDao

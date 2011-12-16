@@ -46,7 +46,6 @@ public class ProgressDialog extends JDialog implements ActionListener {
 	private static Map<String, String> OVERALL;
 	private static Map<String, String> CURRENT;
 	private static Map<String, String> CLOSE;
-	
 
 	static {
 		STEP = new HashMap<String, String>();
@@ -66,16 +65,24 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		CLOSE.put("es", "Cerrar");
 	}
 
+	/**
+	 * initializes the dialog to use the locale (language) passed in. This box
+	 * will consider totalSteps as the number of steps until completion (for
+	 * displaying a progress bar).
+	 * 
+	 * @param totalSteps
+	 * @param locale
+	 */
 	public ProgressDialog(int totalSteps, String locale) {
 		super((Frame) null, false);
 		setSize(WIDTH, HEIGHT);
-		//this puts it in the center of the screen
+		// this puts it in the center of the screen
 		setLocationRelativeTo(null);
 		this.locale = locale;
 		if (this.locale == null) {
 			this.locale = DEFAULT_LOCALE;
 		}
-		progressBar = new JProgressBar(0, totalSteps+1);
+		progressBar = new JProgressBar(0, totalSteps + 1);
 		overallLabel = new JLabel();
 		currentStepLabel = new JLabel();
 		closeButton = new JButton(CLOSE.get(locale));
@@ -84,6 +91,9 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		installControls();
 	}
 
+	/**
+	 * installs the UI widgets
+	 */
 	private void installControls() {
 		JPanel contents = (JPanel) getContentPane();
 		contents.setLayout(new GridLayout(3, 1));
@@ -125,9 +135,9 @@ public class ProgressDialog extends JDialog implements ActionListener {
 	 * @param task
 	 */
 	public void update(int step, String task) {
-		update(step,task,false);
+		update(step, task, false);
 	}
-	
+
 	/**
 	 * updates the current status displayed by this dialog.
 	 * 
@@ -142,11 +152,11 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		}
 		if (step != currentStep) {
 			currentStep = step;
-			progressBar.setValue(currentStep);			
-			if (currentStep >= maxSteps || isComplete) {	
+			progressBar.setValue(currentStep);
+			if (currentStep >= maxSteps || isComplete) {
 				progressBar.setValue(maxSteps);
 				closeButton.setVisible(true);
-			}else{
+			} else {
 				String statusText = STEP.get(locale);
 				statusText = statusText.replaceAll("X", currentStep + "");
 				overallLabel.setText(statusText.replaceAll("N", maxSteps + ""));
@@ -154,6 +164,9 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		}
 	}
 
+	/**
+	 * button handler for the closeButton
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == closeButton) {

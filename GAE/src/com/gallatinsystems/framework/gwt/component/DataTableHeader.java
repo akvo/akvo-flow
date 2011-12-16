@@ -12,10 +12,26 @@ public class DataTableHeader {
 	private String fieldName;
 	private boolean sortable;
 
+	/**
+	 * creates a non-sortable data table header
+	 * 
+	 * @param name
+	 */
 	public DataTableHeader(String name) {
 		displayName = name;
 	}
 
+	/**
+	 * defines a header with the name and key specified
+	 * 
+	 * @param name
+	 *            - name to display
+	 * @param key
+	 *            - name of field within the bound object (used for sorting)
+	 * @param sortable
+	 *            - flag indicating whether or not the table can be sorted by
+	 *            this field
+	 */
 	public DataTableHeader(String name, String key, boolean sortable) {
 		displayName = name;
 		if (key == null) {

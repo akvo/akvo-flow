@@ -35,6 +35,11 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 
+/**
+ * 
+ * Applet to load GIS shape files into the system.
+ * 
+ */
 public class GeometryLoader extends JApplet implements Runnable {
 
 	private static final long serialVersionUID = 1L;
@@ -83,10 +88,11 @@ public class GeometryLoader extends JApplet implements Runnable {
 			serverBase = serverBase.trim().substring(0,
 					serverBase.lastIndexOf("/"));
 		}
-		Thread worker = new Thread(this);
-		worker.start();
 		loadCountryMap();
 		configureFileIdentifier();
+		Thread worker = new Thread(this);		
+		worker.start();
+		
 	}
 
 	@Override

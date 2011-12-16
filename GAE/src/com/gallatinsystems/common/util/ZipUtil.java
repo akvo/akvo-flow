@@ -10,16 +10,33 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * wrapper class to facilitate generation of zip files
+ * 
+ * 
+ */
 public class ZipUtil {
 
-	public static void main(String[] args) {
-		generateZip("<test xml></testxml>");
-	}
-
+	/**
+	 * zips the contents of the string passed in into a file called
+	 * "waterforpeoplemapping.kml"
+	 * 
+	 * @param kmlContents
+	 * @return
+	 * @deprecated
+	 */
 	public static ByteArrayOutputStream generateZip(String kmlContents) {
 		return generateZip(kmlContents, "waterforpeoplemapping.kml");
 	}
 
+	/**
+	 * generates a zip file containg the content of the content string into a
+	 * file named filename.
+	 * 
+	 * @param content
+	 * @param filename
+	 * @return ByteArrayOutputStream of the zip encoded file
+	 */
 	public static ByteArrayOutputStream generateZip(String content,
 			String filename) {
 		ZipOutputStream zipOut = null;
@@ -72,10 +89,27 @@ public class ZipUtil {
 		return bos;
 	}
 
+	/**
+	 * decodes the byte array representing the zip file into a string. This
+	 * assumes the zip contains only 1 file.
+	 * 
+	 * @param contents
+	 * @return
+	 * @throws IOException
+	 */
 	public static String unZip(byte[] contents) throws IOException {
 		return unZip(contents, null);
 	}
 
+	/**
+	 * unzips a single zip entry (file within a zip) and returns the content as
+	 * a string.
+	 * 
+	 * @param contents
+	 * @param entryName
+	 * @return
+	 * @throws IOException
+	 */
 	public static String unZip(byte[] contents, String entryName)
 			throws IOException {
 		ByteArrayInputStream zipContents = new ByteArrayInputStream(contents);

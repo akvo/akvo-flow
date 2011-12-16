@@ -2,6 +2,13 @@ package com.gallatinsystems.user.app.gwt.client;
 
 import java.io.Serializable;
 
+/**
+ * Dto for returning userConfig values to the client. Used for representing
+ * things like the position of portal widgets.
+ * 
+ * @author Christopher Fagiani
+ * 
+ */
 public class UserConfigDto implements Serializable {
 	private static final long serialVersionUID = 4515497143926759239L;
 
@@ -33,6 +40,9 @@ public class UserConfigDto implements Serializable {
 		this.value = value;
 	}
 
+	/**
+	 * equality is defined as having the same group, name AND value
+	 */
 	public boolean equals(Object other) {
 		if (other instanceof UserConfigDto) {
 			if (((UserConfigDto) other).group.equals(group)
