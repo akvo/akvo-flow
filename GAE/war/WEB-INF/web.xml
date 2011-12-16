@@ -158,15 +158,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<servlet-mapping>
 		<servlet-name>DeviceManager</servlet-name>
 		<url-pattern>/webapp/devicemanager</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>SurveyGroupManager</servlet-name>
-		<servlet-class>com.gallatinsystems.survey.app.web.SurveyGroupServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyGroupManager</servlet-name>
-		<url-pattern>/webapp/surveygroupmanager</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping>	
 	<servlet>
 		<servlet-name>TestHarness</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.TestHarnessServlet</servlet-class>
