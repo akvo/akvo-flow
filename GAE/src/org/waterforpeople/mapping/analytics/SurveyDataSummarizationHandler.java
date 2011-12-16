@@ -7,7 +7,9 @@ import java.util.List;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationHandler;
 
 /**
- * Summary processor for WFP data
+ * Summary processor for WFP data. This class maintains a list of summarizer
+ * classes that will be instantiated and invoked (by the parent class) each time
+ * a summarization request is received.
  * 
  * @author Christopher Fagiani
  * 

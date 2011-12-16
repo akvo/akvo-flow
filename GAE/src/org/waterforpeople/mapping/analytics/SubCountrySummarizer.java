@@ -44,6 +44,10 @@ public class SubCountrySummarizer implements DataSummarizer {
 		return currentCursor;
 	}
 
+	/**
+	 * creates SubCountry domain objects in response to persistence of a
+	 * OGRFeature.
+	 */
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {
@@ -56,8 +60,8 @@ public class SubCountrySummarizer implements DataSummarizer {
 					FeatureType.SUB_COUNTRY_OTHER, cursor);
 			if (features != null) {
 				for (OGRFeature f : features) {
-					findOrCreateSubCountry(f.getCountryCode(), f
-							.packSublevelString("|"));
+					findOrCreateSubCountry(f.getCountryCode(),
+							f.packSublevelString("|"));
 				}
 				currentCursor = OGRFeatureDao.getCursor(features);
 			} else {
@@ -90,8 +94,8 @@ public class SubCountrySummarizer implements DataSummarizer {
 				if (values[i] != null
 						&& !"null".equalsIgnoreCase(values[i].trim())) {
 					boolean cacheHit = true;
-					SubCountry sub = countryCache.get(countryCode + "|" + values[i]
-							+ "" + (i + 1));
+					SubCountry sub = countryCache.get(countryCode + "|"
+							+ values[i] + "" + (i + 1));
 					if (sub == null) {
 						sub = subCountryDao.findSubCountry(countryCode,
 								values[i].trim(), i + 1);

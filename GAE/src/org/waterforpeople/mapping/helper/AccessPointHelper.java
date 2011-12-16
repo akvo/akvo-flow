@@ -1088,11 +1088,11 @@ public class AccessPointHelper {
 				AccessPoint minDistanceWaterPoint = null;
 				Double minDistance = null;
 				for (AccessPoint wp : apList) {
-					Double distance = CoordinateUtilities.computeDistance(ap,
-							wp);
+					Double distance = CoordinateUtilities.computeDistance(ap.getLatitude(),ap.getLongitude(),
+							wp.getLatitude(),wp.getLongitude());
 					if (distance < minDistance || minDistance == null) {
-						minDistance = CoordinateUtilities.computeDistance(ap,
-								wp);
+						minDistance = CoordinateUtilities.computeDistance(ap.getLatitude(),ap.getLongitude(),
+								wp.getLatitude(),wp.getLongitude());
 						minDistanceWaterPoint = wp;
 					}
 				}

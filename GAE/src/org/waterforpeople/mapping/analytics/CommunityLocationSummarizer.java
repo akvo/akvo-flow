@@ -26,6 +26,11 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 	Logger logger = Logger.getLogger(CommunityLocationSummarizer.class
 			.getName());
 
+	/**
+	 * This will respond to changes in Access Point lat/lon values by looking up
+	 * the community/country names by location and, if they've changed, updating
+	 * the access point with the new values.
+	 */
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {
@@ -75,20 +80,21 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 						// this save will cascade-save the country
 						commDao.save(community);
 					} else {
-						logger.log(Level.SEVERE,
+						logger.log(
+								Level.SEVERE,
 								"Did not find a country for lat/lon "
 										+ ap.getLatitude() + ","
 										+ ap.getLongitude()
 										+ " using the geonames service");
 					}
 				}
-				if(community != null && community.getName() == null){
+				if (community != null && community.getName() == null) {
 					community.setName(ap.getCommunityName());
 				}
 				if (ap.getCountryCode() == null && community != null) {
 					ap.setCountryCode(community.getCountryCode());
 				}
-				
+
 				AccessPointHelper aph = new AccessPointHelper();
 				aph.setGeoDetails(ap);
 				accessPointDao.save(ap);
@@ -96,8 +102,7 @@ public class CommunityLocationSummarizer implements DataSummarizer {
 		}
 		return true;
 	}
-	
-	
+
 	@Override
 	public String getCursor() {
 		return null;

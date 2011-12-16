@@ -73,7 +73,7 @@ public class OptionQuestionWidget extends QuestionWidget implements
 				for(int i =0; i < ans.length; i++){					
 					boolean found = false;
 					for (int j = 0; j < listBox.getItemCount(); j++) {
-						if(listBox.getItemValue(j).equalsIgnoreCase(ans[i])){
+						if(listBox.getValue(j).equalsIgnoreCase(ans[i])){
 							listBox.setItemSelected(j, true);
 							found = true;
 						}

@@ -15,8 +15,9 @@ import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 /**
- * cleans data by fixing capitalization of Name field values. If the value
- * changed, it will fire a LCR message to the change listener queue
+ * cleans data by fixing capitalization of Name field values. Though not really
+ * a summarization, it is declared to implement DataSummarizer to piggyback on
+ * the summarization task infrastructure.
  * 
  * @author Christopher Fagiani
  * 
@@ -30,6 +31,12 @@ public class NameQuestionDataCleanser implements DataSummarizer {
 		dao = new SurveyInstanceDAO();
 	}
 
+	/**
+	 * rather than summarizing, this will iterate over all "Name" questions and
+	 * clean the data by changing the case of the response to have capital
+	 * letters for the initial character in each word. If the value changed, it
+	 * will fire a LCR message to the change listener queue.
+	 */
 	@Override
 	public boolean performSummarization(String key, String type, String value,
 			Integer offset, String cursor) {
@@ -76,9 +83,10 @@ public class NameQuestionDataCleanser implements DataSummarizer {
 	 */
 	private void sendChangeMessage(DataChangeRecord value) {
 		Queue queue = QueueFactory.getQueue("dataUpdate");
-		queue.add(url("/app_worker/dataupdate").param(
-				DataSummarizationRequest.OBJECT_KEY, value.getId()).param(
-				DataSummarizationRequest.OBJECT_TYPE, "QuestionDataChange")
+		queue.add(url("/app_worker/dataupdate")
+				.param(DataSummarizationRequest.OBJECT_KEY, value.getId())
+				.param(DataSummarizationRequest.OBJECT_TYPE,
+						"QuestionDataChange")
 				.param(DataSummarizationRequest.VALUE_KEY, value.packString()));
 	}
 

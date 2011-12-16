@@ -176,7 +176,7 @@ public class SurveyBulkUploader implements DataImporter {
 		for (File fn : filesInDir.get(1)) {
 			buf.append(fn.getName()).append("|");
 		}
-		futil.writeToFile(buf.toString(), progressFileName);
+		FileUtil.writeToFile(buf.toString(), progressFileName);
 		i++;
 		SwingUtilities.invokeLater(new StatusUpdater(i, COMPLETE.get(locale),
 				true));
