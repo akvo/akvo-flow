@@ -30,6 +30,7 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
+import org.waterforpeople.mapping.domain.Status;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
@@ -91,8 +92,8 @@ public class TaskServlet extends AbstractRestApiServlet {
 			ZipInputStream zis = new ZipInputStream(bis);
 			List<DeviceFiles> dfList = null;
 			DeviceFiles deviceFile = null;
-			dfList = dfDao.listByUri(url.toString());
-			if (dfList != null)
+			dfList = dfDao.listByUri(url.toURI().toString());
+			if (dfList != null && dfList.size()>0)
 				deviceFile = dfList.get(0);
 			if (deviceFile == null) {
 				deviceFile = new DeviceFiles();
@@ -114,7 +115,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			ArrayList<String> unparsedLines = null;
 			try {
 				unparsedLines = extractDataFromZip(zis);
-			} catch (IOException iex) {
+			} catch (Exception iex) {
 				// Error unzipping the response file
 
 				deviceFile.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
@@ -201,6 +202,18 @@ public class TaskServlet extends AbstractRestApiServlet {
 								.param("action", "processFile")
 								.param("fileName", fileName)
 								.param("offset", lineNum + ""));
+					}else{
+						StatusCode status = StatusCode.PROCESSED_NO_ERRORS;
+						if(deviceFile.getProcessedStatus()!=null){
+							status = deviceFile.getProcessedStatus();
+						}
+						deviceFile.setProcessedStatus(status);
+						if (dfList != null) {
+							for (DeviceFiles dfitem : dfList) {
+								dfitem.setProcessedStatus(status);
+							}
+						}
+						
 					}
 				}
 			} else {

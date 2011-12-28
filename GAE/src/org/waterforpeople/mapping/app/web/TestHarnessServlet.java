@@ -191,7 +191,24 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
-		} else if ("testStandardScoring".equals(action)) {
+		} else if ("reprocessFiles".equalsIgnoreCase(action)){
+			DeviceFilesDao dfDao = new DeviceFilesDao();
+			String cursor = null;
+			List<DeviceFiles> files = null;
+			do{
+				files = dfDao.listDeviceFilesByStatus(StatusCode.IN_PROGRESS, cursor);
+				if(files !=null){
+					cursor = DeviceFilesDao.getCursor(files);
+					for(DeviceFiles fi: files){
+						Queue queue = QueueFactory.getDefaultQueue();
+						queue.add(url("/app_worker/task")
+								.param("action", "processFile")
+								.param("fileName", fi.getURI().substring(fi.getURI().lastIndexOf("/")+1)));
+								
+					}			
+				}
+			}while(files !=null && files.size()>0 && cursor != null);
+		}else if ("testStandardScoring".equals(action)) {
 			StandardTestLoader stl  = new StandardTestLoader(req,resp);
 			stl.runTest();
 		} else if ("listStandardScoringResults".equals(action)) {
