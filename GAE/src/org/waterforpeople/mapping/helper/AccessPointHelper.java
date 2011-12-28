@@ -294,15 +294,17 @@ public class AccessPointHelper {
 						newURL = photo_url_root + photoParts[2];
 					} else if (qas.getValue().startsWith("/mnt")) {
 						newURL = photo_url_root + photoParts[3];
-					}else{
-						//otherwise, take the last token and concatenate with the photo_url_root
-						newURL = photo_url_root + photoParts[photoParts.length-1];
+					} else {
+						// otherwise, take the last token and concatenate with
+						// the photo_url_root
+						newURL = photo_url_root
+								+ photoParts[photoParts.length - 1];
 					}
 				} else if (photoParts.length == 1) {
 					// handle the case where we only have the filename (no
 					// paths)
 					newURL = photo_url_root + photoParts[0];
-				}				
+				}
 				f.set(ap, newURL);
 				apmh.setQuestionAnswerType("PHOTO");
 				apmh.setAccessPointValue(ap.getPhotoURL());
@@ -950,93 +952,95 @@ public class AccessPointHelper {
 		// Are there current problems: no=1,yes=0
 		// meet govt quantity standards:no=0,yes=1
 		// Is there a tarriff or fee no=0,yes=1
+
 		AccessPointScoreDetail apss = new AccessPointScoreDetail();
 		logger.log(Level.INFO,
 				"About to compute score for: " + ap.getCommunityCode());
 		Integer score = 0;
+		if (ap.getPointType().equals(AccessPoint.AccessPointType.WATER_POINT)) {
+			// added other conditions to guess if it's an improved point or not
+			// since the scoring seems like it's flawed
+			if ((ap.isImprovedWaterPointFlag() != null && ap
+					.isImprovedWaterPointFlag())
+					|| (ap.getConstructionDateYear() != null && !ap
+							.getConstructionDateYear().trim()
+							.equalsIgnoreCase("na"))
+					|| (ap.getConstructionDateYear() != null && !ap
+							.getConstructionDateYear().trim()
+							.equalsIgnoreCase("n/a"))) {
+				score++;
+				apss.addScoreComputationItem(1,
+						"Plus 1 for Improved Water System = true: ");
+				if (ap.getProvideAdequateQuantity() != null
+						&& ap.getProvideAdequateQuantity().equals(true)) {
+					score++;
+					apss.addScoreComputationItem(1,
+							"Plus 1 for Provide Adequate Quantity = true: ");
 
-		// added other conditions to guess if it's an improved point or not
-		// since the scoring seems like it's flawed
-		if ((ap.isImprovedWaterPointFlag() != null && ap
-				.isImprovedWaterPointFlag())
-				|| (ap.getConstructionDateYear() != null && !ap
-						.getConstructionDateYear().trim()
-						.equalsIgnoreCase("na"))
-				|| (ap.getConstructionDateYear() != null && !ap
-						.getConstructionDateYear().trim()
-						.equalsIgnoreCase("n/a"))) {
-			score++;
-			apss.addScoreComputationItem(1,
-					"Plus 1 for Improved Water System = true: ");
-			if (ap.getProvideAdequateQuantity() != null
-					&& ap.getProvideAdequateQuantity().equals(true)) {
-				score++;
-				apss.addScoreComputationItem(1,
-						"Plus 1 for Provide Adequate Quantity = true: ");
+				} else {
+					apss.addScoreComputationItem(1,
+							"Plus 0 for Provide Adequate Quantity = false or null: ");
+				}
+				if (ap.getHasSystemBeenDown1DayFlag() != null
+						&& !ap.getHasSystemBeenDown1DayFlag().equals(true)) {
+					score++;
+					apss.addScoreComputationItem(1,
+							"Plus 1 for Has System Been Down 1 Day Flag = false: ");
+				} else {
+					apss.addScoreComputationItem(1,
+							"Plus 0 for Has System Been Down 1 Day Flag = true or null: ");
+				}
+				if (ap.getCurrentProblem() == null) {
+					score++;
+					apss.addScoreComputationItem(1,
+							"Plus 1 for Get Current Problem = null");
+				} else {
+					apss.addScoreComputationItem(1,
+							"Plus 0 for Get Current Problem != null value: "
+									+ ap.getCurrentProblem());
+				}
 
+				if (ap.isCollectTariffFlag() != null
+						&& ap.isCollectTariffFlag()) {
+					score++;
+					apss.addScoreComputationItem(1,
+							"Plus 1 for Collect Tariff Flag = true ");
+				} else {
+					apss.addScoreComputationItem(1,
+							"Plus 0 for Collect Tariff Flag = false or null: ");
+				}
 			} else {
 				apss.addScoreComputationItem(1,
-						"Plus 0 for Provide Adequate Quantity = false or null: ");
-			}
-			if (ap.getHasSystemBeenDown1DayFlag() != null
-					&& !ap.getHasSystemBeenDown1DayFlag().equals(true)) {
-				score++;
-				apss.addScoreComputationItem(1,
-						"Plus 1 for Has System Been Down 1 Day Flag = false: ");
-			} else {
-				apss.addScoreComputationItem(1,
-						"Plus 0 for Has System Been Down 1 Day Flag = true or null: ");
-			}
-			if (ap.getCurrentProblem() == null) {
-				score++;
-				apss.addScoreComputationItem(1,
-						"Plus 1 for Get Current Problem = null");
-			} else {
-				apss.addScoreComputationItem(
-						1,
-						"Plus 0 for Get Current Problem != null value: "
-								+ ap.getCurrentProblem());
+						"Plus 0 for Improved Water System = false or null: ");
 			}
 
-			if (ap.isCollectTariffFlag() != null && ap.isCollectTariffFlag()) {
-				score++;
-				apss.addScoreComputationItem(1,
-						"Plus 1 for Collect Tariff Flag = true ");
+			apss.setScore(score);
+			ap.setScore(score);
+			ap.setScoreComputationDate(new Date());
+			apss.setComputationDate(ap.getScoreComputationDate());
+
+			logger.log(Level.INFO,
+					"AP Collected in 2011 so scoring: " + ap.getCommunityCode()
+							+ "/" + ap.getCollectionDate() + " score: " + score);
+			if (score == 0) {
+				ap.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
+				apss.setStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM.toString());
+			} else if (score >= 1 && score <= 2) {
+				ap.setPointStatus(AccessPoint.Status.BROKEN_DOWN);
+				apss.setStatus(AccessPoint.Status.BROKEN_DOWN.toString());
+			} else if (score >= 3 && score <= 4) {
+				ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
+				apss.setStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS
+						.toString());
+			} else if (score >= 5) {
+				ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
+				apss.setStatus(AccessPoint.Status.FUNCTIONING_HIGH.toString());
 			} else {
-				apss.addScoreComputationItem(1,
-						"Plus 0 for Collect Tariff Flag = false or null: ");
+				ap.setPointStatus(AccessPoint.Status.OTHER);
+				apss.setStatus(AccessPoint.Status.OTHER.toString());
 			}
-		} else {
-			apss.addScoreComputationItem(1,
-					"Plus 0 for Improved Water System = false or null: ");
+			ap.setApScoreDetail(apss);
 		}
-
-		apss.setScore(score);
-		ap.setScore(score);
-		ap.setScoreComputationDate(new Date());
-		apss.setComputationDate(ap.getScoreComputationDate());
-
-		logger.log(Level.INFO,
-				"AP Collected in 2011 so scoring: " + ap.getCommunityCode()
-						+ "/" + ap.getCollectionDate() + " score: " + score);
-		if (score == 0) {
-			ap.setPointStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM);
-			apss.setStatus(AccessPoint.Status.NO_IMPROVED_SYSTEM.toString());
-		} else if (score >= 1 && score <= 2) {
-			ap.setPointStatus(AccessPoint.Status.BROKEN_DOWN);
-			apss.setStatus(AccessPoint.Status.BROKEN_DOWN.toString());
-		} else if (score >= 3 && score <= 4) {
-			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS);
-			apss.setStatus(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS
-					.toString());
-		} else if (score >= 5) {
-			ap.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
-			apss.setStatus(AccessPoint.Status.FUNCTIONING_HIGH.toString());
-		} else {
-			ap.setPointStatus(AccessPoint.Status.OTHER);
-			apss.setStatus(AccessPoint.Status.OTHER.toString());
-		}
-		ap.setApScoreDetail(apss);
 		return ap;
 	}
 
@@ -1069,7 +1073,8 @@ public class AccessPointHelper {
 				if (apList != null && !apList.isEmpty()) {
 					for (AccessPoint hh : apList) {
 						Double distance = CoordinateUtilities.computeDistance(
-								ap.getLatitude(),ap.getLongitude(), hh.getLatitude(),hh.getLongitude());
+								ap.getLatitude(), ap.getLongitude(),
+								hh.getLatitude(), hh.getLongitude());
 						if (distance != null && distance < 500) {
 							ap.setNumberWithinAcceptableDistance(ap
 									.getNumberWithinAcceptableDistance() + 1);
@@ -1088,11 +1093,13 @@ public class AccessPointHelper {
 				AccessPoint minDistanceWaterPoint = null;
 				Double minDistance = null;
 				for (AccessPoint wp : apList) {
-					Double distance = CoordinateUtilities.computeDistance(ap.getLatitude(),ap.getLongitude(),
-							wp.getLatitude(),wp.getLongitude());
+					Double distance = CoordinateUtilities.computeDistance(
+							ap.getLatitude(), ap.getLongitude(),
+							wp.getLatitude(), wp.getLongitude());
 					if (distance < minDistance || minDistance == null) {
-						minDistance = CoordinateUtilities.computeDistance(ap.getLatitude(),ap.getLongitude(),
-								wp.getLatitude(),wp.getLongitude());
+						minDistance = CoordinateUtilities.computeDistance(
+								ap.getLatitude(), ap.getLongitude(),
+								wp.getLatitude(), wp.getLongitude());
 						minDistanceWaterPoint = wp;
 					}
 				}

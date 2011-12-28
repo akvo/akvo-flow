@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoring
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.portal.client.widgets.component.standardscoring.StandardScoringDetail;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -211,6 +212,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		scrollP.setAlwaysShowScrollBars(true);
 		scrollP.setWidth("1900px");
 		mainVPanel.add(scrollP);
+		StandardScoringDetail ssd = new StandardScoringDetail();
+		
+		mainVPanel.add(ssd);
 
 	}
 
