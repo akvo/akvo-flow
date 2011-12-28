@@ -2,12 +2,17 @@ package com.gallatinsystems.standards.domain;
 
 import java.util.ArrayList;
 
-import com.gallatinsystems.framework.domain.BaseDomain;
+import javax.jdo.annotations.PersistenceCapable;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Key;
+@PersistenceCapable
 public class LevelOfServiceScore extends BaseDomain {
 	public enum LevelOfServiceScoreType {
 		WaterPointLevelOfService, WaterPointSustainability, PublicInstitutionLevelOfService, PublicInstitutionSustainability
 	};
+	
+	public enum ScoreObject{AccessPoint, SurveyedLocale};
 
 	/**
 	 * 
@@ -16,6 +21,24 @@ public class LevelOfServiceScore extends BaseDomain {
 	private LevelOfServiceScoreType scoreType = null;
 	private ArrayList<String> scoreDetails = null;
 	private Integer score = 0;
+	private Key objectKey = null;
+	private ScoreObject scoreObject = null;
+
+	public Key getObjectKey() {
+		return objectKey;
+	}
+
+	public void setObjectKey(Key objectKey) {
+		this.objectKey = objectKey;
+	}
+
+	public ScoreObject getScoreObject() {
+		return scoreObject;
+	}
+
+	public void setScoreObject(ScoreObject scoreObject) {
+		this.scoreObject = scoreObject;
+	}
 
 	public LevelOfServiceScoreType getScoreType() {
 		return scoreType;
@@ -40,4 +63,5 @@ public class LevelOfServiceScore extends BaseDomain {
 	public void setScore(Integer score) {
 		this.score = score;
 	}
+	
 }

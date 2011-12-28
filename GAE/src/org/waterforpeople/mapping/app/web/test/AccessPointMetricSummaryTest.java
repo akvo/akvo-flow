@@ -74,7 +74,7 @@ public class AccessPointMetricSummaryTest {
 		}
 
 		AccessPointTest aptest = new AccessPointTest();
-		aptest.loadLots(resp);
+		aptest.loadLots(resp, 70);
 		clearAPMSTable();
 
 	}

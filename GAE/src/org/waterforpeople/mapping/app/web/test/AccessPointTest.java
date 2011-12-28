@@ -22,7 +22,7 @@ public class AccessPointTest {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
 			.getName());
 
-	public void loadLots(HttpServletResponse resp) {
+	public void loadLots(HttpServletResponse resp, Integer numToCreate) {
 		try {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			AccessPointDao apDao = new AccessPointDao();
@@ -31,7 +31,7 @@ public class AccessPointTest {
 			ArrayList<AccessPoint> apList = new ArrayList<AccessPoint>();
 			for (int j = 0; j < 1; j++) {
 
-				for (int i = 0; i < 700; i++) {
+				for (int i = 0; i < numToCreate; i++) {
 					// double lon = 35 + (new Random().nextDouble() / new
 					// Random().nextInt(10));
 					// double lat = -15 + (new Random().nextDouble() / new
@@ -75,7 +75,7 @@ public class AccessPointTest {
 					AccessPoint ap = new AccessPoint();
 					ap.setLatitude(lat);
 					ap.setLongitude(lon);
-					ap.setCountryCode("US");
+					ap.setCountryCode("BO");
 					Date today = new Date();
 					System.out
 							.println("AP: " + ap.getLatitude() + "/"
@@ -108,14 +108,18 @@ public class AccessPointTest {
 					calendar.add(Calendar.YEAR, -5);
 					ap.setConstructionDate(calendar.getTime());
 					ap.setPhotoName("Water point");
-
+					ap.setNumberOfHouseholdsUsingPoint(new Random().nextLong());
+					ap.setProvideAdequateQuantity(getRandomBoolean());
+					ap.setPpmFecalColiform(new Random().nextDouble());
+					ap.setNumberOfLitersPerPersonPerDay(new Random().nextInt());
+					ap.setExtimatedPopulation(new Random().nextLong());
 					if (getRandomBoolean())
 						ap.setCurrentProblem("Yes");
-
-					if (getRandomBoolean())
-						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-					else
-						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
+					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+//					if (getRandomBoolean())
+//						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+//					else
+//						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
 					if (getRandomBoolean())
 						ap.setTypeTechnologyString("Kiosk");
 					else
@@ -326,13 +330,13 @@ public class AccessPointTest {
 					ap.setWaterForPeopleProjectFlag(getRandomBoolean());
 					ap.setWaterAvailableDayVisitFlag(getRandomBoolean());
 					ap.setEstimatedPeoplePerHouse(new Random().nextLong());
+					ap.setExtimatedPopulation(new Random().nextLong());
 					ap.setCollectTariffFlag(getRandomBoolean());
 					ap.setCurrentManagementStructurePoint("Community Board");
 					ap.setDescription("Household");
 					ap.setDistrict("test district");
 					ap.setEstimatedHouseholds(new Random().nextLong());
 					ap.setFarthestHouseholdfromPoint("Yes");
-					ap.setNumberOfHouseholdsUsingPoint(new Random().nextLong());
 					Integer year = new Random().nextInt(2011);
 					ap.setConstructionDateYear(year.toString());
 					ap.setCostPer(1.0);

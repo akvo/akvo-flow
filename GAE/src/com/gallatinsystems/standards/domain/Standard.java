@@ -1,11 +1,14 @@
 package com.gallatinsystems.standards.domain;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import javax.jdo.annotations.PersistenceCapable;
 
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-
+@PersistenceCapable
 public class Standard extends BaseDomain {
 
 	public enum StandardScope {
@@ -13,9 +16,17 @@ public class Standard extends BaseDomain {
 	};
 	
 	public enum StandardType {
-		NumberOfUsers, Downtime, WaterEveryDay, Quality, Quantity
+		WaterPointLevelOfService, WaterPointSustainability
 	};
+	
+	public enum StandardValueType{
+		Number, String, Boolean
+	}
 
+	public enum StandardComparisons{
+		equal, notequal, lessthan, greaterthan, greaterthanorequal, lessthanorequal
+	}
+	
 	/**
 	 * 
 	 */
@@ -25,10 +36,27 @@ public class Standard extends BaseDomain {
 	private String country = null;
 	private String standardDescription = null;
 	private String accessPointAttribute = null;
-	private String acessPointAttributeType = null;
+	private StandardValueType acessPointAttributeType = null;
 	private ArrayList<String> positiveValues = null;
-	
-	
+	private StandardComparisons standardComparison = null;
+	private StandardType standardType = null;
+
+	public StandardType getStandardType() {
+		return standardType;
+	}
+
+	public void setStandardType(StandardType standardType) {
+		this.standardType = standardType;
+	}
+
+	public StandardComparisons getStandardComparison() {
+		return standardComparison;
+	}
+
+	public void setStandardComparison(StandardComparisons standardComparison) {
+		this.standardComparison = standardComparison;
+	}
+
 	public String getStandardDescription() {
 		return standardDescription;
 	}
@@ -45,11 +73,11 @@ public class Standard extends BaseDomain {
 		this.accessPointAttribute = accessPointAttribute;
 	}
 
-	public String getAcessPointAttributeType() {
+	public StandardValueType getAcessPointAttributeType() {
 		return acessPointAttributeType;
 	}
 
-	public void setAcessPointAttributeType(String acessPointAttributeType) {
+	public void setAcessPointAttributeType(StandardValueType acessPointAttributeType) {
 		this.acessPointAttributeType = acessPointAttributeType;
 	}
 
@@ -85,4 +113,35 @@ public class Standard extends BaseDomain {
 		this.accessPointType = accessPointType;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		String newLine = System.getProperty("line.separator");
+
+		result.append(this.getClass().getName());
+		result.append(" Object {");
+		result.append(newLine);
+
+		// determine fields declared in this class only (no fields of
+		// superclass)
+		Field[] fields = this.getClass().getDeclaredFields();
+
+		// print field names paired with their values
+		for (Field field : fields) {
+			field.setAccessible(true);
+			result.append("  ");
+			try {
+				result.append(field.getName());
+				result.append(": ");
+				// requires access to private field:
+				result.append(field.get(this));
+			} catch (IllegalAccessException ex) {
+				System.out.println(ex);
+			}
+			result.append(newLine);
+		}
+		result.append("}");
+
+		return result.toString();
+	}
 }

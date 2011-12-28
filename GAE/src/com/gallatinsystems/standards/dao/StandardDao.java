@@ -1,11 +1,20 @@
 package com.gallatinsystems.standards.dao;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.gallatinsystems.auth.domain.WebActivityAuthorization;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.domain.Standard;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 
 public class StandardDao extends BaseDAO<Standard> {
 	public StandardDao(){
@@ -15,5 +24,26 @@ public class StandardDao extends BaseDAO<Standard> {
 	
 	public List<Standard> listByAccessPointType(AccessPointType accessPointType){
 		return super.listByProperty("accessPointType", accessPointType, "String");
+	}
+	
+	public List<Standard> listByAccessPointTypeAndStandardType(AccessPointType accessPointType, StandardType standardType){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Standard.class);
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("accessPointType", filterString, paramString, "String", accessPointType,
+				paramMap);
+		appendNonNullParam("standardType", filterString, paramString,
+				"String", standardType, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		List<Standard> standardList = (List<Standard>) query
+				.executeWithMap(paramMap);
+		return standardList;
 	}
 }

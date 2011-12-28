@@ -28,6 +28,7 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
  */
 public class AccessPointDao extends BaseDAO<AccessPoint> {
 	private static final String SCORE_AP_FLAG = "scoreAPFlag";
+	
 	private static final int MAX_RESULTS = 40;
 
 	public AccessPointDao() {
@@ -464,8 +465,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public AccessPoint save(AccessPoint point) {
 		if (Boolean.parseBoolean(PropertyUtil.getProperty(SCORE_AP_FLAG)))
 			point = AccessPointHelper.scoreAccessPoint(point);
-
+		
 		point = super.save(point);
+		
 		if (point.getApScoreDetailList() != null) {
 			for (AccessPointScoreDetail item : point.getApScoreDetailList()) {
 				if (item.getKey() == null) {

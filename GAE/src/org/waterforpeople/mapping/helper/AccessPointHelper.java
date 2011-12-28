@@ -31,6 +31,7 @@ import org.waterforpeople.mapping.domain.SurveyAttributeMapping;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -52,7 +53,7 @@ public class AccessPointHelper {
 	private static final String GEO_TYPE = "GEO";
 	private static final String PHOTO_TYPE = "IMAGE";
 	private SurveyAttributeMappingDao mappingDao;
-
+	private static final String SCORE_AP_DYNAMIC_FLAG="scoreAPDynamicFlag";
 	static {
 		Properties props = System.getProperties();
 		photo_url_root = props.getProperty("photo_url_root");
@@ -546,7 +547,7 @@ public class AccessPointHelper {
 					try {
 						ap = apDao.save(ap);
 					} catch (Exception ex) {
-						logger.log(Level.INFO, "Could not save point");
+						logger.log(Level.INFO, "Could not save point" + ex);
 					}
 					if (ap.getKey() != null) {
 						Queue summQueue = QueueFactory
@@ -565,7 +566,10 @@ public class AccessPointHelper {
 		}
 
 		if (ap != null) {
-			// ap = this.scoreAccessPointDynamic(ap);
+			if(Boolean.parseBoolean(PropertyUtil.getProperty(SCORE_AP_DYNAMIC_FLAG))){
+				AccessPointHelper aph = new AccessPointHelper();
+				aph.scoreAccessPointNew(ap);
+			}
 			return ap;
 		} else
 			return null;
@@ -942,6 +946,14 @@ public class AccessPointHelper {
 		}
 		return new AccessPointScoreComputationItem(score, scoreItemMessage);
 
+	}
+	
+	public void scoreAccessPointNew(AccessPoint ap){
+		ScoringHelper sh = new ScoringHelper();
+		if(ap.getPointType().equals(AccessPointType.WATER_POINT)){
+			sh.scoreWaterPointLevelOfService(ap);
+			sh.scoreWaterPointSustainability(ap);
+		}
 	}
 
 	public static AccessPoint scoreAccessPoint(AccessPoint ap) {

@@ -8,17 +8,24 @@ import java.util.List;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.domain.LevelOfServiceScore;
 import com.gallatinsystems.standards.domain.LevelOfServiceScore.LevelOfServiceScoreType;
+import com.gallatinsystems.standards.domain.LevelOfServiceScore.ScoreObject;
 import com.gallatinsystems.standards.domain.Standard;
+import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
+import com.gallatinsystems.standards.domain.Standard.StandardScope;
+import com.gallatinsystems.standards.domain.Standard.StandardValueType;
 
 public class ScoringHelper {
 
 	public void scoreWaterPointLevelOfService(AccessPoint ap) {
 		LevelOfServiceScore los = new LevelOfServiceScore();
 		los.setScoreType(LevelOfServiceScoreType.WaterPointLevelOfService);
+		los.setObjectKey(ap.getKey());
+		los.setScoreObject(ScoreObject.AccessPoint);
 		ArrayList<String> scoreDetails = new ArrayList<String>();
 		if (ap.getImprovedWaterPointFlag()) {
 			StandardDao standardDao = new StandardDao();
@@ -26,32 +33,86 @@ public class ScoringHelper {
 					.listByAccessPointType(AccessPointType.WATER_POINT);
 			if (standardList != null) {
 				for (Standard standard : standardList) {
-					String value= getAccessPointFieldValue(ap, standard.getAccessPointAttribute());
-					if(standard.getAcessPointAttributeType().equals("Boolean")){
-						if(compareBoolean(value, Boolean.parseBoolean(standard.getPositiveValues().get(0)))){
-							los.setScore(los.getScore()+1);
-							scoreDetails.add("Plus 1 for " + standard.getStandardDescription() + " WaterPoint " +standard.getAccessPointAttribute()+ "Value " + value);
-						}else{
-							scoreDetails.add("Plus 0 for " + standard.getStandardDescription() + " WaterPoint " +standard.getAccessPointAttribute()+ "Value " + value);
-						}
-					}else if(standard.getAcessPointAttributeType().equals("String")){
-						if(this.compareStrings(value, standard.getPositiveValues())){
-							los.setScore(los.getScore()+1);
-							scoreDetails.add("Plus 1 for " + standard.getStandardDescription() + " WaterPoint " +standard.getAccessPointAttribute()+ "Value " + value);
-						}else{
-							scoreDetails.add("Plus 0 for " + standard.getStandardDescription() + " WaterPoint " +standard.getAccessPointAttribute()+ "Value " + value);
-						}
-					}else if(standard.getAcessPointAttributeType().equals("Integer")){
-						if(this.compareLessThanEqualInteger(value, Integer.parseInt(standard.getPositiveValues().get(0)))){
-							los.setScore(los.getScore()+1);
-							scoreDetails.add("Plus 1 for " + standard.getStandardDescription() + " WaterPoint " +standard.getAccessPointAttribute()+ "Value " + value);
-						}else{
-							scoreDetails.add("Plus 0 for " + standard.getStandardDescription() + " WaterPoint " +standard.getAccessPointAttribute()+ "Value " + value);
+					if (standard.getStandardScope()
+							.equals(StandardScope.Global)
+							|| (standard.getStandardScope()
+									.equals(StandardScope.Local))
+							&& standard.getCountry()
+									.equals(ap.getCountryCode())) {
+						String value = getAccessPointFieldValue(ap,
+								standard.getAccessPointAttribute());
+						if (standard.getAcessPointAttributeType().equals(
+								StandardValueType.Boolean)) {
+							if (compareBoolean(value,
+									Boolean.parseBoolean(standard
+											.getPositiveValues().get(0)))) {
+								los.setScore(los.getScore() + 1);
+								scoreDetails.add(formScoreDetailMessage(1,
+										standard.getStandardDescription(),
+										" WaterPoint ",
+										standard.getAccessPointAttribute(),
+										value,
+										standard.getStandardComparison().toString(),
+										standard.getPositiveValues().toString()));
+							} else {
+								scoreDetails.add(formScoreDetailMessage(0,
+										standard.getStandardDescription(),
+										" WaterPoint ",
+										standard.getAccessPointAttribute(),
+										value,
+										standard.getStandardComparison().toString(),
+										standard.getPositiveValues().toString()));
+							}
+						} else if (standard.getAcessPointAttributeType()
+								.equals(StandardValueType.String)) {
+							if (this.compareStrings(value,
+									standard.getPositiveValues())) {
+								los.setScore(los.getScore() + 1);
+								scoreDetails.add(formScoreDetailMessage(1,
+										standard.getStandardDescription(),
+										" WaterPoint ",
+										standard.getAccessPointAttribute(),
+										value,
+										standard.getStandardComparison().toString(),
+										standard.getPositiveValues().toString()));
+							} else {
+								scoreDetails.add(formScoreDetailMessage(0,
+										standard.getStandardDescription(),
+										" WaterPoint ",
+										standard.getAccessPointAttribute(),
+										value,
+										standard.getStandardComparison().toString(),
+										standard.getPositiveValues().toString()));
+							}
+						} else if (standard.getAcessPointAttributeType()
+								.equals(StandardValueType.Number)) {
+							if (this.compareDouble(standard
+									.getStandardComparison(), value, Double
+									.parseDouble(standard.getPositiveValues()
+											.get(0)))) {
+								los.setScore(los.getScore() + 1);
+								scoreDetails.add(formScoreDetailMessage(1,
+										standard.getStandardDescription(),
+										" WaterPoint ",
+										standard.getAccessPointAttribute(),
+										value,
+										standard.getStandardComparison().toString(),
+										standard.getPositiveValues().toString()));
+							} else {
+								scoreDetails.add(formScoreDetailMessage(0,
+										standard.getStandardDescription(),
+										" WaterPoint ",
+										standard.getAccessPointAttribute(),
+										value,
+										standard.getStandardComparison().toString(),
+										standard.getPositiveValues().toString()));
+							}
 						}
 					}
 				}
 				los.setScoreDetails(scoreDetails);
-				BaseDAO<LevelOfServiceScore> losDao = new BaseDAO<LevelOfServiceScore>(LevelOfServiceScore.class);
+				BaseDAO<LevelOfServiceScore> losDao = new BaseDAO<LevelOfServiceScore>(
+						LevelOfServiceScore.class);
 				losDao.save(los);
 			}
 		} else {
@@ -59,6 +120,14 @@ public class ScoringHelper {
 			ArrayList<String> details = new ArrayList<String>();
 			details.add("0 not improved waterpoint");
 		}
+	}
+
+	private String formScoreDetailMessage(Integer score, String desc,
+			String type, String attribute, String value, String operator,
+			String compareTo) {
+		return "Plus " + score + " for " + desc + " " + type + " " + attribute
+				+ " Value " + value + " " + operator + " " + compareTo;
+
 	}
 
 	public void scoreWaterPointSustainability(AccessPoint ap) {
@@ -76,10 +145,19 @@ public class ScoringHelper {
 	private String getAccessPointFieldValue(AccessPoint ap,
 			String accessPointAttribute) {
 		Method m;
-		String value=null;
+		String value = null;
 		try {
-			m = AccessPoint.class.getMethod("get" + accessPointAttribute, null);
-			value = (String) m.invoke(ap, null);
+			m = AccessPoint.class
+					.getMethod(
+							"get"
+									+ StringUtil
+											.capitalizeFirstCharacterString(accessPointAttribute),
+							null);
+			if (!m.getReturnType().getName().equals("java.lang.String")) {
+				value = m.invoke(ap, null).toString();
+			} else {
+				value = (String) m.invoke(ap, null);
+			}
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -99,31 +177,53 @@ public class ScoringHelper {
 		return value;
 	}
 
-	private Boolean compareBoolean(String uncastvalue, Boolean compareTo){
+	private Boolean compareBoolean(String uncastvalue, Boolean compareTo) {
 		Boolean answer = null;
 		Boolean value = Boolean.parseBoolean(uncastvalue);
-		if(value.equals(compareTo)){
-			answer=true;
-		}else{
-			answer=false;
+		if (value.equals(compareTo)) {
+			answer = true;
+		} else {
+			answer = false;
 		}
 		return answer;
 	}
-	
-	private Boolean compareStrings(String apvalue,ArrayList<String> valueList){
+
+	private Boolean compareStrings(String apvalue, ArrayList<String> valueList) {
 		Boolean answer = false;
-		for(String item:valueList){
-			if(item.equals(apvalue)){
-				answer=true;
+		for (String item : valueList) {
+			if (item.equals(apvalue)) {
+				answer = true;
 			}
 		}
 		return answer;
 	}
-	
-	private Boolean compareLessThanEqualInteger(String apvalue,Integer compareTo ){
+
+	private Boolean compareDouble(
+			Standard.StandardComparisons standardComparisons, String apvalue,
+			Double compareTo) {
 		Boolean answer = false;
-		if(Integer.parseInt(apvalue)<=compareTo){
-			answer=true;
+		if (standardComparisons.equals(StandardComparisons.lessthan)) {
+			if (Double.parseDouble(apvalue) < compareTo) {
+				answer = true;
+			}
+		} else if (standardComparisons
+				.equals(StandardComparisons.lessthanorequal)) {
+			if (Double.parseDouble(apvalue) <= compareTo) {
+				answer = true;
+			}
+		} else if (standardComparisons.equals(StandardComparisons.greaterthan)) {
+			if (Double.parseDouble(apvalue) > compareTo) {
+				answer = true;
+			}
+		} else if (standardComparisons
+				.equals(StandardComparisons.greaterthanorequal)) {
+			if (Double.parseDouble(apvalue) >= compareTo) {
+				answer = true;
+			}
+		} else if (standardComparisons.equals(StandardComparisons.equal)) {
+			if (Double.parseDouble(apvalue) == compareTo) {
+				answer = true;
+			}
 		}
 		return answer;
 	}

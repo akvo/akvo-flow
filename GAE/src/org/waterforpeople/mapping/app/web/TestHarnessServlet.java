@@ -63,6 +63,7 @@ import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
 import org.waterforpeople.mapping.app.web.test.StandardScoringTest;
+import org.waterforpeople.mapping.app.web.test.StandardTestLoader;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.AccessPointMetricMappingDao;
 import org.waterforpeople.mapping.dao.CommunityDao;
@@ -190,6 +191,12 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
+		} else if ("testStandardScoring".equals(action)) {
+			StandardTestLoader stl  = new StandardTestLoader(req,resp);
+			stl.runTest();
+		} else if ("listStandardScoringResults".equals(action)) {
+			StandardTestLoader stl  = new StandardTestLoader(req,resp);
+			stl.listResults();
 		} else if ("testDistanceRule".equals(action)) {
 			DeleteObjectUtil dou = new DeleteObjectUtil();
 			dou.deleteAllObjects("AccessPointScoreComputationItem");
@@ -221,7 +228,7 @@ public class TestHarnessServlet extends HttpServlet {
 				this.populatePermissions();
 				resp.getWriter().println("Completed setting up permissions");
 				AccessPointTest apt = new AccessPointTest();
-				apt.loadLots(resp);
+				apt.loadLots(resp,100);
 				StandardScoringTest sct = new StandardScoringTest();
 				sct.populateData();
 				setupMetrics();
@@ -511,7 +518,7 @@ public class TestHarnessServlet extends HttpServlet {
 			qoDao.delete(qoDao.list("all"));
 			TranslationDao tDao = new TranslationDao();
 			tDao.delete(tDao.list("all"));
-			
+
 		} else if ("replicateDeviceFiles".equals(action)) {
 			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 			for (SurveyInstance si : siDao.list("all")) {
@@ -664,7 +671,7 @@ public class TestHarnessServlet extends HttpServlet {
 					else
 						ap.setTypeTechnologyString("Afridev Handpump");
 					apDao.save(ap);
-				
+
 					// ms.performSummarization("" + ap.getKey().getId(), "");
 					if (i % 50 == 0)
 						log.log(Level.INFO, "Loaded to " + i);
@@ -677,7 +684,7 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("loadLots".equals(action)) {
 			AccessPointTest apt = new AccessPointTest();
-			apt.loadLots(resp);
+			apt.loadLots(resp,500);
 		} else if ("loadCountries".equals(action)) {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");
@@ -1636,14 +1643,14 @@ public class TestHarnessServlet extends HttpServlet {
 
 				localeDao.save(valList);
 			}
-		}else if("fixDuplicateOtherText".equals(action)){
+		} else if ("fixDuplicateOtherText".equals(action)) {
 			TaskOptions options = TaskOptions.Builder.withUrl(
-			"/app_worker/dataprocessor").param(
-			DataProcessorRequest.ACTION_PARAM,
-			DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION);
-	com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-			.getDefaultQueue();
-	queue.add(options);
+					"/app_worker/dataprocessor").param(
+					DataProcessorRequest.ACTION_PARAM,
+					DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
 		}
 	}
 
