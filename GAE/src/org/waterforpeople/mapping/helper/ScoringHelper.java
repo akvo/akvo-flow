@@ -27,6 +27,8 @@ public class ScoringHelper {
 		los.setObjectKey(ap.getKey());
 		los.setScoreObject(ScoreObject.AccessPoint);
 		ArrayList<String> scoreDetails = new ArrayList<String>();
+		BaseDAO<LevelOfServiceScore> losDao = new BaseDAO<LevelOfServiceScore>(
+				LevelOfServiceScore.class);
 		if (ap.getImprovedWaterPointFlag()) {
 			StandardDao standardDao = new StandardDao();
 			List<Standard> standardList = standardDao
@@ -111,14 +113,14 @@ public class ScoringHelper {
 					}
 				}
 				los.setScoreDetails(scoreDetails);
-				BaseDAO<LevelOfServiceScore> losDao = new BaseDAO<LevelOfServiceScore>(
-						LevelOfServiceScore.class);
+				
 				losDao.save(los);
 			}
 		} else {
 			los.setScore(0);
 			ArrayList<String> details = new ArrayList<String>();
 			details.add("0 not improved waterpoint");
+			losDao.save(los);
 		}
 	}
 

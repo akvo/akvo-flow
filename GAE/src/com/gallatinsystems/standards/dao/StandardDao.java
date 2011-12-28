@@ -1,7 +1,5 @@
 package com.gallatinsystems.standards.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +8,6 @@ import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
-import com.gallatinsystems.auth.domain.WebActivityAuthorization;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.domain.Standard;

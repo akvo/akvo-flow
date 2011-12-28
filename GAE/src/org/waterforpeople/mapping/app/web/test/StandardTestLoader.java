@@ -14,6 +14,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.standards.dao.LOSScoreToStatusMappingDao;
 import com.gallatinsystems.standards.dao.LevelOfServiceScoreDao;
 import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.domain.LOSScoreToStatusMapping;
@@ -180,7 +181,7 @@ public class StandardTestLoader {
 		loadWaterPointStandard();
 		loadWaterPointScoreToStatus();
 		AccessPointTest apt = new AccessPointTest();
-		apt.loadLots(resp, 1);
+		apt.loadLots(resp, 10);
 	}
 
 	private void clearAPs() {
@@ -216,6 +217,9 @@ public class StandardTestLoader {
 			for (LevelOfServiceScore losItem : losScoreList) {
 				writeln("   LevelOfServiceScore: " + losItem.getScore()
 						+ " Score Date: " + losItem.getLastUpdateDateTime());
+				LOSScoreToStatusMappingDao losMap = new LOSScoreToStatusMappingDao();
+				LOSScoreToStatusMapping losMapItem = losMap.findByLOSScoreTypeAndScore(losItem.getScoreType(), losItem.getScore());
+				writeln("       Status: " + losMapItem.getColor() + " " + losMapItem.getLevelOfServiceScoreType());
 				for(String detail:losItem.getScoreDetails()){
 					writeln("      Details: " + detail);
 				}
