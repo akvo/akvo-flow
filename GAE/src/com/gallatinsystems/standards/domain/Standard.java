@@ -40,6 +40,15 @@ public class Standard extends BaseDomain {
 	private ArrayList<String> positiveValues = null;
 	private StandardComparisons standardComparison = null;
 	private StandardType standardType = null;
+	private Boolean partOfCompoundRule = false;
+
+	public Boolean getPartOfCompoundRule() {
+		return partOfCompoundRule;
+	}
+
+	public void setPartOfCompoundRule(Boolean partOfCompoundRule) {
+		this.partOfCompoundRule = partOfCompoundRule;
+	}
 
 	public StandardType getStandardType() {
 		return standardType;

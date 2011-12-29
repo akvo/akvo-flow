@@ -81,8 +81,10 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private String description = null;
 	@MappableField(displayName = "Local Spare Parts on Hand")
 	private Boolean localSparePartsFlag = null;
-	@MappableField(displayName = "Nearby Spare Parts on Hand")
+	@MappableField(displayName = "Don't Use - Spare Parts on Hand")
 	private Boolean nearbySparePartsFlag = null;
+	@MappableField(displayName = "Spare Parts on hand")
+	private Boolean sparePartsOnHand = null;
 	@MappableField(displayName = "Supports new Users since Construction/Rehabilitation")
 	private Boolean supportNewUsers = null;
 	@MappableField(displayName = "Positive Financial Balance")
@@ -159,6 +161,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private Boolean improvedWaterPointFlag = null;
 	@MappableField(displayName = "Collect Tariff Flag")
 	private Boolean collectTariffFlag = null;
+	@MappableField(displayName = "Location Type - Urban, Peri Urban, Rural, Other")
+	private LocationType locationType = null;
 	private Integer score = null;
 	private Integer sustainabilityScore = null;
 	private Integer levelOfServiceScore = null;
@@ -648,7 +652,7 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	}
 
 	public enum LocationType{
-		RURAL, URBAN, PERIURBAN
+		RURAL, URBAN, PERIURBAN, OTHER
 	}
 	
 	public enum Status {
@@ -956,5 +960,21 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 		result.append("}");
 
 		return result.toString();
+	}
+
+	public void setLocationType(LocationType locationType) {
+		this.locationType = locationType;
+	}
+
+	public LocationType getLocationType() {
+		return locationType;
+	}
+
+	public void setSparePartsOnHand(Boolean sparePartsOnHand) {
+		this.sparePartsOnHand = sparePartsOnHand;
+	}
+
+	public Boolean getSparePartsOnHand() {
+		return sparePartsOnHand;
 	}
 }

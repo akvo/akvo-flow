@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.waterforpeople.mapping.app.web.TestHarnessServlet;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.AccessPoint.LocationType;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.gis.map.dao.MapFragmentDao;
@@ -36,10 +37,10 @@ public class AccessPointTest {
 					// Random().nextInt(10));
 					// double lat = -15 + (new Random().nextDouble() / new
 					// Random().nextInt(10));
-					
-					//ghana 7.9596438809,-1.20704621427
-//					double lon = -106;
-//					double lat = 39.1;
+
+					// ghana 7.9596438809,-1.20704621427
+					// double lon = -106;
+					// double lat = 39.1;
 					double lon = -1.1;
 					double lat = 7.0;
 					if (getRandomBoolean()) {
@@ -52,14 +53,15 @@ public class AccessPointTest {
 										.nextInt(10));
 
 					}
-					
+
 					if (getRandomBoolean()) {
 						lat = lat
 								+ (new Random().nextDouble() * new Random()
 										.nextInt(10));
-					}else{
-						lat = lat - (new Random().nextDouble() * new Random()
-						.nextInt(10));
+					} else {
+						lat = lat
+								- (new Random().nextDouble() * new Random()
+										.nextInt(10));
 					}
 					Calendar calendar = new GregorianCalendar(2010,
 							Calendar.JANUARY, 1);
@@ -113,13 +115,25 @@ public class AccessPointTest {
 					ap.setPpmFecalColiform(new Random().nextDouble());
 					ap.setNumberOfLitersPerPersonPerDay(new Random().nextInt());
 					ap.setExtimatedPopulation(new Random().nextLong());
+					LocationType locationType = null;
+					Integer locationRandom = new Random().nextInt(3);
+					if ( locationRandom == 3)
+						locationType = LocationType.PERIURBAN;
+					else if(locationRandom==1)
+						locationType = LocationType.RURAL;
+					else if(locationRandom==0)
+						locationType = LocationType.URBAN;
+					else
+						locationType = LocationType.OTHER;
+					
+					ap.setLocationType(locationType);
 					if (getRandomBoolean())
 						ap.setCurrentProblem("Yes");
 					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-//					if (getRandomBoolean())
-//						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-//					else
-//						ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
+					// if (getRandomBoolean())
+					// ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+					// else
+					// ap.setPointType(AccessPoint.AccessPointType.PUBLIC_INSTITUTION);
 					if (getRandomBoolean())
 						ap.setTypeTechnologyString("Kiosk");
 					else
@@ -157,7 +171,8 @@ public class AccessPointTest {
 			return true;
 		}
 	}
-	public void loadWPDistanceTestData(HttpServletResponse resp){
+
+	public void loadWPDistanceTestData(HttpServletResponse resp) {
 		try {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			AccessPointDao apDao = new AccessPointDao();
@@ -167,11 +182,12 @@ public class AccessPointTest {
 			for (int j = 0; j < 1; j++) {
 
 				for (int i = 0; i < 100; i++) {
-					 double lon = 35 + (new Random().nextDouble() / new
-					 Random().nextInt(10));
-					 double lat = -15 + (new Random().nextDouble() / new
-					 Random().nextInt(10));
-					
+					double lon = 35 + (new Random().nextDouble() / new Random()
+							.nextInt(10));
+					double lat = -15
+							+ (new Random().nextDouble() / new Random()
+									.nextInt(10));
+
 					if (getRandomBoolean()) {
 						lon = lon
 								+ (new Random().nextDouble() * new Random()
@@ -182,14 +198,15 @@ public class AccessPointTest {
 										.nextInt(10));
 
 					}
-					
+
 					if (getRandomBoolean()) {
 						lat = lat
 								+ (new Random().nextDouble() * new Random()
 										.nextInt(10));
-					}else{
-						lat = lat - (new Random().nextDouble() * new Random()
-						.nextInt(10));
+					} else {
+						lat = lat
+								- (new Random().nextDouble() * new Random()
+										.nextInt(10));
 					}
 					Calendar calendar = new GregorianCalendar(2010,
 							Calendar.JANUARY, 1);
@@ -242,9 +259,8 @@ public class AccessPointTest {
 					if (getRandomBoolean())
 						ap.setCurrentProblem("Yes");
 
-					
-						ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
-					
+					ap.setPointType(AccessPoint.AccessPointType.WATER_POINT);
+
 					if (getRandomBoolean())
 						ap.setTypeTechnologyString("Kiosk");
 					else
@@ -262,8 +278,8 @@ public class AccessPointTest {
 			e.printStackTrace();
 		}
 	}
-	
-	public void loadHHDistanceTestData(HttpServletResponse resp){
+
+	public void loadHHDistanceTestData(HttpServletResponse resp) {
 		try {
 			MapFragmentDao mfDao = new MapFragmentDao();
 			AccessPointDao apDao = new AccessPointDao();
@@ -273,11 +289,12 @@ public class AccessPointTest {
 			for (int j = 0; j < 1; j++) {
 
 				for (int i = 0; i < 100; i++) {
-					 double lon = 35 + (new Random().nextDouble() / new
-					 Random().nextInt(10));
-					 double lat = -15 + (new Random().nextDouble() / new
-					 Random().nextInt(10));
-					
+					double lon = 35 + (new Random().nextDouble() / new Random()
+							.nextInt(10));
+					double lat = -15
+							+ (new Random().nextDouble() / new Random()
+									.nextInt(10));
+
 					if (getRandomBoolean()) {
 						lon = lon
 								+ (new Random().nextDouble() * new Random()
@@ -288,14 +305,15 @@ public class AccessPointTest {
 										.nextInt(10));
 
 					}
-					
+
 					if (getRandomBoolean()) {
 						lat = lat
 								+ (new Random().nextDouble() * new Random()
 										.nextInt(10));
-					}else{
-						lat = lat - (new Random().nextDouble() * new Random()
-						.nextInt(10));
+					} else {
+						lat = lat
+								- (new Random().nextDouble() * new Random()
+										.nextInt(10));
 					}
 					Calendar calendar = new GregorianCalendar(2010,
 							Calendar.JANUARY, 1);
@@ -348,9 +366,8 @@ public class AccessPointTest {
 					if (getRandomBoolean())
 						ap.setCurrentProblem("Yes");
 
-					
-						ap.setPointType(AccessPoint.AccessPointType.HOUSEHOLD);
-					
+					ap.setPointType(AccessPoint.AccessPointType.HOUSEHOLD);
+
 					if (getRandomBoolean())
 						ap.setTypeTechnologyString("Kiosk");
 					else

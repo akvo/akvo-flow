@@ -3,7 +3,7 @@ package com.gallatinsystems.standards.domain;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.standards.domain.LevelOfServiceScore.LevelOfServiceScoreType;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 
 @PersistenceCapable
 public class LOSScoreToStatusMapping extends BaseDomain {
@@ -14,15 +14,15 @@ public class LOSScoreToStatusMapping extends BaseDomain {
 	public enum LOSColor {Black,Red, Yellow, Green};
 	
 	private static final long serialVersionUID = -5962041217191538747L;
-	private LevelOfServiceScoreType levelOfServiceScoreType = null;
+	private StandardType levelOfServiceScoreType = null;
 	private Integer floor = null;
 	private Integer ceiling = null;
 	private LOSColor color = null;
-	public LevelOfServiceScoreType getLevelOfServiceScoreType() {
+	public StandardType getLevelOfServiceScoreType() {
 		return levelOfServiceScoreType;
 	}
 	public void setLevelOfServiceScoreType(
-			LevelOfServiceScoreType levelOfServiceScoreType) {
+			StandardType levelOfServiceScoreType) {
 		this.levelOfServiceScoreType = levelOfServiceScoreType;
 	}
 	public Integer getFloor() {

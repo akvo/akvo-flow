@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
@@ -12,18 +13,20 @@ import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.domain.LevelOfServiceScore;
-import com.gallatinsystems.standards.domain.LevelOfServiceScore.LevelOfServiceScoreType;
 import com.gallatinsystems.standards.domain.LevelOfServiceScore.ScoreObject;
 import com.gallatinsystems.standards.domain.Standard;
 import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
 import com.gallatinsystems.standards.domain.Standard.StandardScope;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.Standard.StandardValueType;
 
 public class ScoringHelper {
+	private static Logger log = Logger.getLogger(ScoringHelper.class
+			.getName());
 
-	public void scoreWaterPointLevelOfService(AccessPoint ap) {
+	public void scoreWaterPointByLevelOfService(AccessPoint ap, StandardType scoreType) {
 		LevelOfServiceScore los = new LevelOfServiceScore();
-		los.setScoreType(LevelOfServiceScoreType.WaterPointLevelOfService);
+		los.setScoreType(scoreType);
 		los.setObjectKey(ap.getKey());
 		los.setScoreObject(ScoreObject.AccessPoint);
 		ArrayList<String> scoreDetails = new ArrayList<String>();
@@ -31,8 +34,7 @@ public class ScoringHelper {
 				LevelOfServiceScore.class);
 		if (ap.getImprovedWaterPointFlag()) {
 			StandardDao standardDao = new StandardDao();
-			List<Standard> standardList = standardDao
-					.listByAccessPointType(AccessPointType.WATER_POINT);
+			List<Standard> standardList = standardDao.listByAccessPointTypeAndStandardType(AccessPointType.WATER_POINT, scoreType);
 			if (standardList != null) {
 				for (Standard standard : standardList) {
 					if (standard.getStandardScope()
@@ -174,6 +176,9 @@ public class ScoringHelper {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch(NullPointerException e){
+			log.info("AccessPoint Attribute: " + accessPointAttribute );
 			e.printStackTrace();
 		}
 		return value;

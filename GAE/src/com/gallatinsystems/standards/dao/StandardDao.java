@@ -36,6 +36,7 @@ public class StandardDao extends BaseDAO<Standard> {
 				paramMap);
 		appendNonNullParam("standardType", filterString, paramString,
 				"String", standardType, paramMap);
+		appendNonNullParam("partOfCompoundRule", filterString, paramString, "Boolean", false, paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 

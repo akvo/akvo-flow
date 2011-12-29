@@ -9,8 +9,7 @@ import javax.jdo.PersistenceManager;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.domain.LOSScoreToStatusMapping;
-import com.gallatinsystems.standards.domain.Standard;
-import com.gallatinsystems.standards.domain.LevelOfServiceScore.LevelOfServiceScoreType;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 
 public class LOSScoreToStatusMappingDao extends
 		BaseDAO<LOSScoreToStatusMapping> {
@@ -19,13 +18,13 @@ public class LOSScoreToStatusMappingDao extends
 	}
 
 	public List<LOSScoreToStatusMapping> ListByLevelOfServiceScoreType(
-			LevelOfServiceScoreType type) {
+			StandardType type) {
 		// List mappings by LevelOfServiceScoreType
 		return super.listByProperty("levelOfServiceScoreType", type, "String");
 	}
 
 	public LOSScoreToStatusMapping findByLOSScoreTypeAndScore(
-			LevelOfServiceScoreType type,Integer score) {
+			StandardType type,Integer score) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(LOSScoreToStatusMapping.class);
 		Map<String, Object> paramMap = null;
@@ -34,7 +33,7 @@ public class LOSScoreToStatusMappingDao extends
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("levelOfServiceScoreType", filterString,
+		appendNonNullParam("standardType", filterString,
 				paramString, "String", type.toString(), paramMap);
 		super.appendNonNullParam("floor",filterString, paramString, "Integer", score, paramMap,
 				LTE_OP);

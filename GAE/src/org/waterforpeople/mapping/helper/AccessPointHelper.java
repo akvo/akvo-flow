@@ -40,7 +40,10 @@ import com.gallatinsystems.gis.coordinate.utilities.CoordinateUtilities;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
+import com.gallatinsystems.standards.dao.DistanceStandardDao;
 import com.gallatinsystems.standards.dao.StandardScoringDao;
+import com.gallatinsystems.standards.domain.DistanceStandard;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.StandardScoring;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
@@ -951,8 +954,8 @@ public class AccessPointHelper {
 	public void scoreAccessPointNew(AccessPoint ap){
 		ScoringHelper sh = new ScoringHelper();
 		if(ap.getPointType().equals(AccessPointType.WATER_POINT)){
-			sh.scoreWaterPointLevelOfService(ap);
-			sh.scoreWaterPointSustainability(ap);
+			sh.scoreWaterPointByLevelOfService(ap, StandardType.WaterPointLevelOfService);
+			sh.scoreWaterPointByLevelOfService(ap, StandardType.WaterPointSustainability);
 		}
 	}
 
@@ -1058,18 +1061,24 @@ public class AccessPointHelper {
 
 	public void computeDistanceRule(AccessPoint ap) {
 		AccessPointDao apDao = new AccessPointDao();
-		Integer targetDistance = null;
 		if (ap != null) {
-			StandardScoringDao ssDao = new StandardScoringDao();
-			List<StandardScoring> ssList = ssDao
-					.listLocalDistanceStandardScoringForAccessPoint(ap);
-
-			if (ssList != null && !ssList.isEmpty()) {
-				StandardScoring ssItem = ssList.get(0);
-				if (ssItem != null && ssItem.getPositiveCriteria() != null)
-					targetDistance = Integer.parseInt(ssItem
-							.getPositiveCriteria());
+//			StandardScoringDao ssDao = new StandardScoringDao();
+//			List<StandardScoring> ssList = ssDao
+//					.listLocalDistanceStandardScoringForAccessPoint(ap);
+			Integer acceptableDistance = 500;
+			
+			DistanceStandardDao distanceStandardDao = new DistanceStandardDao();
+			DistanceStandard ds = distanceStandardDao.findDistanceStandard(StandardType.WaterPointLevelOfService, ap.getCountryCode(), ap.getLocationType());
+			if(ds!=null){
+				acceptableDistance = ds.getMaxDistance();
 			}
+			
+//			if (ssList != null && !ssList.isEmpty()) {
+//				StandardScoring ssItem = ssList.get(0);
+//				if (ssItem != null && ssItem.getPositiveCriteria() != null)
+//					targetDistance = Integer.parseInt(ssItem
+//							.getPositiveCriteria());
+//			}
 			if (ap.getTypeTechnologyString().equals(
 					"Gravity Fed System with Household Taps")) {
 				// ToDo: check against tech type of HH, but need to know which
@@ -1087,7 +1096,7 @@ public class AccessPointHelper {
 						Double distance = CoordinateUtilities.computeDistance(
 								ap.getLatitude(), ap.getLongitude(),
 								hh.getLatitude(), hh.getLongitude());
-						if (distance != null && distance < 500) {
+						if (distance != null && distance < acceptableDistance) {
 							ap.setNumberWithinAcceptableDistance(ap
 									.getNumberWithinAcceptableDistance() + 1);
 						} else {
@@ -1115,7 +1124,7 @@ public class AccessPointHelper {
 						minDistanceWaterPoint = wp;
 					}
 				}
-				if (minDistance != null && minDistance < 500) {
+				if (minDistance != null && minDistance < acceptableDistance) {
 					minDistanceWaterPoint
 							.setNumberWithinAcceptableDistance(minDistanceWaterPoint
 									.getNumberWithinAcceptableDistance() + 1);
