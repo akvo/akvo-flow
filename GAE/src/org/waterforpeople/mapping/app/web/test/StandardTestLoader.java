@@ -420,8 +420,9 @@ public class StandardTestLoader {
 		standard.setAccessPointAttribute("localSparePartsFlag");
 		cs.setStandardRight(standard);
 		CompoundStandardDao csDao = new CompoundStandardDao();
-		csDao.save(cs);
 		cs.setOperator(Operator.OR);
+		csDao.save(cs);
+		
 
 	}
 }
