@@ -25,7 +25,7 @@ import com.gallatinsystems.standards.domain.Standard.StandardValueType;
 public class ScoringHelper {
 	private static Logger log = Logger.getLogger(ScoringHelper.class.getName());
 
-	public void scoreWaterPointByLevelOfService(AccessPoint ap,
+	public LevelOfServiceScore scoreWaterPointByLevelOfService(AccessPoint ap,
 			StandardType scoreType) {
 		LevelOfServiceScore los = new LevelOfServiceScore();
 		los.setScoreType(scoreType);
@@ -45,12 +45,12 @@ public class ScoringHelper {
 				temp.addAll(sdc.getDetails());
 				los.setScoreDetails(temp);
 			}
-			losDao.save(los);
+			
 		} else {
 			los.setScore(0);
 			los.addScoreDetail("0 not improved waterpoint");
-			losDao.save(los);
 		}
+		return los;
 	}
 
 	private ScoreDetailContainer scoreCompound(AccessPoint ap,

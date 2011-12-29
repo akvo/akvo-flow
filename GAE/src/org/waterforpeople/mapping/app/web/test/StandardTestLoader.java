@@ -281,25 +281,25 @@ public class StandardTestLoader {
 	}
 
 	private void clearAPs() {
-//		DeleteObjectUtil dou = new DeleteObjectUtil();
-//		dou.deleteAllObjects("AccessPoint");
-//		writeln("Deleted APs");
-//		dou.deleteAllObjects("AccessPointScoreComputationItem");
-//		writeln("Deleted APSCI");
-//		dou.deleteAllObjects("AccessPointScoreDetail");
-//		writeln("Deleted APSD");
-//		dou.deleteAllObjects("AccessPointsStatusSummary");
-//		writeln("Deleted AccessPointsStatusSummary");
-//		dou.deleteAllObjects("Standard");
-//		writeln("Deleted All the Standards");
-//		dou.deleteAllObjects("LevelOfServiceScore");
-//		writeln("Deleted All the LevelOfServiceScore");
-//		dou.deleteAllObjects("LOSScoreToStatusMapping");
-//		writeln("Deleted All LevelOfServiceScoreToStatusMappings");
-//		dou.deleteAllObjects("DistanceStandard");
-//		writeln("Deleted All DistanceStandards");
-//		dou.deleteAllObjects("CompoundStandard");
-//		writeln("Deleted All CompoundStandards");
+		DeleteObjectUtil dou = new DeleteObjectUtil();
+		dou.deleteAllObjects("AccessPoint");
+		writeln("Deleted APs");
+		dou.deleteAllObjects("AccessPointScoreComputationItem");
+		writeln("Deleted APSCI");
+		dou.deleteAllObjects("AccessPointScoreDetail");
+		writeln("Deleted APSD");
+		dou.deleteAllObjects("AccessPointsStatusSummary");
+		writeln("Deleted AccessPointsStatusSummary");
+		dou.deleteAllObjects("Standard");
+		writeln("Deleted All the Standards");
+		dou.deleteAllObjects("LevelOfServiceScore");
+		writeln("Deleted All the LevelOfServiceScore");
+		dou.deleteAllObjects("LOSScoreToStatusMapping");
+		writeln("Deleted All LevelOfServiceScoreToStatusMappings");
+		dou.deleteAllObjects("DistanceStandard");
+		writeln("Deleted All DistanceStandards");
+		dou.deleteAllObjects("CompoundStandard");
+		writeln("Deleted All CompoundStandards");
 	}
 
 	public void listResults() {
@@ -331,7 +331,7 @@ public class StandardTestLoader {
 				}
 				write("<td>");
 				for (String detail : losItem.getScoreDetails()) {
-					write(detail +"<BR>");
+					write(" "+detail +"<br>");
 				}
 				write("</td>");
 			}
