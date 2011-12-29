@@ -260,6 +260,16 @@ public class StandardTestLoader {
 			e.printStackTrace();
 		}
 	}
+	
+	private void write(String message){
+		try {
+			log.info(message);
+			resp.getWriter().print(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public void runTest() {
 		clearAPs();
@@ -300,26 +310,34 @@ public class StandardTestLoader {
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> apList = apDao.list("all");
 		LevelOfServiceScoreDao lesScoreDao = new LevelOfServiceScoreDao();
+		writeln("<html><table border=1>");
+		write("<tr><td>AccessPoint Key</td><td>Country Code</td><td>Community Name</td><td>Access Point Code</td><td>Access Point Collection Date</td><td>Number HH within Acceptable Distance</td>" +
+		"<td>Number Outside Acceptable Distance</td><td>LOS Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td>"+
+		"<td>Sustainability Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td></tr>");
+
 		for (AccessPoint item : apList) {
 			List<LevelOfServiceScore> losScoreList = lesScoreDao
 					.listByAccessPoint(item.getKey());
-			writeln("AP: " + item.getKeyString());
+			write("<tr><td>" + item.getKeyString() + "</td><td>"+item.getCountryCode() +"</td><td>"+item.getCommunityName()+"</td><td>" + item.getAccessPointCode()+"</td><td>" + item.getCollectionDate()+ "</td><td>" + 
+					item.getNumberWithinAcceptableDistance() + " </td><td> " + item.getNumberWithinAcceptableDistance()+ "</td>");
 			for (LevelOfServiceScore losItem : losScoreList) {
-				writeln("   LevelOfServiceScore: " + losItem.getScore()
-						+ " Score Date: " + losItem.getLastUpdateDateTime());
 				LOSScoreToStatusMappingDao losMap = new LOSScoreToStatusMappingDao();
 				LOSScoreToStatusMapping losMapItem = losMap
 						.findByLOSScoreTypeAndScore(losItem.getScoreType(),
 								losItem.getScore());
 				if (losMapItem != null) {
-					writeln("       Status: " + losMapItem.getColor() + " "
-							+ losMapItem.getLevelOfServiceScoreType());
+					write("<td>"+ losItem.getScore()+"</td><td>"+
+							 losItem.getLastUpdateDateTime()+"</td><td>" + losMapItem.getColor() + "</td><td>"+losMapItem.getLevelOfServiceScoreType()+"</td>");
 				}
+				write("<td>");
 				for (String detail : losItem.getScoreDetails()) {
-					writeln("      Details: " + detail);
+					write(detail +"<BR>");
 				}
+				write("</td>");
 			}
+			write("</tr>");
 		}
+		writeln("</table></html>");
 	}
 
 	private void loadWaterPointSustainability() {
